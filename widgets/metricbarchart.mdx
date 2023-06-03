@@ -1,0 +1,55 @@
+import React, { useEffect, useState } from 'react';
+import { BarChart } from 'ai-verify-shared-library/charts'
+
+export const MetricBarChart = ({ metric, width="100%", height="100%", data }) => {
+  const [ mydata, setmydata ] = useState({
+    data: [],
+    bars: [],
+  });
+  const wrapperStyle = {
+    fontSize: "12px"
+  }
+
+  useEffect(() => {
+    if (!data || !data.results || !data.output_classes || !data.sensitive_feature)
+      return;
+    const outputClasses = data.output_classes;
+    const sensitiveFeatures = data.sensitive_feature;
+    let ar = [];
+    let groups = {};
+    for (let oc=0; oc<data.results.length; oc++) {
+      const result = data.results[oc][metric];
+      let obj = {
+        outputClass: `Class ${outputClasses[oc]}`,
+      }
+      for (let row of result) {
+        let group1 = JSON.stringify(row.group);
+        let group = sensitiveFeatures.map((f,idx) => `${f}:${row.group[idx]}` ).join(",")
+        groups[group] = 1;
+        obj[group] = row.metric;
+      }
+      ar.push(obj);
+    }
+      setmydata({
+      data: ar,
+      bars: Object.keys(groups).map(grp => ({ dataKey: grp })),
+    });
+  }, [metric, data])
+
+  if (mydata.data.length == 0) {
+    return <div>No results</div>
+  }
+
+  return (
+    <div style={{ width:width, height:height, padding:10, display:"flex", flexDirection:"column" }}>
+      <h4 style={{ padding:0, margin:0 }}>{metric}</h4>
+      <BarChart
+        data={mydata.data}
+        xAxisDataKey="outputClass"
+        bars={mydata.bars}
+        chartProps={{ layout:"vertical" }}
+        legendProps={{ wrapperStyle }}
+      />
+    </div>
+  )
+}
