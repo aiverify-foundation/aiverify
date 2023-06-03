@@ -1,0 +1,23 @@
+{
+  "cid": "digital-samples-contrastdown",
+  "widgetSize": {
+    "minW": 1,
+    "minH": 1,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Samples (Digital: Contrast Down)",
+  "description": "To generate sample images for digital corruptions (contrast down)",
+  "dependencies": [
+    {
+      "cid": "digital_corruptions"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "Algorithm",
+      "cid": "digital_corruptions",
+      "datapath": "digital-corruption-mock-data.json"
+    }
+  ]
+}

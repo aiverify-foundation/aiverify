@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "general-corruptions"
+version = "0.9.0"
+description = ""
+authors = ["AI Verify"]
+readme = "README.md"
+packages = [{include = "general_corruptions"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pandas = "1.5.3"
+numpy = "1.23.5"
+pillow = "9.4.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

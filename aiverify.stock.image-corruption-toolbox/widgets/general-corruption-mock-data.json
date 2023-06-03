@@ -1,0 +1,136 @@
+{
+    "results": [
+        {
+            "corruption_group": "General",
+            "corruption_function": "Gaussian_Noise",
+            "accuracy": {
+                "severity0": 0.9,
+                "severity1": 0.9,
+                "severity2": 0.8,
+                "severity3": 0.8,
+                "severity4": 0.9,
+                "severity5": 0.8
+            },
+            "display_info": {
+                "severity0": [
+                    "algorithms/general_corruptions/temp/Gaussian_Noise/severity0/9.png",
+                    "6",
+                    "6"
+                ],
+                "severity1": [
+                    "algorithms/general_corruptions/temp/Gaussian_Noise/severity1/9.png",
+                    "6",
+                    "6"
+                ],
+                "severity2": [
+                    "algorithms/general_corruptions/temp/Gaussian_Noise/severity2/9.png",
+                    "6",
+                    "6"
+                ],
+                "severity3": [
+                    "algorithms/general_corruptions/temp/Gaussian_Noise/severity3/9.png",
+                    "6",
+                    "6"
+                ],
+                "severity4": [
+                    "algorithms/general_corruptions/temp/Gaussian_Noise/severity4/9.png",
+                    "6",
+                    "6"
+                ],
+                "severity5": [
+                    "algorithms/general_corruptions/temp/Gaussian_Noise/severity5/9.png",
+                    "6",
+                    "6"
+                ]
+            }
+        },
+        {
+            "corruption_group": "General",
+            "corruption_function": "Poisson_Noise",
+            "accuracy": {
+                "severity0": 0.9,
+                "severity1": 0.9,
+                "severity2": 0.9,
+                "severity3": 0.9,
+                "severity4": 0.9,
+                "severity5": 0.9
+            },
+            "display_info": {
+                "severity0": [
+                    "algorithms/general_corruptions/temp/Poisson_Noise/severity0/9.png",
+                    "6",
+                    "6"
+                ],
+                "severity1": [
+                    "algorithms/general_corruptions/temp/Poisson_Noise/severity1/9.png",
+                    "6",
+                    "6"
+                ],
+                "severity2": [
+                    "algorithms/general_corruptions/temp/Poisson_Noise/severity2/9.png",
+                    "6",
+                    "6"
+                ],
+                "severity3": [
+                    "algorithms/general_corruptions/temp/Poisson_Noise/severity3/9.png",
+                    "6",
+                    "6"
+                ],
+                "severity4": [
+                    "algorithms/general_corruptions/temp/Poisson_Noise/severity4/9.png",
+                    "6",
+                    "6"
+                ],
+                "severity5": [
+                    "algorithms/general_corruptions/temp/Poisson_Noise/severity5/9.png",
+                    "6",
+                    "6"
+                ]
+            }
+        },
+        {
+            "corruption_group": "General",
+            "corruption_function": "Salt_and_Pepper_Noise",
+            "accuracy": {
+                "severity0": 0.9,
+                "severity1": 0.8,
+                "severity2": 0.8,
+                "severity3": 0.9,
+                "severity4": 0.9,
+                "severity5": 0.8
+            },
+            "display_info": {
+                "severity0": [
+                    "algorithms/general_corruptions/temp/Salt_and_Pepper_Noise/severity0/9.png",
+                    "6",
+                    "6"
+                ],
+                "severity1": [
+                    "algorithms/general_corruptions/temp/Salt_and_Pepper_Noise/severity1/9.png",
+                    "6",
+                    "6"
+                ],
+                "severity2": [
+                    "algorithms/general_corruptions/temp/Salt_and_Pepper_Noise/severity2/9.png",
+                    "6",
+                    "6"
+                ],
+                "severity3": [
+                    "algorithms/general_corruptions/temp/Salt_and_Pepper_Noise/severity3/9.png",
+                    "6",
+                    "6"
+                ],
+                "severity4": [
+                    "algorithms/general_corruptions/temp/Salt_and_Pepper_Noise/severity4/9.png",
+                    "6",
+                    "6"
+                ],
+                "severity5": [
+                    "algorithms/general_corruptions/temp/Salt_and_Pepper_Noise/severity5/9.png",
+                    "6",
+                    "6"
+                ]
+            }
+        }
+    ]
+}

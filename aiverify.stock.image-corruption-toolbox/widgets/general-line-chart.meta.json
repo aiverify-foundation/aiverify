@@ -1,0 +1,23 @@
+{
+  "cid": "general-line-chart",
+  "widgetSize": {
+    "minW": 1,
+    "minH": 1,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Line Chart (General Corruptions)",
+  "description": "To generate line charts to visualise the accuracy results when general corruptions (gaussian, poisson and salt and pepper noise) are applied",
+  "dependencies": [
+    {
+      "cid": "general_corruptions"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "Algorithm",
+      "cid": "general_corruptions",
+      "datapath": "general-corruption-mock-data.json"
+    }
+  ]
+}

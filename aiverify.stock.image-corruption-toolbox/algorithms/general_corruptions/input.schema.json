@@ -1,0 +1,29 @@
+{
+    "title": "Algorithm Plugin Input Arguments",
+    "description": "A schema for algorithm plugin input arguments",
+    "type": "object",
+    "required": [
+        "annotated_ground_truth_path",
+        "file_name_label",
+        "set_seed"
+    ],
+    "properties": {
+        "annotated_ground_truth_path": {
+            "title": "Annotated ground truth path",
+            "description": "Select the dataset containing image file names and corresponding ground truth labels",
+            "type": "string",
+            "ui:widget": "selectDataset"
+        },
+        "file_name_label": {
+            "title": "Name of column containing image file names",
+            "description": "Key in the name of the column containing the file names in the annotated ground truth dataset",
+            "type": "string"
+        },
+        "set_seed": {
+            "title": "Seed for selection of data for display",
+            "description": "Change to a specific seed for random selection the sample data for display if desired",
+            "default": 10,
+            "type": "integer"
+        }
+    }
+}
