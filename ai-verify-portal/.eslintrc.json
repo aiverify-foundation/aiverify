@@ -1,0 +1,15 @@
+{
+  "extends": ["next/core-web-vitals", "plugin:@typescript-eslint/recommended"],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "root": true,
+  "rules": {
+    "react-hooks/rules-of-hooks": 1,
+    "react-hooks/exhaustive-deps": 0,
+    "prefer-const": 1,
+    "@typescript-eslint/no-empty-function": 1,
+    "@typescript-eslint/ban-ts-comment": 1,
+    "@typescript-eslint/no-inferrable-types": 1,
+    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }]
+  }
+}

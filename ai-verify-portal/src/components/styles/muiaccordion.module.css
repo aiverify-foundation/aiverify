@@ -1,0 +1,11 @@
+.expandIcon {
+  color: #FFFFFF;
+  font-size: 1.1rem;
+}
+
+.headingContainer {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  font-size: 16px;
+}
