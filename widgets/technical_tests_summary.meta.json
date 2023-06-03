@@ -1,0 +1,11 @@
+{
+  "cid": "technical_tests_summary",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 5,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Technical Tests Summary",
+  "description": "Status information on technical test results"
+}
