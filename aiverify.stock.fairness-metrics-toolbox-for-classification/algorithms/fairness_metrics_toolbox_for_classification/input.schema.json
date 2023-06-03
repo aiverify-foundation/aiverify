@@ -1,0 +1,19 @@
+{
+    "title": "Algorithm Plugin Input Arguments",
+    "description": "A schema for algorithm plugin input arguments",
+    "type": "object",
+    "required": [
+        "sensitive_feature"
+    ],
+    "properties": {
+        "sensitive_feature": {
+            "title": "Sensitive Feature Names",
+            "description": "Array of Sensitive Feature Names (e.g. Gender)",
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "minItems": 1
+        }
+    }
+}

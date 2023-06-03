@@ -1,0 +1,22 @@
+[
+  {
+    "key": "sensitiveFeature",
+    "name": "Sensitive Feature Name(s)",
+    "description": "Use commas to separate the features (e.g., gender, race)"
+  },
+  {
+    "key": "favourableOutcomeName",
+    "name": "Favourable Allocated Resource / Opportunity",
+    "description": "The resource/opportunity that is favourable in this use case (e.g., bail, loan, low interest rate, low insurance premium)"
+  },
+  {
+    "key": "qualified",
+    "name": "Qualified Group",
+    "description": "The name of the group that is supposed to receive the resource / opportunity. (e.g. non-reoffenders, qualified applicants, licensed companies)"
+  },
+  {
+    "key": "unqualified",
+    "name": "Unqualified Group",
+    "description": "The name of the group that is NOT supposed to receive the resource / opportunity. (e.g. reoffenders, unqualified applicants, unlicensed companies)"
+  }
+]
