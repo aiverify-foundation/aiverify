@@ -1,0 +1,62 @@
+{
+    "title": "Algorithm Plugin Output Arguments",
+    "description": "A schema for algorithm plugin output arguments",
+    "type": "object",
+    "required": [
+      "feature_names",
+      "results"
+    ],
+    "minProperties": 1,
+    "properties": {
+      "feature_names": {
+        "type": "array",
+        "description": "Array of feature names",
+        "minItems": 1,
+        "items": {
+          "type": "string"
+        }
+      },
+      "results": {
+        "title": "Matrix of feature values (# feature names)",
+        "description": "The results of feature names",
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "description": "Results of indices, ale, and size",
+          "type": "object",
+          "required": [
+            "indices",
+            "ale",
+            "size"
+          ],
+          "minProperties": 3,
+          "properties": {
+            "indices": {
+              "title": "Indices",
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "number"
+              }
+            },
+            "ale": {
+              "title": "ale (# of indices)",
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "number"
+              }
+            },
+            "size": {
+              "title": "size (# of indices)",
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    }
+  }

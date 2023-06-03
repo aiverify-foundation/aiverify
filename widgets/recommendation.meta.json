@@ -1,0 +1,11 @@
+{
+  "cid": "recommendation",
+  "widgetSize": {
+    "minW": 4,
+    "minH": 2,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Recommendation",
+  "description": "To provide a recommendation on explainability"
+}
