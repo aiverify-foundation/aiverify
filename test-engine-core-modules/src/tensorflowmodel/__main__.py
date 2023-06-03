@@ -6,7 +6,7 @@ if __name__ == "__main__":
     discover_path = Path.cwd().parent
     file_path = str(
         discover_path
-        / "tensorflowmodel/user_defined_files/tensorflow_tabular_compas_sequential.sav"
+        / "tensorflowmodel/user_defined_files/tensorflow_tabular_sequential.sav"
     )
 
     # =================================================================================

@@ -25,21 +25,17 @@ class PluginTest:
         # Store the input arguments as private vars
         self._data_path: str = str(self._base_path / data_path)
 
-        self._ground_truth_value = "Interest_Rate"
+        self._ground_truth_value = "default"
         self._expected_data_labels = {
-            "Loan_Amount_Requested": "int64",
-            "Length_Employed": "int64",
-            "Home_Owner": "int64",
-            "Annual_Income": "float64",
-            "Income_Verified": "int64",
-            "Purpose_Of_Loan": "int64",
-            "Debt_To_Income": "float64",
-            "Inquiries_Last_6Mo": "int64",
-            "Months_Since_Deliquency": "float64",
-            "Number_Open_Accounts": "int64",
-            "Total_Accounts": "int64",
-            "Gender": "int64",
-            "Interest_Rate": "int64",
+            "age": "int64",
+            "gender": "int64",
+            "income": "int64",
+            "race": "int64",
+            "home_ownership": "int64",
+            "prior_count": "int64",
+            "loan_amount": "int64",
+            "loan_interests": "float64",
+            "default": "int64",
         }
         self._expected_data_plugin_type = DataPluginType.PANDAS
 

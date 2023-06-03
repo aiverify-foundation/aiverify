@@ -6,7 +6,7 @@ if __name__ == "__main__":
     discover_path = Path.cwd().parent
     file_path = str(
         discover_path
-        / "pandasdata/user_defined_files/pickle_pandas_tabular_loan_testing.sav"
+        / "pandasdata/user_defined_files/pickle_pandas_mock_binary_classification_credit_risk_testing.sav"
     )
 
     # =================================================================================

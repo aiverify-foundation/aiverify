@@ -4,7 +4,7 @@ from module_tests.plugin_test import PluginTest
 
 if __name__ == "__main__":
     discover_path = Path.cwd().parent
-    file_path = str(discover_path / "imageserializer/user_defined_files/2.jpg")
+    file_path = str(discover_path / "imageserializer/user_defined_files/1.jpg")
 
     # =================================================================================
     # NOTE: Do not modify the code below

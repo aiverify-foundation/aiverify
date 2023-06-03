@@ -1,10 +1,9 @@
 import pytest
+from src.imageserializer.imageserializer import Plugin
 from test_engine_core.plugins.enums.image_type import ImageType
 from test_engine_core.plugins.enums.plugin_type import PluginType
 from test_engine_core.plugins.enums.serializer_plugin_type import SerializerPluginType
 from test_engine_core.plugins.metadata.image_metadata import ImageMetadata
-
-from src.imageserializer.imageserializer import Plugin
 
 
 class TestCollectionDelimiterSerializer:
@@ -12,9 +11,9 @@ class TestCollectionDelimiterSerializer:
         "expected_name, expected_description, expected_version",
         [
             (
-                    "imageserializer",
-                    "imageserializer supports reading images",
-                    "0.9.0",
+                "imageserializer",
+                "imageserializer supports reading images",
+                "0.9.0",
             ),
         ],
     )
@@ -27,9 +26,7 @@ class TestCollectionDelimiterSerializer:
     @pytest.mark.parametrize(
         "expected_output",
         [
-            (
-                    PluginType.SERIALIZER
-            ),
+            (PluginType.SERIALIZER),
         ],
     )
     def test_get_plugin_type(self, expected_output):
@@ -39,8 +36,10 @@ class TestCollectionDelimiterSerializer:
         "data_path, expected_output",
         [
             (
-                    "src/imagedata/user_defined_files/2.png",
-                    ImageMetadata(None, ImageType.PNG, "src/imagedata/user_defined_files/2.png")
+                "src/imagedata/user_defined_files/0.png",
+                ImageMetadata(
+                    None, ImageType.PNG, "src/imagedata/user_defined_files/0.png"
+                ),
             )
         ],
     )
@@ -56,47 +55,27 @@ class TestCollectionDelimiterSerializer:
     @pytest.mark.parametrize(
         "data_path, expected_error_message",
         [
+            ("1234.csv", "The image type is not supported."),
             (
-                    "1234.csv",
-                    'The image type is not supported.'
+                "tests/imageserializer/special_image.txt",
+                "The image type is not supported.",
             ),
-            (
-                    "tests/imageserializer/special_image.txt",
-                    'The image type is not supported.'
-            ),
-            (
-                    None,
-                    'expected str, bytes or os.PathLike object, not NoneType'
-            ),
-            (
-                    "None",
-                    'The image type is not supported.'
-            ),
-            (
-                    {},
-                    'expected str, bytes or os.PathLike object, not dict'
-            ),
-            (
-                    [],
-                    'expected str, bytes or os.PathLike object, not list'
-            ),
-            (
-                    1234,
-                    'expected str, bytes or os.PathLike object, not int'
-            ),
+            (None, "expected str, bytes or os.PathLike object, not NoneType"),
+            ("None", "The image type is not supported."),
+            ({}, "expected str, bytes or os.PathLike object, not dict"),
+            ([], "expected str, bytes or os.PathLike object, not list"),
+            (1234, "expected str, bytes or os.PathLike object, not int"),
         ],
     )
     def test_deserialize_data_with_exception(self, data_path, expected_error_message):
         with pytest.raises(Exception) as exc_info:
-            output = Plugin.deserialize_data(data_path)
+            Plugin.deserialize_data(data_path)
         assert str(exc_info.value) == expected_error_message
 
     @pytest.mark.parametrize(
         "expected_output",
         [
-            (
-                    SerializerPluginType.IMAGE
-            ),
+            (SerializerPluginType.IMAGE),
         ],
     )
     def test_get_serializer_plugin_type(self, expected_output):
