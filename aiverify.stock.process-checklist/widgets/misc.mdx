@@ -1,0 +1,15 @@
+export const MyHR = ({ style={} }) => {
+  return (<hr style={{ height:'1px', backgroundColor:'#702F8A', width:'100%', padding:0, margin:0, ...style, }}/>)
+}
+
+export const MyPageTitle1 = ({title, style={}}) => {
+  return (<h1 className="c-primary" style={{ textAlign:'left', padding:0, margin:0, textTransform:'uppercase', fontWeight:900, ...style }}>{title || ""}</h1>)
+}
+
+export const MyPageTitle2 = ({title, style={}}) => {
+  return (<h2 className="c-primary" style={{ padding:0, margin:0, textTransform:'uppercase', fontWeight:700, fontSize:'15pt', ...style }}>{title || ""}</h2>)
+}
+
+export const MyPageTitle3 = ({title, style={}}) => {
+  return (<h3 style={{ padding:0, margin:0, textTransform:'uppercase', color:'black', fontWeight:700, fontSize:'15pt', ...style }}>{title || ""}</h3>)
+}

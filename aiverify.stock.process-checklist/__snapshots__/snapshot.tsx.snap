@@ -1,0 +1,1970 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Snapshot tests renders input blocks explainability_process_checklist unchanged 1`] = `
+<div>
+  <div
+    style="width: 1400px; height: 1050px; display: block; position: relative;"
+  >
+    <div
+      style="display: block; padding: 0px; margin: 0px; overflow: auto; position: relative;"
+    >
+      <div
+        style="width: 100%; display: flex; margin-bottom: 10px;"
+      >
+        <div
+          style="width: 100%; flex-grow: 1;"
+        >
+          <h1
+            style="padding: 0px; margin: 0px;"
+          >
+            AI Verify Framework Process Checklist - 
+            Explainability
+          </h1>
+          <div>
+            Explainability is about ensuring AI driven decisions can be explained and understood by those directly using the system to enable or carry out a decision, to the extent possible. The degree to which explainability is needed also depends on the aims of the explanation, including the context, the needs of stakeholders, types of understanding sought, mode of explanation, as well as the the severity of the consequences of errorneous or inaccurate output on human beings. Explainability is an important component of a transparent AI system. The testable criteria in this section focuses on system-enabled explainability. However, it may not be possible to provide an explanation for how a black box model generated a particular output or decision (and what combination of input factors contributed to that). In these circumstances, other explainability measures may be required (e.g. accountability and transparent communication). As state-of-the-art approaches to explainability become available, users should refine the process, metrics and/or thresholds accordingly.
+          </div>
+        </div>
+        <div
+          style="background-color: rgb(243, 240, 245); color: rgb(153, 30, 102); width: 250px; height: 75px; font-size: 16px; font-weight: 600; margin-top: 10px; display: flex; justify-content: center; align-items: center;"
+        >
+          <div>
+            0
+             out of 
+            1
+             Checks done
+          </div>
+        </div>
+      </div>
+      
+
+      <div
+        style="width: 100%;"
+      >
+        <div>
+          <h3
+            style="color: rgb(112, 47, 138);"
+          >
+            Explainability
+          </h3>
+          <div>
+            <div>
+              <h4
+                style="padding: 0px; margin: 0px;"
+              >
+                Testable Criteria
+              </h4>
+              <div>
+                Demonstrate a preference for developing AI models that can explain their decisions or that are interpretable by default.
+              </div>
+              <div
+                style="width: 100%; display: flex; background-color: rgb(243, 240, 245); padding: 10px; margin-top: 5px; margin-bottom: 5px;"
+              >
+                <div
+                  style="font-weight: 600; width: 40px;"
+                >
+                  1
+                  .
+                  1
+                </div>
+                <div
+                  style="width: 100%;"
+                >
+                  <div>
+                    If choosing a less explainable modelling approach, document the rationale, risk assessments, and trade-offs of the AI model.
+                  </div>
+                  <div
+                    style="display: flex; margin-top: 5px;"
+                  >
+                    <div
+                      style="width: 60%;"
+                    >
+                      <h4
+                        style="padding: 0px; margin: 0px;"
+                      >
+                        Process Checks
+                      </h4>
+                      <div>
+                        Documentary evidence of considerations for the choice of AI model
+                        <br />
+                        <br />
+                        Considerations include:
+                        <br />
+                        - rationale; 
+                        <br />
+                        - risk assessment; and
+                        <br />
+                        - tradeoffs.
+                      </div>
+                    </div>
+                    <div
+                      style="width: 40%;"
+                    >
+                      <h4
+                        style="padding: 0px; margin: 0px;"
+                      >
+                        Metric
+                      </h4>
+                      <div>
+                        Internal documentation
+                      </div>
+                    </div>
+                  </div>
+                  <h4
+                    style="padding: 0px; margin: 5px 0px 0px 0px;"
+                  >
+                    Completed
+                  </h4>
+                  <div
+                    style="display: flex;"
+                  >
+                    <button
+                      data-testid="completed-explainability-2"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      Yes
+                    </button>
+                    <button
+                      data-testid="completed-explainability-2"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      No
+                    </button>
+                    <button
+                      data-testid="completed-explainability-2"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      Not Applicable
+                    </button>
+                  </div>
+                  <h4
+                    style="padding: 0px; margin: 5px 0px 0px 0px;"
+                  >
+                    Elaboration
+                  </h4>
+                  <textarea
+                    maxlength="128"
+                    rows="4"
+                    style="width: 100%; border-width: 0px; resize: none;"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Snapshot tests renders input blocks fairness_process_checklist unchanged 1`] = `
+<div>
+  <div
+    style="width: 1400px; height: 1050px; display: block; position: relative;"
+  >
+    <div
+      style="display: block; padding: 0px; margin: 0px; overflow: auto; position: relative;"
+    >
+      <div
+        style="width: 100%; display: flex; margin-bottom: 10px;"
+      >
+        <div
+          style="width: 100%; flex-grow: 1;"
+        >
+          <h1
+            style="padding: 0px; margin: 0px;"
+          >
+            AI Verify Framework Process Checklist - 
+            Fairness
+          </h1>
+          <div>
+            Fairness is about designing AI systems that avoid creating or reinforcing unfair bias in the AI system, based on the intended definition of fairness for individuals or groups, that is aligned with the desired outcomes of the AI system. The testable criteria focuses on testing the ability of the AI system to align with the intended fairness outcomes, throughout the AI lifecycle.
+          </div>
+        </div>
+        <div
+          style="background-color: rgb(243, 240, 245); color: rgb(153, 30, 102); width: 250px; height: 75px; font-size: 16px; font-weight: 600; margin-top: 10px; display: flex; justify-content: center; align-items: center;"
+        >
+          <div>
+            0
+             out of 
+            9
+             Checks done
+          </div>
+        </div>
+      </div>
+      
+
+      <div
+        style="width: 100%;"
+      >
+        <div>
+          <h3
+            style="color: rgb(112, 47, 138);"
+          >
+            Fairness
+          </h3>
+          <div>
+            <div>
+              <h4
+                style="padding: 0px; margin: 0px;"
+              >
+                Testable Criteria
+              </h4>
+              <div>
+                Put in place processes to test for potential biases during the entire lifecycle of the AI system, so that practitioners can act to mitigate biases based on feedback (e.g., biases due to possible limitations stemming from the composition of the used data sets such as a lack of diversity and non-representativeness.)
+              </div>
+              <div
+                style="width: 100%; display: flex; background-color: rgb(243, 240, 245); padding: 10px; margin-top: 5px; margin-bottom: 5px;"
+              >
+                <div
+                  style="font-weight: 600; width: 40px;"
+                >
+                  1
+                  .
+                  1
+                </div>
+                <div
+                  style="width: 100%;"
+                >
+                  <div>
+                    Monitor the changes in fairness metric values in the lifecycle of the AI system.
+                  </div>
+                  <div
+                    style="display: flex; margin-top: 5px;"
+                  >
+                    <div
+                      style="width: 60%;"
+                    >
+                      <h4
+                        style="padding: 0px; margin: 0px;"
+                      >
+                        Process Checks
+                      </h4>
+                      <div>
+                        Documentary evidence of implemented processes to test for potential biases during the entire lifecycle of the AI system.
+                      </div>
+                    </div>
+                    <div
+                      style="width: 40%;"
+                    >
+                      <h4
+                        style="padding: 0px; margin: 0px;"
+                      >
+                        Metric
+                      </h4>
+                      <div>
+                        Physical testing
+                      </div>
+                    </div>
+                  </div>
+                  <h4
+                    style="padding: 0px; margin: 5px 0px 0px 0px;"
+                  >
+                    Completed
+                  </h4>
+                  <div
+                    style="display: flex;"
+                  >
+                    <button
+                      data-testid="completed-fairness-4"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      Yes
+                    </button>
+                    <button
+                      data-testid="completed-fairness-4"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      No
+                    </button>
+                    <button
+                      data-testid="completed-fairness-4"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      Not Applicable
+                    </button>
+                  </div>
+                  <h4
+                    style="padding: 0px; margin: 5px 0px 0px 0px;"
+                  >
+                    Elaboration
+                  </h4>
+                  <textarea
+                    maxlength="128"
+                    rows="4"
+                    style="width: 100%; border-width: 0px; resize: none;"
+                  />
+                </div>
+              </div>
+            </div>
+            <div>
+              <h4
+                style="padding: 0px; margin: 0px;"
+              >
+                Testable Criteria
+              </h4>
+              <div>
+                Establish a strategy for the selection of fairness metrics that are aligned with the desired outcomes of the AI system's intended application
+              </div>
+              <div
+                style="width: 100%; display: flex; background-color: rgb(243, 240, 245); padding: 10px; margin-top: 5px; margin-bottom: 5px;"
+              >
+                <div
+                  style="font-weight: 600; width: 40px;"
+                >
+                  2
+                  .
+                  1
+                </div>
+                <div
+                  style="width: 100%;"
+                >
+                  <div>
+                    Consider using the fairness tree to select the fairness metrics- 
+                    <a
+                      href="http://www.datasciencepublicpolicy.org/projects/aequitas/"
+                      target="_blank"
+                    >
+                      http://www.datasciencepublicpolicy.org/projects/aequitas/
+                    </a>
+                  </div>
+                  <div
+                    style="display: flex; margin-top: 5px;"
+                  >
+                    <div
+                      style="width: 60%;"
+                    >
+                      <h4
+                        style="padding: 0px; margin: 0px;"
+                      >
+                        Process Checks
+                      </h4>
+                      <div>
+                        Documentary evidence of strategy/process undertaken to select fairness metrics that align with the desired outcomes of the AI system's intended application.
+                      </div>
+                    </div>
+                    <div
+                      style="width: 40%;"
+                    >
+                      <h4
+                        style="padding: 0px; margin: 0px;"
+                      >
+                        Metric
+                      </h4>
+                      <div>
+                        Internal procedure manual. For example: Binary classification
+                        <br />
+                        - Equal Parity
+                        <br />
+                        - Disparate Impact
+                        <br />
+                        - False Negative Rate Parity
+                        <br />
+                        - False Positive Rate Parity
+                        <br />
+                        - False Omission Rate Parity
+                        <br />
+                        - False Discovery Rate Parity
+                        <br />
+                        - True Positive Rate Parity
+                        <br />
+                        - True Negative Rate Parity
+                        <br />
+                        - Negative Predictive Value Parity
+                        <br />
+                        - Positive Predictive Value Parity
+                        <br />
+                        <br />
+                        Regression
+                        <br />
+                        - Bounded group loss
+                      </div>
+                    </div>
+                  </div>
+                  <h4
+                    style="padding: 0px; margin: 5px 0px 0px 0px;"
+                  >
+                    Completed
+                  </h4>
+                  <div
+                    style="display: flex;"
+                  >
+                    <button
+                      data-testid="completed-fairness-5"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      Yes
+                    </button>
+                    <button
+                      data-testid="completed-fairness-5"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      No
+                    </button>
+                    <button
+                      data-testid="completed-fairness-5"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      Not Applicable
+                    </button>
+                  </div>
+                  <h4
+                    style="padding: 0px; margin: 5px 0px 0px 0px;"
+                  >
+                    Elaboration
+                  </h4>
+                  <textarea
+                    maxlength="128"
+                    rows="4"
+                    style="width: 100%; border-width: 0px; resize: none;"
+                  />
+                </div>
+              </div>
+            </div>
+            <div>
+              <h4
+                style="padding: 0px; margin: 0px;"
+              >
+                Testable Criteria
+              </h4>
+              <div>
+                Define sensitive variables for the organisation that are consistent with the legislation and corporate values
+              </div>
+              <div
+                style="width: 100%; display: flex; background-color: rgb(243, 240, 245); padding: 10px; margin-top: 5px; margin-bottom: 5px;"
+              >
+                <div
+                  style="font-weight: 600; width: 40px;"
+                >
+                  3
+                  .
+                  1
+                </div>
+                <div
+                  style="width: 100%;"
+                >
+                  <div>
+                    Identify the sensitive features and its privileged and unprivileged groups.
+                  </div>
+                  <div
+                    style="display: flex; margin-top: 5px;"
+                  >
+                    <div
+                      style="width: 60%;"
+                    >
+                      <h4
+                        style="padding: 0px; margin: 0px;"
+                      >
+                        Process Checks
+                      </h4>
+                      <div>
+                        Documentary evidence of identification of sensitive features and its privileged and unprivileged groups.
+                      </div>
+                    </div>
+                    <div
+                      style="width: 40%;"
+                    >
+                      <h4
+                        style="padding: 0px; margin: 0px;"
+                      >
+                        Metric
+                      </h4>
+                      <div>
+                        Internal documentation. Examples of sensitive features could include religion, nationality, birth place, gender, race. Also refer to country-specific guidelines e.g. UK Equality Act
+                      </div>
+                    </div>
+                  </div>
+                  <h4
+                    style="padding: 0px; margin: 5px 0px 0px 0px;"
+                  >
+                    Completed
+                  </h4>
+                  <div
+                    style="display: flex;"
+                  >
+                    <button
+                      data-testid="completed-fairness-6-a"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      Yes
+                    </button>
+                    <button
+                      data-testid="completed-fairness-6-a"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      No
+                    </button>
+                    <button
+                      data-testid="completed-fairness-6-a"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      Not Applicable
+                    </button>
+                  </div>
+                  <h4
+                    style="padding: 0px; margin: 5px 0px 0px 0px;"
+                  >
+                    Elaboration
+                  </h4>
+                  <textarea
+                    maxlength="128"
+                    rows="4"
+                    style="width: 100%; border-width: 0px; resize: none;"
+                  />
+                </div>
+              </div>
+              <div
+                style="width: 100%; display: flex; background-color: rgb(243, 240, 245); padding: 10px; margin-top: 5px; margin-bottom: 5px;"
+              >
+                <div
+                  style="font-weight: 600; width: 40px;"
+                >
+                  3
+                  .
+                  2
+                </div>
+                <div
+                  style="width: 100%;"
+                >
+                  <div>
+                    Where feasible, consult the impacted communities on the correct definition of fairness e.g. representatives of elderly persons or persons with disabilities.
+                  </div>
+                  <div
+                    style="display: flex; margin-top: 5px;"
+                  >
+                    <div
+                      style="width: 60%;"
+                    >
+                      <h4
+                        style="padding: 0px; margin: 0px;"
+                      >
+                        Process Checks
+                      </h4>
+                      <div>
+                        Documentary evidence of consultations conducted with impacted communities on the correct definition of fairness.
+                      </div>
+                    </div>
+                    <div
+                      style="width: 40%;"
+                    >
+                      <h4
+                        style="padding: 0px; margin: 0px;"
+                      >
+                        Metric
+                      </h4>
+                      <div>
+                        External / internal correspondence
+                      </div>
+                    </div>
+                  </div>
+                  <h4
+                    style="padding: 0px; margin: 5px 0px 0px 0px;"
+                  >
+                    Completed
+                  </h4>
+                  <div
+                    style="display: flex;"
+                  >
+                    <button
+                      data-testid="completed-fairness-6-b"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      Yes
+                    </button>
+                    <button
+                      data-testid="completed-fairness-6-b"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      No
+                    </button>
+                    <button
+                      data-testid="completed-fairness-6-b"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      Not Applicable
+                    </button>
+                  </div>
+                  <h4
+                    style="padding: 0px; margin: 5px 0px 0px 0px;"
+                  >
+                    Elaboration
+                  </h4>
+                  <textarea
+                    maxlength="128"
+                    rows="4"
+                    style="width: 100%; border-width: 0px; resize: none;"
+                  />
+                </div>
+              </div>
+            </div>
+            <div>
+              <h4
+                style="padding: 0px; margin: 0px;"
+              >
+                Testable Criteria
+              </h4>
+              <div>
+                Establish a process for identifying and selecting sub-populations between which the AI system should produce fair outcomes.
+              </div>
+              <div
+                style="width: 100%; display: flex; background-color: rgb(243, 240, 245); padding: 10px; margin-top: 5px; margin-bottom: 5px;"
+              >
+                <div
+                  style="font-weight: 600; width: 40px;"
+                >
+                  4
+                  .
+                  1
+                </div>
+                <div
+                  style="width: 100%;"
+                >
+                  <div>
+                    Define this partitioning in terms of sensitive variables that models should be prohibited from being trained on, but are used in the evaluation of fairness outcomes.
+                  </div>
+                  <div
+                    style="display: flex; margin-top: 5px;"
+                  >
+                    <div
+                      style="width: 60%;"
+                    >
+                      <h4
+                        style="padding: 0px; margin: 0px;"
+                      >
+                        Process Checks
+                      </h4>
+                      <div>
+                        Documentary evidence of establishment of a process for identifying and selecting sub-populations between which the AI system should produce fair outcomes
+                      </div>
+                    </div>
+                    <div
+                      style="width: 40%;"
+                    >
+                      <h4
+                        style="padding: 0px; margin: 0px;"
+                      >
+                        Metric
+                      </h4>
+                      <div>
+                        Physical testing
+                      </div>
+                    </div>
+                  </div>
+                  <h4
+                    style="padding: 0px; margin: 5px 0px 0px 0px;"
+                  >
+                    Completed
+                  </h4>
+                  <div
+                    style="display: flex;"
+                  >
+                    <button
+                      data-testid="completed-fairness-7"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      Yes
+                    </button>
+                    <button
+                      data-testid="completed-fairness-7"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      No
+                    </button>
+                    <button
+                      data-testid="completed-fairness-7"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      Not Applicable
+                    </button>
+                  </div>
+                  <h4
+                    style="padding: 0px; margin: 5px 0px 0px 0px;"
+                  >
+                    Elaboration
+                  </h4>
+                  <textarea
+                    maxlength="128"
+                    rows="4"
+                    style="width: 100%; border-width: 0px; resize: none;"
+                  />
+                </div>
+              </div>
+            </div>
+            <div>
+              <h4
+                style="padding: 0px; margin: 0px;"
+              >
+                Testable Criteria
+              </h4>
+              <div>
+                Establish a strategy or a set of procedures to check that the data used in the training of the AI model, is representative of the population who make up the end-users of the AI model.
+              </div>
+              <div
+                style="width: 100%; display: flex; background-color: rgb(243, 240, 245); padding: 10px; margin-top: 5px; margin-bottom: 5px;"
+              >
+                <div
+                  style="font-weight: 600; width: 40px;"
+                >
+                  5
+                  .
+                  1
+                </div>
+                <div
+                  style="width: 100%;"
+                >
+                  <div>
+                    Perform exploratory data analysis. For the sensitive feature, test the representation of each group in the data. Resample data or collect more data if a particular group is severely underrepresented.
+                  </div>
+                  <div
+                    style="display: flex; margin-top: 5px;"
+                  >
+                    <div
+                      style="width: 60%;"
+                    >
+                      <h4
+                        style="padding: 0px; margin: 0px;"
+                      >
+                        Process Checks
+                      </h4>
+                      <div>
+                        Documentary evidence of establishment of a strategy or a set of procedures to check that the data used in the training of the AI model, is representative of the population who make up the end-users of the AI model.
+                      </div>
+                    </div>
+                    <div
+                      style="width: 40%;"
+                    >
+                      <h4
+                        style="padding: 0px; margin: 0px;"
+                      >
+                        Metric
+                      </h4>
+                      <div>
+                        Physical testing. Note: Sample proportions vs true population proportions for all groups
+                      </div>
+                    </div>
+                  </div>
+                  <h4
+                    style="padding: 0px; margin: 5px 0px 0px 0px;"
+                  >
+                    Completed
+                  </h4>
+                  <div
+                    style="display: flex;"
+                  >
+                    <button
+                      data-testid="completed-fairness-8"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      Yes
+                    </button>
+                    <button
+                      data-testid="completed-fairness-8"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      No
+                    </button>
+                    <button
+                      data-testid="completed-fairness-8"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      Not Applicable
+                    </button>
+                  </div>
+                  <h4
+                    style="padding: 0px; margin: 5px 0px 0px 0px;"
+                  >
+                    Elaboration
+                  </h4>
+                  <textarea
+                    maxlength="128"
+                    rows="4"
+                    style="width: 100%; border-width: 0px; resize: none;"
+                  />
+                </div>
+              </div>
+            </div>
+            <div>
+              <h4
+                style="padding: 0px; margin: 0px;"
+              >
+                Testable Criteria
+              </h4>
+              <div>
+                Put in place a mechanism that allows for the flagging of issues related to bias, discrimination or poor performance of the AI system
+              </div>
+              <div
+                style="width: 100%; display: flex; background-color: rgb(243, 240, 245); padding: 10px; margin-top: 5px; margin-bottom: 5px;"
+              >
+                <div
+                  style="font-weight: 600; width: 40px;"
+                >
+                  6
+                  .
+                  1
+                </div>
+                <div
+                  style="width: 100%;"
+                >
+                  <div>
+                    Monitor threshold violations of fairness metrics.
+                  </div>
+                  <div
+                    style="display: flex; margin-top: 5px;"
+                  >
+                    <div
+                      style="width: 60%;"
+                    >
+                      <h4
+                        style="padding: 0px; margin: 0px;"
+                      >
+                        Process Checks
+                      </h4>
+                      <div>
+                        Documentary evidence of monitoring of threshold violations of fairness metrics.
+                      </div>
+                    </div>
+                    <div
+                      style="width: 40%;"
+                    >
+                      <h4
+                        style="padding: 0px; margin: 0px;"
+                      >
+                        Metric
+                      </h4>
+                      <div>
+                        Physical testing
+                      </div>
+                    </div>
+                  </div>
+                  <h4
+                    style="padding: 0px; margin: 5px 0px 0px 0px;"
+                  >
+                    Completed
+                  </h4>
+                  <div
+                    style="display: flex;"
+                  >
+                    <button
+                      data-testid="completed-fairness-9"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      Yes
+                    </button>
+                    <button
+                      data-testid="completed-fairness-9"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      No
+                    </button>
+                    <button
+                      data-testid="completed-fairness-9"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      Not Applicable
+                    </button>
+                  </div>
+                  <h4
+                    style="padding: 0px; margin: 5px 0px 0px 0px;"
+                  >
+                    Elaboration
+                  </h4>
+                  <textarea
+                    maxlength="128"
+                    rows="4"
+                    style="width: 100%; border-width: 0px; resize: none;"
+                  />
+                </div>
+              </div>
+            </div>
+            <div>
+              <h4
+                style="padding: 0px; margin: 0px;"
+              >
+                Testable Criteria
+              </h4>
+              <div>
+                Put in place appropriate mechanisms to ensure fairness in your AI system.
+              </div>
+              <div
+                style="width: 100%; display: flex; background-color: rgb(243, 240, 245); padding: 10px; margin-top: 5px; margin-bottom: 5px;"
+              >
+                <div
+                  style="font-weight: 600; width: 40px;"
+                >
+                  7
+                  .
+                  1
+                </div>
+                <div
+                  style="width: 100%;"
+                >
+                  <div>
+                    Monitor metrics for the latest set of data for the model currently being deployed on an ongoing basis.
+                  </div>
+                  <div
+                    style="display: flex; margin-top: 5px;"
+                  >
+                    <div
+                      style="width: 60%;"
+                    >
+                      <h4
+                        style="padding: 0px; margin: 0px;"
+                      >
+                        Process Checks
+                      </h4>
+                      <div>
+                        Documentary evidence of monitoring metrics for the latest set of data for the model currently being deployed on an ongoing basis.
+                      </div>
+                    </div>
+                    <div
+                      style="width: 40%;"
+                    >
+                      <h4
+                        style="padding: 0px; margin: 0px;"
+                      >
+                        Metric
+                      </h4>
+                      <div>
+                        Physical testing
+                      </div>
+                    </div>
+                  </div>
+                  <h4
+                    style="padding: 0px; margin: 5px 0px 0px 0px;"
+                  >
+                    Completed
+                  </h4>
+                  <div
+                    style="display: flex;"
+                  >
+                    <button
+                      data-testid="completed-fairness-10"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      Yes
+                    </button>
+                    <button
+                      data-testid="completed-fairness-10"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      No
+                    </button>
+                    <button
+                      data-testid="completed-fairness-10"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      Not Applicable
+                    </button>
+                  </div>
+                  <h4
+                    style="padding: 0px; margin: 5px 0px 0px 0px;"
+                  >
+                    Elaboration
+                  </h4>
+                  <textarea
+                    maxlength="128"
+                    rows="4"
+                    style="width: 100%; border-width: 0px; resize: none;"
+                  />
+                </div>
+              </div>
+            </div>
+            <div>
+              <h4
+                style="padding: 0px; margin: 0px;"
+              >
+                Testable Criteria
+              </h4>
+              <div>
+                Address risk of biases due to possible limitations stemming from the composition of the used data sets (lack of diversity, non-representativeness), by applying appropriate adjustments on data samples of minorities.
+              </div>
+              <div
+                style="width: 100%; display: flex; background-color: rgb(243, 240, 245); padding: 10px; margin-top: 5px; margin-bottom: 5px;"
+              >
+                <div
+                  style="font-weight: 600; width: 40px;"
+                >
+                  8
+                  .
+                  1
+                </div>
+                <div
+                  style="width: 100%;"
+                >
+                  <div>
+                    Where possible, handle imbalanced training sets with minorities. 
+                    <br />
+                    - Oversample minority class
+                    <br />
+                    - Undersample majority class
+                    <br />
+                    - Generate synthetic samples (SMOTE)
+                  </div>
+                  <div
+                    style="display: flex; margin-top: 5px;"
+                  >
+                    <div
+                      style="width: 60%;"
+                    >
+                      <h4
+                        style="padding: 0px; margin: 0px;"
+                      >
+                        Process Checks
+                      </h4>
+                      <div>
+                        Documentary evidence of addressing risk of biases due to possible limitations stemming from the composition of the used data sets (lack of diversity, non-representativeness), by applying appropriate adjustments on data samples of minorities.
+                      </div>
+                    </div>
+                    <div
+                      style="width: 40%;"
+                    >
+                      <h4
+                        style="padding: 0px; margin: 0px;"
+                      >
+                        Metric
+                      </h4>
+                      <div>
+                        Physical testing
+                      </div>
+                    </div>
+                  </div>
+                  <h4
+                    style="padding: 0px; margin: 5px 0px 0px 0px;"
+                  >
+                    Completed
+                  </h4>
+                  <div
+                    style="display: flex;"
+                  >
+                    <button
+                      data-testid="completed-fairness-11"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      Yes
+                    </button>
+                    <button
+                      data-testid="completed-fairness-11"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      No
+                    </button>
+                    <button
+                      data-testid="completed-fairness-11"
+                      style="padding: 10px; background-color: white; color: black; border: 0px; margin-right: 2px; cursor: pointer;"
+                    >
+                      Not Applicable
+                    </button>
+                  </div>
+                  <h4
+                    style="padding: 0px; margin: 5px 0px 0px 0px;"
+                  >
+                    Elaboration
+                  </h4>
+                  <textarea
+                    maxlength="128"
+                    rows="4"
+                    style="width: 100%; border-width: 0px; resize: none;"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Snapshot tests renders widget explainability_process_checklist_answers unchanged 1`] = `
+<div>
+  <div
+    style="width: 1400px; height: 1050px; display: block; position: relative;"
+  >
+    <div
+      style="padding: 10px; text-align: justify;"
+    >
+      <div>
+        Invalid section
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Snapshot tests renders widget fairness_process_checklist_answers unchanged 1`] = `
+<div>
+  <div
+    style="width: 1400px; height: 1050px; display: block; position: relative;"
+  >
+    <div
+      style="padding: 10px; text-align: justify;"
+    >
+      <div>
+        Invalid section
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Snapshot tests renders widget fairness_summary unchanged 1`] = `
+<div>
+  <div
+    style="width: 1400px; height: 1050px; display: block; position: relative;"
+  >
+    <div
+      style="padding: 10px; text-align: justify;"
+    >
+      <div
+        style="font-size: 15px; width: 0px;"
+      >
+        <h3
+          class="c-primary"
+        >
+          Fairness / No Unintended Discrimination
+        </h3>
+        <hr />
+        <div
+          style="display: flex; width: 100%; justify-content: center; align-items: flexStart;"
+        >
+          <div
+            style="width: 260px; height: 240px; flex-shrink: 0;"
+          >
+            <div
+              class="recharts-responsive-container"
+              style="width: 100%; height: 100%;"
+            >
+              <div
+                class="recharts-wrapper"
+                role="region"
+                style="position: relative; cursor: default; width: 1400px; height: 1050px;"
+              >
+                <svg
+                  class="recharts-surface"
+                  cx="50%"
+                  cy="50%"
+                  height="1050"
+                  viewBox="0 0 1400 1050"
+                  width="1400"
+                >
+                  <title />
+                  <desc />
+                  <defs>
+                    <clippath
+                      id="recharts1-clip"
+                    >
+                      <rect
+                        height="1040"
+                        width="1390"
+                        x="5"
+                        y="5"
+                      />
+                    </clippath>
+                  </defs>
+                  <g
+                    class="recharts-layer recharts-pie"
+                    tabindex="0"
+                  >
+                    <g
+                      class="recharts-layer recharts-pie-sector"
+                      tabindex="-1"
+                    >
+                      <path
+                        class="recharts-sector"
+                        cx="700"
+                        cy="525"
+                        d="M 800,525
+    A 100,100,0,
+    1,0,
+    717.364817766693,623.4807753012208
+  L 710.4188906600158,584.0884651807324
+            A 60,60,0,
+            1,1,
+            760,525 Z"
+                        fill="#1f77b4"
+                        name="Yes"
+                        role="img"
+                        stroke="#fff"
+                        tabindex="-1"
+                      />
+                    </g>
+                    <g
+                      class="recharts-layer recharts-pie-sector"
+                      tabindex="-1"
+                    >
+                      <path
+                        class="recharts-sector"
+                        cx="700"
+                        cy="525"
+                        d="M 717.364817766693,623.4807753012208
+    A 100,100,0,
+    0,0,
+    776.6044443118977,589.278760968654
+  L 745.9626665871386,563.5672565811924
+            A 60,60,0,
+            0,1,
+            710.4188906600158,584.0884651807324 Z"
+                        fill="#ff7f0e"
+                        name="No"
+                        role="img"
+                        stroke="#fff"
+                        tabindex="-1"
+                      />
+                    </g>
+                    <g
+                      class="recharts-layer recharts-pie-sector"
+                      tabindex="-1"
+                    >
+                      <path
+                        class="recharts-sector"
+                        cx="700"
+                        cy="525"
+                        d="M 776.6044443118977,589.278760968654
+    A 100,100,0,
+    0,0,
+    800,525
+  L 760,525
+            A 60,60,0,
+            0,1,
+            745.9626665871386,563.5672565811924 Z"
+                        fill="#2ca02c"
+                        name="Not Applicable"
+                        role="img"
+                        stroke="#fff"
+                        tabindex="-1"
+                      />
+                    </g>
+                    <g
+                      class="recharts-layer recharts-pie-labels"
+                    >
+                      <g
+                        class="recharts-layer"
+                      >
+                        <text
+                          dominant-baseline="central"
+                          fill="white"
+                          text-anchor="end"
+                          x="638.7164445504818"
+                          y="473.5769912250768"
+                        >
+                          7
+                        </text>
+                      </g>
+                      <g
+                        class="recharts-layer"
+                      >
+                        <text
+                          dominant-baseline="central"
+                          fill="white"
+                          text-anchor="start"
+                          x="740"
+                          y="594.282032302755"
+                        >
+                          1
+                        </text>
+                      </g>
+                      <g
+                        class="recharts-layer"
+                      >
+                        <text
+                          dominant-baseline="central"
+                          fill="white"
+                          text-anchor="start"
+                          x="775.1754096628727"
+                          y="552.3616114660535"
+                        >
+                          1
+                        </text>
+                      </g>
+                    </g>
+                  </g>
+                </svg>
+                <div
+                  class="recharts-legend-wrapper"
+                  style="position: absolute; width: 1390px; height: auto; left: 5px; bottom: 5px;"
+                >
+                  <ul
+                    class="recharts-default-legend"
+                    style="padding: 0px; margin: 0px; text-align: center;"
+                  >
+                    <li
+                      class="recharts-legend-item legend-item-0"
+                      style="display: inline-block; margin-right: 10px;"
+                    >
+                      <svg
+                        class="recharts-surface"
+                        height="14"
+                        style="display: inline-block; vertical-align: middle; margin-right: 4px;"
+                        viewBox="0 0 32 32"
+                        width="14"
+                      >
+                        <title />
+                        <desc />
+                        <path
+                          class="recharts-legend-icon"
+                          d="M0,4h32v24h-32z"
+                          fill="#1f77b4"
+                          stroke="none"
+                        />
+                      </svg>
+                      <span
+                        class="recharts-legend-item-text"
+                        style="color: rgb(31, 119, 180);"
+                      >
+                        Yes
+                      </span>
+                    </li>
+                    <li
+                      class="recharts-legend-item legend-item-1"
+                      style="display: inline-block; margin-right: 10px;"
+                    >
+                      <svg
+                        class="recharts-surface"
+                        height="14"
+                        style="display: inline-block; vertical-align: middle; margin-right: 4px;"
+                        viewBox="0 0 32 32"
+                        width="14"
+                      >
+                        <title />
+                        <desc />
+                        <path
+                          class="recharts-legend-icon"
+                          d="M0,4h32v24h-32z"
+                          fill="#ff7f0e"
+                          stroke="none"
+                        />
+                      </svg>
+                      <span
+                        class="recharts-legend-item-text"
+                        style="color: rgb(255, 127, 14);"
+                      >
+                        No
+                      </span>
+                    </li>
+                    <li
+                      class="recharts-legend-item legend-item-2"
+                      style="display: inline-block; margin-right: 10px;"
+                    >
+                      <svg
+                        class="recharts-surface"
+                        height="14"
+                        style="display: inline-block; vertical-align: middle; margin-right: 4px;"
+                        viewBox="0 0 32 32"
+                        width="14"
+                      >
+                        <title />
+                        <desc />
+                        <path
+                          class="recharts-legend-icon"
+                          d="M0,4h32v24h-32z"
+                          fill="#2ca02c"
+                          stroke="none"
+                        />
+                      </svg>
+                      <span
+                        class="recharts-legend-item-text"
+                        style="color: rgb(44, 160, 44);"
+                      >
+                        Not Applicable
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            style="flex-grow: 1; text-align: justify; padding-right: 5px; margin-top: 5px;"
+          >
+            <b>
+              Company has implemented 7 of the testable criteria out of 9
+            </b>
+            <p>
+              <b>
+                What it means:
+              </b>
+              <br />
+              By not implementing all the testable criteria, Company runs the risk of not being able to monitor and identify potential causes of bias and address them throughout the AI system’s lifecycle. This may result discriminatory outcomes for individuals affected by the AI system. This could also reduce overall trust in the system.
+            </p>
+            <p>
+              <b>
+                Recommendations(s):
+              </b>
+              <br />
+              It is recommended that Company implements all the testable criteria. Company should review the reasons for not implementing certain testable criteria and assess if these reasons are still valid.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Snapshot tests renders widget overall_summary unchanged 1`] = `
+<div>
+  <div
+    style="width: 1400px; height: 1050px; display: block; position: relative;"
+  >
+    <div
+      style="padding: 10px; text-align: justify;"
+    >
+      <div
+        style="font-size: 15px; width: 0px;"
+      >
+        <h2
+          class="c-primary"
+        >
+          Process Checklist Summary
+        </h2>
+        <div
+          class="aiv-card"
+          style="width: 100%; background-color: rgb(240, 240, 240); color: black;"
+        >
+          <div
+            style="display: flex;"
+          >
+            <div
+              style="flex-grow: 1; text-align: justify; margin-right: 5px;"
+            >
+              <b>
+                The company has completed the process checklist of 
+                10
+                 testable criteria, of which:
+              </b>
+              <ul
+                style="padding-left: 20px; margin-top: 5px;"
+              >
+                <li>
+                  8
+                   testable criteria are indicated as "Yes", meaning that there is documentary evidence for the implementation of these criteria.
+                </li>
+                <li>
+                  1
+                   testable criteria are indicated as "No". As these testable criteria have not been implemented, there could be a potential risk that the company needs to assess and/or mitigate. The company should also periodically review that the reason(s) for not implementing the testable criteria remains valid and aligned with company's values, business objectives and any regulatory requirements.
+                </li>
+                <li>
+                  1
+                   testable criteria are indicated as "Not Applicable". If there are changes to the operating environment or updates, company needs to assess whether these testable criteria would become relevant or remain not applicable.
+                </li>
+              </ul>
+            </div>
+            <div
+              style="width: 300px; flex-shrink: 0; height: 300px;"
+            >
+              <div
+                class="recharts-responsive-container"
+                style="width: 100%; height: 100%;"
+              >
+                <div
+                  class="recharts-wrapper"
+                  role="region"
+                  style="position: relative; cursor: default; width: 1400px; height: 1050px;"
+                >
+                  <svg
+                    class="recharts-surface"
+                    cx="50%"
+                    cy="50%"
+                    height="1050"
+                    viewBox="0 0 1400 1050"
+                    width="1400"
+                  >
+                    <title />
+                    <desc />
+                    <defs>
+                      <clippath
+                        id="recharts1-clip"
+                      >
+                        <rect
+                          height="1040"
+                          width="1390"
+                          x="5"
+                          y="5"
+                        />
+                      </clippath>
+                    </defs>
+                    <g
+                      class="recharts-layer recharts-pie"
+                      tabindex="0"
+                    >
+                      <g
+                        class="recharts-layer recharts-pie-sector"
+                        tabindex="-1"
+                      >
+                        <path
+                          class="recharts-sector"
+                          cx="700"
+                          cy="525"
+                          d="M 800,525
+    A 100,100,0,
+    1,0,
+    730.9016994374947,620.1056516295154
+  L 712.3606797749978,563.0422606518061
+            A 40,40,0,
+            1,1,
+            740,525 Z"
+                          fill="#1f77b4"
+                          name="Yes"
+                          role="img"
+                          stroke="#fff"
+                          tabindex="-1"
+                        />
+                      </g>
+                      <g
+                        class="recharts-layer recharts-pie-sector"
+                        tabindex="-1"
+                      >
+                        <path
+                          class="recharts-sector"
+                          cx="700"
+                          cy="525"
+                          d="M 730.9016994374947,620.1056516295154
+    A 100,100,0,
+    0,0,
+    780.9016994374947,583.7785252292473
+  L 732.3606797749978,548.511410091699
+            A 40,40,0,
+            0,1,
+            712.3606797749978,563.0422606518061 Z"
+                          fill="#ff7f0e"
+                          name="No"
+                          role="img"
+                          stroke="#fff"
+                          tabindex="-1"
+                        />
+                      </g>
+                      <g
+                        class="recharts-layer recharts-pie-sector"
+                        tabindex="-1"
+                      >
+                        <path
+                          class="recharts-sector"
+                          cx="700"
+                          cy="525"
+                          d="M 780.9016994374947,583.7785252292473
+    A 100,100,0,
+    0,0,
+    800,525
+  L 740,525
+            A 40,40,0,
+            0,1,
+            732.3606797749978,548.511410091699 Z"
+                          fill="#2ca02c"
+                          name="Not Applicable"
+                          role="img"
+                          stroke="#fff"
+                          tabindex="-1"
+                        />
+                      </g>
+                      <g
+                        class="recharts-layer recharts-pie-labels"
+                      >
+                        <g
+                          class="recharts-layer"
+                        >
+                          <text
+                            dominant-baseline="central"
+                            fill="white"
+                            text-anchor="end"
+                            x="643.3688103937537"
+                            y="483.8550323395269"
+                          >
+                            8
+                          </text>
+                        </g>
+                        <g
+                          class="recharts-layer"
+                        >
+                          <text
+                            dominant-baseline="central"
+                            fill="white"
+                            text-anchor="start"
+                            x="741.1449676604731"
+                            y="581.6311896062464"
+                          >
+                            1
+                          </text>
+                        </g>
+                        <g
+                          class="recharts-layer"
+                        >
+                          <text
+                            dominant-baseline="central"
+                            fill="white"
+                            text-anchor="start"
+                            x="766.5739561406607"
+                            y="546.6311896062464"
+                          >
+                            1
+                          </text>
+                        </g>
+                      </g>
+                    </g>
+                  </svg>
+                  <div
+                    class="recharts-legend-wrapper"
+                    style="position: absolute; width: 1390px; height: auto; left: 5px; bottom: 5px;"
+                  >
+                    <ul
+                      class="recharts-default-legend"
+                      style="padding: 0px; margin: 0px; text-align: center;"
+                    >
+                      <li
+                        class="recharts-legend-item legend-item-0"
+                        style="display: inline-block; margin-right: 10px;"
+                      >
+                        <svg
+                          class="recharts-surface"
+                          height="14"
+                          style="display: inline-block; vertical-align: middle; margin-right: 4px;"
+                          viewBox="0 0 32 32"
+                          width="14"
+                        >
+                          <title />
+                          <desc />
+                          <path
+                            class="recharts-legend-icon"
+                            d="M0,4h32v24h-32z"
+                            fill="#1f77b4"
+                            stroke="none"
+                          />
+                        </svg>
+                        <span
+                          class="recharts-legend-item-text"
+                          style="color: rgb(31, 119, 180);"
+                        >
+                          Yes
+                        </span>
+                      </li>
+                      <li
+                        class="recharts-legend-item legend-item-1"
+                        style="display: inline-block; margin-right: 10px;"
+                      >
+                        <svg
+                          class="recharts-surface"
+                          height="14"
+                          style="display: inline-block; vertical-align: middle; margin-right: 4px;"
+                          viewBox="0 0 32 32"
+                          width="14"
+                        >
+                          <title />
+                          <desc />
+                          <path
+                            class="recharts-legend-icon"
+                            d="M0,4h32v24h-32z"
+                            fill="#ff7f0e"
+                            stroke="none"
+                          />
+                        </svg>
+                        <span
+                          class="recharts-legend-item-text"
+                          style="color: rgb(255, 127, 14);"
+                        >
+                          No
+                        </span>
+                      </li>
+                      <li
+                        class="recharts-legend-item legend-item-2"
+                        style="display: inline-block; margin-right: 10px;"
+                      >
+                        <svg
+                          class="recharts-surface"
+                          height="14"
+                          style="display: inline-block; vertical-align: middle; margin-right: 4px;"
+                          viewBox="0 0 32 32"
+                          width="14"
+                        >
+                          <title />
+                          <desc />
+                          <path
+                            class="recharts-legend-icon"
+                            d="M0,4h32v24h-32z"
+                            fill="#2ca02c"
+                            stroke="none"
+                          />
+                        </svg>
+                        <span
+                          class="recharts-legend-item-text"
+                          style="color: rgb(44, 160, 44);"
+                        >
+                          Not Applicable
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Snapshot tests renders widget understanding_summary unchanged 1`] = `
+<div>
+  <div
+    style="width: 1400px; height: 1050px; display: block; position: relative;"
+  >
+    <div
+      style="padding: 10px; text-align: justify;"
+    >
+      <div
+        style="font-size: 15px; width: 0px;"
+      >
+        <h3
+          class="c-primary"
+        >
+          Understanding how AI Model Reaches Decision
+        </h3>
+        <hr />
+        <div
+          style="display: flex; width: 100%; justify-content: center; align-items: flexStart;"
+        >
+          <div
+            style="width: 260px; height: 240px; flex-shrink: 0;"
+          >
+            <div
+              class="recharts-responsive-container"
+              style="width: 100%; height: 100%;"
+            >
+              <div
+                class="recharts-wrapper"
+                role="region"
+                style="position: relative; cursor: default; width: 1400px; height: 1050px;"
+              >
+                <svg
+                  class="recharts-surface"
+                  cx="50%"
+                  cy="50%"
+                  height="1050"
+                  viewBox="0 0 1400 1050"
+                  width="1400"
+                >
+                  <title />
+                  <desc />
+                  <defs>
+                    <clippath
+                      id="recharts1-clip"
+                    >
+                      <rect
+                        height="1040"
+                        width="1390"
+                        x="5"
+                        y="5"
+                      />
+                    </clippath>
+                  </defs>
+                  <g
+                    class="recharts-layer recharts-pie"
+                    tabindex="0"
+                  >
+                    <g
+                      class="recharts-layer recharts-pie-sector"
+                      tabindex="-1"
+                    >
+                      <path
+                        class="recharts-sector"
+                        cx="700"
+                        cy="525"
+                        d="M 800,525
+    A 100,100,0,
+    1,0,
+    799.9999999847691,525.0017453292519
+  L 759.9999999908615,525.0010471975511
+            A 60,60,0,
+            1,1,
+            760,525 Z"
+                        fill="#1f77b4"
+                        name="Yes"
+                        role="img"
+                        stroke="#fff"
+                        tabindex="-1"
+                      />
+                    </g>
+                    <g
+                      class="recharts-layer recharts-pie-sector"
+                      tabindex="-1"
+                    />
+                    <g
+                      class="recharts-layer recharts-pie-sector"
+                      tabindex="-1"
+                    />
+                    <g
+                      class="recharts-layer recharts-pie-labels"
+                    >
+                      <g
+                        class="recharts-layer"
+                      >
+                        <text
+                          dominant-baseline="central"
+                          fill="white"
+                          text-anchor="end"
+                          x="620"
+                          y="525"
+                        >
+                          1
+                        </text>
+                      </g>
+                      <g
+                        class="recharts-layer"
+                      >
+                        <text
+                          alignment-baseline="middle"
+                          class="recharts-text recharts-pie-label-text"
+                          cx="700"
+                          cy="525"
+                          fill="#ff7f0e"
+                          name="No"
+                          stroke="none"
+                          text-anchor="start"
+                          x="820"
+                          y="525"
+                        >
+                          <tspan
+                            dy="0em"
+                            x="820"
+                          />
+                        </text>
+                      </g>
+                      <g
+                        class="recharts-layer"
+                      >
+                        <text
+                          alignment-baseline="middle"
+                          class="recharts-text recharts-pie-label-text"
+                          cx="700"
+                          cy="525"
+                          fill="#2ca02c"
+                          name="Not Applicable"
+                          stroke="none"
+                          text-anchor="start"
+                          x="820"
+                          y="525"
+                        >
+                          <tspan
+                            dy="0em"
+                            x="820"
+                          />
+                        </text>
+                      </g>
+                    </g>
+                  </g>
+                </svg>
+                <div
+                  class="recharts-legend-wrapper"
+                  style="position: absolute; width: 1390px; height: auto; left: 5px; bottom: 5px;"
+                >
+                  <ul
+                    class="recharts-default-legend"
+                    style="padding: 0px; margin: 0px; text-align: center;"
+                  >
+                    <li
+                      class="recharts-legend-item legend-item-0"
+                      style="display: inline-block; margin-right: 10px;"
+                    >
+                      <svg
+                        class="recharts-surface"
+                        height="14"
+                        style="display: inline-block; vertical-align: middle; margin-right: 4px;"
+                        viewBox="0 0 32 32"
+                        width="14"
+                      >
+                        <title />
+                        <desc />
+                        <path
+                          class="recharts-legend-icon"
+                          d="M0,4h32v24h-32z"
+                          fill="#1f77b4"
+                          stroke="none"
+                        />
+                      </svg>
+                      <span
+                        class="recharts-legend-item-text"
+                        style="color: rgb(31, 119, 180);"
+                      >
+                        Yes
+                      </span>
+                    </li>
+                    <li
+                      class="recharts-legend-item legend-item-1"
+                      style="display: inline-block; margin-right: 10px;"
+                    >
+                      <svg
+                        class="recharts-surface"
+                        height="14"
+                        style="display: inline-block; vertical-align: middle; margin-right: 4px;"
+                        viewBox="0 0 32 32"
+                        width="14"
+                      >
+                        <title />
+                        <desc />
+                        <path
+                          class="recharts-legend-icon"
+                          d="M0,4h32v24h-32z"
+                          fill="#ff7f0e"
+                          stroke="none"
+                        />
+                      </svg>
+                      <span
+                        class="recharts-legend-item-text"
+                        style="color: rgb(255, 127, 14);"
+                      >
+                        No
+                      </span>
+                    </li>
+                    <li
+                      class="recharts-legend-item legend-item-2"
+                      style="display: inline-block; margin-right: 10px;"
+                    >
+                      <svg
+                        class="recharts-surface"
+                        height="14"
+                        style="display: inline-block; vertical-align: middle; margin-right: 4px;"
+                        viewBox="0 0 32 32"
+                        width="14"
+                      >
+                        <title />
+                        <desc />
+                        <path
+                          class="recharts-legend-icon"
+                          d="M0,4h32v24h-32z"
+                          fill="#2ca02c"
+                          stroke="none"
+                        />
+                      </svg>
+                      <span
+                        class="recharts-legend-item-text"
+                        style="color: rgb(44, 160, 44);"
+                      >
+                        Not Applicable
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            style="flex-grow: 1; text-align: justify; padding-right: 5px; margin-top: 5px;"
+          >
+            <b>
+              Company has implemented all the process checks specified for Explainability
+            </b>
+            <p>
+              <b>
+                What it means:
+              </b>
+              <br />
+              In selecting the final model for deployment, Company has compared multiple models under consideration, and has chosen the model that is most explainable. This will enable Company to help its stakeholders understand key factors contributing to AI model’s recommendation.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

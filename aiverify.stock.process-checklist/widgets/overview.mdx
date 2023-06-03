@@ -1,0 +1,115 @@
+import { areaByID, getPrincipleConfig } from '../inputs/config_principle_areas.ts'
+
+This Summary Report provides an overview of how the AI model performs vis-à-vis the AI Verify
+testing framework. The framework covers 11 AI ethics principles, grouped into 5 focus areas.
+
+These principles are assessed by a combination of technical tests and/or process checks.
+
+export const styles = {
+  tblStyle: {
+    // borderCollapse: 'collapse',
+    width: '100%',
+    fontSize: '10px',
+    textAlign: 'center',
+    lineHeight: 1.2,
+    borderCollapse: 'collapse',
+  },
+  tdOddRow: {
+    backgroundColor: '#333333',
+    color: 'white',
+    // padding: '10px 5px 5px 5px',
+    padding: '10px',
+    border: '2px solid white',
+  },
+  tdEvenRow: {
+    backgroundColor: '#eff3f8',
+    color: 'black',
+    // padding: '5px 5px 0px 5px',
+    padding: '7px',
+    border: '2px solid white',
+    borderCollapse: 'collapse',
+    // display: 'flex',
+    // alignItems: 'center',
+  },
+  subtitle: {
+    fontWeight: 900,
+    display: 'block',
+    textTransform: 'uppercase',
+    marginBottom: '5px',
+  },
+  principle: {
+    fontWeight: 900,
+    color: '#702F8A',
+    textTransform: 'uppercase',
+    display: 'block',
+    // marginTop: '8px',
+  },
+}
+
+export const AreaCell = ({ areaId }) => {
+  const area = areaByID[areaId];
+  return (
+    <>
+      <span style={styles.subtitle}>{area.area}</span>
+      {area.short_description}
+    </>
+  )
+}
+
+export const PrincipleCell = ({ areaId }) => {
+  const area = areaByID[areaId];
+  return (
+    <td style={{...styles.tdEvenRow, width:'25%' }}>
+      {area.principles.map(principle => (
+        <div key={`overview-principle-${principle}`} style={{ marginBottom:'8px' }}>
+          <span style={{ ...styles.principle }}>
+            {principle.name}
+            {principle.hasTechnicalTests && <sup>+</sup>}
+          </span>
+          {principle.short_description}
+        </div>
+      ))}
+    </td>
+  )
+}
+
+export const PrincipleCell1 = ({ principle }) => {
+  // const area = areaByID[areaId];
+  const p = getPrincipleConfig(principle);
+  return (
+    <td colspan='4' style={{ ...styles.tdEvenRow }}>
+      <span style={{...styles.principle, display:'inline'}}>{principle}</span> | {p.principle.short_description}
+    </td>
+  )
+}
+
+<table style={styles.tblStyle} cellPa>
+  <tr style={{ verticalAlign:'center' }}>
+    <td colspan='4' style={styles.tdOddRow}>
+      <AreaCell areaId="transparency" />
+    </td>
+  </tr>
+  <tr style={{ verticalAlign:'center' }}>
+    <PrincipleCell1 principle="Transparency" />
+  </tr>
+  <tr style={{ verticalAlign:'top' }} >
+    <td style={styles.tdOddRow}>
+      <AreaCell areaId="understanding" />
+    </td>
+    <td style={styles.tdOddRow}>
+      <AreaCell areaId="safety_resilence" />
+    </td>
+    <td style={styles.tdOddRow}>
+      <AreaCell areaId="fairness" />
+    </td>
+    <td style={styles.tdOddRow}>
+      <AreaCell areaId="management" />
+    </td>
+  </tr>
+  <tr style={{ verticalAlign:'top' }}>
+    <PrincipleCell areaId="understanding" />
+    <PrincipleCell areaId="safety_resilence" />
+    <PrincipleCell areaId="fairness" />
+    <PrincipleCell areaId="management" />
+  </tr>
+</table>

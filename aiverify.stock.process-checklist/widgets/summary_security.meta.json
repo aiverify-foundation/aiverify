@@ -1,0 +1,23 @@
+{
+  "cid": "summary_security",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 10,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Summary - Security",
+  "description": "Summary of the process checklist for Security checklist",
+  "dependencies": [
+    {
+      "cid": "security_process_checklist"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "InputBlock",
+      "cid": "security_process_checklist",
+      "datapath": "security_process_checklist.sample.json"
+    }
+  ]
+}

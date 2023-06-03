@@ -1,0 +1,23 @@
+{
+  "cid": "summary_reproducibility",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 10,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Summary - Reproducibility",
+  "description": "Summary of the process checklist for Reproducibility checklist",
+  "dependencies": [
+    {
+      "cid": "reproducibility_process_checklist"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "InputBlock",
+      "cid": "reproducibility_process_checklist",
+      "datapath": "reproducibility_process_checklist.sample.json"
+    }
+  ]
+}

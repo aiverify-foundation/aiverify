@@ -1,0 +1,23 @@
+{
+  "cid": "area_descriptions",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 27,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Area Descriptions",
+  "description": "List the framework areas and provide descriptions",
+  "properties": [
+    {
+      "key": "startIndex",
+      "helper": "Start Index of area descriptions to output (default 0)",
+      "default": "0"
+    },
+    {
+      "key": "numAreas",
+      "helper": "Number of area descriptions to output (default 5)",
+      "default": "5"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+import React, { useState, useEffect } from 'react';
+import { areaConfigs } from '../inputs/config_principle_areas.ts'
+import { MyHR } from './misc.mdx';
+
+export const myParseInt = (num) => {
+  if (isNaN(num))
+    return -1;
+  try {
+    return parseInt(num);
+  } catch (e) {
+    return -1;
+  }
+}
+
+export const styles = {
+  area: {
+    fontStyle: 'italic',
+    fontWeight: 600,
+    marginTop: '5px',
+  },
+  paragraph: {
+    marginLeft: '30px',
+    // margin: '10px 0px 10px 25px'
+  },
+  principle: {
+    margin: '10px 0px 10px 0px',
+  }
+}
+
+export const MyAreaDescriptions = ({ props }) => {
+  const [ data, setData ] = useState(null);
+
+  useEffect(() => {
+    let startIndex = myParseInt(props.properties.startIndex);
+    if (startIndex < 0 || isNaN(startIndex))
+      startIndex = 0;
+    let numAreas = myParseInt(props.properties.numAreas);
+    if (numAreas <= 0 || isNaN(numAreas))
+      numAreas = 5;
+    // console.log("startIndex", startIndex, "numAreas", numAreas)
+    setData({
+      startIndex,
+      numAreas,
+      areaSlice: areaConfigs.slice(startIndex, startIndex+numAreas),
+    })
+  }, [props])
+
+  return (
+    <div>
+    {data && data.areaSlice.map((area, index) => (
+      <div key={`area-desc-${area}`}>
+        <MyHR />
+        <div className="c-primary" style={styles.area}><b>Area {data.startIndex+index+1}:</b> {area.short_description}</div>
+        <div style={styles.paragraph}>
+          {area.principles.map(principle => (
+            <div 
+              key={`area-principle-desc-${principle.principle}`}
+              style={styles.principle}
+            >
+              <b>{principle.name}</b>&nbsp;-&nbsp; 
+              <span>{principle.short_description2}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+    </div>
+  )
+}
+
+<MyAreaDescriptions props={props} />

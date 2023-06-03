@@ -1,0 +1,6 @@
+import { ProcessChecklistInput } from './processChecklistInput.mdx'
+import { ProcessChecklistHeader } from './processChecklistHeader.mdx'
+import { config } from './config_explainability.ts';
+
+<ProcessChecklistHeader config={config} data={props.data} />
+<ProcessChecklistInput config={config} data={props.data} onChangeData={props.onChangeData} />

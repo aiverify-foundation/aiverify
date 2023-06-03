@@ -1,0 +1,148 @@
+import React, { useEffect, useState, useMemo } from 'react';
+import { PieChart, renderCustomizedPieLabel } from 'ai-verify-shared-library/charts';
+import { getPrincipleCompletionStatistics, processChecklistConfigs, responseOptions, getNotImplementedTestableCriteria } from './summary_compute.ts';
+import { styles } from './styles.mdx';
+import { getPrincipleConfig, areaByID } from '../inputs/config_principle_areas.ts';
+import { processChecklistConfigsByPrinciple } from './summary_compute.ts';
+import { MyHR } from './misc.mdx';
+
+export const PrincipleSummarySingle = ({ data, principleConfig }) => {
+  const [ config, setConfig ] = useState(null);
+  const [ stat, setStat ] = useState(null);
+  const [ area, setArea ] = useState(null);
+  const [ chartData, setChartData ] = useState([]);
+  const [ summaryJustification, setSummaryJustification] = useState("");
+
+  useEffect(() => {
+    if (!data || !principleConfig)
+      return;
+    const cid = principleConfig.principle.cid;
+    const config = processChecklistConfigs[cid];
+    // console.log("config", config);
+    setConfig(config);
+    const stat = getPrincipleCompletionStatistics(config, data);
+    const chartData = [];
+    for (let opt of responseOptions) {
+      const value = stat[`num${opt.replaceAll(/\s+/g,"")}`] || 0;
+      // if (value == 0)
+      //   continue;
+      chartData.push({
+        name: opt,
+        value
+      })
+    }
+    setStat(stat);
+    setChartData(chartData);
+    if (!data[`summary-justification-${config.principle}`])
+      setSummaryJustification("")
+    else {
+      setSummaryJustification(data[`summary-justification-${config.principle}`].trim());
+    }
+    const area = areaByID[principleConfig.areaId];
+    setArea(area);
+  }, [data, principleConfig])
+
+  const getSummaryHeader = () => {
+    if (stat.numYes == stat.totalQuestions) {
+      return `Company has implemented all the process checks specified for ${config.principle}`;
+    } else if (stat.numYes == 0) {
+      return `Company did not implement any of the testable criteria`;
+    } else {      
+      return `Company has implemented ${stat.numYes} of the testable criteria out of ${stat.totalQuestions}`;
+    }
+  }
+
+  const getSummary = () => {
+    if (stat.numYes == stat.totalQuestions) {
+      return config.summaryYes;
+    } else {
+      return config.summaryNotYes;
+    }
+
+  }
+
+  const getSummaryJustification = (config) => {
+    if (!data[`summary-justification-${config.principle}`])
+      return "";
+    return data[`summary-justification-${config.principle}`].trim();
+  }
+
+  const getPrincipleNumber = () => {
+    if (!config)
+      return "";
+    let str = (config.index+1).toString();
+    if (str.length == 1)
+      str = "0" + str;
+    return str;
+  }
+
+  if (!stat || !config || !area) {
+    return <div></div>
+  }
+
+  return (
+    <>
+      <div style={{ paddingBottom:'5px' }}>
+        The principle of <b>{principleConfig.principle.principle}</b> was assessed through a process check comprising {stat.totalQuestions} testable criteria{principleConfig.principle.hasTechnicalTests?" and technical test":""}.
+      </div>
+      <div style={{ display:'flex', width:'100%', justifyContent:'center', alignItems:'flexStart' }}>
+        <div style={{ width:'300px', flexShrink:0, position:'relative' }}>
+          <div style={{ position:'absolute', top:100, left:100, height:'40px', fontSize:'13.5px', width:'100px', wordWrap: 'break-word', textAlign:'center', display:'flex', justifyContent:'center', alignItems:'center' }}>
+            {principleConfig.principle.name}
+          </div>
+          <div style={{ width:'100%', height:'260px' }}>
+            <PieChart
+              pies={[{
+                dataKey:"value",
+                data:chartData,
+                innerRadius:60,
+                outerRadius:100,
+                labelLine:false,
+                label:renderCustomizedPieLabel
+              }]}
+            />
+          </div>
+          {stat && <div>
+            <div style={{ marginTop:'10px', textAlign:'left' }}>
+              <b>What it means:</b><br/>
+              {getSummary()}
+            </div>
+            {(stat.numYes < stat.totalQuestions) && <div style={{ marginTop:'10px', textAlign:'left' }}>
+              <b>Recommendations(s):</b><br/>
+              {config.recommendation}
+            </div>}
+          </div>}
+        </div>
+        <div style={{ flexGrow:1, marginLeft:'20px', textAlign:'left' }}>
+          <b>Summary Justification</b>
+          {(summaryJustification.length > 0)?(
+            <div>{summaryJustification}</div>
+          ):(
+            <div className="c-error" style={{ fontStyle:'italic' }}>The company did not provide any reason.</div>
+          )}
+          {(config && stat && stat.numYes < stat.totalQuestions) && <div style={{ marginTop:'10px' }}>
+            <b>Company did not implement the following testable criteria fully:</b><br/>
+            <ul style={styles.ul}>
+              {getNotImplementedTestableCriteria(config, data).map(tc => (
+                <li>{tc}</li>
+              ))}
+            </ul>
+          </div>}
+        </div>
+      </div>
+    </>
+  )
+}
+
+
+export const PrincipleSummary = ({ props, principle }) => {
+  const principleConfig = getPrincipleConfig(principle);
+  // console.log("principleConfig", principle, principleConfig)
+  if (!principleConfig) {
+    return <div></div>
+  }
+
+  return (
+    <PrincipleSummarySingle data={props.getIBData(principleConfig.principle.cid)} principleConfig={principleConfig} />
+  )
+}
