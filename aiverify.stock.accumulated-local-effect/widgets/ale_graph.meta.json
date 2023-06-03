@@ -1,0 +1,26 @@
+{
+  "cid": "ale_graph",
+  "widgetSize": {
+    "minW": 2,
+    "minH": 2,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "ALE Line Graphs",
+  "description": "To generate and display ALE values in line graph for each feature in each class output",
+  "tag": [
+    "explainability"
+  ],
+  "dependencies": [
+    {
+      "cid": "accumulated_local_effect"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "Algorithm",
+      "cid": "accumulated_local_effect",
+      "datapath": "accumulated_local_effect.sample.json"
+    }
+  ]
+}
