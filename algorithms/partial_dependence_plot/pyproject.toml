@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "partial-dependence-plot"
+version = "0.9.0"
+description = ""
+authors = ["AI Verify"]
+readme = "README.md"
+packages = [{include = "partial_dependence_plot"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+numpy = "1.23.5"
+scipy = "1.9.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

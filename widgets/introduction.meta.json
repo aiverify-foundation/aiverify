@@ -1,0 +1,11 @@
+{
+  "cid": "introduction",
+  "widgetSize": {
+    "minW": 4,
+    "minH": 4,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Introduction",
+  "description": "To provide an introduction to Partial Dependence Plot"
+}

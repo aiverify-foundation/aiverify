@@ -1,0 +1,16 @@
+import React, { useEffect, useState } from 'react';
+import { MultipleLineChart } from "./pdplinechart.mdx";
+
+
+export const gid = "aiverify.stock.partial_dependence_plot:partial_dependence_plot"
+
+
+{props.result[gid]?(
+  <>
+    <div style={{ width:props.container.width, height:"200px" }}>
+      <MultipleLineChart results={props.result[gid].results} feature_names={props.result[gid].feature_names}/>
+    </div>
+  </>
+):(
+  <div>No data</div>
+)}
