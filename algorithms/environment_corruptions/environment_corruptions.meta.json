@@ -1,0 +1,28 @@
+{
+    "cid": "environment_corruptions",
+    "name": "Environment Corruptions",
+    "modelType": [
+        "classification"
+    ],
+    "version": "0.9.0",
+    "author": "AI Verify",
+    "description": "Algorithm that adds environmental corruptions (rain, fog and snow)",
+    "tags": [
+        "Environment Corruptions",
+        "classification"
+    ],
+    "requireGroundTruth": true,
+    "requiredFiles": [
+        "AUTHORS.rst",
+        "CHANGELOG.md",
+        "input.schema.json",
+        "LICENSE",
+        "output.schema.json",
+        "environment_corruptions.meta.json",
+        "environment_corruptions.py",
+        "README.md",
+        "requirements.txt",
+        "syntax_checker.py",
+        "utils"
+    ]
+}
