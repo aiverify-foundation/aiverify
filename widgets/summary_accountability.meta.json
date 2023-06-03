@@ -1,0 +1,23 @@
+{
+  "cid": "summary_accountability",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 10,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Summary - Accountability",
+  "description": "Summary of the process checklist for Accountability checklist",
+  "dependencies": [
+    {
+      "cid": "accountability_process_checklist"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "InputBlock",
+      "cid": "accountability_process_checklist",
+      "datapath": "accountability_process_checklist.sample.json"
+    }
+  ]
+}

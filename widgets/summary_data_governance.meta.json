@@ -1,0 +1,23 @@
+{
+  "cid": "summary_data_governance",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 10,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Summary - Data Governance",
+  "description": "Summary of the process checklist for Data Governance checklist",
+  "dependencies": [
+    {
+      "cid": "data_governance_process_checklist"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "InputBlock",
+      "cid": "data_governance_process_checklist",
+      "datapath": "data_governance_process_checklist.sample.json"
+    }
+  ]
+}

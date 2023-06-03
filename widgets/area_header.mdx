@@ -1,0 +1,46 @@
+import React, { useState, useEffect } from 'react';
+import { areaConfigs } from '../inputs/config_principle_areas.ts'
+import { MyHR, MyPageTitle1 } from './misc.mdx';
+
+export const myParseInt = (num) => {
+  if (isNaN(num))
+    return -1;
+  try {
+    return parseInt(num);
+  } catch (e) {
+    return -1;
+  }
+}
+
+export const MyAreaHeader = ({ props }) => {
+  const [ area, setArea ] = useState(null);
+  const [ areaNum, setAreaNum ] = useState(null);
+  const [ areaDesc, setAreaDesc ] = useState(null);
+
+  useEffect(() => {
+    let areaIndex = myParseInt(props.properties.areaIndex)-1;
+    if (areaIndex < 0 || isNaN(areaIndex))
+      areaIndex = 0;
+    let str = (areaIndex+1).toString();
+    if (str.length == 1)
+      str = "0" + str;
+    setAreaNum(str)
+    setArea(areaConfigs[areaIndex].area)
+    
+    setAreaDesc(areaConfigs[areaIndex].short_description)
+  }, [props])
+  
+
+  return (
+    <div>
+    {area && areaNum && (
+        <MyPageTitle1 title={`${areaNum} / ${area}`} />
+    )}
+    {areaDesc && (
+        <div><b>{areaDesc}</b></div>
+    )}
+    </div>
+  )
+}
+
+<MyAreaHeader props={props} />

@@ -1,0 +1,18 @@
+{
+    "cid": "area_header",
+    "widgetSize": {
+      "minW": 12,
+      "minH": 3,
+      "maxW": 12,
+      "maxH": 5
+    },
+    "name": "Area Header",
+    "description": "Header and description for each framework area",
+    "properties": [
+      {
+        "key": "areaIndex",
+        "helper": "Index of framework area to display (default 1)",
+        "default": "1"
+      }
+    ]
+  }
