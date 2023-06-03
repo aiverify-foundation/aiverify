@@ -1,0 +1,11 @@
+{
+  "cid": "how_to_read",
+  "widgetSize": {
+    "minW": 2,
+    "minH": 3,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Understanding Bar Chart",
+  "description": "To guide your users how to read the generated bar chart"
+}

@@ -1,0 +1,10 @@
+export const cid = "fairness_metrics_toolbox_for_regression"
+
+import { MetricBarChart } from "./metricbarchart.mdx";
+
+<MetricBarChart
+  metric="mse"
+  metric_name="Mean Square Error Parity"
+  getContainerObserver={props.getContainerObserver}
+  data={props.getResults(cid)}
+/>

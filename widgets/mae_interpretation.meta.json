@@ -1,0 +1,23 @@
+{
+  "cid": "mae_interpretation",
+  "widgetSize": {
+    "minW": 6,
+    "minH": 3,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Interpretation (MAE)",
+  "description": "To interpret the results from mean absolute error parity",
+  "dependencies": [
+    {
+      "cid": "fairness_metrics_toolbox_for_regression"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "Algorithm",
+      "cid": "fairness_metrics_toolbox_for_regression",
+      "datapath": "fairness_metrics_toolbox_for_regression.sample.json"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+export const algo_cid = "fairness_metrics_toolbox_for_regression"
+
+{props.getResults(algo_cid)?(
+  <>
+  <div style={{width:"100%"}}>
+    <h3 class="c-primary">Fairness for Regression</h3>
+    <i>Fairness for Regression</i> computes and displays a list of fairness metrics to measure how correct your regression model predicts among the given set of sensitive features.
+
+    <p><i>Sensitive Attributes selected</i>: {props.getResults(algo_cid).sensitive_feature.join(", ")}
+    </p>
+  </div>
+    </>
+):(
+<>
+  No data  
+</>
+)}
