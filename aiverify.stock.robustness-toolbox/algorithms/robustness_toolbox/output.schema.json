@@ -1,0 +1,32 @@
+{
+    "title": "Algorithm Plugin Output Arguments",
+    "description": "A schema for algorithm plugin output arguments",
+    "type": "object",
+    "required": ["results"],
+    "minProperties": 1,
+    "properties": {
+        "results": {
+            "description": "Algorithm Output",
+            "type": "object",
+            "required": ["num_of_perturbed_samples", "org_performance", "perturbed_performance", "num_of_failed_perturbed_samples"],
+            "properties": {
+                "num_of_perturbed_samples": {
+                    "description": "Number of final perturbed samples",
+                    "type": "number"
+                },
+                "original": {
+                    "description": "Performance for Original Dataset",
+                    "type": "number"
+                },
+                "adversarial": {
+                    "description": "Performance for Perturbed Dataset ",
+                    "type": "number"
+                },
+                "num_of_failed_perturbed_samples": {
+                    "description": "Number of samples that failed to generate perturbed samples",
+                    "type": "number"
+                }
+            }
+        }
+    }
+}

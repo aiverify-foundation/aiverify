@@ -1,0 +1,50 @@
+{
+    "results": {
+        "num_of_perturbed_samples": 250,
+        "org_performance": 0.46,
+        "perturbed_performance": 0.024,
+        "num_of_failed_perturbed_samples": 0,
+        "perturbed_samples": [
+            [
+                63488.0,
+                0.0,
+                995358.0,
+                5120.0,
+                0.0,
+                62464.0,
+                995358.0,
+                217.97055053710938
+            ]
+        ],
+        "org_samples": [
+            [
+                62.0,
+                0.0,
+                54398.0,
+                5.0,
+                0.0,
+                61.0,
+                59173.0,
+                0.2128618704442622
+            ]
+        ],
+        "feature_names": [
+            "age",
+            "gender",
+            "income",
+            "race",
+            "home_ownership",
+            "prior_count",
+            "loan_amount",
+            "loan_interests"
+        ],
+        "perturbed_pred": [
+            0
+        ],
+        "original_pred": [
+            [
+                1
+            ]
+        ]
+    }
+}
