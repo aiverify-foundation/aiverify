@@ -1,0 +1,10 @@
+export const cid = "fairness_metrics_toolbox_for_regression"
+
+import { MetricBarChart } from "./metricbarchart.mdx";
+
+<MetricBarChart
+  metric="mae"
+  metric_name="Mean Absolute Error Parity"
+  getContainerObserver={props.getContainerObserver}
+  data={props.getResults(cid)}
+/>

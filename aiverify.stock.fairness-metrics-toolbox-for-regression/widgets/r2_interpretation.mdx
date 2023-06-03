@@ -1,0 +1,11 @@
+export const cid = "fairness_metrics_toolbox_for_regression"
+
+import { InterpretationChart } from "./interpretation.mdx";
+
+<InterpretationChart
+  metric="r2"
+  metric_name="R2 Score Parity"
+  container={props.container}
+  data={props.getResults(cid)}
+  parity="0"
+/>
