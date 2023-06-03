@@ -1,0 +1,23 @@
+{
+  "cid": "pdp_graph",
+  "widgetSize": {
+    "minW": 8,
+    "minH": 24,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "PDP Line Graphs",
+  "description": "To generate and display PDP values in line graph for each feature in each class output",
+  "dependencies": [
+    {
+      "cid": "partial_dependence_plot"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "Algorithm",
+      "cid": "partial_dependence_plot",
+      "datapath": "sample.json"
+    }
+  ]
+}
