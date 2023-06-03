@@ -1,0 +1,23 @@
+{
+  "cid": "accuracy_comparison",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 6,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Bar Chart (Accuracy)",
+  "description": "To generate and display a bar chart of the orignal and perturbed dataset and the interpretation of the results",
+  "dependencies": [
+    {
+      "cid": "robustness_toolbox"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "Algorithm",
+      "cid": "robustness_toolbox",
+      "datapath": "robustness_toolbox.sample.json"
+    }
+  ]
+}

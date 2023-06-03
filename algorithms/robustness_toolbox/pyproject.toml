@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "robustness-toolbox"
+version = "0.9.0"
+description = ""
+authors = ["AI Verify"]
+readme = "README.md"
+packages = [{include = "robustness_toolbox"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+joblib = "1.2.0"
+numpy = "1.23.5"
+scikit-learn = "1.2.2"
+pandas = "1.5.3"
+pillow = "9.5.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

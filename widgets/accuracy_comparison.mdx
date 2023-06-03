@@ -1,0 +1,47 @@
+import React, { useEffect, useState } from 'react';
+import { BarChart } from 'ai-verify-shared-library/charts'
+
+export const algo_cid = "robustness_toolbox"
+
+export const MyChart = ({ results, modelType}) => {
+  const [ data, setData ] = useState([]);
+
+  useEffect(() => {
+    setData([
+        {
+          "name": "Original Dataset",
+          "accuracy": results.org_performance,
+        },
+        {
+          "name": "Perturbed Dataset",
+          "accuracy": results.perturbed_performance
+        },
+      ])
+  }, [results])
+
+  return (
+    <>
+      <div style={{ height:150, width:'100%' }}>
+        <BarChart
+          data={data}
+          chartProps={{ layout:"vertical" }}
+          hideLegend={true}
+          yAxisProps={{ width:100 }}
+          xAxisDataKey="name"
+          bars={[{ dataKey:"accuracy" }]}
+        />
+      </div>
+    </>
+  )
+}
+
+{props.getResults(algo_cid)?(
+  <>
+    <div style={{ width:props.container.width, height:"200px" }}>
+      <MyChart results={props.getResults(algo_cid).results} modelType={props.modelAndDatasets.model.modelType}/>
+    </div>
+  </>
+):(
+  <div>No data</div>
+)}
+
