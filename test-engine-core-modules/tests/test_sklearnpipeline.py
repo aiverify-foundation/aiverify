@@ -498,9 +498,7 @@ class TestCollectionSklearnPipeline:
     def test_predict(self, pipeline, expected_output):
         new_plugin = Plugin(pipeline)
         new_plugin.is_supported()
-        object_file = pickle.load(
-            open("tests/pipeline/pipeline_sklearn_raw_testing.sav", "rb")
-        )
+        object_file = pickle.load(open("tests/pipeline/pipeline_testing.sav", "rb"))
         output = new_plugin.predict(object_file.head())
         assert (output == expected_output).all()
 
@@ -533,9 +531,7 @@ class TestCollectionSklearnPipeline:
         with pytest.raises(Exception) as exc_info:
             new_plugin = Plugin(pipeline)
             new_plugin.is_supported()
-            object_file = pickle.load(
-                open("tests/pipeline/pipeline_sklearn_raw_testing.sav", "rb")
-            )
+            object_file = pickle.load(open("tests/pipeline/pipeline_testing.sav", "rb"))
             output = new_plugin.predict(object_file.head())
             assert (output == expected_output).all()
         assert str(exc_info.value) == expected_output
@@ -560,9 +556,7 @@ class TestCollectionSklearnPipeline:
     def test_predict_proba(self, pipeline, expected_output):
         new_plugin = Plugin(pipeline)
         new_plugin.is_supported()
-        object_file = pickle.load(
-            open("tests/pipeline/pipeline_sklearn_raw_testing.sav", "rb")
-        )
+        object_file = pickle.load(open("tests/pipeline/pipeline_testing.sav", "rb"))
         output = new_plugin.predict_proba(object_file.head())
         assert np.isclose(output, expected_output).all()
 
@@ -595,9 +589,7 @@ class TestCollectionSklearnPipeline:
         with pytest.raises(Exception) as exc_info:
             new_plugin = Plugin(pipeline)
             new_plugin.is_supported()
-            object_file = pickle.load(
-                open("tests/pipeline/pipeline_sklearn_raw_testing.sav", "rb")
-            )
+            object_file = pickle.load(open("tests/pipeline/pipeline_testing.sav", "rb"))
             output = new_plugin.predict_proba(object_file.head())
             assert (output == expected_output).all()
         assert str(exc_info.value) == expected_output
@@ -611,9 +603,7 @@ class TestCollectionSklearnPipeline:
     def test_score(self, pipeline, expected_output):
         new_plugin = Plugin(pipeline)
         new_plugin.is_supported()
-        object_file = pickle.load(
-            open("tests/pipeline/pipeline_sklearn_raw_testing.sav", "rb")
-        )
+        object_file = pickle.load(open("tests/pipeline/pipeline_testing.sav", "rb"))
         output = new_plugin.score(object_file.head(), [1, 2, 3, 4, 5])
         assert output == expected_output
 
@@ -650,9 +640,7 @@ class TestCollectionSklearnPipeline:
         with pytest.raises(Exception) as exc_info:
             new_plugin = Plugin(pipeline)
             new_plugin.is_supported()
-            object_file = pickle.load(
-                open("tests/pipeline/pipeline_sklearn_raw_testing.sav", "rb")
-            )
+            object_file = pickle.load(open("tests/pipeline/pipeline_testing.sav", "rb"))
             output = new_plugin.score(object_file.head(), [1, 2, 3, 4, 5])
             assert output == expected_output
         assert str(exc_info.value) == expected_output
