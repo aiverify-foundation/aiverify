@@ -5,7 +5,7 @@ from module_tests.plugin_test import PluginTest
 if __name__ == "__main__":
     discover_path = Path.cwd().parent
     file_path = str(
-        discover_path / "sklearnmodel/user_defined_files/pickle_scikit_lr_compas.sav"
+        discover_path / "sklearnmodel/user_defined_files/pickle_scikit_lr.sav"
     )
 
     # =================================================================================

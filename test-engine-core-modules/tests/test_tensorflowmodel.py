@@ -1,67 +1,71 @@
 import numpy as np
 import pytest
+from src.tensorflowmodel.tensorflowmodel import Plugin
 from test_engine_core.plugins.enums.model_plugin_type import ModelPluginType
 from test_engine_core.plugins.enums.plugin_type import PluginType
 from test_engine_core.plugins.plugins_manager import PluginManager
-
-from src.tensorflowmodel.tensorflowmodel import Plugin
 
 
 class TestCollectionTensorflowModel:
     PluginManager.discover("src")
     tensorflow_model, _, _ = PluginManager.get_instance(
         PluginType.MODEL,
-        **{"filename": "src/tensorflowmodel/user_defined_files/tensorflow_tabular_compas_sequential.sav"})
+        **{
+            "filename": "src/tensorflowmodel/user_defined_files/tensorflow_tabular_sequential.sav"
+        }
+    )
     pytest.model = tensorflow_model.get_model()
 
     @pytest.mark.parametrize(
         "model, expected_name, expected_description, expected_version",
         [
             (
-                    pytest.model,
-                    "tensorflowmodel",
-                    "tensorflowmodel supports detecting tensorflow models",
-                    "0.9.0",
+                pytest.model,
+                "tensorflowmodel",
+                "tensorflowmodel supports detecting tensorflow models",
+                "0.9.0",
             ),
             (
-                    None,
-                    "tensorflowmodel",
-                    "tensorflowmodel supports detecting tensorflow models",
-                    "0.9.0",
+                None,
+                "tensorflowmodel",
+                "tensorflowmodel supports detecting tensorflow models",
+                "0.9.0",
             ),
             (
-                    "None",
-                    "tensorflowmodel",
-                    "tensorflowmodel supports detecting tensorflow models",
-                    "0.9.0",
+                "None",
+                "tensorflowmodel",
+                "tensorflowmodel supports detecting tensorflow models",
+                "0.9.0",
             ),
             (
-                    "",
-                    "tensorflowmodel",
-                    "tensorflowmodel supports detecting tensorflow models",
-                    "0.9.0",
+                "",
+                "tensorflowmodel",
+                "tensorflowmodel supports detecting tensorflow models",
+                "0.9.0",
             ),
             (
-                    [],
-                    "tensorflowmodel",
-                    "tensorflowmodel supports detecting tensorflow models",
-                    "0.9.0",
+                [],
+                "tensorflowmodel",
+                "tensorflowmodel supports detecting tensorflow models",
+                "0.9.0",
             ),
             (
-                    {},
-                    "tensorflowmodel",
-                    "tensorflowmodel supports detecting tensorflow models",
-                    "0.9.0",
+                {},
+                "tensorflowmodel",
+                "tensorflowmodel supports detecting tensorflow models",
+                "0.9.0",
             ),
             (
-                    1234,
-                    "tensorflowmodel",
-                    "tensorflowmodel supports detecting tensorflow models",
-                    "0.9.0",
+                1234,
+                "tensorflowmodel",
+                "tensorflowmodel supports detecting tensorflow models",
+                "0.9.0",
             ),
         ],
     )
-    def test_get_metadata(self, model, expected_name, expected_description, expected_version):
+    def test_get_metadata(
+        self, model, expected_name, expected_description, expected_version
+    ):
         new_model = Plugin(model)
         metadata = new_model.get_metadata()
         assert metadata.name == expected_name
@@ -71,33 +75,30 @@ class TestCollectionTensorflowModel:
     @pytest.mark.parametrize(
         "model, expected_output",
         [
+            (pytest.model, PluginType.MODEL),
             (
-                    pytest.model,
-                    PluginType.MODEL
+                None,
+                PluginType.MODEL,
             ),
             (
-                    None,
-                    PluginType.MODEL,
+                "None",
+                PluginType.MODEL,
             ),
             (
-                    "None",
-                    PluginType.MODEL,
+                "",
+                PluginType.MODEL,
             ),
             (
-                    "",
-                    PluginType.MODEL,
+                [],
+                PluginType.MODEL,
             ),
             (
-                    [],
-                    PluginType.MODEL,
+                {},
+                PluginType.MODEL,
             ),
             (
-                    {},
-                    PluginType.MODEL,
-            ),
-            (
-                    "1234",
-                    PluginType.MODEL,
+                "1234",
+                PluginType.MODEL,
             ),
         ],
     )
@@ -108,33 +109,24 @@ class TestCollectionTensorflowModel:
     @pytest.mark.parametrize(
         "model, expected_output",
         [
+            (pytest.model, ModelPluginType.TENSORFLOW),
+            (None, ModelPluginType.TENSORFLOW),
+            ("None", ModelPluginType.TENSORFLOW),
             (
-                    pytest.model,
-                    ModelPluginType.TENSORFLOW
+                "",
+                ModelPluginType.TENSORFLOW,
             ),
             (
-                    None,
-                    ModelPluginType.TENSORFLOW
+                [],
+                ModelPluginType.TENSORFLOW,
             ),
             (
-                    "None",
-                    ModelPluginType.TENSORFLOW
+                {},
+                ModelPluginType.TENSORFLOW,
             ),
             (
-                    "",
-                    ModelPluginType.TENSORFLOW,
-            ),
-            (
-                    [],
-                    ModelPluginType.TENSORFLOW,
-            ),
-            (
-                    {},
-                    ModelPluginType.TENSORFLOW,
-            ),
-            (
-                    "1234",
-                    ModelPluginType.TENSORFLOW,
+                "1234",
+                ModelPluginType.TENSORFLOW,
             ),
         ],
     )
@@ -147,74 +139,80 @@ class TestCollectionTensorflowModel:
         "expected_version, expected_plugin_type, expected_model_plugin_type",
         [
             (
-                    pytest.model,
-                    pytest.model,
-                    "tensorflowmodel",
-                    "tensorflowmodel supports detecting tensorflow models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.TENSORFLOW,
+                pytest.model,
+                pytest.model,
+                "tensorflowmodel",
+                "tensorflowmodel supports detecting tensorflow models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.TENSORFLOW,
             ),
             (
-                    None,
-                    None,
-                    "tensorflowmodel",
-                    "tensorflowmodel supports detecting tensorflow models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.TENSORFLOW,
+                None,
+                None,
+                "tensorflowmodel",
+                "tensorflowmodel supports detecting tensorflow models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.TENSORFLOW,
             ),
             (
-                    "None",
-                    "None",
-                    "tensorflowmodel",
-                    "tensorflowmodel supports detecting tensorflow models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.TENSORFLOW,
+                "None",
+                "None",
+                "tensorflowmodel",
+                "tensorflowmodel supports detecting tensorflow models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.TENSORFLOW,
             ),
             (
-                    "",
-                    None,
-                    "tensorflowmodel",
-                    "tensorflowmodel supports detecting tensorflow models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.TENSORFLOW,
+                "",
+                None,
+                "tensorflowmodel",
+                "tensorflowmodel supports detecting tensorflow models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.TENSORFLOW,
             ),
             (
-                    [],
-                    None,
-                    "tensorflowmodel",
-                    "tensorflowmodel supports detecting tensorflow models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.TENSORFLOW,
+                [],
+                None,
+                "tensorflowmodel",
+                "tensorflowmodel supports detecting tensorflow models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.TENSORFLOW,
             ),
             (
-                    {},
-                    None,
-                    "tensorflowmodel",
-                    "tensorflowmodel supports detecting tensorflow models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.TENSORFLOW,
+                {},
+                None,
+                "tensorflowmodel",
+                "tensorflowmodel supports detecting tensorflow models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.TENSORFLOW,
             ),
             (
-                    "1234",
-                    "1234",
-                    "tensorflowmodel",
-                    "tensorflowmodel supports detecting tensorflow models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.TENSORFLOW,
+                "1234",
+                "1234",
+                "tensorflowmodel",
+                "tensorflowmodel supports detecting tensorflow models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.TENSORFLOW,
             ),
         ],
     )
-    def test_init(self,
-                  model, expected_data, expected_name, expected_description,
-                  expected_version, expected_plugin_type, expected_model_plugin_type
-                  ):
+    def test_init(
+        self,
+        model,
+        expected_data,
+        expected_name,
+        expected_description,
+        expected_version,
+        expected_plugin_type,
+        expected_model_plugin_type,
+    ):
         new_model = Plugin(model)
         assert new_model._model == expected_data
         assert new_model._name == expected_name
@@ -231,74 +229,80 @@ class TestCollectionTensorflowModel:
         "expected_version, expected_plugin_type, expected_model_plugin_type",
         [
             (
-                    pytest.model,
-                    None,
-                    "tensorflowmodel",
-                    "tensorflowmodel supports detecting tensorflow models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.TENSORFLOW,
+                pytest.model,
+                None,
+                "tensorflowmodel",
+                "tensorflowmodel supports detecting tensorflow models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.TENSORFLOW,
             ),
             (
-                    None,
-                    None,
-                    "tensorflowmodel",
-                    "tensorflowmodel supports detecting tensorflow models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.TENSORFLOW,
+                None,
+                None,
+                "tensorflowmodel",
+                "tensorflowmodel supports detecting tensorflow models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.TENSORFLOW,
             ),
             (
-                    "None",
-                    None,
-                    "tensorflowmodel",
-                    "tensorflowmodel supports detecting tensorflow models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.TENSORFLOW,
+                "None",
+                None,
+                "tensorflowmodel",
+                "tensorflowmodel supports detecting tensorflow models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.TENSORFLOW,
             ),
             (
-                    "",
-                    None,
-                    "tensorflowmodel",
-                    "tensorflowmodel supports detecting tensorflow models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.TENSORFLOW,
+                "",
+                None,
+                "tensorflowmodel",
+                "tensorflowmodel supports detecting tensorflow models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.TENSORFLOW,
             ),
             (
-                    [],
-                    None,
-                    "tensorflowmodel",
-                    "tensorflowmodel supports detecting tensorflow models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.TENSORFLOW,
+                [],
+                None,
+                "tensorflowmodel",
+                "tensorflowmodel supports detecting tensorflow models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.TENSORFLOW,
             ),
             (
-                    {},
-                    None,
-                    "tensorflowmodel",
-                    "tensorflowmodel supports detecting tensorflow models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.TENSORFLOW,
+                {},
+                None,
+                "tensorflowmodel",
+                "tensorflowmodel supports detecting tensorflow models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.TENSORFLOW,
             ),
             (
-                    "1234",
-                    None,
-                    "tensorflowmodel",
-                    "tensorflowmodel supports detecting tensorflow models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.TENSORFLOW,
+                "1234",
+                None,
+                "tensorflowmodel",
+                "tensorflowmodel supports detecting tensorflow models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.TENSORFLOW,
             ),
         ],
     )
-    def test_init_no_initialize(self,
-                                model, expected_data, expected_name, expected_description,
-                                expected_version, expected_plugin_type, expected_model_plugin_type
-                                ):
+    def test_init_no_initialize(
+        self,
+        model,
+        expected_data,
+        expected_name,
+        expected_description,
+        expected_version,
+        expected_plugin_type,
+        expected_model_plugin_type,
+    ):
         assert Plugin._model == expected_data
         assert Plugin._name == expected_name
         assert Plugin._description == expected_description
@@ -316,33 +320,30 @@ class TestCollectionTensorflowModel:
     @pytest.mark.parametrize(
         "model, expected_output",
         [
+            (pytest.model, (True, "")),
             (
-                    pytest.model,
-                    (True, "")
+                None,
+                (True, ""),
             ),
             (
-                    None,
-                    (True, ""),
+                "None",
+                (True, ""),
             ),
             (
-                    "None",
-                    (True, ""),
+                "",
+                (True, ""),
             ),
             (
-                    "",
-                    (True, ""),
+                [],
+                (True, ""),
             ),
             (
-                    [],
-                    (True, ""),
+                {},
+                (True, ""),
             ),
             (
-                    {},
-                    (True, ""),
-            ),
-            (
-                    "1234",
-                    (True, ""),
+                "1234",
+                (True, ""),
             ),
         ],
     )
@@ -356,28 +357,28 @@ class TestCollectionTensorflowModel:
         "model, expected_output",
         [
             (
-                    pytest.model,
-                    pytest.model,
+                pytest.model,
+                pytest.model,
             ),
             (
-                    "None",
-                    "None",
+                "None",
+                "None",
             ),
             (
-                    "",
-                    None,
+                "",
+                None,
             ),
             (
-                    [],
-                    None,
+                [],
+                None,
             ),
             (
-                    {},
-                    None,
+                {},
+                None,
             ),
             (
-                    "1234",
-                    "1234",
+                "1234",
+                "1234",
             ),
         ],
     )
@@ -388,33 +389,30 @@ class TestCollectionTensorflowModel:
     @pytest.mark.parametrize(
         "model, expected_output",
         [
+            (pytest.model, "keras.engine.sequential.Sequential"),
             (
-                    pytest.model,
-                    "keras.engine.sequential.Sequential"
+                None,
+                "",
             ),
             (
-                    None,
-                    "",
+                "None",
+                "",
             ),
             (
-                    "None",
-                    "",
+                "",
+                "",
             ),
             (
-                    "",
-                    "",
+                [],
+                "",
             ),
             (
-                    [],
-                    "",
+                {},
+                "",
             ),
             (
-                    {},
-                    "",
-            ),
-            (
-                    "1234",
-                    "",
+                "1234",
+                "",
             ),
         ],
     )
@@ -427,28 +425,28 @@ class TestCollectionTensorflowModel:
         "model, expected_output",
         [
             (
-                    pytest.model,
-                    True,
+                pytest.model,
+                True,
             ),
             (
-                    "None",
-                    False,
+                "None",
+                False,
             ),
             (
-                    "",
-                    False,
+                "",
+                False,
             ),
             (
-                    [],
-                    False,
+                [],
+                False,
             ),
             (
-                    {},
-                    False,
+                {},
+                False,
             ),
             (
-                    "1234",
-                    False,
+                "1234",
+                False,
             ),
         ],
     )
@@ -460,8 +458,8 @@ class TestCollectionTensorflowModel:
         "model, expected_output",
         [
             (
-                    pytest.model,
-                    np.array([[0.8955424], [0.12291051]]),
+                pytest.model,
+                np.array([[0.8955424], [0.12291051]]),
             ),
         ],
     )
@@ -475,24 +473,24 @@ class TestCollectionTensorflowModel:
         "model, expected_output",
         [
             (
-                    "None",
-                    "'str' object has no attribute 'predict'",
+                "None",
+                "'str' object has no attribute 'predict'",
             ),
             (
-                    "",
-                    "'NoneType' object has no attribute 'predict'",
+                "",
+                "'NoneType' object has no attribute 'predict'",
             ),
             (
-                    [],
-                    "'NoneType' object has no attribute 'predict'",
+                [],
+                "'NoneType' object has no attribute 'predict'",
             ),
             (
-                    {},
-                    "'NoneType' object has no attribute 'predict'",
+                {},
+                "'NoneType' object has no attribute 'predict'",
             ),
             (
-                    "1234",
-                    "'str' object has no attribute 'predict'",
+                "1234",
+                "'str' object has no attribute 'predict'",
             ),
         ],
     )
@@ -507,29 +505,26 @@ class TestCollectionTensorflowModel:
     @pytest.mark.parametrize(
         "model, expected_output",
         [
+            (pytest.model, "'Sequential' object has no attribute 'predict_proba'"),
             (
-                    pytest.model,
-                    "'Sequential' object has no attribute 'predict_proba'"
+                "None",
+                "'str' object has no attribute 'predict_proba'",
             ),
             (
-                    "None",
-                    "'str' object has no attribute 'predict_proba'",
+                "",
+                "'NoneType' object has no attribute 'predict_proba'",
             ),
             (
-                    "",
-                    "'NoneType' object has no attribute 'predict_proba'",
+                [],
+                "'NoneType' object has no attribute 'predict_proba'",
             ),
             (
-                    [],
-                    "'NoneType' object has no attribute 'predict_proba'",
+                {},
+                "'NoneType' object has no attribute 'predict_proba'",
             ),
             (
-                    {},
-                    "'NoneType' object has no attribute 'predict_proba'",
-            ),
-            (
-                    "1234",
-                    "'str' object has no attribute 'predict_proba'",
+                "1234",
+                "'str' object has no attribute 'predict_proba'",
             ),
         ],
     )
@@ -544,33 +539,30 @@ class TestCollectionTensorflowModel:
     @pytest.mark.parametrize(
         "model, expected_output",
         [
+            (pytest.model, ""),
             (
-                    pytest.model,
-                    ""
+                None,
+                "",
             ),
             (
-                    None,
-                    "",
+                "None",
+                "",
             ),
             (
-                    "None",
-                    "",
+                "",
+                "",
             ),
             (
-                    "",
-                    "",
+                [],
+                "",
             ),
             (
-                    [],
-                    "",
+                {},
+                "",
             ),
             (
-                    {},
-                    "",
-            ),
-            (
-                    "1234",
-                    "",
+                "1234",
+                "",
             ),
         ],
     )

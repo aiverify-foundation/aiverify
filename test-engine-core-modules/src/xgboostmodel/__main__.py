@@ -5,7 +5,7 @@ from module_tests.plugin_test import PluginTest
 if __name__ == "__main__":
     discover_path = Path.cwd().parent
     file_path = str(
-        discover_path / "xgboostmodel/user_defined_files/joblib_xgboost_lr_compas.sav"
+        discover_path / "xgboostmodel/user_defined_files/joblib_xgboost_lr.sav"
     )
 
     # =================================================================================

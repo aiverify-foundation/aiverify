@@ -2,68 +2,71 @@ import pickle
 
 import numpy as np
 import pytest
+from src.sklearnpipeline.sklearnpipeline import Plugin
 from test_engine_core.plugins.enums.pipeline_plugin_type import PipelinePluginType
 from test_engine_core.plugins.enums.plugin_type import PluginType
 from test_engine_core.plugins.plugins_manager import PluginManager
-
-from src.sklearnpipeline.sklearnpipeline import Plugin
 
 
 class TestCollectionSklearnPipeline:
     PluginManager.discover("src")
 
     pipeline_instance, _, _ = PluginManager.get_instance(
-        PluginType.PIPELINE, **{"pipeline_path": "src/sklearnpipeline/user_defined_files/"})
+        PluginType.PIPELINE,
+        **{"pipeline_path": "src/sklearnpipeline/user_defined_files/"}
+    )
     pytest.pipeline = pipeline_instance.get_pipeline()
 
     @pytest.mark.parametrize(
         "pipeline, expected_name, expected_description, expected_version",
         [
             (
-                    pytest.pipeline,
-                    "sklearnpipeline",
-                    "sklearnpipeline supports detecting sklearn pipeline",
-                    "0.9.0",
+                pytest.pipeline,
+                "sklearnpipeline",
+                "sklearnpipeline supports detecting sklearn pipeline",
+                "0.9.0",
             ),
             (
-                    None,
-                    "sklearnpipeline",
-                    "sklearnpipeline supports detecting sklearn pipeline",
-                    "0.9.0",
+                None,
+                "sklearnpipeline",
+                "sklearnpipeline supports detecting sklearn pipeline",
+                "0.9.0",
             ),
             (
-                    "None",
-                    "sklearnpipeline",
-                    "sklearnpipeline supports detecting sklearn pipeline",
-                    "0.9.0",
+                "None",
+                "sklearnpipeline",
+                "sklearnpipeline supports detecting sklearn pipeline",
+                "0.9.0",
             ),
             (
-                    "",
-                    "sklearnpipeline",
-                    "sklearnpipeline supports detecting sklearn pipeline",
-                    "0.9.0",
+                "",
+                "sklearnpipeline",
+                "sklearnpipeline supports detecting sklearn pipeline",
+                "0.9.0",
             ),
             (
-                    [],
-                    "sklearnpipeline",
-                    "sklearnpipeline supports detecting sklearn pipeline",
-                    "0.9.0",
+                [],
+                "sklearnpipeline",
+                "sklearnpipeline supports detecting sklearn pipeline",
+                "0.9.0",
             ),
             (
-                    {},
-                    "sklearnpipeline",
-                    "sklearnpipeline supports detecting sklearn pipeline",
-                    "0.9.0",
+                {},
+                "sklearnpipeline",
+                "sklearnpipeline supports detecting sklearn pipeline",
+                "0.9.0",
             ),
             (
-                    1234,
-                    "sklearnpipeline",
-                    "sklearnpipeline supports detecting sklearn pipeline",
-                    "0.9.0",
+                1234,
+                "sklearnpipeline",
+                "sklearnpipeline supports detecting sklearn pipeline",
+                "0.9.0",
             ),
         ],
     )
-    def test_get_metadata(self, pipeline, expected_name, expected_description, expected_version):
+    def test_get_metadata(
+        self, pipeline, expected_name, expected_description, expected_version
+    ):
         new_pipeline = Plugin(pipeline)
         metadata = new_pipeline.get_metadata()
         assert metadata.name == expected_name
@@ -73,33 +76,30 @@ class TestCollectionSklearnPipeline:
     @pytest.mark.parametrize(
         "pipeline, expected_output",
         [
+            (pytest.pipeline, PluginType.PIPELINE),
             (
-                    pytest.pipeline,
-                    PluginType.PIPELINE
+                None,
+                PluginType.PIPELINE,
             ),
             (
-                    None,
-                    PluginType.PIPELINE,
+                "None",
+                PluginType.PIPELINE,
             ),
             (
-                    "None",
-                    PluginType.PIPELINE,
+                "",
+                PluginType.PIPELINE,
             ),
             (
-                    "",
-                    PluginType.PIPELINE,
+                [],
+                PluginType.PIPELINE,
             ),
             (
-                    [],
-                    PluginType.PIPELINE,
+                {},
+                PluginType.PIPELINE,
             ),
             (
-                    {},
-                    PluginType.PIPELINE,
-            ),
-            (
-                    "1234",
-                    PluginType.PIPELINE,
+                "1234",
+                PluginType.PIPELINE,
             ),
         ],
     )
@@ -110,33 +110,24 @@ class TestCollectionSklearnPipeline:
     @pytest.mark.parametrize(
         "pipeline, expected_output",
         [
+            (pytest.pipeline, PipelinePluginType.SKLEARN),
+            (None, PipelinePluginType.SKLEARN),
+            ("None", PipelinePluginType.SKLEARN),
             (
-                    pytest.pipeline,
-                    PipelinePluginType.SKLEARN
+                "",
+                PipelinePluginType.SKLEARN,
             ),
             (
-                    None,
-                    PipelinePluginType.SKLEARN
+                [],
+                PipelinePluginType.SKLEARN,
             ),
             (
-                    "None",
-                    PipelinePluginType.SKLEARN
+                {},
+                PipelinePluginType.SKLEARN,
             ),
             (
-                    "",
-                    PipelinePluginType.SKLEARN,
-            ),
-            (
-                    [],
-                    PipelinePluginType.SKLEARN,
-            ),
-            (
-                    {},
-                    PipelinePluginType.SKLEARN,
-            ),
-            (
-                    "1234",
-                    PipelinePluginType.SKLEARN,
+                "1234",
+                PipelinePluginType.SKLEARN,
             ),
         ],
     )
@@ -149,74 +140,80 @@ class TestCollectionSklearnPipeline:
         "expected_version, expected_plugin_type, expected_pipeline_plugin_type",
         [
             (
-                    pytest.pipeline,
-                    pytest.pipeline,
-                    "sklearnpipeline",
-                    "sklearnpipeline supports detecting sklearn pipeline",
-                    "0.9.0",
-                    PluginType.PIPELINE,
-                    PipelinePluginType.SKLEARN,
+                pytest.pipeline,
+                pytest.pipeline,
+                "sklearnpipeline",
+                "sklearnpipeline supports detecting sklearn pipeline",
+                "0.9.0",
+                PluginType.PIPELINE,
+                PipelinePluginType.SKLEARN,
             ),
             (
-                    None,
-                    None,
-                    "sklearnpipeline",
-                    "sklearnpipeline supports detecting sklearn pipeline",
-                    "0.9.0",
-                    PluginType.PIPELINE,
-                    PipelinePluginType.SKLEARN,
+                None,
+                None,
+                "sklearnpipeline",
+                "sklearnpipeline supports detecting sklearn pipeline",
+                "0.9.0",
+                PluginType.PIPELINE,
+                PipelinePluginType.SKLEARN,
             ),
             (
-                    "None",
-                    "None",
-                    "sklearnpipeline",
-                    "sklearnpipeline supports detecting sklearn pipeline",
-                    "0.9.0",
-                    PluginType.PIPELINE,
-                    PipelinePluginType.SKLEARN,
+                "None",
+                "None",
+                "sklearnpipeline",
+                "sklearnpipeline supports detecting sklearn pipeline",
+                "0.9.0",
+                PluginType.PIPELINE,
+                PipelinePluginType.SKLEARN,
             ),
             (
-                    "",
-                    None,
-                    "sklearnpipeline",
-                    "sklearnpipeline supports detecting sklearn pipeline",
-                    "0.9.0",
-                    PluginType.PIPELINE,
-                    PipelinePluginType.SKLEARN,
+                "",
+                None,
+                "sklearnpipeline",
+                "sklearnpipeline supports detecting sklearn pipeline",
+                "0.9.0",
+                PluginType.PIPELINE,
+                PipelinePluginType.SKLEARN,
             ),
             (
-                    [],
-                    None,
-                    "sklearnpipeline",
-                    "sklearnpipeline supports detecting sklearn pipeline",
-                    "0.9.0",
-                    PluginType.PIPELINE,
-                    PipelinePluginType.SKLEARN,
+                [],
+                None,
+                "sklearnpipeline",
+                "sklearnpipeline supports detecting sklearn pipeline",
+                "0.9.0",
+                PluginType.PIPELINE,
+                PipelinePluginType.SKLEARN,
             ),
             (
-                    {},
-                    None,
-                    "sklearnpipeline",
-                    "sklearnpipeline supports detecting sklearn pipeline",
-                    "0.9.0",
-                    PluginType.PIPELINE,
-                    PipelinePluginType.SKLEARN,
+                {},
+                None,
+                "sklearnpipeline",
+                "sklearnpipeline supports detecting sklearn pipeline",
+                "0.9.0",
+                PluginType.PIPELINE,
+                PipelinePluginType.SKLEARN,
             ),
             (
-                    "1234",
-                    "1234",
-                    "sklearnpipeline",
-                    "sklearnpipeline supports detecting sklearn pipeline",
-                    "0.9.0",
-                    PluginType.PIPELINE,
-                    PipelinePluginType.SKLEARN,
+                "1234",
+                "1234",
+                "sklearnpipeline",
+                "sklearnpipeline supports detecting sklearn pipeline",
+                "0.9.0",
+                PluginType.PIPELINE,
+                PipelinePluginType.SKLEARN,
             ),
         ],
     )
-    def test_init(self,
-                  pipeline, expected_data, expected_name, expected_description,
-                  expected_version, expected_plugin_type, expected_pipeline_plugin_type
-                  ):
+    def test_init(
+        self,
+        pipeline,
+        expected_data,
+        expected_name,
+        expected_description,
+        expected_version,
+        expected_plugin_type,
+        expected_pipeline_plugin_type,
+    ):
         new_pipeline = Plugin(pipeline)
         assert new_pipeline._pipeline == expected_data
         assert new_pipeline._name == expected_name
@@ -233,74 +230,80 @@ class TestCollectionSklearnPipeline:
         "expected_version, expected_plugin_type, expected_pipeline_plugin_type",
         [
             (
-                    pytest.pipeline,
-                    None,
-                    "sklearnpipeline",
-                    "sklearnpipeline supports detecting sklearn pipeline",
-                    "0.9.0",
-                    PluginType.PIPELINE,
-                    PipelinePluginType.SKLEARN,
+                pytest.pipeline,
+                None,
+                "sklearnpipeline",
+                "sklearnpipeline supports detecting sklearn pipeline",
+                "0.9.0",
+                PluginType.PIPELINE,
+                PipelinePluginType.SKLEARN,
             ),
             (
-                    None,
-                    None,
-                    "sklearnpipeline",
-                    "sklearnpipeline supports detecting sklearn pipeline",
-                    "0.9.0",
-                    PluginType.PIPELINE,
-                    PipelinePluginType.SKLEARN,
+                None,
+                None,
+                "sklearnpipeline",
+                "sklearnpipeline supports detecting sklearn pipeline",
+                "0.9.0",
+                PluginType.PIPELINE,
+                PipelinePluginType.SKLEARN,
             ),
             (
-                    "None",
-                    None,
-                    "sklearnpipeline",
-                    "sklearnpipeline supports detecting sklearn pipeline",
-                    "0.9.0",
-                    PluginType.PIPELINE,
-                    PipelinePluginType.SKLEARN,
+                "None",
+                None,
+                "sklearnpipeline",
+                "sklearnpipeline supports detecting sklearn pipeline",
+                "0.9.0",
+                PluginType.PIPELINE,
+                PipelinePluginType.SKLEARN,
             ),
             (
-                    "",
-                    None,
-                    "sklearnpipeline",
-                    "sklearnpipeline supports detecting sklearn pipeline",
-                    "0.9.0",
-                    PluginType.PIPELINE,
-                    PipelinePluginType.SKLEARN,
+                "",
+                None,
+                "sklearnpipeline",
+                "sklearnpipeline supports detecting sklearn pipeline",
+                "0.9.0",
+                PluginType.PIPELINE,
+                PipelinePluginType.SKLEARN,
             ),
             (
-                    [],
-                    None,
-                    "sklearnpipeline",
-                    "sklearnpipeline supports detecting sklearn pipeline",
-                    "0.9.0",
-                    PluginType.PIPELINE,
-                    PipelinePluginType.SKLEARN,
+                [],
+                None,
+                "sklearnpipeline",
+                "sklearnpipeline supports detecting sklearn pipeline",
+                "0.9.0",
+                PluginType.PIPELINE,
+                PipelinePluginType.SKLEARN,
             ),
             (
-                    {},
-                    None,
-                    "sklearnpipeline",
-                    "sklearnpipeline supports detecting sklearn pipeline",
-                    "0.9.0",
-                    PluginType.PIPELINE,
-                    PipelinePluginType.SKLEARN,
+                {},
+                None,
+                "sklearnpipeline",
+                "sklearnpipeline supports detecting sklearn pipeline",
+                "0.9.0",
+                PluginType.PIPELINE,
+                PipelinePluginType.SKLEARN,
             ),
             (
-                    "1234",
-                    None,
-                    "sklearnpipeline",
-                    "sklearnpipeline supports detecting sklearn pipeline",
-                    "0.9.0",
-                    PluginType.PIPELINE,
-                    PipelinePluginType.SKLEARN,
+                "1234",
+                None,
+                "sklearnpipeline",
+                "sklearnpipeline supports detecting sklearn pipeline",
+                "0.9.0",
+                PluginType.PIPELINE,
+                PipelinePluginType.SKLEARN,
             ),
         ],
     )
-    def test_init_no_initialize(self,
-                                pipeline, expected_data, expected_name, expected_description,
-                                expected_version, expected_plugin_type, expected_pipeline_plugin_type
-                                ):
+    def test_init_no_initialize(
+        self,
+        pipeline,
+        expected_data,
+        expected_name,
+        expected_description,
+        expected_version,
+        expected_plugin_type,
+        expected_pipeline_plugin_type,
+    ):
         assert Plugin._pipeline == expected_data
         assert Plugin._name == expected_name
         assert Plugin._description == expected_description
@@ -318,33 +321,30 @@ class TestCollectionSklearnPipeline:
     @pytest.mark.parametrize(
         "pipeline, expected_output",
         [
+            (pytest.pipeline, (True, "")),
             (
-                    pytest.pipeline,
-                    (True, "")
+                None,
+                (True, ""),
             ),
             (
-                    None,
-                    (True, ""),
+                "None",
+                (True, ""),
             ),
             (
-                    "None",
-                    (True, ""),
+                "",
+                (True, ""),
             ),
             (
-                    "",
-                    (True, ""),
+                [],
+                (True, ""),
             ),
             (
-                    [],
-                    (True, ""),
+                {},
+                (True, ""),
             ),
             (
-                    {},
-                    (True, ""),
-            ),
-            (
-                    "1234",
-                    (True, ""),
+                "1234",
+                (True, ""),
             ),
         ],
     )
@@ -358,28 +358,28 @@ class TestCollectionSklearnPipeline:
         "pipeline, expected_output",
         [
             (
-                    pytest.pipeline,
-                    pytest.pipeline,
+                pytest.pipeline,
+                pytest.pipeline,
             ),
             (
-                    "None",
-                    "None",
+                "None",
+                "None",
             ),
             (
-                    "",
-                    None,
+                "",
+                None,
             ),
             (
-                    [],
-                    None,
+                [],
+                None,
             ),
             (
-                    {},
-                    None,
+                {},
+                None,
             ),
             (
-                    "1234",
-                    "1234",
+                "1234",
+                "1234",
             ),
         ],
     )
@@ -390,33 +390,30 @@ class TestCollectionSklearnPipeline:
     @pytest.mark.parametrize(
         "pipeline, expected_output",
         [
+            (pytest.pipeline, "sklearn.pipeline.Pipeline"),
             (
-                    pytest.pipeline,
-                    "sklearn.pipeline.Pipeline"
+                None,
+                "",
             ),
             (
-                    None,
-                    "",
+                "None",
+                "",
             ),
             (
-                    "None",
-                    "",
+                "",
+                "",
             ),
             (
-                    "",
-                    "",
+                [],
+                "",
             ),
             (
-                    [],
-                    "",
+                {},
+                "",
             ),
             (
-                    {},
-                    "",
-            ),
-            (
-                    "1234",
-                    "",
+                "1234",
+                "",
             ),
         ],
     )
@@ -429,28 +426,28 @@ class TestCollectionSklearnPipeline:
         "pipeline, expected_output",
         [
             (
-                    pytest.pipeline,
-                    pytest.pipeline,
+                pytest.pipeline,
+                pytest.pipeline,
             ),
             (
-                    "None",
-                    "None",
+                "None",
+                "None",
             ),
             (
-                    "",
-                    "",
+                "",
+                "",
             ),
             (
-                    [],
-                    [],
+                [],
+                [],
             ),
             (
-                    {},
-                    {},
+                {},
+                {},
             ),
             (
-                    "1234",
-                    "1234",
+                "1234",
+                "1234",
             ),
         ],
     )
@@ -463,28 +460,28 @@ class TestCollectionSklearnPipeline:
         "pipeline, expected_output",
         [
             (
-                    pytest.pipeline,
-                    True,
+                pytest.pipeline,
+                True,
             ),
             (
-                    "None",
-                    False,
+                "None",
+                False,
             ),
             (
-                    "",
-                    False,
+                "",
+                False,
             ),
             (
-                    [],
-                    False,
+                [],
+                False,
             ),
             (
-                    {},
-                    False,
+                {},
+                False,
             ),
             (
-                    "1234",
-                    False,
+                "1234",
+                False,
             ),
         ],
     )
@@ -495,16 +492,15 @@ class TestCollectionSklearnPipeline:
     @pytest.mark.parametrize(
         "pipeline, expected_output",
         [
-            (
-                    pytest.pipeline,
-                    np.array([1] * 5)
-            ),
+            (pytest.pipeline, np.array([1] * 5)),
         ],
     )
     def test_predict(self, pipeline, expected_output):
         new_plugin = Plugin(pipeline)
         new_plugin.is_supported()
-        object_file = pickle.load(open("tests/pipeline/compas_pipeline_sklearn_raw_testing.sav", "rb"))
+        object_file = pickle.load(
+            open("tests/pipeline/pipeline_sklearn_raw_testing.sav", "rb")
+        )
         output = new_plugin.predict(object_file.head())
         assert (output == expected_output).all()
 
@@ -512,24 +508,24 @@ class TestCollectionSklearnPipeline:
         "pipeline, expected_output",
         [
             (
-                    "None",
-                    "'str' object has no attribute 'predict'",
+                "None",
+                "'str' object has no attribute 'predict'",
             ),
             (
-                    "",
-                    "'NoneType' object has no attribute 'predict'",
+                "",
+                "'NoneType' object has no attribute 'predict'",
             ),
             (
-                    [],
-                    "'NoneType' object has no attribute 'predict'",
+                [],
+                "'NoneType' object has no attribute 'predict'",
             ),
             (
-                    {},
-                    "'NoneType' object has no attribute 'predict'",
+                {},
+                "'NoneType' object has no attribute 'predict'",
             ),
             (
-                    "1234",
-                    "'str' object has no attribute 'predict'",
+                "1234",
+                "'str' object has no attribute 'predict'",
             ),
         ],
     )
@@ -537,7 +533,9 @@ class TestCollectionSklearnPipeline:
         with pytest.raises(Exception) as exc_info:
             new_plugin = Plugin(pipeline)
             new_plugin.is_supported()
-            object_file = pickle.load(open("tests/pipeline/compas_pipeline_sklearn_raw_testing.sav", "rb"))
+            object_file = pickle.load(
+                open("tests/pipeline/pipeline_sklearn_raw_testing.sav", "rb")
+            )
             output = new_plugin.predict(object_file.head())
             assert (output == expected_output).all()
         assert str(exc_info.value) == expected_output
@@ -546,17 +544,25 @@ class TestCollectionSklearnPipeline:
         "pipeline, expected_output",
         [
             (
-                    pytest.pipeline,
-                    np.array([[0.49962825, 0.50037175], [0.49649935, 0.50350065],
-                              [0.31346175, 0.68653825], [0.40607656, 0.59392344],
-                              [0.44515895, 0.55484105]])
+                pytest.pipeline,
+                np.array(
+                    [
+                        [0.49962825, 0.50037175],
+                        [0.49649935, 0.50350065],
+                        [0.31346175, 0.68653825],
+                        [0.40607656, 0.59392344],
+                        [0.44515895, 0.55484105],
+                    ]
+                ),
             ),
         ],
     )
     def test_predict_proba(self, pipeline, expected_output):
         new_plugin = Plugin(pipeline)
         new_plugin.is_supported()
-        object_file = pickle.load(open("tests/pipeline/compas_pipeline_sklearn_raw_testing.sav", "rb"))
+        object_file = pickle.load(
+            open("tests/pipeline/pipeline_sklearn_raw_testing.sav", "rb")
+        )
         output = new_plugin.predict_proba(object_file.head())
         assert np.isclose(output, expected_output).all()
 
@@ -564,24 +570,24 @@ class TestCollectionSklearnPipeline:
         "pipeline, expected_output",
         [
             (
-                    "None",
-                    "'str' object has no attribute 'predict_proba'",
+                "None",
+                "'str' object has no attribute 'predict_proba'",
             ),
             (
-                    "",
-                    "'NoneType' object has no attribute 'predict_proba'",
+                "",
+                "'NoneType' object has no attribute 'predict_proba'",
             ),
             (
-                    [],
-                    "'NoneType' object has no attribute 'predict_proba'",
+                [],
+                "'NoneType' object has no attribute 'predict_proba'",
             ),
             (
-                    {},
-                    "'NoneType' object has no attribute 'predict_proba'",
+                {},
+                "'NoneType' object has no attribute 'predict_proba'",
             ),
             (
-                    "1234",
-                    "'str' object has no attribute 'predict_proba'",
+                "1234",
+                "'str' object has no attribute 'predict_proba'",
             ),
         ],
     )
@@ -589,7 +595,9 @@ class TestCollectionSklearnPipeline:
         with pytest.raises(Exception) as exc_info:
             new_plugin = Plugin(pipeline)
             new_plugin.is_supported()
-            object_file = pickle.load(open("tests/pipeline/compas_pipeline_sklearn_raw_testing.sav", "rb"))
+            object_file = pickle.load(
+                open("tests/pipeline/pipeline_sklearn_raw_testing.sav", "rb")
+            )
             output = new_plugin.predict_proba(object_file.head())
             assert (output == expected_output).all()
         assert str(exc_info.value) == expected_output
@@ -597,16 +605,15 @@ class TestCollectionSklearnPipeline:
     @pytest.mark.parametrize(
         "pipeline, expected_output",
         [
-            (
-                    pytest.pipeline,
-                    0.2
-            ),
+            (pytest.pipeline, 0.2),
         ],
     )
     def test_score(self, pipeline, expected_output):
         new_plugin = Plugin(pipeline)
         new_plugin.is_supported()
-        object_file = pickle.load(open("tests/pipeline/compas_pipeline_sklearn_raw_testing.sav", "rb"))
+        object_file = pickle.load(
+            open("tests/pipeline/pipeline_sklearn_raw_testing.sav", "rb")
+        )
         output = new_plugin.score(object_file.head(), [1, 2, 3, 4, 5])
         assert output == expected_output
 
@@ -614,28 +621,28 @@ class TestCollectionSklearnPipeline:
         "pipeline, expected_output",
         [
             (
-                    None,
-                    "'NoneType' object has no attribute 'score'",
+                None,
+                "'NoneType' object has no attribute 'score'",
             ),
             (
-                    "None",
-                    "'str' object has no attribute 'score'",
+                "None",
+                "'str' object has no attribute 'score'",
             ),
             (
-                    "",
-                    "'NoneType' object has no attribute 'score'",
+                "",
+                "'NoneType' object has no attribute 'score'",
             ),
             (
-                    [],
-                    "'NoneType' object has no attribute 'score'",
+                [],
+                "'NoneType' object has no attribute 'score'",
             ),
             (
-                    {},
-                    "'NoneType' object has no attribute 'score'",
+                {},
+                "'NoneType' object has no attribute 'score'",
             ),
             (
-                    "1234",
-                    "'str' object has no attribute 'score'",
+                "1234",
+                "'str' object has no attribute 'score'",
             ),
         ],
     )
@@ -643,7 +650,9 @@ class TestCollectionSklearnPipeline:
         with pytest.raises(Exception) as exc_info:
             new_plugin = Plugin(pipeline)
             new_plugin.is_supported()
-            object_file = pickle.load(open("tests/pipeline/compas_pipeline_sklearn_raw_testing.sav", "rb"))
+            object_file = pickle.load(
+                open("tests/pipeline/pipeline_sklearn_raw_testing.sav", "rb")
+            )
             output = new_plugin.score(object_file.head(), [1, 2, 3, 4, 5])
             assert output == expected_output
         assert str(exc_info.value) == expected_output

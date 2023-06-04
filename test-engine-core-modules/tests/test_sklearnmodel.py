@@ -1,66 +1,69 @@
 import numpy as np
 import pytest
+from src.sklearnmodel.sklearnmodel import Plugin
 from test_engine_core.plugins.enums.model_plugin_type import ModelPluginType
 from test_engine_core.plugins.enums.plugin_type import PluginType
 from test_engine_core.plugins.plugins_manager import PluginManager
-
-from src.sklearnmodel.sklearnmodel import Plugin
 
 
 class TestCollectionSklearnModel:
     PluginManager.discover("src")
     sklearn_model, _, _ = PluginManager.get_instance(
-        PluginType.MODEL, **{"filename": "src/sklearnmodel/user_defined_files/pickle_scikit_lr_compas.sav"})
+        PluginType.MODEL,
+        **{"filename": "src/sklearnmodel/user_defined_files/pickle_scikit_lr.sav"}
+    )
     pytest.model = sklearn_model.get_model()
 
     @pytest.mark.parametrize(
         "model, expected_name, expected_description, expected_version",
         [
             (
-                    pytest.model,
-                    "sklearnmodel",
-                    "sklearnmodel supports detecting sklearn models",
-                    "0.9.0",
+                pytest.model,
+                "sklearnmodel",
+                "sklearnmodel supports detecting sklearn models",
+                "0.9.0",
             ),
             (
-                    None,
-                    "sklearnmodel",
-                    "sklearnmodel supports detecting sklearn models",
-                    "0.9.0",
+                None,
+                "sklearnmodel",
+                "sklearnmodel supports detecting sklearn models",
+                "0.9.0",
             ),
             (
-                    "None",
-                    "sklearnmodel",
-                    "sklearnmodel supports detecting sklearn models",
-                    "0.9.0",
+                "None",
+                "sklearnmodel",
+                "sklearnmodel supports detecting sklearn models",
+                "0.9.0",
             ),
             (
-                    "",
-                    "sklearnmodel",
-                    "sklearnmodel supports detecting sklearn models",
-                    "0.9.0",
+                "",
+                "sklearnmodel",
+                "sklearnmodel supports detecting sklearn models",
+                "0.9.0",
             ),
             (
-                    [],
-                    "sklearnmodel",
-                    "sklearnmodel supports detecting sklearn models",
-                    "0.9.0",
+                [],
+                "sklearnmodel",
+                "sklearnmodel supports detecting sklearn models",
+                "0.9.0",
             ),
             (
-                    {},
-                    "sklearnmodel",
-                    "sklearnmodel supports detecting sklearn models",
-                    "0.9.0",
+                {},
+                "sklearnmodel",
+                "sklearnmodel supports detecting sklearn models",
+                "0.9.0",
             ),
             (
-                    1234,
-                    "sklearnmodel",
-                    "sklearnmodel supports detecting sklearn models",
-                    "0.9.0",
+                1234,
+                "sklearnmodel",
+                "sklearnmodel supports detecting sklearn models",
+                "0.9.0",
             ),
         ],
     )
-    def test_get_metadata(self, model, expected_name, expected_description, expected_version):
+    def test_get_metadata(
+        self, model, expected_name, expected_description, expected_version
+    ):
         new_model = Plugin(model)
         metadata = new_model.get_metadata()
         assert metadata.name == expected_name
@@ -70,33 +73,30 @@ class TestCollectionSklearnModel:
     @pytest.mark.parametrize(
         "model, expected_output",
         [
+            (pytest.model, PluginType.MODEL),
             (
-                    pytest.model,
-                    PluginType.MODEL
+                None,
+                PluginType.MODEL,
             ),
             (
-                    None,
-                    PluginType.MODEL,
+                "None",
+                PluginType.MODEL,
             ),
             (
-                    "None",
-                    PluginType.MODEL,
+                "",
+                PluginType.MODEL,
             ),
             (
-                    "",
-                    PluginType.MODEL,
+                [],
+                PluginType.MODEL,
             ),
             (
-                    [],
-                    PluginType.MODEL,
+                {},
+                PluginType.MODEL,
             ),
             (
-                    {},
-                    PluginType.MODEL,
-            ),
-            (
-                    "1234",
-                    PluginType.MODEL,
+                "1234",
+                PluginType.MODEL,
             ),
         ],
     )
@@ -107,33 +107,24 @@ class TestCollectionSklearnModel:
     @pytest.mark.parametrize(
         "model, expected_output",
         [
+            (pytest.model, ModelPluginType.SKLEARN),
+            (None, ModelPluginType.SKLEARN),
+            ("None", ModelPluginType.SKLEARN),
             (
-                    pytest.model,
-                    ModelPluginType.SKLEARN
+                "",
+                ModelPluginType.SKLEARN,
             ),
             (
-                    None,
-                    ModelPluginType.SKLEARN
+                [],
+                ModelPluginType.SKLEARN,
             ),
             (
-                    "None",
-                    ModelPluginType.SKLEARN
+                {},
+                ModelPluginType.SKLEARN,
             ),
             (
-                    "",
-                    ModelPluginType.SKLEARN,
-            ),
-            (
-                    [],
-                    ModelPluginType.SKLEARN,
-            ),
-            (
-                    {},
-                    ModelPluginType.SKLEARN,
-            ),
-            (
-                    "1234",
-                    ModelPluginType.SKLEARN,
+                "1234",
+                ModelPluginType.SKLEARN,
             ),
         ],
     )
@@ -146,74 +137,80 @@ class TestCollectionSklearnModel:
         "expected_version, expected_plugin_type, expected_model_plugin_type",
         [
             (
-                    pytest.model,
-                    pytest.model,
-                    "sklearnmodel",
-                    "sklearnmodel supports detecting sklearn models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.SKLEARN,
+                pytest.model,
+                pytest.model,
+                "sklearnmodel",
+                "sklearnmodel supports detecting sklearn models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.SKLEARN,
             ),
             (
-                    None,
-                    None,
-                    "sklearnmodel",
-                    "sklearnmodel supports detecting sklearn models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.SKLEARN,
+                None,
+                None,
+                "sklearnmodel",
+                "sklearnmodel supports detecting sklearn models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.SKLEARN,
             ),
             (
-                    "None",
-                    "None",
-                    "sklearnmodel",
-                    "sklearnmodel supports detecting sklearn models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.SKLEARN,
+                "None",
+                "None",
+                "sklearnmodel",
+                "sklearnmodel supports detecting sklearn models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.SKLEARN,
             ),
             (
-                    "",
-                    None,
-                    "sklearnmodel",
-                    "sklearnmodel supports detecting sklearn models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.SKLEARN,
+                "",
+                None,
+                "sklearnmodel",
+                "sklearnmodel supports detecting sklearn models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.SKLEARN,
             ),
             (
-                    [],
-                    None,
-                    "sklearnmodel",
-                    "sklearnmodel supports detecting sklearn models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.SKLEARN,
+                [],
+                None,
+                "sklearnmodel",
+                "sklearnmodel supports detecting sklearn models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.SKLEARN,
             ),
             (
-                    {},
-                    None,
-                    "sklearnmodel",
-                    "sklearnmodel supports detecting sklearn models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.SKLEARN,
+                {},
+                None,
+                "sklearnmodel",
+                "sklearnmodel supports detecting sklearn models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.SKLEARN,
             ),
             (
-                    "1234",
-                    "1234",
-                    "sklearnmodel",
-                    "sklearnmodel supports detecting sklearn models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.SKLEARN,
+                "1234",
+                "1234",
+                "sklearnmodel",
+                "sklearnmodel supports detecting sklearn models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.SKLEARN,
             ),
         ],
     )
-    def test_init(self,
-                  model, expected_data, expected_name, expected_description,
-                  expected_version, expected_plugin_type, expected_model_plugin_type
-                  ):
+    def test_init(
+        self,
+        model,
+        expected_data,
+        expected_name,
+        expected_description,
+        expected_version,
+        expected_plugin_type,
+        expected_model_plugin_type,
+    ):
         new_model = Plugin(model)
         assert new_model._model == expected_data
         assert new_model._name == expected_name
@@ -230,74 +227,80 @@ class TestCollectionSklearnModel:
         "expected_version, expected_plugin_type, expected_model_plugin_type",
         [
             (
-                    pytest.model,
-                    None,
-                    "sklearnmodel",
-                    "sklearnmodel supports detecting sklearn models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.SKLEARN,
+                pytest.model,
+                None,
+                "sklearnmodel",
+                "sklearnmodel supports detecting sklearn models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.SKLEARN,
             ),
             (
-                    None,
-                    None,
-                    "sklearnmodel",
-                    "sklearnmodel supports detecting sklearn models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.SKLEARN,
+                None,
+                None,
+                "sklearnmodel",
+                "sklearnmodel supports detecting sklearn models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.SKLEARN,
             ),
             (
-                    "None",
-                    None,
-                    "sklearnmodel",
-                    "sklearnmodel supports detecting sklearn models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.SKLEARN,
+                "None",
+                None,
+                "sklearnmodel",
+                "sklearnmodel supports detecting sklearn models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.SKLEARN,
             ),
             (
-                    "",
-                    None,
-                    "sklearnmodel",
-                    "sklearnmodel supports detecting sklearn models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.SKLEARN,
+                "",
+                None,
+                "sklearnmodel",
+                "sklearnmodel supports detecting sklearn models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.SKLEARN,
             ),
             (
-                    [],
-                    None,
-                    "sklearnmodel",
-                    "sklearnmodel supports detecting sklearn models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.SKLEARN,
+                [],
+                None,
+                "sklearnmodel",
+                "sklearnmodel supports detecting sklearn models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.SKLEARN,
             ),
             (
-                    {},
-                    None,
-                    "sklearnmodel",
-                    "sklearnmodel supports detecting sklearn models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.SKLEARN,
+                {},
+                None,
+                "sklearnmodel",
+                "sklearnmodel supports detecting sklearn models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.SKLEARN,
             ),
             (
-                    "1234",
-                    None,
-                    "sklearnmodel",
-                    "sklearnmodel supports detecting sklearn models",
-                    "0.9.0",
-                    PluginType.MODEL,
-                    ModelPluginType.SKLEARN,
+                "1234",
+                None,
+                "sklearnmodel",
+                "sklearnmodel supports detecting sklearn models",
+                "0.9.0",
+                PluginType.MODEL,
+                ModelPluginType.SKLEARN,
             ),
         ],
     )
-    def test_init_no_initialize(self,
-                                model, expected_data, expected_name, expected_description,
-                                expected_version, expected_plugin_type, expected_model_plugin_type
-                                ):
+    def test_init_no_initialize(
+        self,
+        model,
+        expected_data,
+        expected_name,
+        expected_description,
+        expected_version,
+        expected_plugin_type,
+        expected_model_plugin_type,
+    ):
         assert Plugin._model == expected_data
         assert Plugin._name == expected_name
         assert Plugin._description == expected_description
@@ -315,33 +318,30 @@ class TestCollectionSklearnModel:
     @pytest.mark.parametrize(
         "model, expected_output",
         [
+            (pytest.model, (True, "")),
             (
-                    pytest.model,
-                    (True, "")
+                None,
+                (True, ""),
             ),
             (
-                    None,
-                    (True, ""),
+                "None",
+                (True, ""),
             ),
             (
-                    "None",
-                    (True, ""),
+                "",
+                (True, ""),
             ),
             (
-                    "",
-                    (True, ""),
+                [],
+                (True, ""),
             ),
             (
-                    [],
-                    (True, ""),
+                {},
+                (True, ""),
             ),
             (
-                    {},
-                    (True, ""),
-            ),
-            (
-                    "1234",
-                    (True, ""),
+                "1234",
+                (True, ""),
             ),
         ],
     )
@@ -355,28 +355,28 @@ class TestCollectionSklearnModel:
         "model, expected_output",
         [
             (
-                    pytest.model,
-                    pytest.model,
+                pytest.model,
+                pytest.model,
             ),
             (
-                    "None",
-                    "None",
+                "None",
+                "None",
             ),
             (
-                    "",
-                    None,
+                "",
+                None,
             ),
             (
-                    [],
-                    None,
+                [],
+                None,
             ),
             (
-                    {},
-                    None,
+                {},
+                None,
             ),
             (
-                    "1234",
-                    "1234",
+                "1234",
+                "1234",
             ),
         ],
     )
@@ -387,33 +387,30 @@ class TestCollectionSklearnModel:
     @pytest.mark.parametrize(
         "model, expected_output",
         [
+            (pytest.model, "sklearn.linear_model._logistic.LogisticRegression"),
             (
-                    pytest.model,
-                    "sklearn.linear_model._logistic.LogisticRegression"
+                None,
+                "",
             ),
             (
-                    None,
-                    "",
+                "None",
+                "",
             ),
             (
-                    "None",
-                    "",
+                "",
+                "",
             ),
             (
-                    "",
-                    "",
+                [],
+                "",
             ),
             (
-                    [],
-                    "",
+                {},
+                "",
             ),
             (
-                    {},
-                    "",
-            ),
-            (
-                    "1234",
-                    "",
+                "1234",
+                "",
             ),
         ],
     )
@@ -426,28 +423,28 @@ class TestCollectionSklearnModel:
         "model, expected_output",
         [
             (
-                    pytest.model,
-                    True,
+                pytest.model,
+                True,
             ),
             (
-                    "None",
-                    False,
+                "None",
+                False,
             ),
             (
-                    "",
-                    False,
+                "",
+                False,
             ),
             (
-                    [],
-                    False,
+                [],
+                False,
             ),
             (
-                    {},
-                    False,
+                {},
+                False,
             ),
             (
-                    "1234",
-                    False,
+                "1234",
+                False,
             ),
         ],
     )
@@ -459,8 +456,8 @@ class TestCollectionSklearnModel:
         "model, expected_output",
         [
             (
-                    pytest.model,
-                    np.array([0, 1]),
+                pytest.model,
+                np.array([0, 1]),
             ),
         ],
     )
@@ -474,24 +471,24 @@ class TestCollectionSklearnModel:
         "model, expected_output",
         [
             (
-                    "None",
-                    "'str' object has no attribute 'predict'",
+                "None",
+                "'str' object has no attribute 'predict'",
             ),
             (
-                    "",
-                    "'NoneType' object has no attribute 'predict'",
+                "",
+                "'NoneType' object has no attribute 'predict'",
             ),
             (
-                    [],
-                    "'NoneType' object has no attribute 'predict'",
+                [],
+                "'NoneType' object has no attribute 'predict'",
             ),
             (
-                    {},
-                    "'NoneType' object has no attribute 'predict'",
+                {},
+                "'NoneType' object has no attribute 'predict'",
             ),
             (
-                    "1234",
-                    "'str' object has no attribute 'predict'",
+                "1234",
+                "'str' object has no attribute 'predict'",
             ),
         ],
     )
@@ -507,8 +504,8 @@ class TestCollectionSklearnModel:
         "model, expected_output",
         [
             (
-                    pytest.model,
-                    np.array([[0.50189987, 0.49810013], [0.41150356, 0.58849644]])
+                pytest.model,
+                np.array([[0.50189987, 0.49810013], [0.41150356, 0.58849644]]),
             ),
         ],
     )
@@ -522,24 +519,24 @@ class TestCollectionSklearnModel:
         "model, expected_output",
         [
             (
-                    "None",
-                    "'str' object has no attribute 'predict_proba'",
+                "None",
+                "'str' object has no attribute 'predict_proba'",
             ),
             (
-                    "",
-                    "'NoneType' object has no attribute 'predict_proba'",
+                "",
+                "'NoneType' object has no attribute 'predict_proba'",
             ),
             (
-                    [],
-                    "'NoneType' object has no attribute 'predict_proba'",
+                [],
+                "'NoneType' object has no attribute 'predict_proba'",
             ),
             (
-                    {},
-                    "'NoneType' object has no attribute 'predict_proba'",
+                {},
+                "'NoneType' object has no attribute 'predict_proba'",
             ),
             (
-                    "1234",
-                    "'str' object has no attribute 'predict_proba'",
+                "1234",
+                "'str' object has no attribute 'predict_proba'",
             ),
         ],
     )
@@ -554,10 +551,7 @@ class TestCollectionSklearnModel:
     @pytest.mark.parametrize(
         "model, expected_output",
         [
-            (
-                    pytest.model,
-                    0.0
-            ),
+            (pytest.model, 0.0),
         ],
     )
     def test_score(self, model, expected_output):
@@ -570,28 +564,28 @@ class TestCollectionSklearnModel:
         "model, expected_output",
         [
             (
-                    None,
-                    "'NoneType' object has no attribute 'score'",
+                None,
+                "'NoneType' object has no attribute 'score'",
             ),
             (
-                    "None",
-                    "'str' object has no attribute 'score'",
+                "None",
+                "'str' object has no attribute 'score'",
             ),
             (
-                    "",
-                    "'NoneType' object has no attribute 'score'",
+                "",
+                "'NoneType' object has no attribute 'score'",
             ),
             (
-                    [],
-                    "'NoneType' object has no attribute 'score'",
+                [],
+                "'NoneType' object has no attribute 'score'",
             ),
             (
-                    {},
-                    "'NoneType' object has no attribute 'score'",
+                {},
+                "'NoneType' object has no attribute 'score'",
             ),
             (
-                    "1234",
-                    "'str' object has no attribute 'score'",
+                "1234",
+                "'str' object has no attribute 'score'",
             ),
         ],
     )

@@ -4,7 +4,7 @@ from module_tests.plugin_test import PluginTest
 
 if __name__ == "__main__":
     discover_path = Path.cwd().parent
-    file_path = str(discover_path / "imagedata/user_defined_files/6.png")
+    file_path = str(discover_path / "imagedata/user_defined_files/0.png")
 
     # =================================================================================
     # NOTE: Do not modify the code below
