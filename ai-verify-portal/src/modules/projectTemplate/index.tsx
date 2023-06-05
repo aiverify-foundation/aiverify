@@ -62,7 +62,7 @@ export default function ProjectTemplateModule({ data, pluginManager }: Props) {
         lastSavedTime={lastSavedTime}
         designStep={step}
         disableSaveMenu={projectStore.isNew}
-        disableSaveBtn={projectStore.isNew}
+        disableSaveBtn={projectStore.isReadonly || projectStore.isNew}
         disableNextBtn={disableNextBtn}
         isTemplate
         disableSaveMenuItem

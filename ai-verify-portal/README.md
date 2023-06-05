@@ -51,19 +51,6 @@ Update /etc/redis/redis.conf and set notify-keyspace-events to Kh
 notify-keyspace-events Kh
 ```
 
-## Clone shared library
-```sh
-git clone git@gitlab.com:imda_dsl/t2po/ai-verify/ai-verify-portal/ai-verify-shared-library.git
-```
-
-## Clone from Gitlab repository
-
-```sh
-git clone git@gitlab.com:imda_dsl/t2po/ai-verify/ai-verify-portal/ai-verify-portal.git
-cd ai-aiverify-portal
-npm install
-```
-
 ## Customize the environment variable
 To customize the default environment, you can create a **.env.local** file in the project root directory. This will override the **.env** defaults set.
 

@@ -11,9 +11,8 @@ const pluginsListResponse: ApiResult<PluginManagerType> = {
         "gid": "aiverify.stock.algorithms.partial_dependence_plot",
         "version": "0.1.0",
         "name": "Partial Dependence Plot",
-        "author": "Lionel Teo",
+        "author": "Test User",
         "description": "Partial dependence plot (PDP) depicts the relationship between a small number of input variable and target. They show how predictions partially depend on values of the input variables of interests.",
-        "url": "https://gitlab.com/imda_dsl/t2po/ai-verify/ai-verify-stock-plugins/partial_dependence_plot",
         "algorithms": [
           {
             "cid": "partial_dependence_plot",
@@ -23,7 +22,7 @@ const pluginsListResponse: ApiResult<PluginManagerType> = {
               "regression"
             ],
             "version": "0.1.0",
-            "author": "Lionel Teo",
+            "author": "Test User",
             "description": "Partial dependence plot (PDP) depicts the relationship between a small number of input variable and target. They show how predictions partially depend on values of the input variables of interests.",
             "tags": [
               "Partial Dependence Plot",
@@ -826,7 +825,6 @@ const pluginsListResponse: ApiResult<PluginManagerType> = {
         "name": "fairness metrics toolbox for classification",
         "author": "IMDA-T2E",
         "description": "The Fairness Metrics Toolbox (FMT) for Classification contains a list of fairness metrics to measure how resources (e.g. opportunities, food, loan, medical help) are allocated among the demographic groups (e.g. married male, married female) given a set of sensitive feature(s) (e.g. gender, marital status). This plugin is developed for classification models.",
-        "url": "https://gitlab.com/imda_dsl/t2po/ai-verify/ai-verify-stock-plugins/aiverify.stock.algorithms.fairness-metrics-toolbox-for-classification",
         "algorithms": [
           {
             "cid": "fairness_metrics_toolbox_for_classification",
@@ -1559,7 +1557,7 @@ const pluginsListResponse: ApiResult<PluginManagerType> = {
           "regression"
         ],
         "version": "0.1.0",
-        "author": "Lionel Teo",
+        "author": "Test User",
         "description": "Partial dependence plot (PDP) depicts the relationship between a small number of input variable and target. They show how predictions partially depend on values of the input variables of interests.",
         "tags": [
           "Partial Dependence Plot",
@@ -2168,9 +2166,8 @@ const installPluginResponse: ApiResult<AIFPlugin> = {
         "gid": "aiverify.stock.algorithms.partial_dependence_plot",
         "version": "0.1.0",
         "name": "Partial Dependence Plot",
-        "author": "Lionel Teo",
+        "author": "Test User",
         "description": "Partial dependence plot (PDP) depicts the relationship between a small number of input variable and target. They show how predictions partially depend on values of the input variables of interests.",
-        "url": "https://gitlab.com/imda_dsl/t2po/ai-verify/ai-verify-stock-plugins/partial_dependence_plot",
         "isStock": false,
         "reportWidgets": [],
         "inputBlocks": [],
@@ -2184,7 +2181,7 @@ const installPluginResponse: ApiResult<AIFPlugin> = {
                     "regression"
                 ],
                 "version": "0.1.0",
-                "author": "Lionel Teo",
+                "author": "Test User",
                 "description": "Partial dependence plot (PDP) depicts the relationship between a small number of input variable and target. They show how predictions partially depend on values of the input variables of interests.",
                 "tags": [
                     "Partial Dependence Plot",

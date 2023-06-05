@@ -46,13 +46,6 @@ Update /etc/redis/redis.conf and set notify-keyspace-events to Kh
 
 	notify-keyspace-events Kh
 
-
-## Clone from Gitlab repository
-
-	git clone <<git repo>>
-	cd ai-testkit-api
-	npm install
-
 ## Set the environment variable
 	Create a .env file with the following values
 	NODE_ENV, MONGODB_URI
