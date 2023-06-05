@@ -4,7 +4,6 @@
     "name": "Fairness for Regression",
     "author": "AI Verify",
     "description": "This plugin computes and displays a list of fairness metrics to measure how correctly your regression model predicts among the given set of sensitive features.",
-    "url": "https://gitlab.com/imda_dsl/t2po/ai-verify/ai-verify-stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-regression",
     "tags": [
         "regression",
         "fairness"
