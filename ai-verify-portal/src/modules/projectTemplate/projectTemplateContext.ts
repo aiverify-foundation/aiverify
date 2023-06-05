@@ -3,7 +3,6 @@ import * as _ from 'lodash';
 import moment from 'moment';
 
 import ProjectTemplate, { ProjectInformation, Page, ReportWidgetItem, GlobalVariable } from 'src/types/projectTemplate.interface';
-import { ModelAndDatasets} from 'src/types/project.interface';
 import { InputBlock, Algorithm, ComponentDependency } from 'src/types/plugin.interface';
 import { WidgetProperties, useWidgetProperties } from 'src/lib/canvasUtils';
 
@@ -322,7 +321,13 @@ export function useProjectTemplateStore(data: ProjectTemplate, pluginManager: Pl
 				data.reportWidgets = data.reportWidgets.map(item => {
 					const ret =  _.pick(item, [ "widgetGID", "key", "layoutItemProperties", "properties" ]);
 					if (item.layoutItemProperties)
-						ret.layoutItemProperties = _.pick(item.layoutItemProperties, [ "justifyContent", "alignItems", "color", "bgcolor" ])
+						ret.layoutItemProperties = _.pick(item.layoutItemProperties, [
+							"textAlign",
+							"justifyContent",
+							"alignItems",
+							"color",
+							"bgcolor"
+						])
 					return ret;
 				}) as ReportWidgetItem[]
 				return data;

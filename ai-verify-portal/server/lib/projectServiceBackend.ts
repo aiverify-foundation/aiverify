@@ -105,6 +105,7 @@ export const GET_PROJECT = gql`
                     layoutItemProperties {
                         justifyContent
                         alignItems
+                        textAlign
                         color
                         bgcolor
                     }
@@ -266,6 +267,7 @@ export const GET_REPORT = gql`
                         layoutItemProperties {
                             justifyContent
                             alignItems
+                            textAlign
                             color
                             bgcolor
                         }
@@ -359,6 +361,7 @@ export const GET_PROJECT_TEMPLATE = gql`
                     layoutItemProperties {
                         justifyContent
                         alignItems
+                        textAlign
                         color
                         bgcolor
                     }
