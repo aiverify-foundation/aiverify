@@ -12,6 +12,7 @@ if __name__ == "__main__":
     ground_truth = "default"
     sensitive_feature = ["gender"]
     run_pipeline = False
+    model_type = ModelType.CLASSIFICATION
 
     # # Multiclass Classification Non-Pipeline
     # data_path = ("tests/user_defined_files/data/"
@@ -24,6 +25,7 @@ if __name__ == "__main__":
     # ground_truth = "toxic"
     # sensitive_feature = ["gender"]
     # run_pipeline = False
+    # model_type = ModelType.CLASSIFICATION
 
     # # Tabular Binary Classification Pipeline
     # data_path = ("tests/user_defined_files/data/"
@@ -48,13 +50,6 @@ if __name__ == "__main__":
     # model_type = ModelType.CLASSIFICATION
 
     core_modules_path = "../../../test-engine-core-modules"
-    model_type = ModelType.CLASSIFICATION
-
-    sensitive_feature = ["gender"]
-
-
-
-    core_modules_path = "../../../../test-engine-core-modules"
     plugin_argument_values = {
         "sensitive_feature": sensitive_feature,
     }
