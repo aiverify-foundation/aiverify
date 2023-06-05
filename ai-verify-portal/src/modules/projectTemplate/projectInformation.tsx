@@ -64,7 +64,8 @@ export default function ProjectTemplateInformationComponent(props: TemplateInfoP
           </div>
           <div className={styles.vDivider} />
           <div className={styles.rightSection}>
-            <TextInput 
+            <TextInput
+              label='Template Name'
               name='name'
               placeholder='Give it a name that is easy to identify and distinguish from others'
               value={projectGeneralInfo.name}

@@ -32,6 +32,7 @@ export const getItemLayoutProperties = (itemLayout: LayoutItemProperties, canvas
   const result: React.CSSProperties = {
     justifyContent: itemLayout.justifyContent ? itemLayout.justifyContent : "left",
     alignItems: getTranslateAlignItems(),
+    textAlign: itemLayout.textAlign ? itemLayout.textAlign : "left",
     backgroundColor,
     color,
   }
