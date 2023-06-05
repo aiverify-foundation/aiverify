@@ -6,7 +6,7 @@
     "maxW": 12,
     "maxH": 36
   },
-  "description": "To provide a table of definitions",
+  "description": "To provide a table of definitions for all the fairness metrics calculated",
   "name": "Table of Definition",
   "dependencies": [
     {

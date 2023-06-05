@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Dispatch, SetStateAction } from 'react';
 import { getMDXExport } from 'mdx-bundler/client';
 
 import { styled } from '@mui/material/styles';
@@ -34,6 +34,7 @@ type Props = {
   onSelectDatasetBtnClick: () => void;
   onSelectModelBtnClick: () => void;
   onSelectGroundTruthBtnClick: () => void;
+  setInvalidInputs: Dispatch<SetStateAction<boolean>>;
 }
 
 type InputDisplay = InputBlock | InputBlock[] | string;
@@ -50,6 +51,7 @@ export default function UserInputComponent({
   onSelectDatasetBtnClick,
   onSelectModelBtnClick,
   onSelectGroundTruthBtnClick,
+  setInvalidInputs,
 }: Props) {
   const [inputBlockStates, setInputBlockStates] = useState<InputBlockStateMap>({});
   const { algorithms, inputBlocks } = projectStore.dependencies;
@@ -92,6 +94,7 @@ export default function UserInputComponent({
   useEffect(() => {
     const fetchSummaries = async() => {
       const states = {} as InputBlockStateMap;
+      let valid = true;
       for (const inputBlock of projectStore.dependencies.inputBlocks) {
         const createDynamic = () => {
           const apiPath = `/api/bundler/summary/${inputBlock.gid}`;
@@ -126,6 +129,8 @@ export default function UserInputComponent({
             progressFn: mdxExport.progress,
             validateFn: mdxExport.validate,
           }
+          if (valid && state.validateFn && projectStore.inputBlockData[inputBlock.gid] && !state.validateFn(projectStore.inputBlockData[inputBlock.gid]))
+            valid = false;
           states[inputBlock.gid] = state;  
         } catch (err) {
           console.log("Error loading summary file", err);
@@ -134,10 +139,24 @@ export default function UserInputComponent({
       setInputBlockStates(prevState => ({
         ...prevState,
         ...states,
-      }))        
+      }))
+      setInvalidInputs(!valid); 
     }
     fetchSummaries();
   }, [])
+
+  useEffect(() => {
+    let valid = true;
+    for (const ib of projectStore.dependencies.inputBlocks) {
+      if (!inputBlockStates[ib.gid] || !inputBlockStates[ib.gid].validateFn)
+        continue;
+      if (!getInputBlockValidation(ib.gid)) {
+        valid = false;
+        break;
+      }
+    }
+    setInvalidInputs(!valid);
+  }, [projectStore.inputBlockData])
 
   const getInputBlockProgress = (gid: string):number => {
     if (inputBlockStates[gid])
@@ -157,22 +176,24 @@ export default function UserInputComponent({
     return function Comp(props: StepIconProps) {
         if (typeof(stepItem) === 'string') {
           let completed = true;
+          let error = false;
           if (idx !== undefined) {
             if (Array.isArray(iblocksList[idx + 1])) {
               const groupOfiblocks = iblocksList[idx + 1] as InputBlock[];
               for (let i = 0; i < groupOfiblocks.length; i++) {
-                // if (getInputBlockProgress(groupOfiblocks[i].gid) < 100) {
-                //   completed = false;
-                //   break;
-                // }
-                // change to use validation function
                 if (!getInputBlockValidation(groupOfiblocks[i].gid)) {
+                  error = true;
+                  break;
+                }
+                if (getInputBlockProgress(groupOfiblocks[i].gid) < 100) {
                   completed = false;
                   break;
                 }
               }
             }
           }
+          if (error)
+            return <ErrorIcon color='error' fontSize='large' sx={{ width:'38px' }} />
           if (completed)
             return <CheckCircleIcon color='primary' fontSize='large' sx={{ width:'38px' }} />
           return <CircleIcon color='primary' fontSize='large' sx={{ width:'38px' }} />
@@ -180,6 +201,9 @@ export default function UserInputComponent({
           const ib = stepItem as InputBlock;
           const fontSize = ib.group && ib.group.length > 0 ? "small" : "large";
           const color = ib.group && ib.group.length > 0 ? "secondary" : "primary";
+          const valid = getInputBlockValidation(ib.gid);
+          if (!valid) 
+            return <ErrorIcon color='error' fontSize={fontSize} sx={{ width:'38px' }} />
           if (props.completed)
             return <CheckCircleIcon color={color} fontSize={fontSize} sx={{ width:'38px' }} />
           else
@@ -296,7 +320,7 @@ export default function UserInputComponent({
                               </Step>
                               {Array.isArray(groupedSteps) && groupedSteps.map(groupStepItem => {
                                 const ib = groupStepItem as InputBlock;
-                                return <Step key={`step${ib.gid}`} completed={getInputBlockValidation(ib.gid)}>
+                                return <Step key={`step${ib.gid}`} completed={getInputBlockProgress(ib.gid) >= 100}>
                                     <StepLabel StepIconComponent={ProgressStepIcon(ib)}>
                                       <div style={{ cursor: 'pointer', color: '#676767', fontWeight: '400' }} onClick={handleIblockItemClick(ib.gid)}>{ib.name}</div>
                                     </StepLabel>

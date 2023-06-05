@@ -3,7 +3,7 @@
     "version": "0.9.0",
     "name": "Fairness for Classification",
     "author": "AI Verify",
-    "description": "This plugin computes and displays a list of fairness metrics to measure how correct your classification model predicts among the given set of sensitive features.",
+    "description": "This plugin computes and displays a list of fairness metrics to measure how correctly your classification model predicts among the given set of sensitive features.",
     "url": "https://gitlab.com/imda_dsl/t2po/ai-verify/ai-verify-stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification",
     "tags": [
         "multiclass classification",

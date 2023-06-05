@@ -370,13 +370,17 @@ class DataManager:
 
         # Scan through all the supported data formats
         # Check that this data is one of the supported data formats
-        for _, data_plugin in data_plugins.items():
-            temp_data_instance = data_plugin.Plugin(data)
+        try:
+            for _, data_plugin in data_plugins.items():
+                temp_data_instance = data_plugin.Plugin(data)
+                if temp_data_instance.is_supported():
+                    data_instance = temp_data_instance
+                    is_success = True
+                    break
 
-            if temp_data_instance.is_supported():
-                data_instance = temp_data_instance
-                is_success = True
-                break
+        except Exception:
+            is_success = False
+            data_instance = None
 
         return is_success, data_instance
 

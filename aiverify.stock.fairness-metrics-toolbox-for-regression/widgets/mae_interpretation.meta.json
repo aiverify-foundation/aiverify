@@ -7,7 +7,7 @@
     "maxH": 36
   },
   "name": "Interpretation (MAE)",
-  "description": "To interpret the results from mean absolute error parity",
+  "description": "To interpret the mean absolute error parity results",
   "dependencies": [
     {
       "cid": "fairness_metrics_toolbox_for_regression"
