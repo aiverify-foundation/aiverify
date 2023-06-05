@@ -103,7 +103,7 @@ export default function UserInputComponent({
                 const data = await res.json()
                 if (!data.code)
                   return reject("Invalid MDX");
-                console.log("data", data);
+                // console.log("data", data);
                 resolve(data.code);
               } else {
                 reject("Invalid MDX");
@@ -146,6 +146,13 @@ export default function UserInputComponent({
       return 0;
   }
 
+  const getInputBlockValidation = (gid: string):boolean => {
+    if (inputBlockStates[gid])
+      return inputBlockStates[gid].validateFn(projectStore.inputBlockData[gid]);
+    else // if not exists, assume always valid
+      return true;
+  }
+
   function ProgressStepIcon(stepItem: InputBlock | string, idx?: number) {
     return function Comp(props: StepIconProps) {
         if (typeof(stepItem) === 'string') {
@@ -154,7 +161,12 @@ export default function UserInputComponent({
             if (Array.isArray(iblocksList[idx + 1])) {
               const groupOfiblocks = iblocksList[idx + 1] as InputBlock[];
               for (let i = 0; i < groupOfiblocks.length; i++) {
-                if (getInputBlockProgress(groupOfiblocks[i].gid) < 100) {
+                // if (getInputBlockProgress(groupOfiblocks[i].gid) < 100) {
+                //   completed = false;
+                //   break;
+                // }
+                // change to use validation function
+                if (!getInputBlockValidation(groupOfiblocks[i].gid)) {
                   completed = false;
                   break;
                 }
@@ -284,7 +296,7 @@ export default function UserInputComponent({
                               </Step>
                               {Array.isArray(groupedSteps) && groupedSteps.map(groupStepItem => {
                                 const ib = groupStepItem as InputBlock;
-                                return <Step key={`step${ib.gid}`} completed={getInputBlockProgress(ib.gid) >= 100}>
+                                return <Step key={`step${ib.gid}`} completed={getInputBlockValidation(ib.gid)}>
                                     <StepLabel StepIconComponent={ProgressStepIcon(ib)}>
                                       <div style={{ cursor: 'pointer', color: '#676767', fontWeight: '400' }} onClick={handleIblockItemClick(ib.gid)}>{ib.name}</div>
                                     </StepLabel>
