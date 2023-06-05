@@ -51,6 +51,7 @@ mkdir ai-verify-env
 3. Open a Terminal in the directory
 4. Execute the script by executing the following code.
    ```bash
+   cd ai-verify-env #navigate to the folder created
    bash setup-aiverify-dev.sh
    ```
 5. Wait for the set up to finish, do observe the logs for errors.
@@ -63,14 +64,14 @@ Redis and MongoDB are installed as system services, and should already be runnin
 Execute the following code to check that the services are running.
 
 ```bash
-sudo systemctl status redis-service
+sudo systemctl status redis
 sudo systemctl status mongod
 ```
 
 If they are not running, execute these code to run them:
 
 ```bash
-sudo systemctl start redis-service
+sudo systemctl start redis
 sudo systemctl start mongod
 ```
 
