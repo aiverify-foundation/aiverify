@@ -391,7 +391,7 @@ export default function DatasetListComponent({
                     onCloseIconClick={() => { setShowDeleteConfirmationDialog(false) }}>
                     <AlertBox.Header heading="Confirm File Deletion" isDragHandle></AlertBox.Header>
                     <AlertBox.Body hasFooter>
-                        <div>Are you sure you want to delete these file(s) from AIVerify?</div>
+                        <div>Are you sure you want to delete these file(s) from AI Verify?</div>
                     </AlertBox.Body>
                     <AlertBox.Footer>
                         <div style={{ display: 'flex', justifyContent: 'center', width: '600px'}}>
