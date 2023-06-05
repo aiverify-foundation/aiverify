@@ -1,5 +1,14 @@
-# Project for AI Verify Stock Decorators
+# AI Verify Stock Decorators
 
-## Create zip file for Plugin installation
+## Description
+This plugin contains the stock decorators for the AI Verify report.
 
-  npm run zip
+## Plugin Content
+Widgets
+- Divider
+- Header 1
+- Header 2
+- Header 3
+- Header 4
+- Header 5
+- Header 6

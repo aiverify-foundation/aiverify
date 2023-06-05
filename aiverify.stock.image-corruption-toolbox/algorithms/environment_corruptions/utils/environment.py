@@ -187,6 +187,8 @@ def generate_random_lines(
 ) -> Tuple[list, np.uint8]:
     """
     A method to randomly generate lines as rain
+    Modified from : https://github.com/UjjwalSaxena/Automold--Road-Augmentation-Library/blob/master/Automold.py
+    (MIT)
     """
     imshape = image.shape
     area = imshape[0] * imshape[1]
@@ -214,6 +216,8 @@ def rain_process(
 ) -> Image:
     """
     A method to add rain and decrease darkness
+    Modified from : https://github.com/UjjwalSaxena/Automold--Road-Augmentation-Library/blob/master/Automold.py
+    (MIT)
     """
     image_t = image.copy()
     for rain_drop in rain_drops:
@@ -239,6 +243,8 @@ def add_rain(
 ) -> np.ndarray:
     """
     Adding rain to images
+    Modified from : https://github.com/UjjwalSaxena/Automold--Road-Augmentation-Library/blob/master/Automold.py
+    (MIT)
 
     Parameters:
         img (ndarray) : numpy ndarray of original image to be corrupted

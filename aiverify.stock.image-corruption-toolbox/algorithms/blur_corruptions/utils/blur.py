@@ -5,6 +5,10 @@ from skimage.filters import gaussian
 
 
 def disk(radius: int, alias_blur: float = 0.1, dtype: type = np.float32) -> np.ndarray:
+    """
+    Modified from : https://github.com/hendrycks/robustness/blob/master/ImageNet-C/create_c/make_imagenet_c.py
+    (Apache 2.0)
+    """
     if radius <= 8:
         L = np.arange(-8, 8 + 1)
         ksize = (3, 3)
@@ -20,6 +24,10 @@ def disk(radius: int, alias_blur: float = 0.1, dtype: type = np.float32) -> np.n
 
 
 def clipped_zoom(img: np.ndarray, zoom_factor: int) -> np.ndarray:
+    """
+    Modified from : https://github.com/hendrycks/robustness/blob/master/ImageNet-C/create_c/make_imagenet_c.py
+    (Apache 2.0)
+    """
     height = img.shape[0]
     # ceil crop height(= crop width)
     crop_height = int(np.ceil(height / zoom_factor))
@@ -42,7 +50,7 @@ def gaussian_blur(img: np.ndarray, severity: int = 1) -> np.ndarray:
 
     Parameters:
         img (np.ndarray) : Numpy ndarray of original image to be corrupted
-        severity (int) : Level of severity of noise addedd
+        severity (int) : Level of severity of noise added
 
     Returns:
         np.ndarray: Numpy ndarray of image with Gaussian blur corruption

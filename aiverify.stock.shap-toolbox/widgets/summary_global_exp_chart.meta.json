@@ -7,7 +7,7 @@
     "maxH": 36
   },
   "name": "Bar Chart (Summary)",
-  "description": "To generate bar chart and description on AI Verify report",
+  "description": "To generate bar chart, interpretation and recommendations for explainability testing",
   "dependencies": [
     {
       "cid": "shap_toolbox"

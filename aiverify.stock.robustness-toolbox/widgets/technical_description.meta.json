@@ -7,7 +7,7 @@
     "maxH": 36
   },
   "name": "Description (Technical)",
-  "description": "To provide introduction, interpretation and recommendation for robustness testing",
+  "description": "To provide introduction, interpretation and recommendations for robustness testing with technical details",
   "dependencies": [
     {
       "cid": "robustness_toolbox"
