@@ -178,6 +178,7 @@ test-report.json
 
 # Node modules/ frontend folders
 node_modules/
+node_modules
 build/
 *.zip
 *.log
