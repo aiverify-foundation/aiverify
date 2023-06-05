@@ -491,8 +491,9 @@ export function useProjectTemplateStore(data: ProjectTemplate, pluginManager: Pl
 	}
 
 	const removeReportWidget = (reportWidget: ReportWidgetItem): void => {
-		if (!reportWidget.widget.dependencies || reportWidget.widget.dependencies.length == 0)
-			return;
+		if (!reportWidget.widget ||
+			!reportWidget.widget.dependencies ||
+			reportWidget.widget.dependencies.length == 0) return;
 		let ibMap: dependency2ReportWidgetsMapType | null = null;
 		for (const dep of reportWidget.widget.dependencies) {
 			if (!dependency2ReportWidgetsMap[dep.gid]) {

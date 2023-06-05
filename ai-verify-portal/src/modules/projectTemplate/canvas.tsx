@@ -80,7 +80,7 @@ export default function CanvasComponent(props: CanvasProps) {
     if (page.layouts) gridLayouts = page.layouts;
     if (selectedWidget) {
       selectedGridItemLayout = page.layouts ? page.layouts.find(item => item.i === selectedWidget.key) : undefined;
-      selectedWidgetHasProperties = Boolean(selectedWidget.properties && Object.keys(selectedWidget.properties).length);
+      selectedWidgetHasProperties = selectedWidget.widget && Boolean(selectedWidget.properties && Object.keys(selectedWidget.properties).length);
     }
     if (showPropertiesDialog) {
       if (selectedGridItemDomElement) {
@@ -244,16 +244,19 @@ export default function CanvasComponent(props: CanvasProps) {
 
   const addInvalidWidget = (reportWidget: ReportWidgetItem, layoutItem: Partial<Layout>): void => {
     const key = layoutItem.i as string;
-    const comp = <Box key={key} data-grid={layoutItem}
-      onClick={(e: MouseEvent) => onClickSelectWidget(e, reportWidget)}
-      onContextMenu={(e: MouseEvent) => onClickWidget(e, reportWidget)}
+    const comp = <ReportWidgetGridItemWrapper
+    id={reportWidget.key}
+    key={reportWidget.key}
+    data-grid={layoutItem}
+    onClick={handleCanvasDomElementClick(reportWidget)}
+    onRightClick={handleCanvasDomElementClick(reportWidget)}
       className={clsx(
         styles.reportWidgetComponent,
+        styles.invalidWidget,
         GRID_ITEM_CLASSNAME,
-      )}
-    >
-      <Typography variant='h5' color="error">Invalid Widget</Typography>
-    </Box>
+      )}>
+      <h4 style={{ color: '#f73939' }}>Invalid Widget</h4>
+    </ReportWidgetGridItemWrapper>
     projectStore.dispatchReportWidgetComponents({ type: MapActionTypes.SET, key, payload: comp })
   }
 
@@ -324,21 +327,6 @@ export default function CanvasComponent(props: CanvasProps) {
     loadPage(page - 1);
   }
 
-  const onClickWidget = (e: MouseEvent, widget: ReportWidgetItem) => {
-    e.preventDefault();
-    if (projectStore.isReadonly)
-      return;
-    setSelectedWidget(widget);
-    setShowPropertiesDialog(true)
-  }
-
-  const onClickSelectWidget = (e: MouseEvent, widget: ReportWidgetItem) => {
-    e.preventDefault();
-    if (projectStore.isReadonly)
-      return;
-    setSelectedWidget(widget);
-  }
-
   const handlePropertiesClose = () => {
     setShowPropertiesDialog(false);
   }
@@ -358,10 +346,13 @@ export default function CanvasComponent(props: CanvasProps) {
     page.reportWidgets.splice(widgetIdx, 1);
     projectStore.dispatchPages({ type: ARUActionTypes.UPDATE, payload: page, index: currentPageNo.current })
     projectStore.dispatchReportWidgetComponents({ type: MapActionTypes.UNSET, key })
-    if (reportWidget.widget.dependencies && reportWidget.widget.dependencies.length > 0) {
+    if (!reportWidget.widget) {
+      console.log('Deleting an invalid widget');
+      projectStore.removeReportWidget(reportWidget);
+    } else if (reportWidget.widget.dependencies && reportWidget.widget.dependencies.length > 0) {
       projectStore.removeReportWidget(reportWidget);
     }
-    setComponentProperties(prevState => { // 👈 TODO - check if this state can be removed completely
+    setComponentProperties(prevState => {
       const nextState = { ...prevState };
       delete nextState[key];
       return nextState;
