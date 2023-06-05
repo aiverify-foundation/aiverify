@@ -121,7 +121,7 @@ export const PrincipleSummarySingle = ({ data, principleConfig }) => {
             <b>Company did not implement the following testable criteria fully:</b><br/>
             <ul style={styles.ul}>
               {getNotImplementedTestableCriteria(config, data).map(tc => (
-                <li>{tc}</li>
+                <li><div dangerouslySetInnerHTML={{ __html: tc }}></div></li>
               ))}
             </ul>
           </div>}
