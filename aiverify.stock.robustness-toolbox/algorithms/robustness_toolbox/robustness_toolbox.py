@@ -78,9 +78,35 @@ class Plugin(IAlgorithm):
         initial_model_instance: Union[IModel, IPipeline, None],
         **kwargs,
     ):
-        # Algorithm input arguments defined in input.schema.json
         self._initial_data_instance = initial_data_instance
         self._initial_model_instance = initial_model_instance
+
+        # Look for kwargs values for log_instance, progress_callback and base path
+        self._logger = kwargs.get("logger", None)
+        self._progress_inst = SimpleProgress(
+            1, 0, kwargs.get("progress_callback", None)
+        )
+
+        # Check if data and model are tuples and if the tuples contain 2 items
+        if (
+            not isinstance(data_instance_and_serializer, Tuple)
+            or len(data_instance_and_serializer) != 2
+        ):
+            self.add_to_log(
+                logging.ERROR,
+                f"The algorithm has failed data validation: {data_instance_and_serializer}",
+            )
+            raise RuntimeError("The algorithm has failed data validation")
+
+        if (
+            not isinstance(model_instance_and_serializer, Tuple)
+            or len(model_instance_and_serializer) != 2
+        ):
+            self.add_to_log(
+                logging.ERROR,
+                f"The algorithm has failed model validation: {model_instance_and_serializer}",
+            )
+            raise RuntimeError("The algorithm has failed model validation")
 
         self._data_instance = data_instance_and_serializer[0]
         self._model_instance = model_instance_and_serializer[0]
@@ -88,18 +114,28 @@ class Plugin(IAlgorithm):
         self._serializer_instance = data_instance_and_serializer[1]
 
         if Plugin._requires_ground_truth:
+            # Check if ground truth instance is tuple and if the tuple contains 2 items
+            if (
+                not isinstance(ground_truth_instance_and_serializer, Tuple)
+                or len(ground_truth_instance_and_serializer) != 2
+            ):
+                self.add_to_log(
+                    logging.ERROR,
+                    f"The algorithm has failed ground truth data validation: \
+                        {ground_truth_instance_and_serializer}",
+                )
+                raise RuntimeError(
+                    "The algorithm has failed ground truth data validation"
+                )
             self._requires_ground_truth = True
             self._ground_truth_instance = ground_truth_instance_and_serializer[0]
+            self._ground_truth_serializer = ground_truth_instance_and_serializer[1]
             self._ground_truth = kwargs.get("ground_truth")
+
         else:
             self._ground_truth_instance = None
             self._ground_truth = ""
 
-        # Look for kwargs values for log_instance, progress_callback and base path
-        self._logger = kwargs.get("logger", None)
-        self._progress_inst = SimpleProgress(
-            1, 0, kwargs.get("progress_callback", None)
-        )
         self._base_path = kwargs.get("project_base_path", Path().absolute())
 
         # Perform setup for this plug-in
@@ -145,7 +181,7 @@ class Plugin(IAlgorithm):
             )
             raise RuntimeError(
                 "The algorithm has failed input schema validation. \
-                               The input must adhere to the schema in input.schema.json"
+                 The input must adhere to the schema in input.schema.json"
             )
 
     def add_to_log(self, log_level: int, log_message: str) -> None:
@@ -231,11 +267,11 @@ class Plugin(IAlgorithm):
                 self.add_to_log(
                     logging.ERROR,
                     "The algorithm has failed ground truth header validation. \
-                        Header must be in String and must be present in the dataset: {self._ground_truth}",
+                    Header must be in String and must be present in the dataset: {self._ground_truth}",
                 )
                 raise RuntimeError(
                     "The algorithm has failed ground truth header validation. \
-                        Header must be in String and must be present in the dataset"
+                    Header must be in String and must be present in the dataset"
                 )
 
         # Perform validation on progress_inst
@@ -249,12 +285,12 @@ class Plugin(IAlgorithm):
         if not isinstance(self._base_path, PurePath):
             self.add_to_log(
                 logging.ERROR,
-                f"The algorithm has failed validation for the project path. \
-                    Ensure that the project path is a valid path: {self._base_path}",
+                "The algorithm has failed validation for the project path. \
+                Ensure that the project path is a valid path: {self._base_path}",
             )
             raise RuntimeError(
                 "The algorithm has failed validation for the project path. \
-                    Ensure that the project path is a valid path"
+                Ensure that the project path is a valid path"
             )
 
         # Perform validation on metadata
@@ -269,13 +305,14 @@ class Plugin(IAlgorithm):
         if not isinstance(self._plugin_type, PluginType):
             self.add_to_log(
                 logging.ERROR,
-                f"The algorithm has failed validation for its plugin type. \
-                    Ensure that PluginType is PluginType.ALGORITHM: {Plugin._plugin_type}",
+                "The algorithm has failed validation for its plugin type. \
+                Ensure that PluginType is PluginType.ALGORITHM: {Plugin._plugin_type}",
             )
             raise RuntimeError(
                 "The algorithm has failed validation for its plugin type. \
-                               Ensure that PluginType is PluginType.ALGORITHM"
+                Ensure that PluginType is PluginType.ALGORITHM"
             )
+
         # Perform logging
         self.add_to_log(logging.INFO, "Setup completed")
 
@@ -323,7 +360,7 @@ class Plugin(IAlgorithm):
                 ]
                 self._ordered_ground_truth = annotated_ground_truth.reindex(file_names)
 
-                ## initialise the save directory
+                # initialise the save directory
                 if Path(str(self._save_path)).exists():
                     shutil.rmtree(str(self._save_path))
                 Path(str(self._save_path)).mkdir(parents=True, exist_ok=True)
@@ -391,7 +428,7 @@ class Plugin(IAlgorithm):
                 org_samples,
                 feature_names,
                 adv_predictions,
-                org_predictions
+                org_predictions,
             ) = self._get_final_adversarial_samples(
                 data_in_numpy,
                 ground_truth_in_numpy,
@@ -412,7 +449,7 @@ class Plugin(IAlgorithm):
                 org_samples,
                 feature_names,
                 adv_predictions,
-                org_predictions
+                org_predictions,
             )
 
         else:
@@ -424,7 +461,15 @@ class Plugin(IAlgorithm):
                 f"Invalid data plugin type - {self._data_instance.get_data_plugin_type()}"
             )
 
-    def _transform_to_numpy(self, dir_df):
+    def _transform_to_numpy(self, dir_df: pd.DataFrame):
+        """
+        Args:
+            dir_df (pd.DataFrame): the dir in dataframe
+
+        Returns:
+            Tuple[int, np.float64, np.float64, int, list, list, list, np.ndarray, np.ndarray]
+        """
+
         if (
             self._serializer_instance.get_serializer_plugin_type()
             is not SerializerPluginType.IMAGE
@@ -442,7 +487,17 @@ class Plugin(IAlgorithm):
             images.append(np.float64(image_array))
         return images, image_shapes
 
-    def _transform_to_df(self, data_np, img_shape, subfolder_name):
+    def _transform_to_df(self, data_np: np.ndarray, img_shape, subfolder_name: str):
+        """
+        Args:
+            data_np (np.ndarray):
+            img_shape ():
+            subfolder_name (str): the name of the subfolder
+
+        Returns:
+            Tuple[int, np.float64, np.float64, int, list, list, list, np.ndarray, np.ndarray]
+        """
+
         if (
             self._serializer_instance.get_serializer_plugin_type()
             is not SerializerPluginType.IMAGE
@@ -477,6 +532,7 @@ class Plugin(IAlgorithm):
         Args:
             data_in_numpy (np.ndarray): data used to generate adversarial examples without ground truth
             ground_truth_in_numpy (np.ndarray): ground truth to test with adv_pred
+            image_shapes (np.ndarray): shapes of the images
             init_size (int): the maximum number of time to try to generate the init_adv_sample
 
         Returns:
@@ -498,18 +554,23 @@ class Plugin(IAlgorithm):
                     initial_adversarial_samples[count] = perturbed_input
                     initial_adversarial_predictions[count] = adversarial_prediction[0]
                     break
-                elif (self._model_type == ModelType.REGRESSION and adversarial_prediction is not None):
+                elif (
+                    self._model_type == ModelType.REGRESSION
+                    and adversarial_prediction is not None
+                ):
                     diff = ground_truth - adversarial_prediction[0]
-                    frac = diff/ground_truth
+                    frac = diff / ground_truth
 
                     if adversarial_prediction[0] > ground_truth:
                         diff = adversarial_prediction[0] - ground_truth
-                        frac = diff/adversarial_prediction[0]
+                        frac = diff / adversarial_prediction[0]
 
                     if frac > 0.5:
                         initial_adversarial_samples[count] = perturbed_input
-                        initial_adversarial_predictions[count] = adversarial_prediction[0]
-                        break             
+                        initial_adversarial_predictions[count] = adversarial_prediction[
+                            0
+                        ]
+                        break
 
                 perturbed_input = self._salt_and_pepper(original, 2)
                 adversarial_prediction = self._model.predict(
@@ -533,12 +594,23 @@ class Plugin(IAlgorithm):
         max_feature_value: float,
         predictions,
         image_shapes: np.ndarray,
-    ) -> Tuple[int, float, float, int]:
+    ) -> Tuple[
+        int, np.float64, np.float64, int, list, list, list, np.ndarray, np.ndarray
+    ]:
         """
         This method generates final adversarial samples for the given data.
 
         Args:
             data_in_numpy (np.ndarray): data used to generate adversarial examples without ground truth
+            ground_truth_in_numpy (np.ndarray): the ground truth data in numpy array
+            initial_adversarial_samples (List): the adversarial samples in a list
+            min_feature_value (float): the min feature value in float
+            max_feature_value (float): the max feature value in float
+            predictions (np.ndarray): the predictions in numpy array
+            image_shapes (np.ndarray): the images shapes in numpy array
+
+        Returns:
+            Tuple[int, np.float64, np.float64, int, list, list, list, np.ndarray, np.ndarray]
         """
         delta_ratio_min_threshold = 0.2
         delta_ratio_max_threshold = 0.5
@@ -688,12 +760,12 @@ class Plugin(IAlgorithm):
         org_samples_df = self._transform_to_df(
             org_samples, image_shapes, subfolder_name="org_samples"
         )
-        
+
         if (
             self._serializer_instance.get_serializer_plugin_type()
             is SerializerPluginType.IMAGE
         ):
-            adv_samples = adv_samples_df["image_directory"].values.tolist() 
+            adv_samples = adv_samples_df["image_directory"].values.tolist()
             org_samples = org_samples_df["image_directory"].values.tolist()
 
             shutil.move(self._tmp_path / "adv_samples", self._save_path / "adv_samples")
@@ -743,7 +815,7 @@ class Plugin(IAlgorithm):
             org_samples,
             feature_names,
             sample_adv_predictions,
-            sample_org_predictions,    
+            sample_org_predictions,
         )
 
     def _salt_and_pepper(self, image: np.ndarray, severity: int = 1) -> np.ndarray:
@@ -788,8 +860,8 @@ class Plugin(IAlgorithm):
         https://github.com/Trusted-AI/adversarial-robustness-toolbox/blob/main/art/attacks/evasion/boundary.py::_best_adv
 
         Args:
-            original_sample: The original input.
-            potential_advs: Array containing the potential adversarial examples
+            original_sample (np.ndarray): The original input.
+            potential_advs (np.ndarray): Array containing the potential adversarial examples
 
         Returns:
             np.ndarray: The adversarial example that has the minimum L2 distance from the original input
@@ -808,9 +880,9 @@ class Plugin(IAlgorithm):
         Find the least perturbation to cause the change in prediction.
 
         Args:
-            delta: the step size for this orthogonal step
-            current: the current adversarial sample used to compute
-            original: the original input
+            delta (float): the step size for this orthogonal step
+            current (np.ndarray): the current adversarial sample used to compute
+            original (np.ndarray): the original input
 
         Returns:
             ndarray: the possible perturbed input
@@ -878,7 +950,7 @@ class Plugin(IAlgorithm):
             "org_samples": org_samples,
             "feature_names": feature_names,
             "perturbed_pred": adv_predictions,
-            "original_pred": org_predictions
+            "original_pred": org_predictions,
         }
 
         output_dict["results"].update(results_dict)

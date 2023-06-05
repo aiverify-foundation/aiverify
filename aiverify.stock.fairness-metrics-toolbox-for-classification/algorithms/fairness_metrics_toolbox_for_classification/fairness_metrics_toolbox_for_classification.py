@@ -169,7 +169,7 @@ class Plugin(IAlgorithm):
             )
             raise RuntimeError(
                 "The algorithm has failed input schema validation. \
-                The input must adhere to the schema in input.schema.json"
+                 The input must adhere to the schema in input.schema.json"
             )
 
     def add_to_log(self, log_level: int, log_message: str) -> None:
@@ -227,7 +227,7 @@ class Plugin(IAlgorithm):
                 logging.ERROR,
                 f"The algorithm has failed data validation: {self._data_instance}",
             )
-            raise RuntimeError("The algorithm has failed data validation.")
+            raise RuntimeError("The algorithm has failed data validation")
 
         # Perform validation on model instance
         if not isinstance(self._model_instance, IModel) and not isinstance(
@@ -300,6 +300,9 @@ class Plugin(IAlgorithm):
                 "The algorithm has failed validation for its plugin type. \
                 Ensure that PluginType is PluginType.ALGORITHM"
             )
+
+        # Perform logging
+        self.add_to_log(logging.INFO, "Setup completed")
 
     def get_progress(self) -> int:
         """

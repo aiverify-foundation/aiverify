@@ -144,7 +144,6 @@ class Plugin(IAlgorithm):
         self._tmp_path = self._base_path / "temp"
         self._save_path = self._base_path.parents[1] / "widgets" / "environment_images"
 
-
         # Algorithm input schema defined in input.schema.json
         # By defining the input schema, it allows the front-end to know what algorithm input params is
         # required by this plugin. This allows this algorithm plug-in to receive the arguments values it requires.
@@ -173,7 +172,7 @@ class Plugin(IAlgorithm):
             )
             raise RuntimeError(
                 "The algorithm has failed input schema validation. \
-                               The input must adhere to the schema in input.schema.json"
+                The input must adhere to the schema in input.schema.json"
             )
 
     def add_to_log(self, log_level: int, log_message: str) -> None:
@@ -304,6 +303,7 @@ class Plugin(IAlgorithm):
                 "The algorithm has failed validation for its plugin type. \
                 Ensure that PluginType is PluginType.ALGORITHM"
             )
+
         # Perform logging
         self.add_to_log(logging.INFO, "Setup completed")
 

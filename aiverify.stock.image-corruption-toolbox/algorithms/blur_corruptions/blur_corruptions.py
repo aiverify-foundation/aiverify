@@ -171,7 +171,7 @@ class Plugin(IAlgorithm):
             )
             raise RuntimeError(
                 "The algorithm has failed input schema validation. \
-                               The input must adhere to the schema in input.schema.json"
+                The input must adhere to the schema in input.schema.json"
             )
 
     def add_to_log(self, log_level: int, log_message: str) -> None:
@@ -302,6 +302,7 @@ class Plugin(IAlgorithm):
                 "The algorithm has failed validation for its plugin type. \
                 Ensure that PluginType is PluginType.ALGORITHM"
             )
+
         # Perform logging
         self.add_to_log(logging.INFO, "Setup completed")
 
@@ -327,7 +328,6 @@ class Plugin(IAlgorithm):
         """
         A method to generate the algorithm results with the provided data, model, ground truth information.
         """
-        # Retrieve data information
         # Retrieve data information
         self._model = self._initial_model_instance
         self._data = self._initial_data_instance
