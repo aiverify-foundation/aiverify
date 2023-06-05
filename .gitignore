@@ -1,0 +1,9 @@
+# Environments
+my_virtual_env/
+
+# MacOS
+docs/.DS_Store
+.DS_Store
+
+#deployment
+site/

@@ -1,0 +1,103 @@
+site_name: AI Verify User Guide
+site_url: https://imda-btg.github.io/aiverify-user-guide-docs/
+
+dev_addr: 0.0.0.0:8001 #setup as port 8001 so as not to clash with developer docs (TESTING)
+
+copyright: |
+  &copy; 2023 AI Verify</a>
+
+extra_css:
+  - stylesheets/extra.css
+
+theme:
+  features:
+    - navigation.sections
+    - navigation.indexes
+    - navigation.footer
+    - navigation.top
+
+  name: "material"
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+      primary: custom
+      accent: purple
+    - scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+      primary: custom
+      accent: lime
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+  - pymdownx.arithmatex:
+      generic: true
+  - footnotes
+  - pymdownx.details
+  - pymdownx.mark
+  - attr_list
+  - tables
+  
+nav:
+  - Introduction:
+      - Introduction: index.md
+      - How It Works: introduction/how-it-works.md
+      - Extensibility: introduction/extensibility.md
+  - Getting Started:
+      - Quick Start Guide: getting-started/quick-start-guide.md
+      - Installation & Setup:
+          - Build and run from Dockerfile: getting-started/docker-setup.md
+          - Build and run from source code: getting-started/source-code-setup.md
+      - Accessing AI Model: getting-started/accessing-ai-model.md
+      - Preparation of Input Files: getting-started/preparation-of-input-files.md
+  - How-to:
+      - How to test an AI Model and generate a report:
+          - Intro: using-toolkit-step-by-step/test-ai-model-and-generate-report/0-intro.md
+          - 1. Create New Project: using-toolkit-step-by-step/test-ai-model-and-generate-report/1-create-new-project.md
+          - 2. Select a Report Template: using-toolkit-step-by-step/test-ai-model-and-generate-report/2-select-template.md
+          - 3. Design The Report: using-toolkit-step-by-step/test-ai-model-and-generate-report/3-design-the-report.md
+          - 4. Select Testing Dataset: using-toolkit-step-by-step/test-ai-model-and-generate-report/4-select-testing-dataset.md
+          - 5. Select Ground Truth Dataset: using-toolkit-step-by-step/test-ai-model-and-generate-report/5-select-ground-truth-dataset.md
+          - 6. Select AI Model: using-toolkit-step-by-step/test-ai-model-and-generate-report/6-select-ai-model.md
+          - 7. Provide Test Arguments: using-toolkit-step-by-step/test-ai-model-and-generate-report/7-provide-test-args.md
+          - 8. Complete Process Checklist: using-toolkit-step-by-step/test-ai-model-and-generate-report/8-complete-process-checklist.md
+          - 9. Select Fairness Metrics using Fairness Tree: using-toolkit-step-by-step/test-ai-model-and-generate-report/9-select-fairness-metrics-using-fainess-tree.md
+          - 10. Run Test and Generate Report: using-toolkit-step-by-step/test-ai-model-and-generate-report/10-run-test-and-generate-report.md
+      - How to design a customised report:
+          - Intro: using-toolkit-step-by-step/design-customized-report/0-intro.md
+          - 1. Create New Project: using-toolkit-step-by-step/design-customized-report/1-create-new-project.md
+          - 2. Start Empty Canvas: using-toolkit-step-by-step/design-customized-report/2-start-empty-canvas.md
+          - 3. Design Report with Widgets: using-toolkit-step-by-step/design-customized-report/3-design-report-with-widgets.md
+          - 4. Using Global Variables: using-toolkit-step-by-step/design-customized-report/4-using-global-variable.md
+          - 5. Adding New Pages: using-toolkit-step-by-step/design-customized-report/5-add-new-pages.md
+          - 6. Using Widgets with Dependencies: using-toolkit-step-by-step/design-customized-report/6-using-widget-with-dependencies.md
+          - 7. Save as Report Template: using-toolkit-step-by-step/design-customized-report/7-save-as-template.md
+          - 8. Export as Plugin: using-toolkit-step-by-step/design-customized-report/8-export-as-plugin.md
+  - User Interface & Features:
+      - Homepage: user-interface-features/homepage.md
+      - Canvas Page: user-interface-features/canvas-page.md
+      - Input Blocks Page: user-interface-features/input-blocks-page.md
+      - Report Generating Page: user-interface-features/report-generating-page.md
+      - Asset Manager Page: user-interface-features/asset-manager-page.md
+      - Plugin Manager Page: user-interface-features/plugin-manager-page.md
+      - Report Template Manager Page: user-interface-features/report-template-manager-page.md
+  - Troubleshooting: trouble-shooting/troubleshooting.md
+  - FAQs: others/faq.md
+  - Compatibility Table: others/compatibility.md
+  - References:
+      - AI Verify Plugins: test.md
+      - Developer Documentation: test.md
+  - Glossary: test.md
+  - Release Notes:
+      - License: test.md
+      - Contact Information: test.md
