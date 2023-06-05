@@ -1,0 +1,28 @@
+{
+    "cid": "blur_corruptions",
+    "name": "Blur Corruptions",
+    "modelType": [
+        "classification"
+    ],
+    "version": "0.9.0",
+    "author": "AI Verify",
+    "description": "Algorithm that adds blur corruptions (defocus, gaussian, glass, horizontal motion, vertical motion and zoom blur)",
+    "tags": [
+        "Blur Corruptions",
+        "classification"
+    ],
+    "requireGroundTruth": true,
+    "requiredFiles": [
+        "AUTHORS.rst",
+        "CHANGELOG.md",
+        "input.schema.json",
+        "LICENSE",
+        "output.schema.json",
+        "blur_corruptions.meta.json",
+        "blur_corruptions.py",
+        "README.md",
+        "requirements.txt",
+        "syntax_checker.py",
+        "utils"
+    ]
+}

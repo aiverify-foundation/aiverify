@@ -1,0 +1,66 @@
+export const CompletedButton = ({ label, pid, data, onChangeData }) => {
+  const key = `completed-${pid}`;
+  const handleClick = (event) => {
+    event.preventDefault();
+    if (data && data[key] === label) {
+      onChangeData(key, undefined)
+    } else {
+      onChangeData(key, label)
+    }
+  }
+  if (data && data[key] === label) {
+    return <button data-testid={key} style={{ padding:10, backgroundColor:"#991E66", color:"white", border:0, marginRight:2, cursor:"pointer" }} onClick={handleClick}>{label}</button>
+  } else {
+    return <button data-testid={key} style={{ padding:10, backgroundColor:"white", color:"black", border:0, marginRight:2, cursor:"pointer" }} onClick={handleClick}>{label}</button>
+  }
+}
+
+export const ProcessChecklistInput = ({ config, data, onChangeData }) => {
+  return (
+    <div style={{ width:"100%" }}>
+      {config.sections.map(section => (
+        <div key={section.section}>
+          <h3 style={{ color:"#702F8A" }}>{section.section}</h3>
+          <div style={{  }}>
+            {section.checklist.map((check, index) => (
+              <div key={`check-${index}`} style={{ marginTop:'10px' }}>
+                <b>Testable Criteria</b>
+                <div dangerouslySetInnerHTML={{ __html:check.testableCriteria }}></div>
+                {check.processes.map((process, index2) => (
+                  <div key={process.pid} style={{ width:"100%", display:"flex", backgroundColor:"#F3F0F5", padding:10, marginTop:5, marginBottom:5 }}>
+                    <div style={{ fontWeight:600, width: "40px" }}>{index+1}.{index2+1}</div>
+                    <div style={{ width:"100%" }}>
+                      <div dangerouslySetInnerHTML={{ __html:process.process }}></div>
+                      <div style={{ display:"flex", marginTop:5 }}>
+                        <div style={{ width:"60%" }}>
+                          <h4 style={{ padding:0, margin:0 }}>Process Checks</h4>
+                          <div dangerouslySetInnerHTML={{ __html:process.processChecks }}></div>
+                        </div>
+                        <div style={{ width:"40%" }}>
+                          <h4 style={{ padding:0, margin:0 }}>Metric</h4>
+                          <div dangerouslySetInnerHTML={{ __html:process.metric }}></div>
+                        </div>
+                      </div>
+                      <h4 style={{ padding:0, margin:"5px 0 0 0" }}>Completed</h4>
+                      <div style={{ display:"flex" }}>
+                        <CompletedButton label="Yes" pid={process.pid} data={data} onChangeData={onChangeData} />
+                        <CompletedButton label="No" pid={process.pid} data={data} onChangeData={onChangeData} />
+                        <CompletedButton label="Not Applicable" pid={process.pid} data={data} onChangeData={onChangeData} />
+                      </div>
+                      <h4 style={{ padding:0, margin:"5px 0 0 0" }}>Elaboration</h4>
+                      <textarea rows="4" style={{ width:"100%", borderWidth:0, resize:"none" }} maxLength={256} value={data[`elaboration-${process.pid}`]} onChange={(e)=>onChangeData(`elaboration-${process.pid}`,e.target.value)} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+      <b style={{ margin:"10px 0 0 0" }}>Summary Justification</b>
+      <div style={{ backgroundColor:"#F3F0F5", padding:'10px' }}>
+        <textarea rows="4" style={{ width:"100%", borderWidth:0, resize:"none" }} maxLength={256} value={data[`elaboration-${config.principle}`]} onChange={(e)=>onChangeData(`summary-justification-${config.principle}`,e.target.value)} />
+      </div>
+    </div>
+  )
+}

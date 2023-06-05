@@ -1,0 +1,23 @@
+{
+  "cid": "environment-samples-rain",
+  "widgetSize": {
+    "minW": 1,
+    "minH": 1,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Samples (Environment: Rain)",
+  "description": "To generate sample images for environment corruptions (rain)",
+  "dependencies": [
+    {
+      "cid": "environment_corruptions"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "Algorithm",
+      "cid": "environment_corruptions",
+      "datapath": "environment-corruption-mock-data.json"
+    }
+  ]
+}

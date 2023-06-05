@@ -1,0 +1,8 @@
+import React, { useEffect, useState } from 'react';
+import {DisplayImages} from "./display-samples.mdx"
+
+export const algo_cid = "general_corruptions"
+import {gaussian_general_images, poisson_general_images, snp_general_images } from "./general-corruption-images.js"
+
+<DisplayImages images = {gaussian_general_images} data={props.getResults(algo_cid).results} corruption_index ={0} corruption_name = "General: Gaussian Noise" />
+

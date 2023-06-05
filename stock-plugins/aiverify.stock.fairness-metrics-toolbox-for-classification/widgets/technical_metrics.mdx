@@ -1,0 +1,61 @@
+export const cid = "fairness_metrics_toolbox_for_classification"
+export const ib_cid = "fairness_tree"
+
+import { TechnicalInterpretationChart } from './technical_interpretationtype.mdx';
+import { TechnicalInterpretationChart2 } from './technical_interpretationtype2.mdx';
+
+
+export const GetAllMetrics = ({ container, results }) => {
+  let metrics_map = {
+    'False Negative Rate Parity': "False Negative Rate",
+    "False Positive Rate Parity": "False Positive Rate",
+    "False Discovery Rate Parity": "False Discovery Rate",
+    "False Omission Rate Parity": "False Omission Rate",
+    "True Positive Rate Parity / Equal Opportunity": "True Positive Rate",
+    "True Negative Rate Parity": "True Negative Rate",
+    "Positive Predictive Value Parity": "Positive Predictive Value Parity",
+    "Negative Predictive Value Parity": "Negative Predictive Value Parity",
+    "Equal Parity": "Equal Selection Parity",
+    "Disparate Impact": "Disparate Impact",
+  };
+  let content = [];
+  let metrics = Object.values(metrics_map); // get all the mapped values
+  
+  for (var i = 0; i < metrics.length; i++) {
+    if (metrics[i] == "Equal Selection Parity" || metrics[i] == "Disparate Impact"){
+      content.push(<TechnicalInterpretationChart2
+        metric={metrics[i]}
+        container={container}
+        data={results}
+      />)
+    }
+    else{
+      content.push(<TechnicalInterpretationChart
+        metric={metrics[i]}
+        container={container}
+        data={results}
+      />)
+    }
+  }
+  return (
+    <div>{content}</div>
+  )
+}
+
+<>
+  <div>
+    <h3>Fairness Metrics</h3>
+    The displayed metric(s) demonstrate the equity between two subgroups. In cases where the selected feature consists of more than two subgroups (such as race with multiple subgroups), the parity value is determined by comparing the subgroup with the smallest value to the subgroup with the largest value.
+    <ul>
+      <li><i>Disparate Impact</i>: The closer the value is to 1, the better it is.</li>
+      <li><i>Equal Selection Parity</i>: The smaller the value, the better it is.</li>
+      <li>Other fairness metrics: The smaller the value, the better it is</li>
+    </ul>
+    
+    <br/>
+    <GetAllMetrics
+      container={props.container}
+      results={props.getResults(cid)}
+    />
+  </div>
+</>

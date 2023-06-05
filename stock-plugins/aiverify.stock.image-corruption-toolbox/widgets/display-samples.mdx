@@ -1,0 +1,37 @@
+import React, { useEffect, useState } from 'react';
+
+export const DisplayImages = ({ images, data, corruption_index, corruption_name }) => {
+    let image_content = []
+    let actual_content = []
+    let preds_content = []
+    let severity_labels = []
+  
+    //Displaying original image along with the perturbed images across the severity levels
+    image_content.push(<th align="left" bgcolor = "F0F0F0">Images</th>)
+    images.map((img) => {
+      image_content.push(<td><img src={img} width="100px" /></td>)
+    })
+  
+    let results_array = data[corruption_index]["display_info"]
+    severity_labels.push(<th align="left" bgcolor = "F0F0F0">Severity</th>)
+    actual_content.push(<th align="left" bgcolor = "F0F0F0">Actual Class</th>)
+    preds_content.push(<th align="left" bgcolor = "F0F0F0">Predictions</th>)
+    for (sev = 0; sev < 6; sev++) {
+      severity_labels.push(<th bgcolor = "F0F0F0" align =  "center">{sev}</th>)
+      actual_content.push(<td>{results_array[`severity${sev}`][1]}</td>)
+      preds_content.push(<td>{results_array[`severity${sev}`][2]}</td>)
+    }
+  
+    return (
+      <div>
+        <h4><b>Sample Data after Perturbation with ({corruption_name})</b></h4>
+        <table border = "1">
+          <tr align="center">{severity_labels}</tr>
+          <tr align="center">{image_content}</tr>
+          <tr align="center">{actual_content}</tr>
+          <tr align="center">{preds_content}</tr>
+        </table>
+      </div>
+  
+    )
+  }

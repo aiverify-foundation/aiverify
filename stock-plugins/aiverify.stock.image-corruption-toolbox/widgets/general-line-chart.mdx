@@ -1,0 +1,17 @@
+import { CorruptionLineChart } from './corruptionlinechart.mdx'
+export const algo_cid = "general_corruptions"
+
+
+{
+  props.getResults(algo_cid) ? (
+    <>
+        <CorruptionLineChart
+          data={props.getResults(algo_cid).results}
+          getContainerObserver={props.getContainerObserver}
+          corruption_function="General Corruptions"
+        />
+    </>
+  ) : (
+    <div>No data</div>
+  )
+}

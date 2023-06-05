@@ -1,0 +1,23 @@
+{
+  "cid": "general-samples-snp",
+  "widgetSize": {
+    "minW": 1,
+    "minH": 1,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Samples (General: Salt and Pepper Noise)",
+  "description": "To generate sample images for general corruptions (salt and pepper noise)",
+  "dependencies": [
+    {
+      "cid": "general_corruptions"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "Algorithm",
+      "cid": "general_corruptions",
+      "datapath": "general-corruption-mock-data.json"
+    }
+  ]
+}

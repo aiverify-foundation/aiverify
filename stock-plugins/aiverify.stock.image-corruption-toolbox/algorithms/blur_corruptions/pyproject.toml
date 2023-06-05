@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "blur-corruptions"
+version = "0.9.0"
+description = ""
+authors = ["AI Verify"]
+readme = "README.md"
+packages = [{include = "blur_corruptions"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pandas = "1.5.3"
+numpy = "1.23.5"
+pillow = "9.4.0"
+scikit-learn = "1.2.2"
+scipy = "1.9.3"
+joblib = "1.2.0"
+scikit-image = "0.19.3"
+opencv-python = "4.7.0.72"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

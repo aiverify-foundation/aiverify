@@ -1,0 +1,23 @@
+{
+  "cid": "digital-samples-brightdown",
+  "widgetSize": {
+    "minW": 1,
+    "minH": 1,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Samples (Digital: Brightness Down)",
+  "description": "To generate sample images for digital corruptions (brightness down)",
+  "dependencies": [
+    {
+      "cid": "digital_corruptions"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "Algorithm",
+      "cid": "digital_corruptions",
+      "datapath": "digital-corruption-mock-data.json"
+    }
+  ]
+}
