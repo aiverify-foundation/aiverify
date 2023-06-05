@@ -73,6 +73,6 @@ export const config = {
     }
   ],
   "summaryYes": "Company has put in place communication mechanisms to enable those using and/or affected by the AI system to understand how their data is collected and used, and the intended use and limitations of the AI system.",
-  "summaryNotYes": "Company should review if the current communication mechanisms in place is sufficient to enable those using and/or affected by the AI system to understand how their data is collected and used, and the intended use and limitations of the AI system.",
+  "summaryNotYes": "Company should review if the current communication mechanisms in place are sufficient to enable those using and/or affected by the AI system to understand how their data is collected and used, and the intended use and limitations of the AI system.",
   "recommendation": "Company can consider consulting the users of or individuals affected by the AI system to find out if the current level of information provided to them is adequate, and if not, to address the information gap accordingly."
 }
