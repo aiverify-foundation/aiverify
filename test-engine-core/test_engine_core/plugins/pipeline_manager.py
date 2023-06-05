@@ -229,10 +229,15 @@ class PipelineManager:
 
         # Scan through all the supported pipeline formats
         # Check that this pipeline is one of the supported pipeline formats
-        for _, pipeline_plugin in pipeline_plugins.items():
-            pipeline_instance = pipeline_plugin.Plugin(pipeline)
-            if pipeline_instance.is_supported():
-                is_success = True
-                break
+        try:
+            for _, pipeline_plugin in pipeline_plugins.items():
+                pipeline_instance = pipeline_plugin.Plugin(pipeline)
+                if pipeline_instance.is_supported():
+                    is_success = True
+                    break
+
+        except Exception:
+            is_success = False
+            pipeline_instance = None
 
         return is_success, pipeline_instance

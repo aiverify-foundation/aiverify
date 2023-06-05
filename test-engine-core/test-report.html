@@ -253,23 +253,23 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
 }
 </script>
     <h1>test-report.html</h1>
-    <p>Report generated on 03-Jun-2023 at 19:35:44 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a> v3.2.0</p>
+    <p>Report generated on 05-Jun-2023 at 14:18:40 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a> v3.2.0</p>
     <h2>Environment</h2>
     <table id="environment">
       <tr>
         <td>Packages</td>
-        <td>{"pluggy": "1.0.0", "pytest": "7.3.1"}</td></tr>
+        <td>{"pluggy": "1.0.0", "pytest": "7.3.0"}</td></tr>
       <tr>
         <td>Platform</td>
         <td>Linux-5.19.0-43-generic-x86_64-with-glibc2.35</td></tr>
       <tr>
         <td>Plugins</td>
-        <td>{"cov": "4.0.0", "html": "3.2.0", "json": "0.4.0", "metadata": "2.0.4", "mock": "3.10.0"}</td></tr>
+        <td>{"anyio": "3.6.2", "cov": "4.0.0", "html": "3.2.0", "json": "0.4.0", "metadata": "2.0.4", "mock": "3.10.0"}</td></tr>
       <tr>
         <td>Python</td>
         <td>3.10.6</td></tr></table>
     <h2>Summary</h2>
-    <p>1064 tests ran in 69.51 seconds. </p>
+    <p>1064 tests ran in 106.74 seconds. </p>
     <p class="filter" hidden="true">(Un)check the boxes to filter the results.</p><input checked="true" class="filter" data-test-result="passed" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="passed">1064 passed</span>, <input checked="true" class="filter" data-test-result="skipped" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="skipped">0 skipped</span>, <input checked="true" class="filter" data-test-result="failed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="failed">0 failed</span>, <input checked="true" class="filter" data-test-result="error" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="error">0 errors</span>, <input checked="true" class="filter" data-test-result="xfailed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xfailed">0 expected failures</span>, <input checked="true" class="filter" data-test-result="xpassed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xpassed">0 unexpected passes</span>
     <h2>Results</h2>
     <table id="results-table">
@@ -375,7 +375,7 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_algorithm_manager.py::TestCollectionAlgorithmManager::test_get_algorithm_no_logger[None-kwargs4-expected_output4]</td>
-          <td class="col-duration">0.00</td>
+          <td class="col-duration">0.01</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -465,7 +465,7 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_algorithm_manager.py::TestCollectionAlgorithmManager::test_get_algorithm_no_logger[algorithm_plugins14-kwargs14-expected_output14]</td>
-          <td class="col-duration">0.00</td>
+          <td class="col-duration">0.01</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -1140,7 +1140,7 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_data_converter.py::TestCollectionDataConverter::test_convert_image_list_to_dataframe[data_paths13-my_column-pandas_instance13-None]</td>
-          <td class="col-duration">0.00</td>
+          <td class="col-duration">0.01</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -1167,7 +1167,7 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_data_manager.py::TestCollectionDataManager::test_set_logger[logger0-expected_response0]</td>
-          <td class="col-duration">0.00</td>
+          <td class="col-duration">0.01</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -1212,7 +1212,7 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_data_manager.py::TestCollectionDataManager::test_set_logger[logger5-None]</td>
-          <td class="col-duration">0.00</td>
+          <td class="col-duration">0.03</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -1619,7 +1619,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(73)]: There was an error validating the input parameters: None, {&#x27;data&#x27;: &lt;tests.test_data_manager.PandasData object at 0x7febe90f1570&gt;}, {&#x27;serializer1&#x27;: &lt;tests.test_data_manager.Serializer object at 0x7febe90f1660&gt;}<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(73)]: There was an error validating the input parameters: None, {&#x27;data&#x27;: &lt;tests.test_data_manager.PandasData object at 0x7fdc2b19f7c0&gt;}, {&#x27;serializer1&#x27;: &lt;tests.test_data_manager.Serializer object at 0x7fdc2b497ee0&gt;}<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -1637,7 +1637,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(73)]: There was an error validating the input parameters: {}, {&#x27;data&#x27;: &lt;tests.test_data_manager.PandasData object at 0x7febe90f1570&gt;}, {&#x27;serializer1&#x27;: &lt;tests.test_data_manager.Serializer object at 0x7febe90f1660&gt;}<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(73)]: There was an error validating the input parameters: {}, {&#x27;data&#x27;: &lt;tests.test_data_manager.PandasData object at 0x7fdc2b19f7c0&gt;}, {&#x27;serializer1&#x27;: &lt;tests.test_data_manager.Serializer object at 0x7fdc2b497ee0&gt;}<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -1646,7 +1646,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(73)]: There was an error validating the input parameters: [], {&#x27;data&#x27;: &lt;tests.test_data_manager.PandasData object at 0x7febe90f1570&gt;}, {&#x27;serializer1&#x27;: &lt;tests.test_data_manager.Serializer object at 0x7febe90f1660&gt;}<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(73)]: There was an error validating the input parameters: [], {&#x27;data&#x27;: &lt;tests.test_data_manager.PandasData object at 0x7fdc2b19f7c0&gt;}, {&#x27;serializer1&#x27;: &lt;tests.test_data_manager.Serializer object at 0x7fdc2b497ee0&gt;}<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -1655,7 +1655,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(73)]: There was an error validating the input parameters: 123, {&#x27;data&#x27;: &lt;tests.test_data_manager.PandasData object at 0x7febe90f1570&gt;}, {&#x27;serializer1&#x27;: &lt;tests.test_data_manager.Serializer object at 0x7febe90f1660&gt;}<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(73)]: There was an error validating the input parameters: 123, {&#x27;data&#x27;: &lt;tests.test_data_manager.PandasData object at 0x7fdc2b19f7c0&gt;}, {&#x27;serializer1&#x27;: &lt;tests.test_data_manager.Serializer object at 0x7fdc2b497ee0&gt;}<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -1664,7 +1664,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(73)]: There was an error validating the input parameters: tests/data/test_colon.csv, None, {&#x27;serializer1&#x27;: &lt;tests.test_data_manager.Serializer object at 0x7febe90f1660&gt;}<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(73)]: There was an error validating the input parameters: tests/data/test_colon.csv, None, {&#x27;serializer1&#x27;: &lt;tests.test_data_manager.Serializer object at 0x7fdc2b497ee0&gt;}<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -1673,7 +1673,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(73)]: There was an error validating the input parameters: tests/data/test_colon.csv, None, {&#x27;serializer1&#x27;: &lt;tests.test_data_manager.Serializer object at 0x7febe90f1660&gt;}<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(73)]: There was an error validating the input parameters: tests/data/test_colon.csv, None, {&#x27;serializer1&#x27;: &lt;tests.test_data_manager.Serializer object at 0x7fdc2b497ee0&gt;}<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -1692,7 +1692,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(73)]: There was an error validating the input parameters: tests/data/test_colon.csv, [], {&#x27;serializer1&#x27;: &lt;tests.test_data_manager.Serializer object at 0x7febe90f1660&gt;}<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(73)]: There was an error validating the input parameters: tests/data/test_colon.csv, [], {&#x27;serializer1&#x27;: &lt;tests.test_data_manager.Serializer object at 0x7fdc2b497ee0&gt;}<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -1701,7 +1701,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(73)]: There was an error validating the input parameters: tests/data/test_colon.csv, 123, {&#x27;serializer1&#x27;: &lt;tests.test_data_manager.Serializer object at 0x7febe90f1660&gt;}<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(73)]: There was an error validating the input parameters: tests/data/test_colon.csv, 123, {&#x27;serializer1&#x27;: &lt;tests.test_data_manager.Serializer object at 0x7fdc2b497ee0&gt;}<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -1710,7 +1710,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(73)]: There was an error validating the input parameters: tests/data/test_colon.csv, {&#x27;data&#x27;: &lt;tests.test_data_manager.PandasData object at 0x7febe90f1570&gt;}, None<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(73)]: There was an error validating the input parameters: tests/data/test_colon.csv, {&#x27;data&#x27;: &lt;tests.test_data_manager.PandasData object at 0x7fdc2b19f7c0&gt;}, None<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -1719,7 +1719,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(73)]: There was an error validating the input parameters: tests/data/test_colon.csv, {&#x27;data&#x27;: &lt;tests.test_data_manager.PandasData object at 0x7febe90f1570&gt;}, None<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(73)]: There was an error validating the input parameters: tests/data/test_colon.csv, {&#x27;data&#x27;: &lt;tests.test_data_manager.PandasData object at 0x7fdc2b19f7c0&gt;}, None<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -1738,7 +1738,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(73)]: There was an error validating the input parameters: tests/data/test_colon.csv, {&#x27;data&#x27;: &lt;tests.test_data_manager.PandasData object at 0x7febe90f1570&gt;}, []<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(73)]: There was an error validating the input parameters: tests/data/test_colon.csv, {&#x27;data&#x27;: &lt;tests.test_data_manager.PandasData object at 0x7fdc2b19f7c0&gt;}, []<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -1747,7 +1747,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(73)]: There was an error validating the input parameters: tests/data/test_colon.csv, {&#x27;data&#x27;: &lt;tests.test_data_manager.PandasData object at 0x7febe90f1570&gt;}, 123<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(73)]: There was an error validating the input parameters: tests/data/test_colon.csv, {&#x27;data&#x27;: &lt;tests.test_data_manager.PandasData object at 0x7fdc2b19f7c0&gt;}, 123<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -3200,7 +3200,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_init_error_manager[error_file-errors-/home/ubuntu/Documents/test-engine-core/errors/error_file.json]</td>
+          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_init_error_manager[error_file-errors-/home/ubuntu/Documents/aiverify/test-engine-core/errors/error_file.json]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -3209,7 +3209,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_create_error_manager_default_error_name[error_file-errors-/home/ubuntu/Documents/test-engine-core/errors-/home/ubuntu/Documents/test-engine-core/errors/error_file.json]</td>
+          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_create_error_manager_default_error_name[error_file-errors-/home/ubuntu/Documents/aiverify/test-engine-core/errors-/home/ubuntu/Documents/aiverify/test-engine-core/errors/error_file.json]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -3218,7 +3218,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_create_error_manager_error_name[my_error_name-my_error_name-errors-0-/home/ubuntu/Documents/test-engine-core/errors-/home/ubuntu/Documents/test-engine-core/errors/my_error_name.json]</td>
+          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_create_error_manager_error_name[my_error_name-my_error_name-errors-0-/home/ubuntu/Documents/aiverify/test-engine-core/errors-/home/ubuntu/Documents/aiverify/test-engine-core/errors/my_error_name.json]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -3227,7 +3227,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_create_error_manager_error_name[None-error_file-errors-0-/home/ubuntu/Documents/test-engine-core/errors-/home/ubuntu/Documents/test-engine-core/errors/error_file.json]</td>
+          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_create_error_manager_error_name[None-error_file-errors-0-/home/ubuntu/Documents/aiverify/test-engine-core/errors-/home/ubuntu/Documents/aiverify/test-engine-core/errors/error_file.json]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -3236,7 +3236,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_create_error_manager_error_name[999-999-errors-0-/home/ubuntu/Documents/test-engine-core/errors-/home/ubuntu/Documents/test-engine-core/errors/999.json]</td>
+          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_create_error_manager_error_name[999-999-errors-0-/home/ubuntu/Documents/aiverify/test-engine-core/errors-/home/ubuntu/Documents/aiverify/test-engine-core/errors/999.json]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -3245,7 +3245,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_create_error_manager_error_name[-error_file-errors-0-/home/ubuntu/Documents/test-engine-core/errors-/home/ubuntu/Documents/test-engine-core/errors/error_file.json]</td>
+          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_create_error_manager_error_name[-error_file-errors-0-/home/ubuntu/Documents/aiverify/test-engine-core/errors-/home/ubuntu/Documents/aiverify/test-engine-core/errors/error_file.json]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -3254,7 +3254,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_create_error_manager_error_name[  my_trailing_str  -my_trailing_str-errors-0-/home/ubuntu/Documents/test-engine-core/errors-/home/ubuntu/Documents/test-engine-core/errors/my_trailing_str.json]</td>
+          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_create_error_manager_error_name[  my_trailing_str  -my_trailing_str-errors-0-/home/ubuntu/Documents/aiverify/test-engine-core/errors-/home/ubuntu/Documents/aiverify/test-engine-core/errors/my_trailing_str.json]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -3263,7 +3263,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_create_error_manager_folder_exists[errors-/home/ubuntu/Documents/test-engine-core/errors-/home/ubuntu/Documents/test-engine-core/errors/error_file.json]</td>
+          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_create_error_manager_folder_exists[errors-/home/ubuntu/Documents/aiverify/test-engine-core/errors-/home/ubuntu/Documents/aiverify/test-engine-core/errors/error_file.json]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -3728,7 +3728,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_write_error_to_file_no_instance[error_list0-[]-/home/ubuntu/Documents/test-engine-core/errors-/home/ubuntu/Documents/test-engine-core/errors/error_file.json]</td>
+          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_write_error_to_file_no_instance[error_list0-[]-/home/ubuntu/Documents/aiverify/test-engine-core/errors-/home/ubuntu/Documents/aiverify/test-engine-core/errors/error_file.json]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -3737,7 +3737,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_write_error_to_file_no_permissions[error_list0--/home/ubuntu/Documents/test-engine-core/errors-/home/ubuntu/Documents/test-engine-core/errors/error_file.json]</td>
+          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_write_error_to_file_no_permissions[error_list0--/home/ubuntu/Documents/aiverify/test-engine-core/errors-/home/ubuntu/Documents/aiverify/test-engine-core/errors/error_file.json]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -3746,7 +3746,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_write_error_to_file_no_output_folder[error_list0-[{&quot;category&quot;: &quot;SYSTEM_ERROR&quot;, &quot;code&quot;: &quot;Code&quot;, &quot;description&quot;: &quot;SomeUnsupportedData&quot;, &quot;severity&quot;: &quot;fatal&quot;, &quot;component&quot;: &quot;test_error_manager.py&quot;}]-/home/ubuntu/Documents/test-engine-core/errors-/home/ubuntu/Documents/test-engine-core/errors/error_file.json]</td>
+          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_write_error_to_file_no_output_folder[error_list0-[{&quot;category&quot;: &quot;SYSTEM_ERROR&quot;, &quot;code&quot;: &quot;Code&quot;, &quot;description&quot;: &quot;SomeUnsupportedData&quot;, &quot;severity&quot;: &quot;fatal&quot;, &quot;component&quot;: &quot;test_error_manager.py&quot;}]-/home/ubuntu/Documents/aiverify/test-engine-core/errors-/home/ubuntu/Documents/aiverify/test-engine-core/errors/error_file.json]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -3755,7 +3755,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_write_error_to_file_file_exists[error_list0-[{&quot;category&quot;: &quot;SYSTEM_ERROR&quot;, &quot;code&quot;: &quot;Code&quot;, &quot;description&quot;: &quot;SomeUnsupportedData&quot;, &quot;severity&quot;: &quot;fatal&quot;, &quot;component&quot;: &quot;test_error_manager.py&quot;}]-/home/ubuntu/Documents/test-engine-core/errors-/home/ubuntu/Documents/test-engine-core/errors/error_file.json]</td>
+          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_write_error_to_file_file_exists[error_list0-[{&quot;category&quot;: &quot;SYSTEM_ERROR&quot;, &quot;code&quot;: &quot;Code&quot;, &quot;description&quot;: &quot;SomeUnsupportedData&quot;, &quot;severity&quot;: &quot;fatal&quot;, &quot;component&quot;: &quot;test_error_manager.py&quot;}]-/home/ubuntu/Documents/aiverify/test-engine-core/errors-/home/ubuntu/Documents/aiverify/test-engine-core/errors/error_file.json]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -3764,7 +3764,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_write_error_to_file[error_list0-[{&quot;category&quot;: &quot;SYSTEM_ERROR&quot;, &quot;code&quot;: &quot;Code&quot;, &quot;description&quot;: &quot;SomeUnsupportedData&quot;, &quot;severity&quot;: &quot;fatal&quot;, &quot;component&quot;: &quot;test_error_manager.py&quot;}]-/home/ubuntu/Documents/test-engine-core/errors-/home/ubuntu/Documents/test-engine-core/errors/error_file.json]</td>
+          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_write_error_to_file[error_list0-[{&quot;category&quot;: &quot;SYSTEM_ERROR&quot;, &quot;code&quot;: &quot;Code&quot;, &quot;description&quot;: &quot;SomeUnsupportedData&quot;, &quot;severity&quot;: &quot;fatal&quot;, &quot;component&quot;: &quot;test_error_manager.py&quot;}]-/home/ubuntu/Documents/aiverify/test-engine-core/errors-/home/ubuntu/Documents/aiverify/test-engine-core/errors/error_file.json]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -3773,7 +3773,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_write_error_to_file[error_list1-[]-/home/ubuntu/Documents/test-engine-core/errors-/home/ubuntu/Documents/test-engine-core/errors/error_file.json]</td>
+          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_write_error_to_file[error_list1-[]-/home/ubuntu/Documents/aiverify/test-engine-core/errors-/home/ubuntu/Documents/aiverify/test-engine-core/errors/error_file.json]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -3791,7 +3791,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_get_error_filepath[-/home/ubuntu/Documents/test-engine-core/errors/error_file.json]</td>
+          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_get_error_filepath[-/home/ubuntu/Documents/aiverify/test-engine-core/errors/error_file.json]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -3800,7 +3800,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_get_error_filepath[my_error_file-/home/ubuntu/Documents/test-engine-core/errors/my_error_file.json]</td>
+          <td class="col-name">tests/test_error_manager.py::TestCollectionErrorManager::test_get_error_filepath[my_error_file-/home/ubuntu/Documents/aiverify/test-engine-core/errors/my_error_file.json]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -5161,7 +5161,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_json_utils.py::TestCollectionJsonUtils::test_validate_json[input_data13-123-False]</td>
-          <td class="col-duration">0.00</td>
+          <td class="col-duration">0.03</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -5336,7 +5336,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>There was a permission error while creating logging path: [Errno 13] Permission denied: &#x27;/home/ubuntu/Documents/test-engine-core/logs/LogManager.log&#x27;
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>There was a permission error while creating logging path: [Errno 13] Permission denied: &#x27;/home/ubuntu/Documents/aiverify/test-engine-core/logs/LogManager.log&#x27;
 <br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -6197,7 +6197,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_model_manager.py::TestCollectionModelManager::test_read_model_file_no_logger[tests/model/test_model.sav-model_plugins16-123-expected_output16]</td>
-          <td class="col-duration">0.00</td>
+          <td class="col-duration">0.01</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -6255,7 +6255,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [model_manager.py:read_model_file(70)]: There was an error validating the input parameters: None, {&#x27;model&#x27;: &lt;tests.test_model_manager.Model object at 0x7febddf77880&gt;}, {&#x27;serializer1&#x27;: &lt;tests.test_model_manager.Serializer object at 0x7febddf77850&gt;}<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [model_manager.py:read_model_file(70)]: There was an error validating the input parameters: None, {&#x27;model&#x27;: &lt;tests.test_model_manager.Model object at 0x7fdc1fff33d0&gt;}, {&#x27;serializer1&#x27;: &lt;tests.test_model_manager.Serializer object at 0x7fdc1fff3280&gt;}<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -6273,7 +6273,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [model_manager.py:read_model_file(70)]: There was an error validating the input parameters: 123, {&#x27;model&#x27;: &lt;tests.test_model_manager.Model object at 0x7febddf77880&gt;}, {&#x27;serializer1&#x27;: &lt;tests.test_model_manager.Serializer object at 0x7febddf77850&gt;}<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [model_manager.py:read_model_file(70)]: There was an error validating the input parameters: 123, {&#x27;model&#x27;: &lt;tests.test_model_manager.Model object at 0x7fdc1fff33d0&gt;}, {&#x27;serializer1&#x27;: &lt;tests.test_model_manager.Serializer object at 0x7fdc1fff3280&gt;}<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -6282,7 +6282,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [model_manager.py:read_model_file(70)]: There was an error validating the input parameters: [], {&#x27;model&#x27;: &lt;tests.test_model_manager.Model object at 0x7febddf77880&gt;}, {&#x27;serializer1&#x27;: &lt;tests.test_model_manager.Serializer object at 0x7febddf77850&gt;}<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [model_manager.py:read_model_file(70)]: There was an error validating the input parameters: [], {&#x27;model&#x27;: &lt;tests.test_model_manager.Model object at 0x7fdc1fff33d0&gt;}, {&#x27;serializer1&#x27;: &lt;tests.test_model_manager.Serializer object at 0x7fdc1fff3280&gt;}<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -6291,7 +6291,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [model_manager.py:read_model_file(70)]: There was an error validating the input parameters: {}, {&#x27;model&#x27;: &lt;tests.test_model_manager.Model object at 0x7febddf77880&gt;}, {&#x27;serializer1&#x27;: &lt;tests.test_model_manager.Serializer object at 0x7febddf77850&gt;}<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [model_manager.py:read_model_file(70)]: There was an error validating the input parameters: {}, {&#x27;model&#x27;: &lt;tests.test_model_manager.Model object at 0x7fdc1fff33d0&gt;}, {&#x27;serializer1&#x27;: &lt;tests.test_model_manager.Serializer object at 0x7fdc1fff3280&gt;}<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -6309,7 +6309,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [model_manager.py:read_model_file(70)]: There was an error validating the input parameters: tests/model/test_model.sav, [], {&#x27;serializer1&#x27;: &lt;tests.test_model_manager.Serializer object at 0x7febddf77850&gt;}<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [model_manager.py:read_model_file(70)]: There was an error validating the input parameters: tests/model/test_model.sav, [], {&#x27;serializer1&#x27;: &lt;tests.test_model_manager.Serializer object at 0x7fdc1fff3280&gt;}<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -6318,7 +6318,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [model_manager.py:read_model_file(70)]: There was an error validating the input parameters: tests/model/test_model.sav, None, {&#x27;serializer1&#x27;: &lt;tests.test_model_manager.Serializer object at 0x7febddf77850&gt;}<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [model_manager.py:read_model_file(70)]: There was an error validating the input parameters: tests/model/test_model.sav, None, {&#x27;serializer1&#x27;: &lt;tests.test_model_manager.Serializer object at 0x7fdc1fff3280&gt;}<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -6327,7 +6327,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [model_manager.py:read_model_file(70)]: There was an error validating the input parameters: tests/model/test_model.sav, None, {&#x27;serializer1&#x27;: &lt;tests.test_model_manager.Serializer object at 0x7febddf77850&gt;}<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [model_manager.py:read_model_file(70)]: There was an error validating the input parameters: tests/model/test_model.sav, None, {&#x27;serializer1&#x27;: &lt;tests.test_model_manager.Serializer object at 0x7fdc1fff3280&gt;}<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -6336,7 +6336,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [model_manager.py:read_model_file(70)]: There was an error validating the input parameters: tests/model/test_model.sav, 123, {&#x27;serializer1&#x27;: &lt;tests.test_model_manager.Serializer object at 0x7febddf77850&gt;}<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [model_manager.py:read_model_file(70)]: There was an error validating the input parameters: tests/model/test_model.sav, 123, {&#x27;serializer1&#x27;: &lt;tests.test_model_manager.Serializer object at 0x7fdc1fff3280&gt;}<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -6354,7 +6354,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [model_manager.py:read_model_file(70)]: There was an error validating the input parameters: tests/model/test_model.sav, {&#x27;model&#x27;: &lt;tests.test_model_manager.Model object at 0x7febddf77880&gt;}, []<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [model_manager.py:read_model_file(70)]: There was an error validating the input parameters: tests/model/test_model.sav, {&#x27;model&#x27;: &lt;tests.test_model_manager.Model object at 0x7fdc1fff33d0&gt;}, []<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -6363,7 +6363,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [model_manager.py:read_model_file(70)]: There was an error validating the input parameters: tests/model/test_model.sav, {&#x27;model&#x27;: &lt;tests.test_model_manager.Model object at 0x7febddf77880&gt;}, 123<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [model_manager.py:read_model_file(70)]: There was an error validating the input parameters: tests/model/test_model.sav, {&#x27;model&#x27;: &lt;tests.test_model_manager.Model object at 0x7fdc1fff33d0&gt;}, 123<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -6372,7 +6372,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [model_manager.py:read_model_file(70)]: There was an error validating the input parameters: tests/model/test_model.sav, {&#x27;model&#x27;: &lt;tests.test_model_manager.Model object at 0x7febddf77880&gt;}, None<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [model_manager.py:read_model_file(70)]: There was an error validating the input parameters: tests/model/test_model.sav, {&#x27;model&#x27;: &lt;tests.test_model_manager.Model object at 0x7fdc1fff33d0&gt;}, None<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -6381,7 +6381,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [model_manager.py:read_model_file(70)]: There was an error validating the input parameters: tests/model/test_model.sav, {&#x27;model&#x27;: &lt;tests.test_model_manager.Model object at 0x7febddf77880&gt;}, None<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [model_manager.py:read_model_file(70)]: There was an error validating the input parameters: tests/model/test_model.sav, {&#x27;model&#x27;: &lt;tests.test_model_manager.Model object at 0x7fdc1fff33d0&gt;}, None<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -6440,7 +6440,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_pipeline_manager.py::TestCollectionPipelineManager::test_read_pipeline_path_no_logger[tests/pipeline-pipeline_plugins0-serializer_plugins0-expected_output0]</td>
-          <td class="col-duration">0.00</td>
+          <td class="col-duration">0.34</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -6651,7 +6651,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [pipeline_manager.py:read_pipeline_path(75)]: There was an error validating the input parameters: None, {&#x27;pipeline_path&#x27;: &lt;tests.test_pipeline_manager.Pipeline object at 0x7febde00ff70&gt;}, {&#x27;serializer1&#x27;: &lt;tests.test_pipeline_manager.Serializer object at 0x7febde00fe20&gt;}<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [pipeline_manager.py:read_pipeline_path(75)]: There was an error validating the input parameters: None, {&#x27;pipeline_path&#x27;: &lt;tests.test_pipeline_manager.Pipeline object at 0x7fdc1fe3b940&gt;}, {&#x27;serializer1&#x27;: &lt;tests.test_pipeline_manager.Serializer object at 0x7fdc1fe38d90&gt;}<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -6669,7 +6669,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [pipeline_manager.py:read_pipeline_path(75)]: There was an error validating the input parameters: 123, {&#x27;pipeline_path&#x27;: &lt;tests.test_pipeline_manager.Pipeline object at 0x7febde00ff70&gt;}, {&#x27;serializer1&#x27;: &lt;tests.test_pipeline_manager.Serializer object at 0x7febde00fe20&gt;}<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [pipeline_manager.py:read_pipeline_path(75)]: There was an error validating the input parameters: 123, {&#x27;pipeline_path&#x27;: &lt;tests.test_pipeline_manager.Pipeline object at 0x7fdc1fe3b940&gt;}, {&#x27;serializer1&#x27;: &lt;tests.test_pipeline_manager.Serializer object at 0x7fdc1fe38d90&gt;}<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -6678,7 +6678,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [pipeline_manager.py:read_pipeline_path(75)]: There was an error validating the input parameters: [], {&#x27;pipeline_path&#x27;: &lt;tests.test_pipeline_manager.Pipeline object at 0x7febde00ff70&gt;}, {&#x27;serializer1&#x27;: &lt;tests.test_pipeline_manager.Serializer object at 0x7febde00fe20&gt;}<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [pipeline_manager.py:read_pipeline_path(75)]: There was an error validating the input parameters: [], {&#x27;pipeline_path&#x27;: &lt;tests.test_pipeline_manager.Pipeline object at 0x7fdc1fe3b940&gt;}, {&#x27;serializer1&#x27;: &lt;tests.test_pipeline_manager.Serializer object at 0x7fdc1fe38d90&gt;}<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -6687,7 +6687,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [pipeline_manager.py:read_pipeline_path(75)]: There was an error validating the input parameters: {}, {&#x27;pipeline_path&#x27;: &lt;tests.test_pipeline_manager.Pipeline object at 0x7febde00ff70&gt;}, {&#x27;serializer1&#x27;: &lt;tests.test_pipeline_manager.Serializer object at 0x7febde00fe20&gt;}<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [pipeline_manager.py:read_pipeline_path(75)]: There was an error validating the input parameters: {}, {&#x27;pipeline_path&#x27;: &lt;tests.test_pipeline_manager.Pipeline object at 0x7fdc1fe3b940&gt;}, {&#x27;serializer1&#x27;: &lt;tests.test_pipeline_manager.Serializer object at 0x7fdc1fe38d90&gt;}<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -6705,7 +6705,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [pipeline_manager.py:read_pipeline_path(75)]: There was an error validating the input parameters: tests/pipeline, [], {&#x27;serializer1&#x27;: &lt;tests.test_pipeline_manager.Serializer object at 0x7febde00fe20&gt;}<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [pipeline_manager.py:read_pipeline_path(75)]: There was an error validating the input parameters: tests/pipeline, [], {&#x27;serializer1&#x27;: &lt;tests.test_pipeline_manager.Serializer object at 0x7fdc1fe38d90&gt;}<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -6714,7 +6714,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [pipeline_manager.py:read_pipeline_path(75)]: There was an error validating the input parameters: tests/pipeline, None, {&#x27;serializer1&#x27;: &lt;tests.test_pipeline_manager.Serializer object at 0x7febde00fe20&gt;}<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [pipeline_manager.py:read_pipeline_path(75)]: There was an error validating the input parameters: tests/pipeline, None, {&#x27;serializer1&#x27;: &lt;tests.test_pipeline_manager.Serializer object at 0x7fdc1fe38d90&gt;}<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -6723,7 +6723,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [pipeline_manager.py:read_pipeline_path(75)]: There was an error validating the input parameters: tests/pipeline, None, {&#x27;serializer1&#x27;: &lt;tests.test_pipeline_manager.Serializer object at 0x7febde00fe20&gt;}<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [pipeline_manager.py:read_pipeline_path(75)]: There was an error validating the input parameters: tests/pipeline, None, {&#x27;serializer1&#x27;: &lt;tests.test_pipeline_manager.Serializer object at 0x7fdc1fe38d90&gt;}<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -6732,7 +6732,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [pipeline_manager.py:read_pipeline_path(75)]: There was an error validating the input parameters: tests/pipeline, 123, {&#x27;serializer1&#x27;: &lt;tests.test_pipeline_manager.Serializer object at 0x7febde00fe20&gt;}<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [pipeline_manager.py:read_pipeline_path(75)]: There was an error validating the input parameters: tests/pipeline, 123, {&#x27;serializer1&#x27;: &lt;tests.test_pipeline_manager.Serializer object at 0x7fdc1fe38d90&gt;}<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -6750,7 +6750,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [pipeline_manager.py:read_pipeline_path(75)]: There was an error validating the input parameters: tests/pipeline, {&#x27;pipeline_path&#x27;: &lt;tests.test_pipeline_manager.Pipeline object at 0x7febde00ff70&gt;}, []<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [pipeline_manager.py:read_pipeline_path(75)]: There was an error validating the input parameters: tests/pipeline, {&#x27;pipeline_path&#x27;: &lt;tests.test_pipeline_manager.Pipeline object at 0x7fdc1fe3b940&gt;}, []<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -6759,7 +6759,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [pipeline_manager.py:read_pipeline_path(75)]: There was an error validating the input parameters: tests/pipeline, {&#x27;pipeline_path&#x27;: &lt;tests.test_pipeline_manager.Pipeline object at 0x7febde00ff70&gt;}, 123<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [pipeline_manager.py:read_pipeline_path(75)]: There was an error validating the input parameters: tests/pipeline, {&#x27;pipeline_path&#x27;: &lt;tests.test_pipeline_manager.Pipeline object at 0x7fdc1fe3b940&gt;}, 123<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -6768,7 +6768,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [pipeline_manager.py:read_pipeline_path(75)]: There was an error validating the input parameters: tests/pipeline, {&#x27;pipeline_path&#x27;: &lt;tests.test_pipeline_manager.Pipeline object at 0x7febde00ff70&gt;}, None<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [pipeline_manager.py:read_pipeline_path(75)]: There was an error validating the input parameters: tests/pipeline, {&#x27;pipeline_path&#x27;: &lt;tests.test_pipeline_manager.Pipeline object at 0x7fdc1fe3b940&gt;}, None<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -6777,7 +6777,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [pipeline_manager.py:read_pipeline_path(75)]: There was an error validating the input parameters: tests/pipeline, {&#x27;pipeline_path&#x27;: &lt;tests.test_pipeline_manager.Pipeline object at 0x7febde00ff70&gt;}, None<br/></div></td></tr></tbody>
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    example_logger:log_utils.py:35 [pipeline_manager.py:read_pipeline_path(75)]: There was an error validating the input parameters: tests/pipeline, {&#x27;pipeline_path&#x27;: &lt;tests.test_pipeline_manager.Pipeline object at 0x7fdc1fe3b940&gt;}, None<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -7025,7 +7025,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_plugins_manager.py::TestCollectionPluginsManager::test_get_instance_data_with_valid_response[None-kwargs1-expected_result1]</td>
-          <td class="col-duration">0.00</td>
+          <td class="col-duration">0.05</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -7034,7 +7034,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_plugins_manager.py::TestCollectionPluginsManager::test_get_instance_data_with_valid_response[None-kwargs2-expected_result2]</td>
-          <td class="col-duration">0.02</td>
+          <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -7106,7 +7106,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_plugins_manager.py::TestCollectionPluginsManager::test_get_instance_data_with_invalid_response_1[plugin_type3-kwargs3-expected_result3]</td>
-          <td class="col-duration">0.00</td>
+          <td class="col-duration">0.01</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -7187,7 +7187,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_plugins_manager.py::TestCollectionPluginsManager::test_get_instance_model_with_invalid_response[PluginType.MODEL-kwargs1-expected_result1]</td>
-          <td class="col-duration">0.00</td>
+          <td class="col-duration">0.01</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8078,7 +8078,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_pubsub.py::TestCollectionRedisPubSub::test_publish[my_message-True-]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.83</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8087,7 +8087,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_pubsub.py::TestCollectionRedisPubSub::test_publish[None-False-There was an error publishing message through the pubsub channel due to the message: None]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.81</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8096,7 +8096,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_pubsub.py::TestCollectionRedisPubSub::test_publish[-False-There was an error publishing message through the pubsub channel due to the message: ]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.80</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8105,7 +8105,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_pubsub.py::TestCollectionRedisPubSub::test_publish[None-True-]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.80</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8132,7 +8132,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_pubsub.py::TestCollectionRedisPubSub::test_subscribe[subscribe_callback_function-1.0-True-True-]</td>
-          <td class="col-duration">0.48</td>
+          <td class="col-duration">0.77</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8141,7 +8141,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_pubsub.py::TestCollectionRedisPubSub::test_subscribe[subscribe_callback_function-0.0-True-True-]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.79</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8150,7 +8150,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_pubsub.py::TestCollectionRedisPubSub::test_subscribe[subscribe_callback_function--1.0-False-False-There was an error subscribing message through the pubsub channel due to an invalid sleep time: -1.0]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.76</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8159,7 +8159,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_pubsub.py::TestCollectionRedisPubSub::test_subscribe[subscribe_callback_function-None-False-False-There was an error subscribing message through the pubsub channel due to an invalid sleep time: None0]</td>
-          <td class="col-duration">0.45</td>
+          <td class="col-duration">0.79</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8168,7 +8168,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_pubsub.py::TestCollectionRedisPubSub::test_subscribe[subscribe_callback_function-None-False-False-There was an error subscribing message through the pubsub channel due to an invalid sleep time: None1]</td>
-          <td class="col-duration">0.45</td>
+          <td class="col-duration">0.80</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8177,7 +8177,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_pubsub.py::TestCollectionRedisPubSub::test_subscribe[None-1.0-False-False-There was an error subscribing message through the pubsub channel due to an invalid callback: None0]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.79</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8186,7 +8186,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_pubsub.py::TestCollectionRedisPubSub::test_subscribe[None-1.0-False-False-There was an error subscribing message through the pubsub channel due to an invalid callback: None1]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.80</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8195,7 +8195,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_pubsub.py::TestCollectionRedisPubSub::test_subscribe[123-1.0-False-False-There was an error subscribing message through the pubsub channel due to an invalid callback: 123]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8204,7 +8204,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_pubsub.py::TestCollectionRedisPubSub::test_subscribe[-123-1.0-False-False-There was an error subscribing message through the pubsub channel due to an invalid callback: -123]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8249,7 +8249,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost-6379-my_stream-consumer_group-consumer_name-True-]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.80</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8259,7 +8259,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[127.0.0.1-6379-my_stream-consumer_group-consumer_name-True-]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8269,7 +8269,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[127.0.0.1-5000-my_stream-consumer_group-consumer_name-False-There was a connection error to the redis server: Error 111 connecting to 127.0.0.1:5000. Connection refused.]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8279,7 +8279,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[1.2.3.4-6379-my_stream-consumer_group-consumer_name-False-There was a timeout error to the redis server: Timeout connecting to server]</td>
-          <td class="col-duration">5.47</td>
+          <td class="col-duration">5.80</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8289,7 +8289,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost-99999-my_stream-consumer_group-consumer_name-False-There was an error validating the redis host information]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8299,7 +8299,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost--5000-my_stream-consumer_group-consumer_name-False-There was an error validating the redis host information]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.79</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8309,7 +8309,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost-8080-my_stream-consumer_group-consumer_name-False-There was an error validating the redis host information]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.76</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8319,7 +8319,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[-8080-my_stream-consumer_group-consumer_name-False-There was an error validating the redis host information]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.77</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8329,7 +8329,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost--my_stream-consumer_group-consumer_name-False-There was an error validating the redis host information]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.75</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8339,7 +8339,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[--my_stream-consumer_group-consumer_name-False-There was an error validating the redis host information]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.76</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8349,7 +8349,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[None-8080-my_stream-consumer_group-consumer_name-False-There was an error validating the redis host information0]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.79</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8359,7 +8359,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost-None-my_stream-consumer_group-consumer_name-False-There was an error validating the redis host information0]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.77</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8369,7 +8369,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[None-None-my_stream-consumer_group-consumer_name-False-There was an error validating the redis host information0]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.75</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8379,7 +8379,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[None-8080-my_stream-consumer_group-consumer_name-False-There was an error validating the redis host information1]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.79</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8389,7 +8389,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost-None-my_stream-consumer_group-consumer_name-False-There was an error validating the redis host information1]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8399,7 +8399,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[None-None-my_stream-consumer_group-consumer_name-False-There was an error validating the redis host information1]</td>
-          <td class="col-duration">0.48</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8409,7 +8409,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[None-None-my_stream-consumer_group-consumer_name-False-There was an error validating the redis host information2]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.74</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8419,7 +8419,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[-None-my_stream-consumer_group-consumer_name-False-There was an error validating the redis host information]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.79</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8429,7 +8429,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[None-None-my_stream-consumer_group-consumer_name-False-There was an error validating the redis host information3]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8439,7 +8439,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[None--my_stream-consumer_group-consumer_name-False-There was an error validating the redis host information]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.77</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8449,7 +8449,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[123-8080-my_stream-consumer_group-consumer_name-False-There was an error validating the redis host information]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.80</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8459,7 +8459,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost-6379--consumer_group-consumer_name-False-There was an error validating the redis stream information0]</td>
-          <td class="col-duration">0.48</td>
+          <td class="col-duration">0.79</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8469,7 +8469,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost-6379-None-consumer_group-consumer_name-False-There was an error validating the redis stream information]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.76</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8479,7 +8479,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost-6379-None-consumer_group-consumer_name-True-]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.77</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8489,7 +8489,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost-6379--consumer_group-consumer_name-False-There was an error validating the redis stream information1]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8499,7 +8499,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost-6379-1234-consumer_group-consumer_name-False-There was an error validating the redis stream information]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.77</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8509,7 +8509,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost-6379-stream_name26-consumer_group-consumer_name-False-There was an error validating the redis stream information]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.77</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8519,7 +8519,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost-6379-stream_name27-consumer_group-consumer_name-False-There was an error validating the redis stream information]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.77</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8529,7 +8529,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost-6379-my_stream--consumer_name-False-There was an error validating the redis stream information0]</td>
-          <td class="col-duration">0.45</td>
+          <td class="col-duration">0.76</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8539,7 +8539,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost-6379-my_stream-None-consumer_name-False-There was an error validating the redis stream information]</td>
-          <td class="col-duration">0.45</td>
+          <td class="col-duration">0.75</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8549,7 +8549,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost-6379-my_stream-None-consumer_name-True-]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.76</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8559,7 +8559,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost-6379-my_stream--consumer_name-False-There was an error validating the redis stream information1]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.77</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8569,7 +8569,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost-6379-my_stream-1234-consumer_name-False-There was an error validating the redis stream information]</td>
-          <td class="col-duration">0.45</td>
+          <td class="col-duration">0.76</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8579,7 +8579,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost-6379-my_stream-consumer_group33-consumer_name-False-There was an error validating the redis stream information]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.79</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8589,7 +8589,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost-6379-my_stream-consumer_group34-consumer_name-False-There was an error validating the redis stream information]</td>
-          <td class="col-duration">0.45</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8599,7 +8599,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost-6379-my_stream-consumer_group--False-There was an error validating the redis stream information0]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.75</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8609,7 +8609,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost-6379-my_stream-consumer_group-None-False-There was an error validating the redis stream information]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8619,7 +8619,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost-6379-my_stream-consumer_group-None-True-]</td>
-          <td class="col-duration">0.45</td>
+          <td class="col-duration">0.79</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8629,7 +8629,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost-6379-my_stream-consumer_group--False-There was an error validating the redis stream information1]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8639,7 +8639,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost-6379-my_stream-consumer_group-1234-False-There was an error validating the redis stream information]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.79</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8649,7 +8649,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost-6379-my_stream-consumer_group-consumer_name40-False-There was an error validating the redis stream information]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.75</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8659,7 +8659,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup[localhost-6379-my_stream-consumer_group-consumer_name41-False-There was an error validating the redis stream information]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.75</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8669,7 +8669,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup_consumer_group_exists</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.76</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8679,7 +8679,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_setup_with_multiple_consumer_group_exists</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.76</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8698,7 +8698,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_algorithm_registry[algorithm-expected_message_response0]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.77</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8709,7 +8709,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_algorithm_registry[algorithm_do_not_exist-expected_message_response1]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8720,7 +8720,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_algorithm_registry[None-None]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.77</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8731,7 +8731,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_algorithm_registry[None-expected_message_response3]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8742,7 +8742,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_algorithm_registry[-None]</td>
-          <td class="col-duration">0.48</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8753,7 +8753,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_algorithm_registry[123-None]</td>
-          <td class="col-duration">0.48</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8764,7 +8764,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_algorithm_registry[message6-None]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.79</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8775,7 +8775,7 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_algorithm_registry[message7-None]</td>
-          <td class="col-duration">0.48</td>
+          <td class="col-duration">0.77</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8795,22 +8795,22 @@ ERROR    example_logger:log_utils.py:35 [data_manager.py:read_data(113)]: There 
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_number_of_pending_message[localhost-6379-my_stream-consumer_group-consumer_name-3]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
             <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>OK
-1685792112225-0
-1685792112226-0
-1685792112228-0
+1685945873770-0
+1685945873773-0
+1685945873775-0
 my_stream
-1685792112225-0
+1685945873770-0
 task
 task1
-1685792112226-0
+1685945873773-0
 task
 task2
-1685792112228-0
+1685945873775-0
 task
 task3
 <br/></div></td></tr></tbody>
@@ -8818,22 +8818,22 @@ task3
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_number_of_pending_message[127.0.0.1-6379-my_stream-consumer_group-consumer_name-3]</td>
-          <td class="col-duration">0.49</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
             <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>OK
-1685792112723-0
-1685792112725-0
-1685792112726-0
+1685945874551-0
+1685945874553-0
+1685945874556-0
 my_stream
-1685792112723-0
+1685945874551-0
 task
 task1
-1685792112725-0
+1685945874553-0
 task
 task2
-1685792112726-0
+1685945874556-0
 task
 task3
 <br/></div></td></tr></tbody>
@@ -8841,14 +8841,14 @@ task3
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_number_of_pending_message[127.0.0.1-5000-my_stream-consumer_group-consumer_name-0]</td>
-          <td class="col-duration">0.48</td>
+          <td class="col-duration">0.79</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
             <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>OK
-1685792113209-0
-1685792113210-0
-1685792113212-0
+1685945875348-0
+1685945875351-0
+1685945875353-0
 NOGROUP No such key &#x27;my_stream&#x27; or consumer group &#x27;consumer_group&#x27; in XREADGROUP with GROUP option
 
 <br/></div></td></tr></tbody>
@@ -8856,14 +8856,14 @@ NOGROUP No such key &#x27;my_stream&#x27; or consumer group &#x27;consumer_group
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_number_of_pending_message[1.2.3.4-6379-my_stream-consumer_group-consumer_name-0]</td>
-          <td class="col-duration">5.50</td>
+          <td class="col-duration">5.79</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
             <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>OK
-1685792118709-0
-1685792118712-0
-1685792118714-0
+1685945881144-0
+1685945881149-0
+1685945881152-0
 NOGROUP No such key &#x27;my_stream&#x27; or consumer group &#x27;consumer_group&#x27; in XREADGROUP with GROUP option
 
 <br/></div></td></tr></tbody>
@@ -8871,14 +8871,14 @@ NOGROUP No such key &#x27;my_stream&#x27; or consumer group &#x27;consumer_group
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_number_of_pending_message[localhost-6379-mystream-consumer_group-consumer_name-0]</td>
-          <td class="col-duration">0.48</td>
+          <td class="col-duration">0.79</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
             <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>OK
-1685792119193-0
-1685792119195-0
-1685792119197-0
+1685945881936-0
+1685945881940-0
+1685945881943-0
 NOGROUP No such key &#x27;my_stream&#x27; or consumer group &#x27;consumer_group&#x27; in XREADGROUP with GROUP option
 
 <br/></div></td></tr></tbody>
@@ -8886,14 +8886,14 @@ NOGROUP No such key &#x27;my_stream&#x27; or consumer group &#x27;consumer_group
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_number_of_pending_message[localhost-6379-my_stream-consumergroup-consumer_name-0]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.77</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
             <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>OK
-1685792119661-0
-1685792119663-0
-1685792119664-0
+1685945882715-0
+1685945882718-0
+1685945882721-0
 NOGROUP No such key &#x27;my_stream&#x27; or consumer group &#x27;consumer_group&#x27; in XREADGROUP with GROUP option
 
 <br/></div></td></tr></tbody>
@@ -8901,22 +8901,22 @@ NOGROUP No such key &#x27;my_stream&#x27; or consumer group &#x27;consumer_group
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_number_of_pending_message[localhost-6379-my_stream-consumer_group-consumername-3]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
             <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>OK
-1685792120136-0
-1685792120138-0
-1685792120140-0
+1685945883497-0
+1685945883501-0
+1685945883504-0
 my_stream
-1685792120136-0
+1685945883497-0
 task
 task1
-1685792120138-0
+1685945883501-0
 task
 task2
-1685792120140-0
+1685945883504-0
 task
 task3
 <br/></div></td></tr></tbody>
@@ -8933,7 +8933,7 @@ task3
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_pending_message[1-1-expected_output0]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.79</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8948,7 +8948,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_pending_message[None-1-None0]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.79</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8963,7 +8963,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_pending_message[None-1-None1]</td>
-          <td class="col-duration">0.45</td>
+          <td class="col-duration">0.77</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8978,7 +8978,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_pending_message[-1-None]</td>
-          <td class="col-duration">0.45</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -8993,7 +8993,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_pending_message[num_of_message4-1-None]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9008,7 +9008,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_pending_message[num_of_message5-1-None]</td>
-          <td class="col-duration">0.45</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9023,7 +9023,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_pending_message[1-None-expected_output6]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.79</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9038,7 +9038,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_pending_message[1-None-None]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9053,7 +9053,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_pending_message[1--None]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.77</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9068,7 +9068,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_pending_message[1-blocking_duration_ms9-None]</td>
-          <td class="col-duration">0.45</td>
+          <td class="col-duration">0.77</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9083,7 +9083,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_pending_message[1-blocking_duration_ms10-None]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.77</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9107,7 +9107,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_message[1-1-expected_output0]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.79</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9118,7 +9118,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_message[None-1-None0]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.77</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9129,7 +9129,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_message[None-1-None1]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9140,7 +9140,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_message[-1-None]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9151,7 +9151,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_message[num_of_message4-1-None]</td>
-          <td class="col-duration">0.44</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9162,7 +9162,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_message[num_of_message5-1-None]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.79</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9173,7 +9173,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_message[1-None-expected_output6]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.77</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9184,7 +9184,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_message[1-None-None]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.79</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9195,7 +9195,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_message[1--None]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.77</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9206,7 +9206,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_message[1-blocking_duration_ms9-None]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9217,7 +9217,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_read_message[1-blocking_duration_ms10-None]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9237,7 +9237,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_send_update[messageid-message_dict0-True]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.76</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9247,7 +9247,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_send_update[None-message_dict1-False]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9257,7 +9257,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_send_update[None-message_dict2-True]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.77</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9267,7 +9267,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_send_update[-message_dict3-False]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9277,7 +9277,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_send_update[message_id4-message_dict4-False]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.79</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9287,7 +9287,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_send_update[message_id5-message_dict5-False]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.79</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9297,7 +9297,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_send_update[123-None-False0]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9307,7 +9307,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_send_update[123-None-False1]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.82</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9317,7 +9317,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_send_update[123--False]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9327,7 +9327,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_send_update[123-message_dict9-False]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.79</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9337,7 +9337,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_send_update[123-message_dict10-False]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9356,7 +9356,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_send_message_acknowledgement[16807942311013-0-True]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.81</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9371,7 +9371,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_send_message_acknowledgement[-False]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9386,7 +9386,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_send_message_acknowledgement[messageid-False]</td>
-          <td class="col-duration">0.46</td>
+          <td class="col-duration">0.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9401,7 +9401,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_send_message_acknowledgement[None-False0]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.80</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9416,7 +9416,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_send_message_acknowledgement[None-False1]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.80</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9431,7 +9431,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_send_message_acknowledgement[message_id5-False]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.81</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -9446,7 +9446,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_redis_stream.py::TestCollectionRedisStream::test_send_message_acknowledgement[message_id6-False]</td>
-          <td class="col-duration">0.47</td>
+          <td class="col-duration">0.77</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -10028,7 +10028,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_validate_checks.py::TestCollectionValidateChecks::test_is_folder_no_permission</td>
-          <td class="col-duration">0.00</td>
+          <td class="col-duration">0.01</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -10091,7 +10091,7 @@ task1
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/test_validate_checks.py::TestCollectionValidateChecks::test_is_file_no_permission</td>
-          <td class="col-duration">0.00</td>
+          <td class="col-duration">0.01</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
