@@ -84,24 +84,62 @@ class Plugin(IAlgorithm):
         self._initial_data_instance = initial_data_instance
         self._initial_model_instance = initial_model_instance
 
-        self._data_instance = data_instance_and_serializer[0]
-        self._model_instance = model_instance_and_serializer[0]
-        self._model_type = kwargs.get("model_type")
-
-        if Plugin._requires_ground_truth:
-            self._requires_ground_truth = True
-            self._ground_truth_instance = ground_truth_instance_and_serializer[0]
-            self._ground_truth = kwargs.get("ground_truth")
-        else:
-            self._ground_truth_instance = None
-            self._ground_truth = ""
-
         # Look for kwargs values for log_instance, progress_callback and base path
         self._logger = kwargs.get("logger", None)
         self._progress_inst = SimpleProgress(
             1, 0, kwargs.get("progress_callback", None)
         )
+
+        # Check if data and model are tuples and if the tuples contain 2 items
+        if (
+            not isinstance(data_instance_and_serializer, Tuple)
+            or len(data_instance_and_serializer) != 2
+        ):
+            self.add_to_log(
+                logging.ERROR,
+                f"The algorithm has failed data validation: {data_instance_and_serializer}",
+            )
+            raise RuntimeError("The algorithm has failed data validation")
+
+        if (
+            not isinstance(model_instance_and_serializer, Tuple)
+            or len(model_instance_and_serializer) != 2
+        ):
+            self.add_to_log(
+                logging.ERROR,
+                f"The algorithm has failed model validation: {model_instance_and_serializer}",
+            )
+            raise RuntimeError("The algorithm has failed model validation")
+
+        self._data_instance = data_instance_and_serializer[0]
+        self._model_instance = model_instance_and_serializer[0]
+        self._model_type = kwargs.get("model_type")
+
+        if Plugin._requires_ground_truth:
+            # Check if ground truth instance is tuple and if the tuple contains 2 items
+            if (
+                not isinstance(ground_truth_instance_and_serializer, Tuple)
+                or len(ground_truth_instance_and_serializer) != 2
+            ):
+                self.add_to_log(
+                    logging.ERROR,
+                    f"The algorithm has failed ground truth data validation: \
+                        {ground_truth_instance_and_serializer}",
+                )
+                raise RuntimeError(
+                    "The algorithm has failed ground truth data validation"
+                )
+            self._requires_ground_truth = True
+            self._ground_truth_instance = ground_truth_instance_and_serializer[0]
+            self._ground_truth_serializer = ground_truth_instance_and_serializer[1]
+            self._ground_truth = kwargs.get("ground_truth")
+
+        else:
+            self._ground_truth_instance = None
+            self._ground_truth = ""
+
         self._base_path = kwargs.get("project_base_path", Path().absolute())
+        self._sensitive_feature = kwargs.get("sensitive_feature", None)
 
         # Other variables
         self._background = None
@@ -145,7 +183,7 @@ class Plugin(IAlgorithm):
             )
             raise RuntimeError(
                 "The algorithm has failed input schema validation. \
-                    The input must adhere to the schema in input.schema.json"
+                The input must adhere to the schema in input.schema.json"
             )
 
     def add_to_log(self, log_level: int, log_message: str) -> None:
@@ -203,7 +241,7 @@ class Plugin(IAlgorithm):
                 logging.ERROR,
                 f"The algorithm has failed data validation: {self._data_instance}",
             )
-            raise RuntimeError("The algorithm has failed data validation")
+            raise RuntimeError("The algorithm has failed data validation.")
 
         # Perform validation on model instance
         if not isinstance(self._model_instance, IModel) and not isinstance(
@@ -231,11 +269,11 @@ class Plugin(IAlgorithm):
                 self.add_to_log(
                     logging.ERROR,
                     "The algorithm has failed ground truth header validation. \
-                        Header must be in String and must be present in the dataset: {self._ground_truth}",
+                    Header must be in String and must be present in the dataset: {self._ground_truth}",
                 )
                 raise RuntimeError(
                     "The algorithm has failed ground truth header validation. \
-                        Header must be in String and must be present in the dataset"
+                    Header must be in String and must be present in the dataset"
                 )
 
         # Perform validation on progress_inst
@@ -249,12 +287,12 @@ class Plugin(IAlgorithm):
         if not isinstance(self._base_path, PurePath):
             self.add_to_log(
                 logging.ERROR,
-                f"The algorithm has failed validation for the project path. \
-                    Ensure that the project path is a valid path: {self._base_path}",
+                "The algorithm has failed validation for the project path. \
+                Ensure that the project path is a valid path: {self._base_path}",
             )
             raise RuntimeError(
                 "The algorithm has failed validation for the project path. \
-                    Ensure that the project path is a valid path"
+                Ensure that the project path is a valid path"
             )
 
         # Perform validation on metadata
@@ -269,13 +307,14 @@ class Plugin(IAlgorithm):
         if not isinstance(self._plugin_type, PluginType):
             self.add_to_log(
                 logging.ERROR,
-                f"The algorithm has failed validation for its plugin type. \
-                    Ensure that PluginType is PluginType.ALGORITHM: {Plugin._plugin_type}",
+                "The algorithm has failed validation for its plugin type. \
+                Ensure that PluginType is PluginType.ALGORITHM: {Plugin._plugin_type}",
             )
             raise RuntimeError(
                 "The algorithm has failed validation for its plugin type. \
-                    Ensure that PluginType is PluginType.ALGORITHM"
+                Ensure that PluginType is PluginType.ALGORITHM"
             )
+
         # Perform logging
         self.add_to_log(logging.INFO, "Setup completed")
 

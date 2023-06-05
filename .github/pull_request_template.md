@@ -1,5 +1,3 @@
-# Pull Request Template
-
 ## Description
 
 [Provide a brief description of the changes or features introduced by this pull request.]
