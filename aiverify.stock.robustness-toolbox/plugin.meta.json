@@ -3,6 +3,5 @@
     "version": "0.9.0",
     "name": "Robustness Toolbox",
     "author": "AI Verify",
-    "description": "This plugin generates a perturbed dataset using boundary attack algorithm on the test dataset.",
-    "url": "https://gitlab.com/imda_dsl/t2po/ai-verify/ai-verify-stock-plugins/aiverify.stock.robustness-toolbox"
+    "description": "This plugin generates a perturbed dataset using boundary attack algorithm on the test dataset."
 }

@@ -3,6 +3,5 @@
     "version": "0.9.0",
     "name": "SHAP Toolbox",
     "author": "AI Verify",
-    "description": "SHAP (SHapley Additive exPlanations) is a game theoretic approach to explain the output of any machine learning model.",
-    "url": "https://gitlab.com/imda_dsl/t2po/ai-verify/ai-verify-stock-plugins/aiverify.stock.shap-toolbox"
+    "description": "SHAP (SHapley Additive exPlanations) is a game theoretic approach to explain the output of any machine learning model."
 }

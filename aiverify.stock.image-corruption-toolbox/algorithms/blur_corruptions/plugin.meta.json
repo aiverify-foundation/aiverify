@@ -3,6 +3,5 @@
     "version": "0.9.0",
     "name": "Blur Corruptions",
     "author": "AI Verify",
-    "description": "Robustness plugin with blur corruptions",
-    "url": "https://pypi.org/project/example_plugin/"
+    "description": "Robustness plugin with blur corruptions"
 }
