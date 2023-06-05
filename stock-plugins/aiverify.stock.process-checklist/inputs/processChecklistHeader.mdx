@@ -1,0 +1,15 @@
+import { getTotal, getCompleted } from './processChecklistSummary.ts' 
+
+export const ProcessChecklistHeader = ({ config, data }) => {
+  return (
+    <div style={{ width:"100%", display:"flex", marginBottom:10 }}>
+      <div style={{ width:"100%", flexGrow:1  }}>
+        <h1 style={{ padding:0, margin:0 }}>AI Verify Framework Process Checklist - {config.principle}</h1>
+        <div>{config.description}</div>
+      </div>
+      <div style={{ backgroundColor:"#F3F0F5", color:"#991E66", width:"250px", height:"75px", fontSize:"16px", fontWeight:600, marginTop:10, display:"flex", justifyContent:"center", alignItems:"center" }}>
+        <div>{getCompleted(data)} out of {getTotal(config)} Checks done</div>
+      </div>
+    </div>
+  )
+}
