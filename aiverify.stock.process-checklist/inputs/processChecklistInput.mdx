@@ -25,7 +25,7 @@ export const ProcessChecklistInput = ({ config, data, onChangeData }) => {
             {section.checklist.map((check, index) => (
               <div key={`check-${index}`} style={{ marginTop:'10px' }}>
                 <b>Testable Criteria</b>
-                <div>{check.testableCriteria}</div>
+                <div dangerouslySetInnerHTML={{ __html:check.testableCriteria }}></div>
                 {check.processes.map((process, index2) => (
                   <div key={process.pid} style={{ width:"100%", display:"flex", backgroundColor:"#F3F0F5", padding:10, marginTop:5, marginBottom:5 }}>
                     <div style={{ fontWeight:600, width: "40px" }}>{index+1}.{index2+1}</div>
