@@ -6,7 +6,7 @@ export const cid = "fairness_metrics_toolbox_for_regression"
     <h3>Fairness for Regression</h3>
     The fairness test shows how correctly your model has predicted the selected sensitive feature(s) (Selected: {props.getResults(cid).sensitive_feature.join(", ")}). These fairness metrics are calculated based on the error measurements for regression models. The table shows a list of fairness metrics that are generated in this report. In the case of all regression  fairness metrics, a lower parity value indicates a better outcome.
     <br/><br/>
-    <table style={{width:"100%", padding:"5px", textAlign:"left"}} border="1">
+    <table style={{width:"100%", padding:"5px", textAlign:"left", borderCollapse:'collapse'}} border="1">
       <tbody>
         <tr style={{padding:"5px"}}>
           <th>Fairness Metrics</th>
