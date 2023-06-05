@@ -7,7 +7,7 @@
     ],
     "version": "0.9.0",
     "author": "AI Verify",
-    "description": "This plugin explains how each feature and its feature value contribute to the predictions.",
+    "description": "This algorithm explains how each feature and its feature value contribute to the predictions.",
     "tags": [
         "Accumulated Local Effect",
         "classification",

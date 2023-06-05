@@ -7,7 +7,7 @@
     "maxH": 36
   },
   "name": "Introduction",
-  "description": "To provide an introduction to FMTR",
+  "description": "To provide an introduction to the Fairness Metric Toolbox for Regression ",
   "dependencies": [
     {
       "cid": "fairness_metrics_toolbox_for_regression"

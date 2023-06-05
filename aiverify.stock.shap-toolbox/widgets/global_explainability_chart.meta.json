@@ -7,7 +7,7 @@
     "maxH": 36
   },
   "name": "Bar Chart (Technical)",
-  "description": "To display the average shap values using a bar chart",
+  "description": "To display the average SHAP values using a bar chart",
   "dependencies": [
     {
       "cid": "shap_toolbox"
