@@ -22,7 +22,7 @@ def create_badges() -> None:
 
     # Create coverage badge
     if badgeToCreate == "coverage":
-        with open("../coverage.json") as jsonFile:
+        with open("coverage.json") as jsonFile:
             covJson = json.load(jsonFile)
         covPct = covJson["totals"]["percent_covered"]
         if covPct < 20:
@@ -40,7 +40,7 @@ def create_badges() -> None:
 
     # Create test result badge
     if badgeToCreate == "test":
-        with open("../test-report.json") as jsonFile:
+        with open("test-report.json") as jsonFile:
             testJson = json.load(jsonFile)
         testSummary = testJson["report"]["summary"]
         testPassed = 0 if "passed" not in testSummary else testSummary["passed"]

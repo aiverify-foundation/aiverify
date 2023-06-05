@@ -102,7 +102,11 @@ class AppLogger:
             app_logger
             and isinstance(app_logger, AppLogger)
             and app_logger.raw_logger_instance
+            and isinstance(log_message, str)
         ):
+            log_message = log_message.replace("<", "{")
+            log_message = log_message.replace(">", "}")
+
             if log_level is logging.DEBUG:
                 app_logger.raw_logger_instance.debug(
                     f"[{caller_info_str}]: {log_message}"

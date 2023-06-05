@@ -149,7 +149,7 @@ class PipelineManager:
             log_message(
                 PipelineManager._logger,
                 logging.INFO,
-                f"Supported pipeline format: {type(pipeline)} -> "
+                f"Supported pipeline format: {type(pipeline)}, "
                 f"{return_pipeline_instance.get_pipeline_plugin_type()}"
                 f"[{return_pipeline_instance.get_pipeline_algorithm()}]",
             )

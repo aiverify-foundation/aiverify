@@ -116,7 +116,7 @@ class AlgorithmManager:
                 log_message(
                     AlgorithmManager._logger,
                     logging.INFO,
-                    f"Supported algorithm: {algorithm_id} -> {algorithm.get_plugin_type()}",
+                    f"Supported algorithm: {algorithm_id}, {algorithm.get_plugin_type()}",
                 )
 
             else:
