@@ -1,5 +1,5 @@
 site_name: AI Verify User Guide
-site_url: https://imda-btg.github.io/aiverify-user-guide-docs/
+site_url: https://imda-btg.github.io/aiverify/
 
 dev_addr: 0.0.0.0:8001 #setup as port 8001 so as not to clash with developer docs (TESTING)
 
