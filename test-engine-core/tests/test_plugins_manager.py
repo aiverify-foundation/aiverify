@@ -2,7 +2,6 @@ import logging
 from pathlib import Path
 
 import pytest
-
 from test_engine_core.plugins.algorithm_manager import AlgorithmManager
 from test_engine_core.plugins.data_manager import DataManager
 from test_engine_core.plugins.enums.data_plugin_type import DataPluginType
@@ -731,7 +730,7 @@ class TestCollectionPluginsManager:
                 (
                     None,
                     None,
-                    "There was an error loading algorithm: {} (MockResponse)",
+                    "There was an error loading algorithm: MockResponse",
                 ),
             ),
         ],
