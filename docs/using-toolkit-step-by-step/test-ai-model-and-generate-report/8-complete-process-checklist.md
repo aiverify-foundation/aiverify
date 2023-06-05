@@ -14,10 +14,6 @@ The _AI Verify Summary Report Template for Classification Models_ requires proce
 | Data Governance Process Checklist                    | 4             |
 | Inclusve Growth, Societal & Environmental Well-being | 1             |
 
-[Download the testing framework](https://aiverifyfoundation.sg/wp-content/uploads/2023/06/AI-Verify-Testing-Framework-7-June-2023-1.xlsx)
-
----
-
 Click on **‘Open’**.
 
 ![input-blocks](../../res/test-ai-model-generate-report/pc-1.png)
