@@ -255,10 +255,13 @@ const processService = (key) => {
                 } else if (values.validationResult === 'invalid') {
                   // console.log("validationResult not valid", values);
                   let message;
-                  if (values.errorMessages && safeJSONParse(values.errorMessages.split('[')[1].split(']')[0]) && safeJSONParse(values.errorMessages.split('[')[1].split(']')[0]).description) {
-                    message = safeJSONParse(values.errorMessages.split('[')[1].split(']')[0]).description;
-                  } else {
-                    message = "";
+                  if (values.logFile) {
+                    const dataArray = safeJSONParse(values.errorMessages);
+                    const errorCategory = "DATA_OR_MODEL_ERROR";
+                    const errorDescription = dataArray.find(item => item.category === errorCategory)?.description;
+  
+                    if (errorDescription)
+                      message = errorDescription;
                   }
                   const updatedDoc = await DatasetModel.findByIdAndUpdate(
                     { _id: datasetId },
@@ -283,10 +286,13 @@ const processService = (key) => {
                 
               }else if (values.status === 'error') {
                 let message;
-                if (values.errorMessages && safeJSONParse(values.errorMessages.split('[')[1].split(']')[0]).description) {
-                  message = safeJSONParse(values.errorMessages.split('[')[1].split(']')[0]).description;
-                } else {
-                  message = "";
+                if (values.logFile) {
+                  const dataArray = safeJSONParse(values.errorMessages);
+                  const errorCategory = "DATA_OR_MODEL_ERROR";
+                  const errorDescription = dataArray.find(item => item.category === errorCategory)?.description;
+
+                  if (errorDescription)
+                    message = errorDescription;
                 }
                 let updatedDoc = await DatasetModel.findByIdAndUpdate(
                   { _id: datasetId },
@@ -355,12 +361,14 @@ const processService = (key) => {
 
                 } else if (values.validationResult === 'invalid') {
                   let message;
-                  if (values.errorMessages && safeJSONParse(values.errorMessages.split('[')[1].split(']')[0]) && safeJSONParse(values.errorMessages.split('[')[1].split(']')[0]).description) {
-                    message = safeJSONParse(values.errorMessages.split('[')[1].split(']')[0]).description;
-                  } else {
-                    message = "";
+                  if (values.logFile) {
+                    const dataArray = safeJSONParse(values.errorMessages);
+                    const errorCategory = "DATA_OR_MODEL_ERROR";
+                    const errorDescription = dataArray.find(item => item.category === errorCategory)?.description;
+  
+                    if (errorDescription)
+                      message = errorDescription;
                   }
-
                   let updatedDoc = await ModelFileModel.findByIdAndUpdate(
                     { _id: modelFileId },
                     {
@@ -385,10 +393,13 @@ const processService = (key) => {
 
               } else if (values.status === 'error') {
                 let message;
-                if (values.errorMessages && safeJSONParse(values.errorMessages.split('[')[1].split(']')[0]) && safeJSONParse(values.errorMessages.split('[')[1].split(']')[0]).description) {
-                  message = safeJSONParse(values.errorMessages.split('[')[1].split(']')[0]).description;
-                } else {
-                  message = "";
+                if (values.logFile) {
+                  const dataArray = safeJSONParse(values.errorMessages);
+                  const errorCategory = "DATA_OR_MODEL_ERROR";
+                  const errorDescription = dataArray.find(item => item.category === errorCategory)?.description;
+
+                  if (errorDescription)
+                    message = errorDescription;
                 }
                 let updatedDoc = await ModelFileModel.findByIdAndUpdate(
                   { _id: modelFileId },
