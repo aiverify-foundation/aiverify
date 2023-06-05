@@ -516,6 +516,8 @@ export function useProjectTemplateStore(data: ProjectTemplate, pluginManager: Pl
 		let ibMap = null as dependency2ReportWidgetsMapType|null;
 		// let tmpInputBlocks = null as InputBlock[] | null; 
     for (let reportWidget of page.reportWidgets) {
+			if (!reportWidget.widget)
+				continue;
       if (!reportWidget.widget.dependencies || reportWidget.widget.dependencies.length == 0)
 				continue;
 			for (let dep of reportWidget.widget.dependencies) {

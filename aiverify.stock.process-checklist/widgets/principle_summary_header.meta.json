@@ -1,0 +1,17 @@
+{
+  "cid": "principle_summary_header",
+  "widgetSize": {
+    "minW": 6,
+    "minH": 1,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Principle Summary Header",
+  "description": "Summary header to be displayed before the principle summary",
+  "properties": [
+    {
+      "key": "principle",
+      "helper": "Principle Name"
+    }
+  ]
+}

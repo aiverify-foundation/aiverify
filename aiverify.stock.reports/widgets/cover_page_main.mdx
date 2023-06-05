@@ -17,14 +17,14 @@ export const MyCoverPage = ({ props }) => {
     <div style={{ position:'relative' }}>
       <div style={{ position:'absolute', top:'60px', width:'600px', right:'40px', zIndex:6000, display:'flex', flexFlow:'column wrap', alignItems:'right', textTransform:'uppercase' }}>
         <div style={{ color:'black', fontWeight:600, fontSize:"40pt", textAlign:'right' }}>{props.properties.reportTitle || "Summary Report"}</div>
-        {props.modelAndDatasets.model && (
+        {props.properties.reportSubtitle1 && props.properties.reportSubtitle1.length > 0 && (
           <div style={subTitleStyles} className="c-primary">
-            {props.modelAndDatasets.model.name}
+            {props.properties.reportSubtitle1}
           </div>
         )}
-        {props.properties.companyName && props.properties.companyName.length > 0 && (
+        {props.properties.reportSubtitle2 && props.properties.reportSubtitle2.length > 0 && (
           <div style={subTitleStyles} className="c-primary">
-            {props.properties.companyName}
+            {props.properties.reportSubtitle2}
           </div>
         )}
         {props.report && (

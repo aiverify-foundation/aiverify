@@ -14,8 +14,12 @@
       "helper": "Report Title"
     },
     {
-      "key": "companyName",
-      "helper": "Company Name"
+      "key": "reportSubtitle1",
+      "helper": "Subtitle 1 of report"
+    },
+    {
+      "key": "reportSubtitle2",
+      "helper": "Subtitle 2 of report"
     }
   ]
 }

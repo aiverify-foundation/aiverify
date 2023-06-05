@@ -2,7 +2,7 @@ export const areaConfigs = [
   {
     id: "transparency",
     area: "Transparency on the Use of AI and AI Systems",
-    short_description: "So that individuals are aware and make informed decisions",
+    short_description: "Ensuring that individuals are aware and can make informed decisions",
     principles: [
       {
         principle: "Transparency",
@@ -55,7 +55,7 @@ export const areaConfigs = [
         principle: "Security",
         name: "Security",
         short_description: "AI system is protected from unauthorised access, disclosure, modification, destruction, or disruption",
-        short_description2: "AI security is the protection of AI systems, their data, and the associated infrastructure from unauthorised access, disclosure, modification, destruction, or disruption. AI systems that can maintain",
+        short_description2: "AI security is the protection of AI systems, their data, and the associated infrastructure from unauthorised access, disclosure, modification, destruction, or disruption. AI systems that can maintain confidentiality, integrity, and availability through protection mechanisms that prevent unauthorized access and use may be said to be secure.",
         description: "<b>Security</b> risks related to AI systems can be common across other types of software development and deployment, e.g., concerns related to the confidentiality, integrity, and availability of the system and its training and output data; and general security of the underlying software and hardware for AI systems. Security risk management considerations and approaches are applicable in the design, development, deployment, evaluation, and use of AI systems. Security also encompasses protocols to avoid, protect against, respond to, or recover from attacks. Organisations need to develop a risk-based approach to managing AI security. This involves identifying and assessing the risks associated with the use of AI systems and implementing appropriate security controls to mitigate those risks. Organisations should also define the roles and responsibilities of different stakeholders involved in securing AI systems, including developers, operators, and users of AI system.",
         cid: "security_process_checklist",
       },
