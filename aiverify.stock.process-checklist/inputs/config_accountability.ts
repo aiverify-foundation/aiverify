@@ -83,6 +83,6 @@ export const config = {
     }
   ],
   "summaryYes": "Company has put in place an organisational structure and internal governance mechanism to ensure clear roles and responsibilities for the use of AI. This allows the Company to quickly establish accountability when something goes wrong, identify the problem, and address it in a timely manner.",
-  "summaryNotYes": "The current organisational structure and internal governance mechanism may not provide sufficient clarity in the roles and responsibilities for the use of AI by Company. When something goes wrong, Company may not be able to identify and address problems in a timely manner.",
+  "summaryNotYes": "The current organisational structure and internal governance mechanism may not provide sufficient accountability and oversight of the AI system. This may have negative impact on the identification and mitigation of risks associated with this AI system.",
   "recommendation": "Company should review the current organizational structure and internal governance mechanism to ensure clear accountability for those involved in Company’s AI development and deployment."
 }

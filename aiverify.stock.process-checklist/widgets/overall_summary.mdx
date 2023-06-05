@@ -29,9 +29,9 @@ export const MySummary = ({ getIBData }) => {
           {stats && <div style={{ flexGrow:1, textAlign:'justify', marginRight:'5px' }}>
             <b>The company has completed the process checklist of {stats["totalQuestions"]} process checks, of which:</b>
             <ul style={{ ...styles.ul, marginTop:'5px' }}>
-              <li><b>{stats.numYes} process checks</b> are indicated as "Yes", meaning that there is documentary evidence for the implementation of these criteria<sup>1</sup>.</li>
-              <li><b>{stats.numNo} process checks</b> are indicated as "No". As these process checks have not been implemented, there could be a potential risk that the company needs to assess and/or mitigate<sup>2</sup>.</li>
-              <li><b>{stats.numNotApplicable} process checks</b> are indicated as "Not Applicable".</li>
+              <li><b>{stats.numYes} process checks</b> are indicated as "Yes", meaning that there is documentary evidence for the implementation of these criteria.</li>
+              <li><b>{stats.numNo} process checks</b> are indicated as "No". As these process checks have not been implemented, there could be a potential risk that the company needs to assess and/or mitigate<sup>1</sup>.</li>
+              <li><b>{stats.numNotApplicable} process checks</b> are indicated as "Not Applicable"<sup>2</sup>.</li>
             </ul>
             <div style={{ fontSize:'13px' }}>
               <sup>1</sup>The company should periodically review that the reason(s) for not implementing the process checks remains valid and aligned with company's values, objectives and regulatory requirements.

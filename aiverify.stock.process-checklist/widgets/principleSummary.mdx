@@ -82,9 +82,6 @@ export const PrincipleSummarySingle = ({ data, principleConfig }) => {
 
   return (
     <>
-      <div style={{ paddingBottom:'5px' }}>
-        The principle of <b>{principleConfig.principle.principle}</b> was assessed through a process check comprising {stat.totalQuestions} testable criteria{principleConfig.principle.hasTechnicalTests?" and technical test":""}.
-      </div>
       <div style={{ display:'flex', width:'100%', justifyContent:'center', alignItems:'flexStart' }}>
         <div style={{ width:'300px', flexShrink:0, position:'relative' }}>
           <div style={{ position:'absolute', top:100, left:100, height:'40px', fontSize:'13.5px', width:'100px', wordWrap: 'break-word', textAlign:'center', display:'flex', justifyContent:'center', alignItems:'center' }}>

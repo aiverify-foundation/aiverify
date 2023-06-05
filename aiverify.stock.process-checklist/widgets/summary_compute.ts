@@ -69,6 +69,9 @@ export interface ProcessChecklistStatistics {
 	numNotApplicable: number,
 }
 
+export function getTotalQuestions(principle): number|undefined {
+	return _totalQuestions[principle];
+}
 
 export function getPrincipleCompletionStatistics(config, data): ProcessChecklistStatistics {
 	// let totalQuestions = principle.processes.length;
