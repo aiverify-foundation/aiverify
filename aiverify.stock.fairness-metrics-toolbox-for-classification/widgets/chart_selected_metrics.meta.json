@@ -1,7 +1,7 @@
 {
   "cid": "chart_selected_metrics",
   "name": "Bar Chart (Selected)",
-  "description": "To generate bar chart for your selected fairness metrics from the fairness tree",
+  "description": "To generate bar chart(s) for the selected fairness metric(s) from the fairness tree",
   "widgetSize": {
     "minW": 12,
     "minH": 15,

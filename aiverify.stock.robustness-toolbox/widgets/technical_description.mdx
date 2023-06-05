@@ -58,7 +58,7 @@ export const MyChart = ({ results, modelType}) => {
   return (
     <>
       <div>
-        Robustness Toolbox uses Boundary Attack to perturb the test dataset. Boundary Attack is an attack that starts by adding a large amount of noise to a data point intentionally to cause a model it misclassified by the model. We use Salt-and-pepper noise to create the large amount of noise. Then, it will reduces the amount of noise added while maintaining misclassification. This algorithm does not depend on the underlying model's architecture or parameters.
+        Robustness Toolbox uses Boundary Attack to perturb the test dataset. Boundary Attack is an attack that starts by adding a large amount of noise to a data point intentionally to cause a model it misclassified by the model. We use Salt-and-pepper noise to create the large amount of noise. Then, it will reduce the amount of noise added while maintaining misclassification. This algorithm does not depend on the underlying model's architecture or parameters.
         <p>
         This algorithm is developed for <b>image dataset</b> but can also be used to create noise on tabular dataset. However, it is to note that testing on tabular dataset may warrant caution when interpreting the results as this is not well-tested.
         </p>

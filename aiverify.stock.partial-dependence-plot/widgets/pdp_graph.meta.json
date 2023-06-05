@@ -7,7 +7,7 @@
     "maxH": 36
   },
   "name": "PDP Line Graphs",
-  "description": "To generate and display PDP values in line graph for each feature in each class output",
+  "description": "To generate and display PDP values in line graphs for each feature in each class output",
   "dependencies": [
     {
       "cid": "partial_dependence_plot"

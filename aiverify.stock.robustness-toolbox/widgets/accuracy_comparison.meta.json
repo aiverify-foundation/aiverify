@@ -7,7 +7,7 @@
     "maxH": 36
   },
   "name": "Bar Chart (Accuracy)",
-  "description": "To generate and display a bar chart of the orignal and perturbed dataset and the interpretation of the results",
+  "description": "To generate and display a bar chart of the orignal and perturbed dataset with interpretation of the results",
   "dependencies": [
     {
       "cid": "robustness_toolbox"

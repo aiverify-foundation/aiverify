@@ -6,7 +6,7 @@
     ],
     "version": "0.9.0",
     "author": "AI Verify",
-    "description": "The algorithm computes a list of fairness metrics to measure how correct your model predicts among the given set of sensitive features.",
+    "description": "This algorithm computes a list of fairness metrics to measure how correctly your model predicts among the given set of sensitive features.",
     "tags": [
         "fairness metrics toolbox for classification",
         "classification",
