@@ -1,7 +1,0 @@
-{
-    "gid": "aiverify.stock.robustness_toolbox",
-    "version": "0.9.0",
-    "name": "Robustness Toolbox",
-    "author": "AI Verify",
-    "description": "This plugin generates a perturbed dataset using boundary attack algorithm on the test dataset."
-}

@@ -1,8 +1,0 @@
-import React, { useEffect, useState } from 'react';
-import {DisplayImages} from "./display-samples.mdx"
-
-export const algo_cid = "blur_corruptions"
-import {gaussian_blur_images, glass_blur_images, defocus_blur_images, hmotion_blur_images, vmotion_blur_images, zoom_blur_images} from "./blur-corruption-images.js"
-
-<DisplayImages images = {gaussian_blur_images} data={props.getResults(algo_cid).results} corruption_index ={0} corruption_name = "Blur: Gaussian Blur" />
-

@@ -1,7 +1,0 @@
-node_modules
-node_modules/
-build/
-*.log
-lib-cov
-coverage
-cache
