@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2019-09/schema",
-    "$id": "https://gitlab.com/imda_dsl/t2po/ai-verify/ai-verify-stock-plugins/ai-verify-schemas/-/raw/main/ai-verify.plugin.schema.json",
+    "$id": "test_engine_schema.json",
     "title": "Test Engine Schema",
     "description": "Schema for Test Engine tasks",
     "type": "object",
