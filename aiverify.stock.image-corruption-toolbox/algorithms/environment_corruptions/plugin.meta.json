@@ -3,6 +3,5 @@
     "version": "0.9.0",
     "name": "Environment Corruptions",
     "author": "AI Verify",
-    "description": "Robustness plugin with environment corruptions",
-    "url": "https://gitlab.com/imda_dsl/t2po/ai-verify/ai-verify-stock-plugins/aiverify.stock.image-corruption-toolbox"
+    "description": "Robustness plugin with environment corruptions"
 }

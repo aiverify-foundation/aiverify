@@ -3,6 +3,5 @@
     "version": "0.9.0",
     "name": "General Corruptions",
     "author": "AI Verify",
-    "description": "Robustness with general corruptions",
-    "url": "https://gitlab.com/imda_dsl/t2po/ai-verify/ai-verify-stock-plugins/aiverify.stock.image-corruption-toolbox"
+    "description": "Robustness with general corruptions"
 }

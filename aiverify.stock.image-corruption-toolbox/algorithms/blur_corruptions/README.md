@@ -6,8 +6,5 @@
 ## License
 * Licensed under Apache Software License 2.0
 
-## Plugin URL
-* https://pypi.org/project/example_plugin/
-
 ## Developers:
 * AI Verify
