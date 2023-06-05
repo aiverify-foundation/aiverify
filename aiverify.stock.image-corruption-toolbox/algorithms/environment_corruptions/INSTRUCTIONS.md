@@ -27,7 +27,6 @@ There are some dependencies required for the algorithm plugin. Developers will n
    - project_slug: 
    - plugin_version: If this is a new algorithm, the version should be 0.1.0. If it is an improved version of an existing algorithm, the version should be adjusted accordingly. Refer to [Understanding Versioning](https://cpl.thalesgroup.com/software-monetization/software-versioning-basics) for more information
    - plugin_description: A simple description on what the algorithm is
-   - plugin_url: The link to the repository of the algorithm codes
    - license:
    - algo_model_support: The models supported by the algorithm
    - require_ground_truth: Whether or not the algorithm has ground truth in the dataset
