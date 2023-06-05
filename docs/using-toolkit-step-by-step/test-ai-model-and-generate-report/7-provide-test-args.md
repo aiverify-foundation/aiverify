@@ -2,7 +2,7 @@ The _AI Verify Summary Report Template for Classification Models_ requires **Fai
 
 ![test-args](../../res/test-ai-model-generate-report/input-block-3.png)
 
-Click on ‘Open’ for Fairness Metrics Toolbox for Classification. Provide the test argument:
+Click on **‘Open’** for Fairness Metrics Toolbox for Classification. Provide the test argument:
 
 | Test Argument                           | Description                                                              | Value | 
 | --------------------------------------- | ------------------------------------------------------------------------ | ----- |
@@ -10,11 +10,11 @@ Click on ‘Open’ for Fairness Metrics Toolbox for Classification. Provide the
 
 If there are more than one sensitive feature, click on ‘+’.
 
-Click on ‘Ok’.
+Click on **‘Ok’**.
 
 ![sensitive-feature](../../res/test-ai-model-generate-report/fmt.png)
 
-Click on ‘Open’ for Robustness Toolbox.
+Click on **‘Open’** for Robustness Toolbox.
 
 Provide the test arguments:
 
@@ -25,11 +25,11 @@ Provide the test arguments:
 
 _\*This argument is required only if you are testing an image dataset. For tabular datasets like the one used in this tutorial, it can be left blank._
 
-Click on ‘Ok’.
+Click on **‘Ok’**.
 
 ![robustness-toolbox](../../res/test-ai-model-generate-report/rt.png)
 
-Click on ‘Open’ for SHAP Toolbox.
+Click on **‘Open’** for SHAP Toolbox.
 
 Provide the test arguments:
 
@@ -42,7 +42,7 @@ Provide the test arguments:
 
 _\*Recommended number of test data points is 100, selecting a larger sample will require a longer computation time._
 
-Click on 'Ok'.
+Click on **'Ok'**.
 
 ![shap-toolbox](../../res/test-ai-model-generate-report/shap.png)
 

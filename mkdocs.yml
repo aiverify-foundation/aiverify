@@ -96,8 +96,7 @@ nav:
   - Compatibility Table: others/compatibility.md
   - References:
       - AI Verify Plugins: test.md
-      - Developer Documentation: test.md
-  - Glossary: test.md
+      - Developer Documentation: https://imda-btg.github.io/aiverify-developer-tools/
   - Release Notes:
       - License: test.md
       - Contact Information: test.md

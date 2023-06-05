@@ -4,7 +4,7 @@ AI Verify comes with a set of decorator widgets under the plugin ‘AI Verify St
 
 ![header6-widget](../../res/design-customized-report/drag-1.png)
 
-To edit the widget, click on the widget on the canvas to highlight it, then click on its edit icon at the top right corner to open the Widget Content editor.
+To edit the widget, click on the **widget on the canvas** to highlight it, then click on its **edit icon** at the top right corner to open the Widget Content editor.
 
 ![edit-widget](../../res/design-customized-report/edit-widget-1.png)
 
@@ -15,6 +15,6 @@ The ‘Header 6’ widget contains:
 | **Title** | Fill up this field to allow the widget to populate the canvas with text styled as ‘Header 6’.            |
 | **Text**  | Fill up this field to allow the widget to populate the canvas with unstyled text below the styled Title. |
 
-Click 'Ok' when done.
+Click **'Ok'** when done.
 
 ![fill-widget](../../res/design-customized-report/edit-widget-2.png)

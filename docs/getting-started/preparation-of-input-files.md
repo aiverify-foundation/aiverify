@@ -1,4 +1,4 @@
-To run the technical tests, you need to prepare input fles. To find out the input files needed by a specific technical test, check out the [Plugin Documentation here]().  <!-- TODO: Link -->
+To run the technical tests, you need to prepare input fles. To find out the input files needed by a specific technical test, check out the [Plugin Documentation here](https://imda-btg.github.io/aiverify-developer-tools/).
 
 | Input File/ Folder | Description |
 | ---------- | ---- |

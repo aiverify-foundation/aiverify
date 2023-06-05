@@ -18,7 +18,7 @@ The _AI Verify Summary Report Template for Classification Models_ requires proce
 
 ---
 
-Click on ‘Open’.
+Click on **‘Open’**.
 
 ![input-blocks](../../res/test-ai-model-generate-report/pc-1.png)
 
@@ -40,7 +40,7 @@ You can provide relevant elaboration as such:
 For each AI ethic principle, you can provide a summarized justification which will be displayed in the Summary Report segment of the report generated like this:
 ![summarized-justification](../../res/test-ai-model-generate-report/pc-3.png)
 
-Click on ‘Ok’ once all checks are complete.
+Click on **‘Ok’** once all checks are complete.
 
 ![justification-process-checklist](../../res/test-ai-model-generate-report/pc-4.png)
 

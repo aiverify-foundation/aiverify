@@ -44,6 +44,9 @@ To run AI Verify, these are the minimum requirements to run AI Verify on a local
 ## Install AI Verify
 
 1. Create a folder where you intend to install AI Verify.
+```bash
+mkdir ai-verify-env
+```
 2. Install the `setup-aiverify-dev.sh` file from our GitHub release page and copy the file into the folder created above.
 3. Open a Terminal in the directory
 4. Execute the script by executing the following code.

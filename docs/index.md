@@ -27,4 +27,4 @@ For a more detailed breakdown of how AI Verify works, check out [How It Works](.
 
 To jump directly into the tool, <a href="./res/quick-start-guide.pdf" target="_blank">Download the Quick Start Guide here</a>. <!-- TODO: Link -->
 
-If you are looking to contribute to the AI Verify Toolkit, [Visit the Developer Documentation here](#). <!-- TODO -->
+If you are looking to contribute to the AI Verify Toolkit, [Visit the Developer Documentation here](https://imda-btg.github.io/aiverify-developer-tools/).

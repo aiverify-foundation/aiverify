@@ -13,6 +13,6 @@ Plugins can consist of algorithms, widgets, input blocks, and report templates a
 | Widgets | Report components to visualize data/ test results |
 | Templates | Defines customised report layouts |
 
-To understand more about the pre-installed plugins, check out the [Plugin Documentation here]()
+To understand more about the pre-installed plugins, check out the [Plugin Documentation here](https://imda-btg.github.io/aiverify-developer-tools/)
 
-For developers interested to build plugins, check out the [Plugin Developer Guide here]() <!-- TODO: Link -->
+For developers interested to build plugins, check out the [Plugin Developer Guide here](https://imda-btg.github.io/aiverify-developer-tools/) 

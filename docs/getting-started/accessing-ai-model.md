@@ -22,4 +22,4 @@ If your dataset requires pre-processing before being fed into the prediction mod
 
 ![Upload Pipeline](../../res/getting-started/pipeline.png)
 
-Currently, the toolkit supports a limited set of models. Check out the[ full list of framework and algorithm types supported.]() <!-- TODO: Link -->
+Currently, the toolkit supports a limited set of models. Check out the[ full list of framework and algorithm types supported.](../../others/compatibility/)

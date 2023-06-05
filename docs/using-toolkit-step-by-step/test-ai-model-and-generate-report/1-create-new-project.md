@@ -1,4 +1,4 @@
-On the homepage, click on 'Create New Project'
+On the homepage, click on **'Create New Project'**
 
 ![create-project-image](../../res/test-ai-model-generate-report/home-1.png)
 
@@ -14,6 +14,6 @@ Provide the general information as shown in the table below:
 You will also be able to use the values entered in these fields in other parts of the report if desired. (See [‘How to design a customised report > Using Global Variables’](../../design-customized-report/4-using-global-variable/) )
 
 
-Click 'Next' to proceed.
+Click **'Next'** to proceed.
 
 ![create-project-next-image](../../res/test-ai-model-generate-report/general-1.png)

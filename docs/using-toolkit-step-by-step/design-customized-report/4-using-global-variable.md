@@ -1,12 +1,12 @@
-The project details you previously filled are saved as global variables and can be used as widget content. To use any of the global variables as the widget content, click on ‘Variable’ and select the fields available.
+The project details you previously filled are saved as global variables and can be used as widget content. To use any of the global variables as the widget content, click on **‘Variable’** and select the fields available.
 
 ![use-global-var](../../res/design-customized-report/edit-widget-3.png)
 
-You can also set custom global variables by clicking on the ‘Global Variables’ accordion.
+You can also set custom global variables by clicking on the **‘Global Variables’** accordion.
 
 ![set-custom-global-var](../../res/design-customized-report/global-var-1.png)
 
-Fill up the following fields and click on ‘+’ to create the custom global variable:
+Fill up the following fields and click on **‘+’** to create the custom global variable:
 
 | Field     | Description                                                                                |
 | --------- | ------------------------------------------------------------------------------------------ |
