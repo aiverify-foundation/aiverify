@@ -21,6 +21,7 @@ To run AI Verify, these are the minimum requirements to run AI Verify on a local
 | ---------------------------------------------------------------------------------- | ------------------- |
 | [NodeJs](https://nodejs.org/en/download)                                           | v18.x               |
 | [Python](https://www.python.org/downloads/release/python-3100/)                    | v3.10               |
+| [Git](https://git-scm.com/downloads)                    | v2.40               |
 | [MongoDB\*](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/) | v6.x                |
 <!-- | [Redis..](https://redis.io/docs/getting-started/installation/)                       | v6.x                |
 | [GraphQL..](https://graphql.org/)                                                    | v16.x               |
