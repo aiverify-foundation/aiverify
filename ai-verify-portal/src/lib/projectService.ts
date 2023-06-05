@@ -169,6 +169,7 @@ mutation Mutation($id: ObjectID!, $project: ProjectInput!) {
                 layoutItemProperties {
                     justifyContent
                     alignItems
+                    textAlign
                     color
                     bgcolor
                 }
@@ -192,7 +193,7 @@ mutation Mutation($id: ObjectID!, $project: ProjectInput!) {
                 errorMessages
                 type
             }
-            testDataset { # 👈TODO - this could be slim 
+            testDataset { 
                 id
                 filename
                 filePath
@@ -206,7 +207,7 @@ mutation Mutation($id: ObjectID!, $project: ProjectInput!) {
                 dataFormat
                 errorMessages
             }
-            groundTruthDataset { # 👈TODO - this could be slim 
+            groundTruthDataset {
                 id
                 filename
                 filePath

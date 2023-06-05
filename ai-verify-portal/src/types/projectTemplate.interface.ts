@@ -11,7 +11,7 @@ export type LayoutItemProperties = {
 	alignItems?: string
 	color?: string
 	bgcolor?: string
-	// border?: string
+	textAlign?: 'left' | 'right' | 'center' | 'justify'
 }
 
 /** additional properties for widget items in grid */
