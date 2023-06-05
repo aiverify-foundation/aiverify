@@ -4,11 +4,11 @@ import { styles } from './styles.mdx';
   <tbody>
     <tr>
       <th style={{ ...styles.th, width:'25%' }}>Model Tested:</th>
-      <td style={styles.td}>{props.modelAndDatasets?props.modelAndDatasets.model.name:""}</td>
+      <td style={styles.td}>{props.properties.modelTested || ""}</td>
     </tr>
     <tr>
-      <th style={styles.th}>This Model Is Used to:</th>
-      <td style={styles.td}>{props.modelAndDatasets?props.modelAndDatasets.model.description:""}</td>
+      <th style={styles.th}>Purpose of Model:</th>
+      <td style={styles.td}>{props.properties.modelPurpose || ""}</td>
     </tr>
   </tbody>
 </table> 
