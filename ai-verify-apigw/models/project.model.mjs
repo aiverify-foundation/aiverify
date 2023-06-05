@@ -19,6 +19,7 @@ const pageSchema = new Schema({
         layoutItemProperties: {
             justifyContent: { type: String, default: "left" },
             alignItems: { type: String, default: "top" },
+            textAlign: { type: String, default: "left" },
             color: { type: String },
             bgcolor: { type: String },
         },

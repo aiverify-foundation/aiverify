@@ -1,6 +1,7 @@
 type LayoutItemProperties {
 	justifyContent: String
 	alignItems: String
+	textAlign: String
 	color: String
 	bgcolor: String
 }
@@ -101,6 +102,7 @@ type Project {
 input LayoutItemPropertiesInput {
 	justifyContent: String @constraint(maxLength: 128)
 	alignItems: String @constraint(maxLength: 128)
+	textAlign: String @constraint(maxLength: 128)
 	color: String @constraint(maxLength: 128)
 	bgcolor: String @constraint(maxLength: 128)
 }

@@ -94,6 +94,7 @@ mutation Mutation($project: ProjectInput!, $templateId: String!) {
                 layoutItemProperties {
                     justifyContent
                     alignItems
+                    textAlign
                     color
                     bgcolor
                 }
@@ -326,6 +327,7 @@ mutation Mutation($id: ObjectID!) {
                 layoutItemProperties {
                     justifyContent
                     alignItems
+                    textAlign
                     color
                     bgcolor
                 }
