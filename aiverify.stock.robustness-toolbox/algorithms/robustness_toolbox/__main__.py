@@ -2,21 +2,21 @@ from test_engine_core.plugins.enums.model_type import ModelType
 from tests.plugin_test import PluginTest
 
 if __name__ == "__main__":
-    # Tabular Binary Classification Pipeline
-    data_path = (
-        "tests/user_defined_files/data/"
-        "pickle_pandas_mock_binary_classification_pipeline_credit_risk_testing.sav"
-    )
-    model_path = (
-        "tests/user_defined_files/pipeline/binary_classification_tabular_credit_loan"
-    )
-    ground_truth_path = (
-        "tests/user_defined_files/data/"
-        "pickle_pandas_mock_binary_classification_pipeline_credit_risk_ytest.sav"
-    )
-    ground_truth = "default"
-    run_pipeline = True
-    model_type = ModelType.CLASSIFICATION
+    # # Tabular Binary Classification Pipeline
+    # data_path = (
+    #     "tests/user_defined_files/data/"
+    #     "pickle_pandas_mock_binary_classification_pipeline_credit_risk_testing.sav"
+    # )
+    # model_path = (
+    #     "tests/user_defined_files/pipeline/binary_classification_tabular_credit_loan"
+    # )
+    # ground_truth_path = (
+    #     "tests/user_defined_files/data/"
+    #     "pickle_pandas_mock_binary_classification_pipeline_credit_risk_ytest.sav"
+    # )
+    # ground_truth = "default"
+    # run_pipeline = True
+    # model_type = ModelType.CLASSIFICATION
 
     # # Regression Non-Pipeline
     # data_path = "tests/user_defined_files/data/pickle_pandas_mock_regression_donation_testing.sav"
@@ -29,15 +29,13 @@ if __name__ == "__main__":
     # run_pipeline = False
     # model_type = ModelType.REGRESSION
 
-    # # Image Pipeline
-    # data_path = "tests/user_defined_files/data/raw_fashion_image_10"
-    # model_path = "tests/user_defined_files/pipeline/multiclass_classification_image_mnist_fashion"
-    # ground_truth_path = (
-    #     "tests/user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
-    # )
-    # ground_truth = "label"
-    # run_pipeline = True
-    # model_type = ModelType.CLASSIFICATION
+    # Image Pipeline
+    data_path = "tests/user_defined_files/data/raw_fashion_image_10"
+    model_path = "tests/user_defined_files/pipeline/multiclass_classification_image_mnist_fashion"
+    ground_truth_path = "tests/user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
+    ground_truth = "label"
+    run_pipeline = True
+    model_type = ModelType.CLASSIFICATION
 
     core_modules_path = "../../../test-engine-core-modules"
     plugin_argument_values = {
