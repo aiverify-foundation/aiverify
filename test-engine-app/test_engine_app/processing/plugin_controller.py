@@ -1,6 +1,9 @@
 import logging
 from typing import Dict, Tuple, Union
 
+from test_engine_app.app_logger import AppLogger
+from test_engine_app.network.redis import Redis
+from test_engine_app.processing.algorithm_info import AlgorithmInfo
 from test_engine_core.interfaces.ialgorithm import IAlgorithm
 from test_engine_core.interfaces.idata import IData
 from test_engine_core.interfaces.imodel import IModel
@@ -8,10 +11,6 @@ from test_engine_core.interfaces.iserializer import ISerializer
 from test_engine_core.plugins.enums.plugin_type import PluginType
 from test_engine_core.plugins.plugins_manager import PluginManager
 from test_engine_core.utils.validate_checks import is_empty_string
-
-from test_engine_app.app_logger import AppLogger
-from test_engine_app.network.redis import Redis
-from test_engine_app.processing.algorithm_info import AlgorithmInfo
 
 
 class PluginController:
@@ -458,16 +457,7 @@ class PluginController:
 
         except RuntimeError as error:
             # Set plugin instance to None. There is an error getting the instance.
-            error_message = f"The controller encountered an error while getting an instance: {str(error)}"
-            AppLogger.add_to_log(PluginController._logger, logging.ERROR, error_message)
-            AppLogger.add_error_to_log(
-                PluginController._logger,
-                "SYS",
-                "CSYSx00145",
-                error_message,
-                "Critical",
-                "plugin_controller.py",
-            )
+            error_message = str(error)
 
         finally:
             return plugin_instance, plugin_serializer_instance, error_message
