@@ -53,6 +53,7 @@ export default function ProjectModule({ data, pluginManager }: Props) {
   const [invalidAlgos, setInvalidAlgos] = useState<Algorithm[]>([]);
   const [ disableNextBtn, setDisableNextBtn ] = useState(false);
   const [filePickerMode, setFilePickerMode] = useState<FileSelectMode>(FileSelectMode.DATASET);
+  const [invalidInputs, setInvalidInputs] = useState<boolean>(false);
 
   function handleProjectTemplateSelected(templateId: string | 'blank' | undefined) {
     setSelectedProjectTemplateId(templateId);
@@ -164,6 +165,11 @@ export default function ProjectModule({ data, pluginManager }: Props) {
     }
   }, [step]);
 
+  useEffect(() => {
+    if (step == ProjectStep.CaptureTestInput)
+      setDisableNextBtn(invalidInputs);
+  }, [invalidInputs])
+
   return (
     <div>
       <ReportDesignerHeader
@@ -191,6 +197,7 @@ export default function ProjectModule({ data, pluginManager }: Props) {
             onSelectDatasetBtnClick={selectDatasetBtnClickHandler}
             onSelectModelBtnClick={selectModelBtnClickHandler} 
             onSelectGroundTruthBtnClick={selectGroundTruthBtnClickHandler}
+            setInvalidInputs={setInvalidInputs}
             />}
           {step === ProjectStep.SelectDataset && <DatasetModelFilePicker
             mode={filePickerMode}
