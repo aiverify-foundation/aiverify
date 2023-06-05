@@ -7,7 +7,7 @@
       "maxH": 36
     },
     "name": "Interpretation (MSE)",
-    "description": "To interpret the results from mean square error parity",
+    "description": "To interpret the mean square error parity results",
     "dependencies": [
       {
         "cid": "fairness_metrics_toolbox_for_regression"
