@@ -22,7 +22,7 @@ export function changeWheelSpeed(el: HTMLDivElement, speedY: number) {
     }
     el.scrollTop = scrollY;
   };
-  el.addEventListener('mousewheel', handleMouseWheel as EventListener, false);
+  el.addEventListener('mousewheel', handleMouseWheel as EventListener, { passive: false, capture: false });
   return function () {
     if (removed) return;
     el.removeEventListener('mousewheel', handleMouseWheel as EventListener, false);
