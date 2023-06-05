@@ -197,10 +197,15 @@ class ModelManager:
 
         # Scan through all the supported model formats
         # Check that this model is one of the supported model formats
-        for _, model_plugin in model_plugins.items():
-            model_instance = model_plugin.Plugin(model)
-            if model_instance.is_supported():
-                is_success = True
-                break
+        try:
+            for _, model_plugin in model_plugins.items():
+                model_instance = model_plugin.Plugin(model)
+                if model_instance.is_supported():
+                    is_success = True
+                    break
+
+        except Exception:
+            is_success = False
+            model_instance = None
 
         return is_success, model_instance
