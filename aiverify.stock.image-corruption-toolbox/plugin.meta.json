@@ -1,7 +1,0 @@
-{
-    "gid": "aiverify.stock.image_corruption_toolbox",
-    "version": "0.9.0",
-    "name": "Image Corruption Toolbox",
-    "author": "AI Verify",
-    "description": "Robustness plugin with image corruption algorithms (general, blur, digital, environment)"
-}
