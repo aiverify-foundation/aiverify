@@ -1,8 +1,6 @@
 import logging
 from typing import Callable, Dict, Tuple, Union
 
-from test_engine_core.utils.validate_checks import is_empty_string
-
 from test_engine_app.app_logger import AppLogger
 from test_engine_app.enums.task_type import TaskType
 from test_engine_app.interfaces.iworkerfunction import IWorkerFunction
@@ -11,6 +9,7 @@ from test_engine_app.processing.stream_formatter import StreamFormatter
 from test_engine_app.processing.task_argument import TaskArgument
 from test_engine_app.processing.task_processing import TaskProcessing
 from test_engine_app.processing.task_result import TaskResult
+from test_engine_core.utils.validate_checks import is_empty_string
 
 
 class Task(IWorkerFunction):
@@ -150,9 +149,6 @@ class Task(IWorkerFunction):
                     self._task_arguments
                 )
         else:
-            # Failed validation and Set task failure
-            self._task_results.set_failure()
-
             # Check if id is not None, we can set HSET with error messages
             if not is_empty_string(self._task_arguments.id):
                 self._logger.generate_stream_logger(self._task_arguments.id)
@@ -193,6 +189,10 @@ class Task(IWorkerFunction):
                     "Warning",
                     "task.py",
                 )
+
+            # Failed validation and Set task failure
+            self._task_results.set_failure()
+
         return is_success, error_messages
 
     def _send_task_update(self) -> None:

@@ -370,9 +370,7 @@ class PluginManager:
         if is_success:
             return algorithm_instance, None, error_message
         else:
-            raise RuntimeError(
-                f"There was an error loading algorithm: {arguments} ({error_message})"
-            )
+            raise RuntimeError(f"There was an error loading algorithm: {error_message}")
 
     @staticmethod
     def _delete_plugins_by_type(plugin_type: PluginType, plugin_name: str) -> None:
