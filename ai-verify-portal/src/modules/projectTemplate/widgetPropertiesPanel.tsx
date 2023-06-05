@@ -136,14 +136,14 @@ function WidgetPropertiesPanel(props: WidgetPropertiesPanelProps) {
             <IconButton
               iconComponent={FormatAlignLeftIcon}
               style={{ marginRight: '5px'}}
-              onClick={handleAlignmentChange('justifyContent', 'left')} />
+              onClick={handleAlignmentChange('textAlign', 'left')} />
             <IconButton
               iconComponent={FormatAlignCenterIcon}
               style={{ marginRight: '5px'}} 
-              onClick={handleAlignmentChange('justifyContent', 'center')} />
+              onClick={handleAlignmentChange('textAlign', 'center')} />
             <IconButton
               iconComponent={FormatAlignRightIcon}
-              onClick={handleAlignmentChange('justifyContent', 'right')} />
+              onClick={handleAlignmentChange('textAlign', 'right')} />
           </div>
           <div>
             <IconButton

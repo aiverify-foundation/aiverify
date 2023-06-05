@@ -52,13 +52,13 @@ export default function TemplateDetail (props: TemplateDetailProps) {
 					offsetTop={-10}>
 					<div className={styles.heading}>{template.projectInfo.name}</div>
 				</Tooltip>
-				<Tooltip content={template.projectInfo.name}
+				{template.projectInfo.description ? <Tooltip content={template.projectInfo.description}
 					position={TooltipPosition.bottom}
 					backgroundColor='#676767'
 					fontColor='#FFFFFF'
 					offsetTop={5}>
 					<div className={styles.description}>{template.projectInfo.description}</div>
-				</Tooltip>
+				</Tooltip> : null}
 				{template.projectInfo.company ?
 					<div className={styles.author}>
 						<span>Author: </span>{template.projectInfo.company}
