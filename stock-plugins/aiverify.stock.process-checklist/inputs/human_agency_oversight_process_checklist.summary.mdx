@@ -1,0 +1,21 @@
+import { getTotal, getCompleted } from './processChecklistSummary' 
+import { config } from './config_human_agency_oversight';
+
+{/* Return summary of data */}
+export const summary= (data) => {
+	if (!data)
+		return "No data";
+  return `${getCompleted(data)} out of ${getTotal(config)} Checks done`
+}
+
+{/* Return progress in percentage (0-100) */}
+export const progress = (data) => {
+	if (!data)
+		return 0;
+  return Math.round(getCompleted(data)/getTotal(config)*100)
+}
+
+{/* Validate data. */}
+export const validate = (data) => {
+  return progress(data) == 100;
+}
