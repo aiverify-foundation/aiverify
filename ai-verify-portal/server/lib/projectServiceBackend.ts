@@ -24,6 +24,7 @@ export const GET_PROJECTS = gql`
             projectInfo {
                 name
                 description
+                company
             }
             report {
                 status
@@ -206,6 +207,7 @@ export const GET_REPORT = gql`
                 projectInfo {
                     name
                     description
+                    company
                 }
                 globalVars {
                     key
