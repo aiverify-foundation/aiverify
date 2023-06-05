@@ -27,8 +27,7 @@ if __name__ == "__main__":
     plugin_argument_values = {
         "sensitive_feature": sensitive_feature,
     }
-
-    core_modules_path = "../../../test-engine-core-modules"
+    
     # =====================================================================================
     # NOTE: Do not modify the code below
     # =====================================================================================
