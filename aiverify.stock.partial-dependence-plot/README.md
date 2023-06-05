@@ -4,7 +4,7 @@
 
 This plugin explains how each feature and its feature value contribute to the predictions. The results are visualised as line graphs for each feature.
 
-## Plugin contents
+## Plugin Content
 - Algorithms
   
 | Name                    | Description                                                                                                    |

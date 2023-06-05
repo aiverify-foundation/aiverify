@@ -7,7 +7,7 @@ Boundary Attack is an attack that starts by adding a large amount of noise to a 
 
 This algorithm is developed for image dataset but can also be used to create noise on tabular dataset. However, it is to note that testing on tabular dataset may warrant caution when interpreting the results as this is not well-tested.
 
-## Plugin contents
+## Plugin Content
 - Algorithms
   
 | Name               | Description                                                                                      |

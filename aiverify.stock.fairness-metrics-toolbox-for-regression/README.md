@@ -6,7 +6,7 @@ This plugin computes and displays a list of fairness metrics to measure how corr
 
 
 
-## Plugin contents
+## Plugin Content
 - Algorithms
   
 | Name                                    | Description                                                                                                                             |

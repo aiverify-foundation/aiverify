@@ -12,7 +12,7 @@ There are four different broad groups of corruptions that are packaged in this p
 
 The toolbox generates corrupted images based on the uploaded test data at 5 different severity levels for each corruption function. The accuracy of the model is calculated with the new corrupted datasets.
 
-## Plugin contents
+## Plugin Content
 - Algorithms
   
 |          Name           |                                                                                             Description                                                                                             |

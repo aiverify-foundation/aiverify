@@ -3,7 +3,7 @@
 ## Description
 This plugin explains how your features affect your overall predictions by using Shapley Values.
 
-## Plugin contents
+## Plugin Content
 - Algorithms
   
 | Name               | Description                                                                                      |
