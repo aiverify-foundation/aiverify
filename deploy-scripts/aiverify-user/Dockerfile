@@ -79,9 +79,9 @@ RUN mkdir -p ai-verify-portal/plugins
 ## Widget files have to go into portal plugins folder before nextjs build
 ## Widget files are unzipped into subfolder whose name must match its plugin gid
 
-RUN unzip aiverify.stock.decorators/dist/*.zip -d ./ai-verify-portal/plugins/aiverify.stock.decorators
-RUN unzip aiverify.stock.process-checklist/dist/*.zip -d ./ai-verify-portal/plugins/aiverify.stock.process-checklist
-RUN unzip aiverify.stock.reports/dist/*.zip -d ./ai-verify-portal/plugins/aiverify.stock.reports
+RUN unzip stock-plugins/aiverify.stock.decorators/dist/*.zip -d ./ai-verify-portal/plugins/aiverify.stock.decorators
+RUN unzip stock-plugins/aiverify.stock.process-checklist/dist/*.zip -d ./ai-verify-portal/plugins/aiverify.stock.process-checklist
+RUN unzip stock-plugins/aiverify.stock.reports/dist/*.zip -d ./ai-verify-portal/plugins/aiverify.stock.reports
 
 # Install dependencies for shared-library
 WORKDIR /app/aiverify/ai-verify-shared-library
@@ -134,13 +134,13 @@ REDIS_SERVER_HOSTNAME="redis"\n \
 REDIS_SERVER_PORT=6379\n \
 API_SERVER_PORT=8080' | tee .env
 WORKDIR /app/aiverify
-RUN unzip ./aiverify.stock.accumulated-local-effect/dist/*.zip -d ./ai-verify-portal/plugins/accumulated-local-effect
-RUN unzip ./aiverify.stock.fairness-metrics-toolbox-for-classification/dist/*.zip -d ./ai-verify-portal/plugins/fairness-metrics-toolbox-for-classification
-RUN unzip ./aiverify.stock.fairness-metrics-toolbox-for-regression/dist/*.zip -d ./ai-verify-portal/plugins/fairness-metrics-toolbox-for-regression
-RUN unzip ./aiverify.stock.image-corruption-toolbox/dist/*.zip -d ./ai-verify-portal/plugins/image-corruption-toolbox
-RUN unzip ./aiverify.stock.partial-dependence-plot/dist/*.zip -d ./ai-verify-portal/plugins/partial-dependence-plot
-RUN unzip ./aiverify.stock.robustness-toolbox/dist/*.zip -d ./ai-verify-portal/plugins/robustness-toolbox
-RUN unzip ./aiverify.stock.shap-toolbox/dist/*.zip -d ./ai-verify-portal/plugins/shap-toolbox
+RUN unzip ./stock-plugins/aiverify.stock.accumulated-local-effect/dist/*.zip -d ./ai-verify-portal/plugins/accumulated-local-effect
+RUN unzip ./stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/dist/*.zip -d ./ai-verify-portal/plugins/fairness-metrics-toolbox-for-classification
+RUN unzip ./stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-regression/dist/*.zip -d ./ai-verify-portal/plugins/fairness-metrics-toolbox-for-regression
+RUN unzip ./stock-plugins/aiverify.stock.image-corruption-toolbox/dist/*.zip -d ./ai-verify-portal/plugins/image-corruption-toolbox
+RUN unzip ./stock-plugins/aiverify.stock.partial-dependence-plot/dist/*.zip -d ./ai-verify-portal/plugins/partial-dependence-plot
+RUN unzip ./stock-plugins/aiverify.stock.robustness-toolbox/dist/*.zip -d ./ai-verify-portal/plugins/robustness-toolbox
+RUN unzip ./stock-plugins/aiverify.stock.shap-toolbox/dist/*.zip -d ./ai-verify-portal/plugins/shap-toolbox
 
 # Build portal (nextjs build)
 WORKDIR /app/aiverify/ai-verify-portal

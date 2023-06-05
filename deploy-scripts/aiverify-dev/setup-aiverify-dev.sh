@@ -165,9 +165,9 @@ fi
 cd ..
 
 # Install stock plugins (non-algos)
-unzip aiverify.stock.decorators/dist/aiverify.stock.decorators-*.zip -d ai-verify-portal/plugins/stock.decorators
-unzip aiverify.stock.process-checklist/dist/aiverify.stock.process_checklist-*.zip -d ai-verify-portal/plugins/stock.process-checklist
-unzip aiverify.stock.reports/dist/aiverify.stock.reports-*.zip -d ai-verify-portal/plugins/stock.reports
+unzip stock-plugins/aiverify.stock.decorators/dist/aiverify.stock.decorators-*.zip -d ai-verify-portal/plugins/stock.decorators
+unzip stock-plugins/aiverify.stock.process-checklist/dist/aiverify.stock.process_checklist-*.zip -d ai-verify-portal/plugins/stock.process-checklist
+unzip stock-plugins/aiverify.stock.reports/dist/aiverify.stock.reports-*.zip -d ai-verify-portal/plugins/stock.reports
 
 ############ Python ############
 
@@ -191,13 +191,13 @@ cd ..
 
 # Install stock plugins (algos)
 echo "Install stock plugins (algos)"
-unzip aiverify.stock.accumulated-local-effect/dist/*.zip -d ai-verify-portal/plugins/stock.accumulated-local-effect
-unzip aiverify.stock.fairness-metrics-toolbox-for-classification/dist/*.zip -d ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-classification
-unzip aiverify.stock.fairness-metrics-toolbox-for-regression/dist/*.zip -d ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression
-unzip aiverify.stock.image-corruption-toolbox/dist/*.zip -d ai-verify-portal/plugins/stock.image-corruption-toolbox
-unzip aiverify.stock.partial-dependence-plot/dist/*.zip -d ai-verify-portal/plugins/stock.partial-dependence-plot
-unzip aiverify.stock.robustness-toolbox/dist/*.zip -d ai-verify-portal/plugins/stock.robustness-toolbox
-unzip aiverify.stock.shap-toolbox/dist/*.zip -d ai-verify-portal/plugins/stock.shap-toolbox
+unzip stock-plugins/aiverify.stock.accumulated-local-effect/dist/*.zip -d ai-verify-portal/plugins/stock.accumulated-local-effect
+unzip stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/dist/*.zip -d ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-classification
+unzip stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-regression/dist/*.zip -d ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression
+unzip stock-plugins/aiverify.stock.image-corruption-toolbox/dist/*.zip -d ai-verify-portal/plugins/stock.image-corruption-toolbox
+unzip stock-plugins/aiverify.stock.partial-dependence-plot/dist/*.zip -d ai-verify-portal/plugins/stock.partial-dependence-plot
+unzip stock-plugins/aiverify.stock.robustness-toolbox/dist/*.zip -d ai-verify-portal/plugins/stock.robustness-toolbox
+unzip stock-plugins/aiverify.stock.shap-toolbox/dist/*.zip -d ai-verify-portal/plugins/stock.shap-toolbox
 
 echo "Run portal build"
 cd ai-verify-portal
