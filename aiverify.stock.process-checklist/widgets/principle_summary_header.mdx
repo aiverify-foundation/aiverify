@@ -1,0 +1,28 @@
+import { useEffect, useState } from 'react';
+import { getTotalQuestions } from './summary_compute.ts';
+import { getPrincipleConfig } from '../inputs/config_principle_areas.ts';
+
+export const PrincipleSummaryHeader = ({ props }) => {
+  const [ principleConfig, setPrincipleConfig ] = useState(null);
+  const [ totalQuestions, setTotalQuestions ] = useState(null);
+
+  useEffect(() => {
+    if (!props.properties || !props.properties.principle)
+      return;
+    const principleConfig = getPrincipleConfig(props.properties.principle);
+    setPrincipleConfig(principleConfig);
+    const totalQuestions = getTotalQuestions(props.properties.principle);
+    setTotalQuestions(totalQuestions)
+  }, [props.properties])
+
+  if (!totalQuestions || !principleConfig)
+    return <div>Invalid Principle</div>
+
+  return (
+    <div>
+      The principle of <b>{principleConfig.principle.name}</b> was assessed through {totalQuestions} process check{(totalQuestions>1)?"s":""}{principleConfig.principle.hasTechnicalTests?" and technical test":""}.
+    </div>
+  )
+}
+
+<PrincipleSummaryHeader props={props} />
