@@ -12,12 +12,14 @@ In this table, we list the supported AI framework and algorithms.
 | || | Gradient Boosting Classifier |
 | || | Perceptron |
 | || | Bagging Classifier |
+| || | Linear Support Vector Classifier |
 | || Multiclass Classification | Logistic Regression |
 | || | Decision Tree |
 | || | Random Forest |
 | || | Gradient Boosting Classifier |
 | || | Perceptron |
 | || | Bagging Classifier |
+| || | Linear Support Vector Classifier |
 | || Regression| Linear Regression |
 | || | Extra Tree Regressor |
 | || | Gradient Boosting Regressor |
