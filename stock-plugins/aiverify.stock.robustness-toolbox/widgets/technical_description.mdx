@@ -222,7 +222,7 @@ export const MyChart = ({ results, modelType}) => {
 
           return (
             <>
-              <table border = "1" style={{width:"80%"}}>
+              <table border = "1" style={{width:"80%", borderCollapse:'collapse'}}>
                 <tbody>
                   <tr align="center">
                     {feature_names_content}
@@ -253,7 +253,7 @@ export const MyChart = ({ results, modelType}) => {
         else{
           return(
             <>
-              <table border="1" style={{width:"80%"}}>
+              <table border="1" style={{width:"80%", borderCollapse:'collapse'}}>
                 <tbody>
                   <tr align="center">
                     <td><img src={orgSample}/></td>
