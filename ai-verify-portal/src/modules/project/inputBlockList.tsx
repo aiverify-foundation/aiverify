@@ -27,6 +27,7 @@ type InputBlockListProps = {
 type IblockCardProps = {
   iBlock: InputBlock
   getSummaryFn: (gid: string) => string
+  getValidateFn: (gid: string) => boolean
   openClickHandler: (iblock: InputBlock) => () => void
 }
 
@@ -47,7 +48,7 @@ function calculateCSSWidth(muiWidth: InputBoxWidths | undefined): string | undef
 }
 
 function IblockCard(props: IblockCardProps) {
-  const { iBlock, getSummaryFn, openClickHandler } = props;
+  const { iBlock, getSummaryFn, getValidateFn, openClickHandler } = props;
 
   return <div id={`ibcard-${iBlock.gid}`} className={clsx(
     styles.inputCard,
@@ -64,6 +65,7 @@ function IblockCard(props: IblockCardProps) {
         <button
           className='aivBase-button aivBase-button--primary aivBase-button--small'
           onClick={openClickHandler(iBlock)}>Open</button>
+        {!getValidateFn(iBlock.gid) ? <div className={styles.errorMsg}>Invalid Inputs</div> : null}
       </div>
     </div>
   </div>
@@ -132,6 +134,13 @@ export default function InputBlockList (props: InputBlockListProps) {
       return "";
   }
 
+  const getValidate = (gid: string):boolean => {
+    if (inputBlockStates[gid])
+      return inputBlockStates[gid].validateFn(projectStore.inputBlockData[gid]);
+    else
+      return true;
+  }
+
   const showInputBlock = (gid: string): void => {
     const state = inputBlockStates[gid];
     if (currentState && (currentState.inputBlock.gid === gid)) {
@@ -192,6 +201,7 @@ export default function InputBlockList (props: InputBlockListProps) {
                   key={`summary-${ib.gid}`}
                   iBlock={ib}
                   getSummaryFn={getSummary}
+                  getValidateFn={getValidate}
                   openClickHandler={handleOpenBtnClick}
                 />)}
               </div> 
@@ -202,6 +212,7 @@ export default function InputBlockList (props: InputBlockListProps) {
               key={`summary-${iblock.gid}`}
               iBlock={iblock}
               getSummaryFn={getSummary}
+              getValidateFn={getValidate}
               openClickHandler={handleOpenBtnClick}
             />}
         })}
