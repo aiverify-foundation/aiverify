@@ -25,7 +25,7 @@ In a **multiclass classification model** where there are more than two outcomes,
 | True Negatives (TN)     | The actual value and predicted value are both **NOT cat**.     | Correct Prediction       |
 | False Positives (FP)     | The actual value is **NOT cat**, but the predicted value **cat**.    | Wrong Prediction       |
 | False Negatives (FN)     | The actual value is **cat**, but the predicted value is **NOT cat**.     | Wrong Prediction       |
-
+-
 This calculation will be repeated for other classes (e.g., two separate measurements for dog and mouse using the same logic above).
 
 ## Fairness Metrics in AI Verify
@@ -55,12 +55,25 @@ There are three guided questions:
 
 | Guided Questions     | Options | Rationale |  
 | -----------  | ----------- | --- | 
-| What do you consider to be fair in your use case?  | a. Equal representation<br/>b. Wrong predictions<br/>c. Correct Predictions | To guide the user into thinking about the broad concern in this use case  |
-| Whose impact are you more concerned about?  | a. Is it qualified group not receiving opportunity?<br/>b. Is it unqualified group receiving opportunity?<br/>c. Is it qualified group receiving opportunity?<br/>d. Is it unqualified group not receiving opportunity? | To guide the user into identifying the actual concern in this use case |
-| Does your final decision depends heavily on the model?  | a. Yes<br/>b. No | If the final decision is heavily dependent on the model, the model's prediction should be prioritised. Hence, the metric chosen has the model's prediction as the denominator. Otherwise, we will prioritise the actual value as the denominator |
+| What do you consider to be fair in your use case?  | a. Equal representation<br/><br/>b. Wrong predictions<br/><br/>c. Correct Predictions | To assist the user in identifying the overarching concern in this particular use case  |
+| Whose impact are you more concerned about?  | a. Is it qualified group not receiving opportunity?<br/><br/>b. Is it unqualified group receiving opportunity?<br/><br/>c. Is it qualified group receiving opportunity?<br/><br/>d. Is it unqualified group not receiving opportunity? | To assist the user in choosing the most concerning consequence in this use case |
+| Does your final decision depends heavily on the model?  | a. Yes<br/>b. No | To determine whether we should prioritise the model's predictions or the actual true value as the demoniator |
 
 ### Example Use Case
 
+- **Use Case**: Job Application Prediction Model
+- **Description**: To predict whether this individual will get the job
+- **Sensitive Attribute**: *gender*
+- **Qualified people**: Qualified candidates
+- **Disqualified people**: Unqualified candidates
+
+| Guided Questions    | Rationale |  
+| -----------  | ----------- |
+| What do you consider to be fair in your use case?    | [Correct Prediction] Offering the job to qualified candidates is more important |  
+| Whose impact is more important to you?    | [Qualified people receiving opportunity] Offering the job to qualified candidate is more important than ensuring that unqualified candidates are rejected as hiring the correct candidate is the objective | 
+| Does your final decision depend heavily on the model?    | [No] There is a human-in-the-loop decision making process. | 
+
+**Final Relevant Metrics:** True Positive Rate Parity
 
 
 # Reference
