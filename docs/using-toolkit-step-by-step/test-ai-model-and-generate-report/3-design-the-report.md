@@ -1,6 +1,6 @@
 In this Canvas page, you can design and preview how the report to be generated will look like. Since the _AI Verify Summary Report Template for Classification Models_ is used for this project, the canvas is already populated with report components (widgets) that will help you obtain a report that aligns with the AI Verify Testing Framework.
 
-To include the *Model Name* and *Company Name* in the cover page, we will be using global variables.The project details you previously filled are saved as global variables and can be used as widget content.
+To include the *Model Name* and *Company Name* in the cover page, we will be using global variables. The project details you previously filled are saved as global variables and can be used as widget content.
 
 Click **'v'** to expand Global Variable.
 

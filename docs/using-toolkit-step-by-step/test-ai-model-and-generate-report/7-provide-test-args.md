@@ -2,9 +2,12 @@ The _AI Verify Summary Report Template for Classification Models_ requires **Fai
 
 ![test-args](../../res/test-ai-model-generate-report/input-block-3.png)
 
+
+### Fairness Metrics Toolbox for Classification
+
 Click on **‘Open’** for Fairness Metrics Toolbox for Classification. Provide the test argument:
 
-| Test Argument                           | Description                                                              | Value | 
+| Test Argument                           | Description                                                              | Tutorial Value | 
 | --------------------------------------- | ------------------------------------------------------------------------ | ----- |
 | **(required) Sensitive Feature Names:** | This is the column name of the sensitive feature in the testing dataset. | gender, race |
 
@@ -14,29 +17,31 @@ Click on **‘Ok’**.
 
 ![sensitive-feature](../../res/test-ai-model-generate-report/fmt.png)
 
+### Robustness Toolbox
+
 Click on **‘Open’** for Robustness Toolbox.
 
 Provide the test arguments:
 
-| Test Argument                                    | Description                                                                                                                                                                       | Value |
+| Test Argument                                    | Description                                                                                                                                                                       | Tutorial Value |
 | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
-| **Annotated ground truth path\***                | This is the path to the annotated ground truth file for image datasets. [(See Getting Started > Preparation of Input Files)](../../getting-started/preparation-of-input-files.md) | Select the path to testing dataset |
-| **Name of column containing image file names\*** | This is the column name in the annotated ground truth file for image datasets that contains the image file names.                                                                 | file_name |
-
-_\*This argument is required only if you are testing an image dataset. For tabular datasets like the one used in this tutorial, it can be left blank._
+| **(required) Annotated ground truth path**                | This is the path to the annotated ground truth file for image datasets. For image datasets, it is the path to the annotated ground truth file. [(See Getting Started > Preparation of Input Files)](../../getting-started/preparation-of-input-files.md) | Select the path to `pickle_pandas_mock_binary_classification_credit_risk_testing.sav` |
+| **(required) Name of column containing image file names** | This is the column name of the ground truth. For image datasets, it is the column name in the annotated ground truth file that contains the image file names. | default |
 
 Click on **‘Ok’**.
 
 ![robustness-toolbox](../../res/test-ai-model-generate-report/rt.png)
 
+### SHAP Toolbox
+
 Click on **‘Open’** for SHAP Toolbox.
 
 Provide the test arguments:
 
-| Test Argument                             | Description                                                                                                                                                                             | Value | 
+| Test Argument                             | Description                                                                                                                                                                             | Tutorial Value | 
 | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -----|
 | **(required) Type of Explainability**     | This is the type of explainability test to be run.                                                                                                                                      | Select "global" |
-| **(required) Path of the Background**     | This is the path to the background dataset to be used to create permutations. [(See Getting Started > Preparation of Input Files)](../../getting-started/preparation-of-input-files.md) | Select the path to testing dataset |
+| **(required) Path of the Background**     | This is the path to the background dataset to be used to create permutations. [(See Getting Started > Preparation of Input Files)](../../getting-started/preparation-of-input-files.md) | Select the path to `pickle_pandas_mock_binary_classification_credit_risk_testing.sav` |
 | **(required) Size of the Background\***   | This is the number of data points from the background dataset to be sampled. Enter 0 to skip sampling and use the entire dataset.                                                       | 100 |
 | **(required) Type of the Test Dataset\*** | This is the number of data points from the test dataset to be sampled. Enter 0 to skip sampling and use the entire dataset.                                                             | 100 |
 
