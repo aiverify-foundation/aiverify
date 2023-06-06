@@ -1,4 +1,6 @@
-The _AI Verify Summary Report Template for Classification Models_ contains a decision tree component that aids users to select the most appropriate fairness metric for their use case. The Fairness Tree will be contextualised to your AI use case based on the definitions you provide.
+The _AI Verify Summary Report Template for Classification Models_ contains a decision tree component that aids users to select the most appropriate fairness metric for their use case.  To better understand how the decision tree is used in the selection of metrics, refer to [this guide](../../how-to/use-fairness-tree.md).
+
+The Fairness Tree will be contextualised to your AI use case based on the definitions you provide.
 
 Click on **‘Open’**.
 
