@@ -7,11 +7,9 @@ from typing import Dict, List, Tuple, Union
 
 import semantic_version
 from multidict import MultiDictProxy
-from semantic_version import SimpleSpec, Version
+from test_engine_app.app_logger import AppLogger
 from test_engine_core.utils.json_utils import load_schema_file, validate_json
 from test_engine_core.utils.validate_checks import is_empty_string
-
-from test_engine_app.app_logger import AppLogger
 
 
 class RequirementsChecks:
@@ -175,9 +173,11 @@ class RequirementsChecks:
             min_position = min(list_of_position)
             # extract the name of package
             package_name = requirement[0:min_position]
-            package_name_stripped = package_name.strip()
+            package_name_stripped = package_name.strip().lower()
             # extract the version of package
             package_version = requirement[min_position:]
+            for token in list_of_token_symbol:
+                package_version = package_version.replace(token, "")
             package_version_stripped = package_version.strip()
             return True, package_name_stripped, package_version_stripped, ""
 
@@ -225,7 +225,7 @@ class RequirementsChecks:
         (
             is_extraction_success,
             extracted_package_name,
-            extracted_package_versions,
+            extracted_package_version,
             extraction_error_message,
         ) = self.extract_package_name_and_version(requirement)
         if not is_extraction_success:
@@ -273,21 +273,21 @@ class RequirementsChecks:
 
         try:
             # check compatibility
-            extracted_package_versions = extracted_package_versions.replace(" ", "")
+            extracted_package_version = extracted_package_version.replace(" ", "")
 
             # coerce the install package version incase its just 0.41, with coerce it will be fixed to 0.41.0
-            temp_version = semantic_version.Version.coerce(installed_package_version)
-            installed_package_version = Version(
-                f"{temp_version.major}.{temp_version.minor}.{temp_version.patch}"
+            temp_extracted_version = semantic_version.Version.coerce(
+                extracted_package_version
             )
-            # Perform matching of extracted package version to match with installed package version
-            is_matched = SimpleSpec(extracted_package_versions).match(
+            temp_installed_version = semantic_version.Version.coerce(
                 installed_package_version
             )
-            if is_matched:
-                return is_matched, ""
+
+            # Perform matching of extracted package version to match with installed package version
+            if temp_extracted_version == temp_installed_version:
+                return True, ""
             else:
-                return is_matched, "The package version is not compatible"
+                return False, "The package version is not compatible"
 
         except ValueError as value_error:
             return (
@@ -311,7 +311,7 @@ class RequirementsChecks:
              If the call is unsuccessful, it will be None with an error message.
         """
         for package_info in installed_packages:
-            if package_name == package_info["name"]:
+            if package_name == package_info["name"].lower():
                 return True, package_info["version"], ""
         return False, None, "Unable to get package version"
 

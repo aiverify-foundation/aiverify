@@ -1,5 +1,5 @@
 cloudpickle==2.2.1 ; python_version >= "3.10" and python_version < "4.0"
-colorama==0.4.6 ; python_version >= "3.10" and python_version < "4.0" and platform_system == "Windows"
+colorama==0.4.6 ; python_version >= "3.10" and python_version < "4.0"
 joblib==1.2.0 ; python_version >= "3.10" and python_version < "4.0"
 llvmlite==0.40.0 ; python_version >= "3.10" and python_version < "4.0"
 numba==0.57.0 ; python_version >= "3.10" and python_version < "4.0"
