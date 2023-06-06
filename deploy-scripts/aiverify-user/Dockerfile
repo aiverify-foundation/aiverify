@@ -74,7 +74,7 @@ ARG ACCESS_TOKEN
 
 # Clone aiverify monorepo
 WORKDIR /app
-RUN git clone https://oauth2:${ACCESS_TOKEN}@github.com/imda-btg/aiverify.git --branch=main
+RUN git clone https://github.com/imda-btg/aiverify.git --branch=v0.9.x
 
 WORKDIR /app/aiverify
 

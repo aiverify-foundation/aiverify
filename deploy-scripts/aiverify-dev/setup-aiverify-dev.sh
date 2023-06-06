@@ -166,7 +166,7 @@ sudo apt install -y python3.10-venv
 
 pat=$1
 # Won't need PAT when aiverify repo become public
-git clone https://oauth2:${pat}@github.com/imda-btg/aiverify.git --branch=main
+git clone https://github.com/imda-btg/aiverify.git --branch=v0.9.x
 cd aiverify
 
 ############ Node ############
