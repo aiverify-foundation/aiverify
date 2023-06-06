@@ -1,5 +1,4 @@
 # Image Corruption Toolbox
-(aiverify.stock.image-corruption-toolbox) [[source](https://github.com/IMDA-BTG/aiverify/tree/main/aiverify.stock.image-corruption-toolbox)]
 
 ## Description
 This plugin tests the robustness of AI models to natural corruptions. 
