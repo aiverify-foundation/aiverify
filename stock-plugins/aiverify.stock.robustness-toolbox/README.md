@@ -28,11 +28,11 @@ This algorithm is developed for image dataset but can also be used to create noi
 This plugin was mainly designed for image datasets, but can also be used on tabular datasets.
 
 For images:
-- Image dataset ([Tutorial for Preparation](www.test.com))
-- Annotated Ground Truth Dataset ([Tutorial for Preparation](www.test.com))
+- Image dataset ([Tutorial for Preparation](https://imda-btg.github.io/aiverify/getting-started/prepare-image/#1-dataset-preparation))
+- Annotated Ground Truth Dataset ([Tutorial for Preparation](https://imda-btg.github.io/aiverify/getting-started/prepare-image/#2-annotated-ground-truth-dataset))
 
 For tabular:
-- Tabular dataset ([Tutorial for Preparation](www.test.com))
+- Tabular dataset ([Tutorial for Preparation](https://imda-btg.github.io/aiverify/getting-started/prepare-tabular/))
 
 ### Algorithm User Input(s)
 

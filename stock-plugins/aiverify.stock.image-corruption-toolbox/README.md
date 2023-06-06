@@ -1,5 +1,4 @@
 # Image Corruption Toolbox
-(aiverify.stock.image-corruption-toolbox) [[source](https://github.com/IMDA-BTG/aiverify/tree/main/aiverify.stock.image-corruption-toolbox)]
 
 ## Description
 This plugin tests the robustness of AI models to natural corruptions. 
@@ -16,11 +15,11 @@ The toolbox generates corrupted images based on the uploaded test data at 5 diff
 - Algorithms
   
 |          Name           |                                                                                             Description                                                                                             |
-| :---------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-|    Blur Corruptions     |     Algorithm that adds blur corruptions (defocus, gaussian, glass, horizontal motion, vertical motion and zoom Blur) to images at 5 severity levels, and calcualtes the accuracy of the model      |
-|   Digital Corruptions   | Algorithm that adds digital corruptions (brightness up and down, contrast up and down, compression, random tilt, saturate) to images at 5 severity levels, and calcualtes the accuracy of the model |
-| Environment Corruptions |                             Algorithm that adds environmental corruptions (rain, fog and snow) to images at 5 severity levels, and calcualtes the accuracy of the model                             |
-|   General Corruptions   |                Algorithm that adds environmental corruptions (gaussian, poisson and salt and pepper noise) to images at 5 severity levels, and calcualtes the accuracy of the model                 |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|    Blur Corruptions     |     Algorithm that adds blur corruptions (defocus, gaussian, glass, horizontal motion, vertical motion and zoom Blur) to images at 5 severity levels, and calculates the accuracy of the model      |
+|   Digital Corruptions   | Algorithm that adds digital corruptions (brightness up and down, contrast up and down, compression, random tilt, saturate) to images at 5 severity levels, and calculates the accuracy of the model |
+| Environment Corruptions |                             Algorithm that adds environmental corruptions (rain, fog and snow) to images at 5 severity levels, and calculates the accuracy of the model                             |
+|   General Corruptions   |                Algorithm that adds environmental corruptions (gaussian, poisson and salt and pepper noise) to images at 5 severity levels, and calculates the accuracy of the model                 |
 
 
 - Widgets
@@ -41,8 +40,8 @@ The toolbox generates corrupted images based on the uploaded test data at 5 diff
 
 ## Using the Plugin in AI Verify
 ### Data Preparation
-- Image dataset ([Tutorial for Preparation](www.test.com))
-- Annotated Ground Truth Dataset ([Tutorial for Preparation](www.test.com))
+- Image dataset ([Tutorial for Preparation](https://imda-btg.github.io/aiverify/getting-started/prepare-image/#1-dataset-preparation))
+- Annotated Ground Truth Dataset ([Tutorial for Preparation](https://imda-btg.github.io/aiverify/getting-started/prepare-image/#2-annotated-ground-truth-dataset))
 
 ### Additional Requirements
 ImageMagick (Details for installation can be found [here](https://docs.wand-py.org/en/0.6.11/guide/install.html#))

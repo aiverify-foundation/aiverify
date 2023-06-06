@@ -22,7 +22,7 @@ This plugin explains how each feature and its feature value contribute to the pr
 
 ## Using the Plugin in AI Verify
 ### Data Preparation
-- Tabular dataset ([Tutorial for Preparation](www.test.com))
+- Tabular dataset ([Tutorial for Preparation](https://imda-btg.github.io/aiverify/getting-started/prepare-tabular/))
 
 
 ### Sample use of the widgets

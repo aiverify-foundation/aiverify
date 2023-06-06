@@ -25,7 +25,7 @@ The Fairness Metrics Toolbox (FMT) for Classification contains a list of fairnes
 
 ## Using the Plugin in AI Verify
 ### Data Preparation
-- Tabular dataset ([Tutorial for Preparation](www.test.com))
+- Tabular dataset ([Tutorial for Preparation](https://imda-btg.github.io/aiverify/getting-started/prepare-tabular/))
 
 ### Algorithm User Input(s)
 
@@ -34,7 +34,7 @@ The Fairness Metrics Toolbox (FMT) for Classification contains a list of fairnes
 | Sensitive Feature Name | Array of sensitive features names </br> You may select multiple sensitive features of interest, and as a guide these are usually demographic features | `array` |
 
 ### Algorithm Input Block - Fairness Tree
-The Fairness Tree helps you to select the most relevant fairness metrics for your use case. Read more on how to use the fairness tree [here](/docs/how_to/use_fairness_tree.md) 
+The Fairness Tree helps you to select the most relevant fairness metrics for your use case. Read more on how to understand the fairness tree [here](https://imda-btg.github.io/aiverify/how-to/use-fairness-tree/). 
 
 ### Sample use of the widgets
 
