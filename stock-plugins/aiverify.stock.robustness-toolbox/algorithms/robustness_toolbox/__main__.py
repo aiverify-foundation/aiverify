@@ -37,7 +37,7 @@ if __name__ == "__main__":
     run_pipeline = True
     model_type = ModelType.CLASSIFICATION
 
-    core_modules_path = "../../../test-engine-core-modules"
+    core_modules_path = "../../../../test-engine-core-modules"
     plugin_argument_values = {
         "annotated_ground_truth_path": (
             "tests/user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"

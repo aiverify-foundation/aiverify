@@ -23,7 +23,7 @@ if __name__ == "__main__":
     # run_pipeline = True
     # model_type = ModelType.REGRESSION
 
-    core_modules_path = "../../../test-engine-core-modules"
+    core_modules_path = "../../../../test-engine-core-modules"
     plugin_argument_values = {
         "sensitive_feature": sensitive_feature,
     }
