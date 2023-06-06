@@ -50,15 +50,15 @@ RUN apt update
 
 RUN apt install chromium -y
 
-RUN ln -s /usr/bin/chromium /usr/bin/chromium-browser
+# RUN ln -s /usr/bin/chromium /usr/bin/chromium-browser
 
 # Install libs needed by puppeter/chromium
-#RUN apt install -y libx11-xcb1 libxcomposite1 libxcursor1 libxdamage1 \
-#        libxi-dev libxtst-dev libnss3 libcups2 libxss1 libxrandr2 \
-#        libasound2 libatk1.0-0 libatk-bridge2.0-0 libpangocairo-1.0-0 \
-#        libgtk-3-0 libgbm1
+RUN apt install -y chromium libx11-xcb1 libxcomposite1 libxcursor1 libxdamage1 \
+       libxi-dev libxtst-dev libnss3 libcups2 libxss1 libxrandr2 \
+       libasound2 libatk1.0-0 libatk-bridge2.0-0 libpangocairo-1.0-0 \
+       libgtk-3-0 libgbm1
 
-#RUN groupadd -g $GID $USER
+RUN groupadd -g $GID $USER
 RUN useradd -u $UID -g $GID -ms /bin/bash $USER
 
 # Install Git
@@ -111,8 +111,10 @@ DB_URI=mongodb://aiverify:aiverify@db:27017/aiverify\n \
 REDIS_HOST=redis\n \
 REDIS_PORT=6379\n \
 WEB_REPORT_URL=http://localhost:3000/reportStatus/printview' | tee .env
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD 1
+# ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 RUN npm install
+RUN npm install puppeteer
+RUN node node_modules/puppeteer/install.js
 
 ############### Python #################
 
@@ -144,6 +146,7 @@ RUN unzip ./stock-plugins/aiverify.stock.shap-toolbox/dist/*.zip -d ./ai-verify-
 
 # Build portal (nextjs build)
 WORKDIR /app/aiverify/ai-verify-portal
+
 RUN npm run build
 
 RUN chown -R $UID:$GID /app/aiverify
@@ -155,5 +158,6 @@ WORKDIR /app/aiverify/ai-verify-apigw
 
 #RUN PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=1 npm install puppeteer
 RUN npm install puppeteer
+RUN node node_modules/puppeteer/install.js
 
 WORKDIR /app
