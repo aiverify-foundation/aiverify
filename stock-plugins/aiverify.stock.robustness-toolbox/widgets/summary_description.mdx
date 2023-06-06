@@ -98,7 +98,7 @@ export const MyChart = ({ results, modelType}) => {
                   <ul>
                     <li>The original and perturbed dataset achieved a mean absolute error rate at {results.org_performance} and {results.perturbed_performance} respectively.
                   </li>  
-                    <li>The model may not be robust as there seems to have a significant increase in error at {diffScoreAbsolute()}%.</li>
+                    <li>The model may not be robust as there seems to have a {diffScoreAbsolute()}% increase in error.</li>
                   </ul>
                   <br/>
                   <b>Recommendation(s):</b><br/>
@@ -153,7 +153,7 @@ export const MyChart = ({ results, modelType}) => {
                   {preword}<br/>
                   <ul>
                     <li>The original and perturbed dataset achieved an accuracy of {getPercentage("org_performance")}% and {getPercentage("perturbed_performance")}% respectively. </li>  
-                    <li>The model may not be robust as there seems to have a significant drop in accuracy at {diffScorePercent()}%.</li>
+                    <li>The model may not be robust as there seems to have a {diffScorePercent()}% drop in accuracy.</li>
                   </ul>
                   <br/>
                   <b>Recommendation(s):</b><br/>
