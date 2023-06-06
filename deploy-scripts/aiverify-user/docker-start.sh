@@ -28,10 +28,10 @@ if [ "$RESET" == "--reset" ]; then
   mkdir -p ~/data/db
   mkdir -p ~/uploads/data
   mkdir -p ~/uploads/model
-  docker compose down --volumes
+  docker-compose down --volumes
 fi
 
 echo "Starting containers..."
-docker compose up $DETACH
+docker-compose up $DETACH
 
 

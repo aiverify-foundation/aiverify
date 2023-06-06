@@ -5,4 +5,4 @@ export CUR_GID=$(id -g)
 echo "uid=$CUR_UID gid=$CUR_GID"
 echo "Stopping containers..."
 
-docker compose stop
+docker-compose stop
