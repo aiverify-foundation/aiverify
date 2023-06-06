@@ -20,22 +20,29 @@ then
 fi
 
 # Check if Python3 is installed
+required_py_ver="Python 3.10"
 if ! which python3 &>/dev/null; then
-  echo "Python3 is not installed. Please install Python3, aiverify requires Python 3.10.x."
+  echo "Python3 is not installed. Please install Python3, aiverify requires $required_py_ver.x."
   exit 1
 fi
 
-py_req_ver="3.10"
-py_cur_ver=$(python3 --version | cut -d' ' -f2)
-py_cur_ver_maj=${py_cur_ver%.*}
-if (( $(echo "$py_cur_ver_maj $py_req_ver" | awk '{print ($1 < $2)}'  )))
-then
-  echo "aiverfiy requires Python3 $py_req_ver.x, please install Python3 $py_req_ver.x"
-  exit 1
-elif (( $(echo "$py_cur_ver_maj $py_req_ver" | awk '{print ($1 != $2)}'  )))
-then
-  echo "aiverify is tested on Python3 $py_req_ver.x, you may encounter issues with other Python3 versions"
+# Check Python version - must be 3.10.x (for now)
+py_ver=$(python3 --version 2>&1)
+if [[ $py_ver != $required_py_ver* ]]; then
+  echo "aiverify requires $required_py_ver.x, please install $required_py_ver.x."
 fi
+
+#py_req_ver="3.10"
+#py_cur_ver=$(python3 --version | cut -d' ' -f2)
+#py_cur_ver_maj=${py_cur_ver%.*}
+#if (( $(echo "$py_cur_ver_maj $py_req_ver" | awk '{print ($1 < $2)}'  )))
+#then
+#  echo "aiverfiy requires Python3 $py_req_ver.x, please install Python3 $py_req_ver.x"
+#  exit 1
+#elif (( $(echo "$py_cur_ver_maj $py_req_ver" | awk '{print ($1 != $2)}'  )))
+#then
+#  echo "aiverify is tested on Python3 $py_req_ver.x, you may encounter issues with other Python3 versions"
+#fi
 
 echo "This script requires sudo permission"
 sudo -v
@@ -159,7 +166,7 @@ sudo apt install -y python3.10-venv
 
 pat=$1
 # Won't need PAT when aiverify repo become public
-git clone https://oauth2:${pat}@github.com/imda-btg/aiverify.git
+git clone https://oauth2:${pat}@github.com/imda-btg/aiverify.git --branch=main
 cd aiverify
 
 ############ Node ############
@@ -234,36 +241,39 @@ echo "====================== Creating aiverify services ======================="
 
 echo "[Unit]
 Description=test-engine-app
-After=network.target
+After=network.target redis-server.service
+Requires=redis-server.service
 
 [Service]
 User=$USER
 WorkingDirectory=$(pwd)/test-engine-app
-ExecStart=/bin/bash -c 'source venv/bin/activate && python3 -m test_engine_app'
+ExecStart=/usr/bin/bash -c 'source ../venv/bin/activate && python3 -m test_engine_app'
 
 [Install]
 WantedBy=multi-user.target" | sudo tee /etc/systemd/system/test-engine-app.service
 
 echo "[Unit]
 Description=ai-verify-apigw
-After=network.target
+After=network.target mongod.service test-engine-app.service
+Requires=mongod.service test-engine-app.service
 
 [Service]
 User=$USER
 WorkingDirectory=$(pwd)/ai-verify-apigw
-ExecStart=node app.mjs
+ExecStart=/usr/bin/node app.mjs
 
 [Install]
 WantedBy=multi-user.target" | sudo tee /etc/systemd/system/ai-verify-apigw.service
 
 echo "[Unit]
 Description=ai-verify-portal
-After=network.target
+After=network.target ai-verify-apigw.service
+Requires=ai-verify-apigw.service
 
 [Service]
 User=$USER
 WorkingDirectory=$(pwd)/ai-verify-portal
-ExecStart=npm run start
+ExecStart=/usr/bin/npm run start
 
 [Install]
 WantedBy=multi-user.target" | sudo tee /etc/systemd/system/ai-verify-portal.service
