@@ -83,7 +83,7 @@ if __name__ == "__main__":
         "data_samples": 25,
     }
 
-    core_modules_path = "../../../test-engine-core-modules"
+    core_modules_path = "../../../../test-engine-core-modules"
     # =====================================================================================
     # NOTE: Do not modify the code below
     # =====================================================================================
