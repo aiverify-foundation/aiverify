@@ -4,24 +4,20 @@ To run AI Verify, these are the recommended requirements to run AI Verify on a l
 
 ### System
 
-|       | Recommended Requirements | 
-| ----------- | ----------- |
-| Operating System     | Ubuntu 22.04  |
-| CPU*     | At least 4 cores (Please note that this varies based on the complexity of the model tested.) |
-| Memory    | At least 16GB   |
-| Free Space    | At least 6GB of available space |
-| GPU*    | Depends on the model tested |
+|                  | Recommended Requirements                                                                     |
+| ---------------- | -------------------------------------------------------------------------------------------- |
+| Operating System | Ubuntu 22.04 (64-bit)                                                                                 |
+| Disk Space           | At least 3GB (excluding Docker)                                                                                |
+| Memory           | At least 4GB                                                                                |
+| Free Space       | At least 3GB of available space                                                              |
 
 ### Software
 
 |    Software   | Recommended Version | 
 | ----------- | ----------- |
-| [Docker](https://docs.docker.com/get-docker/)     | ##TO BE UPDATED |
-| [NodeJs](https://nodejs.org/en/download) | v18.x |
-| [Python](https://www.python.org/downloads/release/python-3100/)    | v3.10  |
-| [Git](https://git-scm.com/downloads)   | v2.40.0|
+| [Docker](https://docs.docker.com/get-docker/)     | -  |
 
-## Clone and Build AI Verify
+## Install and Run AI Verify
 
 !!! Note
     If you have installed AI Verify before, it is recommended to start the containiner with a clean state. Run the following commands to clean up existing data and files: 

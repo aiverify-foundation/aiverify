@@ -10,15 +10,14 @@ The AI Verify Toolkit conducts black-box testing on AI models by ingesting the A
 
 The AI Verify report templates contains technical tests that covers 3 principles:
 
-- Fairness: [Fairness Metrics Toolbox for Classification](#) & [Fairness Metrics Toolbox for Regression](#)
-- Robustness: [Robustness Toolbox](#)
-- Explainability (Global): [SHAP Toolbox](#)
+- Fairness: [Fairness Metrics Toolbox for Classification](https://imda-btg.github.io/aiverify-developer-tools/stock_plugins/fmtc/) & [Fairness Metrics Toolbox for Regression](https://imda-btg.github.io/aiverify-developer-tools/stock_plugins/fmtr/)
+- Robustness: [Robustness Toolbox](https://imda-btg.github.io/aiverify-developer-tools/stock_plugins/robustness_toolbox/)
+- Explainability (Global): [SHAP Toolbox](https://imda-btg.github.io/aiverify-developer-tools/stock_plugins/shap/)
 
 There are also two technical tests for explainability that are not included in the AI Verify report templates:
 
-- [Accumulated Local Effect](#)
-- [Partial Dependence Plot](#)
-<!-- TODO: Link -->
+- [Accumulated Local Effect](https://imda-btg.github.io/aiverify-developer-tools/stock_plugins/ale/)
+- [Partial Dependence Plot](https://imda-btg.github.io/aiverify-developer-tools/stock_plugins/pdp/)
 
 ## Process Checks
 
@@ -29,4 +28,3 @@ The AI Verify Toolkit supports the AI Verify Testing Framework by providing an i
 - [Accessing the AI model to be tested](../../getting-started/accessing-ai-model/)
 - [Preparation of Input Files](../../getting-started/preparation-of-input-files/)
 - [List of Supported AI Framework and Datatypes](../../others/compatibility/)
-<!-- TODO: Link -->

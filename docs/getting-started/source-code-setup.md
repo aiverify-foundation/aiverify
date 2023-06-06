@@ -9,7 +9,7 @@ These are the recommended requirements to run AI Verify.
 |                  | Recommended Requirements                                                                     |
 | ---------------- | -------------------------------------------------------------------------------------------- |
 | Operating System | Ubuntu 22.04 (64-bit)                                                                                 |
-| Memory           | At least 4GB                                                                                |
+| Disk Space           | At least 3GB                                                                                |
 | Memory           | At least 4GB                                                                                |
 | Free Space       | At least 3GB of available space                                                              |
 
