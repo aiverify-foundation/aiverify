@@ -572,14 +572,14 @@
       
       
         <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
-          How to test an AI Model and generate a report
+          How to Test an AI Model and Generate a Report
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
         <label class="md-nav__title" for="__nav_3_1">
           <span class="md-nav__icon md-icon"></span>
-          How to test an AI Model and generate a report
+          How to Test an AI Model and Generate a Report
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -780,14 +780,14 @@
       
       
         <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
-          How to design a customised report
+          How to Design a Customised Report
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
         <label class="md-nav__title" for="__nav_3_2">
           <span class="md-nav__icon md-icon"></span>
-          How to design a customised report
+          How to Design a Customised Report
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -1493,9 +1493,18 @@
 <td>The actual value is <strong>cat</strong>, but the predicted value is <strong>NOT cat</strong>.</td>
 <td>Wrong Prediction</td>
 </tr>
+<tr>
+<td>-</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>This calculation will be repeated for other classes (e.g., two separate measurements for dog and mouse using the same logic above).</td>
+<td></td>
+<td></td>
+</tr>
 </tbody>
 </table>
-<p>This calculation will be repeated for other classes (e.g., two separate measurements for dog and mouse using the same logic above).</p>
 <h2 id="fairness-metrics-in-ai-verify">Fairness Metrics in AI Verify</h2>
 <p>There are more than 20 fairness metrics in the literature. However, some metrics are task-specific (e.g., steorotype can only be computed in NLP tasks) while some are more abstract to be understood and used in operation (e.g., sufficiency). In AI Verify, we have selected 10 commonly used fairness metrics.</p>
 <table>
@@ -1546,8 +1555,8 @@
 </table>
 <h2 id="fairness-decision-tree">Fairness Decision Tree</h2>
 <p>We adapted Aequitas Fairness Tree [2] to make it easier for our users to understand in selecting their fairness metrics. </p>
-<p><img alt="" src="../images/../../../images/fairness_tree.png" />
-(<a href="../images/../../../images/fairness_tree.png">Click here to view the full image</a>)</p>
+<p><img alt="" src="../../res/fairness_tree.png" />
+(<a href="../../res/fairness_tree.png">Click here to view the full image</a>)</p>
 <p>There are three guided questions:</p>
 <table>
 <thead>
@@ -1560,22 +1569,52 @@
 <tbody>
 <tr>
 <td>What do you consider to be fair in your use case?</td>
-<td>a. Equal representation<br/>b. Wrong predictions<br/>c. Correct Predictions</td>
-<td>To guide the user into thinking about the broad concern in this use case</td>
+<td>a. Equal representation<br/><br/>b. Wrong predictions<br/><br/>c. Correct Predictions</td>
+<td>To assist the user in identifying the overarching concern in this particular use case</td>
 </tr>
 <tr>
 <td>Whose impact are you more concerned about?</td>
-<td>a. Is it qualified group not receiving opportunity?<br/>b. Is it unqualified group receiving opportunity?<br/>c. Is it qualified group receiving opportunity?<br/>d. Is it unqualified group not receiving opportunity?</td>
-<td>To guide the user into identifying the actual concern in this use case</td>
+<td>a. Is it qualified group not receiving opportunity?<br/><br/>b. Is it unqualified group receiving opportunity?<br/><br/>c. Is it qualified group receiving opportunity?<br/><br/>d. Is it unqualified group not receiving opportunity?</td>
+<td>To assist the user in choosing the most concerning consequence in this use case</td>
 </tr>
 <tr>
 <td>Does your final decision depends heavily on the model?</td>
 <td>a. Yes<br/>b. No</td>
-<td>If the final decision is heavily dependent on the model, the model's prediction should be prioritised. Hence, the metric chosen has the model's prediction as the denominator. Otherwise, we will prioritise the actual value as the denominator</td>
+<td>To determine whether we should prioritise the model's predictions or the actual true value as the demoniator</td>
 </tr>
 </tbody>
 </table>
 <h3 id="example-use-case">Example Use Case</h3>
+<ul>
+<li><strong>Use Case</strong>: Job Application Prediction Model</li>
+<li><strong>Description</strong>: To predict whether this individual will get the job</li>
+<li><strong>Sensitive Attribute</strong>: <em>gender</em></li>
+<li><strong>Qualified people</strong>: Qualified candidates</li>
+<li><strong>Disqualified people</strong>: Unqualified candidates</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Guided Questions</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>What do you consider to be fair in your use case?</td>
+<td>[Correct Prediction] Offering the job to qualified candidates is more important</td>
+</tr>
+<tr>
+<td>Whose impact is more important to you?</td>
+<td>[Qualified people receiving opportunity] Offering the job to qualified candidate is more important than ensuring that unqualified candidates are rejected as hiring the correct candidate is the objective</td>
+</tr>
+<tr>
+<td>Does your final decision depend heavily on the model?</td>
+<td>[No] There is a human-in-the-loop decision making process.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Final Relevant Metrics:</strong> True Positive Rate Parity</p>
 <h1 id="reference">Reference</h1>
 <p>[1]: The Impossibility of Theorem of Machine Fairness: A Casual Perspective. https://arxiv.org/pdf/2007.06024.pdf.
 [2]: Aequitas. http://www.datasciencepublicpolicy.org/our-work/tools-guides/aequitas/</p>

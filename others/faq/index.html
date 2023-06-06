@@ -570,14 +570,14 @@
       
       
         <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
-          How to test an AI Model and generate a report
+          How to Test an AI Model and Generate a Report
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
         <label class="md-nav__title" for="__nav_3_1">
           <span class="md-nav__icon md-icon"></span>
-          How to test an AI Model and generate a report
+          How to Test an AI Model and Generate a Report
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -778,14 +778,14 @@
       
       
         <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
-          How to design a customised report
+          How to Design a Customised Report
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
         <label class="md-nav__title" for="__nav_3_2">
           <span class="md-nav__icon md-icon"></span>
-          How to design a customised report
+          How to Design a Customised Report
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -1420,10 +1420,6 @@
 <td>Does the toolkit run in Jupyter notebooks?</td>
 <td>No, the toolkit is a standalone toolkit. Users can use the user interface provided to run the testing workflow.</td>
 </tr>
-<tr>
-<td>Does the toolkit run on Apple’s M1/M2 chips?</td>
-<td>No, testing is currently not supported on Apple’s M1/M2 chips as they do not support the Tensorflow library used by the toolkit.</td>
-</tr>
 </tbody>
 </table>
 <h2 id="models">Models</h2>
@@ -1441,11 +1437,11 @@
 </tr>
 <tr>
 <td>How should I prepare the model to be uploaded?</td>
-<td>Answer to question</td>
+<td>Visit our How-To guides for preparation of input files: <br> <a href="../../getting-started/prepare-tabular/">For Tabular</a>/ <a href="../../getting-started/prepare-image/">For Image</a></td>
 </tr>
 <tr>
 <td>Is there any limit to the model file size?</td>
-<td>The maximum size for uploading of the model file and test dataset file is <strong>2 GB</strong> each.<br/> It is recommended to use a smaller test dataset (i.e., smaller than 2GB) as a large file may take significantly longer to complete. The time taken to run the test will also be affected by the number of features.</td>
+<td>The maximum size for uploading of the model file and test dataset file is <strong>4 GB</strong> each.<br/> It is recommended to use a smaller test dataset (i.e., smaller than 4GB) as a large file may take significantly longer to complete. The time taken to run the test will also be affected by the number of features.</td>
 </tr>
 </tbody>
 </table>
@@ -1464,19 +1460,19 @@
 </tr>
 <tr>
 <td>What pandas version is currently supported by the toolkit?</td>
-<td>The toolkit is able to support pandas version 1.3.5. Currently, with the latest pandas version 1.4.3, the toolkit is unable to unpickle and read files for testing.</td>
+<td>The toolkit currently runs Pandas v1.5.3. We do not support Pandas 2.x.x.</td>
 </tr>
 <tr>
 <td>Can the toolkit support .csv or .xlsx inputs?</td>
-<td>Answer to question</td>
+<td>The toolkit supports .csv but not .xlsx. Other Delimiter-separated Values supported are: tab, semicolon, pipe, space, colon</td>
 </tr>
 <tr>
 <td>How should I prepare the dataset to be uploaded?</td>
-<td>Answer to question</td>
+<td>Visit our How-To guides for preparation of input files: <br> <a href="../../getting-started/prepare-tabular/">For Tabular</a>/ <a href="../../getting-started/prepare-image/">For Image</a></td>
 </tr>
 <tr>
 <td>What is considered a good input size for the test data?</td>
-<td>Answer to question</td>
+<td>Recommended number of test data points is 100, selecting a larger sample will require a longer computation time.</td>
 </tr>
 </tbody>
 </table>
@@ -1490,8 +1486,8 @@
 </thead>
 <tbody>
 <tr>
-<td>How to view files from the downloaded test results and logs?</td>
-<td>Answer to question</td>
+<td>How do I view test logs after tests have completed running?</td>
+<td>Click to edit the project you want to view logs for. <br> In the URL, copy the ID string behind <code>../project/</code><br> Append the ID string to the end of this URL <code>http://localhost:3000/reportStatus/</code></td>
 </tr>
 </tbody>
 </table>

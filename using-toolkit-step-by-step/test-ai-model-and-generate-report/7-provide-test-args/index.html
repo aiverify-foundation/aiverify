@@ -74,6 +74,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#fairness-metrics-toolbox-for-classification" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -569,14 +574,14 @@
       
       
         <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
-          How to test an AI Model and generate a report
+          How to Test an AI Model and Generate a Report
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="true">
         <label class="md-nav__title" for="__nav_3_1">
           <span class="md-nav__icon md-icon"></span>
-          How to test an AI Model and generate a report
+          How to Test an AI Model and Generate a Report
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -691,9 +696,52 @@
       
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          7. Provide Test Arguments
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         7. Provide Test Arguments
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fairness-metrics-toolbox-for-classification" class="md-nav__link">
+    Fairness Metrics Toolbox for Classification
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#robustness-toolbox" class="md-nav__link">
+    Robustness Toolbox
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#shap-toolbox" class="md-nav__link">
+    SHAP Toolbox
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -785,14 +833,14 @@
       
       
         <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
-          How to design a customised report
+          How to Design a Customised Report
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
         <label class="md-nav__title" for="__nav_3_2">
           <span class="md-nav__icon md-icon"></span>
-          How to design a customised report
+          How to Design a Customised Report
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -1305,6 +1353,35 @@
   
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fairness-metrics-toolbox-for-classification" class="md-nav__link">
+    Fairness Metrics Toolbox for Classification
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#robustness-toolbox" class="md-nav__link">
+    Robustness Toolbox
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#shap-toolbox" class="md-nav__link">
+    SHAP Toolbox
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1322,13 +1399,14 @@
 
 <p>The <em>AI Verify Summary Report Template for Classification Models</em> requires <strong>Fairness</strong> (Fairness Metrics Toolbox for Classification), <strong>Robustness</strong> (Robustness Toolbox) and <strong>Explainability</strong> (SHAP Toolbox) tests to be run. These tests require configuration of some test arguments in addition to the Datasets and AI Model files uploaded. For more information on these tests <a href="#">(see References &gt; List of AI Verify Plugins)</a>.</p>
 <p><img alt="test-args" src="../../../res/test-ai-model-generate-report/input-block-3.png" /></p>
+<h3 id="fairness-metrics-toolbox-for-classification">Fairness Metrics Toolbox for Classification</h3>
 <p>Click on <strong>‘Open’</strong> for Fairness Metrics Toolbox for Classification. Provide the test argument:</p>
 <table>
 <thead>
 <tr>
 <th>Test Argument</th>
 <th>Description</th>
-<th>Value</th>
+<th>Tutorial Value</th>
 </tr>
 </thead>
 <tbody>
@@ -1342,6 +1420,7 @@
 <p>If there are more than one sensitive feature, click on ‘+’.</p>
 <p>Click on <strong>‘Ok’</strong>.</p>
 <p><img alt="sensitive-feature" src="../../../res/test-ai-model-generate-report/fmt.png" /></p>
+<h3 id="robustness-toolbox">Robustness Toolbox</h3>
 <p>Click on <strong>‘Open’</strong> for Robustness Toolbox.</p>
 <p>Provide the test arguments:</p>
 <table>
@@ -1349,25 +1428,25 @@
 <tr>
 <th>Test Argument</th>
 <th>Description</th>
-<th>Value</th>
+<th>Tutorial Value</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>Annotated ground truth path*</strong></td>
-<td>This is the path to the annotated ground truth file for image datasets. <a href="../../../getting-started/preparation-of-input-files/">(See Getting Started &gt; Preparation of Input Files)</a></td>
-<td>Select the path to testing dataset</td>
+<td><strong>(required) Annotated ground truth path</strong></td>
+<td>This is the path to the annotated ground truth file for image datasets. For image datasets, it is the path to the annotated ground truth file. <a href="../../../getting-started/preparation-of-input-files/">(See Getting Started &gt; Preparation of Input Files)</a></td>
+<td>Select the path to <code>pickle_pandas_mock_binary_classification_credit_risk_testing.sav</code></td>
 </tr>
 <tr>
-<td><strong>Name of column containing image file names*</strong></td>
-<td>This is the column name in the annotated ground truth file for image datasets that contains the image file names.</td>
-<td>file_name</td>
+<td><strong>(required) Name of column containing image file names</strong></td>
+<td>This is the column name of the ground truth. For image datasets, it is the column name in the annotated ground truth file that contains the image file names.</td>
+<td>default</td>
 </tr>
 </tbody>
 </table>
-<p><em>*This argument is required only if you are testing an image dataset. For tabular datasets like the one used in this tutorial, it can be left blank.</em></p>
 <p>Click on <strong>‘Ok’</strong>.</p>
 <p><img alt="robustness-toolbox" src="../../../res/test-ai-model-generate-report/rt.png" /></p>
+<h3 id="shap-toolbox">SHAP Toolbox</h3>
 <p>Click on <strong>‘Open’</strong> for SHAP Toolbox.</p>
 <p>Provide the test arguments:</p>
 <table>
@@ -1375,7 +1454,7 @@
 <tr>
 <th>Test Argument</th>
 <th>Description</th>
-<th>Value</th>
+<th>Tutorial Value</th>
 </tr>
 </thead>
 <tbody>
@@ -1387,7 +1466,7 @@
 <tr>
 <td><strong>(required) Path of the Background</strong></td>
 <td>This is the path to the background dataset to be used to create permutations. <a href="../../../getting-started/preparation-of-input-files/">(See Getting Started &gt; Preparation of Input Files)</a></td>
-<td>Select the path to testing dataset</td>
+<td>Select the path to <code>pickle_pandas_mock_binary_classification_credit_risk_testing.sav</code></td>
 </tr>
 <tr>
 <td><strong>(required) Size of the Background*</strong></td>
