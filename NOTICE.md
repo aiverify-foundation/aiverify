@@ -1,7 +1,7 @@
 ===================================================================================================================================
 | PACKAGES:											                          														                                            |
 |---------------------------------------------------------------------------------------------------------------------------------|
-| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/general_corruptions/general_corruptions.py				    |
+| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/general_corruptions/general_corruptions.py		  |
 | aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/environment_corruptions/utils/environment.py			    |
 | aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions/utils/digital.py					        |
 | aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions/utils/blur.py							          |
