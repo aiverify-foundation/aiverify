@@ -40,4 +40,5 @@ In this table, we list the supported AI framework and algorithms.
 |  pickle  | Version is based on the pickle installed in your environment   | 
 |  joblib  | 1.20   | 
 
-*If your datasets and models are serialised using other version, please modify your environment accordingly.
+!!! Info
+        If your datasets and models are serialised using other version, please modify your environment accordingly.

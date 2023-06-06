@@ -77,5 +77,6 @@ There are three guided questions:
 
 
 # Reference
-[1]: The Impossibility of Theorem of Machine Fairness: A Casual Perspective. https://arxiv.org/pdf/2007.06024.pdf.
-[2]: Aequitas. http://www.datasciencepublicpolicy.org/our-work/tools-guides/aequitas/
+[1]: The Impossibility of Theorem of Machine Fairness: A Casual Perspective. [https://arxiv.org/pdf/2007.06024.pdf](https://arxiv.org/pdf/2007.06024.pdf)
+
+[2]: Aequitas. [http://www.datasciencepublicpolicy.org/our-work/tools-guides/aequitas/](http://www.datasciencepublicpolicy.org/our-work/tools-guides/aequitas/)

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The AI Verify Toolkit is an open-source, [extensible](/introduction/extensibility/) toolkit that validates the performance of AI systems against a set of 11 internationally recognised AI ethics principles through process checks and technical tests. AI Verify can be used by companies for self-assessment, or by independent testers to verify AI models against the AI Verify Testing Framework. It supports the technical assessment of supervised learning models trained on most tabular and image datasets for binary / multiclass classification and regression models.
+The AI Verify Toolkit is an open-source, [extensible](introduction/extensibility/) toolkit that validates the performance of AI systems against a set of 11 internationally recognised AI ethics principles through process checks and technical tests. AI Verify can be used by companies for self-assessment, or by independent testers to verify AI models against the AI Verify Testing Framework. It supports the technical assessment of supervised learning models trained on most tabular and image datasets for binary / multiclass classification and regression models.
 
 ## How does the toolkit work?
 

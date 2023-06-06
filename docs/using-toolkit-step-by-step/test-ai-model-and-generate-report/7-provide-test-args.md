@@ -1,4 +1,4 @@
-The _AI Verify Summary Report Template for Classification Models_ requires **Fairness** (Fairness Metrics Toolbox for Classification), **Robustness** (Robustness Toolbox) and **Explainability** (SHAP Toolbox) tests to be run. These tests require configuration of some test arguments in addition to the Datasets and AI Model files uploaded. For more information on these tests [(see References > List of AI Verify Plugins)](#).
+The _AI Verify Summary Report Template for Classification Models_ requires **Fairness** (Fairness Metrics Toolbox for Classification), **Robustness** (Robustness Toolbox) and **Explainability** (SHAP Toolbox) tests to be run. These tests require configuration of some test arguments in addition to the Datasets and AI Model files uploaded. For more information on these tests [(see References > List of AI Verify Plugins)](https://imda-btg.github.io/aiverify-developer-tools/stock_plugins/).
 
 ![test-args](../../res/test-ai-model-generate-report/input-block-3.png)
 
