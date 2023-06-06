@@ -47,6 +47,10 @@ markdown_extensions:
   - pymdownx.mark
   - attr_list
   - tables
+
+plugins:
+  - mkdocs-jupyter:
+      execute: False
   
 nav:
   - Introduction:
@@ -59,8 +63,11 @@ nav:
           - Build and run from Dockerfile: getting-started/docker-setup.md
           - Build and run from source code: getting-started/source-code-setup.md
       - Accessing AI Model: getting-started/accessing-ai-model.md
-      - Preparation of Input Files: getting-started/preparation-of-input-files.md
-  - How-to:
+      - Preparation of Input Files: 
+          - Introduction: getting-started/preparation-of-input-files.md
+          - How to Prepare Tabular Datasets and Models: getting-started/prepare-tabular.ipynb
+          - How to Prepare Image Datasets and Models: getting-started/prepare-image.ipynb
+  - How-to:    
       - How to test an AI Model and generate a report:
           - Intro: using-toolkit-step-by-step/test-ai-model-and-generate-report/0-intro.md
           - 1. Create New Project: using-toolkit-step-by-step/test-ai-model-and-generate-report/1-create-new-project.md
@@ -83,6 +90,7 @@ nav:
           - 6. Using Widgets with Dependencies: using-toolkit-step-by-step/design-customized-report/6-using-widget-with-dependencies.md
           - 7. Save as Report Template: using-toolkit-step-by-step/design-customized-report/7-save-as-template.md
           - 8. Export as Plugin: using-toolkit-step-by-step/design-customized-report/8-export-as-plugin.md
+      - How to Understand the Fairness Decision Tree: how-to/use-fairness-tree.md 
   - User Interface & Features:
       - Homepage: user-interface-features/homepage.md
       - Canvas Page: user-interface-features/canvas-page.md

@@ -10,4 +10,4 @@ To run the technical tests, you need to prepare input fles. To find out the inpu
 
 All input files should be smaller than 4GB and be serialized by pickle or joblib (except for image datasets and TensorFlow models).
 
-For reference on how the model and dataset files can be prepared, check out the sample python notebook [here](). <!-- TODO: Link -->
+For reference on how the model and dataset files can be prepared, check out the provided samples for [tabular](prepare-tabular.ipynb) and [image](prepare-image.ipynb) respectively.
