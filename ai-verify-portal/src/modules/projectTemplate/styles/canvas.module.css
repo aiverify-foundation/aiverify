@@ -12,6 +12,10 @@
 	border-color: #4654f9;
 }
 
+.invalidWidget {
+	background-color: #FFFFFF;
+}
+
 .panelsAndCanvasContainer {
 	position: absolute;
 	display: flex;
