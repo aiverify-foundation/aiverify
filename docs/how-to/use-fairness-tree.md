@@ -48,8 +48,8 @@ There are more than 20 fairness metrics in the literature. However, some metrics
 
 We adapted Aequitas Fairness Tree [2] to make it easier for our users to understand in selecting their fairness metrics. 
 
-![](./images/fairness_tree.png)
-([Click here to view the full image](./images/fairness_tree.png))
+![](../../res/fairness_tree.png)
+([Click here to view the full image](../../res/fairness_tree.png))
 
 There are three guided questions:
 
