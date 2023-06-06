@@ -10,4 +10,4 @@ rm -rf ~/uploads
 mkdir -p ~/data/db
 mkdir -p ~/uploads/data
 mkdir -p ~/uploads/model
-docker compose down --volumes
+docker-compose down --volumes

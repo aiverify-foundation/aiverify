@@ -58,7 +58,11 @@ RUN ln -s /usr/bin/chromium /usr/bin/chromium-browser
 #        libasound2 libatk1.0-0 libatk-bridge2.0-0 libpangocairo-1.0-0 \
 #        libgtk-3-0 libgbm1
 
-#RUN groupadd -g $GID $USER
+# For shap-toolbox plugin
+RUN apt install -y gcc g++ python3-dev
+
+RUN groupadd -g $GID $USER || true
+
 RUN useradd -u $UID -g $GID -ms /bin/bash $USER
 
 # Install Git
@@ -113,6 +117,7 @@ REDIS_PORT=6379\n \
 WEB_REPORT_URL=http://localhost:3000/reportStatus/printview' | tee .env
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD 1
 RUN npm install
+ENV PUPPETEER_EXECUTABLE_PATH /usr/bin/chromium
 
 ############### Python #################
 
@@ -154,6 +159,6 @@ USER $USER
 WORKDIR /app/aiverify/ai-verify-apigw
 
 #RUN PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=1 npm install puppeteer
-RUN npm install puppeteer
+#RUN npm install puppeteer
 
 WORKDIR /app

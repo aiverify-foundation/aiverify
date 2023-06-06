@@ -6,12 +6,17 @@ if ! which node >/dev/null 2>&1; then
   exit 1
 fi
 
-# Check Node.js version
-node_ver=$(node -v)
-required_node_ver="v18"
-if [[ $node_ver != $required_node_ver* ]]; then
-  echo "aiverify requires Node.js $required_node_ver.x, please install Node.js $required_node_ver.x."
+# Check Nodejs version
+node_req_ver="18"
+node_cur_ver=$(node -v | cut -d'v' -f2)
+node_cur_ver_maj=${node_cur_ver%.*.*}
+if (( $(echo "$node_cur_ver_maj $node_req_ver" | awk '{print ($1 < $2)}'  )))
+then
+  echo "aiverfiy requires Node.js $node_req_ver.x, please install Node.js $node_req_ver.x"
   exit 1
+elif (( $(echo "$node_cur_ver_maj $node_req_ver" | awk '{print ($1 != $2)}'  )))
+then
+  echo "aiverify is tested on Node.js $node_req_ver.x, you may encounter issues with other Node.js versions"
 fi
 
 # Check if Python3 is installed
@@ -20,11 +25,16 @@ if ! which python3 &>/dev/null; then
   exit 1
 fi
 
-# Check Python version
-py_ver=$(python3 --version 2>&1)
-required_py_ver="Python 3.10"
-if [[ $py_ver != $required_py_ver* ]]; then
-  echo "aiverify is tested on $required_py_ver.x, you may encounter issues with other python3 versions."
+py_req_ver="3.10"
+py_cur_ver=$(python3 --version | cut -d' ' -f2)
+py_cur_ver_maj=${py_cur_ver%.*}
+if (( $(echo "$py_cur_ver_maj $py_req_ver" | awk '{print ($1 < $2)}'  )))
+then
+  echo "aiverfiy requires Python3 $py_req_ver.x, please install Python3 $py_req_ver.x"
+  exit 1
+elif (( $(echo "$py_cur_ver_maj $py_req_ver" | awk '{print ($1 != $2)}'  )))
+then
+  echo "aiverify is tested on Python3 $py_req_ver.x, you may encounter issues with other Python3 versions"
 fi
 
 echo "This script requires sudo permission"
@@ -41,7 +51,10 @@ sudo apt update
 ############ redis ############
 
 echo "========================== Install redis ============================="
-sudo apt install -y redis-server
+if ! redis-server --version &>/dev/null; then
+  echo "Installing redis-server"
+  sudo apt install -y redis-server
+fi
 pattern='notify-keyspace-events ""'
 replacement='notify-keyspace-events Kh'
 sudo sed -i 's/'"$pattern"'/'"$replacement"'/g' "/etc/redis/redis.conf"
@@ -52,15 +65,27 @@ sudo systemctl restart redis-server.service
 
 echo "========================= Install mongodb ============================"
 
-wget -nc https://www.mongodb.org/static/pgp/server-6.0.asc
-cat server-6.0.asc | gpg --dearmor | sudo tee /etc/apt/keyrings/mongodb.gpg >/dev/null
-sudo sh -c 'echo "deb [ arch=amd64,arm64 signed-by=/etc/apt/keyrings/mongodb.gpg] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" >> /etc/apt/sources.list.d/mongo.list'
-sudo apt update
-sudo apt install -y mongodb-org
+if mongod --version &>/dev/null; then
+ while true; do
+      read -p "Mongodb detected, have you created the db and user required by aiverify? y/n " yn
+      case $yn in
+          [Yy]* ) break;;
+          [Nn]* ) echo "aiverify dev setup aborted, please create the required db and user as instructed in the developer guide";
+                  exit;;
+          * ) echo "Please answer yes or no.";;
+      esac
+  done
+else
+  echo "Installing mongodb"
+  wget -nc https://www.mongodb.org/static/pgp/server-6.0.asc
+  cat server-6.0.asc | gpg --dearmor | sudo tee /etc/apt/keyrings/mongodb.gpg >/dev/null
+  sudo sh -c 'echo "deb [ arch=amd64,arm64 signed-by=/etc/apt/keyrings/mongodb.gpg] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" >> /etc/apt/sources.list.d/mongo.list'
+  sudo apt update
+  sudo apt install -y mongodb-org
 
-sudo systemctl start mongod
-sleep 2
-mongosh <<EOF
+  sudo systemctl start mongod
+  sleep 2
+  mongosh << EOF
   admin = db.getSiblingDB('admin')
   admin.createUser({
     user: 'mongodb',
@@ -77,13 +102,13 @@ mongosh <<EOF
   });
 
   aiverify.createCollection('test-collection');
-
 EOF
+fi
 
 if [[ "$machine_arch" == "aarch64" ]]; then
   echo "arm64 architecture detected"
   echo "====================== Installing Chromium ========================="
-  # For arm64 based machines, as Puppeteer installs Chrome which is only
+  # Install chromium for arm64 based machines, as Puppeteer installs Chrome which is only
   # available in amd64
 
   sudo apt install debian-archive-keyring
@@ -158,6 +183,7 @@ cd ..
 cd ai-verify-apigw
 cp .env.development .env
 if [[ "$machine_arch" == "aarch64" ]]; then
+  # Skip chrome install, which is only available for amd64
   PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=1 npm install
 else
   npm install
@@ -165,9 +191,9 @@ fi
 cd ..
 
 # Install stock plugins (non-algos)
-unzip stock-plugins/aiverify.stock.decorators/dist/aiverify.stock.decorators-*.zip -d ai-verify-portal/plugins/stock.decorators
-unzip stock-plugins/aiverify.stock.process-checklist/dist/aiverify.stock.process_checklist-*.zip -d ai-verify-portal/plugins/stock.process-checklist
-unzip stock-plugins/aiverify.stock.reports/dist/aiverify.stock.reports-*.zip -d ai-verify-portal/plugins/stock.reports
+unzip -o stock-plugins/aiverify.stock.decorators/dist/aiverify.stock.decorators-*.zip -d ai-verify-portal/plugins/stock.decorators
+unzip -o stock-plugins/aiverify.stock.process-checklist/dist/aiverify.stock.process_checklist-*.zip -d ai-verify-portal/plugins/stock.process-checklist
+unzip -o stock-plugins/aiverify.stock.reports/dist/aiverify.stock.reports-*.zip -d ai-verify-portal/plugins/stock.reports
 
 ############ Python ############
 
@@ -181,7 +207,7 @@ pip3 install ./test-engine-core/dist/test_engine_core-*.tar.gz
 
 wdir=$(pwd)
 cd test-engine-app
-echo "CORE_MODULES_FOLDER=\"$wdir/test-engine-core-modules/src\"
+echo "CORE_MODULES_FOLDER=\"$wdir/test-engine-core-modules\"
 VALIDATION_SCHEMAS_FOLDER=\"$wdir/test-engine-app/test_engine_app/validation_schemas/\"
 REDIS_CONSUMER_GROUP=\"MyGroup\"
 REDIS_SERVER_HOSTNAME=\"localhost\"
@@ -191,13 +217,13 @@ cd ..
 
 # Install stock plugins (algos)
 echo "Install stock plugins (algos)"
-unzip stock-plugins/aiverify.stock.accumulated-local-effect/dist/*.zip -d ai-verify-portal/plugins/stock.accumulated-local-effect
-unzip stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/dist/*.zip -d ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-classification
-unzip stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-regression/dist/*.zip -d ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression
-unzip stock-plugins/aiverify.stock.image-corruption-toolbox/dist/*.zip -d ai-verify-portal/plugins/stock.image-corruption-toolbox
-unzip stock-plugins/aiverify.stock.partial-dependence-plot/dist/*.zip -d ai-verify-portal/plugins/stock.partial-dependence-plot
-unzip stock-plugins/aiverify.stock.robustness-toolbox/dist/*.zip -d ai-verify-portal/plugins/stock.robustness-toolbox
-unzip stock-plugins/aiverify.stock.shap-toolbox/dist/*.zip -d ai-verify-portal/plugins/stock.shap-toolbox
+unzip -o stock-plugins/aiverify.stock.accumulated-local-effect/dist/*.zip -d ai-verify-portal/plugins/stock.accumulated-local-effect
+unzip -o stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/dist/*.zip -d ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-classification
+unzip -o stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-regression/dist/*.zip -d ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression
+unzip -o stock-plugins/aiverify.stock.image-corruption-toolbox/dist/*.zip -d ai-verify-portal/plugins/stock.image-corruption-toolbox
+unzip -o stock-plugins/aiverify.stock.partial-dependence-plot/dist/*.zip -d ai-verify-portal/plugins/stock.partial-dependence-plot
+unzip -o stock-plugins/aiverify.stock.robustness-toolbox/dist/*.zip -d ai-verify-portal/plugins/stock.robustness-toolbox
+unzip -o stock-plugins/aiverify.stock.shap-toolbox/dist/*.zip -d ai-verify-portal/plugins/stock.shap-toolbox
 
 echo "Run portal build"
 cd ai-verify-portal
