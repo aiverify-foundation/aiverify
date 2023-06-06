@@ -107,7 +107,7 @@ export const MyChart = ({ results, featureNames, properties }) => {
       </div>
       {data && data.length > 0 &&
         <span>
-          <b>The global explainability test shows that the top {getTopN()} features affecting the AI model's prediction.</b>
+          <b>The global explainability test shows the top {getTopN()} features affecting the AI model's prediction.</b>
           <br/>
           Each bar represents a feature. They are ranked from the highest to the lowest contribution to the predictions. The length of the bar represents the absolute SHAP value across all predictions. A higher value means the feature had more importance on the predicitons, and vice-versa.
           <br/><br/>
