@@ -68,7 +68,7 @@ nav:
           - How to Prepare Tabular Datasets and Models: getting-started/prepare-tabular.ipynb
           - How to Prepare Image Datasets and Models: getting-started/prepare-image.ipynb
   - How-to:    
-      - How to test an AI Model and generate a report:
+      - How to Test an AI Model and Generate a Report:
           - Intro: using-toolkit-step-by-step/test-ai-model-and-generate-report/0-intro.md
           - 1. Create New Project: using-toolkit-step-by-step/test-ai-model-and-generate-report/1-create-new-project.md
           - 2. Select a Report Template: using-toolkit-step-by-step/test-ai-model-and-generate-report/2-select-template.md
@@ -80,7 +80,7 @@ nav:
           - 8. Complete Process Checklist: using-toolkit-step-by-step/test-ai-model-and-generate-report/8-complete-process-checklist.md
           - 9. Select Fairness Metrics using Fairness Tree: using-toolkit-step-by-step/test-ai-model-and-generate-report/9-select-fairness-metrics-using-fainess-tree.md
           - 10. Run Test and Generate Report: using-toolkit-step-by-step/test-ai-model-and-generate-report/10-run-test-and-generate-report.md
-      - How to design a customised report:
+      - How to Design a Customised Report:
           - Intro: using-toolkit-step-by-step/design-customized-report/0-intro.md
           - 1. Create New Project: using-toolkit-step-by-step/design-customized-report/1-create-new-project.md
           - 2. Start Empty Canvas: using-toolkit-step-by-step/design-customized-report/2-start-empty-canvas.md
