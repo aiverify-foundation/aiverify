@@ -1,46 +1,46 @@
-===================================================================================================================================
-| PACKAGES:											                          														                                            |
-|---------------------------------------------------------------------------------------------------------------------------------|
-| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/general_corruptions/general_corruptions.py		  |
-| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/environment_corruptions/utils/environment.py			    |
-| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions/utils/digital.py					        |
-| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions/utils/blur.py							          |
-| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/general_corruptions/tests/user_defined_files/*		    |
-| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/widgets/general_images/*											                    |
+
+| PACKAGES:											                          														                                                                   |
+|--------------------------------------------------------------------------------------------------------------------------------|
+| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/general_corruptions/general_corruptions.py				       |
+| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/environment_corruptions/utils/environment.py			      |
+| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions/utils/digital.py					            |
+| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions/utils/blur.py							                |
+| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/general_corruptions/tests/user_defined_files/*		     |
+| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/widgets/general_images/*											                             |
 | aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/environment_corruptions/tests/user_defined_files/*	  |
-| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/widgets/environment_images/*										                  |
-| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions/tests/user_defined_files/*			  |
-| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/widgets/digital_images/*											                    |
-| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions/tests/user_defined_files/*				    |
-| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/widgets/blur_images/*												                    |
-| aiverify/stock-plugins/aiverify.stock.accumulated-local-effect/algorithms/accumulated_local_effect/accumulated_local_effect.py  |
+| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/widgets/environment_images/*										                          |
+| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions/tests/user_defined_files/*			    |
+| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/widgets/digital_images/*											                             |
+| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions/tests/user_defined_files/*				      |
+| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/widgets/blur_images/*												                               |
+| aiverify/stock-plugins/aiverify.stock.accumulated-local-effect/algorithms/accumulated_local_effect/accumulated_local_effect.py |
 | aiverify/stock-plugins/aiverify.stock.partial-dependence-plot/algorithms/partial_dependence_plot/partial_dependence_plot.py		  |
-| aiverify/stock-plugins/aiverify.stock.robustness-toolbox/algorithms/robustness_toolbox/robustness_toolbox.py						        |
-| aiverify/stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox/shap_toolbox.py										                  |
-| aiverify/stock-plugins/examples/data/raw_fashion_image_10/*																		                                  |
-| aiverify/docs/getting-started/prepare-image-files.zip [in docs branch]								          					                      |
-=====================================================================================================================================================================================================
-| Name                         																										                                                | License                                            				      |
+| aiverify/stock-plugins/aiverify.stock.robustness-toolbox/algorithms/robustness_toolbox/robustness_toolbox.py						             |
+| aiverify/stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox/shap_toolbox.py										                           |
+| aiverify/stock-plugins/examples/data/raw_fashion_image_10/*																		                                                  |
+| aiverify/docs/getting-started/prepare-image-files.zip [in docs branch]								          					                                  |
+
+| Name                         																										                                                                         | License                                            				         |
 |---------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------|
-| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/general_corruptions/general_corruptions.py				    | BSD 3-clause "New" or "Revised" License AND Apache License 2.0	|
-| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/environment_corruptions/utils/environment.py			    | Apache License 2.0 AND MIT License 								              |
-| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions/utils/digital.py					        | Apache License 2.0 AND MIT License                              |
-| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions/utils/blur.py							          | Apache License 2.0 AND MIT License                              |
-| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/general_corruptions/tests/user_defined_files/*		    | MIT License                                                     |
-| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/widgets/general_images/*											                    | MIT License                                                     |
+| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/general_corruptions/general_corruptions.py				        | BSD 3-clause "New" or "Revised" License AND Apache License 2.0	 |
+| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/environment_corruptions/utils/environment.py			       | Apache License 2.0 AND MIT License 								                     |
+| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions/utils/digital.py					             | Apache License 2.0 AND MIT License                              |
+| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions/utils/blur.py							                 | Apache License 2.0 AND MIT License                              |
+| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/general_corruptions/tests/user_defined_files/*		      | MIT License                                                     |
+| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/widgets/general_images/*											                              | MIT License                                                     |
 | aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/environment_corruptions/tests/user_defined_files/*    | MIT License                                                     |
-| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/widgets/environment_images/*										                  | MIT License                                                     |
-| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions/tests/user_defined_files/*		    | MIT License                                                     |
-| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/widgets/digital_images/*											                    | MIT License                                                     |
-| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions/tests/user_defined_files/*				    | MIT License                                                     |
-| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/widgets/blur_images/*												                    | MIT License                                                     |
-| aiverify/stock-plugins/aiverify.stock.accumulated-local-effect/algorithms/accumulated_local_effect/accumulated_local_effect.py	| MIT License                                                     |
-| aiverify/stock-plugins/aiverify.stock.partial-dependence-plot/algorithms/partial_dependence_plot/partial_dependence_plot.py		  | BSD 3-clause "New" or "Revised" License                         |
-| aiverify/stock-plugins/aiverify.stock.robustness-toolbox/algorithms/robustness_toolbox/robustness_toolbox.py						        | MIT License AND BSD 3-clause "New" or "Revised" License         |
-| aiverify/stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox/shap_toolbox.py										                  | MIT License                                                     |
-| aiverify/stock-plugins/examples/data/raw_fashion_image_10/*																		                                  | MIT License                                                     |
-| aiverify/docs/getting-started/prepare-image-files.zip [in docs branch]								          					                      | MIT License                                                     |
-=====================================================================================================================================================================================================
+| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/widgets/environment_images/*										                           | MIT License                                                     |
+| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions/tests/user_defined_files/*		      | MIT License                                                     |
+| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/widgets/digital_images/*											                              | MIT License                                                     |
+| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions/tests/user_defined_files/*				       | MIT License                                                     |
+| aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/widgets/blur_images/*												                                | MIT License                                                     |
+| aiverify/stock-plugins/aiverify.stock.accumulated-local-effect/algorithms/accumulated_local_effect/accumulated_local_effect.py	 | MIT License                                                     |
+| aiverify/stock-plugins/aiverify.stock.partial-dependence-plot/algorithms/partial_dependence_plot/partial_dependence_plot.py		   | BSD 3-clause "New" or "Revised" License                         |
+| aiverify/stock-plugins/aiverify.stock.robustness-toolbox/algorithms/robustness_toolbox/robustness_toolbox.py						              | MIT License AND BSD 3-clause "New" or "Revised" License         |
+| aiverify/stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox/shap_toolbox.py										                            | MIT License                                                     |
+| aiverify/stock-plugins/examples/data/raw_fashion_image_10/*																		                                                   | MIT License                                                     |
+| aiverify/docs/getting-started/prepare-image-files.zip [in docs branch]								          					                                   | MIT License                                                     |
+
 Copyright Text:
 
 aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/general_corruptions/general_corruptions.py
@@ -543,20 +543,19 @@ Modifications to variable names and constants based on experimentations
 aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions/utils/blur.py: defocus_blur
 Modifications to variable names and constants based on experimentations
 
-=================================================================================================
-| PACKAGES:											                                                                |
-|-----------------------------------------------------------------------------------------------|
-| test-engine-app										                                                            |
-| test-engine-core-modules									                                                    |
-| test-engine-core										                                                          |
-| stock-plugins/aiverify.stock.accumulated-local-effect					                                |
-| stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification	                    |
-| stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-regression		                      |
-| stock-plugins/aiverify.stock.image-corruption-toolbox					                                |
-| stock-plugins/aiverify.stock.partial-dependence-plot					                                |
-| stock-plugins/aiverify.stock.robustness-toolbox						                                    |
-| stock-plugins/aiverify.stock.shap-toolbox							                                        |
-=================================================================================================
+| PACKAGES:											                                                      |
+|---------------------------------------------------------------------------|
+| test-engine-app										                                                 |
+| test-engine-core-modules									                                         |
+| test-engine-core										                                                |
+| stock-plugins/aiverify.stock.accumulated-local-effect					                |
+| stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification	 |
+| stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-regression		    |
+| stock-plugins/aiverify.stock.image-corruption-toolbox					                |
+| stock-plugins/aiverify.stock.partial-dependence-plot					                 |
+| stock-plugins/aiverify.stock.robustness-toolbox						                     |
+| stock-plugins/aiverify.stock.shap-toolbox							                          |
+
 | Name                         | Version   | License                                            |
 |------------------------------|-----------|----------------------------------------------------|
 | Markdown                     | 3.4.3     | BSD License                                        |
@@ -624,6 +623,7 @@ Modifications to variable names and constants based on experimentations
 | scikit-learn                 | 1.2.2     | BSD License                                        |
 | scipy                        | 1.9.3     | BSD License                                        |
 | semantic-version             | 2.10.0    | BSD License                                        |
+| setuptools                   | 67.8.0    | MIT License                                        |
 | shap                         | 0.41.0    | MIT                                                |
 | six                          | 1.16.0    | MIT License                                        |
 | slicer                       | 0.0.7     | MIT License                                        |
@@ -637,12 +637,13 @@ Modifications to variable names and constants based on experimentations
 | threadpoolctl                | 3.1.0     | BSD License                                        |
 | tifffile                     | 2023.4.12 | BSD License                                        |
 | tqdm                         | 4.65.0    | MIT License; Mozilla Public License 2.0 (MPL 2.0)  |
-| typing_extensions            | 4.6.2     | Python Software Foundation License                 |
+| typing-extensions            | 4.6.2     | Python Software Foundation License                 |
 | urllib3                      | 1.26.16   | MIT License                                        |
 | wrapt                        | 1.14.1    | BSD License                                        |
+| wheel                        | 0.40.0    | MIT License                                        |
 | xgboost                      | 1.7.4     | Apache Software License                            |
 | yarl                         | 1.9.2     | Apache Software License                            |
-=================================================================================================
+
 Markdown
 3.4.3
 BSD License
@@ -10313,6 +10314,26 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+setuptools
+67.8.0
+The MIT License (MIT)
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to
+deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+sell copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
 
 shap
 0.41.0
@@ -12183,7 +12204,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-typing_extensions
+typing-extensions
 4.6.2
 Python Software Foundation License
 A. HISTORY OF THE SOFTWARE
@@ -12496,6 +12517,29 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 
+wheel
+0.40.0
+MIT License
+
+Copyright (c) 2012 Daniel Holth <dholth@fastmail.fm> and contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
 
 xgboost
 1.7.4
