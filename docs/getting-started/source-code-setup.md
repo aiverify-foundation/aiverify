@@ -49,7 +49,7 @@ These are the recommended requirements to run AI Verify.
 ```bash
 mkdir aiverify-env
 ```
-2. Install the `setup-aiverify-dev.sh` file from our GitHub release page and copy the file into the folder created above.
+2. Install the `setup-aiverify-dev.sh` file from our [Github Release](https://github.com/IMDA-BTG/aiverify/releases/tag/v0.9.0). and copy the file into the folder created above.
 3. Open a Terminal in the directory
 4. Execute the script by executing the following code.
    ```bash
