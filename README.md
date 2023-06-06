@@ -12,11 +12,11 @@ This document provides important notices and information about the project that 
 
 ## Installing AI Verify
 
-New to AI Verify? For steps on how to install AI Verify, you can find them in the user guide linked below.
+New to AI Verify? Generally, you should install AI Verify by building and running the [Dockerfile](https://imda-btg.github.io/aiverify/getting-started/docker-setup/), which contains all the dependencies you need. This should get you ready to use AI Verify! See the installation guide for building and running from [source code](https://imda-btg.github.io/aiverify/getting-started/source-code-setup/) if you wish to deal with dependencies on your own. 
 
 ## User Guide
 
-Learn how you may utilise AI Verify effectively [here](https://imda-btg.github.io/aiverify-user-guide-docs/getting-started/source-code-setup/).
+Learn how you may utilise AI Verify effectively [here](https://imda-btg.github.io/aiverify).
 
 ## Developer Guide
 
@@ -24,7 +24,7 @@ Learn how you can utilise the developer tools effectively to contribute to the p
 
 ## Contributing Guidelines
 
-We encourage contributions from the community to help improve this project. Before contributing, please read our [Contributing Guidelines](https://www.notionhttps://github.com/IMDA-BTG/aiverify-developer-tools/blob/main/Contributor.md.so/CONTRIBUTING.md) to understand the process and expectations.
+We encourage contributions from the community to help improve this project. Before contributing, please read our [Contributing Guidelines](https://github.com/IMDA-BTG/aiverify-developer-tools/blob/main/Contributor.md) to understand the process and expectations.
 
 ## Issue Tracker
 
@@ -34,9 +34,9 @@ Found a bug or have a feature request? Please report it on our issue tracker. We
 
 Comprehensive documentation is available for your reference. It includes installation and setup instructions, user guides, and other relevant information. Please refer to the documentation before opening an issue or asking for support.
 
-## Licence
+## License
 
-This project is released under the Apache 2.0 licence, which can be found under the project’s licence file. By contributing to this project, you agree to release your contributions under the same licence. Please ensure that you are familiar with the licence terms. You may find a list of the licences used by dependencies and any other material used by this project there too.
+This project is released under the Apache 2.0 license, which can be found under the project's license file. By contributing to this project, you agree to release your contributions under the same license. Please ensure that you are familiar with the license terms. You may find a list of the licenses used by dependencies and any other material used by this project there too.
 
 ## Support
 
@@ -44,7 +44,7 @@ If you have any questions or need assistance, please check the project discussio
 
 Thank you for your interest in AI Verify, and we look forward to your contributions!
 
-## NOTICE
+## Notice
 
 ```
 AI Verify
