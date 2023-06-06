@@ -48,7 +48,7 @@ Pin-Priority: 1' | tee /etc/apt/preferences.d/debian-chromium
 
 RUN apt update
 
-RUN apt install chromium -y
+# RUN apt install chromium -y
 
 # RUN ln -s /usr/bin/chromium /usr/bin/chromium-browser
 
