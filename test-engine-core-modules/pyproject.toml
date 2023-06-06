@@ -17,6 +17,7 @@ lightgbm = "3.3.5"
 xgboost = "1.7.4"
 tensorflow = "2.12.0"
 pandas = "1.5.3"
+scipy = "1.9.3"
 
 
 [tool.poetry.group.dev.dependencies]
