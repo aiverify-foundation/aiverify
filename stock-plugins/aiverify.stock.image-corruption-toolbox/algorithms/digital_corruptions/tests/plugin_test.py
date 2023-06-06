@@ -57,7 +57,7 @@ class PluginTest:
 
         # Store the input arguments as private vars
         if core_modules_path == "":
-            core_modules_path = "../../test-engine-core-modules"
+            core_modules_path = "../../../../test-engine-core-modules"
         self._core_modules_path: str = core_modules_path
         self._data_path: str = str(self._base_path / data_path)
         self._model_path: str = str(self._base_path / model_path)
