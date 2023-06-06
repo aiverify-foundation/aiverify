@@ -45,18 +45,25 @@ These are the recommended requirements to run AI Verify.
 
 ## Install AI Verify
 
-1. Create a folder where you intend to install AI Verify.
-```bash
-mkdir aiverify-env
+1. Download `setup-aiverify.zip` from [Github Release](https://github.com/IMDA-BTG/aiverify/releases/tag/v0.9.0).
+
+2. Unzip `setup-aiverify.zip`.
+
+3. Your folder structure should look like this.
 ```
-2. Install the `setup-aiverify-dev.sh` file from our [Github Release](https://github.com/IMDA-BTG/aiverify/releases/tag/v0.9.0). and copy the file into the folder created above.
-3. Open a Terminal in the directory
-4. Execute the script by executing the following code.
+<working directory>/
+├── setup-aiverify/
+    ├── aiverify-user 
+    └── aiverify-dev
+        └── setup-aiverify-dev.sh
+```
+4. Open a Terminal in the directory
+5. Execute the script by executing the following code.
    ```bash
-   cd aiverify-env #navigate to the folder created
+   cd aiverify-dev #navigate to the folder created
    bash setup-aiverify-dev.sh
    ```
-5. Wait for the set up to finish, do observe the logs for errors.
+6. Wait for the set up to finish, do observe the logs for errors.
 
 ## Start AI Verify
 
@@ -84,8 +91,7 @@ AI Verify modules are configured as system services. To ensure AI Verify modules
 Your folder structure should look like this.
 ```
 <working directory>/
-├── aiverify-env/
-    ├── server-6.0.asc/
+├── aiverify-dev/
     ├── setup-aiverify-dev.sh/
     ├── aiverify/
       ├── test-engine-app/
@@ -98,7 +104,7 @@ Your folder structure should look like this.
 
 ```bash
 # Open a new terminal window #
-cd aiverify-env/aiverify
+cd aiverify
 source venv/bin/activate
 cd test-engine-app
 python3 -m test_engine_app
@@ -108,7 +114,7 @@ python3 -m test_engine_app
 
 ```bash
 # Open a new terminal window #
-cd aiverify-env/aiverify/ai-verify-apigw
+cd aiverify/ai-verify-apigw
 node app.mjs
 ```
 
@@ -116,7 +122,7 @@ node app.mjs
 
 ```bash
 # Open a new terminal window #
-cd aiverify-env/aiverify/ai-verify-portal
+cd aiverify/ai-verify-portal
 npm run start
 ```
 

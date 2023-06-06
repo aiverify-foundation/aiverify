@@ -25,10 +25,10 @@ To run AI Verify, these are the recommended requirements to run AI Verify on a l
 
 3. Unzip `setup-aiverify.zip`.
 
-4. Your folder structure should look like this.
+4. The folder structure should look like this.
 ```
 <working directory>/
-├── aiverify/
+├── setup-aiverify/
     ├── aiverify-dev
     └── aiverify-user
         ├── DockerFile
