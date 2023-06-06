@@ -117,7 +117,7 @@ class ModelManager:
             log_message(
                 ModelManager._logger,
                 logging.INFO,
-                f"Supported model format: {type(model)} -> "
+                f"Supported model format: {type(model)}, "
                 f"{return_model_instance.get_model_plugin_type()}[{return_model_instance.get_model_algorithm()}]",
             )
         else:

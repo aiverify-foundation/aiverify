@@ -168,7 +168,7 @@ class DataManager:
             log_message(
                 DataManager._logger,
                 logging.INFO,
-                f"Performing conversion from {return_data_instance.get_data_plugin_type()} -> DataPluginType.PANDAS",
+                f"Performing conversion from {return_data_instance.get_data_plugin_type()} to DataPluginType.PANDAS",
             )
             (
                 is_success,
