@@ -14,10 +14,11 @@ The AI Verify report templates contains technical tests that covers 3 principles
 - Robustness: [Robustness Toolbox](https://imda-btg.github.io/aiverify-developer-tools/stock_plugins/robustness_toolbox/)
 - Explainability (Global): [SHAP Toolbox](https://imda-btg.github.io/aiverify-developer-tools/stock_plugins/shap/)
 
-There are also two technical tests for explainability that are not included in the AI Verify report templates:
+There are also three other technical tests that are not included in the AI Verify report templates:
 
 - [Accumulated Local Effect](https://imda-btg.github.io/aiverify-developer-tools/stock_plugins/ale/)
 - [Partial Dependence Plot](https://imda-btg.github.io/aiverify-developer-tools/stock_plugins/pdp/)
+- [Image Corruption Toolbox](https://imda-btg.github.io/aiverify-developer-tools/stock_plugins/image_corruption/)
 
 ## Process Checks
 
