@@ -10,7 +10,7 @@ Provide the following definitions:
 
 | Definition                                                 | Description                                                                                                                                                | Value |
 | ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |-----|
-| **(required) Sensitive Feature Name(s)**                   | This is the sensitive feature(s) previously selected in [Step 7.](#7-provide-test-args) Use commas to separate the features (e.g. gender, race)            | gender, race |
+| **(required) Sensitive Feature Name(s)**                   | This is the sensitive feature(s) previously selected in [Step 7.](7-provide-test-args.md) Use commas to separate the features (e.g. gender, race)            | gender, race |
 | **(required) Favourable Allocated Resource / Opportunity** | This is the resource/ opportunity that is favourable in this use case. (e.g. bail, loan, low interest rate, low insurance premium)                         | low interest rate |
 | **(required) Qualified Group**                             | This is the name of the group that is supposed to receive the resource / opportunity. (e.g. non-reoffenders, qualified applicants, licensed companies)     | qualified applicants | 
 | **(required) Unqualified Group**                           | This is the name of the group that is NOT supposed to receive the resource / opportunity. (e.g. reoffenders, unqualified applicants, unlicensed companies) | unqualified applicants |
