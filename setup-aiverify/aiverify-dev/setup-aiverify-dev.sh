@@ -2,7 +2,7 @@
 
 # Check if Node.js is installed
 if ! which node >/dev/null 2>&1; then
-  echo "Node.s is not installed. Please install nodejs, aiverify requires Node.js v18.x."
+  echo "Node.js is not installed. Please install nodejs, aiverify requires Node.js v18.x."
   exit 1
 fi
 
@@ -12,7 +12,7 @@ node_cur_ver=$(node -v | cut -d'v' -f2)
 node_cur_ver_maj=${node_cur_ver%.*.*}
 if (( $(echo "$node_cur_ver_maj $node_req_ver" | awk '{print ($1 < $2)}'  )))
 then
-  echo "aiverfiy requires Node.js $node_req_ver.x, please install Node.js $node_req_ver.x"
+  echo "aiverify requires Node.js $node_req_ver.x, please install Node.js $node_req_ver.x"
   exit 1
 elif (( $(echo "$node_cur_ver_maj $node_req_ver" | awk '{print ($1 != $2)}'  )))
 then
@@ -51,7 +51,7 @@ sudo -v
 # x86_64, i686, arm, or aarch64
 machine_arch=$(uname -m)
 
-# Script to setup the aiverify development environment
+# Script to setup the aiverify developer environment
 
 sudo apt update
 
@@ -61,6 +61,8 @@ echo "========================== Install redis ============================="
 if ! redis-server --version &>/dev/null; then
   echo "Installing redis-server"
   sudo apt install -y redis-server
+else
+  echo "redis already installed, skipping redis installation"
 fi
 pattern='notify-keyspace-events ""'
 replacement='notify-keyspace-events Kh'
@@ -164,9 +166,7 @@ sudo apt-get install unzip
 
 sudo apt install -y python3.10-venv
 
-pat=$1
-# Won't need PAT when aiverify repo become public
-git clone https://oauth2:${pat}@github.com/imda-btg/aiverify.git --branch=main
+git clone https://github.com/imda-btg/aiverify.git --branch=v0.9.x
 cd aiverify
 
 ############ Node ############
@@ -278,11 +278,6 @@ ExecStart=/usr/bin/npm run start
 [Install]
 WantedBy=multi-user.target" | sudo tee /etc/systemd/system/ai-verify-portal.service
 
-#cd test-engine-app
-#python3 -m test_engine_app &
-#cd ..
-#cd ai-verify-apigw
-#nohup node app.mjs &
-#cd ..
-#cd ai-verify-portal
-#npm run start
+echo
+echo "aiverify developer environment setup completed"
+echo
