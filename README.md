@@ -24,7 +24,7 @@ Learn how you can utilise the developer tools effectively to contribute to the p
 
 ## Contributing Guidelines
 
-We encourage contributions from the community to help improve this project. Before contributing, please read our [Contributing Guidelines](https://github.com/IMDA-BTG/aiverify-developer-tools/blob/main/Contributor.md) to understand the process and expectations.
+We encourage contributions from the community to help improve this project. Before contributing, please read our [Contributing Guidelines](https://github.com/IMDA-BTG/aiverify-developer-tools/blob/main/CONTRIBUTING.md) to understand the process and expectations.
 
 ## Issue Tracker
 
