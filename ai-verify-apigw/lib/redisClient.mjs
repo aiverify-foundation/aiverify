@@ -26,9 +26,9 @@ const redisConnect = () => {
       },
     },
   });
-  redis.on('error', (err) => {
-    console.error('redis connection error:', err);
-  });
+  // redis.on('error', (err) => {
+  //   console.error('redis connection error:', err);
+  // });
   redis.on('ready', () => {
     // console.info('Message queue is ready')
   })
