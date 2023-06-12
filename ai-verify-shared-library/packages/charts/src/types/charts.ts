@@ -40,3 +40,10 @@ export interface BaseCartesianChartProps {
   legendProps?: LegendProps;
   hideLegend?: boolean;
 }
+
+export interface BaseCategoryChartProps {
+  data: any[];
+  chartProps: CategoricalChartProps;
+  legendProps?: LegendProps;
+  hideLegend?: boolean;
+}
