@@ -120,6 +120,7 @@ export interface MockData {
 
 export interface ReportWidget extends BaseMDXComponent {
     type: PluginComponentType.ReportWidget;
+    dynamicHeight: boolean;
     readonly dependencies?: ComponentDependency[];
     status: ReportWidgetStatus;
     widgetSize: WidgetSize;

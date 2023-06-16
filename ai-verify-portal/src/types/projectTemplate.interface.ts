@@ -21,6 +21,7 @@ export type ReportWidgetItem = {
 	key: string, // layout key
 	layoutItemProperties: LayoutItemProperties,
 	properties?: PropertyMap,
+	dynamicHeight: boolean,
 }
 
 export type Page = {
