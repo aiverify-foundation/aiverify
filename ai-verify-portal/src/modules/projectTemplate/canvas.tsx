@@ -180,6 +180,7 @@ export default function CanvasComponent(props: CanvasProps) {
     }
     const widgetItem: ReportWidgetItem = {
       widget,
+      dynamicHeight: widget.dynamicHeight,
       widgetGID: widget.gid,
       key,
       properties,
@@ -430,6 +431,9 @@ export default function CanvasComponent(props: CanvasProps) {
     const {x, y, w, h} = layout;
     const {minW, minH, maxW, maxH} = widget.widgetSize;
     const newLayout = {x, y, w, h, minW, minH, maxW, maxH};
+    if (widget.dynamicHeight) {
+      newLayout.h = GRID_MAX_ROWS - y;
+    }
     if (!projectStore.widgetBundleCache[widget.gid]) {
       document.body.style.cursor = 'wait';
       try {
@@ -459,7 +463,12 @@ export default function CanvasComponent(props: CanvasProps) {
   
   const onDropDragOver = (e: DragOverEvent) => {
     if (!dragItem) return;
-    return { w: dragItem.widgetSize.minW, h: dragItem.widgetSize.minH }
+    if (dragItem.dynamicHeight) {
+      // return { w: dragItem.widgetSize.minW, h: GRID_MAX_ROWS }
+      return { w: dragItem.widgetSize.minW, h: dragItem.widgetSize.minH }
+    } else {
+      return { w: dragItem.widgetSize.minW, h: dragItem.widgetSize.minH }
+    }
   }
 
   function handleLayoutChange(layouts: Layout[]) {
@@ -500,6 +509,20 @@ export default function CanvasComponent(props: CanvasProps) {
       const widget = page.reportWidgets.find(widget => widget.key === key);
 
       if (!widget)return;
+
+      if (widget.dynamicHeight) {
+        // check that no widget below it
+        let maxY = newItem.y;
+        for (const l of page.layouts) {
+          if (l.i === key)
+            continue;
+          if ((l.y + l.h) > maxY)
+            maxY = l.y + l.h;
+        }
+        newItem.y = maxY;
+        newItem.h = GRID_MAX_ROWS - maxY;
+      }
+
       const gridItem = getGridItemElement(element);
       if (gridItem) selectGridItem(gridItem);
       setSelectedWidget(widget);
@@ -530,6 +553,8 @@ export default function CanvasComponent(props: CanvasProps) {
     const widget = page.reportWidgets.find(widget => widget.key === key);
 
     if (!widget)return;
+    if (widget.dynamicHeight)
+      return;
     
     const gridItem = getGridItemElement(element);
     if (gridItem) selectGridItem(gridItem);
@@ -610,7 +635,7 @@ export default function CanvasComponent(props: CanvasProps) {
   }
 
   const onMovePage = (pageNo: number) => {
-    console.log("onMovePage", currentPageNo.current, pageNo)
+    // console.log("onMovePage", currentPageNo.current, pageNo)
     setShowMovePageDialog(false);
     // if target index is same as current page no, no need to move
     if (currentPageNo.current == pageNo)
