@@ -168,6 +168,11 @@
           "datapath"
         ]
       }
+    },
+    "dynamicHeight": {
+      "description": "Whether this widget has dynamic height",
+      "type": "boolean",
+      "default": false
     }
   },
   "required": [
