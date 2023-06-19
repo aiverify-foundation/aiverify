@@ -443,6 +443,10 @@ export default function CanvasComponent(props: CanvasProps) {
           maxY = l.y + l.h;
         }
       }
+      // check make sure the widget does not goes out of the canvas max height
+      if (maxY >= GRID_MAX_ROWS-1) {
+        return;
+      }
       if (isBottom) {
         // if already bottom widget, then just adjust height from y position
         newLayout.h = GRID_MAX_ROWS - y;
