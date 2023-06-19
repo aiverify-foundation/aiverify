@@ -31,12 +31,10 @@ function MyDynamicHeightPage ({ page, pageno, numPages, widgetComps, report }: M
         className={clsx(
           styles.page,
           sharedStyles.printPage,
-          // styles.reportHeight
         )}
         style={{
           pageBreakBefore: pageno > 0 ? 'always':'avoid',
         }}>
-        {/* {page.reportWidgets?.map(item => widgetComps[item.key])} */}
         {page.reportWidgets?.map(item => {
           const comp = widgetComps[item.key];
           const width = comp.layoutItem.w * COL_WIDTH;
@@ -50,12 +48,7 @@ function MyDynamicHeightPage ({ page, pageno, numPages, widgetComps, report }: M
               style={{
                 display: 'flex',
                 ...getItemLayoutProperties(comp.reportWidget.layoutItemProperties),
-                // position: 'absolute',
-                // top: comp.layoutItem.y * ROW_HEIGHT,
-                // left: comp.layoutItem.x * COL_WIDTH,
-                // width: comp.layoutItem.w * COL_WIDTH
                 float: 'left',
-                // display: 'inline-block',
                 position: 'relative',
                 width,
                 height,
@@ -126,16 +119,13 @@ export default function PrintViewModule({ report, mdxBundleMap }: Props) {
     }
     setPages(pages);
 
-    // console.log("reportContext", reportContext);
     setWidgetComps(widgetComps);
-    // setReportContext(reportContext);
   }, [report.projectSnapshot.pages])
 
   const getWidget = (reportWidget: ReportWidgetItem, layoutItem: any, result: any) => {
     const properties: any = {};
     if (reportWidget.properties) {
       for (const key of Object.keys(reportWidget.properties)) {
-        // properties2[key] = reportWidget.properties[key];
         properties[key] = widgetProperties.getProperty(reportWidget.properties[key]);
       }
     }
