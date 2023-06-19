@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useRef, useMemo, MouseEvent, useCallback } from 'react';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
 import Pagination from '@mui/material/Pagination';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -35,6 +33,7 @@ import { DraggableAbsolutionPositon } from 'src/components/alertBox';
 import { OutlinedInput } from '@mui/material';
 import AddPageDialog from './addPageDialog';
 import MovePageDialog from './movePageDialog';
+import { library } from '@fortawesome/fontawesome-svg-core';
 
 
 type CanvasProps = {
@@ -428,11 +427,30 @@ export default function CanvasComponent(props: CanvasProps) {
       return;
     let addedWidgetGridItem: ReportWidgetItem | undefined;
     const widget = dragItem;
-    const {x, y, w, h} = layout;
+    const {i, x, y, w, h} = layout;
     const {minW, minH, maxW, maxH} = widget.widgetSize;
     const newLayout = {x, y, w, h, minW, minH, maxW, maxH};
     if (widget.dynamicHeight) {
-      newLayout.h = GRID_MAX_ROWS - y;
+      // check if above other widgets
+      let isBottom = true;
+      const y2 = layout.y + layout.h;
+      let maxY = y;
+      for (const l of _l) {
+        if (l.i === i)
+          continue;
+        if (l.y >= y2) {
+          isBottom = false;
+          maxY = l.y + l.h;
+        }
+      }
+      if (isBottom) {
+        // if already bottom widget, then just adjust height from y position
+        newLayout.h = GRID_MAX_ROWS - y;
+      } else {
+        // if not bottom widget, set widget y to maxY and adjust height from maxY
+        newLayout.y = maxY;
+        newLayout.h = GRID_MAX_ROWS - maxY;
+      }
     }
     if (!projectStore.widgetBundleCache[widget.gid]) {
       document.body.style.cursor = 'wait';
@@ -463,12 +481,7 @@ export default function CanvasComponent(props: CanvasProps) {
   
   const onDropDragOver = (e: DragOverEvent) => {
     if (!dragItem) return;
-    if (dragItem.dynamicHeight) {
-      // return { w: dragItem.widgetSize.minW, h: GRID_MAX_ROWS }
-      return { w: dragItem.widgetSize.minW, h: dragItem.widgetSize.minH }
-    } else {
-      return { w: dragItem.widgetSize.minW, h: dragItem.widgetSize.minH }
-    }
+    return { w: dragItem.widgetSize.minW, h: dragItem.widgetSize.minH }
   }
 
   function handleLayoutChange(layouts: Layout[]) {
