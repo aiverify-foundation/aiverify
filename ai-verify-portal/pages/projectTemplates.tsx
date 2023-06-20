@@ -1,5 +1,3 @@
-import React, { useState } from 'react';
-
 import { listProjectTemplates } from 'server/lib/projectServiceBackend';
 import TemplateListModule from 'src/modules/projectTemplate/templateListModule';
 import ProjectTemplate from 'src/types/projectTemplate.interface';
@@ -19,7 +17,5 @@ type Props = {
 }
 
 export default function ProjectTemplateListPage({ templates }: Props) {
-  return (
-    <TemplateListModule templates={templates} />
-  )
+  return <TemplateListModule templates={templates} />
 }

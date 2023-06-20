@@ -1,9 +1,8 @@
-import { gql, useQuery, useMutation } from "@apollo/client";
+import { gql } from "@apollo/client";
 import graphqlClient from "src/lib/graphqlClient";
 
 import Dataset from 'src/types/dataset.interface';
 import ModelFile from 'src/types/model.interface';
-import _ from 'lodash';
 
 export const GET_DATASETS = gql`
     query Query {
@@ -32,7 +31,7 @@ export async function listDatasets(): Promise<Dataset[]> {
         query: GET_DATASETS
     })
 
-    let datasets = data.datasets as Dataset[];
+    const datasets = data.datasets as Dataset[];
     
     return datasets; 
 }
@@ -59,7 +58,7 @@ export async function listModels(): Promise<ModelFile[]> {
         query: GET_MODELS,
     });
 
-    let modelFiles = data.modelFiles as ModelFile[];
+    const modelFiles = data.modelFiles as ModelFile[];
     
     return modelFiles; 
 }
