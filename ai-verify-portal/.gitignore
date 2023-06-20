@@ -37,3 +37,6 @@ yarn-error.log*
 
 # plugins
 /temp
+
+# vscode files
+.vscode/**/*
