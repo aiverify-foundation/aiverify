@@ -149,11 +149,9 @@ export const GET_PROJECT = gql`
 
 async function populateProject (project: Project|ProjectTemplate): Promise<Project|ProjectTemplate> {
     if (project.pages) {
-        for (let page of project.pages) {
-            for (let item of page.reportWidgets) {
-                // console.log("item", item)
+        for (const page of project.pages) {
+            for (const item of page.reportWidgets) {
                 item.widget = await getByGID(item.widgetGID) as ReportWidget;
-                // console.log("-> widget", item.widget)
             }
         }
     }
@@ -165,14 +163,10 @@ export async function listProjects(): Promise<Project[]> {
     const { data } = await client.query({
         query: GET_PROJECTS,
     });
-    // console.log("data", data.projects)
-    let projects = data.projects as Project[];
-    for (let proj of projects) {
+    const projects = data.projects as Project[];
+    for (const proj of projects) {
         await populateProject(proj);
     }
-    // let projects = (data.projects as Project[]).map(async proj => { await populateProject(proj); return proj })
-    // let projects = data.projects as Project[];
-    // console.log("projects", projects)
     return projects; 
 }
 
@@ -191,7 +185,6 @@ export async function getProject(id: string): Promise<Project> {
         console.error("getProject error", JSON.stringify(err, null, 2));
         return Promise.reject(err);
     }
-    // return data.project; 
 }
 
 export const GET_REPORT = gql`
@@ -378,9 +371,8 @@ export async function listProjectTemplates(): Promise<ProjectTemplate[]> {
     const { data } = await client.query({
         query: GET_PROJECT_TEMPLATES,
     });
-    // console.log("data", data.projects)
-    let templates = data.projectTemplates as ProjectTemplate[];
-    for (let template of templates) {
+    const templates = data.projectTemplates as ProjectTemplate[];
+    for (const template of templates) {
         await populateProject(template);
     }
     return templates; 
@@ -395,7 +387,6 @@ export async function getProjectTemplate(id: string): Promise<ProjectTemplate> {
         }
     });
     return await populateProject(_.cloneDeep(data.projectTemplate)); 
-    // return data.project; 
 }
 
 export const CREATE_PROJECT_TEMPLATE = gql`
@@ -406,7 +397,6 @@ mutation Mutation($projectTemplate: ProjectTemplateInput!) {
 }
 `
 export async function createProjectTemplate(projectTemplate: ProjectTemplate): Promise<string> {
-    // console.log("createProjectTemplate", projectTemplate)
     const client = graphqlClient(true)
     const { data } = await client.mutate({
         mutation: CREATE_PROJECT_TEMPLATE,
@@ -415,7 +405,6 @@ export async function createProjectTemplate(projectTemplate: ProjectTemplate): P
         }
     });
     return data.createProjectTemplate.id; 
-    // return data.project; 
 }
 
 export const DELETE_PROJECT_TEMPLATE = gql`
@@ -425,7 +414,6 @@ mutation Mutation($id: ObjectID!) {
 `
 
 export async function deleteProjectTemplate(id: string): Promise<string> {
-    // console.log("createProjectTemplate", projectTemplate)
     const client = graphqlClient(true)
     const { data } = await client.mutate({
         mutation: DELETE_PROJECT_TEMPLATE,
@@ -434,5 +422,4 @@ export async function deleteProjectTemplate(id: string): Promise<string> {
         }
     });
     return data; 
-    // return data.project; 
 }

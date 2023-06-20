@@ -58,7 +58,6 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link(props,
     noLinkStyle,
     prefetch,
     replace,
-    role, // Link don't have roles.
     scroll,
     shallow,
     ...other
