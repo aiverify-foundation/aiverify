@@ -13,7 +13,7 @@ if __name__ == "__main__":
 
     # Regression Binary Classification Pipeline
     data_path = "tests/user_defined_files/data/sample_reg_pipeline_data.sav"
-    model_path = "tests/user_defined_files/pipeline/regression_tabular_donation"
+    model_path = "tests/user_defined_files/pipeline"
     ground_truth_path = (
         "tests/user_defined_files/data/sample_reg_pipeline_ytest_data.sav"
     )
