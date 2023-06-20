@@ -19,5 +19,6 @@
       "cid": "transparency_process_checklist",
       "datapath": "transparency_process_checklist.sample.json"
     }
-  ]
+  ],
+  "dynamicHeight": true
 }

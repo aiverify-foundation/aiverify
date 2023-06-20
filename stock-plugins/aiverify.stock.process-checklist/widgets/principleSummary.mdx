@@ -110,10 +110,10 @@ export const PrincipleSummarySingle = ({ data, principleConfig }) => {
             </div>}
           </div>}
         </div>
-        <div style={{ flexGrow:1, marginLeft:'20px', textAlign:'left' }}>
+        <div style={{ flexGrow:1, marginLeft:'20px', textAlign:'left', width:'calc(100% - 310px)' }}>
           <b>Summary Justification</b>
           {(summaryJustification.length > 0)?(
-            <div>{summaryJustification}</div>
+            <div style={{ breakInside: 'avoid', overflowWrap: 'break-word' }}>{summaryJustification}</div>
           ):(
             <div className="c-error" style={{ fontStyle:'italic' }}>The company did not provide any reason.</div>
           )}
@@ -121,7 +121,7 @@ export const PrincipleSummarySingle = ({ data, principleConfig }) => {
             <b>Company did not implement the following testable criteria fully:</b><br/>
             <ul style={styles.ul}>
               {getNotImplementedTestableCriteria(config, data).map(tc => (
-                <li><div dangerouslySetInnerHTML={{ __html: tc }}></div></li>
+                <li style={{ breakInside: 'avoid', overflowWrap: 'break-word' }}><div dangerouslySetInnerHTML={{ __html: tc }}></div></li>
               ))}
             </ul>
           </div>}

@@ -19,5 +19,6 @@
       "cid": "safety_process_checklist",
       "datapath": "safety_process_checklist.sample.json"
     }
-  ]
+  ],
+  "dynamicHeight": true
 }

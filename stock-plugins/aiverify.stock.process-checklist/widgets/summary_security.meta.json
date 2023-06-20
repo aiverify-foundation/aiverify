@@ -19,5 +19,6 @@
       "cid": "security_process_checklist",
       "datapath": "security_process_checklist.sample.json"
     }
-  ]
+  ],
+  "dynamicHeight": true
 }
