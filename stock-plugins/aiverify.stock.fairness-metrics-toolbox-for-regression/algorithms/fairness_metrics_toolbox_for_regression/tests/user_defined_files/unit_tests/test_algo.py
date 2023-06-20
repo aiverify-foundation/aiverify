@@ -15,20 +15,15 @@ from test_engine_core.utils.simple_progress import SimpleProgress
 
 
 def test_discover_plugin():
-    PluginManager.discover(str(Path().absolute() / "../../../test-engine-core-modules"))
+    PluginManager.discover(
+        str(Path().absolute() / "../../../../test-engine-core-modules")
+    )
 
 
 # Variables for testing
-valid_data_path = (
-    "tests/user_defined_files/data/pickle_pandas_mock_regression_donation_testing.sav"
-)
-valid_model_path = (
-    "tests/user_defined_files/model/"
-    "regression_mock_donation_sklearn.linear_model._base.LinearRegression.sav"
-)
-valid_ground_truth_path = (
-    "tests/user_defined_files/data/pickle_pandas_mock_regression_donation_testing.sav"
-)
+valid_data_path = "tests/user_defined_files/data/sample_reg_donation_data.sav"
+valid_model_path = "tests/user_defined_files/model/sample_reg_donation_sklearn_linear.LogisticRegression.sav"
+valid_ground_truth_path = "tests/user_defined_files/data/sample_reg_donation_data.sav"
 
 test_string = "data_str"
 test_int = 1
