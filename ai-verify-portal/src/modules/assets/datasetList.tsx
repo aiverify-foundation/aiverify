@@ -169,7 +169,6 @@ export default function DatasetListComponent({
         const newSelected = [...selectedIds];
         const messages: string[] = [];
         for (const id of selectedIds) {
-            // console.log("Deleting dataset: ", id)
             const idx = data?.datasets.findIndex((e: Dataset) => e.id === id);
 
             if (idx < 0)
@@ -178,7 +177,7 @@ export default function DatasetListComponent({
             const ar = [...data?.datasets];
             ar.splice(idx, 1);
 
-            const response = await deleteDatasetFn(id!)
+            const response = await deleteDatasetFn(id)
             if (response != id) {
                 setAlertTitle("File deletion error")
                 messages.push(response)
@@ -236,7 +235,7 @@ export default function DatasetListComponent({
        
         // set table data
         if (data) {
-            let ar = myFiles;
+            const ar = myFiles;
             setTableData(ar);
 
             // update focus and edit
@@ -544,7 +543,7 @@ export default function DatasetListComponent({
                                 title="Dataset Name"
                                 inputProps={{
                                     multiline: true,
-                                    onChange: (e: any) => onChange('name', e.target.value),
+                                    onChange: (e: React.ChangeEvent<HTMLInputElement>) => onChange('name', e.target.value),
                                     value: edit.name,
                                     placeholder: "Enter name to identify this dataset",
                                 }}
@@ -581,7 +580,7 @@ export default function DatasetListComponent({
                                 title="Dataset Description"
                                 inputProps={{
                                     multiline: true,
-                                    onChange: (e: any) => onChange('description', e.target.value),
+                                    onChange: (e: React.ChangeEvent<HTMLInputElement>) => onChange('description', e.target.value),
                                     value: edit.description,
                                     placeholder: "Enter dataset description",
                                 }}

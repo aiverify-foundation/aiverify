@@ -239,7 +239,7 @@ mutation Mutation($id: ObjectID!, $project: ProjectInput!) {
 type UpdateProjectFunction = (id: string, project: Partial<ProjectInput>) => Promise<string>  
 export const useUpdateProject = (): UpdateProjectFunction => {
     const [updateProject] = useMutation(UPDATE_PROJECT);
-    const fn = (id: string, project: Partial<Project>): Promise<string> => {
+    const fn = (id: string, project: Partial<ProjectInput>): Promise<string> => {
         return new Promise((resolve, reject) => {
             updateProject({
                 variables: {
@@ -251,7 +251,7 @@ export const useUpdateProject = (): UpdateProjectFunction => {
             })    
         })
     }
-    //@ts-ignore
+    
     return fn;
 }
 

@@ -31,11 +31,11 @@ type OptionCardProps = {
 }
 
 function OptionCard(props: OptionCardProps) {
-    const { highlighted, onClick, testid, name, label, tip, icon, children } = props;
+    const { highlighted, onClick, testid, name, label, icon, children } = props;
     return (
         <div className={clsx (styles.optionCard, highlighted ? styles.optionCard__highlighted : null)} onClick={onClick} data-testid={testid}>
             <div className={clsx (styles.optionCardHeader, highlighted ? styles.optionCardHeader__highlighted : null)}>
-                <input type="radio" id={name} name="mode" value={name} checked={highlighted} onChange={e => {}}></input>
+                <input type="radio" id={name} name="mode" value={name} checked={highlighted} onChange={() => undefined}></input>
                 <div className={clsx (styles.optionItem, highlighted ? styles.optionItem__highlighted : null)}>
                     <label>
                         <div className={styles.optionIcon}>{icon}</div>

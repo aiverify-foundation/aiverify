@@ -1,5 +1,4 @@
 import { useRouter } from 'next/router';
-import { useState } from 'react';
 
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -23,7 +22,6 @@ import styles from './styles/new-asset.module.css';
  */
 export default function AssetsModule() {
   const router = useRouter()
-  const [hover, setHover] = useState(false);
 
   return (
     <div>

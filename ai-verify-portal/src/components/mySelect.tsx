@@ -10,7 +10,7 @@ type Props = {
   title?: string,
   description?: string,
   id?: string,
-  inputProps?: SelectProps,
+  inputProps?: SelectProps<string>,
   errorText?: string|null,
   FormControlProps?: {sx?: SxProps},
   items: string[],

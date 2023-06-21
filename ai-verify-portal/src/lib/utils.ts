@@ -2,7 +2,7 @@ import moment from 'moment';
 import { WheelEvent } from 'react';
 
 
-export function formatDate(d: any): string {
+export function formatDate(d: moment.MomentInput): string {
   return moment(d).format('D MMM YYYY, HH:mm:ss');
 }
 

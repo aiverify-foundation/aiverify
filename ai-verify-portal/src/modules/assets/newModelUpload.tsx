@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import { gql, useSubscription } from '@apollo/client';
 import * as _ from 'lodash';
 import { FileUploader } from "react-drag-drop-files";
@@ -30,8 +30,8 @@ import FormControl from '@mui/material/FormControl';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 
 import ModelFile, { ModelType } from 'src/types/model.interface';
-import { useUpdateModel, useDeleteModelFile } from 'src/lib/assetService';
-import { Dialog, DialogActions, DialogContent, DialogTitle, LinearProgress, ListItemButton, ListItemIcon } from '@mui/material';
+import { useUpdateModel } from 'src/lib/assetService';
+import { Dialog, DialogActions, DialogContent, DialogTitle, LinearProgress, ListItemButton, ListItemIcon, SelectChangeEvent } from '@mui/material';
 import MySelect from 'src/components/mySelect';
 import MyTextField from 'src/components/myTextField';
 import { AlertType, StandardAlert } from 'src/components/standardAlerts';
@@ -87,7 +87,7 @@ function ModelsPicking({updateValidatingState, updateFileList}: ModelsPickingPro
             // console.log("files selected are", files)
             const fileList = files as FileList;
             let isLargeFile = false;
-            for (let file of fileList) {
+            for (const file of fileList) {
                 if (file.size > 4000000000) {
                     isLargeFile = true;
                 }
@@ -99,7 +99,7 @@ function ModelsPicking({updateValidatingState, updateFileList}: ModelsPickingPro
             } else {
                 setAlertTitle(null)
                 setAlertMessages([])
-                let pickedFiles = [
+                const pickedFiles = [
                     ...filesToUpload,
                     ...Array.from(fileList)
                 ];
@@ -123,12 +123,12 @@ function ModelsPicking({updateValidatingState, updateFileList}: ModelsPickingPro
         setModelTypes([]);
     }
 
-    function pickFiles(files: any) {
+    function pickFiles(files: FileList) {
         const messages: string[] = [];
         if (!files)
             return;
         else {
-            const fileList = files as FileList;
+            const fileList = files;
             if (fileList.length > 10) {
                 messages.push("Maximum 10 files to be uploaded at once. Please select less files.")
                 setAlertTitle("File selection error")
@@ -163,7 +163,7 @@ function ModelsPicking({updateValidatingState, updateFileList}: ModelsPickingPro
                             ...Array.from(fileList)
                         ];
                         setFilesToUpload(pickedFiles);
-                        for ( const file of files ) {
+                        for (const file of files ) {
                             setModelTypes(current => [...current, 'Classification']);
                         }
                     }
@@ -298,7 +298,7 @@ function ModelsPicking({updateValidatingState, updateFileList}: ModelsPickingPro
                 //check if any files have the same name
                 const alreadySeen: { [key: string]: boolean } = {};
                 const filenames = filesToUpload.map(file => file.name);
-                let isDuplicate: boolean = false;
+                let isDuplicate = false;
                 filenames.forEach(str => alreadySeen[str] ? isDuplicate = true : alreadySeen[str] = true);
                 if (isDuplicate) {
                     messages.push("Please do not upload files with the same name.")
@@ -420,7 +420,7 @@ function ModelsPicking({updateValidatingState, updateFileList}: ModelsPickingPro
                                         title="Model Type"
                                         inputProps={{
                                             multiline: true,
-                                            onChange: (e: any) => onSetModelType(index, e.target.value),
+                                            onChange: (e: SelectChangeEvent<string>) => onSetModelType(index, e.target.value),
                                             placeholder: "Model Type",
                                             defaultValue: 'Classification'
                                         }}
@@ -463,7 +463,7 @@ function ModelsPicking({updateValidatingState, updateFileList}: ModelsPickingPro
                                         title="Model Type"
                                         inputProps={{
                                             multiline: true,
-                                            onChange: (e: any) => onSetFolderModelType(index, e.target.value),
+                                            onChange: (e: SelectChangeEvent<string>) => onSetFolderModelType(index, e.target.value),
                                             placeholder: "Model Type",
                                             defaultValue: 'Classification',
                                         }}
@@ -519,7 +519,6 @@ function ModelsValidating({filesValidating, updateFile, onBackClick}: ModelsVali
     const [ validationDone, setValidationDone ] = useState<boolean>(false);
 
     const updateModelFn = useUpdateModel();
-    const deleteModelFileFn = useDeleteModelFile();
 
     //update files displayed with latest data from parent
     useEffect(() => {
@@ -554,15 +553,11 @@ function ModelsValidating({filesValidating, updateFile, onBackClick}: ModelsVali
         setEdit(modelFile);
     }
 
-    const setCancelled = async (id: any, modelFile: Partial<ModelFile> ) => {
+    const setCancelled = async (id: string, modelFile: Partial<ModelFile> ) => {
         const newModelFile = {...modelFile, status: "Cancelled"};
         const modelFileInput = _.pick(newModelFile, ["status"]);
-
-        const response = await updateModelFn(id, modelFileInput)
-        // console.log("response is: ", response)
+        await updateModelFn(id, modelFileInput)
         updateFile(newModelFile);
-        // const deleteResponse = await deleteModelFileFn(id)
-        // console.log("deleteResponse is: ", deleteResponse)
     }
 
     useEffect(() => {
@@ -570,16 +565,14 @@ function ModelsValidating({filesValidating, updateFile, onBackClick}: ModelsVali
             console.log('Timeout ended');
             setIsFailed(true);
             setIsRunning(false);
-            for ( let modelValidating of modelsValidating ) {
+            for ( const modelValidating of modelsValidating ) {
                 if (modelValidating.status == FileStatus.PENDING) {
                     if (modelValidating._id) {
                         const modelFile = modelValidating;
-                        let newModelFile = {...modelFile, status: "Error"};  
-                        let modelFileInput = _.pick(newModelFile, ["status"]);
+                        const newModelFile = {...modelFile, status: "Error"};  
+                        const modelFileInput = _.pick(newModelFile, ["status"]);
                         if (modelFile._id) {
-                            updateModelFn(modelFile._id.toString(), modelFileInput).then(updatedModelFile => {
-                                // console.log("Updated ModelFile is: ", updatedModelFile)
-                            })
+                            updateModelFn(modelFile._id.toString(), modelFileInput);
                             updateFile(newModelFile);
                         }
                     }
@@ -676,7 +669,7 @@ function ModelsValidating({filesValidating, updateFile, onBackClick}: ModelsVali
                                     </ListItemAvatar>
                                     <ListItemText primary={modelValidating.name} secondary={modelValidating.size} />
                                     <ListItemIcon>
-                                        <IconButton sx={{visibility:(modelValidating.status == FileStatus.PENDING)?'visible':'hidden'}} onClick={()=> setCancelled(modelValidating._id, modelValidating)}>
+                                        <IconButton sx={{visibility:(modelValidating.status == FileStatus.PENDING)?'visible':'hidden'}} onClick={()=> setCancelled(modelValidating._id as string, modelValidating)}>
                                             <StopCircleIcon />
                                         </IconButton>
                                     </ListItemIcon>
@@ -783,7 +776,7 @@ function ModelsValidating({filesValidating, updateFile, onBackClick}: ModelsVali
                             title="Model Name"
                             inputProps={{
                                 multiline: true,
-                                onChange: (e: any) => onChange('name', e.target.value),
+                                onChange: (e: ChangeEvent<HTMLInputElement>) => onChange('name', e.target.value),
                                 value: edit.name,
                                 placeholder: "Enter name to identify this AI model",
                             }}
@@ -819,7 +812,7 @@ function ModelsValidating({filesValidating, updateFile, onBackClick}: ModelsVali
                             title="Model Type"
                             inputProps={{
                                 multiline: true,
-                                onChange: (e: any) => onChange('modelType', e.target.value),
+                                onChange: (e: SelectChangeEvent) => onChange('modelType', e.target.value),
                                 value: edit.modelType,
                                 placeholder: "Select Model Type",
                             }}
@@ -833,7 +826,7 @@ function ModelsValidating({filesValidating, updateFile, onBackClick}: ModelsVali
                             title="Model Description"
                             inputProps={{
                                 multiline: true,
-                                onChange: (e: any) => onChange('description', e.target.value),
+                                onChange: (e: ChangeEvent<HTMLInputElement>) => onChange('description', e.target.value),
                                 value: edit.description,
                                 placeholder: "Enter AI model description",
                             }}
@@ -942,8 +935,8 @@ export default function NewModelUploadModule({ withoutLayoutContainer = false, o
         // console.log("fileList is now: ", fileList);
 
         //add most recently uploaded datasets to datasetsValidating list (regardless of pending/done state)
-        for (let file of fileList) {
-            let fileValidating = filesValidating.find(e => e.id?.toString() === file.id?.toString());
+        for (const file of fileList) {
+            const fileValidating = filesValidating.find(e => e.id?.toString() === file.id?.toString());
             if (fileValidating) {
                 // console.log("File ", file.name, " already in modelsValidating")
             } else {

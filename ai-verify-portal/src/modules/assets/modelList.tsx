@@ -1,9 +1,8 @@
-import { useRouter } from 'next/router';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import { gql, useQuery } from '@apollo/client';
 import * as _ from 'lodash';
 
-import { Chip, SxProps, Theme } from '@mui/material';
+import { Chip, SelectChangeEvent, SxProps, Theme } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -87,7 +86,6 @@ export default function ModelListComponent({
     containerStyles,
     gridStyles,
  }: Props) {
-    const router = useRouter()
     const [ focus, setFocus ] = useState<ModelFile | null>(null);
     const [ edit, setEdit ] = useState<ModelFile | null>(null);
     const [ openDialog, setOpenDialog ] = useState<boolean>(false);
@@ -103,7 +101,7 @@ export default function ModelListComponent({
 
     const updateModelFn = useUpdateModel();
 
-    const { data, loading, error, startPolling } = useQuery(GET_MODELS);
+    const { data, startPolling } = useQuery(GET_MODELS);
 
     useEffect(() => {
         startPolling(3000);
@@ -119,9 +117,8 @@ export default function ModelListComponent({
     }
 
     const onUpdateModel = async (id: any, model: Partial<ModelFile> ) => {
-        let modelInput = _.pick(model, ['description', 'name', 'modelType']);
+        const modelInput = _.pick(model, ['description', 'name', 'modelType']);
 		const response = await updateModelFn(id.toString(), modelInput)
-        // console.log("response is: ", response)
         if (response == "Duplicate File") {
             console.log("Another file with the same name already exists, unable to update name to: ", modelInput.name)
             if (modelInput.name) setDuplicateName(modelInput.name?.toString());
@@ -163,9 +160,9 @@ export default function ModelListComponent({
         const selectedIds = ids.map((id) => id.toString());
         const newSelected = [...selectedIds];
         const messages: string[] = [];
-        for (let id of selectedIds) {
+        for (const id of selectedIds) {
             // console.log("Deleting modelFile: ", id)
-            let idx = data?.modelFiles.findIndex((e: ModelFile) => e.id === id);
+            const idx = data?.modelFiles.findIndex((e: ModelFile) => e.id === id);
 
             if (idx < 0)
                 return;
@@ -173,7 +170,7 @@ export default function ModelListComponent({
             const ar = [...data?.modelFiles];
             ar.splice(idx, 1);
 
-            const response = await deleteModelFileFn(id!)
+            const response = await deleteModelFileFn(id)
             if (response != id) {
                 setAlertTitle("File deletion error")
                 messages.push(response)
@@ -239,7 +236,7 @@ export default function ModelListComponent({
        
         // set table data
         if (data) {
-            let ar = myFiles;
+            const ar = myFiles;
             setTableData(ar);
 
             // update focus and edit
@@ -523,7 +520,7 @@ export default function ModelListComponent({
                             title="Model Name"
                             inputProps={{
                                 multiline: true,
-                                onChange: (e: any) => onChange('name', e.target.value),
+                                onChange: (e: ChangeEvent<HTMLInputElement>) => onChange('name', e.target.value),
                                 value: edit.name,
                                 placeholder: "Enter name to identify this AI model",
                             }}
@@ -559,7 +556,7 @@ export default function ModelListComponent({
                             title="Model Type"
                             inputProps={{
                                 multiline: true,
-                                onChange: (e: any) => onChange('modelType', e.target.value),
+                                onChange: (e: SelectChangeEvent) => onChange('modelType', e.target.value),
                                 value: edit.modelType,
                                 placeholder: "Select Model Type",
                             }}
@@ -573,7 +570,7 @@ export default function ModelListComponent({
                             title="Model Description"
                             inputProps={{
                                 multiline: true,
-                                onChange: (e: any) => onChange('description', e.target.value),
+                                onChange: (e: ChangeEvent<HTMLInputElement>) => onChange('description', e.target.value),
                                 value: edit.description,
                                 placeholder: "Enter AI model description",
                             }}
