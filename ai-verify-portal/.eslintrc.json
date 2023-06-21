@@ -1,5 +1,5 @@
 {
-  "extends": ["next/core-web-vitals", "plugin:@typescript-eslint/recommended"],
+  "extends": ["next/core-web-vitals", "plugin:@typescript-eslint/recommended", "prettier"], // prettier - just to eslint lint does not do formatting-related rules
   "parser": "@typescript-eslint/parser",
   "plugins": ["@typescript-eslint"],
   "root": true,

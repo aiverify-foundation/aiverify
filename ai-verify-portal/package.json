@@ -23,6 +23,8 @@
     "start": "next start",
     "lint": "next lint -f html -o eslint-report.html",
     "lint-dev": "next lint",
+    "format": "prettier --check --ignore-path .gitignore .",
+    "format-fix": "prettier --write --ignore-path .gitignore .",
     "test": "jest --silent --verbose",
     "test-cov": "jest --coverage",
     "post-update": "echo \"codesandbox preview only, need an update\" && yarn upgrade --latest",
@@ -97,9 +99,11 @@
     "axios-mock-adapter": "^1.21.4",
     "eslint": "latest",
     "eslint-config-next": "latest",
+    "eslint-config-prettier": "^8.8.0",
     "jest": "^29.2.2",
     "jest-environment-jsdom": "^29.2.2",
     "next-router-mock": "^0.9.3",
+    "prettier": "^2.8.8",
     "typescript": "latest"
   },
   "proxy": "http://localhost:4000"
