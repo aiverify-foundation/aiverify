@@ -1,5 +1,5 @@
 import {jest} from '@jest/globals'
-import mongoose, { Model } from 'mongoose';
+import mongoose from 'mongoose';
 import casual from '#testutil/mockData.mjs';
 import { mockModel, mockTestDataset } from '../../testutil/mockData.mjs';
 
