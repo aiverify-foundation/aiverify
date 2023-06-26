@@ -1,12 +1,15 @@
 import {jest} from '@jest/globals'
-import mongoose from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import casual from '#testutil/mockData.mjs';
+import { mockModel, mockTestDataset } from '../../testutil/mockData.mjs';
 
 
 describe("Test Project GraphQL queries", () => {
   let server;
   let ProjectModel;
   let ProjectTemplateModel;
+  let ModelFileModel;
+  let DatasetFileModel;
   let testEngineQueue;
   let data = [];
   let templateData = [];
@@ -31,12 +34,22 @@ describe("Test Project GraphQL queries", () => {
     const models = await import("#models");
     ProjectModel = models.ProjectModel;
     ProjectTemplateModel = models.ProjectTemplateModel;
-    // make sure collection empty
-    // await ProjectModel.deleteMany();
+    ModelFileModel = models.ModelFileModel;
+    DatasetFileModel = models.DatasetModel;
     // create some initial data
+    const model = new ModelFileModel(mockModel);
+    const dataset = new DatasetFileModel(mockTestDataset);
+    const savedModel = await model.save();
+    const savedDataset = await dataset.save();
     const docs = casual.multipleProjects(2);
     for (const doc of docs) { 
       doc.__t = 'ProjectModel';
+      doc.modelAndDatasets = {
+        groundTruthColumn: 'two_year_recid',
+        model: savedModel._id,
+        testDataset: savedDataset._id,
+        groundTruthDataset: savedDataset._id,
+      }
       const obj = new ProjectModel(doc);
       let saveDoc = await obj.save();
       data.push(saveDoc.toObject())
