@@ -420,7 +420,22 @@ mutation($project: ProjectInput!, $templateId: String!) {
       company
     }
     pages {
-      layouts
+      layouts {
+        h
+        i
+        isBounded
+        isDraggable
+        isResizable
+        maxH
+        maxW
+        minH
+        minW
+        resizeHandles
+        static
+        w
+        x
+        y
+      }
     }
   }
 }
@@ -476,11 +491,10 @@ mutation($projectId: ObjectID!, $templateInfo: ProjectInformationInput!) {
 
   it("should generate report without tests", async() => {
     const proj = data[0];
-    const mad = casual.modelAndDataset;
 
     const query = `
-mutation($projectID: ObjectID!, $algorithms: [String]!, $modelAndDatasets: ModelAndDatasetsReportInput) {
-  generateReport(projectID:$projectID, algorithms:$algorithms, modelAndDatasets:$modelAndDatasets) {
+mutation($projectID: ObjectID!, $algorithms: [String]!) {
+  generateReport(projectID:$projectID, algorithms:$algorithms) {
     projectID
     status
   }
@@ -491,7 +505,6 @@ mutation($projectID: ObjectID!, $algorithms: [String]!, $modelAndDatasets: Model
       variables: {
         projectID: proj._id.toString(),
         algorithms: [],
-        modelAndDatasets: mad,
       }
     })
 
@@ -513,8 +526,8 @@ mutation($projectID: ObjectID!, $algorithms: [String]!, $modelAndDatasets: Model
     const algorithms = proj.testInformationData.map(test => test.algorithmGID);
 
     const query = `
-mutation($projectID: ObjectID!, $algorithms: [String]!, $modelAndDatasets: ModelAndDatasetsReportInput) {
-  generateReport(projectID:$projectID, algorithms:$algorithms, modelAndDatasets:$modelAndDatasets) {
+mutation($projectID: ObjectID!, $algorithms: [String]!) {
+  generateReport(projectID:$projectID, algorithms:$algorithms) {
     projectID
     status
   }
@@ -525,7 +538,6 @@ mutation($projectID: ObjectID!, $algorithms: [String]!, $modelAndDatasets: Model
       variables: {
         projectID: proj._id.toString(),
         algorithms,
-        modelAndDatasets: mad,
       }
     })
 

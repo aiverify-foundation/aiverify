@@ -1,8 +1,9 @@
+import { jest } from '@jest/globals';
 import casual from 'casual';
 import mongoose from 'mongoose';
 
 casual.define('ObjectId', function() {
-  return mongoose.Types.ObjectId.toString();
+  return mongoose.Types.ObjectId().toString();
 })
 
 casual.define('randomString', function(len) {
@@ -86,7 +87,6 @@ casual.define('reportPages', function(count) {
         "maxW": casual.integer(1,12),
         "minH": casual.integer(1,36),
         "maxH": casual.integer(1,36),
-        "moved": false,
         "static": false
       }],
       reportWidgets: [
@@ -161,7 +161,7 @@ casual.define('project', function() {
     ...template,
     inputBlockData: {},
     testInformationData: casual.testInformation(1),
-    // modelAndDatasets: kimee TODO
+    modelAndDatasets: casual.modelAndDatasetInput
   }
 })
 
@@ -220,11 +220,25 @@ casual.define('report', function(project, status) {
 
 casual.define('modelAndDataset', function() {
   return {
-    modelFileName: 'testmodel.sav',
-    testDatasetFileName: 'testdata.sav',
-    groundTruthDatasetFileName: 'testgroundtruthdata.sav',
-    modelType: casual.random_element(["Classification","Regression"]),
-    groundTruthColumn: 'testcolumn'
+    model: { modelType: casual.random_element(["Classification","Regression"]) },
+    testDataset: {},
+    groundTruthDataset: {},
+    groundTruthColumn: 'testcolumn',
+    toObject: jest.fn().mockImplementation(() => ({
+      model: {},
+      testDataset: {},
+      groundTruthDataset: {},
+      groundTruthColumn: 'testcolumn'
+    }))
+  }
+})
+
+casual.define('modelAndDatasetInput', function() {
+  return {
+    modelId: casual.ObjectId,
+    testDatasetId: casual.ObjectId,
+    groundTruthDatasetId: casual.ObjectId,
+    groundTruthColumn: 'testcolumn',
   }
 })
 
