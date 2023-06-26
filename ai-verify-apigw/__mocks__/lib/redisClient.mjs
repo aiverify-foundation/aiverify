@@ -9,6 +9,7 @@ const redisConnect = jest.fn().mockReturnValue({
   keys: jest.fn(),
   pSubscribe: jest.fn(),
   hGetAll: jest.fn(),
+  exists: jest.fn(),
 });
 
 export default redisConnect;
