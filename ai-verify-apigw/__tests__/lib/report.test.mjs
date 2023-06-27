@@ -10,6 +10,9 @@ describe("Test module report.mjs", () => {
 
   beforeAll(async() => {
     // mocking
+    jest.unstable_mockModule("#lib/redisClient.mjs", () => {
+      return import("#mocks/lib/redisClient.mjs");
+    });
     jest.unstable_mockModule("#lib/apolloPubSub.mjs", () => {
       return import('#mocks/lib/apolloPubSub.mjs');
     });
