@@ -13,6 +13,9 @@ describe("Test Model GraphQL queries and mutations", () => {
   beforeAll(async() => {
 
     // set some mocks first
+    jest.unstable_mockModule("#lib/redisClient.mjs", () => {
+        return import("#mocks/lib/redisClient.mjs");
+    });
     const models = await import("#models");
     ModelFileModel = models.ModelFileModel;
     ProjectModel = models.ProjectModel;
@@ -241,7 +244,7 @@ describe("Test Model GraphQL queries and mutations", () => {
     expect(count).toBe(0);
   })
 
-  
+
   it("should not delete model with invalid id", async() => {
 
     // check initial db count
