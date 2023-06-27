@@ -290,5 +290,28 @@ const mockTestDataset = {
     numCols: 6,
     numRows: 1235
 };
+
+casual.define('multipleDatasets', function(count) {
+  if (typeof count !== 'number') {
+    count=2;
+  }
+  let ar = [];
+  for (let i=0; i<count; i++) {
+    ar.push(mockTestDataset)
+  }
+  return ar;
+})
+
+casual.define('multipleModels', function(count) {
+  if (typeof count !== 'number') {
+    count=2;
+  }
+  let ar = [];
+  for (let i=0; i<count; i++) {
+    ar.push(mockModel)
+  }
+  return ar;
+})
+
 export default casual;
 export {mockModel, mockTestDataset};
