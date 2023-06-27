@@ -2,7 +2,7 @@ enum ModelAccessType {
   File
   Folder
   Pipeline
-  # API
+  API
 }
 
 enum ModelType {
@@ -20,9 +20,11 @@ enum ModelFileStatusType {
 
 type ModelFile {
     id: ObjectID!
-    filename: String!
     name: String!
-    filePath: String!
+    type: ModelAccessType!
+    filename: String # if type is not API
+    filePath: String # if type is not API
+    modelAPI: ModelAPIType # if type is API
     ctime: DateTime
     description: String
     status: ModelFileStatusType
@@ -31,7 +33,6 @@ type ModelFile {
     serializer: String
     modelFormat: String
     errorMessages: String
-    type: ModelAccessType!
 }
 
 input ModelFileInput {
@@ -41,7 +42,7 @@ input ModelFileInput {
     # filePath: String
     # ctime: DateTime
     description: String @constraint(minLength: 0, maxLength: 256)
-    status: ModelFileStatusType
+    # status: ModelFileStatusType
     # size: String
     modelType: ModelType
     # serializer: String
