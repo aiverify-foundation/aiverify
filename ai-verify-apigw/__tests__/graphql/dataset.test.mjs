@@ -45,10 +45,6 @@ describe("Test Dataset GraphQL queries and mutations", () => {
     server = createApolloServer(resolver.default);
   })
 
-  afterAll(async () => {
-    // clear collection
-    // await ProjectModel.deleteMany();
-  })
 
   beforeEach(async () => {
     jest.clearAllMocks();
