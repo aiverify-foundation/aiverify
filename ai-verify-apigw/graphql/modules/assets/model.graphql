@@ -19,29 +19,35 @@ enum ModelFileStatusType {
 }
 
 type ModelFile {
-    id: ObjectID!
-    name: String!
-    type: ModelAccessType!
-    filename: String # if type is not API
-    filePath: String # if type is not API
-    modelAPI: ModelAPIType # if type is API
-    ctime: DateTime
-    description: String
-    status: ModelFileStatusType
-    size: String
-    modelType: ModelType
-    serializer: String
-    modelFormat: String
-    errorMessages: String
-    createdAt: DateTime
-	  updatedAt: DateTime
+  id: ObjectID!
+  name: String!
+  type: ModelAccessType!
+  filename: String # if type is not API
+  filePath: String # if type is not API
+  modelAPI: ModelAPIType # if type is API
+  ctime: DateTime
+  description: String
+  status: ModelFileStatusType
+  size: String
+  modelType: ModelType
+  serializer: String
+  modelFormat: String
+  errorMessages: String
+  createdAt: DateTime
+  updatedAt: DateTime
 }
 
 input ModelFileInput {
-    name: String @constraint(minLength: 0, maxLength: 128)
-    description: String @constraint(minLength: 0, maxLength: 256)
-    modelType: ModelType
-    modelAPI: ModelAPIInput # for model API inputs
+  name: String @constraint(minLength: 0, maxLength: 128)
+  description: String @constraint(minLength: 0, maxLength: 256)
+  modelType: ModelType
+}
+
+input ModelAPIInput {
+  name: String @constraint(minLength: 0, maxLength: 128)
+  description: String @constraint(minLength: 0, maxLength: 256)
+  modelType: ModelType
+  modelAPI: ModelAPIInput # for model API inputs
 }
 
 type Query {
@@ -50,6 +56,9 @@ type Query {
 }
 
 type Mutation {
+  # create model api
+  createModelAPI(model: ModelAPIInput!): ModelFile
+  updateModelAPI(modelFileID: ObjectID!, model: ModelAPIInput!): ModelFile
   # delete files
   deleteModelFile(id: ObjectID!): ObjectID
   updateModel(modelFileID: ObjectID!, modelFile: ModelFileInput): ModelFile
