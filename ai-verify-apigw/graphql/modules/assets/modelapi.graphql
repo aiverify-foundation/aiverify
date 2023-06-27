@@ -14,7 +14,7 @@ enum OpenAPIAllTypes {
   object
 }
 
-enum OpenAPIMethodType {
+enum OpenAPIMethod {
   POST
   GET
 }
@@ -34,7 +34,7 @@ enum OpenAPIPathParamsStyles {
 type OpenAPIPathParamsType {
   name: String! @constraint(minLength:1, maxLength:128)
   type: OpenAPIAllTypes!
-  itemType: OpenAPIPrimitiveTypes!
+  itemType: OpenAPIPrimitiveTypes
   style: OpenAPIPathParamsStyles
   explode: Boolean
 }
@@ -49,22 +49,22 @@ enum OpenAPIQueryParamsStyles {
 type QueryParamsType {
   name: String! @constraint(minLength:1, maxLength:128)
   type: OpenAPIAllTypes!
-  itemType: OpenAPIPrimitiveTypes!
+  itemType: OpenAPIPrimitiveTypes
   style: OpenAPIQueryParamsStyles
   explode: Boolean
 }
 
 type OpenAPIParametersType {
   subpath: String @constraint(minLength:1, maxLength:2048)
-  pathParams: OpenAPIPathParamsType
-  queryParams: QueryParamsType
+  pathParams: [OpenAPIPathParamsType]
+  queryParams: [QueryParamsType]
 }
 
 
 type OpenAPIRequestBodyPropertyType {
   field: String! @constraint(minLength:1, maxLength:128)
   type: OpenAPIAllTypes!
-  itemType: OpenAPIPrimitiveTypes!
+  itemType: OpenAPIPrimitiveTypes
   style: OpenAPIQueryParamsStyles
   explode: Boolean
 }
@@ -72,8 +72,7 @@ type OpenAPIRequestBodyPropertyType {
 
 type OpenAPIRequestBodyType {
   mediaType: OpenAPIMediaType!
-  params: [String] @constraint(minItems: 1, maxItems:128) # array of param keys
-  properties: [OpenAPIRequestBodyPropertyType]
+  properties: [OpenAPIRequestBodyPropertyType]!
 }
 
 type OpenAPIResponseType {
@@ -97,10 +96,10 @@ type ModelAPIRequestConfigType {
 }
 
 type ModelAPIType {
-  method: OpenAPIMethodType!
+  method: OpenAPIMethod!
   url: URL!
-  authType: String! @constraint(pattern: "^(No Auth|Bearer Token|Basic Auth)$")
-  authTypeConfig: JSON!
+  authType: OpenAPIAuthType!
+  authTypeConfig: JSON
   additionalHeaders: [OpenAPIAdditionalHeadersType],
   parameters: OpenAPIParametersType
   requestBody: OpenAPIRequestBodyType
@@ -110,66 +109,65 @@ type ModelAPIType {
 
 
 input OpenAPIAdditionalHeadersInput {
-  name: String @constraint(minLength:1, maxLength:128)
+  name: String! @constraint(minLength:1, maxLength:128)
   type: OpenAPIPrimitiveTypes!
   value: JSON!
 }
 
 input OpenAPIPathParamsInput {
-  name: String @constraint(minLength:1, maxLength:128)
+  name: String! @constraint(minLength:1, maxLength:128)
   type: OpenAPIAllTypes!
-  itemType: OpenAPIPrimitiveTypes!
+  itemType: OpenAPIPrimitiveTypes
   style: OpenAPIPathParamsStyles
   explode: Boolean
 }
 
 input QueryParamsInput {
-  name: String @constraint(minLength:1, maxLength:128)
+  name: String! @constraint(minLength:1, maxLength:128)
   type: OpenAPIAllTypes!
-  itemType: OpenAPIPrimitiveTypes!
+  itemType: OpenAPIPrimitiveTypes
   style: OpenAPIQueryParamsStyles
   explode: Boolean
 }
 
 input OpenAPIParametersInput {
-  subpath: String @constraint(minLength:1, maxLength:2048)
-  pathParams: OpenAPIPathParamsInput
-  queryParams: QueryParamsInput
+  subpath: String! @constraint(minLength:1, maxLength:2048)
+  pathParams: [OpenAPIPathParamsInput]
+  queryParams: [QueryParamsInput]
 }
 
 input OpenAPIRequestBodyPropertyInput {
-  field: String @constraint(minLength:1, maxLength:128)
+  field: String! @constraint(minLength:1, maxLength:128)
   type: OpenAPIAllTypes!
-  itemType: OpenAPIPrimitiveTypes!
+  itemType: OpenAPIPrimitiveTypes
   style: OpenAPIQueryParamsStyles
   explode: Boolean
 }
 
 input OpenAPIRequestBodyInput {
-  mediaType: OpenAPIMediaType
-  params: [String] @constraint(minItems: 1, maxItems:128) # array of param keys
+  mediaType: OpenAPIMediaType!
   properties: [OpenAPIRequestBodyPropertyInput]
 }
 
 input OpenAPIResponseInput {
-  statusCode: Int @constraint(min:200, max:299)
+  statusCode: Int! @constraint(min:200, max:299)
   mediaType: OpenAPIMediaType!
-  type: OpenAPIAllTypes
+  type: OpenAPIAllTypes!
   field: String @constraint(minLength:1, maxLength:128) # for object, define the prediction field use dot, e.g. xxx.yyy, to denote nested field
 }
 
 input ModelAPIRequestConfigInput {
-  rateLimit: Int @constraint(min:-1) # max number of requests per minute
-  batchStrategy: ModelAPIRequestConfigBatchStrategy
+  rateLimit: Int! @constraint(min:-1) # max number of requests per minute
+  batchStrategy: ModelAPIRequestConfigBatchStrategy!
   batchLimit: Int @constraint(min:-1) # max number of requests in each batch
-  maxConnections: Int @constraint(min:-1) # max number of concurrent connections to API server
-  requestTimeout: Int @constraint(min:1) # request connection timeout in ms
+  maxConnections: Int! @constraint(min:-1) # max number of concurrent connections to API server
+  requestTimeout: Int! @constraint(min:1) # request connection timeout in ms
 }
 
 input ModelAPIInput {
-  method: OpenAPIMethodType
+  method: OpenAPIMethod
   url: URL
-  authType: String @constraint(pattern: "^(No Auth|Bearer Token|Basic Auth)$")
+  authType: OpenAPIAuthType
   authTypeConfig: JSON
   additionalHeaders: [OpenAPIAdditionalHeadersInput]
   parameters: OpenAPIParametersInput
