@@ -77,22 +77,35 @@ type OpenAPIRequestBodyType {
 }
 
 type OpenAPIResponseType {
-    statusCode: Int! @constraint(min:200, max:299)
-    mediaType: OpenAPIMediaType!
-    type: OpenAPIAllTypes
-    field: String @constraint(minLength:1, maxLength:128) # for object, define the prediction field use dot, e.g. xxx.yyy, to denote nested field
+  statusCode: Int! @constraint(min:200, max:299)
+  mediaType: OpenAPIMediaType!
+  type: OpenAPIAllTypes
+  field: String @constraint(minLength:1, maxLength:128) # for object, define the prediction field use dot, e.g. xxx.yyy, to denote nested field
+}
 
+enum ModelAPIRequestConfigBatchStrategy {
+  none
+  multipart
+}
+
+type ModelAPIRequestConfigType {
+  rateLimit: Int! @constraint(min:-1) # max number of requests per minute
+  batchStrategy: ModelAPIRequestConfigBatchStrategy!
+  batchLimit: Int @constraint(min:-1) # max number of requests in each batch
+  maxConnections: Int! @constraint(min:-1) # max number of concurrent connections to API server
+  requestTimeout: Int! @constraint(min:1) # request connection timeout in ms
 }
 
 type ModelAPIType {
-    method: OpenAPIMethodType!
-    url: URL!
-    authType: String! @constraint(pattern: "^(No Auth|Bearer Token|Basic Auth)$")
-    authTypeConfig: JSON
-    additionalHeaders: [OpenAPIAdditionalHeadersType],
-    parameters: OpenAPIParametersType
-    requestBody: OpenAPIRequestBodyType
-    response: OpenAPIResponseType
+  method: OpenAPIMethodType!
+  url: URL!
+  authType: String! @constraint(pattern: "^(No Auth|Bearer Token|Basic Auth)$")
+  authTypeConfig: JSON!
+  additionalHeaders: [OpenAPIAdditionalHeadersType],
+  parameters: OpenAPIParametersType
+  requestBody: OpenAPIRequestBodyType
+  response: OpenAPIResponseType!
+  requestConfig: ModelAPIRequestConfigType!
 }
 
 
@@ -139,20 +152,28 @@ input OpenAPIRequestBodyInput {
 }
 
 input OpenAPIResponseInput {
-    statusCode: Int @constraint(min:200, max:299)
-    mediaType: OpenAPIMediaType!
-    type: OpenAPIAllTypes
-    field: String @constraint(minLength:1, maxLength:128) # for object, define the prediction field use dot, e.g. xxx.yyy, to denote nested field
+  statusCode: Int @constraint(min:200, max:299)
+  mediaType: OpenAPIMediaType!
+  type: OpenAPIAllTypes
+  field: String @constraint(minLength:1, maxLength:128) # for object, define the prediction field use dot, e.g. xxx.yyy, to denote nested field
+}
 
+input ModelAPIRequestConfigInput {
+  rateLimit: Int @constraint(min:-1) # max number of requests per minute
+  batchStrategy: ModelAPIRequestConfigBatchStrategy
+  batchLimit: Int @constraint(min:-1) # max number of requests in each batch
+  maxConnections: Int @constraint(min:-1) # max number of concurrent connections to API server
+  requestTimeout: Int @constraint(min:1) # request connection timeout in ms
 }
 
 input ModelAPIInput {
-    method: OpenAPIMethodType
-    url: URL
-    authType: String @constraint(pattern: "^(No Auth|Bearer Token|Basic Auth)$")
-    authTypeConfig: JSON
-    additionalHeaders: [OpenAPIAdditionalHeadersInput]
-    parameters: OpenAPIParametersInput
-    requestBody: OpenAPIRequestBodyInput
-    response: OpenAPIResponseInput
+  method: OpenAPIMethodType
+  url: URL
+  authType: String @constraint(pattern: "^(No Auth|Bearer Token|Basic Auth)$")
+  authTypeConfig: JSON
+  additionalHeaders: [OpenAPIAdditionalHeadersInput]
+  parameters: OpenAPIParametersInput
+  requestBody: OpenAPIRequestBodyInput
+  response: OpenAPIResponseInput
+  requestConfig: ModelAPIRequestConfigInput
 }
