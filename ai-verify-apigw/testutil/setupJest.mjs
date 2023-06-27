@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 
 beforeAll(async () => {
   // set up connection to mongodb
-  console.debug(`Connecting to ${process.env.DB_URI}`);
+  // console.debug(`Connecting to ${process.env.DB_URI}`);
   await mongoose.connect(process.env.DB_URI, {useNewUrlParser: true});
   // mock apollo pub sub
   jest.unstable_mockModule("#lib/apolloPubSub.mjs", () => {
