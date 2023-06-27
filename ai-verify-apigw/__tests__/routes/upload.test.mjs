@@ -24,6 +24,53 @@ describe("Test /upload route", () => {
             return import("#mocks/lib/redisClient.mjs");
         });
 
+        jest.mock('multer', () => {
+            const multer = () => ({
+                array: jest.fn(() => 'default')
+                .mockImplementationOnce(() => {
+                    return (req, res, next) => {
+                            req.files = [
+                                {
+                                fieldname: 'myFiles',
+                                originalname: 'mockdata.sav',
+                                encoding: '7bit',
+                                mimetype: 'application/octet-stream',
+                                destination: '/tmp',
+                                filename: 'mockdata.sav',
+                                path: '/tmp/mockdata.sav',
+                                size: 2195
+                                },
+                            ];
+                            return next();
+                        };
+                    })
+                .mockImplementationOnce(() => {
+                    return (req, res, next) => {
+                        req.files = [
+                        {
+                            fieldname: 'myModelFiles',
+                            originalname: 'mockmodel.sav',
+                            encoding: '7bit',
+                            mimetype: 'application/octet-stream',
+                            destination: '/tmp',
+                            filename: 'mockmodel.sav',
+                            path: '/tmp/mockmodel.sav',
+                            size: 132878
+                        }
+                        ];
+                        req.body = {
+                        myModelFolders: '',
+                        myModelType: 'Classification'
+                        }
+                        return next();
+                    };
+                })
+            })
+            multer.diskStorage = () => jest.fn()
+            multer.memoryStorage = () => jest.fn()
+            return multer
+        })
+
       const router = await import("#routes/upload.mjs");
       const app = setupServerWithRouter("/upload", router.default);
       request = supertest(app);
@@ -44,43 +91,11 @@ describe("Test /upload route", () => {
       done();
     })
 
-    afterEach(() => {
-      mockfs.restore();
-    })
-
     beforeEach(async () => {
       jest.clearAllMocks();
     })
 
     it("/upload/data should upload dataset file", async () => {
-
-        jest.mock('multer', () => {
-            const multer = () => ({
-                array: () => {
-                return (req, res, next) => {
-        
-                    req.files = [
-                        {
-                        fieldname: 'myFiles',
-                        originalname: 'mockdata.sav',
-                        encoding: '7bit',
-                        mimetype: 'application/octet-stream',
-                        destination: '/tmp',
-                        filename: 'mockdata.sav',
-                        path: '/tmp/mockdata.sav',
-                        size: 2195
-                        },
-                        
-                    ];
-                    
-                    return next();
-                };
-                }
-            })
-            multer.diskStorage = () => jest.fn()
-            multer.memoryStorage = () => jest.fn()
-            return multer
-        })
 
         request.post("/upload/data")
         .then( response => {
@@ -90,37 +105,6 @@ describe("Test /upload route", () => {
     })
 
     it("/upload/model should upload model file", async () => {
-
-        jest.mock('multer', () => {
-            const multer = () => ({
-            array: () => {
-                return (req, res, next) => {
-        
-                    req.files = [
-                    {
-                        fieldname: 'myModelFiles',
-                        originalname: 'mockmodel.sav',
-                        encoding: '7bit',
-                        mimetype: 'application/octet-stream',
-                        destination: '/tmp',
-                        filename: 'mockmodel.sav',
-                        path: '/tmp/mockmodel.sav',
-                        size: 132878
-                    }
-                    ];
-                    req.body = {
-                    myModelFolders: '',
-                    myModelType: 'Classification'
-                    }
-        
-                    return next();
-                };
-            }
-            })
-            multer.diskStorage = () => jest.fn()
-            multer.memoryStorage = () => jest.fn()
-            return multer
-        })
 
         request.post("/upload/model")
         .then( response => {
