@@ -2,6 +2,7 @@ import supertest from 'supertest';
 
 import casual from '#testutil/mockData.mjs';
 import { setupServerWithRouter } from '#testutil/testExpressRouter.mjs';
+import { jest } from '@jest/globals';
 
 describe("Test /template route", () => {
   let server;
@@ -11,6 +12,9 @@ describe("Test /template route", () => {
   const templateCID = "testTemplate";
 
   beforeAll(async() => {
+    jest.unstable_mockModule("#lib/redisClient.mjs", () => {
+      return import("#mocks/lib/redisClient.mjs");
+    });
     const router = await import("#routes/template.mjs");
     const app = setupServerWithRouter("/template", router.default);
     request = supertest(app);
