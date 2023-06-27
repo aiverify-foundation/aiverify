@@ -1,7 +1,8 @@
-import { OpenAPIMediaType } from './openapiScalars.mjs';
+import { OpenAPIMediaType, OpenAPIAuthType } from './openapiScalars.mjs';
 
 const MyScalars = {
-  OpenAPIMediaType
+  OpenAPIMediaType,
+  OpenAPIAuthType
 }
 
 export default MyScalars;

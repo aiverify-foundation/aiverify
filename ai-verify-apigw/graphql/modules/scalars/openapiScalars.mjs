@@ -31,3 +31,33 @@ export const OpenAPIMediaType = new GraphQLScalarType({
     });
   },
 });
+
+// Validation function for checking MediaTypes
+function _authType(value) {
+  if (typeof value === 'string') {
+    switch (value) {
+      case "No Auth":
+      case "Bearer Token":
+      case "Basic Auth":
+        return value;
+    }
+  }
+  throw new GraphQLError('Provided value is not a valid authentication type', {
+    extensions: { code: 'BAD_USER_INPUT' },
+  });
+}
+
+export const OpenAPIAuthType = new GraphQLScalarType({
+  name: 'OpenAPIAuthType',
+  description: 'OpenAPI Authentication Type',
+  serialize: _authType,
+  parseValue: _authType,
+  parseLiteral(ast) {
+    if (ast.kind === Kind.STRING) {
+      return new _authType(ast.value);
+    }
+    throw new GraphQLError('Provided value is not a valid authentication type', {
+      extensions: { code: 'BAD_USER_INPUT' },
+    });
+  },
+});
