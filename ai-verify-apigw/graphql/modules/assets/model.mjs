@@ -20,6 +20,21 @@ const resolvers = {
         })
       })
     },
+    getOpenAPISpecFromModel: (parent, {modelFileID}) => {
+      return new Promise((resolve, reject) => {
+        ModelFileModel.findById(modelFileID).then(doc => {
+          if (!doc)
+            return reject("Invalid ID");
+          if (doc.type !== "API")
+            return reject("Model is not of type API");
+          const spec = doc.exportModelAPI();
+          // console.log("spec", spec); 
+          if (!spec)
+            return reject("Unable to generate spec");
+          resolve(spec);
+        })
+      })
+    }
   },
   Mutation: {
     createModelAPI: (parent, { model }) => {

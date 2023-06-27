@@ -55,7 +55,6 @@ type QueryParamsType {
 }
 
 type OpenAPIParametersType {
-  subpath: String @constraint(minLength:1, maxLength:2048)
   pathParams: [OpenAPIPathParamsType]
   queryParams: [QueryParamsType]
 }
@@ -98,6 +97,7 @@ type ModelAPIRequestConfigType {
 type ModelAPIType {
   method: OpenAPIMethod!
   url: URL!
+  urlParams: String
   authType: OpenAPIAuthType!
   authTypeConfig: JSON
   additionalHeaders: [OpenAPIAdditionalHeadersType],
@@ -131,7 +131,6 @@ input QueryParamsInput {
 }
 
 input OpenAPIParametersInput {
-  subpath: String! @constraint(minLength:1, maxLength:2048)
   pathParams: [OpenAPIPathParamsInput]
   queryParams: [QueryParamsInput]
 }
@@ -167,6 +166,7 @@ input ModelAPIRequestConfigInput {
 input ModelAPIInput {
   method: OpenAPIMethod
   url: URL
+  urlParams: String @constraint(maxLength: 2048)
   authType: OpenAPIAuthType
   authTypeConfig: JSON
   additionalHeaders: [OpenAPIAdditionalHeadersInput]
