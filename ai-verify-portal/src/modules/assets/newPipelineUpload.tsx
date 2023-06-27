@@ -520,7 +520,6 @@ function PipelinesValidating({filesValidating, updateFile, onBackClick}: Pipelin
     const [ openDialog, setOpenDialog ] = useState<boolean>(false);
     const [ modelsValidating, setModelsValidating ] = useState<(ModelFile & { _id?: string})[]>([]);
     const [ isFailed, setIsFailed ] = useState(false);
-    const [ isRunning, setIsRunning ] = useState(false);
     const [ duplicateName, setDuplicateName ] = useState<string>("");
     const [ validationDone, setValidationDone ] = useState<boolean>(false);
 
@@ -571,7 +570,6 @@ function PipelinesValidating({filesValidating, updateFile, onBackClick}: Pipelin
         const timerId = setTimeout(() => {
             console.log('Timeout ended');
             setIsFailed(true);
-            setIsRunning(false);
             for ( const modelValidating of modelsValidating ) {
                 if (modelValidating.status == FileStatus.PENDING) {
                     if (modelValidating._id) {

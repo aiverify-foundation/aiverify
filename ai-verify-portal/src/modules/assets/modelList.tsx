@@ -89,7 +89,6 @@ export default function ModelListComponent({
     const [ focus, setFocus ] = useState<ModelFile | null>(null);
     const [ edit, setEdit ] = useState<ModelFile | null>(null);
     const [ openDialog, setOpenDialog ] = useState<boolean>(false);
-    const [ selected, setSelected ] = React.useState<string[]>([]);
     const [ myFiles, setMyFiles ] = useState<ModelFile[]>([]);
     const [ filters, setFilters ] = useState<ModelFilters[]>([]);
     const [ tableData, setTableData ] = useState<ModelFile[]>([]);
@@ -177,7 +176,6 @@ export default function ModelListComponent({
             }
             const index = newSelected.indexOf(id);
             newSelected.splice(index, 1);
-            setSelected(newSelected);
         }
         setFocus(null);
         setShowDeleteConfirmationDialog(false)

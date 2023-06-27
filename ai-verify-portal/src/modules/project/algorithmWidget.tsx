@@ -24,13 +24,11 @@ type Props = {
 }
 
 export default function AlgorithmWidgetComponent({ testInfo, onChangeData, modelAndDatasets }: Props) {
-  // const [ schema, setSchema ] = useState<RJSFSchema>({});
   const [ rjsfSchema, setRjsfSchema ] = useState<RJSFSchema|null>(null);
   const [ uiSchema, setUISchema ] = useState<UiSchema|null>(null);
   const formRef = createRef<{ validateForm: (formData: any) => boolean }>();
 
   useEffect(() => {
-    console.log("modelAndDatasets", modelAndDatasets)
     const func = async () => {
       const schema = testInfo.algorithm?_.cloneDeep(testInfo.algorithm.inputSchema) : {};
       //@ts-ignore

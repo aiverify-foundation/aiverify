@@ -17,7 +17,6 @@ function CollapsibleList(props: PropsWithChildren<AccordionProps>) {
     children } = props;
   const [ expanded, setExpanded ] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
-  const listRef = useRef<HTMLDivElement>(null);
 
   function handleHeaderClick() {
     setExpanded(prev => !prev);

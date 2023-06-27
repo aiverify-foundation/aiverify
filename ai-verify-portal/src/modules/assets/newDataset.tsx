@@ -444,7 +444,6 @@ function DatasetsValidating({filesValidating, updateFile, onBackClick}: Datasets
     const [ openDialog, setOpenDialog ] = useState<boolean>(false);
     const [ datasetsValidating, setDatasetsValidating ] = useState<(Dataset & { _id?: string})[]>([])
     const [ isFailed, setIsFailed ] = useState(false);
-    const [ isRunning, setIsRunning ] = useState(false);
     const [ duplicateName, setDuplicateName ] = useState<string>("");
     const [ validationDone, setValidationDone ] = useState<boolean>(false);
 
@@ -496,7 +495,6 @@ function DatasetsValidating({filesValidating, updateFile, onBackClick}: Datasets
         const timerId = setTimeout(() => {
             console.log('Timeout ended');
             setIsFailed(true);
-            setIsRunning(false);
             /// call file deletion for files that are still in pending
             for ( const datasetValidating of datasetsValidating ) {
                 if (datasetValidating.status == FileStatus.PENDING) {

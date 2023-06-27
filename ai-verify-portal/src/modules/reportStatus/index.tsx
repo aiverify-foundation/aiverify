@@ -19,7 +19,6 @@ export default function ReportStatusModule({ report }: Props) {
     <div>
       <ReportDesignerHeader
         onBackBtnClick={goBack}
-        onNextBtnClick={() => {}}
         isTemplate={false}
         disableSaveBtn
         disableSaveMenu

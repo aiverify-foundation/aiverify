@@ -98,7 +98,6 @@ export default function DatasetListComponent({
     const [ focus, setFocus ] = useState<Dataset | null>(null);
     const [ edit, setEdit ] = useState<Dataset | null>(null);
     const [ openDialog, setOpenDialog ] = useState<boolean>(false);
-    const [ selected, setSelected ] = React.useState<string[]>([]);
     const [ myFiles, setMyFiles ] = useState<Dataset[]>([]);
     const [ filters, setFilters ] = useState<DatasetFilters[]>([]);
     const [ tableData, setTableData ] = useState<Dataset[]>([]);
@@ -184,8 +183,6 @@ export default function DatasetListComponent({
             }
             const index = newSelected.indexOf(id);
             newSelected.splice(index, 1);
-            setSelected(newSelected);
-
         }
         setFocus(null);
         setShowDeleteConfirmationDialog(false)

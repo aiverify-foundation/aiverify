@@ -10,6 +10,6 @@
     "@typescript-eslint/no-empty-function": 1,
     "@typescript-eslint/ban-ts-comment": 1,
     "@typescript-eslint/no-inferrable-types": 1,
-    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }]
+    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }]
   }
 }

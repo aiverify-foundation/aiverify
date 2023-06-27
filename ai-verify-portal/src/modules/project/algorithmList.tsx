@@ -43,7 +43,7 @@ export default function AlgorithmList (props: AlgorithmListProps) {
   }
 
   function handleDataChange(gid: string) {
-    return (data: any) => {
+    return (data: object) => {
       const payload = {
         ...currentState,
         testArguments: data,

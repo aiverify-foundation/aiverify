@@ -1,4 +1,4 @@
-import { InputBlock, Algorithm } from 'src/types/plugin.interface';
+import { InputBlock } from 'src/types/plugin.interface';
 
 export enum WidgetStatus {
   unloaded,

@@ -1,5 +1,5 @@
 import Dataset from './dataset.interface';
-import ModelFile, { ModelType } from './model.interface';
+import ModelFile from './model.interface';
 import ProjectTemplate from './projectTemplate.interface';
 import { TestInformation, TestEngineTask } from './test.interface';
 
