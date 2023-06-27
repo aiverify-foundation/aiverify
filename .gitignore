@@ -168,7 +168,6 @@ temp/
 .gitignore
 
 # Testing files
-assets/
 ci-central/
 cov-badge.svg
 coverage.json
