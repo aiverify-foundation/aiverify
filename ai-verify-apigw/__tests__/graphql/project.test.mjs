@@ -1,12 +1,15 @@
 import {jest} from '@jest/globals'
 import mongoose from 'mongoose';
 import casual from '#testutil/mockData.mjs';
+import { mockModel, mockTestDataset } from '../../testutil/mockData.mjs';
 
 
 describe("Test Project GraphQL queries", () => {
   let server;
   let ProjectModel;
   let ProjectTemplateModel;
+  let ModelFileModel;
+  let DatasetFileModel;
   let testEngineQueue;
   let data = [];
   let templateData = [];
@@ -31,12 +34,22 @@ describe("Test Project GraphQL queries", () => {
     const models = await import("#models");
     ProjectModel = models.ProjectModel;
     ProjectTemplateModel = models.ProjectTemplateModel;
-    // make sure collection empty
-    // await ProjectModel.deleteMany();
+    ModelFileModel = models.ModelFileModel;
+    DatasetFileModel = models.DatasetModel;
     // create some initial data
+    const model = new ModelFileModel(mockModel);
+    const dataset = new DatasetFileModel(mockTestDataset);
+    const savedModel = await model.save();
+    const savedDataset = await dataset.save();
     const docs = casual.multipleProjects(2);
     for (const doc of docs) { 
       doc.__t = 'ProjectModel';
+      doc.modelAndDatasets = {
+        groundTruthColumn: 'two_year_recid',
+        model: savedModel._id,
+        testDataset: savedDataset._id,
+        groundTruthDataset: savedDataset._id,
+      }
       const obj = new ProjectModel(doc);
       let saveDoc = await obj.save();
       data.push(saveDoc.toObject())
@@ -420,7 +433,22 @@ mutation($project: ProjectInput!, $templateId: String!) {
       company
     }
     pages {
-      layouts
+      layouts {
+        h
+        i
+        isBounded
+        isDraggable
+        isResizable
+        maxH
+        maxW
+        minH
+        minW
+        resizeHandles
+        static
+        w
+        x
+        y
+      }
     }
   }
 }
@@ -476,11 +504,10 @@ mutation($projectId: ObjectID!, $templateInfo: ProjectInformationInput!) {
 
   it("should generate report without tests", async() => {
     const proj = data[0];
-    const mad = casual.modelAndDataset;
 
     const query = `
-mutation($projectID: ObjectID!, $algorithms: [String]!, $modelAndDatasets: ModelAndDatasetsReportInput) {
-  generateReport(projectID:$projectID, algorithms:$algorithms, modelAndDatasets:$modelAndDatasets) {
+mutation($projectID: ObjectID!, $algorithms: [String]!) {
+  generateReport(projectID:$projectID, algorithms:$algorithms) {
     projectID
     status
   }
@@ -491,7 +518,6 @@ mutation($projectID: ObjectID!, $algorithms: [String]!, $modelAndDatasets: Model
       variables: {
         projectID: proj._id.toString(),
         algorithms: [],
-        modelAndDatasets: mad,
       }
     })
 
@@ -513,8 +539,8 @@ mutation($projectID: ObjectID!, $algorithms: [String]!, $modelAndDatasets: Model
     const algorithms = proj.testInformationData.map(test => test.algorithmGID);
 
     const query = `
-mutation($projectID: ObjectID!, $algorithms: [String]!, $modelAndDatasets: ModelAndDatasetsReportInput) {
-  generateReport(projectID:$projectID, algorithms:$algorithms, modelAndDatasets:$modelAndDatasets) {
+mutation($projectID: ObjectID!, $algorithms: [String]!) {
+  generateReport(projectID:$projectID, algorithms:$algorithms) {
     projectID
     status
   }
@@ -525,7 +551,6 @@ mutation($projectID: ObjectID!, $algorithms: [String]!, $modelAndDatasets: Model
       variables: {
         projectID: proj._id.toString(),
         algorithms,
-        modelAndDatasets: mad,
       }
     })
 
