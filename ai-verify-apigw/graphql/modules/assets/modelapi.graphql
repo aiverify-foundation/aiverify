@@ -1,0 +1,158 @@
+enum OpenAPIPrimitiveTypes {
+  string
+  number
+  integer
+  boolean
+}
+
+enum OpenAPIAllTypes {
+  string
+  number
+  integer
+  boolean
+  array
+  object
+}
+
+enum OpenAPIMethodType {
+  POST
+  GET
+}
+
+type OpenAPIAdditionalHeadersType {
+  name: String! @constraint(minLength:1, maxLength:128)
+  type: OpenAPIPrimitiveTypes!
+  value: JSON!
+}
+
+enum OpenAPIPathParamsStyles {
+  simple
+  label
+  matrix
+}
+
+type OpenAPIPathParamsType {
+  name: String! @constraint(minLength:1, maxLength:128)
+  type: OpenAPIAllTypes!
+  itemType: OpenAPIPrimitiveTypes!
+  style: OpenAPIPathParamsStyles
+  explode: Boolean
+}
+
+enum OpenAPIQueryParamsStyles {
+  form
+  spaceDelimited
+  pipeDelimited
+  deepObject
+}
+
+type QueryParamsType {
+  name: String! @constraint(minLength:1, maxLength:128)
+  type: OpenAPIAllTypes!
+  itemType: OpenAPIPrimitiveTypes!
+  style: OpenAPIQueryParamsStyles
+  explode: Boolean
+}
+
+type OpenAPIParametersType {
+  subpath: String @constraint(minLength:1, maxLength:2048)
+  pathParams: OpenAPIPathParamsType
+  queryParams: QueryParamsType
+}
+
+
+type OpenAPIRequestBodyPropertyType {
+  field: String! @constraint(minLength:1, maxLength:128)
+  type: OpenAPIAllTypes!
+  itemType: OpenAPIPrimitiveTypes!
+  style: OpenAPIQueryParamsStyles
+  explode: Boolean
+}
+
+
+type OpenAPIRequestBodyType {
+  mediaType: OpenAPIMediaType!
+  params: [String] @constraint(minItems: 1, maxItems:128) # array of param keys
+  properties: [OpenAPIRequestBodyPropertyType]
+}
+
+type OpenAPIResponseType {
+    statusCode: Int! @constraint(min:200, max:299)
+    mediaType: OpenAPIMediaType!
+    type: OpenAPIAllTypes
+    field: String @constraint(minLength:1, maxLength:128) # for object, define the prediction field use dot, e.g. xxx.yyy, to denote nested field
+
+}
+
+type ModelAPIType {
+    method: OpenAPIMethodType!
+    url: URL!
+    authType: String! @constraint(pattern: "^(No Auth|Bearer Token|Basic Auth)$")
+    authTypeConfig: JSON
+    additionalHeaders: [OpenAPIAdditionalHeadersType],
+    parameters: OpenAPIParametersType
+    requestBody: OpenAPIRequestBodyType
+    response: OpenAPIResponseType
+}
+
+
+input OpenAPIAdditionalHeadersInput {
+  name: String @constraint(minLength:1, maxLength:128)
+  type: OpenAPIPrimitiveTypes!
+  value: JSON!
+}
+
+input OpenAPIPathParamsInput {
+  name: String @constraint(minLength:1, maxLength:128)
+  type: OpenAPIAllTypes!
+  itemType: OpenAPIPrimitiveTypes!
+  style: OpenAPIPathParamsStyles
+  explode: Boolean
+}
+
+input QueryParamsInput {
+  name: String @constraint(minLength:1, maxLength:128)
+  type: OpenAPIAllTypes!
+  itemType: OpenAPIPrimitiveTypes!
+  style: OpenAPIQueryParamsStyles
+  explode: Boolean
+}
+
+input OpenAPIParametersInput {
+  subpath: String @constraint(minLength:1, maxLength:2048)
+  pathParams: OpenAPIPathParamsInput
+  queryParams: QueryParamsInput
+}
+
+input OpenAPIRequestBodyPropertyInput {
+  field: String @constraint(minLength:1, maxLength:128)
+  type: OpenAPIAllTypes!
+  itemType: OpenAPIPrimitiveTypes!
+  style: OpenAPIQueryParamsStyles
+  explode: Boolean
+}
+
+input OpenAPIRequestBodyInput {
+  mediaType: OpenAPIMediaType
+  params: [String] @constraint(minItems: 1, maxItems:128) # array of param keys
+  properties: [OpenAPIRequestBodyPropertyInput]
+}
+
+input OpenAPIResponseInput {
+    statusCode: Int @constraint(min:200, max:299)
+    mediaType: OpenAPIMediaType!
+    type: OpenAPIAllTypes
+    field: String @constraint(minLength:1, maxLength:128) # for object, define the prediction field use dot, e.g. xxx.yyy, to denote nested field
+
+}
+
+input ModelAPIInput {
+    method: OpenAPIMethodType
+    url: URL
+    authType: String @constraint(pattern: "^(No Auth|Bearer Token|Basic Auth)$")
+    authTypeConfig: JSON
+    additionalHeaders: [OpenAPIAdditionalHeadersInput]
+    parameters: OpenAPIParametersInput
+    requestBody: OpenAPIRequestBodyInput
+    response: OpenAPIResponseInput
+}
