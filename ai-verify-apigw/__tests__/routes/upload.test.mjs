@@ -1,4 +1,4 @@
-import {jest} from '@jest/globals';
+import {afterEach, jest} from '@jest/globals';
 import supertest from 'supertest';
 import mockfs from 'mock-fs';
 
@@ -78,11 +78,6 @@ describe("Test /upload route", () => {
       
       app.use(multer({}).array());
 
-      mockfs({
-        '/tmp/mockdata.sav': 'mock data content',
-        '/tmp/mockmodel.sav': 'mock model content',
-      });
-
     })
   
     afterAll(done => {
@@ -91,8 +86,16 @@ describe("Test /upload route", () => {
       done();
     })
 
-    beforeEach(async () => {
+    beforeEach(() => {
       jest.clearAllMocks();
+      mockfs({
+        '/tmp/mockdata.sav': 'mock data content',
+        '/tmp/mockmodel.sav': 'mock model content',
+      });
+    })
+
+    afterEach(() => {
+      mockfs.restore();
     })
 
     it("/upload/data should upload dataset file", async () => {
