@@ -279,11 +279,11 @@ router.post('/data', upload.array('myFiles'), async function (req, res, next) {
         }
         else {
           console.log("numsuccess is: ", numSuccess);
-          res.status(401).json({ err: "All uploads failed" });
+          res.status(400).json({ err: "All uploads failed" });
         }
 
       }).catch(err => {
-        res.status(402).json({ err: "File Upload Error:", err});
+        res.status(400).json({ err: "File Upload Error:", err});
       })
 
 });
