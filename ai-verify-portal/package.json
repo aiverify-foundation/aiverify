@@ -23,7 +23,6 @@
     "start": "next start",
     "lint": "next lint -f html -o eslint-report.html",
     "lint-dev": "next lint",
-    "eslint": "eslint",
     "test": "jest --silent --verbose",
     "test-cov": "jest --coverage",
     "post-update": "echo \"codesandbox preview only, need an update\" && yarn upgrade --latest",
