@@ -6,8 +6,8 @@
   "rules": {
     "react-hooks/rules-of-hooks": 1,
     "react-hooks/exhaustive-deps": 0,
-    "prefer-const": 1,
-    "@typescript-eslint/no-empty-function": 1,
+    "prefer-const": 2,
+    "@typescript-eslint/no-empty-function": 2,
     "@typescript-eslint/ban-ts-comment": 1,
     "@typescript-eslint/no-inferrable-types": 1,
     "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }]
