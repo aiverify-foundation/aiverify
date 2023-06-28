@@ -37,9 +37,9 @@ export default function AlgorithmWidgetComponent({
       const schema = testInfo.algorithm
         ? _.cloneDeep(testInfo.algorithm.inputSchema)
         : {};
-      //@ts-ignore
       const uiw = await parseRJSFSchema(
         schema,
+        //@ts-ignore
         getDatasets,
         modelAndDatasets.testDataset
       );
