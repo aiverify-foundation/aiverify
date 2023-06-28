@@ -509,99 +509,100 @@ describe('Plugins Manager', () => {
       const aivPChecklistCard =
         aivPChecklistCardHeading.parentElement as Element;
       expect(aivPChecklistCard).toMatchInlineSnapshot(`
-      <div
-        class="pluginList-card listItem"
-      >
-        <h3
-          class="value_name"
-        >
-          AI Verify Process Checklist
-        </h3>
         <div
-          class="content"
+          class="pluginList-card listItem"
         >
+          <h3
+            class="value_name"
+          >
+            AI Verify Process Checklist
+          </h3>
           <div
-            style="min-width: 240px;"
+            class="content"
           >
             <div
-              class="row"
+              style="min-width: 240px;"
             >
               <div
-                class="valueDisplay"
+                class="row"
               >
                 <div
-                  class="label"
+                  class="valueDisplay"
                 >
-                  Version:
+                  <div
+                    class="label"
+                  >
+                    Version:
+                  </div>
+                  <div
+                    class="value"
+                  >
+                    0.1.0
+                  </div>
                 </div>
+              </div>
+              <div
+                class="row"
+              >
                 <div
-                  class="value"
+                  class="valueDisplay"
                 >
-                  0.1.0
+                  <div
+                    class="label"
+                  >
+                    Installed on:
+                  </div>
+                  <div
+                    class="value listItem_installedDate"
+                  >
+                    27/03/2023, 16:02:58
+                  </div>
+                </div>
+              </div>
+              <div
+                class="row"
+              >
+                <div
+                  class="valueDisplay"
+                >
+                  <div
+                    class="label"
+                  >
+                    Author:
+                  </div>
+                  <div
+                    class="value"
+                  >
+                    Leong Peck Yoke
+                  </div>
                 </div>
               </div>
             </div>
-            <div
-              class="row"
-            >
+            <div>
               <div
-                class="valueDisplay"
+                class="componentCounts"
               >
-                <div
-                  class="label"
-                >
-                  Installed on:
+                <div>
+                  widgets: 
+                  <span
+                    class="count"
+                  >
+                    2
+                  </span>
                 </div>
-                <div
-                  class="value listItem_installedDate"
-                >
-                  27/03/2023, 16:02:58
+                <div>
+                  input blocks:
+                   
+                  <span
+                    class="count"
+                  >
+                    2
+                  </span>
                 </div>
-              </div>
-            </div>
-            <div
-              class="row"
-            >
-              <div
-                class="valueDisplay"
-              >
-                <div
-                  class="label"
-                >
-                  Author:
-                </div>
-                <div
-                  class="value"
-                >
-                  Leong Peck Yoke
-                </div>
-              </div>
-            </div>
-          </div>
-          <div>
-            <div
-              class="componentCounts"
-            >
-              <div>
-                widgets: 
-                <span
-                  class="count"
-                >
-                  2
-                </span>
-              </div>
-              <div>
-                input blocks: 
-                <span
-                  class="count"
-                >
-                  2
-                </span>
               </div>
             </div>
           </div>
         </div>
-      </div>
       `);
     });
 
