@@ -15,7 +15,9 @@ from test_engine_core.utils.simple_progress import SimpleProgress
 
 
 def test_discover_plugin():
-    PluginManager.discover(str(Path().absolute() / "../../../test-engine-core-modules"))
+    PluginManager.discover(
+        str(Path().absolute() / "../../../../test-engine-core-modules")
+    )
 
 
 # Variables for testing
