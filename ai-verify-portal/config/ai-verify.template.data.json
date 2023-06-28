@@ -1,81 +1,70 @@
 {
-	"$schema": "https://json-schema.org/draft/2020-12/schema",
-	"$id": "/ai-verify.template.data.json",
-	"title": "Template Metadata Data Schema",
-	"description": "AI Verify Template Data schema",
-	"type": "object",
-	"properties": {
-		"pages": {
-			"description": "Unique identififer for the template within the plugin",
-			"type": "array",
-			"minItems": 1,
-			"maxItems": 256,
-			"items": {
-				"type": "object",
-				"description": "Array of page layout",
-				"properties": {
-					"layouts": true,
-					"reportWidgets": {
-						"type": "array",
-						"minItems": 1,
-						"maxItems": 256,			
-						"items": {
-							"type": "object",
-							"description": "Schema for report widget",
-							"properties": {
-								"widgetGID": {
-									"type": "string",
-									"minLength": 1,
-      						"maxLength": 256
-								},
-								"key": {
-									"type": "string",
-									"minLength": 1,
-      						"maxLength": 128
-								},
-								"layoutItemProperties": true,
-								"properties": true
-							},
-							"required": [
-								"widgetGID",
-								"key"
-							]
-						}
-					}
-				},
-				"required": [
-					"layouts",
-					"reportWidgets"
-				]
-			}
-		},
-		"globalVars": {
-			"type": "array",
-			"description": "Array of global globalVars",
-			"items": {
-				"type": "object",
-				"description": "Global variable key value pair",
-				"properties": {
-					"key": {
-						"type": "string",
-						"description": "Property key",
-						"minLength": 1,
-      			"maxLength": 128
-					},
-					"value": {
-						"type": "string",
-						"description": "Property value",
-      			"maxLength": 128
-					}
-				},
-				"required": [
-					"key",
-					"value"
-				]
-			}
-		}
-	},
-	"required": [
-		"pages"
-	]
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "/ai-verify.template.data.json",
+  "title": "Template Metadata Data Schema",
+  "description": "AI Verify Template Data schema",
+  "type": "object",
+  "properties": {
+    "pages": {
+      "description": "Unique identififer for the template within the plugin",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "items": {
+        "type": "object",
+        "description": "Array of page layout",
+        "properties": {
+          "layouts": true,
+          "reportWidgets": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 256,
+            "items": {
+              "type": "object",
+              "description": "Schema for report widget",
+              "properties": {
+                "widgetGID": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "key": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "layoutItemProperties": true,
+                "properties": true
+              },
+              "required": ["widgetGID", "key"]
+            }
+          }
+        },
+        "required": ["layouts", "reportWidgets"]
+      }
+    },
+    "globalVars": {
+      "type": "array",
+      "description": "Array of global globalVars",
+      "items": {
+        "type": "object",
+        "description": "Global variable key value pair",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Property key",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "value": {
+            "type": "string",
+            "description": "Property value",
+            "maxLength": 128
+          }
+        },
+        "required": ["key", "value"]
+      }
+    }
+  },
+  "required": ["pages"]
 }

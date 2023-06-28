@@ -17,7 +17,7 @@
 
 .pluginsRightPane {
   width: 60%;
-  padding-top: 5px
+  padding-top: 5px;
 }
 
 .pluginsList {
@@ -51,36 +51,36 @@
 }
 
 .scrollContainer::-webkit-scrollbar {
-	width: 8px;
-	background-color: rgba(0, 0, 0, 0.1);
+  width: 8px;
+  background-color: rgba(0, 0, 0, 0.1);
   border-radius: 5px;
 }
 
 .scrollContainer::-webkit-scrollbar-thumb {
-	background-color: rgba(122, 121, 122, 0.4);
+  background-color: rgba(122, 121, 122, 0.4);
   border-radius: 5px;
 }
 
 .listItem {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   padding: 15px;
   border-radius: 5px;
   margin-bottom: 10px;
   font-size: 14px;
   min-height: 100px;
   cursor: pointer;
-	box-shadow: 1px 1px 2px 0px rgba(0,0,0,0.1);
+  box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.1);
   border: 1px solid transparent;
 }
 
 .listItem h3 {
-  color: var(--color-palette-violet)
+  color: var(--color-palette-violet);
 }
 
 .listItem:hover {
   transition-property: border-color;
   transition-timing-function: ease-in-out;
-	transition-duration: 0.2s;
+  transition-duration: 0.2s;
   border-color: var(--color-palette-violet);
 }
 
@@ -89,7 +89,7 @@
   border-color: var(--color-palette-violet);
   transition-property: background-color;
   transition-timing-function: ease-in-out;
-	transition-duration: 0.2s;
+  transition-duration: 0.2s;
 }
 
 .content {
@@ -113,7 +113,7 @@
 }
 
 .count {
-  color: var(--color-palette-violet)
+  color: var(--color-palette-violet);
 }
 
 .row {
@@ -229,7 +229,7 @@
 }
 
 .tabBtn:hover {
-  background-color: #e4e4e4
+  background-color: #e4e4e4;
 }
 
 .tabsBtnGroup .tabBtn:first-of-type {
@@ -262,7 +262,7 @@
 }
 
 .componentCard {
-  display:flex; 
+  display: flex;
   flex-direction: column;
   border: 1px solid var(--color-light-gray);
   padding: 15px 20px;

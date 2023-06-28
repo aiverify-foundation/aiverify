@@ -1,5 +1,5 @@
 // Backend
-import type { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 import path from 'node:path';
 import fs from 'node:fs';
@@ -25,25 +25,30 @@ export const config = {
 };
 
 function deleteTempFiles(files: formidable.Files) {
-  for (const file of Object.values(files as { [file: string]: formidable.File})) {
-    fs.rmSync(file.filepath, { force:true })
+  for (const file of Object.values(
+    files as { [file: string]: formidable.File }
+  )) {
+    fs.rmSync(file.filepath, { force: true });
   }
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const form = new formidable.IncomingForm({
     uploadDir: TEMP_DIR,
     allowEmptyFiles: false,
-    maxFileSize: 500*1024*1024, // 500mb
+    maxFileSize: 500 * 1024 * 1024, // 500mb
   });
   form.parse(req, async (err, _fields, files) => {
     if (err) {
       deleteTempFiles(files);
-      return res.status(500).end()
+      return res.status(500).end();
     }
 
     if (_.isNil(files.myFile)) {
-      deleteTempFiles(files)
+      deleteTempFiles(files);
       return res.status(400).end();
     }
 
@@ -58,18 +63,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       for (const entry of zipEntries) {
         // console.log("entry", entry.isDirectory, entry.entryName);
         // check if any subdir
-        if (entry.isDirectory && (entry.entryName.endsWith("inputs/") || entry.entryName.endsWith("widgets/") || entry.entryName.endsWith("algorithms/") || entry.entryName.endsWith("templates/"))) {
+        if (
+          entry.isDirectory &&
+          (entry.entryName.endsWith('inputs/') ||
+            entry.entryName.endsWith('widgets/') ||
+            entry.entryName.endsWith('algorithms/') ||
+            entry.entryName.endsWith('templates/'))
+        ) {
           found = true;
-          const ret = entry.entryName.match(/^(.+)\/(inputs|widgets|algorithms|templates)\//)
+          const ret = entry.entryName.match(
+            /^(.+)\/(inputs|widgets|algorithms|templates)\//
+          );
           // console.log("ret", ret)
           if (ret) {
-            tmpPluginPath = path.join(tmpPluginPath, ret[1])
+            tmpPluginPath = path.join(tmpPluginPath, ret[1]);
           }
           break;
         }
       }
       if (!found) {
-        throw new Error("Invalid plugin")
+        throw new Error('Invalid plugin');
       }
       // console.log("tmpPluginPath", tmpPluginPath)
       zip.extractAllTo(tmpdir, true);
@@ -82,13 +95,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       } else {
         errMsg = String(error);
       }
-      res.status(400).json({ error: errMsg })
+      res.status(400).json({ error: errMsg });
     } finally {
       if (fs.existsSync(tmpdir)) {
-        fs.rmdirSync(tmpdir, { recursive:true })
+        fs.rmdirSync(tmpdir, { recursive: true });
       }
       deleteTempFiles(files);
     }
-
   });
 }

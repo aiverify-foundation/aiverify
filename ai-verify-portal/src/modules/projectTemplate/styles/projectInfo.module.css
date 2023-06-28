@@ -14,12 +14,12 @@
 
 .projectInfoForm {
   display: flex;
-  background: #FFFFFF;
+  background: #ffffff;
   width: 55%;
   min-width: 730px;
   margin: auto;
   padding: 25px 25px 25px 25px;
-  box-shadow: 1px 1px 2px 0px rgba(0,0,0,0.1);
+  box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.1);
   border-radius: 4px;
 }
 
@@ -45,5 +45,5 @@
   margin-top: 30px;
   text-align: right;
   font-size: 13px;
-  color: var(--color-palette-violet)
+  color: var(--color-palette-violet);
 }

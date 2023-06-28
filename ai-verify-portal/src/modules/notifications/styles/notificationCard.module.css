@@ -17,7 +17,7 @@
 .listCard__fadeout {
   transition-property: 'opacity';
   transition-timing-function: ease-in-out;
-	transition-duration: 0.2s;
+  transition-duration: 0.2s;
   opacity: 0;
 }
 
@@ -47,7 +47,7 @@
 .deleteIcon:hover {
   font-size: 20px;
   top: 9px;
-  right: 7px
+  right: 7px;
 }
 
 .dateTime {
@@ -71,12 +71,12 @@
 }
 
 .callToAction {
-  padding: 5px  0 0 0;
+  padding: 5px 0 0 0;
 }
 
 .viewReportCTA {
   width: 125px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   display: flex;
   align-items: center;
   padding: 3px;
@@ -108,14 +108,14 @@
 
 .indicator__done {
   border: 1px solid var(--color-light-gray);
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 
 .assetName {
   display: inline-block;
   text-overflow: ellipsis;
   overflow: hidden;
-	white-space: nowrap;
+  white-space: nowrap;
   width: 100%;
   align-items: center;
   font-size: 14px;

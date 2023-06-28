@@ -7,7 +7,6 @@ import styles from './styles/home.module.css';
 import { ListMenu, ListMenuItem } from 'src/components/listMenu';
 import { Notifications } from '../notifications';
 
-
 function MinimalHeader({ enableMenu = true }: { enableMenu?: boolean }) {
   const [showMenu, setShowMenu] = useState(false);
   const router = useRouter();
@@ -60,37 +59,41 @@ function MinimalHeader({ enableMenu = true }: { enableMenu?: boolean }) {
 
   return (
     <div className={styles.header}>
-      {enableMenu ? <MenuIcon
-        style={{ cursor: 'pointer' }}
-        onMouseEnter={handleMenuIconMouseEnter}
-        onMouseLeave={handleMenuIconMouseLeave}
-      /> : null}
-      {showMenu ? <ListMenu
-        containerStyles={{
-          position: 'absolute',
-          top: '40px',
-          left: '25px',
-          zIndex: 1001 }}
-        onMouseEnter={handleMenuMouseEnter}
-        onMouseLeave={handleMenuMouseLeave}>
-        <ListMenuItem 
-          id='home'
-          displayText='Home'
-          onClick={navigateToHome}/>
-        <ListMenuItem
-          id='saveAsTemplate'
-          displayText='Models & Data'
-          onClick={navigateToModelsData} />
-        <ListMenuItem
-          id='saveAsTemplate'
-          displayText='Plugins'
-          onClick={navigateToPlugins} />
-        <ListMenuItem
-          id='saveAsTemplate'
-          displayText='Report Templates'
-          onClick={navigateToTemplates} />
-        </ListMenu> : null
-      }
+      {enableMenu ? (
+        <MenuIcon
+          style={{ cursor: 'pointer' }}
+          onMouseEnter={handleMenuIconMouseEnter}
+          onMouseLeave={handleMenuIconMouseLeave}
+        />
+      ) : null}
+      {showMenu ? (
+        <ListMenu
+          containerStyles={{
+            position: 'absolute',
+            top: '40px',
+            left: '25px',
+            zIndex: 1001,
+          }}
+          onMouseEnter={handleMenuMouseEnter}
+          onMouseLeave={handleMenuMouseLeave}>
+          <ListMenuItem id="home" displayText="Home" onClick={navigateToHome} />
+          <ListMenuItem
+            id="saveAsTemplate"
+            displayText="Models & Data"
+            onClick={navigateToModelsData}
+          />
+          <ListMenuItem
+            id="saveAsTemplate"
+            displayText="Plugins"
+            onClick={navigateToPlugins}
+          />
+          <ListMenuItem
+            id="saveAsTemplate"
+            displayText="Report Templates"
+            onClick={navigateToTemplates}
+          />
+        </ListMenu>
+      ) : null}
       <Image
         src={LogoImage}
         alt="AI Verify"
@@ -102,7 +105,7 @@ function MinimalHeader({ enableMenu = true }: { enableMenu?: boolean }) {
         <Notifications />
       </div>
     </div>
-  )
+  );
 }
 
 export { MinimalHeader };

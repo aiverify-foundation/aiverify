@@ -1,24 +1,24 @@
-import { gql } from "@apollo/client";
-import { ReportStatusNotification } from "../types";
+import { gql } from '@apollo/client';
+import { ReportStatusNotification } from '../types';
 
 export type GqlNotificationsResult = {
-  notifications: ReportStatusNotification[]
-}
+  notifications: ReportStatusNotification[];
+};
 
 export type GqlCreateNotificationResult = {
-  createNotification : ReportStatusNotification
-}
+  createNotification: ReportStatusNotification;
+};
 
 export type GqlUpdateReadStatusResult = {
-  updateNotificationReadStatus : ReportStatusNotification
-}
+  updateNotificationReadStatus: ReportStatusNotification;
+};
 
 export type GqlDeleteResult = {
-  deleteNotification : string
-}
+  deleteNotification: string;
+};
 
 export const GQL_CREATE_NOTIFICATION = gql`
-  mutation($notif: NotificationInput!) {
+  mutation ($notif: NotificationInput!) {
     createNotification(notif: $notif) {
       id
       type
@@ -32,7 +32,7 @@ export const GQL_CREATE_NOTIFICATION = gql`
       reportStatus
     }
   }
-`
+`;
 export const GQL_GET_ALL_NOTIFICATIONS = gql`
   query Query {
     notifications {
@@ -51,10 +51,13 @@ export const GQL_GET_ALL_NOTIFICATIONS = gql`
       assetName
     }
   }
-`
+`;
 
 export const GQL_UPDATE_NOTIFICATION_READ = gql`
-  mutation UpdateNotificationReadStatus($id: ObjectID!, $readStatus: ReadStatus) {
+  mutation UpdateNotificationReadStatus(
+    $id: ObjectID!
+    $readStatus: ReadStatus
+  ) {
     updateNotificationReadStatus(id: $id, readStatus: $readStatus) {
       id
       type
@@ -71,13 +74,13 @@ export const GQL_UPDATE_NOTIFICATION_READ = gql`
       assetName
     }
   }
-`
+`;
 
 export const GQL_DELETE_NOTIFICATION = gql`
   mutation DeleteNotification($id: ObjectID!) {
     deleteNotification(id: $id)
   }
-`
+`;
 
 export const TESTTASK_SUBSCRIPTION = gql`
   subscription OnTestTaskUpdated {

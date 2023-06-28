@@ -4,10 +4,23 @@
 import path from 'node:path';
 import fs from 'node:fs';
 
-import AIFPlugin, { ReportWidget, ReportWidgetStatus, InputBlock, Algorithm, ProjectTemplateComponent, BasePluginComponent } from 'src/types/plugin.interface';
+import AIFPlugin, {
+  ReportWidget,
+  ReportWidgetStatus,
+  InputBlock,
+  Algorithm,
+  ProjectTemplateComponent,
+  BasePluginComponent,
+} from 'src/types/plugin.interface';
 import PluginManagerType from 'src/types/pluginManager.interface';
 import stockPlugins from 'config/plugin.stock';
-import { redis, deletePluginKeysFromRedis, pluginPath, scanPluginDirectory, validatePluginDirectory } from './lib/pluginService';
+import {
+  redis,
+  deletePluginKeysFromRedis,
+  pluginPath,
+  scanPluginDirectory,
+  validatePluginDirectory,
+} from './lib/pluginService';
 import { deleteProjectTemplate } from './lib/projectServiceBackend';
 
 import moment from 'moment';
@@ -24,7 +37,7 @@ const PLUGIN_SET_PREFIX = 'plugin:list';
  * No validation here. Assume that plugins already validated and well-behaved.
  */
 async function scanPluginDirectories() {
-  console.log('scanPluginDirectories')
+  console.log('scanPluginDirectories');
   const pluginsDir = fs.readdirSync(pluginPath);
   await deletePluginKeysFromRedis();
   const cached = {
@@ -32,12 +45,12 @@ async function scanPluginDirectories() {
     inputBlocks: [] as InputBlock[],
     algorithms: [] as Algorithm[],
     templates: [] as ProjectTemplateComponent[],
-  }
+  };
   for (const dir of pluginsDir) {
     const pdir = path.join(pluginPath, dir);
     try {
       await validatePluginDirectory(pdir);
-      await scanPluginDirectory(pdir, cached)
+      await scanPluginDirectory(pdir, cached);
     } catch (e) {
       console.log('Error reading plugin:', e);
     }
@@ -76,33 +89,31 @@ export async function deletePlugin(gid: string, publish = true) {
   }
 
   if (keys.includes('inputBlocks')) {
-    const inputBlocks = JSON.parse(alldata['inputBlocks'])
+    const inputBlocks = JSON.parse(alldata['inputBlocks']);
     for (const ib of inputBlocks) {
-      await redis.del(`inputBlock:${gid}:${ib}`)
+      await redis.del(`inputBlock:${gid}:${ib}`);
     }
   }
   if (keys.includes('reportWidgets')) {
-    const reportWidgets = JSON.parse(alldata['reportWidgets'])
+    const reportWidgets = JSON.parse(alldata['reportWidgets']);
     for (const ib of reportWidgets) {
-      await redis.del(`widget:${gid}:${ib}`)
+      await redis.del(`widget:${gid}:${ib}`);
     }
   }
   if (keys.includes('templates')) {
-    const templates = JSON.parse(alldata['templates'])
+    const templates = JSON.parse(alldata['templates']);
     for (const template of templates) {
       const key = `template:${gid}:${template}`;
       const id = await redis.hGet(key, 'id');
-      await redis.del(key)
-      if (id)
-        deleteProjectTemplate(id);
+      await redis.del(key);
+      if (id) deleteProjectTemplate(id);
     }
   }
   if (keys.includes('algorithms')) {
-    const algorithms = JSON.parse(alldata['algorithms'])
+    const algorithms = JSON.parse(alldata['algorithms']);
     for (const ib of algorithms) {
-      const key = `algo:${gid}:${ib}`
-      if (publish)
-        await redis.publish('algo.delete', key)
+      const key = `algo:${gid}:${ib}`;
+      if (publish) await redis.publish('algo.delete', key);
       await redis.del(key);
     }
   }
@@ -110,7 +121,7 @@ export async function deletePlugin(gid: string, publish = true) {
   await redis.del(rediskey);
 
   const pdir = path.join(pluginPath, gid);
-  fs.rmSync(pdir, { recursive: true })
+  fs.rmSync(pdir, { recursive: true });
 }
 
 export async function installPlugin(tempDir: string) {
@@ -120,7 +131,7 @@ export async function installPlugin(tempDir: string) {
   // validate path
   const relative = path.relative(pluginPath, pdir);
   if (relative.startsWith('.')) {
-    throw ('Invalid GID');
+    throw 'Invalid GID';
   }
   // if pdir already exists, remove old dir
   let isUpdate = false;
@@ -141,40 +152,48 @@ export async function installPlugin(tempDir: string) {
     inputBlocks: [] as InputBlock[],
     algorithms: [] as Algorithm[],
     templates: [] as ProjectTemplateComponent[],
-  } // clear the cached
+  }; // clear the cached
 
   const plugin = await scanPluginDirectory(pdir, cached);
   plugin.isStock = stockPlugins.includes(gid);
-  if (cached.reportWidgets)
-    plugin.reportWidgets = cached.reportWidgets;
-  if (cached.inputBlocks)
-    plugin.inputBlocks = cached.inputBlocks;
-  if (cached.templates)
-    plugin.templates = cached.templates;
+  if (cached.reportWidgets) plugin.reportWidgets = cached.reportWidgets;
+  if (cached.inputBlocks) plugin.inputBlocks = cached.inputBlocks;
+  if (cached.templates) plugin.templates = cached.templates;
   if (cached.algorithms) {
     plugin.algorithms = cached.algorithms;
     // publish install msg to redis
     for (const algo of plugin.algorithms) {
-      redis.publish(isUpdate ? 'algo.update' : 'algo.install', `algo:${algo.gid}`)
+      redis.publish(
+        isUpdate ? 'algo.update' : 'algo.install',
+        `algo:${algo.gid}`
+      );
     }
   }
 
   return plugin;
 }
 
-export async function getByGID(gid: string): Promise<AIFPlugin | InputBlock | ReportWidget | Algorithm | ProjectTemplate | null> {
+export async function getByGID(
+  gid: string
+): Promise<
+  AIFPlugin | InputBlock | ReportWidget | Algorithm | ProjectTemplate | null
+> {
   const key = await redis.keys(`*:${gid}`);
-  if (key.length == 0)
-    return null;
+  if (key.length == 0) return null;
   const data = await redis.hGet(key[0], 'data');
-  if (!data)
-    return null;
+  if (!data) return null;
   const obj = JSON.parse(data);
   switch (obj.type) {
     case 'Algorithm':
-      obj.requirements = JSON.parse((await redis.hGet(key[0], 'requirements')) || '[]');
-      obj.inputSchema = JSON.parse((await redis.hGet(key[0], 'inputSchema')) || '{}');
-      obj.outputSchema = JSON.parse((await redis.hGet(key[0], 'outputSchema')) || '{}');
+      obj.requirements = JSON.parse(
+        (await redis.hGet(key[0], 'requirements')) || '[]'
+      );
+      obj.inputSchema = JSON.parse(
+        (await redis.hGet(key[0], 'inputSchema')) || '{}'
+      );
+      obj.outputSchema = JSON.parse(
+        (await redis.hGet(key[0], 'outputSchema')) || '{}'
+      );
       return obj as Algorithm;
     case 'InputBlock':
       return obj as InputBlock;
@@ -204,7 +223,6 @@ async function checkPluginDir() {
     } catch (e) {
       console.error('Scan plugins dir error', e);
     }
-
   }
 }
 
@@ -228,34 +246,31 @@ export async function getPlugins(populate = true): Promise<PluginManagerType> {
       plugin = JSON.parse(allKV['meta']);
 
       const getComponents = async (key: string) => {
-        if (!allKV[key])
-          return;
+        if (!allKV[key]) return;
         const obj = JSON.parse(allKV[key]);
         plugin[key] = [];
-        for (const cid of (obj as string[])) {
+        for (const cid of obj as string[]) {
           const comp = await getByGID(`${gid}:${cid}`);
           if (comp) {
             if (key !== 'templates')
               _mymap[(comp as BasePluginComponent).gid] = plugin.version;
             plugin[key].push(comp);
-            if (key === 'inputBlocks')
-              inputBlocks.push(comp as InputBlock);
-            else if (key === 'algorithms')
-              algorithms.push(comp as Algorithm);
+            if (key === 'inputBlocks') inputBlocks.push(comp as InputBlock);
+            else if (key === 'algorithms') algorithms.push(comp as Algorithm);
             else if (key === 'reportWidgets')
               reportWidgets.push(comp as ReportWidget);
             else if (key === 'templates')
               templates.push(comp as ProjectTemplate);
           }
         }
-      }
+      };
 
       await Promise.all([
         getComponents('reportWidgets'),
         getComponents('inputBlocks'),
         getComponents('algorithms'),
-        getComponents('templates')
-      ])
+        getComponents('templates'),
+      ]);
 
       plugin.isStock = stockPlugins.includes(gid);
       try {
@@ -266,8 +281,7 @@ export async function getPlugins(populate = true): Promise<PluginManagerType> {
       plugins.push(plugin);
     } else {
       const meta = await redis.hGet(rediskey, 'meta');
-      if (meta)
-        plugins.push(JSON.parse(meta));
+      if (meta) plugins.push(JSON.parse(meta));
     }
   }
 
@@ -279,9 +293,8 @@ export async function getPlugins(populate = true): Promise<PluginManagerType> {
         dep.valid = false;
         if (_mymap[dep.gid]) {
           if (dep.version)
-            dep.valid = samver.satisfies(_mymap[dep.gid], dep.version)
-          else
-            dep.valid = true;
+            dep.valid = samver.satisfies(_mymap[dep.gid], dep.version);
+          else dep.valid = true;
         }
         if (!dep.valid) {
           status = ReportWidgetStatus.MissingDependencies;
@@ -291,7 +304,7 @@ export async function getPlugins(populate = true): Promise<PluginManagerType> {
     widget.status = status;
   }
 
-  plugins.sort((a, b) => a.installedAt < b.installedAt ? -1 : 1);
+  plugins.sort((a, b) => (a.installedAt < b.installedAt ? -1 : 1));
 
   return {
     plugins,
@@ -299,9 +312,8 @@ export async function getPlugins(populate = true): Promise<PluginManagerType> {
     algorithms,
     templates,
     stockPlugins,
-  }
+  };
 }
-
 
 export function isStockPlugin(gid: string) {
   return stockPlugins.includes(gid);

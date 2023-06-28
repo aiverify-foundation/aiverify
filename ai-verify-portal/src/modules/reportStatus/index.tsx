@@ -6,14 +6,14 @@ import { ReportDesignerHeader } from '../project/header';
 
 type Props = {
   report: Report;
-}
+};
 
 export default function ReportStatusModule({ report }: Props) {
-  const router = useRouter()
+  const router = useRouter();
 
   const goBack = () => {
-    router.push(`/project/${report.projectID}`)
-  }
+    router.push(`/project/${report.projectID}`);
+  };
 
   return (
     <div>
@@ -30,5 +30,5 @@ export default function ReportStatusModule({ report }: Props) {
         </div>
       </div>
     </div>
-  )
+  );
 }

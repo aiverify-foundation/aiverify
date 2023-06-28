@@ -13,29 +13,31 @@ import {
 import styles from './styles/dialogs.module.css';
 
 type ProjectTemplateInformationDialogProps = {
-  projectStore: ProjectTemplateStore,
+  projectStore: ProjectTemplateStore;
   onClose: () => void;
-}
+};
 
-export default function ProjectTemplateInformationDialog(props: ProjectTemplateInformationDialogProps) {
+export default function ProjectTemplateInformationDialog(
+  props: ProjectTemplateInformationDialogProps
+) {
   const { projectStore, onClose } = props;
-  const [ showSuccess, setShowSuccess ] = useState(false);
-  const [ showError, setShowError ] = useState(false);
-  const [ templateDetails, setTemplateDetails ] = useState<ProjectInformation>({
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [templateDetails, setTemplateDetails] = useState<ProjectInformation>({
     name: `${projectStore.projectInfo.name} Template`,
     description: projectStore.projectInfo.description,
     company: projectStore.projectInfo.company,
-  })
+  });
 
   const onChange = (key: string, value: string) => {
-    setTemplateDetails(prevState => ({
+    setTemplateDetails((prevState) => ({
       ...prevState,
       [key]: value,
-    }))
-  }
+    }));
+  };
 
   function handleInputChange(inputName: string) {
-    return (e:React.ChangeEvent<HTMLInputElement>) =>
+    return (e: React.ChangeEvent<HTMLInputElement>) =>
       onChange(inputName, e.target.value);
   }
 
@@ -47,8 +49,7 @@ export default function ProjectTemplateInformationDialog(props: ProjectTemplateI
       } else {
         setShowError(true);
       }
-    }
-    catch(err) {
+    } catch (err) {
       setShowSuccess(false);
       setShowError(true);
       console.error('Error saving canvas as template', err);
@@ -63,18 +64,21 @@ export default function ProjectTemplateInformationDialog(props: ProjectTemplateI
       onCloseIconClick={onClose}>
       <AlertBox.Header heading="Save as Project Template" />
       <AlertBox.Body hasFooter>
-        {showSuccess ?
+        {showSuccess ? (
           <div className={styles.resultBody}>
             <div className={styles.iconWrapper}>
               <CheckCircleOutlineIcon className={styles.successIcon} />
             </div>
             <div className={styles.resultContent}>
               <div className={styles.successHeading}>Save Successful</div>
-              <div>Design has been saved as a template. It will appear on Templates screen.</div>
+              <div>
+                Design has been saved as a template. It will appear on Templates
+                screen.
+              </div>
             </div>
-          </div> : null 
-        }
-        {showError ?
+          </div>
+        ) : null}
+        {showError ? (
           <div className={styles.resultBody}>
             <div className={styles.iconWrapper}>
               <ErrorOutlineIcon className={styles.errorIcon} />
@@ -83,63 +87,71 @@ export default function ProjectTemplateInformationDialog(props: ProjectTemplateI
               <div className={styles.errorHeading}>Save Unsuccessful</div>
               <div>There was a problem saving this design as a template.</div>
             </div>
-          </div> : null }
-        {(!showSuccess && !showError) ?
+          </div>
+        ) : null}
+        {!showSuccess && !showError ? (
           <div>
             <MyTextField
-              id='input-name'
+              id="input-name"
               title="Template Name"
               inputProps={{
                 required: true,
-                error: (templateDetails.name.length == 0),
+                error: templateDetails.name.length == 0,
                 onChange: handleInputChange('name'),
                 value: templateDetails.name,
-                placeholder: "Enter Template Name",
+                placeholder: 'Enter Template Name',
                 styles: {
-                  outline: 'none'
-                }
+                  outline: 'none',
+                },
               }}
-              errorText={templateDetails.name.length == 0 ? "Template name is required" : null}
+              errorText={
+                templateDetails.name.length == 0
+                  ? 'Template name is required'
+                  : null
+              }
               FormControlProps={{
-                sx: {mb:2}
-              }}/>
+                sx: { mb: 2 },
+              }}
+            />
             <MyTextField
-              id='input-description'
+              id="input-description"
               title="Description"
               inputProps={{
                 multiline: true,
-                minRows:4,
+                minRows: 4,
                 onChange: handleInputChange('description'),
                 value: templateDetails.description,
-                placeholder: "Enter Template Description",
+                placeholder: 'Enter Template Description',
               }}
               FormControlProps={{
-                sx: {mb:2}
-              }}/>
+                sx: { mb: 2 },
+              }}
+            />
             <MyTextField
-              id='input-author-name'
+              id="input-author-name"
               title="Author"
               inputProps={{
                 multiline: true,
                 onChange: handleInputChange('company'),
                 value: templateDetails.company,
-                placeholder: "Enter Author Name",
-              }}/>
-          </div> : null
-        }
+                placeholder: 'Enter Author Name',
+              }}
+            />
+          </div>
+        ) : null}
       </AlertBox.Body>
       <AlertBox.Footer>
-      {(!showSuccess && !showError) ? 
-        <div className={styles.footerBtnContainer}>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button onClick={handleSaveAsTemplate}>Save</Button>
-        </div> : 
-        <div className={styles.footerBtnContainer}>
-          <Button onClick={onClose}>OK</Button>
-        </div>
-      }
-      </AlertBox.Footer> 
+        {!showSuccess && !showError ? (
+          <div className={styles.footerBtnContainer}>
+            <Button onClick={onClose}>Cancel</Button>
+            <Button onClick={handleSaveAsTemplate}>Save</Button>
+          </div>
+        ) : (
+          <div className={styles.footerBtnContainer}>
+            <Button onClick={onClose}>OK</Button>
+          </div>
+        )}
+      </AlertBox.Footer>
     </AlertBox>
-    
-  )
+  );
 }

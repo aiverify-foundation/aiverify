@@ -2,9 +2,9 @@ import { createContext } from 'react';
 
 export type WidgetDataContextType = {
   [key: string]: {
-    properties: any,
-  }
-}
+    properties: any;
+  };
+};
 
 const WidgetDataContext = createContext<WidgetDataContextType>({});
 export default WidgetDataContext;

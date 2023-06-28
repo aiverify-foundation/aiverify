@@ -27,7 +27,7 @@ type ReportsHeaderProps = {
   designStep: number;
   onNextBtnClick?: () => void;
   onBackBtnClick: () => void;
-}
+};
 
 function ReportDesignerHeader(props: ReportsHeaderProps) {
   const {
@@ -40,7 +40,7 @@ function ReportDesignerHeader(props: ReportsHeaderProps) {
     isTemplate = false,
     designStep,
     onNextBtnClick,
-    onBackBtnClick
+    onBackBtnClick,
   } = props;
   const [showMenu, setShowMenu] = useState(false);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
@@ -69,7 +69,7 @@ function ReportDesignerHeader(props: ReportsHeaderProps) {
   function backToTemplatesClick() {
     router.push('/projectTemplates');
   }
-  
+
   function handleExportIconMouseEnter() {
     cancelMenuTimer();
     setShowMenu(true);
@@ -123,80 +123,87 @@ function ReportDesignerHeader(props: ReportsHeaderProps) {
   return (
     <div>
       <div className={styles.header}>
-        <div style={{ display: 'flex'}}>
-        {isTemplate && designStep === 1 ? 
-          <div className={styles.reportNavBtn} onClick={backToTemplatesClick}>
-            <ArrowBackIos className={styles.navIcon} />
-            <div>Templates</div>
-          </div> : null
-        }
-        {isTemplate && designStep === 2 ? 
-          <div className={styles.reportNavBtn} onClick={onBackBtnClick}>
-            <ArrowBackIos className={styles.navIcon} />
-            <div>Template Details</div>
-          </div> : null
-        }
-        {!isTemplate && designStep === 2 ? 
-          <div className={styles.reportNavBtn} onClick={onBackBtnClick}>
-            <ArrowBackIos className={styles.navIcon} />
-            <div>Project Details</div>
-          </div> : null
-        }
-        {!isTemplate && designStep === 1 ? 
-          <div className={styles.reportNavBtn} onClick={navigateToHome}>
-            <ArrowBackIos className={styles.navIcon} />
-            <div>Home</div>
-          </div> : null
-        }
-        {!isTemplate && designStep === 3 ? 
-          <div className={styles.reportNavBtn} onClick={onBackBtnClick}>
-            <ArrowBackIos className={styles.navIcon} />
-            <div>Project Details</div>
-          </div> : null
-        }
-        {!isTemplate && designStep === 4 ? 
-          <div className={styles.reportNavBtn} onClick={onBackBtnClick}>
-            <ArrowBackIos className={styles.navIcon} />
-            <div>Design Report</div>
-          </div> : null
-        }
-        {!isTemplate && designStep > 4 ? 
-          <div className={styles.reportNavBtn} onClick={onBackBtnClick}>
-            <ArrowBackIos className={styles.navIcon} />
-            <div>Back</div>
-          </div> : null
-        }
+        <div style={{ display: 'flex' }}>
+          {isTemplate && designStep === 1 ? (
+            <div className={styles.reportNavBtn} onClick={backToTemplatesClick}>
+              <ArrowBackIos className={styles.navIcon} />
+              <div>Templates</div>
+            </div>
+          ) : null}
+          {isTemplate && designStep === 2 ? (
+            <div className={styles.reportNavBtn} onClick={onBackBtnClick}>
+              <ArrowBackIos className={styles.navIcon} />
+              <div>Template Details</div>
+            </div>
+          ) : null}
+          {!isTemplate && designStep === 2 ? (
+            <div className={styles.reportNavBtn} onClick={onBackBtnClick}>
+              <ArrowBackIos className={styles.navIcon} />
+              <div>Project Details</div>
+            </div>
+          ) : null}
+          {!isTemplate && designStep === 1 ? (
+            <div className={styles.reportNavBtn} onClick={navigateToHome}>
+              <ArrowBackIos className={styles.navIcon} />
+              <div>Home</div>
+            </div>
+          ) : null}
+          {!isTemplate && designStep === 3 ? (
+            <div className={styles.reportNavBtn} onClick={onBackBtnClick}>
+              <ArrowBackIos className={styles.navIcon} />
+              <div>Project Details</div>
+            </div>
+          ) : null}
+          {!isTemplate && designStep === 4 ? (
+            <div className={styles.reportNavBtn} onClick={onBackBtnClick}>
+              <ArrowBackIos className={styles.navIcon} />
+              <div>Design Report</div>
+            </div>
+          ) : null}
+          {!isTemplate && designStep > 4 ? (
+            <div className={styles.reportNavBtn} onClick={onBackBtnClick}>
+              <ArrowBackIos className={styles.navIcon} />
+              <div>Back</div>
+            </div>
+          ) : null}
         </div>
         <div className={styles.menuIconsGroup}>
-          {!disableSaveMenu ? <>
-            <FileDownloadIcon
-              className={styles.menuIcon}
-              onMouseEnter={handleExportIconMouseEnter}
-              onMouseLeave={handleExportIconMouseLeave}
-            />
-            {showMenu ? <ListMenu
-              containerStyles={{
-                position: 'absolute',
-                top: '30px',
-                left: '16px',
-                zIndex: 1001 }}
-              onMouseEnter={handleMenuMouseEnter}
-              onMouseLeave={handleMenuMouseLeave}>
-              <ListMenuItem 
-                id='explortAsPlugin'
-                displayText='Export as Plugin'
-                onClick={handleExportMenuItemClick}/>
-              {!disableSaveMenuItem ?
-                <ListMenuItem
-                  id='saveAsTemplate'
-                  displayText='Save as Template'
-                  onClick={handleSaveMenuItemClick} /> : null
-              }
-            </ListMenu> : null}
-          </> : null}
-          {!disableSaveBtn ? 
+          {!disableSaveMenu ? (
+            <>
+              <FileDownloadIcon
+                className={styles.menuIcon}
+                onMouseEnter={handleExportIconMouseEnter}
+                onMouseLeave={handleExportIconMouseLeave}
+              />
+              {showMenu ? (
+                <ListMenu
+                  containerStyles={{
+                    position: 'absolute',
+                    top: '30px',
+                    left: '16px',
+                    zIndex: 1001,
+                  }}
+                  onMouseEnter={handleMenuMouseEnter}
+                  onMouseLeave={handleMenuMouseLeave}>
+                  <ListMenuItem
+                    id="explortAsPlugin"
+                    displayText="Export as Plugin"
+                    onClick={handleExportMenuItemClick}
+                  />
+                  {!disableSaveMenuItem ? (
+                    <ListMenuItem
+                      id="saveAsTemplate"
+                      displayText="Save as Template"
+                      onClick={handleSaveMenuItemClick}
+                    />
+                  ) : null}
+                </ListMenu>
+              ) : null}
+            </>
+          ) : null}
+          {!disableSaveBtn ? (
             <StyledTooltip
-              title= { isTemplate ? 'Save Template' : 'Save Project' }
+              title={isTemplate ? 'Save Template' : 'Save Project'}
               placement="left">
               <SaveIcon
                 className={clsx(
@@ -204,12 +211,18 @@ function ReportDesignerHeader(props: ReportsHeaderProps) {
                   styles.menuSaveIcon,
                   disableManualSaveBtn ? styles.menuIcon__Disabled : null
                 )}
-                onClick={handleManualSaveClick} />
-            </StyledTooltip> : null 
-          }
-          {showManualSavedMsg ? 
-            <div className={styles.savedMsgDisplay}>Project saved</div> : null}
-          {!showManualSavedMsg && lastSavedTime ? <div className={styles.savedTimeDisplay}>Autosaved at {lastSavedTime}</div> : null}
+                onClick={handleManualSaveClick}
+              />
+            </StyledTooltip>
+          ) : null}
+          {showManualSavedMsg ? (
+            <div className={styles.savedMsgDisplay}>Project saved</div>
+          ) : null}
+          {!showManualSavedMsg && lastSavedTime ? (
+            <div className={styles.savedTimeDisplay}>
+              Autosaved at {lastSavedTime}
+            </div>
+          ) : null}
         </div>
         <Image
           src={LogoImage}
@@ -217,47 +230,73 @@ function ReportDesignerHeader(props: ReportsHeaderProps) {
           className={styles.logo}
           onClick={navigateToHome}
         />
-        
+
         <div style={{ display: 'flex' }}>
           <Notifications />
-          {isTemplate && designStep === 1 ? 
-            <div className={
-              clsx(styles.reportNavBtn, disableNextBtn ? styles.disableNavBtn : null)}
-              style={!disableNextBtn ? {marginLeft: '20px'} : {}}
-              onClick={disableNextBtn ? undefined: onNextBtnClick}>
+          {isTemplate && designStep === 1 ? (
+            <div
+              className={clsx(
+                styles.reportNavBtn,
+                disableNextBtn ? styles.disableNavBtn : null
+              )}
+              style={!disableNextBtn ? { marginLeft: '20px' } : {}}
+              onClick={disableNextBtn ? undefined : onNextBtnClick}>
               <div>Next</div>
-              <ArrowForwardIos className={styles.navIcon} style={{ marginLeft: '5px'}} />
-            </div> : null
-          }
-          {isTemplate && designStep === 2 ? 
-            <div className={styles.reportNavBtn} onClick={handleExportActionClick}>
+              <ArrowForwardIos
+                className={styles.navIcon}
+                style={{ marginLeft: '5px' }}
+              />
+            </div>
+          ) : null}
+          {isTemplate && designStep === 2 ? (
+            <div
+              className={styles.reportNavBtn}
+              onClick={handleExportActionClick}>
               <div>Export as Plugin</div>
-              <ArrowForwardIos className={styles.navIcon} style={{ marginLeft: '5px'}} />
-            </div> : null
-          }
-          {!isTemplate && (designStep > 0 && designStep < 10) && (designStep !== ProjectStep.SelectDataset) ? 
-            <div className={
-              clsx(styles.reportNavBtn, disableNextBtn ? styles.disableNavBtn : null)}
-              style={!disableNextBtn ? {marginLeft: '20px'} : {}}
-              onClick={disableNextBtn ? undefined: onNextBtnClick}>
+              <ArrowForwardIos
+                className={styles.navIcon}
+                style={{ marginLeft: '5px' }}
+              />
+            </div>
+          ) : null}
+          {!isTemplate &&
+          designStep > 0 &&
+          designStep < 10 &&
+          designStep !== ProjectStep.SelectDataset ? (
+            <div
+              className={clsx(
+                styles.reportNavBtn,
+                disableNextBtn ? styles.disableNavBtn : null
+              )}
+              style={!disableNextBtn ? { marginLeft: '20px' } : {}}
+              onClick={disableNextBtn ? undefined : onNextBtnClick}>
               <div>Next</div>
-              <ArrowForwardIos className={styles.navIcon} style={{ marginLeft: '5px'}} />
-            </div> : null
-          }
+              <ArrowForwardIos
+                className={styles.navIcon}
+                style={{ marginLeft: '5px' }}
+              />
+            </div>
+          ) : null}
         </div>
       </div>
-      {projectStore ? <>
-        {showSaveDialog ? <ProjectTemplateInformationDialog
-          projectStore={projectStore}
-          onClose={handleSaveDialogClose}
-        /> : null}
-        {showExportDialog ? <ExportTemplateDialog
-          projectStore={projectStore}
-          onClose={handleExportDialogClose} 
-        /> : null}
-      </>: null}
+      {projectStore ? (
+        <>
+          {showSaveDialog ? (
+            <ProjectTemplateInformationDialog
+              projectStore={projectStore}
+              onClose={handleSaveDialogClose}
+            />
+          ) : null}
+          {showExportDialog ? (
+            <ExportTemplateDialog
+              projectStore={projectStore}
+              onClose={handleExportDialogClose}
+            />
+          ) : null}
+        </>
+      ) : null}
     </div>
-  )
+  );
 }
 
 export { ReportDesignerHeader };

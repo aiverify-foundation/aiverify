@@ -1,7 +1,6 @@
 import moment from 'moment';
 import { WheelEvent } from 'react';
 
-
 export function formatDate(d: moment.MomentInput): string {
   return moment(d).format('D MMM YYYY, HH:mm:ss');
 }
@@ -22,10 +21,17 @@ export function changeWheelSpeed(el: HTMLDivElement, speedY: number) {
     }
     el.scrollTop = scrollY;
   };
-  el.addEventListener('mousewheel', handleMouseWheel as EventListener, { passive: false, capture: false });
+  el.addEventListener('mousewheel', handleMouseWheel as EventListener, {
+    passive: false,
+    capture: false,
+  });
   return function () {
     if (removed) return;
-    el.removeEventListener('mousewheel', handleMouseWheel as EventListener, false);
+    el.removeEventListener(
+      'mousewheel',
+      handleMouseWheel as EventListener,
+      false
+    );
     removed = true;
   };
 }
