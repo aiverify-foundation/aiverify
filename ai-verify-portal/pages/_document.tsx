@@ -1,18 +1,27 @@
-import Document, { Html, Head, Main, NextScript } from 'next/document';
+import Document, { Html, Head, Main, NextScript, DocumentContext, DocumentInitialProps } from 'next/document';
 import createEmotionServer from '@emotion/server/create-instance';
 import theme from '../src/lib/theme';
 import createEmotionCache from '../src/lib/createEmotionCache';
+import { AppProps, AppType } from 'next/app';
+import { EmotionCache } from '@emotion/cache';
 
-export default class MyDocument extends Document {
+interface DocumentProps extends DocumentInitialProps {
+  emotionStyleTags: React.ReactNode[]
+}
+
+interface AppPropsWithEmotion extends AppProps {
+  emotionCache?: EmotionCache;
+}
+
+export default class MyDocument extends Document<DocumentProps> {
   render() {
     return (
       <Html lang="en">
         <Head>
-          {/* PWA primary color */}
           <meta name="theme-color" content={theme.palette.primary.main} />
           <link rel="shortcut icon" href="/favicon.ico" />
           <meta name="emotion-insertion-point" content="" />
-          {(this.props as any).emotionStyleTags}
+          {this.props.emotionStyleTags}
         </Head>
         <body>
           <div id="aivModal"></div>
@@ -26,7 +35,7 @@ export default class MyDocument extends Document {
 
 // `getInitialProps` belongs to `_document` (instead of `_app`),
 // it's compatible with static-site generation (SSG).
-MyDocument.getInitialProps = async (ctx) => {
+MyDocument.getInitialProps = async (ctx: DocumentContext) => {
   // Resolution order
   //
   // On the server:
@@ -58,10 +67,10 @@ MyDocument.getInitialProps = async (ctx) => {
 
   ctx.renderPage = () =>
     originalRenderPage({
-      enhanceApp: (App: any) =>
-        (function EnhanceApp(props) {
+      enhanceApp: (App: React.ComponentType<React.ComponentProps<AppType> & AppPropsWithEmotion>) =>
+        function EnhanceApp(props) {
           return <App emotionCache={cache} {...props} />;
-        }),
+        },
     });
 
   const initialProps = await Document.getInitialProps(ctx);

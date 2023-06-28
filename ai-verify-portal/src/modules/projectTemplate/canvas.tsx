@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useRef, useMemo, MouseEvent, useCallback } from 'react';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
 import Pagination from '@mui/material/Pagination';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import GridOnIcon from '@mui/icons-material/GridOn';
 import OpenWithIcon from '@mui/icons-material/OpenWith';
-import GridLayout, { DragOverEvent, ItemCallback, Layout } from "react-grid-layout";
+import GridLayout, { ItemCallback, Layout } from "react-grid-layout";
 import { ProjectTemplateStore, ARUActionTypes, MapActionTypes } from './projectTemplateContext';
 import WidgetDataContext, { WidgetDataContextType } from './widgetDataContext';
 import ReportWidgetComponent, { ReportWidgetComponentProps } from './reportWidget';
@@ -55,7 +53,6 @@ export default function CanvasComponent(props: CanvasProps) {
   const { projectStore, isTemplate } = props;
   const [dragItem, setDragItem] = useState<ReportWidget | null>(null);
   const [selectedWidget, setSelectedWidget] = useState<ReportWidgetItem | null>(null);
-  const [selectedPage, setSelectedPage] = useState<number>();
   const [selectedGridItemDomElement, setSelectedGridItemDomElement] = useState<HTMLDivElement | undefined>();
   const [componentProperties, setComponentProperties] = useState<Record<string, ReportWidgetComponentProps>>({});
   const [widgetDataContext, setWidgetDataContext] = useState<WidgetDataContextType>({});
@@ -457,7 +454,7 @@ export default function CanvasComponent(props: CanvasProps) {
 
   }
   
-  const onDropDragOver = (e: DragOverEvent) => {
+  const onDropDragOver = () => {
     if (!dragItem) return;
     return { w: dragItem.widgetSize.minW, h: dragItem.widgetSize.minH }
   }
@@ -544,7 +541,6 @@ export default function CanvasComponent(props: CanvasProps) {
     const value = parseInt(e.target.value);
     if (isNaN(value) || value < 1 || value > projectStore.pages.length)
       return;
-    setSelectedPage(value);
     loadPage(value - 1);
   }
 

@@ -1,9 +1,8 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import graphqlClient from "./graphqlClient";
 
 import Dataset from 'src/types/dataset.interface';
 import ModelFile from 'src/types/model.interface';
-import { reject } from "lodash";
 
 
 export const DELETE_DATASET = gql`
@@ -19,9 +18,9 @@ mutation Mutation($id: ObjectID!) {
  */
 type deleteDatasetFunction = (id: string) => Promise<string>  
 export const useDeleteDataset = (): deleteDatasetFunction => {
-    const [deleteDataset, { data, loading, error }] = useMutation(DELETE_DATASET);
+    const [deleteDataset] = useMutation(DELETE_DATASET);
     const fn = (id: string): Promise<string> => {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
            deleteDataset({
                 variables: {
                     id,
@@ -49,9 +48,9 @@ mutation Mutation($id: ObjectID!) {
  */
 type deleteModelFileFunction = (id: string) => Promise<string>  
 export const useDeleteModelFile = (): deleteModelFileFunction => {
-    const [deleteModelFile, { data, loading, error }] = useMutation(DELETE_MODEL_FILE);
+    const [deleteModelFile] = useMutation(DELETE_MODEL_FILE);
     const fn = (id: string): Promise<string> => {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
            deleteModelFile({
                 variables: {
                     id,
@@ -81,9 +80,9 @@ mutation($modelFileID: ObjectID!, $modelFile: ModelFileInput) {
  */
 type UpdateModelFunction = (modelFileID: string, modelFile: Partial<ModelFile>) => Promise<string>
 export const useUpdateModel = (): UpdateModelFunction => {
-    const [updateModel, { data, loading, error }] = useMutation(UPDATE_MODEL);
+    const [updateModel] = useMutation(UPDATE_MODEL);
     const fn = (modelFileID: string, modelFile: Partial<ModelFile>): Promise<string> => {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             updateModel({
                 variables: {
                     modelFileID,
@@ -114,9 +113,9 @@ mutation($datasetID: ObjectID!, $dataset: DatasetInput) {
  */
 type UpdateDatasetFunction = (datasetID: string, dataset: Partial<Dataset>) => Promise<string>
 export const useUpdateDataset = (): UpdateDatasetFunction => {
-    const [updateDataset, { data, loading, error }] = useMutation(UPDATE_DATASET);
+    const [updateDataset] = useMutation(UPDATE_DATASET);
     const fn = (datasetID: string, dataset: Partial<Dataset>): Promise<string> => {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             updateDataset({
                 variables: {
                     datasetID,

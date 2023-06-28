@@ -26,7 +26,6 @@ import templateSchema from 'config/ai-verify.template.schema.json';
 import templateDataSchema from 'config/ai-verify.template.data.json';
 import widgetSchema from 'config/ai-verify.widget.schema.json';
 
-// const LAST_MODIFIED_KEY = "plugin:lastModified";
 const PLUGIN_SET_PREFIX = "plugin:list";
 
 import AIFPlugin, { AIFPluginCache, PluginComponentType } from 'src/types/plugin.interface';
@@ -47,7 +46,7 @@ export function readJSONFromFile(filepath: string, errorReturn: any = {}): any {
 export function readRequirementsFile(filepath: string): string[] | undefined {
   try {
     const text = fs.readFileSync(filepath).toString('utf8');
-    let ar = text.split(/\r?\n/).map(e => e.trim()).filter(e => e.length > 0)
+    const ar = text.split(/\r?\n/).map(e => e.trim()).filter(e => e.length > 0)
     return ar;
   } catch (e) {
     console.warn("Unable to read JSON from file", filepath);
@@ -173,12 +172,12 @@ export async function scanPluginDirectory(pdir: string, cached: AIFPluginCache |
   if (fs.existsSync(templates_subdir)) {
     const allfiles = fs.readdirSync(templates_subdir);
     const metaFiles = allfiles.filter(f => f.endsWith(metaSuffix));
-    let templates = [];
+    const templates = [];
     for (const metaFile of metaFiles) {
       // console.log("metaFile", metaFile)
       // read widget meta json
       const metaPath = path.join(templates_subdir, metaFile);
-      let template = readJSONFromFile(metaPath);
+      const template = readJSONFromFile(metaPath);
 
       template.type = PluginComponentType.Template;
       template.gid = `${pluginMeta.gid}:${template.cid}`; // auto set widget gid = <plugin gid>:<cid>
@@ -186,7 +185,7 @@ export async function scanPluginDirectory(pdir: string, cached: AIFPluginCache |
       template.pluginGID = pluginMeta.gid;
 
       const dataPath = path.join(templates_subdir, `${template.cid}.data.json`);
-      let data = readJSONFromFile(dataPath);
+      const data = readJSONFromFile(dataPath);
       data.fromPlugin = true;
       data.projectInfo = {
         name: template.name,
@@ -225,14 +224,14 @@ export async function scanPluginDirectory(pdir: string, cached: AIFPluginCache |
     // console.log("version", pluginMeta)
     const algodirs = fs.readdirSync(algo_subdir);
     // console.log("allfiles", algodirs)
-    let algorithms = [];
+    const algorithms = [];
     for (const cid of algodirs) {
       const mydir = path.join(algo_subdir, cid);
       // console.log("mydir", mydir)
       if (!fs.lstatSync(mydir).isDirectory())
         continue;
       const metaPath = path.join(mydir, `${cid}.meta.json`);
-      let algo = readJSONFromFile(metaPath);
+      const algo = readJSONFromFile(metaPath);
 
       algo.type = PluginComponentType.Algorithm;
       algo.gid = `${pluginMeta.gid}:${algo.cid}`; // auto set widget gid = <plugin gid>:<cid>
@@ -285,7 +284,7 @@ function validatePythonScript (scriptPath: string): Promise<void> {
       return reject("Script does not exists");
 
     try {
-      exec(`${python_cmd} ${python_script_checker} "${scriptPath}"`, (error, stdout, stderr) => {
+      exec(`${python_cmd} ${python_script_checker} "${scriptPath}"`, (error) => {
         if (error)
           return reject("Invalid python script");
         else
@@ -299,7 +298,7 @@ function validatePythonScript (scriptPath: string): Promise<void> {
 } 
 
 async function validateMDX (scriptPath: string): Promise<void> {
-  const result = await bundleMDX({
+  await bundleMDX({
 		// cwd: pluginPath,
 		file: scriptPath,
 		// globals: {'MyCheckbox':'MyCheckbox'},
@@ -324,35 +323,29 @@ async function validateMDX (scriptPath: string): Promise<void> {
 }
 
 async function validateSummary (scriptPath: string): Promise<void> {
-  const result = await bundleMDX({
-		// cwd: pluginPath,
+  await bundleMDX({
 		file: scriptPath,
 	})
-  // console.log("validateMDX result", result)
 }
 
 export function validatePluginDirectory(pdir: string): Promise<string> {
-  // console.log("validatePluginDirectory", pdir)
   return new Promise(async (resolve, reject) => {
     // read in the plugin meta file
     const pluginMeta = readJSONFromFile(path.join(pdir, pluginMetaFile));
-    let res = validator.validate(pluginMeta, pluginSchema);
+    const res = validator.validate(pluginMeta, pluginSchema);
     if (!res.valid) {
-      // console.error("Invalid plugin schema");
       return reject("Invalid plugin schema");
     }
 
-    const pluginKey = `${PLUGIN_SET_PREFIX}:${pluginMeta.gid}`;
     const widgets_subdir = path.join(pdir, "widgets");
     if (fs.existsSync(widgets_subdir)) {
       const allfiles = fs.readdirSync(widgets_subdir);
       const metaFiles = allfiles.filter(f => f.endsWith(metaSuffix));
       // pluginMeta.reportWidgets = [];
       for (const metaFile of metaFiles) {
-        // console.log("metaFile", metaFile)
         // read widget meta json
         const metaPath = path.join(widgets_subdir, metaFile);
-        let widget = readJSONFromFile(metaPath);
+        const widget = readJSONFromFile(metaPath);
         const res = validator.validate(widget, widgetSchema);
         if (!res.valid) {
           return reject("Invalid widget schema: " + res.errors);
@@ -369,7 +362,7 @@ export function validatePluginDirectory(pdir: string): Promise<string> {
 
         // read in mock data if any
         if (widget.mockdata) {
-          for (let mock of widget.mockdata) {
+          for (const mock of widget.mockdata) {
             const datapath = path.join(widgets_subdir, mock.datapath);
             const relative = path.relative(pdir, datapath);
             if (relative.startsWith(".")) {
@@ -394,7 +387,7 @@ export function validatePluginDirectory(pdir: string): Promise<string> {
         // console.log("metaFile", metaFile)
         // read widget meta json
         const metaPath = path.join(inputs_subdir, metaFile);
-        let widget = readJSONFromFile(metaPath);
+        const widget = readJSONFromFile(metaPath);
         const res = validator.validate(widget, inputBlockSchema);
         if (!res.valid) {
           return reject("Invalid input block schema: " + res.errors);
@@ -426,16 +419,15 @@ export function validatePluginDirectory(pdir: string): Promise<string> {
       const allfiles = fs.readdirSync(template_subdir);
       const metaFiles = allfiles.filter(f => f.endsWith(metaSuffix));
       for (const metaFile of metaFiles) {
-        // console.log("metaFile", metaFile)
         // read template meta json
         const metaPath = path.join(template_subdir, metaFile);
-        let template = readJSONFromFile(metaPath);
+        const template = readJSONFromFile(metaPath);
         const res = validator.validate(template, templateSchema);
         if (!res.valid) {
           return reject("Invalid template schema");
         }
         const dataPath = path.join(template_subdir, `${template.cid}.data.json`);
-        let data = readJSONFromFile(dataPath);
+        const data = readJSONFromFile(dataPath);
         const res2 = validator.validate(data, templateDataSchema as any);
         if (!res2.valid) {
           console.log("data validation failed", res2.errors)
@@ -447,28 +439,22 @@ export function validatePluginDirectory(pdir: string): Promise<string> {
 
     const algo_subdir = path.join(pdir, "algorithms");
     if (fs.existsSync(algo_subdir)) {
-      // console.log("check", python_script_checker, fs.existsSync(python_script_checker))
-      // console.log("algo_subdir", algo_subdir)
-      // console.log("version", pluginMeta)
       const algodirs = fs.readdirSync(algo_subdir);
-      // console.log("allfiles", algodirs)
       for (const cid of algodirs) {
         const mydir = path.join(algo_subdir, cid);
-        // console.log("mydir", mydir)
         if (!fs.lstatSync(mydir).isDirectory())
           continue;
         
         // read algorithm meta
         const metaPath = path.join(mydir, `${cid}.meta.json`);
-        let algo = readJSONFromFile(metaPath);
-        let res = validator.validate(algo, algoSchema);
+        const algo = readJSONFromFile(metaPath);
+        const res = validator.validate(algo, algoSchema);
         if (!res.valid) {
           return reject("Invalid algorithm schema");
         }
 
         // validate algo script
         const scriptPath = path.join(mydir, `${algo.cid}.py`)
-        // console.log("scriptPath", scriptPath)
         try {
           await validatePythonScript(scriptPath);
         } catch(e) {
@@ -491,14 +477,11 @@ export function validatePluginDirectory(pdir: string): Promise<string> {
         }
 
       }
-      // console.log("check algos", pluginMeta.algorithms)
     }
-    // cached._mymap[pluginMeta.gid] = pluginMeta;
-    // return pluginMeta;
 
     resolve(pluginMeta.gid);
   })
 
-} // validatePluginDirectory
+}
 
 

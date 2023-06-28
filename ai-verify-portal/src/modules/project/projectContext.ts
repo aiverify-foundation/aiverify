@@ -7,7 +7,7 @@ const validator = new Validator();
 import { ProjectTemplateStore, useProjectTemplateStore, GenericMap, MapActions, DEBOUNCE_WAIT, DataUpdateActions } from '../projectTemplate/projectTemplateContext';
 export * from '../projectTemplate/projectTemplateContext'; 
 // import ProjectTemplate, { ProjectInformation, Page, ReportWidgetItem, GlobalVariable } from 'src/types/projectTemplate.interface';
-import Project, { Report, ProjectReportStatus, ModelAndDatesetsFileNames, ModelAndDatasets } from 'src/types/project.interface';
+import Project, { Report, ProjectReportStatus, ModelAndDatasets } from 'src/types/project.interface';
 // import { InputBlock, Algorithm } from 'src/types/plugin.interface';
 import { TestInformation } from 'src/types/test.interface';
 // import { WidgetProperties, useWidgetProperties } from 'src/lib/canvasUtils';
@@ -49,7 +49,7 @@ export function useProjectStore(data: Project, pluginManager: PluginManagerType)
 	/** create the reducers */
 
 	const requireGroundTruth = useMemo<boolean>(() => {
-		for (let algo of templateStore.dependencies.algorithms) {
+		for (const algo of templateStore.dependencies.algorithms) {
 			if (_.isNil(algo.requireGroundTruth)) // default true
 				return true;
 			if (algo.requireGroundTruth)
@@ -66,7 +66,7 @@ export function useProjectStore(data: Project, pluginManager: PluginManagerType)
 			// console.log("Updating page", id, pages);
 			if (!id || id.length == 0)
 				return;
-			updateProjectFn(id, { inputBlockData: state }).then(proj => {
+			updateProjectFn(id, { inputBlockData: state }).then(() => {
 				// console.log("updated proj", proj);
 				templateStore.setLastSavedTime(moment());
 			}).catch(err => {
@@ -107,7 +107,7 @@ export function useProjectStore(data: Project, pluginManager: PluginManagerType)
 				}
 			}) as any[]
 			// console.log("testInformationArray", testInformationArray)
-			updateProjectFn(id, { testInformationData: testInformationArray }).then(proj => {
+			updateProjectFn(id, { testInformationData: testInformationArray }).then(() => {
 				// console.log("updated proj", proj);
 				templateStore.setLastSavedTime(moment());
 			}).catch(err => {
@@ -137,7 +137,7 @@ export function useProjectStore(data: Project, pluginManager: PluginManagerType)
 				groundTruthDatasetId: state.groundTruthDataset?state.groundTruthDataset.id:undefined,
 				groundTruthColumn: state.groundTruthColumn,
 			}
-			updateProjectFn(id, { modelAndDatasets }).then(proj => {
+			updateProjectFn(id, { modelAndDatasets }).then(() => {
 				templateStore.setLastSavedTime(moment());
 			}).catch(err => {
 				console.error("Update Info error:", err);
@@ -194,13 +194,11 @@ export function useProjectStore(data: Project, pluginManager: PluginManagerType)
 			const project = {
 				projectInfo: templateStore.projectInfo,
 			}
-			// console.log("create project", project)
 			createProjectFromTemplateFn(project, templateId).then((doc: Partial<Project>) => {
-				// console.log("New project id", result)
 				templateStore.setId(doc.id);
 				templateStore.setIsNew(false);
 				templateStore.setLastSavedTime(moment())
-				resolve(doc.id!);
+				resolve(doc.id as string);
 			}).catch(err => {
 				reject(err);
 			})
@@ -211,11 +209,9 @@ export function useProjectStore(data: Project, pluginManager: PluginManagerType)
 	const generateReportFn = useGenerateReport();
 	const generateReport = (algorithms: string[]) => {
 		return new Promise<Partial<Report>>((resolve, reject) => {
-			// console.log("create project", project)
 			flushAllUpdates();
 			setReportStatus(ProjectReportStatus.GeneratingReport)
-			generateReportFn(templateStore.id!, algorithms).then((result: Partial<Report>) => {
-				// console.log("New project id", result)
+			generateReportFn(templateStore.id as string, algorithms).then((result: Partial<Report>) => {
 				resolve(result);
 			}).catch(err => {
 				reject(err);
@@ -228,7 +224,7 @@ export function useProjectStore(data: Project, pluginManager: PluginManagerType)
 	const cancelTestRuns = (algorithms: string[]) => {
 		return new Promise<Report>((resolve, reject) => {
 			// console.log("create project", project)
-			cancelTestRunsFn(templateStore.id!, algorithms).then((result: Report) => {
+			cancelTestRunsFn(templateStore.id as string, algorithms).then((result: Report) => {
 				// console.log("New project id", result)
 				resolve(result);
 			}).catch(err => {
@@ -246,7 +242,7 @@ export function useProjectStore(data: Project, pluginManager: PluginManagerType)
 	// flush all updates
 	const flushAllUpdates = (): void => {
 		templateStore.flushAllUpdates();
-		for (let fn of _allDebounceFns) {
+		for (const fn of _allDebounceFns) {
 			fn.flush();
 		}
 	}

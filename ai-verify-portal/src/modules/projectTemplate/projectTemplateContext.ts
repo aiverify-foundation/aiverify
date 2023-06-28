@@ -106,9 +106,7 @@ export interface ProjectTemplateStore {
  * Represents the project context to be passed to child components
  */
 export const DEBOUNCE_WAIT = 5000; // in ms
-export function useProjectTemplateStore(data: ProjectTemplate, pluginManager: PluginManagerType, projectMode:boolean = false): ProjectTemplateStore {
-	// const widgetProperties = useWidgetProperties(data);
-	// var isNew: boolean = !!!data.id;
+export function useProjectTemplateStore(data: ProjectTemplate, pluginManager: PluginManagerType, projectMode = false): ProjectTemplateStore {
 	const [ isNew, setIsNew ] = useState<boolean>(!!!data.id);
 	const [ id, setId ] = useState<string|undefined>(data.id);
 	const [ lastSavedTime, setLastSavedTime ] = useState<moment.Moment|null>(null)
@@ -262,8 +260,8 @@ export function useProjectTemplateStore(data: ProjectTemplate, pluginManager: Pl
 			if (isNew) // project create don't update first
 				return;
 			// console.log("sending info update to api");
-			let data = _.pick(state, [ "name", "description", "reportTitle", "company" ]);
-			updateProjectFn(id, { projectInfo:data }).then(proj => {
+			const data = _.pick(state, [ "name", "description", "reportTitle", "company" ]);
+			updateProjectFn(id, { projectInfo:data }).then(() => {
 				// console.log("updated proj", proj);
 				setLastSavedTime(moment());
 			}).catch(err => {
@@ -332,7 +330,7 @@ export function useProjectTemplateStore(data: ProjectTemplate, pluginManager: Pl
 				}) as ReportWidgetItem[]
 				return data;
 			}) as Page[]
-			updateProjectFn(id, { pages:_pages }).then(proj => {
+			updateProjectFn(id, { pages:_pages }).then(() => {
 				// console.log("updated proj", proj);
 				setLastSavedTime(moment());
 			}).catch(err => {
@@ -358,7 +356,7 @@ export function useProjectTemplateStore(data: ProjectTemplate, pluginManager: Pl
 			const _globalVars = globalVars.map(item => {
 				return _.pick(item, [ "key", "value" ]);
 			}) as GlobalVariable[]
-			updateProjectFn(id, { globalVars:_globalVars }).then(proj => {
+			updateProjectFn(id, { globalVars:_globalVars }).then(() => {
 				// console.log("updated proj", proj);
 				setLastSavedTime(moment());
 			}).catch(err => {
@@ -380,14 +378,14 @@ export function useProjectTemplateStore(data: ProjectTemplate, pluginManager: Pl
 	});
 
 	const [dependency2ReportWidgetsMap, setDependency2ReportWidgetsMap] = useState<dependency2ReportWidgetsMapType>(() => {
-		let mymap = {} as dependency2ReportWidgetsMapType;
-		for (let page of data.pages) {
-			for (let item of page.reportWidgets) {
+		const mymap = {} as dependency2ReportWidgetsMapType;
+		for (const page of data.pages) {
+			for (const item of page.reportWidgets) {
 				if (item.widget && item.widget.dependencies) {
-					for (let dep of item.widget.dependencies) {
+					for (const dep of item.widget.dependencies) {
 						// console.log("dep", dep);
 						if (mymap[dep.gid]) {
-							let item2 = mymap[dep.gid].find(e => e.key === item.key) as ReportWidgetItem|undefined;
+							const item2 = mymap[dep.gid].find(e => e.key === item.key) as ReportWidgetItem|undefined;
 							if (!item2) {
 								mymap[dep.gid].push(item);
 							}
@@ -460,7 +458,7 @@ export function useProjectTemplateStore(data: ProjectTemplate, pluginManager: Pl
 		if (!reportWidget.widget.dependencies || reportWidget.widget.dependencies.length == 0)
 			return;
 		let ibMap = null as dependency2ReportWidgetsMapType|null;
-		for (let dep of reportWidget.widget.dependencies) {
+		for (const dep of reportWidget.widget.dependencies) {
 			let comp = pluginManager.inputBlocks.find(e => e.gid === dep.gid) as any;
 			if (!comp) {
 				comp = pluginManager.algorithms.find(e => e.gid === dep.gid);
@@ -521,12 +519,12 @@ export function useProjectTemplateStore(data: ProjectTemplate, pluginManager: Pl
     const page = pages[pageIdx];
 		let ibMap = null as dependency2ReportWidgetsMapType|null;
 		// let tmpInputBlocks = null as InputBlock[] | null; 
-    for (let reportWidget of page.reportWidgets) {
+    for (const reportWidget of page.reportWidgets) {
 			if (!reportWidget.widget)
 				continue;
       if (!reportWidget.widget.dependencies || reportWidget.widget.dependencies.length == 0)
 				continue;
-			for (let dep of reportWidget.widget.dependencies) {
+			for (const dep of reportWidget.widget.dependencies) {
 				if (!dependency2ReportWidgetsMap[dep.gid]) {
 					continue;
 				}
@@ -573,9 +571,7 @@ export function useProjectTemplateStore(data: ProjectTemplate, pluginManager: Pl
 				projectInfo,
 				pages: [],
 			}
-			// console.log("create project", project)
 			createProjectTemplateFn(project).then((result: string) => {
-				// console.log("New project id", result)
 				setId(result);
 				setIsNew(false);
 				setLastSavedTime(moment())
@@ -590,10 +586,8 @@ export function useProjectTemplateStore(data: ProjectTemplate, pluginManager: Pl
 	const saveProjectAsTemplateFn = useSaveProjectAsTemplate();
 	const saveProjectAsTemplate = (templateInfo: ProjectInformation) => {
 		return new Promise<string>((resolve, reject) => {
-			// console.log("create project", project)
-			saveProjectAsTemplateFn(id!, templateInfo).then((result: ProjectTemplate) => {
-				// console.log("New project id", result)
-				resolve(result.id!);
+			saveProjectAsTemplateFn(id as string, templateInfo).then((result: ProjectTemplate) => {
+				resolve(result.id as string);
 			}).catch(err => {
 				reject(err);
 			})
@@ -602,7 +596,7 @@ export function useProjectTemplateStore(data: ProjectTemplate, pluginManager: Pl
 	}
 
 	const exportTemplate = (pluginGID: string, templateCID: string) => {
-		return myexportTemplate(id!, pluginGID, templateCID);
+		return myexportTemplate(id as string, pluginGID, templateCID);
 	}
 
 	const _allDebounceFns = [
@@ -613,7 +607,7 @@ export function useProjectTemplateStore(data: ProjectTemplate, pluginManager: Pl
 
 	// flush all updates
 	const flushAllUpdates = (): void => {
-		for (let fn of _allDebounceFns) {
+		for (const fn of _allDebounceFns) {
 			fn.flush();
 		}
 	}

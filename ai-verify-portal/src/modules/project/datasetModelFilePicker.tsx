@@ -34,8 +34,6 @@ function DatasetModelFilePicker(props: DatasetModelFileSelectorProps) {
 
   const [ showNewDataset, setShowNewDataset ] = useState(false);
   const [ showNewModel, setShowNewModel ] = useState(false);
-  const [ showNewModelUpload, setShowNewModelUpload ] = useState(false);
-  const [ showNewPipelineUpload, setShowNewPipelineUpload ] = useState(false);
 
   function handleNewDatasetBtnClick() {
     setShowNewDataset(true);

@@ -172,10 +172,10 @@ export default function DisplayReportWidgets (props: PropsWithChildren<DisplayRe
           {
             widget.properties || widget.mockdata ? 
               <div className={styles.footerBtnGroup}>
-                <button className="aivBase-button aivBase-button--outlined aivBase-button--small" onClick={e => handleClickSelectedProperties(widget)}>
+                <button className="aivBase-button aivBase-button--outlined aivBase-button--small" onClick={() => handleClickSelectedProperties(widget)}>
                   Properties
                 </button>
-                <button className="aivBase-button aivBase-button--outlined aivBase-button--small" onClick={e => handleClickSelectedMockData(widget)}>
+                <button className="aivBase-button aivBase-button--outlined aivBase-button--small" onClick={() => handleClickSelectedMockData(widget)}>
                   Sample Data
                 </button>
               </div> : null
@@ -204,49 +204,3 @@ export default function DisplayReportWidgets (props: PropsWithChildren<DisplayRe
     </div>
   )
 }
-
-{/* <Stack id="plugin-reportWidget-list">
-        {plugin.reportWidgets.map(widget => (
-          <Box key={`widget-${widget.gid}`} sx={{ mt:1, p:2, boxShadow: 1, borderRadius:1, bgcolor:'background.paper', display:'flex', flexDirection:'column' }}>
-            <Typography variant="title3">{widget.name}</Typography>
-            <Typography variant="body1">{widget.description}</Typography>
-            <Typography variant="body1"><b>CID: </b> {widget.cid}</Typography>
-            <Typography variant="body1"><b>GID: </b> {widget.gid}</Typography>
-            <Typography variant="body1"><b>Status: </b> {widget.status}</Typography>
-            <Typography variant="body1"><b>Widget Size Min Units (WxH): </b> {widget.widgetSize?.minW}x{widget.widgetSize?.minH}</Typography>
-            <Typography variant="body1"><b>Widget Size Max Units (WxH): </b> {widget.widgetSize?.maxW}x{widget.widgetSize?.maxH}</Typography>
-            {widget.tags && (<Typography variant="body1"><b>Tags:</b> {widget.tags.join(", ")}</Typography>)}
-            {widget.dependencies && (
-              <React.Fragment>
-                <Typography sx={{ fontWeight:'bold' }}>Dependencies</Typography>
-                <List dense={true} sx={{ listStyleType: 'disc', pl: 2, pt: 0 }}>
-                  {widget.dependencies.map(dep => (
-                    <ListItem key={`tooltip-dep-${widget.gid}-${dep.gid}`} disablePadding sx={{ display: 'list-item' }}>
-                      {dep.valid ? (
-                        <Link href="#" color="inherit">{dep.gid}</Link>
-                      ) : (
-                        <Typography component="span" fontSize="inherit" color="warning.light">{dep.gid}</Typography>
-                      )}
-                      {dep.version && <Typography component="span">, version {dep.version}</Typography>}
-                    </ListItem>
-                  ))}
-                </List>
-              </React.Fragment>
-            )}
-            {(widget.properties || widget.mockdata) && (
-              <Box sx={{ mt:1 }}>
-                {widget.properties && (
-                  <Button startIcon={<SettingsIcon/>} size="small" variant="contained" color="secondary" sx={{ mr:1 }} onClick={e => handleClickSelectedProperties(widget)}>
-                    Properties
-                  </Button>
-                )}
-                {widget.mockdata && (
-                  <Button startIcon={<DataObjectIcon/>} size="small" variant="contained" color="secondary" sx={{ mr:1 }} onClick={e => handleClickSelectedMockData(widget)}>
-                    Sample Data
-                  </Button>
-                )}
-              </Box>
-            )}
-          </Box>
-        ))}
-      </Stack> */}

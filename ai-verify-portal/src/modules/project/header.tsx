@@ -25,7 +25,7 @@ type ReportsHeaderProps = {
   disableNextBtn?: boolean;
   isTemplate?: boolean;
   designStep: number;
-  onNextBtnClick: () => void;
+  onNextBtnClick?: () => void;
   onBackBtnClick: () => void;
 }
 

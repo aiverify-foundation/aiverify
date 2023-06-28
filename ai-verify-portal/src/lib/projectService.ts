@@ -1,5 +1,4 @@
 import { ApolloError, gql, useMutation, useSubscription, } from "@apollo/client";
-
 import Project, { ProjectInput, Report } from 'src/types/project.interface';
 import ProjectTemplate, { ProjectInformation } from "src/types/projectTemplate.interface";
 
@@ -44,7 +43,7 @@ mutation Mutation($project: ProjectInput!) {
  */
 type CreateProjectFunction = (project: Partial<Project>) => Promise<string>  
 export const useCreateProject = (): CreateProjectFunction => {
-    const [createProject, { data, loading, error }] = useMutation(CREATE_PROJECT);
+    const [createProject] = useMutation(CREATE_PROJECT);
     const fn = (project: Partial<Project>): Promise<string> => {
         return new Promise((resolve, reject) => {
             createProject({
@@ -112,7 +111,7 @@ mutation Mutation($project: ProjectInput!, $templateId: String!) {
  */
 type CreateProjectFromTemplateFunction = (project: Partial<Project>, id: string) => Promise<Partial<Project>>  
 export const useCreateProjectFromTemplate = (): CreateProjectFromTemplateFunction => {
-    const [createProjectFromTemplate, { data, loading, error }] = useMutation(CREATE_PROJECT_FROM_TEMPLATE);
+    const [createProjectFromTemplate] = useMutation(CREATE_PROJECT_FROM_TEMPLATE);
     const fn = (project: Partial<Project>, templateId: string): Promise<Partial<Project>> => {
         return new Promise((resolve, reject) => {
             createProjectFromTemplate({
@@ -239,8 +238,8 @@ mutation Mutation($id: ObjectID!, $project: ProjectInput!) {
  */
 type UpdateProjectFunction = (id: string, project: Partial<ProjectInput>) => Promise<string>  
 export const useUpdateProject = (): UpdateProjectFunction => {
-    const [updateProject, { data, loading, error }] = useMutation(UPDATE_PROJECT);
-    const fn = (id: string, project: Partial<Project>): Promise<string> => {
+    const [updateProject] = useMutation(UPDATE_PROJECT);
+    const fn = (id: string, project: Partial<ProjectInput>): Promise<string> => {
         return new Promise((resolve, reject) => {
             updateProject({
                 variables: {
@@ -252,7 +251,7 @@ export const useUpdateProject = (): UpdateProjectFunction => {
             })    
         })
     }
-    //@ts-ignore
+    
     return fn;
 }
 
@@ -269,7 +268,7 @@ mutation Mutation($id: ObjectID!) {
  */
  type deleteProjectFunction = (id: string) => Promise<string>  
  export const useDeleteProject = (): deleteProjectFunction => {
-     const [deleteProject, { data, loading, error }] = useMutation(DELETE_PROJECT);
+     const [deleteProject] = useMutation(DELETE_PROJECT);
      const fn = (id: string): Promise<string> => {
          return new Promise((resolve, reject) => {
             deleteProject({
@@ -345,7 +344,7 @@ mutation Mutation($id: ObjectID!) {
  */
 type cloneProjectFunction = (id: string) => Promise<Project>  
 export const useCloneProject = (): cloneProjectFunction => {
-    const [cloneProject, { data, loading, error }] = useMutation(CLONE_PROJECT);
+    const [cloneProject] = useMutation(CLONE_PROJECT);
     const fn = (id: string): Promise<Project> => {
         return new Promise((resolve, reject) => {
             cloneProject({
@@ -377,7 +376,7 @@ mutation Mutation($projectId: ObjectID!, $templateInfo:ProjectInformationInput!)
  */
 type saveProjectAsTemplateFunction = (projectId: string, templateInfo: ProjectInformation) => Promise<ProjectTemplate>  
 export const useSaveProjectAsTemplate = (): saveProjectAsTemplateFunction => {
-    const [saveProjectAsTemplate, { data, loading, error }] = useMutation(SAVE_PROJECT_AS_TEMPLATE);
+    const [saveProjectAsTemplate] = useMutation(SAVE_PROJECT_AS_TEMPLATE);
     const fn = (projectId: string, templateInfo: ProjectInformation): Promise<ProjectTemplate> => {
         return new Promise((resolve, reject) => {
             saveProjectAsTemplate({
@@ -410,7 +409,7 @@ mutation Mutation($projectID: ObjectID!, $algorithms: [String]!) {
  */
  type generateReportFunction = (projectID: string, algorithms: string[]) => Promise<Partial<Report>>  
  export const useGenerateReport = (): generateReportFunction => {
-     const [generateReport, { data, loading, error }] = useMutation(GENERATE_REPORT);
+     const [generateReport] = useMutation(GENERATE_REPORT);
      const fn = (projectID: string, algorithms: string[]): Promise<Partial<Report>> => {
          return new Promise((resolve, reject) => {
             generateReport({
@@ -450,7 +449,7 @@ mutation Mutation($projectID: ObjectID!, $algorithms: [String]!) {
  */
  type cancelTestRunsFunction = (projectID: string, algorithms: string[]) => Promise<Report>  
  export const useCancelTestRuns = (): cancelTestRunsFunction => {
-     const [cancelTestRuns, { data, loading, error }] = useMutation(CANCEL_TEST_RUNS);
+     const [cancelTestRuns] = useMutation(CANCEL_TEST_RUNS);
      const fn = (projectID: string, algorithms: string[]): Promise<Report> => {
          return new Promise((resolve, reject) => {
             cancelTestRuns({

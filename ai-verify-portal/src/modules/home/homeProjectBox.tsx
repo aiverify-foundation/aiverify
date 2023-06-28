@@ -138,7 +138,7 @@ function ProjectStatus({
 export default function ProjectBox ({project, onDeleteProject, onCloneProject}: ProjectBoxProps) {
 	const router = useRouter()
 	const [ report, setReport ] = useState<Report | undefined>(project.report);
-	const [ updatedReport, updatedReportLoading ] = useSubscribeReportStatusUpdated(project.id!);
+	const [ updatedReport, updatedReportLoading ] = useSubscribeReportStatusUpdated(project.id as string);
 	const [ showDeleteConfirmation, setShowDeleteConfirmation ] = useState<boolean>(false);
 	const [ lastModifiedDateDisplay, setLastModifiedDateDisplay ] = useState<string>('');
 	let reportAlgorithmGIDs: string[] = [];

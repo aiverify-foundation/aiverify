@@ -9,7 +9,6 @@ import { ReportStatusNotification } from '../types';
 function CardReportStatus(props: SpecializedCardProps<ReportStatusNotification>) {
   const { notification, showMsgBody = false } = props;
   const {
-    title,
     subject,
     body,
     projectId,

@@ -10,10 +10,8 @@ import { Algorithm, InputBlock } from 'src/types/plugin.interface';
 import { BaseMuiAccordionSummary } from 'src/components/baseMuiAccordionSummary';
 import { GlobalVar, GlobalVars } from './globalVars';
 import { AlertType, StandardAlert } from 'src/components/standardAlerts';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import produce from 'immer';
 import styles from './styles/rightpanel.module.css';
-import { ListMenu, ListMenuItem } from 'src/components/listMenu';
 
 type RightPanelProps = {
   projectStore: ProjectTemplateStore;
@@ -23,11 +21,6 @@ type DisplayDependancyProps = {
   id: string;
   listNum?: number;
   dependency: InputBlock | Algorithm;
-}
-
-type MoreMenuProps<T> = {
-  items: T[];
-  onItemClick: (id: string) => void;
 }
 
 const AccordionId = {
@@ -49,81 +42,6 @@ function DependencyDetails({ id, dependency, listNum }: DisplayDependancyProps) 
   )
 }
 
-function MoreMenu(props: MoreMenuProps<Algorithm | InputBlock>) {
-  const { items, onItemClick } = props;
-  const menuTimer = useRef<NodeJS.Timeout>();
-  const [showMenu, setShowMenu] = useState(false);
-
-  function delayHideMenu() {
-    menuTimer.current = setTimeout(() => {
-      setShowMenu(false);
-    }, 300);
-  }
-
-  function cancelMenuTimer() {
-    if (menuTimer.current) {
-      clearTimeout(menuTimer.current);
-    }
-  }
-
-  function handleIconMouseEnter() {
-    cancelMenuTimer();
-    setShowMenu(true);
-  }
-
-  function handleIconMouseLeave() {
-    delayHideMenu();
-  }
-
-  function handleMenuMouseEnter() {
-    cancelMenuTimer();
-  }
-
-  function handleMenuMouseLeave() {
-    delayHideMenu();
-  }
-
-  function handleMenuItemClick(id: string) {
-    return () => {
-      onItemClick(id);
-      setShowMenu(false);
-    }
-  }
-
-  return <div style={{
-    display: 'flex',
-    position: 'relative',
-    width: '100%',
-    zIndex: 102,
-    justifyContent: 'flex-start'
-  }}>
-    <MoreHorizIcon
-      style={{ cursor: 'pointer', marginLeft: '5px', marginTop: '2px', color: '#702F8A'}}
-      onMouseEnter={handleIconMouseEnter}
-      onMouseLeave={handleIconMouseLeave}
-    />
-    {showMenu ? 
-      <ListMenu
-        containerStyles={{
-          position: 'absolute',
-          top: '25px',
-          left: '10px',
-          zIndex: 1000,
-        }}
-        onMouseEnter={handleMenuMouseEnter}
-        onMouseLeave={handleMenuMouseLeave}>
-        {items.map(item => 
-          <ListMenuItem
-            key={item.gid}
-            id={item.gid}
-            displayText={item.name}
-            onClick={handleMenuItemClick(item.gid)}
-            style={{ fontSize: '14px'}} />
-          )}
-      </ListMenu> : null
-    }
-  </div>
-}
 
 function DesignerRightPanel(props: PropsWithChildren<RightPanelProps>) {
   const {
@@ -160,13 +78,7 @@ function DesignerRightPanel(props: PropsWithChildren<RightPanelProps>) {
     projectStore.dispatchGlobalVars({ type: ARUActionTypes.REMOVE, index })
   }
 
-  function handleAlgoMenuItemClick(algoId: string) {
-    document.getElementById(`algo-${algoId}`)?.scrollIntoView({ behavior: 'smooth'});
-  }
 
-  function handleIBlockMenuItemClick(iblockId: string) {
-    document.getElementById(`algo-${iblockId}`)?.scrollIntoView({ behavior: 'smooth'});
-  }
 
   const handleOnGlobalVarsExpandedChange = useCallback((e: React.SyntheticEvent, expanded: boolean) => {
     setTimeout(() => {

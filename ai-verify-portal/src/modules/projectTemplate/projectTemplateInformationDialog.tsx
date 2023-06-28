@@ -5,13 +5,12 @@ import { ProjectTemplateStore } from './projectTemplateContext';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'; // TODO - use other svg and remove dependency on Material icons
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import MyTextField from 'src/components/myTextField';
-import { 
+import {
   AlertBox,
   AlertBoxFixedPositions,
   AlertBoxSize,
 } from 'src/components/alertBox';
 import styles from './styles/dialogs.module.css';
-import { truncate } from 'lodash';
 
 type ProjectTemplateInformationDialogProps = {
   projectStore: ProjectTemplateStore,

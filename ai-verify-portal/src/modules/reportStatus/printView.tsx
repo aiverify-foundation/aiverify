@@ -4,10 +4,8 @@ import GridLayout from "react-grid-layout";
 
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-// import Paper from '@mui/material/Paper';
 
 import { MAX_ROWS, ROW_HEIGHT, WIDTH } from 'src/lib/reportUtils';
-// import { ReportDataContext, ReportDataContextType } from 'ai-verify-shared-library/lib';
 import { getItemLayoutProperties, useWidgetProperties } from 'src/lib/canvasUtils';
 import { ReportWidgetItem, } from 'src/types/projectTemplate.interface';
 import { Report } from 'src/types/project.interface';
@@ -31,9 +29,9 @@ export default function PrintViewModule({ report, mdxBundleMap }: Props) {
   const [widgetComps, setWidgetComps] = useState<any|null>(null);
 
   useEffect(() => {
-    let result = {} as any;
+    const result = {} as any;
     if (report.tests) {
-      for (let test of report.tests) {
+      for (const test of report.tests) {
         if (test.status == TestEngineTaskStatus.Success)
           result[test.algorithmGID] = test.output;
         else
@@ -53,16 +51,14 @@ export default function PrintViewModule({ report, mdxBundleMap }: Props) {
         getWidget(reportWidget, layout, widgetComps, result)
       }
     }
-    // console.log("reportContext", reportContext);
     setWidgetComps(widgetComps);
-    // setReportContext(reportContext);
   }, [])
 
   const getWidget = (reportWidget: ReportWidgetItem, layoutItem: any, widgetComps: any, result: any) => {
     console.log("getWidget", reportWidget)
-    let properties: any = {};
+    const properties: any = {};
     if (reportWidget.properties) {
-      for (let key of Object.keys(reportWidget.properties)) {
+      for (const key of Object.keys(reportWidget.properties)) {
         // properties2[key] = reportWidget.properties[key];
         properties[key] = widgetProperties.getProperty(reportWidget.properties[key]);
       }

@@ -12,7 +12,6 @@ import AdmZip from 'adm-zip';
 
 import { installPlugin } from 'server/pluginManager';
 
-// const TEMP_DIR = './temp';
 const TEMP_DIR = os.tmpdir();
 
 if (!existsSync(TEMP_DIR)) {
@@ -34,12 +33,10 @@ function deleteTempFiles(files: formidable.Files) {
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const form = new formidable.IncomingForm({
     uploadDir: TEMP_DIR,
-    // keepExtensions: true,
     allowEmptyFiles: false,
     maxFileSize: 500*1024*1024, // 500mb
   });
   form.parse(req, async (err, _fields, files) => {
-    // console.log("uploaded", err, files);
     if (err) {
       deleteTempFiles(files);
       return res.status(500).end()
@@ -50,21 +47,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).end();
     }
 
-    let file = files.myFile as any;
-    // console.log("isSingle", file)
+    const file = files.myFile as formidable.File;
 
-    let tmpdir = path.join(TEMP_DIR, `plugin_${file.newFilename}`);
+    const tmpdir = path.join(TEMP_DIR, `plugin_${file.newFilename}`);
     try {
       let tmpPluginPath = tmpdir;
       const zip = new AdmZip(file.filepath);
-      let zipEntries = zip.getEntries();
+      const zipEntries = zip.getEntries();
       let found = false;
-      for (let entry of zipEntries) {
+      for (const entry of zipEntries) {
         // console.log("entry", entry.isDirectory, entry.entryName);
         // check if any subdir
         if (entry.isDirectory && (entry.entryName.endsWith("inputs/") || entry.entryName.endsWith("widgets/") || entry.entryName.endsWith("algorithms/") || entry.entryName.endsWith("templates/"))) {
           found = true;
-          let ret = entry.entryName.match(/^(.+)\/(inputs|widgets|algorithms|templates)\//)
+          const ret = entry.entryName.match(/^(.+)\/(inputs|widgets|algorithms|templates)\//)
           // console.log("ret", ret)
           if (ret) {
             tmpPluginPath = path.join(tmpPluginPath, ret[1])

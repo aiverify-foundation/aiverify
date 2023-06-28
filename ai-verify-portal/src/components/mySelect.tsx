@@ -1,23 +1,23 @@
 import * as React from 'react';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import FormControl from '@mui/material/FormControl';
 import Typography from '@mui/material/Typography';
 import FormHelperText from '@mui/material/FormHelperText';
 import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
+import Select, { SelectProps } from '@mui/material/Select';
+import { SxProps } from '@mui/material';
 
 type Props = {
   title?: string,
   description?: string,
   id?: string,
-  inputProps?: any,
+  inputProps?: SelectProps<string>,
   errorText?: string|null,
-  FormControlProps?: any,
-  items: any,
+  FormControlProps?: {sx?: SxProps},
+  items: string[],
   isDisabled?: boolean,
 }
 
-function MySelect ({ title, description, id, inputProps={}, FormControlProps={}, errorText, items={}, isDisabled}: Props) {
+function MySelect ({ title, description, id, inputProps={}, FormControlProps={}, errorText, items=[], isDisabled}: Props) {
   return (
     <FormControl
       fullWidth

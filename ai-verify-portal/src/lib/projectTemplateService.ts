@@ -38,7 +38,7 @@ mutation Mutation($projectTemplate: ProjectTemplateInput!) {
  */
 type CreateProjectFunction = (projectTemplate: Partial<ProjectTemplate>) => Promise<string>
 export const useCreateProjectTemplate = (): CreateProjectFunction => {
-  const [createProjectTemplate, { data, loading, error }] = useMutation(CREATE_PROJECT_TEMPLATE);
+  const [createProjectTemplate] = useMutation(CREATE_PROJECT_TEMPLATE);
   const fn = (projectTemplate: Partial<ProjectTemplate>): Promise<string> => {
     return new Promise((resolve, reject) => {
       createProjectTemplate({
@@ -109,7 +109,7 @@ mutation Mutation($id: ObjectID!, $projectTemplate: ProjectTemplateInput!) {
  */
 type UpdateProjectTemplateFunction = (id: string, projectTemplate: Partial<ProjectTemplate>) => Promise<string>
 export const useUpdateProjectTemplate = (): UpdateProjectTemplateFunction => {
-  const [updateProjectTemplate, { data, loading, error }] = useMutation(UPDATE_PROJECT_TEMPLATE);
+  const [updateProjectTemplate] = useMutation(UPDATE_PROJECT_TEMPLATE);
   const fn = (id: string, projectTemplate: Partial<ProjectTemplate>): Promise<string> => {
     return new Promise((resolve, reject) => {
       updateProjectTemplate({
@@ -138,7 +138,7 @@ mutation Mutation($id: ObjectID!) {
  */
 type deleteProjectFunction = (id: string) => Promise<string>
 export const useDeleteProjectTemplate = (): deleteProjectFunction => {
-  const [deleteProjectTemplate, { data, loading, error }] = useMutation(DELETE_PROJECT_TEMPLATE);
+  const [deleteProjectTemplate] = useMutation(DELETE_PROJECT_TEMPLATE);
   const fn = (id: string): Promise<string> => {
     return new Promise((resolve, reject) => {
       deleteProjectTemplate({
@@ -206,7 +206,7 @@ mutation Mutation($id: ObjectID!) {
  */
 type cloneProjectTemplateFunction = (id: string) => Promise<ProjectTemplate>
 export const useCloneProjectTemplate = (): cloneProjectTemplateFunction => {
-  const [cloneProjectTemplate, { data, loading, error }] = useMutation(CLONE_PROJECT_TEMPLATE);
+  const [cloneProjectTemplate] = useMutation(CLONE_PROJECT_TEMPLATE);
   const fn = (id: string): Promise<ProjectTemplate> => {
     return new Promise((resolve, reject) => {
       cloneProjectTemplate({
@@ -240,8 +240,7 @@ export function exportTemplate(templateId: string, pluginGID: string, templateCI
         const content = res.headers.get("content-disposition");
         if (!content)
           return reject("Missing content-deposition header");
-        const found = content!.match(/attachment;\s*filename=(.+)/i)
-        // console.log("found", found);
+        const found = content.match(/attachment;\s*filename=(.+)/i)
         if (!found)
           return reject("Missing content-deposition filename");
         const filename = found[1];
@@ -255,7 +254,8 @@ export function exportTemplate(templateId: string, pluginGID: string, templateCI
         document.body.removeChild(link);
         resolve('ok');
     }).catch(err => {
-      reject("Fetch Error")
+      console.log(err);
+      reject("Fetch Error");
     })
   });
 } 

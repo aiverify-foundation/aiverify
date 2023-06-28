@@ -60,11 +60,9 @@ export function useWidgetProperties({ projectInfo, globalVars }: WidgetPropertie
   }, [projectInfo, globalVars])
 
   const getProperty = (prop: string) => {
-    let m = prop.match(/^\{(.+)\}$/);
-    if (m) {
-      // console.log("match", m)
-      // console.log("combinedGlobalVars", combinedGlobalVars)
-      let found = combinedGlobalVars.find(e => e.key === m![1])
+    const match = prop.match(/^\{(.+)\}$/);
+    if (match) {
+      const found = combinedGlobalVars.find(e => e.key === match[1])
       if (found)
         return found.value;
       else
@@ -75,7 +73,6 @@ export function useWidgetProperties({ projectInfo, globalVars }: WidgetPropertie
   }
 
   return {
-    // setData,
     combinedGlobalVars,
     getProperty,
   }

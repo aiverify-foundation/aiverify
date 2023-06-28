@@ -1,18 +1,11 @@
 import React, { useState } from 'react';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
 import { v4 as uuidv4 } from 'uuid';
 import { ProjectTemplateStore } from './projectTemplateContext';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'; // TODO - use other svg and remove dependency on Material icons
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import MyTextField from 'src/components/myTextField';
-import { 
+import {
   AlertBox,
   AlertBoxFixedPositions,
   AlertBoxSize,

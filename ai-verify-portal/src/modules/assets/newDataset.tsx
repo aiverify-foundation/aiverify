@@ -35,7 +35,7 @@ import TableRow from '@mui/material/TableRow';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 
 import Dataset from 'src/types/dataset.interface';
-import { useUpdateDataset, useDeleteDataset } from 'src/lib/assetService';
+import { useUpdateDataset } from 'src/lib/assetService';
 import { Dialog, DialogActions, DialogContent, DialogTitle, FormControl, LinearProgress, ListItemButton, ListItemIcon } from '@mui/material';
 import MyTextField from 'src/components/myTextField';
 import { AlertType, StandardAlert } from 'src/components/standardAlerts';
@@ -91,7 +91,7 @@ function DatasetsPicking({updateValidatingState, updateFileList}: DatasetsPickin
             // console.log("files selected are", files)
             const fileList = files as FileList;
             let isLargeFile = false;
-            for (let file of fileList) {
+            for (const file of fileList) {
                 if (file.size > 4000000000) {
                     isLargeFile = true;
                 }
@@ -103,7 +103,7 @@ function DatasetsPicking({updateValidatingState, updateFileList}: DatasetsPickin
             } else {
                 setAlertTitle(null)
                 setAlertMessages([])
-                let pickedFiles = [
+                const pickedFiles = [
                     ...filesToUpload,
                     ...Array.from(fileList)
                 ];
@@ -125,19 +125,19 @@ function DatasetsPicking({updateValidatingState, updateFileList}: DatasetsPickin
         setFoldersToUpload([]);
     }
 
-    function pickFiles(files: any) {
+    function pickFiles(files: FileList) {
         const messages: string[] = [];
         if (!files)
             return;
         else {
-            const fileList = files as FileList;
+            const fileList = files;
             if (fileList.length > 10) {
                 messages.push("Maximum 10 files to be uploaded at once. Please select less files.")
                 setAlertTitle("File selection error")
                 setAlertMessages(messages)
             } else {
-                let folderSelected: boolean = false;
-                for (let file of fileList) {
+                let folderSelected = false;
+                for (const file of fileList) {
                     if (file.size == 0){ // not always 0...
                         folderSelected = true;
                     }
@@ -173,7 +173,7 @@ function DatasetsPicking({updateValidatingState, updateFileList}: DatasetsPickin
 
     const unpickDatasetFile = (file: File) => {
         // console.log("Unpicking dataset: ", file.name)
-        let idx = filesToUpload.indexOf(file);
+        const idx = filesToUpload.indexOf(file);
         if (idx < 0)
             return;
         const ar = [...filesToUpload];
@@ -269,7 +269,7 @@ function DatasetsPicking({updateValidatingState, updateFileList}: DatasetsPickin
                 //check if any files have the same name
                 const alreadySeen: { [key: string]: boolean } = {};
                 const filenames = filesToUpload.map(file => file.name);
-                let isDuplicate: boolean = false;
+                let isDuplicate = false;
                 filenames.forEach(str => alreadySeen[str] ? isDuplicate = true : alreadySeen[str] = true);
                 if (isDuplicate) {
                     messages.push("Please do not upload files with the same name.")
@@ -444,12 +444,10 @@ function DatasetsValidating({filesValidating, updateFile, onBackClick}: Datasets
     const [ openDialog, setOpenDialog ] = useState<boolean>(false);
     const [ datasetsValidating, setDatasetsValidating ] = useState<(Dataset & { _id?: string})[]>([])
     const [ isFailed, setIsFailed ] = useState(false);
-    const [ isRunning, setIsRunning ] = useState(false);
     const [ duplicateName, setDuplicateName ] = useState<string>("");
     const [ validationDone, setValidationDone ] = useState<boolean>(false);
 
     const updateDatasetFn = useUpdateDataset()
-    const deleteDatasetFn = useDeleteDataset();
 
     //update files displayed with latest data from parent
     useEffect(() => {
@@ -484,15 +482,12 @@ function DatasetsValidating({filesValidating, updateFile, onBackClick}: Datasets
         setEdit(dataset);
     }
 
-    const setCancelled = async (id: any, dataset: Partial<Dataset> ) => {
+    const setCancelled = async (id: string, dataset: Partial<Dataset> ) => {
         const newDataset = {...dataset, status: "Cancelled"};
         const datasetInput = _.pick(newDataset, ["status"]);
 
-        const response = await updateDatasetFn(id, datasetInput)
-        // console.log("response is: ", response)
+        await updateDatasetFn(id, datasetInput)
         updateFile(newDataset);
-        // const deleteResponse = await deleteDatasetFn(id)
-        // console.log("deleteResponse is: ", deleteResponse)
     }
 
 
@@ -500,18 +495,15 @@ function DatasetsValidating({filesValidating, updateFile, onBackClick}: Datasets
         const timerId = setTimeout(() => {
             console.log('Timeout ended');
             setIsFailed(true);
-            setIsRunning(false);
             /// call file deletion for files that are still in pending
-            for ( let datasetValidating of datasetsValidating ) {
+            for ( const datasetValidating of datasetsValidating ) {
                 if (datasetValidating.status == FileStatus.PENDING) {
                     if (datasetValidating._id) {
                         const dataset = datasetValidating;
-                        let newDataset = {...dataset, status: "Error"};
-                        let datasetInput = _.pick(newDataset, ["status"]);
+                        const newDataset = {...dataset, status: "Error"};
+                        const datasetInput = _.pick(newDataset, ["status"]);
                         if (dataset._id) {
-                            updateDatasetFn(dataset._id.toString(), datasetInput).then(updatedDataset => {
-                                // console.log("Updated Dataset is: ", updatedDataset)
-                            })
+                            updateDatasetFn(dataset._id.toString(), datasetInput);
                             updateFile(newDataset);
                         }
                     }
@@ -606,7 +598,7 @@ function DatasetsValidating({filesValidating, updateFile, onBackClick}: Datasets
                                         <ListItemText primary={datasetValidating.name} secondary={datasetValidating.size} sx={{width: 360}}/>
                                         <ListItemIcon>
                                             <IconButton sx={{visibility:(datasetValidating.status == FileStatus.PENDING)?'visible':'hidden'}} 
-                                            onClick={()=> setCancelled(datasetValidating._id, datasetValidating)} data-testid="cancel-validation-button">
+                                            onClick={()=> setCancelled(datasetValidating._id as string, datasetValidating)} data-testid="cancel-validation-button">
                                                 <StopCircleIcon />
                                             </IconButton>
                                         </ListItemIcon>
@@ -936,8 +928,8 @@ export default function NewDatasetModule({ withoutLayoutContainer = false, onBac
         // console.log("fileList is now: ", fileList);
 
         //add most recently uploaded datasets to datasetsValidating list (regardless of pending/done state)
-        for (let file of fileList) {
-            let fileValidating = filesValidating.find(e => e.id?.toString() === file.id?.toString());
+        for (const file of fileList) {
+            const fileValidating = filesValidating.find(e => e.id?.toString() === file.id?.toString());
             if (fileValidating) {
                 // console.log("File ", file.name, " already in datasetsValidating")
             } else {
