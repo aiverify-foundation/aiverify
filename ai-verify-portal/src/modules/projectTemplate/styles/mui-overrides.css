@@ -1,137 +1,157 @@
 #leftPanel .pluginAccordion .MuiAccordionSummary-root {
-	min-height: 30px;
-	padding: 0;
-	margin-bottom: 3px;
-	background-color: rgba(255, 255, 255, 0.1);
-	border-radius: 3px;
-	padding-right: 5px;
-	color: var(--color-white);
+  min-height: 30px;
+  padding: 0;
+  margin-bottom: 3px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  padding-right: 5px;
+  color: var(--color-white);
 }
 
 #leftPanel .pluginAccordion .Mui-expanded .MuiAccordionSummary-root {
-	margin-bottom: 5px;
+  margin-bottom: 5px;
 }
 
 #leftPanel .pluginAccordion .MuiAccordionSummary-root:hover {
-	background-color: rgba(255, 255, 255, 0.2);
-	min-height: 30px;
+  background-color: rgba(255, 255, 255, 0.2);
+  min-height: 30px;
 }
 
 #leftPanel .pluginAccordion .Mui-expanded .MuiAccordionSummary-root {
-	background-color: rgba(196, 41, 131, 0.5);
-	color: var(--color-white);
-	padding-left: 3px;
-	font-weight: 400;
+  background-color: rgba(196, 41, 131, 0.5);
+  color: var(--color-white);
+  padding-left: 3px;
+  font-weight: 400;
 }
 
 #leftPanel .pluginAccordion .MuiPaper-root {
-	background-color: transparent;
-	box-shadow: none;
-	margin-bottom: 3px;
+  background-color: transparent;
+  box-shadow: none;
+  margin-bottom: 3px;
 }
 
 #leftPanel .pluginAccordion .MuiPaper-root.Mui-expanded {
-	margin-bottom: 15px;
+  margin-bottom: 15px;
 }
 
 #leftPanel .pluginAccordion .MuiAccordionDetails-root {
-	background-color: transparent;
+  background-color: transparent;
 }
 
 #leftPanel .pluginAccordion .MuiAccordionDetails-root {
-	padding: 0;
-	margin: 0;
+  padding: 0;
+  margin: 0;
 }
 
 .MuiAccordionSummary-content {
-/* 
+  /* 
   Leaving this here as a note - .MuiAccordionSummary-content cannot be styled using natural css.
   MUI uses a dynamic classname for it, so we have to create a styled AccordionSummary component to be able to style it
 */
 }
 
 #rightPanel .propertiesAccordion {
-	box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.2);
-	border-radius: 5px;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
 }
 
 #rightPanel .propertiesAccordion .MuiAccordion-root:first-of-type {
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
 }
 
-#rightPanel .propertiesAccordion .MuiAccordion-root.Mui-disabled{
-	background-color: white;
+#rightPanel .propertiesAccordion .MuiAccordion-root.Mui-disabled {
+  background-color: white;
 }
 
-#rightPanel .propertiesAccordion .MuiAccordion-root.Mui-disabled .MuiCollapse-wrapperInner {
-	height: 0px;
+#rightPanel
+  .propertiesAccordion
+  .MuiAccordion-root.Mui-disabled
+  .MuiCollapse-wrapperInner {
+  height: 0px;
 }
 
 #rightPanel .propertiesAccordion .MuiAccordion-root:last-of-type {
-	border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
 }
 
 #rightPanel .propertiesAccordion .MuiAccordion-root.Mui-expanded {
-	border-bottom: 1px solid rgba(0, 0, 0, 0.12); 
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 }
 
 #rightPanel .propertiesAccordion .MuiAccordion-root.Mui-expanded:last-of-type {
-	border-bottom: 0;
+  border-bottom: 0;
 }
 
 #rightPanel .propertiesAccordion .MuiAccordion-root .MuiAccordionSummary-root {
-	min-height: 40px;
-	padding: 0;
-	padding-right: 5px;
-	color: var(--color-palette-violet);
-	border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  min-height: 40px;
+  padding: 0;
+  padding-right: 5px;
+  color: var(--color-palette-violet);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 }
 
-#rightPanel .propertiesAccordion .MuiAccordion-root:first-of-type .MuiAccordionSummary-root {
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-} 
-
-#rightPanel .propertiesAccordion .MuiAccordion-root:last-of-type .MuiAccordionSummary-root {
-	border-bottom: none;
-	border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
+#rightPanel
+  .propertiesAccordion
+  .MuiAccordion-root:first-of-type
+  .MuiAccordionSummary-root {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
 }
 
-#rightPanel .propertiesAccordion .MuiAccordion-root.Mui-expanded:last-of-type .MuiAccordionSummary-root {
-	border-bottom-left-radius: 0;
-	border-bottom-right-radius: 0;
-} 
-
-#rightPanel .propertiesAccordion .MuiAccordion-root.Mui-expanded:last-of-type .MuiAccordionSummary-root {
-	border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-	border-bottom-left-radius: 0;
-	border-bottom-right-radius: 0;
+#rightPanel
+  .propertiesAccordion
+  .MuiAccordion-root:last-of-type
+  .MuiAccordionSummary-root {
+  border-bottom: none;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
 }
 
-#rightPanel .propertiesAccordion .MuiAccordion-root .MuiAccordionSummary-root.Mui-expanded {
-	background-color: #e3e2e2;
+#rightPanel
+  .propertiesAccordion
+  .MuiAccordion-root.Mui-expanded:last-of-type
+  .MuiAccordionSummary-root {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
-#rightPanel .propertiesAccordion .MuiAccordion-root .MuiAccordionSummary-root:hover {
-	background-color: rgba(227, 226, 226, 0.5);
+#rightPanel
+  .propertiesAccordion
+  .MuiAccordion-root.Mui-expanded:last-of-type
+  .MuiAccordionSummary-root {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+#rightPanel
+  .propertiesAccordion
+  .MuiAccordion-root
+  .MuiAccordionSummary-root.Mui-expanded {
+  background-color: #e3e2e2;
+}
+
+#rightPanel
+  .propertiesAccordion
+  .MuiAccordion-root
+  .MuiAccordionSummary-root:hover {
+  background-color: rgba(227, 226, 226, 0.5);
 }
 
 #rightPanel .propertiesAccordion .MuiAccordionDetails-root {
-	padding: 0
+  padding: 0;
 }
 
 #rightPanel .propertiesAccordion .MuiAccordion-root {
-	box-shadow: none;
-	
+  box-shadow: none;
 }
 
 #rightPanel .propertiesAccordion .MuiAccordion-root:before {
-	background-color: transparent;
+  background-color: transparent;
 }
 
 #designArea .MuiButtonBase-root.Mui-selected {
-	/* background-color: var(--color-palette-pink); */
+  /* background-color: var(--color-palette-pink); */
 }

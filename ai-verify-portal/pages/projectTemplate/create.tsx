@@ -1,4 +1,4 @@
-import { GetServerSideProps } from 'next'
+import { GetServerSideProps } from 'next';
 import ProjectTemplateModule from 'src/modules/projectTemplate';
 import ProjectTemplate from 'src/types/projectTemplate.interface';
 import PluginManagerType from 'src/types/pluginManager.interface';
@@ -8,22 +8,27 @@ export const getServerSideProps: GetServerSideProps = async () => {
   const pluginManager = await getPlugins();
   return {
     props: {
-      pluginManager
+      pluginManager,
     },
-  }
-}
+  };
+};
 
 type Props = {
-  pluginManager: PluginManagerType
-}
+  pluginManager: PluginManagerType;
+};
 
 export default function ProjectTemplateCreatePage({ pluginManager }: Props) {
   const emptyProjectState: Partial<ProjectTemplate> = {
     projectInfo: {
-      name: "",
+      name: '',
     },
     pages: [],
     globalVars: [],
-  }
-  return (<ProjectTemplateModule data={emptyProjectState as ProjectTemplate} pluginManager={pluginManager} />)
+  };
+  return (
+    <ProjectTemplateModule
+      data={emptyProjectState as ProjectTemplate}
+      pluginManager={pluginManager}
+    />
+  );
 }

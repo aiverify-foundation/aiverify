@@ -1,8 +1,7 @@
-@media print
-{
-  .no-print, .no-print *
-  {
-      display: none !important;
+@media print {
+  .no-print,
+  .no-print * {
+    display: none !important;
   }
 }
 
@@ -23,9 +22,9 @@
 }
 
 .reportWidgetComponent {
-	cursor: pointer;
-	position: relative;
-	overflow: hidden;
-	width: 100%;
-	height: 500px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 500px;
 }

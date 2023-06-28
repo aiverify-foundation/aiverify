@@ -1,13 +1,13 @@
 .homeMenuButton {
-	color: white;
-	cursor: pointer;
-	height: 180px;
+  color: white;
+  cursor: pointer;
+  height: 180px;
 }
 
 .homeMenuButton:hover {
-	background-color: #702F8A;
+  background-color: #702f8a;
 }
 
 .homeMenuIcon {
-	font-size: 50px;
+  font-size: 50px;
 }

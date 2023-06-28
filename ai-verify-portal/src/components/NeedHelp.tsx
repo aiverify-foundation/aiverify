@@ -8,15 +8,17 @@ import Typography from '@mui/material/Typography';
  */
 
 type Props = {
-	onClick?: React.MouseEventHandler,
-    testid?: string,
-}
+  onClick?: React.MouseEventHandler;
+  testid?: string;
+};
 
 export default function NeedHelp({ onClick, testid }: Props) {
-    return (
-        <Box sx={{ display:'block' }}>
-            <Typography variant="caption">Need Help?</Typography>
-            <IconButton data-testid={testid} aria-label="Help" onClick={onClick}><InfoOutlinedIcon /></IconButton>
-        </Box>
-    )
+  return (
+    <Box sx={{ display: 'block' }}>
+      <Typography variant="caption">Need Help?</Typography>
+      <IconButton data-testid={testid} aria-label="Help" onClick={onClick}>
+        <InfoOutlinedIcon />
+      </IconButton>
+    </Box>
+  );
 }

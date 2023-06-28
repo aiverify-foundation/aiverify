@@ -1,12 +1,12 @@
 .root {
   position: relative;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border-radius: 4px;
-  box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.2);
+  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.2);
 }
 
 .header {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   position: relative;
   display: flex;
   align-items: center;
@@ -33,7 +33,7 @@
 
 .headerChild {
   display: flex;
-  gap: 10px
+  gap: 10px;
 }
 
 .arrowIcon {
@@ -55,12 +55,12 @@
 
 .list::-webkit-scrollbar {
   width: 8px;
-	background-color: rgb(224, 224, 224);
+  background-color: rgb(224, 224, 224);
   border-radius: 5px;
 }
 
 .list::-webkit-scrollbar-thumb {
-	background-color: rgb(190, 189, 189);
+  background-color: rgb(190, 189, 189);
   border-radius: 5px;
 }
 
@@ -69,7 +69,6 @@
   align-items: center;
   padding: 0 15px;
   min-height: 50px;
-
 }
 
 .list > .item:hover {

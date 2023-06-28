@@ -12,12 +12,12 @@ type GlobalVarsProps = {
   variables: GlobalVar[];
   onAddClick: (variables: GlobalVar) => void;
   onRemoveClick: (variables: GlobalVar) => void;
-}
+};
 
 type VariableRowProps = {
   globalVariable: GlobalVar;
   onRemoveBtnClick: (globalVar: GlobalVar) => void;
-}
+};
 
 const newVar = { key: '', value: '' };
 
@@ -39,21 +39,25 @@ function VariableRow(props: VariableRowProps) {
     }
   }
 
-  return <div 
-    id={`varkey-${globalVariable.key}`}
-    className={styles.gVarsRow}
-    onMouseOver={handleVarMouseOver}
-    onMouseLeave={handleVarMouseLeave}>
+  return (
+    <div
+      id={`varkey-${globalVariable.key}`}
+      className={styles.gVarsRow}
+      onMouseOver={handleVarMouseOver}
+      onMouseLeave={handleVarMouseLeave}>
       <div className={styles.gVarsCol}>{globalVariable.key}</div>
       <div className={styles.gVarsCol}>{globalVariable.value}</div>
       <div className={styles.gVarsDelCol} onClick={handleRemoveBtnClick}>
-        {showRemoveBtn ? <CloseIcon
-          className={styles.gVarsRemoveBtn}
-          fontSize='small'
-          style={{ color: '#676767' }}
-        /> : null}
+        {showRemoveBtn ? (
+          <CloseIcon
+            className={styles.gVarsRemoveBtn}
+            fontSize="small"
+            style={{ color: '#676767' }}
+          />
+        ) : null}
       </div>
-    </div>;
+    </div>
+  );
 }
 
 const GlobalVars = forwardRef<HTMLInputElement, GlobalVarsProps>(
@@ -73,32 +77,36 @@ const GlobalVars = forwardRef<HTMLInputElement, GlobalVarsProps>(
 
     function handleKeyChange(e: React.ChangeEvent<HTMLInputElement>) {
       setNewGlobalVar(
-        produce(draft => { draft.key = e.target.value })
-      )
+        produce((draft) => {
+          draft.key = e.target.value;
+        })
+      );
     }
 
     function handleValueChange(e: React.ChangeEvent<HTMLInputElement>) {
       setNewGlobalVar(
-        produce(draft => { draft.value = e.target.value })
-      )
+        produce((draft) => {
+          draft.value = e.target.value;
+        })
+      );
     }
 
     function handleEnterKey(e: React.KeyboardEvent<HTMLInputElement>) {
       if (e.key === 'Enter') {
         if (key && value) {
-          if (variables.find(gvar => gvar.key === key) !== undefined) {
-            return
+          if (variables.find((gvar) => gvar.key === key) !== undefined) {
+            return;
           }
           if (typeof onAddClick === 'function') {
             onAddClick(newGlobalVar);
           }
-            setNewGlobalVar(newVar);
+          setNewGlobalVar(newVar);
         }
       }
     }
 
     useEffect(() => {
-      if (variables.find(gvar => gvar.key === key) !== undefined) {
+      if (variables.find((gvar) => gvar.key === key) !== undefined) {
         setDisableAddBtn(true);
         return;
       }
@@ -113,7 +121,10 @@ const GlobalVars = forwardRef<HTMLInputElement, GlobalVarsProps>(
 
     useEffect(() => {
       if (scrollContainerRef.current) {
-        scrollContainerRef.current.scrollTo(0, scrollContainerRef.current.scrollHeight);
+        scrollContainerRef.current.scrollTo(
+          0,
+          scrollContainerRef.current.scrollHeight
+        );
       }
     }, [variables]);
 
@@ -125,36 +136,41 @@ const GlobalVars = forwardRef<HTMLInputElement, GlobalVarsProps>(
           <div className={styles.gVarsDelCol}></div>
         </div>
         <div className={styles.gVarsScrollContainer} ref={scrollContainerRef}>
-        {variables.map(globalVar =>
-          <VariableRow
-            key={globalVar.key}
-            globalVariable={globalVar}
-            onRemoveBtnClick={onRemoveClick}/>
-        )}
+          {variables.map((globalVar) => (
+            <VariableRow
+              key={globalVar.key}
+              globalVariable={globalVar}
+              onRemoveBtnClick={onRemoveClick}
+            />
+          ))}
         </div>
         <div className={clsx(styles.gVarsInputRow, styles.gVarsRow_padRight)}>
           <div className={styles.gVarsInputCol}>
-            <input type='text'
+            <input
+              type="text"
               ref={keyInputRef}
               value={key}
               onKeyUp={handleEnterKey}
-              onChange={handleKeyChange}/>
+              onChange={handleKeyChange}
+            />
           </div>
           <div className={styles.gVarsInputCol}>
-            <input type='text'
+            <input
+              type="text"
               value={value}
               onKeyUp={handleEnterKey}
-              onChange={handleValueChange} />
+              onChange={handleValueChange}
+            />
           </div>
           <button
             className={styles.gVarsAddBtn}
             disabled={disableAddBtn}
             onClick={handleAddClick}>
-              <AddIcon fontSize='small' style={{ color: '#676767' }}/>
+            <AddIcon fontSize="small" style={{ color: '#676767' }} />
           </button>
         </div>
       </div>
-    )
+    );
   }
 );
 

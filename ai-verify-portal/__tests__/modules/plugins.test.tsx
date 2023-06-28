@@ -3,81 +3,129 @@ import userEvent from '@testing-library/user-event';
 import PluginsModule from 'src/modules/plugins/index';
 import * as APIs from 'src/modules/plugins/api/plugins';
 import * as algoAPIs from 'src/modules/plugins/api/algorithms';
-import { algoPackageDependencyStatusResponse, emptyListResponse, installPluginResponse, pluginsListResponse } from '__mocks__/plugins';
+import {
+  algoPackageDependencyStatusResponse,
+  emptyListResponse,
+  installPluginResponse,
+  pluginsListResponse,
+} from '__mocks__/plugins';
 import { MockProviders } from '__mocks__/mockProviders';
 import { silentConsoleLogs } from '__mocks__/mockGlobals';
 
-jest.mock('src/modules/plugins/api/plugins', () => ({ __esModule: true, ...jest.requireActual('src/modules/plugins/api/plugins')}));
-jest.mock('src/modules/plugins/api/algorithms', () => ({ __esModule: true, ...jest.requireActual('src/modules/plugins/api/algorithms')}));
+jest.mock('src/modules/plugins/api/plugins', () => ({
+  __esModule: true,
+  ...jest.requireActual('src/modules/plugins/api/plugins'),
+}));
+jest.mock('src/modules/plugins/api/algorithms', () => ({
+  __esModule: true,
+  ...jest.requireActual('src/modules/plugins/api/algorithms'),
+}));
 
 describe('Plugins Manager', () => {
-
   const fetchAllPluginsSpy = jest.spyOn(APIs, 'fetchAllPlugins');
   const uploadPluginSpy = jest.spyOn(APIs, 'uploadPlugin');
   const deletePluginSpy = jest.spyOn(APIs, 'deletePlugin');
-  const getPythonPackageDependencyStatusSpy = jest.spyOn(algoAPIs, 'getPythonPackageDependencyStatus');
+  const getPythonPackageDependencyStatusSpy = jest.spyOn(
+    algoAPIs,
+    'getPythonPackageDependencyStatus'
+  );
 
   beforeAll(() => {
     silentConsoleLogs();
-  })
+  });
 
   afterEach(() => {
     fetchAllPluginsSpy.mockReset();
     uploadPluginSpy.mockReset();
     deletePluginSpy.mockReset();
     getPythonPackageDependencyStatusSpy.mockReset();
-  })
+  });
 
   describe('Initial Render', () => {
-
     it('should fetch all plugins on render and sort by Installed Date (asc)', async () => {
       fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
-      const { container } = render(<MockProviders><PluginsModule /></MockProviders>);
+      const { container } = render(
+        <MockProviders>
+          <PluginsModule />
+        </MockProviders>
+      );
       await screen.findByText(/^Partial Dependence Plot$/i);
-      const pluginsListNodes = container.querySelectorAll<Element>('.pluginList-card');
+      const pluginsListNodes =
+        container.querySelectorAll<Element>('.pluginList-card');
       const pluginsListElements = Array.from(pluginsListNodes);
-      const pluginNamesAndInstalledDate:[string, string][] = pluginsListElements.map(el => {
-        const header = el.querySelector('h3') as Element;
-        const dateDiv = el.querySelector('.listItem_installedDate') as Element;
-        return [header.textContent as string, dateDiv.textContent as string];
-      });
+      const pluginNamesAndInstalledDate: [string, string][] =
+        pluginsListElements.map((el) => {
+          const header = el.querySelector('h3') as Element;
+          const dateDiv = el.querySelector(
+            '.listItem_installedDate'
+          ) as Element;
+          return [header.textContent as string, dateDiv.textContent as string];
+        });
       expect(fetchAllPluginsSpy).toBeCalledTimes(1);
       expect(pluginsListElements.length).toEqual(6);
-      expect(pluginNamesAndInstalledDate[0][0]).toEqual('Partial Dependence Plot');
-      expect(pluginNamesAndInstalledDate[1][0]).toEqual('AI Verify Stock Decorators');
-      expect(pluginNamesAndInstalledDate[2][0]).toEqual('Widgets for Fairness Metrics Toolbox');
-      expect(pluginNamesAndInstalledDate[3][0]).toEqual('AI Verify Process Checklist');
-      expect(pluginNamesAndInstalledDate[4][0]).toEqual('fairness metrics toolbox for classification');
-      expect(pluginNamesAndInstalledDate[5][0]).toEqual('Widgets for SHAP toolbox');
+      expect(pluginNamesAndInstalledDate[0][0]).toEqual(
+        'Partial Dependence Plot'
+      );
+      expect(pluginNamesAndInstalledDate[1][0]).toEqual(
+        'AI Verify Stock Decorators'
+      );
+      expect(pluginNamesAndInstalledDate[2][0]).toEqual(
+        'Widgets for Fairness Metrics Toolbox'
+      );
+      expect(pluginNamesAndInstalledDate[3][0]).toEqual(
+        'AI Verify Process Checklist'
+      );
+      expect(pluginNamesAndInstalledDate[4][0]).toEqual(
+        'fairness metrics toolbox for classification'
+      );
+      expect(pluginNamesAndInstalledDate[5][0]).toEqual(
+        'Widgets for SHAP toolbox'
+      );
       await waitFor(() => {
         expect(container.querySelector('.listItem__selected')).toBeTruthy();
-      })
-      const selectedPlugin = container.querySelector('.listItem__selected')?.querySelector('h3') as Element;
+      });
+      const selectedPlugin = container
+        .querySelector('.listItem__selected')
+        ?.querySelector('h3') as Element;
       expect(selectedPlugin.textContent).toBe('Partial Dependence Plot');
     });
 
     it('should display details of first plugin on plugins list', async () => {
       fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
-      const { container } = render(<MockProviders><PluginsModule /></MockProviders>);
+      const { container } = render(
+        <MockProviders>
+          <PluginsModule />
+        </MockProviders>
+      );
       await screen.findByTestId('pluginDetailsPanel');
-      const pluginDetailsHeader = container.querySelector('#detailsHead > h2') as HTMLHeadingElement;
-      expect(pluginDetailsHeader.textContent).toEqual('Partial Dependence Plot');
+      const pluginDetailsHeader = container.querySelector(
+        '#detailsHead > h2'
+      ) as HTMLHeadingElement;
+      expect(pluginDetailsHeader.textContent).toEqual(
+        'Partial Dependence Plot'
+      );
     });
-  
+
     it('should display "no plugins found" when list is empty', async () => {
       fetchAllPluginsSpy.mockResolvedValue(emptyListResponse);
-      render(<MockProviders><PluginsModule /></MockProviders>);
+      render(
+        <MockProviders>
+          <PluginsModule />
+        </MockProviders>
+      );
       await screen.findByText(/No plugins found/i);
       expect(screen.queryByText('No plugins found')).toBeTruthy();
     });
-
-  })
+  });
 
   describe('Quick Filters, Sort and Search', () => {
-
     it('should render quick filters, search and sort elements', async () => {
       fetchAllPluginsSpy.mockResolvedValue(emptyListResponse);
-      render(<MockProviders><PluginsModule /></MockProviders>);
+      render(
+        <MockProviders>
+          <PluginsModule />
+        </MockProviders>
+      );
       expect(screen.getByText('Plugin Manager')).toBeTruthy();
       await screen.findByText(/Sort by/i);
       expect(screen.queryByText('Sort by')).toBeTruthy();
@@ -85,10 +133,14 @@ describe('Plugins Manager', () => {
       expect(screen.queryByPlaceholderText('Search plugins')).toBeTruthy();
       expect(screen.queryByText('Install Plugin')).toBeTruthy();
     });
-    
+
     it('should show sort by menu when menu clicked', async () => {
       fetchAllPluginsSpy.mockResolvedValue(emptyListResponse);
-      const { container } = render(<MockProviders><PluginsModule /></MockProviders>);
+      const { container } = render(
+        <MockProviders>
+          <PluginsModule />
+        </MockProviders>
+      );
       await screen.findByText(/Sort by/i);
       const sortMenu = container.querySelector('#pluginsSortMenu') as Element;
       expect(sortMenu).toBeTruthy();
@@ -104,149 +156,270 @@ describe('Plugins Manager', () => {
 
     it('should sort by Installed Date (desc) ', async () => {
       fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
-      const { container } = render(<MockProviders><PluginsModule /></MockProviders>);
+      const { container } = render(
+        <MockProviders>
+          <PluginsModule />
+        </MockProviders>
+      );
       await screen.findByText(/^Partial Dependence Plot$/i);
       const sortMenu = container.querySelector('#pluginsSortMenu') as Element;
       await userEvent.click(sortMenu);
       const sortOption = screen.queryByText('Installed Date (desc)') as Element;
       await userEvent.click(sortOption);
-      const pluginsListNodes = container.querySelectorAll<Element>('.pluginList-card');
+      const pluginsListNodes =
+        container.querySelectorAll<Element>('.pluginList-card');
       const pluginsListElements = Array.from(pluginsListNodes);
-      const pluginNamesAndInstalledDate:[string, string][] = pluginsListElements.map(el => {
-        const header = el.querySelector('h3') as Element;
-        const dateDiv = el.querySelector('.listItem_installedDate') as Element;
-        return [header.textContent as string, dateDiv.textContent as string];
-      });
-      expect(pluginNamesAndInstalledDate[0][0]).toEqual('Widgets for SHAP toolbox');
-      expect(pluginNamesAndInstalledDate[1][0]).toEqual('fairness metrics toolbox for classification')
-      expect(pluginNamesAndInstalledDate[2][0]).toEqual('AI Verify Process Checklist')
-      expect(pluginNamesAndInstalledDate[3][0]).toEqual('Widgets for Fairness Metrics Toolbox')
-      expect(pluginNamesAndInstalledDate[4][0]).toEqual('AI Verify Stock Decorators')
-      expect(pluginNamesAndInstalledDate[5][0]).toEqual('Partial Dependence Plot')
+      const pluginNamesAndInstalledDate: [string, string][] =
+        pluginsListElements.map((el) => {
+          const header = el.querySelector('h3') as Element;
+          const dateDiv = el.querySelector(
+            '.listItem_installedDate'
+          ) as Element;
+          return [header.textContent as string, dateDiv.textContent as string];
+        });
+      expect(pluginNamesAndInstalledDate[0][0]).toEqual(
+        'Widgets for SHAP toolbox'
+      );
+      expect(pluginNamesAndInstalledDate[1][0]).toEqual(
+        'fairness metrics toolbox for classification'
+      );
+      expect(pluginNamesAndInstalledDate[2][0]).toEqual(
+        'AI Verify Process Checklist'
+      );
+      expect(pluginNamesAndInstalledDate[3][0]).toEqual(
+        'Widgets for Fairness Metrics Toolbox'
+      );
+      expect(pluginNamesAndInstalledDate[4][0]).toEqual(
+        'AI Verify Stock Decorators'
+      );
+      expect(pluginNamesAndInstalledDate[5][0]).toEqual(
+        'Partial Dependence Plot'
+      );
     });
 
     it('should sort by Plugin Name (asc) ', async () => {
       fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
-      const { container } = render(<MockProviders><PluginsModule /></MockProviders>);
+      const { container } = render(
+        <MockProviders>
+          <PluginsModule />
+        </MockProviders>
+      );
       await screen.findByText(/^Partial Dependence Plot$/i);
       const sortMenu = container.querySelector('#pluginsSortMenu') as Element;
       await userEvent.click(sortMenu);
       const sortOption = screen.queryByText('Plugin Name (asc)') as Element;
       await userEvent.click(sortOption);
-      const pluginsListNodes = container.querySelectorAll<Element>('.pluginList-card');
+      const pluginsListNodes =
+        container.querySelectorAll<Element>('.pluginList-card');
       const pluginsListElements = Array.from(pluginsListNodes);
-      const pluginNamesAndInstalledDate:[string, string][] = pluginsListElements.map(el => {
-        const header = el.querySelector('h3') as Element;
-        const dateDiv = el.querySelector('.listItem_installedDate') as Element;
-        return [header.textContent as string, dateDiv.textContent as string];
-      });
-      expect(pluginNamesAndInstalledDate[0][0]).toEqual('AI Verify Process Checklist')
-      expect(pluginNamesAndInstalledDate[1][0]).toEqual('AI Verify Stock Decorators')
-      expect(pluginNamesAndInstalledDate[2][0]).toEqual('fairness metrics toolbox for classification')
-      expect(pluginNamesAndInstalledDate[3][0]).toEqual('Partial Dependence Plot')
-      expect(pluginNamesAndInstalledDate[4][0]).toEqual('Widgets for Fairness Metrics Toolbox')
-      expect(pluginNamesAndInstalledDate[5][0]).toEqual('Widgets for SHAP toolbox');
+      const pluginNamesAndInstalledDate: [string, string][] =
+        pluginsListElements.map((el) => {
+          const header = el.querySelector('h3') as Element;
+          const dateDiv = el.querySelector(
+            '.listItem_installedDate'
+          ) as Element;
+          return [header.textContent as string, dateDiv.textContent as string];
+        });
+      expect(pluginNamesAndInstalledDate[0][0]).toEqual(
+        'AI Verify Process Checklist'
+      );
+      expect(pluginNamesAndInstalledDate[1][0]).toEqual(
+        'AI Verify Stock Decorators'
+      );
+      expect(pluginNamesAndInstalledDate[2][0]).toEqual(
+        'fairness metrics toolbox for classification'
+      );
+      expect(pluginNamesAndInstalledDate[3][0]).toEqual(
+        'Partial Dependence Plot'
+      );
+      expect(pluginNamesAndInstalledDate[4][0]).toEqual(
+        'Widgets for Fairness Metrics Toolbox'
+      );
+      expect(pluginNamesAndInstalledDate[5][0]).toEqual(
+        'Widgets for SHAP toolbox'
+      );
     });
 
     it('should sort by Plugin Name (desc) ', async () => {
       fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
-      const { container } = render(<MockProviders><PluginsModule /></MockProviders>);
+      const { container } = render(
+        <MockProviders>
+          <PluginsModule />
+        </MockProviders>
+      );
       await screen.findByText(/^Partial Dependence Plot$/i);
       const sortMenu = container.querySelector('#pluginsSortMenu') as Element;
       await userEvent.click(sortMenu);
       const sortOption = screen.queryByText('Plugin Name (desc)') as Element;
       await userEvent.click(sortOption);
-      const pluginsListNodes = container.querySelectorAll<Element>('.pluginList-card');
+      const pluginsListNodes =
+        container.querySelectorAll<Element>('.pluginList-card');
       const pluginsListElements = Array.from(pluginsListNodes);
-      const pluginNamesAndInstalledDate:[string, string][] = pluginsListElements.map(el => {
-        const header = el.querySelector('h3') as Element;
-        const dateDiv = el.querySelector('.listItem_installedDate') as Element;
-        return [header.textContent as string, dateDiv.textContent as string];
-      });
-      expect(pluginNamesAndInstalledDate[0][0]).toEqual('Widgets for SHAP toolbox');
-      expect(pluginNamesAndInstalledDate[1][0]).toEqual('Widgets for Fairness Metrics Toolbox');
-      expect(pluginNamesAndInstalledDate[2][0]).toEqual('Partial Dependence Plot');
-      expect(pluginNamesAndInstalledDate[3][0]).toEqual('fairness metrics toolbox for classification');
-      expect(pluginNamesAndInstalledDate[4][0]).toEqual('AI Verify Stock Decorators');
-      expect(pluginNamesAndInstalledDate[5][0]).toEqual('AI Verify Process Checklist');
+      const pluginNamesAndInstalledDate: [string, string][] =
+        pluginsListElements.map((el) => {
+          const header = el.querySelector('h3') as Element;
+          const dateDiv = el.querySelector(
+            '.listItem_installedDate'
+          ) as Element;
+          return [header.textContent as string, dateDiv.textContent as string];
+        });
+      expect(pluginNamesAndInstalledDate[0][0]).toEqual(
+        'Widgets for SHAP toolbox'
+      );
+      expect(pluginNamesAndInstalledDate[1][0]).toEqual(
+        'Widgets for Fairness Metrics Toolbox'
+      );
+      expect(pluginNamesAndInstalledDate[2][0]).toEqual(
+        'Partial Dependence Plot'
+      );
+      expect(pluginNamesAndInstalledDate[3][0]).toEqual(
+        'fairness metrics toolbox for classification'
+      );
+      expect(pluginNamesAndInstalledDate[4][0]).toEqual(
+        'AI Verify Stock Decorators'
+      );
+      expect(pluginNamesAndInstalledDate[5][0]).toEqual(
+        'AI Verify Process Checklist'
+      );
     });
-    
+
     it('should filter plugins by text search - match in plugin name', async () => {
       fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
-      const { container } = render(<MockProviders><PluginsModule /></MockProviders>);
-      const searchInput = screen.queryByPlaceholderText('Search plugins') as HTMLInputElement;
+      const { container } = render(
+        <MockProviders>
+          <PluginsModule />
+        </MockProviders>
+      );
+      const searchInput = screen.queryByPlaceholderText(
+        'Search plugins'
+      ) as HTMLInputElement;
       await waitFor(async () => {
-        expect(await screen.findAllByText(/^Partial Dependence Plot$/i)).toHaveLength(3);
-      })
-      expect(await screen.findAllByText(/^AI Verify Process Checklist$/i)).toHaveLength(1);
-      const pluginsListNodes = container.querySelectorAll<Element>('.pluginList-card');
+        expect(
+          await screen.findAllByText(/^Partial Dependence Plot$/i)
+        ).toHaveLength(3);
+      });
+      expect(
+        await screen.findAllByText(/^AI Verify Process Checklist$/i)
+      ).toHaveLength(1);
+      const pluginsListNodes =
+        container.querySelectorAll<Element>('.pluginList-card');
       expect(pluginsListNodes.length).toEqual(6);
       await userEvent.type(searchInput, 'veri');
       await waitFor(async () => {
-        expect(await screen.findAllByText(/^AI Verify Process Checklist$/i)).toHaveLength(2);
-      })
-      expect(screen.queryAllByText(/^AI Verify Stock Decorators$/i)).toHaveLength(1);
+        expect(
+          await screen.findAllByText(/^AI Verify Process Checklist$/i)
+        ).toHaveLength(2);
+      });
+      expect(
+        screen.queryAllByText(/^AI Verify Stock Decorators$/i)
+      ).toHaveLength(1);
       expect(screen.queryByText(/^Partial Dependence Plot$/i)).toBeNull();
-      const filteredPluginsListNodes = container.querySelectorAll<Element>('.pluginList-card');
+      const filteredPluginsListNodes =
+        container.querySelectorAll<Element>('.pluginList-card');
       expect(filteredPluginsListNodes).toHaveLength(2);
-      await userEvent.click(screen.queryByTestId('clearSearchInputIcon') as Element);
+      await userEvent.click(
+        screen.queryByTestId('clearSearchInputIcon') as Element
+      );
       await waitFor(async () => {
-        expect(await screen.findAllByText(/^Partial Dependence Plot$/i)).toHaveLength(3);
-      })
-      expect(await screen.findAllByText(/^AI Verify Process Checklist$/i)).toHaveLength(1);
-      const clearSearchPluginsListNodes = container.querySelectorAll<Element>('.pluginList-card');
+        expect(
+          await screen.findAllByText(/^Partial Dependence Plot$/i)
+        ).toHaveLength(3);
+      });
+      expect(
+        await screen.findAllByText(/^AI Verify Process Checklist$/i)
+      ).toHaveLength(1);
+      const clearSearchPluginsListNodes =
+        container.querySelectorAll<Element>('.pluginList-card');
       expect(clearSearchPluginsListNodes.length).toEqual(6);
     });
 
     it('should filter plugins by text search - match in widget name', async () => {
       fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
-      const { container } = render(<MockProviders><PluginsModule /></MockProviders>);
-      const searchInput = screen.queryByPlaceholderText('Search plugins') as HTMLInputElement;
+      const { container } = render(
+        <MockProviders>
+          <PluginsModule />
+        </MockProviders>
+      );
+      const searchInput = screen.queryByPlaceholderText(
+        'Search plugins'
+      ) as HTMLInputElement;
       await waitFor(async () => {
-        expect(await screen.findAllByText(/^Partial Dependence Plot$/i)).toHaveLength(3);
-      })
-      expect(await screen.findAllByText(/^Widgets For Fairness Metrics Toolbox$/i)).toHaveLength(1);
-      const pluginsListNodes = container.querySelectorAll<Element>('.pluginList-card');
+        expect(
+          await screen.findAllByText(/^Partial Dependence Plot$/i)
+        ).toHaveLength(3);
+      });
+      expect(
+        await screen.findAllByText(/^Widgets For Fairness Metrics Toolbox$/i)
+      ).toHaveLength(1);
+      const pluginsListNodes =
+        container.querySelectorAll<Element>('.pluginList-card');
       expect(pluginsListNodes.length).toEqual(6);
       await userEvent.type(searchInput, 'false');
       await waitFor(async () => {
-        expect(await screen.findAllByText(/^Widgets For Fairness Metrics Toolbox$/i)).toHaveLength(2);
-      })
-      const filteredPluginsListNodes = container.querySelectorAll<Element>('.pluginList-card');
+        expect(
+          await screen.findAllByText(/^Widgets For Fairness Metrics Toolbox$/i)
+        ).toHaveLength(2);
+      });
+      const filteredPluginsListNodes =
+        container.querySelectorAll<Element>('.pluginList-card');
       expect(filteredPluginsListNodes).toHaveLength(1);
     });
 
     it('should filter plugins by text search - match in plugin description', async () => {
       fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
-      const { container } = render(<MockProviders><PluginsModule /></MockProviders>);
-      const searchInput = screen.queryByPlaceholderText('Search plugins') as HTMLInputElement;
+      const { container } = render(
+        <MockProviders>
+          <PluginsModule />
+        </MockProviders>
+      );
+      const searchInput = screen.queryByPlaceholderText(
+        'Search plugins'
+      ) as HTMLInputElement;
       await waitFor(async () => {
-        expect(await screen.findAllByText(/^Partial Dependence Plot$/i)).toHaveLength(3);
-      })
-      expect(await screen.findAllByText(/^Widgets For Fairness Metrics Toolbox$/i)).toHaveLength(1);
-      const pluginsListNodes = container.querySelectorAll<Element>('.pluginList-card');
+        expect(
+          await screen.findAllByText(/^Partial Dependence Plot$/i)
+        ).toHaveLength(3);
+      });
+      expect(
+        await screen.findAllByText(/^Widgets For Fairness Metrics Toolbox$/i)
+      ).toHaveLength(1);
+      const pluginsListNodes =
+        container.querySelectorAll<Element>('.pluginList-card');
       expect(pluginsListNodes.length).toEqual(6);
       await userEvent.type(searchInput, '(FMT)');
       await waitFor(async () => {
-        expect(await screen.findAllByText(/^Widgets For Fairness Metrics Toolbox$/i)).toHaveLength(2);
-      })
-      expect(await screen.findAllByText(/^Fairness Metrics Toolbox For Classification$/i)).toHaveLength(1);
-      const filteredPluginsListNodes = container.querySelectorAll<Element>('.pluginList-card');
+        expect(
+          await screen.findAllByText(/^Widgets For Fairness Metrics Toolbox$/i)
+        ).toHaveLength(2);
+      });
+      expect(
+        await screen.findAllByText(
+          /^Fairness Metrics Toolbox For Classification$/i
+        )
+      ).toHaveLength(1);
+      const filteredPluginsListNodes =
+        container.querySelectorAll<Element>('.pluginList-card');
       expect(filteredPluginsListNodes).toHaveLength(2);
     });
 
     //TODO - assert filter
-  })
+  });
 
   describe('Install Plugin', () => {
     it('should show install plugin confirmation modal dialog when file is selected', async () => {
       fetchAllPluginsSpy.mockResolvedValue(emptyListResponse);
-      render(<MockProviders><PluginsModule /></MockProviders>);
+      render(
+        <MockProviders>
+          <PluginsModule />
+        </MockProviders>
+      );
       const fileName = 'mockplugin.zip';
-      const pluginFileInput = await screen.findByTestId<HTMLInputElement>('pluginFileInput');
+      const pluginFileInput = await screen.findByTestId<HTMLInputElement>(
+        'pluginFileInput'
+      );
       const mockFile = new File(['---'], fileName, { type: 'application/zip' });
       await userEvent.upload(pluginFileInput, mockFile);
-      expect((pluginFileInput.files as FileList)).toHaveLength(1);
+      expect(pluginFileInput.files as FileList).toHaveLength(1);
       expect((pluginFileInput.files as FileList)[0]).toBe(mockFile);
       await screen.findByText(fileName);
       expect(screen.queryByText('Install')).toBeTruthy();
@@ -257,31 +430,47 @@ describe('Plugins Manager', () => {
     it('should install plugin when "Install" button is clicked and show success message', async () => {
       fetchAllPluginsSpy.mockResolvedValue(emptyListResponse);
       uploadPluginSpy.mockResolvedValueOnce(installPluginResponse);
-      render(<MockProviders><PluginsModule /></MockProviders>);
+      render(
+        <MockProviders>
+          <PluginsModule />
+        </MockProviders>
+      );
       const fileName = 'mockplugin.zip';
-      const pluginFileInput = await screen.findByTestId<HTMLInputElement>('pluginFileInput');
-      const mockFile = new File(['---'], fileName, {type: 'application/zip'});
+      const pluginFileInput = await screen.findByTestId<HTMLInputElement>(
+        'pluginFileInput'
+      );
+      const mockFile = new File(['---'], fileName, { type: 'application/zip' });
       await userEvent.upload(pluginFileInput, mockFile);
       const installBtn = await screen.findByText('Install');
       await userEvent.click(installBtn);
       expect(uploadPluginSpy).toHaveBeenCalledWith(mockFile);
       expect(uploadPluginSpy).toHaveBeenCalledTimes(1);
-      expect(screen.queryByText(/Plugin was successfully installed/i)).toBeTruthy();
+      expect(
+        screen.queryByText(/Plugin was successfully installed/i)
+      ).toBeTruthy();
       const okBtn = await screen.findByText(/ok/i);
       await userEvent.click(okBtn);
-      expect(screen.queryByText(/Plugin was successfully installed/i)).toBeNull();
+      expect(
+        screen.queryByText(/Plugin was successfully installed/i)
+      ).toBeNull();
       await waitFor(() => expect(fetchAllPluginsSpy).toHaveBeenCalledTimes(2));
     });
 
     it('should display error modal dialog if selected file mimetype is not "zip" type', async () => {
       fetchAllPluginsSpy.mockResolvedValue(emptyListResponse);
       uploadPluginSpy.mockResolvedValueOnce(installPluginResponse);
-      render(<MockProviders><PluginsModule /></MockProviders>);
+      render(
+        <MockProviders>
+          <PluginsModule />
+        </MockProviders>
+      );
       const fileName = 'mockplugin.zip';
-      const pluginFileInput = await screen.findByTestId<HTMLInputElement>('pluginFileInput');
-      const mockFile = new File(['---'], fileName, {type: 'image/png'});
+      const pluginFileInput = await screen.findByTestId<HTMLInputElement>(
+        'pluginFileInput'
+      );
+      const mockFile = new File(['---'], fileName, { type: 'image/png' });
       await userEvent.upload(pluginFileInput, mockFile, { applyAccept: false });
-      expect((pluginFileInput.files as FileList)).toHaveLength(1);
+      expect(pluginFileInput.files as FileList).toHaveLength(1);
       expect(screen.queryByText(/Unable to install plugin/i)).toBeTruthy();
       expect(uploadPluginSpy).not.toHaveBeenCalled();
     });
@@ -289,25 +478,36 @@ describe('Plugins Manager', () => {
     it('should display error modal dialog if selected file filename extension is not ".zip"', async () => {
       fetchAllPluginsSpy.mockResolvedValue(emptyListResponse);
       uploadPluginSpy.mockResolvedValueOnce(installPluginResponse);
-      render(<MockProviders><PluginsModule /></MockProviders>);
+      render(
+        <MockProviders>
+          <PluginsModule />
+        </MockProviders>
+      );
       const fileName = 'mock.png';
-      const pluginFileInput = await screen.findByTestId<HTMLInputElement>('pluginFileInput');
-      const mockFile = new File(['---'], fileName, {type: 'application/zip'});
+      const pluginFileInput = await screen.findByTestId<HTMLInputElement>(
+        'pluginFileInput'
+      );
+      const mockFile = new File(['---'], fileName, { type: 'application/zip' });
       await userEvent.upload(pluginFileInput, mockFile, { applyAccept: false });
-      expect((pluginFileInput.files as FileList)).toHaveLength(1);
+      expect(pluginFileInput.files as FileList).toHaveLength(1);
       expect(screen.queryByText(/Unable to install plugin/i)).toBeTruthy();
       expect(uploadPluginSpy).not.toHaveBeenCalled();
     });
   });
 
-
   describe('Plugins List Card and Plugin Details', () => {
-
     it('should display correct information on list card', async () => {
       fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
-      render(<MockProviders><PluginsModule /></MockProviders>);
-      const aivPChecklistCardHeading = await screen.findByText(/AI Verify Process Checklist/i) as Element;
-      const aivPChecklistCard = aivPChecklistCardHeading.parentElement as Element;
+      render(
+        <MockProviders>
+          <PluginsModule />
+        </MockProviders>
+      );
+      const aivPChecklistCardHeading = (await screen.findByText(
+        /AI Verify Process Checklist/i
+      )) as Element;
+      const aivPChecklistCard =
+        aivPChecklistCardHeading.parentElement as Element;
       expect(aivPChecklistCard).toMatchInlineSnapshot(`
       <div
         class="pluginList-card listItem"
@@ -404,14 +604,22 @@ describe('Plugins Manager', () => {
       </div>
       `);
     });
-    
+
     it('should highlight selected plugin and display the plugin details when clicked', async () => {
       fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
-      render(<MockProviders><PluginsModule /></MockProviders>);
+      render(
+        <MockProviders>
+          <PluginsModule />
+        </MockProviders>
+      );
       await waitFor(async () => {
-        expect(await screen.findAllByText(/^Partial Dependence Plot$/i)).toHaveLength(3);
-      })
-      const listCardHeading = await screen.findByText(/AI Verify Process Checklist/i) as Element;
+        expect(
+          await screen.findAllByText(/^Partial Dependence Plot$/i)
+        ).toHaveLength(3);
+      });
+      const listCardHeading = (await screen.findByText(
+        /AI Verify Process Checklist/i
+      )) as Element;
       const listCard = listCardHeading.parentElement as Element;
       expect(listCard.classList.contains('listItem__selected')).toBe(false);
       await userEvent.click(listCard);
@@ -420,14 +628,24 @@ describe('Plugins Manager', () => {
 
     it('should display tabs and number of components', async () => {
       fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
-      const { container } = render(<MockProviders><PluginsModule /></MockProviders>);
+      const { container } = render(
+        <MockProviders>
+          <PluginsModule />
+        </MockProviders>
+      );
       await waitFor(async () => {
-        expect(await screen.findAllByText(/^Partial Dependence Plot$/i)).toHaveLength(3);
-      })
-      const listCardHeading = await screen.findByText(/AI Verify Process Checklist/i) as Element;
+        expect(
+          await screen.findAllByText(/^Partial Dependence Plot$/i)
+        ).toHaveLength(3);
+      });
+      const listCardHeading = (await screen.findByText(
+        /AI Verify Process Checklist/i
+      )) as Element;
       const listCard = listCardHeading.parentElement as Element;
       await userEvent.click(listCard);
-      const headings = await screen.findAllByText(/^AI Verify Process Checklist$/) as Element[];
+      const headings = (await screen.findAllByText(
+        /^AI Verify Process Checklist$/
+      )) as Element[];
       expect(headings).toHaveLength(2);
       const tabBtns = container.querySelectorAll<HTMLElement>('.tabBtn');
       expect(tabBtns).toHaveLength(2);
@@ -437,20 +655,40 @@ describe('Plugins Manager', () => {
 
     it('should display plugin details under tabs', async () => {
       fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
-      const { container } = render(<MockProviders><PluginsModule /></MockProviders>);
+      const { container } = render(
+        <MockProviders>
+          <PluginsModule />
+        </MockProviders>
+      );
       await waitFor(async () => {
-        expect(await screen.findAllByText(/^Partial Dependence Plot$/i)).toHaveLength(3);
-      })
-      const listCardHeading = await screen.findByText(/AI Verify Process Checklist/i) as Element;
+        expect(
+          await screen.findAllByText(/^Partial Dependence Plot$/i)
+        ).toHaveLength(3);
+      });
+      const listCardHeading = (await screen.findByText(
+        /AI Verify Process Checklist/i
+      )) as Element;
       const listCard = listCardHeading.parentElement as Element;
       await userEvent.click(listCard);
-      await screen.findAllByText(/^AI Verify Process Checklist$/) as Element[];
+      (await screen.findAllByText(
+        /^AI Verify Process Checklist$/
+      )) as Element[];
       const tabBtns = container.querySelectorAll<HTMLElement>('.tabBtn');
-      expect(screen.queryByText(/^Explainability Process Checklist Answers$/i)).toBeTruthy();
-      expect(screen.queryByText(/^Fairness Process Checklist Answers$/i)).toBeTruthy();
-      expect(screen.queryByText(/^Explainability Process Checklist 0.1.0$/i)).toBeNull();
-      expect(screen.queryByText(/^Fairness Process Checklist 0.1.0$/i)).toBeNull();
-      const wDetailsHeading = screen.queryByText(/^Explainability Process Checklist Answers$/i) as Element;
+      expect(
+        screen.queryByText(/^Explainability Process Checklist Answers$/i)
+      ).toBeTruthy();
+      expect(
+        screen.queryByText(/^Fairness Process Checklist Answers$/i)
+      ).toBeTruthy();
+      expect(
+        screen.queryByText(/^Explainability Process Checklist 0.1.0$/i)
+      ).toBeNull();
+      expect(
+        screen.queryByText(/^Fairness Process Checklist 0.1.0$/i)
+      ).toBeNull();
+      const wDetailsHeading = screen.queryByText(
+        /^Explainability Process Checklist Answers$/i
+      ) as Element;
       const widgetDetailsCard = wDetailsHeading.parentElement;
       expect(widgetDetailsCard).toMatchInlineSnapshot(`
         <div
@@ -489,11 +727,21 @@ describe('Plugins Manager', () => {
         `);
 
       await userEvent.click(tabBtns[1]);
-      expect(screen.queryByText(/^Explainability Process Checklist Answers$/i)).toBeNull();
-      expect(screen.queryByText(/^Fairness Process Checklist Answers$/i)).toBeNull();
-      expect(screen.queryByText(/^Explainability Process Checklist 0.1.0$/i)).toBeTruthy();
-      expect(screen.queryByText(/^Fairness Process Checklist 0.1.0$/i)).toBeTruthy();
-      const ibDetailsHeading = screen.queryByText(/^Explainability Process Checklist 0.1.0$/i) as Element;
+      expect(
+        screen.queryByText(/^Explainability Process Checklist Answers$/i)
+      ).toBeNull();
+      expect(
+        screen.queryByText(/^Fairness Process Checklist Answers$/i)
+      ).toBeNull();
+      expect(
+        screen.queryByText(/^Explainability Process Checklist 0.1.0$/i)
+      ).toBeTruthy();
+      expect(
+        screen.queryByText(/^Fairness Process Checklist 0.1.0$/i)
+      ).toBeTruthy();
+      const ibDetailsHeading = screen.queryByText(
+        /^Explainability Process Checklist 0.1.0$/i
+      ) as Element;
       const iblockDetailsCard = ibDetailsHeading.parentElement;
       expect(iblockDetailsCard).toMatchInlineSnapshot(`
         <div
@@ -588,17 +836,27 @@ describe('Plugins Manager', () => {
 
     it('should display plugin algo environment dependencies statuses', async () => {
       fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
-      getPythonPackageDependencyStatusSpy.mockResolvedValue(algoPackageDependencyStatusResponse)
-      render(<MockProviders><PluginsModule /></MockProviders>);
+      getPythonPackageDependencyStatusSpy.mockResolvedValue(
+        algoPackageDependencyStatusResponse
+      );
+      render(
+        <MockProviders>
+          <PluginsModule />
+        </MockProviders>
+      );
       await waitFor(async () => {
-        expect(await screen.findAllByText(/^Partial Dependence Plot$/i)).toHaveLength(3);
+        expect(
+          await screen.findAllByText(/^Partial Dependence Plot$/i)
+        ).toHaveLength(3);
         expect(await screen.findByText(/^Required Packages$/i)).toBeTruthy();
       });
       expect(getPythonPackageDependencyStatusSpy).toHaveBeenCalledWith([
-        {"requirement": "numpy==1.24.1"},
-        {"requirement": "scipy==1.10.0"}
+        { requirement: 'numpy==1.24.1' },
+        { requirement: 'scipy==1.10.0' },
       ]);
-      const requiredPackageHeading = screen.queryByText(/^Required Packages$/i) as Element;
+      const requiredPackageHeading = screen.queryByText(
+        /^Required Packages$/i
+      ) as Element;
       const statusContainer = requiredPackageHeading.parentElement as Element;
       expect(statusContainer).toMatchInlineSnapshot(`
         <div
@@ -673,16 +931,23 @@ describe('Plugins Manager', () => {
   });
 
   describe('Delete Plugin', () => {
-
     it('should show delete plugin confirmation modal dialog delete button is clicked', async () => {
       fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
-      render(<MockProviders><PluginsModule /></MockProviders>);
+      render(
+        <MockProviders>
+          <PluginsModule />
+        </MockProviders>
+      );
       await waitFor(async () => {
-        expect(await screen.findAllByText(/^Partial Dependence Plot$/i)).toHaveLength(3);
-      })
+        expect(
+          await screen.findAllByText(/^Partial Dependence Plot$/i)
+        ).toHaveLength(3);
+      });
       const delBtn = screen.queryByText(/^Delete$/i) as Element;
       await userEvent.click(delBtn);
-      await screen.findByText(/^Are you sure you want to delete this plugin\?$/i);
+      await screen.findByText(
+        /^Are you sure you want to delete this plugin\?$/i
+      );
       expect(await screen.findAllByText(/^Delete$/i)).toHaveLength(2);
     });
 
@@ -690,18 +955,26 @@ describe('Plugins Manager', () => {
       fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
       const GID = 'aiverify.stock.algorithms.partial_dependence_plot';
       deletePluginSpy.mockResolvedValueOnce({ status: 200, data: GID });
-      render(<MockProviders><PluginsModule /></MockProviders>);
+      render(
+        <MockProviders>
+          <PluginsModule />
+        </MockProviders>
+      );
       await waitFor(async () => {
-        expect(await screen.findAllByText(/^Partial Dependence Plot$/i)).toHaveLength(3);
-      })
+        expect(
+          await screen.findAllByText(/^Partial Dependence Plot$/i)
+        ).toHaveLength(3);
+      });
       const delBtn = screen.queryByText(/^Delete$/i) as Element;
       await userEvent.click(delBtn);
       const deleteBtns = await screen.findAllByText(/^Delete$/i);
       await userEvent.click(deleteBtns[1]);
       await screen.findByText(/^Plugin was successfully removed$/i);
       expect(deletePluginSpy).toHaveBeenCalledWith(GID);
-      expect(screen.queryByText(/^Plugin was successfully removed$/i)).toBeTruthy();
+      expect(
+        screen.queryByText(/^Plugin was successfully removed$/i)
+      ).toBeTruthy();
       await waitFor(() => expect(fetchAllPluginsSpy).toHaveBeenCalledTimes(2));
     });
   });
-})
+});

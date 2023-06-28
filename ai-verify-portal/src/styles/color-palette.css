@@ -1,14 +1,14 @@
 :root {
-  --color-palette-violet: #702F8A;
-  --color-palette-violet-red: #991E66;
+  --color-palette-violet: #702f8a;
+  --color-palette-violet-red: #991e66;
   --color-palette-pink: #c42983;
   --color-palette-purple: #3b2161;
   --color-palette-dark-indigo1: #41244d;
   --color-palette-dark-indigo: #4b255a;
   --color-palette-royal-blue: #3a3d8a;
   --color-palette-midnight-blue: #292b61;
-  --color-white-soft-pink-tint: #F3F0F5;
-  --color-white: #FFFFFF;
+  --color-white-soft-pink-tint: #f3f0f5;
+  --color-white: #ffffff;
   --color-light-gray: #cfcfcf;
   --color-light-gray2: #f0f0f0;
   --color-light-gray3: #f7f7f7;
@@ -19,4 +19,3 @@
   --color-alert-warning: #fabb33;
   --color-alert-info: #357cce;
 }
-

@@ -1,15 +1,51 @@
 {
-  "extends": ["next/core-web-vitals", "plugin:@typescript-eslint/recommended", "prettier"], // prettier - just to eslint lint does not do formatting-related rules
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ], // prettier - ensure eslint lint does not do formatting-related rules
   "parser": "@typescript-eslint/parser",
   "plugins": ["@typescript-eslint"],
   "root": true,
   "rules": {
-    "react-hooks/rules-of-hooks": 1,
+    "react-hooks/rules-of-hooks": "warn",
     "react-hooks/exhaustive-deps": 0,
-    "prefer-const": 2,
-    "@typescript-eslint/no-empty-function": 2,
-    "@typescript-eslint/ban-ts-comment": 1,
-    "@typescript-eslint/no-inferrable-types": 1,
-    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }]
+    // "react/self-closing-comp": "error", TODO: Enable and fix below lint errors in separate PR
+    "prefer-const": "error",
+    "@typescript-eslint/no-empty-function": "error",
+    "@typescript-eslint/ban-ts-comment": "warn",
+    "@typescript-eslint/no-inferrable-types": "error",
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
+    ]
+    // TODO: Enable and fix below lint errors in separate PR
+    // "import/order": [
+    //   "warn",
+    //   {
+    //     "groups": [
+    //       "builtin",
+    //       "external",
+    //       "parent",
+    //       "sibling",
+    //       "index",
+    //       "object",
+    //       "type"
+    //     ],
+    //     "pathGroups": [
+    //       {
+    //         "pattern": "@/**/**",
+    //         "group": "parent",
+    //         "position": "before"
+    //       }
+    //     ],
+    //     "alphabetize": { "order": "asc" }
+    //   }
+    // ],
+    // "no-restricted-imports": ["error",
+    //   {
+    //         "patterns": ["../"]
+    //   }
+    // ]
   }
 }

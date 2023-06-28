@@ -3,192 +3,192 @@
 }
 
 .stickyPanelContainer {
-	position: fixed;
-	padding-top: 30px;
+  position: fixed;
+  padding-top: 30px;
 }
 
 .stickyRightAccordionContainer {
-	position: fixed;
-	width: var(--right-panel-width);
+  position: fixed;
+  width: var(--right-panel-width);
 }
 
 .accordionHeadingWrapper {
-	display: flex;
-	justify-content: space-between;
-	width: 100%;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .accordionHeading {
-	margin-left: 10px;
+  margin-left: 10px;
 }
 
 .gVarsContainer {
-	padding: 5px 15px;
-	padding-right: 0px;
-	margin-bottom: 10px;
-	font-size: 14px;
+  padding: 5px 15px;
+  padding-right: 0px;
+  margin-bottom: 10px;
+  font-size: 14px;
 }
 
 .gVarsScrollContainer {
-	max-height: 120px;
-	overflow-y: scroll;
-	padding-right: 5px;
+  max-height: 120px;
+  overflow-y: scroll;
+  padding-right: 5px;
 }
 
 .gVarsScrollContainer::-webkit-scrollbar {
-	width: 8px;
-	background-color: rgb(224, 224, 224);
+  width: 8px;
+  background-color: rgb(224, 224, 224);
   border-radius: 5px;
 }
 
 .gVarsScrollContainer::-webkit-scrollbar-thumb {
-	background-color: rgb(190, 189, 189);
+  background-color: rgb(190, 189, 189);
   border-radius: 5px;
 }
 
 .gVarsHeading {
-	width: 50%;
-	font-weight: bold;
+  width: 50%;
+  font-weight: bold;
 }
 
 .gVarsRow {
-	display: flex;
-	align-items: center;
-	padding: 2px;
+  display: flex;
+  align-items: center;
+  padding: 2px;
 }
 
 .gVarsRow_padRight {
-	margin-right: 15px;
+  margin-right: 15px;
 }
 
 .gVarsRow:hover {
-	background-color: var(--color-light-gray2);
+  background-color: var(--color-light-gray2);
 }
 
 .gVarsInputRow {
-	display: flex;
-	margin-top: 8px;
-	height: 30px;
+  display: flex;
+  margin-top: 8px;
+  height: 30px;
 }
 
 .gVarsCol {
-	position: relative;
-	margin-right: 8px;
-	width: calc((100% - 30px) / 2);
+  position: relative;
+  margin-right: 8px;
+  width: calc((100% - 30px) / 2);
 }
 
 .gVarsDelCol {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
 }
 
 .gVarsInputCol {
-	height: 100%;
-	width: calc((100% - 30px) / 2);
+  height: 100%;
+  width: calc((100% - 30px) / 2);
 }
 
 .gVarsInputCol input[type='text'] {
-	width: 95%;
-	height: 100%;
-	padding: 4px;
-	font-size: 14px;
-	font-family: inherit;
-	border: 1px solid var(--color-light-gray);
+  width: 95%;
+  height: 100%;
+  padding: 4px;
+  font-size: 14px;
+  font-family: inherit;
+  border: 1px solid var(--color-light-gray);
 }
 
 .gVarsInputCol input[type='text']:focus {
-	outline: none;
+  outline: none;
 }
 
 .gVarsAddBtn {
-	display: flex;
-	align-items: center;
-	margin: 0;
-	padding: 0;
-	background: none;
-	border: 1px solid white;
-	border-color: white;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 1px solid white;
+  border-color: white;
 }
 
 .gVarsAddbtn:enabled {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .gVarsAddBtn:disabled {
-	opacity: 0.5;
+  opacity: 0.5;
 }
 
 .gVarsAddBtn:enabled:hover {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .gVarsRemoveBtn {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .indicatorsGroup {
-	display: flex;
+  display: flex;
 }
 
 .indicatorWarningIcon {
-	color: var(--color-alert-warning);
-	margin-right: 5px;
-	font-size: 26px;
+  color: var(--color-alert-warning);
+  margin-right: 5px;
+  font-size: 26px;
 }
 
 .indicatorWarningIcon:hover {
-	opacity: 0.8;
+  opacity: 0.8;
 }
 
 .testsCountChip {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	margin-top: 2px;
-	margin-right: 10px;
-	background-color: var(--color-palette-pink);
-	border-radius: 50%;
-	min-width: 22px;
-	height: 22px;
-	color: white;
-	font-size: 13px;
-	line-height: 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2px;
+  margin-right: 10px;
+  background-color: var(--color-palette-pink);
+  border-radius: 50%;
+  min-width: 22px;
+  height: 22px;
+  color: white;
+  font-size: 13px;
+  line-height: 22px;
 }
 
 .depedencyDetailsScrollContainer {
-	max-height: 150px;
-	overflow-y: auto;
+  max-height: 150px;
+  overflow-y: auto;
 }
 
 .depedencyDetailsScrollContainer::-webkit-scrollbar {
-	width: 8px;
-	background-color: rgb(224, 224, 224);
+  width: 8px;
+  background-color: rgb(224, 224, 224);
   border-radius: 5px;
 }
 
 .depedencyDetailsScrollContainer::-webkit-scrollbar-thumb {
-	background-color: rgb(190, 189, 189);
+  background-color: rgb(190, 189, 189);
   border-radius: 5px;
 }
 
 .depedencyDetails {
-	font-size: 14px;
-	padding: 5px 10px;
-	box-sizing: border-box;
-	border-bottom: 1px solid var(--color-light-gray);
+  font-size: 14px;
+  padding: 5px 10px;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--color-light-gray);
 }
 
 .depedencyDetails:last-of-type {
-	border-bottom: none;
+  border-bottom: none;
 }
 
 .depedencyDetails .depedencyHeading {
-	margin-bottom: 4px;
-	cursor: pointer;
+  margin-bottom: 4px;
+  cursor: pointer;
 }
 
 .depedencyDetails .depedencyHeading:hover .headingText {
-	text-decoration: underline;
+  text-decoration: underline;
 }
