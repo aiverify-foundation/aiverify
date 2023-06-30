@@ -67,7 +67,22 @@ const modelFileSchema = new Schema({
   type: { type: String, required: true, default: "File", enum: ["File", "Folder", "Pipeline", "API"] },
   filename: { type: String }, // for non-API type
   filePath: { type: String }, // for non-API type
-  modelAPI: { type: modelAPISchema }, // for API type
+  modelAPI: { type: modelAPISchema, validate: {
+    validator: function(api) {
+      return new Promise((resolve, reject) => {
+        try {
+          const spec = _exportModelAPI(api);
+          if (spec)
+            resolve(true);
+          else
+            reject(new Error('Invalid model API'))
+        } catch (err) {
+          reject(err);
+        }
+      })
+    },
+    message: props => `ModelAPI is invalid`
+  } }, // for API type
   ctime: { type: Date },
   description: { type: String, required: false },
   status: { type: String, default: "Pending", enum: ["Pending", "Valid", "Invalid", "Error", "Cancelled", "Temp"] },
@@ -86,10 +101,13 @@ const _url_path_pattern = /\{([a-z0-9_\-\s]+)\}/ig;
 
 modelFileSchema.methods.exportModelAPI = function() {
   if (this.type !== "API") {
-    return null;
+    throw new Error("Model is not of type API")
   }
+  return _exportModelAPI(this.modelAPI);
+}
 
-  const modelAPI = this.modelAPI;
+function _exportModelAPI(modelAPI) {
+  // const modelAPI = this.modelAPI;
   // console.log("exportModelAPI", modelAPI)
   let spec = {
     "openapi": "3.0.3",
@@ -170,7 +188,7 @@ modelFileSchema.methods.exportModelAPI = function() {
       let attr = item.replaceAll(/[{}]/g,'');
       const p = modelAPI.parameters.pathParams.find(p => p.name === attr);
       if (!p) {
-        return null;
+        throw new Error(`Path parameter {${attr}} not defined`);
       }
       let pobj = {
         "in": "path",

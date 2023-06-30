@@ -27,18 +27,22 @@ const resolvers = {
             return reject("Invalid ID");
           if (doc.type !== "API")
             return reject("Model is not of type API");
-          const spec = doc.exportModelAPI();
-          // console.log("spec", spec); 
-          if (!spec)
-            return reject("Unable to generate spec");
-          resolve(spec);
+          try {
+            const spec = doc.exportModelAPI();
+            // console.log("spec", spec); 
+            if (!spec)
+              return reject("Unable to generate spec");
+            resolve(spec);  
+          } catch (err) {
+            reject(err);
+          }
         })
       })
     }
   },
   Mutation: {
     createModelAPI: (parent, { model }) => {
-      console.log("createModelAPI", model);
+      // console.log("createModelAPI", model);
       if (!model.name || !model.modelType || !model.modelAPI || !model.modelAPI.response) {
         return Promise.reject("Missing variable")
       }
