@@ -1,13 +1,13 @@
 enum OpenAPIPrimitiveTypes {
   string
-  number
+  Int
   integer
   boolean
 }
 
 enum OpenAPIAllTypes {
   string
-  number
+  Int
   integer
   boolean
   array
@@ -20,7 +20,7 @@ enum OpenAPIMethod {
 }
 
 type OpenAPIAdditionalHeadersType {
-  name: String! @constraint(minLength:1, maxLength:128)
+  name: String! @constraint(minLength: 1, maxLength: 128)
   type: OpenAPIPrimitiveTypes!
   value: JSON!
 }
@@ -32,9 +32,10 @@ enum OpenAPIPathParamsStyles {
 }
 
 type OpenAPIPathParamsType {
-  name: String! @constraint(minLength:1, maxLength:128)
+  name: String! @constraint(minLength: 1, maxLength: 128)
   type: OpenAPIAllTypes!
   itemType: OpenAPIPrimitiveTypes
+  maxItems: Int # max array items if itemType == 'array'
   style: OpenAPIPathParamsStyles
   explode: Boolean
 }
@@ -47,9 +48,10 @@ enum OpenAPIQueryParamsStyles {
 }
 
 type QueryParamsType {
-  name: String! @constraint(minLength:1, maxLength:128)
+  name: String! @constraint(minLength: 1, maxLength: 128)
   type: OpenAPIAllTypes!
   itemType: OpenAPIPrimitiveTypes
+  maxItems: Int # max array items if itemType == 'array'
   style: OpenAPIQueryParamsStyles
   explode: Boolean
 }
@@ -59,15 +61,14 @@ type OpenAPIParametersType {
   queryParams: [QueryParamsType]
 }
 
-
 type OpenAPIRequestBodyPropertyType {
-  field: String! @constraint(minLength:1, maxLength:128)
+  field: String! @constraint(minLength: 1, maxLength: 128)
   type: OpenAPIAllTypes!
   itemType: OpenAPIPrimitiveTypes
+  maxItems: Int # max array items if itemType == 'array'
   style: OpenAPIQueryParamsStyles
   explode: Boolean
 }
-
 
 type OpenAPIRequestBodyType {
   mediaType: OpenAPIMediaType!
@@ -75,10 +76,10 @@ type OpenAPIRequestBodyType {
 }
 
 type OpenAPIResponseType {
-  statusCode: Int! @constraint(min:200, max:299)
+  statusCode: Int! @constraint(min: 200, max: 299)
   mediaType: OpenAPIMediaType!
   type: OpenAPIAllTypes
-  field: String @constraint(minLength:1, maxLength:128) # for object, define the prediction field use dot, e.g. xxx.yyy, to denote nested field
+  field: String @constraint(minLength: 1, maxLength: 128) # for object, define the prediction field use dot, e.g. xxx.yyy, to denote nested field
 }
 
 enum ModelAPIRequestConfigBatchStrategy {
@@ -87,11 +88,11 @@ enum ModelAPIRequestConfigBatchStrategy {
 }
 
 type ModelAPIRequestConfigType {
-  rateLimit: Int! @constraint(min:-1) # max number of requests per minute
+  rateLimit: Int! @constraint(min: -1) # max Int of requests per minute
   batchStrategy: ModelAPIRequestConfigBatchStrategy!
-  batchLimit: Int @constraint(min:-1) # max number of requests in each batch
-  maxConnections: Int! @constraint(min:-1) # max number of concurrent connections to API server
-  requestTimeout: Int! @constraint(min:1) # request connection timeout in ms
+  batchLimit: Int @constraint(min: -1) # max Int of requests in each batch
+  maxConnections: Int! @constraint(min: -1) # max Int of concurrent connections to API server
+  requestTimeout: Int! @constraint(min: 1) # request connection timeout in ms
 }
 
 type ModelAPIType {
@@ -100,32 +101,33 @@ type ModelAPIType {
   urlParams: String
   authType: OpenAPIAuthType!
   authTypeConfig: JSON
-  additionalHeaders: [OpenAPIAdditionalHeadersType],
+  additionalHeaders: [OpenAPIAdditionalHeadersType]
   parameters: OpenAPIParametersType
   requestBody: OpenAPIRequestBodyType
   response: OpenAPIResponseType!
   requestConfig: ModelAPIRequestConfigType!
 }
 
-
 input OpenAPIAdditionalHeadersInput {
-  name: String! @constraint(minLength:1, maxLength:128)
+  name: String! @constraint(minLength: 1, maxLength: 128)
   type: OpenAPIPrimitiveTypes!
   value: JSON!
 }
 
 input OpenAPIPathParamsInput {
-  name: String! @constraint(minLength:1, maxLength:128)
+  name: String! @constraint(minLength: 1, maxLength: 128)
   type: OpenAPIAllTypes!
   itemType: OpenAPIPrimitiveTypes
+  maxItems: Int # max array items if itemType == 'array'
   style: OpenAPIPathParamsStyles
   explode: Boolean
 }
 
 input QueryParamsInput {
-  name: String! @constraint(minLength:1, maxLength:128)
+  name: String! @constraint(minLength: 1, maxLength: 128)
   type: OpenAPIAllTypes!
   itemType: OpenAPIPrimitiveTypes
+  maxItems: Int # max array items if itemType == 'array'
   style: OpenAPIQueryParamsStyles
   explode: Boolean
 }
@@ -136,9 +138,10 @@ input OpenAPIParametersInput {
 }
 
 input OpenAPIRequestBodyPropertyInput {
-  field: String! @constraint(minLength:1, maxLength:128)
+  field: String! @constraint(minLength: 1, maxLength: 128)
   type: OpenAPIAllTypes!
   itemType: OpenAPIPrimitiveTypes
+  maxItems: Int # max array items if itemType == 'array'
   style: OpenAPIQueryParamsStyles
   explode: Boolean
 }
@@ -149,18 +152,18 @@ input OpenAPIRequestBodyInput {
 }
 
 input OpenAPIResponseInput {
-  statusCode: Int! @constraint(min:200, max:299)
+  statusCode: Int! @constraint(min: 200, max: 299)
   mediaType: OpenAPIMediaType!
   type: OpenAPIAllTypes!
-  field: String @constraint(minLength:1, maxLength:128) # for object, define the prediction field use dot, e.g. xxx.yyy, to denote nested field
+  field: String @constraint(minLength: 1, maxLength: 128) # for object, define the prediction field use dot, e.g. xxx.yyy, to denote nested field
 }
 
 input ModelAPIRequestConfigInput {
-  rateLimit: Int! @constraint(min:-1) # max number of requests per minute
+  rateLimit: Int! @constraint(min: -1) # max Int of requests per minute
   batchStrategy: ModelAPIRequestConfigBatchStrategy!
-  batchLimit: Int @constraint(min:-1) # max number of requests in each batch
-  maxConnections: Int! @constraint(min:-1) # max number of concurrent connections to API server
-  requestTimeout: Int! @constraint(min:1) # request connection timeout in ms
+  batchLimit: Int @constraint(min: -1) # max Int of requests in each batch
+  maxConnections: Int! @constraint(min: -1) # max Int of concurrent connections to API server
+  requestTimeout: Int! @constraint(min: 1) # request connection timeout in ms
 }
 
 input ModelAPIInput {
