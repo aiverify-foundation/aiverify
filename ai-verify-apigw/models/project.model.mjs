@@ -75,10 +75,19 @@ export const ProjectTemplateModel = model(
   projectTemplateSchema
 );
 
+/**
+ * Configuration specific to configuration data for API connector
+ */
+const apiConfigSchema = new Schema({
+  requestBody: { type: Object },
+  parameters: { type: Object },
+});
+
 export const projectSchema = new Schema(
   {
     template: { type: Schema.Types.ObjectId, ref: "ProjectTemplateModel" }, // reference to template used
     inputBlockData: { type: Object, default: {} },
+    apiConfig: apiConfigSchema,
     testInformationData: [
       {
         algorithmGID: { type: String },
