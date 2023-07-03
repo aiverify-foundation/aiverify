@@ -4,24 +4,32 @@ import Typography from '@mui/material/Typography';
 import FormHelperText from '@mui/material/FormHelperText';
 
 type Props = {
-  title?: string,
-  description?: string,
-  id?: string,
-  inputProps?: any,
-  errorText?: string|null,
-  FormControlProps?: any,
-}
+  title?: string;
+  description?: string;
+  id?: string;
+  inputProps?: any;
+  errorText?: string | null;
+  FormControlProps?: any;
+};
 
-function MyTextField ({ title, description, id, inputProps={}, FormControlProps={}, errorText }: Props) {
+function MyTextField({
+  title,
+  description,
+  id,
+  inputProps = {},
+  FormControlProps = {},
+  errorText,
+}: Props) {
   return (
-    <FormControl
-      fullWidth
-      {...FormControlProps}
-    >
+    <FormControl fullWidth {...FormControlProps}>
       {title && <Typography variant="formLabel">{title}</Typography>}
-      {description && <Typography variant="formHelperText" sx={{ mb:0.5 }}>{description}</Typography>}
+      {description && (
+        <Typography variant="formHelperText" sx={{ mb: 0.5 }}>
+          {description}
+        </Typography>
+      )}
       <OutlinedInput
-        color='secondary'
+        color="secondary"
         data-testid={id}
         id={id}
         fullWidth
@@ -30,7 +38,7 @@ function MyTextField ({ title, description, id, inputProps={}, FormControlProps=
       />
       {errorText && <FormHelperText error>{errorText}</FormHelperText>}
     </FormControl>
-  )
+  );
 }
 
 export default MyTextField;

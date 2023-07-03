@@ -8,40 +8,43 @@ module.exports = {
         destination: '/home',
         permanent: true,
       },
-    ]
+    ];
   },
   rewrites() {
     return [
       {
-        source: "/api/graphql",
+        source: '/api/graphql',
         destination: `${process.env.APIGW_URL}/graphql`,
       },
       {
-        source: "/api/upload/data",
+        source: '/api/upload/data',
         destination: `${process.env.APIGW_URL}/upload/data`,
       },
       {
-        source: "/api/upload/model",
+        source: '/api/upload/model',
         destination: `${process.env.APIGW_URL}/upload/model`,
-      },{
-        source: "/api/report/:projectId",
+      },
+      {
+        source: '/api/report/:projectId',
         destination: `${process.env.APIGW_URL}/report/:projectId`,
       },
       {
-        source: "/api/template/:path",
+        source: '/api/template/:path',
         destination: `${process.env.APIGW_URL}/template/:path`,
       },
       {
-        source: "/api/logs/:projectId",
+        source: '/api/logs/:projectId',
         destination: `${process.env.APIGW_URL}/logs/:projectId`,
       },
       {
-        source: "/api/requirements/client",
-        destination: process.env.TEST_ENGINE_URL ? `${process.env.TEST_ENGINE_URL}/requirements/client` : 'http://localhost:8080/requirements/client',
+        source: '/api/requirements/client',
+        destination: process.env.TEST_ENGINE_URL
+          ? `${process.env.TEST_ENGINE_URL}/requirements/client`
+          : 'http://localhost:8080/requirements/client',
       },
     ];
   },
   eslint: {
-    dirs: ['pages', 'server', 'src', 'plugins']
+    dirs: ['pages', 'server', 'src', 'plugins'],
   },
 };

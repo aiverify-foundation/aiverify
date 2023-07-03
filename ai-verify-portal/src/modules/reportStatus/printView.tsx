@@ -1,10 +1,19 @@
 import React, { useState, useEffect, useRef, forwardRef } from 'react';
 
+
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+
 import { WIDTH, COLUMNS, ROW_HEIGHT } from 'src/lib/reportUtils';
-import { getItemLayoutProperties, useWidgetProperties } from 'src/lib/canvasUtils';
+import {
+  getItemLayoutProperties,
+  useWidgetProperties,
+} from 'src/lib/canvasUtils';
 import { ReportWidgetItem, Page } from 'src/types/projectTemplate.interface';
 import { Report } from 'src/types/project.interface';
-import ReportWidgetComponent, { ReportWidgetComponentProps } from './reportWidget';
+import ReportWidgetComponent, {
+  ReportWidgetComponentProps,
+} from './reportWidget';
 import styles from './styles/printView.module.css';
 import sharedStyles from '../projectTemplate/styles/shared/reportDefault.module.css';
 import { TestEngineTaskStatus } from '../../types/test.interface';
@@ -77,7 +86,7 @@ function MyDynamicHeightPage ({ page, pageno, numPages, widgetComps, report }: M
 type Props = {
   report: Report;
   mdxBundleMap: any;
-}
+};
 
 /**
  * Main project module component
@@ -85,8 +94,10 @@ type Props = {
 export default function PrintViewModule({ report, mdxBundleMap }: Props) {
   const [ pages, setPages ] = useState<PageExtended[]>([]);
   const widgetProperties = useWidgetProperties(report.projectSnapshot);
-  const [reportContext, setReportContext] = useState<{[key: string]: ReportWidgetComponentProps}>({});
-  const [widgetComps, setWidgetComps] = useState<any|null>(null);
+  const [reportContext, setReportContext] = useState<{
+    [key: string]: ReportWidgetComponentProps;
+  }>({});
+  const [widgetComps, setWidgetComps] = useState<any | null>(null);
 
   useEffect(() => {
     const pages = report.projectSnapshot.pages as PageExtended[];
@@ -96,22 +107,20 @@ export default function PrintViewModule({ report, mdxBundleMap }: Props) {
       for (const test of report.tests) {
         if (test.status == TestEngineTaskStatus.Success)
           result[test.algorithmGID] = test.output;
-        else
-          result[test.algorithmGID] = null;
+        else result[test.algorithmGID] = null;
       }
     }
     const widgetComps: any = {};
     for (const page of pages) {
       page.hasDynamicHeight = false;
       for (const layout of page.layouts) {
-        if (layout.i === "_youcantseeme")
-          continue;
-        const reportWidget = page.reportWidgets.find(e => e.key == layout.i);
+        if (layout.i === '_youcantseeme') continue;
+        const reportWidget = page.reportWidgets.find((e) => e.key == layout.i);
         if (!reportWidget) {
-          console.warn("Invalid widget key", layout);
+          console.warn('Invalid widget key', layout);
           continue;
         }
-        const comp = getWidget(reportWidget, layout, result)
+        const comp = getWidget(reportWidget, layout, result);
         widgetComps[reportWidget.key] = comp;
         if (comp.meta.dynamicHeight)
           page.hasDynamicHeight = true;
@@ -120,13 +129,20 @@ export default function PrintViewModule({ report, mdxBundleMap }: Props) {
     setPages(pages);
 
     setWidgetComps(widgetComps);
-  }, [report.projectSnapshot.pages])
+  }, [report.projectSnapshot.pages]);
 
-  const getWidget = (reportWidget: ReportWidgetItem, layoutItem: any, result: any) => {
+  const getWidget = (
+    reportWidget: ReportWidgetItem,
+    layoutItem: any,
+    result: any
+  ) => {
     const properties: any = {};
+
     if (reportWidget.properties) {
       for (const key of Object.keys(reportWidget.properties)) {
-        properties[key] = widgetProperties.getProperty(reportWidget.properties[key]);
+        properties[key] = widgetProperties.getProperty(
+          reportWidget.properties[key]
+        );
       }
     }
     const comp = {
@@ -143,22 +159,24 @@ export default function PrintViewModule({ report, mdxBundleMap }: Props) {
   const numPages = pages.length;
 
   return (
-    <div className={clsx(
-      styles.pageContainer,
-      sharedStyles.reportRoot,
-      sharedStyles.reportContainer,
-      )}
-    >
-      {widgetComps && reportContext && pages.map((page, pageno) => (
-        <MyDynamicHeightPage
-          key={`page-${pageno}`}
-          page={page}
-          pageno={pageno}
-          numPages={numPages}
-          widgetComps={widgetComps}
-          report={report}
-        />
+    <div
+      className={clsx(
+        styles.pageContainer,
+        sharedStyles.reportRoot,
+        sharedStyles.reportContainer
+      )}>
+      {widgetComps &&
+        reportContext &&
+        pages.map((page, pageno) => (
+          <MyDynamicHeightPage
+            key={`page-${pageno}`}
+            page={page}
+            pageno={pageno}
+            numPages={numPages}
+            widgetComps={widgetComps}
+            report={report}
+          />
       ))}
     </div>
-  )
+  );
 }

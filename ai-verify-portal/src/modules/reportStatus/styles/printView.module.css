@@ -1,8 +1,7 @@
-@media print
-{
-  .no-print, .no-print *
-  {
-      display: none !important;
+@media print {
+  .no-print,
+  .no-print * {
+    display: none !important;
   }
   /* .page {
     page-break-after: 'always'

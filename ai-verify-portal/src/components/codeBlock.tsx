@@ -3,8 +3,8 @@ import * as React from 'react';
 import OutlinedInput from '@mui/material/OutlinedInput';
 
 type Props = {
-  text?: string,
-}
+  text?: string;
+};
 
 export default function CodeBlock({ text }: Props) {
   return (
@@ -17,5 +17,5 @@ export default function CodeBlock({ text }: Props) {
       // sx={{ bgcolor:'black', color:'white' }}
       value={text}
     />
-  )
+  );
 }

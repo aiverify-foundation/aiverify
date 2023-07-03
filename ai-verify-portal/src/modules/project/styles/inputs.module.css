@@ -19,7 +19,7 @@
 .projectDetail {
   display: flex;
   flex-direction: column;
-  background: #FFFFFF;
+  background: #ffffff;
   padding: 15px;
   border-radius: 4px;
 }
@@ -77,7 +77,7 @@
 .inputCard {
   display: flex;
   position: relative;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   align-items: flex-start;
   padding: 4px 20px;
   border-radius: 4px;
@@ -86,7 +86,7 @@
   border: 2px solid transparent;
   transition-property: 'border-color';
   transition-timing-function: ease-in-out;
-	transition-duration: 0.2s;
+  transition-duration: 0.2s;
   scroll-margin-top: 20px;
 }
 
@@ -117,7 +117,7 @@
 }
 
 .inputSummary {
-  font-size:  14px;
+  font-size: 14px;
 }
 
 .inputMain {

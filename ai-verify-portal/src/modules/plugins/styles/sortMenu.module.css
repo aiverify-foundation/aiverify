@@ -1,6 +1,6 @@
 .sortMenu {
   position: relative;
-  display: flex; 
+  display: flex;
   flex-direction: column;
   position: relative;
 }
@@ -11,7 +11,7 @@
 }
 
 .optionDisplay {
-  background: #FFFFFF;
+  background: #ffffff;
   padding: 5px 8px;
   cursor: pointer;
   border-radius: 4px;

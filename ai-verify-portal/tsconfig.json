@@ -20,12 +20,10 @@
       "src/*": ["src/*"],
       "server/*": ["server/*"],
       "plugins/*": ["plugins/*"],
-      "config/*": ["config/*"]
+      "config/*": ["config/*"],
+      "@/components/*": ["src/components/*"]
     },
-    "typeRoots": [
-      "node_modules/@types",
-      "src/@types",
-    ]
+    "typeRoots": ["node_modules/@types", "src/@types"]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules", "plugins"]
