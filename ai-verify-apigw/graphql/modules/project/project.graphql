@@ -79,6 +79,7 @@ type Report {
 
 type ModelAndDatasets {
   model: ModelFile
+  apiConfig: APIConfigType
   testDataset: Dataset
   groundTruthDataset: Dataset
   groundTruthColumn: String
@@ -97,7 +98,6 @@ type Project {
   pages: [Page]
   inputBlockData: JSON
   testInformationData: [TestInformation]
-  apiConfig: APIConfigType
   report: Report
   createdAt: DateTime
   updatedAt: DateTime
@@ -153,16 +153,17 @@ input GlobalVariableInput {
   value: String! @constraint(minLength: 1, maxLength: 128)
 }
 
-input ModelAndDatasetsInput {
-  modelId: ObjectID
-  testDatasetId: ObjectID
-  groundTruthDatasetId: ObjectID
-  groundTruthColumn: String @constraint(minLength: 1, maxLength: 128)
-}
-
 input APIConfigInput {
   requestBody: JSON
   parameters: JSON
+}
+
+input ModelAndDatasetsInput {
+  modelId: ObjectID
+  apiConfig: APIConfigInput
+  testDatasetId: ObjectID
+  groundTruthDatasetId: ObjectID
+  groundTruthColumn: String @constraint(minLength: 1, maxLength: 128)
 }
 
 input ProjectInput {
@@ -172,7 +173,6 @@ input ProjectInput {
   inputBlockData: JSON
   modelAndDatasets: ModelAndDatasetsInput
   testInformationData: [TestInformationInput]
-  apiConfig: APIConfigInput
   # inputBlockGIDs: [String]
 }
 
