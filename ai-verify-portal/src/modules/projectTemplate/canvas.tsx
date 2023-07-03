@@ -548,7 +548,7 @@ export default function CanvasComponent(props: CanvasProps) {
     if (!dragItem || !layout) return;
     let addedWidgetGridItem: ReportWidgetItem | undefined;
     const widget = dragItem;
-    const { x, y, w, h } = layout;
+    const { i, x, y, w, h } = layout;
     const { minW, minH, maxW, maxH } = widget.widgetSize;
     const newLayout = { x, y, w, h, minW, minH, maxW, maxH };
     if (widget.dynamicHeight) {
