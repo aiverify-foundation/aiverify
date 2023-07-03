@@ -378,7 +378,7 @@ const resolvers = {
           // no tests to run, just generate
         }
         const needToRunTests = reportObj.tests && reportObj.tests.length > 0;
-        const modelAndDatasets = proj.modelAndDatasets.toObject();
+        const modelAndDatasets = proj.modelAndDatasets;
         if (
           needToRunTests &&
           (!modelAndDatasets ||
@@ -394,10 +394,19 @@ const resolvers = {
           const doc = await ReportModel.findByIdAndUpdate(reportId, reportObj, {
             new: true,
           });
-          queueTests(doc, modelAndDatasets);
-          doc.projectID = proj._id;
-          if (!needToRunTests) await generateReport(reportId);
-          resolve(doc);
+          try {
+            if (needToRunTests) {
+              await queueTests(doc, modelAndDatasets);
+            } else {
+              await generateReport(reportId);
+            }
+            doc.projectID = proj._id;
+            resolve(doc);
+          } catch (err) {
+            doc.status = "ReportError";
+            await doc.save();
+            reject(err);
+          }
         } else {
           // create new report object
           const report = new ReportModel(reportObj);
@@ -405,9 +414,18 @@ const resolvers = {
           newDoc.projectID = proj._id;
           proj.report = newDoc._id;
           await proj.save();
-          queueTests(newDoc, modelAndDatasets);
-          if (!needToRunTests) await generateReport(newDoc._id);
-          resolve(newDoc);
+          try {
+            if (needToRunTests) {
+              await queueTests(newDoc, modelAndDatasets);
+            } else {
+              await generateReport(newDoc._id);
+            }
+            resolve(newDoc);
+          } catch (err) {
+            newDoc.status = "ReportError";
+            await newDoc.save();
+            reject(err);
+          }
         }
       });
     }, // generateReport

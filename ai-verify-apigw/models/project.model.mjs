@@ -87,7 +87,6 @@ export const projectSchema = new Schema(
   {
     template: { type: Schema.Types.ObjectId, ref: "ProjectTemplateModel" }, // reference to template used
     inputBlockData: { type: Object, default: {} },
-    apiConfig: apiConfigSchema,
     testInformationData: [
       {
         algorithmGID: { type: String },
@@ -97,6 +96,7 @@ export const projectSchema = new Schema(
     ],
     modelAndDatasets: {
       model: { type: Schema.Types.ObjectId, ref: "ModelFileModel" },
+      apiConfig: apiConfigSchema,
       testDataset: { type: Schema.Types.ObjectId, ref: "DatasetModel" },
       groundTruthDataset: { type: Schema.Types.ObjectId, ref: "DatasetModel" },
       groundTruthColumn: { type: String },
