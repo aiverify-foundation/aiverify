@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
+import HeightIcon from '@mui/icons-material/Height';
 import { IconButton } from 'src/components/iconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import styles from './styles/canvas.module.css';
@@ -10,12 +11,21 @@ const CANVAS_PAD = 10; // this value must be the same as css var --A4-canvas-pad
 type SelectedGridActionButtonsProps = {
   el: HTMLDivElement;
   hideEditBtn?: boolean;
+  title?: string;
+  isDynamicHeight?: boolean;
   onDeleteClick: () => void;
   onEditClick: () => void;
 };
 
 function SelectedGridActionButtons(props: SelectedGridActionButtonsProps) {
-  const { el, hideEditBtn = false, onDeleteClick, onEditClick } = props;
+  const {
+    el,
+    hideEditBtn = false,
+    onDeleteClick,
+    onEditClick,
+    title,
+    isDynamicHeight = false,
+  } = props;
   const [isTransitioning, setIsTransitioning] = useState(false);
   const width = el.style.width;
   const matrix = new DOMMatrixReadOnly(
@@ -53,17 +63,40 @@ function SelectedGridActionButtons(props: SelectedGridActionButtonsProps) {
 
   return isTransitioning ? null : (
     <div
+      className={styles.menuContainer}
       id="gridItemActionMenu"
-      className={styles.gridItem_menu}
       style={{ top, left: `calc(${left} + ${width} + 5px)` }}>
-      <IconButton
-        iconComponent={DeleteIcon}
-        noOutline
-        onClick={onDeleteClick}
-      />
-      {!hideEditBtn ? (
-        <IconButton iconComponent={EditIcon} noOutline onClick={onEditClick} />
+      {title !== undefined ? (
+        <div className={styles.gridItem_title}>{title}</div>
       ) : null}
+      {isDynamicHeight ? (
+        <div className={styles.gridItem_dheightNote}>
+          <HeightIcon style={{ color: '#787878', fontSize: 22 }} />
+          <div>Dynamic Height </div>
+        </div>
+      ) : null}
+      <div className={styles.gridItem_menu}>
+        <IconButton
+          iconComponent={DeleteIcon}
+          noOutline
+          onClick={onDeleteClick}
+          style={{
+            boxShadow: '0px 0px 4px 0px rgba(0, 0, 0, 0.2)',
+            marginRight: 3,
+          }}
+        />
+        {!hideEditBtn ? (
+          <IconButton
+            iconComponent={EditIcon}
+            noOutline
+            onClick={onEditClick}
+            style={{
+              boxShadow: '0px 0px 4px 0px rgba(0, 0, 0, 0.2)',
+              marginRight: 3,
+            }}
+          />
+        ) : null}
+      </div>
     </div>
   );
 }
