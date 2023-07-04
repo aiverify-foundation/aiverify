@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, forwardRef } from 'react';
 
-
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
@@ -28,35 +27,42 @@ interface PageExtended extends Page {
 type MyDynamicHeightPageProps = {
   page: PageExtended;
   pageno: number;
-  numPages: number,
+  numPages: number;
   widgetComps: any;
   report: Report;
-}
+};
 
-function MyDynamicHeightPage ({ page, pageno, numPages, widgetComps, report }: MyDynamicHeightPageProps) {
+function MyDynamicHeightPage({
+  page,
+  pageno,
+  numPages,
+  widgetComps,
+  report,
+}: MyDynamicHeightPageProps) {
   return (
     <>
-      <div 
-        className={clsx(
-          styles.page,
-          sharedStyles.printPage,
-        )}
+      <div
+        className={clsx(styles.page, sharedStyles.printPage)}
         style={{
-          pageBreakBefore: pageno > 0 ? 'always':'avoid',
+          pageBreakBefore: pageno > 0 ? 'always' : 'avoid',
         }}>
-        {page.reportWidgets?.map(item => {
+        {page.reportWidgets?.map((item) => {
           const comp = widgetComps[item.key];
           const width = comp.layoutItem.w * COL_WIDTH;
           const left = comp.layoutItem.x * COL_WIDTH;
           const top = comp.layoutItem.y * ROW_HEIGHT;
-          const height=comp.meta.dynamicHeight?'max-content':comp.layoutItem.h*ROW_HEIGHT;
+          const height = comp.meta.dynamicHeight
+            ? 'max-content'
+            : comp.layoutItem.h * ROW_HEIGHT;
           return (
             <div
               key={item.key}
               className={styles.reportWidgetComponent}
               style={{
                 display: 'flex',
-                ...getItemLayoutProperties(comp.reportWidget.layoutItemProperties),
+                ...getItemLayoutProperties(
+                  comp.reportWidget.layoutItemProperties
+                ),
                 float: 'left',
                 position: 'relative',
                 width,
@@ -64,8 +70,7 @@ function MyDynamicHeightPage ({ page, pageno, numPages, widgetComps, report }: M
                 marginRight: -WIDTH,
                 marginLeft: left,
                 marginTop: top,
-              }}
-            >
+              }}>
               <ReportWidgetComponent
                 mdxBundle={comp.mdxBundle}
                 inputBlockData={report.projectSnapshot.inputBlockData}
@@ -75,12 +80,14 @@ function MyDynamicHeightPage ({ page, pageno, numPages, widgetComps, report }: M
                 report={report}
               />
             </div>
-          )
+          );
         })}
       </div>
-      {page.hasDynamicHeight && pageno < (numPages-1) && <div style={{ pageBreakAfter:'always' }}></div>}
+      {page.hasDynamicHeight && pageno < numPages - 1 && (
+        <div style={{ pageBreakAfter: 'always' }}></div>
+      )}
     </>
-  )
+  );
 }
 
 type Props = {
@@ -92,7 +99,7 @@ type Props = {
  * Main project module component
  */
 export default function PrintViewModule({ report, mdxBundleMap }: Props) {
-  const [ pages, setPages ] = useState<PageExtended[]>([]);
+  const [pages, setPages] = useState<PageExtended[]>([]);
   const widgetProperties = useWidgetProperties(report.projectSnapshot);
   const [reportContext, setReportContext] = useState<{
     [key: string]: ReportWidgetComponentProps;
@@ -122,8 +129,7 @@ export default function PrintViewModule({ report, mdxBundleMap }: Props) {
         }
         const comp = getWidget(reportWidget, layout, result);
         widgetComps[reportWidget.key] = comp;
-        if (comp.meta.dynamicHeight)
-          page.hasDynamicHeight = true;
+        if (comp.meta.dynamicHeight) page.hasDynamicHeight = true;
       }
     }
     setPages(pages);
@@ -151,10 +157,10 @@ export default function PrintViewModule({ report, mdxBundleMap }: Props) {
       meta: mdxBundleMap[reportWidget.widgetGID].widget,
       properties: properties,
       layoutItem,
-      result, 
-    }
+      result,
+    };
     return comp;
-  }
+  };
 
   const numPages = pages.length;
 
@@ -176,7 +182,7 @@ export default function PrintViewModule({ report, mdxBundleMap }: Props) {
             widgetComps={widgetComps}
             report={report}
           />
-      ))}
+        ))}
     </div>
   );
 }

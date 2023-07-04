@@ -1,8 +1,4 @@
-import React, {
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Accordion,
   AccordionDetails,
@@ -37,7 +33,8 @@ type LeftPanelProps = {
 };
 
 function DesignerLeftPanel(props: LeftPanelProps) {
-  const { projectStore, onWidgetDragStart, onWidgetDragEnd, onWidgetDrag } = props;
+  const { projectStore, onWidgetDragStart, onWidgetDragEnd, onWidgetDrag } =
+    props;
   const [pluginsWithWidgets, setPluginsWithWidgets] = useState<AIFPlugin[]>([]);
   const widgetsFuseRef = useRef<Fuse<AIFPlugin>>();
 

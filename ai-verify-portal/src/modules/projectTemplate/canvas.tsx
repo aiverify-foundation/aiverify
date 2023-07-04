@@ -105,8 +105,12 @@ export default function CanvasComponent(props: CanvasProps) {
   const selectedWidgetPlugin = selectedWidget
     ? projectStore.pluginManager.plugins.find(
         (plugin) => plugin.gid === selectedWidget.widget.pluginGID
-      ) : undefined;
-  const selectedWidgetMenuTitle = selectedWidget && selectedWidgetPlugin ? `${selectedWidgetPlugin.name} - ${selectedWidget.widget.name}` : undefined;
+      )
+    : undefined;
+  const selectedWidgetMenuTitle =
+    selectedWidget && selectedWidgetPlugin
+      ? `${selectedWidgetPlugin.name} - ${selectedWidget.widget.name}`
+      : undefined;
   let selectedGridItemLayout;
   let selectedWidgetHasProperties = false;
   const dataPopulationDialogPosition: DraggableAbsolutionPositon = {

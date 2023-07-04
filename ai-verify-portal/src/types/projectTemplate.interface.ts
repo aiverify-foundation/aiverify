@@ -16,13 +16,13 @@ export type LayoutItemProperties = {
 
 /** additional properties for widget items in grid */
 export type ReportWidgetItem = {
-	widget: ReportWidget;
-	widgetGID: string; // reference widget GID
-	key: string; // layout key
-	layoutItemProperties: LayoutItemProperties;
-	properties?: PropertyMap;
-	dynamicHeight: boolean,
-}
+  widget: ReportWidget;
+  widgetGID: string; // reference widget GID
+  key: string; // layout key
+  layoutItemProperties: LayoutItemProperties;
+  properties?: PropertyMap;
+  dynamicHeight: boolean;
+};
 
 export type Page = {
   layouts: ReactGridLayout.Layout[];
