@@ -74,7 +74,7 @@ const resolvers = {
           const newdoc = await ModelFileModel.findOneAndUpdate(
             { _id: modelFileID, type: "API" },
             model,
-            { new: true }
+            { new: true, runValidators: true }
           );
           resolve(newdoc);
         } catch (err) {
