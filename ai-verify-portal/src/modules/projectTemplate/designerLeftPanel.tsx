@@ -27,9 +27,9 @@ const fuseSearchOptions = {
 
 type LeftPanelProps = {
   projectStore: ProjectTemplateStore;
-  onWidgetDragStart: (widget: ReportWidget) => void;
-  onWidgetDragEnd: () => void;
-  onWidgetDrag: React.DragEventHandler<HTMLDivElement>;
+  onWidgetDragStart?: (widget: ReportWidget) => void;
+  onWidgetDragEnd?: () => void;
+  onWidgetDrag?: React.DragEventHandler<HTMLDivElement>;
 };
 
 function DesignerLeftPanel(props: LeftPanelProps) {
@@ -41,16 +41,16 @@ function DesignerLeftPanel(props: LeftPanelProps) {
   function dragStartHandler(widget: ReportWidget) {
     return (e: React.DragEvent<HTMLDivElement>) => {
       e.dataTransfer.setData('text/plain', '');
-      onWidgetDragStart(widget);
+      if (onWidgetDragStart) onWidgetDragStart(widget);
     };
   }
 
   function dragEndHandler() {
-    onWidgetDragEnd();
+    if (onWidgetDragEnd) onWidgetDragEnd();
   }
 
   function dragHandler(e: React.DragEvent<HTMLDivElement>) {
-    onWidgetDrag(e);
+    if (onWidgetDrag) onWidgetDrag(e);
   }
 
   function handleSearchInputChange(e: React.ChangeEvent<HTMLInputElement>) {

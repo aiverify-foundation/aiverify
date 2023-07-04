@@ -121,6 +121,13 @@
   border-radius: 2px;
 }
 
+.gridItem_btnWrapper {
+  background: var(--color-white);
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.2);
+  margin-right: 3px;
+  border-radius: 2px;
+}
+
 .gridItem_dheightNote {
   display: flex;
   align-items: center;

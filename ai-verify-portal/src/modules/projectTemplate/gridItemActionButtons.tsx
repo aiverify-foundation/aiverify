@@ -4,6 +4,7 @@ import HeightIcon from '@mui/icons-material/Height';
 import { IconButton } from 'src/components/iconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import styles from './styles/canvas.module.css';
+import { Tooltip, TooltipPosition } from 'src/components/tooltip';
 
 const GRID_ITEM_CLASSNAME = 'aiv-report-widget';
 const CANVAS_PAD = 10; // this value must be the same as css var --A4-canvas-padding
@@ -70,31 +71,31 @@ function SelectedGridActionButtons(props: SelectedGridActionButtonsProps) {
         <div className={styles.gridItem_title}>{title}</div>
       ) : null}
       {isDynamicHeight ? (
-        <div className={styles.gridItem_dheightNote}>
-          <HeightIcon style={{ color: '#787878', fontSize: 22 }} />
-          <div>Dynamic Height </div>
-        </div>
+        <Tooltip
+          position={TooltipPosition.top}
+          content="Content of this widget is longer than page height. It will automatically print on multiple pages during report generation.">
+          <div className={styles.gridItem_dheightNote}>
+            <HeightIcon style={{ color: '#787878', fontSize: 22 }} />
+            <div>Dynamic Height </div>
+          </div>
+        </Tooltip>
       ) : null}
       <div className={styles.gridItem_menu}>
-        <IconButton
-          iconComponent={DeleteIcon}
-          noOutline
-          onClick={onDeleteClick}
-          style={{
-            boxShadow: '0px 0px 4px 0px rgba(0, 0, 0, 0.2)',
-            marginRight: 3,
-          }}
-        />
-        {!hideEditBtn ? (
+        <div className={styles.gridItem_btnWrapper}>
           <IconButton
-            iconComponent={EditIcon}
+            iconComponent={DeleteIcon}
             noOutline
-            onClick={onEditClick}
-            style={{
-              boxShadow: '0px 0px 4px 0px rgba(0, 0, 0, 0.2)',
-              marginRight: 3,
-            }}
+            onClick={onDeleteClick}
           />
+        </div>
+        {!hideEditBtn ? (
+          <div className={styles.gridItem_btnWrapper}>
+            <IconButton
+              iconComponent={EditIcon}
+              noOutline
+              onClick={onEditClick}
+            />
+          </div>
         ) : null}
       </div>
     </div>

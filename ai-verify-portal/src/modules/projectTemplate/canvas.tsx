@@ -97,7 +97,8 @@ export default function CanvasComponent(props: CanvasProps) {
   const [showMovePageDialog, setShowMovePageDialog] = useState<boolean>(false);
   const [dHeightIconPos, setdHeightIconPos] = useState<
     [number, number] | undefined
-  >([300, 300]);
+  >();
+  const [isRightPanelFocused, setIsRightPanelFocused] = useState(false);
   const mounted = useRef<boolean>(false);
   const canvasRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
@@ -163,6 +164,7 @@ export default function CanvasComponent(props: CanvasProps) {
       const gridItem = getGridItemElement(e.target as HTMLElement);
       setSelectedWidget(item);
       setShowGridItemActionMenu(true);
+      setIsRightPanelFocused(false);
       if (gridItem) setSelectedGridItemDomElement(gridItem);
     };
   }
@@ -485,6 +487,7 @@ export default function CanvasComponent(props: CanvasProps) {
 
   function handleEditWidgetClick() {
     setShowPropertiesDialog(true);
+    setIsRightPanelFocused(false);
   }
 
   const handleChangeProperty = (prop: UserDefinedProperty, value: string) => {
@@ -561,14 +564,13 @@ export default function CanvasComponent(props: CanvasProps) {
   function handleOnGridItemDrag(
     _layout: Layout[],
     _oldItem: Layout,
-    newItem: Layout,
+    _newItem: Layout,
     _placeholder: Layout,
     _e: globalThis.MouseEvent,
     element: HTMLElement
   ) {
     if (!dragItem || !dragItem.dynamicHeight) return;
-    const { y, right, height } = element.getBoundingClientRect();
-    console.log(y);
+    const { y, right } = element.getBoundingClientRect();
     const scrollTop = scrollContainerRef.current
       ? scrollContainerRef.current.scrollTop
       : 0;
@@ -607,7 +609,6 @@ export default function CanvasComponent(props: CanvasProps) {
         newLayout.y = maxY;
         newLayout.h = GRID_MAX_ROWS - maxY;
       }
-      setdHeightIconPos(undefined);
     }
     if (!projectStore.widgetBundleCache[widget.gid]) {
       document.body.style.cursor = 'wait';
@@ -641,6 +642,8 @@ export default function CanvasComponent(props: CanvasProps) {
         triggerGridItemElementClick(addedWidgetGridItem.key);
       }
     }
+    setDragItem(undefined);
+    setdHeightIconPos(undefined);
   };
 
   const handleOnGridItemDropDragOver = () => {
@@ -706,14 +709,25 @@ export default function CanvasComponent(props: CanvasProps) {
     setDragItem(undefined);
   }
 
-  function handleOnGridItemDragStart() {
+  const handleOnGridItemDragStart: ItemCallback = (
+    _layout: Layout[],
+    _oldItem: Layout,
+    newItem: Layout,
+    _placeholder: Layout,
+    _e: globalThis.MouseEvent,
+    _element: HTMLElement
+  ) => {
     if (projectStore.isReadonly) return;
-    if (!selectedWidget) return;
+    const page = currentPage();
+    if (!page) return;
+    const key = newItem.i;
+    const widget = page.reportWidgets.find((widget) => widget.key === key);
+    if (!widget) return;
     setSelectedGridItemDomElement(undefined);
-    if (selectedWidget.dynamicHeight) {
-      setDragItem(selectedWidget.widget);
+    if (widget.dynamicHeight) {
+      setDragItem(widget.widget);
     }
-  }
+  };
 
   function handleOnCanvasResizeStart() {
     if (projectStore.isReadonly) return;
@@ -755,14 +769,14 @@ export default function CanvasComponent(props: CanvasProps) {
     setdHeightIconPos(undefined);
   }
 
-  function leftPanelWidgetDragHandler(e: React.DragEvent<HTMLDivElement>) {
-    return; // noop. keeping as placeholder
-  }
-
   function handlePageInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const value = parseInt(e.target.value);
     if (isNaN(value) || value < 1 || value > projectStore.pages.length) return;
     loadPage(value - 1);
+  }
+
+  function handleWidgetPropsPanelFocus() {
+    setIsRightPanelFocused(true);
   }
 
   const bindDocClickHandler = useCallback(function bindDocClickHandler(
@@ -858,7 +872,6 @@ export default function CanvasComponent(props: CanvasProps) {
           projectStore={projectStore}
           onWidgetDragStart={leftPanelWidgetDragStartHandler}
           onWidgetDragEnd={leftPanelWidgetDragEndHandler}
-          onWidgetDrag={leftPanelWidgetDragHandler}
         />
         <div id="designArea" className={styles.designArea}>
           <div
@@ -981,11 +994,14 @@ export default function CanvasComponent(props: CanvasProps) {
             </div>
           </ErrorBoundary>
         </div>
-        <DesignerRightPanel projectStore={projectStore}>
+        <DesignerRightPanel
+          projectStore={projectStore}
+          isFocused={isRightPanelFocused}>
           <WidgetPropertiesPanel
             layout={selectedGridItemLayout}
             reportWidget={selectedWidget}
             onVisualStylePropertyChange={handleVisualStylePropertyChange}
+            onFocus={handleWidgetPropsPanelFocus}
           />
         </DesignerRightPanel>
       </div>
