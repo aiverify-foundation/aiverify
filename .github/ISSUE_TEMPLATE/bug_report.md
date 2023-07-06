@@ -1,12 +1,3 @@
----
-name: Bug report
-about: Create a report to help us improve
-title: ''
-labels: ''
-assignees: ''
-
----
-
 ## Bug Report
 
 **Description:**
@@ -23,9 +14,8 @@ List the steps to reproduce the bug. Be as specific as possible.
 
 **Environment:**
 - Operating System and Version:
-- Library Version: 
 - AI Verify Version:
-- Any other relevant information:
+- Any other relevant information (e.g. version of related package dependencies installed):
 
 Did you build using source code or from docker file? If from source code, please provide the below information:
 - Python Version:
