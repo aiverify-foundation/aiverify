@@ -97,12 +97,63 @@
   font-size: 14px;
 }
 
+.menuContainer {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  z-index: 102;
+}
+
+.gridItem_title {
+  width: max-content;
+  max-width: 200px;
+  background: var(--color-white);
+  padding: 5px 10px;
+  margin-bottom: 5px;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+  font-size: 13px;
+}
+
 .gridItem_menu {
   display: flex;
   align-items: center;
-  position: absolute;
-  background: #ffffff;
+  border-radius: 2px;
+}
+
+.gridItem_btnWrapper {
+  background: var(--color-white);
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.2);
+  margin-right: 3px;
+  border-radius: 2px;
+}
+
+.gridItem_dheightNote {
+  display: flex;
+  align-items: center;
   border-radius: 2px;
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.2);
-  z-index: 102;
+  background: var(--color-white);
+  margin-bottom: 5px;
+  font-size: 13px;
+  width: 130px;
+}
+
+@keyframes animateHeight {
+  from {
+    transform: scaleY(1);
+  }
+
+  to {
+    transform: scaleY(1.3);
+  }
+}
+
+.dynHeightIndicator {
+  position: absolute;
+  color: var(--color-palette-violet-red);
+  animation-duration: 0.3s;
+  animation-name: animateHeight;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
 }

@@ -27,6 +27,7 @@ type WidgetPropertiesPanelProps = {
     prop: keyof LayoutItemProperties,
     value: string
   ) => void;
+  onFocus?: () => void;
 };
 
 enum ColoringMode {
@@ -40,7 +41,7 @@ const default_FillColor = '#FFFFFF';
 const default_FontColor = '#000000';
 
 function WidgetPropertiesPanel(props: WidgetPropertiesPanelProps) {
-  const { reportWidget, layout, onVisualStylePropertyChange } = props;
+  const { reportWidget, layout, onVisualStylePropertyChange, onFocus } = props;
   const [showColorPicker, setShowColorPicker] = useState<boolean>(false);
   const [coloringMode, setColoringMode] = useState<ColoringMode | undefined>(
     undefined
@@ -99,6 +100,10 @@ function WidgetPropertiesPanel(props: WidgetPropertiesPanelProps) {
     document.removeEventListener('click', handleOutsideColorPickerClick);
   }
 
+  function handleSelfClick() {
+    if (onFocus) onFocus();
+  }
+
   useEffect(() => {
     if (reportWidget) {
       setFillColor(
@@ -114,7 +119,10 @@ function WidgetPropertiesPanel(props: WidgetPropertiesPanelProps) {
   }, [reportWidget]);
 
   return (
-    <div id={WIDGET_PANEL_ID} className={styles.propertiesPanel}>
+    <div
+      id={WIDGET_PANEL_ID}
+      className={styles.propertiesPanel}
+      onClick={handleSelfClick}>
       <div className={styles.propertiesHeading}>
         <div className={styles.headingContainer}>
           <WidgetsIcon style={{ fontSize: '18px' }} />

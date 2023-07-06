@@ -1,31 +1,22 @@
-import React, {
-  forwardRef,
-  PropsWithChildren,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Accordion,
   AccordionDetails,
   InputAdornment,
-  Link,
   TextField,
 } from '@mui/material';
 import { ProjectTemplateStore } from '../project/projectContext';
 import WidgetsIcon from '@mui/icons-material/Widgets';
 import SearchIcon from '@mui/icons-material/Search';
-import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { BaseMuiAccordionSummary } from 'src/components/baseMuiAccordionSummary';
 import AIFPlugin, {
   ReportWidget,
   ReportWidgetStatus,
 } from 'src/types/plugin.interface';
 import styles from './styles/leftpanel.module.css';
-import clsx from 'clsx';
 import Fuse from 'fuse.js';
 import { serializeSearchResult } from './utils/serializeFuseSearchResult';
-import { changeWheelSpeed } from 'src/lib/utils';
+import { DraggableWidget, WidgetDetails } from './draggableWidget';
 
 const fuseSearchOptions = {
   includeMatches: true,
@@ -36,143 +27,30 @@ const fuseSearchOptions = {
 
 type LeftPanelProps = {
   projectStore: ProjectTemplateStore;
-  onWidgetDragStart: (widget: ReportWidget) => void;
+  onWidgetDragStart?: (widget: ReportWidget) => void;
+  onWidgetDragEnd?: () => void;
+  onWidgetDrag?: React.DragEventHandler<HTMLDivElement>;
 };
-
-type WidgetDetailsProps = {
-  widget: ReportWidget;
-};
-
-type WidgetGroupProps = {
-  widget: ReportWidget;
-  disabled?: boolean;
-  onDragStart: (
-    widget: ReportWidget
-  ) => React.DragEventHandler<HTMLDivElement> | undefined;
-};
-
-const WidgetDetails = forwardRef<HTMLDivElement, WidgetDetailsProps>(
-  function WidgetDetails(props: WidgetDetailsProps, scrollContainerRef) {
-    const { widget } = props;
-    const hasDependencies = widget.dependencies && widget.dependencies.length;
-    const hasTags = widget.tags && widget.tags.length;
-
-    return (
-      <div
-        ref={scrollContainerRef}
-        className={styles.widgetDetailsScrollContainer}>
-        <div
-          className={styles.widgetDetailsRow}
-          style={{ flexDirection: 'column' }}>
-          <div className={styles.widgetDetailLabel}>Description:</div>
-          <div className={styles.widgetDetailText}>{widget.description}</div>
-        </div>
-        <div className={styles.widgetDetailsRow}>
-          <div className={styles.widgetDetailLabel}>Version:</div>
-          <div className={styles.widgetDetailText}>{widget.version}</div>
-        </div>
-        {hasTags ? (
-          <div className={styles.widgetDetailsRow}>
-            <div className={styles.widgetDetailLabel}>Tags: </div>
-            <div className={styles.widgetDetailText}>
-              {widget.tags.join(', ')}
-            </div>
-          </div>
-        ) : null}
-        {hasDependencies ? (
-          <div
-            className={styles.widgetDetailsRow}
-            style={{ flexDirection: 'column' }}>
-            <div className={styles.widgetDetailLabel}>Dependencies:</div>
-            <ul>
-              {widget.dependencies.map((dep) => (
-                <li key={`${widget.gid}-${dep.gid}`}>
-                  {dep.valid ? (
-                    <Link href="#" color="inherit">
-                      {dep.gid}
-                    </Link>
-                  ) : (
-                    <div style={{ color: 'red' }}>{dep.gid}</div>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
-      </div>
-    );
-  }
-);
-
-function DraggableWidget(props: PropsWithChildren<WidgetGroupProps>) {
-  const { widget, disabled = false, onDragStart } = props;
-
-  const divRef = useRef<HTMLDivElement>(null);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!divRef.current) return;
-    let removeWheelHandler: () => void;
-    const el = divRef.current;
-    const handleTransitionStart = () => {
-      if (scrollContainerRef.current) {
-        scrollContainerRef.current.scrollTop = 0;
-        removeWheelHandler = changeWheelSpeed(scrollContainerRef.current, 0.08);
-      }
-    };
-    el.addEventListener('transitionstart', handleTransitionStart);
-    return () => {
-      el.removeEventListener('transitionstart', handleTransitionStart, false);
-      if (removeWheelHandler) removeWheelHandler();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!scrollContainerRef.current) return;
-    return changeWheelSpeed(scrollContainerRef.current, 0.08);
-  }, []);
-
-  return (
-    <div
-      key={widget.gid}
-      ref={divRef}
-      className={clsx(
-        styles.draggableWidget,
-        disabled ? styles.draggableWidget_disabled : null
-      )}
-      draggable={!disabled}
-      unselectable="on"
-      onDragStart={!disabled ? onDragStart(widget) : undefined} // this is a hack for firefox
-    >
-      <div className={styles.widgetHeadingWrapper}>
-        <div style={{ display: 'flex' }}>
-          <WidgetsIcon className={styles.draggableWidgetIcon} />
-          <div className={styles.widgetHeading}>{widget.name}</div>
-        </div>
-        {!disabled ? (
-          <div
-            className={styles.draggableHandleIconWrapper}
-            style={{ display: 'flex' }}>
-            <DragIndicatorIcon className={styles.draggableHandleIcon} />
-          </div>
-        ) : null}
-      </div>
-      <div className={styles.widgetDetailsDivider}></div>
-      <WidgetDetails widget={widget} ref={scrollContainerRef} />
-    </div>
-  );
-}
 
 function DesignerLeftPanel(props: LeftPanelProps) {
-  const { projectStore, onWidgetDragStart } = props;
+  const { projectStore, onWidgetDragStart, onWidgetDragEnd, onWidgetDrag } =
+    props;
   const [pluginsWithWidgets, setPluginsWithWidgets] = useState<AIFPlugin[]>([]);
   const widgetsFuseRef = useRef<Fuse<AIFPlugin>>();
 
   function dragStartHandler(widget: ReportWidget) {
     return (e: React.DragEvent<HTMLDivElement>) => {
       e.dataTransfer.setData('text/plain', '');
-      onWidgetDragStart(widget);
+      if (onWidgetDragStart) onWidgetDragStart(widget);
     };
+  }
+
+  function dragEndHandler() {
+    if (onWidgetDragEnd) onWidgetDragEnd();
+  }
+
+  function dragHandler(e: React.DragEvent<HTMLDivElement>) {
+    if (onWidgetDrag) onWidgetDrag(e);
   }
 
   function handleSearchInputChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -273,7 +151,9 @@ function DesignerLeftPanel(props: LeftPanelProps) {
                               key={widget.gid}
                               widget={widget}
                               disabled={isWidgetDisabled}
-                              onDragStart={dragStartHandler}>
+                              onDrag={dragHandler}
+                              onDragStart={dragStartHandler}
+                              onDragEnd={dragEndHandler}>
                               <WidgetDetails widget={widget} />
                             </DraggableWidget>
                           );

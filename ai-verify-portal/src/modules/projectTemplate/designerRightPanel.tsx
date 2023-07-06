@@ -15,6 +15,7 @@ import styles from './styles/rightpanel.module.css';
 
 type RightPanelProps = {
   projectStore: ProjectTemplateStore;
+  isFocused?: boolean;
 };
 
 type DisplayDependancyProps = {
@@ -52,7 +53,7 @@ function DependencyDetails({
 }
 
 function DesignerRightPanel(props: PropsWithChildren<RightPanelProps>) {
-  const { projectStore, children } = props;
+  const { projectStore, isFocused = false, children } = props;
   const [globalVariables, setGlobalVariables] = useState<GlobalVar[]>(
     () => projectStore.globalVars
   );
@@ -104,7 +105,10 @@ function DesignerRightPanel(props: PropsWithChildren<RightPanelProps>) {
   );
 
   return (
-    <div id="rightPanel" className={styles.rightPanel}>
+    <div
+      id="rightPanel"
+      className={styles.rightPanel}
+      style={{ zIndex: isFocused ? 999 : 100 }}>
       <div className={styles.stickyPanelContainer}>
         {children}
         <div className={styles.stickyRightAccordionContainer}>

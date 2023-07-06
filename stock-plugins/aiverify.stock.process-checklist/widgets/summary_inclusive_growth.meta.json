@@ -19,5 +19,6 @@
       "cid": "inclusive_growth_process_checklist",
       "datapath": "inclusive_growth_process_checklist.sample.json"
     }
-  ]
+  ],
+  "dynamicHeight": true
 }
