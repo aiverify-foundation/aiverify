@@ -13,13 +13,11 @@ def create_badges() -> None:
     else:
         print("No badgeToCreate provided")
         sys.exit()
-
     covBadgeSvg = "cov-badge.svg"
     testBadgeSvg = "test-badge.svg"
     lintBadgeSvg = "lint-badge.svg"
     depBadgeSvg = "dep-badge.svg"
     licBadgeSvg = "lic-badge.svg"
-
     # Create coverage badge
     if badgeToCreate == "coverage":
         with open("coverage.json") as jsonFile:
@@ -37,7 +35,6 @@ def create_badges() -> None:
         if os.path.exists(covBadgeSvg):
             os.remove(covBadgeSvg)
         badge.write_badge(covBadgeSvg)
-
     # Create test result badge
     if badgeToCreate == "test":
         with open("test-report.json") as jsonFile:
@@ -55,7 +52,6 @@ def create_badges() -> None:
         if os.path.exists(testBadgeSvg):
             os.remove(testBadgeSvg)
         badge.write_badge(testBadgeSvg)
-
     # Create lint (flake8) badge
     if badgeToCreate == "lint":
         with open("flake8-report.txt", "r") as file:
@@ -67,7 +63,6 @@ def create_badges() -> None:
         if os.path.exists(lintBadgeSvg):
             os.remove(lintBadgeSvg)
         badge.write_badge(lintBadgeSvg)
-
     # Create dependency check badge
     if badgeToCreate == "dependency":
         numVul = "0"
@@ -92,7 +87,6 @@ def create_badges() -> None:
         if os.path.exists(depBadgeSvg):
             os.remove(depBadgeSvg)
         badge.write_badge(depBadgeSvg)
-
     # Create license check badge
     if badgeToCreate == "license":
         with open("licenses-found.md", "r") as file:
@@ -113,7 +107,6 @@ def create_badges() -> None:
             for lic in copyleftLic:
                 if lic in content:
                     licFound.append(lic)
-
         numCopyleftLic = len(licFound)
         color = "green" if (numCopyleftLic == 0) else "red"
         badge = anybadge.Badge(

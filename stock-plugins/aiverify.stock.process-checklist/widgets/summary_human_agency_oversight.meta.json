@@ -19,5 +19,6 @@
       "cid": "human_agency_oversight_process_checklist",
       "datapath": "human_agency_oversight_process_checklist.sample.json"
     }
-  ]
+  ],
+  "dynamicHeight": true
 }

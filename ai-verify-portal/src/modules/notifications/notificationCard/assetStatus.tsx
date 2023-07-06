@@ -5,15 +5,9 @@ import { AssetValidationStatus } from 'src/types/dataset.interface';
 
 function AssetStatusCard(props: SpecializedCardProps<AssetStatusNotification>) {
   const { notification, showMsgBody = false } = props;
-  const {
-    title,
-    subject,
-    body,
-    assetType,
-    assetStatus,
-    assetName,
-  } = notification;
-  
+  const { title, subject, body, assetType, assetStatus, assetName } =
+    notification;
+
   let subjectText = subject;
   let assetTypeText: string;
 
@@ -25,7 +19,8 @@ function AssetStatusCard(props: SpecializedCardProps<AssetStatusNotification>) {
     assetTypeText = 'Unknown asset type';
   }
 
-  const titleText = title.trim() !== '' ? title : `${assetTypeText} Upload Status`
+  const titleText =
+    title.trim() !== '' ? title : `${assetTypeText} Upload Status`;
 
   switch (assetStatus) {
     case AssetValidationStatus.Valid:
@@ -43,21 +38,23 @@ function AssetStatusCard(props: SpecializedCardProps<AssetStatusNotification>) {
     case AssetValidationStatus.Cancelled:
       subjectText = `${assetTypeText} validation cancelled`;
       break;
-    default: 
+    default:
       subjectText = `${assetTypeText} validation status unknown`;
       break;
   }
 
-  return <div>
+  return (
+    <div>
       <h4>{titleText}</h4>
       <div className={styles.subject}>{subjectText}</div>
-      { showMsgBody ? <div className={styles.body}>
-        {body}
-      </div> : null }
+      {showMsgBody ? <div className={styles.body}>{body}</div> : null}
       <div className={styles.callToAction}>
-        {!showMsgBody ? <div className={styles.assetName}>Filename: {assetName}</div> : null}
+        {!showMsgBody ? (
+          <div className={styles.assetName}>Filename: {assetName}</div>
+        ) : null}
       </div>
     </div>
+  );
 }
 
 export { AssetStatusCard };

@@ -49,8 +49,8 @@ const theme = createTheme({
     },
     formHelperText: {
       fontSize: '14px',
-      fontWeight: 300,      
-    }
+      fontWeight: 300,
+    },
   },
   palette: {
     background: {
@@ -68,17 +68,16 @@ const theme = createTheme({
       light: '#90376B',
     },
     positive: {
-      main: '#33961A'
+      main: '#33961A',
     },
     negative: {
-      main: '#DF2525'
+      main: '#DF2525',
     },
     select: {
-      main: '#CF98E4'
+      main: '#CF98E4',
     },
   },
 });
-
 
 declare module '@mui/material/styles' {
   interface Palette {

@@ -24,26 +24,5 @@
       "datapath": "reproducibility_process_checklist.sample.json"
     }
   ],
-  "properties": [
-    {
-      "key": "testableCriteria",
-      "helper": "Enter the number of the testable criteria to display (default 1)",
-      "default": "1"
-    },
-    {
-      "key": "startIndex",
-      "helper": "Enter the start index of the process check to display (default 0)",
-      "default": "0"
-    },
-    {
-      "key": "numProcessChecks",
-      "helper": "Enter the number of process checks to display (default 2)",
-      "default": "2"
-    },
-    {
-      "key": "hideCriteriaDescription",
-      "helper": "Set to 1 to hide the criteria description (default 0)",
-      "default": "0"
-    }
-  ]
+  "dynamicHeight": true
 }

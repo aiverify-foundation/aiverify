@@ -14,12 +14,12 @@
 }
 
 .testCard {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--color-light-gray);
   padding: 20px 25px 25px 25px;
-  box-shadow: 1px 1px 2px 0px rgba(0,0,0,0.1);
+  box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.1);
   border-radius: 4px;
   margin-bottom: 45px;
 }
@@ -27,7 +27,7 @@
 .logsContainer {
   overflow-wrap: break-word;
   background-color: var(--color-dark-gray);
-  color: #FFFFFF;
+  color: #ffffff;
   padding: 10px;
   border-radius: 4px;
   font-size: 14px;

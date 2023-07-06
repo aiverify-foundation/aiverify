@@ -1,5 +1,4 @@
-import { useRouter } from 'next/router'
-import { GetServerSideProps } from 'next'
+import { GetServerSideProps } from 'next';
 
 import ProjectTemplateModule from 'src/modules/projectTemplate';
 import ProjectTemplate from 'src/types/projectTemplate.interface';
@@ -8,26 +7,28 @@ import { getPlugins } from 'server/pluginManager';
 
 import { getProjectTemplate } from 'server/lib/projectServiceBackend';
 
-export const getServerSideProps: GetServerSideProps = async ({params}) => {
-  const id = params!.id as string;
-  const data = await getProjectTemplate(id)
+export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+  if (!params || !params.id) {
+    console.log('url parameter required - id');
+    return { notFound: true };
+  }
+
+  const id = params.id as string;
+  const data = await getProjectTemplate(id);
   const pluginManager = await getPlugins();
   return {
     props: {
       pluginManager,
-      data
+      data,
     },
-  }
-}
+  };
+};
 
 type Props = {
-  data: ProjectTemplate,
-  pluginManager: PluginManagerType
-}
+  data: ProjectTemplate;
+  pluginManager: PluginManagerType;
+};
 
-export default function ProjectUpdatePage({data, pluginManager}: Props) {
-  const router = useRouter()
-  const { pid } = router.query
-
-  return (<ProjectTemplateModule data={data} pluginManager={pluginManager} />)
+export default function ProjectUpdatePage({ data, pluginManager }: Props) {
+  return <ProjectTemplateModule data={data} pluginManager={pluginManager} />;
 }

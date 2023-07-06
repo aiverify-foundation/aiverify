@@ -19,5 +19,6 @@
       "cid": "data_governance_process_checklist",
       "datapath": "data_governance_process_checklist.sample.json"
     }
-  ]
+  ],
+  "dynamicHeight": true
 }

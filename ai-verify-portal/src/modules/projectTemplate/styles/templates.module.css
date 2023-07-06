@@ -17,8 +17,8 @@
   border-radius: 8px;
   width: 430px;
   height: 200px;
-  background-color: #FFFFFF;
-  box-shadow: 1px 1px 2px 0px rgba(0,0,0,0.1);
+  background-color: #ffffff;
+  box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.1);
   border: 2px solid transparent;
 }
 
@@ -29,13 +29,13 @@
 .templateDetailsCard:hover {
   transition-property: 'border-color';
   transition-timing-function: ease-in-out;
-	transition-duration: 0.2s;
+  transition-duration: 0.2s;
   border-color: var(--color-palette-violet);
 }
 
 .card__disableHover:hover {
-  transition:none;
-  border-color: #FFFFFF;
+  transition: none;
+  border-color: #ffffff;
 }
 
 .searchRow {
@@ -58,14 +58,14 @@
   padding: 15px 20px;
   cursor: pointer;
   border-radius: 8px 0 0 8px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 
 .card__highlighted .mainContent {
   background-color: #f3f3f3;
   transition-property: background-color;
   transition-timing-function: ease-in-out;
-	transition-duration: 0.2s;
+  transition-duration: 0.2s;
 }
 
 .card__disableHover .mainContent {
@@ -132,15 +132,15 @@
   border-radius: 8px;
   width: 430px;
   height: 200px;
-  background-color: #FFFFFF;
-  box-shadow: 1px 1px 2px 0px rgba(0,0,0,0.1);
+  background-color: #ffffff;
+  box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.1);
   border: 2px solid transparent;
 }
 
 .blankCanvasCard:hover {
   transition-property: 'border-color';
   transition-timing-function: ease-in-out;
-	transition-duration: 0.2s;
+  transition-duration: 0.2s;
   border-color: var(--color-palette-violet);
 }
 
@@ -150,7 +150,7 @@
   padding: 15px 20px;
   cursor: pointer;
   border-radius: 8px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 
 .blankCardHeading {

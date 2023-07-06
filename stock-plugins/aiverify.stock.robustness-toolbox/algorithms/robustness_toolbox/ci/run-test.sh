@@ -10,8 +10,8 @@ fi
 set +e
 $test_cmd --cov=$source_dir --cov-branch --html=test-report.html --json=test-report.json
 exit_code=$?
-coverage html
-coverage json --pretty-print
+coverage html -i
+coverage json --pretty-print -i
 python3 ci/createBadges.py test
 python3 ci/createBadges.py coverage
 set -e

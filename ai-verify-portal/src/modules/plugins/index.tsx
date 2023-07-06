@@ -34,25 +34,37 @@ const fuseSearchOptions = {
     'reportWidgets.name',
     'inputBlocks.name',
     'inputBlocks.description',
-  ]
-}
+  ],
+};
 
 export default function PluginsModule() {
-  const [ plugins, setPlugins ] = useState<AIFPlugin[]>([]);
-  const [ initialPluginsLoaded, setInitialPluginsLoaded ] = useState<AIFPlugin[] | undefined>();
-  const [ loadingError, setLoadingError ] = useState<Error | undefined>();
-  const [ selectedSortOption, setSelectedSortOption ] = useState<SortOption>(SortOption.InstallDateAsc);
-  const [ selectedPlugin, setSelectedPlugin ] = useState<AIFPlugin>();
-  const [ activeQuickFilters, setActiveQuickFilters ] = useState<QuickFilter[]>([]);
-  const [ showDeleteConfirmation, setShowDeleteConfirmation ] = useState(false);
-  const [ showInstallConfirmation, setShowInstallConfirmation ] = useState(false);
-  const [ newPluginFile, setNewPluginFile ] = useState<File>();
-  const [ showDeleteResult, setShowDeleteResult] = useState<{ success: boolean, name?: string }>();
-  const [ showInstallResult, setShowInstallResult] = useState<{ success: boolean, errorMsg?: string }>();
+  const [plugins, setPlugins] = useState<AIFPlugin[]>([]);
+  const [initialPluginsLoaded, setInitialPluginsLoaded] = useState<
+    AIFPlugin[] | undefined
+  >();
+  const [loadingError, setLoadingError] = useState<Error | undefined>();
+  const [selectedSortOption, setSelectedSortOption] = useState<SortOption>(
+    SortOption.InstallDateAsc
+  );
+  const [selectedPlugin, setSelectedPlugin] = useState<AIFPlugin>();
+  const [activeQuickFilters, setActiveQuickFilters] = useState<QuickFilter[]>(
+    []
+  );
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [showInstallConfirmation, setShowInstallConfirmation] = useState(false);
+  const [newPluginFile, setNewPluginFile] = useState<File>();
+  const [showDeleteResult, setShowDeleteResult] = useState<{
+    success: boolean;
+    name?: string;
+  }>();
+  const [showInstallResult, setShowInstallResult] = useState<{
+    success: boolean;
+    errorMsg?: string;
+  }>();
   const fileInputRef = useRef<HTMLInputElement>(null);
-	const searchInputRef = useRef<HTMLInputElement>();
-	const pluginsListRef = useRef<HTMLDivElement>(null);
-	const widgetsFuseRef = useRef<Fuse<AIFPlugin>>();
+  const searchInputRef = useRef<HTMLInputElement>();
+  const pluginsListRef = useRef<HTMLDivElement>(null);
+  const widgetsFuseRef = useRef<Fuse<AIFPlugin>>();
 
   function handleSearchInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (!widgetsFuseRef.current) return;
@@ -60,14 +72,16 @@ export default function PluginsModule() {
       setPlugins([...initialPluginsLoaded]);
       return;
     }
-    const fuseSearchResult = widgetsFuseRef.current.search(`'${e.target.value}`);
+    const fuseSearchResult = widgetsFuseRef.current.search(
+      `'${e.target.value}`
+    );
     setPlugins(serializeSearchResult(fuseSearchResult));
   }
 
   function handleQuickFilterClick(filter: QuickFilter) {
     return () => {
-      setActiveQuickFilters(prev => {
-        const idx = prev.findIndex(item => item === filter);
+      setActiveQuickFilters((prev) => {
+        const idx = prev.findIndex((item) => item === filter);
         const updatedFilters = [...prev];
         if (idx > -1) {
           updatedFilters.splice(idx, 1);
@@ -75,28 +89,32 @@ export default function PluginsModule() {
           updatedFilters.push(filter);
         }
         return updatedFilters;
-      })
-    }
+      });
+    };
   }
 
   function handleClearSearchBtnClick() {
-		if (searchInputRef.current && searchInputRef.current.value.length) {
-			searchInputRef.current.value = '';
-      if (initialPluginsLoaded)
-        setPlugins([...initialPluginsLoaded]);
-		}
-	}
+    if (searchInputRef.current && searchInputRef.current.value.length) {
+      searchInputRef.current.value = '';
+      if (initialPluginsLoaded) setPlugins([...initialPluginsLoaded]);
+    }
+  }
 
   function handlePluginDeleteClick() {
     setShowDeleteConfirmation(true);
   }
 
-  async function handleDeleteConfirmationPrimaryBtnClick(confirmDelete: boolean) {
+  async function handleDeleteConfirmationPrimaryBtnClick(
+    confirmDelete: boolean
+  ) {
     if (confirmDelete) {
       if (selectedPlugin) {
         const result = await deletePlugin(selectedPlugin.gid);
         if ('status' in result) {
-          setShowDeleteResult({ success: result.status === HttpStatusCode.Ok, name: selectedPlugin.name });
+          setShowDeleteResult({
+            success: result.status === HttpStatusCode.Ok,
+            name: selectedPlugin.name,
+          });
           await fetchInitialPlugins();
         }
       }
@@ -106,7 +124,9 @@ export default function PluginsModule() {
     }
   }
 
-  async function handlePluginFileSelected(event: ChangeEvent<HTMLInputElement>) {
+  async function handlePluginFileSelected(
+    event: ChangeEvent<HTMLInputElement>
+  ) {
     event.preventDefault();
     if (!event.target.files || !event.target.files.length) return;
     const file = event.target.files[0];
@@ -120,15 +140,22 @@ export default function PluginsModule() {
     setShowInstallConfirmation(true);
   }
 
-  async function handleInstallConfirmationPrimaryBtnClick(confirmInstall: boolean) {
+  async function handleInstallConfirmationPrimaryBtnClick(
+    confirmInstall: boolean
+  ) {
     if (confirmInstall) {
       if (newPluginFile) {
         const result = await uploadPlugin(newPluginFile);
         if ('status' in result) {
-          if (result.status === HttpStatusCode.Ok && result.data.gid != undefined) {
+          if (
+            result.status === HttpStatusCode.Ok &&
+            result.data.gid != undefined
+          ) {
             setShowInstallResult({ success: true });
             const updatedPluginsList = await fetchInitialPlugins();
-            const installedPlugin = updatedPluginsList.find(plugin => plugin.gid === result.data.gid);
+            const installedPlugin = updatedPluginsList.find(
+              (plugin) => plugin.gid === result.data.gid
+            );
             setSelectedPlugin(installedPlugin);
           }
         } else {
@@ -140,8 +167,7 @@ export default function PluginsModule() {
       setShowInstallConfirmation(false);
       setShowInstallResult(undefined);
     }
-    if (fileInputRef.current)
-      fileInputRef.current.value = '';
+    if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
   function handleItemClick(plugin: AIFPlugin) {
@@ -176,14 +202,15 @@ export default function PluginsModule() {
       setSelectedPlugin(undefined);
       return;
     }
-    const filtered = initialPluginsLoaded.filter(plugin => {
+    const filtered = initialPluginsLoaded.filter((plugin) => {
       for (const qFilter of activeQuickFilters) {
         switch (qFilter) {
           case QuickFilter.PreInstalled:
             if (plugin.isStock) return true;
             break;
           case QuickFilter.Widgets:
-            if (plugin.reportWidgets && plugin.reportWidgets.length) return true;
+            if (plugin.reportWidgets && plugin.reportWidgets.length)
+              return true;
             break;
           case QuickFilter.Algorithms:
             if (plugin.algorithms && plugin.algorithms.length) return true;
@@ -194,38 +221,46 @@ export default function PluginsModule() {
           case QuickFilter.Templates:
             if (plugin.templates && plugin.templates.length) return true;
             break;
-          default: return false;
+          default:
+            return false;
         }
       }
     });
     setPlugins(filtered);
-  }, [activeQuickFilters])
+  }, [activeQuickFilters]);
 
   useEffect(() => {
     if (!plugins || !initialPluginsLoaded) return;
-      const sortedPlugins = [...plugins];
-      switch (selectedSortOption) {
-        case SortOption.InstallDateDesc:
-          sortedPlugins.sort((a, b) => a.installedAt > b.installedAt ? -1 : 1);       
-          break;
-        case SortOption.InstallDateAsc:
-          sortedPlugins.sort((a, b) => a.installedAt < b.installedAt ? -1 : 1);       
-          break;
-        case SortOption.PluginNameDesc:
-          sortedPlugins.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? -1 : 1))      
-          break;
-        case SortOption.PluginNameAsc:
-          sortedPlugins.sort((a, b) => (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1))      
-          break;
-      }
-      setPlugins(sortedPlugins);
-  }, [selectedSortOption, initialPluginsLoaded])
+    const sortedPlugins = [...plugins];
+    switch (selectedSortOption) {
+      case SortOption.InstallDateDesc:
+        sortedPlugins.sort((a, b) => (a.installedAt > b.installedAt ? -1 : 1));
+        break;
+      case SortOption.InstallDateAsc:
+        sortedPlugins.sort((a, b) => (a.installedAt < b.installedAt ? -1 : 1));
+        break;
+      case SortOption.PluginNameDesc:
+        sortedPlugins.sort((a, b) =>
+          a.name.toLowerCase() > b.name.toLowerCase() ? -1 : 1
+        );
+        break;
+      case SortOption.PluginNameAsc:
+        sortedPlugins.sort((a, b) =>
+          a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
+        );
+        break;
+    }
+    setPlugins(sortedPlugins);
+  }, [selectedSortOption, initialPluginsLoaded]);
 
   useEffect(() => {
     if (showInstallResult) return;
     if (plugins.length === 0) setSelectedPlugin(undefined);
     if (pluginsListRef.current && plugins.length) {
-      const firstItemEl = pluginsListRef.current.querySelector<HTMLDivElement>('div:first-of-type');
+      const firstItemEl =
+        pluginsListRef.current.querySelector<HTMLDivElement>(
+          'div:first-of-type'
+        );
       if (firstItemEl) firstItemEl.click();
     }
   }, [plugins]);
@@ -238,74 +273,117 @@ export default function PluginsModule() {
     <div>
       <MinimalHeader />
       <div className="layoutContentArea">
-          <div className="mainContainer">
-            <div className={styles.container__limits}>
-              <div className={styles.pluginsPanelsLayout}>
-                <div id="pluginsLeftPane" className={styles.pluginsLeftPane} >
-                  <div style={{ marginBottom: '25px' }}>
-                    <div style={{ display: 'flex'}}>
-                      <PowerIcon style={{ fontSize: '30px', marginTop: '2px', marginRight: '4px' }}/>
-                      <div>
-                        <h3 className='screenHeading'>Plugin Manager</h3>
-                        <p className='headingDescription'>Manage plugins and their templates, widgets, and algorithms</p>
-                      </div>
+        <div className="mainContainer">
+          <div className={styles.container__limits}>
+            <div className={styles.pluginsPanelsLayout}>
+              <div id="pluginsLeftPane" className={styles.pluginsLeftPane}>
+                <div style={{ marginBottom: '25px' }}>
+                  <div style={{ display: 'flex' }}>
+                    <PowerIcon
+                      style={{
+                        fontSize: '30px',
+                        marginTop: '2px',
+                        marginRight: '4px',
+                      }}
+                    />
+                    <div>
+                      <h3 className="screenHeading">Plugin Manager</h3>
+                      <p className="headingDescription">
+                        Manage plugins and their templates, widgets, and
+                        algorithms
+                      </p>
                     </div>
                   </div>
-                  <div className={styles.pluginsList}>
-                    {loadingError ? <PageLevelErrorAlert
-                        error={loadingError}
-                        headingText="Error loading plugins"
-                        content="There was an issue while trying to load plugins"/> :
-                      <div>
-                        <div style={{
+                </div>
+                <div className={styles.pluginsList}>
+                  {loadingError ? (
+                    <PageLevelErrorAlert
+                      error={loadingError}
+                      headingText="Error loading plugins"
+                      content="There was an issue while trying to load plugins"
+                    />
+                  ) : (
+                    <div>
+                      <div
+                        style={{
                           display: 'flex',
                           position: 'relative',
                           justifyContent: 'space-between',
-                          marginRight: '18px'
+                          marginRight: '18px',
                         }}>
-                          <QuickFilters activeQuickFilters={activeQuickFilters} handleQuickFilterClick={handleQuickFilterClick}/>
-                          <SortMenu selected={selectedSortOption} onClick={handleSortMenuSelected}/>
-                        </div>
-                        <div className={styles.searchFieldRow}>
-                          <OutlinedInput
-                            inputRef={searchInputRef}
-                            id="search"
-                            type="text"
-                            placeholder="Search plugins"
-                            style={{ height: '36px', width: '100%', background: '#FFFFFF' }}
-                            onChange={handleSearchInputChange}
-                            startAdornment={
-                              <InputAdornment position="start">
-                                <SearchIcon />
-                              </InputAdornment>
-                            }/>
-                            <div data-testid="clearSearchInputIcon" style={{
-                              position: 'absolute',
-                              top: '8px',
-                              right: '25px',
-                              cursor: 'pointer',
-                            }}
-                            onClick={handleClearSearchBtnClick}><ClearIcon style={{ fontSize: '20px' }} /></div>
-                        </div>
-                        <div id="pluginsList" ref={pluginsListRef} className={styles.scrollContainer}>
-                          { plugins.length === 0 ? <div style={{ fontSize: '16px', fontWeight: 'bold' }}>No plugins found</div> :
-                            plugins.map(plugin =>
-                              <PluginListItem
-                                selected={selectedPlugin && selectedPlugin.gid === plugin.gid}
-                                key={`plugin-${plugin.gid}`}
-                                plugin={plugin}
-                                onClick={handleItemClick(plugin)}/>
-                          )}
+                        <QuickFilters
+                          activeQuickFilters={activeQuickFilters}
+                          handleQuickFilterClick={handleQuickFilterClick}
+                        />
+                        <SortMenu
+                          selected={selectedSortOption}
+                          onClick={handleSortMenuSelected}
+                        />
+                      </div>
+                      <div className={styles.searchFieldRow}>
+                        <OutlinedInput
+                          inputRef={searchInputRef}
+                          id="search"
+                          type="text"
+                          placeholder="Search plugins"
+                          style={{
+                            height: '36px',
+                            width: '100%',
+                            background: '#FFFFFF',
+                          }}
+                          onChange={handleSearchInputChange}
+                          startAdornment={
+                            <InputAdornment position="start">
+                              <SearchIcon />
+                            </InputAdornment>
+                          }
+                        />
+                        <div
+                          data-testid="clearSearchInputIcon"
+                          style={{
+                            position: 'absolute',
+                            top: '8px',
+                            right: '25px',
+                            cursor: 'pointer',
+                          }}
+                          onClick={handleClearSearchBtnClick}>
+                          <ClearIcon style={{ fontSize: '20px' }} />
                         </div>
                       </div>
-                    }
-                  </div>
+                      <div
+                        id="pluginsList"
+                        ref={pluginsListRef}
+                        className={styles.scrollContainer}>
+                        {plugins.length === 0 ? (
+                          <div style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                            No plugins found
+                          </div>
+                        ) : (
+                          plugins.map((plugin) => (
+                            <PluginListItem
+                              selected={
+                                selectedPlugin &&
+                                selectedPlugin.gid === plugin.gid
+                              }
+                              key={`plugin-${plugin.gid}`}
+                              plugin={plugin}
+                              onClick={handleItemClick(plugin)}
+                            />
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <div id="pluginsRightPane" className={styles.pluginsRightPane}>
-                {!loadingError ?
+              </div>
+              <div id="pluginsRightPane" className={styles.pluginsRightPane}>
+                {!loadingError ? (
                   <div className={styles.actionBtnGroup}>
                     {/* TODO - refactor file input to not use MUI button */}
-                    <Button variant="contained" component="label" style={{ marginRight: '5px'}}>
+                    <Button
+                      variant="contained"
+                      component="label"
+                      style={{ marginRight: '5px' }}>
                       Install Plugin
                       <input
                         hidden
@@ -313,58 +391,94 @@ export default function PluginsModule() {
                         accept="application/zip"
                         type="file"
                         ref={fileInputRef}
-                        onChange={handlePluginFileSelected}/>
+                        onChange={handlePluginFileSelected}
+                      />
                     </Button>
                     {/* <Button variant="contained" component="label">
                       Update Dependencies Status
                     </Button> */}
-                  </div> : null }
-                  {selectedPlugin ?
-                    <PluginsDetails plugin={selectedPlugin} onDeleteBtnClick={handlePluginDeleteClick} /> : null }
-                </div> 
+                  </div>
+                ) : null}
+                {selectedPlugin ? (
+                  <PluginsDetails
+                    plugin={selectedPlugin}
+                    onDeleteBtnClick={handlePluginDeleteClick}
+                  />
+                ) : null}
               </div>
             </div>
           </div>
+        </div>
       </div>
-      {newPluginFile && showInstallConfirmation ? 
+      {newPluginFile && showInstallConfirmation ? (
         <ConfirmationDialog
           size={AlertBoxSize.AUTO}
           title="Install Plugin"
-          primaryBtnText='Install'
+          primaryBtnText="Install"
           showOKBtn={showInstallResult != undefined}
           onClose={handleInstallConfirmationPrimaryBtnClick}>
-            {showInstallResult ? 
-              <StandardAlert
-                disableCloseIcon
-                style={{ border: 'none', padding: 'none', minHeight: 'none' }}
-                alertType={showInstallResult.success ? AlertType.SUCCESS : AlertType.ERROR} 
-                headingText={showInstallResult.success ? 'Plugin was successfully installed' : 'Unable to install plugin'}>
-                  <div style={{ fontSize: '14px' }}>
-                    <div>{newPluginFile.name}</div>
-                    {!showInstallResult.success ? <div style={{ color: '#f73939' }}>{showInstallResult.errorMsg}</div> : null}
-                  </div>
-              </StandardAlert>
-              : <h4 style={{ wordBreak: 'break-word' }}>{newPluginFile.name} <span style={{ fontWeight: 'normal' }}>({newPluginFile.size / 1000} kb)</span></h4>
-            }
-        </ConfirmationDialog> : null}
-      {selectedPlugin && showDeleteConfirmation ? 
-        <ConfirmationDialog
-          size={AlertBoxSize.XTRASMALL}
-          title="Delete Plugin"
-          primaryBtnText='Delete'
-          message={showDeleteResult ? undefined : 'Are you sure you want to delete this plugin?'}
-          showOKBtn={showDeleteResult != undefined}
-          onClose={handleDeleteConfirmationPrimaryBtnClick}>
-          {showDeleteResult ? 
+          {showInstallResult ? (
             <StandardAlert
               disableCloseIcon
               style={{ border: 'none', padding: 'none', minHeight: 'none' }}
-              alertType={showDeleteResult.success ? AlertType.SUCCESS : AlertType.ERROR} 
-              headingText={showDeleteResult.success ? 'Plugin was successfully removed' : 'Unable to remove plugin'}>
-                <div>{showDeleteResult.name}</div>
+              alertType={
+                showInstallResult.success ? AlertType.SUCCESS : AlertType.ERROR
+              }
+              headingText={
+                showInstallResult.success
+                  ? 'Plugin was successfully installed'
+                  : 'Unable to install plugin'
+              }>
+              <div style={{ fontSize: '14px' }}>
+                <div>{newPluginFile.name}</div>
+                {!showInstallResult.success ? (
+                  <div style={{ color: '#f73939' }}>
+                    {showInstallResult.errorMsg}
+                  </div>
+                ) : null}
+              </div>
             </StandardAlert>
-            : <h4>{selectedPlugin.name}</h4>}
-        </ConfirmationDialog>: null}
+          ) : (
+            <h4 style={{ wordBreak: 'break-word' }}>
+              {newPluginFile.name}{' '}
+              <span style={{ fontWeight: 'normal' }}>
+                ({newPluginFile.size / 1000} kb)
+              </span>
+            </h4>
+          )}
+        </ConfirmationDialog>
+      ) : null}
+      {selectedPlugin && showDeleteConfirmation ? (
+        <ConfirmationDialog
+          size={AlertBoxSize.XTRASMALL}
+          title="Delete Plugin"
+          primaryBtnText="Delete"
+          message={
+            showDeleteResult
+              ? undefined
+              : 'Are you sure you want to delete this plugin?'
+          }
+          showOKBtn={showDeleteResult != undefined}
+          onClose={handleDeleteConfirmationPrimaryBtnClick}>
+          {showDeleteResult ? (
+            <StandardAlert
+              disableCloseIcon
+              style={{ border: 'none', padding: 'none', minHeight: 'none' }}
+              alertType={
+                showDeleteResult.success ? AlertType.SUCCESS : AlertType.ERROR
+              }
+              headingText={
+                showDeleteResult.success
+                  ? 'Plugin was successfully removed'
+                  : 'Unable to remove plugin'
+              }>
+              <div>{showDeleteResult.name}</div>
+            </StandardAlert>
+          ) : (
+            <h4>{selectedPlugin.name}</h4>
+          )}
+        </ConfirmationDialog>
+      ) : null}
     </div>
-  )
+  );
 }

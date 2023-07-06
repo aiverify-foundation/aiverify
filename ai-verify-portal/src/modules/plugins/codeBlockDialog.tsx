@@ -12,20 +12,19 @@ type Props = {
   id?: string;
   open: boolean;
   onClose?: () => void;
-  title?: string,
-  text?: string,
-}
+  title?: string;
+  text?: string;
+};
 
-export default function CodeBlockDialog({ id, open, onClose, title, text }: Props) {
-
+export default function CodeBlockDialog({
+  id,
+  open,
+  onClose,
+  title,
+  text,
+}: Props) {
   return (
-    <Dialog
-      id={id}
-      open={open}
-      onClose={onClose}
-      maxWidth="md"
-      fullWidth
-    >
+    <Dialog id={id} open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <CodeBlock text={text} />

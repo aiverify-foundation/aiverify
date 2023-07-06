@@ -15,28 +15,29 @@ import Project from 'src/types/project.interface';
 import { MinimalHeader } from './header';
 
 type Props = {
-	projects: Project[]
-}
+  projects: Project[];
+};
 
 /**
  * Homepage component
  */
 export default function HomeModule({ projects }: Props) {
-  const router = useRouter()
+  const router = useRouter();
 
   return (
     <div>
-      <MinimalHeader enableMenu={false}/>
+      <MinimalHeader enableMenu={false} />
       <div className="layoutContentArea">
         <Container maxWidth={false} className="scrollContainer">
           <Container maxWidth="xl" className="mainContainer">
-            <Box sx={{ display:'flex', flexDirection:'column' }}>
-              <Box sx={{
-                height:'100%',
-                display:'flex',
-                justifyContent: 'space-between',
-                pb: '12px'
-              }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+              <Box
+                sx={{
+                  height: '100%',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  pb: '12px',
+                }}>
                 <Typography variant="heading4">
                   Welcome, what would you like to do today?
                 </Typography>
@@ -61,13 +62,13 @@ export default function HomeModule({ projects }: Props) {
                   />
                 </Grid>
                 <Grid xs={3}>
-                  <HomeMenuButtonComponent 
+                  <HomeMenuButtonComponent
                     testid="manage-plugins-button"
                     title="Plugins"
                     description="Manage plugins"
                     onClick={() => router.push('/plugins')}
                     MyIcon={PowerIcon}
-                  />          
+                  />
                 </Grid>
                 <Grid xs={3}>
                   <HomeMenuButtonComponent

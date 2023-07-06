@@ -4,7 +4,7 @@
   width: 100%;
 }
 
-.dragIconWrapper{
+.dragIconWrapper {
   position: absolute;
   left: -15px;
   top: 3px;
@@ -44,17 +44,17 @@
   overflow-y: auto;
   border: 1px solid var(--color-light-gray);
   border-radius: 4px;
-  box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
 }
 
 .variablesMenu::-webkit-scrollbar {
-	width: 8px;
-	background-color: rgb(224, 224, 224);
+  width: 8px;
+  background-color: rgb(224, 224, 224);
   border-radius: 5px;
 }
 
 .variablesMenu::-webkit-scrollbar-thumb {
-	background-color: rgb(190, 189, 189);
+  background-color: rgb(190, 189, 189);
   border-radius: 5px;
 }
 
@@ -73,8 +73,8 @@
   margin-left: 8px;
   margin-right: 0;
   text-overflow: ellipsis;
-	overflow: hidden;
-	white-space: nowrap;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .capitalize {

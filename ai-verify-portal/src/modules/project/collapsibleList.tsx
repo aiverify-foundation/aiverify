@@ -4,58 +4,49 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import clsx from 'clsx';
 
 type AccordionProps = {
-  headerContent?: React.ReactNode
-  style?: React.CSSProperties
-  defaultExpanded?: boolean
-}
+  headerContent?: React.ReactNode;
+  style?: React.CSSProperties;
+  defaultExpanded?: boolean;
+};
 
 function CollapsibleList(props: PropsWithChildren<AccordionProps>) {
-  const {
-    headerContent,
-    style,
-    defaultExpanded = false,
-    children } = props;
-  const [ expanded, setExpanded ] = useState(false);
+  const { headerContent, style, defaultExpanded = false, children } = props;
+  const [expanded, setExpanded] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
-  const listRef = useRef<HTMLDivElement>(null);
 
   function handleHeaderClick() {
-    setExpanded(prev => !prev);
+    setExpanded((prev) => !prev);
   }
 
   useEffect(() => {
     setExpanded(defaultExpanded);
-  }, [defaultExpanded])
+  }, [defaultExpanded]);
 
-  return <div ref={rootRef}
-    className={clsx(
-      styles.root,
-      expanded ? styles.list__expanded : null
-    )}
-    style={style}>
+  return (
+    <div
+      ref={rootRef}
+      className={clsx(styles.root, expanded ? styles.list__expanded : null)}
+      style={style}>
       <div className={styles.header} onClick={handleHeaderClick}>
-        <ArrowDropDownIcon className={styles.arrowIcon}/>
-        <div className={styles.headerContent}>
-          {headerContent}
-        </div>
+        <ArrowDropDownIcon className={styles.arrowIcon} />
+        <div className={styles.headerContent}>{headerContent}</div>
       </div>
-      <div className={styles.list}>
-        {children}
-      </div>
-  </div>
+      <div className={styles.list}>{children}</div>
+    </div>
+  );
 }
 
 function Header(props: PropsWithChildren) {
   const { children } = props;
-  return <div className={styles.headerChild}>{children}</div>
-} 
+  return <div className={styles.headerChild}>{children}</div>;
+}
 
 function Item(props: PropsWithChildren) {
   const { children } = props;
-  return <div className={styles.item}>{children}</div>
+  return <div className={styles.item}>{children}</div>;
 }
 
 CollapsibleList.Header = Header;
-CollapsibleList.Item = Item
+CollapsibleList.Item = Item;
 
-export { CollapsibleList }
+export { CollapsibleList };

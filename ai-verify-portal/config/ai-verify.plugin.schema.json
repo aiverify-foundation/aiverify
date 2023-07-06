@@ -1,48 +1,44 @@
 {
-	"$schema": "https://json-schema.org/draft/2020-12/schema",
-	"$id": "/ai-verify.plugin.schema.json",
-	"title": "Plugin Metadata Schema",
-	"description": "AI Verify plugin metadata schema",
-	"type": "object",
-	"properties": {
-		"gid": {
-			"description": "Unique global identififer for the plugin",
-			"type": "string",
-			"pattern": "^[a-zA-Z0-9][a-zA-Z0-9-._]*$",
-			"minLength": 1,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "/ai-verify.plugin.schema.json",
+  "title": "Plugin Metadata Schema",
+  "description": "AI Verify plugin metadata schema",
+  "type": "object",
+  "properties": {
+    "gid": {
+      "description": "Unique global identififer for the plugin",
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9-._]*$",
+      "minLength": 1,
       "maxLength": 128
-		},
-		"version": {
-			"description": "Version of the plugin",
-			"type": "string",
-			"minLength": 1,
+    },
+    "version": {
+      "description": "Version of the plugin",
+      "type": "string",
+      "minLength": 1,
       "maxLength": 256
-		},
-		"name": {
-			"description": "Plugin name",
-			"type": "string",
-			"minLength": 1,
+    },
+    "name": {
+      "description": "Plugin name",
+      "type": "string",
+      "minLength": 1,
       "maxLength": 128
-		},
-		"author": {
-			"description": "Plugin author",
-			"type": "string",
+    },
+    "author": {
+      "description": "Plugin author",
+      "type": "string",
       "maxLength": 128
-		},
-		"description": {
-			"description": "Plugin description",
-			"type": "string",
+    },
+    "description": {
+      "description": "Plugin description",
+      "type": "string",
       "maxLength": 256
-		},
-		"url": {
-			"description": "URL of project page",
-			"type": "string",
+    },
+    "url": {
+      "description": "URL of project page",
+      "type": "string",
       "maxLength": 2048
-		}
-	},
-	"required": [
-		"gid",
-		"version",
-		"name"
-	]
+    }
+  },
+  "required": ["gid", "version", "name"]
 }
