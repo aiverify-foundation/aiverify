@@ -65,6 +65,12 @@ type CanvasProps = {
   isTemplate?: boolean;
 };
 
+type GridLayoutCoords = {
+  x: number;
+  y: number;
+  h: number;
+};
+
 const GRID_WIDTH = 774;
 const GRID_ROW_HEIGHT = 30;
 const GRID_MAX_ROWS = 36;
@@ -265,7 +271,6 @@ export default function CanvasComponent(props: CanvasProps) {
     }
     const widgetItem: ReportWidgetItem = {
       widget,
-      dynamicHeight: widget.dynamicHeight,
       widgetGID: widget.gid,
       key,
       properties,
@@ -561,6 +566,50 @@ export default function CanvasComponent(props: CanvasProps) {
     });
   };
 
+  function calcDynHeightWidgetAutoHeight(
+    compKey: string,
+    layoutCoords: GridLayoutCoords,
+    layouts: Layout[],
+    isResizing = false,
+    prevLayout?: Layout
+  ): GridLayoutCoords | false {
+    const coords = { ...layoutCoords };
+    if (isResizing && prevLayout) {
+      if (coords.h > prevLayout.h) {
+        const diff = coords.h - prevLayout.h;
+        coords.y = coords.y - diff;
+      } else if (coords.h < prevLayout.h) {
+        const diff = prevLayout.h - coords.h;
+        coords.y = coords.y + diff;
+      }
+      return coords;
+    }
+    // check if above other widgets
+    let isBottom = true;
+    const y = coords.y + coords.h;
+    let maxY = coords.y;
+    for (const layout of layouts) {
+      if (layout.i === compKey) continue;
+      if (layout.y >= y) {
+        isBottom = false;
+        maxY = layout.y + layout.h;
+      }
+    }
+    // check make sure the widget does not goes out of the canvas max height
+    if (maxY >= GRID_MAX_ROWS - 1) {
+      return false;
+    }
+    if (isBottom) {
+      // if already bottom widget, then just adjust height from y position
+      coords.h = GRID_MAX_ROWS - coords.y;
+    } else {
+      // if not bottom widget, set widget y to maxY and adjust height from maxY
+      coords.y = maxY;
+      coords.h = GRID_MAX_ROWS - maxY;
+    }
+    return coords;
+  }
+
   function handleOnGridItemDrag(
     _layout: Layout[],
     _oldItem: Layout,
@@ -578,7 +627,7 @@ export default function CanvasComponent(props: CanvasProps) {
     setdHeightIconPos([y + scrollTop, right]);
   }
 
-  const handleOnGridItemDrop = async (_l: Layout[], layout: Layout) => {
+  const handleGridItemDrop = async (layouts: Layout[], layout: Layout) => {
     if (!dragItem || !layout) return;
     let addedWidgetGridItem: ReportWidgetItem | undefined;
     const widget = dragItem;
@@ -586,29 +635,11 @@ export default function CanvasComponent(props: CanvasProps) {
     const { minW, minH, maxW, maxH } = widget.widgetSize;
     const newLayout = { x, y, w, h, minW, minH, maxW, maxH };
     if (widget.dynamicHeight) {
-      // check if above other widgets
-      let isBottom = true;
-      const y2 = layout.y + layout.h;
-      let maxY = y;
-      for (const l of _l) {
-        if (l.i === i) continue;
-        if (l.y >= y2) {
-          isBottom = false;
-          maxY = l.y + l.h;
-        }
-      }
-      // check make sure the widget does not goes out of the canvas max height
-      if (maxY >= GRID_MAX_ROWS - 1) {
-        return;
-      }
-      if (isBottom) {
-        // if already bottom widget, then just adjust height from y position
-        newLayout.h = GRID_MAX_ROWS - y;
-      } else {
-        // if not bottom widget, set widget y to maxY and adjust height from maxY
-        newLayout.y = maxY;
-        newLayout.h = GRID_MAX_ROWS - maxY;
-      }
+      const newCoords = calcDynHeightWidgetAutoHeight(i, { x, y, h }, layouts);
+      if (newCoords === false) return;
+      newLayout.x = newCoords.x;
+      newLayout.y = newCoords.y;
+      newLayout.h = newCoords.h;
     }
     if (!projectStore.widgetBundleCache[widget.gid]) {
       document.body.style.cursor = 'wait';
@@ -646,7 +677,7 @@ export default function CanvasComponent(props: CanvasProps) {
     setdHeightIconPos(undefined);
   };
 
-  const handleOnGridItemDropDragOver = () => {
+  const handleGridItemDropDragOver = () => {
     if (!dragItem) return;
     return { w: dragItem.widgetSize.minW, h: dragItem.widgetSize.minH };
   };
@@ -674,8 +705,8 @@ export default function CanvasComponent(props: CanvasProps) {
     }, 0);
   }
 
-  function handleOnGridItemDragStop(
-    _layout: Layout[],
+  function handleGridItemDragStop(
+    layouts: Layout[],
     _oldItem: Layout,
     newItem: Layout,
     _placeholder: Layout,
@@ -687,29 +718,32 @@ export default function CanvasComponent(props: CanvasProps) {
 
     if (!page) return;
     const key = newItem.i;
-    const widget = page.reportWidgets.find((widget) => widget.key === key);
+    const reportWidget = page.reportWidgets.find(
+      (widget) => widget.key === key
+    );
 
-    if (!widget) return;
+    if (!reportWidget) return;
 
-    if (widget.dynamicHeight) {
-      // check that no widget below it
-      let maxY = newItem.y;
-      for (const l of page.layouts) {
-        if (l.i === key) continue;
-        if (l.y + l.h > maxY) maxY = l.y + l.h;
-      }
-      newItem.y = maxY;
-      newItem.h = GRID_MAX_ROWS - maxY;
+    if (reportWidget.widget.dynamicHeight) {
+      const newCoords = calcDynHeightWidgetAutoHeight(
+        newItem.i,
+        { x: newItem.x, y: newItem.y, h: newItem.h },
+        layouts
+      );
+      if (newCoords === false) return;
+      newItem.x = newCoords.x;
+      newItem.y = newCoords.y;
+      newItem.h = newCoords.h;
     }
 
     const gridItem = getGridItemElement(element);
     if (gridItem) selectGridItem(gridItem);
-    setSelectedWidget(widget);
+    setSelectedWidget(reportWidget);
     setdHeightIconPos(undefined);
     setDragItem(undefined);
   }
 
-  const handleOnGridItemDragStart: ItemCallback = (
+  const handleGridItemDragStart: ItemCallback = (
     _layout: Layout[],
     _oldItem: Layout,
     newItem: Layout,
@@ -721,22 +755,24 @@ export default function CanvasComponent(props: CanvasProps) {
     const page = currentPage();
     if (!page) return;
     const key = newItem.i;
-    const widget = page.reportWidgets.find((widget) => widget.key === key);
-    if (!widget) return;
+    const reportWidget = page.reportWidgets.find(
+      (widget) => widget.key === key
+    );
+    if (!reportWidget) return;
     setSelectedGridItemDomElement(undefined);
-    if (widget.dynamicHeight) {
-      setDragItem(widget.widget);
+    if (reportWidget.widget.dynamicHeight) {
+      setDragItem(reportWidget.widget);
     }
   };
 
-  function handleOnCanvasResizeStart() {
+  function handleCanvasResizeStart() {
     if (projectStore.isReadonly) return;
     setSelectedGridItemDomElement(undefined);
   }
 
-  const handleOnGridItemResizeStop: ItemCallback = (
-    _layout: Layout[],
-    _oldItem: Layout,
+  const handleGridItemResizeStop: ItemCallback = (
+    layouts: Layout[],
+    prevLayout: Layout,
     newItem: Layout,
     _placeholder: Layout,
     _e: globalThis.MouseEvent,
@@ -747,14 +783,29 @@ export default function CanvasComponent(props: CanvasProps) {
 
     if (!page) return;
     const key = newItem.i;
-    const widget = page.reportWidgets.find((widget) => widget.key === key);
+    const reportWidget = page.reportWidgets.find(
+      (widget) => widget.key === key
+    );
 
-    if (!widget) return;
-    if (widget.dynamicHeight) return;
+    if (!reportWidget) return;
+    if (reportWidget.widget.dynamicHeight) {
+      const newCoords = calcDynHeightWidgetAutoHeight(
+        newItem.i,
+        { x: newItem.x, y: newItem.y, h: newItem.h },
+        layouts,
+        true,
+        prevLayout
+      );
+      if (newCoords === false) return;
+      newItem.x = newCoords.x;
+      newItem.y = newCoords.y;
+      newItem.h = newCoords.h;
+      return;
+    }
 
     const gridItem = getGridItemElement(element);
     if (gridItem) selectGridItem(gridItem);
-    setSelectedWidget(widget);
+    setSelectedWidget(reportWidget);
   };
 
   const leftPanelWidgetDragStartHandler = useCallback(function (
@@ -959,7 +1010,9 @@ export default function CanvasComponent(props: CanvasProps) {
               {showGridItemActionMenu && selectedGridItemDomElement ? (
                 <SelectedGridActionButtons
                   title={selectedWidgetMenuTitle}
-                  isDynamicHeight={selectedWidget?.dynamicHeight}
+                  isDynamicHeight={
+                    selectedWidget ? selectedWidget.widget.dynamicHeight : false
+                  }
                   el={selectedGridItemDomElement}
                   hideEditBtn={!selectedWidgetHasProperties}
                   onDeleteClick={handleDeleteWidgetClick}
@@ -974,13 +1027,13 @@ export default function CanvasComponent(props: CanvasProps) {
                 margin={[0, 0]}
                 compactType={null}
                 onDrag={handleOnGridItemDrag}
-                onDrop={handleOnGridItemDrop}
-                onDragStart={handleOnGridItemDragStart}
-                onDragStop={handleOnGridItemDragStop}
-                onResizeStart={handleOnCanvasResizeStart}
-                onDropDragOver={handleOnGridItemDropDragOver}
+                onDrop={handleGridItemDrop}
+                onDragStart={handleGridItemDragStart}
+                onDragStop={handleGridItemDragStop}
+                onResizeStart={handleCanvasResizeStart}
+                onDropDragOver={handleGridItemDropDragOver}
                 onLayoutChange={handleLayoutChange}
-                onResizeStop={handleOnGridItemResizeStop}
+                onResizeStop={handleGridItemResizeStop}
                 preventCollision
                 isDroppable={!projectStore.isReadonly}
                 isResizable={!projectStore.isReadonly}

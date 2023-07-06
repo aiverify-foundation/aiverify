@@ -73,7 +73,7 @@ function SelectedGridActionButtons(props: SelectedGridActionButtonsProps) {
       {isDynamicHeight ? (
         <Tooltip
           position={TooltipPosition.top}
-          content="Content of this widget is longer than page height. It will automatically print on multiple pages during report generation.">
+          content="Content of this widget is longer than page height. It will be printed across multiple pages in the report generated.">
           <div className={styles.gridItem_dheightNote}>
             <HeightIcon style={{ color: '#787878', fontSize: 22 }} />
             <div>Dynamic Height </div>
