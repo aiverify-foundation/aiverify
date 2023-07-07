@@ -193,7 +193,7 @@ function _exportModelAPI(modelAPI) {
     },
   };
 
-  const url = modelAPI.url + modelAPI.urlParams;
+  const url = modelAPI.url + (modelAPI.urlParams || "");
   const url_match = url.match(_url_pattern);
   // add servers
   spec["servers"] = [
