@@ -47,7 +47,7 @@ input ModelAPIInput {
   name: String @constraint(minLength: 0, maxLength: 128)
   description: String @constraint(minLength: 0, maxLength: 256)
   modelType: ModelType
-  modelAPI: ModelAPIInput # for model API inputs
+  modelAPI: OpenAPIInput # for model API inputs
 }
 
 type Query {

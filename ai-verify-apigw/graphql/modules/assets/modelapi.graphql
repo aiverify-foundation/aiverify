@@ -158,7 +158,7 @@ input OpenAPIResponseInput {
   field: String @constraint(minLength: 1, maxLength: 128) # for object, define the prediction field use dot, e.g. xxx.yyy, to denote nested field
 }
 
-input ModelAPIRequestConfigInput {
+input OpenAPIRequestConfigInput {
   rateLimit: Int! @constraint(min: -1) # max Int of requests per minute
   batchStrategy: ModelAPIRequestConfigBatchStrategy!
   batchLimit: Int @constraint(min: -1) # max Int of requests in each batch
@@ -166,7 +166,7 @@ input ModelAPIRequestConfigInput {
   requestTimeout: Int! @constraint(min: 1) # request connection timeout in ms
 }
 
-input ModelAPIInput {
+input OpenAPIInput {
   method: OpenAPIMethod
   url: URL
   urlParams: String @constraint(maxLength: 2048)
@@ -176,5 +176,5 @@ input ModelAPIInput {
   parameters: OpenAPIParametersInput
   requestBody: OpenAPIRequestBodyInput
   response: OpenAPIResponseInput
-  requestConfig: ModelAPIRequestConfigInput
+  requestConfig: OpenAPIRequestConfigInput
 }
