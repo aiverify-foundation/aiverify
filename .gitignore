@@ -180,9 +180,9 @@ test-report.json
 node_modules/
 node_modules
 build/
-*.zip
 *.log
 lib-cov
-coverage
+coverage/
 cache
-uploads
+/uploads/
+/package-lock.json
