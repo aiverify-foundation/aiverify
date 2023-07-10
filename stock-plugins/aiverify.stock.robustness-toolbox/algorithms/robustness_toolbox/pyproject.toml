@@ -13,7 +13,7 @@ numpy = "1.23.5"
 scikit-learn = "1.2.2"
 pandas = "1.5.3"
 pillow = "9.4.0"
-scipy = "1.9.3"
+scipy = "1.10.0"
 
 
 [build-system]
