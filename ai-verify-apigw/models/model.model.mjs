@@ -4,61 +4,67 @@ import _ from "lodash";
 const PRIMITIVE_TYPES = ["string", "number", "integer", "boolean"];
 const ALL_TYPES = [...PRIMITIVE_TYPES, "array", "object"];
 
+const MEDIA_TYPES = [
+  "none",
+  "application/x-www-form-urlencoded",
+  "multipart/form-data",
+  "application/json",
+  "text/plain",
+];
+
 const modelAPIAdditionalHeadersSchema = new Schema({
   name: { type: String, required: true },
   type: { type: String, required: true, enum: PRIMITIVE_TYPES },
   value: { type: Object, required: true },
 });
 
-const modelAPIParametersSchema = new Schema({
+const modelAPIParametersPathSchema = new Schema({
+  mediaType: {
+    type: String,
+    required: true,
+    enum: MEDIA_TYPES,
+    default: "none",
+  },
+  isArray: { type: Boolean, required: true, default: false },
+  maxItems: { type: Number }, // max array items if itemType == 'array'
   pathParams: [
     {
       name: { type: String, required: true },
-      type: { type: String, required: true, enum: ALL_TYPES },
-      itemType: { type: String, enum: PRIMITIVE_TYPES }, // only applicate if "type" is "array"
-      maxItems: { type: Number }, // max array items if itemType == 'array'
-      style: {
-        type: String,
-        enum: ["simple", "label", "matrix"],
-        default: "simple",
-      },
-      explode: { type: Boolean, default: false },
+      type: { type: String, required: true, enum: PRIMITIVE_TYPES },
     },
   ],
+});
+
+const modelAPIParametersQuerySchema = new Schema({
+  mediaType: { type: String, required: true, enum: MEDIA_TYPES },
+  name: { type: String },
+  isArray: { type: Boolean, required: true, default: false },
+  maxItems: { type: Number }, // max array items if itemType == 'array'
   queryParams: [
     {
       name: { type: String, required: true },
-      type: { type: String, required: true, enum: ALL_TYPES },
-      itemType: { type: String, enum: PRIMITIVE_TYPES }, // only applicate if "type" is "array"
-      maxItems: { type: Number }, // max array items if itemType == 'array'
-      style: {
-        type: String,
-        enum: ["form", "spaceDelimited", "pipeDelimited", "deepObject"],
-        default: "form",
-      },
-      explode: { type: Boolean, default: true },
+      type: { type: String, required: true, enum: PRIMITIVE_TYPES },
     },
   ],
+});
+
+const modelAPIParametersSchema = new Schema({
+  paths: modelAPIParametersPathSchema,
+  queries: modelAPIParametersQuerySchema,
 });
 
 const modelAPIRequestBodySchema = new Schema({
   mediaType: {
     type: String,
     required: true,
-    enum: ["none", "multipart/form-data", "application/x-www-form-urlencoded"],
+    enum: MEDIA_TYPES,
   },
+  isArray: { type: Boolean, required: true, default: false },
+  maxItems: { type: Number }, // max array items if itemType == 'array'
   properties: [
     {
       field: { type: String, required: true },
-      type: { type: String, required: true, enum: ALL_TYPES },
-      itemType: { type: String, enum: PRIMITIVE_TYPES }, // only applicate if "type" is "array"
-      maxItems: { type: Number }, // max array items if itemType == 'array'
-      style: {
-        type: String,
-        enum: ["form", "spaceDelimited", "pipeDelimited", "deepObject"],
-        default: "form",
-      },
-      explode: { type: Boolean, default: true },
+      type: { type: String, required: true, enum: PRIMITIVE_TYPES },
     },
   ],
 });
@@ -248,77 +254,161 @@ function _exportModelAPI(modelAPI) {
   if (
     path_match &&
     modelAPI.parameters &&
-    modelAPI.parameters.pathParams &&
-    modelAPI.parameters.pathParams.length > 0
+    modelAPI.parameters.paths &&
+    modelAPI.parameters.paths.pathParams &&
+    modelAPI.parameters.paths.pathParams.length > 0
   ) {
     // console.log("path_match", path_match);
-    for (let item of path_match) {
-      let attr = item.replaceAll(/[{}]/g, "");
-      const p = modelAPI.parameters.pathParams.find((p) => p.name === attr);
-      if (!p) {
-        throw new Error(`Path parameter {${attr}} not defined`);
-      }
-      let pobj = {
-        in: "path",
-        name: p.name,
-        required: true,
-        schema: {
-          type: p.type,
-        },
-      };
-      if (p.type === "array") {
-        if (p.maxItems) {
-          pobj.schema.maxItems = p.maxItems;
+    // const parameters = [];
+    const isComplex = modelAPI.parameters.paths.mediaType !== "none";
+    if (!isComplex) {
+      for (let item of path_match) {
+        let attr = item.replaceAll(/[{}]/g, "");
+        const p = modelAPI.parameters.paths.pathParams.find(
+          (p) => p.name === attr
+        );
+        if (!p) {
+          throw new Error(`Path parameter {${attr}} not defined`);
         }
-        pobj.schema["items"] = {
-          type: p.itemType || "string",
+        let pobj = {
+          in: "path",
+          name: p.name,
+          required: true,
+          schema: {
+            type: p.type,
+          },
         };
-      } else if (p.type === "object") {
-        pobj.schema["properties"] = {
-          type: p.itemType || "string",
+        pathObj.parameters.push(pobj);
+      }
+    } else {
+      if (path_match.length != 1) {
+        // impose condition of only one path param for objects
+        throw new Error("Require one path variable for complex serialization");
+      }
+      let name = path_match[0].replaceAll(/[{}]/g, "");
+      if (!name || name.length == 0) {
+        throw new Error(
+          "Name field required for parameters with complex serialization"
+        );
+      }
+      const properties = {};
+      const required = [];
+      for (let p of modelAPI.parameters.paths.pathParams) {
+        properties[p.name] = {
+          type: p.type,
         };
+        required.push(p.name);
       }
-      if (p.type === "array" || p.type === "object") {
-        pobj["style"] = p.style || "simple";
-        pobj["explode"] = _.isBoolean(p.explode) ? p.explode : false;
+      const objectDefinition = {
+        type: "object",
+        properties,
+        required,
+      };
+      if (modelAPI.parameters.paths.isArray) {
+        const schema = {
+          type: "array",
+          items: objectDefinition,
+        };
+        if (modelAPI.parameters.paths.maxItems) {
+          schema.maxItems = modelAPI.parameters.paths.maxItems;
+        }
+        pathObj.parameters.push({
+          in: "path",
+          name,
+          required: true,
+          content: {
+            [modelAPI.parameters.paths.mediaType]: {
+              schema,
+            },
+          },
+        });
+      } else {
+        pathObj.parameters.push({
+          in: "path",
+          name,
+          required: true,
+          content: {
+            [modelAPI.parameters.paths.mediaType]: {
+              schema: objectDefinition,
+            },
+          },
+        });
       }
-      pathObj.parameters.push(pobj);
     }
   }
 
   // add query params if any
   if (
     modelAPI.parameters &&
-    modelAPI.parameters.queryParams &&
-    modelAPI.parameters.queryParams.length > 0
+    modelAPI.parameters.queries &&
+    modelAPI.parameters.queries.queryParams &&
+    modelAPI.parameters.queries.queryParams.length > 0
   ) {
     // has query params
-    for (let p of modelAPI.parameters.queryParams) {
-      let pobj = {
-        in: "query",
-        name: p.name,
-        required: true,
-        schema: {
+    const isComplex = modelAPI.parameters.queries.mediaType !== "none";
+    if (!isComplex) {
+      for (let p of modelAPI.parameters.queries.queryParams) {
+        let pobj = {
+          in: "query",
+          name: p.name,
+          required: true,
+          schema: {
+            type: p.type,
+          },
+        };
+        pathObj.parameters.push(pobj);
+      }
+    } else {
+      if (
+        !modelAPI.parameters.queries.name ||
+        modelAPI.parameters.queries.name.length == 0
+      ) {
+        throw new Error(
+          "Name field required for parameters with complex serialization"
+        );
+      }
+      const name = modelAPI.parameters.queries.name;
+      const properties = {};
+      const required = [];
+      for (let p of modelAPI.parameters.queries.queryParams) {
+        properties[p.name] = {
           type: p.type,
-        },
+        };
+        required.push(p.name);
+      }
+      const objectDefinition = {
+        type: "object",
+        properties,
+        required,
       };
-      if (p.type === "array") {
-        if (p.maxItems) {
-          pobj.schema.maxItems = p.maxItems;
+      if (modelAPI.parameters.queries.isArray) {
+        const schema = {
+          type: "array",
+          items: objectDefinition,
+        };
+        if (modelAPI.parameters.queries.maxItems) {
+          schema.maxItems = modelAPI.parameters.queries.maxItems;
         }
-        pobj.schema["items"] = {
-          type: p.itemType || "string",
-        };
-      } else if (p.type === "object") {
-        pobj.schema["properties"] = {
-          type: p.itemType || "string",
-        };
+        pathObj.parameters.push({
+          in: "query",
+          name,
+          content: {
+            [modelAPI.parameters.queries.mediaType]: {
+              schema,
+            },
+          },
+        });
+      } else {
+        pathObj.parameters.push({
+          in: "query",
+          name,
+          content: {
+            [modelAPI.parameters.queries.mediaType]: {
+              schema: objectDefinition,
+            },
+          },
+        });
       }
-      if (p.type === "array" || p.type === "object") {
-        pobj["style"] = p.style || "form";
-        pobj["explode"] = _.isBoolean(p.explode) ? p.explode : true;
-      }
-      pathObj.parameters.push(pobj);
     }
   }
 
@@ -326,45 +416,43 @@ function _exportModelAPI(modelAPI) {
   if (modelAPI.requestBody && modelAPI.requestBody.mediaType !== "none") {
     let required = [];
     let properties = {};
-    let encoding = {};
     for (let prop of modelAPI.requestBody.properties) {
       required.push(prop.field);
       properties[prop.field] = {
         type: prop.type,
       };
-      if (prop.type === "array") {
-        if (prop.maxItems) {
-          properties[prop.field]["maxItems"] = prop.maxItems;
-        }
-        properties[prop.field]["items"] = {
-          type: prop.itemType || "string",
-        };
-      } else if (prop.type === "object") {
-        properties[prop.field]["properties"] = {
-          type: prop.itemType || "string",
-        };
-      }
-      if (prop.type === "array" || prop.type === "object") {
-        encoding[prop.field] = {
-          style: prop.style || "form",
-          explode: _.isBoolean(prop.explode) ? prop.explode : true,
-        };
-      }
     }
-    if (_.isEmpty(encoding)) encoding = undefined;
-    pathObj["requestBody"] = {
-      required: true,
-      content: {
-        [modelAPI.requestBody.mediaType]: {
-          schema: {
-            type: "object",
-            required,
-            properties,
-          },
-          ...(_.isEmpty(encoding) ? {} : { encoding }),
-        },
-      },
+    const objectDefinition = {
+      type: "object",
+      required,
+      properties,
     };
+    if (modelAPI.requestBody.isArray) {
+      const schema = {
+        type: "array",
+        items: objectDefinition,
+      };
+      if (modelAPI.requestBody.maxItems) {
+        schema.maxItems = modelAPI.requestBody.maxItems;
+      }
+      pathObj["requestBody"] = {
+        required: true,
+        content: {
+          [modelAPI.requestBody.mediaType]: {
+            schema,
+          },
+        },
+      };
+    } else {
+      pathObj["requestBody"] = {
+        required: true,
+        content: {
+          [modelAPI.requestBody.mediaType]: {
+            schema: objectDefinition,
+          },
+        },
+      };
+    }
   }
 
   spec["paths"] = {

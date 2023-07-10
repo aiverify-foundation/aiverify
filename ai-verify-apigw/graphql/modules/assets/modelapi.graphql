@@ -1,13 +1,13 @@
 enum OpenAPIPrimitiveTypes {
   string
-  Int
+  number
   integer
   boolean
 }
 
 enum OpenAPIAllTypes {
   string
-  Int
+  number
   integer
   boolean
   array
@@ -25,53 +25,45 @@ type OpenAPIAdditionalHeadersType {
   value: JSON!
 }
 
-enum OpenAPIPathParamsStyles {
-  simple
-  label
-  matrix
-}
-
 type OpenAPIPathParamsType {
   name: String! @constraint(minLength: 1, maxLength: 128)
-  type: OpenAPIAllTypes!
-  itemType: OpenAPIPrimitiveTypes
-  maxItems: Int # max array items if itemType == 'array'
-  style: OpenAPIPathParamsStyles
-  explode: Boolean
+  type: OpenAPIPrimitiveTypes!
 }
 
-enum OpenAPIQueryParamsStyles {
-  form
-  spaceDelimited
-  pipeDelimited
-  deepObject
-}
-
-type QueryParamsType {
+type QueryAPIParamsType {
   name: String! @constraint(minLength: 1, maxLength: 128)
-  type: OpenAPIAllTypes!
-  itemType: OpenAPIPrimitiveTypes
-  maxItems: Int # max array items if itemType == 'array'
-  style: OpenAPIQueryParamsStyles
-  explode: Boolean
+  type: OpenAPIPrimitiveTypes!
+}
+
+type OpenAPIParametersPathType {
+  mediaType: OpenAPIMediaType! # default none
+  isArray: Boolean! # indicate if is array, default false, note that cannot be array if mediaType == 'none' 
+  maxItems: Int @constraint(min: 1) # max array items if array
+  pathParams: [OpenAPIPathParamsType]
+}
+
+type OpenAPIParametersQueryType {
+  mediaType: OpenAPIMediaType! # default none
+  name: String # name of query if mediaType !== 'none'
+  isArray: Boolean! # indicate if is array, default false, note that cannot be array if mediaType == 'none' 
+  maxItems: Int @constraint(min: 1) # max array items if array
+  queryParams: [QueryAPIParamsType]
 }
 
 type OpenAPIParametersType {
-  pathParams: [OpenAPIPathParamsType]
-  queryParams: [QueryParamsType]
+  paths: OpenAPIParametersPathType
+  queries: OpenAPIParametersQueryType
 }
 
 type OpenAPIRequestBodyPropertyType {
   field: String! @constraint(minLength: 1, maxLength: 128)
-  type: OpenAPIAllTypes!
-  itemType: OpenAPIPrimitiveTypes
-  maxItems: Int # max array items if itemType == 'array'
-  style: OpenAPIQueryParamsStyles
-  explode: Boolean
+  type: OpenAPIPrimitiveTypes!
 }
 
 type OpenAPIRequestBodyType {
   mediaType: OpenAPIMediaType!
+  isArray: Boolean! # indicate if is array, default false
+  maxItems: Int @constraint(min: 1) # max array items if array
   properties: [OpenAPIRequestBodyPropertyType]!
 }
 
@@ -116,38 +108,43 @@ input OpenAPIAdditionalHeadersInput {
 
 input OpenAPIPathParamsInput {
   name: String! @constraint(minLength: 1, maxLength: 128)
-  type: OpenAPIAllTypes!
-  itemType: OpenAPIPrimitiveTypes
-  maxItems: Int # max array items if itemType == 'array'
-  style: OpenAPIPathParamsStyles
-  explode: Boolean
+  type: OpenAPIPrimitiveTypes!
 }
 
-input QueryParamsInput {
+input OpenAPIQueryParamsInput {
   name: String! @constraint(minLength: 1, maxLength: 128)
-  type: OpenAPIAllTypes!
-  itemType: OpenAPIPrimitiveTypes
-  maxItems: Int # max array items if itemType == 'array'
-  style: OpenAPIQueryParamsStyles
-  explode: Boolean
+  type: OpenAPIPrimitiveTypes!
+}
+
+input OpenAPIParametersPathInput {
+  mediaType: OpenAPIMediaType! # default none
+  isArray: Boolean! # indicate if is array, default false, note that cannot be array if mediaType == 'none' 
+  maxItems: Int @constraint(min: 1) # max array items if array
+  pathParams: [OpenAPIPathParamsInput]
+}
+
+input OpenAPIParametersQueryInput {
+  mediaType: OpenAPIMediaType! # default none
+  name: String # name of query if mediaType !== 'none'
+  isArray: Boolean! # indicate if is array, default false, note that cannot be array if mediaType == 'none' 
+  maxItems: Int @constraint(min: 1) # max array items if array
+  queryParams: [OpenAPIQueryParamsInput]
 }
 
 input OpenAPIParametersInput {
-  pathParams: [OpenAPIPathParamsInput]
-  queryParams: [QueryParamsInput]
+  paths: OpenAPIParametersPathInput
+  queries: OpenAPIParametersQueryInput
 }
 
 input OpenAPIRequestBodyPropertyInput {
   field: String! @constraint(minLength: 1, maxLength: 128)
-  type: OpenAPIAllTypes!
-  itemType: OpenAPIPrimitiveTypes
-  maxItems: Int # max array items if itemType == 'array'
-  style: OpenAPIQueryParamsStyles
-  explode: Boolean
+  type: OpenAPIPrimitiveTypes!
 }
 
 input OpenAPIRequestBodyInput {
   mediaType: OpenAPIMediaType!
+  isArray: Boolean! # indicate if is array, default false
+  maxItems: Int @constraint(min: 1) # max array items if array
   properties: [OpenAPIRequestBodyPropertyInput]
 }
 
