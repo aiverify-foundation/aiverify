@@ -12,7 +12,7 @@ class TestCollectionEnvironmentVariables:
     def init(self):
         # Reset
         EnvironmentVariables._core_modules_folder = str(
-            Path().resolve() / "core_modules"
+            Path().resolve().parent / "test-engine-core-modules"
         )
         EnvironmentVariables._validation_schemas_folder = str(
             Path().resolve() / "validation_schemas"
@@ -24,6 +24,9 @@ class TestCollectionEnvironmentVariables:
 
         # Remove .env file
         try:
+            os.makedirs(
+                str(Path().resolve().parent / "test-engine-core-modules"), exist_ok=True
+            )
             os.remove(".env")
         except FileNotFoundError:
             pass
@@ -62,14 +65,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/env_core_modules/path_issues_env",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -79,14 +82,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/env_core_modules/path_issues_env_1",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -96,14 +99,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/env_core_modules/path_issues_env_2",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -113,14 +116,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/env_core_modules/path_issues_env_3",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -130,14 +133,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/env_core_modules/path_issues_env_4",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -165,14 +168,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/validation_schema/path_issues_env",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -182,14 +185,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/validation_schema/path_issues_env_1",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -199,14 +202,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/validation_schema/path_issues_env_2",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -216,14 +219,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/validation_schema/path_issues_env_3",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -233,14 +236,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/validation_schema/path_issues_env_4",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -285,14 +288,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/consumer_group/path_issues_env_1",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -319,14 +322,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/consumer_group/path_issues_env_3",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -336,14 +339,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/consumer_group/path_issues_env_4",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -388,14 +391,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/redis_hostname/path_issues_env_1",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -422,14 +425,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/redis_hostname/path_issues_env_3",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -439,14 +442,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/redis_hostname/path_issues_env_4",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -474,14 +477,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/server_port/path_issues_env",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -491,14 +494,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/server_port/path_issues_env_1",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -525,14 +528,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/server_port/path_issues_env_3",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -542,14 +545,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/server_port/path_issues_env_4",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -576,14 +579,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/server_port/value_issues_env",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -593,14 +596,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/server_port/value_issues_env_1",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -611,14 +614,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/api_server_port/path_issues_env",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -628,14 +631,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/api_server_port/path_issues_env_1",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -662,14 +665,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/api_server_port/path_issues_env_3",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -679,14 +682,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/api_server_port/path_issues_env_4",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -713,14 +716,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/api_server_port/value_issues_env",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -730,14 +733,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/api_server_port/value_issues_env_1",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -748,14 +751,14 @@ class TestCollectionEnvironmentVariables:
             (
                 "tests/env_files/invalid_env",
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
@@ -786,14 +789,14 @@ class TestCollectionEnvironmentVariables:
             # working environment
             (
                 {
-                    "core_modules_folder": str(Path().resolve() / "core_modules"),
+                    "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
                     "validation_folder": str(Path().resolve() / "validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
-                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve() / "core_modules")}\n'
+                f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
                 f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
