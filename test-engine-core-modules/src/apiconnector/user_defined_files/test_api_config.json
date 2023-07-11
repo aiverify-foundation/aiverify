@@ -1,0 +1,26 @@
+{
+    "responseBody": {
+      "field": "data",
+      "type": "integer"
+    },
+    "authentication": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyMmY4MTJiNmJlM2IzMjEyMTQzMjBjZiIsImlhdCI6MTY2MDE5Nzg3MCwiZXhwIjoxNjYyNzg5ODcwfQ.cebsoHVMzV4GGwX-QjHFc5CcTkEy7jLQQLaaHlvN2JU"
+    },
+    "headers": {
+      "foo": "bar"
+    },
+    "requestBody": {
+      "age": "age_cat_cat",
+      "gender": "sex_code",
+      "race": "race_code",
+      "count": "priors_count",
+      "charge": "c_charge_degree_cat"
+    },
+    "requestOptions": {
+      "rateLimit": -1,
+      "batchStrategy": "none",
+      "batchLimit": -1,
+      "maxConnections": -1,
+      "requestTimeout": 3000
+    }
+  }
