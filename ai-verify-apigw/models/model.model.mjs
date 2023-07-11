@@ -335,6 +335,8 @@ function _exportModelAPI(modelAPI) {
         });
       }
     }
+  } else if (path_match && path_match.length > 0) {
+    throw new Error("Path parameters not defined");
   }
 
   // add query params if any
@@ -345,7 +347,7 @@ function _exportModelAPI(modelAPI) {
     modelAPI.parameters.queries.queryParams.length > 0
   ) {
     // has query params
-    const isComplex = modelAPI.parameters.queries.mediaType !== "none";
+    const isComplex = modelAPI.parameters.queries.mediaType && modelAPI.parameters.queries.mediaType !== "none";
     if (!isComplex) {
       for (let p of modelAPI.parameters.queries.queryParams) {
         let pobj = {
@@ -414,6 +416,9 @@ function _exportModelAPI(modelAPI) {
 
   // add request body if any
   if (modelAPI.requestBody && modelAPI.requestBody.mediaType !== "none") {
+    if (modelAPI.method === 'GET') {
+      throw new Error("GET methods cannot have a request body")
+    }
     let required = [];
     let properties = {};
     for (let prop of modelAPI.requestBody.properties) {

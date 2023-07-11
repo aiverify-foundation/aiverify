@@ -143,6 +143,7 @@ input OpenAPIRequestBodyPropertyInput {
 
 input OpenAPIRequestBodyInput {
   mediaType: OpenAPIMediaType!
+  name: String # name of payload property when array
   isArray: Boolean! # indicate if is array, default false
   maxItems: Int @constraint(min: 1) # max array items if array
   properties: [OpenAPIRequestBodyPropertyInput]
