@@ -2,3 +2,5 @@ venv
 coverage
 /uploads/
 /package-lock.json
+**/*.log
+.tox
