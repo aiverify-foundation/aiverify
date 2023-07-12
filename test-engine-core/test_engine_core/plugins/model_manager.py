@@ -27,6 +27,66 @@ class ModelManager:
             ModelManager._logger = logger
 
     @staticmethod
+    def read_api_file(
+        api_schema: Dict,
+        api_config: Dict,
+        model_plugins: Dict,
+        serializer_plugins: Dict,
+    ) -> Tuple[bool, Union[IModel, None], Union[ISerializer, None], str]:
+        """
+        A method to read the api configuration and schema and return the model instance and serializer instance
+
+        Args:
+            api_schema (Dict): OpenAPI schema
+            api_config (Dict): OpenAPI configuration
+            model_plugins (Dict): A dictionary of supported model plugins
+            serializer_plugins (Dict): A dictionary of supported serializer plugins
+
+        Returns:
+            Tuple[bool, Union[IModel, None], Union[ISerializer, None], str]:
+            Returns a tuple consisting of bool that indicates if it succeeds,
+            If it succeeds, it will contain an object of IModel, and an object of ISerializer
+            and returns an empty string
+            If it fails to deserialize/identify, it will contain None objects and returns the error message
+        """
+        return_model_instance = None
+        return_model_serializer_instance = None
+        log_message(
+            ModelManager._logger,
+            logging.INFO,
+            f"Attempting to read api:"
+            f"APISchema: {api_schema}"
+            f"APIConfig: {api_config}",
+        )
+
+        # Validate the inputs
+        if (
+            api_schema is None
+            or not isinstance(api_schema, dict)
+            or api_config is None
+            or not isinstance(api_config, dict)
+            or model_plugins is None
+            or not isinstance(model_plugins, dict)
+            or serializer_plugins is None
+            or not isinstance(serializer_plugins, dict)
+        ):
+            error_message = (
+                f"There was an error validating the input parameters: {api_schema}, {api_config},"
+                f"{model_plugins}, {serializer_plugins}"
+            )
+            log_message(ModelManager._logger, logging.ERROR, error_message)
+            return (
+                False,
+                return_model_instance,
+                return_model_serializer_instance,
+                error_message,
+            )
+        else:
+            log_message(
+                ModelManager._logger, logging.INFO, "Model validation successful"
+            )
+
+    @staticmethod
     def read_model_file(
         model_file: str, model_plugins: Dict, serializer_plugins: Dict
     ) -> Tuple[bool, Union[IModel, None], Union[ISerializer, None], str]:

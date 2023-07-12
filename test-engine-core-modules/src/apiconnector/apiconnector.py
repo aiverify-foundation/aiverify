@@ -1,7 +1,10 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Tuple, Union
+import pathlib
+from typing import Any, Dict, List, Tuple
 
+import httpx
+from aiopenapi3 import FileSystemLoader, OpenAPI
 from openapi_schema_validator import OAS30Validator, validate
 from test_engine_core.interfaces.imodel import IModel
 from test_engine_core.plugins.enums.model_plugin_type import ModelPluginType
@@ -85,6 +88,18 @@ class Plugin(IModel):
         # self._default_api_status_code: list = [429, 500, 502, 503, 504]
         # self._default_api_allowed_methods: list = ["GET", "POST"]
 
+    @staticmethod
+    def session_factory(*args, **kwargs) -> httpx.AsyncClient:
+        """
+        A factory that generates async client
+
+        Returns:
+            httpx.AsyncClient: Returns an httpx AsyncClient with additional settings
+        """
+        kwargs["verify"] = False
+        kwargs["timeout"] = 5.0  # seconds
+        return httpx.AsyncClient(*args, **kwargs)
+
     def cleanup(self) -> None:
         """
         A method to clean-up objects
@@ -94,7 +109,7 @@ class Plugin(IModel):
         else:
             pass  # pragma: no cover
 
-    def setup(self) -> Tuple[bool, str]:
+    async def setup(self) -> Tuple[bool, str]:
         """
         A method to perform setup
 
@@ -103,7 +118,26 @@ class Plugin(IModel):
             error message if failed.
         """
         try:
-            print("HelloWorld")
+            token = ""
+            api = OpenAPI.load_file(
+                url="",
+                path=pathlib.Path("test_api_config.json"),
+                session_factory=Plugin.session_factory,
+                loader=FileSystemLoader(
+                    pathlib.Path(
+                        "/workspaces/aiverify-backend-dev/aiverify/test-engine-core-modules/src/apiconnector"
+                    )
+                ),
+            )
+            api.authenticate(myAuth=f"token {token}")
+            predict_request = api.createRequest(("/predict/tc007", "post"))
+            body = predict_request.data.get_type().parse_obj(
+                {"age": 14, "gender": 13, "race": 13, "count": 13, "charge": 13}
+            )
+            headers, data, result = await predict_request.request(
+                parameters={"foo": "bar"}, data=body
+            )
+            print(result.text, result.status_code, result.content)
             # # Search for the first api and http method.
             # # Set the prediction operationId
             # path_to_be_updated = self._api_schema["paths"]
