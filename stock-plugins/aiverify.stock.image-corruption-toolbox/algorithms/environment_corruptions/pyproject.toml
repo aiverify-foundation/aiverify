@@ -14,7 +14,7 @@ pillow = "9.4.0"
 scikit-learn = "1.2.2"
 scipy = "1.10.0"
 joblib = "1.2.0"
-scikit-image = "0.19.3"
+scikit-image = "0.21.0"
 opencv-python = "4.7.0.72"
 wand = "0.6.11"
 
