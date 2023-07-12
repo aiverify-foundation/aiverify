@@ -9,6 +9,7 @@ type TextInputProps = {
   value?: string;
   maxLength?: number;
   labelSibling?: React.ReactElement;
+  style?: React.CSSProperties;
   onChange?: ChangeEventHandler<HTMLInputElement>;
 };
 
@@ -21,11 +22,12 @@ function TextInput(props: TextInputProps) {
     maxLength,
     value,
     labelSibling,
+    style,
     onChange,
   } = props;
 
   return (
-    <div className={styles.textInput}>
+    <div className={styles.textInput} style={style}>
       <label>
         <div className={styles.label}>
           <div>{label}</div>

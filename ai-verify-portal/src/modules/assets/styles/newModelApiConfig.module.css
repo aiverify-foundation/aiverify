@@ -1,0 +1,203 @@
+.container__limits {
+  width: 100%;
+  margin: auto;
+  max-width: 1920px;
+  min-width: 1400px;
+}
+
+.layout {
+  padding: 0 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.apiConfigForm {
+  display: flex;
+  background: #ffffff;
+  width: 70%;
+  min-width: 730px;
+  margin: auto;
+  padding: 25px 25px 25px 25px;
+  box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.configName {
+  display: inline;
+  font-size: 18px;
+  color: var(--color-palette-violet-red);
+  margin-right: 5px;
+}
+
+.description {
+  display: inline;
+  font-size: 16px;
+  margin-right: 5px;
+}
+
+.apiConfigForm p {
+  font-size: 14px;
+}
+
+.leftSection {
+  padding-right: 25px;
+  width: 270px;
+}
+
+.vDivider {
+  width: 1px;
+  background-color: var(--color-light-gray);
+}
+
+.rightSection {
+  padding-left: 25px;
+  min-width: 550px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.tabs {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 25px;
+}
+
+.tabsBtnGroup {
+  display: flex;
+}
+
+.tabsDivider {
+  height: 1px;
+  border-bottom: 1px solid var(--color-light-gray);
+  /* margin: 0 0 5px 0; */
+  margin-bottom: 2px;
+}
+
+.tabBtn {
+  display: flex;
+  align-items: center;
+  padding: 6px 14px;
+  font-size: 15px;
+  border: 1px solid var(--color-light-gray);
+  border-bottom: none;
+  border-left: none;
+  cursor: pointer;
+  background-color: var(--color-light-gray2);
+}
+
+.tabBtn__selected {
+  background-color: #e4e4e4;
+  border-top: 3px solid var(--color-palette-violet-red);
+}
+
+.tabBtn:hover {
+  background-color: #e4e4e4;
+}
+
+.tabsBtnGroup .tabBtn:first-of-type {
+  border-left: 1px solid var(--color-light-gray);
+}
+
+.tabContent {
+  background-color: var(--color-light-gray3);
+  padding: 25px 10px;
+  min-height: 400px;
+}
+
+.tabContent .scrollContainer {
+  padding-right: 15px;
+}
+
+.keyInput,
+.valInput {
+  width: 250px;
+  margin-right: 10px;
+}
+
+.headingName,
+.headingVal {
+  width: 250px;
+  margin-right: 10px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.iconContainer {
+  margin-top: 5px;
+}
+
+.keyValRow {
+  display: flex;
+  align-items: center;
+}
+
+.gVarsRow_padRight {
+  margin-right: 15px;
+}
+
+.gVarsRow:hover {
+  background-color: var(--color-light-gray2);
+}
+
+.gVarsInputRow {
+  display: flex;
+  margin-top: 8px;
+  height: 30px;
+}
+
+.keyValCol {
+  position: relative;
+  margin-right: 8px;
+  width: 250px;
+}
+
+.delIconContainer {
+  margin-top: 5px;
+}
+
+.gVarsInputCol {
+  height: 100%;
+  width: calc((100% - 30px) / 2);
+}
+
+.gVarsInputCol input[type='text'] {
+  width: 95%;
+  height: 100%;
+  padding: 4px;
+  font-size: 14px;
+  font-family: inherit;
+  border: 1px solid var(--color-light-gray);
+}
+
+.gVarsInputCol input[type='text']:focus {
+  outline: none;
+}
+
+.gVarsAddBtn {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 1px solid white;
+  border-color: white;
+}
+
+.gVarsAddbtn:enabled {
+  cursor: pointer;
+}
+
+.gVarsAddBtn:disabled {
+  opacity: 0.5;
+}
+
+.gVarsAddBtn:enabled:hover {
+  cursor: pointer;
+}
+
+.keyValRemoveBtn {
+  cursor: pointer;
+}

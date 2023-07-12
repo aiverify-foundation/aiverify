@@ -1,0 +1,44 @@
+.selectInput {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.selectInput select {
+  border-radius: 4px;
+  border: 1px solid var(--color-light-gray);
+  font-size: 16px;
+  padding: 8px 10px;
+  width: 100%;
+  color: var(--color-gray);
+  resize: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.selectInput input::placeholder,
+.selectInput textarea::placeholder {
+  color: var(--color-light-gray);
+}
+
+.selectInput input:focus,
+.selectInput textarea:focus {
+  outline: none;
+}
+
+.selectInput.inputError input,
+.selectInput.inputError textarea {
+  border-color: var(--color-alert-red);
+}
+
+.label {
+  display: flex;
+  justify-content: space-between;
+  color: var(--color-gray);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.inputError {
+  color: var(--color-alert-red);
+}

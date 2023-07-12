@@ -59,7 +59,7 @@ function IconButton(props: PropsWithChildren<IconButtonProps>) {
             }}
           />
         ) : null}
-        <div>{children}</div>
+        <div style={{ display: 'flex', alignItems: 'center' }}>{children}</div>
       </div>
     </button>
   );
