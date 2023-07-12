@@ -28,7 +28,7 @@ type RequestHeaderDisplayProps = {
 
 type UrlParamsDisplayProps = {
   param: UrlParameter;
-  onRemoveBtnClick: (globalVar: RequestHeader) => void;
+  onRemoveBtnClick: (param: UrlParameter) => void;
 };
 
 type SelectOption = {
@@ -45,6 +45,17 @@ const AUTH_METHODS = [
   { value: 'none', label: 'None' },
   { value: 'bearer_token', label: 'Bearer Token' },
   { value: 'basic_auth', label: 'Basic Auth' },
+];
+
+const MEDIA_TYPES = [
+  { value: 'none', label: 'None' },
+  {
+    value: 'application/x-www-form-urlencoded',
+    label: 'application/x-www-form-urlencoded',
+  },
+  { value: 'multipart/form-data', label: 'multipart/form-data' },
+  { value: 'application/json', label: 'application/json' },
+  { value: 'text/plain', label: 'text/plain' },
 ];
 
 const DEFAULT_REQUEST_HEADERS = [
@@ -66,10 +77,8 @@ enum Tab {
 function RequestHeaderInput(props: RequestHeaderDisplayProps) {
   const { header, onRemoveBtnClick } = props;
 
-  function handleRemoveBtnClick() {
-    if (typeof onRemoveBtnClick === 'function') {
-      onRemoveBtnClick(header);
-    }
+  function handleRemoveBtnClick(header: RequestHeader) {
+    return () => onRemoveBtnClick(header);
   }
 
   return (
@@ -84,7 +93,7 @@ function RequestHeaderInput(props: RequestHeaderDisplayProps) {
         <IconButton
           iconComponent={CloseIcon}
           noOutline
-          onClick={handleRemoveBtnClick}
+          onClick={handleRemoveBtnClick(header)}
         />
       </div>
     </div>
@@ -94,10 +103,8 @@ function RequestHeaderInput(props: RequestHeaderDisplayProps) {
 function UrlParamsInput(props: UrlParamsDisplayProps) {
   const { param, onRemoveBtnClick } = props;
 
-  function handleRemoveBtnClick() {
-    if (typeof onRemoveBtnClick === 'function') {
-      onRemoveBtnClick(param);
-    }
+  function handleRemoveBtnClick(param: UrlParameter) {
+    return () => onRemoveBtnClick(param);
   }
 
   return (
@@ -106,16 +113,17 @@ function UrlParamsInput(props: UrlParamsDisplayProps) {
         <TextInput value={param.key} name="" style={{ marginBottom: 0 }} />
       </div>
       <div className={styles.keyValCol}>
-        <TextInput value={param.value} name="" style={{ marginBottom: 0 }} />
+        <TextInput value={param.dataType} name="" style={{ marginBottom: 0 }} />
       </div>
       <div className={styles.keyValCol}>
-        <TextInput value={param.dataType} name="" style={{ marginBottom: 0 }} />
+        <TextInput value={param.value} name="" style={{ marginBottom: 0 }} />
       </div>
       <div className={styles.delIconContainer}>
         <IconButton
           iconComponent={CloseIcon}
           noOutline
-          onClick={handleRemoveBtnClick}
+          onClick={handleRemoveBtnClick(param)}
+          style={{ marginRight: 42 }}
         />
       </div>
     </div>
@@ -130,6 +138,7 @@ function NewModelApiConfigModule() {
     REQUEST_METHODS[1]
   );
   const [authType, setAuthType] = useState<SelectOption>(AUTH_METHODS[0]);
+  const [mediaType, setMediaType] = useState<SelectOption>(MEDIA_TYPES[0]);
   const [activeTab, setActiveTab] = useState<Tab>(Tab.AUTHENTICATION);
   const [newHeader, setNewHeader] = useState<RequestHeader>({
     key: '',
@@ -201,8 +210,16 @@ function NewModelApiConfigModule() {
     }));
   }
 
+  function handleMediaTypeChange(option: SelectOption) {
+    setMediaType(option);
+  }
+
   function handleAddHeader() {
     setRequestHeaders([...requestHeaders, newHeader]);
+    setNewHeader({
+      key: '',
+      value: '',
+    });
   }
 
   function handleAddUrlParam() {
@@ -220,6 +237,24 @@ function NewModelApiConfigModule() {
 
   function handleAuthTypeChange(option: SelectOption) {
     setAuthType(option);
+  }
+
+  function handleDeleteUrlParamClick(param: UrlParameter) {
+    const currentParams = [...urlParams];
+    const idx = currentParams.findIndex(
+      (currentParam) => currentParam.key === param.key
+    );
+    currentParams.splice(idx, 1);
+    setUrlParams(currentParams);
+  }
+
+  function handleDeleteHeaderClick(header: RequestHeader) {
+    const currentHeaders = [...requestHeaders];
+    const idx = currentHeaders.findIndex(
+      (currentHeader) => currentHeader.key === header.key
+    );
+    currentHeaders.splice(idx, 1);
+    setRequestHeaders(currentHeaders);
   }
 
   return (
@@ -406,7 +441,7 @@ function NewModelApiConfigModule() {
                                 <RequestHeaderInput
                                   key={header.key}
                                   header={header}
-                                  onRemoveBtnClick={() => undefined}
+                                  onRemoveBtnClick={handleDeleteHeaderClick}
                                 />
                               ))}
                             </div>
@@ -453,15 +488,15 @@ function NewModelApiConfigModule() {
                               <div className={styles.headingName}>
                                 Parameter Name
                               </div>
-                              <div className={styles.headingVal}>Value</div>
                               <div className={styles.headingVal}>Data Type</div>
+                              <div className={styles.headingVal}>Value</div>
                             </div>
                             <div style={{ marginBottom: 10 }}>
                               {urlParams.map((param) => (
                                 <UrlParamsInput
                                   key={param.key}
                                   param={param}
-                                  onRemoveBtnClick={() => undefined}
+                                  onRemoveBtnClick={handleDeleteUrlParamClick}
                                 />
                               ))}
                             </div>
@@ -476,15 +511,15 @@ function NewModelApiConfigModule() {
                               <div className={styles.valInput}>
                                 <TextInput
                                   name=""
-                                  onChange={handleParamValueChange}
-                                  value={newParam.value}
+                                  onChange={handleParamDatatypeChange}
+                                  value={newParam.dataType}
                                 />
                               </div>
                               <div className={styles.valInput}>
                                 <TextInput
                                   name=""
-                                  onChange={handleParamDatatypeChange}
-                                  value={newParam.dataType}
+                                  onChange={handleParamValueChange}
+                                  value={newParam.value}
                                 />
                               </div>
                               <div className={styles.iconContainer}>
@@ -504,9 +539,40 @@ function NewModelApiConfigModule() {
                             </div>
                           </div>
                         ) : null}
+
+                        {activeTab === Tab.REQUESTBODY ? (
+                          <div style={{ padding: '0 10px' }}>
+                            <div style={{ display: 'flex' }}>
+                              <div style={{ marginRight: 10 }}>
+                                <SelectInput
+                                  width={300}
+                                  label="Media Type"
+                                  name="mediaType"
+                                  options={MEDIA_TYPES}
+                                  onChange={handleMediaTypeChange}
+                                  value={mediaType}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ) : null}
                       </div>
                     </div>
                   </div>
+                </div>
+                <div className={styles.buttons}>
+                  <button
+                    style={{ width: 100 }}
+                    className="aivBase-button aivBase-button--secondary aivBase-button--medum"
+                    onClick={() => null}>
+                    Back
+                  </button>
+                  <button
+                    style={{ width: 100, marginRight: 0 }}
+                    className="aivBase-button aivBase-button--primary aivBase-button--medium"
+                    onClick={() => null}>
+                    Save
+                  </button>
                 </div>
               </div>
             </div>
