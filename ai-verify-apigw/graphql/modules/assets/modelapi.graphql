@@ -44,7 +44,7 @@ type OpenAPIParametersPathType {
 
 type OpenAPIParametersQueryType {
   mediaType: OpenAPIMediaType! # default none
-  name: String # name of query if mediaType !== 'none'
+  name: String @constraint(minLength: 1, maxLength: 128) # name of query if mediaType !== 'none'
   isArray: Boolean! # indicate if is array, default false, note that cannot be array if mediaType == 'none' 
   maxItems: Int @constraint(min: 1) # max array items if array
   queryParams: [QueryAPIParamsType]
@@ -63,6 +63,7 @@ type OpenAPIRequestBodyPropertyType {
 type OpenAPIRequestBodyType {
   mediaType: OpenAPIMediaType!
   isArray: Boolean! # indicate if is array, default false
+  name: String @constraint(minLength: 1, maxLength: 128) # name of payload property when array
   maxItems: Int @constraint(min: 1) # max array items if array
   properties: [OpenAPIRequestBodyPropertyType]!
 }
@@ -125,7 +126,7 @@ input OpenAPIParametersPathInput {
 
 input OpenAPIParametersQueryInput {
   mediaType: OpenAPIMediaType! # default none
-  name: String # name of query if mediaType !== 'none'
+  name: String @constraint(minLength: 1, maxLength: 128) # name of query if mediaType !== 'none'
   isArray: Boolean! # indicate if is array, default false, note that cannot be array if mediaType == 'none' 
   maxItems: Int @constraint(min: 1) # max array items if array
   queryParams: [OpenAPIQueryParamsInput]
@@ -143,7 +144,7 @@ input OpenAPIRequestBodyPropertyInput {
 
 input OpenAPIRequestBodyInput {
   mediaType: OpenAPIMediaType!
-  name: String # name of payload property when array
+  name: String @constraint(minLength: 1, maxLength: 128) # name of payload property when array
   isArray: Boolean! # indicate if is array, default false
   maxItems: Int @constraint(min: 1) # max array items if array
   properties: [OpenAPIRequestBodyPropertyInput]

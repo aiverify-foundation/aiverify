@@ -60,6 +60,7 @@ const modelAPIRequestBodySchema = new Schema({
     enum: MEDIA_TYPES,
   },
   isArray: { type: Boolean, required: true, default: false },
+  name: { type: String },
   maxItems: { type: Number }, // max array items if itemType == 'array'
   properties: [
     {
@@ -433,10 +434,18 @@ function _exportModelAPI(modelAPI) {
       properties,
     };
     if (modelAPI.requestBody.isArray) {
-      const schema = {
+      let schema = {
         type: "array",
         items: objectDefinition,
       };
+      if (modelAPI.requestBody.name && modelAPI.requestBody.name.length > 0) {
+        schema = {
+          type: "object",
+          properties: {
+            [modelAPI.requestBody.name]: schema
+          }
+        }
+      }
       if (modelAPI.requestBody.maxItems) {
         schema.maxItems = modelAPI.requestBody.maxItems;
       }
