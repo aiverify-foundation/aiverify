@@ -56,7 +56,8 @@ class Plugin(IModel):
         """
         return Plugin._model_plugin_type
 
-    def __init__(self, model: Any) -> None:
+    def __init__(self, **kwargs) -> None:
+        model = kwargs.get("model", None)
         if model:
             self._model = model
 

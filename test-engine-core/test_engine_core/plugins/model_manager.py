@@ -27,25 +27,23 @@ class ModelManager:
             ModelManager._logger = logger
 
     @staticmethod
-    def read_api_file(
+    def read_api(
         api_schema: Dict,
         api_config: Dict,
         model_plugins: Dict,
-        serializer_plugins: Dict,
-    ) -> Tuple[bool, Union[IModel, None], Union[ISerializer, None], str]:
+    ) -> Tuple[bool, Union[IModel, None], None, str]:
         """
-        A method to read the api configuration and schema and return the model instance and serializer instance
+        A method to read the api configuration and schema and return the model instance and None (serializer instance)
 
         Args:
             api_schema (Dict): OpenAPI schema
             api_config (Dict): OpenAPI configuration
             model_plugins (Dict): A dictionary of supported model plugins
-            serializer_plugins (Dict): A dictionary of supported serializer plugins
 
         Returns:
-            Tuple[bool, Union[IModel, None], Union[ISerializer, None], str]:
+            Tuple[bool, Union[IModel, None], None, str]:
             Returns a tuple consisting of bool that indicates if it succeeds,
-            If it succeeds, it will contain an object of IModel, and an object of ISerializer
+            If it succeeds, it will contain an object of IModel, and None (object of ISerializer)
             and returns an empty string
             If it fails to deserialize/identify, it will contain None objects and returns the error message
         """
@@ -54,9 +52,7 @@ class ModelManager:
         log_message(
             ModelManager._logger,
             logging.INFO,
-            f"Attempting to read api:"
-            f"APISchema: {api_schema}"
-            f"APIConfig: {api_config}",
+            f"Attempting to read api: api_schema: {api_schema}, api_config: {api_config}",
         )
 
         # Validate the inputs
@@ -67,13 +63,9 @@ class ModelManager:
             or not isinstance(api_config, dict)
             or model_plugins is None
             or not isinstance(model_plugins, dict)
-            or serializer_plugins is None
-            or not isinstance(serializer_plugins, dict)
         ):
-            error_message = (
-                f"There was an error validating the input parameters: {api_schema}, {api_config},"
-                f"{model_plugins}, {serializer_plugins}"
-            )
+            error_message = f"There was an error validating the input parameters: {api_schema}, {api_config}, \
+            {model_plugins}"
             log_message(ModelManager._logger, logging.ERROR, error_message)
             return (
                 False,
@@ -85,6 +77,39 @@ class ModelManager:
             log_message(
                 ModelManager._logger, logging.INFO, "Model validation successful"
             )
+
+        # Attempt to identify the model format with the supported list.
+        # If model is not in the supported list, it will return False
+        log_message(
+            ModelManager._logger,
+            logging.INFO,
+            "Attempting to identify model format with api schema",
+        )
+        is_success, return_model_instance = ModelManager._try_to_identify_model_format(
+            model_plugins, {"api_schema": api_schema, "api_config": api_config}
+        )
+        if is_success:
+            error_message = ""
+            log_message(
+                ModelManager._logger,
+                logging.INFO,
+                f"Supported model format for api schema: "
+                f"{return_model_instance.get_model_plugin_type()}[{return_model_instance.get_model_algorithm()}]",
+            )
+        else:
+            # Failed to get model format
+            return_model_instance = None
+            error_message = (
+                "There was an error getting model format with api schema (unsupported)"
+            )
+            log_message(ModelManager._logger, logging.ERROR, error_message)
+
+        return (
+            is_success,
+            return_model_instance,
+            return_model_serializer_instance,
+            error_message,
+        )
 
     @staticmethod
     def read_model_file(
@@ -170,7 +195,7 @@ class ModelManager:
             f"Attempting to identify model format: {type(model)}",
         )
         is_success, return_model_instance = ModelManager._try_to_identify_model_format(
-            model, model_plugins
+            model_plugins, {"model": model}
         )
         if is_success:
             error_message = ""
@@ -236,14 +261,12 @@ class ModelManager:
 
     @staticmethod
     def _try_to_identify_model_format(
-        model: Any,
-        model_plugins: Dict,
+        model_plugins: Dict, **kwargs
     ) -> Tuple[bool, IModel]:
         """
         A helper method to read the model and return the respective model format instance
 
         Args:
-            model (Any): The de-serialized model
             model_plugins (Dict): The dictionary of detected model plugins
 
         Returns:
@@ -259,7 +282,7 @@ class ModelManager:
         # Check that this model is one of the supported model formats
         try:
             for _, model_plugin in model_plugins.items():
-                model_instance = model_plugin.Plugin(model)
+                model_instance = model_plugin.Plugin(**kwargs)
                 if model_instance.is_supported():
                     is_success = True
                     break

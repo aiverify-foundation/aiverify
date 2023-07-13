@@ -65,9 +65,12 @@ class Plugin(IModel):
         """
         return Plugin._model_plugin_type
 
-    def __init__(self, api_schema: Dict, api_config: Dict) -> None:
+    def __init__(self, **kwargs) -> None:
         # Configuration
         self._is_setup_completed = False
+        api_schema = kwargs.get("api_schema", None)
+        api_config = kwargs.get("api_config", None)
+
         if api_schema and api_config:
             self._api_schema = api_schema
             self._api_config = api_config

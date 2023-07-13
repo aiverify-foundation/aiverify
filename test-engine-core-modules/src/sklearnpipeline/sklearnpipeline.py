@@ -56,7 +56,8 @@ class Plugin(IPipeline):
         """
         return Plugin._pipeline_plugin_type
 
-    def __init__(self, pipeline: Any) -> None:
+    def __init__(self, **kwargs) -> None:
+        pipeline = kwargs.get("pipeline", None)
         if pipeline:
             self._pipeline = pipeline
 

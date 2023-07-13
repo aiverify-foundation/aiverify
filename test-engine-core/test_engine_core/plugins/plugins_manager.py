@@ -290,18 +290,17 @@ class PluginManager:
                 model_instance,
                 serializer_instance,
                 error_message,
-            ) = ModelManager.read_api_file(
+            ) = ModelManager.read_api(
                 api_schema,
                 api_config,
                 PluginManager._get_plugins_by_type(PluginType.MODEL),
-                PluginManager._get_plugins_by_type(PluginType.SERIALIZER),
             )
 
             if is_success:
                 return model_instance, serializer_instance, error_message
             else:
                 raise RuntimeError(
-                    f"There was an error loading model(api): ({error_message})"
+                    f"There was an error loading model(api): {api_schema} | {api_config} ({error_message})"
                 )
 
         else:

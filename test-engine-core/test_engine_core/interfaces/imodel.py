@@ -16,7 +16,7 @@ class IModel(IPlugin):
         pass
 
     @abstractmethod
-    def __init__(self, model: Any) -> None:
+    def __init__(self, **kwargs) -> None:
         pass
 
     @abstractmethod

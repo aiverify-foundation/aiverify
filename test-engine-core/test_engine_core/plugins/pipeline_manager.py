@@ -143,7 +143,9 @@ class PipelineManager:
         (
             is_success,
             return_pipeline_instance,
-        ) = PipelineManager._try_to_identify_pipeline_format(pipeline, pipeline_plugins)
+        ) = PipelineManager._try_to_identify_pipeline_format(
+            pipeline_plugins, {"pipeline": pipeline}
+        )
         if is_success:
             error_message = ""
             log_message(
@@ -208,14 +210,12 @@ class PipelineManager:
 
     @staticmethod
     def _try_to_identify_pipeline_format(
-        pipeline: Any,
-        pipeline_plugins: Dict,
+        pipeline_plugins: Dict, **kwargs
     ) -> Tuple[bool, IPipeline]:
         """
         A helper method to read the pipeline and return the respective pipeline format instance
 
         Args:
-            pipeline (Any): The de-serialized pipeline
             pipeline_plugins (Dict): The dictionary of detected pipeline plugins
 
         Returns:
@@ -231,7 +231,7 @@ class PipelineManager:
         # Check that this pipeline is one of the supported pipeline formats
         try:
             for _, pipeline_plugin in pipeline_plugins.items():
-                pipeline_instance = pipeline_plugin.Plugin(pipeline)
+                pipeline_instance = pipeline_plugin.Plugin(**kwargs)
                 if pipeline_instance.is_supported():
                     is_success = True
                     break

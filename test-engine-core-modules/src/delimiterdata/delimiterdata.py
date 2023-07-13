@@ -56,7 +56,8 @@ class Plugin(IData):
         """
         return Plugin._data_plugin_type
 
-    def __init__(self, data: DelimiterMetadata) -> None:
+    def __init__(self, **kwargs) -> None:
+        data = kwargs.get("data", None)
         if isinstance(data, DelimiterMetadata) and data:
             self._data = data
 

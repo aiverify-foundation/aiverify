@@ -225,7 +225,9 @@ class DataManager:
             (
                 is_success,
                 data_instance,
-            ) = DataManager._try_to_identify_data_format(df_data, data_plugins)
+            ) = DataManager._try_to_identify_data_format(
+                data_plugins, {"data": df_data}
+            )
 
             return is_success, data_instance, ""
         else:
@@ -262,7 +264,9 @@ class DataManager:
             (
                 is_success,
                 data_instance,
-            ) = DataManager._try_to_identify_data_format(df_data, data_plugins)
+            ) = DataManager._try_to_identify_data_format(
+                data_plugins, {"data": df_data}
+            )
 
             return is_success, data_instance, ""
         else:
@@ -300,7 +304,7 @@ class DataManager:
 
         # Attempt to identify the data format with the supported list.
         is_success, data_instance = DataManager._try_to_identify_data_format(
-            data, data_plugins
+            data_plugins, {"data", data}
         )
         if not is_success:
             error_message = f"There was an error identifying dataset: {type(data)}"
@@ -350,13 +354,12 @@ class DataManager:
 
     @staticmethod
     def _try_to_identify_data_format(
-        data: Any, data_plugins: Dict
+        data_plugins: Dict, **kwargs
     ) -> Tuple[bool, IData]:
         """
         A helper method to identify the data and return the respective data format instance
 
         Args:
-            data (Any): The de-serialized data
             data_plugins (Dict): A dictionary of supported data plugins
 
         Returns:
@@ -372,7 +375,7 @@ class DataManager:
         # Check that this data is one of the supported data formats
         try:
             for _, data_plugin in data_plugins.items():
-                temp_data_instance = data_plugin.Plugin(data)
+                temp_data_instance = data_plugin.Plugin(**kwargs)
                 if temp_data_instance.is_supported():
                     data_instance = temp_data_instance
                     is_success = True
