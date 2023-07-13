@@ -9,6 +9,7 @@ import clsx from 'clsx';
 import { ChangeEvent, useState } from 'react';
 import { IconButton } from 'src/components/iconButton';
 import { TextArea } from 'src/components/textArea';
+import { AuthType, MediaType, RequestMethod } from './types';
 
 type RequestHeader = {
   key: string;
@@ -31,35 +32,32 @@ type UrlParamsDisplayProps = {
   onRemoveBtnClick: (param: UrlParameter) => void;
 };
 
-const REQUEST_METHODS = [
-  { value: 'GET', label: 'GET' },
-  { value: 'POST', label: 'POST' },
+const optionsRequestMethods = [
+  { value: RequestMethod.GET, label: RequestMethod.GET },
+  { value: RequestMethod.POST, label: RequestMethod.POST },
 ];
 
-const AUTH_METHODS = [
-  { value: 'none', label: 'None' },
-  { value: 'bearer_token', label: 'Bearer Token' },
-  { value: 'basic_auth', label: 'Basic Auth' },
+const optionsAuthMethods = [
+  { value: AuthType.NO_AUTH, label: AuthType.NO_AUTH },
+  { value: AuthType.BEARER_TOKEN, label: AuthType.BEARER_TOKEN },
+  { value: AuthType.BASIC, label: AuthType.BASIC },
 ];
 
-const MEDIA_TYPES = [
-  { value: 'none', label: 'None' },
-  {
-    value: 'application/x-www-form-urlencoded',
-    label: 'application/x-www-form-urlencoded',
-  },
-  { value: 'multipart/form-data', label: 'multipart/form-data' },
-  { value: 'application/json', label: 'application/json' },
-  { value: 'text/plain', label: 'text/plain' },
+const optionsMediaTypes = [
+  { value: MediaType.NONE, label: MediaType.NONE },
+  { value: MediaType.FORM_URLENCODED, label: MediaType.FORM_URLENCODED },
+  { value: MediaType.MULTIPART_FORMDATA, label: MediaType.MULTIPART_FORMDATA },
+  { value: MediaType.APP_JSON, label: MediaType.APP_JSON },
+  { value: MediaType.TEXT_PLAIN, label: MediaType.TEXT_PLAIN },
 ];
 
-const DEFAULT_REQUEST_HEADERS = [
+const defaultRequestHeaders = [
   { key: 'Connection', value: 'keep-alive' },
   { key: 'Accept', value: '*/*' },
 ];
 
-const DEFAULT_NAME_DISPLAY = 'API Config Name';
-const DEFAULT_DESC_DISPLAY = 'Description of Config';
+const defaultConfigNameDisplay = 'API Config Name';
+const defaultConfigDescDisplay = 'Description of Config';
 
 enum Tab {
   PARAMS,
@@ -130,10 +128,10 @@ function NewModelApiConfigModule() {
   const [configDesc, setConfigDesc] = useState<string>();
   const [isEditName, setIsEditName] = useState(false);
   const [requestMethod, setRequestMethod] = useState<SelectOption | null>(
-    REQUEST_METHODS[1]
+    optionsRequestMethods[1]
   );
-  const [authType, setAuthType] = useState<SelectOption | null>(AUTH_METHODS[0]);
-  const [mediaType, setMediaType] = useState<SelectOption | null>(MEDIA_TYPES[0]);
+  const [authType, setAuthType] = useState<SelectOption | null>(optionsAuthMethods[0]);
+  const [mediaType, setMediaType] = useState<SelectOption | null>(optionsMediaTypes[0]);
   const [activeTab, setActiveTab] = useState<Tab>(Tab.AUTHENTICATION);
   const [newHeader, setNewHeader] = useState<RequestHeader>({
     key: '',
@@ -145,7 +143,7 @@ function NewModelApiConfigModule() {
     dataType: '',
   });
   const [requestHeaders, setRequestHeaders] = useState<RequestHeader[]>(
-    DEFAULT_REQUEST_HEADERS
+    defaultRequestHeaders
   );
   const [urlParams, setUrlParams] = useState<UrlParameter[]>([]);
 
@@ -273,7 +271,7 @@ function NewModelApiConfigModule() {
                       <div style={{ display: 'flex', flexDirection: 'column' }}>
                         <div>
                           <div className={styles.configName}>
-                            {configName || DEFAULT_NAME_DISPLAY}
+                            {configName || defaultConfigNameDisplay}
                           </div>
                           <IconButton
                             iconComponent={EditIcon}
@@ -284,9 +282,8 @@ function NewModelApiConfigModule() {
                         </div>
                         <div>
                           <div className={styles.description}>
-                            {configDesc || DEFAULT_DESC_DISPLAY}
+                            {configDesc || defaultConfigDescDisplay}
                           </div>
-                          {/* <IconButton iconComponent={EditIcon} noOutline /> */}
                         </div>
                       </div>
                     ) : (
@@ -333,7 +330,7 @@ function NewModelApiConfigModule() {
                           width={140}
                           label="Request Method"
                           name="requestMethod"
-                          options={REQUEST_METHODS}
+                          options={optionsRequestMethods}
                           onChange={handleRequestMethodChange}
                           value={requestMethod}
                         />
@@ -406,7 +403,7 @@ function NewModelApiConfigModule() {
                                   width={200}
                                   label="Authentication Type"
                                   name="authType"
-                                  options={AUTH_METHODS}
+                                  options={optionsAuthMethods}
                                   onChange={handleAuthTypeChange}
                                   value={authType}
                                 />
@@ -543,7 +540,7 @@ function NewModelApiConfigModule() {
                                   width={300}
                                   label="Media Type"
                                   name="mediaType"
-                                  options={MEDIA_TYPES}
+                                  options={optionsMediaTypes}
                                   onChange={handleMediaTypeChange}
                                   value={mediaType}
                                 />
