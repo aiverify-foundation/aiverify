@@ -3,16 +3,6 @@
   flex-direction: column;
   margin-bottom: 20px;
   font-size: 14px;
-}
-
-.selectInput select {
-  border-radius: 4px;
-  border: 1px solid var(--color-light-gray);
-  font-size: 16px;
-  padding: 8px 10px;
-  width: 100%;
-  color: var(--color-gray);
-  resize: none;
   -webkit-font-smoothing: antialiased;
 }
 
