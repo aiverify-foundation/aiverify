@@ -16,21 +16,6 @@
   -webkit-font-smoothing: antialiased;
 }
 
-.selectInput input::placeholder,
-.selectInput textarea::placeholder {
-  color: var(--color-light-gray);
-}
-
-.selectInput input:focus,
-.selectInput textarea:focus {
-  outline: none;
-}
-
-.selectInput.inputError input,
-.selectInput.inputError textarea {
-  border-color: var(--color-alert-red);
-}
-
 .label {
   display: flex;
   justify-content: space-between;

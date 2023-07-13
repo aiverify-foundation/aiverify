@@ -1,11 +1,11 @@
-import React, { ChangeEventHandler } from 'react';
+import React from 'react';
 import styles from './styles/selectInput.module.css';
-import Select, { Options } from 'react-select';
+import Select from 'react-select';
 
 type SelectOption = {
   value: string;
   label: string;
-};
+} | null;
 
 type SelectInputProps = {
   name: string;
@@ -13,18 +13,23 @@ type SelectInputProps = {
   label?: string;
   placeholder?: string;
   error?: string;
-  value?: string;
+  value?: SelectOption;
   labelSibling?: React.ReactElement;
-  options: Options<SelectOption>;
-  onChange?: (option: any) => void;
-};
+  options: SelectOption[];
+  onChange?: (option: SelectOption) => void;
+}
+
+const BORDER_COLOR = '#cfcfcf';
+const BORDER_FOCUS_COLOR = 'hsl(0, 0%, 70%)';
+const FONT_COLOR = '#676767';
+const PLACEHOLDER_COLOR = '#cfcfcf';
 
 function SelectInput(props: SelectInputProps) {
   const {
     name,
     width = 'auto',
     label,
-    placeholder,
+    placeholder = 'test',
     error,
     value,
     labelSibling,
@@ -39,7 +44,7 @@ function SelectInput(props: SelectInputProps) {
           <div>{label}</div>
           {labelSibling}
         </div>
-        <Select
+        <Select<SelectOption>
           styles={{
             container: (baseStyles) => ({
               ...baseStyles,
@@ -50,11 +55,11 @@ function SelectInput(props: SelectInputProps) {
               minHeight: 30,
               fontSize: 16,
               lineHeight: 'normal',
-              borderColor: state.isFocused ? 'hsl(0, 0%, 70%)' : '#cfcfcf',
-              '&:hover': {
-                borderColor: 'hsl(0, 0%, 70%)',
-              },
               boxShadow: 'none',
+              borderColor: state.isFocused ? BORDER_FOCUS_COLOR : BORDER_COLOR,
+              '&:hover': {
+                borderColor: BORDER_FOCUS_COLOR,
+              },
             }),
             valueContainer: (baseStyles) => ({
               ...baseStyles,
@@ -63,7 +68,7 @@ function SelectInput(props: SelectInputProps) {
             placeholder: (baseStyles) => ({
               ...baseStyles,
               lineHeight: 'normal',
-              color: '#676767',
+              color: PLACEHOLDER_COLOR,
             }),
             indicatorSeparator: (baseStyles) => ({
               ...baseStyles,
@@ -77,10 +82,8 @@ function SelectInput(props: SelectInputProps) {
               ...baseStyles,
               padding: 0,
               margin: 0,
-              // lineHeight: 'normal',
             }),
           }}
-          classNamePrefix="aiv"
           name={name}
           placeholder={placeholder}
           value={value}
@@ -96,3 +99,5 @@ function SelectInput(props: SelectInputProps) {
 }
 
 export { SelectInput };
+export type { SelectOption };
+

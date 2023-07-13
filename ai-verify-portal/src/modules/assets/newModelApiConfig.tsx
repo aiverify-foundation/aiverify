@@ -1,7 +1,7 @@
 import { TextInput } from 'src/components/textInput';
 import { MinimalHeader } from '../home/header';
 import styles from './styles/newModelApiConfig.module.css';
-import { SelectInput } from 'src/components/selectInput';
+import { SelectInput, SelectOption } from 'src/components/selectInput';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
@@ -29,11 +29,6 @@ type RequestHeaderDisplayProps = {
 type UrlParamsDisplayProps = {
   param: UrlParameter;
   onRemoveBtnClick: (param: UrlParameter) => void;
-};
-
-type SelectOption = {
-  value: string;
-  label: string;
 };
 
 const REQUEST_METHODS = [
@@ -134,11 +129,11 @@ function NewModelApiConfigModule() {
   const [configName, setConfigName] = useState<string>();
   const [configDesc, setConfigDesc] = useState<string>();
   const [isEditName, setIsEditName] = useState(false);
-  const [requestMethod, setRequestMethod] = useState<SelectOption>(
+  const [requestMethod, setRequestMethod] = useState<SelectOption | null>(
     REQUEST_METHODS[1]
   );
-  const [authType, setAuthType] = useState<SelectOption>(AUTH_METHODS[0]);
-  const [mediaType, setMediaType] = useState<SelectOption>(MEDIA_TYPES[0]);
+  const [authType, setAuthType] = useState<SelectOption | null>(AUTH_METHODS[0]);
+  const [mediaType, setMediaType] = useState<SelectOption | null>(MEDIA_TYPES[0]);
   const [activeTab, setActiveTab] = useState<Tab>(Tab.AUTHENTICATION);
   const [newHeader, setNewHeader] = useState<RequestHeader>({
     key: '',
@@ -210,7 +205,7 @@ function NewModelApiConfigModule() {
     }));
   }
 
-  function handleMediaTypeChange(option: SelectOption) {
+  function handleMediaTypeChange(option: SelectOption | null) {
     setMediaType(option);
   }
 
@@ -231,11 +226,11 @@ function NewModelApiConfigModule() {
     });
   }
 
-  function handleRequestMethodChange(option: SelectOption) {
+  function handleRequestMethodChange(option: SelectOption | null) {
     setRequestMethod(option);
   }
 
-  function handleAuthTypeChange(option: SelectOption) {
+  function handleAuthTypeChange(option: SelectOption | null) {
     setAuthType(option);
   }
 
