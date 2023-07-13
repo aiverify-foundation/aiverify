@@ -16,3 +16,12 @@ export enum RequestMethod {
   GET = 'GET',
   POST = 'POST'
 }
+
+export enum OpenApiDataTypes {
+  string = 'string',
+  number = 'number',
+  integer = 'integer',
+  boolean = 'boolean',
+  array = 'array',
+  object = 'object',
+}

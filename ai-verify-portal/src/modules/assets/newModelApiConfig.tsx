@@ -9,7 +9,7 @@ import clsx from 'clsx';
 import { ChangeEvent, useState } from 'react';
 import { IconButton } from 'src/components/iconButton';
 import { TextArea } from 'src/components/textArea';
-import { AuthType, MediaType, RequestMethod } from './types';
+import { optionsAuthMethods, optionsMediaTypes, optionsRequestMethods } from './selectOptions';
 
 type RequestHeader = {
   key: string;
@@ -31,25 +31,6 @@ type UrlParamsDisplayProps = {
   param: UrlParameter;
   onRemoveBtnClick: (param: UrlParameter) => void;
 };
-
-const optionsRequestMethods = [
-  { value: RequestMethod.GET, label: RequestMethod.GET },
-  { value: RequestMethod.POST, label: RequestMethod.POST },
-];
-
-const optionsAuthMethods = [
-  { value: AuthType.NO_AUTH, label: AuthType.NO_AUTH },
-  { value: AuthType.BEARER_TOKEN, label: AuthType.BEARER_TOKEN },
-  { value: AuthType.BASIC, label: AuthType.BASIC },
-];
-
-const optionsMediaTypes = [
-  { value: MediaType.NONE, label: MediaType.NONE },
-  { value: MediaType.FORM_URLENCODED, label: MediaType.FORM_URLENCODED },
-  { value: MediaType.MULTIPART_FORMDATA, label: MediaType.MULTIPART_FORMDATA },
-  { value: MediaType.APP_JSON, label: MediaType.APP_JSON },
-  { value: MediaType.TEXT_PLAIN, label: MediaType.TEXT_PLAIN },
-];
 
 const defaultRequestHeaders = [
   { key: 'Connection', value: 'keep-alive' },
