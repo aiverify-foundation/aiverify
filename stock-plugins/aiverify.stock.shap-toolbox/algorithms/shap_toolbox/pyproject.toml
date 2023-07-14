@@ -13,9 +13,9 @@ numpy = "1.23.5"
 pandas = "1.5.3"
 scikit-learn = "1.2.2"
 shap = "0.41.0"
-setuptools = "^67.8.0"
+setuptools = "68.0.0"
 xgboost = "1.7.4"
-scipy = "1.10.0"
+scipy = "1.11.1"
 
 
 [build-system]
