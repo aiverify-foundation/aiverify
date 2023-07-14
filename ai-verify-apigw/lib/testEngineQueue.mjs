@@ -89,8 +89,8 @@ export const queueTests = async (report, modelAndDatasets) => {
       throw new Error("Missing apiConfig information");
     }
   } else {
-    if (!modelAndDatasets.model.modelFile) {
-      throw new Error("Missing modelFile information");
+    if (!modelAndDatasets.model.filePath) {
+      throw new Error("Missing filePath information");
     }
   }
 
