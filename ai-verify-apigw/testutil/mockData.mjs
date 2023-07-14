@@ -217,30 +217,36 @@ casual.define('report', function(project, status) {
   return report;
 })
 
-const mockModel = {
-  filename: 'pickle_scikit_bc_compas.sav',
-  name: 'pickle_scikit_bc_compas.sav',
-  filePath: '/home/test/uploads/model/pickle_scikit_bc_compas.sav',
-  ctime: new Date('2023-06-05T07:17:25.132Z'),
-  description: '',
-  status: 'Valid',
-  size: '502.71 KB',
-  modelType: 'Classification',
-  serializer: 'pickle',
-  modelFormat: 'sklearn',
-  errorMessages: '',
-  type: 'File',
-  createdAt: new Date('2023-06-05T07:17:25.140Z'),
-  updatedAt: new Date('2023-06-05T07:17:26.151Z')
-}
-
-const mockTestDataset = {
-    filename: 'pickle_pandas_tabular_compas_testing.sav',
-    name: 'pickle_pandas_tabular_compas_testing.sav',
+casual.define('modelFile', function() {
+  const d = casual.moment.toDate();
+  return {
+    filename: 'pickle_scikit_bc_compas.sav',
+    name: 'pickle_scikit_bc_compas.sav',
+    filePath: `/home/test/uploads/model/${casual.word}.sav`,
+    ctime: d,
+    description: casual.description,
+    status: 'Valid',
+    size: '502.71 KB',
+    modelType: casual.random_element(['Classification', 'Regression']),
+    serializer: 'pickle',
+    modelFormat: 'sklearn',
+    errorMessages: '',
     type: 'File',
-    filePath: '/home/test/uploads/data/pickle_pandas_tabular_compas_testing.sav',
-    ctime: '2023-06-05T07:17:06.360Z',
-    description: '',
+    createdAt: d,
+    updatedAt: d
+  }
+})
+
+casual.define('testDataset', function() {
+  const d = casual.moment.toDate();
+  const filename = `${casual.word}.sav`;
+  return {
+    filename,
+    name: filename,
+    type: 'File',
+    filePath: `/home/test/uploads/data/${filename}`,
+    ctime: d,
+    description: casual.description,
     status: 'Valid',
     size: '68.33 KB',
     serializer: 'pickle',
@@ -248,48 +254,67 @@ const mockTestDataset = {
     errorMessages: '',
     dataColumns: [
         {
-            name: 'age_cat_cat',
+            name: 'age',
             datatype: 'int64',
-            label: 'age_cat_cat',
-            _id: mongoose.Types.ObjectId('647d8bf3ef104c4da904734a')
+            label: 'age',
         },
         {
-            name: 'sex_code',
+            name: 'gender',
             datatype: 'int64',
-            label: 'sex_code',
-            _id: mongoose.Types.ObjectId('647d8bf3ef104c4da904734b')
+            label: 'gender',
         },
         {
-            name: 'race_code',
+            name: 'race',
             datatype: 'int64',
-            label: 'race_code',
-            _id: mongoose.Types.ObjectId('647d8bf3ef104c4da904734c')
+            label: 'race',
         },
         {
-            name: 'priors_count',
+            name: 'income',
             datatype: 'int64',
-            label: 'priors_count',
-            _id: mongoose.Types.ObjectId('647d8bf3ef104c4da904734d')
+            label: 'income',
         },
         {
-            name: 'c_charge_degree_cat',
+            name: 'employment',
             datatype: 'int64',
-            label: 'c_charge_degree_cat',
-            _id: mongoose.Types.ObjectId('647d8bf3ef104c4da904734e')
+            label: 'employment',
         },
         {
-            name: 'two_year_recid',
+            name: 'employment_length',
             datatype: 'int64',
-            label: 'two_year_recid',
-            _id: mongoose.Types.ObjectId('647d8bf3ef104c4da904734f')
-        }
+            label: 'employment_length',
+        },
+        {
+            name: 'total_donated',
+            datatype: 'int64',
+            label: 'total_donated',
+        },
+        {
+            name: 'num_donation',
+            datatype: 'int64',
+            label: 'num_donation',
+        },
+        {
+            name: 'donation',
+            datatype: 'int64',
+            label: 'donation',
+        },
     ],
-    createdAt: new Date('2023-06-05T07:17:06.368Z'),
-    updatedAt: new Date('2023-06-05T07:17:07.385Z'),
-    __v: 0,
+    createdAt: d,
+    updatedAt: d,
     numCols: 6,
     numRows: 1235
-};
+  }
+})
+
+casual.define('modelAndDatasets', function(modelType) {
+  let testDataset = casual.testDataset;
+  return {
+    groundTruthColumn: 'donation',
+    model: casual.modelFile,
+    testDataset,
+    groundTruthDataset: testDataset,
+  }
+})
 
 casual.define('multipleDatasets', function(count) {
   if (typeof count !== 'number') {
@@ -297,7 +322,7 @@ casual.define('multipleDatasets', function(count) {
   }
   let ar = [];
   for (let i=0; i<count; i++) {
-    ar.push(mockTestDataset)
+    ar.push(casual.testDataset)
   }
   return ar;
 })
@@ -308,10 +333,10 @@ casual.define('multipleModels', function(count) {
   }
   let ar = [];
   for (let i=0; i<count; i++) {
-    ar.push(mockModel)
+    ar.push(casual.modelFile)
   }
   return ar;
 })
 
 export default casual;
-export {mockModel, mockTestDataset};
+// export {mockModel, mockTestDataset};

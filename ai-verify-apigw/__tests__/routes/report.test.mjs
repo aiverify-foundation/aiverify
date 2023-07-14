@@ -40,7 +40,7 @@ describe("Test /report route", () => {
     const router = await import("#routes/report.mjs");
     const app = setupServerWithRouter("/report", router.default);
     request = supertest(app);
-    server = app.listen(4010);
+    server = app.listen(4011);
   })
 
   afterAll(async() => {

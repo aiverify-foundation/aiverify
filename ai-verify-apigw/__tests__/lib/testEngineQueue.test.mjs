@@ -53,8 +53,8 @@ describe("Test module testEngineQueue.mjs", () => {
   it("should queue tests", async() => {
     redis.hSet.mockResolvedValue();
     redis.xAdd.mockResolvedValue();
-    const modelAndDataset = casual.modelAndDataset;
-    await testEngineQueue.queueTests(reportData, modelAndDataset)
+    const modelAndDatasets = casual.modelAndDatasets('File');
+    await testEngineQueue.queueTests(reportData, modelAndDatasets)
     expect(redis.hSet).toHaveBeenCalled();
     expect(redis.xAdd).toHaveBeenCalled();
     const xAddLastCall = redis.xAdd.mock.lastCall;

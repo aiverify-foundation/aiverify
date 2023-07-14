@@ -74,7 +74,7 @@ describe("Test /upload route", () => {
       const router = await import("#routes/upload.mjs");
       const app = setupServerWithRouter("/upload", router.default);
       request = supertest(app);
-      server = app.listen(4010);
+      server = app.listen(4012);
       
       app.use(multer({}).array());
 

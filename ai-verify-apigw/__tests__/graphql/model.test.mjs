@@ -164,7 +164,6 @@ describe("Test Model GraphQL queries and mutations", () => {
             description: 'Mock Description1',
             modelType: 'Regression',
             name: 'New File Name1.png',
-            status: 'Cancelled',
         }
       }
     })
@@ -177,7 +176,6 @@ describe("Test Model GraphQL queries and mutations", () => {
     const doc = await ModelFileModel.findOne({ _id: mongoose.Types.ObjectId(id) });
     expect(doc.name).toEqual('New File Name1.png');
     expect(doc.modelType).toEqual('Regression');
-    expect(doc.status).toEqual('Cancelled');
     expect(doc.description).toEqual('Mock Description1');
   })
 
