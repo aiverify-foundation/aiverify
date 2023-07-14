@@ -12,7 +12,7 @@ joblib = "1.2.0"
 numpy = "1.23.5"
 scikit-learn = "1.2.2"
 pandas = "1.5.3"
-scipy = "1.9.3"
+scipy = "1.11.1"
 
 
 [build-system]
