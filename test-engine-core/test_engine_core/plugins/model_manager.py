@@ -86,7 +86,7 @@ class ModelManager:
             "Attempting to identify model format with api schema",
         )
         is_success, return_model_instance = ModelManager._try_to_identify_model_format(
-            model_plugins, {"api_schema": api_schema, "api_config": api_config}
+            model_plugins, **{"api_schema": api_schema, "api_config": api_config}
         )
         if is_success:
             error_message = ""
@@ -195,7 +195,7 @@ class ModelManager:
             f"Attempting to identify model format: {type(model)}",
         )
         is_success, return_model_instance = ModelManager._try_to_identify_model_format(
-            model_plugins, {"model": model}
+            model_plugins, **{"model": model}
         )
         if is_success:
             error_message = ""

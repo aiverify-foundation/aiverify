@@ -226,7 +226,7 @@ class DataManager:
                 is_success,
                 data_instance,
             ) = DataManager._try_to_identify_data_format(
-                data_plugins, {"data": df_data}
+                data_plugins, **{"data": df_data}
             )
 
             return is_success, data_instance, ""
@@ -265,7 +265,7 @@ class DataManager:
                 is_success,
                 data_instance,
             ) = DataManager._try_to_identify_data_format(
-                data_plugins, {"data": df_data}
+                data_plugins, **{"data": df_data}
             )
 
             return is_success, data_instance, ""
@@ -304,7 +304,7 @@ class DataManager:
 
         # Attempt to identify the data format with the supported list.
         is_success, data_instance = DataManager._try_to_identify_data_format(
-            data_plugins, {"data", data}
+            data_plugins, **{"data": data}
         )
         if not is_success:
             error_message = f"There was an error identifying dataset: {type(data)}"

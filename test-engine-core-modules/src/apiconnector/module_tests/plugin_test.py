@@ -47,50 +47,48 @@ class PluginTest:
             # Load all the core plugins and the model plugin
             PluginManager.discover(str(self._base_path))
 
-            # # Get the model instance
-            # (
-            #     self._model_instance,
-            #     self._model_serializer_instance,
-            #     error_message,
-            # ) = PluginManager.get_instance(
-            #     PluginType.MODEL,
-            #     **{
-            #         "mode": ModelModeType.API,
-            #         "api_schema": self._api_schema,
-            #         "api_config": self._api_config,
-            #     }
-            # )
+            # Get the model instance
+            (
+                self._model_instance,
+                self._model_serializer_instance,
+                error_message,
+            ) = PluginManager.get_instance(
+                PluginType.MODEL,
+                **{
+                    "mode": ModelModeType.API,
+                    "api_schema": self._api_schema,
+                    "api_config": self._api_config,
+                },
+            )
 
-            print("Helloworld")
+            # Perform model instance setup
+            is_success, error_messages = self._model_instance.setup()
+            if not is_success:
+                raise RuntimeError(
+                    f"Failed to perform model instance setup: {error_messages}"
+                )
 
-            # # Perform model instance setup
-            # is_success, error_messages = self._model_instance.setup()
-            # if not is_success:
-            #     raise RuntimeError(
-            #         f"Failed to perform model instance setup: {error_messages}"
-            #     )
+            # Run different tests on the model instance
+            test_methods = [
+                self._validate_metadata,
+                self._validate_plugin_type,
+                self._validate_model_supported,
+            ]
 
-            # # Run different tests on the model instance
-            # test_methods = [
-            #     self._validate_metadata,
-            #     self._validate_plugin_type,
-            #     self._validate_model_supported,
-            # ]
+            for method in test_methods:
+                tmp_count, tmp_error_msg = method()
+                error_count += tmp_count
+                error_message += tmp_error_msg
 
-            # for method in test_methods:
-            #     tmp_count, tmp_error_msg = method()
-            #     error_count += tmp_count
-            #     error_message += tmp_error_msg
+            # Perform cleanup
+            self._model_instance.cleanup()
 
-            # # Perform cleanup
-            # self._model_instance.cleanup()
-
-            # if error_count > 0:
-            #     print(f"Errors found while running tests. {error_message}")
-            #     sys.exit(-1)
-            # else:
-            #     print("No errors found. Test completed successfully.")
-            #     sys.exit(0)
+            if error_count > 0:
+                print(f"Errors found while running tests. {error_message}")
+                sys.exit(-1)
+            else:
+                print("No errors found. Test completed successfully.")
+                sys.exit(0)
 
         except Exception as error:
             # Print and exit with error

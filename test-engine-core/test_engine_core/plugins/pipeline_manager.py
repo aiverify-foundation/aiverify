@@ -144,7 +144,7 @@ class PipelineManager:
             is_success,
             return_pipeline_instance,
         ) = PipelineManager._try_to_identify_pipeline_format(
-            pipeline_plugins, {"pipeline": pipeline}
+            pipeline_plugins, **{"pipeline": pipeline}
         )
         if is_success:
             error_message = ""

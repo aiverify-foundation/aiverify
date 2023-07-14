@@ -1,18 +1,13 @@
 from __future__ import annotations
 
-import pathlib
 from typing import Any, Dict, List, Tuple
 
 import httpx
-from aiopenapi3 import FileSystemLoader, OpenAPI
 from openapi_schema_validator import OAS30Validator, validate
 from test_engine_core.interfaces.imodel import IModel
 from test_engine_core.plugins.enums.model_plugin_type import ModelPluginType
 from test_engine_core.plugins.enums.plugin_type import PluginType
 from test_engine_core.plugins.metadata.plugin_metadata import PluginMetadata
-
-# from requests import Session, session
-# from requests.adapters import HTTPAdapter, Retry
 
 
 # NOTE: Do not change the class name, else the plugin cannot be read by the system
@@ -65,6 +60,18 @@ class Plugin(IModel):
         """
         return Plugin._model_plugin_type
 
+    @staticmethod
+    def session_factory(*args, **kwargs) -> httpx.AsyncClient:
+        """
+        A factory that generates async client
+
+        Returns:
+            httpx.AsyncClient: Returns an httpx AsyncClient with additional settings
+        """
+        kwargs["verify"] = False
+        kwargs["timeout"] = 5.0  # seconds
+        return httpx.AsyncClient(*args, **kwargs)
+
     def __init__(self, **kwargs) -> None:
         # Configuration
         self._is_setup_completed = False
@@ -78,41 +85,13 @@ class Plugin(IModel):
             self._api_schema: Dict = dict()
             self._api_config: Dict = dict()
 
-        # # API variables
-        # self._openapi3_inst = None
-        # self._default_api_retries: int = 3
-        # self._session: Union[Session, None] = None
-        # self._additional_headers: Dict = dict()
-        # self._auth_info: Dict = dict()
-        # # (0s, 2s, 4s)
-        # # Formula: {backoff factor} * (2 ** ({number of total retries} - 1))
-        # self._default_api_backoff: float = 1.0
-        # self._default_api_timeout: float = 5.0 # seconds
-        # self._default_api_status_code: list = [429, 500, 502, 503, 504]
-        # self._default_api_allowed_methods: list = ["GET", "POST"]
-
-    @staticmethod
-    def session_factory(*args, **kwargs) -> httpx.AsyncClient:
-        """
-        A factory that generates async client
-
-        Returns:
-            httpx.AsyncClient: Returns an httpx AsyncClient with additional settings
-        """
-        kwargs["verify"] = False
-        kwargs["timeout"] = 5.0  # seconds
-        return httpx.AsyncClient(*args, **kwargs)
-
     def cleanup(self) -> None:
         """
         A method to clean-up objects
         """
-        if self._session is not None:
-            self._session.close()
-        else:
-            pass  # pragma: no cover
+        pass
 
-    async def setup(self) -> Tuple[bool, str]:
+    def setup(self) -> Tuple[bool, str]:
         """
         A method to perform setup
 
@@ -121,62 +100,24 @@ class Plugin(IModel):
             error message if failed.
         """
         try:
-            token = ""
-            api = OpenAPI.load_file(
-                url="",
-                path=pathlib.Path("test_api_config.json"),
-                session_factory=Plugin.session_factory,
-                loader=FileSystemLoader(
-                    pathlib.Path(
-                        "/workspaces/aiverify-backend-dev/aiverify/test-engine-core-modules/src/apiconnector"
-                    )
-                ),
-            )
-            api.authenticate(myAuth=f"token {token}")
-            predict_request = api.createRequest(("/predict/tc007", "post"))
-            body = predict_request.data.get_type().parse_obj(
-                {"age": 14, "gender": 13, "race": 13, "count": 13, "charge": 13}
-            )
-            headers, data, result = await predict_request.request(
-                parameters={"foo": "bar"}, data=body
-            )
-            print(result.text, result.status_code, result.content)
-            # # Search for the first api and http method.
-            # # Set the prediction operationId
-            # path_to_be_updated = self._api_schema["paths"]
-            # if len(path_to_be_updated) > 0:
-            #     first_api = list(path_to_be_updated.items())[0]
-            #     first_api_value = first_api[1]
-            #     if len(first_api_value) > 0:
-            #         first_api_http = list(first_api_value.items())[0]
-            #         first_api_http_value = first_api_http[1]
-            #         first_api_http_value.update({"operationId": "predict_api"})
+            # Perform OpenAPI3 schema validation
+            # An exception will be thrown if validation has errors
+            validate(self._api_config, self._api_schema, cls=OAS30Validator)
 
-            # # Parse the openapi schema
-            # self._openapi3_inst = OpenAPI(self._api_schema, validate=True)
-            # self._setup_authentication()
+            # Search for the first api and http method.
+            # Set the prediction operationId
+            path_to_be_updated = self._api_schema["paths"]
+            if len(path_to_be_updated) > 0:
+                first_api = list(path_to_be_updated.items())[0]
+                first_api_value = first_api[1]
+                if len(first_api_value) > 0:
+                    first_api_http = list(first_api_value.items())[0]
+                    first_api_http_value = first_api_http[1]
+                    first_api_http_value.update({"operationId": "predict_api"})
 
-            # # Prepare headers information for sending query
-            # # Convert headers object into key-attribute mapping in dict
-            # if "headers" in self._api_config.keys():
-            #     self._additional_headers = self._api_config["headers"]
-            # else:
-            #     self._additional_headers = dict()
+            # TODO: Create the api instance
 
-            # # Setup session retry strategy
-            # # It will perform 3 times retries and have default backoff time for status_forcelist error code
-            # # It will perform for methods in whitelist
-            # retry_strategy = Retry(
-            #     total=self._default_api_retries,
-            #     backoff_factor=self._default_api_backoff,
-            #     status_forcelist=self._default_api_status_code,
-            #     allowed_methods=self._default_api_allowed_methods,
-            # )
-            # adapter = HTTPAdapter(max_retries=retry_strategy)
-            # self._session = session()
-            # self._session.verify = False
-            # self._session.mount("https://", adapter)
-            # self._session.mount("http://", adapter)
+            # TODO: Setup API Authentication
 
             # Setup completed
             self._is_setup_completed = True
@@ -233,10 +174,6 @@ class Plugin(IModel):
             Any: predicted result
         """
         pass
-        # try:
-        #     return self._model.predict(data)
-        # except Exception:
-        #     raise
 
     def predict_proba(self, data: Any, *args) -> Any:
         """
@@ -249,10 +186,6 @@ class Plugin(IModel):
             Any: predicted result
         """
         pass
-        # try:
-        #     return self._model.predict_proba(data)
-        # except Exception:
-        #     raise
 
     def score(self, data: Any, y_true: Any) -> Any:
         """
@@ -266,25 +199,3 @@ class Plugin(IModel):
             Any: score result
         """
         raise RuntimeError("ApiConnector does not support score method")
-
-    # def _identify_model_algorithm(self, model: Any) -> Tuple[bool, str]:
-    #     """
-    #     A helper method to identify the model algorithm whether it is being supported
-
-    #     Args:
-    #         model (Any): the model to be checked against the supported model list
-
-    #     Returns:
-    #         Tuple[bool, str]: true if model is supported, str will store the support
-    #         algo name
-    #     """
-    #     model_algorithm = ""
-    #     is_success = False
-
-    #     module_type_name = f"{type(model).__module__}.{type(model).__name__}"
-    #     for supported_algo in self._supported_algorithms:
-    #         if supported_algo == module_type_name:
-    #             model_algorithm = supported_algo
-    #             is_success = True
-
-    #     return is_success, model_algorithm
