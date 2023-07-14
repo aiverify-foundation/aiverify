@@ -1,4 +1,4 @@
 export type SvgIconProps = {
-  size: number,
-  color: string
-}
+  size: number;
+  color: string;
+};

@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{include = "test_engine_core_modules"}]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.11"
+python = ">=3.10,<3.12"
 joblib = "1.2.0"
 libclang = "15.0.6.1"
 numpy = "1.23.5"

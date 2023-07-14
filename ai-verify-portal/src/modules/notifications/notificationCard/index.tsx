@@ -1,6 +1,12 @@
 import styles from '../styles/notificationCard.module.css';
 import clsx from 'clsx';
-import { StandardNotification, NotificationType, ReadStatus, ReportStatusNotification, AssetStatusNotification } from '../types';
+import {
+  StandardNotification,
+  NotificationType,
+  ReadStatus,
+  ReportStatusNotification,
+  AssetStatusNotification,
+} from '../types';
 import CloseIcon from '@mui/icons-material/Close';
 import React from 'react';
 import { CardReportStatus } from './cardReportStatus';
@@ -14,35 +20,38 @@ import { AssetValidationStatus } from 'src/types/dataset.interface';
 enum NotificationColor {
   ALERT = '#e6eef8',
   ERROR = '#fdecec',
-  WHITE = '#ffffff'
+  WHITE = '#ffffff',
 }
 
 type NotificationCardProps = {
-  notification: StandardNotification | ReportStatusNotification
-  style?: React.CSSProperties
-  hideDeleteIcon?: boolean
-  showMsgBody?: boolean
-  enableDeletingEffect?: boolean
-  onClick?: (msg: StandardNotification) => void
-  onDeleteClick?: (id: string, preventFadeEffect?: boolean) => void
-}
+  notification: StandardNotification | ReportStatusNotification;
+  style?: React.CSSProperties;
+  hideDeleteIcon?: boolean;
+  showMsgBody?: boolean;
+  enableDeletingEffect?: boolean;
+  onClick?: (msg: StandardNotification) => void;
+  onDeleteClick?: (id: string, preventFadeEffect?: boolean) => void;
+};
 
 type ReadIndicatorProps = {
-  status: ReadStatus
-  style?: React.CSSProperties
-}
+  status: ReadStatus;
+  style?: React.CSSProperties;
+};
 
 type SpecializedCardProps<T = StandardNotification> = {
-  notification: T,
-  showMsgBody?: boolean
-}
+  notification: T;
+  showMsgBody?: boolean;
+};
 
 function ReadIndicator(props: ReadIndicatorProps) {
   const { status, style } = props;
   const styleModifier = `indicator__${status.toLowerCase()}`;
-  return <div
-    className={clsx(styles.readIndicator, styles[styleModifier])}
-    style={style}/>;
+  return (
+    <div
+      className={clsx(styles.readIndicator, styles[styleModifier])}
+      style={style}
+    />
+  );
 }
 
 function NotificationCard(props: NotificationCardProps) {
@@ -55,14 +64,10 @@ function NotificationCard(props: NotificationCardProps) {
     onDeleteClick,
   } = props;
 
-  const {
-    type,
-    readStatus,
-    timestamp,
-  } = notification;
+  const { type, readStatus, timestamp } = notification;
 
   const dateTimeDisplay = new Date(timestamp).toLocaleString('en-GB');
-  
+
   let notifColor = NotificationColor.ALERT;
 
   if (showMsgBody) {
@@ -70,14 +75,16 @@ function NotificationCard(props: NotificationCardProps) {
   } else {
     if (type === NotificationType.REPORT_STATUS) {
       switch ((notification as ReportStatusNotification).reportStatus) {
-        case  ProjectReportStatus.ReportGenerated:
+        case ProjectReportStatus.ReportGenerated:
           notifColor = NotificationColor.ALERT;
           break;
         default:
           notifColor = NotificationColor.ALERT;
-
       }
-    } else if (type === NotificationType.MODEL_STATUS || type === NotificationType.DATASET_STATUS) {
+    } else if (
+      type === NotificationType.MODEL_STATUS ||
+      type === NotificationType.DATASET_STATUS
+    ) {
       switch ((notification as AssetStatusNotification).assetStatus) {
         case AssetValidationStatus.Invalid:
         case AssetValidationStatus.Cancelled:
@@ -108,15 +115,18 @@ function NotificationCard(props: NotificationCardProps) {
     if (onDeleteClick) onDeleteClick(notification.id);
   }
 
-  return <div className={clsx(
-      styles.listCard,
-      enableDeletingEffect ? styles.listCard__fadeout : null,
-      onClick ? styles.listCard__hoverable : null
-    )}
-    style={{ backgroundColor: notifColor }}
-    onClick={handleCardClick}>
-      <ReadIndicator status={readStatus}/>
-      { showMsgBody ? <Icon
+  return (
+    <div
+      className={clsx(
+        styles.listCard,
+        enableDeletingEffect ? styles.listCard__fadeout : null,
+        onClick ? styles.listCard__hoverable : null
+      )}
+      style={{ backgroundColor: notifColor }}
+      onClick={handleCardClick}>
+      <ReadIndicator status={readStatus} />
+      {showMsgBody ? (
+        <Icon
           name={IconName.TRASH}
           size={14}
           onClick={handleDeleteClickWithoutFadeout}
@@ -126,29 +136,39 @@ function NotificationCard(props: NotificationCardProps) {
             right: '10px',
             top: '12px',
             fontSize: '14px',
-        }} /> : !hideDeleteIcon ? <CloseIcon
-        className={styles.deleteIcon}
-        onClick={handleDeleteClick}
-        />: null }
-      { type === NotificationType.GENERAL ? <CardStandard
+          }}
+        />
+      ) : !hideDeleteIcon ? (
+        <CloseIcon className={styles.deleteIcon} onClick={handleDeleteClick} />
+      ) : null}
+      {type === NotificationType.GENERAL ? (
+        <CardStandard
           showMsgBody={showMsgBody}
           notification={notification as StandardNotification}
-        /> : null }
-      { type === NotificationType.ERROR ? <CardStandard
+        />
+      ) : null}
+      {type === NotificationType.ERROR ? (
+        <CardStandard
           showMsgBody={showMsgBody}
           notification={notification as StandardNotification}
-        /> : null }
-      { type === NotificationType.REPORT_STATUS ? <CardReportStatus
+        />
+      ) : null}
+      {type === NotificationType.REPORT_STATUS ? (
+        <CardReportStatus
           showMsgBody={showMsgBody}
           notification={notification as ReportStatusNotification}
-        /> : null }
-      { type === NotificationType.DATASET_STATUS || type === NotificationType.MODEL_STATUS ?
+        />
+      ) : null}
+      {type === NotificationType.DATASET_STATUS ||
+      type === NotificationType.MODEL_STATUS ? (
         <AssetStatusCard
           showMsgBody={showMsgBody}
           notification={notification as AssetStatusNotification}
-        /> : null }
+        />
+      ) : null}
       <div className={styles.dateTime}>{dateTimeDisplay}</div>
     </div>
+  );
 }
 
 export { NotificationCard };

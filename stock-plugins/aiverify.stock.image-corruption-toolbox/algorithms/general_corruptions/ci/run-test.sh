@@ -1,11 +1,17 @@
 #!/bin/bash
 source_dir=.
 
+if [ "$1" == "-m" ]; then
+  test_cmd="python3 -m pytest"
+else
+  test_cmd=pytest
+fi
+
 set +e
-python3 -m pytest --cov=$source_dir --cov-branch --html=test-report.html --json=test-report.json
+$test_cmd --cov=$source_dir --cov-branch --html=test-report.html --json=test-report.json
 exit_code=$?
-coverage html
-coverage json --pretty-print
+coverage html -i
+coverage json --pretty-print -i
 python3 ci/createBadges.py test
 python3 ci/createBadges.py coverage
 set -e

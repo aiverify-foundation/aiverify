@@ -11,7 +11,7 @@
 }
 
 .react-grid-item.aiv-report-widget > .react-resizable-handle::after {
-  content: "";
+  content: '';
   position: absolute;
   right: 5px;
   bottom: 5px;
@@ -29,66 +29,92 @@
   content: '';
 } */
 
-.react-grid-item.aiv-report-widget > .react-resizable-handle.react-resizable-handle-n,
-.react-grid-item.aiv-report-widget > .react-resizable-handle.react-resizable-handle-e,
-.react-grid-item.aiv-report-widget > .react-resizable-handle.react-resizable-handle-s,
-.react-grid-item.aiv-report-widget > .react-resizable-handle.react-resizable-handle-w,
-.react-grid-item.aiv-report-widget > .react-resizable-handle.react-resizable-handle-ne,
-.react-grid-item.aiv-report-widget > .react-resizable-handle.react-resizable-handle-sw,
-.react-grid-item.aiv-report-widget > .react-resizable-handle.react-resizable-handle-nw {
+.react-grid-item.aiv-report-widget
+  > .react-resizable-handle.react-resizable-handle-n,
+.react-grid-item.aiv-report-widget
+  > .react-resizable-handle.react-resizable-handle-e,
+.react-grid-item.aiv-report-widget
+  > .react-resizable-handle.react-resizable-handle-s,
+.react-grid-item.aiv-report-widget
+  > .react-resizable-handle.react-resizable-handle-w,
+.react-grid-item.aiv-report-widget
+  > .react-resizable-handle.react-resizable-handle-ne,
+.react-grid-item.aiv-report-widget
+  > .react-resizable-handle.react-resizable-handle-sw,
+.react-grid-item.aiv-report-widget
+  > .react-resizable-handle.react-resizable-handle-nw {
   visibility: hidden;
 }
 
-.react-grid-item.aiv-report-widget:hover > .react-resizable-handle.react-resizable-handle-n,
-.react-grid-item.aiv-report-widget:hover > .react-resizable-handle.react-resizable-handle-e,
-.react-grid-item.aiv-report-widget:hover > .react-resizable-handle.react-resizable-handle-s,
-.react-grid-item.aiv-report-widget:hover > .react-resizable-handle.react-resizable-handle-w,
-.react-grid-item.aiv-report-widget:hover > .react-resizable-handle.react-resizable-handle-ne,
-.react-grid-item.aiv-report-widget:hover > .react-resizable-handle.react-resizable-handle-sw,
-.react-grid-item.aiv-report-widget:hover > .react-resizable-handle.react-resizable-handle-nw {
+.react-grid-item.aiv-report-widget:hover
+  > .react-resizable-handle.react-resizable-handle-n,
+.react-grid-item.aiv-report-widget:hover
+  > .react-resizable-handle.react-resizable-handle-e,
+.react-grid-item.aiv-report-widget:hover
+  > .react-resizable-handle.react-resizable-handle-s,
+.react-grid-item.aiv-report-widget:hover
+  > .react-resizable-handle.react-resizable-handle-w,
+.react-grid-item.aiv-report-widget:hover
+  > .react-resizable-handle.react-resizable-handle-ne,
+.react-grid-item.aiv-report-widget:hover
+  > .react-resizable-handle.react-resizable-handle-sw,
+.react-grid-item.aiv-report-widget:hover
+  > .react-resizable-handle.react-resizable-handle-nw {
   visibility: visible;
 }
 
-.react-grid-item.aiv-report-widget > .react-resizable-handle.react-resizable-handle-w,
-.react-grid-item.aiv-report-widget > .react-resizable-handle.react-resizable-handle-e {
+.react-grid-item.aiv-report-widget
+  > .react-resizable-handle.react-resizable-handle-w,
+.react-grid-item.aiv-report-widget
+  > .react-resizable-handle.react-resizable-handle-e {
   top: calc(50% + var(--handle-size) / 2 + 2px);
 }
 
-.react-grid-item.aiv-report-widget > .react-resizable-handle.react-resizable-handle-n,
-.react-grid-item.aiv-report-widget > .react-resizable-handle.react-resizable-handle-s {
+.react-grid-item.aiv-report-widget
+  > .react-resizable-handle.react-resizable-handle-n,
+.react-grid-item.aiv-report-widget
+  > .react-resizable-handle.react-resizable-handle-s {
   left: calc(50% + var(--handle-size) / 2 + 2px);
 }
 
-.react-grid-item.aiv-report-widget > .react-resizable-handle.react-resizable-handle-n {
+.react-grid-item.aiv-report-widget
+  > .react-resizable-handle.react-resizable-handle-n {
   /* top: calc(0px - var(--handle-size) / 2 - 2px); */
 }
-.react-grid-item.aiv-report-widget > .react-resizable-handle.react-resizable-handle-s {
+.react-grid-item.aiv-report-widget
+  > .react-resizable-handle.react-resizable-handle-s {
   /* bottom: calc(0px - var(--handle-size) / 2 - 2px); */
 }
-.react-grid-item.aiv-report-widget > .react-resizable-handle.react-resizable-handle-w {
+.react-grid-item.aiv-report-widget
+  > .react-resizable-handle.react-resizable-handle-w {
   /* left: calc(0px - var(--handle-size) / 2 - 2px); */
 }
 
-.react-grid-item.aiv-report-widget > .react-resizable-handle.react-resizable-handle-e {
+.react-grid-item.aiv-report-widget
+  > .react-resizable-handle.react-resizable-handle-e {
   /* right: calc(0px - var(--handle-size) / 2 - 2px); */
 }
 
-.react-grid-item.aiv-report-widget > .react-resizable-handle.react-resizable-handle-nw {
+.react-grid-item.aiv-report-widget
+  > .react-resizable-handle.react-resizable-handle-nw {
   /* top: calc(0px - var(--handle-size) / 2 - 2px); */
   /* left: calc(0px - var(--handle-size) / 2 - 2px); */
 }
 
-.react-grid-item.aiv-report-widget > .react-resizable-handle.react-resizable-handle-ne {
+.react-grid-item.aiv-report-widget
+  > .react-resizable-handle.react-resizable-handle-ne {
   /* top: calc(0px - var(--handle-size) / 2 - 2px); */
   /* right: calc(0px - var(--handle-size) / 2 - 2px); */
 }
 
-.react-grid-item.aiv-report-widget > .react-resizable-handle.react-resizable-handle-se {
+.react-grid-item.aiv-report-widget
+  > .react-resizable-handle.react-resizable-handle-se {
   /* bottom: calc(0px - var(--handle-size) / 2 - 2px); */
   /* right: calc(0px - var(--handle-size) / 2 - 2px); */
 }
 
-.react-grid-item.aiv-report-widget > .react-resizable-handle.react-resizable-handle-sw {
+.react-grid-item.aiv-report-widget
+  > .react-resizable-handle.react-resizable-handle-sw {
   /* bottom: calc(0px - var(--handle-size) / 2 - 2px); */
   /* left: calc(0px - var(--handle-size) / 2 - 2px); */
 }

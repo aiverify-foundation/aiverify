@@ -9,7 +9,7 @@
 .iconBtn:hover {
   transition-property: 'background-color';
   transition-timing-function: ease-in-out;
-	transition-duration: 0.2s;
+  transition-duration: 0.2s;
   background-color: #d6d6d6;
 }
 
@@ -34,7 +34,7 @@
 .iconBtn__noOutline:hover {
   transition-property: 'background-color';
   transition-timing-function: ease-in-out;
-	transition-duration: 0.2s;
+  transition-duration: 0.2s;
   background-color: #f1f1f1;
 }
 

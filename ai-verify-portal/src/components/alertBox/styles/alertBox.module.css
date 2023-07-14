@@ -14,12 +14,12 @@
   z-index: 1002;
   background-color: white;
   box-sizing: border-box;
-  box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
   border-radius: 5px;
 }
 
 .alertBox.with_modalOverlay {
-  box-shadow: 0px 0px 10px 4px rgba(0,0,0,0.2);
+  box-shadow: 0px 0px 10px 4px rgba(0, 0, 0, 0.2);
 }
 
 .fixed_center {
@@ -62,11 +62,11 @@
 }
 
 .header_dragHandle {
-  cursor: move
+  cursor: move;
 }
 
 .header_dragHandle:active {
-  cursor: move
+  cursor: move;
 }
 
 .alertBoxBody {
@@ -79,12 +79,12 @@
 
 .alertBoxBody::-webkit-scrollbar {
   width: 8px;
-	background-color: rgb(224, 224, 224);
+  background-color: rgb(224, 224, 224);
   border-radius: 5px;
 }
 
 .alertBoxBody::-webkit-scrollbar-thumb {
-	background-color: rgb(190, 189, 189);
+  background-color: rgb(190, 189, 189);
   border-radius: 5px;
 }
 
@@ -99,7 +99,6 @@
 .headingText {
   margin-right: 5px;
 }
-
 
 /* Extra Small modifier */
 
@@ -130,7 +129,6 @@
   height: 45px;
 }
 
-
 /* Small modifier */
 
 .alertBox.alertBox_s {
@@ -160,8 +158,6 @@
   height: 45px;
 }
 
-
-
 /* Medium modifier */
 .alertBox.alertBox_m {
   width: 600px;
@@ -189,8 +185,6 @@
 .alertBox_m .alertBoxFooter {
   height: 45px;
 }
-
-
 
 /* Large modifier */
 .alertBox.alertBox_l {
@@ -220,7 +214,6 @@
   height: 55px;
 }
 
-
 /* Auto modifier */
 .alertBox.alertBox_auto {
   width: 550px;
@@ -248,5 +241,3 @@
 .alertBox_auto .alertBoxFooter {
   height: 45px;
 }
-
-

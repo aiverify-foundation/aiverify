@@ -1,8 +1,8 @@
 .topmenu {
   position: relative;
-	height: var(--topmenu-height);
-	background-color: var(--color-palette-violet);
-	width: 100%;
+  height: var(--topmenu-height);
+  background-color: var(--color-palette-violet);
+  width: 100%;
   align-items: center;
   display: flex;
   justify-content: flex-end;

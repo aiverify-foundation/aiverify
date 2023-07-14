@@ -1,6 +1,6 @@
 export type ErrorWithMessage = Error & {
-  message: string
-}
+  message: string;
+};
 
 // utils to handle try-catch error in a typed manner, because caught error is always unknown
 function isErrorWithMessage(error: unknown): error is ErrorWithMessage {
@@ -9,15 +9,15 @@ function isErrorWithMessage(error: unknown): error is ErrorWithMessage {
     error !== null &&
     'message' in error &&
     typeof (error as Record<string, unknown>).message === 'string'
-  )
+  );
 }
 
 export function toErrorWithMessage(maybeError: unknown): ErrorWithMessage {
-  if (isErrorWithMessage(maybeError)) return maybeError
+  if (isErrorWithMessage(maybeError)) return maybeError;
 
   try {
-    return new Error(JSON.stringify(maybeError))
+    return new Error(JSON.stringify(maybeError));
   } catch {
-    return new Error(String(maybeError))
+    return new Error(String(maybeError));
   }
 }

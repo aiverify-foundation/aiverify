@@ -3,6 +3,7 @@
 ## Software Requirements
 
 ### Operation System Supported
+
 - Linux
 
 ### Prerequisites
@@ -14,21 +15,25 @@
 ## Installing NodeJS 16.x
 
 ### Using Ubuntu
+
 ```sh
 curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
 sudo apt-get install -y nodejs
 ```
 
 ### Using Debian, as root
+
 ```sh
 curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
 apt-get install -y nodejs
 ```
+
 ## Installing and Setting up mongodb
 
 Install mongodb. See [MongoDB Installation Guides](https://www.mongodb.com/docs/manual/installation/)
 
 Create a new user
+
 ```sh
 use aiverify
 db.createUser({user:"aiverify",pwd:"aiverify",roles:["readWrite"]})
@@ -52,24 +57,27 @@ notify-keyspace-events Kh
 ```
 
 ## Customize the environment variable
-To customize the default environment, you can create a **.env.local** file in the project root directory. This will override the **.env** defaults set.
 
+To customize the default environment, you can create a **.env.local** file in the project root directory. This will override the **.env** defaults set.
 
 # Running the Application
 
 Make sure that mongodb and redis server are running before starting the application.
 
 ## Run NodeJS in development mode
+
 ```sh
 npm run dev
 ```
 
 ## Run NodeJS in production mode
+
 ```sh
 npm run start
 ```
 
 ## Run NodeJS unit tests
+
 ```sh
 npm run test
 ```

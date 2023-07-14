@@ -1,4 +1,4 @@
-import { InputBlock, Algorithm } from 'src/types/plugin.interface';
+import { InputBlock } from 'src/types/plugin.interface';
 
 export enum WidgetStatus {
   unloaded,
@@ -14,8 +14,8 @@ export type InputBlockState = {
   summaryFn: (data: any) => string;
   progressFn: (data: any) => number;
   validateFn: (data: any) => boolean;
-}
+};
 
 export type InputBlockStateMap = {
-  [gid: string]: InputBlockState
-}
+  [gid: string]: InputBlockState;
+};

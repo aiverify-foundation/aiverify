@@ -1,8 +1,9 @@
-import { AlgoDependency } from "../pluginDetails";
-
+import { AlgoDependency } from '../pluginDetails';
 
 // 👇 This needs more work (PEPS requirements.txt dependency can be defined in various patterns)
-export function deserializeAlgoRequirement(algoReq: string): AlgoDependency | undefined {
+export function deserializeAlgoRequirement(
+  algoReq: string
+): AlgoDependency | undefined {
   const regx = /([a-zA-z0-9-_.@]*)([=><]{1,2})(\d*.\d*.\d*)/;
   const matches = algoReq.trim().match(regx);
   if (matches && matches.length > 0) {

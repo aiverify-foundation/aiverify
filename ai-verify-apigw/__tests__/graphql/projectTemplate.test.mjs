@@ -1,4 +1,4 @@
-// import {jest} from '@jest/globals';
+import {jest} from '@jest/globals';
 import mongoose from 'mongoose';
 import casual from '#testutil/mockData.mjs';
 
@@ -8,6 +8,9 @@ describe("Test Project Template GraphQL queries", () => {
   let data = [];
 
   beforeAll(async() => {
+    jest.unstable_mockModule("#lib/redisClient.mjs", () => {
+      return import("#mocks/lib/redisClient.mjs");
+    });
     const models = await import("#models");
     ProjectTemplateModel = models.ProjectTemplateModel;
     // make sure collection empty

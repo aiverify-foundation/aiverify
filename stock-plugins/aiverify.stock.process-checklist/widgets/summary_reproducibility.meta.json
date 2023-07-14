@@ -19,5 +19,6 @@
       "cid": "reproducibility_process_checklist",
       "datapath": "reproducibility_process_checklist.sample.json"
     }
-  ]
+  ],
+  "dynamicHeight": true
 }

@@ -19,6 +19,6 @@
       "cid": "fairness_process_checklist",
       "datapath": "fairness_process_checklist.sample.json" 
     }
-  ]
-
+  ],
+  "dynamicHeight": true
 }

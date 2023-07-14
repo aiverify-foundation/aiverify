@@ -4,26 +4,28 @@
 }
 
 .reportContainer {
-	--A4-page-width: 794px;
-	--A4-page-padding: 10px; 
-	--A4-page-height: 1100px;
+  --A4-page-width: 794px;
+  --A4-page-padding: 10px;
+  --A4-page-height: 1100px;
   /* 
 	Page height: Based on aspect-ratio, relative to width 794px, it should be 1123px. 
 	That computes to 36 number of rows (30px per row), with padding 10px factored in.
 	That leaves a bit of space leftover.
 	So, just use exact height value of 36 rows * 30px to remove the leftover from screen
 	*/
-	width: var(--A4-page-width);
+  width: var(--A4-page-width);
 }
 
 .reportHeight {
-	height: var(--A4-page-height);
+  height: var(--A4-page-height);
 }
 
 .printPage {
-	/* 
+  /* 
 	Print page width factors in padding left and padding right - 10px each, that we see on canvas.
 	Not using padding attribute here to prevent the page number that gets printed by pdf generator, to be flushed right to the edge
 	*/
-  width: calc(var(--A4-page-width) - var(--A4-page-padding) - var(--A4-page-padding));
+  width: calc(
+    var(--A4-page-width) - var(--A4-page-padding) - var(--A4-page-padding)
+  );
 }
