@@ -29,10 +29,12 @@ function TextInput(props: TextInputProps) {
   return (
     <div className={styles.textInput} style={style}>
       <label>
-        <div className={styles.label}>
-          <div>{label}</div>
-          {labelSibling}
-        </div>
+        {label !== '' && label !== undefined ? (
+          <div className={styles.label}>
+            <div>{label}</div>
+            {labelSibling}
+          </div>
+        ) : null}
         <input
           type="text"
           name={name}

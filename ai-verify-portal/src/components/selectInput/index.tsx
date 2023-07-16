@@ -17,11 +17,10 @@ type SelectInputProps = {
   labelSibling?: React.ReactElement;
   options: SelectOption[];
   onChange?: (option: SelectOption) => void;
-}
+};
 
 const BORDER_COLOR = '#cfcfcf';
 const BORDER_FOCUS_COLOR = 'hsl(0, 0%, 70%)';
-const FONT_COLOR = '#676767';
 const PLACEHOLDER_COLOR = '#cfcfcf';
 
 function SelectInput(props: SelectInputProps) {
@@ -29,7 +28,7 @@ function SelectInput(props: SelectInputProps) {
     name,
     width = 'auto',
     label,
-    placeholder = 'test',
+    placeholder,
     error,
     value,
     labelSibling,
@@ -40,10 +39,12 @@ function SelectInput(props: SelectInputProps) {
   return (
     <div className={styles.selectInput} style={{ width }}>
       <label>
-        <div className={styles.label}>
-          <div>{label}</div>
-          {labelSibling}
-        </div>
+        {label !== '' && label !== undefined ? (
+          <div className={styles.label}>
+            <div>{label}</div>
+            {labelSibling}
+          </div>
+        ) : null}
         <Select<SelectOption>
           styles={{
             container: (baseStyles) => ({
@@ -100,4 +101,3 @@ function SelectInput(props: SelectInputProps) {
 
 export { SelectInput };
 export type { SelectOption };
-

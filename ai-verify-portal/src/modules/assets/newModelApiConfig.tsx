@@ -2,35 +2,35 @@ import { TextInput } from 'src/components/textInput';
 import { MinimalHeader } from '../home/header';
 import styles from './styles/newModelApiConfig.module.css';
 import { SelectInput, SelectOption } from 'src/components/selectInput';
-import AddIcon from '@mui/icons-material/Add';
-import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import clsx from 'clsx';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { IconButton } from 'src/components/iconButton';
 import { TextArea } from 'src/components/textArea';
-import { optionsAuthMethods, optionsMediaTypes, optionsRequestMethods } from './selectOptions';
-
-type RequestHeader = {
-  key: string;
-  value: string;
-};
-
-type UrlParameter = {
-  key: string;
-  value: string;
-  dataType: string;
-};
-
-type RequestHeaderDisplayProps = {
-  header: RequestHeader;
-  onRemoveBtnClick: (globalVar: RequestHeader) => void;
-};
-
-type UrlParamsDisplayProps = {
-  param: UrlParameter;
-  onRemoveBtnClick: (param: UrlParameter) => void;
-};
+import {
+  optionsAuthMethods,
+  optionsMediaTypes,
+  optionsRequestMethods,
+} from './selectOptions';
+import {
+  RequestHeader,
+  RequestHeaderCaptureInput,
+  RequestHeaderDisplayInput,
+  RequestHeaderInputHeading,
+} from './requestHeaderInput';
+import {
+  UrlParameter,
+  UrlParamDisplayInput,
+  UrlParamCaptureInput,
+  UrlParamsInputHeading,
+} from './urlParamInput';
+import { RequestMethod } from './types';
+import {
+  BodyPayloadProperty,
+  BodyPayloadPropertyCaptureInput,
+  BodyPayloadPropertyDisplayInput,
+  BodyPayloadPropertyInputHeading,
+} from './bodyPayloadInput';
 
 const defaultRequestHeaders = [
   { key: 'Connection', value: 'keep-alive' },
@@ -41,67 +41,11 @@ const defaultConfigNameDisplay = 'API Config Name';
 const defaultConfigDescDisplay = 'Description of Config';
 
 enum Tab {
-  PARAMS,
+  URL_PARAMS,
   HEADERS,
   AUTHENTICATION,
-  REQUESTBODY,
+  REQUEST_BODY,
   RESPONSE,
-}
-
-function RequestHeaderInput(props: RequestHeaderDisplayProps) {
-  const { header, onRemoveBtnClick } = props;
-
-  function handleRemoveBtnClick(header: RequestHeader) {
-    return () => onRemoveBtnClick(header);
-  }
-
-  return (
-    <div id={`varkey-${header.key}`} className={styles.keyValRow}>
-      <div className={styles.keyValCol}>
-        <TextInput value={header.key} name="" style={{ marginBottom: 0 }} />
-      </div>
-      <div className={styles.keyValCol}>
-        <TextInput value={header.value} name="" style={{ marginBottom: 0 }} />
-      </div>
-      <div className={styles.delIconContainer}>
-        <IconButton
-          iconComponent={CloseIcon}
-          noOutline
-          onClick={handleRemoveBtnClick(header)}
-        />
-      </div>
-    </div>
-  );
-}
-
-function UrlParamsInput(props: UrlParamsDisplayProps) {
-  const { param, onRemoveBtnClick } = props;
-
-  function handleRemoveBtnClick(param: UrlParameter) {
-    return () => onRemoveBtnClick(param);
-  }
-
-  return (
-    <div id={`varkey-${param.key}`} className={styles.keyValRow}>
-      <div className={styles.keyValCol}>
-        <TextInput value={param.key} name="" style={{ marginBottom: 0 }} />
-      </div>
-      <div className={styles.keyValCol}>
-        <TextInput value={param.dataType} name="" style={{ marginBottom: 0 }} />
-      </div>
-      <div className={styles.keyValCol}>
-        <TextInput value={param.value} name="" style={{ marginBottom: 0 }} />
-      </div>
-      <div className={styles.delIconContainer}>
-        <IconButton
-          iconComponent={CloseIcon}
-          noOutline
-          onClick={handleRemoveBtnClick(param)}
-          style={{ marginRight: 42 }}
-        />
-      </div>
-    </div>
-  );
 }
 
 function NewModelApiConfigModule() {
@@ -111,22 +55,33 @@ function NewModelApiConfigModule() {
   const [requestMethod, setRequestMethod] = useState<SelectOption | null>(
     optionsRequestMethods[1]
   );
-  const [authType, setAuthType] = useState<SelectOption | null>(optionsAuthMethods[0]);
-  const [mediaType, setMediaType] = useState<SelectOption | null>(optionsMediaTypes[0]);
-  const [activeTab, setActiveTab] = useState<Tab>(Tab.AUTHENTICATION);
+  const [authType, setAuthType] = useState<SelectOption | null>(
+    optionsAuthMethods[0]
+  );
+  const [mediaType, setMediaType] = useState<SelectOption | null>(
+    optionsMediaTypes[0]
+  );
+  const [activeTab, setActiveTab] = useState<Tab>();
   const [newHeader, setNewHeader] = useState<RequestHeader>({
     key: '',
     value: '',
   });
   const [newParam, setNewParam] = useState<UrlParameter>({
     key: '',
-    value: '',
     dataType: '',
   });
+  const [newPayloadProperty, setNewPayloadProperty] =
+    useState<BodyPayloadProperty>({
+      key: '',
+      dataType: '',
+    });
   const [requestHeaders, setRequestHeaders] = useState<RequestHeader[]>(
     defaultRequestHeaders
   );
   const [urlParams, setUrlParams] = useState<UrlParameter[]>([]);
+  const [payloadProperties, setPayloadProperties] = useState<
+    BodyPayloadProperty[]
+  >([]);
 
   function handleTabClick(tab: Tab) {
     return () => setActiveTab(tab);
@@ -163,15 +118,6 @@ function NewModelApiConfigModule() {
   function handleParamKeyChange(e: ChangeEvent<HTMLInputElement>) {
     setNewParam((prev) => ({
       key: e.target.value,
-      value: prev.value,
-      dataType: prev.dataType,
-    }));
-  }
-
-  function handleParamValueChange(e: ChangeEvent<HTMLInputElement>) {
-    setNewParam((prev) => ({
-      key: prev.key,
-      value: e.target.value,
       dataType: prev.dataType,
     }));
   }
@@ -179,7 +125,20 @@ function NewModelApiConfigModule() {
   function handleParamDatatypeChange(e: ChangeEvent<HTMLInputElement>) {
     setNewParam((prev) => ({
       key: prev.key,
-      value: prev.value,
+      dataType: e.target.value,
+    }));
+  }
+
+  function handlePayloadPropKeyChange(e: ChangeEvent<HTMLInputElement>) {
+    setNewPayloadProperty((prev) => ({
+      key: e.target.value,
+      dataType: prev.dataType,
+    }));
+  }
+
+  function handlePayloadPropDatatypeChange(e: ChangeEvent<HTMLInputElement>) {
+    setNewPayloadProperty((prev) => ({
+      key: prev.key,
       dataType: e.target.value,
     }));
   }
@@ -200,7 +159,14 @@ function NewModelApiConfigModule() {
     setUrlParams([...urlParams, newParam]);
     setNewParam({
       key: '',
-      value: '',
+      dataType: '',
+    });
+  }
+
+  function handleAddPayloadProperty() {
+    setPayloadProperties([...payloadProperties, newPayloadProperty]);
+    setNewPayloadProperty({
+      key: '',
       dataType: '',
     });
   }
@@ -230,6 +196,30 @@ function NewModelApiConfigModule() {
     currentHeaders.splice(idx, 1);
     setRequestHeaders(currentHeaders);
   }
+
+  function handleDeletePayloadPropClick(property: BodyPayloadProperty) {
+    const currentProps = [...payloadProperties];
+    const idx = currentProps.findIndex(
+      (currentProp) => currentProp.key === property.key
+    );
+    currentProps.splice(idx, 1);
+    setPayloadProperties(currentProps);
+  }
+
+  useEffect(() => {
+    if (
+      activeTab !== Tab.AUTHENTICATION &&
+      activeTab !== Tab.REQUEST_BODY &&
+      activeTab !== Tab.RESPONSE &&
+      activeTab !== Tab.HEADERS
+    ) {
+      setActiveTab(
+        requestMethod && requestMethod.value === RequestMethod.GET
+          ? Tab.URL_PARAMS
+          : Tab.HEADERS
+      );
+    }
+  }, [requestMethod]);
 
   return (
     <div>
@@ -322,16 +312,19 @@ function NewModelApiConfigModule() {
                     </div>
                     <div className={styles.tabs}>
                       <div className={styles.tabsBtnGroup}>
-                        <div
-                          className={clsx(
-                            styles.tabBtn,
-                            activeTab === Tab.PARAMS
-                              ? styles.tabBtn__selected
-                              : null
-                          )}
-                          onClick={handleTabClick(Tab.PARAMS)}>
-                          Parameters
-                        </div>
+                        {requestMethod &&
+                        requestMethod.value === RequestMethod.GET ? (
+                          <div
+                            className={clsx(
+                              styles.tabBtn,
+                              activeTab === Tab.URL_PARAMS
+                                ? styles.tabBtn__selected
+                                : null
+                            )}
+                            onClick={handleTabClick(Tab.URL_PARAMS)}>
+                            URL Parameters
+                          </div>
+                        ) : null}
                         <div
                           className={clsx(
                             styles.tabBtn,
@@ -340,26 +333,16 @@ function NewModelApiConfigModule() {
                               : null
                           )}
                           onClick={handleTabClick(Tab.HEADERS)}>
-                          Headers
+                          Request Headers
                         </div>
                         <div
                           className={clsx(
                             styles.tabBtn,
-                            activeTab === Tab.AUTHENTICATION
+                            activeTab === Tab.REQUEST_BODY
                               ? styles.tabBtn__selected
                               : null
                           )}
-                          onClick={handleTabClick(Tab.AUTHENTICATION)}>
-                          Authentication
-                        </div>
-                        <div
-                          className={clsx(
-                            styles.tabBtn,
-                            activeTab === Tab.REQUESTBODY
-                              ? styles.tabBtn__selected
-                              : null
-                          )}
-                          onClick={handleTabClick(Tab.REQUESTBODY)}>
+                          onClick={handleTabClick(Tab.REQUEST_BODY)}>
                           Request Body
                         </div>
                         <div
@@ -372,10 +355,104 @@ function NewModelApiConfigModule() {
                           onClick={handleTabClick(Tab.RESPONSE)}>
                           Response
                         </div>
+                        <div
+                          className={clsx(
+                            styles.tabBtn,
+                            activeTab === Tab.AUTHENTICATION
+                              ? styles.tabBtn__selected
+                              : null
+                          )}
+                          onClick={handleTabClick(Tab.AUTHENTICATION)}>
+                          Authentication
+                        </div>
                       </div>
-
                       <div className={styles.tabsDivider} />
                       <div className={styles.tabContent}>
+                        {activeTab === Tab.URL_PARAMS ? (
+                          <div
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'column',
+                            }}>
+                            <UrlParamsInputHeading />
+                            {urlParams.map((param) => (
+                              <UrlParamDisplayInput
+                                key={param.key}
+                                param={param}
+                                onRemoveBtnClick={handleDeleteUrlParamClick}
+                              />
+                            ))}
+                            <UrlParamCaptureInput
+                              newParam={newParam}
+                              onKeynameChange={handleParamKeyChange}
+                              onDatatypeChange={handleParamDatatypeChange}
+                              onAddClick={handleAddUrlParam}
+                            />
+                          </div>
+                        ) : null}
+
+                        {activeTab === Tab.HEADERS ? (
+                          <div
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'column',
+                            }}>
+                            <RequestHeaderInputHeading />
+                            {requestHeaders.map((header) => (
+                              <RequestHeaderDisplayInput
+                                key={header.key}
+                                header={header}
+                                onRemoveBtnClick={handleDeleteHeaderClick}
+                              />
+                            ))}
+                            <RequestHeaderCaptureInput
+                              newHeader={newHeader}
+                              onKeynameChange={handleHeaderKeyChange}
+                              onValueChange={handleHeaderValueChange}
+                              onAddClick={handleAddHeader}
+                            />
+                          </div>
+                        ) : null}
+
+                        {activeTab === Tab.REQUEST_BODY ? (
+                          <div style={{ padding: '0 10px' }}>
+                            <div
+                              style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                              }}>
+                              <div style={{ marginBottom: 5 }}>
+                                <SelectInput
+                                  width={300}
+                                  label="Media Type"
+                                  name="mediaType"
+                                  options={optionsMediaTypes}
+                                  onChange={handleMediaTypeChange}
+                                  value={mediaType}
+                                />
+                              </div>
+                              <BodyPayloadPropertyInputHeading />
+                              {payloadProperties.map((property) => (
+                                <BodyPayloadPropertyDisplayInput
+                                  key={property.key}
+                                  property={property}
+                                  onRemoveBtnClick={
+                                    handleDeletePayloadPropClick
+                                  }
+                                />
+                              ))}
+                              <BodyPayloadPropertyCaptureInput
+                                newProperty={newPayloadProperty}
+                                onKeynameChange={handlePayloadPropKeyChange}
+                                onDatatypeChange={
+                                  handlePayloadPropDatatypeChange
+                                }
+                                onAddClick={handleAddPayloadProperty}
+                              />
+                            </div>
+                          </div>
+                        ) : null}
+
                         {activeTab === Tab.AUTHENTICATION ? (
                           <div style={{ padding: '0 10px' }}>
                             <div style={{ display: 'flex' }}>
@@ -391,140 +468,6 @@ function NewModelApiConfigModule() {
                               </div>
                               <div style={{ flexGrow: 1 }}>
                                 <TextInput label="Token" name="bearerToken" />
-                              </div>
-                            </div>
-                          </div>
-                        ) : null}
-
-                        {activeTab === Tab.HEADERS ? (
-                          <div
-                            style={{
-                              display: 'flex',
-                              flexDirection: 'column',
-                            }}>
-                            <div style={{ display: 'flex', marginBottom: 10 }}>
-                              <div className={styles.headingName}>
-                                Header Name
-                              </div>
-                              <div className={styles.headingVal}>Value</div>
-                              <div></div>
-                            </div>
-                            <div style={{ marginBottom: 10 }}>
-                              {requestHeaders.map((header) => (
-                                <RequestHeaderInput
-                                  key={header.key}
-                                  header={header}
-                                  onRemoveBtnClick={handleDeleteHeaderClick}
-                                />
-                              ))}
-                            </div>
-                            <div style={{ display: 'flex' }}>
-                              <div className={styles.keyInput}>
-                                <TextInput
-                                  name=""
-                                  onChange={handleHeaderKeyChange}
-                                  value={newHeader.key}
-                                />
-                              </div>
-                              <div className={styles.valInput}>
-                                <TextInput
-                                  name=""
-                                  onChange={handleHeaderValueChange}
-                                  value={newHeader.value}
-                                />
-                              </div>
-                              <div className={styles.iconContainer}>
-                                <IconButton
-                                  iconComponent={AddIcon}
-                                  onClick={handleAddHeader}>
-                                  <div
-                                    style={{
-                                      color: '#676767',
-                                      fontSize: 15,
-                                      margin: '0 6px',
-                                    }}>
-                                    Add
-                                  </div>
-                                </IconButton>
-                              </div>
-                            </div>
-                          </div>
-                        ) : null}
-
-                        {activeTab === Tab.PARAMS ? (
-                          <div
-                            style={{
-                              display: 'flex',
-                              flexDirection: 'column',
-                            }}>
-                            <div style={{ display: 'flex', marginBottom: 10 }}>
-                              <div className={styles.headingName}>
-                                Parameter Name
-                              </div>
-                              <div className={styles.headingVal}>Data Type</div>
-                              <div className={styles.headingVal}>Value</div>
-                            </div>
-                            <div style={{ marginBottom: 10 }}>
-                              {urlParams.map((param) => (
-                                <UrlParamsInput
-                                  key={param.key}
-                                  param={param}
-                                  onRemoveBtnClick={handleDeleteUrlParamClick}
-                                />
-                              ))}
-                            </div>
-                            <div style={{ display: 'flex' }}>
-                              <div className={styles.keyInput}>
-                                <TextInput
-                                  name=""
-                                  onChange={handleParamKeyChange}
-                                  value={newParam.key}
-                                />
-                              </div>
-                              <div className={styles.valInput}>
-                                <TextInput
-                                  name=""
-                                  onChange={handleParamDatatypeChange}
-                                  value={newParam.dataType}
-                                />
-                              </div>
-                              <div className={styles.valInput}>
-                                <TextInput
-                                  name=""
-                                  onChange={handleParamValueChange}
-                                  value={newParam.value}
-                                />
-                              </div>
-                              <div className={styles.iconContainer}>
-                                <IconButton
-                                  iconComponent={AddIcon}
-                                  onClick={handleAddUrlParam}>
-                                  <div
-                                    style={{
-                                      color: '#676767',
-                                      fontSize: 15,
-                                      margin: '0 6px',
-                                    }}>
-                                    Add
-                                  </div>
-                                </IconButton>
-                              </div>
-                            </div>
-                          </div>
-                        ) : null}
-
-                        {activeTab === Tab.REQUESTBODY ? (
-                          <div style={{ padding: '0 10px' }}>
-                            <div style={{ display: 'flex' }}>
-                              <div style={{ marginRight: 10 }}>
-                                <SelectInput
-                                  width={300}
-                                  label="Media Type"
-                                  name="mediaType"
-                                  options={optionsMediaTypes}
-                                  onChange={handleMediaTypeChange}
-                                  value={mediaType}
-                                />
                               </div>
                             </div>
                           </div>
