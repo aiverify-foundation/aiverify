@@ -26,7 +26,12 @@ import {
   UrlParamCaptureInput,
   UrlParamsInputHeading,
 } from './urlParamInput';
-import { AuthType, RequestMethod, URLParamType } from './types';
+import {
+  AuthType,
+  OpenApiDataTypes,
+  RequestMethod,
+  URLParamType,
+} from './types';
 import {
   BodyPayloadProperty,
   BodyPayloadPropertyCaptureInput,
@@ -35,19 +40,22 @@ import {
 } from './bodyPayloadInput';
 import { ApiConfigNameDescForm } from './apiConfigNameDescForm';
 import { Tooltip, TooltipPosition } from 'src/components/tooltip';
+import produce from 'immer';
 
-const defaultRequestHeaders = [
-  { key: 'Connection', value: 'keep-alive' },
-  { key: 'Accept', value: '*/*' },
-];
+type UrlParameterWithReactKeyId = UrlParameter & { id: string };
+type BodyPayloadPropertyWithReactKeyId = BodyPayloadProperty & { id: string };
 
 const defaultConfigNameDisplay = 'API Config Name';
 const defaultConfigDescDisplay = 'Description of Config';
 
 const emptyKeyValue = { key: '', value: '' };
-const emptyKeyDatatype = {
+const defaultUrlParameter = {
   key: '',
-  dataType: '',
+  dataType: OpenApiDataTypes.STRING,
+};
+const defaultBodyPayloadProperty = {
+  key: '',
+  dataType: OpenApiDataTypes.STRING,
 };
 
 enum Tab {
@@ -57,6 +65,17 @@ enum Tab {
   REQUEST_BODY,
   RESPONSE,
 }
+
+/*
+  This running number id is only used for react component `key` props for the list if urlparams and request body property fields rendered.
+  Do not use it for any other purposes.
+ */
+function genInputReactKey() {
+  let count = 0;
+  return () => `input${count++}`;
+}
+
+const getInputReactKeyId = genInputReactKey();
 
 function NewModelApiConfigModule() {
   const [configName, setConfigName] = useState<string>('');
@@ -79,15 +98,13 @@ function NewModelApiConfigModule() {
   );
   const [activeTab, setActiveTab] = useState<Tab>();
   const [newHeader, setNewHeader] = useState<RequestHeader>(emptyKeyValue);
-  const [newParam, setNewParam] = useState<UrlParameter>(emptyKeyDatatype);
+  const [newParam, setNewParam] = useState<UrlParameter>(defaultUrlParameter);
   const [newPayloadProperty, setNewPayloadProperty] =
-    useState<BodyPayloadProperty>(emptyKeyDatatype);
-  const [requestHeaders, setRequestHeaders] = useState<RequestHeader[]>(
-    defaultRequestHeaders
-  );
-  const [urlParams, setUrlParams] = useState<UrlParameter[]>([]);
+    useState<BodyPayloadProperty>(defaultBodyPayloadProperty);
+  const [requestHeaders, setRequestHeaders] = useState<RequestHeader[]>([]);
+  const [urlParams, setUrlParams] = useState<UrlParameterWithReactKeyId[]>([]);
   const [payloadProperties, setPayloadProperties] = useState<
-    BodyPayloadProperty[]
+    BodyPayloadPropertyWithReactKeyId[]
   >([]);
   const [bearerToken, setBearerToken] = useState<string>('');
   const [basicAuthUserPwd, setBasicAuthUserPwd] = useState<[string, string]>([
@@ -131,31 +148,81 @@ function NewModelApiConfigModule() {
     setNewHeader((prev) => ({ key: prev.key, value: e.target.value }));
   }
 
-  function handleParamKeyChange(e: ChangeEvent<HTMLInputElement>) {
+  function handleNewParamKeyChange(e: ChangeEvent<HTMLInputElement>) {
+    if (e.target.value.trim() === '') return;
     setNewParam((prev) => ({
       key: e.target.value,
       dataType: prev.dataType,
     }));
   }
 
-  function handleParamDatatypeChange(e: ChangeEvent<HTMLInputElement>) {
+  function handleNewParamDatatypeChange(option: SelectOption) {
+    if (!option) return;
     setNewParam((prev) => ({
       key: prev.key,
-      dataType: e.target.value,
+      dataType: option.value,
     }));
   }
 
-  function handlePayloadPropKeyChange(e: ChangeEvent<HTMLInputElement>) {
+  function handleCurrentParamKeyChange(paramKeyName: string) {
+    return (e: ChangeEvent<HTMLInputElement>) => {
+      setUrlParams(
+        produce((draft) => {
+          const urlParam = draft.find((param) => param.key === paramKeyName);
+          if (urlParam) urlParam.key = e.target.value;
+        })
+      );
+    };
+  }
+
+  function handleCurrentParamDatatypeChange(paramKeyName: string) {
+    return (option: SelectOption) => {
+      if (!option) return;
+      setUrlParams(
+        produce((draft) => {
+          const urlParam = draft.find((param) => param.key === paramKeyName);
+          if (urlParam) urlParam.dataType = option.value;
+        })
+      );
+    };
+  }
+
+  function handleCurrentBodyPropKeyChange(propKeyName: string) {
+    return (e: ChangeEvent<HTMLInputElement>) => {
+      setPayloadProperties(
+        produce((draft) => {
+          const urlParam = draft.find((param) => param.key === propKeyName);
+          if (urlParam) urlParam.key = e.target.value;
+        })
+      );
+    };
+  }
+
+  function handleCurrentBodyPropDatatypeChange(propKeyName: string) {
+    return (option: SelectOption) => {
+      if (!option) return;
+      setPayloadProperties(
+        produce((draft) => {
+          const urlParam = draft.find((param) => param.key === propKeyName);
+          if (urlParam) urlParam.dataType = option.value;
+        })
+      );
+    };
+  }
+
+  function handleNewBodyPropKeyChange(e: ChangeEvent<HTMLInputElement>) {
+    if (e.target.value.trim() === '') return;
     setNewPayloadProperty((prev) => ({
       key: e.target.value,
       dataType: prev.dataType,
     }));
   }
 
-  function handlePayloadPropDatatypeChange(e: ChangeEvent<HTMLInputElement>) {
+  function handleNewBodyPropDatatypeChange(option: SelectOption) {
+    if (!option) return;
     setNewPayloadProperty((prev) => ({
       key: prev.key,
-      dataType: e.target.value,
+      dataType: option.value,
     }));
   }
 
@@ -172,19 +239,15 @@ function NewModelApiConfigModule() {
   }
 
   function handleAddUrlParam() {
-    setUrlParams([...urlParams, newParam]);
-    setNewParam({
-      key: '',
-      dataType: '',
-    });
+    const newUrlParam = { ...newParam, id: getInputReactKeyId() };
+    setUrlParams([...urlParams, newUrlParam]);
+    setNewParam(defaultUrlParameter);
   }
 
   function handleAddPayloadProperty() {
-    setPayloadProperties([...payloadProperties, newPayloadProperty]);
-    setNewPayloadProperty({
-      key: '',
-      dataType: '',
-    });
+    const newProperty = { ...newPayloadProperty, id: getInputReactKeyId() };
+    setPayloadProperties([...payloadProperties, newProperty]);
+    setNewPayloadProperty(defaultBodyPayloadProperty);
   }
 
   function handleAuthUserChange(e: ChangeEvent<HTMLInputElement>) {
@@ -245,7 +308,6 @@ function NewModelApiConfigModule() {
   useEffect(() => {
     if (
       activeTab !== Tab.AUTHENTICATION &&
-      activeTab !== Tab.REQUEST_BODY &&
       activeTab !== Tab.RESPONSE &&
       activeTab !== Tab.HEADERS
     ) {
@@ -256,6 +318,11 @@ function NewModelApiConfigModule() {
       );
     }
   }, [requestMethod]);
+
+  useEffect(() => {
+    console.log(urlParams);
+    console.log(payloadProperties);
+  }, [urlParams, payloadProperties]);
 
   function LeftSectionContent() {
     return (
@@ -314,15 +381,17 @@ function NewModelApiConfigModule() {
             onClick={handleTabClick(Tab.URL_PARAMS)}>
             URL Parameters
           </div>
-        ) : null}
-        <div
-          className={clsx(
-            styles.tabBtn,
-            activeTab === Tab.REQUEST_BODY ? styles.tabBtn__selected : null
-          )}
-          onClick={handleTabClick(Tab.REQUEST_BODY)}>
-          Request Body
-        </div>
+        ) : (
+          <div
+            className={clsx(
+              styles.tabBtn,
+              activeTab === Tab.REQUEST_BODY ? styles.tabBtn__selected : null
+            )}
+            onClick={handleTabClick(Tab.REQUEST_BODY)}>
+            Request Body
+          </div>
+        )}
+
         <div
           className={clsx(
             styles.tabBtn,
@@ -479,15 +548,21 @@ function NewModelApiConfigModule() {
                             <UrlParamsInputHeading />
                             {urlParams.map((param) => (
                               <UrlParamDisplayInput
-                                key={param.key}
+                                key={param.id}
                                 param={param}
+                                onKeynameChange={handleCurrentParamKeyChange(
+                                  param.key
+                                )}
+                                onDatatypeChange={handleCurrentParamDatatypeChange(
+                                  param.key
+                                )}
                                 onRemoveBtnClick={handleDeleteUrlParamClick}
                               />
                             ))}
                             <UrlParamCaptureInput
                               newParam={newParam}
-                              onKeynameChange={handleParamKeyChange}
-                              onDatatypeChange={handleParamDatatypeChange}
+                              onKeynameChange={handleNewParamKeyChange}
+                              onDatatypeChange={handleNewParamDatatypeChange}
                               onAddClick={handleAddUrlParam}
                             />
                           </div>
@@ -535,15 +610,21 @@ function NewModelApiConfigModule() {
                             <BodyPayloadPropertyInputHeading />
                             {payloadProperties.map((property) => (
                               <BodyPayloadPropertyDisplayInput
-                                key={property.key}
+                                key={property.id}
                                 property={property}
+                                onDatatypeChange={handleCurrentBodyPropDatatypeChange(
+                                  property.key
+                                )}
+                                onPropertyNameChange={handleCurrentBodyPropKeyChange(
+                                  property.key
+                                )}
                                 onRemoveBtnClick={handleDeletePayloadPropClick}
                               />
                             ))}
                             <BodyPayloadPropertyCaptureInput
                               newProperty={newPayloadProperty}
-                              onKeynameChange={handlePayloadPropKeyChange}
-                              onDatatypeChange={handlePayloadPropDatatypeChange}
+                              onKeynameChange={handleNewBodyPropKeyChange}
+                              onDatatypeChange={handleNewBodyPropDatatypeChange}
                               onAddClick={handleAddPayloadProperty}
                             />
                           </div>

@@ -16,6 +16,7 @@ type SelectInputProps = {
   value?: SelectOption;
   labelSibling?: React.ReactElement;
   options: SelectOption[];
+  style?: React.CSSProperties;
   onChange?: (option: SelectOption) => void;
 };
 
@@ -33,11 +34,13 @@ function SelectInput(props: SelectInputProps) {
     value,
     labelSibling,
     options,
+    style,
     onChange,
   } = props;
 
+  const containerStyles = { width, ...style };
   return (
-    <div className={styles.selectInput} style={{ width }}>
+    <div className={styles.selectInput} style={containerStyles}>
       <label>
         {label !== '' && label !== undefined ? (
           <div className={styles.label}>

@@ -1,5 +1,11 @@
 import { ModelType } from 'src/types/model.interface';
-import { AuthType, MediaType, RequestMethod, URLParamType } from './types';
+import {
+  AuthType,
+  MediaType,
+  OpenApiDataTypes,
+  RequestMethod,
+  URLParamType,
+} from './types';
 
 export const optionsModelTypes = [
   { value: ModelType.Classification, label: ModelType.Classification },
@@ -31,9 +37,8 @@ export const optionsMediaTypes = [
 ];
 
 export const optionsOpenApiDataTypes = [
-  { value: MediaType.NONE, label: MediaType.NONE },
-  { value: MediaType.FORM_URLENCODED, label: MediaType.FORM_URLENCODED },
-  { value: MediaType.MULTIPART_FORMDATA, label: MediaType.MULTIPART_FORMDATA },
-  { value: MediaType.APP_JSON, label: MediaType.APP_JSON },
-  { value: MediaType.TEXT_PLAIN, label: MediaType.TEXT_PLAIN },
+  { value: OpenApiDataTypes.STRING, label: OpenApiDataTypes.STRING },
+  { value: OpenApiDataTypes.INTEGER, label: OpenApiDataTypes.INTEGER },
+  { value: OpenApiDataTypes.BOOLEAN, label: OpenApiDataTypes.BOOLEAN },
+  { value: OpenApiDataTypes.ARRAY, label: OpenApiDataTypes.ARRAY },
 ];

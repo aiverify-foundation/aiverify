@@ -4,6 +4,8 @@ import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import styles from './styles/newModelApiConfig.module.css';
 import { ChangeEvent } from 'react';
+import { SelectInput, SelectOption } from 'src/components/selectInput';
+import { optionsOpenApiDataTypes } from './selectOptions';
 
 type BodyPayloadProperty = {
   key: string;
@@ -12,13 +14,15 @@ type BodyPayloadProperty = {
 
 type BodyPayloadPropertyDisplayInputProps = {
   property: BodyPayloadProperty;
+  onPropertyNameChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onDatatypeChange: (option: SelectOption) => void;
   onRemoveBtnClick: (property: BodyPayloadProperty) => void;
 };
 
 type BodyPayloadPropertyCaptureInputProps = {
   newProperty: BodyPayloadProperty;
   onKeynameChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  onDatatypeChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onDatatypeChange: (option: SelectOption) => void;
   onAddClick: () => void;
 };
 
@@ -34,26 +38,33 @@ function BodyPayloadPropertyInputHeading() {
 function BodyPayloadPropertyDisplayInput(
   props: BodyPayloadPropertyDisplayInputProps
 ) {
-  const { property, onRemoveBtnClick } = props;
+  const { property, onRemoveBtnClick, onPropertyNameChange, onDatatypeChange } =
+    props;
+  const selectedOption = optionsOpenApiDataTypes.find(
+    (type) => type.value === property.dataType
+  );
 
   function handleRemoveBtnClick(property: BodyPayloadProperty) {
     return () => onRemoveBtnClick(property);
   }
 
   return (
-    <div id={`varkey-${property.key}`} className={styles.keyValRow}>
+    <div className={styles.keyValRow}>
       <div className={styles.keyValCol}>
         <TextInput
           value={property.key}
           name="variableName"
-          style={{ marginBottom: 4 }}
+          onChange={onPropertyNameChange}
+          style={{ marginBottom: 0 }}
         />
       </div>
       <div className={styles.keyValCol}>
-        <TextInput
-          value={property.dataType}
-          name="dataType"
-          style={{ marginBottom: 4 }}
+        <SelectInput
+          name="propDataType"
+          options={optionsOpenApiDataTypes}
+          onChange={onDatatypeChange}
+          value={selectedOption}
+          style={{ marginBottom: 0 }}
         />
       </div>
       <div className={styles.delIconContainer}>
@@ -72,6 +83,9 @@ function BodyPayloadPropertyCaptureInput(
   props: BodyPayloadPropertyCaptureInputProps
 ) {
   const { newProperty, onKeynameChange, onDatatypeChange, onAddClick } = props;
+  const selectedOption = optionsOpenApiDataTypes.find(
+    (type) => type.value === newProperty.dataType
+  );
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
       <div className={styles.keyInput}>
@@ -83,10 +97,11 @@ function BodyPayloadPropertyCaptureInput(
         />
       </div>
       <div className={styles.valInput}>
-        <TextInput
-          name=""
+        <SelectInput
+          name="propDataType"
+          options={optionsOpenApiDataTypes}
           onChange={onDatatypeChange}
-          value={newProperty.dataType}
+          value={selectedOption}
           style={{ marginBottom: 0 }}
         />
       </div>
