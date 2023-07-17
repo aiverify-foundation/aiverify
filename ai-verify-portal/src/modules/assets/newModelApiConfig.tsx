@@ -28,6 +28,7 @@ import {
 } from './urlParamInput';
 import {
   AuthType,
+  MediaType,
   OpenApiDataTypes,
   RequestMethod,
   URLParamType,
@@ -44,6 +45,7 @@ import produce from 'immer';
 
 type UrlParameterWithReactKeyId = UrlParameter & { id: string };
 type BodyPayloadPropertyWithReactKeyId = BodyPayloadProperty & { id: string };
+type RequestHeaderWithReactKeyId = RequestHeader & { id: string };
 
 const defaultConfigNameDisplay = 'API Config Name';
 const defaultConfigDescDisplay = 'Description of Config';
@@ -84,16 +86,14 @@ function NewModelApiConfigModule() {
   const [modelType, setModelType] = useState<SelectOption | null>(
     optionsModelTypes[0]
   );
-  const [requestMethod, setRequestMethod] = useState<SelectOption | null>(
+  const [requestMethod, setRequestMethod] = useState<SelectOption>(
     optionsRequestMethods[1]
   );
-  const [authType, setAuthType] = useState<SelectOption | null>(
-    optionsAuthMethods[0]
-  );
-  const [urlParamType, setUrlParamType] = useState<SelectOption | null>(
+  const [authType, setAuthType] = useState<SelectOption>(optionsAuthMethods[0]);
+  const [urlParamType, setUrlParamType] = useState<SelectOption>(
     optionsUrlParamTypes[0]
   );
-  const [mediaType, setMediaType] = useState<SelectOption | null>(
+  const [mediaType, setMediaType] = useState<SelectOption>(
     optionsMediaTypes[0]
   );
   const [activeTab, setActiveTab] = useState<Tab>();
@@ -101,7 +101,9 @@ function NewModelApiConfigModule() {
   const [newParam, setNewParam] = useState<UrlParameter>(defaultUrlParameter);
   const [newPayloadProperty, setNewPayloadProperty] =
     useState<BodyPayloadProperty>(defaultBodyPayloadProperty);
-  const [requestHeaders, setRequestHeaders] = useState<RequestHeader[]>([]);
+  const [requestHeaders, setRequestHeaders] = useState<
+    RequestHeaderWithReactKeyId[]
+  >([]);
   const [urlParams, setUrlParams] = useState<UrlParameterWithReactKeyId[]>([]);
   const [payloadProperties, setPayloadProperties] = useState<
     BodyPayloadPropertyWithReactKeyId[]
@@ -210,6 +212,28 @@ function NewModelApiConfigModule() {
     };
   }
 
+  function handleCurrentHeaderKeynameChange(headerKeyName: string) {
+    return (e: ChangeEvent<HTMLInputElement>) => {
+      setRequestHeaders(
+        produce((draft) => {
+          const header = draft.find((header) => header.key === headerKeyName);
+          if (header) header.key = e.target.value;
+        })
+      );
+    };
+  }
+
+  function handleCurrentHeaderValueChange(headerKeyName: string) {
+    return (e: ChangeEvent<HTMLInputElement>) => {
+      setRequestHeaders(
+        produce((draft) => {
+          const header = draft.find((header) => header.key === headerKeyName);
+          if (header) header.value = e.target.value;
+        })
+      );
+    };
+  }
+
   function handleNewBodyPropKeyChange(e: ChangeEvent<HTMLInputElement>) {
     if (e.target.value.trim() === '') return;
     setNewPayloadProperty((prev) => ({
@@ -226,16 +250,14 @@ function NewModelApiConfigModule() {
     }));
   }
 
-  function handleMediaTypeChange(option: SelectOption | null) {
+  function handleMediaTypeChange(option: SelectOption) {
     setMediaType(option);
   }
 
-  function handleAddHeader() {
-    setRequestHeaders([...requestHeaders, newHeader]);
-    setNewHeader({
-      key: '',
-      value: '',
-    });
+  function handleNewAddHeader() {
+    const newReqHeader = { ...newHeader, id: getInputReactKeyId() };
+    setRequestHeaders([...requestHeaders, newReqHeader]);
+    setNewHeader(emptyKeyValue);
   }
 
   function handleAddUrlParam() {
@@ -507,34 +529,29 @@ function NewModelApiConfigModule() {
                                     <div>
                                       <div style={{ marginBottom: 5 }}>
                                         This is an example where 2 parameters
-                                        are defined below - &quot;age&quot; &
+                                        are defined - &quot;age&quot; &
                                         &quot;gender&quot;
                                       </div>
                                       Before running a test, you will be
-                                      prompted to map dataset attribute names to
-                                      these parameters. Those attribute names
-                                      will replace these parameters in the final
-                                      request URL.
+                                      prompted to map dataset attributes to
+                                      these parameters.
                                     </div>
                                   ) : (
                                     <div>
                                       <div style={{ marginBottom: 5 }}>
                                         This is an example where 2 parameters
-                                        are defined below - &quot;age&quot; &
+                                        are defined - &quot;age&quot; &
                                         &quot;gender&quot;
                                       </div>
                                       Before running a test, you will be
-                                      prompted to map dataset attribute names to
-                                      these parameters. Those corresponding
-                                      values of those attribute names will
-                                      replace these parameters in the final
-                                      request URL.
+                                      prompted to map dataset attributes to
+                                      these parameters.
                                     </div>
                                   )
                                 }
                                 position={TooltipPosition.right}
                                 offsetLeft={8}
-                                offsetTop={62}>
+                                offsetTop={42}>
                                 <div
                                   style={{
                                     display: 'flex',
@@ -568,29 +585,6 @@ function NewModelApiConfigModule() {
                           </div>
                         ) : null}
 
-                        {activeTab === Tab.HEADERS ? (
-                          <div
-                            style={{
-                              display: 'flex',
-                              flexDirection: 'column',
-                            }}>
-                            <RequestHeaderInputHeading />
-                            {requestHeaders.map((header) => (
-                              <RequestHeaderDisplayInput
-                                key={header.key}
-                                header={header}
-                                onRemoveBtnClick={handleDeleteHeaderClick}
-                              />
-                            ))}
-                            <RequestHeaderCaptureInput
-                              newHeader={newHeader}
-                              onKeynameChange={handleHeaderKeyChange}
-                              onValueChange={handleHeaderValueChange}
-                              onAddClick={handleAddHeader}
-                            />
-                          </div>
-                        ) : null}
-
                         {activeTab === Tab.REQUEST_BODY ? (
                           <div
                             style={{
@@ -607,25 +601,85 @@ function NewModelApiConfigModule() {
                                 value={mediaType}
                               />
                             </div>
-                            <BodyPayloadPropertyInputHeading />
-                            {payloadProperties.map((property) => (
-                              <BodyPayloadPropertyDisplayInput
-                                key={property.id}
-                                property={property}
-                                onDatatypeChange={handleCurrentBodyPropDatatypeChange(
-                                  property.key
+                            {mediaType && mediaType.value !== MediaType.NONE ? (
+                              <div>
+                                <BodyPayloadPropertyInputHeading />
+                                {payloadProperties.map((property) => (
+                                  <BodyPayloadPropertyDisplayInput
+                                    key={property.id}
+                                    property={property}
+                                    onDatatypeChange={handleCurrentBodyPropDatatypeChange(
+                                      property.key
+                                    )}
+                                    onPropertyNameChange={handleCurrentBodyPropKeyChange(
+                                      property.key
+                                    )}
+                                    onRemoveBtnClick={
+                                      handleDeletePayloadPropClick
+                                    }
+                                  />
+                                ))}
+                                <BodyPayloadPropertyCaptureInput
+                                  newProperty={newPayloadProperty}
+                                  onKeynameChange={handleNewBodyPropKeyChange}
+                                  onDatatypeChange={
+                                    handleNewBodyPropDatatypeChange
+                                  }
+                                  onAddClick={handleAddPayloadProperty}
+                                />
+                              </div>
+                            ) : null}
+                          </div>
+                        ) : null}
+
+                        {activeTab === Tab.HEADERS ? (
+                          <div
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'column',
+                            }}>
+                            <div style={{ display: 'flex', marginBottom: 5 }}>
+                              <TextInput
+                                placeholder="requestTimeout"
+                                label="Request Timeout"
+                                name="requestTimeout"
+                                style={{ width: 200, marginRight: 15 }}
+                              />
+                              <TextInput
+                                placeholder="rateLimit"
+                                label="Rate Limit"
+                                name="rateLimit"
+                                style={{ width: 200, marginRight: 15 }}
+                              />
+                              <TextInput
+                                placeholder="maxConnections"
+                                label="Max Connections"
+                                name="maxConnections"
+                                style={{ width: 200, marginRight: 15 }}
+                              />
+                            </div>
+                            <h4 style={{ fontSize: 15, fontWeight: 300 }}>
+                              Additional Headers
+                            </h4>
+                            <RequestHeaderInputHeading />
+                            {requestHeaders.map((header) => (
+                              <RequestHeaderDisplayInput
+                                key={header.id}
+                                header={header}
+                                onKeynameChange={handleCurrentHeaderKeynameChange(
+                                  header.key
                                 )}
-                                onPropertyNameChange={handleCurrentBodyPropKeyChange(
-                                  property.key
+                                onValueChange={handleCurrentHeaderValueChange(
+                                  header.key
                                 )}
-                                onRemoveBtnClick={handleDeletePayloadPropClick}
+                                onRemoveBtnClick={handleDeleteHeaderClick}
                               />
                             ))}
-                            <BodyPayloadPropertyCaptureInput
-                              newProperty={newPayloadProperty}
-                              onKeynameChange={handleNewBodyPropKeyChange}
-                              onDatatypeChange={handleNewBodyPropDatatypeChange}
-                              onAddClick={handleAddPayloadProperty}
+                            <RequestHeaderCaptureInput
+                              newHeader={newHeader}
+                              onKeynameChange={handleHeaderKeyChange}
+                              onValueChange={handleHeaderValueChange}
+                              onAddClick={handleNewAddHeader}
                             />
                           </div>
                         ) : null}

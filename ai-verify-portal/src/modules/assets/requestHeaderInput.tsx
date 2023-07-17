@@ -12,6 +12,8 @@ type RequestHeader = {
 
 type RequestHeaderDisplayProps = {
   header: RequestHeader;
+  onKeynameChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onValueChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onRemoveBtnClick: (globalVar: RequestHeader) => void;
 };
 
@@ -33,7 +35,7 @@ function RequestHeaderInputHeading() {
 }
 
 function RequestHeaderDisplayInput(props: RequestHeaderDisplayProps) {
-  const { header, onRemoveBtnClick } = props;
+  const { header, onRemoveBtnClick, onKeynameChange, onValueChange } = props;
 
   function handleRemoveBtnClick(header: RequestHeader) {
     return () => onRemoveBtnClick(header);
@@ -42,10 +44,20 @@ function RequestHeaderDisplayInput(props: RequestHeaderDisplayProps) {
   return (
     <div id={`varkey-${header.key}`} className={styles.keyValRow}>
       <div className={styles.keyValCol}>
-        <TextInput value={header.key} name="" style={{ marginBottom: 4 }} />
+        <TextInput
+          value={header.key}
+          name=""
+          style={{ marginBottom: 0 }}
+          onChange={onKeynameChange}
+        />
       </div>
       <div className={styles.keyValCol}>
-        <TextInput value={header.value} name="" style={{ marginBottom: 4 }} />
+        <TextInput
+          value={header.value}
+          name=""
+          style={{ marginBottom: 0 }}
+          onChange={onValueChange}
+        />
       </div>
       <div className={styles.delIconContainer}>
         <IconButton
@@ -64,7 +76,7 @@ function RequestHeaderCaptureInput(props: RequestHeaderCaptureInputProps) {
     <div style={{ display: 'flex', alignItems: 'center' }}>
       <div className={styles.keyInput}>
         <TextInput
-          name=""
+          name="headerKeyNameCapture"
           onChange={onKeynameChange}
           value={newHeader.key}
           style={{ marginBottom: 0 }}
@@ -72,7 +84,7 @@ function RequestHeaderCaptureInput(props: RequestHeaderCaptureInputProps) {
       </div>
       <div className={styles.valInput}>
         <TextInput
-          name=""
+          name="headerValueCapture"
           onChange={onValueChange}
           value={newHeader.value}
           style={{ marginBottom: 0 }}
