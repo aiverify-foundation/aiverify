@@ -172,3 +172,7 @@
   font-weight: 600;
   color: var(--color-palette-pink);
 }
+
+.delIconContainer {
+  display: flex;
+}

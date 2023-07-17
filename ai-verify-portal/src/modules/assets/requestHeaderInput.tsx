@@ -72,6 +72,8 @@ function RequestHeaderDisplayInput(props: RequestHeaderDisplayProps) {
 
 function RequestHeaderCaptureInput(props: RequestHeaderCaptureInputProps) {
   const { newHeader, onKeynameChange, onValueChange, onAddClick } = props;
+  const disableAddBtn =
+    newHeader.key.trim() === '' || newHeader.value.trim() === '';
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
       <div className={styles.keyInput}>
@@ -91,7 +93,10 @@ function RequestHeaderCaptureInput(props: RequestHeaderCaptureInputProps) {
         />
       </div>
       <div className={styles.iconContainer}>
-        <IconButton iconComponent={AddIcon} onClick={onAddClick}>
+        <IconButton
+          iconComponent={AddIcon}
+          onClick={onAddClick}
+          disabled={disableAddBtn}>
           <div
             style={{
               color: '#676767',

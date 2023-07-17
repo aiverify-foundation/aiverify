@@ -25,7 +25,7 @@ import {
   UrlParamDisplayInput,
   UrlParamCaptureInput,
   UrlParamsInputHeading,
-} from './urlParamInput';
+} from './requestUrlParamInput';
 import {
   AuthType,
   MediaType,
@@ -38,26 +38,33 @@ import {
   BodyPayloadPropertyCaptureInput,
   BodyPayloadPropertyDisplayInput,
   BodyPayloadPropertyInputHeading,
-} from './bodyPayloadInput';
+} from './requestBodyInput';
 import { ApiConfigNameDescForm } from './apiConfigNameDescForm';
 import { Tooltip, TooltipPosition } from 'src/components/tooltip';
 import produce from 'immer';
+import {
+  ResponseProperty,
+  ResponsePropertyInput,
+  ResponsePropertyInputHeading,
+} from './responsePropertyInput';
 
 type UrlParameterWithReactKeyId = UrlParameter & { id: string };
 type BodyPayloadPropertyWithReactKeyId = BodyPayloadProperty & { id: string };
 type RequestHeaderWithReactKeyId = RequestHeader & { id: string };
+type ResponsePropertyWithReactKeyId = ResponseProperty & { id: string };
 
 const defaultConfigNameDisplay = 'Configuration Name';
 const defaultConfigDescDisplay = 'Description';
 
+const emptyTuple: [string, string] = ['', ''];
 const emptyKeyValue = { key: '', value: '' };
 const defaultUrlParameter = {
   key: '',
-  dataType: OpenApiDataTypes.STRING,
+  dataType: OpenApiDataTypes.INTEGER,
 };
 const defaultBodyPayloadProperty = {
   key: '',
-  dataType: OpenApiDataTypes.STRING,
+  dataType: OpenApiDataTypes.INTEGER,
 };
 
 enum Tab {
@@ -69,21 +76,21 @@ enum Tab {
 }
 
 /*
-  This running number id is only used for react component `key` props for the list if urlparams and request body property fields rendered.
+  This id is only used for react component `key` props for the list of urlparams and request body property fields rendered.
   Do not use it for any other purposes.
  */
-function genInputReactKey() {
+function initReactKeyIdGenerator() {
   let count = 0;
-  return () => `input${count++}`;
+  return () => `input${Date.now()}${count++}`;
 }
 
-const getInputReactKeyId = genInputReactKey();
+const getInputReactKeyId = initReactKeyIdGenerator();
 
 function NewModelApiConfigModule() {
   const [configName, setConfigName] = useState<string>('');
   const [configDesc, setConfigDesc] = useState<string>('');
   const [isEditName, setIsEditName] = useState(false);
-  const [modelType, setModelType] = useState<SelectOption | null>(
+  const [modelType, setModelType] = useState<SelectOption>(
     optionsModelTypes[0]
   );
   const [requestMethod, setRequestMethod] = useState<SelectOption>(
@@ -101,21 +108,24 @@ function NewModelApiConfigModule() {
   );
   const [activeTab, setActiveTab] = useState<Tab>();
   const [newHeader, setNewHeader] = useState<RequestHeader>(emptyKeyValue);
+  const [newResponseProperty, setNewResponseProperty] =
+    useState<RequestHeader>(emptyKeyValue);
   const [newParam, setNewParam] = useState<UrlParameter>(defaultUrlParameter);
-  const [newPayloadProperty, setNewPayloadProperty] =
+  const [newRequestProperty, setNewRequestProperty] =
     useState<BodyPayloadProperty>(defaultBodyPayloadProperty);
   const [requestHeaders, setRequestHeaders] = useState<
     RequestHeaderWithReactKeyId[]
   >([]);
   const [urlParams, setUrlParams] = useState<UrlParameterWithReactKeyId[]>([]);
-  const [payloadProperties, setPayloadProperties] = useState<
+  const [requestProperties, setRequestProperties] = useState<
     BodyPayloadPropertyWithReactKeyId[]
   >([]);
+  const [responseProperties, setResponseProperties] = useState<
+    ResponsePropertyWithReactKeyId[]
+  >([]);
   const [bearerToken, setBearerToken] = useState<string>('');
-  const [basicAuthUserPwd, setBasicAuthUserPwd] = useState<[string, string]>([
-    '',
-    '',
-  ]);
+  const [basicAuthUserPwd, setBasicAuthUserPwd] =
+    useState<[string, string]>(emptyTuple);
 
   function handleBackClick() {
     history.back();
@@ -145,16 +155,69 @@ function NewModelApiConfigModule() {
     setConfigDesc(e.target.value);
   }
 
-  function handleHeaderKeyChange(e: ChangeEvent<HTMLInputElement>) {
+  function handleRequestMediaTypeChange(option: SelectOption) {
+    setRequestMediaType(option);
+  }
+
+  function handleResponseMediaTypeChange(option: SelectOption) {
+    setResponseMediaType(option);
+  }
+
+  function handleAuthUserChange(e: ChangeEvent<HTMLInputElement>) {
+    setBasicAuthUserPwd((prev) => [e.target.value, prev[1]]);
+  }
+
+  function handleAuthPasswordChange(e: ChangeEvent<HTMLInputElement>) {
+    setBasicAuthUserPwd((prev) => [prev[0], e.target.value]);
+  }
+
+  function handleModelTypeChange(option: SelectOption) {
+    setModelType(option);
+  }
+
+  function handleRequestMethodChange(option: SelectOption) {
+    setRequestMethod(option);
+  }
+
+  function handleUrlParamTypeChange(option: SelectOption) {
+    setUrlParamType(option);
+  }
+
+  function handleAuthTypeChange(option: SelectOption) {
+    setAuthType(option);
+  }
+
+  function handleBearerTokenChange(e: ChangeEvent<HTMLInputElement>) {
+    setBearerToken(e.target.value);
+  }
+
+  function handleNewHeaderKeyChange(e: ChangeEvent<HTMLInputElement>) {
     setNewHeader((prev) => ({ key: e.target.value, value: prev.value }));
   }
 
-  function handleHeaderValueChange(e: ChangeEvent<HTMLInputElement>) {
+  function handleNewHeaderValueChange(e: ChangeEvent<HTMLInputElement>) {
     setNewHeader((prev) => ({ key: prev.key, value: e.target.value }));
   }
 
+  function handleNewResponsePropertyNameChange(
+    e: ChangeEvent<HTMLInputElement>
+  ) {
+    setNewResponseProperty((prev) => ({
+      key: e.target.value,
+      value: prev.value,
+    }));
+  }
+
+  function handleNewResponsePropertyValueChange(
+    e: ChangeEvent<HTMLInputElement>
+  ) {
+    setNewResponseProperty((prev) => ({
+      key: prev.key,
+      value: e.target.value,
+    }));
+  }
+
   function handleNewParamKeyChange(e: ChangeEvent<HTMLInputElement>) {
-    if (e.target.value.trim() === '') return;
     setNewParam((prev) => ({
       key: e.target.value,
       dataType: prev.dataType,
@@ -164,6 +227,21 @@ function NewModelApiConfigModule() {
   function handleNewParamDatatypeChange(option: SelectOption) {
     if (!option) return;
     setNewParam((prev) => ({
+      key: prev.key,
+      dataType: option.value,
+    }));
+  }
+
+  function handleNewRequestPropertyKeyChange(e: ChangeEvent<HTMLInputElement>) {
+    setNewRequestProperty((prev) => ({
+      key: e.target.value,
+      dataType: prev.dataType,
+    }));
+  }
+
+  function handleNewRequestPropertyDatatypeChange(option: SelectOption) {
+    if (!option) return;
+    setNewRequestProperty((prev) => ({
       key: prev.key,
       dataType: option.value,
     }));
@@ -194,7 +272,7 @@ function NewModelApiConfigModule() {
 
   function handleCurrentBodyPropKeyChange(propKeyName: string) {
     return (e: ChangeEvent<HTMLInputElement>) => {
-      setPayloadProperties(
+      setRequestProperties(
         produce((draft) => {
           const urlParam = draft.find((param) => param.key === propKeyName);
           if (urlParam) urlParam.key = e.target.value;
@@ -206,7 +284,7 @@ function NewModelApiConfigModule() {
   function handleCurrentBodyPropDatatypeChange(propKeyName: string) {
     return (option: SelectOption) => {
       if (!option) return;
-      setPayloadProperties(
+      setRequestProperties(
         produce((draft) => {
           const urlParam = draft.find((param) => param.key === propKeyName);
           if (urlParam) urlParam.dataType = option.value;
@@ -237,101 +315,126 @@ function NewModelApiConfigModule() {
     };
   }
 
-  function handleNewBodyPropKeyChange(e: ChangeEvent<HTMLInputElement>) {
-    if (e.target.value.trim() === '') return;
-    setNewPayloadProperty((prev) => ({
-      key: e.target.value,
-      dataType: prev.dataType,
-    }));
+  function handleCurrentResponsePropertyNameChange(propName: string) {
+    return (e: ChangeEvent<HTMLInputElement>) => {
+      setResponseProperties(
+        produce((draft) => {
+          const prop = draft.find((prop) => prop.key === propName);
+          if (prop) prop.key = e.target.value;
+        })
+      );
+    };
   }
 
-  function handleNewBodyPropDatatypeChange(option: SelectOption) {
-    if (!option) return;
-    setNewPayloadProperty((prev) => ({
-      key: prev.key,
-      dataType: option.value,
-    }));
+  function handleCurrentResponsePropertyValueChange(propName: string) {
+    return (e: ChangeEvent<HTMLInputElement>) => {
+      setResponseProperties(
+        produce((draft) => {
+          const prop = draft.find((prop) => prop.key === propName);
+          if (prop) prop.value = e.target.value;
+        })
+      );
+    };
   }
 
-  function handleRequestMediaTypeChange(option: SelectOption) {
-    setRequestMediaType(option);
-  }
-
-  function handleResponseMediaTypeChange(option: SelectOption) {
-    setResponseMediaType(option);
-  }
-
-  function handleNewAddHeader() {
-    const newReqHeader = { ...newHeader, id: getInputReactKeyId() };
-    setRequestHeaders([...requestHeaders, newReqHeader]);
+  function handleAddHeader() {
+    setRequestHeaders(
+      produce((draft) => {
+        draft.push({
+          key: newHeader.key,
+          value: newHeader.value,
+          id: getInputReactKeyId(),
+        });
+      })
+    );
     setNewHeader(emptyKeyValue);
   }
 
   function handleAddUrlParam() {
-    const newUrlParam = { ...newParam, id: getInputReactKeyId() };
-    setUrlParams([...urlParams, newUrlParam]);
+    setUrlParams(
+      produce((draft) => {
+        draft.push({
+          key: newParam.key,
+          dataType: newParam.dataType,
+          id: getInputReactKeyId(),
+        });
+      })
+    );
     setNewParam(defaultUrlParameter);
   }
 
-  function handleAddPayloadProperty() {
-    const newProperty = { ...newPayloadProperty, id: getInputReactKeyId() };
-    setPayloadProperties([...payloadProperties, newProperty]);
-    setNewPayloadProperty(defaultBodyPayloadProperty);
+  function handleAddRequestProperty() {
+    setRequestProperties(
+      produce((draft) => {
+        draft.push({
+          key: newRequestProperty.key,
+          dataType: newRequestProperty.dataType,
+          id: getInputReactKeyId(),
+        });
+      })
+    );
+    setNewRequestProperty(defaultBodyPayloadProperty);
   }
 
-  function handleAuthUserChange(e: ChangeEvent<HTMLInputElement>) {
-    setBasicAuthUserPwd((prev) => [e.target.value, prev[1]]);
-  }
-
-  function handleAuthPasswordChange(e: ChangeEvent<HTMLInputElement>) {
-    setBasicAuthUserPwd((prev) => [prev[0], e.target.value]);
-  }
-
-  function handleModelTypeChange(option: SelectOption | null) {
-    setModelType(option);
-  }
-
-  function handleRequestMethodChange(option: SelectOption | null) {
-    setRequestMethod(option);
-  }
-
-  function handleUrlParamTypeChange(option: SelectOption | null) {
-    setUrlParamType(option);
-  }
-
-  function handleAuthTypeChange(option: SelectOption | null) {
-    setAuthType(option);
-  }
-
-  function handleBearerTokenChange(e: ChangeEvent<HTMLInputElement>) {
-    setBearerToken(e.target.value);
+  function handleAddResponseProperty() {
+    setResponseProperties(
+      produce((draft) => {
+        draft.push({
+          key: newResponseProperty.key,
+          value: newResponseProperty.value,
+          id: getInputReactKeyId(),
+        });
+      })
+    );
+    setNewResponseProperty(emptyKeyValue);
   }
 
   function handleDeleteUrlParamClick(param: UrlParameter) {
-    const currentParams = [...urlParams];
-    const idx = currentParams.findIndex(
+    const idx = urlParams.findIndex(
       (currentParam) => currentParam.key === param.key
     );
-    currentParams.splice(idx, 1);
-    setUrlParams(currentParams);
+    if (idx === -1) return;
+    setUrlParams(
+      produce((draft) => {
+        draft.splice(idx, 1);
+      })
+    );
   }
 
   function handleDeleteHeaderClick(header: RequestHeader) {
-    const currentHeaders = [...requestHeaders];
-    const idx = currentHeaders.findIndex(
+    const idx = requestHeaders.findIndex(
       (currentHeader) => currentHeader.key === header.key
     );
-    currentHeaders.splice(idx, 1);
-    setRequestHeaders(currentHeaders);
+    if (idx === -1) return;
+    setRequestHeaders(
+      produce((draft) => {
+        draft.splice(idx, 1);
+      })
+    );
   }
 
-  function handleDeletePayloadPropClick(property: BodyPayloadProperty) {
-    const currentProps = [...payloadProperties];
-    const idx = currentProps.findIndex(
+  function handleDeleteRequestPropertyClick(property: BodyPayloadProperty) {
+    const idx = requestProperties.findIndex(
       (currentProp) => currentProp.key === property.key
     );
-    currentProps.splice(idx, 1);
-    setPayloadProperties(currentProps);
+    if (idx === -1) return;
+    setRequestProperties(
+      produce((draft) => {
+        draft.splice(idx, 1);
+      })
+    );
+  }
+
+  function handleDeleteResponsePropertyClick(property: ResponseProperty) {
+    const idx = responseProperties.findIndex(
+      (currentProp) => currentProp.key === property.key
+    );
+    if (idx === -1) return;
+    setResponseProperties(
+      produce((draft) => {
+        draft.splice(idx, 1);
+      })
+    );
   }
 
   useEffect(() => {
@@ -350,8 +453,10 @@ function NewModelApiConfigModule() {
 
   useEffect(() => {
     console.log(urlParams);
-    console.log(payloadProperties);
-  }, [urlParams, payloadProperties]);
+    console.log(requestProperties);
+    console.log(requestHeaders);
+    console.log(responseProperties);
+  }, [urlParams, requestProperties, requestHeaders, responseProperties]);
 
   function LeftSectionContent() {
     return (
@@ -530,6 +635,8 @@ function NewModelApiConfigModule() {
                                 </div>
                               )}
                               <Tooltip
+                                backgroundColor="#676767"
+                                fontColor="#FFFFFF"
                                 content={
                                   urlParamType &&
                                   urlParamType.value === URLParamType.QUERY ? (
@@ -539,8 +646,8 @@ function NewModelApiConfigModule() {
                                         are defined - &quot;age&quot; &
                                         &quot;gender&quot;
                                       </div>
-                                      Before running a test, you will be
-                                      prompted to map dataset attributes to
+                                      Before running tests, you will be prompted
+                                      to map your test dataset attributes to
                                       these parameters.
                                     </div>
                                   ) : (
@@ -550,9 +657,9 @@ function NewModelApiConfigModule() {
                                         are defined - &quot;age&quot; &
                                         &quot;gender&quot;
                                       </div>
-                                      Before running a test, you will be
-                                      prompted to map dataset attributes to
-                                      these parameters.
+                                      Before running tests, you will be prompted
+                                      to map your dataset attributes to these
+                                      parameters.
                                     </div>
                                   )
                                 }
@@ -612,7 +719,7 @@ function NewModelApiConfigModule() {
                             requestMediaType.value !== MediaType.NONE ? (
                               <div>
                                 <BodyPayloadPropertyInputHeading />
-                                {payloadProperties.map((property) => (
+                                {requestProperties.map((property) => (
                                   <BodyPayloadPropertyDisplayInput
                                     key={property.id}
                                     property={property}
@@ -623,39 +730,22 @@ function NewModelApiConfigModule() {
                                       property.key
                                     )}
                                     onRemoveBtnClick={
-                                      handleDeletePayloadPropClick
+                                      handleDeleteRequestPropertyClick
                                     }
                                   />
                                 ))}
                                 <BodyPayloadPropertyCaptureInput
-                                  newProperty={newPayloadProperty}
-                                  onKeynameChange={handleNewBodyPropKeyChange}
-                                  onDatatypeChange={
-                                    handleNewBodyPropDatatypeChange
+                                  newProperty={newRequestProperty}
+                                  onKeynameChange={
+                                    handleNewRequestPropertyKeyChange
                                   }
-                                  onAddClick={handleAddPayloadProperty}
+                                  onDatatypeChange={
+                                    handleNewRequestPropertyDatatypeChange
+                                  }
+                                  onAddClick={handleAddRequestProperty}
                                 />
                               </div>
                             ) : null}
-                          </div>
-                        ) : null}
-
-                        {activeTab === Tab.RESPONSE ? (
-                          <div
-                            style={{
-                              display: 'flex',
-                              flexDirection: 'column',
-                            }}>
-                            <div style={{ marginBottom: 5 }}>
-                              <SelectInput
-                                width={300}
-                                label="Media Type"
-                                name="responseMediaType"
-                                options={optionsMediaTypes}
-                                onChange={handleResponseMediaTypeChange}
-                                value={responseMediaType}
-                              />
-                            </div>
                           </div>
                         ) : null}
 
@@ -704,9 +794,58 @@ function NewModelApiConfigModule() {
                             ))}
                             <RequestHeaderCaptureInput
                               newHeader={newHeader}
-                              onKeynameChange={handleHeaderKeyChange}
-                              onValueChange={handleHeaderValueChange}
-                              onAddClick={handleNewAddHeader}
+                              onKeynameChange={handleNewHeaderKeyChange}
+                              onValueChange={handleNewHeaderValueChange}
+                              onAddClick={handleAddHeader}
+                            />
+                          </div>
+                        ) : null}
+
+                        {activeTab === Tab.RESPONSE ? (
+                          <div
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'column',
+                            }}>
+                            <div style={{ marginBottom: 5 }}>
+                              <SelectInput
+                                width={300}
+                                label="Media Type"
+                                name="responseMediaType"
+                                options={optionsMediaTypes}
+                                onChange={handleResponseMediaTypeChange}
+                                value={responseMediaType}
+                              />
+                            </div>
+                            <h4 style={{ fontSize: 15, fontWeight: 300 }}>
+                              Additional Properties
+                            </h4>
+                            <ResponsePropertyInputHeading />
+                            {responseProperties.map((prop) => (
+                              <ResponsePropertyInput
+                                key={prop.id}
+                                property={prop}
+                                onKeynameChange={handleCurrentResponsePropertyNameChange(
+                                  prop.key
+                                )}
+                                onValueChange={handleCurrentResponsePropertyValueChange(
+                                  prop.key
+                                )}
+                                onRemoveBtnClick={
+                                  handleDeleteResponsePropertyClick
+                                }
+                              />
+                            ))}
+                            <ResponsePropertyInput
+                              showAddBtn
+                              property={newResponseProperty}
+                              onKeynameChange={
+                                handleNewResponsePropertyNameChange
+                              }
+                              onValueChange={
+                                handleNewResponsePropertyValueChange
+                              }
+                              onAddClick={handleAddResponseProperty}
                             />
                           </div>
                         ) : null}

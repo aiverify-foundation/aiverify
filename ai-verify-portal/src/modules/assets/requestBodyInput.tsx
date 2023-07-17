@@ -7,57 +7,60 @@ import { ChangeEvent } from 'react';
 import { SelectInput, SelectOption } from 'src/components/selectInput';
 import { optionsOpenApiDataTypes } from './selectOptions';
 
-type UrlParameter = {
+type BodyPayloadProperty = {
   key: string;
   dataType: string;
 };
 
-type UrlParamsDisplayProps = {
-  param: UrlParameter;
-  onKeynameChange: (e: ChangeEvent<HTMLInputElement>) => void;
+type BodyPayloadPropertyDisplayInputProps = {
+  property: BodyPayloadProperty;
+  onPropertyNameChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onDatatypeChange: (option: SelectOption) => void;
-  onRemoveBtnClick: (param: UrlParameter) => void;
+  onRemoveBtnClick: (property: BodyPayloadProperty) => void;
 };
 
-type UrlParamCaptureInputProps = {
-  newParam: UrlParameter;
+type BodyPayloadPropertyCaptureInputProps = {
+  newProperty: BodyPayloadProperty;
   onKeynameChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onDatatypeChange: (option: SelectOption) => void;
   onAddClick: () => void;
 };
 
-function UrlParamsInputHeading() {
+function BodyPayloadPropertyInputHeading() {
   return (
     <div style={{ display: 'flex', marginBottom: 4 }}>
-      <div className={styles.headingName}>Parameter Name</div>
+      <div className={styles.headingName}>Property Name</div>
       <div className={styles.headingVal}>Data Type</div>
     </div>
   );
 }
 
-function UrlParamDisplayInput(props: UrlParamsDisplayProps) {
-  const { param, onRemoveBtnClick, onKeynameChange, onDatatypeChange } = props;
+function BodyPayloadPropertyDisplayInput(
+  props: BodyPayloadPropertyDisplayInputProps
+) {
+  const { property, onRemoveBtnClick, onPropertyNameChange, onDatatypeChange } =
+    props;
   const selectedOption = optionsOpenApiDataTypes.find(
-    (type) => type.value === param.dataType
+    (type) => type.value === property.dataType
   );
 
-  function handleRemoveBtnClick(param: UrlParameter) {
-    return () => onRemoveBtnClick(param);
+  function handleRemoveBtnClick(property: BodyPayloadProperty) {
+    return () => onRemoveBtnClick(property);
   }
 
   return (
     <div className={styles.keyValRow}>
       <div className={styles.keyValCol}>
         <TextInput
-          value={param.key}
+          value={property.key}
           name="variableName"
+          onChange={onPropertyNameChange}
           style={{ marginBottom: 0 }}
-          onChange={onKeynameChange}
         />
       </div>
       <div className={styles.keyValCol}>
         <SelectInput
-          name="paramDataType"
+          name="propDataType"
           options={optionsOpenApiDataTypes}
           onChange={onDatatypeChange}
           value={selectedOption}
@@ -68,7 +71,7 @@ function UrlParamDisplayInput(props: UrlParamsDisplayProps) {
         <IconButton
           iconComponent={CloseIcon}
           noOutline
-          onClick={handleRemoveBtnClick(param)}
+          onClick={handleRemoveBtnClick(property)}
           style={{ marginRight: 42 }}
         />
       </div>
@@ -76,25 +79,27 @@ function UrlParamDisplayInput(props: UrlParamsDisplayProps) {
   );
 }
 
-function UrlParamCaptureInput(props: UrlParamCaptureInputProps) {
-  const { newParam, onKeynameChange, onDatatypeChange, onAddClick } = props;
+function BodyPayloadPropertyCaptureInput(
+  props: BodyPayloadPropertyCaptureInputProps
+) {
+  const { newProperty, onKeynameChange, onDatatypeChange, onAddClick } = props;
   const selectedOption = optionsOpenApiDataTypes.find(
-    (type) => type.value === newParam.dataType
+    (type) => type.value === newProperty.dataType
   );
-
+  const disableAddBtn = newProperty.key.trim() === '';
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
       <div className={styles.keyInput}>
         <TextInput
-          name="paramName"
+          name=""
           onChange={onKeynameChange}
-          value={newParam.key}
+          value={newProperty.key}
           style={{ marginBottom: 0 }}
         />
       </div>
       <div className={styles.valInput}>
         <SelectInput
-          name="paramDataType"
+          name="propDataType"
           options={optionsOpenApiDataTypes}
           onChange={onDatatypeChange}
           value={selectedOption}
@@ -102,7 +107,10 @@ function UrlParamCaptureInput(props: UrlParamCaptureInputProps) {
         />
       </div>
       <div className={styles.iconContainer}>
-        <IconButton iconComponent={AddIcon} onClick={onAddClick}>
+        <IconButton
+          iconComponent={AddIcon}
+          onClick={onAddClick}
+          disabled={disableAddBtn}>
           <div
             style={{
               color: '#676767',
@@ -117,5 +125,9 @@ function UrlParamCaptureInput(props: UrlParamCaptureInputProps) {
   );
 }
 
-export { UrlParamDisplayInput, UrlParamCaptureInput, UrlParamsInputHeading };
-export type { UrlParameter };
+export {
+  BodyPayloadPropertyDisplayInput,
+  BodyPayloadPropertyCaptureInput,
+  BodyPayloadPropertyInputHeading,
+};
+export type { BodyPayloadProperty };
