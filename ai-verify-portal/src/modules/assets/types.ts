@@ -1,7 +1,7 @@
 export enum AuthType {
   NO_AUTH = 'No Auth',
-  BASIC = 'Bearer Token',
-  BEARER_TOKEN = 'Basic Auth'
+  BASIC = 'Basic Auth',
+  BEARER_TOKEN = 'Bearer Token',
 }
 
 export enum MediaType {
@@ -14,14 +14,19 @@ export enum MediaType {
 
 export enum RequestMethod {
   GET = 'GET',
-  POST = 'POST'
+  POST = 'POST',
 }
 
 export enum OpenApiDataTypes {
-  string = 'string',
-  number = 'number',
-  integer = 'integer',
-  boolean = 'boolean',
-  array = 'array',
-  object = 'object',
+  STRING = 'string',
+  NUMBER = 'number',
+  INTEGER = 'integer',
+  BOOLEAN = 'boolean',
+  ARRAY = 'array',
+  OBJECT = 'object',
+}
+
+export enum URLParamType {
+  PATH = 'Path',
+  QUERY = 'Query',
 }

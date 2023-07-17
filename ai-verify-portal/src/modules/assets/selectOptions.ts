@@ -1,4 +1,15 @@
-import { AuthType, MediaType, RequestMethod } from "./types";
+import { ModelType } from 'src/types/model.interface';
+import { AuthType, MediaType, RequestMethod, URLParamType } from './types';
+
+export const optionsModelTypes = [
+  { value: ModelType.Classification, label: ModelType.Classification },
+  { value: ModelType.Regression, label: ModelType.Regression },
+];
+
+export const optionsUrlParamTypes = [
+  { value: URLParamType.QUERY, label: URLParamType.QUERY },
+  { value: URLParamType.PATH, label: URLParamType.PATH },
+];
 
 export const optionsRequestMethods = [
   { value: RequestMethod.GET, label: RequestMethod.GET },
