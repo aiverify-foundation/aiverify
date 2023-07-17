@@ -47,8 +47,8 @@ type UrlParameterWithReactKeyId = UrlParameter & { id: string };
 type BodyPayloadPropertyWithReactKeyId = BodyPayloadProperty & { id: string };
 type RequestHeaderWithReactKeyId = RequestHeader & { id: string };
 
-const defaultConfigNameDisplay = 'API Config Name';
-const defaultConfigDescDisplay = 'Description of Config';
+const defaultConfigNameDisplay = 'Configuration Name';
+const defaultConfigDescDisplay = 'Description';
 
 const emptyKeyValue = { key: '', value: '' };
 const defaultUrlParameter = {
@@ -93,7 +93,10 @@ function NewModelApiConfigModule() {
   const [urlParamType, setUrlParamType] = useState<SelectOption>(
     optionsUrlParamTypes[0]
   );
-  const [mediaType, setMediaType] = useState<SelectOption>(
+  const [requestMediaType, setRequestMediaType] = useState<SelectOption>(
+    optionsMediaTypes[0]
+  );
+  const [responseMediaType, setResponseMediaType] = useState<SelectOption>(
     optionsMediaTypes[0]
   );
   const [activeTab, setActiveTab] = useState<Tab>();
@@ -250,8 +253,12 @@ function NewModelApiConfigModule() {
     }));
   }
 
-  function handleMediaTypeChange(option: SelectOption) {
-    setMediaType(option);
+  function handleRequestMediaTypeChange(option: SelectOption) {
+    setRequestMediaType(option);
+  }
+
+  function handleResponseMediaTypeChange(option: SelectOption) {
+    setResponseMediaType(option);
   }
 
   function handleNewAddHeader() {
@@ -595,13 +602,14 @@ function NewModelApiConfigModule() {
                               <SelectInput
                                 width={300}
                                 label="Media Type"
-                                name="mediaType"
+                                name="requestMediaType"
                                 options={optionsMediaTypes}
-                                onChange={handleMediaTypeChange}
-                                value={mediaType}
+                                onChange={handleRequestMediaTypeChange}
+                                value={requestMediaType}
                               />
                             </div>
-                            {mediaType && mediaType.value !== MediaType.NONE ? (
+                            {requestMediaType &&
+                            requestMediaType.value !== MediaType.NONE ? (
                               <div>
                                 <BodyPayloadPropertyInputHeading />
                                 {payloadProperties.map((property) => (
@@ -629,6 +637,25 @@ function NewModelApiConfigModule() {
                                 />
                               </div>
                             ) : null}
+                          </div>
+                        ) : null}
+
+                        {activeTab === Tab.RESPONSE ? (
+                          <div
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'column',
+                            }}>
+                            <div style={{ marginBottom: 5 }}>
+                              <SelectInput
+                                width={300}
+                                label="Media Type"
+                                name="responseMediaType"
+                                options={optionsMediaTypes}
+                                onChange={handleResponseMediaTypeChange}
+                                value={responseMediaType}
+                              />
+                            </div>
                           </div>
                         ) : null}
 

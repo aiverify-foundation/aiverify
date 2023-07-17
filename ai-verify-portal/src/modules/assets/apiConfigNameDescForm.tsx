@@ -34,15 +34,15 @@ function ApiConfigNameDescForm(props: ApiConfigNameDescFormProps) {
         value={desc}
         onChange={onDescChange}
       />
-      <div style={{ textAlign: 'right' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <button
-          style={{ width: 100 }}
+          style={{ width: '49%', marginRight: 0 }}
           className="aivBase-button aivBase-button--outlined aivBase-button--small"
           onClick={onOKClick}>
           Cancel
         </button>
         <button
-          style={{ width: 100, marginRight: 0 }}
+          style={{ width: '49%', marginRight: 0 }}
           className="aivBase-button aivBase-button--outlined aivBase-button--small"
           onClick={onCancelClick}>
           OK
