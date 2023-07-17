@@ -13,8 +13,8 @@ numpy = "1.23.5"
 pillow = "9.4.0"
 scikit-learn = "1.2.2"
 joblib = "1.2.0"
-scipy = "1.9.3"
-scikit-image = "0.19.3"
+scipy = "1.11.1"
+scikit-image = "0.21.0"
 
 
 [build-system]
