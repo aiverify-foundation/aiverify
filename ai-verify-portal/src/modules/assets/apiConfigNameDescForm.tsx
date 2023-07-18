@@ -1,19 +1,17 @@
-import { ChangeEvent } from 'react';
+import { useFormikContext } from 'formik';
 import { TextArea } from 'src/components/textArea';
 import { TextInput } from 'src/components/textInput';
+import { ModelAPIGraphQLModel } from './types';
 
 type ApiConfigNameDescFormProps = {
-  name: string;
-  desc: string;
-  onNameChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  onDescChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   onOKClick: () => void;
   onCancelClick: () => void;
 };
 
 function ApiConfigNameDescForm(props: ApiConfigNameDescFormProps) {
-  const { name, desc, onDescChange, onNameChange, onOKClick, onCancelClick } =
-    props;
+  const { onOKClick, onCancelClick } = props;
+
+  const { values, handleChange } = useFormikContext<ModelAPIGraphQLModel>();
   return (
     <div
       style={{
@@ -22,17 +20,17 @@ function ApiConfigNameDescForm(props: ApiConfigNameDescFormProps) {
       }}>
       <TextInput
         label="Config Name"
-        name="configName"
-        value={name}
+        name="name"
+        value={values.name}
         maxLength={255}
         style={{ marginBottom: 10 }}
-        onChange={onNameChange}
+        onChange={handleChange}
       />
       <TextArea
         label="Description"
-        name="configDesc"
-        value={desc}
-        onChange={onDescChange}
+        name="description"
+        value={values.description}
+        onChange={handleChange}
       />
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <button

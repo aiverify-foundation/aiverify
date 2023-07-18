@@ -13,16 +13,18 @@ type SelectInputProps = {
   label?: string;
   placeholder?: string;
   error?: string;
-  value?: SelectOption;
+  value?: string;
   labelSibling?: React.ReactElement;
   options: SelectOption[];
   style?: React.CSSProperties;
-  onChange?: (option: SelectOption) => void;
+  onChange?: (value: string) => void;
 };
 
 const BORDER_COLOR = '#cfcfcf';
 const BORDER_FOCUS_COLOR = 'hsl(0, 0%, 70%)';
 const PLACEHOLDER_COLOR = '#cfcfcf';
+const OPTION_HOVER_COLOR = '#ebc8f9';
+const OPTION_SELECTED_COLOR = '#702f8a';
 
 function SelectInput(props: SelectInputProps) {
   const {
@@ -38,7 +40,14 @@ function SelectInput(props: SelectInputProps) {
     onChange,
   } = props;
 
+  const selectedOption = options.find((opt) => opt && opt.value === value);
   const containerStyles = { width, ...style };
+
+  function handleChange(option: SelectOption) {
+    if (!option) return;
+    if (onChange) onChange(option.value);
+  }
+
   return (
     <div className={styles.selectInput} style={containerStyles}>
       <label>
@@ -87,12 +96,23 @@ function SelectInput(props: SelectInputProps) {
               padding: 0,
               margin: 0,
             }),
+            option: (baseStyles, state) => ({
+              ...baseStyles,
+              backgroundColor: state.isSelected
+                ? OPTION_SELECTED_COLOR
+                : 'inherit',
+              '&:hover': {
+                backgroundColor: state.isSelected
+                  ? OPTION_SELECTED_COLOR
+                  : OPTION_HOVER_COLOR,
+              },
+            }),
           }}
           name={name}
           placeholder={placeholder}
-          value={value}
+          value={selectedOption}
           options={options}
-          onChange={onChange}
+          onChange={handleChange}
         />
         {Boolean(error) ? (
           <div className={styles.inputError}>{error}</div>

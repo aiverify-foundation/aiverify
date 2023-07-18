@@ -10,7 +10,6 @@ import {
   DragDropContext,
   Droppable,
   Draggable,
-  OnDragEndResponder,
   DragUpdate,
 } from 'react-beautiful-dnd';
 import { IconButton } from 'src/components/iconButton';
@@ -36,6 +35,7 @@ import {
 import {
   AuthType,
   MediaType,
+  ModelAPIGraphQLModel,
   OpenApiDataTypes,
   RequestMethod,
   URLParamType,
@@ -54,6 +54,10 @@ import {
   ResponsePropertyInput,
   ResponsePropertyInputHeading,
 } from './responsePropertyInput';
+import { Formik, Form } from 'formik';
+import { ModelType } from 'src/types/model.interface';
+import { ModelApiLeftSection } from './newModelApiLeftSection';
+import { TabButtonsGroup } from './newModelApiTabButtons';
 
 type UrlParameterWithReactKeyId = UrlParameter & { id: string };
 type BodyPayloadPropertyWithReactKeyId = BodyPayloadProperty & { id: string };
@@ -92,6 +96,45 @@ function initReactKeyIdGenerator() {
 }
 
 const getInputReactKeyId = initReactKeyIdGenerator();
+
+const initialValues: ModelAPIGraphQLModel = {
+  name: '',
+  description: '',
+  modelType: ModelType.Classification,
+  url: '',
+  method: RequestMethod.POST,
+  authType: AuthType.NO_AUTH,
+  authTypeConfig: {},
+  requestBody: {
+    mediaType: MediaType.NONE,
+    isArray: false,
+    properties: [],
+  },
+  parameters: {
+    queries: {
+      mediaType: MediaType.NONE,
+      isArray: false,
+      queryParams: [],
+    },
+    paths: {
+      mediaType: MediaType.NONE,
+      isArray: false,
+      pathParams: [],
+    },
+  },
+  requestConfig: {
+    rateLimit: -1,
+    batchStrategy: '',
+    batchLimit: -1,
+    maxConnections: -1,
+    requestTimeout: -1,
+  },
+  response: {
+    statusCode: 200,
+    mediaType: MediaType.NONE,
+    type: OpenApiDataTypes.STRING,
+  },
+};
 
 function NewModelApiConfigModule() {
   const [configName, setConfigName] = useState<string>('');
@@ -139,7 +182,7 @@ function NewModelApiConfigModule() {
   }
 
   function handleTabClick(tab: Tab) {
-    return () => setActiveTab(tab);
+    return setActiveTab(tab);
   }
 
   function handleEditNameClick() {
@@ -454,19 +497,19 @@ function NewModelApiConfigModule() {
     );
   }
 
-  useEffect(() => {
-    if (
-      activeTab !== Tab.AUTHENTICATION &&
-      activeTab !== Tab.RESPONSE &&
-      activeTab !== Tab.HEADERS
-    ) {
-      setActiveTab(
-        requestMethod && requestMethod.value === RequestMethod.GET
-          ? Tab.URL_PARAMS
-          : Tab.REQUEST_BODY
-      );
-    }
-  }, [requestMethod]);
+  // useEffect(() => {
+  //   if (
+  //     activeTab !== Tab.AUTHENTICATION &&
+  //     activeTab !== Tab.RESPONSE &&
+  //     activeTab !== Tab.HEADERS
+  //   ) {
+  //     setActiveTab(
+  //       requestMethod && requestMethod.value === RequestMethod.GET
+  //         ? Tab.URL_PARAMS
+  //         : Tab.REQUEST_BODY
+  //     );
+  //   }
+  // }, [requestMethod]);
 
   useEffect(() => {
     console.log(urlParams);
@@ -474,102 +517,6 @@ function NewModelApiConfigModule() {
     console.log(requestHeaders);
     console.log(responseProperties);
   }, [urlParams, requestProperties, requestHeaders, responseProperties]);
-
-  function LeftSectionContent() {
-    return (
-      <div>
-        {!isEditName ? (
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-              <div className={styles.configName}>
-                {configName || defaultConfigNameDisplay}
-              </div>
-              <IconButton
-                iconComponent={EditIcon}
-                noOutline
-                style={{ fontSize: 12 }}
-                onClick={handleEditNameClick}
-              />
-            </div>
-            <div>
-              <div className={styles.description}>
-                {configDesc || defaultConfigDescDisplay}
-              </div>
-            </div>
-          </div>
-        ) : (
-          <ApiConfigNameDescForm
-            name={configName}
-            desc={configDesc}
-            onNameChange={handleConfigNameChange}
-            onDescChange={handleConfigDescriptionChange}
-            onCancelClick={handleEditNameCancelClick}
-            onOKClick={handleEditNameOkClick}
-          />
-        )}
-        <div style={{ marginTop: 25 }}>
-          <SelectInput
-            label="Model Type"
-            name="modelType"
-            options={optionsModelTypes}
-            value={modelType}
-            onChange={handleModelTypeChange}
-          />
-        </div>
-      </div>
-    );
-  }
-
-  function TabButtonsGroup() {
-    return (
-      <div className={styles.tabsBtnGroup}>
-        {requestMethod && requestMethod.value === RequestMethod.GET ? (
-          <div
-            className={clsx(
-              styles.tabBtn,
-              activeTab === Tab.URL_PARAMS ? styles.tabBtn__selected : null
-            )}
-            onClick={handleTabClick(Tab.URL_PARAMS)}>
-            URL Parameters
-          </div>
-        ) : (
-          <div
-            className={clsx(
-              styles.tabBtn,
-              activeTab === Tab.REQUEST_BODY ? styles.tabBtn__selected : null
-            )}
-            onClick={handleTabClick(Tab.REQUEST_BODY)}>
-            Request Body
-          </div>
-        )}
-
-        <div
-          className={clsx(
-            styles.tabBtn,
-            activeTab === Tab.HEADERS ? styles.tabBtn__selected : null
-          )}
-          onClick={handleTabClick(Tab.HEADERS)}>
-          Request Headers
-        </div>
-        <div
-          className={clsx(
-            styles.tabBtn,
-            activeTab === Tab.RESPONSE ? styles.tabBtn__selected : null
-          )}
-          onClick={handleTabClick(Tab.RESPONSE)}>
-          Response
-        </div>
-        <div
-          className={clsx(
-            styles.tabBtn,
-            activeTab === Tab.AUTHENTICATION ? styles.tabBtn__selected : null
-          )}
-          onClick={handleTabClick(Tab.AUTHENTICATION)}>
-          Authentication
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div>
@@ -580,387 +527,468 @@ function NewModelApiConfigModule() {
             <div className="mainContainer">
               <div className={styles.container__limits}>
                 <div className={styles.layout}>
-                  <div style={{ marginBottom: '25px' }}>
-                    <h3 className="screenHeading">API Configuration</h3>
-                    <p className="headingDescription">
-                      Add the API configurations needed to connect to the AI
-                      model server
-                    </p>
-                  </div>
-                  <div className={styles.apiConfigForm}>
-                    <div className={styles.leftSection}>
-                      <LeftSectionContent />
-                    </div>
-                    <div className={styles.vDivider} />
-                    <div className={styles.rightSection}>
-                      <div style={{ display: 'flex' }}>
-                        <div style={{ marginRight: 10 }}>
-                          <SelectInput
-                            width={140}
-                            label="Request Method"
-                            name="requestMethod"
-                            options={optionsRequestMethods}
-                            onChange={handleRequestMethodChange}
-                            value={requestMethod}
-                          />
-                        </div>
-                        <div style={{ flexGrow: 1 }}>
-                          <TextInput label="Model URL" name="apiUrl" />
-                        </div>
-                      </div>
-                      <div className={styles.tabs}>
-                        <TabButtonsGroup />
-                        <div className={styles.tabsDivider} />
-                        <div className={styles.tabContent}>
-                          {activeTab === Tab.URL_PARAMS ? (
-                            <div
-                              style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                              }}>
-                              <div
-                                style={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                }}>
-                                <SelectInput
-                                  label="URL Parameter Type"
-                                  name="urlParamType"
-                                  options={optionsUrlParamTypes}
-                                  value={urlParamType}
-                                  onChange={handleUrlParamTypeChange}
-                                />
-                                {urlParamType &&
-                                urlParamType.value === URLParamType.QUERY ? (
-                                  <div style={{ marginLeft: 10, fontSize: 14 }}>
-                                    e.g. https://hostname/predict?
-                                    <span className={styles.paramHighlight}>
-                                      age
-                                    </span>
-                                    =&#123;age_value&#125;&
-                                    <span className={styles.paramHighlight}>
-                                      gender
-                                    </span>
-                                    =&#123;gender_value&#125;
-                                  </div>
-                                ) : (
-                                  <div style={{ marginLeft: 10, fontSize: 14 }}>
-                                    e.g. https://hostname/predict/
-                                    <span className={styles.paramHighlight}>
-                                      &#123;age&#125;
-                                    </span>
-                                    /
-                                    <span className={styles.paramHighlight}>
-                                      &#123;gender&#125;
-                                    </span>
-                                  </div>
-                                )}
-                                <Tooltip
-                                  backgroundColor="#676767"
-                                  fontColor="#FFFFFF"
-                                  content={
-                                    urlParamType &&
-                                    urlParamType.value ===
-                                      URLParamType.QUERY ? (
-                                      <div>
-                                        <div style={{ marginBottom: 5 }}>
-                                          This is an example where 2 parameters
-                                          are defined - &quot;age&quot; &
-                                          &quot;gender&quot;
-                                        </div>
-                                        Before running tests, you will be
-                                        prompted to map your test dataset
-                                        attributes to these parameters.
-                                      </div>
-                                    ) : (
-                                      <div>
-                                        <div style={{ marginBottom: 5 }}>
-                                          This is an example where 2 parameters
-                                          are defined - &quot;age&quot; &
-                                          &quot;gender&quot;
-                                        </div>
-                                        Before running tests, you will be
-                                        prompted to map your dataset attributes
-                                        to these parameters.
-                                      </div>
-                                    )
-                                  }
-                                  position={TooltipPosition.right}
-                                  offsetLeft={8}
-                                  offsetTop={42}>
-                                  <div
-                                    style={{
-                                      display: 'flex',
-                                      color: '#991e66',
-                                      marginLeft: 15,
-                                    }}>
-                                    <InfoIcon style={{ fontSize: 22 }} />
-                                  </div>
-                                </Tooltip>
-                              </div>
-                              <UrlParamsInputHeading />
-                              <Droppable droppableId="list-container">
-                                {(provided) => (
-                                  <div
-                                    className="list-container"
-                                    {...provided.droppableProps}
-                                    ref={provided.innerRef}>
-                                    {urlParams.map((param, index) => (
-                                      <Draggable
-                                        key={param.id}
-                                        draggableId={param.id}
-                                        index={index}>
-                                        {(provided) => (
-                                          <div
-                                            className="item-container"
-                                            ref={provided.innerRef}
-                                            {...provided.dragHandleProps}
-                                            {...provided.draggableProps}>
-                                            <UrlParamDisplayInput
-                                              key={param.id}
-                                              param={param}
-                                              onKeynameChange={handleCurrentParamKeyChange(
-                                                param.key
-                                              )}
-                                              onDatatypeChange={handleCurrentParamDatatypeChange(
-                                                param.key
-                                              )}
-                                              onRemoveBtnClick={
-                                                handleDeleteUrlParamClick
-                                              }
-                                            />
-                                          </div>
-                                        )}
-                                      </Draggable>
-                                    ))}
-                                    {provided.placeholder}
-                                  </div>
-                                )}
-                              </Droppable>
-                              <UrlParamCaptureInput
-                                newParam={newParam}
-                                onKeynameChange={handleNewParamKeyChange}
-                                onDatatypeChange={handleNewParamDatatypeChange}
-                                onAddClick={handleAddUrlParam}
-                              />
+                  <Formik
+                    initialValues={initialValues}
+                    onSubmit={(values) => console.log(values)}>
+                    {({ values, handleChange, setFieldValue }) => {
+                      return (
+                        <Form>
+                          <div style={{ marginBottom: '25px' }}>
+                            <h3 className="screenHeading">API Configuration</h3>
+                            <p className="headingDescription">
+                              Add the API configurations needed to connect to
+                              the AI model server
+                            </p>
+                          </div>
+                          <div className={styles.apiConfigForm}>
+                            <div className={styles.leftSection}>
+                              <ModelApiLeftSection />
                             </div>
-                          ) : null}
-
-                          {activeTab === Tab.REQUEST_BODY ? (
-                            <div
-                              style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                              }}>
-                              <div style={{ marginBottom: 5 }}>
-                                <SelectInput
-                                  width={300}
-                                  label="Media Type"
-                                  name="requestMediaType"
-                                  options={optionsMediaTypes}
-                                  onChange={handleRequestMediaTypeChange}
-                                  value={requestMediaType}
-                                />
-                              </div>
-                              {requestMediaType &&
-                              requestMediaType.value !== MediaType.NONE ? (
-                                <div>
-                                  <BodyPayloadPropertyInputHeading />
-                                  {requestProperties.map((property) => (
-                                    <BodyPayloadPropertyDisplayInput
-                                      key={property.id}
-                                      property={property}
-                                      onDatatypeChange={handleCurrentBodyPropDatatypeChange(
-                                        property.key
-                                      )}
-                                      onPropertyNameChange={handleCurrentBodyPropKeyChange(
-                                        property.key
-                                      )}
-                                      onRemoveBtnClick={
-                                        handleDeleteRequestPropertyClick
-                                      }
-                                    />
-                                  ))}
-                                  <BodyPayloadPropertyCaptureInput
-                                    newProperty={newRequestProperty}
-                                    onKeynameChange={
-                                      handleNewRequestPropertyKeyChange
+                            <div className={styles.vDivider} />
+                            <div className={styles.rightSection}>
+                              <div style={{ display: 'flex' }}>
+                                <div style={{ marginRight: 10 }}>
+                                  <SelectInput
+                                    width={140}
+                                    label="Request Method"
+                                    name="method"
+                                    options={optionsRequestMethods}
+                                    onChange={(val) =>
+                                      setFieldValue('method', val)
                                     }
-                                    onDatatypeChange={
-                                      handleNewRequestPropertyDatatypeChange
-                                    }
-                                    onAddClick={handleAddRequestProperty}
+                                    value={values.method}
                                   />
                                 </div>
-                              ) : null}
-                            </div>
-                          ) : null}
-
-                          {activeTab === Tab.HEADERS ? (
-                            <div
-                              style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                              }}>
-                              <div style={{ display: 'flex', marginBottom: 5 }}>
-                                <TextInput
-                                  placeholder="requestTimeout"
-                                  label="Request Timeout"
-                                  name="requestTimeout"
-                                  style={{ width: 200, marginRight: 15 }}
-                                />
-                                <TextInput
-                                  placeholder="rateLimit"
-                                  label="Rate Limit"
-                                  name="rateLimit"
-                                  style={{ width: 200, marginRight: 15 }}
-                                />
-                                <TextInput
-                                  placeholder="maxConnections"
-                                  label="Max Connections"
-                                  name="maxConnections"
-                                  style={{ width: 200, marginRight: 15 }}
-                                />
-                              </div>
-                              <h4 style={{ fontSize: 15, fontWeight: 300 }}>
-                                Additional Headers
-                              </h4>
-                              <RequestHeaderInputHeading />
-                              {requestHeaders.map((header) => (
-                                <RequestHeaderDisplayInput
-                                  key={header.id}
-                                  header={header}
-                                  onKeynameChange={handleCurrentHeaderKeynameChange(
-                                    header.key
-                                  )}
-                                  onValueChange={handleCurrentHeaderValueChange(
-                                    header.key
-                                  )}
-                                  onRemoveBtnClick={handleDeleteHeaderClick}
-                                />
-                              ))}
-                              <RequestHeaderCaptureInput
-                                newHeader={newHeader}
-                                onKeynameChange={handleNewHeaderKeyChange}
-                                onValueChange={handleNewHeaderValueChange}
-                                onAddClick={handleAddHeader}
-                              />
-                            </div>
-                          ) : null}
-
-                          {activeTab === Tab.RESPONSE ? (
-                            <div
-                              style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                              }}>
-                              <div style={{ marginBottom: 5 }}>
-                                <SelectInput
-                                  width={300}
-                                  label="Media Type"
-                                  name="responseMediaType"
-                                  options={optionsMediaTypes}
-                                  onChange={handleResponseMediaTypeChange}
-                                  value={responseMediaType}
-                                />
-                              </div>
-                              <h4 style={{ fontSize: 15, fontWeight: 300 }}>
-                                Additional Properties
-                              </h4>
-                              <ResponsePropertyInputHeading />
-                              {responseProperties.map((prop) => (
-                                <ResponsePropertyInput
-                                  key={prop.id}
-                                  property={prop}
-                                  onKeynameChange={handleCurrentResponsePropertyNameChange(
-                                    prop.key
-                                  )}
-                                  onValueChange={handleCurrentResponsePropertyValueChange(
-                                    prop.key
-                                  )}
-                                  onRemoveBtnClick={
-                                    handleDeleteResponsePropertyClick
-                                  }
-                                />
-                              ))}
-                              <ResponsePropertyInput
-                                showAddBtn
-                                property={newResponseProperty}
-                                onKeynameChange={
-                                  handleNewResponsePropertyNameChange
-                                }
-                                onValueChange={
-                                  handleNewResponsePropertyValueChange
-                                }
-                                onAddClick={handleAddResponseProperty}
-                              />
-                            </div>
-                          ) : null}
-
-                          {activeTab === Tab.AUTHENTICATION ? (
-                            <div
-                              style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                              }}>
-                              <SelectInput
-                                width={200}
-                                label="Authentication Type"
-                                name="authType"
-                                options={optionsAuthMethods}
-                                onChange={handleAuthTypeChange}
-                                value={authType}
-                              />
-                              {authType &&
-                              authType.value === AuthType.BEARER_TOKEN ? (
                                 <div style={{ flexGrow: 1 }}>
                                   <TextInput
-                                    label="Token"
-                                    name="bearerToken"
-                                    value={bearerToken}
-                                    onChange={handleBearerTokenChange}
-                                    style={{ width: 560 }}
+                                    label="Model URL"
+                                    name="url"
+                                    onChange={handleChange}
+                                    value={values.url}
                                   />
                                 </div>
-                              ) : null}
-                              {authType && authType.value === AuthType.BASIC ? (
-                                <div style={{ display: 'flex' }}>
+                              </div>
+                              <div className={styles.tabs}>
+                                <TabButtonsGroup
+                                  onTabClick={handleTabClick}
+                                  activeTab={activeTab}
+                                />
+                                <div className={styles.tabsDivider} />
+                                <div className={styles.tabContent}>
+                                  {values.method === RequestMethod.GET &&
+                                  activeTab === Tab.URL_PARAMS ? (
+                                    <div
+                                      style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                      }}>
+                                      <div
+                                        style={{
+                                          display: 'flex',
+                                          alignItems: 'center',
+                                        }}>
+                                        <SelectInput
+                                          label="URL Parameter Type"
+                                          name="urlParamType"
+                                          options={optionsUrlParamTypes}
+                                          value={urlParamType}
+                                          onChange={handleUrlParamTypeChange}
+                                        />
+                                        {urlParamType &&
+                                        urlParamType.value ===
+                                          URLParamType.QUERY ? (
+                                          <div
+                                            style={{
+                                              marginLeft: 10,
+                                              fontSize: 14,
+                                            }}>
+                                            e.g. https://hostname/predict?
+                                            <span
+                                              className={styles.paramHighlight}>
+                                              age
+                                            </span>
+                                            =&#123;value&#125;&
+                                            <span
+                                              className={styles.paramHighlight}>
+                                              gender
+                                            </span>
+                                            =&#123;value&#125;
+                                          </div>
+                                        ) : (
+                                          <div
+                                            style={{
+                                              marginLeft: 10,
+                                              fontSize: 14,
+                                            }}>
+                                            e.g. https://hostname/predict/
+                                            <span
+                                              className={styles.paramHighlight}>
+                                              &#123;age&#125;
+                                            </span>
+                                            /
+                                            <span
+                                              className={styles.paramHighlight}>
+                                              &#123;gender&#125;
+                                            </span>
+                                          </div>
+                                        )}
+                                        <Tooltip
+                                          backgroundColor="#676767"
+                                          fontColor="#FFFFFF"
+                                          content={
+                                            urlParamType &&
+                                            urlParamType.value ===
+                                              URLParamType.QUERY ? (
+                                              <div>
+                                                <div
+                                                  style={{ marginBottom: 5 }}>
+                                                  Example of URL with 2
+                                                  parameters defined -
+                                                  &quot;age&quot; &
+                                                  &quot;gender&quot;
+                                                </div>
+                                                Before running tests, you will
+                                                be prompted to map your test
+                                                dataset attributes to these
+                                                parameters.
+                                              </div>
+                                            ) : (
+                                              <div>
+                                                <div
+                                                  style={{ marginBottom: 5 }}>
+                                                  Example of URL with 2
+                                                  parameters are defined -
+                                                  &quot;age&quot; &
+                                                  &quot;gender&quot;
+                                                </div>
+                                                Before running tests, you will
+                                                be prompted to map your dataset
+                                                attributes to these parameters.
+                                              </div>
+                                            )
+                                          }
+                                          position={TooltipPosition.right}
+                                          offsetLeft={8}
+                                          offsetTop={42}>
+                                          <div
+                                            style={{
+                                              display: 'flex',
+                                              color: '#991e66',
+                                              marginLeft: 15,
+                                            }}>
+                                            <InfoIcon
+                                              style={{ fontSize: 22 }}
+                                            />
+                                          </div>
+                                        </Tooltip>
+                                      </div>
+                                      <UrlParamsInputHeading />
+                                      <Droppable droppableId="list-container">
+                                        {(provided) => (
+                                          <div
+                                            className="list-container"
+                                            {...provided.droppableProps}
+                                            ref={provided.innerRef}>
+                                            {urlParams.map((param, index) => (
+                                              <Draggable
+                                                key={param.id}
+                                                draggableId={param.id}
+                                                index={index}>
+                                                {(provided) => (
+                                                  <div
+                                                    className="item-container"
+                                                    ref={provided.innerRef}
+                                                    {...provided.dragHandleProps}
+                                                    {...provided.draggableProps}>
+                                                    <UrlParamDisplayInput
+                                                      key={param.id}
+                                                      param={param}
+                                                      onKeynameChange={handleCurrentParamKeyChange(
+                                                        param.key
+                                                      )}
+                                                      onDatatypeChange={handleCurrentParamDatatypeChange(
+                                                        param.key
+                                                      )}
+                                                      onRemoveBtnClick={
+                                                        handleDeleteUrlParamClick
+                                                      }
+                                                    />
+                                                  </div>
+                                                )}
+                                              </Draggable>
+                                            ))}
+                                            {provided.placeholder}
+                                          </div>
+                                        )}
+                                      </Droppable>
+                                      <UrlParamCaptureInput
+                                        newParam={newParam}
+                                        onKeynameChange={
+                                          handleNewParamKeyChange
+                                        }
+                                        onDatatypeChange={
+                                          handleNewParamDatatypeChange
+                                        }
+                                        onAddClick={handleAddUrlParam}
+                                      />
+                                    </div>
+                                  ) : null}
+
+                                  {activeTab === Tab.REQUEST_BODY ? (
+                                    <div
+                                      style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                      }}>
+                                      <div style={{ marginBottom: 5 }}>
+                                        <SelectInput
+                                          width={300}
+                                          label="Media Type"
+                                          name="requestBody.mediaType"
+                                          options={optionsMediaTypes}
+                                          onChange={(val) =>
+                                            setFieldValue(
+                                              'requestBody.mediaType',
+                                              val
+                                            )
+                                          }
+                                          value={
+                                            values.requestBody &&
+                                            values.requestBody.mediaType
+                                          }
+                                        />
+                                      </div>
+                                      {values.requestBody &&
+                                      values.requestBody.mediaType !==
+                                        MediaType.NONE ? (
+                                        <div>
+                                          <BodyPayloadPropertyInputHeading />
+                                          {requestProperties.map((property) => (
+                                            <BodyPayloadPropertyDisplayInput
+                                              key={property.id}
+                                              property={property}
+                                              onDatatypeChange={handleCurrentBodyPropDatatypeChange(
+                                                property.key
+                                              )}
+                                              onPropertyNameChange={handleCurrentBodyPropKeyChange(
+                                                property.key
+                                              )}
+                                              onRemoveBtnClick={
+                                                handleDeleteRequestPropertyClick
+                                              }
+                                            />
+                                          ))}
+                                          <BodyPayloadPropertyCaptureInput
+                                            newProperty={newRequestProperty}
+                                            onKeynameChange={
+                                              handleNewRequestPropertyKeyChange
+                                            }
+                                            onDatatypeChange={
+                                              handleNewRequestPropertyDatatypeChange
+                                            }
+                                            onAddClick={
+                                              handleAddRequestProperty
+                                            }
+                                          />
+                                        </div>
+                                      ) : null}
+                                    </div>
+                                  ) : null}
+
+                                  {activeTab === Tab.HEADERS ? (
+                                    <div
+                                      style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                      }}>
+                                      {/* <div style={{ display: 'flex', marginBottom: 5 }}>
                                   <TextInput
-                                    label="User"
-                                    name="authUser"
-                                    value={basicAuthUserPwd[0]}
-                                    onChange={handleAuthUserChange}
-                                    style={{ marginRight: 8, width: 300 }}
+                                    placeholder="requestTimeout"
+                                    label="Request Timeout"
+                                    name="requestTimeout"
+                                    style={{ width: 200, marginRight: 15 }}
                                   />
                                   <TextInput
-                                    label="Password"
-                                    name="authPassword"
-                                    value={basicAuthUserPwd[1]}
-                                    onChange={handleAuthPasswordChange}
-                                    style={{ width: 300 }}
+                                    placeholder="rateLimit"
+                                    label="Rate Limit"
+                                    name="rateLimit"
+                                    style={{ width: 200, marginRight: 15 }}
                                   />
+                                  <TextInput
+                                    placeholder="maxConnections"
+                                    label="Max Connections"
+                                    name="maxConnections"
+                                    style={{ width: 200, marginRight: 15 }}
+                                  />
+                                </div> */}
+                                      {/* <h4 style={{ fontSize: 15, fontWeight: 300 }}>
+                                  Additional Headers
+                                </h4> */}
+                                      <RequestHeaderInputHeading />
+                                      {requestHeaders.map((header) => (
+                                        <RequestHeaderDisplayInput
+                                          key={header.id}
+                                          header={header}
+                                          onKeynameChange={handleCurrentHeaderKeynameChange(
+                                            header.key
+                                          )}
+                                          onValueChange={handleCurrentHeaderValueChange(
+                                            header.key
+                                          )}
+                                          onRemoveBtnClick={
+                                            handleDeleteHeaderClick
+                                          }
+                                        />
+                                      ))}
+                                      <RequestHeaderCaptureInput
+                                        newHeader={newHeader}
+                                        onKeynameChange={
+                                          handleNewHeaderKeyChange
+                                        }
+                                        onValueChange={
+                                          handleNewHeaderValueChange
+                                        }
+                                        onAddClick={handleAddHeader}
+                                      />
+                                    </div>
+                                  ) : null}
+
+                                  {activeTab === Tab.RESPONSE ? (
+                                    <div
+                                      style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                      }}>
+                                      <div
+                                        style={{
+                                          marginBottom: 5,
+                                          display: 'flex',
+                                        }}>
+                                        <SelectInput
+                                          width={300}
+                                          label="Media Type"
+                                          name="response.mediaType"
+                                          options={optionsMediaTypes}
+                                          onChange={(val) =>
+                                            setFieldValue(
+                                              'response.mediaType',
+                                              val
+                                            )
+                                          }
+                                          value={values.response.mediaType}
+                                          style={{ marginRight: 8 }}
+                                        />
+                                      </div>
+                                      <h4
+                                        style={{
+                                          fontSize: 15,
+                                          fontWeight: 300,
+                                        }}>
+                                        Additional Properties
+                                      </h4>
+                                      <ResponsePropertyInputHeading />
+                                      {responseProperties.map((prop) => (
+                                        <ResponsePropertyInput
+                                          key={prop.id}
+                                          property={prop}
+                                          onKeynameChange={handleCurrentResponsePropertyNameChange(
+                                            prop.key
+                                          )}
+                                          onValueChange={handleCurrentResponsePropertyValueChange(
+                                            prop.key
+                                          )}
+                                          onRemoveBtnClick={
+                                            handleDeleteResponsePropertyClick
+                                          }
+                                        />
+                                      ))}
+                                      <ResponsePropertyInput
+                                        showAddBtn
+                                        property={newResponseProperty}
+                                        onKeynameChange={
+                                          handleNewResponsePropertyNameChange
+                                        }
+                                        onValueChange={
+                                          handleNewResponsePropertyValueChange
+                                        }
+                                        onAddClick={handleAddResponseProperty}
+                                      />
+                                    </div>
+                                  ) : null}
+
+                                  {activeTab === Tab.AUTHENTICATION ? (
+                                    <div
+                                      style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                      }}>
+                                      <SelectInput
+                                        width={200}
+                                        label="Authentication Type"
+                                        name="authType"
+                                        options={optionsAuthMethods}
+                                        onChange={handleAuthTypeChange}
+                                        value={authType}
+                                      />
+                                      {authType &&
+                                      authType.value ===
+                                        AuthType.BEARER_TOKEN ? (
+                                        <div style={{ flexGrow: 1 }}>
+                                          <TextInput
+                                            label="Token"
+                                            name="bearerToken"
+                                            value={bearerToken}
+                                            onChange={handleBearerTokenChange}
+                                            style={{ width: 560 }}
+                                          />
+                                        </div>
+                                      ) : null}
+                                      {authType &&
+                                      authType.value === AuthType.BASIC ? (
+                                        <div style={{ display: 'flex' }}>
+                                          <TextInput
+                                            label="User"
+                                            name="authUser"
+                                            value={basicAuthUserPwd[0]}
+                                            onChange={handleAuthUserChange}
+                                            style={{
+                                              marginRight: 8,
+                                              width: 300,
+                                            }}
+                                          />
+                                          <TextInput
+                                            label="Password"
+                                            name="authPassword"
+                                            value={basicAuthUserPwd[1]}
+                                            onChange={handleAuthPasswordChange}
+                                            style={{ width: 300 }}
+                                          />
+                                        </div>
+                                      ) : null}
+                                    </div>
+                                  ) : null}
                                 </div>
-                              ) : null}
+                              </div>
                             </div>
-                          ) : null}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className={styles.buttons}>
-                    <button
-                      style={{ width: 100 }}
-                      className="aivBase-button aivBase-button--secondary aivBase-button--medum"
-                      onClick={handleBackClick}>
-                      Back
-                    </button>
-                    <button
-                      style={{ width: 100, marginRight: 0 }}
-                      className="aivBase-button aivBase-button--primary aivBase-button--medium"
-                      onClick={() => null}>
-                      Save
-                    </button>
-                  </div>
+                          </div>
+                          <div className={styles.buttons}>
+                            <button
+                              style={{ width: 100 }}
+                              className="aivBase-button aivBase-button--secondary aivBase-button--medum"
+                              onClick={handleBackClick}>
+                              Back
+                            </button>
+                            <button
+                              type="submit"
+                              style={{ width: 100, marginRight: 0 }}
+                              className="aivBase-button aivBase-button--primary aivBase-button--medium">
+                              Save
+                            </button>
+                          </div>
+                        </Form>
+                      );
+                    }}
+                  </Formik>
                 </div>
               </div>
             </div>
