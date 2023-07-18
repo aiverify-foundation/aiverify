@@ -2,9 +2,9 @@
 
 ## Introduction
 
-Welcome to AI Verify! AI Verify is launched under the AI Verify Foundation, a subsidiary under the IMDA.
+Welcome to AI Verify! AI Verify is launched under the [AI Verify Foundation](https://aiverifyfoundation.sg/?utm_source=Github&utm_medium=referral&utm_campaign=20230607_AI_Verify_Foundation_GitHub), a subsidiary under the IMDA.
 
-AI Verify is an AI governance testing framework and software toolkit that validates the performance of AI systems against a set of internationally recognised principles through standardised tests. AI Verify is consistent with international AI governance frameworks such as those from European Union, OECD and Singapore.
+[AI Verify](https://aiverifyfoundation.sg/what-is-ai-verify/?utm_source=Github&utm_medium=referral&utm_campaign=20230607_AI_Verify_GitHub) is an AI governance testing framework and software toolkit that validates the performance of AI systems against a set of internationally recognised principles through standardised tests. AI Verify is consistent with international AI governance frameworks such as those from European Union, OECD and Singapore.
 
 It is a single integrated toolkit that operates within an enterprise environment. It can perform technical tests on common supervised learning classification and regression models for most tabular and image datasets. It however does not define AI ethical standards and does not guarantee that any AI system tested will be free from risks or biases or is completely safe.
 
@@ -24,7 +24,7 @@ Learn how you can utilise the developer tools effectively to contribute to the p
 
 ## Contributing Guidelines
 
-We encourage contributions from the community to help improve this project. Before contributing, please read our [Contributing Guidelines](https://github.com/IMDA-BTG/aiverify-developer-tools/blob/main/Contributor.md) to understand the process and expectations.
+We encourage contributions from the community to help improve this project. Before contributing, please read our [Contributing Guidelines](https://github.com/IMDA-BTG/aiverify-developer-tools/blob/main/CONTRIBUTING.md) to understand the process and expectations.
 
 ## Issue Tracker
 
@@ -40,7 +40,7 @@ This project is released under the Apache 2.0 license, which can be found under 
 
 ## Support
 
-If you have any questions or need assistance, please check the project discussions or issue tracker for existing threads. If you cannot find a resolution, feel free to create a new discussion or issue, or contact info@aiverify.sg if you require assistance.
+If you have any questions or need assistance, please check the project discussions or issue tracker for existing threads. If you cannot find a resolution, feel free to create a new discussion or issue, or head over to our [contact page](https://aiverifyfoundation.sg/contact-us/?utm_source=Github&utm_medium=referral&utm_campaign=20230607_Queries_from_GitHub) if you require assistance.
 
 Thank you for your interest in AI Verify, and we look forward to your contributions!
 

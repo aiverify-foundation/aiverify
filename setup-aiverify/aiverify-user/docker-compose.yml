@@ -4,21 +4,17 @@ services:
   redis:
     image: redis:6.2-alpine
     restart: always
-    ports:
-      - '6379:6379'
     command: redis-server --save 20 1 --loglevel warning --include /etc/redis/redis.conf
     volumes:
        - ./redis-init/redis.conf:/etc/redis/redis.conf
 #      - ./data/redis:/data
-#      - ./log/redis:/var/log/redis
+#      - ./logs/redis:/var/log/redis
     networks:
       - app-network
 
   db:
     image: mongo:6.0.4
     restart: always
-    ports:
-      - '27017:27017'
     environment:
       MONGO_INITDB_ROOT_USERNAME: '${MONGO_ROOT_USER:-mongodb}'
       MONGO_INITDB_ROOT_PASSWORD: '${MONGO_ROOT_PASSWORD:-mongodb}'
@@ -27,7 +23,7 @@ services:
     user: '${CUR_UID}:${CUR_GID}'
     volumes:
       - ~/data/db:/data/db
-      - ~/log/db:/var/log/mongodb
+      - ~/logs/db:/var/log/mongodb
       - ./mongo-init:/docker-entrypoint-initdb.d
     networks:
       - app-network

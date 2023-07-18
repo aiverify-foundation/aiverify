@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{include = "test_engine_app"}]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">=3.10,<3.12"
 redis = "4.5.5"
 numpy = "1.23.5"
 pathos = "0.3.0"

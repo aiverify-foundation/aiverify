@@ -52,12 +52,6 @@ RUN apt install chromium -y
 
 RUN ln -s /usr/bin/chromium /usr/bin/chromium-browser
 
-# Install libs needed by puppeter/chromium
-#RUN apt install -y libx11-xcb1 libxcomposite1 libxcursor1 libxdamage1 \
-#        libxi-dev libxtst-dev libnss3 libcups2 libxss1 libxrandr2 \
-#        libasound2 libatk1.0-0 libatk-bridge2.0-0 libpangocairo-1.0-0 \
-#        libgtk-3-0 libgbm1
-
 # For shap-toolbox plugin
 RUN apt install -y gcc g++ python3-dev
 
@@ -70,9 +64,7 @@ RUN apt update && apt install -y git
 
 RUN apt-get install unzip
 
-ARG ACCESS_TOKEN
-
-# Clone aiverify monorepo
+# Clone aiverify repo
 WORKDIR /app
 RUN git clone https://github.com/imda-btg/aiverify.git --branch=v0.9.x
 
@@ -80,8 +72,7 @@ WORKDIR /app/aiverify
 
 RUN mkdir -p ai-verify-portal/plugins
 
-## Widget files have to go into portal plugins folder before nextjs build
-## Widget files are unzipped into subfolder whose name must match its plugin gid
+## Plugin files have to go into portal plugins folder before portal build (i.e. nextjs build)
 
 RUN unzip stock-plugins/aiverify.stock.decorators/dist/*.zip -d ./ai-verify-portal/plugins/aiverify.stock.decorators
 RUN unzip stock-plugins/aiverify.stock.process-checklist/dist/*.zip -d ./ai-verify-portal/plugins/aiverify.stock.process-checklist
@@ -98,15 +89,15 @@ SERVER_URL=http://localhost:3000\n \
 WEBSOCKET_URL=ws://localhost:4000/graphql\n \
 APIGW_URL=http://localhost:4000\n \
 MONGODB_URI=mongodb://aiverify:aiverify@db:27017/aiverify\n \
-REDIS_URI=redis://redis:6379' | tee .env.local
+REDIS_URI=redis://redis:6379\n \
+TEST_ENGINE_URL=http://test-engine:8080' | tee .env.local
 RUN rm .env.development
 
 # Install dependencies for portal
 RUN npm install
 RUN npm link ../ai-verify-shared-library
 
-# run portal build in the final stage with all the stock plugins copied to plugins folder.
-#RUN npm run build
+# Build portal in the final stage after all stock plugins are copied to plugins folder.
 
 # Install dependencies for apigw
 WORKDIR /app/aiverify/ai-verify-apigw
@@ -138,6 +129,8 @@ REDIS_CONSUMER_GROUP="MyGroup"\n \
 REDIS_SERVER_HOSTNAME="redis"\n \
 REDIS_SERVER_PORT=6379\n \
 API_SERVER_PORT=8080' | tee .env
+
+# Unzip stock plugins (algos) into portal plugins folder
 WORKDIR /app/aiverify
 RUN unzip ./stock-plugins/aiverify.stock.accumulated-local-effect/dist/*.zip -d ./ai-verify-portal/plugins/accumulated-local-effect
 RUN unzip ./stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/dist/*.zip -d ./ai-verify-portal/plugins/fairness-metrics-toolbox-for-classification
@@ -147,18 +140,13 @@ RUN unzip ./stock-plugins/aiverify.stock.partial-dependence-plot/dist/*.zip -d .
 RUN unzip ./stock-plugins/aiverify.stock.robustness-toolbox/dist/*.zip -d ./ai-verify-portal/plugins/robustness-toolbox
 RUN unzip ./stock-plugins/aiverify.stock.shap-toolbox/dist/*.zip -d ./ai-verify-portal/plugins/shap-toolbox
 
-# Build portal (nextjs build)
+# All stock plugins are installed into portal plugins foler, now build portal (nextjs build)
 WORKDIR /app/aiverify/ai-verify-portal
 RUN npm run build
 
 RUN chown -R $UID:$GID /app/aiverify
 
+# Run containers with non-admin user
 USER $USER
-
-# Install puppeteer again to ensure needed modules go into the user's cache dir
-WORKDIR /app/aiverify/ai-verify-apigw
-
-#RUN PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=1 npm install puppeteer
-#RUN npm install puppeteer
 
 WORKDIR /app
