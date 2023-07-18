@@ -48,6 +48,7 @@ function RequestHeaderDisplayInput(props: RequestHeaderDisplayProps) {
           value={header.key}
           name=""
           style={{ marginBottom: 0 }}
+          maxLength={100}
           onChange={onKeynameChange}
         />
       </div>
@@ -56,6 +57,7 @@ function RequestHeaderDisplayInput(props: RequestHeaderDisplayProps) {
           value={header.value}
           name=""
           style={{ marginBottom: 0 }}
+          maxLength={100}
           onChange={onValueChange}
         />
       </div>
@@ -81,6 +83,7 @@ function RequestHeaderCaptureInput(props: RequestHeaderCaptureInputProps) {
           name="headerKeyNameCapture"
           onChange={onKeynameChange}
           value={newHeader.key}
+          maxLength={100}
           style={{ marginBottom: 0 }}
         />
       </div>
@@ -89,6 +92,7 @@ function RequestHeaderCaptureInput(props: RequestHeaderCaptureInputProps) {
           name="headerValueCapture"
           onChange={onValueChange}
           value={newHeader.value}
+          maxLength={100}
           style={{ marginBottom: 0 }}
         />
       </div>

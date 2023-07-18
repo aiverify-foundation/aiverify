@@ -55,6 +55,7 @@ function ResponsePropertyInput(props: ResponsePropertyInputProps) {
           name="propertyNameCapture"
           onChange={onKeynameChange}
           value={property.key}
+          maxLength={100}
           style={{ marginBottom: 0 }}
         />
       </div>
@@ -63,6 +64,7 @@ function ResponsePropertyInput(props: ResponsePropertyInputProps) {
           name="propertyValueCapture"
           onChange={onValueChange}
           value={property.value}
+          maxLength={100}
           style={{ marginBottom: 0 }}
         />
       </div>

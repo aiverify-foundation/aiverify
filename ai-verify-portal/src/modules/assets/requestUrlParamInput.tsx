@@ -53,6 +53,7 @@ function UrlParamDisplayInput(props: UrlParamsDisplayProps) {
           value={param.key}
           name="variableName"
           style={{ marginBottom: 0 }}
+          maxLength={100}
           onChange={onKeynameChange}
         />
       </div>
@@ -94,6 +95,7 @@ function UrlParamCaptureInput(props: UrlParamCaptureInputProps) {
           name="paramName"
           onChange={onKeynameChange}
           value={newParam.key}
+          maxLength={100}
           style={{ marginBottom: 0 }}
         />
       </div>

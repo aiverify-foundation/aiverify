@@ -55,6 +55,7 @@ function BodyPayloadPropertyDisplayInput(
           value={property.key}
           name="variableName"
           onChange={onPropertyNameChange}
+          maxLength={100}
           style={{ marginBottom: 0 }}
         />
       </div>
@@ -94,6 +95,7 @@ function BodyPayloadPropertyCaptureInput(
           name=""
           onChange={onKeynameChange}
           value={newProperty.key}
+          maxLength={100}
           style={{ marginBottom: 0 }}
         />
       </div>
