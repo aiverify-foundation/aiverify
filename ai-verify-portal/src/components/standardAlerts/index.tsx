@@ -7,26 +7,26 @@ import React, { PropsWithChildren } from 'react';
 import clsx from 'clsx';
 
 enum AlertType {
-  ERROR='error',
-  WARNING='warning',
-  INFO='info',
-  SUCCESS='success'
+  ERROR = 'error',
+  WARNING = 'warning',
+  INFO = 'info',
+  SUCCESS = 'success',
 }
 
 type StandardAlertProps = {
-  alertType: AlertType,
-  disableCloseIcon?: boolean,
-  headingText?: string,
-  style?: React.CSSProperties,
-  iconStyle?: React.CSSProperties,
-  headingStyle?: React.CSSProperties,
-  onCloseIconClick?: () => void,
-}
+  alertType: AlertType;
+  disableCloseIcon?: boolean;
+  headingText?: string;
+  style?: React.CSSProperties;
+  iconStyle?: React.CSSProperties;
+  headingStyle?: React.CSSProperties;
+  onCloseIconClick?: () => void;
+};
 
 type AlertIconProps = {
-  type: AlertType,
-  style?: React.CSSProperties
-}
+  type: AlertType;
+  style?: React.CSSProperties;
+};
 
 function AlertIcon(props: AlertIconProps) {
   const { type, style } = props;
@@ -34,13 +34,33 @@ function AlertIcon(props: AlertIconProps) {
 
   switch (type) {
     case AlertType.ERROR:
-      return <ErrorOutlineIcon className={clsx(styles.alertIcon, styles[modifierClass])} style={style} />
+      return (
+        <ErrorOutlineIcon
+          className={clsx(styles.alertIcon, styles[modifierClass])}
+          style={style}
+        />
+      );
     case AlertType.WARNING:
-      return <ErrorOutlineIcon className={clsx(styles.alertIcon, styles[modifierClass])} style={style}/>
+      return (
+        <ErrorOutlineIcon
+          className={clsx(styles.alertIcon, styles[modifierClass])}
+          style={style}
+        />
+      );
     case AlertType.INFO:
-      return <InfoIcon className={clsx(styles.alertIcon, styles[modifierClass])} style={style}/>
+      return (
+        <InfoIcon
+          className={clsx(styles.alertIcon, styles[modifierClass])}
+          style={style}
+        />
+      );
     case AlertType.SUCCESS:
-      return <CheckCircleOutlineIcon className={clsx(styles.alertIcon, styles[modifierClass])} style={style}/>
+      return (
+        <CheckCircleOutlineIcon
+          className={clsx(styles.alertIcon, styles[modifierClass])}
+          style={style}
+        />
+      );
     default:
       return null;
   }
@@ -55,7 +75,7 @@ function StandardAlert(props: PropsWithChildren<StandardAlertProps>) {
     iconStyle,
     headingStyle,
     onCloseIconClick,
-    children
+    children,
   } = props;
 
   const customAlertBoxStyles: React.CSSProperties = {
@@ -67,23 +87,29 @@ function StandardAlert(props: PropsWithChildren<StandardAlertProps>) {
     height: 'auto',
     ...style,
   };
-  const customIconStyles: React.CSSProperties = disableCloseIcon ? { display: 'none' } : { color: 'lightGray' };
+  const customIconStyles: React.CSSProperties = disableCloseIcon
+    ? { display: 'none' }
+    : { color: 'lightGray' };
   const modifierClass = `type_${alertType}`;
 
-  return <AlertBox 
-    containerStyles={customAlertBoxStyles}
-    iconStyles={customIconStyles}
-    onCloseIconClick={onCloseIconClick}>
+  return (
+    <AlertBox
+      containerStyles={customAlertBoxStyles}
+      iconStyles={customIconStyles}
+      onCloseIconClick={onCloseIconClick}>
       <div className={clsx(styles.stdAlertBody, styles[modifierClass])}>
         <div className={styles.iconWrapper}>
-          <AlertIcon type={alertType} style={iconStyle}/>
+          <AlertIcon type={alertType} style={iconStyle} />
         </div>
         <div className={clsx(styles.stdAlertContent, styles[modifierClass])}>
-          <div className={styles.stdAlertHeading} style={headingStyle}>{headingText}</div>
+          <div className={styles.stdAlertHeading} style={headingStyle}>
+            {headingText}
+          </div>
           {children}
         </div>
       </div>
-  </AlertBox>
+    </AlertBox>
+  );
 }
 
-export { StandardAlert, AlertType }
+export { StandardAlert, AlertType };

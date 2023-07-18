@@ -31,7 +31,7 @@ export async function generateReport(reportId) {
 
   // generate report
   // added --no-sandbox param to make it work in containerized env.
-  const browser = await puppeteer.launch({args: ['--no-sandbox']});
+  const browser = await puppeteer.launch({args: ['--no-sandbox'], headless:'new'});
   const page = await browser.newPage();
   const url = `${WEB_REPORT_URL}/${report.project.toString()}`;
   // const pdf_name =  `report_${report.project.toString()}.pdf`;
@@ -42,6 +42,17 @@ export async function generateReport(reportId) {
     path: pdf_path,
     printBackground: true,
     format: 'A4',
+    margin: {
+      top: 10,
+      bottom: 33,
+    },
+    displayHeaderFooter: true,
+    footerTemplate: `
+      <style>#header, #footer { padding: 0 !important; }</style>
+      <div style="font-size: 9px; padding: 5px 0px 5px 0px; margin: 0px 15px 0px 0px; text-align: right; width: 100%;">
+        Page <span class="pageNumber"></span> of <span class="totalPages"></span>
+      </div>
+    `
   });
 
   // update report status

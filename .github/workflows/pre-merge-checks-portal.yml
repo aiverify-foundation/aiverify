@@ -5,26 +5,19 @@
 # 4. Dependency analysis (undesirable licenses)
 # 5. Deploy reports generated from the above to GitHub Pages
 
-# support monorepo
-
 name: Pre-Merge Checks (ai-verify-portal)
 
 on:
-  # Runs on pull request to main
+  # Runs when a pull request to main is being assigned
   pull_request:
-    branches: [ master, main ]
+    types: [ assigned, synchronize ]
+    branches:
+      - 'main'
     paths:
       - 'ai-verify-portal/**'
 
   # Run this workflow manually from Actions tab
   workflow_dispatch:
-
-# Sets permissions of GITHUB_TOKEN
-permissions:
-  contents: write
-  pages: write
-  pull-requests: write
-  id-token: write
 
 # Allow one concurrent deployment
 concurrency:
@@ -32,41 +25,23 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Single deploy job since we're just deploying
+
   pre-merge-checks:
-#    environment:
-#      name: github-pages
-#      url: ${{ steps.deployment.outputs.page_url }}
+    # Run only when PR is assigned, even on subsequent commits (i.e. synchronize)
+    if: (github.event_name == 'pull_request' && github.event.pull_request.assignee != null) || github.event_name == 'workflow_dispatch'
+
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 40
 
     steps:
 
-#      - name: Add label to PR
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#          PR: ${{ github.event.pull_request.html_url }}
-#        run: |
-#          gh pr edit $PR --add-label 'ai-verify-portal'
-
       # Checkout code
       - name: Checkout code
-        run: |
-          set +e
-          git config --global init.defaultBranch main
-          git init
-          git branch -m main
-          git remote add origin https://github.com/IMDA-BTG/aiverify.git
-          git config --local gc.auto 0
-          authToken="x-access-token:${{ secrets.GITHUB_TOKEN }}"
-          encodedAuthToken=$(echo -n "$authToken" | base64 -w0)
-          git config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ${encodedAuthToken}"
-          git -c protocol.version=2 fetch --no-tags --prune --progress --no-recurse-submodules --depth=1 origin +${{github.sha}}:refs/remotes/origin/main
-          git sparse-checkout init
-          git sparse-checkout set ai-verify-portal ai-verify-shared-library _site
-          git checkout --progress --force -B master refs/remotes/origin/main
-          ls -l
-          set -e
+        uses: actions/checkout@v3
+        with:
+          sparse-checkout: |
+            ai-verify-portal
+            ai-verify-shared-library
 
       # Install dependencies
       - name: Setup npm cache/install
@@ -101,11 +76,18 @@ jobs:
           cp .env.development .env
           npm run build
 
+      # Format check
+      - name: Format check
+        if: ${{ ! cancelled() }}
+        working-directory: ${{ github.workspace }}/ai-verify-portal
+        run: |
+          npm run format-check
+
       # Unit Tests & Coverage
       - name: Unit tests with coverage
-        if: always()
+        if: ${{ ! cancelled() }}
         working-directory: ${{ github.workspace }}/ai-verify-portal
-        timeout-minutes: 5
+        timeout-minutes: 30
         run: |
           set +e
           sudo timedatectl set-timezone Asia/Singapore
@@ -121,12 +103,13 @@ jobs:
 
       # eslint
       - name: Code quality analysis - lint
-        if: always()
+        if: ${{ ! cancelled() }}
         working-directory: ${{ github.workspace }}/ai-verify-portal
         run: |
           set +e
-          npx eslint -f html -o eslint-report.html .
+          npx eslint .
           exit_code_lint=$?
+          npx eslint -f html -o eslint-report.html .
           npx eslint -f json -o eslint-report.json .
           node ci/createBadges.mjs lint
           set -e
@@ -137,17 +120,19 @@ jobs:
 
       # npm audit
       - name: Dependency analysis - vulnerabilities & licenses
-        if: always()
+        if: ${{ ! cancelled() }}
         working-directory: ${{ github.workspace }}/ai-verify-portal
         run: |
           set +e
+          npm audit
+          exit_code_audit=$?         
           npm audit --json | npx npm-audit-markdown --output npm-audit-report.md
-          exit_code_audit=$?
           npx markdown-to-html-cli --source npm-audit-report.md --output npm-audit-report.html -y
           echo -e "License Check Summary for portal\n" > license-report.txt
           cat licenses-found.txt >> license-report.txt
           echo -e "\nLicense Check Summary for shared-library\n" >> license-report.txt
           cat ../ai-verify-shared-library/licenses-found.txt >> license-report.txt
+          cat license-report.txt
           cp license-report.txt licenses-found.txt
           node ci/createBadges.mjs dependency        
           node ci/createBadges.mjs license
@@ -158,8 +143,9 @@ jobs:
           fi
 
       ### Publish reports to ci dashboard ###
+
       - name: Checkout dashboard
-        if: always()
+        if: ${{ github.event.pull_request.head.repo.full_name == github.repository && always() }}
         uses: actions/checkout@v3
         with:
           repository: IMDA-BTG/ci-dashboard
@@ -168,53 +154,21 @@ jobs:
           path: check-results
 
       - name: Push results to dashboard
-        if: always()
+        if: ${{ github.event.pull_request.head.repo.full_name == github.repository && always() }}
         working-directory: ${{ github.workspace }}/check-results
         run: |
           set +e
+          find ../ -type f -name ".gitignore" -exec rm {} +
+          [ -d "docs/pre-merge/portal" ] && rm -rf docs/pre-merge/portal
           mkdir -p docs/pre-merge/portal
           mv ../ai-verify-portal/coverage docs/pre-merge/portal/
           mv ../ai-verify-portal/*.svg docs/pre-merge/portal/
           mv ../ai-verify-portal/*.html docs/pre-merge/portal/
           mv ../ai-verify-portal/*.md docs/pre-merge/portal/
           mv ../ai-verify-portal/*.txt docs/pre-merge/portal/
-          git add *
+          git add docs/pre-merge/portal
           git config user.name "imda-btg"
           git config user.email "idma-btg@imda.gov.sg"
           git commit -m "feat(portal) actions publish portal reports to dashboard"
           git push
           set -e
-
-#      - name: Prepare artifact 2
-#        if: always()
-#        run: |
-#          set +e
-#          mkdir -p check-results/docs/pre-merge/portal
-#          cd check-results
-#          git init
-#          git branch -m main
-#          git remote add origin https://github.com/IMDA-BTG/ci-dashboard.git
-#          mv ../ai-verify-portal/coverage docs/pre-merge/portal/
-#          mv ../ai-verify-portal/*.svg docs/pre-merge/portal/
-#          mv ../ai-verify-portal/*.html docs/pre-merge/portal/
-#          mv ../ai-verify-portal/*.md docs/pre-merge/portal/
-#          mv ../ai-verify-portal/*.txt docs/pre-merge/portal/
-#          git add *
-#          git config user.name "imda-btg"
-#          git config user.email "idma-btg@imda.gov.sg"
-#          git commit -m "feat(portal): actions publish portal reports to dashboard"
-#          git config --unset-all http.https://github.com/.extraheader
-#          authToken="x-access-token:${{ secrets.CHECKOUT_TOKEN }}"
-#          encodedAuthToken=$(echo -n "$authToken" | base64 -w0)
-#          git config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ${encodedAuthToken}"
-#          git push
-#          set -e
-#
-#      - name: Upload artifact
-#        if: always()
-#        uses: actions/upload-pages-artifact@v1
-#
-#      - name: Publish artifact to Pages
-#        if: always()
-#        id: deployment
-#        uses: actions/deploy-pages@v1

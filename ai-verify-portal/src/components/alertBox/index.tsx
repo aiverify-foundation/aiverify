@@ -10,16 +10,16 @@ enum AlertBoxSize {
   SMALL = 's',
   MEDIUM = 'm',
   LARGE = 'l',
-  AUTO = 'auto'
+  AUTO = 'auto',
 }
 
 enum AlertBoxFixedPositions {
-  CENTER = 'center'
+  CENTER = 'center',
 }
 
-type DraggableAbsolutionPositon = {x: number, y: number}
+type DraggableAbsolutionPositon = { x: number; y: number };
 
-type CSSAbsolutePosition = Pick<React.CSSProperties, 'top' | 'left'>
+type CSSAbsolutePosition = Pick<React.CSSProperties, 'top' | 'left'>;
 
 type AlertBoxProps = {
   id?: string;
@@ -33,22 +33,22 @@ type AlertBoxProps = {
   enableModalOverlay?: boolean;
   renderInPortal?: boolean;
   onCloseIconClick?: () => void;
-}
+};
 
 type AlertBoxHeaderProps = {
-  heading?: string,
-  isDragHandle?: boolean,
-}
+  heading?: string;
+  isDragHandle?: boolean;
+};
 
 type AlertBoxBodyProps = {
   bodyStyles?: React.CSSProperties;
   hasFooter?: boolean;
-}
+};
 
 type AlertBoxFooterProps = {
   footerStyles?: React.CSSProperties;
   hasFooter?: boolean;
-}
+};
 
 const portalDivId = 'aivModal';
 
@@ -69,8 +69,11 @@ function AlertBox(props: PropsWithChildren<AlertBoxProps>) {
   } = props;
 
   const sizeModifier = `alertBox_${size}`;
-  const positionModifier = defaultPosition || draggable ? 'absolute_pos' : `fixed_${fixedPosition}`;
-  const modalModfier = enableModalOverlay ? 'with_modalOverlay' : 'without_modalOverlay';
+  const positionModifier =
+    defaultPosition || draggable ? 'absolute_pos' : `fixed_${fixedPosition}`;
+  const modalModfier = enableModalOverlay
+    ? 'with_modalOverlay'
+    : 'without_modalOverlay';
   const inlineStyles = { ...containerStyles };
   const dragHandleClassName = dragHandle || 'alertbox-dragHandle';
 
@@ -80,17 +83,44 @@ function AlertBox(props: PropsWithChildren<AlertBoxProps>) {
   }
 
   if (draggable) {
-    return <>
-      {enableModalOverlay ? <div className={styles.screenOverlay} /> : null}
-      <Draggable
-        handle={`.${dragHandleClassName}`}
-        disabled={!draggable}
-        defaultPosition={defaultPosition as DraggableAbsolutionPositon}>
-        <div id={id}
+    return (
+      <>
+        {enableModalOverlay ? <div className={styles.screenOverlay} /> : null}
+        <Draggable
+          handle={`.${dragHandleClassName}`}
+          disabled={!draggable}
+          defaultPosition={defaultPosition as DraggableAbsolutionPositon}>
+          <div
+            id={id}
+            className={clsx(
+              styles.alertBox,
+              styles[positionModifier],
+              styles[sizeModifier],
+              styles[modalModfier]
+            )}
+            style={inlineStyles}>
+            <CloseIcon
+              className={styles.closeIcon}
+              style={iconStyles}
+              onClick={onCloseIconClick}
+            />
+            {children}
+          </div>
+        </Draggable>
+      </>
+    );
+  }
+
+  if (enableModalOverlay && renderInPortal) {
+    return (
+      <ClientOnlyPortal selector={`#${portalDivId}`}>
+        {enableModalOverlay ? <div className={styles.screenOverlay} /> : null}
+        <div
+          id={id}
           className={clsx(
             styles.alertBox,
-            styles[positionModifier],
             styles[sizeModifier],
+            styles[positionModifier],
             styles[modalModfier]
           )}
           style={inlineStyles}>
@@ -101,14 +131,15 @@ function AlertBox(props: PropsWithChildren<AlertBoxProps>) {
           />
           {children}
         </div>
-      </Draggable>
-    </>
+      </ClientOnlyPortal>
+    );
   }
 
-  if (enableModalOverlay && renderInPortal) {
-    return <ClientOnlyPortal selector={`#${portalDivId}`}>
+  return (
+    <>
       {enableModalOverlay ? <div className={styles.screenOverlay} /> : null}
-      <div id={id}
+      <div
+        id={id}
         className={clsx(
           styles.alertBox,
           styles[sizeModifier],
@@ -123,67 +154,51 @@ function AlertBox(props: PropsWithChildren<AlertBoxProps>) {
         />
         {children}
       </div>
-    </ClientOnlyPortal>
-  }
-
-  return <>
-    {enableModalOverlay ? <div className={styles.screenOverlay} /> : null}
-    <div id={id}
-      className={clsx(
-        styles.alertBox,
-        styles[sizeModifier],
-        styles[positionModifier],
-        styles[modalModfier]
-      )}
-      style={inlineStyles}>
-      <CloseIcon
-        className={styles.closeIcon}
-        style={iconStyles}
-        onClick={onCloseIconClick}
-      />
-      {children}
-    </div>
-  </>
+    </>
+  );
 }
 
 function Header(props: PropsWithChildren<AlertBoxHeaderProps>) {
   const { heading, isDragHandle = false, children } = props;
-  return <div 
-    className={
-      clsx(
+  return (
+    <div
+      className={clsx(
         styles.alertBoxHeader,
-        isDragHandle ? 'alertbox-dragHandle' : null, 
-        isDragHandle ? styles.header_dragHandle : null)}    
-    >
-    <div className={styles.headingText}>{heading}</div>
-    {children}
-  </div>
+        isDragHandle ? 'alertbox-dragHandle' : null,
+        isDragHandle ? styles.header_dragHandle : null
+      )}>
+      <div className={styles.headingText}>{heading}</div>
+      {children}
+    </div>
+  );
 }
 
 function Body(props: PropsWithChildren<AlertBoxBodyProps>) {
   const { bodyStyles, children, hasFooter = false } = props;
-  return <div className={
-    clsx(
-      styles.alertBoxBody,
-      hasFooter ? styles.offsetFooter : null,
-    )}
-    style={bodyStyles}>
-    {children}
-  </div>
+  return (
+    <div
+      className={clsx(
+        styles.alertBoxBody,
+        hasFooter ? styles.offsetFooter : null
+      )}
+      style={bodyStyles}>
+      {children}
+    </div>
+  );
 }
 
 function Footer(props: PropsWithChildren<AlertBoxFooterProps>) {
   const { footerStyles, children } = props;
-  return <div
-    className={styles.alertBoxFooter}
-    style={footerStyles}>
+  return (
+    <div className={styles.alertBoxFooter} style={footerStyles}>
       {children}
-  </div>
+    </div>
+  );
 }
 
 AlertBox.Body = Body;
 AlertBox.Header = Header;
 AlertBox.Footer = Footer;
 
-export { AlertBox, AlertBoxSize, AlertBoxFixedPositions }
-export type { DraggableAbsolutionPositon }
+export { AlertBox, AlertBoxSize, AlertBoxFixedPositions };
+export type { DraggableAbsolutionPositon };

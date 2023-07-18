@@ -19,5 +19,6 @@
       "cid": "explainability_process_checklist",
       "datapath": "explainability_process_checklist.sample.json" 
     }
-  ]
+  ],
+  "dynamicHeight": true
 }

@@ -52,12 +52,7 @@
           "maximum": 36
         }
       },
-      "required": [
-        "minW",
-        "minH",
-        "maxW",
-        "maxH"
-      ]
+      "required": ["minW", "minH", "maxW", "maxH"]
     },
     "properties": {
       "description": "List of widget properties",
@@ -83,10 +78,7 @@
             "maxLength": 128
           }
         },
-        "required": [
-          "key",
-          "helper"
-        ]
+        "required": ["key", "helper"]
       }
     },
     "tags": {
@@ -124,9 +116,7 @@
             "maxLength": 256
           }
         },
-        "required": [
-          "cid"
-        ]
+        "required": ["cid"]
       }
     },
     "mockdata": {
@@ -139,10 +129,7 @@
           "type": {
             "description": "Type of sample data",
             "type": "string",
-            "enum": [
-              "Algorithm",
-              "InputBlock"
-            ]
+            "enum": ["Algorithm", "InputBlock"]
           },
           "gid": {
             "description": "GID of sample data for component dependency. If empty, assume GID of same plugin",
@@ -162,17 +149,14 @@
             "maxLength": 256
           }
         },
-        "required": [
-          "type",
-          "cid",
-          "datapath"
-        ]
+        "required": ["type", "cid", "datapath"]
       }
+    },
+    "dynamicHeight": {
+      "description": "Whether this widget has dynamic height",
+      "type": "boolean",
+      "default": false
     }
   },
-  "required": [
-    "cid",
-    "name",
-    "widgetSize"
-  ]
+  "required": ["cid", "name", "widgetSize"]
 }

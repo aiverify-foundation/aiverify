@@ -16,7 +16,7 @@
   min-width: 20px;
   height: 20px;
   border-radius: 50%;
-  color:#FFFFFF;
+  color: #ffffff;
   font-size: 12px;
   padding: 2px 3px 2px 2px;
   top: -5px;
@@ -52,7 +52,7 @@
   width: 400px;
   background-color: var(--color-white);
   border-radius: 4px;
-  box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.3);
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.3);
 }
 
 .panel h3 {
@@ -71,13 +71,13 @@
 }
 
 .scrollContainer::-webkit-scrollbar {
-	width: 8px;
-	background-color: rgba(0, 0, 0, 0.1);
+  width: 8px;
+  background-color: rgba(0, 0, 0, 0.1);
   border-radius: 5px;
 }
 
 .scrollContainer::-webkit-scrollbar-thumb {
-	background-color: rgba(122, 121, 122, 0.4);
+  background-color: rgba(122, 121, 122, 0.4);
   border-radius: 5px;
 }
 
@@ -114,12 +114,12 @@
 }
 
 .callToAction {
-  padding: 5px  0 0 0;
+  padding: 5px 0 0 0;
 }
 
 .viewReportCTA {
   width: 125px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   display: flex;
   align-items: center;
   padding: 3px;
@@ -138,15 +138,15 @@
 .flyOutMsg {
   visibility: hidden;
   position: absolute;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border: 1px solid var(--color-light-gray2);
-  box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.3);
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.3);
   top: 60px;
   right: -400px;
   width: 340px;
   transition-property: right;
   transition-timing-function: ease-in-out;
-	transition-duration: 0.2s;
+  transition-duration: 0.2s;
 }
 
 .flyIn {

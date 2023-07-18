@@ -5,7 +5,8 @@
   font-size: 14px;
 }
 
-.textInput input, .textInput textarea {
+.textInput input,
+.textInput textarea {
   border-radius: 4px;
   border: 1px solid var(--color-light-gray);
   font-size: 16px;
@@ -22,15 +23,18 @@
   font-family: inherit;
 }
 
-.textInput input::placeholder, .textInput textarea::placeholder {
+.textInput input::placeholder,
+.textInput textarea::placeholder {
   color: var(--color-light-gray);
 }
 
-.textInput input:focus, .textInput textarea:focus {
+.textInput input:focus,
+.textInput textarea:focus {
   outline: none;
 }
 
-.textInput.inputError input, .textInput.inputError textarea {
+.textInput.inputError input,
+.textInput.inputError textarea {
   border-color: var(--color-alert-red);
 }
 

@@ -5,6 +5,6 @@ type FuseResult<T> = Fuse.FuseResult<T>;
 
 export function serializeSearchResult(list: FuseResult<Project>[]): Project[] {
   let projectsResult: Project[] = [];
-  projectsResult = list.map(fuseResultItem => fuseResultItem.item);
+  projectsResult = list.map((fuseResultItem) => fuseResultItem.item);
   return projectsResult;
 }

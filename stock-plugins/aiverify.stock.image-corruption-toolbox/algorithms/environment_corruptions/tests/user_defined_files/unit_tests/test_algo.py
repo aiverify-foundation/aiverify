@@ -1,4 +1,3 @@
-import json
 import logging
 from pathlib import Path
 
@@ -10,20 +9,28 @@ from test_engine_core.plugins.enums.model_type import ModelType
 from test_engine_core.plugins.enums.plugin_type import PluginType
 from test_engine_core.plugins.metadata.plugin_metadata import PluginMetadata
 from test_engine_core.plugins.plugins_manager import PluginManager
-from test_engine_core.utils.json_utils import remove_numpy_formats
+from test_engine_core.utils.json_utils import (
+    load_schema_file,
+    remove_numpy_formats,
+    validate_json,
+)
 from test_engine_core.utils.simple_progress import SimpleProgress
 
 
 def test_discover_plugin():
-    PluginManager.discover(str(Path().absolute() / "../../../test-engine-core-modules"))
+    PluginManager.discover(
+        str(Path().absolute() / "../../../../test-engine-core-modules")
+    )
 
 
 # Variables for testing
 valid_data_path = "tests/user_defined_files/data/raw_fashion_image_10"
-valid_model_path = "tests/user_defined_files/pipeline/multiclass_classification_image_mnist_fashion"
+valid_model_path = (
+    "tests/user_defined_files/pipeline/multiclass_classification_image_mnist_fashion"
+)
 valid_ground_truth_path = (
-        "tests/user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
-        )
+    "tests/user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
+)
 
 test_string = "data_str"
 test_int = 1
@@ -495,9 +502,9 @@ def test_valid_run(get_data_instance_and_serializer_without_ground_truth):
     test_plugin.generate()
     results = remove_numpy_formats(test_plugin.get_results())
 
-    # Load sample JSON file to assert results
-    f = open("tests/user_defined_files/unit_tests/sample_output.json")
-    sample_data = json.load(f)
-    f.close()
+    validate_status = validate_json(
+        results,
+        load_schema_file(str(Path().absolute() / "output.schema.json")),
+    )
 
-    assert results == sample_data
+    assert validate_status == True

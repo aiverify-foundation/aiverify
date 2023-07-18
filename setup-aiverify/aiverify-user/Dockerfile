@@ -14,15 +14,6 @@ RUN apt-get update && apt-get install -y curl
 RUN curl -sL https://deb.nodesource.com/setup_19.x | bash -
 RUN apt-get update && apt-get install -y nodejs
 
-# Install python 3.10
-
-RUN apt update
-RUN apt install -y python3.10
-RUN python3 --version
-
-# Install virtualenv
-RUN apt install -y python3.10-venv
-
 # Install Chromium
 
 RUN apt install debian-archive-keyring
@@ -111,6 +102,14 @@ RUN npm install
 ENV PUPPETEER_EXECUTABLE_PATH /usr/bin/chromium
 
 ############### Python #################
+
+# Install Python3.10
+RUN apt update
+RUN apt install -y python3.10
+RUN python3 --version
+
+# Install virtualenv
+RUN apt install -y python3.11-venv
 
 # Install dependencies into virtualenv
 RUN python3 -m venv /opt/venv

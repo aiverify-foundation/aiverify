@@ -33,8 +33,8 @@
           "properties": {
             "reportTitle": "Summary Report",
             "companyName": "{company}",
-            "reportSubtitle1": "{modelName}",
-            "reportSubtitle2": "{company}"
+            "reportSubtitle1": "{company}",
+            "reportSubtitle2": "{modelName}"
           }
         }
       ]
@@ -618,22 +618,6 @@
     {
       "layouts": [
         {
-          "i": "1684929577371",
-          "x": 0,
-          "y": 6,
-          "w": 12,
-          "h": 30,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
           "i": "1685516198460",
           "x": 0,
           "y": 0,
@@ -680,21 +664,25 @@
           "isResizable": null,
           "resizeHandles": null,
           "isBounded": null
+        },
+        {
+          "i": "1689038789267",
+          "x": 0,
+          "y": 6,
+          "w": 12,
+          "h": 30,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 10,
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:summary_transparency",
-          "key": "1684929577371",
-          "properties": null
-        },
         {
           "layoutItemProperties": {
             "justifyContent": "left",
@@ -734,13 +722,25 @@
           "properties": {
             "principle": "Transparency"
           }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.process_checklist:summary_transparency",
+          "key": "1689038789267",
+          "properties": null
         }
       ]
     },
     {
       "layouts": [
         {
-          "i": "1685980854045",
+          "i": "1685887158934",
           "x": 0,
           "y": 0,
           "w": 12,
@@ -756,13 +756,45 @@
           "isBounded": null
         },
         {
-          "i": "1685980882053",
+          "i": "1685887182343",
           "x": 0,
           "y": 4,
           "w": 12,
           "h": 1,
           "maxW": 12,
-          "maxH": 1,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
+        },
+        {
+          "i": "1685887236274",
+          "x": 0,
+          "y": 7,
+          "w": 12,
+          "h": 29,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 12,
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
+        },
+        {
+          "i": "1685887277893",
+          "x": 0,
+          "y": 6,
+          "w": 12,
+          "h": 1,
+          "maxW": 12,
+          "maxH": 36,
           "minW": 1,
           "minH": 1,
           "static": false,
@@ -772,7 +804,7 @@
           "isBounded": null
         },
         {
-          "i": "1685980915295",
+          "i": "1685889275116",
           "x": 0,
           "y": 5,
           "w": 12,
@@ -786,13 +818,87 @@
           "isResizable": null,
           "resizeHandles": null,
           "isBounded": null
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "center",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.process_checklist:area_header",
+          "key": "1685887158934",
+          "properties": {
+            "areaIndex": "2"
+          }
         },
         {
-          "i": "1685981003966",
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_divider",
+          "key": "1685887182343",
+          "properties": null
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.shap_toolbox:summary_global_exp_chart",
+          "key": "1685887236274",
+          "properties": {
+            "topNFeatures": "20"
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "center",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_title3",
+          "key": "1685887277893",
+          "properties": {
+            "title": "Technical Test"
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "center",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.process_checklist:principle_summary_header",
+          "key": "1685889275116",
+          "properties": {
+            "principle": "Explainability"
+          }
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1684929765131",
           "x": 0,
-          "y": 6,
+          "y": 0,
           "w": 12,
-          "h": 30,
+          "h": 36,
           "maxW": 12,
           "maxH": 36,
           "minW": 12,
@@ -813,115 +919,9 @@
             "color": null,
             "bgcolor": null
           },
-          "widgetGID": "aiverify.stock.process_checklist:area_header",
-          "key": "1685980854045",
-          "properties": {
-            "areaIndex": "2"
-          }
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "center",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.decorators:divider",
-          "key": "1685980882053",
-          "properties": null
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "center",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:principle_summary_header",
-          "key": "1685980915295",
-          "properties": {
-            "principle": "Explainability"
-          }
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
           "widgetGID": "aiverify.stock.process_checklist:summary_explainability",
-          "key": "1685981003966",
+          "key": "1684929765131",
           "properties": null
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1685981071611",
-          "x": 0,
-          "y": 1,
-          "w": 12,
-          "h": 35,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 12,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1685981483172",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 1,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 1,
-          "minH": 1,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.shap_toolbox:summary_global_exp_chart",
-          "key": "1685981071611",
-          "properties": {
-            "topNFeatures": "20"
-          }
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "center",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.reports:page_title3",
-          "key": "1685981483172",
-          "properties": {
-            "title": "technical test"
-          }
         }
       ]
     },
@@ -1178,7 +1178,7 @@
     {
       "layouts": [
         {
-          "i": "1685981255895",
+          "i": "1685889865280",
           "x": 0,
           "y": 0,
           "w": 12,
@@ -1194,15 +1194,47 @@
           "isBounded": null
         },
         {
-          "i": "1685981279656",
+          "i": "1685889889908",
           "x": 0,
-          "y": 1,
+          "y": 2,
           "w": 12,
-          "h": 35,
+          "h": 6,
           "maxW": 12,
           "maxH": 36,
           "minW": 12,
-          "minH": 10,
+          "minH": 6,
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
+        },
+        {
+          "i": "1685889893427",
+          "x": 0,
+          "y": 8,
+          "w": 12,
+          "h": 18,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 18,
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
+        },
+        {
+          "i": "1685889916737",
+          "x": 0,
+          "y": 1,
+          "w": 12,
+          "h": 1,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 1,
           "static": false,
           "isDraggable": null,
           "isResizable": null,
@@ -1220,77 +1252,11 @@
             "bgcolor": null
           },
           "widgetGID": "aiverify.stock.process_checklist:principle_summary_header",
-          "key": "1685981255895",
+          "key": "1685889865280",
           "properties": {
             "principle": "Robustness"
           }
         },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:summary_robustness",
-          "key": "1685981279656",
-          "properties": null
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1685889889908",
-          "x": 0,
-          "y": 1,
-          "w": 12,
-          "h": 6,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 6,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1685889893427",
-          "x": 0,
-          "y": 7,
-          "w": 12,
-          "h": 18,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 18,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1685981505569",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 1,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 1,
-          "minH": 1,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
         {
           "layoutItemProperties": {
             "justifyContent": "left",
@@ -1324,7 +1290,7 @@
             "bgcolor": null
           },
           "widgetGID": "aiverify.stock.reports:page_title3",
-          "key": "1685981505569",
+          "key": "1685889916737",
           "properties": {
             "title": "Technical Test"
           }
@@ -1334,59 +1300,11 @@
     {
       "layouts": [
         {
-          "i": "1685981570213",
+          "i": "1684929834011",
           "x": 0,
           "y": 0,
           "w": 12,
-          "h": 3,
-          "maxW": 12,
-          "maxH": 5,
-          "minW": 12,
-          "minH": 3,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1685981587593",
-          "x": 0,
-          "y": 3,
-          "w": 12,
-          "h": 1,
-          "maxW": 12,
-          "maxH": 1,
-          "minW": 1,
-          "minH": 1,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1685981605764",
-          "x": 0,
-          "y": 4,
-          "w": 12,
-          "h": 1,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 6,
-          "minH": 1,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1685981623206",
-          "x": 0,
-          "y": 5,
-          "w": 12,
-          "h": 31,
+          "h": 36,
           "maxW": 12,
           "maxH": 36,
           "minW": 12,
@@ -1407,48 +1325,8 @@
             "color": null,
             "bgcolor": null
           },
-          "widgetGID": "aiverify.stock.process_checklist:area_header",
-          "key": "1685981570213",
-          "properties": {
-            "areaIndex": "4"
-          }
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "center",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.decorators:divider",
-          "key": "1685981587593",
-          "properties": null
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "center",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:principle_summary_header",
-          "key": "1685981605764",
-          "properties": {
-            "principle": "Fairness"
-          }
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:summary_fairness",
-          "key": "1685981623206",
+          "widgetGID": "aiverify.stock.process_checklist:summary_robustness",
+          "key": "1684929834011",
           "properties": null
         }
       ]
@@ -1458,7 +1336,7 @@
         {
           "i": "1685890039237",
           "x": 0,
-          "y": 0,
+          "y": 5,
           "w": 12,
           "h": 1,
           "maxW": 12,
@@ -1472,9 +1350,57 @@
           "isBounded": null
         },
         {
+          "i": "1685890052347",
+          "x": 0,
+          "y": 4,
+          "w": 12,
+          "h": 1,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 6,
+          "minH": 1,
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
+        },
+        {
+          "i": "1685890097204",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 3,
+          "maxW": 12,
+          "maxH": 5,
+          "minW": 12,
+          "minH": 3,
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
+        },
+        {
+          "i": "1685890113062",
+          "x": 0,
+          "y": 3,
+          "w": 12,
+          "h": 1,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
+        },
+        {
           "i": "1685890208476",
           "x": 0,
-          "y": 1,
+          "y": 6,
           "w": 12,
           "h": 5,
           "maxW": 12,
@@ -1490,9 +1416,9 @@
         {
           "i": "1685890331001",
           "x": 0,
-          "y": 6,
+          "y": 11,
           "w": 12,
-          "h": 30,
+          "h": 25,
           "maxW": 12,
           "maxH": 36,
           "minW": 12,
@@ -1518,6 +1444,46 @@
           "properties": {
             "title": "Technical Test"
           }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "center",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.process_checklist:principle_summary_header",
+          "key": "1685890052347",
+          "properties": {
+            "principle": "Fairness"
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.process_checklist:area_header",
+          "key": "1685890097204",
+          "properties": {
+            "areaIndex": "4"
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_divider",
+          "key": "1685890113062",
+          "properties": null
         },
         {
           "layoutItemProperties": {
@@ -1575,6 +1541,40 @@
           },
           "widgetGID": "aiverify.stock.fairness_metrics_toolbox_for_classification:summary_recommendation",
           "key": "1685890367384",
+          "properties": null
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1684929846191",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 10,
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.process_checklist:summary_fairness",
+          "key": "1684929846191",
           "properties": null
         }
       ]
@@ -1933,22 +1933,6 @@
     {
       "layouts": [
         {
-          "i": "1684930688064",
-          "x": 0,
-          "y": 2,
-          "w": 12,
-          "h": 34,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
           "i": "1685516568279",
           "x": 0,
           "y": 0,
@@ -1979,24 +1963,25 @@
           "isResizable": null,
           "resizeHandles": null,
           "isBounded": null
+        },
+        {
+          "i": "1689037960180",
+          "x": 0,
+          "y": 2,
+          "w": 12,
+          "h": 34,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 10,
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:transparency_responses",
-          "key": "1684930688064",
-          "properties": {
-            "testableCriteria": "1",
-            "startIndex": "0"
-          }
-        },
         {
           "layoutItemProperties": {
             "justifyContent": "left",
@@ -2022,142 +2007,23 @@
           "widgetGID": "aiverify.stock.reports:page_divider",
           "key": "1685516588483",
           "properties": null
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684932272584",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 36,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:transparency_responses",
-          "key": "1684932272584",
-          "properties": {
-            "testableCriteria": "2",
-            "startIndex": "0",
-            "hideCriteriaDescription": "",
-            "numProcessChecks": "3"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684932651737",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 24,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:transparency_responses",
-          "key": "1684932651737",
-          "properties": {
-            "testableCriteria": "2",
-            "startIndex": "3",
-            "numProcessChecks": "5",
-            "hideCriteriaDescription": "1"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684932717470",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 36,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:transparency_responses",
-          "key": "1684932717470",
-          "properties": {
-            "testableCriteria": "3",
-            "startIndex": "0"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684932773639",
-          "x": 0,
-          "y": 2,
-          "w": 12,
-          "h": 34,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
         },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.process_checklist:transparency_responses",
+          "key": "1689037960180",
+          "properties": null
+        }
+      ]
+    },
+    {
+      "layouts": [
         {
           "i": "1685516652952",
           "x": 0,
@@ -2189,24 +2055,25 @@
           "isResizable": null,
           "resizeHandles": null,
           "isBounded": null
+        },
+        {
+          "i": "1689038035534",
+          "x": 0,
+          "y": 2,
+          "w": 12,
+          "h": 34,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 10,
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:explainability_responses",
-          "key": "1684932773639",
-          "properties": {
-            "testableCriteria": "1",
-            "startIndex": "0"
-          }
-        },
         {
           "layoutItemProperties": {
             "justifyContent": "left",
@@ -2232,27 +2099,23 @@
           "widgetGID": "aiverify.stock.reports:page_divider",
           "key": "1685516667515",
           "properties": null
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.process_checklist:explainability_responses",
+          "key": "1689038035534",
+          "properties": null
         }
       ]
     },
     {
       "layouts": [
-        {
-          "i": "1684932807743",
-          "x": 0,
-          "y": 2,
-          "w": 12,
-          "h": 16,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
         {
           "i": "1685516702631",
           "x": 0,
@@ -2284,24 +2147,25 @@
           "isResizable": null,
           "resizeHandles": null,
           "isBounded": null
+        },
+        {
+          "i": "1689038053574",
+          "x": 0,
+          "y": 2,
+          "w": 12,
+          "h": 34,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 10,
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:reproducibility_responses",
-          "key": "1684932807743",
-          "properties": {
-            "testableCriteria": "1",
-            "startIndex": "0"
-          }
-        },
         {
           "layoutItemProperties": {
             "justifyContent": "left",
@@ -2327,490 +2191,23 @@
           "widgetGID": "aiverify.stock.reports:page_divider",
           "key": "1685516785323",
           "properties": null
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.process_checklist:reproducibility_responses",
+          "key": "1689038053574",
+          "properties": null
         }
       ]
     },
     {
       "layouts": [
-        {
-          "i": "1684932849206",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 23,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:reproducibility_responses",
-          "key": "1684932849206",
-          "properties": {
-            "testableCriteria": "2",
-            "startIndex": "0"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684932874221",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 18,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1685517593900",
-          "x": 0,
-          "y": 18,
-          "w": 12,
-          "h": 12,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:reproducibility_responses",
-          "key": "1684932874221",
-          "properties": {
-            "testableCriteria": "3",
-            "startIndex": "0"
-          }
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:reproducibility_responses",
-          "key": "1685517593900",
-          "properties": {
-            "testableCriteria": "4",
-            "startIndex": "0",
-            "numProcessChecks": "2",
-            "hideCriteriaDescription": "0"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684935911858",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 11,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1685517662078",
-          "x": 0,
-          "y": 11,
-          "w": 12,
-          "h": 15,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:reproducibility_responses",
-          "key": "1684935911858",
-          "properties": {
-            "testableCriteria": "5",
-            "startIndex": "0"
-          }
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:reproducibility_responses",
-          "key": "1685517662078",
-          "properties": {
-            "testableCriteria": "6",
-            "startIndex": "0",
-            "numProcessChecks": "2",
-            "hideCriteriaDescription": "0"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684933032274",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 12,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1685517751822",
-          "x": 0,
-          "y": 12,
-          "w": 12,
-          "h": 12,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:reproducibility_responses",
-          "key": "1684933032274",
-          "properties": {
-            "testableCriteria": "7",
-            "startIndex": "0"
-          }
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:reproducibility_responses",
-          "key": "1685517751822",
-          "properties": {
-            "testableCriteria": "8",
-            "startIndex": "0",
-            "numProcessChecks": "2",
-            "hideCriteriaDescription": "0"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1685630261132",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 25,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:reproducibility_responses",
-          "key": "1685630261132",
-          "properties": {
-            "testableCriteria": "9",
-            "startIndex": "0",
-            "numProcessChecks": "2",
-            "hideCriteriaDescription": "0"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684933072462",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 20,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1685517818748",
-          "x": 0,
-          "y": 20,
-          "w": 12,
-          "h": 16,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:reproducibility_responses",
-          "key": "1684933072462",
-          "properties": {
-            "testableCriteria": "10",
-            "startIndex": "0"
-          }
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:reproducibility_responses",
-          "key": "1685517818748",
-          "properties": {
-            "testableCriteria": "11",
-            "startIndex": "0",
-            "numProcessChecks": "2",
-            "hideCriteriaDescription": "0"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684936013025",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 11,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1685517863343",
-          "x": 0,
-          "y": 11,
-          "w": 12,
-          "h": 11,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:reproducibility_responses",
-          "key": "1684936013025",
-          "properties": {
-            "testableCriteria": "12",
-            "startIndex": "0"
-          }
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:reproducibility_responses",
-          "key": "1685517863343",
-          "properties": {
-            "testableCriteria": "13",
-            "startIndex": "0",
-            "numProcessChecks": "2",
-            "hideCriteriaDescription": "0"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684936048623",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 21,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:reproducibility_responses",
-          "key": "1684936048623",
-          "properties": {
-            "testableCriteria": "14",
-            "startIndex": "0"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684933223316",
-          "x": 0,
-          "y": 2,
-          "w": 12,
-          "h": 19,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
         {
           "i": "1685518190185",
           "x": 0,
@@ -2842,24 +2239,25 @@
           "isResizable": null,
           "resizeHandles": null,
           "isBounded": null
+        },
+        {
+          "i": "1689038119514",
+          "x": 0,
+          "y": 2,
+          "w": 12,
+          "h": 34,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 10,
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:safety_responses",
-          "key": "1684933223316",
-          "properties": {
-            "testableCriteria": "1",
-            "startIndex": "0"
-          }
-        },
         {
           "layoutItemProperties": {
             "justifyContent": "left",
@@ -2885,256 +2283,23 @@
           "widgetGID": "aiverify.stock.reports:page_divider",
           "key": "1685518211988",
           "properties": null
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.process_checklist:safety_responses",
+          "key": "1689038119514",
+          "properties": null
         }
       ]
     },
     {
       "layouts": [
-        {
-          "i": "1684933252150",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 17,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1685517964429",
-          "x": 0,
-          "y": 17,
-          "w": 12,
-          "h": 13,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:safety_responses",
-          "key": "1684933252150",
-          "properties": {
-            "testableCriteria": "2",
-            "startIndex": "0"
-          }
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:safety_responses",
-          "key": "1685517964429",
-          "properties": {
-            "testableCriteria": "3",
-            "startIndex": "0",
-            "numProcessChecks": "2",
-            "hideCriteriaDescription": "0"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684933278299",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 15,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1685518340374",
-          "x": 0,
-          "y": 15,
-          "w": 12,
-          "h": 21,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:safety_responses",
-          "key": "1684933278299",
-          "properties": {
-            "testableCriteria": "4",
-            "startIndex": "0",
-            "numProcessChecks": "3"
-          }
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:safety_responses",
-          "key": "1685518340374",
-          "properties": {
-            "testableCriteria": "5",
-            "startIndex": "0",
-            "numProcessChecks": "2",
-            "hideCriteriaDescription": "0"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1685518080897",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 21,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1685870889841",
-          "x": 0,
-          "y": 21,
-          "w": 12,
-          "h": 12,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:safety_responses",
-          "key": "1685518080897",
-          "properties": {
-            "testableCriteria": "5",
-            "startIndex": "2",
-            "numProcessChecks": "",
-            "hideCriteriaDescription": "1"
-          }
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:safety_responses",
-          "key": "1685870889841",
-          "properties": {
-            "testableCriteria": "6",
-            "startIndex": "0",
-            "numProcessChecks": "2",
-            "hideCriteriaDescription": "0"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684933327387",
-          "x": 0,
-          "y": 2,
-          "w": 12,
-          "h": 15,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1684936120636",
-          "x": 0,
-          "y": 17,
-          "w": 12,
-          "h": 16,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
         {
           "i": "1685518525074",
           "x": 0,
@@ -3166,39 +2331,25 @@
           "isResizable": null,
           "resizeHandles": null,
           "isBounded": null
+        },
+        {
+          "i": "1689038150392",
+          "x": 0,
+          "y": 2,
+          "w": 12,
+          "h": 34,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 10,
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:security_responses",
-          "key": "1684933327387",
-          "properties": {
-            "testableCriteria": "1",
-            "startIndex": "0"
-          }
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:security_responses",
-          "key": "1684936120636",
-          "properties": {
-            "testableCriteria": "2",
-            "startIndex": "0"
-          }
-        },
         {
           "layoutItemProperties": {
             "justifyContent": "left",
@@ -3224,213 +2375,6 @@
           "widgetGID": "aiverify.stock.reports:page_divider",
           "key": "1685518538928",
           "properties": null
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684933378186",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 29,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:security_responses",
-          "key": "1684933378186",
-          "properties": {
-            "testableCriteria": "3",
-            "startIndex": "0",
-            "numProcessChecks": ""
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684933397497",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 26,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:security_responses",
-          "key": "1684933397497",
-          "properties": {
-            "testableCriteria": "4",
-            "startIndex": "0",
-            "numProcessChecks": "2"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684933417521",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 28,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:security_responses",
-          "key": "1684933417521",
-          "properties": {
-            "testableCriteria": "4",
-            "startIndex": "2",
-            "hideCriteriaDescription": "1",
-            "numProcessChecks": "4"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684933434359",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 36,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:security_responses",
-          "key": "1684933434359",
-          "properties": {
-            "testableCriteria": "5",
-            "startIndex": "0",
-            "numProcessChecks": "3"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684933475239",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 22,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1685518696620",
-          "x": 0,
-          "y": 22,
-          "w": 12,
-          "h": 14,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:security_responses",
-          "key": "1684933475239",
-          "properties": {
-            "testableCriteria": "6",
-            "startIndex": "0",
-            "numProcessChecks": "3"
-          }
         },
         {
           "layoutItemProperties": {
@@ -3441,50 +2385,13 @@
             "bgcolor": null
           },
           "widgetGID": "aiverify.stock.process_checklist:security_responses",
-          "key": "1685518696620",
-          "properties": {
-            "testableCriteria": "7",
-            "startIndex": "0",
-            "numProcessChecks": "2",
-            "hideCriteriaDescription": "0"
-          }
+          "key": "1689038150392",
+          "properties": null
         }
       ]
     },
     {
       "layouts": [
-        {
-          "i": "1684933526042",
-          "x": 0,
-          "y": 2,
-          "w": 12,
-          "h": 15,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1684936741334",
-          "x": 0,
-          "y": 17,
-          "w": 12,
-          "h": 11,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
         {
           "i": "1685518730146",
           "x": 0,
@@ -3516,39 +2423,25 @@
           "isResizable": null,
           "resizeHandles": null,
           "isBounded": null
+        },
+        {
+          "i": "1689038218493",
+          "x": 0,
+          "y": 2,
+          "w": 12,
+          "h": 34,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 10,
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:robustness_responses",
-          "key": "1684933526042",
-          "properties": {
-            "testableCriteria": "1",
-            "startIndex": "0"
-          }
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:robustness_responses",
-          "key": "1684936741334",
-          "properties": {
-            "testableCriteria": "2",
-            "startIndex": "0"
-          }
-        },
         {
           "layoutItemProperties": {
             "justifyContent": "left",
@@ -3574,59 +2467,6 @@
           "widgetGID": "aiverify.stock.reports:page_divider",
           "key": "1685518757391",
           "properties": null
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684933551532",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 11,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1684936775403",
-          "x": 0,
-          "y": 11,
-          "w": 12,
-          "h": 15,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:robustness_responses",
-          "key": "1684933551532",
-          "properties": {
-            "testableCriteria": "3",
-            "startIndex": "0"
-          }
         },
         {
           "layoutItemProperties": {
@@ -3637,86 +2477,13 @@
             "bgcolor": null
           },
           "widgetGID": "aiverify.stock.process_checklist:robustness_responses",
-          "key": "1684936775403",
-          "properties": {
-            "testableCriteria": "4",
-            "startIndex": "0"
-          }
+          "key": "1689038218493",
+          "properties": null
         }
       ]
     },
     {
       "layouts": [
-        {
-          "i": "1684933604077",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 36,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:robustness_responses",
-          "key": "1684933604077",
-          "properties": {
-            "testableCriteria": "5",
-            "startIndex": "0",
-            "numProcessChecks": "3"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684933684662",
-          "x": 0,
-          "y": 2,
-          "w": 12,
-          "h": 10,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1684936815002",
-          "x": 0,
-          "y": 12,
-          "w": 12,
-          "h": 12,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
         {
           "i": "1685518860877",
           "x": 0,
@@ -3748,39 +2515,25 @@
           "isResizable": null,
           "resizeHandles": null,
           "isBounded": null
+        },
+        {
+          "i": "1689038282752",
+          "x": 0,
+          "y": 2,
+          "w": 12,
+          "h": 34,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 6,
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:fairness_responses",
-          "key": "1684933684662",
-          "properties": {
-            "testableCriteria": "1",
-            "startIndex": "0"
-          }
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:fairness_responses",
-          "key": "1684936815002",
-          "properties": {
-            "testableCriteria": "2",
-            "startIndex": "0"
-          }
-        },
         {
           "layoutItemProperties": {
             "justifyContent": "left",
@@ -3806,302 +2559,23 @@
           "widgetGID": "aiverify.stock.reports:page_divider",
           "key": "1685518875495",
           "properties": null
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.process_checklist:fairness_responses",
+          "key": "1689038282752",
+          "properties": null
         }
       ]
     },
     {
       "layouts": [
-        {
-          "i": "1684933724989",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 20,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1685518949263",
-          "x": 0,
-          "y": 20,
-          "w": 12,
-          "h": 14,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:fairness_responses",
-          "key": "1684933724989",
-          "properties": {
-            "testableCriteria": "3",
-            "startIndex": "0"
-          }
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:fairness_responses",
-          "key": "1685518949263",
-          "properties": {
-            "testableCriteria": "4",
-            "startIndex": "0",
-            "numProcessChecks": "1",
-            "hideCriteriaDescription": "0"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684933741642",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 10,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1685519015174",
-          "x": 0,
-          "y": 10,
-          "w": 12,
-          "h": 11,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1685519195179",
-          "x": 0,
-          "y": 21,
-          "w": 12,
-          "h": 12,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:fairness_responses",
-          "key": "1684933741642",
-          "properties": {
-            "testableCriteria": "4",
-            "startIndex": "1",
-            "hideCriteriaDescription": "1"
-          }
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:fairness_responses",
-          "key": "1685519015174",
-          "properties": {
-            "testableCriteria": "5",
-            "startIndex": "0",
-            "numProcessChecks": "2",
-            "hideCriteriaDescription": "0"
-          }
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:fairness_responses",
-          "key": "1685519195179",
-          "properties": {
-            "testableCriteria": "6",
-            "startIndex": "0",
-            "numProcessChecks": "2",
-            "hideCriteriaDescription": "0"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684933798540",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 12,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1684936878816",
-          "x": 0,
-          "y": 12,
-          "w": 12,
-          "h": 11,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1685519238123",
-          "x": 0,
-          "y": 23,
-          "w": 12,
-          "h": 13,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:fairness_responses",
-          "key": "1684933798540",
-          "properties": {
-            "testableCriteria": "7",
-            "startIndex": "0"
-          }
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:fairness_responses",
-          "key": "1684936878816",
-          "properties": {
-            "testableCriteria": "8",
-            "startIndex": "0"
-          }
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:fairness_responses",
-          "key": "1685519238123",
-          "properties": {
-            "testableCriteria": "9",
-            "startIndex": "0",
-            "numProcessChecks": "2",
-            "hideCriteriaDescription": "0"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684934092244",
-          "x": 0,
-          "y": 2,
-          "w": 12,
-          "h": 22,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
         {
           "i": "1685519288011",
           "x": 0,
@@ -4133,24 +2607,25 @@
           "isResizable": null,
           "resizeHandles": null,
           "isBounded": null
+        },
+        {
+          "i": "1689038305748",
+          "x": 0,
+          "y": 2,
+          "w": 12,
+          "h": 34,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 10,
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:data_governance_responses",
-          "key": "1684934092244",
-          "properties": {
-            "testableCriteria": "1",
-            "startIndex": "0"
-          }
-        },
         {
           "layoutItemProperties": {
             "justifyContent": "left",
@@ -4176,59 +2651,6 @@
           "widgetGID": "aiverify.stock.reports:page_divider",
           "key": "1685519317659",
           "properties": null
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684934136438",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 18,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1685519451835",
-          "x": 0,
-          "y": 18,
-          "w": 12,
-          "h": 18,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:data_governance_responses",
-          "key": "1684934136438",
-          "properties": {
-            "testableCriteria": "2",
-            "startIndex": "0"
-          }
         },
         {
           "layoutItemProperties": {
@@ -4239,71 +2661,13 @@
             "bgcolor": null
           },
           "widgetGID": "aiverify.stock.process_checklist:data_governance_responses",
-          "key": "1685519451835",
-          "properties": {
-            "testableCriteria": "3",
-            "startIndex": "0",
-            "numProcessChecks": "2",
-            "hideCriteriaDescription": "0"
-          }
+          "key": "1689038305748",
+          "properties": null
         }
       ]
     },
     {
       "layouts": [
-        {
-          "i": "1684934163761",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 13,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:data_governance_responses",
-          "key": "1684934163761",
-          "properties": {
-            "testableCriteria": "4",
-            "startIndex": "0"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684934372708",
-          "x": 0,
-          "y": 2,
-          "w": 12,
-          "h": 27,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
         {
           "i": "1685519496618",
           "x": 0,
@@ -4335,25 +2699,25 @@
           "isResizable": null,
           "resizeHandles": null,
           "isBounded": null
+        },
+        {
+          "i": "1689038357949",
+          "x": 0,
+          "y": 2,
+          "w": 12,
+          "h": 34,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 10,
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:accountability_responses",
-          "key": "1684934372708",
-          "properties": {
-            "testableCriteria": "1",
-            "startIndex": "0",
-            "numProcessChecks": "2"
-          }
-        },
         {
           "layoutItemProperties": {
             "justifyContent": "left",
@@ -4379,204 +2743,23 @@
           "widgetGID": "aiverify.stock.reports:page_divider",
           "key": "1685519519853",
           "properties": null
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.process_checklist:accountability_responses",
+          "key": "1689038357949",
+          "properties": null
         }
       ]
     },
     {
       "layouts": [
-        {
-          "i": "1684934391098",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 12,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1685519585307",
-          "x": 0,
-          "y": 12,
-          "w": 12,
-          "h": 17,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:accountability_responses",
-          "key": "1684934391098",
-          "properties": {
-            "testableCriteria": "1",
-            "startIndex": "2",
-            "hideCriteriaDescription": "1"
-          }
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:accountability_responses",
-          "key": "1685519585307",
-          "properties": {
-            "testableCriteria": "2",
-            "startIndex": "0",
-            "numProcessChecks": "2",
-            "hideCriteriaDescription": "0"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684934461677",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 19,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1684936941504",
-          "x": 0,
-          "y": 19,
-          "w": 12,
-          "h": 12,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:accountability_responses",
-          "key": "1684934461677",
-          "properties": {
-            "testableCriteria": "3",
-            "startIndex": "0"
-          }
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:accountability_responses",
-          "key": "1684936941504",
-          "properties": {
-            "testableCriteria": "4",
-            "startIndex": "0"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684934486073",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 24,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:accountability_responses",
-          "key": "1684934486073",
-          "properties": {
-            "testableCriteria": "5",
-            "startIndex": "0",
-            "numProcessChecks": "3"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684934535003",
-          "x": 0,
-          "y": 2,
-          "w": 12,
-          "h": 26,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
         {
           "i": "1685519678334",
           "x": 0,
@@ -4608,25 +2791,25 @@
           "isResizable": null,
           "resizeHandles": null,
           "isBounded": null
+        },
+        {
+          "i": "1689038400593",
+          "x": 0,
+          "y": 2,
+          "w": 12,
+          "h": 34,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 10,
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:human_agency_oversight_responses",
-          "key": "1684934535003",
-          "properties": {
-            "testableCriteria": "1",
-            "startIndex": "0",
-            "numProcessChecks": "3"
-          }
-        },
         {
           "layoutItemProperties": {
             "justifyContent": "left",
@@ -4652,97 +2835,6 @@
           "widgetGID": "aiverify.stock.reports:page_divider",
           "key": "1685519702139",
           "properties": null
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684934553927",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 33,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:human_agency_oversight_responses",
-          "key": "1684934553927",
-          "properties": {
-            "testableCriteria": "2",
-            "startIndex": "0",
-            "numProcessChecks": "3"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684934587296",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 14,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
-        {
-          "i": "1684936991652",
-          "x": 0,
-          "y": 14,
-          "w": 12,
-          "h": 15,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:human_agency_oversight_responses",
-          "key": "1684934587296",
-          "properties": {
-            "testableCriteria": "3",
-            "startIndex": "0"
-          }
         },
         {
           "layoutItemProperties": {
@@ -4753,69 +2845,13 @@
             "bgcolor": null
           },
           "widgetGID": "aiverify.stock.process_checklist:human_agency_oversight_responses",
-          "key": "1684936991652",
-          "properties": {
-            "testableCriteria": "4",
-            "startIndex": "0"
-          }
+          "key": "1689038400593",
+          "properties": null
         }
       ]
     },
     {
       "layouts": [
-        {
-          "i": "1684934612930",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 14,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:human_agency_oversight_responses",
-          "key": "1684934612930",
-          "properties": {
-            "testableCriteria": "5",
-            "startIndex": "0"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
-          "i": "1684934640146",
-          "x": 0,
-          "y": 2,
-          "w": 12,
-          "h": 16,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false,
-          "isDraggable": null,
-          "isResizable": null,
-          "resizeHandles": null,
-          "isBounded": null
-        },
         {
           "i": "1685519866335",
           "x": 0,
@@ -4847,24 +2883,25 @@
           "isResizable": null,
           "resizeHandles": null,
           "isBounded": null
+        },
+        {
+          "i": "1689038443355",
+          "x": 0,
+          "y": 2,
+          "w": 12,
+          "h": 34,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 10,
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:inclusive_growth_responses",
-          "key": "1684934640146",
-          "properties": {
-            "testableCriteria": "1",
-            "startIndex": "0"
-          }
-        },
         {
           "layoutItemProperties": {
             "justifyContent": "left",
@@ -4889,6 +2926,18 @@
           },
           "widgetGID": "aiverify.stock.reports:page_divider",
           "key": "1685519928964",
+          "properties": null
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.process_checklist:inclusive_growth_responses",
+          "key": "1689038443355",
           "properties": null
         }
       ]
@@ -5378,11 +3427,11 @@
   "globalVars": [
     {
       "key": "modelName",
-      "value": "Binary Classification Model for Credit Risk"
+      "value": "User input model name"
     },
     {
       "key": "modelPurpose",
-      "value": "This model is used to test if the applicant will default the loan"
+      "value": "User input model Purpose"
     }
   ]
 }

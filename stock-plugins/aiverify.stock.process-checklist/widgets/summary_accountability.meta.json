@@ -19,5 +19,6 @@
       "cid": "accountability_process_checklist",
       "datapath": "accountability_process_checklist.sample.json"
     }
-  ]
+  ],
+  "dynamicHeight": true
 }

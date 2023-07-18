@@ -19,5 +19,6 @@
       "cid": "robustness_process_checklist",
       "datapath": "robustness_process_checklist.sample.json"
     }
-  ]
+  ],
+  "dynamicHeight": true
 }
