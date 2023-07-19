@@ -71,7 +71,7 @@ def create_badges() -> None:
             if content.find("No known vulnerabilities found") != -1:
                 numVul = "0"
             else:
-                pattern = r"Found (\d+) known vulnerabilities in"
+                pattern = r"Found (\d+) known vulnerabilit"
                 match = re.search(pattern, content)
                 if match:
                     numVul = match.group(1)
