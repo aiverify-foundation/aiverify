@@ -3,31 +3,20 @@ from tests.plugin_test import PluginTest
 
 if __name__ == "__main__":
     # # Tabular Binary Classification Pipeline
-    # data_path = (
-    #     "tests/user_defined_files/data/"
-    #     "pickle_pandas_mock_binary_classification_pipeline_credit_risk_testing.sav"
-    # )
-    # model_path = (
-    #     "tests/user_defined_files/pipeline/binary_classification_tabular_credit_loan"
-    # )
-    # ground_truth_path = (
-    #     "tests/user_defined_files/data/"
-    #     "pickle_pandas_mock_binary_classification_pipeline_credit_risk_ytest.sav"
-    # )
+    # data_path = "tests/user_defined_files/data/sample_bc_pipeline_credit_data.sav"
+    # model_path = "tests/user_defined_files/pipeline/bc_tabular_credit"
+    # ground_truth_path = "tests/user_defined_files/data/sample_bc_pipeline_credit_ytest_data.sav"
     # ground_truth = "default"
     # run_pipeline = True
     # model_type = ModelType.CLASSIFICATION
 
-    # # Regression Non-Pipeline
-    # data_path = "tests/user_defined_files/data/pickle_pandas_mock_regression_donation_testing.sav"
-    # model_path = ("tests/user_defined_files/model/"
-    #               "regression_mock_donation_sklearn.linear_model._base.LinearRegression.sav")
-    # ground_truth_path = (
-    #     "tests/user_defined_files/data/pickle_pandas_mock_regression_donation_testing.sav"
-    # )
-    # ground_truth = "donation"
-    # run_pipeline = False
-    # model_type = ModelType.REGRESSION
+    # Regression Non-Pipeline
+    data_path = "tests/user_defined_files/data/sample_reg_donation_data.sav"
+    model_path = "tests/user_defined_files/model/sample_reg_donation_sklearn_linear.LogisticRegression.sav"
+    ground_truth_path = "tests/user_defined_files/data/sample_reg_donation_data.sav"
+    ground_truth = "donation"
+    run_pipeline = False
+    model_type = ModelType.REGRESSION
 
     # Image Pipeline
     data_path = "tests/user_defined_files/data/raw_fashion_image_10"

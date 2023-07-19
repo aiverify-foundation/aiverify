@@ -24,15 +24,9 @@ def test_discover_plugin():
 
 
 # Variables for testing
-valid_data_path = "tests/user_defined_files/data/pickle_pandas_mock_binary_classification_credit_risk_testing.sav"
-valid_model_path = (
-    "tests/user_defined_files/model/"
-    "binary_classification_mock_credit_risk_sklearn.linear_model._logistic.LogisticRegression.sav"
-)
-valid_ground_truth_path = (
-    "tests/user_defined_files/data/"
-    "pickle_pandas_mock_binary_classification_credit_risk_testing.sav"
-)
+valid_data_path = "tests/user_defined_files/data/sample_bc_credit_data.sav"
+valid_model_path = "tests/user_defined_files/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav"
+valid_ground_truth_path = "tests/user_defined_files/data/sample_bc_credit_data.sav"
 
 test_string = "data_str"
 test_int = 1

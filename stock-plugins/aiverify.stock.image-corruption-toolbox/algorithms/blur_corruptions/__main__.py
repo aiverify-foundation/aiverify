@@ -5,9 +5,7 @@ if __name__ == "__main__":
     # Image Pipeline
     data_path = "tests/user_defined_files/data/raw_fashion_image_10"
     model_path = "tests/user_defined_files/pipeline/multiclass_classification_image_mnist_fashion"
-    ground_truth_path = (
-        "tests/user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
-        )
+    ground_truth_path = "tests/user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
     ground_truth = "label"
     run_pipeline = True
     model_type = ModelType.CLASSIFICATION
