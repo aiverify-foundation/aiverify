@@ -12,7 +12,7 @@ To upload new datasets, click on **‘New Dataset +’.**
 
 **Drag and drop** the dataset file(s) onto the drop box or click to select files. A maximum of 10 files can be uploaded at once. You should also take the chance to upload the Ground Truth and Background Datasets as well. For image datasets, you can upload a folder containing the image files by clicking on ‘Upload Folder’ to select the folder to be uploaded. For more information on dataset preparation, ([See Getting Started > Preparation of Input Files](../../getting-started/preparation-of-input-files.md))
 
-For this tutorial, we will be using the sample dataset `pickle_pandas_mock_binary_classification_credit_risk_testing.sav` [**Download Here**](https://github.com/IMDA-BTG/aiverify/blob/main/examples/data/pickle_pandas_mock_binary_classification_credit_risk_testing.sav?raw=true)
+For this tutorial, we will be using the sample dataset `sample_bc_credit_data.sav` [**Download Here**](https://github.com/IMDA-BTG/aiverify/blob/main/examples/data/sample_bc_credit_data.sav?raw=true)
 
 Click **‘Upload Selected Files >’**.
 
