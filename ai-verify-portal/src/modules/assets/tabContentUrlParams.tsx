@@ -3,14 +3,15 @@ import { Tooltip, TooltipPosition } from "src/components/tooltip";
 import InfoIcon from '@mui/icons-material/Info';
 import { ModelAPIGraphQLModel, OpenApiDataTypes, URLParamType, UrlParam } from "./types";
 import styles from './styles/newModelApiConfig.module.css';
-import { UrlParamCaptureInput, UrlParamDisplayInput, UrlParameter, UrlParamsInputHeading } from "./requestUrlParamInput";
+import { UrlParamCaptureInput, UrlParamDisplayInput, UrlParamsInputHeading } from "./requestUrlParamInput";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import { FieldArray, useFormikContext } from "formik";
 import { optionsUrlParamTypes } from "./selectOptions";
 import { ChangeEvent, useState } from "react";
+import { getInputReactKeyId } from "./newModelApiConfig";
 
-type UrlParameterWithReactKeyId = UrlParam & { id: string };
 const defaultUrlParameter: UrlParam = {
+  reactPropId: '',
   name: '',
   type: OpenApiDataTypes.INTEGER,
 };
@@ -20,12 +21,20 @@ type TabContentURLParams = {
 }
 
 function TabContentURLParams(props: TabContentURLParams) {
-  const { urlQueryType } = props;
-  const [newParam, setNewParam] = useState<UrlParameterWithReactKeyId>(defaultUrlParameter);
+  const [paramType, setParamType] = useState<URLParamType>(URLParamType.QUERY);
+  const [newParam, setNewParam] = useState<UrlParam>(() => ({
+    ...defaultUrlParameter,
+    reactPropIid: getInputReactKeyId()
+  }));
   const { values } = useFormikContext<ModelAPIGraphQLModel>();
+
+  function handleParamTypeChange(val: URLParamType) {
+    setParamType(val);
+  }
 
   function handleNewParamKeyChange(e: ChangeEvent<HTMLInputElement>) {
     setNewParam((prev) => ({
+      reactPropId: prev.reactPropId,
       name: e.target.value,
       type: prev.type,
     }));
@@ -34,6 +43,7 @@ function TabContentURLParams(props: TabContentURLParams) {
   function handleNewParamDatatypeChange(option: SelectOption) {
     if (!option) return;
     setNewParam((prev) => ({
+      reactPropId: prev.reactPropId,
       name: prev.name,
       type: option.value as OpenApiDataTypes,
     }));
@@ -50,14 +60,14 @@ function TabContentURLParams(props: TabContentURLParams) {
           display: 'flex',
           alignItems: 'center',
         }}>
-        <SelectInput
+        <SelectInput<URLParamType>
           label="URL Parameter Type"
           name="urlParamType"
           options={optionsUrlParamTypes}
-          value={urlParamType}
-          onChange={handleUrlParamTypeChange}
+          value={paramType}
+          onChange={handleParamTypeChange}
         />
-        {urlQueryType === URLParamType.QUERY ? (
+        {paramType === URLParamType.QUERY ? (
           <div
             style={{
               marginLeft: 10,
@@ -84,7 +94,7 @@ function TabContentURLParams(props: TabContentURLParams) {
           backgroundColor="#676767"
           fontColor="#FFFFFF"
           content={
-            urlQueryType === URLParamType.QUERY ? (
+            paramType === URLParamType.QUERY ? (
               <div>
                 <div style={{ marginBottom: 5 }}>
                   Example of URL with 2 parameters defined - &quot;age&quot; &
@@ -129,7 +139,7 @@ function TabContentURLParams(props: TabContentURLParams) {
                   return (
                     <div>
                       {values.parameters?.queries?.queryParams.map((param, index) => (
-                        <Draggable key={param.id} draggableId={param.id} index={index}>
+                        <Draggable key={param.reactPropId} draggableId={param.reactPropId} index={index}>
                           {(provided) => (
                             <div
                               className="item-container"
