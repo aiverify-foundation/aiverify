@@ -2,12 +2,12 @@ import React from 'react';
 import styles from './styles/selectInput.module.css';
 import Select from 'react-select';
 
-type SelectOption = {
-  value: string;
+type SelectOption<T = string> = {
+  value: T;
   label: string;
 } | null;
 
-type SelectInputProps = {
+type SelectInputProps<valueType = string> = {
   name: string;
   width?: number;
   label?: string;
@@ -15,9 +15,10 @@ type SelectInputProps = {
   error?: string;
   value?: string;
   labelSibling?: React.ReactElement;
-  options: SelectOption[];
+  options: SelectOption<valueType>[];
   style?: React.CSSProperties;
-  onChange?: (value: string) => void;
+  selectedOptionPredicateFn?: (option: SelectOption<valueType>) => boolean;
+  onChange?: (value: valueType) => void;
 };
 
 const BORDER_COLOR = '#cfcfcf';
@@ -26,7 +27,7 @@ const PLACEHOLDER_COLOR = '#cfcfcf';
 const OPTION_HOVER_COLOR = '#ebc8f9';
 const OPTION_SELECTED_COLOR = '#702f8a';
 
-function SelectInput(props: SelectInputProps) {
+function SelectInput<T = string>(props: SelectInputProps<T>) {
   const {
     name,
     width = 'auto',
@@ -37,13 +38,14 @@ function SelectInput(props: SelectInputProps) {
     labelSibling,
     options,
     style,
+    selectedOptionPredicateFn,
     onChange,
   } = props;
 
-  const selectedOption = options.find((opt) => opt && opt.value === value);
+  const selectedOption = options.find(selectedOptionPredicateFn ? selectedOptionPredicateFn : (opt) => opt && opt.value === value);
   const containerStyles = { width, ...style };
 
-  function handleChange(option: SelectOption) {
+  function handleChange(option: SelectOption<T>) {
     if (!option) return;
     if (onChange) onChange(option.value);
   }
@@ -57,7 +59,7 @@ function SelectInput(props: SelectInputProps) {
             {labelSibling}
           </div>
         ) : null}
-        <Select<SelectOption>
+        <Select<SelectOption<T>>
           styles={{
             container: (baseStyles) => ({
               ...baseStyles,

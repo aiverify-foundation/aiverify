@@ -137,24 +137,9 @@ const initialValues: ModelAPIGraphQLModel = {
 };
 
 function NewModelApiConfigModule() {
-  const [configName, setConfigName] = useState<string>('');
-  const [configDesc, setConfigDesc] = useState<string>('');
-  const [isEditName, setIsEditName] = useState(false);
-  const [modelType, setModelType] = useState<SelectOption>(
-    optionsModelTypes[0]
-  );
-  const [requestMethod, setRequestMethod] = useState<SelectOption>(
-    optionsRequestMethods[1]
-  );
   const [authType, setAuthType] = useState<SelectOption>(optionsAuthMethods[0]);
   const [urlParamType, setUrlParamType] = useState<SelectOption>(
     optionsUrlParamTypes[0]
-  );
-  const [requestMediaType, setRequestMediaType] = useState<SelectOption>(
-    optionsMediaTypes[0]
-  );
-  const [responseMediaType, setResponseMediaType] = useState<SelectOption>(
-    optionsMediaTypes[0]
   );
   const [activeTab, setActiveTab] = useState<Tab>();
   const [newHeader, setNewHeader] = useState<RequestHeader>(emptyKeyValue);
@@ -185,48 +170,12 @@ function NewModelApiConfigModule() {
     return setActiveTab(tab);
   }
 
-  function handleEditNameClick() {
-    setIsEditName(true);
-  }
-
-  function handleEditNameCancelClick() {
-    setIsEditName(false);
-  }
-
-  function handleEditNameOkClick() {
-    setIsEditName(false);
-  }
-
-  function handleConfigNameChange(e: ChangeEvent<HTMLInputElement>) {
-    setConfigName(e.target.value);
-  }
-
-  function handleConfigDescriptionChange(e: ChangeEvent<HTMLTextAreaElement>) {
-    setConfigDesc(e.target.value);
-  }
-
-  function handleRequestMediaTypeChange(option: SelectOption) {
-    setRequestMediaType(option);
-  }
-
-  function handleResponseMediaTypeChange(option: SelectOption) {
-    setResponseMediaType(option);
-  }
-
   function handleAuthUserChange(e: ChangeEvent<HTMLInputElement>) {
     setBasicAuthUserPwd((prev) => [e.target.value, prev[1]]);
   }
 
   function handleAuthPasswordChange(e: ChangeEvent<HTMLInputElement>) {
     setBasicAuthUserPwd((prev) => [prev[0], e.target.value]);
-  }
-
-  function handleModelTypeChange(option: SelectOption) {
-    setModelType(option);
-  }
-
-  function handleRequestMethodChange(option: SelectOption) {
-    setRequestMethod(option);
   }
 
   function handleUrlParamTypeChange(option: SelectOption) {

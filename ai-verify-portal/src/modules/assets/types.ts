@@ -51,6 +51,7 @@ export type RequestBody = {
 };
 
 export type UrlParam = {
+  reactPropId: string;
   name: string;
   type: OpenApiDataTypes;
 };
