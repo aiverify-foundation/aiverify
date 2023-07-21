@@ -24,7 +24,10 @@ const defaultUrlParameter: UrlParam = {
   type: OpenApiDataTypes.INTEGER,
 };
 
-//forwardRef needed because parent component needs a ref to Formik's fieldArray-ArrayHelpers.move method for drag and drop feature
+const pathParamsInputName = 'parameters.paths.pathParams';
+const queryParamsInputName = 'parameters.queries.queryParams';
+
+//forwardRef needed because parent component needs a ref to Formik's fieldArray-ArrayHelpers.move method from this component, for drag and drop feature
 const TabContentURLParams = forwardRef<FieldArrayRenderProps | undefined>(
   function Content(_props, ref) {
     const [paramType, setParamType] = useState<URLParamType>(
@@ -36,6 +39,28 @@ const TabContentURLParams = forwardRef<FieldArrayRenderProps | undefined>(
     useImperativeHandle(ref, () => formArrayHelpersRef.current, []);
 
     function handleParamTypeChange(val: URLParamType) {
+      if (val === paramType) return;
+      if (
+        val === URLParamType.QUERY &&
+        values.parameters &&
+        values.parameters.paths &&
+        values.parameters.paths.pathParams.length
+      ) {
+        setFieldValue(queryParamsInputName, [
+          ...values.parameters.paths.pathParams,
+        ]);
+        setFieldValue(pathParamsInputName, []);
+      } else if (
+        val === URLParamType.PATH &&
+        values.parameters &&
+        values.parameters.queries &&
+        values.parameters.queries.queryParams.length
+      ) {
+        setFieldValue(pathParamsInputName, [
+          ...values.parameters.queries.queryParams,
+        ]);
+        setFieldValue(queryParamsInputName, []);
+      }
       setParamType(val);
     }
 
@@ -45,6 +70,19 @@ const TabContentURLParams = forwardRef<FieldArrayRenderProps | undefined>(
         reactPropId:
           prev.reactPropId === '' ? getInputReactKeyId() : prev.reactPropId,
       }));
+    }
+
+    function handleCurrentParamChange(idx: number) {
+      return (val: UrlParam) => {
+        setFieldValue(
+          `${
+            paramType === URLParamType.QUERY
+              ? queryParamsInputName
+              : pathParamsInputName
+          }[${idx}]`,
+          val
+        );
+      };
     }
 
     return (
@@ -116,60 +154,70 @@ const TabContentURLParams = forwardRef<FieldArrayRenderProps | undefined>(
         </div>
         <UrlParamsInputHeading />
         <Droppable droppableId="list-container">
-          {(provided) => (
-            <div
-              className="list-container"
-              {...provided.droppableProps}
-              ref={provided.innerRef}>
-              <FieldArray name="parameters.queries.queryParams">
-                {(arrayHelpers) => {
-                  formArrayHelpersRef.current = arrayHelpers;
-                  if (!values.parameters || !values.parameters.queries)
-                    return null;
-                  const queryParams = values.parameters.queries.queryParams;
-                  return (
-                    <div>
-                      {queryParams.map((param, index) => (
-                        <Draggable
-                          key={param.reactPropId}
-                          draggableId={param.reactPropId}
-                          index={index}>
-                          {(provided) => (
-                            <div
-                              className="item-container"
-                              ref={provided.innerRef}
-                              {...provided.dragHandleProps}
-                              {...provided.draggableProps}>
-                              <UrlParamCaptureInput
-                                value={param}
-                                onChange={(val) =>
-                                  setFieldValue(
-                                    `parameters.queries[${index}]`,
-                                    val
-                                  )
-                                }
-                                onDeleteClick={() => arrayHelpers.remove(index)}
-                              />
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                      <UrlParamCaptureInput
-                        showAddBtn
-                        value={newParam}
-                        onChange={handleNewParamChange}
-                        onAddClick={() => {
-                          arrayHelpers.push(newParam);
-                          setNewParam(defaultUrlParameter);
-                        }}
-                      />
-                    </div>
-                  );
-                }}
-              </FieldArray>
-            </div>
-          )}
+          {(provided) => {
+            const fieldArrayName =
+              paramType === URLParamType.QUERY
+                ? queryParamsInputName
+                : pathParamsInputName;
+            return (
+              <div
+                className="list-container"
+                {...provided.droppableProps}
+                ref={provided.innerRef}>
+                <FieldArray name={fieldArrayName}>
+                  {(arrayHelpers) => {
+                    formArrayHelpersRef.current = arrayHelpers;
+                    let params: UrlParam[] = [];
+                    if (paramType === URLParamType.QUERY) {
+                      if (!values.parameters || !values.parameters.queries)
+                        return null;
+                      else params = values.parameters.queries.queryParams;
+                    } else {
+                      if (!values.parameters || !values.parameters.paths)
+                        return null;
+                      else params = values.parameters.paths.pathParams;
+                    }
+                    return (
+                      <div>
+                        {params.map((param, index) => (
+                          <Draggable
+                            key={param.reactPropId}
+                            draggableId={param.reactPropId}
+                            index={index}>
+                            {(provided) => (
+                              <div
+                                className="item-container"
+                                ref={provided.innerRef}
+                                {...provided.dragHandleProps}
+                                {...provided.draggableProps}>
+                                <UrlParamCaptureInput
+                                  value={param}
+                                  onChange={handleCurrentParamChange(index)}
+                                  onDeleteClick={() =>
+                                    arrayHelpers.remove(index)
+                                  }
+                                />
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
+                        <UrlParamCaptureInput
+                          showAddBtn
+                          value={newParam}
+                          onChange={handleNewParamChange}
+                          onAddClick={() => {
+                            arrayHelpers.push(newParam);
+                            setNewParam(defaultUrlParameter);
+                          }}
+                        />
+                      </div>
+                    );
+                  }}
+                </FieldArray>
+              </div>
+            );
+          }}
         </Droppable>
       </div>
     );

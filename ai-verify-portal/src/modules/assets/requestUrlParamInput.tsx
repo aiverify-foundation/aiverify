@@ -5,7 +5,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import styles from './styles/newModelApiConfig.module.css';
 import { ChangeEvent } from 'react';
-import { SelectInput, SelectOption } from 'src/components/selectInput';
+import { SelectInput } from 'src/components/selectInput';
 import { optionsOpenApiDataTypes } from './selectOptions';
 import { OpenApiDataTypes, UrlParam } from './types';
 
@@ -33,7 +33,13 @@ function UrlParamsInputHeading() {
 }
 
 function UrlParamCaptureInput(props: UrlParamsDisplayProps) {
-  const { value, showAddBtn = false, onChange, onAddClick, onDeleteClick } = props;
+  const {
+    value,
+    showAddBtn = false,
+    onChange,
+    onAddClick,
+    onDeleteClick,
+  } = props;
   const disableAddBtn = value.name.trim() === '' || value.type.trim() === '';
 
   function handleRemoveBtnClick(param: UrlParam) {
@@ -41,12 +47,12 @@ function UrlParamCaptureInput(props: UrlParamsDisplayProps) {
   }
 
   function handleKeyChange(e: ChangeEvent<HTMLInputElement>) {
-    const updatedParam: UrlParam = {...value, name: e.target.value};
+    const updatedParam: UrlParam = { ...value, name: e.target.value };
     onChange(updatedParam);
   }
 
   function handleTypeChange(val: OpenApiDataTypes) {
-    const updatedParam = {...value, type: val};
+    const updatedParam = { ...value, type: val };
     onChange(updatedParam);
   }
 
@@ -70,34 +76,38 @@ function UrlParamCaptureInput(props: UrlParamsDisplayProps) {
           style={{ marginBottom: 0 }}
         />
       </div>
-      {showAddBtn ? <div className={styles.iconContainer}>
-        <IconButton
-          iconComponent={AddIcon}
-          onClick={onAddClick}
-          disabled={disableAddBtn}>
-          <div
-            style={{
-              color: '#676767',
-              fontSize: 15,
-              margin: '0 6px',
-            }}>
-            Add
-          </div>
-        </IconButton>
-      </div> : <div className={styles.delIconContainer}>
-        <div style={{ display: 'flex' }}>
-          <DragIndicatorIcon style={{ color: '#cfcfcf', cursor: 'move' }} />
+      {showAddBtn ? (
+        <div className={styles.iconContainer}>
+          <IconButton
+            iconComponent={AddIcon}
+            onClick={onAddClick}
+            disabled={disableAddBtn}>
+            <div
+              style={{
+                color: '#676767',
+                fontSize: 15,
+                margin: '0 6px',
+              }}>
+              Add
+            </div>
+          </IconButton>
         </div>
-        <IconButton
-          iconComponent={CloseIcon}
-          noOutline
-          onClick={handleRemoveBtnClick(value)}
-          style={{ marginRight: 42 }}
-        />
-      </div>}
+      ) : (
+        <div className={styles.delIconContainer}>
+          <div style={{ display: 'flex' }}>
+            <DragIndicatorIcon style={{ color: '#cfcfcf', cursor: 'move' }} />
+          </div>
+          <IconButton
+            iconComponent={CloseIcon}
+            noOutline
+            onClick={handleRemoveBtnClick(value)}
+            style={{ marginRight: 42 }}
+          />
+        </div>
+      )}
     </div>
   );
 }
 
-export {  UrlParamCaptureInput, UrlParamsInputHeading };
+export { UrlParamCaptureInput, UrlParamsInputHeading };
 export type { UrlParameter };

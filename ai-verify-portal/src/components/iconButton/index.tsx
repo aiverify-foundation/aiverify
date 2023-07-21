@@ -40,6 +40,7 @@ function IconButton(props: PropsWithChildren<IconButtonProps>) {
 
   return (
     <button
+      type="button"
       className={clsx(
         styles.iconBtn,
         rounded ? styles.iconBtn__rounded : null,
