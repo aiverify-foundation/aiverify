@@ -85,7 +85,7 @@ export const config = {
               "pid": "3.7.1",
               "process": "Version control model artefacts by associating each artefact with the version of code, dependencies, and parameters used in training",
               "metric": "Internal documentation",
-              "processChecks": "Documentary evidence of version control model artefacts. <br/><br/>Each artefact includes: <br/>- version of codef<br/>- dependencies; and <br/>- parameters used in training"
+              "processChecks": "Documentary evidence of version control model artefacts. <br/><br/>Each artefact includes: <br/>- version of code<br/>- dependencies; and <br/>- parameters used in training"
             }
           ]
         },
