@@ -1,8 +1,5 @@
 #!/bin/bash
 
-export CUR_UID=$(id -u)
-export CUR_GID=$(id -g)
-
 while true; do
     echo "WARNING! This will delete all datasets, models, 3rd party plugins, templates and projects"
     read -p "Are your sure you want to proceed? [y/n] " yn
@@ -20,11 +17,17 @@ while true; do
     esac
 done
 
-echo "Resetting aiverify container environment..."
-rm -rf ~/data
-rm -rf ~/logs
-mkdir -p ~/data/db
-mkdir -p ~/logs/db
-docker-compose down --volumes
+echo "Resetting aiverify developer environment..."
 
-echo "aiverify container environment reset completed"
+echo "Cleanup database..."
+mongosh aiverify --quiet --eval "db.dropDatabase()"
+
+echo "Cleanup redis cache..."
+redis-cli flushall
+
+echo "Delete datasets, models and logs..."
+rm -f aiverify/uploads/data/*
+rm -f aiverify/uploads/model/*
+rm -f aiverify/test-engine-app/logs/*
+
+echo "aiverify developer reset completed"
