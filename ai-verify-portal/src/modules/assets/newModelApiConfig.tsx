@@ -2,21 +2,11 @@ import { TextInput } from 'src/components/textInput';
 import { MinimalHeader } from '../home/header';
 import styles from './styles/newModelApiConfig.module.css';
 import { SelectInput, SelectOption } from 'src/components/selectInput';
-import EditIcon from '@mui/icons-material/Edit';
-import InfoIcon from '@mui/icons-material/Info';
-import clsx from 'clsx';
-import { ChangeEvent, useEffect, useState } from 'react';
-import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DragUpdate,
-} from 'react-beautiful-dnd';
-import { IconButton } from 'src/components/iconButton';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { DragDropContext, DragUpdate } from 'react-beautiful-dnd';
 import {
   optionsAuthMethods,
   optionsMediaTypes,
-  optionsModelTypes,
   optionsRequestMethods,
   optionsUrlParamTypes,
 } from './selectOptions';
@@ -26,19 +16,13 @@ import {
   RequestHeaderDisplayInput,
   RequestHeaderInputHeading,
 } from './requestHeaderInput';
-import {
-  UrlParameter,
-  UrlParamDisplayInput,
-  UrlParamCaptureInput,
-  UrlParamsInputHeading,
-} from './requestUrlParamInput';
+import { UrlParameter } from './requestUrlParamInput';
 import {
   AuthType,
   MediaType,
   ModelAPIGraphQLModel,
   OpenApiDataTypes,
   RequestMethod,
-  URLParamType,
 } from './types';
 import {
   BodyPayloadProperty,
@@ -46,15 +30,13 @@ import {
   BodyPayloadPropertyDisplayInput,
   BodyPayloadPropertyInputHeading,
 } from './requestBodyInput';
-import { ApiConfigNameDescForm } from './apiConfigNameDescForm';
-import { Tooltip, TooltipPosition } from 'src/components/tooltip';
 import produce from 'immer';
 import {
   ResponseProperty,
   ResponsePropertyInput,
   ResponsePropertyInputHeading,
 } from './responsePropertyInput';
-import { Formik, Form } from 'formik';
+import { Formik, Form, FieldArrayRenderProps } from 'formik';
 import { ModelType } from 'src/types/model.interface';
 import { ModelApiLeftSection } from './newModelApiLeftSection';
 import { TabButtonsGroup } from './newModelApiTabButtons';
@@ -65,15 +47,8 @@ type BodyPayloadPropertyWithReactKeyId = BodyPayloadProperty & { id: string };
 type RequestHeaderWithReactKeyId = RequestHeader & { id: string };
 type ResponsePropertyWithReactKeyId = ResponseProperty & { id: string };
 
-const defaultConfigNameDisplay = 'Configuration Name';
-const defaultConfigDescDisplay = 'Description';
-
 const emptyTuple: [string, string] = ['', ''];
 const emptyKeyValue = { key: '', value: '' };
-const defaultUrlParameter = {
-  key: '',
-  dataType: OpenApiDataTypes.INTEGER,
-};
 const defaultBodyPayloadProperty = {
   key: '',
   dataType: OpenApiDataTypes.INTEGER,
@@ -139,14 +114,10 @@ const initialValues: ModelAPIGraphQLModel = {
 
 function NewModelApiConfigModule() {
   const [authType, setAuthType] = useState<SelectOption>(optionsAuthMethods[0]);
-  const [urlParamType, setUrlParamType] = useState<SelectOption>(
-    optionsUrlParamTypes[0]
-  );
   const [activeTab, setActiveTab] = useState<Tab>();
   const [newHeader, setNewHeader] = useState<RequestHeader>(emptyKeyValue);
   const [newResponseProperty, setNewResponseProperty] =
     useState<RequestHeader>(emptyKeyValue);
-  const [newParam, setNewParam] = useState<UrlParameter>(defaultUrlParameter);
   const [newRequestProperty, setNewRequestProperty] =
     useState<BodyPayloadProperty>(defaultBodyPayloadProperty);
   const [requestHeaders, setRequestHeaders] = useState<
@@ -162,6 +133,7 @@ function NewModelApiConfigModule() {
   const [bearerToken, setBearerToken] = useState<string>('');
   const [basicAuthUserPwd, setBasicAuthUserPwd] =
     useState<[string, string]>(emptyTuple);
+  const paramsFormikArrayHelpersRef = useRef<FieldArrayRenderProps>();
 
   function handleBackClick() {
     history.back();
@@ -177,10 +149,6 @@ function NewModelApiConfigModule() {
 
   function handleAuthPasswordChange(e: ChangeEvent<HTMLInputElement>) {
     setBasicAuthUserPwd((prev) => [prev[0], e.target.value]);
-  }
-
-  function handleUrlParamTypeChange(option: SelectOption) {
-    setUrlParamType(option);
   }
 
   function handleAuthTypeChange(option: SelectOption) {
@@ -217,21 +185,6 @@ function NewModelApiConfigModule() {
     }));
   }
 
-  function handleNewParamKeyChange(e: ChangeEvent<HTMLInputElement>) {
-    setNewParam((prev) => ({
-      key: e.target.value,
-      dataType: prev.dataType,
-    }));
-  }
-
-  function handleNewParamDatatypeChange(option: SelectOption) {
-    if (!option) return;
-    setNewParam((prev) => ({
-      key: prev.key,
-      dataType: option.value,
-    }));
-  }
-
   function handleNewRequestPropertyKeyChange(e: ChangeEvent<HTMLInputElement>) {
     setNewRequestProperty((prev) => ({
       key: e.target.value,
@@ -245,29 +198,6 @@ function NewModelApiConfigModule() {
       key: prev.key,
       dataType: option.value,
     }));
-  }
-
-  function handleCurrentParamKeyChange(paramKeyName: string) {
-    return (e: ChangeEvent<HTMLInputElement>) => {
-      setUrlParams(
-        produce((draft) => {
-          const urlParam = draft.find((param) => param.key === paramKeyName);
-          if (urlParam) urlParam.key = e.target.value;
-        })
-      );
-    };
-  }
-
-  function handleCurrentParamDatatypeChange(paramKeyName: string) {
-    return (option: SelectOption) => {
-      if (!option) return;
-      setUrlParams(
-        produce((draft) => {
-          const urlParam = draft.find((param) => param.key === paramKeyName);
-          if (urlParam) urlParam.dataType = option.value;
-        })
-      );
-    };
   }
 
   function handleCurrentBodyPropKeyChange(propKeyName: string) {
@@ -350,19 +280,6 @@ function NewModelApiConfigModule() {
     setNewHeader(emptyKeyValue);
   }
 
-  function handleAddUrlParam() {
-    setUrlParams(
-      produce((draft) => {
-        draft.push({
-          key: newParam.key,
-          dataType: newParam.dataType,
-          id: getInputReactKeyId(),
-        });
-      })
-    );
-    setNewParam(defaultUrlParameter);
-  }
-
   function handleAddRequestProperty() {
     setRequestProperties(
       produce((draft) => {
@@ -387,18 +304,6 @@ function NewModelApiConfigModule() {
       })
     );
     setNewResponseProperty(emptyKeyValue);
-  }
-
-  function handleDeleteUrlParamClick(param: UrlParameter) {
-    const idx = urlParams.findIndex(
-      (currentParam) => currentParam.key === param.key
-    );
-    if (idx === -1) return;
-    setUrlParams(
-      produce((draft) => {
-        draft.splice(idx, 1);
-      })
-    );
   }
 
   function handleDeleteHeaderClick(header: RequestHeader) {
@@ -438,13 +343,11 @@ function NewModelApiConfigModule() {
   }
   function handleDrop(droppedItem: DragUpdate) {
     if (!droppedItem.destination) return;
-    setUrlParams(
-      produce((draft) => {
-        const [reorderedItem] = draft.splice(droppedItem.source.index, 1);
-        if (droppedItem.destination)
-          draft.splice(droppedItem.destination.index, 0, reorderedItem);
-      })
-    );
+    if (paramsFormikArrayHelpersRef.current)
+      paramsFormikArrayHelpersRef.current.move(
+        droppedItem.source.index,
+        droppedItem.destination.index
+      );
   }
 
   // useEffect(() => {
@@ -527,7 +430,9 @@ function NewModelApiConfigModule() {
                                 <div className={styles.tabContent}>
                                   {values.method === RequestMethod.GET &&
                                   activeTab === Tab.URL_PARAMS ? (
-                                    <TabContentURLParams />
+                                    <TabContentURLParams
+                                      ref={paramsFormikArrayHelpersRef}
+                                    />
                                   ) : null}
 
                                   {activeTab === Tab.REQUEST_BODY ? (

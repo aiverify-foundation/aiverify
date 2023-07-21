@@ -12,15 +12,10 @@ import {
   UrlParamCaptureInput,
   UrlParamsInputHeading,
 } from './requestUrlParamInput';
-import {
-  DragDropContext,
-  DragUpdate,
-  Draggable,
-  Droppable,
-} from 'react-beautiful-dnd';
-import { FieldArray, useFormikContext } from 'formik';
+import { Draggable, Droppable } from 'react-beautiful-dnd';
+import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { optionsUrlParamTypes } from './selectOptions';
-import { useState } from 'react';
+import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import { getInputReactKeyId } from './newModelApiConfig';
 
 const defaultUrlParameter: UrlParam = {
@@ -29,26 +24,30 @@ const defaultUrlParameter: UrlParam = {
   type: OpenApiDataTypes.INTEGER,
 };
 
-function TabContentURLParams() {
-  const [paramType, setParamType] = useState<URLParamType>(URLParamType.QUERY);
-  const [newParam, setNewParam] = useState<UrlParam>(defaultUrlParameter);
-  const { values, setFieldValue } = useFormikContext<ModelAPIGraphQLModel>();
+//forwardRef needed because parent component needs a ref to Formik's fieldArray-ArrayHelpers.move method for drag and drop feature
+const TabContentURLParams = forwardRef<FieldArrayRenderProps | undefined>(
+  function Content(_props, ref) {
+    const [paramType, setParamType] = useState<URLParamType>(
+      URLParamType.QUERY
+    );
+    const [newParam, setNewParam] = useState<UrlParam>(defaultUrlParameter);
+    const { values, setFieldValue } = useFormikContext<ModelAPIGraphQLModel>();
+    const formArrayHelpersRef = useRef<FieldArrayRenderProps>();
+    useImperativeHandle(ref, () => formArrayHelpersRef.current, []);
 
-  function handleParamTypeChange(val: URLParamType) {
-    setParamType(val);
-  }
+    function handleParamTypeChange(val: URLParamType) {
+      setParamType(val);
+    }
 
-  function handleNewParamChange(value: UrlParam) {
-    setNewParam((prev) => ({
-      ...value,
-      reactPropId:
-        prev.reactPropId === '' ? getInputReactKeyId() : prev.reactPropId,
-    }));
-  }
+    function handleNewParamChange(value: UrlParam) {
+      setNewParam((prev) => ({
+        ...value,
+        reactPropId:
+          prev.reactPropId === '' ? getInputReactKeyId() : prev.reactPropId,
+      }));
+    }
 
-  function handleDrop(droppedItem: DragUpdate) {}
-
-  return (
+    return (
       <div
         style={{
           display: 'flex',
@@ -124,6 +123,7 @@ function TabContentURLParams() {
               ref={provided.innerRef}>
               <FieldArray name="parameters.queries.queryParams">
                 {(arrayHelpers) => {
+                  formArrayHelpersRef.current = arrayHelpers;
                   if (!values.parameters || !values.parameters.queries)
                     return null;
                   const queryParams = values.parameters.queries.queryParams;
@@ -154,6 +154,7 @@ function TabContentURLParams() {
                           )}
                         </Draggable>
                       ))}
+                      {provided.placeholder}
                       <UrlParamCaptureInput
                         showAddBtn
                         value={newParam}
@@ -167,12 +168,12 @@ function TabContentURLParams() {
                   );
                 }}
               </FieldArray>
-              {provided.placeholder}
             </div>
           )}
         </Droppable>
       </div>
-  );
-}
+    );
+  }
+);
 
 export { TabContentURLParams };
