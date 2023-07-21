@@ -338,6 +338,8 @@ function _exportModelAPI(modelAPI) {
     }
   } else if (path_match && path_match.length > 0) {
     throw new Error("Path parameters not defined");
+  } else if (!path_match && (modelAPI.parameters && modelAPI.parameters.paths)) {
+    throw new Error("urlParams not defined for paths");
   }
 
   // add query params if any
