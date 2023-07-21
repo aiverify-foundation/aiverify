@@ -1,4 +1,4 @@
-import {jest} from '@jest/globals'
+import {expect, jest} from '@jest/globals'
 import mongoose from 'mongoose';
 import casual from '#testutil/mockData.mjs';
 
@@ -8,6 +8,7 @@ describe("Test Model GraphQL queries and mutations", () => {
   let ProjectModel;
   let ModelFileModel;
   let data = [];
+  let modelAPIData = [];
   let projData;
 
   beforeAll(async() => {
@@ -28,6 +29,13 @@ describe("Test Model GraphQL queries and mutations", () => {
       let saveDoc = await obj.save();
       data.push(saveDoc.toObject())
     }
+
+    modelAPIData.push(casual.modelAPI("requestBody", false));
+    modelAPIData.push(casual.modelAPI("query", false));
+    modelAPIData.push(casual.modelAPI("path", false));
+    modelAPIData.push(casual.modelAPI("requestBody", true));
+    modelAPIData.push(casual.modelAPI("query", true));
+    modelAPIData.push(casual.modelAPI("path", true));
 
     // ProjectModel = models.ProjectModel;
     const project = casual.project;
@@ -276,5 +284,153 @@ describe("Test Model GraphQL queries and mutations", () => {
     expect(counta).toBe(count);
 
   })
+
+
+  it("should create model API", async() => {
+    const query = `
+mutation($model: ModelAPIInput!) {
+  createModelAPI(model: $model) {
+    id
+    name
+    description
+    type
+    status
+    modelType
+  }
+}
+`
+    for (let model of modelAPIData) {
+      const response = await server.executeOperation({
+        query,
+        variables: {
+          model
+        }
+      })
+
+      // check response
+      expect(response.body.kind).toBe('single');
+      expect(response.body.singleResult.errors).toBeUndefined();
+
+      const result = response.body.singleResult.data.createModelAPI;
+      const id = result.id;
+      model.id = id;
+
+      // check updated into db
+      const doc = await ModelFileModel.findOne({ _id: mongoose.Types.ObjectId(id) });
+      expect(doc).toBeDefined();
+      expect(doc.name).toEqual(model.name);
+      expect(doc.modelType).toEqual(model.modelType);
+      expect(doc.description).toEqual(model.description);
+      expect(doc.modelAPI.method).toEqual(model.modelAPI.method);
+      expect(doc.modelAPI.url).toEqual(model.modelAPI.url);
+      expect(doc.modelAPI.urlParams).toEqual(model.modelAPI.urlParams);
+      expect(doc.modelAPI.authType).toEqual(model.modelAPI.authType);
+      expect(doc.modelAPI.authTypeConfig).toEqual(model.modelAPI.authTypeConfig);
+      if (model.modelAPI.requestBody) {
+        expect(model.modelAPI).toHaveProperty("requestBody")
+        expect(doc.modelAPI.requestBody.mediaType).toEqual(model.modelAPI.requestBody.mediaType);
+        expect(doc.modelAPI.requestBody.isArray).toEqual(model.modelAPI.requestBody.isArray);
+        expect(doc.modelAPI.requestBody.maxItems).toEqual(model.modelAPI.requestBody.maxItems);
+        expect(doc.modelAPI.requestBody.properties.length).toEqual(model.modelAPI.requestBody.properties.length);
+        for (let i=0; i<doc.modelAPI.requestBody.properties.length; i++) {
+          const prop1 = doc.modelAPI.requestBody.properties[i];
+          const prop2 = model.modelAPI.requestBody.properties[i];
+          expect(prop1.field).toEqual(prop2.field);
+          expect(prop1.type).toEqual(prop2.type);
+        }
+      } else if (model.modelAPI.parameters && model.modelAPI.parameters.paths) {
+        expect(model.modelAPI).toHaveProperty("parameters.paths")
+        expect(doc.modelAPI.parameters.paths.mediaType).toEqual(model.modelAPI.parameters.paths.mediaType);
+        expect(doc.modelAPI.parameters.paths.isArray).toEqual(model.modelAPI.parameters.paths.isArray);
+        expect(doc.modelAPI.parameters.paths.maxItems).toEqual(model.modelAPI.parameters.paths.maxItems);
+        expect(doc.modelAPI.parameters.paths.pathParams.length).toEqual(model.modelAPI.parameters.paths.pathParams.length);
+        for (let i=0; i<doc.modelAPI.parameters.paths.pathParams.length; i++) {
+          const prop1 = doc.modelAPI.parameters.paths.pathParams[i];
+          const prop2 = model.modelAPI.parameters.paths.pathParams[i];
+          expect(prop1.name).toEqual(prop2.name);
+          expect(prop1.type).toEqual(prop2.type);
+        }
+      } else if (model.modelAPI.parameters && model.modelAPI.parameters.queries) {
+        expect(model.modelAPI).toHaveProperty("parameters.queries")
+        expect(doc.modelAPI.parameters.queries.mediaType).toEqual(model.modelAPI.parameters.queries.mediaType);
+        expect(doc.modelAPI.parameters.queries.isArray).toEqual(model.modelAPI.parameters.queries.isArray);
+        expect(doc.modelAPI.parameters.queries.maxItems).toEqual(model.modelAPI.parameters.queries.maxItems);
+        expect(doc.modelAPI.parameters.queries.queryParams.length).toEqual(model.modelAPI.parameters.queries.queryParams.length);
+        for (let i=0; i<doc.modelAPI.parameters.queries.queryParams.length; i++) {
+          const prop1 = doc.modelAPI.parameters.queries.queryParams[i];
+          const prop2 = model.modelAPI.parameters.queries.queryParams[i];
+          expect(prop1.name).toEqual(prop2.name);
+          expect(prop1.type).toEqual(prop2.type);
+        }
+      }
+    }
+  })
+
+  it("should build OpenAPI specs from model", async() => {
+    const query = `
+query($modelFileID: ObjectID!) {
+  getOpenAPISpecFromModel(modelFileID: $modelFileID)
+}
+`
+    for (let model of modelAPIData) {
+      const response = await server.executeOperation({
+        query,
+        variables: {
+          modelFileID: model.id
+        }
+      })
+
+      // check response
+      expect(response.body.kind).toBe('single');
+      expect(response.body.singleResult.errors).toBeUndefined();
+
+      const spec = response.body.singleResult.data.getOpenAPISpecFromModel;
+      expect(spec).toHaveProperty("paths")
+      const keys = Object.keys(spec.paths)
+      expect(keys.length).toBe(1);
+      const path = spec.paths[keys[0]];
+
+      const method = model.modelAPI.method.toLowerCase();
+      expect(path).toHaveProperty(method)
+
+      if (model.modelAPI.requestBody) {
+        expect(path[method]).toHaveProperty("requestBody")
+      } else if (model.modelAPI.parameters && model.modelAPI.parameters.paths) {
+        expect(path[method]).toHaveProperty("parameters")
+      } else if (model.modelAPI.parameters && model.modelAPI.parameters.queries) {
+        expect(path[method]).toHaveProperty("parameters")
+      }
+
+    }
+  })
+
+  it("should delete model API", async() => {
+    const query = `
+mutation($id: ObjectID!) {
+  deleteModelFile(id: $id)
+}
+`
+    for (let model of modelAPIData) {
+      const count = await ModelFileModel.countDocuments({ _id: mongoose.Types.ObjectId(model.id) })
+      expect(count).toBe(1)
+
+      const response = await server.executeOperation({
+        query,
+        variables: {
+          id: model.id
+        }
+      })
+
+      // check response
+      expect(response.body.kind).toBe('single');
+      expect(response.body.singleResult.errors).toBeUndefined();
+
+      // verify delete from db
+      const count2 = await ModelFileModel.countDocuments({ _id: mongoose.Types.ObjectId(model.id) })
+      expect(count2).toBe(0)
+    }
+  })
+
+
 
 });
