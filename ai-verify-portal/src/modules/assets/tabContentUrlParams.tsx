@@ -2,6 +2,7 @@ import { SelectInput } from 'src/components/selectInput';
 import { Tooltip, TooltipPosition } from 'src/components/tooltip';
 import InfoIcon from '@mui/icons-material/Info';
 import {
+  MediaType,
   ModelAPIGraphQLModel,
   OpenApiDataTypes,
   URLParamType,
@@ -14,7 +15,7 @@ import {
 } from './requestUrlParamInput';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
-import { optionsUrlParamTypes } from './selectOptions';
+import { optionsMediaTypes, optionsUrlParamTypes } from './selectOptions';
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import { getInputReactKeyId } from './newModelApiConfig';
 
@@ -24,6 +25,8 @@ const defaultUrlParameter: UrlParam = {
   type: OpenApiDataTypes.INTEGER,
 };
 
+const pathParamsKey = 'parameters.paths';
+const queryParamsKey = 'parameters.queries';
 const pathParamsInputName = 'parameters.paths.pathParams';
 const queryParamsInputName = 'parameters.queries.queryParams';
 
@@ -36,10 +39,41 @@ const TabContentURLParams = forwardRef<FieldArrayRenderProps | undefined>(
     const [newParam, setNewParam] = useState<UrlParam>(defaultUrlParameter);
     const { values, setFieldValue } = useFormikContext<ModelAPIGraphQLModel>();
     const formArrayHelpersRef = useRef<FieldArrayRenderProps>();
+    const keyName = `${
+      paramType === URLParamType.QUERY ? queryParamsKey : pathParamsKey
+    }.mediaType`;
+    const mediaTypeValue = URLParamType.QUERY
+      ? values.parameters?.queries?.mediaType
+      : values.parameters?.paths?.mediaType;
     useImperativeHandle(ref, () => formArrayHelpersRef.current, []);
 
     function handleParamTypeChange(val: URLParamType) {
       if (val === paramType) return;
+
+      if (val === URLParamType.QUERY) {
+        setFieldValue(
+          `${queryParamsKey}.mediatype`,
+          values.parameters?.paths?.mediaType
+        );
+        if (values.parameters?.paths?.pathParams.length) {
+          setFieldValue(queryParamsInputName, [
+            ...values.parameters.paths.pathParams,
+          ]);
+          setFieldValue(pathParamsInputName, []);
+        }
+      } else {
+        setFieldValue(
+          `${pathParamsKey}.mediatype`,
+          values.parameters?.queries?.mediaType
+        );
+        if (values.parameters?.queries?.queryParams.length) {
+          setFieldValue(pathParamsInputName, [
+            ...values.parameters.queries.queryParams,
+          ]);
+          setFieldValue(queryParamsInputName, []);
+        }
+      }
+
       if (
         val === URLParamType.QUERY &&
         values.parameters &&
@@ -61,6 +95,7 @@ const TabContentURLParams = forwardRef<FieldArrayRenderProps | undefined>(
         ]);
         setFieldValue(queryParamsInputName, []);
       }
+
       setParamType(val);
     }
 
@@ -91,6 +126,14 @@ const TabContentURLParams = forwardRef<FieldArrayRenderProps | undefined>(
           display: 'flex',
           flexDirection: 'column',
         }}>
+        <SelectInput<MediaType>
+          width={240}
+          label="Media Type"
+          name={keyName}
+          options={optionsMediaTypes}
+          value={mediaTypeValue}
+          onChange={(val) => setFieldValue(keyName, val)}
+        />
         <div
           style={{
             display: 'flex',
