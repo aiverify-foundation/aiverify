@@ -94,15 +94,14 @@ function UrlParamCaptureInput(props: UrlParamsDisplayProps) {
         </div>
       ) : (
         <div className={styles.delIconContainer}>
-          <div style={{ display: 'flex' }}>
-            <DragIndicatorIcon style={{ color: '#cfcfcf', cursor: 'move' }} />
-          </div>
           <IconButton
             iconComponent={CloseIcon}
             noOutline
             onClick={handleRemoveBtnClick(value)}
-            style={{ marginRight: 42 }}
           />
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <DragIndicatorIcon style={{ color: '#cfcfcf', cursor: 'grab' }} />
+          </div>
         </div>
       )}
     </div>

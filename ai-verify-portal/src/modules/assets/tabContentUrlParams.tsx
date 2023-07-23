@@ -178,7 +178,12 @@ const TabContentURLParams = forwardRef<FieldArrayRenderProps | undefined>(
                       else params = values.parameters.paths.pathParams;
                     }
                     return (
-                      <div>
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          width: 'fit-content',
+                        }}>
                         {params.map((param, index) => (
                           <Draggable
                             key={param.reactPropId}
