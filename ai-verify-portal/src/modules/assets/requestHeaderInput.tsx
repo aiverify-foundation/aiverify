@@ -4,120 +4,117 @@ import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import styles from './styles/newModelApiConfig.module.css';
 import { ChangeEvent } from 'react';
+import { AdditionalHeader, OpenApiDataTypes } from './types';
+import { SelectInput } from 'src/components/selectInput';
+import { optionsOpenApiDataTypes } from './selectOptions';
 
-type RequestHeader = {
-  key: string;
-  value: string;
+type AdditionalHeaderInputProps = {
+  value: AdditionalHeader;
+  showAddBtn?: boolean;
+  onChange: (value: AdditionalHeader) => void;
+  onAddClick?: () => void;
+  onDeleteClick?: (param: AdditionalHeader) => void;
 };
 
-type RequestHeaderDisplayProps = {
-  header: RequestHeader;
-  onKeynameChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  onValueChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  onRemoveBtnClick: (globalVar: RequestHeader) => void;
-};
-
-type RequestHeaderCaptureInputProps = {
-  newHeader: RequestHeader;
-  onKeynameChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  onValueChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  onAddClick: () => void;
-};
-
-function RequestHeaderInputHeading() {
+function AdditionalHeaderInputHeading() {
   return (
     <div style={{ display: 'flex', marginBottom: 4 }}>
       <div className={styles.headingName}>Header Name</div>
+      <div className={styles.headingName}>Data Type</div>
       <div className={styles.headingVal}>Value</div>
       <div></div>
     </div>
   );
 }
 
-function RequestHeaderDisplayInput(props: RequestHeaderDisplayProps) {
-  const { header, onRemoveBtnClick, onKeynameChange, onValueChange } = props;
+function AdditionalHeaderInput(props: AdditionalHeaderInputProps) {
+  const {
+    value,
+    showAddBtn = false,
+    onChange,
+    onAddClick,
+    onDeleteClick,
+  } = props;
+  const disableAddBtn =
+    value.name.trim() === '' ||
+    value.type.trim() === '' ||
+    value.value.trim() === '';
 
-  function handleRemoveBtnClick(header: RequestHeader) {
-    return () => onRemoveBtnClick(header);
+  function handleRemoveBtnClick(header: AdditionalHeader) {
+    return () => onDeleteClick && onDeleteClick(header);
+  }
+
+  function handleNameChange(e: ChangeEvent<HTMLInputElement>) {
+    const updatedParam: AdditionalHeader = { ...value, name: e.target.value };
+    onChange(updatedParam);
+  }
+
+  function handleTypeChange(val: OpenApiDataTypes) {
+    const updatedParam = { ...value, type: val };
+    onChange(updatedParam);
+  }
+
+  function handleValChange(e: ChangeEvent<HTMLInputElement>) {
+    const updatedParam = { ...value, value: e.target.value };
+    onChange(updatedParam);
   }
 
   return (
-    <div id={`varkey-${header.key}`} className={styles.keyValRow}>
+    <div className={styles.keyValRow}>
       <div className={styles.keyValCol}>
         <TextInput
-          value={header.key}
-          name=""
+          value={value.name}
+          name="additonalHeaderNameInput"
           style={{ marginBottom: 0 }}
           maxLength={100}
-          onChange={onKeynameChange}
+          onChange={handleNameChange}
+        />
+      </div>
+      <div className={styles.keyValCol}>
+        <SelectInput<OpenApiDataTypes>
+          name="additonalHeaderDataTypeInput"
+          options={optionsOpenApiDataTypes}
+          onChange={handleTypeChange}
+          value={value.type}
+          style={{ marginBottom: 0 }}
         />
       </div>
       <div className={styles.keyValCol}>
         <TextInput
-          value={header.value}
-          name=""
+          value={value.value}
+          name="additonalHeaderValueInput"
           style={{ marginBottom: 0 }}
           maxLength={100}
-          onChange={onValueChange}
+          onChange={handleValChange}
         />
       </div>
-      <div className={styles.delIconContainer}>
-        <IconButton
-          iconComponent={CloseIcon}
-          noOutline
-          onClick={handleRemoveBtnClick(header)}
-        />
-      </div>
+      {showAddBtn ? (
+        <div className={styles.iconContainer}>
+          <IconButton
+            iconComponent={AddIcon}
+            onClick={onAddClick}
+            disabled={disableAddBtn}>
+            <div
+              style={{
+                color: '#676767',
+                fontSize: 15,
+                margin: '0 6px',
+              }}>
+              Add
+            </div>
+          </IconButton>
+        </div>
+      ) : (
+        <div className={styles.delIconContainer}>
+          <IconButton
+            iconComponent={CloseIcon}
+            noOutline
+            onClick={handleRemoveBtnClick(value)}
+          />
+        </div>
+      )}
     </div>
   );
 }
 
-function RequestHeaderCaptureInput(props: RequestHeaderCaptureInputProps) {
-  const { newHeader, onKeynameChange, onValueChange, onAddClick } = props;
-  const disableAddBtn =
-    newHeader.key.trim() === '' || newHeader.value.trim() === '';
-  return (
-    <div style={{ display: 'flex', alignItems: 'center' }}>
-      <div className={styles.keyInput}>
-        <TextInput
-          name="headerKeyNameCapture"
-          onChange={onKeynameChange}
-          value={newHeader.key}
-          maxLength={100}
-          style={{ marginBottom: 0 }}
-        />
-      </div>
-      <div className={styles.valInput}>
-        <TextInput
-          name="headerValueCapture"
-          onChange={onValueChange}
-          value={newHeader.value}
-          maxLength={100}
-          style={{ marginBottom: 0 }}
-        />
-      </div>
-      <div className={styles.iconContainer}>
-        <IconButton
-          iconComponent={AddIcon}
-          onClick={onAddClick}
-          disabled={disableAddBtn}>
-          <div
-            style={{
-              color: '#676767',
-              fontSize: 15,
-              margin: '0 6px',
-            }}>
-            Add
-          </div>
-        </IconButton>
-      </div>
-    </div>
-  );
-}
-
-export {
-  RequestHeaderDisplayInput,
-  RequestHeaderCaptureInput,
-  RequestHeaderInputHeading,
-};
-export type { RequestHeader };
+export { AdditionalHeaderInput, AdditionalHeaderInputHeading };

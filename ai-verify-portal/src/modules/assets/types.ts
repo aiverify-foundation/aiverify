@@ -34,12 +34,14 @@ export enum URLParamType {
 }
 
 export type AdditionalHeader = {
+  reactPropId: string;
   name: string;
   type: OpenApiDataTypes;
   value: string;
 };
 
-export type RequestBodyProperty = {
+export type BodyParam = {
+  reactPropId: string;
   field: string;
   type: OpenApiDataTypes;
 };
@@ -47,7 +49,7 @@ export type RequestBodyProperty = {
 export type RequestBody = {
   mediaType: MediaType;
   isArray: boolean;
-  properties: RequestBodyProperty[];
+  properties: BodyParam[];
 };
 
 export type UrlParam = {
@@ -69,8 +71,8 @@ export type Paths = {
 };
 
 export type Parameters = {
-  queries?: Queries;
-  paths?: Paths;
+  queries: Queries;
+  paths: Paths;
 };
 
 export type RequestConfig = {
@@ -87,15 +89,25 @@ export type Response = {
   type: OpenApiDataTypes;
 };
 
+export type AuthBearerTokenConfig = {
+  token: string;
+};
+
+export type AuthBasicConfig = {
+  username: string;
+  password: string;
+};
+
 export type ModelAPI = {
   url: string;
   method: RequestMethod;
   authType: AuthType;
-  authTypeConfig: { [key: string]: string };
-  requestBody?: RequestBody;
+  authTypeConfig: AuthBearerTokenConfig | AuthBasicConfig;
+  requestBody: RequestBody;
   requestConfig: RequestConfig;
   response: Response;
-  parameters?: Parameters;
+  parameters: Parameters;
+  additionalHeaders: AdditionalHeader[];
 };
 
 export type ConfigDescription = {
@@ -104,4 +116,24 @@ export type ConfigDescription = {
   modelType: ModelType;
 };
 
-export type ModelAPIGraphQLModel = ConfigDescription & ModelAPI;
+export type ModelAPIFormModel = ConfigDescription & ModelAPI;
+
+export type ModelAPIGraphQLModel = ConfigDescription &
+  Pick<
+    ModelAPI,
+    'url' | 'method' | 'authType' | 'requestConfig' | 'response'
+  > & {
+    authTypeConfig: AuthBearerTokenConfig | AuthBasicConfig;
+    requestBody?: Pick<RequestBody, 'mediaType' | 'isArray'> & {
+      properties: Omit<BodyParam, 'reactPropId'>;
+    };
+    parameters?: {
+      queries?: {
+        queryParams: Omit<UrlParam, 'reactPropId'>;
+      };
+      paths?: {
+        pathParams: Omit<UrlParam, 'reactPropId'>;
+      };
+    };
+    additionalHeaders: Omit<AdditionalHeader, 'reactPropId'>[];
+  };

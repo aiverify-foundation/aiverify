@@ -3,14 +3,14 @@ import { gql } from '@apollo/client';
 export const GQL_CREATE_MODELAPI = gql`
   mutation ($model: ModelAPIInput!) {
     createModelAPI(model: $model) {
-      description
       name
-      type
-      modelType {
+      description
+      modelType
+      modelApi {
         url
+        method
         authType
         authTypeConfig
-        method
         requestBody {
           isArray
           mediaType

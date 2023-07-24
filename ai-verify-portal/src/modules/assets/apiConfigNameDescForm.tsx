@@ -1,7 +1,7 @@
 import { useFormikContext } from 'formik';
 import { TextArea } from 'src/components/textArea';
 import { TextInput } from 'src/components/textInput';
-import { ModelAPIGraphQLModel } from './types';
+import { ModelAPIFormModel } from './types';
 
 type ApiConfigNameDescFormProps = {
   onOKClick: () => void;
@@ -11,7 +11,7 @@ type ApiConfigNameDescFormProps = {
 function ApiConfigNameDescForm(props: ApiConfigNameDescFormProps) {
   const { onOKClick, onCancelClick } = props;
 
-  const { values, handleChange } = useFormikContext<ModelAPIGraphQLModel>();
+  const { values, handleChange } = useFormikContext<ModelAPIFormModel>();
   return (
     <div
       style={{

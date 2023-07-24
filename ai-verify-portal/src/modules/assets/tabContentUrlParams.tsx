@@ -3,7 +3,7 @@ import { Tooltip, TooltipPosition } from 'src/components/tooltip';
 import InfoIcon from '@mui/icons-material/Info';
 import {
   MediaType,
-  ModelAPIGraphQLModel,
+  ModelAPIFormModel,
   OpenApiDataTypes,
   URLParamType,
   UrlParam,
@@ -37,14 +37,14 @@ const TabContentURLParams = forwardRef<FieldArrayRenderProps | undefined>(
       URLParamType.QUERY
     );
     const [newParam, setNewParam] = useState<UrlParam>(defaultUrlParameter);
-    const { values, setFieldValue } = useFormikContext<ModelAPIGraphQLModel>();
+    const { values, setFieldValue } = useFormikContext<ModelAPIFormModel>();
     const formArrayHelpersRef = useRef<FieldArrayRenderProps>();
     const keyName = `${
       paramType === URLParamType.QUERY ? queryParamsKey : pathParamsKey
     }.mediaType`;
     const mediaTypeValue = URLParamType.QUERY
-      ? values.parameters?.queries?.mediaType
-      : values.parameters?.paths?.mediaType;
+      ? values.parameters.queries.mediaType
+      : values.parameters.paths.mediaType;
     useImperativeHandle(ref, () => formArrayHelpersRef.current, []);
 
     function handleParamTypeChange(val: URLParamType) {
@@ -53,9 +53,9 @@ const TabContentURLParams = forwardRef<FieldArrayRenderProps | undefined>(
       if (val === URLParamType.QUERY) {
         setFieldValue(
           `${queryParamsKey}.mediatype`,
-          values.parameters?.paths?.mediaType
+          values.parameters.paths.mediaType
         );
-        if (values.parameters?.paths?.pathParams.length) {
+        if (values.parameters.paths.pathParams.length) {
           setFieldValue(queryParamsInputName, [
             ...values.parameters.paths.pathParams,
           ]);
@@ -64,36 +64,14 @@ const TabContentURLParams = forwardRef<FieldArrayRenderProps | undefined>(
       } else {
         setFieldValue(
           `${pathParamsKey}.mediatype`,
-          values.parameters?.queries?.mediaType
+          values.parameters.queries.mediaType
         );
-        if (values.parameters?.queries?.queryParams.length) {
+        if (values.parameters.queries.queryParams.length) {
           setFieldValue(pathParamsInputName, [
             ...values.parameters.queries.queryParams,
           ]);
           setFieldValue(queryParamsInputName, []);
         }
-      }
-
-      if (
-        val === URLParamType.QUERY &&
-        values.parameters &&
-        values.parameters.paths &&
-        values.parameters.paths.pathParams.length
-      ) {
-        setFieldValue(queryParamsInputName, [
-          ...values.parameters.paths.pathParams,
-        ]);
-        setFieldValue(pathParamsInputName, []);
-      } else if (
-        val === URLParamType.PATH &&
-        values.parameters &&
-        values.parameters.queries &&
-        values.parameters.queries.queryParams.length
-      ) {
-        setFieldValue(pathParamsInputName, [
-          ...values.parameters.queries.queryParams,
-        ]);
-        setFieldValue(queryParamsInputName, []);
       }
 
       setParamType(val);
@@ -107,7 +85,7 @@ const TabContentURLParams = forwardRef<FieldArrayRenderProps | undefined>(
       }));
     }
 
-    function handleCurrentParamChange(idx: number) {
+    function handleAddedParamChange(idx: number) {
       return (val: UrlParam) => {
         setFieldValue(
           `${
@@ -212,13 +190,9 @@ const TabContentURLParams = forwardRef<FieldArrayRenderProps | undefined>(
                     formArrayHelpersRef.current = arrayHelpers;
                     let params: UrlParam[] = [];
                     if (paramType === URLParamType.QUERY) {
-                      if (!values.parameters || !values.parameters.queries)
-                        return null;
-                      else params = values.parameters.queries.queryParams;
+                      params = values.parameters.queries.queryParams;
                     } else {
-                      if (!values.parameters || !values.parameters.paths)
-                        return null;
-                      else params = values.parameters.paths.pathParams;
+                      params = values.parameters.paths.pathParams;
                     }
                     return (
                       <div
@@ -240,7 +214,7 @@ const TabContentURLParams = forwardRef<FieldArrayRenderProps | undefined>(
                                 {...provided.draggableProps}>
                                 <UrlParamCaptureInput
                                   value={param}
-                                  onChange={handleCurrentParamChange(index)}
+                                  onChange={handleAddedParamChange(index)}
                                   onDeleteClick={() =>
                                     arrayHelpers.remove(index)
                                   }

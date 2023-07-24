@@ -1,6 +1,6 @@
 import { useFormikContext } from 'formik';
 import styles from './styles/newModelApiConfig.module.css';
-import { ModelAPIGraphQLModel } from './types';
+import { ModelAPIFormModel } from './types';
 import EditIcon from '@mui/icons-material/Edit';
 import { IconButton } from 'src/components/iconButton';
 import { useState } from 'react';
@@ -13,7 +13,7 @@ const defaultConfigDescDisplay = 'Description';
 
 function ModelApiLeftSection() {
   const [isEdit, setIsEdit] = useState(false);
-  const { values, setFieldValue } = useFormikContext<ModelAPIGraphQLModel>();
+  const { values, setFieldValue } = useFormikContext<ModelAPIFormModel>();
   return (
     <div>
       {!isEdit ? (

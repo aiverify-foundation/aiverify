@@ -2,7 +2,7 @@ import { SetStateAction } from 'react';
 import styles from './styles/newModelApiConfig.module.css';
 import clsx from 'clsx';
 import { useFormikContext } from 'formik';
-import { ModelAPIGraphQLModel, RequestMethod } from './types';
+import { ModelAPIFormModel, RequestMethod } from './types';
 
 export enum Tab {
   URL_PARAMS,
@@ -18,7 +18,7 @@ type TabButtonsGroupProps = {
 };
 
 function TabButtonsGroup({ activeTab, onTabClick }: TabButtonsGroupProps) {
-  const { values } = useFormikContext<ModelAPIGraphQLModel>();
+  const { values } = useFormikContext<ModelAPIFormModel>();
   function handleTabClick(tab: Tab) {
     return () => onTabClick(tab);
   }
@@ -46,18 +46,18 @@ function TabButtonsGroup({ activeTab, onTabClick }: TabButtonsGroupProps) {
       <div
         className={clsx(
           styles.tabBtn,
-          activeTab === Tab.RESPONSE ? styles.tabBtn__selected : null
+          activeTab === Tab.HEADERS ? styles.tabBtn__selected : null
         )}
-        onClick={handleTabClick(Tab.RESPONSE)}>
-        Response
+        onClick={handleTabClick(Tab.HEADERS)}>
+        Additional Request Headers
       </div>
       <div
         className={clsx(
           styles.tabBtn,
-          activeTab === Tab.HEADERS ? styles.tabBtn__selected : null
+          activeTab === Tab.RESPONSE ? styles.tabBtn__selected : null
         )}
-        onClick={handleTabClick(Tab.HEADERS)}>
-        Additional Headers
+        onClick={handleTabClick(Tab.RESPONSE)}>
+        Response
       </div>
       <div
         className={clsx(

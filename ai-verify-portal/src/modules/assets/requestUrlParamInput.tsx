@@ -9,14 +9,8 @@ import { SelectInput } from 'src/components/selectInput';
 import { optionsOpenApiDataTypes } from './selectOptions';
 import { OpenApiDataTypes, UrlParam } from './types';
 
-type UrlParameter = {
-  key: string;
-  dataType: string;
-};
-
-type UrlParamsDisplayProps = {
+type UrlParameterInputProps = {
   value: UrlParam;
-  param?: UrlParameter;
   showAddBtn?: boolean;
   onChange: (value: UrlParam) => void;
   onAddClick?: () => void;
@@ -32,7 +26,7 @@ function UrlParamsInputHeading() {
   );
 }
 
-function UrlParamCaptureInput(props: UrlParamsDisplayProps) {
+function UrlParamCaptureInput(props: UrlParameterInputProps) {
   const {
     value,
     showAddBtn = false,
@@ -61,7 +55,7 @@ function UrlParamCaptureInput(props: UrlParamsDisplayProps) {
       <div className={styles.keyValCol}>
         <TextInput
           value={value.name}
-          name="variableName"
+          name="paramName"
           style={{ marginBottom: 0 }}
           maxLength={100}
           onChange={handleKeyChange}
@@ -109,4 +103,3 @@ function UrlParamCaptureInput(props: UrlParamsDisplayProps) {
 }
 
 export { UrlParamCaptureInput, UrlParamsInputHeading };
-export type { UrlParameter };
