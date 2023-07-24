@@ -5,19 +5,23 @@ import {
   ResponsePropertyInput,
 } from './responseParamInput';
 
+const responseFieldName = 'modelAPI.response';
+
 function TabContentResponse() {
   const { values, setFieldValue } = useFormikContext<ModelAPIFormModel>();
 
   const value: Response = {
-    statusCode: values.response.statusCode,
-    mediaType: values.response.mediaType,
-    type: values.response.type,
+    statusCode: values.modelAPI.response.statusCode,
+    mediaType: values.modelAPI.response.mediaType,
+    type: values.modelAPI.response.type,
+    field: values.modelAPI.response.field,
   };
 
   function handleChange(value: Response) {
-    setFieldValue('response.statusCode', value.statusCode);
-    setFieldValue('response.mediaType', value.mediaType);
-    setFieldValue('response.type', value.type);
+    setFieldValue(`${responseFieldName}.statusCode`, value.statusCode);
+    setFieldValue(`${responseFieldName}.mediaType`, value.mediaType);
+    setFieldValue(`${responseFieldName}.type`, value.type);
+    setFieldValue(`${responseFieldName}.field`, value.field);
   }
 
   return (

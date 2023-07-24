@@ -40,9 +40,7 @@ const urlParamsFieldName = 'modelAPI.urlParams';
 //forwardRef needed because parent component needs a ref to Formik's fieldArray-ArrayHelpers.move method from this component, for drag and drop feature
 const TabContentURLParams = forwardRef<FieldArrayRenderProps | undefined>(
   function Content(_props, ref) {
-    const [paramType, setParamType] = useState<URLParamType>(
-      URLParamType.QUERY
-    );
+    const [paramType, setParamType] = useState<URLParamType>();
     const [newParam, setNewParam] = useState<UrlParam>(defaultUrlParameter);
     const { values, setFieldValue } = useFormikContext<ModelAPIFormModel>();
     const formArrayHelpersRef = useRef<FieldArrayRenderProps>();
@@ -125,6 +123,14 @@ const TabContentURLParams = forwardRef<FieldArrayRenderProps | undefined>(
         paramType === URLParamType.PATH ? urlParamsStr : undefined
       );
     }, [urlParamsStr]);
+
+    useEffect(() => {
+      setParamType(
+        values.modelAPI.parameters.queries
+          ? URLParamType.QUERY
+          : URLParamType.PATH
+      );
+    }, []);
 
     return (
       <div

@@ -19,9 +19,12 @@ type ResponseInputProps = {
 function ResponseInputHeading() {
   return (
     <div style={{ display: 'flex', marginBottom: 4 }}>
-      <div className={styles.headingName}>Status Code</div>
+      <div className={styles.headingName} style={{ width: 90 }}>
+        Status Code
+      </div>
       <div className={styles.headingVal}>Media Type</div>
       <div className={styles.headingVal}>Data Type</div>
+      <div className={styles.headingVal}>Field Name</div>
       <div></div>
     </div>
   );
@@ -64,14 +67,19 @@ function ResponsePropertyInput(props: ResponseInputProps) {
     onChange(updatedParam);
   }
 
+  function handleFieldChange(e: ChangeEvent<HTMLInputElement>) {
+    const updatedParam = { ...value, field: e.target.value };
+    onChange(updatedParam);
+  }
+
   return (
     <div className={styles.keyValRow}>
-      <div className={styles.keyValCol}>
+      <div className={styles.keyValCol} style={{ width: 90 }}>
         <TextInput
           name="statusCodeInput"
           onChange={handleStatusCodeChange}
           value={value.statusCode.toString()}
-          maxLength={100}
+          maxLength={128}
           style={{ marginBottom: 0 }}
         />
       </div>
@@ -90,6 +98,15 @@ function ResponsePropertyInput(props: ResponseInputProps) {
           options={optionsOpenApiDataTypes}
           onChange={handleTypeChange}
           value={value.type}
+          style={{ marginBottom: 0 }}
+        />
+      </div>
+      <div className={styles.keyValCol}>
+        <TextInput
+          name="fieldNameInput"
+          onChange={handleFieldChange}
+          value={value.field}
+          maxLength={128}
           style={{ marginBottom: 0 }}
         />
       </div>

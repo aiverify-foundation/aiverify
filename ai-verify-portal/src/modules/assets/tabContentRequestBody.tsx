@@ -20,7 +20,7 @@ const defaultBodyParameter: BodyParam = {
   type: OpenApiDataTypes.INTEGER,
 };
 
-const inputKey = 'requestBody.properties';
+const requestBodyFieldName = 'modelAPI.requestBody';
 
 function TabContentRequestBody() {
   const [newParam, setNewParam] = useState<BodyParam>(defaultBodyParameter);
@@ -36,7 +36,7 @@ function TabContentRequestBody() {
 
   function handleAddedParamChange(idx: number) {
     return (val: BodyParam) => {
-      setFieldValue(`${inputKey}[${idx}]`, val);
+      setFieldValue(`${requestBodyFieldName}.properties[${idx}]`, val);
     };
   }
 
@@ -52,12 +52,14 @@ function TabContentRequestBody() {
         name="requestBody.mediaType"
         options={optionsMediaTypes}
         value={values.modelAPI.requestBody?.mediaType}
-        onChange={(val) => setFieldValue('requestBody.mediaType', val)}
+        onChange={(val) =>
+          setFieldValue(`${requestBodyFieldName}.mediaType`, val)
+        }
       />
       {values.modelAPI.requestBody.mediaType !== MediaType.NONE ? (
         <div>
           <RequestBodyParamsHeading />
-          <FieldArray name={inputKey}>
+          <FieldArray name={`${requestBodyFieldName}.properties`}>
             {(arrayHelpers) => {
               const params = values.modelAPI.requestBody.properties || [];
               return (

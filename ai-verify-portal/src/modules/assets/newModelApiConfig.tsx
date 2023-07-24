@@ -7,6 +7,7 @@ import { DragDropContext, DragUpdate } from 'react-beautiful-dnd';
 import { optionsRequestMethods } from './selectOptions';
 import {
   AuthType,
+  BatchStrategy,
   MediaType,
   ModelAPIFormModel,
   ModelAPIGraphQLModel,
@@ -53,11 +54,6 @@ export const initialValues: ModelAPIFormModel = {
     urlParams: '',
     method: RequestMethod.POST,
     authType: AuthType.NO_AUTH,
-    authTypeConfig: {
-      token: '',
-      username: '',
-      password: '',
-    },
     requestBody: {
       mediaType: MediaType.NONE,
       isArray: false,
@@ -72,37 +68,19 @@ export const initialValues: ModelAPIFormModel = {
     },
     requestConfig: {
       rateLimit: -1,
-      batchStrategy: '',
+      batchStrategy: BatchStrategy.none,
       batchLimit: -1,
       maxConnections: -1,
-      requestTimeout: -1,
+      requestTimeout: 60000,
     },
     response: {
       statusCode: 200,
-      mediaType: MediaType.NONE,
-      type: OpenApiDataTypes.STRING,
+      mediaType: MediaType.APP_JSON,
+      type: OpenApiDataTypes.INTEGER,
+      field: 'data',
     },
   },
 };
-/*
- additionalHeaders: [],
-    requestBody: {
-      mediaType: MediaType.NONE,
-      isArray: false,
-      properties: [],
-    },
-    parameters: {
-      queries: {
-        mediaType: MediaType.NONE,
-        isArray: false,
-        queryParams: [],
-      },
-      paths: {
-        mediaType: MediaType.NONE,
-        isArray: false,
-        pathParams: [],
-      },
-    },*/
 
 function NewModelApiConfigModule() {
   const [activeTab, setActiveTab] = useState<Tab>();
@@ -110,81 +88,52 @@ function NewModelApiConfigModule() {
   const [addNewModelAPIConfig] =
     useMutation<GqlCreateModelAPIConfigResult>(GQL_CREATE_MODELAPI);
 
-  async function createModelAPIConfig(model: ModelAPIFormModel) {
-    console.log(model);
-    return;
-    // const modelAPIInput: ModelAPIGraphQLModel = {
-    //   name: model.name,
-    //   description: model.description,
-    //   modelType: model.modelType,
-    //   method: model.modelAPI.method,
-    //   url: model.modelAPI.url,
-    //   authType: model.modelAPI.authType,
-    //   authTypeConfig: model.modelAPI.authTypeConfig,
-    //   requestConfig: model.modelAPI.requestConfig,
-    //   response: model.modelAPI.response,
-    //   additionalHeaders: [],
-    // };
+  async function createModelAPIConfig(formValues: ModelAPIFormModel) {
+    const modelAPIInput: ModelAPIGraphQLModel = { ...formValues };
 
-    // if (model.modelAPI.urlParams.trim() !== '') {
-    //   modelAPIInput.urlParams = model.modelAPI.urlParams;
-    // }
+    if (formValues.modelAPI.method === RequestMethod.GET) {
+      delete modelAPIInput.modelAPI.requestBody;
+      // tidy pathParams - remove reactPropId
+      const parameters = modelAPIInput.modelAPI.parameters;
+      if (parameters && parameters.paths) {
+        parameters.paths.pathParams = parameters.paths.pathParams.map(
+          (param) => ({
+            name: param.name,
+            type: param.type,
+          })
+        );
+      }
+    } else {
+      delete modelAPIInput.modelAPI.parameters;
+      // tidy requestbody properties - remove reactPropId
+      const requestBody = modelAPIInput.modelAPI.requestBody;
+      if (requestBody && requestBody.properties) {
+        requestBody.properties = requestBody.properties.map((prop) => ({
+          field: prop.field,
+          type: prop.type,
+        }));
+      }
+    }
 
-    // if (model.modelAPI.method === RequestMethod.POST) {
-    //   modelAPIInput.requestBody = {
-    //     mediaType: model.modelAPI.requestBody.mediaType,
-    //     isArray: false,
-    //     properties: model.modelAPI.requestBody.properties.map((prop) => ({
-    //       field: prop.field,
-    //       type: prop.type,
-    //     })),
-    //   };
-    // }
+    //tidy additionalHeaders - remove reactPropId
+    if (modelAPIInput.modelAPI.additionalHeaders) {
+      modelAPIInput.modelAPI.additionalHeaders =
+        modelAPIInput.modelAPI.additionalHeaders.map((header) => ({
+          name: header.name,
+          type: header.type,
+          value: header.value,
+        }));
+    }
+    console.log(modelAPIInput);
 
-    // if (model.modelAPI.method === RequestMethod.GET) {
-    //   if (model.modelAPI.parameters.paths.pathParams.length) {
-    //     modelAPIInput.parameters = {
-    //       paths: {
-    //         pathParams: model.modelAPI.parameters.paths.pathParams.map(
-    //           (param) => ({
-    //             name: param.name,
-    //             type: param.type,
-    //           })
-    //         ),
-    //       },
-    //     };
-    //   } else if (model.modelAPI.parameters.queries.queryParams.length) {
-    //     modelAPIInput.parameters = {
-    //       queries: {
-    //         queryParams: model.modelAPI.parameters.queries.queryParams.map(
-    //           (param) => ({
-    //             name: param.name,
-    //             type: param.type,
-    //           })
-    //         ),
-    //       },
-    //     };
-    //   }
-    // }
-
-    // if (model.modelAPI.additionalHeaders.length) {
-    //   modelAPIInput.additionalHeaders = model.modelAPI.additionalHeaders.map(
-    //     (header) => ({
-    //       name: header.name,
-    //       type: header.type,
-    //       value: header.value,
-    //     })
-    //   );
-    // }
-
-    // try {
-    //   const result = await addNewModelAPIConfig({
-    //     variables: { model: modelAPIInput },
-    //   });
-    //   console.log(result);
-    // } catch (err) {
-    //   console.error(err);
-    // }
+    try {
+      const result = await addNewModelAPIConfig({
+        variables: { model: modelAPIInput },
+      });
+      console.log(result);
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   function handleBackClick() {

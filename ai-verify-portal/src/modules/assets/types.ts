@@ -38,6 +38,11 @@ export enum URLParamType {
   QUERY = 'Query',
 }
 
+export enum BatchStrategy {
+  none = 'none',
+  multipart = 'multipart',
+}
+
 export type AdditionalHeader = {
   reactPropId: string;
   name: string;
@@ -84,7 +89,7 @@ export type Parameters = RequireAtLeastOne<BaseParameters>;
 
 export type RequestConfig = {
   rateLimit: number;
-  batchStrategy: string;
+  batchStrategy: BatchStrategy;
   batchLimit: number;
   maxConnections: number;
   requestTimeout: number;
@@ -94,6 +99,7 @@ export type Response = {
   statusCode: number;
   mediaType: MediaType;
   type: OpenApiDataTypes;
+  field: string;
 };
 
 export type AuthBearerTokenConfig = {
@@ -108,9 +114,9 @@ export type AuthBasicConfig = {
 export type ModelAPI = {
   method: RequestMethod;
   url: string;
-  urlParams: string;
+  urlParams?: string;
   authType: AuthType;
-  authTypeConfig: AuthBearerTokenConfig | AuthBasicConfig;
+  authTypeConfig?: AuthBearerTokenConfig | AuthBasicConfig;
   requestBody: RequestBody;
   requestConfig: RequestConfig;
   response: Response;
@@ -128,23 +134,32 @@ export type ModelAPIFormModel = ConfigDescription & {
   modelAPI: ModelAPI;
 };
 
-export type ModelAPIGraphQLModel = ConfigDescription &
-  Pick<
-    ModelAPI,
-    'url' | 'method' | 'authType' | 'requestConfig' | 'response'
-  > & {
-    urlParams?: string;
-    authTypeConfig: AuthBearerTokenConfig | AuthBasicConfig;
-    requestBody?: Pick<RequestBody, 'mediaType' | 'isArray'> & {
-      properties: Pick<BodyParam, 'field' | 'type'>[];
-    };
-    parameters?: {
-      queries?: {
-        queryParams: Pick<UrlParam, 'name' | 'type'>[];
-      };
-      paths?: {
-        pathParams: Pick<UrlParam, 'name' | 'type'>[];
-      };
-    };
-    additionalHeaders: Pick<AdditionalHeader, 'name' | 'type' | 'value'>[];
+interface RequestBodyOrParametersForGraphQL {
+  requestBody: Pick<RequestBody, 'mediaType' | 'isArray'> & {
+    properties: Pick<BodyParam, 'field' | 'type'>[];
   };
+  parameters: RequireAtLeastOne<{
+    queries: {
+      queryParams: Pick<UrlParam, 'name' | 'type'>[];
+    };
+    paths: {
+      pathParams: Pick<UrlParam, 'name' | 'type'>[];
+    };
+  }>;
+}
+
+export type ModelAPIGraphQLModel = ConfigDescription & {
+  modelAPI: Pick<
+    ModelAPI,
+    | 'method'
+    | 'url'
+    | 'urlParams'
+    | 'authType'
+    | 'authTypeConfig'
+    | 'requestConfig'
+    | 'response'
+  > &
+    RequireAtLeastOne<RequestBodyOrParametersForGraphQL> & {
+      additionalHeaders?: Pick<AdditionalHeader, 'name' | 'type' | 'value'>[];
+    };
+};

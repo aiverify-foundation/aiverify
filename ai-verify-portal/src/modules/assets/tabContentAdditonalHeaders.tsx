@@ -1,6 +1,6 @@
 import { AdditionalHeader, ModelAPIFormModel, OpenApiDataTypes } from './types';
-import { FieldArray, useFormikContext } from 'formik';
-import { useState } from 'react';
+import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
+import { useEffect, useState } from 'react';
 import { getInputReactKeyId } from './newModelApiConfig';
 import {
   AdditionalHeaderInput,
@@ -13,6 +13,8 @@ const defaultAdditionalHeader: AdditionalHeader = {
   type: OpenApiDataTypes.INTEGER,
   value: '',
 };
+
+const additionalHeaderFieldName = 'modelAPI.additionalHeaders';
 
 function TabContentAdditionalHeaders() {
   const [newHeader, setNewHeader] = useState<AdditionalHeader>(
@@ -30,9 +32,22 @@ function TabContentAdditionalHeaders() {
 
   function handleAddedParamChange(idx: number) {
     return (val: AdditionalHeader) => {
-      setFieldValue(`additionalHeaders[${idx}]`, val);
+      setFieldValue(`${additionalHeaderFieldName}[${idx}]`, val);
     };
   }
+
+  function handleAddNewHeader(formikArrayHelpers: FieldArrayRenderProps) {
+    return () => {
+      formikArrayHelpers.push(newHeader);
+      setNewHeader(defaultAdditionalHeader);
+    };
+  }
+
+  useEffect(() => {
+    if (values.modelAPI.additionalHeaders?.length === 0) {
+      setFieldValue(additionalHeaderFieldName, undefined);
+    }
+  }, [values.modelAPI.additionalHeaders]);
 
   return (
     <div
@@ -42,7 +57,7 @@ function TabContentAdditionalHeaders() {
       }}>
       <div>
         <AdditionalHeaderInputHeading />
-        <FieldArray name="additionalHeaders">
+        <FieldArray name={additionalHeaderFieldName}>
           {(arrayHelpers) => {
             const headers = values.modelAPI.additionalHeaders || [];
             return (
@@ -64,10 +79,7 @@ function TabContentAdditionalHeaders() {
                   showAddBtn
                   value={newHeader}
                   onChange={handleNewParamChange}
-                  onAddClick={() => {
-                    arrayHelpers.push(newHeader);
-                    setNewHeader(defaultAdditionalHeader);
-                  }}
+                  onAddClick={handleAddNewHeader(arrayHelpers)}
                 />
               </div>
             );

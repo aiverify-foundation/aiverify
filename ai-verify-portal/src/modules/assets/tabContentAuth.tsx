@@ -8,20 +8,43 @@ import {
   ModelAPIFormModel,
 } from './types';
 import { TextInput } from 'src/components/textInput';
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useEffect } from 'react';
+
+const authTypeFieldName = 'modelAPI.authType';
+const authTypeConfigFieldName = 'modelAPI.authTypeConfig';
 
 function TabContentAuth() {
   const { values, setFieldValue } = useFormikContext<ModelAPIFormModel>();
 
   function handleBearerTokenChange(e: ChangeEvent<HTMLInputElement>) {
-    setFieldValue('authTypeConfig.token', e.target.value);
+    setFieldValue(`${authTypeConfigFieldName}.token`, e.target.value);
   }
   function handleUsernameChange(e: ChangeEvent<HTMLInputElement>) {
-    setFieldValue('authTypeConfig.username', e.target.value);
+    setFieldValue(`${authTypeConfigFieldName}.username`, e.target.value);
   }
   function handlePasswordChange(e: ChangeEvent<HTMLInputElement>) {
-    setFieldValue('authTypeConfig.password', e.target.value);
+    setFieldValue(`${authTypeConfigFieldName}.password`, e.target.value);
   }
+
+  useEffect(() => {
+    switch (values.modelAPI.authType) {
+      case AuthType.NO_AUTH:
+        setFieldValue(authTypeConfigFieldName, undefined);
+        break;
+      case AuthType.BASIC:
+        setFieldValue(authTypeConfigFieldName, {
+          username: '',
+          password: '',
+        });
+        break;
+      case AuthType.BEARER_TOKEN:
+        setFieldValue(authTypeConfigFieldName, {
+          token: '',
+        });
+        break;
+    }
+  }, [values.modelAPI.authType]);
+
   return (
     <div
       style={{
@@ -33,10 +56,11 @@ function TabContentAuth() {
         label="Authentication Type"
         name="authTypeInput"
         options={optionsAuthMethods}
-        onChange={(val) => setFieldValue('authType', val)}
+        onChange={(val) => setFieldValue(authTypeFieldName, val)}
         value={values.modelAPI.authType}
       />
-      {values.modelAPI.authType === AuthType.BEARER_TOKEN ? (
+      {values.modelAPI.authType === AuthType.BEARER_TOKEN &&
+      (values.modelAPI.authTypeConfig as AuthBearerTokenConfig) ? (
         <div style={{ flexGrow: 1 }}>
           <TextInput
             label="Token"
@@ -49,7 +73,8 @@ function TabContentAuth() {
           />
         </div>
       ) : null}
-      {values.modelAPI.authType === AuthType.BASIC ? (
+      {values.modelAPI.authType === AuthType.BASIC &&
+      values.modelAPI.authTypeConfig ? (
         <div style={{ display: 'flex' }}>
           <TextInput
             label="User"
