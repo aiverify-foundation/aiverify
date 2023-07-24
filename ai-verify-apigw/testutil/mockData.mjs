@@ -405,12 +405,24 @@ casual.define("testDataset", function () {
 
 casual.define("modelAndDatasets", function (modelType) {
   let testDataset = casual.testDataset;
-  return {
+  let modelAndDatasets = {
     groundTruthColumn: "donation",
-    model: casual.modelFile,
     testDataset,
     groundTruthDataset: testDataset,
-  };
+  }
+  if (modelType === 'File') {
+    modelAndDatasets.model = casual.modelFile;
+  } else {
+    const model = casual.modelAPI("requestBody",false);
+    model.type = 'API';
+    model.status = 'Valid';
+    modelAndDatasets.model = model;
+    modelAndDatasets.apiConfig = {
+      requestBody: { 
+      }
+    }
+  }
+  return modelAndDatasets;
 });
 
 casual.define("multipleDatasets", function (count) {
