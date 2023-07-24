@@ -16,7 +16,13 @@ import {
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { optionsMediaTypes, optionsUrlParamTypes } from './selectOptions';
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import { getInputReactKeyId } from './newModelApiConfig';
 
 const defaultUrlParameter: UrlParam = {
@@ -25,10 +31,11 @@ const defaultUrlParameter: UrlParam = {
   type: OpenApiDataTypes.INTEGER,
 };
 
-const pathParamsKey = 'parameters.paths';
-const queryParamsKey = 'parameters.queries';
-const pathParamsInputName = 'parameters.paths.pathParams';
-const queryParamsInputName = 'parameters.queries.queryParams';
+const pathsFieldName = 'modelAPI.parameters.paths';
+const queriesFieldName = 'modelAPI.parameters.queries';
+const pathParamsFieldName = 'modelAPI.parameters.paths.pathParams';
+const queryParamsFieldName = 'modelAPI.parameters.queries.queryParams';
+const urlParamsFieldName = 'modelAPI.urlParams';
 
 //forwardRef needed because parent component needs a ref to Formik's fieldArray-ArrayHelpers.move method from this component, for drag and drop feature
 const TabContentURLParams = forwardRef<FieldArrayRenderProps | undefined>(
@@ -39,42 +46,56 @@ const TabContentURLParams = forwardRef<FieldArrayRenderProps | undefined>(
     const [newParam, setNewParam] = useState<UrlParam>(defaultUrlParameter);
     const { values, setFieldValue } = useFormikContext<ModelAPIFormModel>();
     const formArrayHelpersRef = useRef<FieldArrayRenderProps>();
-    const keyName = `${
-      paramType === URLParamType.QUERY ? queryParamsKey : pathParamsKey
+    const mediaTypeFieldName = `${
+      paramType === URLParamType.QUERY ? queriesFieldName : pathsFieldName
     }.mediaType`;
-    const mediaTypeValue = URLParamType.QUERY
-      ? values.parameters.queries.mediaType
-      : values.parameters.paths.mediaType;
+    const mediaTypeValue =
+      paramType === URLParamType.QUERY
+        ? values.modelAPI.parameters.queries?.mediaType
+        : values.modelAPI.parameters.paths?.mediaType;
+    const urlParamsStr = values.modelAPI.parameters.paths
+      ? values.modelAPI.parameters.paths.pathParams.reduce((prev, param) => {
+          return `${prev}/{${param.name}}`;
+        }, '')
+      : '';
     useImperativeHandle(ref, () => formArrayHelpersRef.current, []);
 
     function handleParamTypeChange(val: URLParamType) {
       if (val === paramType) return;
-
-      if (val === URLParamType.QUERY) {
-        setFieldValue(
-          `${queryParamsKey}.mediatype`,
-          values.parameters.paths.mediaType
-        );
-        if (values.parameters.paths.pathParams.length) {
-          setFieldValue(queryParamsInputName, [
-            ...values.parameters.paths.pathParams,
-          ]);
-          setFieldValue(pathParamsInputName, []);
-        }
-      } else {
-        setFieldValue(
-          `${pathParamsKey}.mediatype`,
-          values.parameters.queries.mediaType
-        );
-        if (values.parameters.queries.queryParams.length) {
-          setFieldValue(pathParamsInputName, [
-            ...values.parameters.queries.queryParams,
-          ]);
-          setFieldValue(queryParamsInputName, []);
-        }
-      }
-
       setParamType(val);
+
+      if (val === URLParamType.QUERY && values.modelAPI.parameters.paths) {
+        setFieldValue(
+          queryParamsFieldName,
+          values.modelAPI.parameters.paths.pathParams
+        );
+        setFieldValue(
+          `${queriesFieldName}.mediaType`,
+          values.modelAPI.parameters.paths.mediaType
+        );
+        setFieldValue(
+          `${queriesFieldName}.isArray`,
+          values.modelAPI.parameters.paths.isArray
+        );
+        setFieldValue(pathsFieldName, undefined);
+      } else if (
+        val === URLParamType.PATH &&
+        values.modelAPI.parameters.queries
+      ) {
+        setFieldValue(
+          pathParamsFieldName,
+          values.modelAPI.parameters.queries.queryParams
+        );
+        setFieldValue(
+          `${pathsFieldName}.mediaType`,
+          values.modelAPI.parameters.queries.mediaType
+        );
+        setFieldValue(
+          `${pathsFieldName}.isArray`,
+          values.modelAPI.parameters.queries.isArray
+        );
+        setFieldValue(queriesFieldName, undefined);
+      }
     }
 
     function handleNewParamChange(value: UrlParam) {
@@ -90,13 +111,20 @@ const TabContentURLParams = forwardRef<FieldArrayRenderProps | undefined>(
         setFieldValue(
           `${
             paramType === URLParamType.QUERY
-              ? queryParamsInputName
-              : pathParamsInputName
+              ? queryParamsFieldName
+              : pathParamsFieldName
           }[${idx}]`,
           val
         );
       };
     }
+
+    useEffect(() => {
+      setFieldValue(
+        urlParamsFieldName,
+        paramType === URLParamType.PATH ? urlParamsStr : undefined
+      );
+    }, [urlParamsStr]);
 
     return (
       <div
@@ -107,10 +135,10 @@ const TabContentURLParams = forwardRef<FieldArrayRenderProps | undefined>(
         <SelectInput<MediaType>
           width={240}
           label="Media Type"
-          name={keyName}
+          name="mediaTypeInput"
           options={optionsMediaTypes}
           value={mediaTypeValue}
-          onChange={(val) => setFieldValue(keyName, val)}
+          onChange={(val) => setFieldValue(mediaTypeFieldName, val)}
         />
         <div
           style={{
@@ -178,8 +206,8 @@ const TabContentURLParams = forwardRef<FieldArrayRenderProps | undefined>(
           {(provided) => {
             const fieldArrayName =
               paramType === URLParamType.QUERY
-                ? queryParamsInputName
-                : pathParamsInputName;
+                ? queryParamsFieldName
+                : pathParamsFieldName;
             return (
               <div
                 className="list-container"
@@ -189,10 +217,16 @@ const TabContentURLParams = forwardRef<FieldArrayRenderProps | undefined>(
                   {(arrayHelpers) => {
                     formArrayHelpersRef.current = arrayHelpers;
                     let params: UrlParam[] = [];
-                    if (paramType === URLParamType.QUERY) {
-                      params = values.parameters.queries.queryParams;
-                    } else {
-                      params = values.parameters.paths.pathParams;
+                    if (
+                      paramType === URLParamType.QUERY &&
+                      values.modelAPI.parameters.queries
+                    ) {
+                      params = values.modelAPI.parameters.queries.queryParams;
+                    } else if (
+                      paramType === URLParamType.PATH &&
+                      values.modelAPI.parameters.paths
+                    ) {
+                      params = values.modelAPI.parameters.paths.pathParams;
                     }
                     return (
                       <div

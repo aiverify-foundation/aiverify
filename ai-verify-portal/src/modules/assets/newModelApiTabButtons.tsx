@@ -24,7 +24,8 @@ function TabButtonsGroup({ activeTab, onTabClick }: TabButtonsGroupProps) {
   }
   return (
     <div className={styles.tabsBtnGroup}>
-      {values.method && values.method === RequestMethod.GET ? (
+      {values.modelAPI.method &&
+      values.modelAPI.method === RequestMethod.GET ? (
         <div
           className={clsx(
             styles.tabBtn,

@@ -1,5 +1,10 @@
 import { ModelType } from 'src/types/model.interface';
 
+type RequireAtLeastOne<T> = {
+  [K in keyof T]-?: Required<Pick<T, K>> &
+    Partial<Pick<T, Exclude<keyof T, K>>>;
+}[keyof T];
+
 export enum AuthType {
   NO_AUTH = 'No Auth',
   BASIC = 'Basic Auth',
@@ -40,6 +45,12 @@ export type AdditionalHeader = {
   value: string;
 };
 
+export type UrlParam = {
+  reactPropId: string;
+  name: string;
+  type: OpenApiDataTypes;
+};
+
 export type BodyParam = {
   reactPropId: string;
   field: string;
@@ -50,12 +61,6 @@ export type RequestBody = {
   mediaType: MediaType;
   isArray: boolean;
   properties: BodyParam[];
-};
-
-export type UrlParam = {
-  reactPropId: string;
-  name: string;
-  type: OpenApiDataTypes;
 };
 
 export type Queries = {
@@ -70,10 +75,12 @@ export type Paths = {
   pathParams: UrlParam[];
 };
 
-export type Parameters = {
+interface BaseParameters {
   queries: Queries;
   paths: Paths;
-};
+}
+
+export type Parameters = RequireAtLeastOne<BaseParameters>;
 
 export type RequestConfig = {
   rateLimit: number;
@@ -99,15 +106,16 @@ export type AuthBasicConfig = {
 };
 
 export type ModelAPI = {
-  url: string;
   method: RequestMethod;
+  url: string;
+  urlParams: string;
   authType: AuthType;
   authTypeConfig: AuthBearerTokenConfig | AuthBasicConfig;
   requestBody: RequestBody;
   requestConfig: RequestConfig;
   response: Response;
   parameters: Parameters;
-  additionalHeaders: AdditionalHeader[];
+  additionalHeaders?: AdditionalHeader[];
 };
 
 export type ConfigDescription = {
@@ -116,24 +124,27 @@ export type ConfigDescription = {
   modelType: ModelType;
 };
 
-export type ModelAPIFormModel = ConfigDescription & ModelAPI;
+export type ModelAPIFormModel = ConfigDescription & {
+  modelAPI: ModelAPI;
+};
 
 export type ModelAPIGraphQLModel = ConfigDescription &
   Pick<
     ModelAPI,
     'url' | 'method' | 'authType' | 'requestConfig' | 'response'
   > & {
+    urlParams?: string;
     authTypeConfig: AuthBearerTokenConfig | AuthBasicConfig;
     requestBody?: Pick<RequestBody, 'mediaType' | 'isArray'> & {
-      properties: Omit<BodyParam, 'reactPropId'>;
+      properties: Pick<BodyParam, 'field' | 'type'>[];
     };
     parameters?: {
       queries?: {
-        queryParams: Omit<UrlParam, 'reactPropId'>;
+        queryParams: Pick<UrlParam, 'name' | 'type'>[];
       };
       paths?: {
-        pathParams: Omit<UrlParam, 'reactPropId'>;
+        pathParams: Pick<UrlParam, 'name' | 'type'>[];
       };
     };
-    additionalHeaders: Omit<AdditionalHeader, 'reactPropId'>[];
+    additionalHeaders: Pick<AdditionalHeader, 'name' | 'type' | 'value'>[];
   };

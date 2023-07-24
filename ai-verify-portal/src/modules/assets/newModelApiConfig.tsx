@@ -9,6 +9,7 @@ import {
   AuthType,
   MediaType,
   ModelAPIFormModel,
+  ModelAPIGraphQLModel,
   OpenApiDataTypes,
   RequestMethod,
 } from './types';
@@ -21,6 +22,8 @@ import { TabContentRequestBody } from './tabContentRequestBody';
 import { TabContentResponse } from './tabContentResponse';
 import { TabContentAdditionalHeaders } from './tabContentAdditonalHeaders';
 import { TabContentAuth } from './tabContentAuth';
+import { useMutation } from '@apollo/client';
+import { GQL_CREATE_MODELAPI, GqlCreateModelAPIConfigResult } from './api/gql';
 
 enum Tab {
   URL_PARAMS,
@@ -41,53 +44,148 @@ function initReactKeyIdGenerator() {
 
 export const getInputReactKeyId = initReactKeyIdGenerator();
 
-const initialValues: ModelAPIFormModel = {
+export const initialValues: ModelAPIFormModel = {
   name: '',
   description: '',
   modelType: ModelType.Classification,
-  url: '',
-  method: RequestMethod.POST,
-  authType: AuthType.NO_AUTH,
-  authTypeConfig: {
-    token: '',
-    username: '',
-    password: '',
-  },
-  additionalHeaders: [],
-  requestBody: {
-    mediaType: MediaType.NONE,
-    isArray: false,
-    properties: [],
-  },
-  parameters: {
-    queries: {
+  modelAPI: {
+    url: '',
+    urlParams: '',
+    method: RequestMethod.POST,
+    authType: AuthType.NO_AUTH,
+    authTypeConfig: {
+      token: '',
+      username: '',
+      password: '',
+    },
+    requestBody: {
       mediaType: MediaType.NONE,
       isArray: false,
-      queryParams: [],
+      properties: [],
     },
-    paths: {
+    parameters: {
+      queries: {
+        mediaType: MediaType.NONE,
+        isArray: false,
+        queryParams: [],
+      },
+    },
+    requestConfig: {
+      rateLimit: -1,
+      batchStrategy: '',
+      batchLimit: -1,
+      maxConnections: -1,
+      requestTimeout: -1,
+    },
+    response: {
+      statusCode: 200,
       mediaType: MediaType.NONE,
-      isArray: false,
-      pathParams: [],
+      type: OpenApiDataTypes.STRING,
     },
-  },
-  requestConfig: {
-    rateLimit: -1,
-    batchStrategy: '',
-    batchLimit: -1,
-    maxConnections: -1,
-    requestTimeout: -1,
-  },
-  response: {
-    statusCode: 200,
-    mediaType: MediaType.NONE,
-    type: OpenApiDataTypes.STRING,
   },
 };
+/*
+ additionalHeaders: [],
+    requestBody: {
+      mediaType: MediaType.NONE,
+      isArray: false,
+      properties: [],
+    },
+    parameters: {
+      queries: {
+        mediaType: MediaType.NONE,
+        isArray: false,
+        queryParams: [],
+      },
+      paths: {
+        mediaType: MediaType.NONE,
+        isArray: false,
+        pathParams: [],
+      },
+    },*/
 
 function NewModelApiConfigModule() {
   const [activeTab, setActiveTab] = useState<Tab>();
   const paramsFormikArrayHelpersRef = useRef<FieldArrayRenderProps>();
+  const [addNewModelAPIConfig] =
+    useMutation<GqlCreateModelAPIConfigResult>(GQL_CREATE_MODELAPI);
+
+  async function createModelAPIConfig(model: ModelAPIFormModel) {
+    console.log(model);
+    return;
+    // const modelAPIInput: ModelAPIGraphQLModel = {
+    //   name: model.name,
+    //   description: model.description,
+    //   modelType: model.modelType,
+    //   method: model.modelAPI.method,
+    //   url: model.modelAPI.url,
+    //   authType: model.modelAPI.authType,
+    //   authTypeConfig: model.modelAPI.authTypeConfig,
+    //   requestConfig: model.modelAPI.requestConfig,
+    //   response: model.modelAPI.response,
+    //   additionalHeaders: [],
+    // };
+
+    // if (model.modelAPI.urlParams.trim() !== '') {
+    //   modelAPIInput.urlParams = model.modelAPI.urlParams;
+    // }
+
+    // if (model.modelAPI.method === RequestMethod.POST) {
+    //   modelAPIInput.requestBody = {
+    //     mediaType: model.modelAPI.requestBody.mediaType,
+    //     isArray: false,
+    //     properties: model.modelAPI.requestBody.properties.map((prop) => ({
+    //       field: prop.field,
+    //       type: prop.type,
+    //     })),
+    //   };
+    // }
+
+    // if (model.modelAPI.method === RequestMethod.GET) {
+    //   if (model.modelAPI.parameters.paths.pathParams.length) {
+    //     modelAPIInput.parameters = {
+    //       paths: {
+    //         pathParams: model.modelAPI.parameters.paths.pathParams.map(
+    //           (param) => ({
+    //             name: param.name,
+    //             type: param.type,
+    //           })
+    //         ),
+    //       },
+    //     };
+    //   } else if (model.modelAPI.parameters.queries.queryParams.length) {
+    //     modelAPIInput.parameters = {
+    //       queries: {
+    //         queryParams: model.modelAPI.parameters.queries.queryParams.map(
+    //           (param) => ({
+    //             name: param.name,
+    //             type: param.type,
+    //           })
+    //         ),
+    //       },
+    //     };
+    //   }
+    // }
+
+    // if (model.modelAPI.additionalHeaders.length) {
+    //   modelAPIInput.additionalHeaders = model.modelAPI.additionalHeaders.map(
+    //     (header) => ({
+    //       name: header.name,
+    //       type: header.type,
+    //       value: header.value,
+    //     })
+    //   );
+    // }
+
+    // try {
+    //   const result = await addNewModelAPIConfig({
+    //     variables: { model: modelAPIInput },
+    //   });
+    //   console.log(result);
+    // } catch (err) {
+    //   console.error(err);
+    // }
+  }
 
   function handleBackClick() {
     history.back();
@@ -131,7 +229,7 @@ function NewModelApiConfigModule() {
                 <div className={styles.layout}>
                   <Formik
                     initialValues={initialValues}
-                    onSubmit={(values) => console.log(values)}>
+                    onSubmit={(values) => createModelAPIConfig(values)}>
                     {({ values, handleChange, setFieldValue }) => {
                       return (
                         <Form>
@@ -153,20 +251,20 @@ function NewModelApiConfigModule() {
                                   <SelectInput
                                     width={140}
                                     label="Request Method"
-                                    name="method"
+                                    name="modelAPI.method"
                                     options={optionsRequestMethods}
                                     onChange={(val) =>
-                                      setFieldValue('method', val)
+                                      setFieldValue('modelAPI.method', val)
                                     }
-                                    value={values.method}
+                                    value={values.modelAPI.method}
                                   />
                                 </div>
                                 <div style={{ flexGrow: 1 }}>
                                   <TextInput
                                     label="Model URL"
-                                    name="url"
+                                    name="modelAPI.url"
                                     onChange={handleChange}
-                                    value={values.url}
+                                    value={values.modelAPI.url}
                                   />
                                 </div>
                               </div>
@@ -177,7 +275,8 @@ function NewModelApiConfigModule() {
                                 />
                                 <div className={styles.tabsDivider} />
                                 <div className={styles.tabContent}>
-                                  {values.method === RequestMethod.GET &&
+                                  {values.modelAPI.method ===
+                                    RequestMethod.GET &&
                                   activeTab === Tab.URL_PARAMS ? (
                                     <TabContentURLParams
                                       ref={paramsFormikArrayHelpersRef}

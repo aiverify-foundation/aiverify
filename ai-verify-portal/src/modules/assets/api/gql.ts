@@ -3,17 +3,49 @@ import { gql } from '@apollo/client';
 export const GQL_CREATE_MODELAPI = gql`
   mutation ($model: ModelAPIInput!) {
     createModelAPI(model: $model) {
+      id
       name
       description
+      type
+      status
       modelType
-      modelApi {
+      modelAPI {
         url
-        method
+        urlParams
+        additionalHeaders {
+          name
+          type
+          value
+        }
         authType
         authTypeConfig
+        method
+        parameters {
+          paths {
+            mediaType
+            isArray
+            maxItems
+            pathParams {
+              name
+              type
+            }
+          }
+          queries {
+            mediaType
+            name
+            isArray
+            maxItems
+            queryParams {
+              name
+              type
+            }
+          }
+        }
         requestBody {
-          isArray
           mediaType
+          isArray
+          name
+          maxItems
           properties {
             field
             type
@@ -36,3 +68,7 @@ export const GQL_CREATE_MODELAPI = gql`
     }
   }
 `;
+
+export type GqlCreateModelAPIConfigResult = {
+  createModelAPI: { id: string; name: string; description: string };
+};
