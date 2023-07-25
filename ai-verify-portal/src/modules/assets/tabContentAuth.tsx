@@ -94,7 +94,9 @@ function TabContentAuth() {
           <TextInput
             label="Password"
             name={`${authTypeConfigFieldName}.password`}
-            value={(values.modelAPI.authTypeConfig as AuthBasicConfig).password}
+            value={
+              (values.modelAPI.authTypeConfig as AuthBasicConfig)?.password
+            }
             onChange={handleChange}
             style={{ width: 300 }}
             error={
