@@ -23,6 +23,15 @@
   border-radius: 4px;
 }
 
+.pageLevelError {
+  display: flex;
+  background: #ffffff;
+  width: 70%;
+  min-width: 730px;
+  margin: auto;
+  margin-bottom: 10px;
+}
+
 .buttons {
   display: flex;
   justify-content: flex-end;

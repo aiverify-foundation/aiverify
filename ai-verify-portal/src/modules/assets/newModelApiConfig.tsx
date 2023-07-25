@@ -31,6 +31,7 @@ import { ModalResult } from './modalResult';
 import { ErrorWithMessage, toErrorWithMessage } from 'src/lib/errorUtils';
 import { AlertType, StandardAlert } from 'src/components/standardAlerts';
 import { AlertBoxSize } from 'src/components/alertBox';
+import { useRouter } from 'next/router';
 
 const urlPattern = new RegExp(
   '^([a-zA-Z]+:\\/\\/)?' + // protocol
@@ -78,16 +79,13 @@ const ModelAPIFormSchema = Yup.object().shape({
     authTypeConfig: Yup.object().shape({
       token: Yup.string()
         .min(32, 'Too short. Min 32 characters')
-        .max(128, 'Max 128 characters')
-        .required('Required'),
+        .max(128, 'Max 128 characters'),
       username: Yup.string()
         .min(5, 'Too short. Min 5 characters')
-        .max(128, 'Max 128 characters')
-        .required('Required'),
+        .max(128, 'Max 128 characters'),
       password: Yup.string()
         .min(5, 'Too short. Min 5 characters')
-        .max(128, 'Max 128 characters')
-        .required('Required'),
+        .max(128, 'Max 128 characters'),
     }),
   }),
 });
@@ -130,13 +128,14 @@ export const initialValues: ModelAPIFormModel = {
 };
 
 function NewModelApiConfigModule() {
-  const [activeTab, setActiveTab] = useState<Tab>();
+  const [activeTab, setActiveTab] = useState<Tab>(Tab.REQUEST_BODY);
   const [saveResult, setSaveResult] = useState<
     ErrorWithMessage | GqlCreateModelAPIConfigResult
   >();
   const paramsFormikArrayHelpersRef = useRef<FieldArrayRenderProps>();
   const [addNewModelAPIConfig] =
     useMutation<GqlCreateModelAPIConfigResult>(GQL_CREATE_MODELAPI);
+  const router = useRouter();
 
   async function createModelAPIConfig(formValues: ModelAPIFormModel) {
     const modelAPIInput: ModelAPIGraphQLModel = { ...formValues };
@@ -147,6 +146,13 @@ function NewModelApiConfigModule() {
       const parameters = modelAPIInput.modelAPI.parameters;
       if (parameters && parameters.paths) {
         parameters.paths.pathParams = parameters.paths.pathParams.map(
+          (param) => ({
+            name: param.name,
+            type: param.type,
+          })
+        );
+      } else if (parameters && parameters.queries) {
+        parameters.queries.queryParams = parameters.queries.queryParams.map(
           (param) => ({
             name: param.name,
             type: param.type,
@@ -259,6 +265,23 @@ function NewModelApiConfigModule() {
                               the AI model server
                             </p>
                           </div>
+                          <div className={styles.pageLevelError}>
+                            {Object.keys(errors).length &&
+                            Object.keys(touched).length ? (
+                              <StandardAlert
+                                disableCloseIcon
+                                alertType={AlertType.ERROR}
+                                headingText="Field-level errors"
+                                onCloseIconClick={handleCloseResultClick}>
+                                <div style={{ display: 'flex', fontSize: 14 }}>
+                                  <div>
+                                    Please ensure all the necessary inputs are
+                                    valid
+                                  </div>
+                                </div>
+                              </StandardAlert>
+                            ) : null}
+                          </div>
                           <div className={styles.apiConfigForm}>
                             <div className={styles.leftSection}>
                               <ModelApiLeftSection />
@@ -361,13 +384,14 @@ function NewModelApiConfigModule() {
         <ModalResult
           size={AlertBoxSize.SMALL}
           title="Create New Model API Config"
-          onCloseClick={handleCloseResultClick}>
+          onCloseClick={handleCloseResultClick}
+          onOkClick={() => router.push('/assets/models')}>
           <div>
             {'createModelAPI' in saveResult ? (
               <StandardAlert
                 disableCloseIcon
                 alertType={AlertType.SUCCESS}
-                headingText="New Model API Config was successfully created"
+                headingText="New Model API Config successfully created"
                 onCloseIconClick={handleCloseResultClick}
                 style={{ border: 'none' }}>
                 <div
@@ -377,24 +401,14 @@ function NewModelApiConfigModule() {
                     fontSize: 14,
                   }}>
                   <div>
-                    {
-                      (saveResult as GqlCreateModelAPIConfigResult)
-                        .createModelAPI.id
-                    }
-                  </div>
-                  <div>
+                    Config Name:{' '}
                     {
                       (saveResult as GqlCreateModelAPIConfigResult)
                         .createModelAPI.name
                     }
                   </div>
                   <div>
-                    {
-                      (saveResult as GqlCreateModelAPIConfigResult)
-                        .createModelAPI.description
-                    }
-                  </div>
-                  <div>
+                    Model Type:{' '}
                     {
                       (saveResult as GqlCreateModelAPIConfigResult)
                         .createModelAPI.modelType

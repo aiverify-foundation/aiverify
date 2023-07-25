@@ -10,10 +10,11 @@ type ModalResultProps = {
   message?: string;
   children?: React.ReactElement;
   onCloseClick: () => void;
+  onOkClick: () => void;
 };
 
 function ModalResult(props: ModalResultProps) {
-  const { size, title, message, children, onCloseClick } = props;
+  const { size, title, message, children, onCloseClick, onOkClick } = props;
   return (
     <AlertBox
       size={size || AlertBoxSize.MEDIUM}
@@ -35,7 +36,7 @@ function ModalResult(props: ModalResultProps) {
           }}>
           <button
             className="aivBase-button aivBase-button--primary aivBase-button--small"
-            onClick={onCloseClick}>
+            onClick={onOkClick}>
             OK
           </button>
         </div>
