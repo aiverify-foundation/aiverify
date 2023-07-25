@@ -1,0 +1,188 @@
+.container__limits {
+  width: 100%;
+  margin: auto;
+  max-width: 1920px;
+  min-width: 1400px;
+}
+
+.layout {
+  padding: 0 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.apiConfigForm {
+  display: flex;
+  background: #ffffff;
+  width: 90%;
+  min-width: 730px;
+  margin: auto;
+  padding: 25px 25px 25px 25px;
+  box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.pageLevelError {
+  display: flex;
+  background: #ffffff;
+  width: 90%;
+  min-width: 730px;
+  margin: auto;
+  margin-bottom: 10px;
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  width: 90%;
+  min-width: 730px;
+  margin: auto;
+  padding: 25px 25px 25px 25px;
+}
+
+.configName {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-palette-violet-red);
+  margin-right: 5px;
+  margin-bottom: 5px;
+  line-height: 21px;
+  padding-top: 6px;
+  max-height: 70px;
+  overflow: hidden;
+}
+
+.description {
+  font-size: 16px;
+  margin-right: 5px;
+  line-height: 20px;
+  max-height: 220px;
+  overflow: hidden;
+  overflow-y: auto;
+}
+
+.description::-webkit-scrollbar {
+  width: 8px;
+  background-color: rgb(224, 224, 224);
+  border-radius: 5px;
+}
+
+.description::-webkit-scrollbar-thumb {
+  background-color: rgb(190, 189, 189);
+  border-radius: 5px;
+}
+
+.apiConfigForm p {
+  font-size: 14px;
+}
+
+.leftSection {
+  padding-right: 25px;
+  width: 270px;
+}
+
+.vDivider {
+  width: 1px;
+  background-color: var(--color-light-gray);
+}
+
+.rightSection {
+  padding-left: 25px;
+  min-width: 550px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.tabs {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.tabsBtnGroup {
+  display: flex;
+}
+
+.tabsDivider {
+  height: 1px;
+  border-bottom: 1px solid var(--color-light-gray);
+  margin-bottom: 2px;
+}
+
+.tabBtn {
+  display: flex;
+  align-items: center;
+  padding: 6px 14px;
+  font-size: 15px;
+  border: 1px solid var(--color-light-gray);
+  border-bottom: none;
+  border-left: none;
+  cursor: pointer;
+  background-color: var(--color-light-gray2);
+}
+
+.tabBtn__selected {
+  background-color: #e4e4e4;
+  border-top: 3px solid var(--color-palette-violet-red);
+}
+
+.tabBtn:hover {
+  background-color: #e4e4e4;
+}
+
+.tabsBtnGroup .tabBtn:first-of-type {
+  border-left: 1px solid var(--color-light-gray);
+}
+
+.tabContent {
+  background-color: var(--color-light-gray3);
+  padding: 15px;
+  min-height: 270px;
+}
+
+.tabContent .scrollContainer {
+  padding-right: 15px;
+}
+
+.keyInput,
+.valInput {
+  width: 250px;
+  margin-right: 8px;
+}
+
+.headingName,
+.headingVal {
+  flex-basis: 200px;
+  margin-right: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.keyValRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+  width: 100%;
+}
+
+.keyValCol {
+  position: relative;
+  margin-right: 8px;
+  flex-basis: 200px;
+}
+
+.keyValRemoveBtn {
+  cursor: pointer;
+}
+
+.paramHighlight {
+  font-weight: 600;
+  color: var(--color-palette-pink);
+}
+
+.delIconContainer {
+  display: flex;
+}
