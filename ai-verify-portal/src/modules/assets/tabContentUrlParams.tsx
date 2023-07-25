@@ -138,14 +138,6 @@ const TabContentURLParams = forwardRef<FieldArrayRenderProps | undefined>(
           display: 'flex',
           flexDirection: 'column',
         }}>
-        <SelectInput<MediaType>
-          width={240}
-          label="Media Type"
-          name="mediaTypeInput"
-          options={optionsMediaTypes}
-          value={mediaTypeValue}
-          onChange={(val) => setFieldValue(mediaTypeFieldName, val)}
-        />
         <div
           style={{
             display: 'flex',

@@ -14,10 +14,10 @@ import {
   OpenApiDataTypes,
   RequestMethod,
 } from './types';
-import { Formik, Form, FieldArrayRenderProps } from 'formik';
+import { Formik, Form, FieldArrayRenderProps, FormikErrors } from 'formik';
 import { ModelType } from 'src/types/model.interface';
 import { ModelApiLeftSection } from './newModelApiLeftSection';
-import { TabButtonsGroup } from './newModelApiTabButtons';
+import { Tab, TabButtonsGroup } from './newModelApiTabButtons';
 import { TabContentURLParams } from './tabContentUrlParams';
 import { TabContentRequestBody } from './tabContentRequestBody';
 import { TabContentResponse } from './tabContentResponse';
@@ -25,14 +25,11 @@ import { TabContentAdditionalHeaders } from './tabContentAdditonalHeaders';
 import { TabContentAuth } from './tabContentAuth';
 import { useMutation } from '@apollo/client';
 import { GQL_CREATE_MODELAPI, GqlCreateModelAPIConfigResult } from './api/gql';
-
-enum Tab {
-  URL_PARAMS,
-  HEADERS,
-  AUTHENTICATION,
-  REQUEST_BODY,
-  RESPONSE,
-}
+import { TabContentOthers } from './tabContentOthers';
+import { ModalResult } from './modalResult';
+import { ErrorWithMessage, toErrorWithMessage } from 'src/lib/errorUtils';
+import { AlertType, StandardAlert } from 'src/components/standardAlerts';
+import { AlertBoxSize } from 'src/components/alertBox';
 
 /*
   This id is only used for react component `key` props for the list of urlparams and request body property fields rendered.
@@ -84,6 +81,9 @@ export const initialValues: ModelAPIFormModel = {
 
 function NewModelApiConfigModule() {
   const [activeTab, setActiveTab] = useState<Tab>();
+  const [saveResult, setSaveResult] = useState<
+    ErrorWithMessage | GqlCreateModelAPIConfigResult
+  >();
   const paramsFormikArrayHelpersRef = useRef<FieldArrayRenderProps>();
   const [addNewModelAPIConfig] =
     useMutation<GqlCreateModelAPIConfigResult>(GQL_CREATE_MODELAPI);
@@ -124,15 +124,18 @@ function NewModelApiConfigModule() {
           value: header.value,
         }));
     }
+
     console.log(modelAPIInput);
 
     try {
       const result = await addNewModelAPIConfig({
         variables: { model: modelAPIInput },
       });
-      console.log(result);
+      if (result.data && result.data.createModelAPI.id) {
+        setSaveResult(result.data);
+      }
     } catch (err) {
-      console.error(err);
+      setSaveResult(toErrorWithMessage(err));
     }
   }
 
@@ -144,6 +147,32 @@ function NewModelApiConfigModule() {
     return setActiveTab(tab);
   }
 
+  function handleCloseResultClick() {
+    setSaveResult(undefined);
+  }
+
+  function handleRequestMethodChange(
+    setFieldValue: (
+      field: string,
+      value: RequestMethod,
+      shouldValidate?: boolean | undefined
+    ) => Promise<void | FormikErrors<ModelAPIFormModel>>
+  ) {
+    return (val: RequestMethod) => {
+      if (
+        activeTab !== Tab.AUTHENTICATION &&
+        activeTab !== Tab.RESPONSE &&
+        activeTab !== Tab.HEADERS &&
+        activeTab !== Tab.OTHERS
+      ) {
+        setActiveTab(
+          val === RequestMethod.GET ? Tab.URL_PARAMS : Tab.REQUEST_BODY
+        );
+      }
+      setFieldValue('modelAPI.method', val);
+    };
+  }
+
   function handleDrop(droppedItem: DragUpdate) {
     if (!droppedItem.destination) return;
     if (paramsFormikArrayHelpersRef.current)
@@ -152,20 +181,6 @@ function NewModelApiConfigModule() {
         droppedItem.destination.index
       );
   }
-
-  // useEffect(() => {
-  //   if (
-  //     activeTab !== Tab.AUTHENTICATION &&
-  //     activeTab !== Tab.RESPONSE &&
-  //     activeTab !== Tab.HEADERS
-  //   ) {
-  //     setActiveTab(
-  //       requestMethod && requestMethod.value === RequestMethod.GET
-  //         ? Tab.URL_PARAMS
-  //         : Tab.REQUEST_BODY
-  //     );
-  //   }
-  // }, [requestMethod]);
 
   return (
     <div>
@@ -202,9 +217,9 @@ function NewModelApiConfigModule() {
                                     label="Request Method"
                                     name="modelAPI.method"
                                     options={optionsRequestMethods}
-                                    onChange={(val) =>
-                                      setFieldValue('modelAPI.method', val)
-                                    }
+                                    onChange={handleRequestMethodChange(
+                                      setFieldValue
+                                    )}
                                     value={values.modelAPI.method}
                                   />
                                 </div>
@@ -247,6 +262,10 @@ function NewModelApiConfigModule() {
                                   {activeTab === Tab.AUTHENTICATION ? (
                                     <TabContentAuth />
                                   ) : null}
+
+                                  {activeTab === Tab.OTHERS ? (
+                                    <TabContentOthers />
+                                  ) : null}
                                 </div>
                               </div>
                             </div>
@@ -275,6 +294,66 @@ function NewModelApiConfigModule() {
           </div>
         </div>
       </DragDropContext>
+      {saveResult ? (
+        <ModalResult
+          size={AlertBoxSize.SMALL}
+          title="Create New Model API Config"
+          onCloseClick={handleCloseResultClick}>
+          <div>
+            {'createModelAPI' in saveResult ? (
+              <StandardAlert
+                disableCloseIcon
+                alertType={AlertType.SUCCESS}
+                headingText="New Model API Config was successfully created"
+                onCloseIconClick={handleCloseResultClick}
+                style={{ border: 'none' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    fontSize: 14,
+                  }}>
+                  <div>
+                    {
+                      (saveResult as GqlCreateModelAPIConfigResult)
+                        .createModelAPI.id
+                    }
+                  </div>
+                  <div>
+                    {
+                      (saveResult as GqlCreateModelAPIConfigResult)
+                        .createModelAPI.name
+                    }
+                  </div>
+                  <div>
+                    {
+                      (saveResult as GqlCreateModelAPIConfigResult)
+                        .createModelAPI.description
+                    }
+                  </div>
+                  <div>
+                    {
+                      (saveResult as GqlCreateModelAPIConfigResult)
+                        .createModelAPI.modelType
+                    }
+                  </div>
+                </div>
+              </StandardAlert>
+            ) : (
+              <StandardAlert
+                disableCloseIcon
+                alertType={AlertType.ERROR}
+                headingText="Check configuration"
+                onCloseIconClick={handleCloseResultClick}
+                style={{ border: 'none' }}>
+                <div style={{ display: 'flex', fontSize: 14 }}>
+                  <div>{saveResult.message}</div>
+                </div>
+              </StandardAlert>
+            )}
+          </div>
+        </ModalResult>
+      ) : null}
     </div>
   );
 }

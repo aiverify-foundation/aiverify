@@ -14,16 +14,11 @@ const authTypeFieldName = 'modelAPI.authType';
 const authTypeConfigFieldName = 'modelAPI.authTypeConfig';
 
 function TabContentAuth() {
-  const { values, setFieldValue } = useFormikContext<ModelAPIFormModel>();
+  const { values, setFieldValue, handleChange } =
+    useFormikContext<ModelAPIFormModel>();
 
   function handleBearerTokenChange(e: ChangeEvent<HTMLInputElement>) {
     setFieldValue(`${authTypeConfigFieldName}.token`, e.target.value);
-  }
-  function handleUsernameChange(e: ChangeEvent<HTMLInputElement>) {
-    setFieldValue(`${authTypeConfigFieldName}.username`, e.target.value);
-  }
-  function handlePasswordChange(e: ChangeEvent<HTMLInputElement>) {
-    setFieldValue(`${authTypeConfigFieldName}.password`, e.target.value);
   }
 
   useEffect(() => {
@@ -32,15 +27,11 @@ function TabContentAuth() {
         setFieldValue(authTypeConfigFieldName, undefined);
         break;
       case AuthType.BASIC:
-        setFieldValue(authTypeConfigFieldName, {
-          username: '',
-          password: '',
-        });
+        setFieldValue(`${authTypeConfigFieldName}.token`, undefined);
         break;
       case AuthType.BEARER_TOKEN:
-        setFieldValue(authTypeConfigFieldName, {
-          token: '',
-        });
+        setFieldValue(`${authTypeConfigFieldName}.username`, undefined);
+        setFieldValue(`${authTypeConfigFieldName}.password`, undefined);
         break;
     }
   }, [values.modelAPI.authType]);
@@ -59,28 +50,28 @@ function TabContentAuth() {
         onChange={(val) => setFieldValue(authTypeFieldName, val)}
         value={values.modelAPI.authType}
       />
-      {values.modelAPI.authType === AuthType.BEARER_TOKEN &&
-      (values.modelAPI.authTypeConfig as AuthBearerTokenConfig) ? (
+      {values.modelAPI.authType === AuthType.BEARER_TOKEN ? (
         <div style={{ flexGrow: 1 }}>
           <TextInput
             label="Token"
-            name="authTypeConfig.token"
+            name={`${authTypeConfigFieldName}.token`}
             value={
-              (values.modelAPI.authTypeConfig as AuthBearerTokenConfig).token
+              (values.modelAPI.authTypeConfig as AuthBearerTokenConfig)?.token
             }
             onChange={handleBearerTokenChange}
             style={{ width: 560 }}
           />
         </div>
       ) : null}
-      {values.modelAPI.authType === AuthType.BASIC &&
-      values.modelAPI.authTypeConfig ? (
+      {values.modelAPI.authType === AuthType.BASIC ? (
         <div style={{ display: 'flex' }}>
           <TextInput
             label="User"
-            name="authTypeConfig.username"
-            value={(values.modelAPI.authTypeConfig as AuthBasicConfig).username}
-            onChange={handleUsernameChange}
+            name={`${authTypeConfigFieldName}.username`}
+            value={
+              (values.modelAPI.authTypeConfig as AuthBasicConfig)?.username
+            }
+            onChange={handleChange}
             style={{
               marginRight: 8,
               width: 300,
@@ -88,9 +79,9 @@ function TabContentAuth() {
           />
           <TextInput
             label="Password"
-            name="authTypeConfig.password"
+            name={`${authTypeConfigFieldName}.password`}
             value={(values.modelAPI.authTypeConfig as AuthBasicConfig).password}
-            onChange={handlePasswordChange}
+            onChange={handleChange}
             style={{ width: 300 }}
           />
         </div>

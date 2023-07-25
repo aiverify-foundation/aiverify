@@ -10,6 +10,7 @@ export enum Tab {
   AUTHENTICATION,
   REQUEST_BODY,
   RESPONSE,
+  OTHERS,
 }
 
 type TabButtonsGroupProps = {
@@ -67,6 +68,14 @@ function TabButtonsGroup({ activeTab, onTabClick }: TabButtonsGroupProps) {
         )}
         onClick={handleTabClick(Tab.AUTHENTICATION)}>
         Authentication
+      </div>
+      <div
+        className={clsx(
+          styles.tabBtn,
+          activeTab === Tab.OTHERS ? styles.tabBtn__selected : null
+        )}
+        onClick={handleTabClick(Tab.OTHERS)}>
+        Others
       </div>
     </div>
   );

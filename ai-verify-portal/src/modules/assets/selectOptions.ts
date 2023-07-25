@@ -1,6 +1,7 @@
 import { ModelType } from 'src/types/model.interface';
 import {
   AuthType,
+  BatchStrategy,
   MediaType,
   OpenApiDataTypes,
   RequestMethod,
@@ -41,4 +42,9 @@ export const optionsOpenApiDataTypes = [
   { value: OpenApiDataTypes.INTEGER, label: OpenApiDataTypes.INTEGER },
   { value: OpenApiDataTypes.BOOLEAN, label: OpenApiDataTypes.BOOLEAN },
   { value: OpenApiDataTypes.ARRAY, label: OpenApiDataTypes.ARRAY },
+];
+
+export const optionsBatchStrategies = [
+  { value: BatchStrategy.none, label: BatchStrategy.none },
+  { value: BatchStrategy.multipart, label: BatchStrategy.multipart },
 ];
