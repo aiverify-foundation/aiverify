@@ -53,20 +53,14 @@ function TabContentAdditionalHeaders() {
     <div
       style={{
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: 'column'
       }}>
-      <div>
         <AdditionalHeaderInputHeading />
         <FieldArray name={additionalHeaderFieldName}>
           {(arrayHelpers) => {
             const headers = values.modelAPI.additionalHeaders || [];
             return (
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  width: 'fit-content',
-                }}>
+              <>
                 {headers.map((header, index) => (
                   <AdditionalHeaderInput
                     key={header.reactPropId}
@@ -81,11 +75,10 @@ function TabContentAdditionalHeaders() {
                   onChange={handleNewParamChange}
                   onAddClick={handleAddNewHeader(arrayHelpers)}
                 />
-              </div>
+              </>
             );
           }}
         </FieldArray>
-      </div>
     </div>
   );
 }

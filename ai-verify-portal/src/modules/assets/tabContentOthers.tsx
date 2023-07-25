@@ -25,8 +25,9 @@ function TabContentOthers() {
       style={{
         display: 'flex',
         flexWrap: 'wrap',
+        rowGap: 10,
       }}>
-      <div className={styles.keyValCol} style={{ width: 120 }}>
+      <div className={styles.keyValCol}>
         <TextInput
           label="Rate Limit"
           name={`${otherReqConfigFieldName}.rateLimit`}
@@ -53,7 +54,7 @@ function TabContentOthers() {
           style={{ marginBottom: 0 }}
         />
       </div>
-      <div className={styles.keyValCol} style={{ width: 120 }}>
+      <div className={styles.keyValCol}>
         <TextInput
           label="Batch Limit"
           name={`${otherReqConfigFieldName}.batchLimit`}
@@ -68,7 +69,7 @@ function TabContentOthers() {
           }
         />
       </div>
-      <div className={styles.keyValCol} style={{ width: 120 }}>
+      <div className={styles.keyValCol}>
         <TextInput
           label="Max Connections"
           name={`${otherReqConfigFieldName}.maxConnections`}
@@ -85,7 +86,7 @@ function TabContentOthers() {
           }
         />
       </div>
-      <div className={styles.keyValCol} style={{ width: 120 }}>
+      <div className={styles.keyValCol}>
         <TextInput
           label="Request Timeout"
           name={`${otherReqConfigFieldName}.requestTimeout`}

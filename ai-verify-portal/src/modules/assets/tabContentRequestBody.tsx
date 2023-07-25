@@ -57,7 +57,7 @@ function TabContentRequestBody() {
         }
       />
       {values.modelAPI.requestBody.mediaType !== MediaType.NONE ? (
-        <div>
+        <>
           <RequestBodyParamsHeading />
           <FieldArray name={`${requestBodyFieldName}.properties`}>
             {(arrayHelpers) => {
@@ -67,7 +67,6 @@ function TabContentRequestBody() {
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
-                    width: 'fit-content',
                   }}>
                   {params.map((param, index) => (
                     <RequestBodyParameterInput
@@ -90,7 +89,7 @@ function TabContentRequestBody() {
               );
             }}
           </FieldArray>
-        </div>
+        </>
       ) : null}
     </div>
   );

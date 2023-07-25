@@ -231,7 +231,6 @@ const TabContentURLParams = forwardRef<FieldArrayRenderProps | undefined>(
                         style={{
                           display: 'flex',
                           flexDirection: 'column',
-                          width: 'fit-content',
                         }}>
                         {params.map((param, index) => (
                           <Draggable

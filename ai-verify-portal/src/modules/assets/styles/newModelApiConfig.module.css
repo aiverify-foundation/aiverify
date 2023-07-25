@@ -15,7 +15,7 @@
 .apiConfigForm {
   display: flex;
   background: #ffffff;
-  width: 70%;
+  width: 90%;
   min-width: 730px;
   margin: auto;
   padding: 25px 25px 25px 25px;
@@ -26,7 +26,7 @@
 .pageLevelError {
   display: flex;
   background: #ffffff;
-  width: 70%;
+  width: 90%;
   min-width: 730px;
   margin: auto;
   margin-bottom: 10px;
@@ -35,7 +35,7 @@
 .buttons {
   display: flex;
   justify-content: flex-end;
-  width: 70%;
+  width: 90%;
   min-width: 730px;
   margin: auto;
   padding: 25px 25px 25px 25px;
@@ -140,7 +140,7 @@
 .tabContent {
   background-color: var(--color-light-gray3);
   padding: 15px;
-  min-height: 350px;
+  min-height: 270px;
 }
 
 .tabContent .scrollContainer {
@@ -155,8 +155,8 @@
 
 .headingName,
 .headingVal {
-  width: 250px;
-  margin-right: 10px;
+  flex-basis: 200px;
+  margin-right: 8px;
   font-size: 14px;
   font-weight: 600;
 }
@@ -165,12 +165,13 @@
   display: flex;
   align-items: center;
   margin-bottom: 4px;
+  width: 100%;
 }
 
 .keyValCol {
   position: relative;
   margin-right: 8px;
-  width: 250px;
+  flex-basis: 200px;
 }
 
 .keyValRemoveBtn {

@@ -21,8 +21,8 @@ function AdditionalHeaderInputHeading() {
     <div style={{ display: 'flex', marginBottom: 4 }}>
       <div className={styles.headingName}>Header Name</div>
       <div className={styles.headingName}>Data Type</div>
-      <div className={styles.headingVal}>Value</div>
-      <div></div>
+      <div className={styles.headingName}>Value</div>
+      <div style={{ width: 72}}></div>
     </div>
   );
 }
