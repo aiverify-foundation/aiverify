@@ -11,7 +11,8 @@ type ApiConfigNameDescFormProps = {
 function ApiConfigNameDescForm(props: ApiConfigNameDescFormProps) {
   const { onOKClick, onCancelClick } = props;
 
-  const { values, handleChange } = useFormikContext<ModelAPIFormModel>();
+  const { values, errors, touched, handleChange } =
+    useFormikContext<ModelAPIFormModel>();
   return (
     <div
       style={{
@@ -25,12 +26,18 @@ function ApiConfigNameDescForm(props: ApiConfigNameDescFormProps) {
         maxLength={255}
         style={{ marginBottom: 10 }}
         onChange={handleChange}
+        error={Boolean(errors.name && touched.name) ? errors.name : undefined}
       />
       <TextArea
         label="Description"
         name="description"
         value={values.description}
         onChange={handleChange}
+        error={
+          Boolean(errors.description && touched.description)
+            ? errors.description
+            : undefined
+        }
       />
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <button

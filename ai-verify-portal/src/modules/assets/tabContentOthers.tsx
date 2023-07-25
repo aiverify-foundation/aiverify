@@ -1,4 +1,4 @@
-import { FormikHandlers, useFormikContext } from 'formik';
+import { useFormikContext } from 'formik';
 import { BatchStrategy, ModelAPIFormModel } from './types';
 import { TextInput } from 'src/components/textInput';
 import styles from './styles/newModelApiConfig.module.css';
@@ -14,8 +14,11 @@ import { optionsBatchStrategies } from './selectOptions';
 const otherReqConfigFieldName = 'modelAPI.requestConfig';
 
 function TabContentOthers() {
-  const { values, setFieldValue, handleChange } =
+  const { values, errors, touched, setFieldValue, handleChange } =
     useFormikContext<ModelAPIFormModel>();
+
+  const fieldErrors = errors.modelAPI?.requestConfig;
+  const touchedFields = touched.modelAPI?.requestConfig;
 
   return (
     <div
@@ -31,6 +34,11 @@ function TabContentOthers() {
           value={values.modelAPI.requestConfig.rateLimit.toString()}
           maxLength={128}
           style={{ marginBottom: 0 }}
+          error={
+            Boolean(fieldErrors?.rateLimit && touchedFields?.rateLimit)
+              ? fieldErrors?.rateLimit
+              : undefined
+          }
         />
       </div>
       <div className={styles.keyValCol}>
@@ -53,6 +61,11 @@ function TabContentOthers() {
           value={values.modelAPI.requestConfig.batchLimit.toString()}
           maxLength={128}
           style={{ marginBottom: 0 }}
+          error={
+            Boolean(fieldErrors?.batchLimit && touchedFields?.batchLimit)
+              ? fieldErrors?.batchLimit
+              : undefined
+          }
         />
       </div>
       <div className={styles.keyValCol} style={{ width: 120 }}>
@@ -63,6 +76,13 @@ function TabContentOthers() {
           value={values.modelAPI.requestConfig.maxConnections.toString()}
           maxLength={128}
           style={{ marginBottom: 0 }}
+          error={
+            Boolean(
+              fieldErrors?.maxConnections && touchedFields?.maxConnections
+            )
+              ? fieldErrors?.maxConnections
+              : undefined
+          }
         />
       </div>
       <div className={styles.keyValCol} style={{ width: 120 }}>
@@ -73,6 +93,13 @@ function TabContentOthers() {
           value={values.modelAPI.requestConfig.requestTimeout.toString()}
           maxLength={128}
           style={{ marginBottom: 0 }}
+          error={
+            Boolean(
+              fieldErrors?.requestTimeout && touchedFields?.requestTimeout
+            )
+              ? fieldErrors?.requestTimeout
+              : undefined
+          }
         />
       </div>
     </div>

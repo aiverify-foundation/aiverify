@@ -14,8 +14,12 @@ const authTypeFieldName = 'modelAPI.authType';
 const authTypeConfigFieldName = 'modelAPI.authTypeConfig';
 
 function TabContentAuth() {
-  const { values, setFieldValue, handleChange } =
+  const { values, errors, touched, setFieldValue, handleChange } =
     useFormikContext<ModelAPIFormModel>();
+
+  // investigate authTypeConfig type-check not working
+  const fieldErrors = errors.modelAPI?.authTypeConfig as any;
+  const touchedFields = touched.modelAPI?.authTypeConfig as any;
 
   function handleBearerTokenChange(e: ChangeEvent<HTMLInputElement>) {
     setFieldValue(`${authTypeConfigFieldName}.token`, e.target.value);
@@ -60,6 +64,11 @@ function TabContentAuth() {
             }
             onChange={handleBearerTokenChange}
             style={{ width: 560 }}
+            error={
+              Boolean(fieldErrors?.token && touchedFields?.token)
+                ? fieldErrors?.token
+                : undefined
+            }
           />
         </div>
       ) : null}
@@ -76,6 +85,11 @@ function TabContentAuth() {
               marginRight: 8,
               width: 300,
             }}
+            error={
+              Boolean(fieldErrors?.username && touchedFields?.username)
+                ? fieldErrors?.username
+                : undefined
+            }
           />
           <TextInput
             label="Password"
@@ -83,6 +97,11 @@ function TabContentAuth() {
             value={(values.modelAPI.authTypeConfig as AuthBasicConfig).password}
             onChange={handleChange}
             style={{ width: 300 }}
+            error={
+              Boolean(fieldErrors?.password && touchedFields?.password)
+                ? fieldErrors?.password
+                : undefined
+            }
           />
         </div>
       ) : null}

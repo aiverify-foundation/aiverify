@@ -3,7 +3,7 @@ import styles from './styles/newModelApiConfig.module.css';
 import { ModelAPIFormModel } from './types';
 import EditIcon from '@mui/icons-material/Edit';
 import { IconButton } from 'src/components/iconButton';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ApiConfigNameDescForm } from './apiConfigNameDescForm';
 import { optionsModelTypes } from './selectOptions';
 import { SelectInput } from 'src/components/selectInput';
@@ -13,7 +13,18 @@ const defaultConfigDescDisplay = 'Description';
 
 function ModelApiLeftSection() {
   const [isEdit, setIsEdit] = useState(false);
-  const { values, setFieldValue } = useFormikContext<ModelAPIFormModel>();
+  const { values, errors, touched, setFieldValue } =
+    useFormikContext<ModelAPIFormModel>();
+
+  useEffect(() => {
+    if (
+      Boolean(errors.name && touched.name) ||
+      Boolean(errors.description && touched.description)
+    ) {
+      setIsEdit(true);
+    }
+  }, [errors.name, errors.description]);
+
   return (
     <div>
       {!isEdit ? (
