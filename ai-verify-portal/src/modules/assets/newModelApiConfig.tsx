@@ -129,6 +129,7 @@ export const initialValues: ModelAPIFormModel = {
 
 function NewModelApiConfigModule() {
   const [activeTab, setActiveTab] = useState<Tab>(Tab.REQUEST_BODY);
+  const [showPageLevelAlert, setShowPageLevelAlert] = useState(false);
   const [saveResult, setSaveResult] = useState<
     ErrorWithMessage | GqlCreateModelAPIConfigResult
   >();
@@ -195,6 +196,10 @@ function NewModelApiConfigModule() {
 
   function handleBackClick() {
     history.back();
+  }
+
+  function handleCloseAlertClick() {
+    setShowPageLevelAlert(false);
   }
 
   function handleTabClick(tab: Tab) {
@@ -266,13 +271,13 @@ function NewModelApiConfigModule() {
                             </p>
                           </div>
                           <div className={styles.pageLevelError}>
-                            {Object.keys(errors).length &&
+                            {showPageLevelAlert &&
+                            Object.keys(errors).length &&
                             Object.keys(touched).length ? (
                               <StandardAlert
-                                disableCloseIcon
                                 alertType={AlertType.ERROR}
                                 headingText="Field-level errors"
-                                onCloseIconClick={handleCloseResultClick}>
+                                onCloseIconClick={handleCloseAlertClick}>
                                 <div style={{ display: 'flex', fontSize: 14 }}>
                                   <div>
                                     Please ensure all the necessary inputs are
@@ -366,7 +371,8 @@ function NewModelApiConfigModule() {
                             <button
                               type="submit"
                               style={{ width: 100, marginRight: 0 }}
-                              className="aivBase-button aivBase-button--primary aivBase-button--medium">
+                              className="aivBase-button aivBase-button--primary aivBase-button--medium"
+                              onClick={() => setShowPageLevelAlert(true)}>
                               Save
                             </button>
                           </div>
