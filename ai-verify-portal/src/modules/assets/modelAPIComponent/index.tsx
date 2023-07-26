@@ -126,6 +126,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
 
   function handleFormSubmit(values: ModelAPIFormModel) {
     setSaveInProgress(true);
+    setIsDisabled(true);
     if (id != undefined) {
       updateApiConfig(id, values);
     } else {
@@ -210,10 +211,15 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                       return (
                         <Form>
                           <div style={{ marginBottom: '25px' }}>
-                            <h3 className="screenHeading">API Configuration</h3>
+                            <h3 className="screenHeading">
+                              {id !== undefined
+                                ? 'Update API Configuration'
+                                : 'Create API Configuration'}
+                            </h3>
                             <p className="headingDescription">
-                              Add the API configurations needed to connect to
-                              the AI model server
+                              {id !== undefined
+                                ? 'Update API configuration needed to connect to the AI model server'
+                                : 'Create a new API configuration needed to connect to the AI model server'}
                             </p>
                           </div>
                           <div className={styles.pageLevelError}>
@@ -323,7 +329,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                                 onClick={handleBackClick}>
                                 Back to AI Models
                               </button>
-                              {isDisabled ? (
+                              {isDisabled && id !== undefined ? (
                                 <button
                                   type="button"
                                   style={{ width: 100 }}
@@ -332,7 +338,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                                   Edit
                                 </button>
                               ) : null}
-                              {!isDisabled ? (
+                              {!isDisabled && id !== undefined ? (
                                 <button
                                   type="button"
                                   style={{ width: 140 }}
@@ -348,7 +354,9 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                                 type="submit"
                                 style={{ width: 100, marginRight: 0 }}
                                 className="aivBase-button aivBase-button--primary aivBase-button--medium"
-                                onClick={() => setShowPageLevelAlert(true)}>
+                                onClick={() => {
+                                  setShowPageLevelAlert(true);
+                                }}>
                                 Save
                               </button>
                             ) : null}
