@@ -44,13 +44,6 @@ const TabContentURLParams = forwardRef<FieldArrayRenderProps | undefined>(
     const [newParam, setNewParam] = useState<UrlParam>(defaultUrlParameter);
     const { values, setFieldValue } = useFormikContext<ModelAPIFormModel>();
     const formArrayHelpersRef = useRef<FieldArrayRenderProps>();
-    const mediaTypeFieldName = `${
-      paramType === URLParamType.QUERY ? queriesFieldName : pathsFieldName
-    }.mediaType`;
-    const mediaTypeValue =
-      paramType === URLParamType.QUERY
-        ? values.modelAPI.parameters.queries?.mediaType
-        : values.modelAPI.parameters.paths?.mediaType;
     const urlParamsStr = values.modelAPI.parameters.paths
       ? values.modelAPI.parameters.paths.pathParams.reduce((prev, param) => {
           return `${prev}/{${param.name}}`;

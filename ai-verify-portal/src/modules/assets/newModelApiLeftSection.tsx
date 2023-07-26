@@ -13,7 +13,7 @@ const defaultConfigDescDisplay = 'Description';
 
 function ModelApiLeftSection() {
   const [isEdit, setIsEdit] = useState(false);
-  const { values, errors, touched, setFieldValue } =
+  const { values, errors, touched, handleChange } =
     useFormikContext<ModelAPIFormModel>();
 
   useEffect(() => {
@@ -58,7 +58,7 @@ function ModelApiLeftSection() {
           name="modelType"
           options={optionsModelTypes}
           value={values.modelType}
-          onChange={(val) => setFieldValue('modelType', val)}
+          onSyntheticChange={handleChange}
         />
       </div>
     </div>

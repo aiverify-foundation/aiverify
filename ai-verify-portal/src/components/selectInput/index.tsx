@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import styles from './styles/selectInput.module.css';
 import Select from 'react-select';
 
@@ -19,6 +19,8 @@ type SelectInputProps<valueType = string> = {
   style?: React.CSSProperties;
   selectedOptionPredicateFn?: (option: SelectOption<valueType>) => boolean;
   onChange?: (value: valueType) => void;
+  // change handler to support formik's `handleChange` method. If this becomes unstable, use onChange prop with formik's `setFieldValue` method at the consumer
+  onSyntheticChange?: (e: ChangeEvent<HTMLInputElement>) => void;
 };
 
 const BORDER_COLOR = '#cfcfcf';
@@ -39,14 +41,35 @@ function SelectInput<T = string>(props: SelectInputProps<T>) {
     options,
     style,
     selectedOptionPredicateFn,
+    onSyntheticChange,
     onChange,
   } = props;
 
-  const selectedOption = options.find(selectedOptionPredicateFn ? selectedOptionPredicateFn : (opt) => opt && opt.value === value);
+  const selectedOption = options.find(
+    selectedOptionPredicateFn
+      ? selectedOptionPredicateFn
+      : (opt) => opt && opt.value === value
+  );
   const containerStyles = { width, ...style };
 
   function handleChange(option: SelectOption<T>) {
     if (!option) return;
+    /*
+      To support formik's `handleChange` method, we shape an event object and cast it to react ChangeEvent<HTMLInputElement>. This seems to work.
+      Alternatively, use `onChange` prop instead, and the handler passed to it can use formik's `setFieldValue`
+    */
+    if (onSyntheticChange && typeof option.value === 'string') {
+      const syntheticEvent = {
+        target: {
+          name,
+          value: option.value,
+        },
+      };
+      onSyntheticChange(
+        syntheticEvent as unknown as ChangeEvent<HTMLInputElement>
+      );
+      return;
+    }
     if (onChange) onChange(option.value);
   }
 

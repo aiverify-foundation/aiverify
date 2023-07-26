@@ -1,11 +1,6 @@
 import { TextInput } from 'src/components/textInput';
 import styles from './styles/newModelApiConfig.module.css';
-import {
-  MediaType,
-  ModelAPIFormModel,
-  OpenApiDataTypes,
-  Response,
-} from './types';
+import { MediaType, ModelAPIFormModel, OpenApiDataTypes } from './types';
 import { SelectInput } from 'src/components/selectInput';
 import { optionsMediaTypes, optionsOpenApiDataTypes } from './selectOptions';
 import { useFormikContext } from 'formik';
@@ -27,16 +22,7 @@ function ResponseInputHeading() {
 }
 
 function ResponsePropertyInput() {
-  const { values, setFieldValue, handleChange } =
-    useFormikContext<ModelAPIFormModel>();
-
-  function handleMediaChange(val: MediaType) {
-    setFieldValue(`${responseFieldName}.mediaType`, val);
-  }
-
-  function handleTypeChange(val: OpenApiDataTypes) {
-    setFieldValue(`${responseFieldName}.type`, val);
-  }
+  const { values, handleChange } = useFormikContext<ModelAPIFormModel>();
 
   return (
     <div className={styles.keyValRow}>
@@ -53,8 +39,8 @@ function ResponsePropertyInput() {
         <SelectInput<MediaType>
           name={`${responseFieldName}.mediaType`}
           options={optionsMediaTypes}
-          onChange={handleMediaChange}
           value={values.modelAPI.response.mediaType}
+          onSyntheticChange={handleChange}
           style={{ marginBottom: 0 }}
         />
       </div>
@@ -62,8 +48,8 @@ function ResponsePropertyInput() {
         <SelectInput<OpenApiDataTypes>
           name={`${responseFieldName}.type`}
           options={optionsOpenApiDataTypes}
-          onChange={handleTypeChange}
           value={values.modelAPI.response.type}
+          onSyntheticChange={handleChange}
           style={{ marginBottom: 0 }}
         />
       </div>

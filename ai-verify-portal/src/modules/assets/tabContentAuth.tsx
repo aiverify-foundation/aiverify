@@ -49,9 +49,9 @@ function TabContentAuth() {
       <SelectInput<AuthType>
         width={200}
         label="Authentication Type"
-        name="authTypeInput"
+        name={authTypeFieldName}
         options={optionsAuthMethods}
-        onChange={(val) => setFieldValue(authTypeFieldName, val)}
+        onSyntheticChange={handleChange}
         value={values.modelAPI.authType}
       />
       {values.modelAPI.authType === AuthType.BEARER_TOKEN ? (

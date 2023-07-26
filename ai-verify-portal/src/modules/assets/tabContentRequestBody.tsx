@@ -24,7 +24,8 @@ const requestBodyFieldName = 'modelAPI.requestBody';
 
 function TabContentRequestBody() {
   const [newParam, setNewParam] = useState<BodyParam>(defaultBodyParameter);
-  const { values, setFieldValue } = useFormikContext<ModelAPIFormModel>();
+  const { values, setFieldValue, handleChange } =
+    useFormikContext<ModelAPIFormModel>();
 
   function handleNewParamChange(value: BodyParam) {
     setNewParam((prev) => ({
@@ -49,12 +50,10 @@ function TabContentRequestBody() {
       <SelectInput<MediaType>
         width={240}
         label="Media Type"
-        name="requestBody.mediaType"
+        name={`${requestBodyFieldName}.mediaType`}
         options={optionsMediaTypes}
         value={values.modelAPI.requestBody?.mediaType}
-        onChange={(val) =>
-          setFieldValue(`${requestBodyFieldName}.mediaType`, val)
-        }
+        onSyntheticChange={handleChange}
       />
       {values.modelAPI.requestBody.mediaType !== MediaType.NONE ? (
         <>

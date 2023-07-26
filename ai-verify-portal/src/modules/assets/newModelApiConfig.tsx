@@ -33,6 +33,12 @@ import { AlertType, StandardAlert } from 'src/components/standardAlerts';
 import { AlertBoxSize } from 'src/components/alertBox';
 import { useRouter } from 'next/router';
 
+type FormikSetFieldvalueFn = (
+  field: string,
+  value: RequestMethod,
+  shouldValidate?: boolean | undefined
+) => Promise<void | FormikErrors<ModelAPIFormModel>>;
+
 const urlPattern = new RegExp(
   '^([a-zA-Z]+:\\/\\/)?' + // protocol
     '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
@@ -207,16 +213,17 @@ function NewModelApiConfigModule() {
   }
 
   function handleCloseResultClick() {
+    if (saveResult && 'createModelAPI' in saveResult) {
+      if (saveResult.createModelAPI.id) {
+        router.push('/assets/models');
+        setSaveResult(undefined);
+      }
+      return;
+    }
     setSaveResult(undefined);
   }
 
-  function handleRequestMethodChange(
-    setFieldValue: (
-      field: string,
-      value: RequestMethod,
-      shouldValidate?: boolean | undefined
-    ) => Promise<void | FormikErrors<ModelAPIFormModel>>
-  ) {
+  function handleRequestMethodChange(setFieldValue: FormikSetFieldvalueFn) {
     return (val: RequestMethod) => {
       if (
         activeTab !== Tab.AUTHENTICATION &&
@@ -391,14 +398,13 @@ function NewModelApiConfigModule() {
           size={AlertBoxSize.SMALL}
           title="Create New Model API Config"
           onCloseClick={handleCloseResultClick}
-          onOkClick={() => router.push('/assets/models')}>
+          onOkClick={handleCloseResultClick}>
           <div>
             {'createModelAPI' in saveResult ? (
               <StandardAlert
                 disableCloseIcon
                 alertType={AlertType.SUCCESS}
                 headingText="New Model API Config successfully created"
-                onCloseIconClick={handleCloseResultClick}
                 style={{ border: 'none' }}>
                 <div
                   style={{
@@ -427,7 +433,6 @@ function NewModelApiConfigModule() {
                 disableCloseIcon
                 alertType={AlertType.ERROR}
                 headingText="Check configuration"
-                onCloseIconClick={handleCloseResultClick}
                 style={{ border: 'none' }}>
                 <div style={{ display: 'flex', fontSize: 14 }}>
                   <div>{saveResult.message}</div>
