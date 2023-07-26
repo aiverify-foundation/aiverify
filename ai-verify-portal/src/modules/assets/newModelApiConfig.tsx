@@ -7,16 +7,12 @@ import { DragDropContext, DragUpdate } from 'react-beautiful-dnd';
 import { optionsRequestMethods } from './selectOptions';
 import * as Yup from 'yup';
 import {
-  AuthType,
-  BatchStrategy,
-  MediaType,
   ModelAPIFormModel,
   ModelAPIGraphQLModel,
-  OpenApiDataTypes,
   RequestMethod,
+  SaveResult,
 } from './types';
 import { Formik, Form, FieldArrayRenderProps, FormikErrors } from 'formik';
-import { ModelType } from 'src/types/model.interface';
 import { ModelApiLeftSection } from './newModelApiLeftSection';
 import { Tab, TabButtonsGroup } from './newModelApiTabButtons';
 import { TabContentURLParams } from './tabContentUrlParams';
@@ -25,13 +21,19 @@ import { TabContentResponse } from './tabContentResponse';
 import { TabContentAdditionalHeaders } from './tabContentAdditonalHeaders';
 import { TabContentAuth } from './tabContentAuth';
 import { useMutation } from '@apollo/client';
-import { GQL_CREATE_MODELAPI, GqlCreateModelAPIConfigResult } from './api/gql';
+import {
+  GQL_CREATE_MODELAPI,
+  GQL_UPDATE_MODELAPI,
+  GqlCreateModelAPIConfigResult,
+  GqlUpdateModelAPIConfigResult,
+} from './api/gql';
 import { TabContentOthers } from './tabContentOthers';
 import { ModalResult } from './modalResult';
 import { ErrorWithMessage, toErrorWithMessage } from 'src/lib/errorUtils';
 import { AlertType, StandardAlert } from 'src/components/standardAlerts';
-import { AlertBoxSize } from 'src/components/alertBox';
 import { useRouter } from 'next/router';
+import { transformFormValuesToGraphModel } from './utils/modelApiUtils';
+import { defaultFormValues } from './constants';
 
 type FormikSetFieldvalueFn = (
   field: string,
@@ -96,43 +98,6 @@ const ModelAPIFormSchema = Yup.object().shape({
   }),
 });
 
-export const defaultFormValues: ModelAPIFormModel = {
-  name: '',
-  description: '',
-  modelType: ModelType.Classification,
-  modelAPI: {
-    url: '',
-    urlParams: '',
-    method: RequestMethod.POST,
-    authType: AuthType.NO_AUTH,
-    requestBody: {
-      mediaType: MediaType.NONE,
-      isArray: false,
-      properties: [],
-    },
-    parameters: {
-      queries: {
-        mediaType: MediaType.NONE,
-        isArray: false,
-        queryParams: [],
-      },
-    },
-    requestConfig: {
-      rateLimit: -1,
-      batchStrategy: BatchStrategy.none,
-      batchLimit: -1,
-      maxConnections: -1,
-      requestTimeout: 60000,
-    },
-    response: {
-      statusCode: 200,
-      mediaType: MediaType.APP_JSON,
-      type: OpenApiDataTypes.INTEGER,
-      field: 'data',
-    },
-  },
-};
-
 export type NewModelApiConfigModuleProps = {
   id?: string;
   formValues?: ModelAPIFormModel;
@@ -140,71 +105,74 @@ export type NewModelApiConfigModuleProps = {
 
 function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
   const { id, formValues } = props;
-  console.log(formValues);
-  const [activeTab, setActiveTab] = useState<Tab>(Tab.REQUEST_BODY);
+  const [activeTab, setActiveTab] = useState<Tab>(() => {
+    if (formValues) {
+      return formValues.modelAPI.method === RequestMethod.POST
+        ? Tab.REQUEST_BODY
+        : Tab.URL_PARAMS;
+    }
+    return Tab.REQUEST_BODY;
+  });
   const [showPageLevelAlert, setShowPageLevelAlert] = useState(false);
-  const [saveResult, setSaveResult] = useState<
-    ErrorWithMessage | GqlCreateModelAPIConfigResult
-  >();
+  const [saveResult, setSaveResult] = useState<ErrorWithMessage | SaveResult>();
+  const [saveInProgress, setSaveInProgress] = useState(false);
   const paramsFormikArrayHelpersRef = useRef<FieldArrayRenderProps>();
   const [addNewModelAPIConfig] =
     useMutation<GqlCreateModelAPIConfigResult>(GQL_CREATE_MODELAPI);
+  const [updateModelAPIConfig] =
+    useMutation<GqlUpdateModelAPIConfigResult>(GQL_UPDATE_MODELAPI);
   const router = useRouter();
   const initialFormValues = formValues || defaultFormValues;
 
-  async function createModelAPIConfig(formValues: ModelAPIFormModel) {
-    const modelAPIInput: ModelAPIGraphQLModel = { ...formValues };
-
-    if (formValues.modelAPI.method === RequestMethod.GET) {
-      delete modelAPIInput.modelAPI.requestBody;
-      // tidy pathParams - remove reactPropId
-      const parameters = modelAPIInput.modelAPI.parameters;
-      if (parameters && parameters.paths) {
-        parameters.paths.pathParams = parameters.paths.pathParams.map(
-          (param) => ({
-            name: param.name,
-            type: param.type,
-          })
-        );
-      } else if (parameters && parameters.queries) {
-        parameters.queries.queryParams = parameters.queries.queryParams.map(
-          (param) => ({
-            name: param.name,
-            type: param.type,
-          })
-        );
-      }
-    } else {
-      delete modelAPIInput.modelAPI.parameters;
-      // tidy requestbody properties - remove reactPropId
-      const requestBody = modelAPIInput.modelAPI.requestBody;
-      if (requestBody && requestBody.properties) {
-        requestBody.properties = requestBody.properties.map((prop) => ({
-          field: prop.field,
-          type: prop.type,
-        }));
-      }
-    }
-
-    //tidy additionalHeaders - remove reactPropId
-    if (modelAPIInput.modelAPI.additionalHeaders) {
-      modelAPIInput.modelAPI.additionalHeaders =
-        modelAPIInput.modelAPI.additionalHeaders.map((header) => ({
-          name: header.name,
-          type: header.type,
-          value: header.value,
-        }));
-    }
+  async function saveNewApiConfig(values: ModelAPIFormModel) {
+    const gqlModelAPIInput: ModelAPIGraphQLModel =
+      transformFormValuesToGraphModel(values);
 
     try {
       const result = await addNewModelAPIConfig({
-        variables: { model: modelAPIInput },
+        variables: { model: gqlModelAPIInput },
       });
       if (result.data && result.data.createModelAPI.id) {
-        setSaveResult(result.data);
+        setSaveResult(result.data.createModelAPI);
+        setSaveInProgress(false);
       }
     } catch (err) {
       setSaveResult(toErrorWithMessage(err));
+      setSaveInProgress(false);
+    }
+  }
+
+  async function updateApiConfig(
+    modelFileId: string,
+    values: ModelAPIFormModel
+  ) {
+    if (!id) {
+      console.error(`model api ID undefined`);
+      return;
+    }
+    const gqlModelAPIInput: ModelAPIGraphQLModel =
+      transformFormValuesToGraphModel(values);
+
+    try {
+      const result = await updateModelAPIConfig({
+        variables: { modelFileId, model: gqlModelAPIInput },
+      });
+      if (result.data && result.data.updateModelAPI.id) {
+        setSaveResult(result.data.updateModelAPI);
+        setSaveInProgress(false);
+      }
+    } catch (err) {
+      setSaveResult(toErrorWithMessage(err));
+      setSaveInProgress(false);
+    }
+  }
+
+  function handleFormSubmit(values: ModelAPIFormModel) {
+    setSaveInProgress(true);
+    if (id != undefined) {
+      updateApiConfig(id, values);
+    } else {
+      saveNewApiConfig(values);
     }
   }
 
@@ -221,11 +189,13 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
   }
 
   function handleCloseResultClick() {
-    if (saveResult && 'createModelAPI' in saveResult) {
-      if (saveResult.createModelAPI.id) {
-        router.push('/assets/models');
-        setSaveResult(undefined);
+    if (saveResult && 'id' in saveResult) {
+      if (!id) {
+        router.push(`/assets/modelApiConfig/${saveResult.id}`);
+      } else {
+        location.reload();
       }
+      setSaveResult(undefined);
       return;
     }
     setSaveResult(undefined);
@@ -268,7 +238,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                   <Formik
                     initialValues={initialFormValues}
                     validationSchema={ModelAPIFormSchema}
-                    onSubmit={(values) => createModelAPIConfig(values)}>
+                    onSubmit={handleFormSubmit}>
                     {({
                       values,
                       handleChange,
@@ -384,6 +354,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                               Back
                             </button>
                             <button
+                              disabled={saveInProgress}
                               type="submit"
                               style={{ width: 100, marginRight: 0 }}
                               className="aivBase-button aivBase-button--primary aivBase-button--medium"
@@ -403,12 +374,11 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
       </DragDropContext>
       {saveResult ? (
         <ModalResult
-          size={AlertBoxSize.SMALL}
           title="Create New Model API Config"
           onCloseClick={handleCloseResultClick}
           onOkClick={handleCloseResultClick}>
           <div>
-            {'createModelAPI' in saveResult ? (
+            {'id' in saveResult ? (
               <StandardAlert
                 disableCloseIcon
                 alertType={AlertType.SUCCESS}
@@ -421,18 +391,14 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                     fontSize: 14,
                   }}>
                   <div>
-                    Config Name:{' '}
-                    {
-                      (saveResult as GqlCreateModelAPIConfigResult)
-                        .createModelAPI.name
-                    }
+                    Config Name:&nbsp;
+                    <span style={{ fontWeight: 800 }}>{saveResult.name}</span>
                   </div>
                   <div>
-                    Model Type:{' '}
-                    {
-                      (saveResult as GqlCreateModelAPIConfigResult)
-                        .createModelAPI.modelType
-                    }
+                    Model Type:&nbsp;
+                    <span style={{ fontWeight: 800 }}>
+                      {saveResult.modelType}
+                    </span>
                   </div>
                 </div>
               </StandardAlert>

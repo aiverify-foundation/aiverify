@@ -43,6 +43,13 @@ export enum BatchStrategy {
   multipart = 'multipart',
 }
 
+export type SaveResult = {
+  id: string;
+  name: string;
+  description: string;
+  modelType: ModelType;
+};
+
 export type AdditionalHeader = {
   reactPropId: string;
   name: string;

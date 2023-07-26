@@ -20,3 +20,23 @@ export type GqlCreateModelAPIConfigResult = {
     modelType: ModelType;
   };
 };
+
+export const GQL_UPDATE_MODELAPI = gql`
+  mutation Mutation($modelFileId: ObjectID!, $model: ModelAPIInput!) {
+    updateModelAPI(modelFileID: $modelFileId, model: $model) {
+      id
+      name
+      description
+      modelType
+    }
+  }
+`;
+
+export type GqlUpdateModelAPIConfigResult = {
+  updateModelAPI: {
+    id: string;
+    name: string;
+    description: string;
+    modelType: ModelType;
+  };
+};

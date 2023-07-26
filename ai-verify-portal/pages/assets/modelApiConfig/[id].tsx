@@ -43,7 +43,7 @@ export const getServerSideProps: GetServerSideProps<{
     1) Delete optional properties which graphQL query returned values are null
     2) For non-optional properties which graphQL query returned values are null, assign them to the default values
     3) Remove __typename properties
-    4) Generate and add `reactPropId` to the parameters, properties arrays
+    4) Generate and add `reactPropId` to the parameters, properties arrays items. These Ids are only used as React `key` prop values
   */
   const formValues: ModelAPIFormModel = {
     name: result.name,
@@ -62,11 +62,13 @@ export const getServerSideProps: GetServerSideProps<{
         return rest;
       })(),
       requestBody: {
+        // set to default first, then populate at next step
         mediaType: MediaType.NONE,
         isArray: false,
         properties: [],
       },
       parameters: {
+        // set to default first, then populate at next step
         queries: {
           mediaType: MediaType.NONE,
           isArray: false,
@@ -76,7 +78,7 @@ export const getServerSideProps: GetServerSideProps<{
     },
   };
 
-  // set to -1 (to support the older configs which did not have default -1)
+  // set to -1 (to support the older configs which did not have default -1) TODO: remove when data updated
   if (formValues.modelAPI.requestConfig.batchLimit === null) {
     formValues.modelAPI.requestConfig.batchLimit = -1;
   }
@@ -93,7 +95,7 @@ export const getServerSideProps: GetServerSideProps<{
   if (result.modelAPI.requestBody !== null) {
     formValues.modelAPI.requestBody = {
       ...result.modelAPI.requestBody,
-      // add reactPropId = ''
+      // add reactPropId
       properties: result.modelAPI.requestBody.properties.map((prop) => ({
         field: prop.field,
         type: prop.type,
@@ -112,7 +114,7 @@ export const getServerSideProps: GetServerSideProps<{
           const { __typename, ...rest } = result.modelAPI.parameters.queries;
           return rest;
         })(),
-        // add reactPropId = ''
+        // add reactPropId
         queryParams: result.modelAPI.parameters.queries.queryParams.map(
           (param) => ({
             name: param.name,
@@ -131,7 +133,7 @@ export const getServerSideProps: GetServerSideProps<{
           const { __typename, ...rest } = result.modelAPI.parameters.paths;
           return rest;
         })(),
-        // add reactPropId = ''
+        // add reactPropId
         pathParams: result.modelAPI.parameters.paths.pathParams.map(
           (param) => ({
             name: param.name,
