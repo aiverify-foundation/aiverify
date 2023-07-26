@@ -13,7 +13,7 @@ AI Verify is presently only supported for its current release version. Please ma
 Security vulnerabilities are serious issues and will be considered carefully so as to safeguard the integrity and stability of AI Verify. 
 If you find a potential security vulnerability, please refrain from reporting security vulnerabilities through public platforms, 
 such as on GitHub issues, discussions, or pull requests. 
-Please instead raise it as a security vulnerability [here](https://github.com/IMDA-BTG/aiverify/security). 
+Please instead raise it as a security vulnerability [here](https://github.com/IMDA-BTG/aiverify/security/advisories/new). 
 ​
 Please include as much of the information listed below as you can to help us better understand and resolve the issue:
 ​
@@ -24,6 +24,7 @@ Please include as much of the information listed below as you can to help us bet
 - Step-by-step instructions to reproduce the issue
 - Proof-of-concept or exploit code (if possible)
 - Impact of the issue, including how an attacker might exploit the issue
+
 ​
 This information will help us triage your report more quickly.
 ​
