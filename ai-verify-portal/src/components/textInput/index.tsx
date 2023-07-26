@@ -5,6 +5,7 @@ type TextInputProps = {
   name: string;
   label?: string;
   placeholder?: string;
+  disabled?: boolean;
   error?: string;
   value?: string;
   maxLength?: number;
@@ -18,6 +19,7 @@ function TextInput(props: TextInputProps) {
     name,
     label,
     placeholder,
+    disabled,
     error,
     maxLength,
     value,
@@ -36,6 +38,7 @@ function TextInput(props: TextInputProps) {
           </div>
         ) : null}
         <input
+          disabled={disabled}
           type="text"
           name={name}
           placeholder={placeholder}

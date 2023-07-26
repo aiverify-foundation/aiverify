@@ -1,7 +1,7 @@
 import { AdditionalHeader, ModelAPIFormModel, OpenApiDataTypes } from './types';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useEffect, useState } from 'react';
-import { getInputReactKeyId } from './newModelApiConfig';
+import { getInputReactKeyId } from '.';
 import {
   AdditionalHeaderInput,
   AdditionalHeaderInputHeading,
@@ -16,11 +16,16 @@ const defaultAdditionalHeader: AdditionalHeader = {
 
 const additionalHeaderFieldName = 'modelAPI.additionalHeaders';
 
-function TabContentAdditionalHeaders() {
+function TabContentAdditionalHeaders({
+  disabled = false,
+}: {
+  disabled?: boolean;
+}) {
   const [newHeader, setNewHeader] = useState<AdditionalHeader>(
     defaultAdditionalHeader
   );
   const { values, setFieldValue } = useFormikContext<ModelAPIFormModel>();
+  const headers = values.modelAPI.additionalHeaders || [];
 
   function handleNewParamChange(value: AdditionalHeader) {
     setNewHeader((prev) => ({
@@ -44,7 +49,7 @@ function TabContentAdditionalHeaders() {
   }
 
   useEffect(() => {
-    if (values.modelAPI.additionalHeaders?.length === 0) {
+    if (headers.length === 0) {
       setFieldValue(additionalHeaderFieldName, undefined);
     }
   }, [values.modelAPI.additionalHeaders]);
@@ -53,32 +58,38 @@ function TabContentAdditionalHeaders() {
     <div
       style={{
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
       }}>
-        <AdditionalHeaderInputHeading />
-        <FieldArray name={additionalHeaderFieldName}>
-          {(arrayHelpers) => {
-            const headers = values.modelAPI.additionalHeaders || [];
-            return (
-              <>
-                {headers.map((header, index) => (
-                  <AdditionalHeaderInput
-                    key={header.reactPropId}
-                    value={header}
-                    onChange={handleAddedParamChange(index)}
-                    onDeleteClick={() => arrayHelpers.remove(index)}
-                  />
-                ))}
+      {!disabled ? <AdditionalHeaderInputHeading /> : null}
+      <FieldArray name={additionalHeaderFieldName}>
+        {(arrayHelpers) => (
+          <>
+            {disabled && !headers.length ? (
+              <div style={{ fontSize: 15, marginTop: 20 }}>
+                No additional Request Headers
+              </div>
+            ) : (
+              headers.map((header, index) => (
                 <AdditionalHeaderInput
-                  showAddBtn
-                  value={newHeader}
-                  onChange={handleNewParamChange}
-                  onAddClick={handleAddNewHeader(arrayHelpers)}
+                  disabled={disabled}
+                  key={header.reactPropId}
+                  value={header}
+                  onChange={handleAddedParamChange(index)}
+                  onDeleteClick={() => arrayHelpers.remove(index)}
                 />
-              </>
-            );
-          }}
-        </FieldArray>
+              ))
+            )}
+            {!disabled ? (
+              <AdditionalHeaderInput
+                showAddBtn
+                value={newHeader}
+                onChange={handleNewParamChange}
+                onAddClick={handleAddNewHeader(arrayHelpers)}
+              />
+            ) : null}
+          </>
+        )}
+      </FieldArray>
     </div>
   );
 }

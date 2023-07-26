@@ -21,13 +21,14 @@ function ResponseInputHeading() {
   );
 }
 
-function ResponsePropertyInput() {
+function ResponsePropertyInput({ disabled = false }: { disabled?: boolean }) {
   const { values, handleChange } = useFormikContext<ModelAPIFormModel>();
 
   return (
     <div className={styles.keyValRow}>
       <div className={styles.keyValCol} style={{ width: 90 }}>
         <TextInput
+          disabled={disabled}
           name={`${responseFieldName}.statusCode`}
           onChange={handleChange}
           value={values.modelAPI.response.statusCode.toString()}
@@ -37,6 +38,7 @@ function ResponsePropertyInput() {
       </div>
       <div className={styles.keyValCol}>
         <SelectInput<MediaType>
+          disabled={disabled}
           name={`${responseFieldName}.mediaType`}
           options={optionsMediaTypes}
           value={values.modelAPI.response.mediaType}
@@ -46,6 +48,7 @@ function ResponsePropertyInput() {
       </div>
       <div className={styles.keyValCol}>
         <SelectInput<OpenApiDataTypes>
+          disabled={disabled}
           name={`${responseFieldName}.type`}
           options={optionsOpenApiDataTypes}
           value={values.modelAPI.response.type}
@@ -55,6 +58,7 @@ function ResponsePropertyInput() {
       </div>
       <div className={styles.keyValCol}>
         <TextInput
+          disabled={disabled}
           name={`${responseFieldName}.field`}
           onChange={handleChange}
           value={values.modelAPI.response.field}

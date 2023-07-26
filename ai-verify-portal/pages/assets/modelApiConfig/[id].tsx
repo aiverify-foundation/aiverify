@@ -1,15 +1,13 @@
-import { result } from 'lodash';
 import { GetServerSideProps } from 'next';
 import { getModelAPIConfig } from 'server/lib/assetServiceBackend';
 import {
   NewModelApiConfigModule,
   NewModelApiConfigModuleProps,
-} from 'src/modules/assets/newModelApiConfig';
+} from 'src/modules/assets/modelAPIComponent';
 import {
   MediaType,
   ModelAPIFormModel,
-  ModelAPIGraphQLQueryResponseModel,
-} from 'src/modules/assets/types';
+} from 'src/modules/assets/modelAPIComponent/types';
 
 /*
   This id is only used for react component `key` props for the list of urlparams and request body property fields rendered.
@@ -39,11 +37,12 @@ export const getServerSideProps: GetServerSideProps<{
   }
 
   /*
-    Shaping to `ModelAPIFormModel`
-    1) Delete optional properties which graphQL query returned values are null
-    2) For non-optional properties which graphQL query returned values are null, assign them to the default values
+    Shaping `ModelAPIFormModel` object for modelApiConfig component to consume
+    1) Add all required (typed as non-optional) properties
+    2) For required properties which graphQL query returned values are null, assign default values to them first
     3) Remove __typename properties
-    4) Generate and add `reactPropId` to the parameters, properties arrays items. These Ids are only used as React `key` prop values
+    4) Populate properties which were set to default values
+    5) Generate and add `reactPropId` to the parameters, properties arrays items. These Ids are only used as React `key` prop values
   */
   const formValues: ModelAPIFormModel = {
     name: result.name,
@@ -78,12 +77,12 @@ export const getServerSideProps: GetServerSideProps<{
     },
   };
 
-  // set to -1 (to support the older configs which did not have default -1) TODO: remove when data updated
+  // set to batchLimit -1 which should be default value (to support the older data which did not have default -1) TODO: remove this code when data updated
   if (formValues.modelAPI.requestConfig.batchLimit === null) {
     formValues.modelAPI.requestConfig.batchLimit = -1;
   }
 
-  // delete any null properties
+  // add urlParams, authTypeConfig properties if they are not null properties. Otherwise, just omit them from the object.
   if (result.modelAPI.urlParams !== null) {
     formValues.modelAPI.urlParams = result.modelAPI.urlParams;
   }
@@ -92,9 +91,13 @@ export const getServerSideProps: GetServerSideProps<{
     formValues.modelAPI.authTypeConfig = result.modelAPI.authTypeConfig;
   }
 
+  // populate requestBody, parameters and additonalHeaders if they are not NULL
   if (result.modelAPI.requestBody !== null) {
     formValues.modelAPI.requestBody = {
-      ...result.modelAPI.requestBody,
+      ...(() => {
+        const { __typename, ...rest } = result.modelAPI.requestBody;
+        return rest;
+      })(),
       // add reactPropId
       properties: result.modelAPI.requestBody.properties.map((prop) => ({
         field: prop.field,
@@ -145,8 +148,23 @@ export const getServerSideProps: GetServerSideProps<{
     };
   }
 
+  if (
+    result.modelAPI.additionalHeaders &&
+    result.modelAPI.additionalHeaders !== null
+  ) {
+    // add reactPropId
+    formValues.modelAPI.additionalHeaders =
+      result.modelAPI.additionalHeaders.map((header) => ({
+        name: header.name,
+        type: header.type,
+        value: header.value,
+        reactPropId: getInputReactKeyId(),
+      }));
+  }
+
   return {
     props: {
+      disabled: true,
       id: result.id,
       formValues,
     },
@@ -154,8 +172,15 @@ export const getServerSideProps: GetServerSideProps<{
 };
 
 export default function ModelAPIConmfigPage({
+  disabled,
   id,
   formValues,
 }: NewModelApiConfigModuleProps) {
-  return <NewModelApiConfigModule id={id} formValues={formValues} />;
+  return (
+    <NewModelApiConfigModule
+      id={id}
+      formValues={formValues}
+      disabled={disabled}
+    />
+  );
 }

@@ -1,11 +1,9 @@
 import { TextInput } from 'src/components/textInput';
-import { MinimalHeader } from '../home/header';
 import styles from './styles/newModelApiConfig.module.css';
 import { SelectInput } from 'src/components/selectInput';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { DragDropContext, DragUpdate } from 'react-beautiful-dnd';
 import { optionsRequestMethods } from './selectOptions';
-import * as Yup from 'yup';
 import {
   ModelAPIFormModel,
   ModelAPIGraphQLModel,
@@ -13,12 +11,12 @@ import {
   SaveResult,
 } from './types';
 import { Formik, Form, FieldArrayRenderProps, FormikErrors } from 'formik';
-import { ModelApiLeftSection } from './newModelApiLeftSection';
-import { Tab, TabButtonsGroup } from './newModelApiTabButtons';
+import { ModelApiLeftSection } from './leftSection';
+import { Tab, TabButtonsGroup } from './tabButtons';
 import { TabContentURLParams } from './tabContentUrlParams';
 import { TabContentRequestBody } from './tabContentRequestBody';
 import { TabContentResponse } from './tabContentResponse';
-import { TabContentAdditionalHeaders } from './tabContentAdditonalHeaders';
+import { TabContentAdditionalHeaders } from './tabContentHeaders';
 import { TabContentAuth } from './tabContentAuth';
 import { useMutation } from '@apollo/client';
 import {
@@ -26,7 +24,7 @@ import {
   GQL_UPDATE_MODELAPI,
   GqlCreateModelAPIConfigResult,
   GqlUpdateModelAPIConfigResult,
-} from './api/gql';
+} from './gql';
 import { TabContentOthers } from './tabContentOthers';
 import { ModalResult } from './modalResult';
 import { ErrorWithMessage, toErrorWithMessage } from 'src/lib/errorUtils';
@@ -34,6 +32,8 @@ import { AlertType, StandardAlert } from 'src/components/standardAlerts';
 import { useRouter } from 'next/router';
 import { transformFormValuesToGraphModel } from './utils/modelApiUtils';
 import { defaultFormValues } from './constants';
+import { ModelAPIFormSchema } from './validationSchema';
+import { MinimalHeader } from 'src/modules/home/header';
 
 type FormikSetFieldvalueFn = (
   field: string,
@@ -41,15 +41,6 @@ type FormikSetFieldvalueFn = (
   shouldValidate?: boolean | undefined
 ) => Promise<void | FormikErrors<ModelAPIFormModel>>;
 
-const urlPattern = new RegExp(
-  '^([a-zA-Z]+:\\/\\/)?' + // protocol
-    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
-    '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR IP (v4) address
-    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-    '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-    '(\\#[-a-z\\d_]*)?$', // fragment locator
-  'i'
-);
 /*
   This id is only used for react component `key` props for the list of urlparams and request body property fields rendered.
   Do not use it for any other purposes.
@@ -61,50 +52,15 @@ function initReactKeyIdGenerator() {
 
 export const getInputReactKeyId = initReactKeyIdGenerator();
 
-const ModelAPIFormSchema = Yup.object().shape({
-  name: Yup.string()
-    .min(5, 'Too short. Min 5 characters')
-    .max(128, 'Max 128 characters')
-    .required('Required'),
-  description: Yup.string()
-    .min(20, 'Too short. Min 20 characters')
-    .max(128, 'Max 128 characters')
-    .required('Required'),
-  modelAPI: Yup.object().shape({
-    url: Yup.string()
-      .matches(urlPattern, 'Invalid URL')
-      .required('URL is required'),
-    requestConfig: Yup.object().shape({
-      rateLimit: Yup.number().min(-1, 'Invalid number').required('Required'),
-      batchLimit: Yup.number().min(-1, 'Invalid number').required('Required'),
-      maxConnections: Yup.number()
-        .min(-1, 'Invalid number')
-        .required('Required'),
-      requestTimeout: Yup.number()
-        .min(1, 'Invalid number')
-        .required('Required'),
-    }),
-    authTypeConfig: Yup.object().shape({
-      token: Yup.string()
-        .min(32, 'Too short. Min 32 characters')
-        .max(128, 'Max 128 characters'),
-      username: Yup.string()
-        .min(5, 'Too short. Min 5 characters')
-        .max(128, 'Max 128 characters'),
-      password: Yup.string()
-        .min(5, 'Too short. Min 5 characters')
-        .max(128, 'Max 128 characters'),
-    }),
-  }),
-});
-
 export type NewModelApiConfigModuleProps = {
   id?: string;
+  disabled?: boolean;
   formValues?: ModelAPIFormModel;
 };
 
 function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
-  const { id, formValues } = props;
+  const { id, formValues, disabled = false } = props;
+  console.log(formValues);
   const [activeTab, setActiveTab] = useState<Tab>(() => {
     if (formValues) {
       return formValues.modelAPI.method === RequestMethod.POST
@@ -116,6 +72,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
   const [showPageLevelAlert, setShowPageLevelAlert] = useState(false);
   const [saveResult, setSaveResult] = useState<ErrorWithMessage | SaveResult>();
   const [saveInProgress, setSaveInProgress] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
   const paramsFormikArrayHelpersRef = useRef<FieldArrayRenderProps>();
   const [addNewModelAPIConfig] =
     useMutation<GqlCreateModelAPIConfigResult>(GQL_CREATE_MODELAPI);
@@ -133,7 +90,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
         variables: { model: gqlModelAPIInput },
       });
       if (result.data && result.data.createModelAPI.id) {
-        setSaveResult(result.data.createModelAPI);
+        setSaveResult({ ...result.data.createModelAPI, mode: 'new' });
         setSaveInProgress(false);
       }
     } catch (err) {
@@ -158,7 +115,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
         variables: { modelFileId, model: gqlModelAPIInput },
       });
       if (result.data && result.data.updateModelAPI.id) {
-        setSaveResult(result.data.updateModelAPI);
+        setSaveResult({ ...result.data.updateModelAPI, mode: 'update' });
         setSaveInProgress(false);
       }
     } catch (err) {
@@ -177,7 +134,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
   }
 
   function handleBackClick() {
-    history.back();
+    router.push('/assets/models');
   }
 
   function handleCloseAlertClick() {
@@ -225,6 +182,10 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
         droppedItem.destination.index
       );
   }
+
+  useEffect(() => {
+    setIsDisabled(disabled);
+  }, [disabled]);
 
   return (
     <div>
@@ -274,13 +235,14 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                           </div>
                           <div className={styles.apiConfigForm}>
                             <div className={styles.leftSection}>
-                              <ModelApiLeftSection />
+                              <ModelApiLeftSection disabled={isDisabled} />
                             </div>
                             <div className={styles.vDivider} />
                             <div className={styles.rightSection}>
                               <div style={{ display: 'flex' }}>
                                 <div style={{ marginRight: 10 }}>
                                   <SelectInput
+                                    disabled={isDisabled}
                                     width={140}
                                     label="Request Method"
                                     name="modelAPI.method"
@@ -293,6 +255,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                                 </div>
                                 <div style={{ flexGrow: 1 }}>
                                   <TextInput
+                                    disabled={isDisabled}
                                     label="Model URL"
                                     name="modelAPI.url"
                                     onChange={handleChange}
@@ -320,47 +283,75 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                                   activeTab === Tab.URL_PARAMS ? (
                                     <TabContentURLParams
                                       ref={paramsFormikArrayHelpersRef}
+                                      disabled={isDisabled}
                                     />
                                   ) : null}
 
                                   {activeTab === Tab.REQUEST_BODY ? (
-                                    <TabContentRequestBody />
+                                    <TabContentRequestBody
+                                      disabled={isDisabled}
+                                    />
                                   ) : null}
 
                                   {activeTab === Tab.HEADERS ? (
-                                    <TabContentAdditionalHeaders />
+                                    <TabContentAdditionalHeaders
+                                      disabled={isDisabled}
+                                    />
                                   ) : null}
 
                                   {activeTab === Tab.RESPONSE ? (
-                                    <TabContentResponse />
+                                    <TabContentResponse disabled={isDisabled} />
                                   ) : null}
 
                                   {activeTab === Tab.AUTHENTICATION ? (
-                                    <TabContentAuth />
+                                    <TabContentAuth disabled={isDisabled} />
                                   ) : null}
 
                                   {activeTab === Tab.OTHERS ? (
-                                    <TabContentOthers />
+                                    <TabContentOthers disabled={isDisabled} />
                                   ) : null}
                                 </div>
                               </div>
                             </div>
                           </div>
                           <div className={styles.buttons}>
-                            <button
-                              style={{ width: 100 }}
-                              className="aivBase-button aivBase-button--secondary aivBase-button--medum"
-                              onClick={handleBackClick}>
-                              Back
-                            </button>
-                            <button
-                              disabled={saveInProgress}
-                              type="submit"
-                              style={{ width: 100, marginRight: 0 }}
-                              className="aivBase-button aivBase-button--primary aivBase-button--medium"
-                              onClick={() => setShowPageLevelAlert(true)}>
-                              Save
-                            </button>
+                            <div>
+                              <button
+                                type="button"
+                                style={{ width: 180 }}
+                                className="aivBase-button aivBase-button--secondary aivBase-button--medum"
+                                onClick={handleBackClick}>
+                                Back to AI Models
+                              </button>
+                              {isDisabled ? (
+                                <button
+                                  type="button"
+                                  style={{ width: 100 }}
+                                  className="aivBase-button aivBase-button--secondary aivBase-button--medium"
+                                  onClick={() => setIsDisabled(false)}>
+                                  Edit
+                                </button>
+                              ) : null}
+                              {!isDisabled ? (
+                                <button
+                                  type="button"
+                                  style={{ width: 140 }}
+                                  className="aivBase-button aivBase-button--secondary aivBase-button--medium"
+                                  onClick={() => setIsDisabled(true)}>
+                                  Cancel Edit
+                                </button>
+                              ) : null}
+                            </div>
+                            {!isDisabled ? (
+                              <button
+                                disabled={saveInProgress}
+                                type="submit"
+                                style={{ width: 100, marginRight: 0 }}
+                                className="aivBase-button aivBase-button--primary aivBase-button--medium"
+                                onClick={() => setShowPageLevelAlert(true)}>
+                                Save
+                              </button>
+                            ) : null}
                           </div>
                         </Form>
                       );
@@ -374,7 +365,11 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
       </DragDropContext>
       {saveResult ? (
         <ModalResult
-          title="Create New Model API Config"
+          title={
+            id !== undefined
+              ? 'Update Model API Config'
+              : 'Create New Model API Config'
+          }
           onCloseClick={handleCloseResultClick}
           onOkClick={handleCloseResultClick}>
           <div>
@@ -382,7 +377,11 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
               <StandardAlert
                 disableCloseIcon
                 alertType={AlertType.SUCCESS}
-                headingText="New Model API Config successfully created"
+                headingText={
+                  id !== undefined
+                    ? 'API Configuration Saved'
+                    : 'New API Configuration created'
+                }
                 style={{ border: 'none' }}>
                 <div
                   style={{
@@ -390,6 +389,10 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                     flexDirection: 'column',
                     fontSize: 14,
                   }}>
+                  <div style={{ marginTop: 5 }}>
+                    ID:&nbsp;
+                    <span style={{ fontWeight: 800 }}>{saveResult.id}</span>
+                  </div>
                   <div>
                     Config Name:&nbsp;
                     <span style={{ fontWeight: 800 }}>{saveResult.name}</span>

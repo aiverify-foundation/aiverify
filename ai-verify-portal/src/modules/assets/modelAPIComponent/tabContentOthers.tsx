@@ -5,15 +5,9 @@ import styles from './styles/newModelApiConfig.module.css';
 import { SelectInput } from 'src/components/selectInput';
 import { optionsBatchStrategies } from './selectOptions';
 
-/*
- rateLimit: number;
-  batchStrategy: BatchStrategy;
-  batchLimit: number;
-  maxConnections: number;
-  requestTimeout: number;*/
 const otherReqConfigFieldName = 'modelAPI.requestConfig';
 
-function TabContentOthers() {
+function TabContentOthers({ disabled = false }: { disabled?: boolean }) {
   const { values, errors, touched, setFieldValue, handleChange } =
     useFormikContext<ModelAPIFormModel>();
 
@@ -29,6 +23,7 @@ function TabContentOthers() {
       }}>
       <div className={styles.keyValCol}>
         <TextInput
+          disabled={disabled}
           label="Rate Limit"
           name={`${otherReqConfigFieldName}.rateLimit`}
           onChange={handleChange}
@@ -44,6 +39,7 @@ function TabContentOthers() {
       </div>
       <div className={styles.keyValCol}>
         <SelectInput<BatchStrategy>
+          disabled={disabled}
           label="Batch Strategy"
           name={`${otherReqConfigFieldName}.batchStrategy`}
           options={optionsBatchStrategies}
@@ -56,6 +52,7 @@ function TabContentOthers() {
       </div>
       <div className={styles.keyValCol}>
         <TextInput
+          disabled={disabled}
           label="Batch Limit"
           name={`${otherReqConfigFieldName}.batchLimit`}
           onChange={handleChange}
@@ -71,6 +68,7 @@ function TabContentOthers() {
       </div>
       <div className={styles.keyValCol}>
         <TextInput
+          disabled={disabled}
           label="Max Connections"
           name={`${otherReqConfigFieldName}.maxConnections`}
           onChange={handleChange}
@@ -88,6 +86,7 @@ function TabContentOthers() {
       </div>
       <div className={styles.keyValCol}>
         <TextInput
+          disabled={disabled}
           label="Request Timeout"
           name={`${otherReqConfigFieldName}.requestTimeout`}
           onChange={handleChange}

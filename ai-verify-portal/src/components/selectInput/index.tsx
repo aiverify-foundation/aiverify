@@ -12,6 +12,7 @@ type SelectInputProps<valueType = string> = {
   width?: number;
   label?: string;
   placeholder?: string;
+  disabled?: boolean;
   error?: string;
   value?: string;
   labelSibling?: React.ReactElement;
@@ -28,6 +29,8 @@ const BORDER_FOCUS_COLOR = 'hsl(0, 0%, 70%)';
 const PLACEHOLDER_COLOR = '#cfcfcf';
 const OPTION_HOVER_COLOR = '#ebc8f9';
 const OPTION_SELECTED_COLOR = '#702f8a';
+const CONTROL_ENABLED_COLOR = '#ffffff';
+const CONTROL_DISABLED_COLOR = '#f5f5f5';
 
 function SelectInput<T = string>(props: SelectInputProps<T>) {
   const {
@@ -35,6 +38,7 @@ function SelectInput<T = string>(props: SelectInputProps<T>) {
     width = 'auto',
     label,
     placeholder,
+    disabled = false,
     error,
     value,
     labelSibling,
@@ -98,6 +102,9 @@ function SelectInput<T = string>(props: SelectInputProps<T>) {
               '&:hover': {
                 borderColor: BORDER_FOCUS_COLOR,
               },
+              backgroundColor: state.isDisabled
+                ? CONTROL_DISABLED_COLOR
+                : CONTROL_ENABLED_COLOR,
             }),
             valueContainer: (baseStyles) => ({
               ...baseStyles,
@@ -137,6 +144,7 @@ function SelectInput<T = string>(props: SelectInputProps<T>) {
           placeholder={placeholder}
           value={selectedOption}
           options={options}
+          isDisabled={disabled}
           onChange={handleChange}
         />
         {Boolean(error) ? (

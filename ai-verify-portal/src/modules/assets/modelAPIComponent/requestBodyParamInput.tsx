@@ -11,6 +11,7 @@ import { BodyParam, OpenApiDataTypes } from './types';
 type RequestBodyParameterInputProps = {
   value: BodyParam;
   showAddBtn?: boolean;
+  disabled?: boolean;
   onChange: (value: BodyParam) => void;
   onAddClick?: () => void;
   onDeleteClick?: (param: BodyParam) => void;
@@ -29,6 +30,7 @@ function RequestBodyParameterInput(props: RequestBodyParameterInputProps) {
   const {
     value,
     showAddBtn = false,
+    disabled = false,
     onChange,
     onAddClick,
     onDeleteClick,
@@ -53,6 +55,7 @@ function RequestBodyParameterInput(props: RequestBodyParameterInputProps) {
     <div className={styles.keyValRow}>
       <div className={styles.keyValCol}>
         <TextInput
+          disabled={disabled}
           value={value.field}
           name="paramName"
           onChange={handleKeyChange}
@@ -62,6 +65,7 @@ function RequestBodyParameterInput(props: RequestBodyParameterInputProps) {
       </div>
       <div className={styles.keyValCol}>
         <SelectInput<OpenApiDataTypes>
+          disabled={disabled}
           name="propDataType"
           options={optionsOpenApiDataTypes}
           onChange={handleTypeChange}
@@ -85,7 +89,7 @@ function RequestBodyParameterInput(props: RequestBodyParameterInputProps) {
             </div>
           </IconButton>
         </div>
-      ) : (
+      ) : !disabled ? (
         <div className={styles.delIconContainer}>
           <IconButton
             iconComponent={CloseIcon}
@@ -93,7 +97,7 @@ function RequestBodyParameterInput(props: RequestBodyParameterInputProps) {
             onClick={handleRemoveBtnClick(value)}
           />
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

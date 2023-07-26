@@ -13,7 +13,7 @@ import { ChangeEvent, useEffect } from 'react';
 const authTypeFieldName = 'modelAPI.authType';
 const authTypeConfigFieldName = 'modelAPI.authTypeConfig';
 
-function TabContentAuth() {
+function TabContentAuth({ disabled = false }: { disabled?: boolean }) {
   const { values, errors, touched, setFieldValue, handleChange } =
     useFormikContext<ModelAPIFormModel>();
 
@@ -47,6 +47,7 @@ function TabContentAuth() {
         flexDirection: 'column',
       }}>
       <SelectInput<AuthType>
+        disabled={disabled}
         width={200}
         label="Authentication Type"
         name={authTypeFieldName}
@@ -57,6 +58,7 @@ function TabContentAuth() {
       {values.modelAPI.authType === AuthType.BEARER_TOKEN ? (
         <div style={{ flexGrow: 1 }}>
           <TextInput
+            disabled={disabled}
             label="Token"
             name={`${authTypeConfigFieldName}.token`}
             value={
@@ -75,6 +77,7 @@ function TabContentAuth() {
       {values.modelAPI.authType === AuthType.BASIC ? (
         <div style={{ display: 'flex' }}>
           <TextInput
+            disabled={disabled}
             label="User"
             name={`${authTypeConfigFieldName}.username`}
             value={
@@ -92,6 +95,7 @@ function TabContentAuth() {
             }
           />
           <TextInput
+            disabled={disabled}
             label="Password"
             name={`${authTypeConfigFieldName}.password`}
             value={

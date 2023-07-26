@@ -2,46 +2,52 @@ import { IconButton } from 'src/components/iconButton';
 import { TextInput } from 'src/components/textInput';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
-import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import styles from './styles/newModelApiConfig.module.css';
 import { ChangeEvent } from 'react';
+import { AdditionalHeader, OpenApiDataTypes } from './types';
 import { SelectInput } from 'src/components/selectInput';
 import { optionsOpenApiDataTypes } from './selectOptions';
-import { OpenApiDataTypes, UrlParam } from './types';
 
-type UrlParameterInputProps = {
-  value: UrlParam;
+type AdditionalHeaderInputProps = {
+  value: AdditionalHeader;
   showAddBtn?: boolean;
-  onChange: (value: UrlParam) => void;
+  disabled?: boolean;
+  onChange: (value: AdditionalHeader) => void;
   onAddClick?: () => void;
-  onDeleteClick?: (param: UrlParam) => void;
+  onDeleteClick?: (param: AdditionalHeader) => void;
 };
 
-function UrlParamsInputHeading() {
+function AdditionalHeaderInputHeading() {
   return (
     <div style={{ display: 'flex', marginBottom: 4 }}>
-      <div className={styles.headingName}>Parameter Name</div>
-      <div className={styles.headingVal}>Data Type</div>
+      <div className={styles.headingName}>Header Name</div>
+      <div className={styles.headingName}>Data Type</div>
+      <div className={styles.headingName}>Value</div>
+      <div style={{ width: 72 }}></div>
     </div>
   );
 }
 
-function UrlParamCaptureInput(props: UrlParameterInputProps) {
+function AdditionalHeaderInput(props: AdditionalHeaderInputProps) {
   const {
     value,
     showAddBtn = false,
+    disabled,
     onChange,
     onAddClick,
     onDeleteClick,
   } = props;
-  const disableAddBtn = value.name.trim() === '' || value.type.trim() === '';
+  const disableAddBtn =
+    value.name.trim() === '' ||
+    value.type.trim() === '' ||
+    value.value.trim() === '';
 
-  function handleRemoveBtnClick(param: UrlParam) {
-    return () => onDeleteClick && onDeleteClick(param);
+  function handleRemoveBtnClick(header: AdditionalHeader) {
+    return () => onDeleteClick && onDeleteClick(header);
   }
 
-  function handleKeyChange(e: ChangeEvent<HTMLInputElement>) {
-    const updatedParam: UrlParam = { ...value, name: e.target.value };
+  function handleNameChange(e: ChangeEvent<HTMLInputElement>) {
+    const updatedParam: AdditionalHeader = { ...value, name: e.target.value };
     onChange(updatedParam);
   }
 
@@ -50,24 +56,41 @@ function UrlParamCaptureInput(props: UrlParameterInputProps) {
     onChange(updatedParam);
   }
 
+  function handleValChange(e: ChangeEvent<HTMLInputElement>) {
+    const updatedParam = { ...value, value: e.target.value };
+    onChange(updatedParam);
+  }
+
   return (
     <div className={styles.keyValRow}>
       <div className={styles.keyValCol}>
         <TextInput
+          disabled={disabled}
           value={value.name}
-          name="paramName"
+          name="additonalHeaderNameInput"
           style={{ marginBottom: 0 }}
           maxLength={100}
-          onChange={handleKeyChange}
+          onChange={handleNameChange}
         />
       </div>
       <div className={styles.keyValCol}>
         <SelectInput<OpenApiDataTypes>
-          name="paramDataType"
+          disabled={disabled}
+          name="additonalHeaderDataTypeInput"
           options={optionsOpenApiDataTypes}
           onChange={handleTypeChange}
           value={value.type}
           style={{ marginBottom: 0 }}
+        />
+      </div>
+      <div className={styles.keyValCol}>
+        <TextInput
+          disabled={disabled}
+          value={value.value}
+          name="additonalHeaderValueInput"
+          style={{ marginBottom: 0 }}
+          maxLength={100}
+          onChange={handleValChange}
         />
       </div>
       {showAddBtn ? (
@@ -86,20 +109,17 @@ function UrlParamCaptureInput(props: UrlParameterInputProps) {
             </div>
           </IconButton>
         </div>
-      ) : (
+      ) : !disabled ? (
         <div className={styles.delIconContainer}>
           <IconButton
             iconComponent={CloseIcon}
             noOutline
             onClick={handleRemoveBtnClick(value)}
           />
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <DragIndicatorIcon style={{ color: '#cfcfcf', cursor: 'grab' }} />
-          </div>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }
 
-export { UrlParamCaptureInput, UrlParamsInputHeading };
+export { AdditionalHeaderInput, AdditionalHeaderInputHeading };

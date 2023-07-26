@@ -5,11 +5,10 @@ import { ModelAPIFormModel } from './types';
 
 type ApiConfigNameDescFormProps = {
   onOKClick: () => void;
-  onCancelClick: () => void;
 };
 
 function ApiConfigNameDescForm(props: ApiConfigNameDescFormProps) {
-  const { onOKClick, onCancelClick } = props;
+  const { onOKClick } = props;
 
   const { values, errors, touched, handleChange } =
     useFormikContext<ModelAPIFormModel>();
@@ -39,17 +38,11 @@ function ApiConfigNameDescForm(props: ApiConfigNameDescFormProps) {
             : undefined
         }
       />
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <button
           style={{ width: '49%', marginRight: 0 }}
           className="aivBase-button aivBase-button--outlined aivBase-button--small"
           onClick={onOKClick}>
-          Cancel
-        </button>
-        <button
-          style={{ width: '49%', marginRight: 0 }}
-          className="aivBase-button aivBase-button--outlined aivBase-button--small"
-          onClick={onCancelClick}>
           OK
         </button>
       </div>

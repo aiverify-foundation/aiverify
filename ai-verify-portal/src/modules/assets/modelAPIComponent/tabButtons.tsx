@@ -1,4 +1,3 @@
-import { SetStateAction } from 'react';
 import styles from './styles/newModelApiConfig.module.css';
 import clsx from 'clsx';
 import { useFormikContext } from 'formik';

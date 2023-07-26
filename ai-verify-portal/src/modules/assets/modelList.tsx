@@ -46,6 +46,7 @@ import {
 import { AlertType, StandardAlert } from 'src/components/standardAlerts';
 import ModelFile, { ModelType } from 'src/types/model.interface';
 import { useUpdateModel, useDeleteModelFile } from 'src/lib/assetService';
+import { useRouter } from 'next/router';
 
 type Props = {
   showSelectModelBtn?: boolean;
@@ -109,6 +110,7 @@ export default function ModelListComponent({
     useState<boolean>(false);
   const [alertTitle, setAlertTitle] = useState<string | null>(null);
   const [alertMessages, setAlertMessages] = useState<string[]>([]);
+  const router = useRouter();
 
   const updateModelFn = useUpdateModel();
 
@@ -605,29 +607,47 @@ export default function ModelListComponent({
               border: '1px solid #C8C8C8',
               borderRadius: 3,
             }}>
-            {focus && focus.status == FocusStatus.VALID && (
-              <Button
-                color="secondary"
-                sx={{ mr: 1, alignSelf: 'flex-end' }}
-                onClick={showDialog}>
-                Edit
-              </Button>
-            )}
+            {focus &&
+              focus.status == FocusStatus.VALID &&
+              focus.type !== 'API' && (
+                <Button
+                  color="secondary"
+                  sx={{ mr: 1, alignSelf: 'flex-end' }}
+                  onClick={showDialog}>
+                  Edit
+                </Button>
+              )}
             <Typography sx={{ mb: 2, fontWeight: 'bold', size: '14px' }}>
               {focus.name}
             </Typography>
             <Typography sx={{ fontSize: 14 }}>
-              <b>Status:</b> {focus.status} <br />
+              {focus.type !== 'API' ? (
+                <>
+                  <b>Status:</b> {focus.status} <br />
+                </>
+              ) : null}
               <b>Type:</b> {focus.type} <br />
-              <b>Date Uploaded:</b> {new Date(focus.ctime).toLocaleString()}{' '}
-              <br />
-              <b>Size:</b> {focus.size ? focus.size : '-'} <br />
+              {focus.type !== 'API' ? (
+                <>
+                  <b>Date Uploaded:</b> {new Date(focus.ctime).toLocaleString()}{' '}
+                  <br />
+                </>
+              ) : null}
+              {focus.type !== 'API' ? (
+                <>
+                  <b>Size:</b> {focus.size ? focus.size : '-'} <br />
+                </>
+              ) : null}
             </Typography>
 
             {focus.status == FocusStatus.VALID ? (
               <Typography sx={{ fontSize: 14 }}>
-                <b>Serializer:</b> {focus.serializer} <br />
-                <b>Model Format:</b> {focus.modelFormat} <br />
+                {focus.type !== 'API' ? (
+                  <>
+                    <b>Serializer:</b> {focus.serializer} <br />
+                    <b>Model Format:</b> {focus.modelFormat} <br />
+                  </>
+                ) : null}
                 <b>Description:</b> {focus.description}
                 <br />
                 <b>Model Type:</b> {focus.modelType} <br />
@@ -635,6 +655,16 @@ export default function ModelListComponent({
             ) : (
               ''
             )}
+            {focus && focus.type === 'API' && focus.id ? (
+              <button
+                style={{ width: 240, marginTop: 20 }}
+                className="aivBase-button aivBase-button--secondary aivBase-button--medum"
+                onClick={() => {
+                  router.push(`/assets/modelApiConfig/${focus.id}`);
+                }}>
+                View / Edit Configuration
+              </button>
+            ) : null}
 
             {focus.errorMessages && (
               <Box

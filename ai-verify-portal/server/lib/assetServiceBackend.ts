@@ -1,10 +1,7 @@
 import { gql } from '@apollo/client';
 import { toErrorWithMessage } from 'src/lib/errorUtils';
 import graphqlClient from 'src/lib/graphqlClient';
-import {
-  ModelAPIGraphQLModel,
-  ModelAPIGraphQLQueryResponseModel,
-} from 'src/modules/assets/types';
+import { ModelAPIGraphQLQueryResponseModel } from 'src/modules/assets/modelAPIComponent/types';
 
 import Dataset from 'src/types/dataset.interface';
 import ModelFile from 'src/types/model.interface';

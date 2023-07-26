@@ -48,6 +48,7 @@ export type SaveResult = {
   name: string;
   description: string;
   modelType: ModelType;
+  mode: 'new' | 'update';
 };
 
 export type AdditionalHeader = {
@@ -213,6 +214,7 @@ export type ModelAPIGraphQLQueryResponseModel = ConfigDescription & {
     } | null;
     requestBody:
       | (Pick<RequestBody, 'mediaType' | 'isArray'> & {
+          __typename: string;
           properties: Pick<BodyParam, 'field' | 'type'>[];
         })
       | null;

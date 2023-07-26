@@ -8,7 +8,7 @@ import {
 import { FieldArray, useFormikContext } from 'formik';
 import { optionsMediaTypes } from './selectOptions';
 import { useState } from 'react';
-import { getInputReactKeyId } from './newModelApiConfig';
+import { getInputReactKeyId } from '.';
 import {
   RequestBodyParameterInput,
   RequestBodyParamsHeading,
@@ -22,10 +22,11 @@ const defaultBodyParameter: BodyParam = {
 
 const requestBodyFieldName = 'modelAPI.requestBody';
 
-function TabContentRequestBody() {
+function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
   const [newParam, setNewParam] = useState<BodyParam>(defaultBodyParameter);
   const { values, setFieldValue, handleChange } =
     useFormikContext<ModelAPIFormModel>();
+  const properties = values.modelAPI.requestBody.properties || [];
 
   function handleNewParamChange(value: BodyParam) {
     setNewParam((prev) => ({
@@ -48,6 +49,7 @@ function TabContentRequestBody() {
         flexDirection: 'column',
       }}>
       <SelectInput<MediaType>
+        disabled={disabled}
         width={240}
         label="Media Type"
         name={`${requestBodyFieldName}.mediaType`}
@@ -57,24 +59,30 @@ function TabContentRequestBody() {
       />
       {values.modelAPI.requestBody.mediaType !== MediaType.NONE ? (
         <>
-          <RequestBodyParamsHeading />
+          {properties.length > 0 ? <RequestBodyParamsHeading /> : null}
           <FieldArray name={`${requestBodyFieldName}.properties`}>
-            {(arrayHelpers) => {
-              const params = values.modelAPI.requestBody.properties || [];
-              return (
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                  }}>
-                  {params.map((param, index) => (
+            {(arrayHelpers) => (
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}>
+                {!properties.length ? (
+                  <div style={{ fontSize: 15, marginTop: 20 }}>
+                    No Request Body Properties
+                  </div>
+                ) : (
+                  properties.map((param, index) => (
                     <RequestBodyParameterInput
+                      disabled={disabled}
                       key={param.reactPropId}
                       value={param}
                       onChange={handleAddedParamChange(index)}
                       onDeleteClick={() => arrayHelpers.remove(index)}
                     />
-                  ))}
+                  ))
+                )}
+                {!disabled ? (
                   <RequestBodyParameterInput
                     showAddBtn
                     value={newParam}
@@ -84,9 +92,9 @@ function TabContentRequestBody() {
                       setNewParam(defaultBodyParameter);
                     }}
                   />
-                </div>
-              );
-            }}
+                ) : null}
+              </div>
+            )}
           </FieldArray>
         </>
       ) : null}

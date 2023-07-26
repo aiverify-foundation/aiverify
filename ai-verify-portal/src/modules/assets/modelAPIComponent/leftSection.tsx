@@ -4,14 +4,14 @@ import { ModelAPIFormModel } from './types';
 import EditIcon from '@mui/icons-material/Edit';
 import { IconButton } from 'src/components/iconButton';
 import { useEffect, useState } from 'react';
-import { ApiConfigNameDescForm } from './apiConfigNameDescForm';
+import { ApiConfigNameDescForm } from './nameDescInput';
 import { optionsModelTypes } from './selectOptions';
 import { SelectInput } from 'src/components/selectInput';
 
 const defaultConfigNameDisplay = 'Configuration Name';
 const defaultConfigDescDisplay = 'Description';
 
-function ModelApiLeftSection() {
+function ModelApiLeftSection({ disabled = false }: { disabled: boolean }) {
   const [isEdit, setIsEdit] = useState(false);
   const { values, errors, touched, handleChange } =
     useFormikContext<ModelAPIFormModel>();
@@ -33,12 +33,14 @@ function ModelApiLeftSection() {
             <div className={styles.configName}>
               {values.name || defaultConfigNameDisplay}
             </div>
-            <IconButton
-              iconComponent={EditIcon}
-              noOutline
-              style={{ fontSize: 12 }}
-              onClick={() => setIsEdit(true)}
-            />
+            {!disabled ? (
+              <IconButton
+                iconComponent={EditIcon}
+                noOutline
+                style={{ fontSize: 12 }}
+                onClick={() => setIsEdit(true)}
+              />
+            ) : null}
           </div>
           <div>
             <div className={styles.description}>
@@ -47,13 +49,11 @@ function ModelApiLeftSection() {
           </div>
         </div>
       ) : (
-        <ApiConfigNameDescForm
-          onCancelClick={() => setIsEdit(false)}
-          onOKClick={() => setIsEdit(false)}
-        />
+        <ApiConfigNameDescForm onOKClick={() => setIsEdit(false)} />
       )}
       <div style={{ marginTop: 25 }}>
         <SelectInput
+          disabled={disabled}
           label="Model Type"
           name="modelType"
           options={optionsModelTypes}
