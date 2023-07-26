@@ -92,6 +92,45 @@ describe("Test Model GraphQL queries and mutations", () => {
     }
   });
 
+  it("should list one model", async () => {
+    const dataLen = data.length;
+    const id = data[dataLen - 1]._id;
+    const query = `
+        query($modelFileId: ObjectID) {
+            modelFiles(modelFileID: $modelFileId) {
+                id
+                name
+                filename
+                filePath
+                ctime
+                size
+                status
+                description
+                serializer
+                modelFormat
+                modelType
+                errorMessages
+                type
+            }
+        }
+    `;
+    const response = await server.executeOperation({
+      query,
+      variables: {
+        modelFileId: id,
+      },
+    });
+
+    expect(response.body.kind).toBe("single");
+    expect(response.body.singleResult.errors).toBeUndefined();
+    const docs = response.body.singleResult.data?.modelFiles;
+    expect(docs.length).toBe(1);
+    const doc = docs[0];
+    expect(doc).toBeDefined();
+    expect(doc.id).toBe(data[dataLen - 1]._id.toString());
+    expect(doc.name).toBe(data[dataLen - 1].name);
+  });
+
   it("should not update model with invalid id", async () => {
     const dataLen = data.length;
     const id = data[dataLen - 1]._id;
@@ -502,7 +541,7 @@ query($modelFileID: ObjectID!) {
     const response1 = await server.executeOperation({
       query,
       variables: {
-        modelFileID: casual.uuid
+        modelFileID: casual.uuid,
       },
     });
 
@@ -513,14 +552,14 @@ query($modelFileID: ObjectID!) {
     const response2 = await server.executeOperation({
       query,
       variables: {
-        modelFileID: data[0]._id
+        modelFileID: data[0]._id,
       },
     });
 
     // check response
     expect(response2.body.kind).toBe("single");
-    expect(response2.body.singleResult.errors).toBeDefined();    
-  })
+    expect(response2.body.singleResult.errors).toBeDefined();
+  });
 
   it("should delete model API", async () => {
     const query = `

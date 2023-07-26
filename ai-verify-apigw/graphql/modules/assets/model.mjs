@@ -10,15 +10,25 @@ const resolvers = {
      * Returns list of model files
      * @returns Promise with ModelFile[]
      */
-    modelFiles: (parent) => {
+    modelFiles: (parent, { modelFileID }) => {
       return new Promise((resolve, reject) => {
-        ModelFileModel.find()
-          .then((docs) => {
-            resolve(docs);
-          })
-          .catch((err) => {
-            reject(err);
-          });
+        if (modelFileID) {
+          ModelFileModel.findById(modelFileID)
+            .then((doc) => {
+              resolve([doc]);
+            })
+            .catch((err) => {
+              reject(err);
+            });
+        } else {
+          ModelFileModel.find()
+            .then((docs) => {
+              resolve(docs);
+            })
+            .catch((err) => {
+              reject(err);
+            });
+        }
       });
     },
     getOpenAPISpecFromModel: (parent, { modelFileID }) => {

@@ -6,8 +6,8 @@ enum ModelAccessType {
 }
 
 enum ModelType {
-    Classification
-    Regression
+  Classification
+  Regression
 }
 
 enum ModelFileStatusType {
@@ -52,9 +52,9 @@ input ModelAPIInput {
 
 type Query {
   # return list of modelfiles
-  modelFiles: [ModelFile]
+  modelFiles(modelFileID: ObjectID): [ModelFile]
   # retrieve the openapi specs for API model
-  getOpenAPISpecFromModel (modelFileID: ObjectID!): JSON
+  getOpenAPISpecFromModel(modelFileID: ObjectID!): JSON
 }
 
 type Mutation {
@@ -76,5 +76,5 @@ type ModelFileStatusUpdate {
 }
 
 type Subscription {
-	validateModelStatusUpdated: ModelFileStatusUpdate 
+  validateModelStatusUpdated: ModelFileStatusUpdate
 }
