@@ -96,7 +96,7 @@ const ModelAPIFormSchema = Yup.object().shape({
   }),
 });
 
-export const initialValues: ModelAPIFormModel = {
+export const defaultFormValues: ModelAPIFormModel = {
   name: '',
   description: '',
   modelType: ModelType.Classification,
@@ -133,7 +133,14 @@ export const initialValues: ModelAPIFormModel = {
   },
 };
 
-function NewModelApiConfigModule() {
+export type NewModelApiConfigModuleProps = {
+  id?: string;
+  formValues?: ModelAPIFormModel;
+};
+
+function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
+  const { id, formValues } = props;
+  console.log(formValues);
   const [activeTab, setActiveTab] = useState<Tab>(Tab.REQUEST_BODY);
   const [showPageLevelAlert, setShowPageLevelAlert] = useState(false);
   const [saveResult, setSaveResult] = useState<
@@ -143,6 +150,7 @@ function NewModelApiConfigModule() {
   const [addNewModelAPIConfig] =
     useMutation<GqlCreateModelAPIConfigResult>(GQL_CREATE_MODELAPI);
   const router = useRouter();
+  const initialFormValues = formValues || defaultFormValues;
 
   async function createModelAPIConfig(formValues: ModelAPIFormModel) {
     const modelAPIInput: ModelAPIGraphQLModel = { ...formValues };
@@ -258,7 +266,7 @@ function NewModelApiConfigModule() {
               <div className={styles.container__limits}>
                 <div className={styles.layout}>
                   <Formik
-                    initialValues={initialValues}
+                    initialValues={initialFormValues}
                     validationSchema={ModelAPIFormSchema}
                     onSubmit={(values) => createModelAPIConfig(values)}>
                     {({

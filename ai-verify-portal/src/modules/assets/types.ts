@@ -90,7 +90,7 @@ export type Parameters = RequireAtLeastOne<BaseParameters>;
 export type RequestConfig = {
   rateLimit: number;
   batchStrategy: BatchStrategy;
-  batchLimit: number;
+  batchLimit?: number;
   maxConnections: number;
   requestTimeout: number;
 };
@@ -130,6 +130,9 @@ export type ConfigDescription = {
   modelType: ModelType;
 };
 
+/*
+  ModelAPIConfig Type used by the Formik controlled form
+*/
 export type ModelAPIFormModel = ConfigDescription & {
   modelAPI: ModelAPI;
 };
@@ -140,15 +143,23 @@ interface RequestBodyOrParametersForGraphQL {
   };
   parameters: RequireAtLeastOne<{
     queries: {
+      mediaType: MediaType;
+      isArray: boolean;
       queryParams: Pick<UrlParam, 'name' | 'type'>[];
     };
     paths: {
+      mediaType: MediaType;
+      isArray: boolean;
       pathParams: Pick<UrlParam, 'name' | 'type'>[];
     };
   }>;
 }
 
+/*
+  ModelAPIConfig Type to conform to for create and update via graphql
+*/
 export type ModelAPIGraphQLModel = ConfigDescription & {
+  id?: string;
   modelAPI: Pick<
     ModelAPI,
     | 'method'
@@ -161,5 +172,46 @@ export type ModelAPIGraphQLModel = ConfigDescription & {
   > &
     RequireAtLeastOne<RequestBodyOrParametersForGraphQL> & {
       additionalHeaders?: Pick<AdditionalHeader, 'name' | 'type' | 'value'>[];
+      updatedAt?: string;
     };
+};
+
+type Typename = {
+  __typename: string;
+};
+/* 
+  The raw ModelAPIConfig Type returned when query via graphql.
+  Some response properties could be `null`
+*/
+export type ModelAPIGraphQLQueryResponseModel = ConfigDescription & {
+  id: string;
+  modelAPI: Pick<ModelAPI, 'method' | 'url' | 'authType'> & {
+    urlParams?: string | null;
+    authTypeConfig?: AuthBearerTokenConfig | AuthBasicConfig | null;
+    requestConfig: Typename & RequestConfig;
+    response: Typename & Response;
+    parameters: {
+      queries: {
+        __typename: string;
+        mediaType: MediaType;
+        isArray: boolean;
+        queryParams: Pick<UrlParam, 'name' | 'type'>[];
+      } | null;
+      paths: {
+        __typename: string;
+        mediaType: MediaType;
+        isArray: boolean;
+        pathParams: Pick<UrlParam, 'name' | 'type'>[];
+      } | null;
+    } | null;
+    requestBody:
+      | (Pick<RequestBody, 'mediaType' | 'isArray'> & {
+          properties: Pick<BodyParam, 'field' | 'type'>[];
+        })
+      | null;
+    additionalHeaders?:
+      | Pick<AdditionalHeader, 'name' | 'type' | 'value'>[]
+      | null;
+  };
+  updatedAt: string;
 };

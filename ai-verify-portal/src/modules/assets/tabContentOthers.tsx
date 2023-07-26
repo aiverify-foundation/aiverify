@@ -59,7 +59,7 @@ function TabContentOthers() {
           label="Batch Limit"
           name={`${otherReqConfigFieldName}.batchLimit`}
           onChange={handleChange}
-          value={values.modelAPI.requestConfig.batchLimit.toString()}
+          value={values.modelAPI.requestConfig.batchLimit?.toString()}
           maxLength={128}
           style={{ marginBottom: 0 }}
           error={
