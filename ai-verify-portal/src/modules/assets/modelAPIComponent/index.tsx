@@ -21,8 +21,10 @@ import { TabContentAuth } from './tabContentAuth';
 import { useMutation } from '@apollo/client';
 import {
   GQL_CREATE_MODELAPI,
+  GQL_DELETE_MODELAPI,
   GQL_UPDATE_MODELAPI,
   GqlCreateModelAPIConfigResult,
+  GqlDeleteModelAPIConfigResult,
   GqlUpdateModelAPIConfigResult,
 } from './gql';
 import { TabContentOthers } from './tabContentOthers';
@@ -34,6 +36,8 @@ import { transformFormValuesToGraphModel } from './utils/modelApiUtils';
 import { defaultFormValues } from './constants';
 import { ModelAPIFormSchema } from './validationSchema';
 import { MinimalHeader } from 'src/modules/home/header';
+import ConfirmationDialog from 'src/components/confirmationDialog';
+import { AlertBoxSize } from 'src/components/alertBox';
 
 type FormikSetFieldvalueFn = (
   field: string,
@@ -60,7 +64,6 @@ export type NewModelApiConfigModuleProps = {
 
 function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
   const { id, formValues, disabled = false } = props;
-  console.log(formValues);
   const [activeTab, setActiveTab] = useState<Tab>(() => {
     if (formValues) {
       return formValues.modelAPI.method === RequestMethod.POST
@@ -73,13 +76,37 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
   const [saveResult, setSaveResult] = useState<ErrorWithMessage | SaveResult>();
   const [saveInProgress, setSaveInProgress] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const paramsFormikArrayHelpersRef = useRef<FieldArrayRenderProps>();
   const [addNewModelAPIConfig] =
     useMutation<GqlCreateModelAPIConfigResult>(GQL_CREATE_MODELAPI);
   const [updateModelAPIConfig] =
     useMutation<GqlUpdateModelAPIConfigResult>(GQL_UPDATE_MODELAPI);
+  const [deleteModelAPIConfig] =
+    useMutation<GqlDeleteModelAPIConfigResult>(GQL_DELETE_MODELAPI);
   const router = useRouter();
   const initialFormValues = formValues || defaultFormValues;
+
+  let modalResultTitle = '';
+  let modalResultHeading = '';
+
+  if (id === undefined) {
+    modalResultTitle = 'Create New Model API Config';
+    modalResultHeading = 'New API Configuration created';
+  } else {
+    if (saveResult && 'id' in saveResult) {
+      if (saveResult.mode === 'new') {
+        modalResultTitle = 'Create New Model API Config';
+        modalResultHeading = 'New API Configuration created';
+      } else if (saveResult.mode === 'update') {
+        modalResultTitle = 'Update Model API Config';
+        modalResultHeading = 'API Configuration Saved';
+      } else {
+        modalResultTitle = 'Delete Model API Config';
+        modalResultHeading = 'API Configuration Deleted';
+      }
+    }
+  }
 
   async function saveNewApiConfig(values: ModelAPIFormModel) {
     const gqlModelAPIInput: ModelAPIGraphQLModel =
@@ -103,10 +130,6 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
     modelFileId: string,
     values: ModelAPIFormModel
   ) {
-    if (!id) {
-      console.error(`model api ID undefined`);
-      return;
-    }
     const gqlModelAPIInput: ModelAPIGraphQLModel =
       transformFormValuesToGraphModel(values);
 
@@ -122,6 +145,33 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
       setSaveResult(toErrorWithMessage(err));
       setSaveInProgress(false);
     }
+  }
+
+  async function deleteApiConfig(deleteModelFileId: string) {
+    try {
+      const result = await deleteModelAPIConfig({
+        variables: { deleteModelFileId },
+      });
+      if (result.data && result.data.deleteModelFile) {
+        setSaveResult({ id: result.data.deleteModelFile, mode: 'delete' });
+        setShowConfirmation(false);
+        setSaveInProgress(false);
+      }
+    } catch (err) {
+      setSaveResult(toErrorWithMessage(err));
+      setShowConfirmation(false);
+      setSaveInProgress(false);
+    }
+  }
+
+  function handleConfirmation(confirm: boolean) {
+    if (!confirm) {
+      setShowConfirmation(false);
+    }
+    if (id == undefined) {
+      return;
+    }
+    deleteApiConfig(id);
   }
 
   function handleFormSubmit(values: ModelAPIFormModel) {
@@ -148,10 +198,10 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
 
   function handleCloseResultClick() {
     if (saveResult && 'id' in saveResult) {
-      if (!id) {
+      if (saveResult.mode === 'new') {
         router.push(`/assets/modelApiConfig/${saveResult.id}`);
-      } else {
-        location.reload();
+      } else if (saveResult.mode === 'delete') {
+        router.push('/assets/models');
       }
       setSaveResult(undefined);
       return;
@@ -321,19 +371,31 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                             </div>
                           </div>
                           <div className={styles.buttons}>
+                            <button
+                              type="button"
+                              style={{ width: 180 }}
+                              className="aivBase-button aivBase-button--secondary aivBase-button--medum"
+                              onClick={handleBackClick}>
+                              Back to AI Models
+                            </button>
                             <div>
-                              <button
-                                type="button"
-                                style={{ width: 180 }}
-                                className="aivBase-button aivBase-button--secondary aivBase-button--medum"
-                                onClick={handleBackClick}>
-                                Back to AI Models
-                              </button>
                               {isDisabled && id !== undefined ? (
                                 <button
                                   type="button"
                                   style={{ width: 100 }}
-                                  className="aivBase-button aivBase-button--secondary aivBase-button--medium"
+                                  className="aivBase-button aivBase-button--outlined aivBase-button--medium"
+                                  onClick={() => {
+                                    setIsDisabled(true);
+                                    setShowConfirmation(true);
+                                  }}>
+                                  Delete
+                                </button>
+                              ) : null}
+                              {isDisabled && id !== undefined ? (
+                                <button
+                                  type="button"
+                                  style={{ width: 100 }}
+                                  className="aivBase-button aivBase-button--primary aivBase-button--medium"
                                   onClick={() => setIsDisabled(false)}>
                                   Edit
                                 </button>
@@ -347,20 +409,64 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                                   Cancel Edit
                                 </button>
                               ) : null}
+                              {!isDisabled ? (
+                                <button
+                                  disabled={saveInProgress}
+                                  type="submit"
+                                  style={{ width: 100, marginRight: 0 }}
+                                  className="aivBase-button aivBase-button--primary aivBase-button--medium"
+                                  onClick={() => {
+                                    setShowPageLevelAlert(true);
+                                  }}>
+                                  Save
+                                </button>
+                              ) : null}
                             </div>
-                            {!isDisabled ? (
-                              <button
-                                disabled={saveInProgress}
-                                type="submit"
-                                style={{ width: 100, marginRight: 0 }}
-                                className="aivBase-button aivBase-button--primary aivBase-button--medium"
-                                onClick={() => {
-                                  setShowPageLevelAlert(true);
-                                }}>
-                                Save
-                              </button>
-                            ) : null}
                           </div>
+                          {showConfirmation ? (
+                            <ConfirmationDialog
+                              renderInPortal
+                              disablePrimaryBtn={saveInProgress}
+                              size={AlertBoxSize.MEDIUM}
+                              title="Delete Model API Config"
+                              onClose={handleConfirmation}>
+                              <StandardAlert
+                                disableCloseIcon
+                                alertType={AlertType.WARNING}
+                                headingText="Confirm Delete"
+                                style={{ border: 'none' }}>
+                                <div
+                                  style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    fontSize: 14,
+                                  }}>
+                                  <div>
+                                    Are you sure you want to delete this
+                                    configuration?
+                                  </div>
+                                  <div style={{ marginTop: 5 }}>
+                                    ID:&nbsp;
+                                    <span style={{ fontWeight: 800 }}>
+                                      {id}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    Config Name:&nbsp;
+                                    <span style={{ fontWeight: 800 }}>
+                                      {values.name}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    Model Type:&nbsp;
+                                    <span style={{ fontWeight: 800 }}>
+                                      {values.modelType}
+                                    </span>
+                                  </div>
+                                </div>
+                              </StandardAlert>
+                            </ConfirmationDialog>
+                          ) : null}
                         </Form>
                       );
                     }}
@@ -373,11 +479,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
       </DragDropContext>
       {saveResult ? (
         <ModalResult
-          title={
-            id !== undefined
-              ? 'Update Model API Config'
-              : 'Create New Model API Config'
-          }
+          title={modalResultTitle}
           onCloseClick={handleCloseResultClick}
           onOkClick={handleCloseResultClick}>
           <div>
@@ -385,11 +487,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
               <StandardAlert
                 disableCloseIcon
                 alertType={AlertType.SUCCESS}
-                headingText={
-                  id !== undefined
-                    ? 'API Configuration Saved'
-                    : 'New API Configuration created'
-                }
+                headingText={modalResultHeading}
                 style={{ border: 'none' }}>
                 <div
                   style={{
@@ -401,16 +499,20 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                     ID:&nbsp;
                     <span style={{ fontWeight: 800 }}>{saveResult.id}</span>
                   </div>
-                  <div>
-                    Config Name:&nbsp;
-                    <span style={{ fontWeight: 800 }}>{saveResult.name}</span>
-                  </div>
-                  <div>
-                    Model Type:&nbsp;
-                    <span style={{ fontWeight: 800 }}>
-                      {saveResult.modelType}
-                    </span>
-                  </div>
+                  {saveResult.name !== undefined ? (
+                    <div>
+                      Config Name:&nbsp;
+                      <span style={{ fontWeight: 800 }}>{saveResult.name}</span>
+                    </div>
+                  ) : null}
+                  {saveResult.modelType !== undefined ? (
+                    <div>
+                      Model Type:&nbsp;
+                      <span style={{ fontWeight: 800 }}>
+                        {saveResult.modelType}
+                      </span>
+                    </div>
+                  ) : null}
                 </div>
               </StandardAlert>
             ) : (

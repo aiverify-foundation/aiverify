@@ -40,3 +40,13 @@ export type GqlUpdateModelAPIConfigResult = {
     modelType: ModelType;
   };
 };
+
+export const GQL_DELETE_MODELAPI = gql`
+  mutation Mutation($deleteModelFileId: ObjectID!) {
+    deleteModelFile(id: $deleteModelFileId)
+  }
+`;
+
+export type GqlDeleteModelAPIConfigResult = {
+  deleteModelFile: string;
+};

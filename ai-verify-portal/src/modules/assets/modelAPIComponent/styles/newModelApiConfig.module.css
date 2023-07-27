@@ -34,7 +34,7 @@
 
 .buttons {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   width: 90%;
   min-width: 730px;
   margin: auto;

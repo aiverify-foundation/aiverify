@@ -45,10 +45,10 @@ export enum BatchStrategy {
 
 export type SaveResult = {
   id: string;
-  name: string;
-  description: string;
-  modelType: ModelType;
-  mode: 'new' | 'update';
+  name?: string;
+  description?: string;
+  modelType?: ModelType;
+  mode: 'new' | 'update' | 'delete';
 };
 
 export type AdditionalHeader = {
