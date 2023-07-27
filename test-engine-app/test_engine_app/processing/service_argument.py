@@ -2,12 +2,11 @@ import json
 from pathlib import Path
 from typing import Dict, Tuple, Union
 
+from test_engine_app.enums.service_validation_type import ServiceValidationType
+from test_engine_app.processing.stream_validation import StreamValidation
 from test_engine_core.plugins.enums.model_mode_type import ModelModeType
 from test_engine_core.utils.json_utils import load_schema_file, validate_json
 from test_engine_core.utils.validate_checks import is_empty_string
-
-from test_engine_app.enums.service_validation_type import ServiceValidationType
-from test_engine_app.processing.stream_validation import StreamValidation
 
 
 class ServiceArgument:
@@ -135,14 +134,19 @@ class ServiceArgument:
 
         else:
             if self.model_mode is ModelModeType.API:
-                raise RuntimeError(
-                    "The service is currently unable to process API model type"
-                )
+                validation_methods = [
+                    (StreamValidation.validate_model_mode, [self.model_mode]),
+                    (
+                        StreamValidation.validate_model_api,
+                        [self.api_schema, self.api_config],
+                    ),
+                ]
 
-            validation_methods = [
-                (StreamValidation.validate_model_mode, [self.model_mode]),
-                (StreamValidation.validate_model_upload, [self.model_path]),
-            ]
+            else:
+                validation_methods = [
+                    (StreamValidation.validate_model_mode, [self.model_mode]),
+                    (StreamValidation.validate_model_upload, [self.model_path]),
+                ]
 
         for method, method_args in validation_methods:
             tmp_count, tmp_error_msg = method(*method_args)

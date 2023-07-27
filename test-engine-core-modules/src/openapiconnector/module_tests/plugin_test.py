@@ -32,7 +32,7 @@ class PluginTest:
         self._model_instance: Union[None, IModel] = None
         self._model_serializer_instance: Union[None, ISerializer] = None
 
-        self._expected_model_algorithm = ""
+        self._expected_model_algorithm = "OpenAPIConnector"
         self._expected_model_plugin_type = ModelPluginType.API
 
     @time_class_method
@@ -107,9 +107,9 @@ class PluginTest:
 
         metadata = self._model_instance.get_metadata()
         if (
-            metadata.name == "apiconnector"
+            metadata.name == "OpenAPIConnector"
             and metadata.description
-            == "apiconnector supports performing api calls to external model servers"
+            == "OpenAPIConnector supports performing api calls to external model servers"
             and metadata.version == "0.9.0"
         ):
             # Metadata is correct

@@ -18,6 +18,9 @@ xgboost = "1.7.4"
 tensorflow = "2.12.0"
 pandas = "1.5.3"
 scipy = "1.11.1"
+httpx = "0.24.1"
+openapi-schema-validator = "0.6.0"
+aiopenapi3 = {git = "https://github.com/commonism/aiopenapi3.git", rev = "8e9591162d1cef8cfc8e7840f34eb20c84af8c24"}
 
 
 [tool.poetry.group.dev.dependencies]
