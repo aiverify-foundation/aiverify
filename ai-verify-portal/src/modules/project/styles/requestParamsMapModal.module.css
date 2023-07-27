@@ -1,0 +1,15 @@
+.mapRow {
+  width: 100%;
+  display: flex;
+  border-bottom: 1px solid var(--color-light-gray);
+  padding: 5px 10px;
+  align-items: center;
+}
+
+.mapRow:last-of-type {
+  border-bottom: none;
+}
+
+.paramCell {
+  width: 50%;
+}

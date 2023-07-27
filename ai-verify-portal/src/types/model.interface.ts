@@ -1,3 +1,5 @@
+import { ModelAPI } from 'src/modules/assets/modelAPIComponent/types';
+
 export enum ModelMode {
   API,
   Upload,
@@ -31,18 +33,5 @@ export default interface ModelFile {
   modelFormat: string;
   errorMessages: string;
   type: string;
+  modelAPI?: ModelAPI;
 }
-
-/**
- * Represents the AI Model
- */
-// export interface Model {
-//     id?: string, // unique ID
-//     name: string,
-//     description: string,
-//     mode: ModelMode,
-//     algorithmType?: AlgorithmType,
-//     modelType?: ModelType,
-// }
-
-//ModelApi interface?
