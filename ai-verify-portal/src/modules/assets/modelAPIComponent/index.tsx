@@ -167,6 +167,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
   function handleConfirmation(confirm: boolean) {
     if (!confirm) {
       setShowConfirmation(false);
+      return;
     }
     if (id == undefined) {
       return;
