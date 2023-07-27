@@ -2,7 +2,8 @@ import * as Yup from 'yup';
 
 const urlPattern = new RegExp(
   '^([a-zA-Z]+:\\/\\/)?' + // protocol
-    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+    'localhost|' + // localhost
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // OR domain name
     '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR IP (v4) address
     '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
     '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
