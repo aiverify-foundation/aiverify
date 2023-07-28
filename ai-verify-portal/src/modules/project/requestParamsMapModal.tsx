@@ -40,27 +40,24 @@ function RequestParamsMapModal(props: RequestParamsMapModalProps) {
             <div className={styles.paramCell}>Request Parameters</div>
             <div className={styles.datasetCell}>Dataset Columns</div>
           </div>
-          {requestParams.map((param) => (
+          {requestParams.map((param) => {
+            const name = 'name' in param ? param.name : param.field
+            return (
             <div
               className={styles.mapRow}
-              key={`param-${'name' in param ? param.name : param.field}`}>
-              {'name' in param ? (
-                <div className={styles.paramCell}>{param.name}</div>
-              ) : (
-                <div className={styles.paramCell} key={`param-${param.field}`}>
-                  {param.field}
-                </div>
-              )}
+              key={`param-${name}`}>
+              <div className={styles.paramCell}>{name}</div>
               <div className={styles.datasetCell}>
                 <SelectInput
                   name="dsetColumn"
                   options={datasetColumnOptions}
                   width={180}
+                  value={name}
                   style={{ marginBottom: 0 }}
                 />
               </div>
             </div>
-          ))}
+              )})}
           <div style={{ display: 'flex' }}></div>
         </div>
       </AlertBox.Body>
