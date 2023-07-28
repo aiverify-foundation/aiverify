@@ -2,16 +2,28 @@ import asyncio
 import http
 import json
 import pathlib
-from typing import Any, Callable, Dict, Tuple, Union
+from enum import Enum, auto
+from typing import Any, Callable, Dict, List, Tuple, Union
 
 import aiopenapi3
 import httpx as httpx
+import pandas as pd
 from aiopenapi3 import FileSystemLoader, OpenAPI
+from httpx import Response
 from openapi_schema_validator import OAS30Validator, validate
 from test_engine_core.interfaces.imodel import IModel
 from test_engine_core.plugins.enums.model_plugin_type import ModelPluginType
 from test_engine_core.plugins.enums.plugin_type import PluginType
 from test_engine_core.plugins.metadata.plugin_metadata import PluginMetadata
+
+
+class BatchStrategy(Enum):
+    """
+    The BatchStrategy enum class specifies the different batching strategies
+    """
+
+    NONE = auto()
+    MULTIPART = auto()
 
 
 # NOTE: Do not change the class name, else the plugin cannot be read by the system
@@ -36,10 +48,26 @@ class Plugin(IModel):
     _api_schema: Dict = None
     _api_config: Dict = None
     # OpenAPI custom transport variables
-    _api_verify: bool = False
-    _api_rate_limit_timeout: float = 5.0
-    _api_cert: Any = None
-    _api_retries: int = 3
+    # Default request options values
+    _api_ssl_verify_default: bool = False
+    _api_ssl_cert_default: None = None
+    _api_request_timeout_default: float = 3.0
+    _api_rate_limit_default: int = -1
+    _api_rate_limit_timeout_default: int = 3
+    _api_batch_strategy_default: BatchStrategy = BatchStrategy.NONE
+    _api_batch_limit_default: int = -1
+    _api_max_connections_default: int = -1
+    _api_connection_retries_default: int = 3
+    # Set request options values
+    _api_ssl_verify: bool = _api_ssl_verify_default
+    _api_ssl_cert: Union[str, None] = _api_ssl_cert_default
+    _api_request_timeout: float = _api_request_timeout_default
+    _api_rate_limit: int = _api_rate_limit_default
+    _api_rate_limit_timeout: int = _api_rate_limit_timeout_default
+    _api_batch_strategy: BatchStrategy = _api_batch_strategy_default
+    _api_batch_limit: int = _api_batch_limit_default
+    _api_max_connections: int = _api_max_connections_default
+    _api_connection_retries: int = _api_connection_retries_default
     # OpenAPI request error
     _lock = asyncio.Lock()
     _response_error_message: str = ""
@@ -82,11 +110,16 @@ class Plugin(IModel):
         Returns:
             httpx.AsyncClient: Returns a httpx AsyncClient
         """
+        kwargs["timeout"] = Plugin._api_request_timeout
         kwargs["transport"] = OpenAPICustomTransport(
-            verify=Plugin._api_verify,
-            cert=Plugin._api_cert,
-            retries=Plugin._api_retries,
+            verify=Plugin._api_ssl_verify,
+            cert=Plugin._api_ssl_cert,
+            rate_limit=Plugin._api_rate_limit,
             rate_limit_timeout=Plugin._api_rate_limit_timeout,
+            batch_strategy=Plugin._api_batch_strategy,
+            batch_limit=Plugin._api_batch_limit,
+            max_connections=Plugin._api_max_connections,
+            connection_retries=Plugin._api_connection_retries,
             response_error_callback=Plugin._notify_response_error,
         )
         return httpx.AsyncClient(*args, **kwargs)
@@ -138,10 +171,37 @@ class Plugin(IModel):
                     first_api_http_value.update({"operationId": "predict_api"})
 
             # Update session variables if necessary
-            # Plugin._api_verify = False
-            # Plugin._api_rate_limit_timeout = 2.0
-            # Plugin._api_retries = 3
-            # Plugin._api_cert = None
+            Plugin._api_ssl_verify = self._api_config.get("requestOptions", {}).get(
+                "sslVerify", Plugin._api_ssl_verify_default
+            )
+            Plugin._api_ssl_cert = self._api_config.get("requestOptions", {}).get(
+                "sslCert", Plugin._api_ssl_cert_default
+            )
+            Plugin._api_request_timeout = self._api_config.get(
+                "requestOptions", {}
+            ).get("requestTimeout", Plugin._api_request_timeout_default)
+            Plugin._api_rate_limit = self._api_config.get("requestOptions", {}).get(
+                "rateLimit", Plugin._api_rate_limit_default
+            )
+            Plugin._api_rate_limit_timeout = self._api_config.get(
+                "requestOptions", {}
+            ).get("rateLimitTimeout", Plugin._api_rate_limit_timeout_default)
+            temp_strategy = self._api_config.get("requestOptions", {}).get(
+                "batchStrategy", Plugin._api_batch_strategy_default.name.lower()
+            )
+            if temp_strategy == "none":
+                Plugin._api_batch_strategy = BatchStrategy.NONE
+            else:
+                Plugin._api_batch_strategy = BatchStrategy.MULTIPART
+            Plugin.api_batch_limit = self._api_config.get("requestOptions", {}).get(
+                "batchLimit", Plugin._api_batch_limit_default
+            )
+            Plugin._api_max_connections = self._api_config.get(
+                "requestOptions", {}
+            ).get("maxConnections", Plugin._api_max_connections_default)
+            Plugin._api_connection_retries = self._api_config.get(
+                "requestOptions", {}
+            ).get("connectionRetries", Plugin._api_connection_retries_default)
 
             # Create the api instance based on the provided api schema
             self._api_instance = OpenAPI.loads(
@@ -203,8 +263,8 @@ class Plugin(IModel):
         """
         # Call the function to make multiple requests
         try:
-            responses = asyncio.run(self.make_requests())
-            print(responses.text)
+            return asyncio.run(self.make_requests(data, *args))
+
         except aiopenapi3.RequestError:
             raise RuntimeError(Plugin._response_error_message)
 
@@ -218,7 +278,7 @@ class Plugin(IModel):
         Returns:
             Any: predicted result
         """
-        pass
+        return self.predict(data, *args)
 
     def score(self, data: Any, y_true: Any) -> Any:
         """
@@ -290,17 +350,76 @@ class Plugin(IModel):
                 self._api_instance._.predict_api.operation.requestBody.content
             )
 
-    async def make_requests(self) -> Any:
+    async def get_data_payload(
+        self, data_row: Union[List, pd.Series], data_labels: Tuple[Any, ...]
+    ) -> Dict:
         """
-        An async method that performs openapi3 requests through the library
+        An async method that formats the data row with the data labels.
 
-        Raises:
-            RuntimeError: Exception if method is not supported such as "post" and "get"
+        Args:
+            data_row (Union[List, pd.Series]): The data row to be formatted. It can be either a list or a pandas Series.
+            data_labels (Tuple[Any, ...]): A tuple containing key-value pairs representing the data labels.
+            Each key represents the target field name in the final data payload, and each value represents
+            the corresponding field name in the input data_row.
 
         Returns:
-            Any: Response result
+            Dict: A dictionary containing the formatted data payload with field names as keys and their respective
+            values extracted from the data_row.
+
+        Notes:
+            - The input data_row should contain values corresponding to the data_labels. If the data_row is a
+            pandas Series, the column names of the Series should match the data_labels.
+            - The method retrieves the requestBody data mapping dictionary from the requestBody and
+            updates it with the values from the data_row based on the data_labels.
+        """
+        # Make sure that the data row comes in as a list, so we can reference the index and pull the value
+        if isinstance(data_row, pd.Series):
+            data_row_list = data_row.tolist()
+        else:
+            data_row_list = data_row
+
+        # Retrieve the requestBody data mapping dictionary
+        data_mapping = self._api_config.get("requestBody", dict())
+
+        # Update the data mapping dictionary with the row value
+        for key, value in data_mapping.items():
+            index = next(
+                (
+                    index
+                    for index, (key1, value1) in enumerate(data_labels)
+                    if key1 == value
+                ),
+                None,
+            )
+            data_mapping[key] = data_row_list[index]
+
+        return data_mapping
+
+    async def send_request(self, row_data_to_send: Dict) -> Response:
+        """
+        An async method to send an API request based on the provided row data.
+
+        Args:
+            row_data_to_send (Dict): A dictionary containing the data to be sent in the API request. The keys represent
+            the parameter names, and the values represent their corresponding values.
+
+        Returns:
+            Response: The response object representing the API response.
+
+        Notes:
+            - This method is used to send API requests based on the provided row data. It supports both POST
+            and GET methods.
+            - If the API method is "POST," the method constructs the request payload using the provided row_data_to_send
+              dictionary and sends it in the request body. The method also populates the request headers with required
+              header parameters specified in the API schema.
+            - If the API method is "GET," the method sends the row_data_to_send dictionary as parameters in the
+            API request URL without a request body.
+            - The method retrieves the API schema by calling the get_schema_content method, and it uses the API
+            instance's predict_api attribute to access the API details.
+            - The method returns the API response object containing the results of the API request.
         """
         if self._api_instance._.predict_api.method.lower() == "post":
+            # POST method
             # Get API Instance schema
             self._api_instance_schema = await self.get_schema_content()
 
@@ -312,38 +431,7 @@ class Plugin(IModel):
                         headers.update({parameter.name: parameter.schema_.enum[0]})
 
             # Populate body with payload values
-            payload = {
-                "age": 1,
-                "gender": 2,
-                "race": 3,
-                "income": 4,
-                "employment": 5,
-                "employment_length": 6,
-                "total_donated": 7,
-                "num_donation": 8,
-            }
-            body = self._api_instance_schema.get_type().construct(**payload)
-
-            # Perform api request
-            headers, data, result = await self._api_instance._.predict_api.request(
-                parameters=headers, data=body
-            )
-
-        elif self._api_instance._.predict_api.method.lower() == "get":
-            # Populate headers
-            headers = {
-                "age": 1,
-                "gender": 2,
-                "race": 3,
-                "income": 4,
-                "employment": 5,
-                "employment_length": 6,
-                "total_donated": 7,
-                "num_donation": 8,
-            }
-
-            # Populate body with payload values
-            body = None
+            body = self._api_instance_schema.get_type().construct(**row_data_to_send)
 
             # Perform api request
             headers, data, result = await self._api_instance._.predict_api.request(
@@ -351,9 +439,68 @@ class Plugin(IModel):
             )
 
         else:
-            raise RuntimeError("Unexpected api method")
+            # GET method
+            # Populate body with payload values
+            body = None
+
+            # Perform api request
+            headers, data, result = await self._api_instance._.predict_api.request(
+                parameters=row_data_to_send, data=body
+            )
 
         return result
+
+    async def make_requests(self, data: Any, *args) -> Any:
+        """
+        An async method to make multiple API requests using the provided data.
+
+        Args:
+            data (Any): The data to be predicted. It can be a pandas DataFrame or a numpy ndarray, or a list containing
+            multiple data objects of these types.
+            *args (Tuple): Variable-length argument list. The argument list contains any additional arguments required
+            by the `get_data_payload` function.
+
+        Returns:
+            Any: The response data obtained from the API requests. It is returned as a list containing the response
+            text from each API request.
+
+        Notes:
+            - This method allows making multiple API requests using the provided data. The data can be a pandas
+            DataFrame or a numpy ndarray, or a list containing multiple data objects of these types.
+            - For each data object in the input data list, the method iterates over the rows of the DataFrame
+            or ndarray.
+            - It prepares the row information for the payload or headers using the `get_data_payload` method, which
+            takes the row and any additional arguments (*args) as input.
+            - The row information is then passed to the `send_request` method to make the API request and
+            obtain the response.
+            - The response text from each API request is appended to the `response_data` list.
+            - Finally, the method returns the `response_data` list containing the response text from
+            all the API requests.
+        """
+        response_data = list()
+
+        # Loop through the data list. It can be a list of mixed data to be predicted such as DF or numpy
+        for data_to_predict in data:
+            if type(data_to_predict) is pd.DataFrame:
+                # PANDAS DF
+                for _, row in data_to_predict.iterrows():
+                    # Prepare the row information for payload or header
+                    row_for_payload = await self.get_data_payload(row, *args)
+
+                    # Pass this information to the send request function to request
+                    response = await self.send_request(row_for_payload)
+                    response_data.append(response.text)
+            else:
+                # NDARRAY
+                for row in data_to_predict:
+                    # Prepare the row information for payload or header
+                    row_for_payload = await self.get_data_payload(row, *args)
+
+                    # Pass this information to the send request function to request
+                    response = await self.send_request(row_for_payload)
+                    response_data.append(response.text)
+
+        return response_data
 
     def _setup_api_authentication(self) -> None:
         """
@@ -408,32 +555,37 @@ class OpenAPICustomTransport(httpx.AsyncHTTPTransport):
     A custom transport module that allows error code retries and backoff timing
     """
 
-    _ssl_verify: bool = True
-    _ssl_cert: Any = None
-    _api_retries: int = 3
     # (1s, 2s, 4s)  Formula: {backoff factor} * (2 ** ({number of total retries} - 1))
     _api_backoff_factor: float = 2.0
-    _api_rate_limit_timeout: float = 5.0  # seconds
     _api_status_code: list = [429, 500, 502, 503, 504]
 
     def __init__(
         self,
         verify: bool,
         cert: Any,
-        retries: int,
+        rate_limit: int,
         rate_limit_timeout: float,
+        batch_strategy: BatchStrategy,
+        batch_limit: int,
+        max_connections: int,
+        connection_retries: int,
         response_error_callback: Callable,
     ):
         # Save the variables
         self._ssl_verify = verify
         self._ssl_cert = cert
-        self._api_retries = retries
-        self._api_rate_limit_timeout = rate_limit_timeout
+        self._rate_limit = rate_limit
+        self._rate_limit_timeout = rate_limit_timeout
+        self._batch_strategy = batch_strategy
+        self._batch_limit = batch_limit
+        self._max_connection = max_connections
+        self._connection_retries = connection_retries
         self._response_error_callback = response_error_callback
 
         # Initialize super class
         super().__init__(
-            verify=self._ssl_verify, cert=self._ssl_cert, retries=self._api_retries
+            verify=self._ssl_verify,
+            cert=self._ssl_cert,
         )
 
     async def handle_attempt_retries(
@@ -448,14 +600,14 @@ class OpenAPICustomTransport(httpx.AsyncHTTPTransport):
             attempt (int): current number of retry attempt
             status_code (Union[None, int]): response status code
         """
-        if attempt == self._api_retries:
+        if attempt == self._connection_retries:
             return
 
         # Have not reached the number of retries.
         # Proceed to check backoff time and perform sleep
         if status_code and status_code == 429:
             # if the status code is 429 (too many requests)
-            backoff_timing = self._api_rate_limit_timeout
+            backoff_timing = self._rate_limit_timeout
         else:
             backoff_timing = int(self._api_backoff_factor * (2 ** (attempt - 1)))
         await asyncio.sleep(backoff_timing)
@@ -478,7 +630,7 @@ class OpenAPICustomTransport(httpx.AsyncHTTPTransport):
         """
         # Send the async request to the server
         error_message = ""
-        for attempt in range(self._api_retries + 1):
+        for attempt in range(self._connection_retries + 1):
             try:
                 response = await super().handle_async_request(request)
             except (
@@ -502,10 +654,10 @@ class OpenAPICustomTransport(httpx.AsyncHTTPTransport):
                     await self.handle_attempt_retries(attempt, response.status_code)
             finally:
                 # Exceeded the number of attempts
-                if attempt == self._api_retries:
+                if attempt == self._connection_retries:
                     await self._response_error_callback(
-                        f"Maximum retries exceeded ({self._api_retries}) {error_message}"
+                        f"Maximum retries exceeded ({self._connection_retries}) {error_message}"
                     )
                     raise RuntimeError(
-                        f"Maximum retries exceeded ({self._api_retries}) {error_message}"
+                        f"Maximum retries exceeded ({self._connection_retries}) {error_message}"
                     )
