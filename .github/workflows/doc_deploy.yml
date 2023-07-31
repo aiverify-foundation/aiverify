@@ -1,0 +1,28 @@
+name: Merge documentation updates
+
+on: 
+  pull_request:
+    branches:
+      - gh-pages
+  
+jobs:
+  auto-approve:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Auto approve
+        uses: hmarr/auto-approve-action@v2.1.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        if: github.event.pull_request.user.login == 'aiverify'
+
+  auto-merge:
+    needs: auto-approve
+    runs-on: ubuntu-latest
+    steps:
+      - name: Auto merge
+        uses: pascalgn/automerge-action@v0.14.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_LABELS: "automerge"
+          MERGE_METHOD: "squash"
+        if: github.event.pull_request.user.login == 'aiverify'
