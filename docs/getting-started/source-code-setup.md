@@ -22,7 +22,7 @@ These are the recommended requirements to run AI Verify.
 | Software                                                                           | Recommended Version |
 | ---------------------------------------------------------------------------------- | ------------------- |
 | [NodeJs](https://nodejs.org/en/download)                                           | v18.x               |
-| [Python](https://www.python.org/downloads/release/python-3100/)                    | v3.10               |
+| [Python](https://www.python.org/downloads/)                    | v3.11               |
 | [MongoDB\*](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/) | v6.x                |
 <!-- | [Redis..](https://redis.io/docs/getting-started/installation/)                       | v6.x                |
 | [GraphQL..](https://graphql.org/)                                                    | v16.x               |
