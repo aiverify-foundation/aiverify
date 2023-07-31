@@ -382,6 +382,7 @@ class Plugin(IModel):
         data_mapping = self._api_config.get("requestBody", dict())
 
         # Update the data mapping dictionary with the row value
+        return_list = dict()
         for key, value in data_mapping.items():
             index = next(
                 (
@@ -391,9 +392,9 @@ class Plugin(IModel):
                 ),
                 None,
             )
-            data_mapping[key] = data_row_list[index]
+            return_list[key] = data_row_list[index]
 
-        return data_mapping
+        return return_list
 
     async def send_request(self, row_data_to_send: Dict) -> Response:
         """
