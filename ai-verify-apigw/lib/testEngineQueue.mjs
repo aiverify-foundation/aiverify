@@ -100,7 +100,7 @@ export const queueTests = async (report, modelAndDatasets) => {
   };
 
   for (let test of report.tests) {
-    console.log("test", test);
+    // console.log("test", test);
     const id = `${reportId}-${test._id}`;
     const taskId = `task:${id}`;
     let task = {
@@ -116,14 +116,17 @@ export const queueTests = async (report, modelAndDatasets) => {
       const modelAPI = modelAndDatasets.model.modelAPI.toObject();
       const apiConfig = {
         ...modelAndDatasets.apiConfig.toObject(),
+        requestConfig: modelAPI.requestConfig,
         responseBody: {
           field: modelAPI.response.field,
           type: modelAPI.response.type,
         },
       };
+      delete apiConfig._id; // remove this field not required
       if (modelAPI.authType !== "No Auth") {
         apiConfig["authentication"] = modelAPI.authTypeConfig;
       }
+      // console.log("apiConfig", apiConfig)
       task.apiConfig = apiConfig;
       task.apiSchema = modelAndDatasets.model.exportModelAPI();
     } else {
