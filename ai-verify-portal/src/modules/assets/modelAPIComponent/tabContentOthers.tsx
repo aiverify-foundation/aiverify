@@ -18,10 +18,10 @@ function TabContentOthers({ disabled = false }: { disabled?: boolean }) {
     <div
       style={{
         display: 'flex',
-        flexWrap: 'wrap',
-        rowGap: 10,
+        flexDirection: 'column',
+        width: 300,
       }}>
-      <div className={styles.keyValCol}>
+      <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
         <TextInput
           disabled={disabled}
           label="Rate Limit"
@@ -29,7 +29,7 @@ function TabContentOthers({ disabled = false }: { disabled?: boolean }) {
           onChange={handleChange}
           value={values.modelAPI.requestConfig.rateLimit.toString()}
           maxLength={128}
-          style={{ marginBottom: 0 }}
+          style={{ marginBottom: 0, width: '100%' }}
           error={
             Boolean(fieldErrors?.rateLimit && touchedFields?.rateLimit)
               ? fieldErrors?.rateLimit
@@ -37,7 +37,7 @@ function TabContentOthers({ disabled = false }: { disabled?: boolean }) {
           }
         />
       </div>
-      <div className={styles.keyValCol}>
+      <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
         <SelectInput<BatchStrategy>
           disabled={disabled}
           label="Batch Strategy"
@@ -47,10 +47,10 @@ function TabContentOthers({ disabled = false }: { disabled?: boolean }) {
             setFieldValue(`${otherReqConfigFieldName}.batchStrategy`, val)
           }
           value={values.modelAPI.requestConfig.batchStrategy}
-          style={{ marginBottom: 0 }}
+          style={{ marginBottom: 0, width: '100%' }}
         />
       </div>
-      <div className={styles.keyValCol}>
+      <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
         <TextInput
           disabled={disabled}
           label="Batch Limit"
@@ -58,7 +58,7 @@ function TabContentOthers({ disabled = false }: { disabled?: boolean }) {
           onChange={handleChange}
           value={values.modelAPI.requestConfig.batchLimit?.toString()}
           maxLength={128}
-          style={{ marginBottom: 0 }}
+          style={{ marginBottom: 0, width: '100%' }}
           error={
             Boolean(fieldErrors?.batchLimit && touchedFields?.batchLimit)
               ? fieldErrors?.batchLimit
@@ -66,7 +66,7 @@ function TabContentOthers({ disabled = false }: { disabled?: boolean }) {
           }
         />
       </div>
-      <div className={styles.keyValCol}>
+      <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
         <TextInput
           disabled={disabled}
           label="Max Connections"
@@ -74,7 +74,7 @@ function TabContentOthers({ disabled = false }: { disabled?: boolean }) {
           onChange={handleChange}
           value={values.modelAPI.requestConfig.maxConnections.toString()}
           maxLength={128}
-          style={{ marginBottom: 0 }}
+          style={{ marginBottom: 0, width: '100%' }}
           error={
             Boolean(
               fieldErrors?.maxConnections && touchedFields?.maxConnections
@@ -84,7 +84,7 @@ function TabContentOthers({ disabled = false }: { disabled?: boolean }) {
           }
         />
       </div>
-      <div className={styles.keyValCol}>
+      <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
         <TextInput
           disabled={disabled}
           label="Request Timeout"
@@ -92,7 +92,7 @@ function TabContentOthers({ disabled = false }: { disabled?: boolean }) {
           onChange={handleChange}
           value={values.modelAPI.requestConfig.requestTimeout.toString()}
           maxLength={128}
-          style={{ marginBottom: 0 }}
+          style={{ marginBottom: 0, width: '100%' }}
           error={
             Boolean(
               fieldErrors?.requestTimeout && touchedFields?.requestTimeout

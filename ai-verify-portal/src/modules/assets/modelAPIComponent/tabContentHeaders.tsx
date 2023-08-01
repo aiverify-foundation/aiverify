@@ -7,6 +7,9 @@ import {
   AdditionalHeaderInputHeading,
 } from './requestHeaderInput';
 
+const HeaderExistsMsg = 'Header exists';
+const RequiredMsg = 'Required';
+
 const defaultAdditionalHeader: AdditionalHeader = {
   reactPropId: '',
   name: '',
@@ -24,10 +27,14 @@ function TabContentAdditionalHeaders({
   const [newHeader, setNewHeader] = useState<AdditionalHeader>(
     defaultAdditionalHeader
   );
+  const [headerErrorMsg, setHeaderErrorMsg] = useState<string>();
+  const [valueErrorMsg, setValueErrorMsg] = useState<string>();
   const { values, setFieldValue } = useFormikContext<ModelAPIFormModel>();
   const headers = values.modelAPI.additionalHeaders || [];
 
   function handleNewParamChange(value: AdditionalHeader) {
+    if (headerErrorMsg !== undefined) setHeaderErrorMsg(undefined);
+    if (valueErrorMsg !== undefined) setValueErrorMsg(undefined);
     setNewHeader((prev) => ({
       ...value,
       reactPropId:
@@ -43,8 +50,28 @@ function TabContentAdditionalHeaders({
 
   function handleAddNewHeader(formikArrayHelpers: FieldArrayRenderProps) {
     return () => {
+      if (newHeader.name.trim() === '') setHeaderErrorMsg(RequiredMsg);
+      const isExist =
+        headers &&
+        headers.findIndex((header) => header.name === newHeader.name) > -1;
+      if (isExist) {
+        setHeaderErrorMsg(HeaderExistsMsg);
+        return;
+      }
       formikArrayHelpers.push(newHeader);
       setNewHeader(defaultAdditionalHeader);
+    };
+  }
+
+  function handleDeleteClick(
+    formikArrayHelpers: FieldArrayRenderProps,
+    index: number
+  ) {
+    return () => {
+      if (headers && headers[index].name === newHeader.name) {
+        setHeaderErrorMsg(undefined);
+      }
+      formikArrayHelpers.remove(index);
     };
   }
 
@@ -60,7 +87,7 @@ function TabContentAdditionalHeaders({
         display: 'flex',
         flexDirection: 'column',
       }}>
-      {!disabled ? <AdditionalHeaderInputHeading /> : null}
+      {disabled && !headers.length ? null : <AdditionalHeaderInputHeading />}
       <FieldArray name={additionalHeaderFieldName}>
         {(arrayHelpers) => (
           <>
@@ -75,7 +102,7 @@ function TabContentAdditionalHeaders({
                   key={header.reactPropId}
                   value={header}
                   onChange={handleAddedParamChange(index)}
-                  onDeleteClick={() => arrayHelpers.remove(index)}
+                  onDeleteClick={handleDeleteClick(arrayHelpers, index)}
                 />
               ))
             )}
@@ -85,6 +112,7 @@ function TabContentAdditionalHeaders({
                 value={newHeader}
                 onChange={handleNewParamChange}
                 onAddClick={handleAddNewHeader(arrayHelpers)}
+                headerError={headerErrorMsg}
               />
             ) : null}
           </>

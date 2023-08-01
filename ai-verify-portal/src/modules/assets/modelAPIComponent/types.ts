@@ -124,7 +124,10 @@ export type ModelAPI = {
   url: string;
   urlParams?: string;
   authType: AuthType;
-  authTypeConfig?: AuthBearerTokenConfig | AuthBasicConfig;
+  authTypeConfig?: { authType?: AuthType } & ( // authType is duplicated here because token, user & password are dependent on it and Yup validation schema depdendencies fields have to be siblings
+    | AuthBearerTokenConfig
+    | AuthBasicConfig
+  );
   requestBody: RequestBody;
   requestConfig: RequestConfig;
   response: Response;
@@ -170,15 +173,10 @@ export type ModelAPIGraphQLModel = ConfigDescription & {
   id?: string;
   modelAPI: Pick<
     ModelAPI,
-    | 'method'
-    | 'url'
-    | 'urlParams'
-    | 'authType'
-    | 'authTypeConfig'
-    | 'requestConfig'
-    | 'response'
-  > &
-    RequireAtLeastOne<RequestBodyOrParametersForGraphQL> & {
+    'method' | 'url' | 'urlParams' | 'authType' | 'requestConfig' | 'response'
+  > & {
+    authTypeConfig?: Partial<AuthBearerTokenConfig> | Partial<AuthBasicConfig>; // authType must be removed for the gql request
+  } & RequireAtLeastOne<RequestBodyOrParametersForGraphQL> & {
       additionalHeaders?: Pick<AdditionalHeader, 'name' | 'type' | 'value'>[];
       updatedAt?: string;
     };

@@ -12,6 +12,9 @@ type AdditionalHeaderInputProps = {
   value: AdditionalHeader;
   showAddBtn?: boolean;
   disabled?: boolean;
+  headerError?: string;
+  typeError?: string;
+  valueError?: string;
   onChange: (value: AdditionalHeader) => void;
   onAddClick?: () => void;
   onDeleteClick?: (param: AdditionalHeader) => void;
@@ -33,6 +36,9 @@ function AdditionalHeaderInput(props: AdditionalHeaderInputProps) {
     value,
     showAddBtn = false,
     disabled,
+    headerError,
+    typeError,
+    valueError,
     onChange,
     onAddClick,
     onDeleteClick,
@@ -71,6 +77,7 @@ function AdditionalHeaderInput(props: AdditionalHeaderInputProps) {
           style={{ marginBottom: 0 }}
           maxLength={100}
           onChange={handleNameChange}
+          error={headerError}
         />
       </div>
       <div className={styles.keyValCol}>
@@ -81,6 +88,7 @@ function AdditionalHeaderInput(props: AdditionalHeaderInputProps) {
           onChange={handleTypeChange}
           value={value.type}
           style={{ marginBottom: 0 }}
+          error={typeError}
         />
       </div>
       <div className={styles.keyValCol}>
@@ -91,6 +99,7 @@ function AdditionalHeaderInput(props: AdditionalHeaderInputProps) {
           style={{ marginBottom: 0 }}
           maxLength={100}
           onChange={handleValChange}
+          error={valueError}
         />
       </div>
       {showAddBtn ? (

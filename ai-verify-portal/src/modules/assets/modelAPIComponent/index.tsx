@@ -38,6 +38,7 @@ import { ModelAPIFormSchema } from './validationSchema';
 import { MinimalHeader } from 'src/modules/home/header';
 import ConfirmationDialog from 'src/components/confirmationDialog';
 import { AlertBoxSize } from 'src/components/alertBox';
+import { PageLevelErrorAlert } from 'src/components/pageLeverlErrorAlert';
 
 type FormikSetFieldvalueFn = (
   field: string,
@@ -277,17 +278,13 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                             {showPageLevelAlert &&
                             Object.keys(errors).length &&
                             Object.keys(touched).length ? (
-                              <StandardAlert
-                                alertType={AlertType.ERROR}
+                              <PageLevelErrorAlert
                                 headingText="Field-level errors"
-                                onCloseIconClick={handleCloseAlertClick}>
-                                <div style={{ display: 'flex', fontSize: 14 }}>
-                                  <div>
-                                    Please ensure all the necessary inputs are
-                                    valid
-                                  </div>
-                                </div>
-                              </StandardAlert>
+                                content="Please ensure all the necessary inputs are
+                              valid"
+                                disableCloseIcon={false}
+                                onCloseIconClick={handleCloseAlertClick}
+                              />
                             ) : null}
                           </div>
                           <div className={styles.apiConfigForm}>

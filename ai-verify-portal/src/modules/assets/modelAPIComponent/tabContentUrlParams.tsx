@@ -2,7 +2,6 @@ import { SelectInput } from 'src/components/selectInput';
 import { Tooltip, TooltipPosition } from 'src/components/tooltip';
 import InfoIcon from '@mui/icons-material/Info';
 import {
-  MediaType,
   ModelAPIFormModel,
   OpenApiDataTypes,
   URLParamType,
@@ -24,6 +23,9 @@ import {
   useState,
 } from 'react';
 import { getInputReactKeyId } from '.';
+
+const PropExistsMsg = 'Parameter exists';
+const RequiredMsg = 'Required';
 
 const defaultUrlParameter: UrlParam = {
   reactPropId: '',
@@ -48,6 +50,7 @@ const TabContentURLParams = forwardRef<
 >(function Content({ disabled = false }, ref) {
   const [paramType, setParamType] = useState<URLParamType>();
   const [newParam, setNewParam] = useState<UrlParam>(defaultUrlParameter);
+  const [errorMsg, setErrorMsg] = useState<string>();
   const { values, setFieldValue } = useFormikContext<ModelAPIFormModel>();
   const formArrayHelpersRef = useRef<FieldArrayRenderProps>();
   const urlParamsStr = values.modelAPI.parameters.paths
@@ -58,6 +61,7 @@ const TabContentURLParams = forwardRef<
   useImperativeHandle(ref, () => formArrayHelpersRef.current, []);
 
   function handleParamTypeChange(val: URLParamType) {
+    if (errorMsg !== undefined) setErrorMsg(undefined);
     if (val === paramType) return;
     setParamType(val);
 
@@ -96,6 +100,7 @@ const TabContentURLParams = forwardRef<
   }
 
   function handleNewParamChange(value: UrlParam) {
+    if (errorMsg !== undefined) setErrorMsg(undefined);
     setNewParam((prev) => ({
       ...value,
       reactPropId:
@@ -113,6 +118,41 @@ const TabContentURLParams = forwardRef<
         }[${idx}]`,
         val
       );
+    };
+  }
+
+  function handleAddClick(formikArrayHelpers: FieldArrayRenderProps) {
+    return () => {
+      if (newParam.name.trim() === '') setErrorMsg(RequiredMsg);
+      const urlParams =
+        paramType === URLParamType.QUERY
+          ? values.modelAPI.parameters.queries?.queryParams
+          : values.modelAPI.parameters.paths?.pathParams;
+      const isExist =
+        urlParams &&
+        urlParams.findIndex((param) => param.name === newParam.name) > -1;
+      if (isExist) {
+        setErrorMsg(PropExistsMsg);
+        return;
+      }
+      formikArrayHelpers.push(newParam);
+      setNewParam(defaultUrlParameter);
+    };
+  }
+
+  function handleDeleteClick(
+    formikArrayHelpers: FieldArrayRenderProps,
+    index: number
+  ) {
+    return () => {
+      const urlParams =
+        paramType === URLParamType.QUERY
+          ? values.modelAPI.parameters.queries?.queryParams
+          : values.modelAPI.parameters.paths?.pathParams;
+      if (urlParams && urlParams[index].name === newParam.name) {
+        setErrorMsg(undefined);
+      }
+      formikArrayHelpers.remove(index);
     };
   }
 
@@ -248,7 +288,10 @@ const TabContentURLParams = forwardRef<
                                 disabled={disabled}
                                 value={param}
                                 onChange={handleAddedParamChange(index)}
-                                onDeleteClick={() => arrayHelpers.remove(index)}
+                                onDeleteClick={handleDeleteClick(
+                                  arrayHelpers,
+                                  index
+                                )}
                               />
                             </div>
                           )}
@@ -261,10 +304,8 @@ const TabContentURLParams = forwardRef<
                           showAddBtn
                           value={newParam}
                           onChange={handleNewParamChange}
-                          onAddClick={() => {
-                            arrayHelpers.push(newParam);
-                            setNewParam(defaultUrlParameter);
-                          }}
+                          onAddClick={handleAddClick(arrayHelpers)}
+                          paramError={errorMsg}
                         />
                       ) : null}
                     </div>

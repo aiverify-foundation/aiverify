@@ -12,6 +12,8 @@ type RequestBodyParameterInputProps = {
   value: BodyParam;
   showAddBtn?: boolean;
   disabled?: boolean;
+  fieldError?: string;
+  typeError?: string;
   onChange: (value: BodyParam) => void;
   onAddClick?: () => void;
   onDeleteClick?: (param: BodyParam) => void;
@@ -31,6 +33,8 @@ function RequestBodyParameterInput(props: RequestBodyParameterInputProps) {
     value,
     showAddBtn = false,
     disabled = false,
+    fieldError,
+    typeError,
     onChange,
     onAddClick,
     onDeleteClick,
@@ -61,6 +65,7 @@ function RequestBodyParameterInput(props: RequestBodyParameterInputProps) {
           onChange={handleKeyChange}
           maxLength={100}
           style={{ marginBottom: 0 }}
+          error={fieldError}
         />
       </div>
       <div className={styles.keyValCol}>
@@ -71,6 +76,7 @@ function RequestBodyParameterInput(props: RequestBodyParameterInputProps) {
           onChange={handleTypeChange}
           value={value.type}
           style={{ marginBottom: 0 }}
+          error={typeError}
         />
       </div>
       {showAddBtn ? (

@@ -5,7 +5,7 @@ import {
   ModelAPIFormModel,
   OpenApiDataTypes,
 } from './types';
-import { FieldArray, useFormikContext } from 'formik';
+import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { optionsMediaTypes } from './selectOptions';
 import { useState } from 'react';
 import { getInputReactKeyId } from '.';
@@ -22,13 +22,18 @@ const defaultBodyParameter: BodyParam = {
 
 const requestBodyFieldName = 'modelAPI.requestBody';
 
+const PropExistsMsg = 'Property exists';
+const RequiredMsg = 'Required';
+
 function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
   const [newParam, setNewParam] = useState<BodyParam>(defaultBodyParameter);
+  const [errorMsg, setErrorMsg] = useState<string>();
   const { values, setFieldValue, handleChange } =
     useFormikContext<ModelAPIFormModel>();
   const properties = values.modelAPI.requestBody.properties || [];
 
   function handleNewParamChange(value: BodyParam) {
+    if (errorMsg !== undefined) setErrorMsg(undefined);
     setNewParam((prev) => ({
       ...value,
       reactPropId:
@@ -39,6 +44,36 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
   function handleAddedParamChange(idx: number) {
     return (val: BodyParam) => {
       setFieldValue(`${requestBodyFieldName}.properties[${idx}]`, val);
+    };
+  }
+
+  function handleAddClick(formikArrayHelpers: FieldArrayRenderProps) {
+    return () => {
+      if (newParam.field.trim() === '') setErrorMsg(RequiredMsg);
+      const isExist =
+        values.modelAPI.requestBody.properties.findIndex(
+          (prop) => prop.field === newParam.field
+        ) > -1;
+      if (isExist) {
+        setErrorMsg(PropExistsMsg);
+        return;
+      }
+      formikArrayHelpers.push(newParam);
+      setNewParam(defaultBodyParameter);
+    };
+  }
+
+  function handleDeleteClick(
+    formikArrayHelpers: FieldArrayRenderProps,
+    index: number
+  ) {
+    return () => {
+      if (
+        values.modelAPI.requestBody.properties[index].field === newParam.field
+      ) {
+        setErrorMsg(undefined);
+      }
+      formikArrayHelpers.remove(index);
     };
   }
 
@@ -59,7 +94,7 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
       />
       {values.modelAPI.requestBody.mediaType !== MediaType.NONE ? (
         <>
-          {properties.length > 0 ? <RequestBodyParamsHeading /> : null}
+          {disabled && !properties.length ? null : <RequestBodyParamsHeading />}
           <FieldArray name={`${requestBodyFieldName}.properties`}>
             {(arrayHelpers) => (
               <div
@@ -67,7 +102,7 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
                   display: 'flex',
                   flexDirection: 'column',
                 }}>
-                {!properties.length ? (
+                {disabled && !properties.length ? (
                   <div style={{ fontSize: 15, marginTop: 20 }}>
                     No Request Body Properties
                   </div>
@@ -78,7 +113,7 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
                       key={param.reactPropId}
                       value={param}
                       onChange={handleAddedParamChange(index)}
-                      onDeleteClick={() => arrayHelpers.remove(index)}
+                      onDeleteClick={handleDeleteClick(arrayHelpers, index)}
                     />
                   ))
                 )}
@@ -87,10 +122,8 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
                     showAddBtn
                     value={newParam}
                     onChange={handleNewParamChange}
-                    onAddClick={() => {
-                      arrayHelpers.push(newParam);
-                      setNewParam(defaultBodyParameter);
-                    }}
+                    onAddClick={handleAddClick(arrayHelpers)}
+                    fieldError={errorMsg}
                   />
                 ) : null}
               </div>

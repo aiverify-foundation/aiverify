@@ -13,6 +13,8 @@ type UrlParameterInputProps = {
   value: UrlParam;
   showAddBtn?: boolean;
   disabled?: boolean;
+  paramError?: string;
+  typeError?: string;
   onChange: (value: UrlParam) => void;
   onAddClick?: () => void;
   onDeleteClick?: (param: UrlParam) => void;
@@ -32,6 +34,8 @@ function UrlParamCaptureInput(props: UrlParameterInputProps) {
     value,
     showAddBtn = false,
     disabled = false,
+    paramError,
+    typeError,
     onChange,
     onAddClick,
     onDeleteClick,
@@ -62,6 +66,7 @@ function UrlParamCaptureInput(props: UrlParameterInputProps) {
           style={{ marginBottom: 0 }}
           maxLength={100}
           onChange={handleKeyChange}
+          error={paramError}
         />
       </div>
       <div className={styles.keyValCol}>
@@ -72,6 +77,7 @@ function UrlParamCaptureInput(props: UrlParameterInputProps) {
           onChange={handleTypeChange}
           value={value.type}
           style={{ marginBottom: 0 }}
+          error={typeError}
         />
       </div>
       {showAddBtn ? (
