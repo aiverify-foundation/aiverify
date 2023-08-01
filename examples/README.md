@@ -20,9 +20,9 @@ Output Classes:
 
 |       | File | 
 | ----------- | ----------- |
-| AI Model     | binary_classification_mock_credit_risk_sklearn.linear_model._logistic.LogisticRegression.sav |
-| Test Dataset | pickle_pandas_mock_binary_classification_credit_risk_testing.sav |
-| Ground Truth File  | pickle_pandas_mock_binary_classification_credit_risk_testing.sav |
+| AI Model     | sample_bc_credit_sklearn_linear.LogisticRegression.sav |
+| Test Dataset | sample_bc_credit_data.sav |
+| Ground Truth File  | sample_bc_credit_data.sav |
 | Ground Truth | default |
 | Sensitive Feature | gender, race |
 
@@ -31,8 +31,8 @@ Output Classes:
 |       | File | 
 | ----------- | ----------- |
 | AI Model     | binary_classification_tabular_credit_loan | 
-| Test Dataset | pickle_pandas_mock_binary_classification_pipeline_credit_risk_testing.sav |
-| Ground Truth File  | pickle_pandas_mock_binary_classification_pipeline_credit_risk_ytest.sav |
+| Test Dataset | sample_bc_pipeline_credit_data.sav |
+| Ground Truth File  | sample_bc_pipeline_credit_ytest_data.sav |
 | Ground Truth | default |
 | Sensitive Feature | gender, race |
 
@@ -50,9 +50,9 @@ Output Classes:
 
 |       | File | 
 | ----------- | ----------- |
-| AI Model     | multiclass_classification_mock_toxic_classification_sklearn.linear_model._logistic.LogisticRegression.sav |
-| Test Dataset | pickle_pandas_mock_multiclass_classification_toxic_classification_testing.sav |
-| Ground Truth File  | pickle_pandas_mock_multiclass_classification_toxic_classification_testing.sav |
+| AI Model     | sample_mc_toxic_sklearn_linear.LogisticRegression.sav |
+| Test Dataset | sample_mc_toxic_data.sav |
+| Ground Truth File  | sample_mc_toxic_data.sav |
 | Ground Truth | toxic |
 | Sensitive Feature | gender, race |
 
@@ -61,8 +61,8 @@ Output Classes:
 |       | File | 
 | ----------- | ----------- |
 | AI Model     | multiclass_classification_tabular_toxic_classification | 
-| Test Dataset | pickle_pandas_mock_multiclass_classification_pipeline_toxic_classification_testing.sav |
-| Ground Truth File  | pickle_pandas_mock_multiclass_classification_pipeline_toxic_classification_ytest.sav |
+| Test Dataset | sample_mc_pipeline_toxic_data.sav |
+| Ground Truth File  | sample_mc_pipeline_toxic_ytest_data.sav |
 | Ground Truth | toxic |
 | Sensitive Feature | gender, race |
 
@@ -76,9 +76,9 @@ Output:
 
 |       | File | 
 | ----------- | ----------- |
-| AI Model     | regression_mock_donation_sklearn.linear_model._base.LinearRegression.sav |
-| Test Dataset | pickle_pandas_mock_regression_donation_testing.sav |
-| Ground Truth File  | pickle_pandas_mock_regression_donation_testing.sav |
+| AI Model     | sample_reg_donation_sklearn_linear.LogisticRegression.sav |
+| Test Dataset | sample_reg_donation_data.sav |
+| Ground Truth File  | sample_reg_donation_data.sav |
 | Ground Truth | donation |
 | Sensitive Feature | gender, race |
 
@@ -87,8 +87,8 @@ Output:
 |       | File | 
 | ----------- | ----------- |
 | AI Model     | regression_tabular_donation | 
-| Test Dataset | pickle_pandas_mock_regression_pipeline_testing.sav |
-| Ground Truth File  | pickle_pandas_mock_regression_pipeline_ytest.sav |
+| Test Dataset | sample_reg_pipeline_data.sav |
+| Ground Truth File  | sample_reg_pipeline_ytest_data.sav |
 | Ground Truth | donation |
 | Sensitive Feature | gender, race |
 

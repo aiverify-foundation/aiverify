@@ -1,22 +1,28 @@
-# Build the ai-verify combined docker image
+# Build the aiverify docker image
 
-###########################################################
-# Build stage for Node repos
-###########################################################
-FROM ubuntu:22.04 AS final
+FROM ubuntu:22.04
 
-ARG USER=appuser
-ARG UID
-ARG GID
+###################  Install libraries ######################
 
-# Install node v19.x
+ENV TZ=Asia/Singapore
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Install node v18.x
 RUN apt-get update && apt-get install -y curl
-RUN curl -sL https://deb.nodesource.com/setup_19.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
 RUN apt-get update && apt-get install -y nodejs
 
-# Install Chromium
+# Install python 3.11, virtualenv
+RUN apt-get update
+RUN apt install software-properties-common -y
+RUN add-apt-repository ppa:deadsnakes/ppa
+RUN apt-get install -y python3.11 python3.11-venv
 
-RUN apt install debian-archive-keyring
+###################  Install chromium ######################
+
+# Install Chromium (for puppeteer) separately to cater for arm64 and amd64,
+# as puppeteer installs Chrome/Chromium for amd64 only
+RUN apt-get install debian-archive-keyring
 
 RUN umask 22
 
@@ -37,115 +43,127 @@ Package: *\n \
 Pin: origin *.debian.org\n \
 Pin-Priority: 1' | tee /etc/apt/preferences.d/debian-chromium
 
-RUN apt update
+RUN apt-get update
 
-RUN apt install chromium -y
+RUN apt-get install chromium -y
 
 RUN ln -s /usr/bin/chromium /usr/bin/chromium-browser
 
-# For shap-toolbox plugin
-RUN apt install -y gcc g++ python3-dev
-
-RUN groupadd -g $GID $USER || true
-
-RUN useradd -u $UID -g $GID -ms /bin/bash $USER
+# For shap-toolbox stock plugin
+RUN apt-get install -y gcc g++ python3.11-dev
 
 # Install Git
-RUN apt update && apt install -y git
+RUN apt-get install -y git
 
 RUN apt-get install unzip
 
-# Clone aiverify repo
+################### Create aiverify user ######################
+
+ARG USER=aiverify
+RUN groupadd -g 10000 $USER
+RUN useradd -u 10000 -g 10000 -ms /bin/bash $USER
+
+###################  Clone aiverify repo ######################
+
+ARG BRANCH_TAG=v0.9.x
+RUN echo "BRANCH_TAG=$BRANCH_TAG"
 WORKDIR /app
-RUN git clone https://github.com/imda-btg/aiverify.git --branch=v0.9.x
+RUN git clone https://github.com/imda-btg/aiverify.git --branch=$BRANCH_TAG aiverify
 
 WORKDIR /app/aiverify
 
-RUN mkdir -p ai-verify-portal/plugins
+# Create plugins, file upload and logs folders
+RUN mkdir -p ./ai-verify-portal/plugins
+RUN mkdir -p ./uploads/data
+RUN mkdir -p ./uploads/model
+RUN mkdir -p ./test-engine-app/logs
 
-## Plugin files have to go into portal plugins folder before portal build (i.e. nextjs build)
+RUN chown -R 10000:10000 /app/aiverify
 
-RUN unzip stock-plugins/aiverify.stock.decorators/dist/*.zip -d ./ai-verify-portal/plugins/aiverify.stock.decorators
-RUN unzip stock-plugins/aiverify.stock.process-checklist/dist/*.zip -d ./ai-verify-portal/plugins/aiverify.stock.process-checklist
-RUN unzip stock-plugins/aiverify.stock.reports/dist/*.zip -d ./ai-verify-portal/plugins/aiverify.stock.reports
+###################  Node ######################
 
 # Install dependencies for shared-library
 WORKDIR /app/aiverify/ai-verify-shared-library
 RUN npm install && npm run build
 
 WORKDIR /app/aiverify/ai-verify-portal
-RUN echo 'NEXT_PUBLIC_SERVER_URL=http://localhost:3000\n \
-NEXT_PUBLIC_WEBSOCKET_URL=ws://localhost:4000/graphql\n \
-SERVER_URL=http://localhost:3000\n \
-WEBSOCKET_URL=ws://localhost:4000/graphql\n \
-APIGW_URL=http://localhost:4000\n \
-MONGODB_URI=mongodb://aiverify:aiverify@db:27017/aiverify\n \
-REDIS_URI=redis://redis:6379\n \
-TEST_ENGINE_URL=http://test-engine:8080' | tee .env.local
+
+# Create env file for portal
+# Change localhost of the following urls (via --build-arg) to hostname of
+# the machine running aiverify if you want to access from a remote browser
+ARG PORTAL_URL=http://localhost
+ARG WS_URL=ws://localhost
+RUN echo "PORTAL_URL=$PORTAL_URL WS_URL=$WS_URL"
+RUN echo "NEXT_PUBLIC_SERVER_URL=${PORTAL_URL}:3000\n\
+NEXT_PUBLIC_WEBSOCKET_URL=${WS_URL}:4000/graphql\n\
+SERVER_URL=http://localhost:3000\n\
+WEBSOCKET_URL=ws://localhost:4000/graphql\n\
+APIGW_URL=http://localhost:4000\n\
+MONGODB_URI=mongodb://aiverify:aiverify@db:27017/aiverify\n\
+REDIS_URI=redis://redis:6379\n\
+TEST_ENGINE_URL=http://test-engine:8080" | tee .env.local
 RUN rm .env.development
 
-# Install dependencies for portal
+# Install dependencies for portal, and build portal (nextjs build)
 RUN npm install
 RUN npm link ../ai-verify-shared-library
+RUN npm run build
 
-# Build portal in the final stage after all stock plugins are copied to plugins folder.
+# Create env file for apigw
+WORKDIR /app/aiverify/ai-verify-apigw
+RUN echo 'MONGODB_URI=mongodb://aiverify:aiverify@db:27017/aiverify\n\
+DB_URI=mongodb://aiverify:aiverify@db:27017/aiverify\n\
+REDIS_HOST=redis\n\
+REDIS_PORT=6379\n\
+WEB_REPORT_URL=http://localhost:3000/reportStatus/printview' | tee .env
 
 # Install dependencies for apigw
-WORKDIR /app/aiverify/ai-verify-apigw
-RUN echo 'MONGODB_URI=mongodb://aiverify:aiverify@db:27017/aiverify\n \
-DB_URI=mongodb://aiverify:aiverify@db:27017/aiverify\n \
-REDIS_HOST=redis\n \
-REDIS_PORT=6379\n \
-WEB_REPORT_URL=http://localhost:3000/reportStatus/printview' | tee .env
+# Skip Chrome/chromium install during puppeteer install, since chromium
+# already installed above
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD 1
 RUN npm install
 ENV PUPPETEER_EXECUTABLE_PATH /usr/bin/chromium
 
+############## Stock plugins #################
+
+# Unzip stock plugin bundles into the plugins folder
+WORKDIR /app/aiverify/stock-plugins
+RUN for plugin_dir in *; do \
+      echo "Unzipping plugin $plugin_dir"; \
+      unzip $plugin_dir/dist/*.zip -d ../ai-verify-portal/plugins/$plugin_dir; \
+    done
+
+RUN chown -R 10000:10000 /app/aiverify/stock-plugins
+
 ############### Python #################
 
-# Install Python3.10
-RUN apt update
-RUN apt install -y python3.10
-RUN python3 --version
-
-# Install virtualenv
-RUN apt install -y python3.11-venv
-
 # Install dependencies into virtualenv
-RUN python3 -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
-
 WORKDIR /app/aiverify
-RUN find ./ -type f -name 'requirements.txt' -exec pip install -r "{}" \;
+RUN python3 -m venv venv
+ENV PATH="/app/aiverify/venv/bin:$PATH"
 
+# Install dependencies
+WORKDIR /app/aiverify/test-engine-app
+RUN pip install -r requirements.txt
+WORKDIR /app/aiverify/test-engine-core
+RUN pip install -r requirements.txt
+WORKDIR /app/aiverify/test-engine-core-modules
+RUN pip install -r requirements.txt
+WORKDIR /app/aiverify/stock-plugins
+RUN find ./ -type f -name 'requirements.txt' -exec pip install -r "{}" \;
+WORKDIR /app/aiverify
 RUN pip install ./test-engine-core/dist/test_engine_core-*.tar.gz
 
 # Create env file for test-engine-app
 WORKDIR /app/aiverify/test-engine-app
-RUN echo 'CORE_MODULES_FOLDER="../test-engine-core-modules"\n \
-VALIDATION_SCHEMAS_FOLDER="./test_engine_app/validation_schemas/"\n \
-REDIS_CONSUMER_GROUP="MyGroup"\n \
-REDIS_SERVER_HOSTNAME="redis"\n \
-REDIS_SERVER_PORT=6379\n \
+RUN echo 'CORE_MODULES_FOLDER="../test-engine-core-modules"\n\
+VALIDATION_SCHEMAS_FOLDER="./test_engine_app/validation_schemas/"\n\
+REDIS_CONSUMER_GROUP="MyGroup"\n\
+REDIS_SERVER_HOSTNAME="redis"\n\
+REDIS_SERVER_PORT=6379\n\
 API_SERVER_PORT=8080' | tee .env
 
-# Unzip stock plugins (algos) into portal plugins folder
-WORKDIR /app/aiverify
-RUN unzip ./stock-plugins/aiverify.stock.accumulated-local-effect/dist/*.zip -d ./ai-verify-portal/plugins/accumulated-local-effect
-RUN unzip ./stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/dist/*.zip -d ./ai-verify-portal/plugins/fairness-metrics-toolbox-for-classification
-RUN unzip ./stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-regression/dist/*.zip -d ./ai-verify-portal/plugins/fairness-metrics-toolbox-for-regression
-RUN unzip ./stock-plugins/aiverify.stock.image-corruption-toolbox/dist/*.zip -d ./ai-verify-portal/plugins/image-corruption-toolbox
-RUN unzip ./stock-plugins/aiverify.stock.partial-dependence-plot/dist/*.zip -d ./ai-verify-portal/plugins/partial-dependence-plot
-RUN unzip ./stock-plugins/aiverify.stock.robustness-toolbox/dist/*.zip -d ./ai-verify-portal/plugins/robustness-toolbox
-RUN unzip ./stock-plugins/aiverify.stock.shap-toolbox/dist/*.zip -d ./ai-verify-portal/plugins/shap-toolbox
-
-# All stock plugins are installed into portal plugins foler, now build portal (nextjs build)
-WORKDIR /app/aiverify/ai-verify-portal
-RUN npm run build
-
-RUN chown -R $UID:$GID /app/aiverify
-
-# Run containers with non-admin user
+# Run containers with non-root user
 USER $USER
 
 WORKDIR /app

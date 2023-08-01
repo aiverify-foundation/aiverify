@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: AI Verify Foundation Contact Page
+    url: https://aiverifyfoundation.sg/contact-us/?utm_source=Github&utm_medium=referral&utm_campaign=20230607_Queries_from_GitHub
+    about: Please direct your queries here.
+  - name: GitHub Discussion Board
+    url: https://github.com/IMDA-BTG/aiverify/discussions
+    about: Please share ideas and ask/answer questions publicly here.
