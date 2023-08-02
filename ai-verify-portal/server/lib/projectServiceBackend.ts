@@ -133,6 +133,62 @@ export const GET_PROJECT = gql`
           name
           status
           ctime
+          modelAPI {
+            method
+            url
+            urlParams
+            authType
+            authTypeConfig
+            additionalHeaders {
+              name
+              type
+              value
+            }
+            parameters {
+              paths {
+                mediaType
+                isArray
+                maxItems
+                pathParams {
+                  name
+                  type
+                }
+              }
+              queries {
+                mediaType
+                name
+                isArray
+                maxItems
+                queryParams {
+                  name
+                  type
+                }
+              }
+            }
+            requestBody {
+              mediaType
+              isArray
+              name
+              maxItems
+              properties {
+                field
+                type
+              }
+            }
+            response {
+              statusCode
+              mediaType
+              type
+              field
+            }
+            requestConfig {
+              rateLimit
+              batchStrategy
+              batchLimit
+              maxConnections
+              requestTimeout
+            }
+          }
         }
         testDataset {
           id
@@ -191,7 +247,6 @@ export async function listProjects(): Promise<Project[]> {
 }
 
 export async function getProject(id: string): Promise<Project> {
-  console.log('getProject');
   const client = graphqlClient(true);
   try {
     const { data } = await client.query({
