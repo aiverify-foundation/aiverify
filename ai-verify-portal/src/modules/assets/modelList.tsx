@@ -78,6 +78,62 @@ const GET_MODELS = gql`
       name
       filename
       filePath
+      modelAPI {
+        method
+        url
+        urlParams
+        authType
+        authTypeConfig
+        additionalHeaders {
+          name
+          type
+          value
+        }
+        parameters {
+          paths {
+            mediaType
+            isArray
+            maxItems
+            pathParams {
+              name
+              type
+            }
+          }
+          queries {
+            mediaType
+            name
+            isArray
+            maxItems
+            queryParams {
+              name
+              type
+            }
+          }
+        }
+        requestBody {
+          mediaType
+          isArray
+          name
+          maxItems
+          properties {
+            field
+            type
+          }
+        }
+        response {
+          statusCode
+          mediaType
+          type
+          field
+        }
+        requestConfig {
+          rateLimit
+          batchStrategy
+          batchLimit
+          maxConnections
+          requestTimeout
+        }
+      }
       ctime
       size
       status
@@ -197,6 +253,7 @@ export default function ModelListComponent({
 
   function handleModelBtnClick() {
     if (onModelSelected) {
+      console.log(focus);
       onModelSelected(focus as ModelFile);
     }
   }

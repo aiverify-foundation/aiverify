@@ -5,14 +5,21 @@ import {
   ModelAPIFormModel,
   OpenApiDataTypes,
 } from './types';
-import { FieldArray, useFormikContext } from 'formik';
+import {
+  FieldArray,
+  FieldArrayRenderProps,
+  useFormikContext,
+  FormikErrors,
+  FormikTouched,
+} from 'formik';
 import { optionsMediaTypes } from './selectOptions';
-import { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { getInputReactKeyId } from '.';
 import {
   RequestBodyParameterInput,
   RequestBodyParamsHeading,
 } from './requestBodyParamInput';
+import { TextInput } from 'src/components/textInput';
 
 const defaultBodyParameter: BodyParam = {
   reactPropId: '',
@@ -22,23 +29,66 @@ const defaultBodyParameter: BodyParam = {
 
 const requestBodyFieldName = 'modelAPI.requestBody';
 
+const PropExistsMsg = 'Property exists';
+const RequiredMsg = 'Required';
+
 function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
   const [newParam, setNewParam] = useState<BodyParam>(defaultBodyParameter);
-  const { values, setFieldValue, handleChange } =
+  const [errorMsg, setErrorMsg] = useState<string>();
+  const { values, errors, touched, handleChange } =
     useFormikContext<ModelAPIFormModel>();
   const properties = values.modelAPI.requestBody.properties || [];
+  const fieldErrors = errors.modelAPI?.requestBody?.properties as
+    | FormikErrors<BodyParam>[]
+    | undefined;
+  const touchedFields = touched.modelAPI?.requestBody?.properties as
+    | FormikTouched<BodyParam>[]
+    | undefined;
+  console.log(fieldErrors);
 
-  function handleNewParamChange(value: BodyParam) {
-    setNewParam((prev) => ({
-      ...value,
-      reactPropId:
-        prev.reactPropId === '' ? getInputReactKeyId() : prev.reactPropId,
-    }));
+  // overloading just to make the type compatible with formik's `handleChange` signature
+  function handleNewParamChange(e: ChangeEvent<HTMLInputElement>): void;
+  function handleNewParamChange(arg: BodyParam): void;
+  function handleNewParamChange(
+    arg: BodyParam | ChangeEvent<HTMLInputElement>
+  ) {
+    if ('field' in arg) {
+      if (errorMsg !== undefined) setErrorMsg(undefined);
+      setNewParam((prev) => ({
+        ...arg,
+        reactPropId:
+          prev.reactPropId === '' ? getInputReactKeyId() : prev.reactPropId,
+      }));
+    }
   }
 
-  function handleAddedParamChange(idx: number) {
-    return (val: BodyParam) => {
-      setFieldValue(`${requestBodyFieldName}.properties[${idx}]`, val);
+  function handleAddClick(formikArrayHelpers: FieldArrayRenderProps) {
+    return () => {
+      if (newParam.field.trim() === '') setErrorMsg(RequiredMsg);
+      const isExist =
+        values.modelAPI.requestBody.properties.findIndex(
+          (prop) => prop.field === newParam.field
+        ) > -1;
+      if (isExist) {
+        setErrorMsg(PropExistsMsg);
+        return;
+      }
+      formikArrayHelpers.push(newParam);
+      setNewParam(defaultBodyParameter);
+    };
+  }
+
+  function handleDeleteClick(
+    formikArrayHelpers: FieldArrayRenderProps,
+    index: number
+  ) {
+    return () => {
+      if (
+        values.modelAPI.requestBody.properties[index].field === newParam.field
+      ) {
+        setErrorMsg(undefined);
+      }
+      formikArrayHelpers.remove(index);
     };
   }
 
@@ -59,7 +109,7 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
       />
       {values.modelAPI.requestBody.mediaType !== MediaType.NONE ? (
         <>
-          {properties.length > 0 ? <RequestBodyParamsHeading /> : null}
+          {disabled && !properties.length ? null : <RequestBodyParamsHeading />}
           <FieldArray name={`${requestBodyFieldName}.properties`}>
             {(arrayHelpers) => (
               <div
@@ -67,18 +117,31 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
                   display: 'flex',
                   flexDirection: 'column',
                 }}>
-                {!properties.length ? (
+                {disabled && !properties.length ? (
                   <div style={{ fontSize: 15, marginTop: 20 }}>
                     No Request Body Properties
                   </div>
                 ) : (
                   properties.map((param, index) => (
                     <RequestBodyParameterInput
+                      isFormikBinded
+                      propInputName={`modelAPI.requestBody.properties.${index}.field`}
+                      propTypeName={`modelAPI.requestBody.properties.${index}.type`}
                       disabled={disabled}
                       key={param.reactPropId}
                       value={param}
-                      onChange={handleAddedParamChange(index)}
-                      onDeleteClick={() => arrayHelpers.remove(index)}
+                      onChange={handleChange}
+                      onDeleteClick={handleDeleteClick(arrayHelpers, index)}
+                      fieldError={
+                        Boolean(
+                          fieldErrors &&
+                            fieldErrors[index]?.field &&
+                            touchedFields &&
+                            touchedFields[index]?.type
+                        )
+                          ? fieldErrors && fieldErrors[index]?.field
+                          : undefined
+                      }
                     />
                   ))
                 )}
@@ -87,10 +150,8 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
                     showAddBtn
                     value={newParam}
                     onChange={handleNewParamChange}
-                    onAddClick={() => {
-                      arrayHelpers.push(newParam);
-                      setNewParam(defaultBodyParameter);
-                    }}
+                    onAddClick={handleAddClick(arrayHelpers)}
+                    fieldError={errorMsg}
                   />
                 ) : null}
               </div>

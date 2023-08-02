@@ -160,9 +160,7 @@ export function useProjectStore(
   );
   const _sendModelAndDatasets = useCallback(
     _.debounce((id: string | undefined, state: ModelAndDatasets) => {
-      // console.log("Updating page", id, pages);
       if (!id || id.length == 0) return;
-      // const data = _.pick(state, [ "model", "testDataset", "groundTruthDataset", "groundTruthColumn"]);
       const modelAndDatasets = {
         modelId: state.model ? state.model.id : undefined,
         testDatasetId: state.testDataset ? state.testDataset.id : undefined,
@@ -170,6 +168,7 @@ export function useProjectStore(
           ? state.groundTruthDataset.id
           : undefined,
         groundTruthColumn: state.groundTruthColumn,
+        apiConfig: state.apiConfig,
       };
       updateProjectFn(id, { modelAndDatasets })
         .then(() => {

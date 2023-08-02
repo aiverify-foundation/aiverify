@@ -25,7 +25,6 @@
 
 .pageLevelError {
   display: flex;
-  background: #ffffff;
   width: 90%;
   min-width: 730px;
   margin: auto;
@@ -163,7 +162,7 @@
 
 .keyValRow {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 4px;
   width: 100%;
 }

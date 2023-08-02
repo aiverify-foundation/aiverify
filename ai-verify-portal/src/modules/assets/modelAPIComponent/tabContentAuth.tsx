@@ -26,18 +26,10 @@ function TabContentAuth({ disabled = false }: { disabled?: boolean }) {
   }
 
   useEffect(() => {
-    switch (values.modelAPI.authType) {
-      case AuthType.NO_AUTH:
-        setFieldValue(authTypeConfigFieldName, undefined);
-        break;
-      case AuthType.BASIC:
-        setFieldValue(`${authTypeConfigFieldName}.token`, undefined);
-        break;
-      case AuthType.BEARER_TOKEN:
-        setFieldValue(`${authTypeConfigFieldName}.username`, undefined);
-        setFieldValue(`${authTypeConfigFieldName}.password`, undefined);
-        break;
-    }
+    setFieldValue(
+      `${authTypeConfigFieldName}.authType`, // This is set under authTypeConfig only for Yup validation field dependencies
+      values.modelAPI.authType
+    );
   }, [values.modelAPI.authType]);
 
   return (

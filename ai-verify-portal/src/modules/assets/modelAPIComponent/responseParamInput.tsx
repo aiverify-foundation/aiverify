@@ -22,7 +22,10 @@ function ResponseInputHeading() {
 }
 
 function ResponsePropertyInput({ disabled = false }: { disabled?: boolean }) {
-  const { values, handleChange } = useFormikContext<ModelAPIFormModel>();
+  const { values, errors, touched, handleChange } =
+    useFormikContext<ModelAPIFormModel>();
+  const fieldErrors = errors.modelAPI?.response;
+  const touchedFields = touched.modelAPI?.response;
 
   return (
     <div className={styles.keyValRow}>
@@ -34,6 +37,11 @@ function ResponsePropertyInput({ disabled = false }: { disabled?: boolean }) {
           value={values.modelAPI.response.statusCode.toString()}
           maxLength={128}
           style={{ marginBottom: 0 }}
+          error={
+            Boolean(fieldErrors?.statusCode && touchedFields?.statusCode)
+              ? fieldErrors?.statusCode
+              : undefined
+          }
         />
       </div>
       <div className={styles.keyValCol}>
