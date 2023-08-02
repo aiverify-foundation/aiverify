@@ -1,5 +1,13 @@
-import { object, string, number } from 'yup';
+import { object, string, number, bool, array, addMethod } from 'yup';
 import { AuthType } from './types';
+
+declare module 'yup' {
+  //@ts-ignore
+  interface ObjectSchema<T> {
+    //@ts-ignore
+    uniqueProperty(propertyName: string, message?: string): ObjectSchema<T>;
+  }
+}
 
 const urlPattern = new RegExp(
   '^([a-zA-Z]+:\\/\\/)?' + // protocol
@@ -11,6 +19,31 @@ const urlPattern = new RegExp(
     '(\\#[-a-z\\d_]*)?$', // fragment locator
   'i'
 );
+
+addMethod(object, 'uniqueProperty', function (propertyName, message) {
+  return this.test('unique', message, function (value: { [x: string]: any }) {
+    if (!value || !value[propertyName]) {
+      return true;
+    }
+
+    const { path } = this;
+    const options = [...this.parent];
+    const currentIndex = options.indexOf(value);
+
+    const subOptions = options.slice(0, currentIndex);
+
+    if (
+      subOptions.some((option) => option[propertyName] === value[propertyName])
+    ) {
+      throw this.createError({
+        path: `${path}.${propertyName}`,
+        message,
+      });
+    }
+
+    return true;
+  });
+});
 
 export const ModelAPIFormSchema = object({
   name: string()
@@ -52,7 +85,7 @@ export const ModelAPIFormSchema = object({
     }),
     authType: string().required(),
     authTypeConfig: object({
-      authType: string(), // duplicated here for the `when()` dependecies below. Yup when() has limitation - it cannot refer to fields up the tree.
+      authType: string(), // duplicated here for the `when()` dependecies below. Yup `when()` has limitation - it cannot refer to fields up the tree.
       token: string()
         .min(32, 'Too short. Min 32 characters')
         .max(128, 'Max 128 characters')
@@ -74,6 +107,16 @@ export const ModelAPIFormSchema = object({
           is: AuthType.BASIC,
           then: (schema) => schema.required('Required'),
         }),
+    }),
+    requestBody: object({
+      mediaType: string().required('REquired'),
+      isArray: bool(),
+      properties: array().of(
+        object({
+          field: string().required('Required'),
+          type: string().required('Required'),
+        }).uniqueProperty('field', 'Property Exists')
+      ),
     }),
   }),
 });

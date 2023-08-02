@@ -9,12 +9,18 @@ import { optionsOpenApiDataTypes } from './selectOptions';
 import { BodyParam, OpenApiDataTypes } from './types';
 
 type RequestBodyParameterInputProps = {
+  isFormikBinded?: boolean;
   value: BodyParam;
   showAddBtn?: boolean;
   disabled?: boolean;
   fieldError?: string;
   typeError?: string;
-  onChange: (value: BodyParam) => void;
+  propInputName?: string;
+  propTypeName?: string;
+  onChange: {
+    (e: ChangeEvent<HTMLInputElement>): void;
+    (value: BodyParam): void;
+  };
   onAddClick?: () => void;
   onDeleteClick?: (param: BodyParam) => void;
 };
@@ -30,11 +36,14 @@ function RequestBodyParamsHeading() {
 
 function RequestBodyParameterInput(props: RequestBodyParameterInputProps) {
   const {
+    isFormikBinded = false,
     value,
     showAddBtn = false,
     disabled = false,
     fieldError,
     typeError,
+    propInputName,
+    propTypeName,
     onChange,
     onAddClick,
     onDeleteClick,
@@ -61,8 +70,8 @@ function RequestBodyParameterInput(props: RequestBodyParameterInputProps) {
         <TextInput
           disabled={disabled}
           value={value.field}
-          name="paramName"
-          onChange={handleKeyChange}
+          name={isFormikBinded && propInputName ? propInputName : 'paramName'}
+          onChange={isFormikBinded ? onChange : handleKeyChange}
           maxLength={100}
           style={{ marginBottom: 0 }}
           error={fieldError}
@@ -71,9 +80,10 @@ function RequestBodyParameterInput(props: RequestBodyParameterInputProps) {
       <div className={styles.keyValCol}>
         <SelectInput<OpenApiDataTypes>
           disabled={disabled}
-          name="propDataType"
+          name={isFormikBinded && propTypeName ? propTypeName : 'propDataType'}
           options={optionsOpenApiDataTypes}
-          onChange={handleTypeChange}
+          onChange={isFormikBinded ? undefined : handleTypeChange}
+          onSyntheticChange={isFormikBinded ? onChange : undefined}
           value={value.type}
           style={{ marginBottom: 0 }}
           error={typeError}

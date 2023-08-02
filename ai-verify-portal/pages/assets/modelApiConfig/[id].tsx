@@ -171,7 +171,7 @@ export const getServerSideProps: GetServerSideProps<{
   };
 };
 
-export default function ModelAPIConmfigPage({
+export default function ModelAPIConfigPage({
   disabled,
   id,
   formValues,

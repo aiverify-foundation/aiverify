@@ -5,14 +5,21 @@ import {
   ModelAPIFormModel,
   OpenApiDataTypes,
 } from './types';
-import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
+import {
+  FieldArray,
+  FieldArrayRenderProps,
+  useFormikContext,
+  FormikErrors,
+  FormikTouched,
+} from 'formik';
 import { optionsMediaTypes } from './selectOptions';
-import { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { getInputReactKeyId } from '.';
 import {
   RequestBodyParameterInput,
   RequestBodyParamsHeading,
 } from './requestBodyParamInput';
+import { TextInput } from 'src/components/textInput';
 
 const defaultBodyParameter: BodyParam = {
   reactPropId: '',
@@ -28,23 +35,31 @@ const RequiredMsg = 'Required';
 function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
   const [newParam, setNewParam] = useState<BodyParam>(defaultBodyParameter);
   const [errorMsg, setErrorMsg] = useState<string>();
-  const { values, setFieldValue, handleChange } =
+  const { values, errors, touched, handleChange } =
     useFormikContext<ModelAPIFormModel>();
   const properties = values.modelAPI.requestBody.properties || [];
+  const fieldErrors = errors.modelAPI?.requestBody?.properties as
+    | FormikErrors<BodyParam>[]
+    | undefined;
+  const touchedFields = touched.modelAPI?.requestBody?.properties as
+    | FormikTouched<BodyParam>[]
+    | undefined;
+  console.log(fieldErrors);
 
-  function handleNewParamChange(value: BodyParam) {
-    if (errorMsg !== undefined) setErrorMsg(undefined);
-    setNewParam((prev) => ({
-      ...value,
-      reactPropId:
-        prev.reactPropId === '' ? getInputReactKeyId() : prev.reactPropId,
-    }));
-  }
-
-  function handleAddedParamChange(idx: number) {
-    return (val: BodyParam) => {
-      setFieldValue(`${requestBodyFieldName}.properties[${idx}]`, val);
-    };
+  // overloading just to make the type compatible with formik's `handleChange` signature
+  function handleNewParamChange(e: ChangeEvent<HTMLInputElement>): void;
+  function handleNewParamChange(arg: BodyParam): void;
+  function handleNewParamChange(
+    arg: BodyParam | ChangeEvent<HTMLInputElement>
+  ) {
+    if ('field' in arg) {
+      if (errorMsg !== undefined) setErrorMsg(undefined);
+      setNewParam((prev) => ({
+        ...arg,
+        reactPropId:
+          prev.reactPropId === '' ? getInputReactKeyId() : prev.reactPropId,
+      }));
+    }
   }
 
   function handleAddClick(formikArrayHelpers: FieldArrayRenderProps) {
@@ -109,11 +124,24 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
                 ) : (
                   properties.map((param, index) => (
                     <RequestBodyParameterInput
+                      isFormikBinded
+                      propInputName={`modelAPI.requestBody.properties.${index}.field`}
+                      propTypeName={`modelAPI.requestBody.properties.${index}.type`}
                       disabled={disabled}
                       key={param.reactPropId}
                       value={param}
-                      onChange={handleAddedParamChange(index)}
+                      onChange={handleChange}
                       onDeleteClick={handleDeleteClick(arrayHelpers, index)}
+                      fieldError={
+                        Boolean(
+                          fieldErrors &&
+                            fieldErrors[index]?.field &&
+                            touchedFields &&
+                            touchedFields[index]?.type
+                        )
+                          ? fieldErrors && fieldErrors[index]?.field
+                          : undefined
+                      }
                     />
                   ))
                 )}
