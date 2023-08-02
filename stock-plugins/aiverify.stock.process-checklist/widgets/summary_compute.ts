@@ -44,6 +44,12 @@ export const processChecklistConfigsByPrinciple = processChecklistCids.reduce((a
 	// console.log("config", cid, config)
 	config.index = index;
 	config.cid = cid;
+	let count = 0;
+	for (const section of config.sections) {
+		for (const check of section.checklist) {
+			check.index = count++;
+		}
+	}
 	acc[config.principle] = config; 
 	return acc;
 }, {})
