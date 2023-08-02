@@ -29,7 +29,7 @@ class Plugin(IModel):
         "sklearn.ensemble._bagging.BaggingClassifier",
         "sklearn.linear_model._base.LinearRegression",
         "sklearn.ensemble._gb.GradientBoostingRegressor",
-        "sklearn.ensemble.ExtraTreesRegressor",
+        "sklearn.ensemble._forest.ExtraTreesRegressor",
         "sklearn.ensemble._forest.RandomForestRegressor",
     ]
     _name: str = "sklearnmodel"
