@@ -33,9 +33,14 @@ export const GET_PROJECTS = gql`
         }
       }
       modelAndDatasets {
+        apiConfig {
+          parameters
+          requestBody
+        }
         groundTruthColumn
         model {
           id
+          type
           filename
           filePath
           modelType
@@ -114,11 +119,16 @@ export const GET_PROJECT = gql`
         }
       }
       modelAndDatasets {
+        apiConfig {
+          parameters
+          requestBody
+        }
         groundTruthColumn
         model {
           id
           filename
           filePath
+          type
           modelType
           name
           status
@@ -222,6 +232,10 @@ export const GET_REPORT = gql`
           testArguments
         }
         modelAndDatasets {
+          apiConfig {
+            parameters
+            apiConfig
+          }
           testDataset {
             filename
             name

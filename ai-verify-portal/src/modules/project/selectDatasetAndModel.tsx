@@ -1,7 +1,7 @@
 import CloseIcon from '@mui/icons-material/Close';
 
 import { ProjectStore, UpdateActionTypes } from './projectContext';
-import { ModelAndDatasets } from 'src/types/project.interface';
+import { APIConfig, ModelAndDatasets } from 'src/types/project.interface';
 import { FileSelectMode } from './datasetModelFilePicker';
 import { MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import Dataset, { DatasetColumn } from 'src/types/dataset.interface';
@@ -11,7 +11,11 @@ import styles from './styles/inputs.module.css';
 import ModelFile from 'src/types/model.interface';
 import { useState } from 'react';
 import { RequestParamsMapModal } from './requestParamsMapModal';
-import { BodyParam, UrlParam } from '../assets/modelAPIComponent/types';
+import {
+  BodyParam,
+  RequestMethod,
+  UrlParam,
+} from '../assets/modelAPIComponent/types';
 
 type Props = {
   showGroundTruth: boolean;
@@ -35,12 +39,19 @@ export default function SelectDatasetAndModelSection({
   let groundTruthColVal = '';
   let selectedModel: ModelFile | undefined = undefined;
   let dataset: Dataset | undefined;
+  let apiConfiguration: APIConfig | undefined = undefined;
+  let paramsColumnsMap: Record<string, string> | undefined = undefined;
   const [showParamsMapping, setShowParamsMapping] = useState(false);
 
   if (projectStore.modelAndDatasets) {
     console.log(projectStore.modelAndDatasets);
-    const { model, testDataset, groundTruthDataset, groundTruthColumn } =
-      projectStore.modelAndDatasets;
+    const {
+      model,
+      apiConfig,
+      testDataset,
+      groundTruthDataset,
+      groundTruthColumn,
+    } = projectStore.modelAndDatasets;
     selectedModel = model;
     dataset = testDataset;
     selectedDatasetFilename = testDataset
@@ -56,6 +67,9 @@ export default function SelectDatasetAndModelSection({
     if (groundTruthColumn) {
       groundTruthColVal = groundTruthColumn;
     }
+    if (apiConfig) {
+      apiConfiguration = apiConfig;
+    }
   }
 
   let requestParams: (BodyParam | UrlParam)[] = [];
@@ -67,8 +81,14 @@ export default function SelectDatasetAndModelSection({
       } else if (apiDetails.parameters.queries) {
         requestParams = [...apiDetails.parameters.queries.queryParams];
       }
+      if (apiConfiguration && apiConfiguration.parameters) {
+        paramsColumnsMap = apiConfiguration.parameters;
+      }
     } else if (apiDetails.requestBody) {
       requestParams = [...apiDetails.requestBody.properties];
+      if (apiConfiguration && apiConfiguration.requestBody) {
+        paramsColumnsMap = apiConfiguration.requestBody;
+      }
     }
   }
 
@@ -105,7 +125,36 @@ export default function SelectDatasetAndModelSection({
     setShowParamsMapping(false);
   }
 
-  function handleParamsModalOkClick() {
+  function handleParamsModalOkClick(
+    paramsColumnsMapping: Record<string, string>
+  ) {
+    const payload: Partial<ModelAndDatasets> = {};
+    const apiDetails = selectedModel ? selectedModel.modelAPI : undefined;
+    if (
+      apiDetails &&
+      apiDetails.method === RequestMethod.GET &&
+      apiDetails.parameters
+    ) {
+      payload.apiConfig = {
+        parameters: paramsColumnsMapping,
+      };
+      projectStore.dispatchModelAndDatasets({
+        type: UpdateActionTypes.UPDATE,
+        payload,
+      });
+    } else if (
+      apiDetails &&
+      apiDetails.method === RequestMethod.POST &&
+      apiDetails.requestBody
+    ) {
+      payload.apiConfig = {
+        requestBody: paramsColumnsMapping,
+      };
+      projectStore.dispatchModelAndDatasets({
+        type: UpdateActionTypes.UPDATE,
+        payload,
+      });
+    }
     setShowParamsMapping(false);
   }
 
@@ -294,6 +343,7 @@ export default function SelectDatasetAndModelSection({
       </div>
       {showParamsMapping && dataset ? (
         <RequestParamsMapModal
+          initialMap={paramsColumnsMap}
           datasetColumns={dataset.dataColumns}
           requestParams={requestParams}
           onCloseClick={handleParamsModalCloseClick}
