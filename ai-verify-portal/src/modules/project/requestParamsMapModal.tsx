@@ -13,29 +13,29 @@ import produce from 'immer';
 type RequestParamsMapModalProps = {
   initialMap?: Record<string, string>;
   datasetColumns: DatasetColumn[];
-  requestParams: (BodyParam | UrlParam)[];
+  requestParams: BodyParam[] | UrlParam[];
   onCloseClick: () => void;
-  onOkClick: (paramsColumnsMapping: Record<string, string | undefined>) => void;
+  onOkClick: (paramsColumnsMap: Record<string, string>) => void;
 };
 
 function RequestParamsMapModal(props: RequestParamsMapModalProps) {
   const { initialMap, datasetColumns, requestParams, onCloseClick, onOkClick } =
     props;
-  const columnDict: Record<string, string> = {};
-  const datasetColumnOptions: SelectOption[] = datasetColumns.map((column) => {
+  const columnDict: Record<string, string> = {}; // used for easy lookup of column name using param name
+  const columnOptions: SelectOption[] = datasetColumns.map((column) => {
     columnDict[column.name] = column.name;
     return {
       value: column.name,
       label: column.name,
     };
   });
-  const [paramsColumnsMapping, setParamsColumnsMapping] = useState<
-    Record<string, string | undefined>
+  const [paramsColumnsMap, setParamsColumnsMap] = useState<
+    Record<string, string>
   >({});
 
   function handleColumnChange(paramName: string) {
     return (columnName: string) =>
-      setParamsColumnsMapping(
+      setParamsColumnsMap(
         produce((draft) => {
           draft[paramName] = columnName;
         })
@@ -43,24 +43,21 @@ function RequestParamsMapModal(props: RequestParamsMapModalProps) {
   }
 
   function handleOkClick() {
-    onOkClick(paramsColumnsMapping);
+    onOkClick(paramsColumnsMap);
   }
 
   useEffect(() => {
-    let newMap: Record<string, string | undefined> = {};
+    let newMap: Record<string, string> = {};
     requestParams.forEach((param) => {
       const name = 'name' in param ? param.name : param.field;
-      newMap[name] = columnDict[name];
+      newMap[name] = columnDict[name] || '';
     });
     if (initialMap !== undefined) {
       newMap = { ...newMap, ...initialMap };
     }
-    setParamsColumnsMapping(newMap);
+    setParamsColumnsMap(newMap);
   }, [initialMap]);
 
-  useEffect(() => {
-    console.log(paramsColumnsMapping);
-  }, [paramsColumnsMapping]);
   return (
     <AlertBox
       size={AlertBoxSize.MEDIUM}
@@ -98,9 +95,9 @@ function RequestParamsMapModal(props: RequestParamsMapModalProps) {
                 <div className={styles.datasetCell}>
                   <SelectInput
                     name="dsetColumn"
-                    options={datasetColumnOptions}
+                    options={columnOptions}
                     width={180}
-                    value={paramsColumnsMapping[name]}
+                    value={paramsColumnsMap[name]}
                     style={{ marginBottom: 0 }}
                     onChange={handleColumnChange(name)}
                   />

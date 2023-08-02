@@ -85,7 +85,7 @@ export const ModelAPIFormSchema = object({
     }),
     authType: string().required(),
     authTypeConfig: object({
-      authType: string(), // duplicated here for the `when()` dependecies below. Yup `when()` has limitation - it cannot refer to fields up the tree.
+      authType: string(), // duplicated here for the `when()` dependencies below. Yup `when()` has limitation - it cannot refer to fields up the tree.
       token: string()
         .min(32, 'Too short. Min 32 characters')
         .max(128, 'Max 128 characters')

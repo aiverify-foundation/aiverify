@@ -32,16 +32,17 @@ export default function SelectDatasetAndModelSection({
   onSelectModel,
   projectStore,
 }: Props) {
-  let selectedDatasetFilename: string | undefined;
-  let selectedTruthDatasetFilename: string | undefined;
-  let selectedModelFilename: string | undefined;
+  const [showParamsMapping, setShowParamsMapping] = useState(false);
+
+  let selectedDatasetFilename = '';
+  let selectedTruthDatasetFilename = '';
+  let selectedModelFilename = '';
   let groundTruthColumns: DatasetColumn[] = [];
   let groundTruthColVal = '';
   let selectedModel: ModelFile | undefined = undefined;
   let dataset: Dataset | undefined;
-  let apiConfiguration: APIConfig | undefined = undefined;
   let paramsColumnsMap: Record<string, string> | undefined = undefined;
-  const [showParamsMapping, setShowParamsMapping] = useState(false);
+  let requestParams: BodyParam[] | UrlParam[] = [];
 
   if (projectStore.modelAndDatasets) {
     console.log(projectStore.modelAndDatasets);
@@ -67,27 +68,27 @@ export default function SelectDatasetAndModelSection({
     if (groundTruthColumn) {
       groundTruthColVal = groundTruthColumn;
     }
-    if (apiConfig) {
-      apiConfiguration = apiConfig;
-    }
-  }
 
-  let requestParams: (BodyParam | UrlParam)[] = [];
-  if (selectedModel && selectedModel.type === 'API' && selectedModel.modelAPI) {
-    const apiDetails = selectedModel.modelAPI;
-    if (apiDetails.parameters) {
-      if (apiDetails.parameters.paths) {
-        requestParams = [...apiDetails.parameters.paths.pathParams];
-      } else if (apiDetails.parameters.queries) {
-        requestParams = [...apiDetails.parameters.queries.queryParams];
-      }
-      if (apiConfiguration && apiConfiguration.parameters) {
-        paramsColumnsMap = apiConfiguration.parameters;
-      }
-    } else if (apiDetails.requestBody) {
-      requestParams = [...apiDetails.requestBody.properties];
-      if (apiConfiguration && apiConfiguration.requestBody) {
-        paramsColumnsMap = apiConfiguration.requestBody;
+    if (
+      selectedModel &&
+      selectedModel.type === 'API' &&
+      selectedModel.modelAPI
+    ) {
+      const apiDetails = selectedModel.modelAPI;
+      if (apiDetails.parameters) {
+        if (apiDetails.parameters.paths) {
+          requestParams = [...apiDetails.parameters.paths.pathParams];
+        } else if (apiDetails.parameters.queries) {
+          requestParams = [...apiDetails.parameters.queries.queryParams];
+        }
+        if (apiConfig && apiConfig.parameters) {
+          paramsColumnsMap = apiConfig.parameters;
+        }
+      } else if (apiDetails.requestBody) {
+        requestParams = [...apiDetails.requestBody.properties];
+        if (apiConfig && apiConfig.requestBody) {
+          paramsColumnsMap = apiConfig.requestBody;
+        }
       }
     }
   }
@@ -125,9 +126,7 @@ export default function SelectDatasetAndModelSection({
     setShowParamsMapping(false);
   }
 
-  function handleParamsModalOkClick(
-    paramsColumnsMapping: Record<string, string>
-  ) {
+  function handleParamsModalOkClick(paramsColumnsMap: Record<string, string>) {
     const payload: Partial<ModelAndDatasets> = {};
     const apiDetails = selectedModel ? selectedModel.modelAPI : undefined;
     if (
@@ -136,7 +135,7 @@ export default function SelectDatasetAndModelSection({
       apiDetails.parameters
     ) {
       payload.apiConfig = {
-        parameters: paramsColumnsMapping,
+        parameters: paramsColumnsMap,
       };
       projectStore.dispatchModelAndDatasets({
         type: UpdateActionTypes.UPDATE,
@@ -148,7 +147,7 @@ export default function SelectDatasetAndModelSection({
       apiDetails.requestBody
     ) {
       payload.apiConfig = {
-        requestBody: paramsColumnsMapping,
+        requestBody: paramsColumnsMap,
       };
       projectStore.dispatchModelAndDatasets({
         type: UpdateActionTypes.UPDATE,
