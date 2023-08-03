@@ -34,7 +34,7 @@ import { AlertType, StandardAlert } from 'src/components/standardAlerts';
 import { useRouter } from 'next/router';
 import { transformFormValuesToGraphModel } from './utils/modelApiUtils';
 import { defaultFormValues } from './constants';
-import { ModelAPIFormSchema } from './validationSchema';
+import { ModelAPIFormValidationSchema } from './validationSchema';
 import { MinimalHeader } from 'src/modules/home/header';
 import ConfirmationDialog from 'src/components/confirmationDialog';
 import { AlertBoxSize } from 'src/components/alertBox';
@@ -254,7 +254,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                 <div className={styles.layout}>
                   <Formik
                     initialValues={initialFormValues}
-                    validationSchema={ModelAPIFormSchema}
+                    validationSchema={ModelAPIFormValidationSchema}
                     onSubmit={handleFormSubmit}>
                     {({
                       values,
@@ -329,6 +329,9 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                                 </div>
                               </div>
                               <div className={styles.tabs}>
+                                <div className={styles.tabsHeading}>
+                                  HTTP Request and Connection Settings
+                                </div>
                                 <TabButtonsGroup
                                   onTabClick={handleTabClick}
                                   activeTab={activeTab}

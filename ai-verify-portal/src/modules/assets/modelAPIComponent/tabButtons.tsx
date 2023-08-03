@@ -58,7 +58,7 @@ function TabButtonsGroup({ activeTab, onTabClick }: TabButtonsGroupProps) {
           activeTab === Tab.RESPONSE ? styles.tabBtn__selected : null
         )}
         onClick={handleTabClick(Tab.RESPONSE)}>
-        Response
+        Response Properties
       </div>
       <div
         className={clsx(
@@ -66,7 +66,7 @@ function TabButtonsGroup({ activeTab, onTabClick }: TabButtonsGroupProps) {
           activeTab === Tab.AUTHENTICATION ? styles.tabBtn__selected : null
         )}
         onClick={handleTabClick(Tab.AUTHENTICATION)}>
-        Authentication
+        Authentication Settings
       </div>
       <div
         className={clsx(
@@ -74,7 +74,7 @@ function TabButtonsGroup({ activeTab, onTabClick }: TabButtonsGroupProps) {
           activeTab === Tab.OTHERS ? styles.tabBtn__selected : null
         )}
         onClick={handleTabClick(Tab.OTHERS)}>
-        Others
+        Connection Settings
       </div>
     </div>
   );

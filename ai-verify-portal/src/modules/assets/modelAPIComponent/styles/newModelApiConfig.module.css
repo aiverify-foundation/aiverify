@@ -111,6 +111,15 @@
   margin-bottom: 2px;
 }
 
+.tabsHeading {
+  display: flex;
+  justify-content: space-between;
+  color: var(--color-gray);
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
 .tabBtn {
   display: flex;
   align-items: center;

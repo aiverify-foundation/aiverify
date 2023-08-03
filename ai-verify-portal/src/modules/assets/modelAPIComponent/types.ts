@@ -96,18 +96,21 @@ interface BaseParameters {
 export type Parameters = RequireAtLeastOne<BaseParameters>;
 
 export type RequestConfig = {
-  rateLimit: number;
-  batchStrategy: BatchStrategy;
-  batchLimit?: number;
-  maxConnections: number;
+  sslVerify: boolean;
   requestTimeout: number;
+  rateLimit: number;
+  rateLimitTimeout: number;
+  connectionRetries: number;
+  batchStrategy: BatchStrategy;
+  batchLimit: number;
+  maxConnections: number;
 };
 
 export type Response = {
   statusCode: number;
   mediaType: MediaType;
   type: OpenApiDataTypes;
-  field: string;
+  field?: string;
 };
 
 export type AuthBearerTokenConfig = {

@@ -19,7 +19,6 @@ import {
   RequestBodyParameterInput,
   RequestBodyParamsHeading,
 } from './requestBodyParamInput';
-import { TextInput } from 'src/components/textInput';
 
 const defaultBodyParameter: BodyParam = {
   reactPropId: '',
@@ -37,14 +36,14 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
   const [errorMsg, setErrorMsg] = useState<string>();
   const { values, errors, touched, handleChange } =
     useFormikContext<ModelAPIFormModel>();
-  const properties = values.modelAPI.requestBody.properties || [];
+  const properties = values.modelAPI.requestBody?.properties || [];
   const fieldErrors = errors.modelAPI?.requestBody?.properties as
     | FormikErrors<BodyParam>[]
     | undefined;
   const touchedFields = touched.modelAPI?.requestBody?.properties as
     | FormikTouched<BodyParam>[]
     | undefined;
-  console.log(fieldErrors);
+  const mediaTypeOptions = [optionsMediaTypes[1], optionsMediaTypes[2]];
 
   // overloading just to make the type compatible with formik's `handleChange` signature
   function handleNewParamChange(e: ChangeEvent<HTMLInputElement>): void;
@@ -103,7 +102,7 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
         width={240}
         label="Media Type"
         name={`${requestBodyFieldName}.mediaType`}
-        options={optionsMediaTypes}
+        options={mediaTypeOptions}
         value={values.modelAPI.requestBody?.mediaType}
         onSyntheticChange={handleChange}
       />

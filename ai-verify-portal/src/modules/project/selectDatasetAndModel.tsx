@@ -320,8 +320,7 @@ export default function SelectDatasetAndModelSection({
                       offsetLeft={10}>
                       <IconButton
                         iconComponent={EditIcon}
-                        noOutline
-                        style={{ fontSize: 12, padding: 2 }}
+                        style={{ fontSize: 11, padding: 2 }}
                         onClick={() => {
                           model !== undefined
                             ? router.push({

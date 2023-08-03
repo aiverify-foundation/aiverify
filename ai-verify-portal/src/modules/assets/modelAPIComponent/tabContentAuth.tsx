@@ -70,7 +70,7 @@ function TabContentAuth({ disabled = false }: { disabled?: boolean }) {
         <div style={{ display: 'flex' }}>
           <TextInput
             disabled={disabled}
-            label="User"
+            label="Username"
             name={`${authTypeConfigFieldName}.username`}
             value={
               (values.modelAPI.authTypeConfig as AuthBasicConfig)?.username

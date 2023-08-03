@@ -8,6 +8,8 @@ import {
   RequestMethod,
 } from './types';
 
+export const ConnectionSettingUnlimited = -1;
+
 export const defaultFormValues: ModelAPIFormModel = {
   name: '',
   description: '',
@@ -18,7 +20,7 @@ export const defaultFormValues: ModelAPIFormModel = {
     method: RequestMethod.POST,
     authType: AuthType.NO_AUTH,
     requestBody: {
-      mediaType: MediaType.NONE,
+      mediaType: MediaType.FORM_URLENCODED,
       isArray: false,
       properties: [],
     },
@@ -30,11 +32,14 @@ export const defaultFormValues: ModelAPIFormModel = {
       },
     },
     requestConfig: {
-      rateLimit: -1,
+      rateLimit: ConnectionSettingUnlimited,
       batchStrategy: BatchStrategy.none,
-      batchLimit: -1,
-      maxConnections: -1,
-      requestTimeout: 60000,
+      batchLimit: ConnectionSettingUnlimited,
+      maxConnections: ConnectionSettingUnlimited,
+      requestTimeout: 3,
+      sslVerify: false,
+      rateLimitTimeout: ConnectionSettingUnlimited,
+      connectionRetries: 5,
     },
     response: {
       statusCode: 200,

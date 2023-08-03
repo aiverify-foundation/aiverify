@@ -1,5 +1,6 @@
-import { object, string, number, bool, array, addMethod } from 'yup';
-import { AuthType } from './types';
+import { object, string, number, bool, array, addMethod, boolean } from 'yup';
+import { AuthType, MediaType } from './types';
+import { ConnectionSettingUnlimited } from './constants';
 
 declare module 'yup' {
   //@ts-ignore
@@ -45,13 +46,13 @@ addMethod(object, 'uniqueProperty', function (propertyName, message) {
   });
 });
 
-export const ModelAPIFormSchema = object({
+export const ModelAPIFormValidationSchema = object({
   name: string()
-    .min(5, 'Too short. Min 5 characters')
+    .min(5, 'Min 5 characters')
     .max(128, 'Max 128 characters')
     .required('Required'),
   description: string()
-    .min(20, 'Too short. Min 20 characters')
+    .min(20, 'Min 20 characters')
     .max(128, 'Max 128 characters')
     .required('Required'),
   modelAPI: object({
@@ -60,21 +61,32 @@ export const ModelAPIFormSchema = object({
       .required('URL is required'),
     requestConfig: object({
       rateLimit: number()
-        .min(-1, 'Invalid number')
+        .min(ConnectionSettingUnlimited, 'Invalid. Enter -1 for unlimited')
         .required('Required')
         .typeError('Must be a number'),
-      batchLimit: number()
-        .min(-1, 'Invalid number')
+      rateLimitTimeout: number()
+        .min(ConnectionSettingUnlimited, 'Invalid. Enter -1 for unlimited')
         .required('Required')
+        .typeError('Must be a number'),
+      batchStrategy: string().required('Required'),
+      batchLimit: number()
+        .min(ConnectionSettingUnlimited, 'Invalid. Enter -1 for unlimited')
+        .required('Required')
+        .typeError('Must be a number'),
+      connectionRetries: number()
+        .min(0, 'Must be 0 or greater')
+        .max(5, 'Must be less than 6')
         .typeError('Must be a number'),
       maxConnections: number()
-        .min(-1, 'Invalid number')
+        .min(ConnectionSettingUnlimited, 'Invalid. Enter -1 for unlimited')
         .required('Required')
         .typeError('Must be a number'),
       requestTimeout: number()
-        .min(1, 'Invalid number')
+        .min(3, 'Must be greater than 2')
+        .max(5, 'Must be less than 6')
         .required('Required')
         .typeError('Must be a number'),
+      sslVerify: boolean().required('Required'),
     }),
     response: object({
       statusCode: number()
@@ -82,26 +94,30 @@ export const ModelAPIFormSchema = object({
         .min(100, 'Invalid Status Code')
         .max(599, 'Invalid Status Code')
         .required('Required'),
+      mediaType: string().required('Required'),
+      type: string().required('Required'),
+      field: string().when('mediaType', {
+        is: MediaType.APP_JSON,
+        then: (schema) => schema.required('Required'),
+      }),
     }),
     authType: string().required(),
     authTypeConfig: object({
       authType: string(), // duplicated here for the `when()` dependencies below. Yup `when()` has limitation - it cannot refer to fields up the tree.
       token: string()
-        .min(32, 'Too short. Min 32 characters')
+        .min(32, 'Min 32 characters')
         .max(128, 'Max 128 characters')
         .when('authType', {
           is: AuthType.BEARER_TOKEN,
           then: (schema) => schema.required('Required'),
         }),
       username: string()
-        .min(5, 'Too short. Min 5 characters')
         .max(128, 'Max 128 characters')
         .when('authType', {
           is: AuthType.BASIC,
           then: (schema) => schema.required('Required'),
         }),
       password: string()
-        .min(5, 'Too short. Min 5 characters')
         .max(128, 'Max 128 characters')
         .when('authType', {
           is: AuthType.BASIC,
