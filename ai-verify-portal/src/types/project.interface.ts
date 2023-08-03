@@ -26,11 +26,11 @@ export type APIConfig = {
   parameters?: Record<string, string>;
 };
 export interface ModelAndDatasets {
-  model: ModelFile;
+  model?: ModelFile;
   apiConfig?: APIConfig;
-  testDataset: Dataset;
-  groundTruthDataset: Dataset;
-  groundTruthColumn: string;
+  testDataset?: Dataset;
+  groundTruthDataset?: Dataset;
+  groundTruthColumn?: string;
 }
 
 /**

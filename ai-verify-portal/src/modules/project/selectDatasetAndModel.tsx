@@ -1,14 +1,13 @@
 import CloseIcon from '@mui/icons-material/Close';
 
 import { ProjectStore, UpdateActionTypes } from './projectContext';
-import { APIConfig, ModelAndDatasets } from 'src/types/project.interface';
+import { ModelAndDatasets } from 'src/types/project.interface';
 import { FileSelectMode } from './datasetModelFilePicker';
 import { MenuItem, Select, SelectChangeEvent } from '@mui/material';
-import Dataset, { DatasetColumn } from 'src/types/dataset.interface';
+import { DatasetColumn } from 'src/types/dataset.interface';
 import FilePresentIcon from '@mui/icons-material/FilePresent';
 import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
 import styles from './styles/inputs.module.css';
-import ModelFile from 'src/types/model.interface';
 import { useState } from 'react';
 import { RequestParamsMapModal } from './requestParamsMapModal';
 import {
@@ -39,56 +38,45 @@ export default function SelectDatasetAndModelSection({
   let selectedModelFilename = '';
   let groundTruthColumns: DatasetColumn[] = [];
   let groundTruthColVal = '';
-  let selectedModel: ModelFile | undefined = undefined;
-  let dataset: Dataset | undefined;
   let paramsColumnsMap: Record<string, string> | undefined = undefined;
   let requestParams: BodyParam[] | UrlParam[] = [];
 
-  if (projectStore.modelAndDatasets) {
-    console.log(projectStore.modelAndDatasets);
-    const {
-      model,
-      apiConfig,
-      testDataset,
-      groundTruthDataset,
-      groundTruthColumn,
-    } = projectStore.modelAndDatasets;
-    selectedModel = model;
-    dataset = testDataset;
-    selectedDatasetFilename = testDataset
-      ? testDataset.name
-      : selectedDatasetFilename;
-    selectedModelFilename = model ? model.name : selectedModelFilename;
-    selectedTruthDatasetFilename = groundTruthDataset
-      ? groundTruthDataset.name
-      : selectedTruthDatasetFilename;
-    if (groundTruthDataset && groundTruthDataset.dataColumns) {
-      groundTruthColumns = groundTruthDataset.dataColumns;
-    }
-    if (groundTruthColumn) {
-      groundTruthColVal = groundTruthColumn;
-    }
+  console.log(projectStore.modelAndDatasets);
+  const {
+    model,
+    apiConfig,
+    testDataset,
+    groundTruthDataset,
+    groundTruthColumn,
+  } = projectStore.modelAndDatasets;
+  selectedDatasetFilename = testDataset
+    ? testDataset.name
+    : selectedDatasetFilename;
+  selectedModelFilename = model ? model.name : selectedModelFilename;
+  selectedTruthDatasetFilename = groundTruthDataset
+    ? groundTruthDataset.name
+    : selectedTruthDatasetFilename;
+  if (groundTruthDataset && groundTruthDataset.dataColumns) {
+    groundTruthColumns = groundTruthDataset.dataColumns;
+  }
+  if (groundTruthColumn) {
+    groundTruthColVal = groundTruthColumn;
+  }
 
-    if (
-      selectedModel &&
-      selectedModel.type === 'API' &&
-      selectedModel.modelAPI
-    ) {
-      const apiDetails = selectedModel.modelAPI;
-      if (apiDetails.parameters) {
-        if (apiDetails.parameters.paths) {
-          requestParams = [...apiDetails.parameters.paths.pathParams];
-        } else if (apiDetails.parameters.queries) {
-          requestParams = [...apiDetails.parameters.queries.queryParams];
-        }
-        if (apiConfig && apiConfig.parameters) {
-          paramsColumnsMap = apiConfig.parameters;
-        }
-      } else if (apiDetails.requestBody) {
-        requestParams = [...apiDetails.requestBody.properties];
-        if (apiConfig && apiConfig.requestBody) {
-          paramsColumnsMap = apiConfig.requestBody;
-        }
+  if (model && model.type === 'API' && model.modelAPI) {
+    if (model.modelAPI.parameters) {
+      if (model.modelAPI.parameters.paths) {
+        requestParams = [...model.modelAPI.parameters.paths.pathParams];
+      } else if (model.modelAPI.parameters.queries) {
+        requestParams = [...model.modelAPI.parameters.queries.queryParams];
+      }
+      if (apiConfig && apiConfig.parameters) {
+        paramsColumnsMap = apiConfig.parameters;
+      }
+    } else if (model.modelAPI.requestBody) {
+      requestParams = [...model.modelAPI.requestBody.properties];
+      if (apiConfig && apiConfig.requestBody) {
+        paramsColumnsMap = apiConfig.requestBody;
       }
     }
   }
@@ -128,7 +116,7 @@ export default function SelectDatasetAndModelSection({
 
   function handleParamsModalOkClick(paramsColumnsMap: Record<string, string>) {
     const payload: Partial<ModelAndDatasets> = {};
-    const apiDetails = selectedModel ? selectedModel.modelAPI : undefined;
+    const apiDetails = model ? model.modelAPI : undefined;
     if (
       apiDetails &&
       apiDetails.method === RequestMethod.GET &&
@@ -302,7 +290,7 @@ export default function SelectDatasetAndModelSection({
                   minWidth: 345,
                 }}>
                 <div style={{ display: 'flex' }}>
-                  {selectedModel && selectedModel.type === 'API' ? (
+                  {model && model.type === 'API' ? (
                     <SettingsApplicationsIcon
                       style={{ marginRight: '10px', fontSize: '27px' }}
                     />
@@ -320,7 +308,7 @@ export default function SelectDatasetAndModelSection({
                   onClick={() => removeFileHandler(FileSelectMode.MODEL)}
                 />
               </div>
-              {selectedModel && selectedModel.type === 'API' ? (
+              {model && model.type === 'API' ? (
                 <div>
                   <button
                     style={{ marginTop: 15 }}
@@ -340,10 +328,10 @@ export default function SelectDatasetAndModelSection({
           )}
         </div>
       </div>
-      {showParamsMapping && dataset ? (
+      {showParamsMapping && testDataset ? (
         <RequestParamsMapModal
           initialMap={paramsColumnsMap}
-          datasetColumns={dataset.dataColumns}
+          datasetColumns={testDataset.dataColumns}
           requestParams={requestParams}
           onCloseClick={handleParamsModalCloseClick}
           onOkClick={handleParamsModalOkClick}
