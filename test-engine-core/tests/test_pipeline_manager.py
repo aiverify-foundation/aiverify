@@ -1,7 +1,6 @@
 import logging
 
 import pytest
-
 from test_engine_core.plugins.enums.pipeline_plugin_type import PipelinePluginType
 from test_engine_core.plugins.enums.plugin_type import PluginType
 from test_engine_core.plugins.pipeline_manager import PipelineManager
@@ -149,7 +148,7 @@ class TestCollectionPipelineManager:
                     None,
                     (
                         "There was an error deserializing the pipeline: "
-                        "tests/pipeline/binary_classification_pipeline_credit_risk_sklearn.pipeline.Pipeline.sav"
+                        "tests/pipeline/sample_bc_credit_sklearn_linear.Pipeline.sav"
                     ),
                 ),
             ),
@@ -325,7 +324,7 @@ class TestCollectionPipelineManager:
                     None,
                     (
                         "There was an error deserializing the pipeline: "
-                        "tests/pipeline/binary_classification_pipeline_credit_risk_sklearn.pipeline.Pipeline.sav"
+                        "tests/pipeline/sample_bc_credit_sklearn_linear.Pipeline.sav"
                     ),
                 ),
             ),
@@ -439,7 +438,7 @@ class TestCollectionPipelineManager:
                     None,
                     (
                         "There was an error deserializing the pipeline: "
-                        "tests/pipeline/binary_classification_pipeline_credit_risk_sklearn.pipeline.Pipeline.sav"
+                        "tests/pipeline/sample_bc_credit_sklearn_linear.Pipeline.sav"
                     ),
                 ),
             ),
@@ -615,7 +614,7 @@ class TestCollectionPipelineManager:
                     None,
                     (
                         "There was an error deserializing the pipeline: "
-                        "tests/pipeline/binary_classification_pipeline_credit_risk_sklearn.pipeline.Pipeline.sav"
+                        "tests/pipeline/sample_bc_credit_sklearn_linear.Pipeline.sav"
                     ),
                 ),
             ),
