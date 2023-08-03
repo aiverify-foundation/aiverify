@@ -7,14 +7,19 @@ import { MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { DatasetColumn } from 'src/types/dataset.interface';
 import FilePresentIcon from '@mui/icons-material/FilePresent';
 import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
+import EditIcon from '@mui/icons-material/Edit';
 import styles from './styles/inputs.module.css';
 import { useState } from 'react';
 import { RequestParamsMapModal } from './requestParamsMapModal';
+
 import {
   BodyParam,
   RequestMethod,
   UrlParam,
 } from '../assets/modelAPIComponent/types';
+import { useRouter } from 'next/router';
+import { IconButton } from 'src/components/iconButton';
+import { Tooltip, TooltipPosition } from 'src/components/tooltip';
 
 type Props = {
   showGroundTruth: boolean;
@@ -32,6 +37,7 @@ export default function SelectDatasetAndModelSection({
   projectStore,
 }: Props) {
   const [showParamsMapping, setShowParamsMapping] = useState(false);
+  const router = useRouter();
 
   let selectedDatasetFilename = '';
   let selectedTruthDatasetFilename = '';
@@ -41,7 +47,6 @@ export default function SelectDatasetAndModelSection({
   let paramsColumnsMap: Record<string, string> | undefined = undefined;
   let requestParams: BodyParam[] | UrlParam[] = [];
 
-  console.log(projectStore.modelAndDatasets);
   const {
     model,
     apiConfig,
@@ -287,9 +292,10 @@ export default function SelectDatasetAndModelSection({
                   border: '1px solid #cfcfcf',
                   padding: '10px',
                   justifyContent: 'space-between',
+                  alignItems: 'center',
                   minWidth: 345,
                 }}>
-                <div style={{ display: 'flex' }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
                   {model && model.type === 'API' ? (
                     <SettingsApplicationsIcon
                       style={{ marginRight: '10px', fontSize: '27px' }}
@@ -299,8 +305,33 @@ export default function SelectDatasetAndModelSection({
                       style={{ marginRight: '10px', fontSize: '25px' }}
                     />
                   )}
-                  <div style={{ marginRight: '15px' }}>
+                  <div
+                    style={{
+                      marginRight: '15px',
+                    }}>
                     {selectedModelFilename}
+                  </div>
+                  <div>
+                    <Tooltip
+                      backgroundColor="#676767"
+                      fontColor="#FFFFFF"
+                      content="Edit Configuration"
+                      position={TooltipPosition.right}
+                      offsetLeft={10}>
+                      <IconButton
+                        iconComponent={EditIcon}
+                        noOutline
+                        style={{ fontSize: 12, padding: 2 }}
+                        onClick={() => {
+                          model !== undefined
+                            ? router.push({
+                                pathname: `/assets/modelApiConfig/${model.id}`,
+                                query: { from: 'selectModel' },
+                              })
+                            : undefined;
+                        }}
+                      />
+                    </Tooltip>
                   </div>
                 </div>
                 <CloseIcon

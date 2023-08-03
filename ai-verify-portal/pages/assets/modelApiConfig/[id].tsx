@@ -23,7 +23,7 @@ export const getInputReactKeyId = initReactKeyIdGenerator();
 export const getServerSideProps: GetServerSideProps<{
   id?: string;
   formValues?: ModelAPIFormModel;
-}> = async ({ params }) => {
+}> = async ({ params, query }) => {
   if (!params || !params.id) {
     return {
       props: {},
@@ -31,6 +31,7 @@ export const getServerSideProps: GetServerSideProps<{
   }
 
   const id = params.id as string;
+  const from = query.from as string;
   const result = await getModelAPIConfig(id);
   if (!result) {
     return { notFound: true };
@@ -167,6 +168,7 @@ export const getServerSideProps: GetServerSideProps<{
       disabled: true,
       id: result.id,
       formValues,
+      entryPoint: from,
     },
   };
 };
@@ -175,12 +177,14 @@ export default function ModelAPIConfigPage({
   disabled,
   id,
   formValues,
+  entryPoint,
 }: NewModelApiConfigModuleProps) {
   return (
     <NewModelApiConfigModule
       id={id}
       formValues={formValues}
-      disabled={disabled}
+      disabled={entryPoint === 'selectModel' ? false : disabled}
+      entryPoint={entryPoint}
     />
   );
 }

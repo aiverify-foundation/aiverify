@@ -61,10 +61,11 @@ export type NewModelApiConfigModuleProps = {
   id?: string;
   disabled?: boolean;
   formValues?: ModelAPIFormModel;
+  entryPoint?: string;
 };
 
 function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
-  const { id, formValues, disabled = false } = props;
+  const { id, formValues, disabled = false, entryPoint } = props;
   const [activeTab, setActiveTab] = useState<Tab>(() => {
     if (formValues) {
       return formValues.modelAPI.method === RequestMethod.POST
@@ -187,7 +188,9 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
   }
 
   function handleBackClick() {
-    router.push('/assets/models');
+    entryPoint === 'selectModel'
+      ? router.back()
+      : router.push('/assets/models');
   }
 
   function handleCloseAlertClick() {
@@ -374,7 +377,9 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                               style={{ width: 180 }}
                               className="aivBase-button aivBase-button--secondary aivBase-button--medum"
                               onClick={handleBackClick}>
-                              Back to AI Models
+                              {entryPoint === 'selectModel'
+                                ? 'Back to Project'
+                                : 'Back to AI Models'}
                             </button>
                             <div>
                               {isDisabled && id !== undefined ? (
