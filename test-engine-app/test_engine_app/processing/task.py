@@ -1,7 +1,11 @@
 import logging
+import queue
+from multiprocessing import Lock
 from typing import Callable, Dict, Tuple, Union
 
+import pathos
 from test_engine_app.app_logger import AppLogger
+from test_engine_app.enums.process_status import ProcessStatus
 from test_engine_app.enums.task_type import TaskType
 from test_engine_app.interfaces.iworkerfunction import IWorkerFunction
 from test_engine_app.processing.plugin_controller import PluginController
@@ -17,6 +21,8 @@ class Task(IWorkerFunction):
     Task class focuses on storing information and allows data processing and printing results
     regardless of the principle and configuration
     """
+
+    lock: Lock = Lock()
 
     def __init__(
         self,
@@ -43,13 +49,15 @@ class Task(IWorkerFunction):
         # Callback method
         self._task_update_callback: Union[Callable, None] = task_update_cb
 
+        # Timeout
+        self._mp_queue_timeout = 0.2  # 200 ms
+        self._mp_join_timeout = 5.0  # 5 seconds
+
         # Task
+        self._to_stop: bool = False
         self._logger: AppLogger = AppLogger()
         self._task_arguments: TaskArgument = TaskArgument(validation_schemas_folder)
         self._task_results = TaskResult(self._logger)
-        self._task_processing = TaskProcessing(
-            self._logger, self._send_task_update, self._task_results
-        )
 
     def cancel(self) -> None:
         """
@@ -60,7 +68,34 @@ class Task(IWorkerFunction):
             logging.INFO,
             "The system has received notification to cancel task",
         )
-        self._task_processing.stop()
+
+        # Check and terminate the process if running
+        running_process = self._get_task_process()
+        if running_process:
+            # Process is running.
+            # Terminate it if unable to join
+            AppLogger.add_to_log(
+                self._logger, logging.INFO, "Attempting to join running process"
+            )
+            running_process.join(timeout=self._mp_join_timeout)
+            if running_process.is_alive():
+                AppLogger.add_to_log(
+                    self._logger,
+                    logging.INFO,
+                    "Attempt to join process failed. Terminating process.",
+                )
+                running_process.terminate()
+
+            # Set flag to stop
+            self._to_stop = True
+
+            # Set the task to cancelled
+            self._task_results.set_cancelled()
+        else:
+            # Unable to terminate
+            AppLogger.add_to_log(
+                self._logger, logging.INFO, "There are no running task"
+            )
 
     def cleanup(self) -> None:
         """
@@ -122,32 +157,51 @@ class Task(IWorkerFunction):
         # Validate the task arguments
         is_success, error_messages = self._task_arguments.parse(self._message_arguments)
         if is_success:
-            # Setup stream logger and route the logs to task logger
             self._logger.generate_stream_logger(self._task_arguments.id)
-            PluginController.set_logger(self._logger)
-            AppLogger.add_to_log(
-                self._logger,
-                logging.INFO,
-                f"The task validation is successful: {self._task_arguments.id}",
-            )
-            AppLogger.add_to_log(
-                self._logger,
-                logging.INFO,
-                f"Working on task: "
-                f"message_id {self._message_id}, "
-                f"message_args {self._message_arguments}, "
-                f"task_type: {self._task_type}",
-            )
 
-            # Process the incoming task
-            if self._task_type is TaskType.PENDING:
-                is_success, error_messages = self._task_processing.process_pending_task(
-                    self._task_arguments
+            # Run the task processing instance in a Process and will return results when completed.
+            # If there is a process termination required, will terminate the process.
+            # Create a new queue for the process to place the results
+            with pathos.helpers.mp.Manager() as manager:
+                results_queue = manager.Queue()
+
+                # Create the Process
+                new_process = pathos.helpers.mp.Process(
+                    target=TaskProcessing.run_task_processing_in_process,
+                    args=(
+                        self._logger,
+                        self._task_arguments,
+                        self._message_id,
+                        self._message_arguments,
+                        self._task_type,
+                        results_queue,
+                    ),
                 )
-            else:
-                is_success, error_messages = self._task_processing.process_new_task(
-                    self._task_arguments
-                )
+
+                # Set the process before starting
+                self._set_task_process(new_process)
+                new_process.start()
+
+                # Get updates while process is running
+                while self._to_stop is False:
+                    try:
+                        process_status, payload = results_queue.get(
+                            timeout=self._mp_queue_timeout
+                        )
+                        if process_status is ProcessStatus.UPDATE:
+                            # Handle update task results
+                            self._task_results = payload
+                            self._send_task_update()
+                        else:
+                            # Handle process complete
+                            is_success, self._task_results, error_messages = payload
+                            break
+
+                    except queue.Empty:
+                        continue
+
+                # Join the process
+                new_process.join()
         else:
             # Check if id is not None, we can set HSET with error messages
             if not is_empty_string(self._task_arguments.id):
@@ -194,6 +248,28 @@ class Task(IWorkerFunction):
             self._task_results.set_failure()
 
         return is_success, error_messages
+
+    def _get_task_process(self) -> Union[pathos.helpers.mp.Process, None]:
+        """
+        A helper method to return the running task process
+
+        Returns:
+            Union[pathos.helpers.mp.Process, None]: An task process or None
+        """
+        with Task.lock:
+            return self._task_process
+
+    def _set_task_process(
+        self, task_process: Union[pathos.helpers.mp.Process, None]
+    ) -> None:
+        """
+        A helper method to set the task process
+
+        Args:
+            task_process (Union[pathos.helpers.mp.Process, None]): task process or None
+        """
+        with Task.lock:
+            self._task_process = task_process
 
     def _send_task_update(self) -> None:
         """
