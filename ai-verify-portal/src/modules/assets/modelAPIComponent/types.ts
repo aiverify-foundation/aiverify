@@ -51,6 +51,11 @@ export type SaveResult = {
   mode: 'new' | 'update' | 'delete';
 };
 
+/*
+  Below are types for the (1)API Model Form (formik state), (2)API Model GraphQL response and (3)API Model form submit.
+  Using formik, type all inputs as `string` at form-level. YUP validation schema is used to validate the string inputs.
+  Cast numberic types to string when consuming graphql query response and cast numeric types to number at form submit
+*/
 export type AdditionalHeader = {
   reactPropId: string;
   name: string;
@@ -95,7 +100,18 @@ interface BaseParameters {
 
 export type Parameters = RequireAtLeastOne<BaseParameters>;
 
-export type RequestConfig = {
+export type RequestConfigForm = {
+  sslVerify: boolean;
+  requestTimeout: string;
+  rateLimit: string;
+  rateLimitTimeout: string;
+  connectionRetries: string;
+  batchStrategy: BatchStrategy;
+  batchLimit: string;
+  maxConnections: string;
+};
+
+export type RequestConfigGQL = {
   sslVerify: boolean;
   requestTimeout: number;
   rateLimit: number;
@@ -106,52 +122,53 @@ export type RequestConfig = {
   maxConnections: number;
 };
 
-export type Response = {
+export type ResponseForm = {
+  statusCode: string;
+  mediaType: MediaType;
+  type: OpenApiDataTypes;
+  field?: string;
+};
+
+export type ResponseGQL = {
   statusCode: number;
   mediaType: MediaType;
   type: OpenApiDataTypes;
   field?: string;
 };
 
-export type AuthBearerTokenConfig = {
-  token: string;
+export type AuthTypeConfig = {
+  token?: string;
+  username?: string;
+  password?: string;
 };
 
-export type AuthBasicConfig = {
-  username: string;
-  password: string;
-};
-
-export type ModelAPI = {
+type FormModelApi = {
   method: RequestMethod;
   url: string;
   urlParams?: string;
   authType: AuthType;
-  authTypeConfig?: { authType?: AuthType } & ( // authType is duplicated here because token, user & password are dependent on it and Yup validation schema depdendencies fields have to be siblings
-    | AuthBearerTokenConfig
-    | AuthBasicConfig
-  );
+  authTypeConfig?: { authType?: AuthType } & AuthTypeConfig; // authType is duplicated here because token, user & password are dependent on it and Yup validation schema depdendencies fields have to be siblings
   requestBody: RequestBody;
-  requestConfig: RequestConfig;
-  response: Response;
+  requestConfig: RequestConfigForm;
+  response: ResponseForm;
   parameters: Parameters;
   additionalHeaders?: AdditionalHeader[];
 };
 
-export type ConfigDescription = {
-  name: string;
-  description: string;
-  modelType: ModelType;
+export type GqlModelApi = {
+  method: RequestMethod;
+  url: string;
+  urlParams?: string;
+  authType: AuthType;
+  authTypeConfig?: AuthTypeConfig;
+  requestBody: RequestBody;
+  requestConfig: RequestConfigGQL;
+  response: ResponseGQL;
+  parameters: Parameters;
+  additionalHeaders?: AdditionalHeader[];
 };
 
-/*
-  ModelAPIConfig Type used by the Formik controlled form
-*/
-export type ModelAPIFormModel = ConfigDescription & {
-  modelAPI: ModelAPI;
-};
-
-interface RequestBodyOrParametersForGraphQL {
+type RequestBodyOrParametersGQL = {
   requestBody: Pick<RequestBody, 'mediaType' | 'isArray'> & {
     properties: Pick<BodyParam, 'field' | 'type'>[];
   };
@@ -167,38 +184,55 @@ interface RequestBodyOrParametersForGraphQL {
       pathParams: Pick<UrlParam, 'name' | 'type'>[];
     };
   }>;
-}
+};
+
+/*
+  ModelAPIConfig Type used by the Formik controlled form
+*/
+export type ModelApiFormModel = {
+  name: string;
+  description: string;
+  modelType: ModelType;
+  modelAPI: FormModelApi;
+};
 
 /*
   ModelAPIConfig Type to conform to for create and update via graphql
+  Used to typecheck payload at form submission handler
 */
-export type ModelAPIGraphQLModel = ConfigDescription & {
+export type ModelApiGQLModel = {
   id?: string;
+  name: string;
+  description: string;
+  modelType: ModelType;
   modelAPI: Pick<
-    ModelAPI,
-    'method' | 'url' | 'urlParams' | 'authType' | 'requestConfig' | 'response'
+    GqlModelApi,
+    'method' | 'url' | 'urlParams' | 'authType' | 'authTypeConfig'
   > & {
-    authTypeConfig?: Partial<AuthBearerTokenConfig> | Partial<AuthBasicConfig>; // authType must be removed for the gql request
-  } & RequireAtLeastOne<RequestBodyOrParametersForGraphQL> & {
-      additionalHeaders?: Pick<AdditionalHeader, 'name' | 'type' | 'value'>[];
-      updatedAt?: string;
-    };
+    requestConfig: RequestConfigGQL;
+    response: ResponseGQL;
+    additionalHeaders?: Pick<AdditionalHeader, 'name' | 'type' | 'value'>[];
+  } & RequireAtLeastOne<RequestBodyOrParametersGQL>;
 };
 
 type Typename = {
   __typename: string;
 };
+
 /* 
-  The raw ModelAPIConfig Type returned when query via graphql.
+  The ModelAPIConfig payload returned when query via graphql.
   Some response properties could be `null`
 */
-export type ModelAPIGraphQLQueryResponseModel = ConfigDescription & {
+export type ModelApiGQLQueryResponseModel = {
   id: string;
-  modelAPI: Pick<ModelAPI, 'method' | 'url' | 'authType'> & {
+  name: string;
+  description: string;
+  modelType: ModelType;
+  modelAPI: Pick<GqlModelApi, 'method' | 'url' | 'authType'> & {
     urlParams?: string | null;
-    authTypeConfig?: AuthBearerTokenConfig | AuthBasicConfig | null;
-    requestConfig: Typename & RequestConfig;
-    response: Typename & Response;
+    authTypeConfig?: AuthTypeConfig | null;
+    requestConfig: Typename & RequestConfigGQL;
+    response: Typename & ResponseGQL;
     parameters: {
       queries: {
         __typename: string;

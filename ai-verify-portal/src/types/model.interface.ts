@@ -1,4 +1,4 @@
-import { ModelAPI } from 'src/modules/assets/modelAPIComponent/types';
+import { GqlModelApi } from 'src/modules/assets/modelAPIComponent/types';
 
 export enum ModelMode {
   API,
@@ -33,5 +33,5 @@ export default interface ModelFile {
   modelFormat: string;
   errorMessages: string;
   type: string;
-  modelAPI?: ModelAPI;
+  modelAPI?: GqlModelApi;
 }

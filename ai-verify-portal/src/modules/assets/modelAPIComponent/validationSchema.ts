@@ -1,6 +1,5 @@
 import { object, string, number, bool, array, addMethod, boolean } from 'yup';
 import { AuthType, MediaType } from './types';
-import { ConnectionSettingUnlimited } from './constants';
 
 declare module 'yup' {
   //@ts-ignore
@@ -46,6 +45,8 @@ addMethod(object, 'uniqueProperty', function (propertyName, message) {
   });
 });
 
+const unlimited = -1;
+
 export const ModelAPIFormValidationSchema = object({
   name: string()
     .min(5, 'Min 5 characters')
@@ -61,16 +62,16 @@ export const ModelAPIFormValidationSchema = object({
       .required('URL is required'),
     requestConfig: object({
       rateLimit: number()
-        .min(ConnectionSettingUnlimited, 'Invalid. Enter -1 for unlimited')
+        .min(unlimited, 'Invalid. Enter -1 for unlimited')
         .required('Required')
         .typeError('Must be a number'),
       rateLimitTimeout: number()
-        .min(ConnectionSettingUnlimited, 'Invalid. Enter -1 for unlimited')
+        .min(unlimited, 'Invalid. Enter -1 for unlimited')
         .required('Required')
         .typeError('Must be a number'),
       batchStrategy: string().required('Required'),
       batchLimit: number()
-        .min(ConnectionSettingUnlimited, 'Invalid. Enter -1 for unlimited')
+        .min(unlimited, 'Invalid. Enter -1 for unlimited')
         .required('Required')
         .typeError('Must be a number'),
       connectionRetries: number()
@@ -78,7 +79,7 @@ export const ModelAPIFormValidationSchema = object({
         .max(5, 'Must be less than 6')
         .typeError('Must be a number'),
       maxConnections: number()
-        .min(ConnectionSettingUnlimited, 'Invalid. Enter -1 for unlimited')
+        .min(unlimited, 'Invalid. Enter -1 for unlimited')
         .required('Required')
         .typeError('Must be a number'),
       requestTimeout: number()

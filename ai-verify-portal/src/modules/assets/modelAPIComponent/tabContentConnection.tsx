@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik';
-import { BatchStrategy, ModelAPIFormModel } from './types';
+import { BatchStrategy, ModelApiFormModel } from './types';
 import { TextInput } from 'src/components/textInput';
 import styles from './styles/newModelApiConfig.module.css';
 import { SelectInput } from 'src/components/selectInput';
@@ -8,9 +8,9 @@ import { ConnectionSettingUnlimited } from './constants';
 
 const otherReqConfigFieldName = 'modelAPI.requestConfig';
 
-function TabContentOthers({ disabled = false }: { disabled?: boolean }) {
+function TabContentConnection({ disabled = false }: { disabled?: boolean }) {
   const { values, errors, touched, handleChange } =
-    useFormikContext<ModelAPIFormModel>();
+    useFormikContext<ModelApiFormModel>();
   const requestConfig = values.modelAPI.requestConfig;
   const fieldErrors = errors.modelAPI?.requestConfig;
   const touchedFields = touched.modelAPI?.requestConfig;
@@ -29,7 +29,7 @@ function TabContentOthers({ disabled = false }: { disabled?: boolean }) {
             label="Request Timeout"
             name={`${otherReqConfigFieldName}.requestTimeout`}
             onChange={handleChange}
-            value={requestConfig.requestTimeout.toString()}
+            value={requestConfig.requestTimeout}
             maxLength={128}
             style={{ marginBottom: 0, width: '100%' }}
             error={
@@ -47,7 +47,7 @@ function TabContentOthers({ disabled = false }: { disabled?: boolean }) {
             label="Rate Limit"
             name={`${otherReqConfigFieldName}.rateLimit`}
             onChange={handleChange}
-            value={requestConfig.rateLimit.toString()}
+            value={requestConfig.rateLimit}
             maxLength={128}
             style={{ marginBottom: 0, width: '100%' }}
             error={
@@ -65,7 +65,7 @@ function TabContentOthers({ disabled = false }: { disabled?: boolean }) {
             label="Rate Limit Timeout"
             name={`${otherReqConfigFieldName}.rateLimitTimeout`}
             onChange={handleChange}
-            value={requestConfig.rateLimitTimeout?.toString()}
+            value={requestConfig.rateLimitTimeout}
             maxLength={128}
             style={{ marginBottom: 0, width: '100%' }}
             error={
@@ -96,7 +96,7 @@ function TabContentOthers({ disabled = false }: { disabled?: boolean }) {
             label="Batch Limit"
             name={`${otherReqConfigFieldName}.batchLimit`}
             onChange={handleChange}
-            value={requestConfig.batchLimit?.toString()}
+            value={requestConfig.batchLimit}
             maxLength={128}
             style={{ marginBottom: 0, width: '100%' }}
             error={
@@ -114,7 +114,7 @@ function TabContentOthers({ disabled = false }: { disabled?: boolean }) {
             label="Connection Retries"
             name={`${otherReqConfigFieldName}.connectionRetries`}
             onChange={handleChange}
-            value={requestConfig.connectionRetries?.toString()}
+            value={requestConfig.connectionRetries}
             maxLength={128}
             style={{ marginBottom: 0, width: '100%' }}
             error={
@@ -133,7 +133,7 @@ function TabContentOthers({ disabled = false }: { disabled?: boolean }) {
             label="Max Connections"
             name={`${otherReqConfigFieldName}.maxConnections`}
             onChange={handleChange}
-            value={requestConfig.maxConnections.toString()}
+            value={requestConfig.maxConnections}
             maxLength={128}
             style={{ marginBottom: 0, width: '100%' }}
             error={
@@ -150,4 +150,4 @@ function TabContentOthers({ disabled = false }: { disabled?: boolean }) {
   );
 }
 
-export { TabContentOthers };
+export { TabContentConnection };

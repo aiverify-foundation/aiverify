@@ -1,23 +1,46 @@
 import {
   AuthType,
-  ModelAPIFormModel,
-  ModelAPIGraphQLModel,
+  ModelApiFormModel,
+  ModelApiGQLModel,
   RequestMethod,
 } from '../types';
 
 export function transformFormValuesToGraphModel(
-  formValues: ModelAPIFormModel
-): ModelAPIGraphQLModel {
+  formValues: ModelApiFormModel
+): ModelApiGQLModel {
   // delete the duplicated authType from authTypeConfig (it was only used for auth field dependecies validation)
   if (formValues.modelAPI.authTypeConfig) {
     delete formValues.modelAPI.authTypeConfig.authType;
   }
-  const gqlModelAPIInput: ModelAPIGraphQLModel = { ...formValues };
+
+  const { modelAPI, ...otherProps } = formValues;
+  const { requestConfig, response, ...otherModelApiProps } = modelAPI;
+  const { statusCode, ...otherResponseProps } = response;
+  const formToModelApiGqlPayload: ModelApiGQLModel = {
+    modelAPI: {
+      requestConfig: {
+        sslVerify: requestConfig.sslVerify,
+        requestTimeout: parseInt(requestConfig.requestTimeout),
+        rateLimit: parseFloat(requestConfig.rateLimit),
+        rateLimitTimeout: parseInt(requestConfig.rateLimitTimeout),
+        connectionRetries: parseInt(requestConfig.connectionRetries),
+        batchStrategy: requestConfig.batchStrategy,
+        batchLimit: parseInt(requestConfig.batchLimit),
+        maxConnections: parseInt(requestConfig.maxConnections),
+      },
+      response: {
+        statusCode: parseInt(statusCode),
+        ...otherResponseProps,
+      },
+      ...otherModelApiProps,
+    },
+    ...otherProps,
+  };
 
   if (formValues.modelAPI.method === RequestMethod.GET) {
-    delete gqlModelAPIInput.modelAPI.requestBody;
+    delete formToModelApiGqlPayload.modelAPI.requestBody;
     // tidy pathParams - remove reactPropId
-    const parameters = gqlModelAPIInput.modelAPI.parameters;
+    const parameters = formToModelApiGqlPayload.modelAPI.parameters;
     if (parameters && parameters.paths) {
       parameters.paths.pathParams = parameters.paths.pathParams.map(
         (param) => ({
@@ -34,9 +57,9 @@ export function transformFormValuesToGraphModel(
       );
     }
   } else {
-    delete gqlModelAPIInput.modelAPI.parameters;
+    delete formToModelApiGqlPayload.modelAPI.parameters;
     // tidy requestbody properties - remove reactPropId
-    const requestBody = gqlModelAPIInput.modelAPI.requestBody;
+    const requestBody = formToModelApiGqlPayload.modelAPI.requestBody;
     if (requestBody && requestBody.properties) {
       requestBody.properties = requestBody.properties.map((prop) => ({
         field: prop.field,
@@ -46,9 +69,9 @@ export function transformFormValuesToGraphModel(
   }
 
   //tidy additionalHeaders - remove reactPropId
-  if (gqlModelAPIInput.modelAPI.additionalHeaders) {
-    gqlModelAPIInput.modelAPI.additionalHeaders =
-      gqlModelAPIInput.modelAPI.additionalHeaders.map((header) => ({
+  if (formToModelApiGqlPayload.modelAPI.additionalHeaders) {
+    formToModelApiGqlPayload.modelAPI.additionalHeaders =
+      formToModelApiGqlPayload.modelAPI.additionalHeaders.map((header) => ({
         name: header.name,
         type: header.type,
         value: header.value,
@@ -56,22 +79,22 @@ export function transformFormValuesToGraphModel(
   }
 
   //tidy authTypeConfig
-  if (gqlModelAPIInput.modelAPI.authType === AuthType.NO_AUTH) {
-    delete gqlModelAPIInput.modelAPI.authTypeConfig;
-  } else if (gqlModelAPIInput.modelAPI.authTypeConfig) {
+  if (formToModelApiGqlPayload.modelAPI.authType === AuthType.NO_AUTH) {
+    delete formToModelApiGqlPayload.modelAPI.authTypeConfig;
+  } else if (formToModelApiGqlPayload.modelAPI.authTypeConfig) {
     if (
-      gqlModelAPIInput.modelAPI.authType === AuthType.BEARER_TOKEN &&
-      'username' in gqlModelAPIInput.modelAPI.authTypeConfig
+      formToModelApiGqlPayload.modelAPI.authType === AuthType.BEARER_TOKEN &&
+      'username' in formToModelApiGqlPayload.modelAPI.authTypeConfig
     ) {
-      delete gqlModelAPIInput.modelAPI.authTypeConfig.username;
-      delete gqlModelAPIInput.modelAPI.authTypeConfig.password;
+      delete formToModelApiGqlPayload.modelAPI.authTypeConfig.username;
+      delete formToModelApiGqlPayload.modelAPI.authTypeConfig.password;
     } else if (
-      gqlModelAPIInput.modelAPI.authType === AuthType.BASIC &&
-      'token' in gqlModelAPIInput.modelAPI.authTypeConfig
+      formToModelApiGqlPayload.modelAPI.authType === AuthType.BASIC &&
+      'token' in formToModelApiGqlPayload.modelAPI.authTypeConfig
     ) {
-      delete gqlModelAPIInput.modelAPI.authTypeConfig.token;
+      delete formToModelApiGqlPayload.modelAPI.authTypeConfig.token;
     }
   }
 
-  return gqlModelAPIInput;
+  return formToModelApiGqlPayload;
 }

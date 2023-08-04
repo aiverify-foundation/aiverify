@@ -13,6 +13,7 @@ type TextInputProps = {
   labelSibling?: React.ReactElement;
   style?: React.CSSProperties;
   onChange?: ChangeEventHandler<HTMLInputElement>;
+  onBlur?: ChangeEventHandler<HTMLInputElement>;
 };
 
 function TextInput(props: TextInputProps) {
@@ -27,6 +28,7 @@ function TextInput(props: TextInputProps) {
     labelSibling,
     style,
     onChange,
+    onBlur,
   } = props;
 
   return (
@@ -51,6 +53,7 @@ function TextInput(props: TextInputProps) {
           value={value}
           maxLength={maxLength}
           onChange={onChange}
+          onBlur={onBlur}
         />
         {Boolean(error) ? (
           <div className={styles.errorText}>{error}</div>

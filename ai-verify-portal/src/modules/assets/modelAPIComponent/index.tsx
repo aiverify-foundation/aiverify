@@ -27,7 +27,7 @@ import {
   GqlDeleteModelAPIConfigResult,
   GqlUpdateModelAPIConfigResult,
 } from './gql';
-import { TabContentOthers } from './tabContentOthers';
+import { TabContentConnection } from './tabContentConnection';
 import { ModalResult } from './modalResult';
 import { ErrorWithMessage, toErrorWithMessage } from 'src/lib/errorUtils';
 import { AlertType, StandardAlert } from 'src/components/standardAlerts';
@@ -368,7 +368,9 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                                   ) : null}
 
                                   {activeTab === Tab.OTHERS ? (
-                                    <TabContentOthers disabled={isDisabled} />
+                                    <TabContentConnection
+                                      disabled={isDisabled}
+                                    />
                                   ) : null}
                                 </div>
                               </div>

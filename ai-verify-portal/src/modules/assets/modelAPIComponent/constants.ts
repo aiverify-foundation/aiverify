@@ -3,14 +3,14 @@ import {
   AuthType,
   BatchStrategy,
   MediaType,
-  ModelAPIFormModel,
+  ModelApiFormModel,
   OpenApiDataTypes,
   RequestMethod,
 } from './types';
 
-export const ConnectionSettingUnlimited = -1;
+export const ConnectionSettingUnlimited = '-1';
 
-export const defaultFormValues: ModelAPIFormModel = {
+export const defaultFormValues: ModelApiFormModel = {
   name: '',
   description: '',
   modelType: ModelType.Classification,
@@ -36,13 +36,13 @@ export const defaultFormValues: ModelAPIFormModel = {
       batchStrategy: BatchStrategy.none,
       batchLimit: ConnectionSettingUnlimited,
       maxConnections: ConnectionSettingUnlimited,
-      requestTimeout: 3,
+      requestTimeout: '3',
       sslVerify: false,
       rateLimitTimeout: ConnectionSettingUnlimited,
-      connectionRetries: 5,
+      connectionRetries: '5',
     },
     response: {
-      statusCode: 200,
+      statusCode: '200',
       mediaType: MediaType.APP_JSON,
       type: OpenApiDataTypes.INTEGER,
       field: 'data',

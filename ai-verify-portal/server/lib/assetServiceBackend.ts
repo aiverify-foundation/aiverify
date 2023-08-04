@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 import { toErrorWithMessage } from 'src/lib/errorUtils';
 import graphqlClient from 'src/lib/graphqlClient';
-import { ModelAPIGraphQLQueryResponseModel } from 'src/modules/assets/modelAPIComponent/types';
+import { ModelApiGQLQueryResponseModel } from 'src/modules/assets/modelAPIComponent/types';
 
 import Dataset from 'src/types/dataset.interface';
 import ModelFile from 'src/types/model.interface';
@@ -137,11 +137,11 @@ const GQL_GET_MODELAPI = gql`
 
 export async function getModelAPIConfig(
   modelFileID: string
-): Promise<ModelAPIGraphQLQueryResponseModel | undefined> {
+): Promise<ModelApiGQLQueryResponseModel | undefined> {
   const client = graphqlClient(true);
   try {
     const { data } = await client.query<{
-      modelFiles: ModelAPIGraphQLQueryResponseModel[];
+      modelFiles: ModelApiGQLQueryResponseModel[];
     }>({
       query: GQL_GET_MODELAPI,
       variables: {
