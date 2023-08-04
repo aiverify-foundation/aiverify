@@ -4,6 +4,7 @@ import express from 'express';
 const router = express.Router();
 import fs from 'node:fs';
 import path from 'node:path';
+import mongoose from 'mongoose';
 
 import { REPORT_DIRNAME, getReportFilename } from '../lib/report.mjs';
 
@@ -36,12 +37,19 @@ router.get('/:projectId',
   function(req, res) {
     try {
       const projectId = req.params.projectId;
+
+      // check projectId only consists of hexadecimal letters
+      if (!mongoose.Types.ObjectId.isValid(projectId)) {
+        console.log("not valid object ID")
+        return res.sendStatus(400).end();
+      }
+
       // console.log("get report", projectId)
       const filename = getReportFilename(projectId);
       const pdf_path = path.join(REPORT_DIRNAME, filename);
 
       if (!fs.existsSync(pdf_path)) {
-        return res.sendStatus(400);
+        return res.sendStatus(400).end();
       }
   
       let file = fs.createReadStream(pdf_path);
@@ -51,7 +59,7 @@ router.get('/:projectId',
       res.setHeader('Content-Disposition', 'inline');
       file.pipe(res);  
     } catch (e) {
-      res.sendStatus(500);
+      res.sendStatus(500).end();
     }
   });
 

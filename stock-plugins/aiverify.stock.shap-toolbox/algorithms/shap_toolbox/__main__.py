@@ -3,76 +3,56 @@ from tests.plugin_test import PluginTest
 
 if __name__ == "__main__":
     # Binary Classification Non-Pipeline
-    data_path = "tests/user_defined_files/data/pickle_pandas_mock_binary_classification_credit_risk_testing.sav"
-    model_path = (
-        "tests/user_defined_files/model/"
-        "binary_classification_mock_credit_risk_sklearn.linear_model._logistic.LogisticRegression.sav"
-    )
-    ground_truth_path = (
-        "tests/user_defined_files/data/"
-        "pickle_pandas_mock_binary_classification_credit_risk_testing.sav"
-    )
+    data_path = "tests/user_defined_files/data/sample_bc_credit_data.sav"
+    model_path = "tests/user_defined_files/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav"
+    ground_truth_path = "tests/user_defined_files/data/sample_bc_credit_data.sav"
     ground_truth = "default"
-    background_path = "tests/user_defined_files/data/pickle_pandas_mock_binary_classification_credit_risk_testing.sav"
+    background_path = "tests/user_defined_files/data/sample_bc_credit_data.sav"
     run_pipeline = False
     model_type = ModelType.CLASSIFICATION
 
     # # Multiclass Classification Non-Pipeline
-    # data_path = ("tests/user_defined_files/data/"
-    #              "pickle_pandas_mock_multiclass_classification_toxic_classification_testing.sav")
-    # model_path = ("tests/user_defined_files/model/""multiclass_classification_mock_toxic_"
-    #               "classification_sklearn.linear_model._logistic.LogisticRegression.sav")
-    # ground_truth_path = (
-    #     "tests/user_defined_files/data/pickle_pandas_mock_multiclass_classification_toxic_classification_testing.sav"
-    # )
-    # background_path = ("tests/user_defined_files/data/"
-    #                    "pickle_pandas_mock_multiclass_classification_toxic_classification_testing.sav")
+    # data_path = "tests/user_defined_files/data/sample_mc_toxic_data.sav"
+    # model_path = "tests/user_defined_files/model/sample_mc_toxic_sklearn_linear.LogisticRegression.sav"
+    # ground_truth_path = "tests/user_defined_files/data/sample_mc_toxic_data.sav"
+    # background_path = "tests/user_defined_files/data/sample_mc_toxic_data.sav"
     # ground_truth = "toxic"
     # run_pipeline = False
     # model_type = ModelType.CLASSIFICATION
 
     # # Tabular Binary Classification Pipeline
-    # data_path = ("tests/user_defined_files/data/"
-    #              "pickle_pandas_mock_binary_classification_pipeline_credit_risk_testing.sav")
-    # model_path = "tests/user_defined_files/pipeline/binary_classification_tabular_credit_loan"
-    # ground_truth_path = ("tests/user_defined_files/data/"
-    #                      "pickle_pandas_mock_binary_classification_pipeline_credit_risk_ytest.sav")
+    # data_path = "tests/user_defined_files/data/sample_bc_pipeline_credit_data.sav"
+    # model_path = "tests/user_defined_files/pipeline/bc_tabular_credit"
+    # ground_truth_path = "tests/user_defined_files/data/sample_bc_pipeline_credit_ytest_data.sav"
     # ground_truth = "default"
-    # background_path = ("tests/user_defined_files/data/"
-    #                    "pickle_pandas_mock_binary_classification_pipeline_credit_risk_testing.sav")
+    # background_path = "tests/user_defined_files/data/sample_bc_pipeline_credit_data.sav"
     # run_pipeline = True
     # model_type = ModelType.CLASSIFICATION
 
     # # Multiclass Classification Pipeline
-    # data_path = ("tests/user_defined_files/data/pickle_pandas_mock_multiclass_classification_pipeline_toxic_"
-    #              "classification_testing.sav")
-    # model_path = "tests/user_defined_files/pipeline/multiclass_classification_tabular_toxic_classification"
-    # ground_truth_path = ("tests/user_defined_files/data/"
-    #                      "pickle_pandas_mock_multiclass_classification_pipeline_toxic_classification_ytest.sav")
+    # data_path = "tests/user_defined_files/data/sample_mc_pipeline_toxic_data.sav"
+    # model_path = "tests/user_defined_files/pipeline/mc_tabular_toxic"
+    # ground_truth_path = "tests/user_defined_files/data/sample_mc_pipeline_toxic_ytest_data.sav"
     # ground_truth = "toxic"
-    # background_path = ("tests/user_defined_files/data/pickle_pandas_mock_multiclass_classification_pipeline_toxic_"
-    #                    "classification_testing.sav")
+    # background_path = "tests/user_defined_files/data/sample_mc_pipeline_toxic_data.sav"
     # run_pipeline = True
     # model_type = ModelType.CLASSIFICATION
 
     # # Regression Non-Pipeline
-    # data_path = "tests/user_defined_files/data/pickle_pandas_mock_regression_donation_testing.sav"
-    # model_path = ("tests/user_defined_files/model/"
-    #               "regression_mock_donation_sklearn.linear_model._base.LinearRegression.sav")
-    # ground_truth_path = (
-    #     "tests/user_defined_files/data/pickle_pandas_mock_regression_donation_testing.sav"
-    # )
+    # data_path = "tests/user_defined_files/data/sample_reg_donation_data.sav"
+    # model_path = ("tests/user_defined_files/model/sample_reg_donation_sklearn_linear.LogisticRegression.sav")
+    # ground_truth_path = "tests/user_defined_files/data/sample_reg_donation_data.sav"
     # ground_truth = "donation"
-    # background_path = "tests/user_defined_files/data/pickle_pandas_mock_regression_donation_testing.sav"
+    # background_path = "tests/user_defined_files/data/sample_reg_donation_data.sav"
     # run_pipeline = False
     # model_type = ModelType.REGRESSION
 
     # # Regression Pipeline
-    # data_path = "tests/user_defined_files/data/pickle_pandas_mock_regression_pipeline_testing.sav"
+    # data_path = "tests/user_defined_files/data/sample_reg_pipeline_data.sav"
     # model_path = "tests/user_defined_files/pipeline/regression_tabular_donation"
-    # ground_truth_path = "tests/user_defined_files/data/pickle_pandas_mock_regression_pipeline_ytest.sav"
+    # ground_truth_path = "tests/user_defined_files/data/sample_reg_pipeline_ytest_data.sav"
     # ground_truth = "donation"
-    # background_path = "tests/user_defined_files/data/pickle_pandas_mock_regression_donation_testing.sav"
+    # background_path = "tests/user_defined_files/data/sample_reg_donation_data.sav"
     # run_pipeline = True
     # model_type = ModelType.REGRESSION
 
