@@ -15,7 +15,7 @@ from test_engine_core.interfaces.imodel import IModel
 from test_engine_core.plugins.enums.model_plugin_type import ModelPluginType
 from test_engine_core.plugins.enums.plugin_type import PluginType
 from test_engine_core.plugins.metadata.plugin_metadata import PluginMetadata
-
+import time
 
 class BatchStrategy(Enum):
     """
@@ -263,7 +263,7 @@ class Plugin(IModel):
         """
         # Call the function to make multiple requests
         try:
-            return asyncio.run(self.make_requests(data, *args))
+            return asyncio.run(self.make_request(data, *args))
 
         except aiopenapi3.RequestError:
             raise RuntimeError(Plugin._response_error_message)
@@ -372,14 +372,42 @@ class Plugin(IModel):
             - The method retrieves the requestBody data mapping dictionary from the requestBody and
             updates it with the values from the data_row based on the data_labels.
         """
+        # # Make sure that the data row comes in as a list, so we can reference the index and pull the value
+        # if isinstance(data_row, pd.Series):
+        #     data_row_list = data_row.tolist()
+        # else:
+        #     data_row_list = data_row
+
+        # # Retrieve the requestBody data mapping dictionary
+        # data_mapping = self._api_config.get("requestBody", dict())
+
+        # # Update the data mapping dictionary with the row value
+        # return_list = dict()
+        # for key, value in data_mapping.items():
+        #     index = next(
+        #         (
+        #             index
+        #             for index, (key1, value1) in enumerate(data_labels)
+        #             if key1 == value
+        #         ),
+        #         None,
+        #     )
+        #     return_list[key] = data_row_list[index]
+
+        # return return_list
+
         # Make sure that the data row comes in as a list, so we can reference the index and pull the value
         if isinstance(data_row, pd.Series):
             data_row_list = data_row.tolist()
         else:
             data_row_list = data_row
 
-        # Retrieve the requestBody data mapping dictionary
-        data_mapping = self._api_config.get("requestBody", dict())
+        # parameters field is not empty
+        if len(self._api_config.get("parameters",[])):
+            data_mapping = self._api_config.get("parameters", dict())
+        # no parameters. mapping should be in requestBody
+        else:
+            data_mapping = self._api_config.get("requestBody", dict())
 
         # Update the data mapping dictionary with the row value
         return_list = dict()
@@ -393,10 +421,9 @@ class Plugin(IModel):
                 None,
             )
             return_list[key] = data_row_list[index]
-
         return return_list
 
-    async def send_request(self, row_data_to_send: Dict) -> Response:
+    async def send_request(self, row, *args) -> Response:
         """
         An async method to send an API request based on the provided row data.
 
@@ -419,11 +446,43 @@ class Plugin(IModel):
             instance's predict_api attribute to access the API details.
             - The method returns the API response object containing the results of the API request.
         """
+        # if self._api_instance._.predict_api.method.lower() == "post":
+        #     # POST method
+        #     # Get API Instance schema
+        #     self._api_instance_schema = await self.get_schema_content()
+
+        #     # Populate headers
+        #     headers = dict()
+        #     for parameter in self._api_instance._.predict_api.parameters:
+        #         if str(parameter.in_.name).lower() == "header" and parameter.required:
+        #             if len(parameter.schema_.enum) > 0:
+        #                 headers.update({parameter.name: parameter.schema_.enum[0]})
+
+        #     # Populate body with payload values
+        #     body = self._api_instance_schema.get_type().construct(**row_data_to_send)
+
+        #     # Perform api request
+        #     headers, data, result = await self._api_instance._.predict_api.request(
+        #         parameters=headers, data=body
+        #     )
+
+        # else:
+        #     # GET method
+        #     # Populate body with payload values
+        #     body = None
+
+        #     # Perform api request
+        #     headers, data, result = await self._api_instance._.predict_api.request(
+        #         parameters=row_data_to_send, data=body
+        #     )
+
+        # return result
+
+        row_data_to_send = await self.get_data_payload(row, *args)
         if self._api_instance._.predict_api.method.lower() == "post":
             # POST method
             # Get API Instance schema
             self._api_instance_schema = await self.get_schema_content()
-
             # Populate headers
             headers = dict()
             for parameter in self._api_instance._.predict_api.parameters:
@@ -451,7 +510,7 @@ class Plugin(IModel):
 
         return result
 
-    async def make_requests(self, data: Any, *args) -> Any:
+    async def make_request(self, data: Any, *args) -> Any:
         """
         An async method to make multiple API requests using the provided data.
 
@@ -478,30 +537,49 @@ class Plugin(IModel):
             - Finally, the method returns the `response_data` list containing the response text from
             all the API requests.
         """
-        response_data = list()
 
-        # Loop through the data list. It can be a list of mixed data to be predicted such as DF or numpy
+        start_time = time.time()
+        response_data = list()
+ 
+        # # Loop through the data list. It can be a list of mixed data to be predicted such as DF or numpy. 4: 3.75, 3.63, 3.56, 3.61, 3.56 (SYNC)
+        # for data_to_predict in data:
+        #     if type(data_to_predict) is pd.DataFrame:
+        #         # PANDAS DF
+        #         for _, row in data_to_predict.iterrows():
+        #             # Pass this information to the send request function to request
+        #             response = await self.send_request(row, *args)
+        #             response_data.append(response.text)
+        #     else:
+        #         # NDARRAY
+        #         for row in data_to_predict:
+        #             # Pass this information to the send request function to request
+        #             response = await self.send_request(row, *args)
+        #             response_data.append(response.text)
+
+
+        request_task_list = []
+        # Loop through the data list. It can be a list of mixed data to be predicted such as DF or numpy. 4: 2.63, 2.57, 2.62, 2.56, 2.55 (ASYNC)
         for data_to_predict in data:
             if type(data_to_predict) is pd.DataFrame:
                 # PANDAS DF
                 for _, row in data_to_predict.iterrows():
-                    # Prepare the row information for payload or header
-                    row_for_payload = await self.get_data_payload(row, *args)
-
                     # Pass this information to the send request function to request
-                    response = await self.send_request(row_for_payload)
-                    response_data.append(response.text)
+                    request_task_list.append(self.send_request(row, *args))
             else:
                 # NDARRAY
                 for row in data_to_predict:
-                    # Prepare the row information for payload or header
-                    row_for_payload = await self.get_data_payload(row, *args)
-
                     # Pass this information to the send request function to request
-                    response = await self.send_request(row_for_payload)
-                    response_data.append(response.text)
-
+                    request_task_list.append(self.send_request(row, *args))
+            
+        response_list = await asyncio.gather(*request_task_list)
+        for response in response_list:
+            response_data.append(response.text)
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print("time taken:", elapsed_time)
         return response_data
+    
+
 
     def _setup_api_authentication(self) -> None:
         """
