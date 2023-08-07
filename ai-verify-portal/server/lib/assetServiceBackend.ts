@@ -121,11 +121,14 @@ const GQL_GET_MODELAPI = gql`
           field
         }
         requestConfig {
+          sslVerify
+          connectionTimeout
           rateLimit
-          batchStrategy
+          rateLimitTimeout
           batchLimit
+          connectionRetries
           maxConnections
-          requestTimeout
+          batchStrategy
         }
       }
     }
