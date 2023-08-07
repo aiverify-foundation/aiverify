@@ -127,11 +127,14 @@ const GET_MODELS = gql`
           field
         }
         requestConfig {
+          sslVerify
+          connectionTimeout
           rateLimit
-          batchStrategy
+          rateLimitTimeout
           batchLimit
+          connectionRetries
           maxConnections
-          requestTimeout
+          batchStrategy
         }
       }
       ctime

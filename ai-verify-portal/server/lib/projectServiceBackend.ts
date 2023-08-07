@@ -182,11 +182,14 @@ export const GET_PROJECT = gql`
               field
             }
             requestConfig {
+              sslVerify
+              connectionTimeout
               rateLimit
-              batchStrategy
+              rateLimitTimeout
               batchLimit
+              connectionRetries
               maxConnections
-              requestTimeout
+              batchStrategy
             }
           }
         }
@@ -289,7 +292,7 @@ export const GET_REPORT = gql`
         modelAndDatasets {
           apiConfig {
             parameters
-            apiConfig
+            requestBody
           }
           testDataset {
             filename
