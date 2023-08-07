@@ -81,11 +81,14 @@ enum ModelAPIRequestConfigBatchStrategy {
 }
 
 type ModelAPIRequestConfigType {
-  rateLimit: Int! @constraint(min: -1) # max Int of requests per minute
+  sslVerify: Boolean! # determine if there is a need to verify the SSL cert when connecting to the server
+  connectionTimeout: Int! @constraint(min: -1) # connection timeout when connecting to the server (in seconds)
+  rateLimit: Int! @constraint(min: -1) # maximum number of request(s) allowed to be made to the server per second
+  rateLimitTimeout: Int! @constraint(min: -1) # connection timeout when connecting to the server(in seconds) when there is rate limiting
+  batchLimit: Int @constraint(min: -1) # maximum number of batched request(s) that can be sent in a multipart request
+  connectionRetries: Int @constraint(min: -1) # number of retries for connecting to a server
+  maxConnections: Int! @constraint(min: -1) # maximum number of concurrent connection(s) that can be made to the server
   batchStrategy: ModelAPIRequestConfigBatchStrategy!
-  batchLimit: Int @constraint(min: -1) # max Int of requests in each batch
-  maxConnections: Int! @constraint(min: -1) # max Int of concurrent connections to API server
-  requestTimeout: Int! @constraint(min: 1) # request connection timeout in ms
 }
 
 type ModelAPIType {
@@ -158,11 +161,14 @@ input OpenAPIResponseInput {
 }
 
 input OpenAPIRequestConfigInput {
-  rateLimit: Int! @constraint(min: -1) # max Int of requests per minute
+  sslVerify: Boolean! # determine if there is a need to verify the SSL cert when connecting to the server
+  connectionTimeout: Int! @constraint(min: -1) # connection timeout when connecting to the server (in seconds)
+  rateLimit: Int! @constraint(min: -1) # maximum number of request(s) allowed to be made to the server per second
+  rateLimitTimeout: Int! @constraint(min: -1) # connection timeout when connecting to the server(in seconds) when there is rate limiting
+  batchLimit: Int @constraint(min: -1) # maximum number of batched request(s) that can be sent in a multipart request
+  connectionRetries: Int @constraint(min: -1) # number of retries for connecting to a server
+  maxConnections: Int! @constraint(min: -1) # maximum number of concurrent connection(s) that can be made to the server
   batchStrategy: ModelAPIRequestConfigBatchStrategy!
-  batchLimit: Int @constraint(min: -1) # max Int of requests in each batch
-  maxConnections: Int! @constraint(min: -1) # max Int of concurrent connections to API server
-  requestTimeout: Int! @constraint(min: 1) # request connection timeout in ms
 }
 
 input OpenAPIInput {

@@ -95,15 +95,17 @@ const modelAPISchema = new Schema({
     field: { type: String }, // for object, define the prediction field use dot, e.g. xxx.yyy, to denote nested field
   },
   requestConfig: {
-    rateLimit: { type: Number, required: true },
+    sslVerify: { type: Boolean, default: true },
+    connectionTimeout: { type: Number, default: -1 },
+    rateLimit: { type: Number, default: -1 },
+    rateLimitTimeout: { type: Number, default: -1 },
+    batchLimit: { type: Number, default: -1 },
+    connectionRetries: { type: Number, default: 3 },
+    maxConnections: { type: Number, default: -1 },
     batchStrategy: {
       type: String,
-      required: true,
       enum: ["none", "multipart"],
     },
-    batchLimit: { type: Number },
-    maxConnections: { type: Number, required: true },
-    requestTimeout: { type: Number, required: true },
   },
 });
 
