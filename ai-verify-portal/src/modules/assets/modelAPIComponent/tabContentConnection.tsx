@@ -60,7 +60,9 @@ function TabContentConnection({ disabled = false }: { disabled?: boolean }) {
         <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
           <TextInput
             disabled={
-              disabled || requestConfig.rateLimit === ConnectionSettingUnlimited
+              disabled ||
+              requestConfig.rateLimit.trim() === '' ||
+              parseInt(requestConfig.rateLimit) < 0
             }
             label="Rate Limit Timeout"
             name={`${otherReqConfigFieldName}.rateLimitTimeout`}

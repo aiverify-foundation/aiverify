@@ -1,6 +1,6 @@
 import { useFormikContext } from 'formik';
 import styles from './styles/newModelApiConfig.module.css';
-import { ModelAPIFormModel } from './types';
+import { ModelApiFormModel } from './types';
 import EditIcon from '@mui/icons-material/Edit';
 import { IconButton } from 'src/components/iconButton';
 import { useEffect, useState } from 'react';
@@ -14,7 +14,7 @@ const defaultConfigDescDisplay = 'Description';
 function ModelApiLeftSection({ disabled = false }: { disabled: boolean }) {
   const [isEdit, setIsEdit] = useState(false);
   const { values, errors, touched, handleChange } =
-    useFormikContext<ModelAPIFormModel>();
+    useFormikContext<ModelApiFormModel>();
 
   useEffect(() => {
     if (

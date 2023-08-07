@@ -1,6 +1,12 @@
-import { AdditionalHeader, ModelAPIFormModel, OpenApiDataTypes } from './types';
-import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
-import { useEffect, useState } from 'react';
+import { AdditionalHeader, ModelApiFormModel, OpenApiDataTypes } from './types';
+import {
+  FieldArray,
+  FieldArrayRenderProps,
+  FormikErrors,
+  FormikTouched,
+  useFormikContext,
+} from 'formik';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { getInputReactKeyId } from '.';
 import {
   AdditionalHeaderInput,
@@ -29,23 +35,31 @@ function TabContentAdditionalHeaders({
   );
   const [headerErrorMsg, setHeaderErrorMsg] = useState<string>();
   const [valueErrorMsg, setValueErrorMsg] = useState<string>();
-  const { values, setFieldValue } = useFormikContext<ModelAPIFormModel>();
+  const { values, errors, touched, handleChange, setFieldValue } =
+    useFormikContext<ModelApiFormModel>();
   const headers = values.modelAPI.additionalHeaders || [];
+  const fieldErrors = errors.modelAPI?.additionalHeaders as
+    | FormikErrors<AdditionalHeader>[]
+    | undefined;
+  const touchedFields = touched.modelAPI?.additionalHeaders as
+    | FormikTouched<AdditionalHeader>[]
+    | undefined;
 
-  function handleNewParamChange(value: AdditionalHeader) {
+  // overloading just to make the type compatible with formik's `handleChange` signature
+  function handleNewParamChange(e: ChangeEvent<HTMLInputElement>): void;
+  function handleNewParamChange(arg: AdditionalHeader): void;
+  function handleNewParamChange(
+    arg: AdditionalHeader | ChangeEvent<HTMLInputElement>
+  ) {
     if (headerErrorMsg !== undefined) setHeaderErrorMsg(undefined);
     if (valueErrorMsg !== undefined) setValueErrorMsg(undefined);
-    setNewHeader((prev) => ({
-      ...value,
-      reactPropId:
-        prev.reactPropId === '' ? getInputReactKeyId() : prev.reactPropId,
-    }));
-  }
-
-  function handleAddedParamChange(idx: number) {
-    return (val: AdditionalHeader) => {
-      setFieldValue(`${additionalHeaderFieldName}[${idx}]`, val);
-    };
+    if ('name' in arg) {
+      setNewHeader((prev) => ({
+        ...arg,
+        reactPropId:
+          prev.reactPropId === '' ? getInputReactKeyId() : prev.reactPropId,
+      }));
+    }
   }
 
   function handleAddNewHeader(formikArrayHelpers: FieldArrayRenderProps) {
@@ -75,12 +89,6 @@ function TabContentAdditionalHeaders({
     };
   }
 
-  useEffect(() => {
-    if (headers.length === 0) {
-      setFieldValue(additionalHeaderFieldName, undefined);
-    }
-  }, [values.modelAPI.additionalHeaders]);
-
   return (
     <div
       style={{
@@ -98,11 +106,35 @@ function TabContentAdditionalHeaders({
             ) : (
               headers.map((header, index) => (
                 <AdditionalHeaderInput
+                  isFormikBinded
+                  headerInputName={`modelAPI.additionalHeaders.${index}.name`}
+                  headerTypeName={`modelAPI.additionalHeaders.${index}.type`}
+                  headerValueName={`modelAPI.additionalHeaders.${index}.value`}
                   disabled={disabled}
                   key={header.reactPropId}
                   value={header}
-                  onChange={handleAddedParamChange(index)}
+                  onChange={handleChange}
                   onDeleteClick={handleDeleteClick(arrayHelpers, index)}
+                  headerError={
+                    Boolean(
+                      fieldErrors &&
+                        fieldErrors[index]?.name &&
+                        touchedFields &&
+                        touchedFields[index]?.name
+                    )
+                      ? fieldErrors && fieldErrors[index]?.name
+                      : undefined
+                  }
+                  valueError={
+                    Boolean(
+                      fieldErrors &&
+                        fieldErrors[index]?.value &&
+                        touchedFields &&
+                        touchedFields[index]?.value
+                    )
+                      ? fieldErrors && fieldErrors[index]?.value
+                      : undefined
+                  }
                 />
               ))
             )}

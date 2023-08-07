@@ -9,13 +9,20 @@ import { SelectInput } from 'src/components/selectInput';
 import { optionsOpenApiDataTypes } from './selectOptions';
 
 type AdditionalHeaderInputProps = {
+  isFormikBinded?: boolean;
   value: AdditionalHeader;
   showAddBtn?: boolean;
   disabled?: boolean;
   headerError?: string;
   typeError?: string;
   valueError?: string;
-  onChange: (value: AdditionalHeader) => void;
+  headerInputName?: string;
+  headerTypeName?: string;
+  headerValueName?: string;
+  onChange: {
+    (e: ChangeEvent<HTMLInputElement>): void;
+    (value: AdditionalHeader): void;
+  };
   onAddClick?: () => void;
   onDeleteClick?: (param: AdditionalHeader) => void;
 };
@@ -33,12 +40,16 @@ function AdditionalHeaderInputHeading() {
 
 function AdditionalHeaderInput(props: AdditionalHeaderInputProps) {
   const {
+    isFormikBinded = false,
     value,
     showAddBtn = false,
     disabled,
     headerError,
     typeError,
     valueError,
+    headerInputName,
+    headerTypeName,
+    headerValueName,
     onChange,
     onAddClick,
     onDeleteClick,
@@ -73,19 +84,28 @@ function AdditionalHeaderInput(props: AdditionalHeaderInputProps) {
         <TextInput
           disabled={disabled}
           value={value.name}
-          name="additonalHeaderNameInput"
+          name={
+            isFormikBinded && headerInputName
+              ? headerInputName
+              : 'headerNameInput'
+          }
           style={{ marginBottom: 0 }}
           maxLength={100}
-          onChange={handleNameChange}
+          onChange={isFormikBinded ? onChange : handleNameChange}
           error={headerError}
         />
       </div>
       <div className={styles.keyValCol}>
         <SelectInput<OpenApiDataTypes>
           disabled={disabled}
-          name="additonalHeaderDataTypeInput"
+          name={
+            isFormikBinded && headerTypeName
+              ? headerTypeName
+              : 'headerTypeInput'
+          }
           options={optionsOpenApiDataTypes}
-          onChange={handleTypeChange}
+          onChange={isFormikBinded ? undefined : handleTypeChange}
+          onSyntheticChange={isFormikBinded ? onChange : undefined}
           value={value.type}
           style={{ marginBottom: 0 }}
           error={typeError}
@@ -95,10 +115,14 @@ function AdditionalHeaderInput(props: AdditionalHeaderInputProps) {
         <TextInput
           disabled={disabled}
           value={value.value}
-          name="additonalHeaderValueInput"
+          name={
+            isFormikBinded && headerValueName
+              ? headerValueName
+              : 'headerValueInput'
+          }
           style={{ marginBottom: 0 }}
           maxLength={100}
-          onChange={handleValChange}
+          onChange={isFormikBinded ? onChange : handleValChange}
           error={valueError}
         />
       </div>

@@ -1,5 +1,5 @@
 import { object, string, number, bool, array, addMethod, boolean } from 'yup';
-import { AuthType, MediaType } from './types';
+import { AuthType, MediaType, URLParamType } from './types';
 
 declare module 'yup' {
   //@ts-ignore
@@ -126,7 +126,7 @@ export const ModelAPIFormValidationSchema = object({
         }),
     }),
     requestBody: object({
-      mediaType: string().required('REquired'),
+      mediaType: string().required('Required'),
       isArray: bool(),
       properties: array().of(
         object({
@@ -135,5 +135,45 @@ export const ModelAPIFormValidationSchema = object({
         }).uniqueProperty('field', 'Property Exists')
       ),
     }),
+    parameters: object({
+      paramType: string().required('Required'),
+      queries: object().when('paramType', {
+        is: (paramType: string) => paramType === URLParamType.QUERY,
+        then: () =>
+          object({
+            mediaType: string().required('Required'),
+            isArray: bool(),
+            queryParams: array().of(
+              object({
+                name: string().required('Required'),
+                type: string().required('Required'),
+              }).uniqueProperty('name', 'Property Exists')
+            ),
+          }),
+        otherwise: () => object({}),
+      }),
+      paths: object().when('paramType', {
+        is: (paramType: string) => paramType === URLParamType.PATH,
+        then: () =>
+          object({
+            mediaType: string().required('Required'),
+            isArray: bool(),
+            pathParams: array().of(
+              object({
+                name: string().required('Required'),
+                type: string().required('Required'),
+              }).uniqueProperty('name', 'Property Exists')
+            ),
+          }),
+        otherwise: () => object({}),
+      }),
+    }),
+    additionalHeaders: array().of(
+      object({
+        name: string().required('Required'),
+        type: string().required('Required'),
+        value: string().required('Required'),
+      }).uniqueProperty('name', 'Header Exists')
+    ),
   }),
 });

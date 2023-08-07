@@ -6,7 +6,8 @@ import {
 } from 'src/modules/assets/modelAPIComponent';
 import {
   MediaType,
-  ModelAPIFormModel,
+  ModelApiFormModel,
+  URLParamType,
 } from 'src/modules/assets/modelAPIComponent/types';
 
 /*
@@ -22,7 +23,7 @@ export const getInputReactKeyId = initReactKeyIdGenerator();
 
 export const getServerSideProps: GetServerSideProps<{
   id?: string;
-  formValues?: ModelAPIFormModel;
+  formValues?: ModelApiFormModel;
 }> = async ({ params, query }) => {
   if (!params || !params.id) {
     return {
@@ -38,14 +39,15 @@ export const getServerSideProps: GetServerSideProps<{
   }
 
   /*
-    Shaping `ModelAPIFormModel` object for modelApiConfig component to consume
+    Shaping `ModelApiFormModel` object for modelApiConfig component to consume
     1) Add all required (typed as non-optional) properties
-    2) For required properties which graphQL query returned values are null, assign default values to them first
-    3) Remove __typename properties
-    4) Populate properties which were set to default values
-    5) Generate and add `reactPropId` to the parameters, properties arrays items. These Ids are only used as React `key` prop values
+    2) Cast numbers to string (the form managed by formik treats all inputs as strings)
+    3) For required properties which graphQL query returned values are null, assign default values to them first
+    4) Remove __typename properties
+    5) Populate properties which were set to default values
+    6) Generate and add `reactPropId` to the parameters, properties arrays items. These Ids are only used as React `key` prop values
   */
-  const formValues: ModelAPIFormModel = {
+  const formValues: ModelApiFormModel = {
     name: result.name,
     description: result.description,
     modelType: result.modelType,
@@ -54,12 +56,32 @@ export const getServerSideProps: GetServerSideProps<{
       url: result.modelAPI.url,
       authType: result.modelAPI.authType,
       requestConfig: (() => {
-        const { __typename, ...rest } = result.modelAPI.requestConfig;
-        return rest;
+        const {
+          __typename,
+          requestTimeout,
+          rateLimit,
+          rateLimitTimeout,
+          connectionRetries,
+          maxConnections,
+          batchLimit,
+          ...rest
+        } = result.modelAPI.requestConfig;
+        return {
+          requestTimeout: requestTimeout.toString(),
+          rateLimit: rateLimit.toString(),
+          rateLimitTimeout: rateLimitTimeout.toString(),
+          connectionRetries: connectionRetries.toString(),
+          maxConnections: maxConnections.toString(),
+          batchLimit: batchLimit.toString(),
+          ...rest,
+        };
       })(),
       response: (() => {
-        const { __typename, ...rest } = result.modelAPI.response;
-        return rest;
+        const { __typename, statusCode, ...rest } = result.modelAPI.response;
+        return {
+          statusCode: statusCode.toString(),
+          ...rest,
+        };
       })(),
       requestBody: {
         // set to default first, then populate at next step
@@ -68,20 +90,21 @@ export const getServerSideProps: GetServerSideProps<{
         properties: [],
       },
       parameters: {
+        paramType: URLParamType.QUERY,
         // set to default first, then populate at next step
         queries: {
           mediaType: MediaType.NONE,
           isArray: false,
           queryParams: [],
         },
+        paths: {
+          mediaType: MediaType.NONE,
+          isArray: false,
+          pathParams: [],
+        },
       },
     },
   };
-
-  // set to batchLimit -1 which should be default value (to support the older data which did not have default -1) TODO: remove this code when data updated
-  if (formValues.modelAPI.requestConfig.batchLimit === null) {
-    formValues.modelAPI.requestConfig.batchLimit = -1;
-  }
 
   // add urlParams, authTypeConfig properties if they are not null properties. Otherwise, just omit them from the object.
   if (result.modelAPI.urlParams !== null) {
@@ -108,10 +131,7 @@ export const getServerSideProps: GetServerSideProps<{
     };
   }
 
-  if (
-    result.modelAPI.parameters &&
-    result.modelAPI.parameters.queries !== null
-  ) {
+  if (result.modelAPI.parameters && result.modelAPI.parameters.queries) {
     formValues.modelAPI.parameters = {
       queries: {
         ...(() => {
@@ -130,7 +150,7 @@ export const getServerSideProps: GetServerSideProps<{
     };
   }
 
-  if (result.modelAPI.parameters && result.modelAPI.parameters.paths !== null) {
+  if (result.modelAPI.parameters && result.modelAPI.parameters.paths) {
     formValues.modelAPI.parameters = {
       paths: {
         ...(() => {

@@ -5,8 +5,8 @@ import { useEffect, useRef, useState } from 'react';
 import { DragDropContext, DragUpdate } from 'react-beautiful-dnd';
 import { optionsRequestMethods } from './selectOptions';
 import {
-  ModelAPIFormModel,
-  ModelAPIGraphQLModel,
+  ModelApiFormModel,
+  ModelApiGQLModel,
   RequestMethod,
   SaveResult,
 } from './types';
@@ -44,7 +44,7 @@ type FormikSetFieldvalueFn = (
   field: string,
   value: RequestMethod,
   shouldValidate?: boolean | undefined
-) => Promise<void | FormikErrors<ModelAPIFormModel>>;
+) => Promise<void | FormikErrors<ModelApiFormModel>>;
 
 /*
   This id is only used for react component `key` props for the list of urlparams and request body property fields rendered.
@@ -60,7 +60,7 @@ export const getInputReactKeyId = initReactKeyIdGenerator();
 export type NewModelApiConfigModuleProps = {
   id?: string;
   disabled?: boolean;
-  formValues?: ModelAPIFormModel;
+  formValues?: ModelApiFormModel;
   entryPoint?: string;
 };
 
@@ -110,8 +110,8 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
     }
   }
 
-  async function saveNewApiConfig(values: ModelAPIFormModel) {
-    const gqlModelAPIInput: ModelAPIGraphQLModel =
+  async function saveNewApiConfig(values: ModelApiFormModel) {
+    const gqlModelAPIInput: ModelApiGQLModel =
       transformFormValuesToGraphModel(values);
 
     try {
@@ -130,9 +130,9 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
 
   async function updateApiConfig(
     modelFileId: string,
-    values: ModelAPIFormModel
+    values: ModelApiFormModel
   ) {
-    const gqlModelAPIInput: ModelAPIGraphQLModel =
+    const gqlModelAPIInput: ModelApiGQLModel =
       transformFormValuesToGraphModel(values);
 
     try {
@@ -177,7 +177,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
     deleteApiConfig(id);
   }
 
-  function handleFormSubmit(values: ModelAPIFormModel) {
+  function handleFormSubmit(values: ModelApiFormModel) {
     setSaveInProgress(true);
     setIsDisabled(true);
     if (id != undefined) {
@@ -263,6 +263,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                       errors,
                       touched,
                     }) => {
+                      console.log(values);
                       return (
                         <Form>
                           <div style={{ marginBottom: '25px' }}>

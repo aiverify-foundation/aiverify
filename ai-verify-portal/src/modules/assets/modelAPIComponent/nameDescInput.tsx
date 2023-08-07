@@ -1,7 +1,7 @@
 import { useFormikContext } from 'formik';
 import { TextArea } from 'src/components/textArea';
 import { TextInput } from 'src/components/textInput';
-import { ModelAPIFormModel } from './types';
+import { ModelApiFormModel } from './types';
 
 type ApiConfigNameDescFormProps = {
   onOKClick: () => void;
@@ -11,7 +11,7 @@ function ApiConfigNameDescForm(props: ApiConfigNameDescFormProps) {
   const { onOKClick } = props;
 
   const { values, errors, touched, handleChange } =
-    useFormikContext<ModelAPIFormModel>();
+    useFormikContext<ModelApiFormModel>();
   return (
     <div
       style={{

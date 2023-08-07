@@ -93,12 +93,11 @@ export type Paths = {
   pathParams: UrlParam[];
 };
 
-interface BaseParameters {
+type Parameters = {
+  paramType: URLParamType;
   queries: Queries;
   paths: Paths;
-}
-
-export type Parameters = RequireAtLeastOne<BaseParameters>;
+};
 
 export type RequestConfigForm = {
   sslVerify: boolean;
@@ -164,7 +163,7 @@ export type GqlModelApi = {
   requestBody: RequestBody;
   requestConfig: RequestConfigGQL;
   response: ResponseGQL;
-  parameters: Parameters;
+  parameters: Exclude<Parameters, URLParamType>;
   additionalHeaders?: AdditionalHeader[];
 };
 
@@ -234,13 +233,13 @@ export type ModelApiGQLQueryResponseModel = {
     requestConfig: Typename & RequestConfigGQL;
     response: Typename & ResponseGQL;
     parameters: {
-      queries: {
+      queries?: {
         __typename: string;
         mediaType: MediaType;
         isArray: boolean;
         queryParams: Pick<UrlParam, 'name' | 'type'>[];
       } | null;
-      paths: {
+      paths?: {
         __typename: string;
         mediaType: MediaType;
         isArray: boolean;

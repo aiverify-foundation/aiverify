@@ -5,7 +5,7 @@ import {
   AuthBasicConfig,
   AuthBearerTokenConfig,
   AuthType,
-  ModelAPIFormModel,
+  ModelApiFormModel,
 } from './types';
 import { TextInput } from 'src/components/textInput';
 import { ChangeEvent, useEffect } from 'react';
@@ -15,7 +15,7 @@ const authTypeConfigFieldName = 'modelAPI.authTypeConfig';
 
 function TabContentAuth({ disabled = false }: { disabled?: boolean }) {
   const { values, errors, touched, setFieldValue, handleChange } =
-    useFormikContext<ModelAPIFormModel>();
+    useFormikContext<ModelApiFormModel>();
 
   // investigate authTypeConfig type-check not working
   const fieldErrors = errors.modelAPI?.authTypeConfig as any;

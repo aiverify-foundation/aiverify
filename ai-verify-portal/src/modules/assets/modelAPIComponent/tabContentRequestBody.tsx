@@ -2,7 +2,7 @@ import { SelectInput } from 'src/components/selectInput';
 import {
   BodyParam,
   MediaType,
-  ModelAPIFormModel,
+  ModelApiFormModel,
   OpenApiDataTypes,
 } from './types';
 import {
@@ -35,7 +35,7 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
   const [newParam, setNewParam] = useState<BodyParam>(defaultBodyParameter);
   const [errorMsg, setErrorMsg] = useState<string>();
   const { values, errors, touched, handleChange } =
-    useFormikContext<ModelAPIFormModel>();
+    useFormikContext<ModelApiFormModel>();
   const properties = values.modelAPI.requestBody?.properties || [];
   const fieldErrors = errors.modelAPI?.requestBody?.properties as
     | FormikErrors<BodyParam>[]
@@ -136,7 +136,7 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
                           fieldErrors &&
                             fieldErrors[index]?.field &&
                             touchedFields &&
-                            touchedFields[index]?.type
+                            touchedFields[index]?.field
                         )
                           ? fieldErrors && fieldErrors[index]?.field
                           : undefined

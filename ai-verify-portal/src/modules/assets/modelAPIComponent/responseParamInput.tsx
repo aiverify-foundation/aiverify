@@ -1,6 +1,6 @@
 import { TextInput } from 'src/components/textInput';
 import styles from './styles/newModelApiConfig.module.css';
-import { MediaType, ModelAPIFormModel, OpenApiDataTypes } from './types';
+import { MediaType, ModelApiFormModel, OpenApiDataTypes } from './types';
 import { SelectInput } from 'src/components/selectInput';
 import { optionsMediaTypes, optionsOpenApiDataTypes } from './selectOptions';
 import { FormikContextType } from 'formik';
@@ -8,7 +8,7 @@ import { FormikContextType } from 'formik';
 const responseFieldName = 'modelAPI.response';
 
 type ResponseInputHeadingProps = {
-  formikContext: FormikContextType<ModelAPIFormModel>;
+  formikContext: FormikContextType<ModelApiFormModel>;
 };
 
 function ResponseInputHeading(props: ResponseInputHeadingProps) {
@@ -32,7 +32,7 @@ function ResponseInputHeading(props: ResponseInputHeadingProps) {
 
 type ResponsePropertyInputProps = {
   disabled: boolean;
-  formikContext: FormikContextType<ModelAPIFormModel>;
+  formikContext: FormikContextType<ModelApiFormModel>;
 };
 
 function ResponsePropertyInput(props: ResponsePropertyInputProps) {

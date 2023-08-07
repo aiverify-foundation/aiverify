@@ -1,7 +1,7 @@
 import styles from './styles/newModelApiConfig.module.css';
 import clsx from 'clsx';
 import { useFormikContext } from 'formik';
-import { ModelAPIFormModel, RequestMethod } from './types';
+import { ModelApiFormModel, RequestMethod } from './types';
 
 export enum Tab {
   URL_PARAMS,
@@ -18,7 +18,7 @@ type TabButtonsGroupProps = {
 };
 
 function TabButtonsGroup({ activeTab, onTabClick }: TabButtonsGroupProps) {
-  const { values } = useFormikContext<ModelAPIFormModel>();
+  const { values } = useFormikContext<ModelApiFormModel>();
   function handleTabClick(tab: Tab) {
     return () => onTabClick(tab);
   }

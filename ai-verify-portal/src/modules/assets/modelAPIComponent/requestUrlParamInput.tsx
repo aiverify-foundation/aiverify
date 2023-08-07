@@ -10,12 +10,18 @@ import { optionsOpenApiDataTypes } from './selectOptions';
 import { OpenApiDataTypes, UrlParam } from './types';
 
 type UrlParameterInputProps = {
+  isFormikBinded?: boolean;
   value: UrlParam;
   showAddBtn?: boolean;
   disabled?: boolean;
   paramError?: string;
   typeError?: string;
-  onChange: (value: UrlParam) => void;
+  paramInputName?: string;
+  paramTypeName?: string;
+  onChange: {
+    (e: ChangeEvent<HTMLInputElement>): void;
+    (value: UrlParam): void;
+  };
   onAddClick?: () => void;
   onDeleteClick?: (param: UrlParam) => void;
 };
@@ -31,11 +37,14 @@ function UrlParamsInputHeading() {
 
 function UrlParamCaptureInput(props: UrlParameterInputProps) {
   const {
+    isFormikBinded = false,
     value,
     showAddBtn = false,
     disabled = false,
     paramError,
     typeError,
+    paramInputName,
+    paramTypeName,
     onChange,
     onAddClick,
     onDeleteClick,
@@ -62,19 +71,22 @@ function UrlParamCaptureInput(props: UrlParameterInputProps) {
         <TextInput
           disabled={disabled}
           value={value.name}
-          name="paramName"
+          name={isFormikBinded && paramInputName ? paramInputName : 'paramName'}
           style={{ marginBottom: 0 }}
           maxLength={100}
-          onChange={handleKeyChange}
+          onChange={isFormikBinded ? onChange : handleKeyChange}
           error={paramError}
         />
       </div>
       <div className={styles.keyValCol}>
         <SelectInput<OpenApiDataTypes>
           disabled={disabled}
-          name="paramDataType"
+          name={
+            isFormikBinded && paramTypeName ? paramTypeName : 'paramDataType'
+          }
           options={optionsOpenApiDataTypes}
-          onChange={handleTypeChange}
+          onChange={isFormikBinded ? undefined : handleTypeChange}
+          onSyntheticChange={isFormikBinded ? onChange : undefined}
           value={value.type}
           style={{ marginBottom: 0 }}
           error={typeError}
