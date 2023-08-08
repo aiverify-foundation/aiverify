@@ -6,7 +6,6 @@ import {
   ModelApiFormModel,
   OpenApiDataTypes,
   RequestMethod,
-  URLParamType,
 } from './types';
 
 export const ConnectionSettingUnlimited = '-1';
@@ -25,25 +24,12 @@ export const defaultFormValues: ModelApiFormModel = {
       isArray: false,
       properties: [],
     },
-    parameters: {
-      paramType: URLParamType.QUERY,
-      queries: {
-        mediaType: MediaType.NONE,
-        isArray: false,
-        queryParams: [],
-      },
-      paths: {
-        mediaType: MediaType.NONE,
-        isArray: false,
-        pathParams: [],
-      },
-    },
     requestConfig: {
       rateLimit: ConnectionSettingUnlimited,
       batchStrategy: BatchStrategy.none,
       batchLimit: ConnectionSettingUnlimited,
       maxConnections: ConnectionSettingUnlimited,
-      requestTimeout: '3',
+      connectionTimeout: '3',
       sslVerify: false,
       rateLimitTimeout: ConnectionSettingUnlimited,
       connectionRetries: '5',

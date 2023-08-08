@@ -2,6 +2,7 @@ import { SelectInput } from 'src/components/selectInput';
 import { Tooltip, TooltipPosition } from 'src/components/tooltip';
 import InfoIcon from '@mui/icons-material/Info';
 import {
+  MediaType,
   ModelApiFormModel,
   OpenApiDataTypes,
   URLParamType,
@@ -58,16 +59,19 @@ const TabContentURLParams = forwardRef<
 >(function Content({ disabled = false }, ref) {
   const [newParam, setNewParam] = useState<UrlParam>(defaultUrlParameter);
   const [errorMsg, setErrorMsg] = useState<string>();
+  const [selectedParamType, setSelectedParamType] = useState<URLParamType>();
   const { values, errors, touched, setFieldValue, handleChange } =
     useFormikContext<ModelApiFormModel>();
   const formArrayHelpersRef = useRef<FieldArrayRenderProps>();
-  const urlParamsStr = values.modelAPI.parameters.paths
-    ? values.modelAPI.parameters.paths.pathParams.reduce((prev, param) => {
-        return `${prev}/{${param.name}}`;
-      }, '')
-    : '';
+  const urlParamsStr =
+    values.modelAPI.parameters && values.modelAPI.parameters.paths
+      ? values.modelAPI.parameters.paths.pathParams.reduce((prev, param) => {
+          return `${prev}/{${param.name}}`;
+        }, '')
+      : '';
   useImperativeHandle(ref, () => formArrayHelpersRef.current, []);
-  const paramType = values.modelAPI.parameters.paramType;
+  const paramType =
+    values.modelAPI.parameters && values.modelAPI.parameters.paramType;
 
   let paramErrors: FormikErrors<UrlParam>[] | undefined;
   let touchedParamFields: FormikTouched<UrlParam>[] | undefined;
@@ -102,39 +106,6 @@ const TabContentURLParams = forwardRef<
     }
   }
 
-  if (paramType === URLParamType.QUERY && values.modelAPI.parameters.paths) {
-    setFieldValue(
-      queryParamsFieldName,
-      values.modelAPI.parameters.paths.pathParams
-    );
-    setFieldValue(
-      `${queriesFieldName}.mediaType`,
-      values.modelAPI.parameters.paths.mediaType
-    );
-    setFieldValue(
-      `${queriesFieldName}.isArray`,
-      values.modelAPI.parameters.paths.isArray
-    );
-    setFieldValue(pathsFieldName, undefined);
-  } else if (
-    paramType === URLParamType.PATH &&
-    values.modelAPI.parameters.queries
-  ) {
-    setFieldValue(
-      pathParamsFieldName,
-      values.modelAPI.parameters.queries.queryParams
-    );
-    setFieldValue(
-      `${pathsFieldName}.mediaType`,
-      values.modelAPI.parameters.queries.mediaType
-    );
-    setFieldValue(
-      `${pathsFieldName}.isArray`,
-      values.modelAPI.parameters.queries.isArray
-    );
-    setFieldValue(queriesFieldName, undefined);
-  }
-
   // overloading just to make the type compatible with formik's `handleChange` signature
   function handleNewParamChange(e: ChangeEvent<HTMLInputElement>): void;
   function handleNewParamChange(arg: UrlParam): void;
@@ -151,6 +122,65 @@ const TabContentURLParams = forwardRef<
 
   useEffect(() => {
     if (errorMsg !== undefined) setErrorMsg(undefined);
+    if (!selectedParamType && !paramType) {
+      // fresh tab, no params data - set defaults
+      setFieldValue(queryTypeFieldName, URLParamType.QUERY);
+      setFieldValue(`${queriesFieldName}.queryParams`, []);
+      setFieldValue(`${queriesFieldName}.isArray`, false);
+      setFieldValue(`${queriesFieldName}.mediaType`, MediaType.NONE);
+      setSelectedParamType(URLParamType.QUERY);
+    } else if (!selectedParamType && paramType) {
+      // on initial reder
+      setSelectedParamType(paramType);
+      return; // exit because this is initial render
+    } else if (selectedParamType && !paramType) {
+      // on save
+      setFieldValue(queryTypeFieldName, selectedParamType);
+      return;
+    } else if (paramType === selectedParamType) {
+      // on same param type selected as before
+      return; //no-op because there is no change of selected param type
+    }
+
+    if (
+      paramType === URLParamType.QUERY &&
+      values.modelAPI.parameters &&
+      values.modelAPI.parameters.paths
+    ) {
+      setFieldValue(
+        queryParamsFieldName,
+        values.modelAPI.parameters.paths.pathParams
+      );
+      setFieldValue(
+        `${queriesFieldName}.mediaType`,
+        values.modelAPI.parameters.paths.mediaType
+      );
+      setFieldValue(
+        `${queriesFieldName}.isArray`,
+        values.modelAPI.parameters.paths.isArray
+      );
+      setFieldValue(pathsFieldName, undefined);
+      setSelectedParamType(URLParamType.QUERY);
+    } else if (
+      paramType === URLParamType.PATH &&
+      values.modelAPI.parameters &&
+      values.modelAPI.parameters.queries
+    ) {
+      setFieldValue(
+        pathParamsFieldName,
+        values.modelAPI.parameters.queries.queryParams
+      );
+      setFieldValue(
+        `${pathsFieldName}.mediaType`,
+        values.modelAPI.parameters.queries.mediaType
+      );
+      setFieldValue(
+        `${pathsFieldName}.isArray`,
+        values.modelAPI.parameters.queries.isArray
+      );
+      setFieldValue(queriesFieldName, undefined);
+      setSelectedParamType(URLParamType.PATH);
+    }
   }, [paramType]);
 
   function handleAddClick(formikArrayHelpers: FieldArrayRenderProps) {
@@ -158,8 +188,8 @@ const TabContentURLParams = forwardRef<
       if (newParam.name.trim() === '') setErrorMsg(RequiredMsg);
       const urlParams =
         paramType === URLParamType.QUERY
-          ? values.modelAPI.parameters.queries?.queryParams
-          : values.modelAPI.parameters.paths?.pathParams;
+          ? values.modelAPI.parameters?.queries?.queryParams
+          : values.modelAPI.parameters?.paths?.pathParams;
       const isExist =
         urlParams &&
         urlParams.findIndex((param) => param.name === newParam.name) > -1;
@@ -179,8 +209,8 @@ const TabContentURLParams = forwardRef<
     return () => {
       const urlParams =
         paramType === URLParamType.QUERY
-          ? values.modelAPI.parameters.queries?.queryParams
-          : values.modelAPI.parameters.paths?.pathParams;
+          ? values.modelAPI.parameters?.queries?.queryParams
+          : values.modelAPI.parameters?.paths?.pathParams;
       if (urlParams && urlParams[index].name === newParam.name) {
         setErrorMsg(undefined);
       }
@@ -211,7 +241,7 @@ const TabContentURLParams = forwardRef<
           label="URL Parameter Type"
           name={queryTypeFieldName}
           options={optionsUrlParamTypes}
-          value={values.modelAPI.parameters.paramType}
+          value={values.modelAPI.parameters?.paramType}
           onSyntheticChange={handleChange}
         />
         {paramType === URLParamType.QUERY ? (
@@ -281,14 +311,14 @@ const TabContentURLParams = forwardRef<
                   let params: UrlParam[] = [];
                   if (
                     paramType === URLParamType.QUERY &&
-                    values.modelAPI.parameters.queries
+                    values.modelAPI.parameters?.queries
                   ) {
                     params = values.modelAPI.parameters.queries.queryParams;
                   } else if (
                     paramType === URLParamType.PATH &&
-                    values.modelAPI.parameters.paths
+                    values.modelAPI.parameters?.paths
                   ) {
-                    params = values.modelAPI.parameters.paths.pathParams;
+                    params = values.modelAPI.parameters?.paths.pathParams;
                   }
                   return (
                     <div

@@ -6,7 +6,7 @@ import {
   FormikTouched,
   useFormikContext,
 } from 'formik';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { getInputReactKeyId } from '.';
 import {
   AdditionalHeaderInput,
@@ -35,7 +35,7 @@ function TabContentAdditionalHeaders({
   );
   const [headerErrorMsg, setHeaderErrorMsg] = useState<string>();
   const [valueErrorMsg, setValueErrorMsg] = useState<string>();
-  const { values, errors, touched, handleChange, setFieldValue } =
+  const { values, errors, touched, handleChange } =
     useFormikContext<ModelApiFormModel>();
   const headers = values.modelAPI.additionalHeaders || [];
   const fieldErrors = errors.modelAPI?.additionalHeaders as

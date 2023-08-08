@@ -93,15 +93,16 @@ export type Paths = {
   pathParams: UrlParam[];
 };
 
-type Parameters = {
+export type Parameters = {
   paramType: URLParamType;
+} & RequireAtLeastOne<{
   queries: Queries;
   paths: Paths;
-};
+}>;
 
 export type RequestConfigForm = {
   sslVerify: boolean;
-  requestTimeout: string;
+  connectionTimeout: string;
   rateLimit: string;
   rateLimitTimeout: string;
   connectionRetries: string;
@@ -112,7 +113,7 @@ export type RequestConfigForm = {
 
 export type RequestConfigGQL = {
   sslVerify: boolean;
-  requestTimeout: number;
+  connectionTimeout: number;
   rateLimit: number;
   rateLimitTimeout: number;
   connectionRetries: number;
@@ -144,14 +145,33 @@ export type AuthTypeConfig = {
 type FormModelApi = {
   method: RequestMethod;
   url: string;
-  urlParams?: string;
+  urlParams: string;
   authType: AuthType;
-  authTypeConfig?: { authType?: AuthType } & AuthTypeConfig; // authType is duplicated here because token, user & password are dependent on it and Yup validation schema depdendencies fields have to be siblings
-  requestBody: RequestBody;
+  authTypeConfig: { authType?: AuthType } & AuthTypeConfig; // authType is duplicated here because token, user & password are dependent on it and Yup validation schema depdendencies fields have to be siblings
   requestConfig: RequestConfigForm;
   response: ResponseForm;
-  parameters: Parameters;
   additionalHeaders?: AdditionalHeader[];
+} & RequireAtLeastOne<{
+  requestBody: RequestBody;
+  parameters: Parameters;
+}>;
+
+type RequestBodyOrParametersGQL = {
+  requestBody: Omit<RequestBody, 'properties'> & {
+    properties: Omit<BodyParam, 'reactPropId'>[];
+  };
+  parameters: RequireAtLeastOne<{
+    queries: {
+      mediaType: MediaType;
+      isArray: boolean;
+      queryParams: Omit<UrlParam, 'reactPropId'>[];
+    };
+    paths: {
+      mediaType: MediaType;
+      isArray: boolean;
+      pathParams: Omit<UrlParam, 'reactPropId'>[];
+    };
+  }>;
 };
 
 export type GqlModelApi = {
@@ -160,30 +180,10 @@ export type GqlModelApi = {
   urlParams?: string;
   authType: AuthType;
   authTypeConfig?: AuthTypeConfig;
-  requestBody: RequestBody;
   requestConfig: RequestConfigGQL;
   response: ResponseGQL;
-  parameters: Exclude<Parameters, URLParamType>;
   additionalHeaders?: AdditionalHeader[];
-};
-
-type RequestBodyOrParametersGQL = {
-  requestBody: Pick<RequestBody, 'mediaType' | 'isArray'> & {
-    properties: Pick<BodyParam, 'field' | 'type'>[];
-  };
-  parameters: RequireAtLeastOne<{
-    queries: {
-      mediaType: MediaType;
-      isArray: boolean;
-      queryParams: Pick<UrlParam, 'name' | 'type'>[];
-    };
-    paths: {
-      mediaType: MediaType;
-      isArray: boolean;
-      pathParams: Pick<UrlParam, 'name' | 'type'>[];
-    };
-  }>;
-};
+} & RequireAtLeastOne<RequestBodyOrParametersGQL>;
 
 /*
   ModelAPIConfig Type used by the Formik controlled form
@@ -204,13 +204,8 @@ export type ModelApiGQLModel = {
   name: string;
   description: string;
   modelType: ModelType;
-  modelAPI: Pick<
-    GqlModelApi,
-    'method' | 'url' | 'urlParams' | 'authType' | 'authTypeConfig'
-  > & {
-    requestConfig: RequestConfigGQL;
-    response: ResponseGQL;
-    additionalHeaders?: Pick<AdditionalHeader, 'name' | 'type' | 'value'>[];
+  modelAPI: Omit<GqlModelApi, 'additionalHeaders'> & {
+    additionalHeaders?: Omit<AdditionalHeader, 'reactPropId'>[];
   } & RequireAtLeastOne<RequestBodyOrParametersGQL>;
 };
 
@@ -222,39 +217,43 @@ type Typename = {
   The ModelAPIConfig payload returned when query via graphql.
   Some response properties could be `null`
 */
-export type ModelApiGQLQueryResponseModel = {
+export type ModelApiGQLQueryResponseModel = Typename & {
   id: string;
   name: string;
   description: string;
   modelType: ModelType;
-  modelAPI: Pick<GqlModelApi, 'method' | 'url' | 'authType'> & {
-    urlParams?: string | null;
-    authTypeConfig?: AuthTypeConfig | null;
-    requestConfig: Typename & RequestConfigGQL;
-    response: Typename & ResponseGQL;
-    parameters: {
-      queries?: {
-        __typename: string;
-        mediaType: MediaType;
-        isArray: boolean;
-        queryParams: Pick<UrlParam, 'name' | 'type'>[];
+  modelAPI: Typename &
+    Pick<GqlModelApi, 'method' | 'url' | 'authType'> & {
+      urlParams?: string | null;
+      authTypeConfig: AuthTypeConfig;
+      requestConfig: Typename & RequestConfigGQL;
+      response: Typename & ResponseGQL;
+      parameters?: {
+        queries?:
+          | (Typename & {
+              mediaType: MediaType;
+              isArray: boolean;
+              queryParams: Omit<UrlParam, 'reactPropId'>[];
+            })
+          | null;
+        paths?:
+          | (Typename & {
+              mediaType: MediaType;
+              isArray: boolean;
+              pathParams: Omit<UrlParam, 'reactPropId'>[];
+            })
+          | null;
       } | null;
-      paths?: {
-        __typename: string;
-        mediaType: MediaType;
-        isArray: boolean;
-        pathParams: Pick<UrlParam, 'name' | 'type'>[];
-      } | null;
-    } | null;
-    requestBody:
-      | (Pick<RequestBody, 'mediaType' | 'isArray'> & {
-          __typename: string;
-          properties: Pick<BodyParam, 'field' | 'type'>[];
-        })
-      | null;
-    additionalHeaders?:
-      | Pick<AdditionalHeader, 'name' | 'type' | 'value'>[]
-      | null;
-  };
+      requestBody?:
+        | (Typename &
+            Omit<RequestBody, 'properties'> & {
+              test: number;
+              properties: Omit<BodyParam, 'reactPropId'>[];
+            })
+        | null;
+      additionalHeaders?:
+        | (Typename & Omit<AdditionalHeader, 'reactPropId'>[])
+        | null;
+    };
   updatedAt: string;
 };

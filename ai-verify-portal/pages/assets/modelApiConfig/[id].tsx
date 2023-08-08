@@ -7,6 +7,7 @@ import {
 import {
   MediaType,
   ModelApiFormModel,
+  RequestMethod,
   URLParamType,
 } from 'src/modules/assets/modelAPIComponent/types';
 
@@ -46,6 +47,7 @@ export const getServerSideProps: GetServerSideProps<{
     4) Remove __typename properties
     5) Populate properties which were set to default values
     6) Generate and add `reactPropId` to the parameters, properties arrays items. These Ids are only used as React `key` prop values
+    7) Delete optional properties which values are `null` - Do not populate Formik form input values with `null`
   */
   const formValues: ModelApiFormModel = {
     name: result.name,
@@ -54,11 +56,13 @@ export const getServerSideProps: GetServerSideProps<{
     modelAPI: {
       method: result.modelAPI.method,
       url: result.modelAPI.url,
+      urlParams: result.modelAPI.urlParams || '',
       authType: result.modelAPI.authType,
+      authTypeConfig: result.modelAPI.authTypeConfig,
       requestConfig: (() => {
         const {
           __typename,
-          requestTimeout,
+          connectionTimeout,
           rateLimit,
           rateLimitTimeout,
           connectionRetries,
@@ -67,7 +71,7 @@ export const getServerSideProps: GetServerSideProps<{
           ...rest
         } = result.modelAPI.requestConfig;
         return {
-          requestTimeout: requestTimeout.toString(),
+          connectionTimeout: connectionTimeout.toString(),
           rateLimit: rateLimit.toString(),
           rateLimitTimeout: rateLimitTimeout.toString(),
           connectionRetries: connectionRetries.toString(),
@@ -83,40 +87,18 @@ export const getServerSideProps: GetServerSideProps<{
           ...rest,
         };
       })(),
-      requestBody: {
-        // set to default first, then populate at next step
-        mediaType: MediaType.NONE,
-        isArray: false,
-        properties: [],
-      },
-      parameters: {
-        paramType: URLParamType.QUERY,
-        // set to default first, then populate at next step
-        queries: {
-          mediaType: MediaType.NONE,
-          isArray: false,
-          queryParams: [],
-        },
-        paths: {
-          mediaType: MediaType.NONE,
-          isArray: false,
-          pathParams: [],
-        },
-      },
+      requestBody: {} as never, // populate / remove at next step
+      parameters: {} as never, // populate / remove at next step
     },
   };
 
-  // add urlParams, authTypeConfig properties if they are not null properties. Otherwise, just omit them from the object.
-  if (result.modelAPI.urlParams !== null) {
-    formValues.modelAPI.urlParams = result.modelAPI.urlParams;
-  }
-
-  if (result.modelAPI.authTypeConfig !== null) {
-    formValues.modelAPI.authTypeConfig = result.modelAPI.authTypeConfig;
-  }
-
   // populate requestBody, parameters and additonalHeaders if they are not NULL
-  if (result.modelAPI.requestBody !== null) {
+  if (
+    result.modelAPI.method === RequestMethod.POST &&
+    result.modelAPI.requestBody &&
+    result.modelAPI.requestBody.properties.length
+  ) {
+    delete formValues.modelAPI.parameters;
     formValues.modelAPI.requestBody = {
       ...(() => {
         const { __typename, ...rest } = result.modelAPI.requestBody;
@@ -129,10 +111,14 @@ export const getServerSideProps: GetServerSideProps<{
         reactPropId: getInputReactKeyId(),
       })),
     };
-  }
-
-  if (result.modelAPI.parameters && result.modelAPI.parameters.queries) {
+  } else if (
+    result.modelAPI.parameters &&
+    result.modelAPI.parameters.queries &&
+    result.modelAPI.parameters.queries.queryParams.length
+  ) {
+    delete formValues.modelAPI.requestBody;
     formValues.modelAPI.parameters = {
+      paramType: URLParamType.QUERY,
       queries: {
         ...(() => {
           const { __typename, ...rest } = result.modelAPI.parameters.queries;
@@ -148,10 +134,14 @@ export const getServerSideProps: GetServerSideProps<{
         ),
       },
     };
-  }
-
-  if (result.modelAPI.parameters && result.modelAPI.parameters.paths) {
+  } else if (
+    result.modelAPI.parameters &&
+    result.modelAPI.parameters.paths &&
+    result.modelAPI.parameters.paths.pathParams.length
+  ) {
+    delete formValues.modelAPI.requestBody;
     formValues.modelAPI.parameters = {
+      paramType: URLParamType.PATH,
       paths: {
         ...(() => {
           const { __typename, ...rest } = result.modelAPI.parameters.paths;
@@ -165,6 +155,11 @@ export const getServerSideProps: GetServerSideProps<{
             reactPropId: getInputReactKeyId(),
           })
         ),
+      },
+      queries: {
+        mediaType: MediaType.NONE,
+        isArray: false,
+        queryParams: [],
       },
     };
   }
@@ -183,13 +178,23 @@ export const getServerSideProps: GetServerSideProps<{
       }));
   }
 
+  // delete field if null
+  if (formValues.modelAPI.response.field == null) {
+    delete formValues.modelAPI.response.field;
+  }
+
+  const moduleProps: NewModelApiConfigModuleProps = {
+    disabled: true,
+    id: result.id,
+    formValues,
+  };
+
+  if (from) {
+    moduleProps.entryPoint = from;
+  }
+
   return {
-    props: {
-      disabled: true,
-      id: result.id,
-      formValues,
-      entryPoint: from,
-    },
+    props: moduleProps,
   };
 };
 

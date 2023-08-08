@@ -1,14 +1,9 @@
 import { SelectInput } from 'src/components/selectInput';
 import { optionsAuthMethods } from './selectOptions';
 import { useFormikContext } from 'formik';
-import {
-  AuthBasicConfig,
-  AuthBearerTokenConfig,
-  AuthType,
-  ModelApiFormModel,
-} from './types';
+import { AuthType, ModelApiFormModel } from './types';
 import { TextInput } from 'src/components/textInput';
-import { ChangeEvent, useEffect } from 'react';
+import { useEffect } from 'react';
 
 const authTypeFieldName = 'modelAPI.authType';
 const authTypeConfigFieldName = 'modelAPI.authTypeConfig';
@@ -17,17 +12,12 @@ function TabContentAuth({ disabled = false }: { disabled?: boolean }) {
   const { values, errors, touched, setFieldValue, handleChange } =
     useFormikContext<ModelApiFormModel>();
 
-  // investigate authTypeConfig type-check not working
-  const fieldErrors = errors.modelAPI?.authTypeConfig as any;
-  const touchedFields = touched.modelAPI?.authTypeConfig as any;
-
-  function handleBearerTokenChange(e: ChangeEvent<HTMLInputElement>) {
-    setFieldValue(`${authTypeConfigFieldName}.token`, e.target.value);
-  }
+  const fieldErrors = errors.modelAPI?.authTypeConfig;
+  const touchedFields = touched.modelAPI?.authTypeConfig;
 
   useEffect(() => {
     setFieldValue(
-      `${authTypeConfigFieldName}.authType`, // This is set under authTypeConfig only for Yup validation field dependencies
+      `${authTypeConfigFieldName}.authType`, // This is duplicated under authTypeConfig only for Yup validation field dependencies
       values.modelAPI.authType
     );
   }, [values.modelAPI.authType]);
@@ -53,10 +43,8 @@ function TabContentAuth({ disabled = false }: { disabled?: boolean }) {
             disabled={disabled}
             label="Token"
             name={`${authTypeConfigFieldName}.token`}
-            value={
-              (values.modelAPI.authTypeConfig as AuthBearerTokenConfig)?.token
-            }
-            onChange={handleBearerTokenChange}
+            value={values.modelAPI.authTypeConfig.token}
+            onChange={handleChange}
             style={{ width: 560 }}
             error={
               Boolean(fieldErrors?.token && touchedFields?.token)
@@ -72,9 +60,7 @@ function TabContentAuth({ disabled = false }: { disabled?: boolean }) {
             disabled={disabled}
             label="Username"
             name={`${authTypeConfigFieldName}.username`}
-            value={
-              (values.modelAPI.authTypeConfig as AuthBasicConfig)?.username
-            }
+            value={values.modelAPI.authTypeConfig.username}
             onChange={handleChange}
             style={{
               marginRight: 8,
@@ -90,9 +76,7 @@ function TabContentAuth({ disabled = false }: { disabled?: boolean }) {
             disabled={disabled}
             label="Password"
             name={`${authTypeConfigFieldName}.password`}
-            value={
-              (values.modelAPI.authTypeConfig as AuthBasicConfig)?.password
-            }
+            value={values.modelAPI.authTypeConfig.password}
             onChange={handleChange}
             style={{ width: 300 }}
             error={

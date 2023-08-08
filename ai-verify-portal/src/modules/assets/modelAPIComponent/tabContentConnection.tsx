@@ -4,7 +4,6 @@ import { TextInput } from 'src/components/textInput';
 import styles from './styles/newModelApiConfig.module.css';
 import { SelectInput } from 'src/components/selectInput';
 import { optionsBatchStrategies } from './selectOptions';
-import { ConnectionSettingUnlimited } from './constants';
 
 const otherReqConfigFieldName = 'modelAPI.requestConfig';
 
@@ -26,17 +25,55 @@ function TabContentConnection({ disabled = false }: { disabled?: boolean }) {
         <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
           <TextInput
             disabled={disabled}
-            label="Request Timeout"
-            name={`${otherReqConfigFieldName}.requestTimeout`}
+            label="Connection Timeout"
+            name={`${otherReqConfigFieldName}.connectionTimeout`}
             onChange={handleChange}
-            value={requestConfig.requestTimeout}
+            value={requestConfig.connectionTimeout}
             maxLength={128}
             style={{ marginBottom: 0, width: '100%' }}
             error={
               Boolean(
-                fieldErrors?.requestTimeout && touchedFields?.requestTimeout
+                fieldErrors?.connectionTimeout &&
+                  touchedFields?.connectionTimeout
               )
-                ? fieldErrors?.requestTimeout
+                ? fieldErrors?.connectionTimeout
+                : undefined
+            }
+          />
+        </div>
+        <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
+          <TextInput
+            disabled={disabled}
+            label="Connection Retries"
+            name={`${otherReqConfigFieldName}.connectionRetries`}
+            onChange={handleChange}
+            value={requestConfig.connectionRetries}
+            maxLength={128}
+            style={{ marginBottom: 0, width: '100%' }}
+            error={
+              Boolean(
+                fieldErrors?.connectionRetries &&
+                  touchedFields?.connectionRetries
+              )
+                ? fieldErrors?.connectionRetries
+                : undefined
+            }
+          />
+        </div>
+        <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
+          <TextInput
+            disabled={disabled}
+            label="Max Connections"
+            name={`${otherReqConfigFieldName}.maxConnections`}
+            onChange={handleChange}
+            value={requestConfig.maxConnections}
+            maxLength={128}
+            style={{ marginBottom: 0, width: '100%' }}
+            error={
+              Boolean(
+                fieldErrors?.maxConnections && touchedFields?.maxConnections
+              )
+                ? fieldErrors?.maxConnections
                 : undefined
             }
           />
@@ -79,6 +116,8 @@ function TabContentConnection({ disabled = false }: { disabled?: boolean }) {
             }
           />
         </div>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', width: 300 }}>
         <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
           <SelectInput<BatchStrategy>
             disabled={disabled}
@@ -104,45 +143,6 @@ function TabContentConnection({ disabled = false }: { disabled?: boolean }) {
             error={
               Boolean(fieldErrors?.batchLimit && touchedFields?.batchLimit)
                 ? fieldErrors?.batchLimit
-                : undefined
-            }
-          />
-        </div>
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', width: 300 }}>
-        <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
-          <TextInput
-            disabled={disabled}
-            label="Connection Retries"
-            name={`${otherReqConfigFieldName}.connectionRetries`}
-            onChange={handleChange}
-            value={requestConfig.connectionRetries}
-            maxLength={128}
-            style={{ marginBottom: 0, width: '100%' }}
-            error={
-              Boolean(
-                fieldErrors?.connectionRetries &&
-                  touchedFields?.connectionRetries
-              )
-                ? fieldErrors?.connectionRetries
-                : undefined
-            }
-          />
-        </div>
-        <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
-          <TextInput
-            disabled={disabled}
-            label="Max Connections"
-            name={`${otherReqConfigFieldName}.maxConnections`}
-            onChange={handleChange}
-            value={requestConfig.maxConnections}
-            maxLength={128}
-            style={{ marginBottom: 0, width: '100%' }}
-            error={
-              Boolean(
-                fieldErrors?.maxConnections && touchedFields?.maxConnections
-              )
-                ? fieldErrors?.maxConnections
                 : undefined
             }
           />

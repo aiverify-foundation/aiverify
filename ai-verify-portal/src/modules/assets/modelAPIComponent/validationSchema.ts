@@ -1,5 +1,5 @@
 import { object, string, number, bool, array, addMethod, boolean } from 'yup';
-import { AuthType, MediaType, URLParamType } from './types';
+import { AuthType, MediaType, RequestMethod, URLParamType } from './types';
 
 declare module 'yup' {
   //@ts-ignore
@@ -57,9 +57,8 @@ export const ModelAPIFormValidationSchema = object({
     .max(128, 'Max 128 characters')
     .required('Required'),
   modelAPI: object({
-    url: string()
-      .matches(urlPattern, 'Invalid URL')
-      .required('URL is required'),
+    method: string().required('Required'),
+    url: string().matches(urlPattern, 'Invalid URL').required('Required'),
     requestConfig: object({
       rateLimit: number()
         .min(unlimited, 'Invalid. Enter -1 for unlimited')
@@ -82,7 +81,7 @@ export const ModelAPIFormValidationSchema = object({
         .min(unlimited, 'Invalid. Enter -1 for unlimited')
         .required('Required')
         .typeError('Must be a number'),
-      requestTimeout: number()
+      connectionTimeout: number()
         .min(3, 'Must be greater than 2')
         .max(5, 'Must be less than 6')
         .required('Required')
@@ -125,18 +124,23 @@ export const ModelAPIFormValidationSchema = object({
           then: (schema) => schema.required('Required'),
         }),
     }),
-    requestBody: object({
-      mediaType: string().required('Required'),
-      isArray: bool(),
-      properties: array().of(
+    requestBody: object().when('method', {
+      is: RequestMethod.POST,
+      then: () =>
         object({
-          field: string().required('Required'),
-          type: string().required('Required'),
-        }).uniqueProperty('field', 'Property Exists')
-      ),
+          mediaType: string().required('Required'),
+          isArray: bool(),
+          properties: array().of(
+            object({
+              field: string().required('Required'),
+              type: string().required('Required'),
+            }).uniqueProperty('field', 'Property Exists')
+          ),
+        }),
+      otherwise: () => object({}),
     }),
     parameters: object({
-      paramType: string().required('Required'),
+      paramType: string(),
       queries: object().when('paramType', {
         is: (paramType: string) => paramType === URLParamType.QUERY,
         then: () =>
