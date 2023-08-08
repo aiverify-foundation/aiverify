@@ -105,8 +105,8 @@ export const ModelAPIFormValidationSchema = object({
     authTypeConfig: object({
       authType: string(), // duplicated here for the `when()` dependencies below. Yup `when()` has limitation - it cannot refer to fields up the tree.
       token: string()
-        .min(32, 'Min 32 characters')
-        .max(128, 'Max 128 characters')
+        .min(1, 'Min 32 characters')
+        .max(1024, 'Max 128 characters')
         .when('authType', {
           is: AuthType.BEARER_TOKEN,
           then: (schema) => schema.required('Required'),
