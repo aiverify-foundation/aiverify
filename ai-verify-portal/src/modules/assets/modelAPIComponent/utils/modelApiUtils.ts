@@ -39,6 +39,7 @@ export function transformFormValuesToGraphModel(
   if (otherResponseProps.mediaType === MediaType.APP_JSON) {
     formToModelApiGqlPayload.modelAPI.response.field = field;
   }
+
   //populate authType config if not NO_AUTH
   if (authType !== AuthType.NO_AUTH) {
     //tidy authTypeConfig
@@ -61,6 +62,10 @@ export function transformFormValuesToGraphModel(
       }
       // tidy params - remove reactPropId
       if (formToModelApiGqlPayload.modelAPI.parameters.paths) {
+        // TODO - fix name field
+        if (!formToModelApiGqlPayload.modelAPI.parameters.paths.isArray) {
+          delete formToModelApiGqlPayload.modelAPI.parameters.paths.name;
+        }
         formToModelApiGqlPayload.modelAPI.parameters.paths.pathParams =
           formToModelApiGqlPayload.modelAPI.parameters.paths.pathParams.map(
             (param) => ({
