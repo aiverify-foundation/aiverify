@@ -21,7 +21,7 @@ To run AI Verify, these are the recommended requirements to run AI Verify on a l
 
 1. Launch Docker Desktop.
 
-2. Download `setup-aiverify.zip` from [Github Release](https://github.com/IMDA-BTG/aiverify/releases/tag/v0.9.0).
+2. Download `setup-aiverify.zip` from [Github Release](https://github.com/IMDA-BTG/aiverify/releases)
 
 3. Unzip `setup-aiverify.zip`.
 
