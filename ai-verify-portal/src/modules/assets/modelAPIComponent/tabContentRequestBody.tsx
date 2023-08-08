@@ -19,6 +19,8 @@ import {
   RequestBodyParameterInput,
   RequestBodyParamsHeading,
 } from './requestBodyParamInput';
+import { CheckBox } from 'src/components/checkbox';
+import { TextInput } from 'src/components/textInput';
 
 const defaultBodyParameter: BodyParam = {
   reactPropId: '',
@@ -64,6 +66,7 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
   function handleAddClick(formikArrayHelpers: FieldArrayRenderProps) {
     return () => {
       if (newParam.field.trim() === '') setErrorMsg(RequiredMsg);
+      if (!values.modelAPI.requestBody) return;
       const isExist =
         values.modelAPI.requestBody.properties.findIndex(
           (prop) => prop.field === newParam.field
@@ -83,7 +86,7 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
   ) {
     return () => {
       if (
-        values.modelAPI.requestBody.properties[index].field === newParam.field
+        values.modelAPI.requestBody?.properties[index].field === newParam.field
       ) {
         setErrorMsg(undefined);
       }
@@ -106,7 +109,29 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
         value={values.modelAPI.requestBody?.mediaType}
         onSyntheticChange={handleChange}
       />
-      {values.modelAPI.requestBody.mediaType !== MediaType.NONE ? (
+      <div style={{ display: 'flex', marginBottom: 10 }}>
+        <CheckBox
+          label="Format as array"
+          disabled={disabled}
+          checked={values.modelAPI.requestBody?.isArray}
+          name={`${requestBodyFieldName}.isArray`}
+          value={values.modelAPI.requestBody?.isArray}
+          onChange={handleChange}
+          style={{ marginRight: 40 }}
+        />
+        {values.modelAPI.requestBody?.isArray ? (
+          <TextInput
+            disabled={disabled}
+            label="Array Name"
+            name={`${requestBodyFieldName}.name`}
+            onChange={handleChange}
+            value={values.modelAPI.requestBody?.name}
+            maxLength={128}
+            style={{ marginBottom: 0, width: 100 }}
+          />
+        ) : null}
+      </div>
+      {values.modelAPI.requestBody?.mediaType !== MediaType.NONE ? (
         <>
           {disabled && !properties.length ? null : <RequestBodyParamsHeading />}
           <FieldArray name={`${requestBodyFieldName}.properties`}>

@@ -78,18 +78,24 @@ export type BodyParam = {
 export type RequestBody = {
   mediaType: MediaType;
   isArray: boolean;
+  name?: string;
+  maxItems?: string;
   properties: BodyParam[];
 };
 
 export type Queries = {
   mediaType: MediaType;
   isArray: boolean;
+  name?: string;
+  maxItems?: string;
   queryParams: UrlParam[];
 };
 
 export type Paths = {
   mediaType: MediaType;
   isArray: boolean;
+  name?: string;
+  maxItems?: string;
   pathParams: UrlParam[];
 };
 
@@ -158,17 +164,23 @@ type FormModelApi = {
 
 type RequestBodyOrParametersGQL = {
   requestBody: Omit<RequestBody, 'properties'> & {
+    name?: string;
+    maxItems?: number;
     properties: Omit<BodyParam, 'reactPropId'>[];
   };
   parameters: RequireAtLeastOne<{
     queries: {
       mediaType: MediaType;
       isArray: boolean;
+      name?: string;
+      maxItems?: number;
       queryParams: Omit<UrlParam, 'reactPropId'>[];
     };
     paths: {
       mediaType: MediaType;
       isArray: boolean;
+      name?: string;
+      maxItems?: number;
       pathParams: Omit<UrlParam, 'reactPropId'>[];
     };
   }>;

@@ -31,6 +31,8 @@ import {
   useState,
 } from 'react';
 import { getInputReactKeyId } from '.';
+import { CheckBox } from 'src/components/checkbox';
+import { TextInput } from 'src/components/textInput';
 
 const PropExistsMsg = 'Parameter exists';
 const RequiredMsg = 'Required';
@@ -159,6 +161,10 @@ const TabContentURLParams = forwardRef<
         `${queriesFieldName}.isArray`,
         values.modelAPI.parameters.paths.isArray
       );
+      setFieldValue(
+        `${queriesFieldName}.name`,
+        values.modelAPI.parameters.paths.name
+      );
       setFieldValue(pathsFieldName, undefined);
       setSelectedParamType(URLParamType.QUERY);
     } else if (
@@ -177,6 +183,10 @@ const TabContentURLParams = forwardRef<
       setFieldValue(
         `${pathsFieldName}.isArray`,
         values.modelAPI.parameters.queries.isArray
+      );
+      setFieldValue(
+        `${pathsFieldName}.name`,
+        values.modelAPI.parameters.queries.name
       );
       setFieldValue(queriesFieldName, undefined);
       setSelectedParamType(URLParamType.PATH);
@@ -292,6 +302,52 @@ const TabContentURLParams = forwardRef<
             <InfoIcon style={{ fontSize: 22 }} />
           </div>
         </Tooltip>
+      </div>
+      <div style={{ display: 'flex', marginBottom: 10 }}>
+        <CheckBox
+          label="Format as array"
+          disabled={disabled}
+          checked={
+            paramType === URLParamType.QUERY
+              ? values.modelAPI.parameters?.queries?.isArray
+              : values.modelAPI.parameters?.paths?.isArray
+          }
+          name={
+            paramType === URLParamType.QUERY
+              ? `${queriesFieldName}.isArray`
+              : `${pathsFieldName}.isArray`
+          }
+          value={
+            paramType === URLParamType.QUERY
+              ? values.modelAPI.parameters?.queries?.isArray
+              : values.modelAPI.parameters?.paths?.isArray
+          }
+          onChange={handleChange}
+          style={{ marginRight: 40 }}
+        />
+        {(
+          paramType === URLParamType.QUERY
+            ? values.modelAPI.parameters?.queries?.isArray
+            : values.modelAPI.parameters?.paths?.isArray
+        ) ? (
+          <TextInput
+            disabled={disabled}
+            label="Array Name"
+            name={
+              paramType === URLParamType.QUERY
+                ? `${queriesFieldName}.name`
+                : `${pathsFieldName}.name`
+            }
+            onChange={handleChange}
+            value={
+              paramType === URLParamType.QUERY
+                ? values.modelAPI.parameters?.queries?.name
+                : values.modelAPI.parameters?.paths?.name
+            }
+            maxLength={128}
+            style={{ marginBottom: 0, width: 100 }}
+          />
+        ) : null}
       </div>
       <UrlParamsInputHeading />
       <Droppable droppableId="list-container">

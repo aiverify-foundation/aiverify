@@ -37,6 +37,7 @@ function TabContentAuth({ disabled = false }: { disabled?: boolean }) {
         onSyntheticChange={handleChange}
         value={values.modelAPI.authType}
       />
+
       {values.modelAPI.authType === AuthType.BEARER_TOKEN ? (
         <div style={{ flexGrow: 1 }}>
           <TextInput
