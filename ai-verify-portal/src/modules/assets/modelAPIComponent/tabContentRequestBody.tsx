@@ -67,8 +67,8 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
     return () => {
       if (newParam.field.trim() === '') setErrorMsg(RequiredMsg);
       if (!values.modelAPI.requestBody) return;
-      if (!values.modelAPI.requestBody.properties) return;
       const isExist =
+        values.modelAPI.requestBody.properties &&
         values.modelAPI.requestBody.properties.findIndex(
           (prop) => prop.field === newParam.field
         ) > -1;
