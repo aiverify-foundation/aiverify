@@ -9,8 +9,8 @@ type CheckBoxProps = {
   checked?: boolean;
   value?: boolean;
   disabled?: boolean;
-  labelSibling?: React.ReactElement;
   style?: React.CSSProperties;
+  size?: number;
   onChange?: ChangeEventHandler<HTMLInputElement>;
 };
 
@@ -21,8 +21,8 @@ function CheckBox(props: CheckBoxProps) {
     error,
     value,
     checked = false,
-    labelSibling,
     disabled = false,
+    size = 20,
     style,
     onChange,
   } = props;
@@ -34,12 +34,11 @@ function CheckBox(props: CheckBoxProps) {
         error !== undefined ? styles.inputError : null
       )}
       style={style}>
-      <label>
-        <div className={styles.label}>
-          <div>{label}</div>
-          {labelSibling}
-        </div>
+      <label
+        className={styles.control}
+        style={{ height: size, fontSize: size }}>
         <input
+          className={styles.input}
           type="checkbox"
           name={name}
           checked={checked}
@@ -47,10 +46,10 @@ function CheckBox(props: CheckBoxProps) {
           disabled={disabled}
           onChange={onChange}
         />
-        {Boolean(error) ? (
-          <div className={styles.errorText}>{error}</div>
-        ) : null}
       </label>
+      <div className={styles.labelText}>
+        <div>{label}</div>
+      </div>
     </div>
   );
 }

@@ -254,7 +254,8 @@ const TabContentURLParams = forwardRef<
           value={values.modelAPI.parameters?.paramType}
           onSyntheticChange={handleChange}
         />
-        {paramType === URLParamType.QUERY ? (
+        {paramType === URLParamType.QUERY &&
+        !values.modelAPI.parameters?.queries?.isArray ? (
           <div
             style={{
               marginLeft: 10,
@@ -266,7 +267,21 @@ const TabContentURLParams = forwardRef<
             <span className={styles.paramHighlight}>gender</span>
             =&#123;value&#125;
           </div>
-        ) : (
+        ) : null}
+        {paramType === URLParamType.QUERY &&
+        values.modelAPI.parameters?.queries?.isArray ? (
+          <div
+            style={{
+              marginLeft: 10,
+              fontSize: 14,
+            }}>
+            e.g. https://hostname/predict?data=&#123;
+            <span className={styles.paramHighlight}>age</span>: value,&nbsp;
+            <span className={styles.paramHighlight}>gender</span>: value&#125;
+          </div>
+        ) : null}
+        {paramType === URLParamType.PATH &&
+        !values.modelAPI.parameters?.paths?.isArray ? (
           <div
             style={{
               marginLeft: 10,
@@ -276,7 +291,19 @@ const TabContentURLParams = forwardRef<
             <span className={styles.paramHighlight}>&#123;age&#125;</span>/
             <span className={styles.paramHighlight}>&#123;gender&#125;</span>
           </div>
-        )}
+        ) : null}
+        {paramType === URLParamType.PATH &&
+        values.modelAPI.parameters?.paths?.isArray ? (
+          <div
+            style={{
+              marginLeft: 10,
+              fontSize: 14,
+            }}>
+            e.g. https://hostname/predict/&#123;
+            <span className={styles.paramHighlight}>age</span>: value,&nbsp;
+            <span className={styles.paramHighlight}>gender</span>: value&#125;
+          </div>
+        ) : null}
         <Tooltip
           backgroundColor="#676767"
           fontColor="#FFFFFF"
@@ -303,36 +330,16 @@ const TabContentURLParams = forwardRef<
           </div>
         </Tooltip>
       </div>
-      <div style={{ display: 'flex', marginBottom: 10 }}>
-        <CheckBox
-          label="Format as array"
-          disabled={disabled}
-          checked={
-            paramType === URLParamType.QUERY
-              ? values.modelAPI.parameters?.queries?.isArray
-              : values.modelAPI.parameters?.paths?.isArray
-          }
-          name={
-            paramType === URLParamType.QUERY
-              ? `${queriesFieldName}.isArray`
-              : `${pathsFieldName}.isArray`
-          }
-          value={
-            paramType === URLParamType.QUERY
-              ? values.modelAPI.parameters?.queries?.isArray
-              : values.modelAPI.parameters?.paths?.isArray
-          }
-          onChange={handleChange}
-          style={{ marginRight: 40 }}
-        />
-        {(
-          paramType === URLParamType.QUERY
-            ? values.modelAPI.parameters?.queries?.isArray
-            : values.modelAPI.parameters?.paths?.isArray
-        ) ? (
+      {paramType === URLParamType.QUERY ? (
+        <div style={{ position: 'relative', width: 500, marginBottom: 15 }}>
           <TextInput
-            disabled={disabled}
-            label="Array Name"
+            disabled={
+              disabled ||
+              !(paramType === URLParamType.QUERY
+                ? values.modelAPI.parameters?.queries?.isArray
+                : values.modelAPI.parameters?.paths?.isArray)
+            }
+            label="."
             name={
               paramType === URLParamType.QUERY
                 ? `${queriesFieldName}.name`
@@ -345,10 +352,43 @@ const TabContentURLParams = forwardRef<
                 : values.modelAPI.parameters?.paths?.name
             }
             maxLength={128}
-            style={{ marginBottom: 0, width: 100 }}
+            style={{ marginBottom: 0, width: 240 }}
           />
-        ) : null}
-      </div>
+          <CheckBox
+            label="Format as array (Provide array variable name below)"
+            disabled={disabled}
+            checked={
+              paramType === URLParamType.QUERY
+                ? values.modelAPI.parameters?.queries?.isArray
+                : values.modelAPI.parameters?.paths?.isArray
+            }
+            name={
+              paramType === URLParamType.QUERY
+                ? `${queriesFieldName}.isArray`
+                : `${pathsFieldName}.isArray`
+            }
+            value={
+              paramType === URLParamType.QUERY
+                ? values.modelAPI.parameters?.queries?.isArray
+                : values.modelAPI.parameters?.paths?.isArray
+            }
+            onChange={handleChange}
+            style={{ position: 'absolute', top: 0 }}
+          />
+        </div>
+      ) : (
+        <div style={{ position: 'relative', width: 300, marginBottom: 15 }}>
+          <CheckBox
+            label="Format as array"
+            disabled={disabled}
+            checked={values.modelAPI.parameters?.paths?.isArray}
+            name={`${pathsFieldName}.isArray`}
+            value={values.modelAPI.parameters?.paths?.isArray}
+            onChange={handleChange}
+            style={{ justifyContent: 'flex-start' }}
+          />
+        </div>
+      )}
       <UrlParamsInputHeading />
       <Droppable droppableId="list-container">
         {(provided) => {

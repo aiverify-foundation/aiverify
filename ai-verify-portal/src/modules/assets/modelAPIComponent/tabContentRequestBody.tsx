@@ -109,27 +109,25 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
         value={values.modelAPI.requestBody?.mediaType}
         onSyntheticChange={handleChange}
       />
-      <div style={{ display: 'flex', marginBottom: 10 }}>
+      <div style={{ position: 'relative', width: 500, marginBottom: 15 }}>
+        <TextInput
+          label="."
+          disabled={disabled || !values.modelAPI.requestBody?.isArray}
+          name={`${requestBodyFieldName}.name`}
+          onChange={handleChange}
+          value={values.modelAPI.requestBody?.name}
+          maxLength={128}
+          style={{ marginBottom: 0, width: 240 }}
+        />
         <CheckBox
-          label="Format as array"
+          label="Format as array (Provide array variable name below)"
           disabled={disabled}
           checked={values.modelAPI.requestBody?.isArray}
           name={`${requestBodyFieldName}.isArray`}
           value={values.modelAPI.requestBody?.isArray}
           onChange={handleChange}
-          style={{ marginRight: 40 }}
+          style={{ position: 'absolute', top: 0 }}
         />
-        {values.modelAPI.requestBody?.isArray ? (
-          <TextInput
-            disabled={disabled}
-            label="Array Name"
-            name={`${requestBodyFieldName}.name`}
-            onChange={handleChange}
-            value={values.modelAPI.requestBody?.name}
-            maxLength={128}
-            style={{ marginBottom: 0, width: 100 }}
-          />
-        ) : null}
       </div>
       {values.modelAPI.requestBody?.mediaType !== MediaType.NONE ? (
         <>
