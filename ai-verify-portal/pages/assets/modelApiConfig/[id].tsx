@@ -94,7 +94,7 @@ export const getServerSideProps: GetServerSideProps<{
 
   //tidy authtypeconfig null
   if (!result.modelAPI.authTypeConfig) {
-    delete formValues.modelAPI.authTypeConfig;
+    formValues.modelAPI.authTypeConfig = {};
   }
 
   // populate requestBody, parameters and additonalHeaders if they are not NULL
