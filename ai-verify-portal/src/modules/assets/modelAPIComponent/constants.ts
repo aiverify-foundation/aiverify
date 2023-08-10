@@ -6,6 +6,7 @@ import {
   ModelApiFormModel,
   OpenApiDataTypes,
   RequestMethod,
+  URLParamType,
 } from './types';
 
 export const ConnectionSettingUnlimited = '-1';
@@ -23,6 +24,19 @@ export const defaultFormValues: ModelApiFormModel = {
       mediaType: MediaType.FORM_URLENCODED,
       isArray: false,
       properties: [],
+    },
+    parameters: {
+      paramType: URLParamType.QUERY,
+      paths: {
+        mediaType: MediaType.NONE,
+        isArray: false,
+        pathParams: [],
+      },
+      queries: {
+        mediaType: MediaType.NONE,
+        isArray: false,
+        queryParams: [],
+      },
     },
     requestConfig: {
       rateLimit: ConnectionSettingUnlimited,

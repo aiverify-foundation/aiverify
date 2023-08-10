@@ -162,29 +162,22 @@ type FormModelApi = {
   parameters: Parameters;
 }>;
 
-type RequestBodyOrParametersGQL = {
-  requestBody: Omit<RequestBody, 'properties'> & {
-    name?: string;
+type RequestBodyOrParametersGQL = RequireAtLeastOne<{
+  requestBody: Omit<RequestBody, 'properties' | 'maxItems'> & {
     maxItems?: number;
     properties: Omit<BodyParam, 'reactPropId'>[];
   };
   parameters: RequireAtLeastOne<{
-    queries: {
-      mediaType: MediaType;
-      isArray: boolean;
-      name?: string;
+    queries: Omit<Queries, 'queryParams' | 'maxItems'> & {
       maxItems?: number;
       queryParams: Omit<UrlParam, 'reactPropId'>[];
     };
-    paths: {
-      mediaType: MediaType;
-      isArray: boolean;
-      name?: string;
+    paths: Omit<Paths, 'pathParams' | 'maxItems'> & {
       maxItems?: number;
       pathParams: Omit<UrlParam, 'reactPropId'>[];
     };
   }>;
-};
+}>;
 
 export type GqlModelApi = {
   method: RequestMethod;

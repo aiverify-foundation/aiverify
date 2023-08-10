@@ -5,6 +5,7 @@ import {
   NewModelApiConfigModuleProps,
 } from 'src/modules/assets/modelAPIComponent';
 import {
+  AuthType,
   MediaType,
   ModelApiFormModel,
   RequestMethod,
@@ -87,23 +88,29 @@ export const getServerSideProps: GetServerSideProps<{
           ...rest,
         };
       })(),
-      requestBody: {} as never, // populate / remove at next step
-      parameters: {} as never, // populate / remove at next step
+      requestBody: {} as never, // populate at next step
+      parameters: {} as never, // populate at next step
     },
   };
 
-  //tidy authtypeconfig null
+  // refer to modules/assets/modelAPIComponent/constants.ts for defaults
+  // defaults here should be in sync with defaults in constants.ts
+
+  // if authtypeconfig is null, set defaults
   if (!result.modelAPI.authTypeConfig) {
-    formValues.modelAPI.authTypeConfig = {};
+    formValues.modelAPI.authTypeConfig = {
+      authType: AuthType.NO_AUTH, // authType is duplicated here in Form Model to allow easy Yup validation dependency rules. Remove in gql request.
+      token: '',
+      username: '',
+      password: '',
+    };
   }
 
   // populate requestBody, parameters and additonalHeaders if they are not NULL
   if (
     result.modelAPI.method === RequestMethod.POST &&
-    result.modelAPI.requestBody &&
-    result.modelAPI.requestBody.properties.length
+    result.modelAPI.requestBody
   ) {
-    delete formValues.modelAPI.parameters;
     formValues.modelAPI.requestBody = {
       ...(() => {
         const { __typename, ...rest } = result.modelAPI.requestBody;
@@ -117,55 +124,64 @@ export const getServerSideProps: GetServerSideProps<{
       })),
     };
   } else if (
-    result.modelAPI.parameters &&
-    result.modelAPI.parameters.queries &&
-    result.modelAPI.parameters.queries.queryParams.length
+    result.modelAPI.method === RequestMethod.GET &&
+    result.modelAPI.parameters
   ) {
-    delete formValues.modelAPI.requestBody;
-    formValues.modelAPI.parameters = {
-      paramType: URLParamType.QUERY,
-      queries: {
-        ...(() => {
-          const { __typename, ...rest } = result.modelAPI.parameters.queries;
-          return rest;
-        })(),
-        // add reactPropId
-        queryParams: result.modelAPI.parameters.queries.queryParams.map(
-          (param) => ({
-            name: param.name,
-            type: param.type,
-            reactPropId: getInputReactKeyId(),
-          })
-        ),
-      },
-    };
-  } else if (
-    result.modelAPI.parameters &&
-    result.modelAPI.parameters.paths &&
-    result.modelAPI.parameters.paths.pathParams.length
-  ) {
-    delete formValues.modelAPI.requestBody;
-    formValues.modelAPI.parameters = {
-      paramType: URLParamType.PATH,
-      paths: {
-        ...(() => {
-          const { __typename, ...rest } = result.modelAPI.parameters.paths;
-          return rest;
-        })(),
-        // add reactPropId
-        pathParams: result.modelAPI.parameters.paths.pathParams.map(
-          (param) => ({
-            name: param.name,
-            type: param.type,
-            reactPropId: getInputReactKeyId(),
-          })
-        ),
-      },
-      queries: {
-        mediaType: MediaType.NONE,
-        isArray: false,
-        queryParams: [],
-      },
+    if (result.modelAPI.parameters.queries) {
+      formValues.modelAPI.parameters = {
+        paramType: URLParamType.QUERY,
+        queries: {
+          ...(() => {
+            const { __typename, ...rest } = result.modelAPI.parameters.queries;
+            return rest;
+          })(),
+          // add reactPropId
+          queryParams: result.modelAPI.parameters.queries.queryParams.map(
+            (param) => ({
+              name: param.name,
+              type: param.type,
+              reactPropId: getInputReactKeyId(),
+            })
+          ),
+        },
+        paths: {
+          //set queries to default
+          mediaType: MediaType.NONE,
+          isArray: false,
+          pathParams: [],
+        },
+      };
+    } else if (result.modelAPI.parameters.paths) {
+      formValues.modelAPI.parameters = {
+        paramType: URLParamType.PATH,
+        paths: {
+          ...(() => {
+            const { __typename, ...rest } = result.modelAPI.parameters.paths;
+            return rest;
+          })(),
+          // add reactPropId
+          pathParams: result.modelAPI.parameters.paths.pathParams.map(
+            (param) => ({
+              name: param.name,
+              type: param.type,
+              reactPropId: getInputReactKeyId(),
+            })
+          ),
+        },
+        queries: {
+          //set queries to default
+          mediaType: MediaType.NONE,
+          isArray: false,
+          queryParams: [],
+        },
+      };
+    }
+
+    // set requestBody to default
+    formValues.modelAPI.requestBody = {
+      mediaType: MediaType.FORM_URLENCODED,
+      isArray: false,
+      properties: [],
     };
   }
 
