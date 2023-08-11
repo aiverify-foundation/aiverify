@@ -206,7 +206,6 @@ class Plugin(IModel):
             ).get("connectionRetries", Plugin._api_connection_retries_default)
 
             # Create the api instance based on the provided api schema
-            print("api_schema:", self._api_schema)
             self._api_instance = OpenAPI.loads(
                 url="",
                 data=json.dumps(self._api_schema),
