@@ -7,6 +7,7 @@ import { ChangeEvent } from 'react';
 import { SelectInput } from 'src/components/selectInput';
 import { optionsOpenApiDataTypes } from './selectOptions';
 import { BodyParam, OpenApiDataTypes } from './types';
+import clsx from 'clsx';
 
 type RequestBodyParameterInputProps = {
   isFormikBinded?: boolean;
@@ -65,7 +66,7 @@ function RequestBodyParameterInput(props: RequestBodyParameterInputProps) {
   }
 
   return (
-    <div className={styles.keyValRow}>
+    <div className={clsx(styles.keyValRow, 'propertyInputRow')}>
       <div className={styles.keyValCol}>
         <TextInput
           disabled={disabled}
@@ -92,6 +93,7 @@ function RequestBodyParameterInput(props: RequestBodyParameterInputProps) {
       {showAddBtn ? (
         <div className={styles.iconContainer}>
           <IconButton
+            id="addRequestPropertyBtn"
             iconComponent={AddIcon}
             onClick={onAddClick}
             disabled={disableAddBtn}>

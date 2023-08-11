@@ -39,6 +39,7 @@ function ModelApiLeftSection({ disabled = false }: { disabled: boolean }) {
                 noOutline
                 style={{ fontSize: 12 }}
                 onClick={() => setIsEdit(true)}
+                id="editConfigIconBtn"
               />
             ) : null}
           </div>
