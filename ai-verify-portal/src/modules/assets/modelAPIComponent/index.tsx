@@ -263,7 +263,6 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                       errors,
                       touched,
                     }) => {
-                      console.log(errors);
                       return (
                         <Form>
                           <div style={{ marginBottom: '25px' }}>

@@ -79,7 +79,7 @@ function AdditionalHeaderInput(props: AdditionalHeaderInputProps) {
   }
 
   return (
-    <div className={styles.keyValRow}>
+    <div className={styles.keyValRow} data-testid="additionalHeaderInputRow">
       <div className={styles.keyValCol}>
         <TextInput
           disabled={disabled}
@@ -129,6 +129,7 @@ function AdditionalHeaderInput(props: AdditionalHeaderInputProps) {
       {showAddBtn ? (
         <div className={styles.iconContainer}>
           <IconButton
+            id="headerAddBtn"
             iconComponent={AddIcon}
             onClick={onAddClick}
             disabled={disableAddBtn}>

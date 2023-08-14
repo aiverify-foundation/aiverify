@@ -26,6 +26,7 @@
     "format-check": "prettier --check .",
     "format-fix": "prettier --write .",
     "test": "jest --silent --verbose",
+    "test-withlogs": "jest --verbose",
     "test-nocov": "jest --silent --verbose --coverage=false --watch",
     "test-cov": "jest --coverage",
     "post-update": "echo \"codesandbox preview only, need an update\" && yarn upgrade --latest",

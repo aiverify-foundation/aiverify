@@ -54,6 +54,7 @@ function ModelApiLeftSection({ disabled = false }: { disabled: boolean }) {
       )}
       <div style={{ marginTop: 25 }}>
         <SelectInput
+          id="modelTypeSelect"
           disabled={disabled}
           label="Model Type"
           name="modelType"

@@ -164,9 +164,12 @@ exports[`New Model API Config Initial Render should render with the correct defa
                       >
                         <div
                           class="selectInput"
+                          id="modelTypeSelect"
                           style="width: auto;"
                         >
-                          <label>
+                          <label
+                            for="modelType"
+                          >
                             <div
                               class="label"
                             >
@@ -188,18 +191,18 @@ exports[`New Model API Config Initial Render should render with the correct defa
                                 class="css-1f43avz-a11yText-A11yText"
                               />
                               <div
-                                class=" css-l8cqhx-control"
+                                class="aiv__control css-l8cqhx-control"
                               >
                                 <div
-                                  class=" css-1tkr00k-ValueContainer"
+                                  class="aiv__value-container aiv__value-container--has-value css-1tkr00k-ValueContainer"
                                 >
                                   <div
-                                    class=" css-1dimb5e-singleValue"
+                                    class="aiv__single-value css-1dimb5e-singleValue"
                                   >
                                     Classification
                                   </div>
                                   <div
-                                    class=" css-12a5c88-Input"
+                                    class="aiv__input-container css-12a5c88-Input"
                                     data-value=""
                                   >
                                     <input
@@ -209,7 +212,7 @@ exports[`New Model API Config Initial Render should render with the correct defa
                                       autocapitalize="none"
                                       autocomplete="off"
                                       autocorrect="off"
-                                      class=""
+                                      class="aiv__input"
                                       id="react-select-2-input"
                                       role="combobox"
                                       spellcheck="false"
@@ -221,14 +224,14 @@ exports[`New Model API Config Initial Render should render with the correct defa
                                   </div>
                                 </div>
                                 <div
-                                  class=" css-1hb7zxy-IndicatorsContainer"
+                                  class="aiv__indicators css-1hb7zxy-IndicatorsContainer"
                                 >
                                   <span
-                                    class=" css-1j9nsr8-indicatorSeparator"
+                                    class="aiv__indicator-separator css-1j9nsr8-indicatorSeparator"
                                   />
                                   <div
                                     aria-hidden="true"
-                                    class=" css-ogl6pu-indicatorContainer"
+                                    class="aiv__indicator aiv__dropdown-indicator css-ogl6pu-indicatorContainer"
                                   >
                                     <svg
                                       aria-hidden="true"
@@ -272,7 +275,9 @@ exports[`New Model API Config Initial Render should render with the correct defa
                           class="selectInput"
                           style="width: 140px;"
                         >
-                          <label>
+                          <label
+                            for="modelAPI.method"
+                          >
                             <div
                               class="label"
                             >
@@ -294,18 +299,18 @@ exports[`New Model API Config Initial Render should render with the correct defa
                                 class="css-1f43avz-a11yText-A11yText"
                               />
                               <div
-                                class=" css-l8cqhx-control"
+                                class="aiv__control css-l8cqhx-control"
                               >
                                 <div
-                                  class=" css-1tkr00k-ValueContainer"
+                                  class="aiv__value-container aiv__value-container--has-value css-1tkr00k-ValueContainer"
                                 >
                                   <div
-                                    class=" css-1dimb5e-singleValue"
+                                    class="aiv__single-value css-1dimb5e-singleValue"
                                   >
                                     POST
                                   </div>
                                   <div
-                                    class=" css-12a5c88-Input"
+                                    class="aiv__input-container css-12a5c88-Input"
                                     data-value=""
                                   >
                                     <input
@@ -315,7 +320,7 @@ exports[`New Model API Config Initial Render should render with the correct defa
                                       autocapitalize="none"
                                       autocomplete="off"
                                       autocorrect="off"
-                                      class=""
+                                      class="aiv__input"
                                       id="react-select-3-input"
                                       role="combobox"
                                       spellcheck="false"
@@ -327,14 +332,14 @@ exports[`New Model API Config Initial Render should render with the correct defa
                                   </div>
                                 </div>
                                 <div
-                                  class=" css-1hb7zxy-IndicatorsContainer"
+                                  class="aiv__indicators css-1hb7zxy-IndicatorsContainer"
                                 >
                                   <span
-                                    class=" css-1j9nsr8-indicatorSeparator"
+                                    class="aiv__indicator-separator css-1j9nsr8-indicatorSeparator"
                                   />
                                   <div
                                     aria-hidden="true"
-                                    class=" css-ogl6pu-indicatorContainer"
+                                    class="aiv__indicator aiv__dropdown-indicator css-ogl6pu-indicatorContainer"
                                   >
                                     <svg
                                       aria-hidden="true"
@@ -433,7 +438,9 @@ exports[`New Model API Config Initial Render should render with the correct defa
                             class="selectInput"
                             style="width: 240px;"
                           >
-                            <label>
+                            <label
+                              for="modelAPI.requestBody.mediaType"
+                            >
                               <div
                                 class="label"
                               >
@@ -455,18 +462,18 @@ exports[`New Model API Config Initial Render should render with the correct defa
                                   class="css-1f43avz-a11yText-A11yText"
                                 />
                                 <div
-                                  class=" css-l8cqhx-control"
+                                  class="aiv__control css-l8cqhx-control"
                                 >
                                   <div
-                                    class=" css-1tkr00k-ValueContainer"
+                                    class="aiv__value-container aiv__value-container--has-value css-1tkr00k-ValueContainer"
                                   >
                                     <div
-                                      class=" css-1dimb5e-singleValue"
+                                      class="aiv__single-value css-1dimb5e-singleValue"
                                     >
                                       application/x-www-form-urlencoded
                                     </div>
                                     <div
-                                      class=" css-12a5c88-Input"
+                                      class="aiv__input-container css-12a5c88-Input"
                                       data-value=""
                                     >
                                       <input
@@ -476,7 +483,7 @@ exports[`New Model API Config Initial Render should render with the correct defa
                                         autocapitalize="none"
                                         autocomplete="off"
                                         autocorrect="off"
-                                        class=""
+                                        class="aiv__input"
                                         id="react-select-4-input"
                                         role="combobox"
                                         spellcheck="false"
@@ -488,14 +495,14 @@ exports[`New Model API Config Initial Render should render with the correct defa
                                     </div>
                                   </div>
                                   <div
-                                    class=" css-1hb7zxy-IndicatorsContainer"
+                                    class="aiv__indicators css-1hb7zxy-IndicatorsContainer"
                                   >
                                     <span
-                                      class=" css-1j9nsr8-indicatorSeparator"
+                                      class="aiv__indicator-separator css-1j9nsr8-indicatorSeparator"
                                     />
                                     <div
                                       aria-hidden="true"
-                                      class=" css-ogl6pu-indicatorContainer"
+                                      class="aiv__indicator aiv__dropdown-indicator css-ogl6pu-indicatorContainer"
                                     >
                                       <svg
                                         aria-hidden="true"
@@ -612,7 +619,9 @@ exports[`New Model API Config Initial Render should render with the correct defa
                                   class="selectInput"
                                   style="width: auto; margin-bottom: 0px;"
                                 >
-                                  <label>
+                                  <label
+                                    for="propDataType"
+                                  >
                                     <div
                                       class=" css-fyq6mk-container"
                                     >
@@ -627,18 +636,18 @@ exports[`New Model API Config Initial Render should render with the correct defa
                                         class="css-1f43avz-a11yText-A11yText"
                                       />
                                       <div
-                                        class=" css-l8cqhx-control"
+                                        class="aiv__control css-l8cqhx-control"
                                       >
                                         <div
-                                          class=" css-1tkr00k-ValueContainer"
+                                          class="aiv__value-container aiv__value-container--has-value css-1tkr00k-ValueContainer"
                                         >
                                           <div
-                                            class=" css-1dimb5e-singleValue"
+                                            class="aiv__single-value css-1dimb5e-singleValue"
                                           >
                                             integer
                                           </div>
                                           <div
-                                            class=" css-12a5c88-Input"
+                                            class="aiv__input-container css-12a5c88-Input"
                                             data-value=""
                                           >
                                             <input
@@ -648,7 +657,7 @@ exports[`New Model API Config Initial Render should render with the correct defa
                                               autocapitalize="none"
                                               autocomplete="off"
                                               autocorrect="off"
-                                              class=""
+                                              class="aiv__input"
                                               id="react-select-5-input"
                                               role="combobox"
                                               spellcheck="false"
@@ -660,14 +669,14 @@ exports[`New Model API Config Initial Render should render with the correct defa
                                           </div>
                                         </div>
                                         <div
-                                          class=" css-1hb7zxy-IndicatorsContainer"
+                                          class="aiv__indicators css-1hb7zxy-IndicatorsContainer"
                                         >
                                           <span
-                                            class=" css-1j9nsr8-indicatorSeparator"
+                                            class="aiv__indicator-separator css-1j9nsr8-indicatorSeparator"
                                           />
                                           <div
                                             aria-hidden="true"
-                                            class=" css-ogl6pu-indicatorContainer"
+                                            class="aiv__indicator aiv__dropdown-indicator css-ogl6pu-indicatorContainer"
                                           >
                                             <svg
                                               aria-hidden="true"

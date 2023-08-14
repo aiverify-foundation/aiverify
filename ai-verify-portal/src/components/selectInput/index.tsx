@@ -8,6 +8,7 @@ type SelectOption<T = string> = {
 } | null;
 
 type SelectInputProps<valueType = string> = {
+  id?: string;
   name: string;
   width?: number;
   label?: string;
@@ -34,6 +35,7 @@ const CONTROL_DISABLED_COLOR = '#f5f5f5';
 
 function SelectInput<T = string>(props: SelectInputProps<T>) {
   const {
+    id,
     name,
     width = 'auto',
     label,
@@ -78,8 +80,8 @@ function SelectInput<T = string>(props: SelectInputProps<T>) {
   }
 
   return (
-    <div className={styles.selectInput} style={containerStyles}>
-      <label>
+    <div className={styles.selectInput} style={containerStyles} id={id}>
+      <label htmlFor={name}>
         {label !== '' && label !== undefined ? (
           <div className={styles.label}>
             <div>{label}</div>
@@ -144,6 +146,7 @@ function SelectInput<T = string>(props: SelectInputProps<T>) {
           placeholder={placeholder}
           value={selectedOption}
           options={options}
+          classNamePrefix="aiv"
           isDisabled={disabled}
           onChange={handleChange}
         />

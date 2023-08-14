@@ -3,11 +3,24 @@ import userEvent from '@testing-library/user-event';
 import { MockProviders } from '__mocks__/mockProviders';
 import { silentConsoleLogs } from '__mocks__/mockGlobals';
 import { NewModelApiConfigModule } from 'src/modules/assets/modelAPIComponent';
-import * as apolloClient from '@apollo/client';
+import { GQL_CREATE_MODELAPI } from 'src/modules/assets/modelAPIComponent/gql';
+import {
+  saveConfigVariables_result,
+  saveConfigVariables_tc000,
+  saveConfigVariables_tc001,
+  saveConfigVariables_tc002,
+  saveConfigVariables_tc003,
+  saveConfigVariables_tc004,
+  saveConfigVariables_tc005,
+  saveConfigVariables_tc006,
+  saveConfigVariables_tc007,
+  saveConfigVariables_tc008,
+  saveConfigVariables_tc009,
+} from '__mocks__/mockNewApiModelGqlVars';
 
 describe('New Model API Config', () => {
   beforeAll(() => {
-    silentConsoleLogs();
+    // silentConsoleLogs();
   });
 
   describe('Initial Render', () => {
@@ -29,17 +42,23 @@ describe('New Model API Config', () => {
     });
   });
 
-  describe('GraphQL Model API Config Payloads', () => {
-    const addNewModelAPIConfigSpy = jest.fn();
-    beforeAll(() => {
-      jest.mock('@apollo/client', () => ({
-        useMutation: jest.fn(() => [addNewModelAPIConfigSpy]),
-      }));
-    });
+  describe('GraphQL Model API Config Payloads (Happy Flows)', () => {
+    it('should create the correct payload with No Auth (tc000)', async () => {
+      const mocks_tc000 = [
+        {
+          request: {
+            query: GQL_CREATE_MODELAPI,
+            variables: { model: saveConfigVariables_tc000 },
+          },
+          result: {
+            data: saveConfigVariables_result,
+          },
+        },
+      ];
 
-    it('should create the correct payload', async () => {
       const { container } = render(
-        <MockProviders>
+        <MockProviders apolloMocks={mocks_tc000}>
+          <div id="aivModal"></div>
           <NewModelApiConfigModule />
         </MockProviders>
       );
@@ -55,13 +74,30 @@ describe('New Model API Config', () => {
         'My test API'
       );
       await userEvent.type(
-        container.querySelector('input[name="name"]') as HTMLInputElement,
+        container.querySelector(
+          'textarea[name="description"]'
+        ) as HTMLTextAreaElement,
         'My test API description'
       );
-      await userEvent.type(
-        container.querySelector('input[name="modelType"]') as HTMLInputElement,
-        'Regression'
+      const modelTypeInputContainer = container.querySelector(
+        'label[for="modelType"]'
+      ) as HTMLElement;
+      userEvent.click(
+        modelTypeInputContainer.querySelector(
+          '.aiv__dropdown-indicator'
+        ) as HTMLElement
       );
+      await waitFor(async () => {
+        const options = Array.from(
+          modelTypeInputContainer.querySelectorAll('.aiv__option')
+        );
+        expect(options.length).not.toBe(0);
+        const targetOption = options.find(
+          (opt) => opt.textContent === 'Regression'
+        );
+        userEvent.click(targetOption as HTMLElement);
+      });
+
       await userEvent.type(
         container.querySelector(
           'input[name="modelAPI.url"]'
@@ -100,19 +136,1354 @@ describe('New Model API Config', () => {
       await userEvent.click(addPropertyBtn);
       await userEvent.type(
         container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'total_donated'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
         'num_donation'
       );
       await userEvent.click(addPropertyBtn);
       await waitFor(async () => {
         expect(
           Array.from(container.querySelectorAll('.propertyInputRow')).length
-        ).toEqual(8);
+        ).toEqual(9);
       });
 
-      await userEvent.click(saveBtn);
+      userEvent.click(saveBtn);
+      expect(
+        await screen.findByText(/^New API Configuration created$/i)
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText(/^64d5a78656d3605a78346770$/i)
+      ).toBeInTheDocument();
+    }, 30000);
+
+    it('should create the correct payload with Bearer Token Auth (tc001)', async () => {
+      const mocks_tc001 = [
+        {
+          request: {
+            query: GQL_CREATE_MODELAPI,
+            variables: { model: saveConfigVariables_tc001 },
+          },
+          result: {
+            data: saveConfigVariables_result,
+          },
+        },
+      ];
+
+      const { container } = render(
+        <MockProviders apolloMocks={mocks_tc001}>
+          <div id="aivModal"></div>
+          <NewModelApiConfigModule />
+        </MockProviders>
+      );
+
+      await screen.findByText(/^Create API Configuration$/i);
+      const editNameBtn = await screen.findByTestId('editConfigIconBtn');
+      const addPropertyBtn = await screen.findByTestId('addRequestPropertyBtn');
+      const saveBtn = await screen.findByText(/^SAVE$/i);
+      userEvent.click(editNameBtn);
+      await screen.findByText(/^OK$/i);
+      await userEvent.type(
+        container.querySelector('input[name="name"]') as HTMLInputElement,
+        'My test API'
+      );
+      await userEvent.type(
+        container.querySelector(
+          'textarea[name="description"]'
+        ) as HTMLTextAreaElement,
+        'My test API description'
+      );
+      const modelTypeInputContainer = container.querySelector(
+        'label[for="modelType"]'
+      ) as HTMLElement;
+      userEvent.click(
+        modelTypeInputContainer.querySelector(
+          '.aiv__dropdown-indicator'
+        ) as HTMLElement
+      );
       await waitFor(async () => {
-        expect(addNewModelAPIConfigSpy).toHaveBeenCalled();
+        const options = Array.from(
+          modelTypeInputContainer.querySelectorAll('.aiv__option')
+        );
+        expect(options.length).not.toBe(0);
+        const targetOption = options.find(
+          (opt) => opt.textContent === 'Regression'
+        );
+        userEvent.click(targetOption as HTMLElement);
       });
-    }, 10000);
+
+      await userEvent.type(
+        container.querySelector(
+          'input[name="modelAPI.url"]'
+        ) as HTMLInputElement,
+        'https://localhost:5000/predict/tc001'
+      );
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'age'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'gender'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'race'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'income'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'employment'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'employment_length'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'total_donated'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'num_donation'
+      );
+      await userEvent.click(addPropertyBtn);
+      await waitFor(async () => {
+        expect(
+          Array.from(container.querySelectorAll('.propertyInputRow')).length
+        ).toEqual(9);
+      });
+
+      userEvent.click(await screen.findByText(/^Authentication Settings$/i));
+      await screen.findByText(/^Authentication Type$/i);
+      const authTypeInputContainer = container.querySelector(
+        'label[for="modelAPI.authType"]'
+      ) as HTMLElement;
+      userEvent.click(
+        authTypeInputContainer.querySelector(
+          '.aiv__dropdown-indicator'
+        ) as HTMLElement
+      );
+      await waitFor(async () => {
+        const options = Array.from(
+          authTypeInputContainer.querySelectorAll('.aiv__option')
+        );
+        expect(options.length).not.toBe(0);
+        const targetOption = options.find(
+          (opt) => opt.textContent === 'Bearer Token'
+        );
+        userEvent.click(targetOption as HTMLElement);
+      });
+
+      await screen.findByText(/^Token$/i);
+      await userEvent.type(
+        container.querySelector(
+          'input[name="modelAPI.authTypeConfig.token"]'
+        ) as HTMLInputElement,
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyMmY4MTJiNmJlM2IzMjEyMTQzMjBjZiIsImlhdCI6MTY2MDE5Nzg3MCwiZXhwIjoxNjYyNzg5ODcwfQ.cebsoHVMzV4GGwX-QjHFc5CcTkEy7jLQQLaaHlvN2JU'
+      );
+
+      userEvent.click(saveBtn);
+      expect(
+        await screen.findByText(/^New API Configuration created$/i)
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText(/^64d5a78656d3605a78346770$/i)
+      ).toBeInTheDocument();
+    }, 30000);
+
+    it('should create the correct payload with Basic Auth (tc002)', async () => {
+      const mocks_tc002 = [
+        {
+          request: {
+            query: GQL_CREATE_MODELAPI,
+            variables: { model: saveConfigVariables_tc002 },
+          },
+          result: {
+            data: saveConfigVariables_result,
+          },
+        },
+      ];
+
+      const { container } = render(
+        <MockProviders apolloMocks={mocks_tc002}>
+          <div id="aivModal"></div>
+          <NewModelApiConfigModule />
+        </MockProviders>
+      );
+
+      await screen.findByText(/^Create API Configuration$/i);
+      const editNameBtn = await screen.findByTestId('editConfigIconBtn');
+      const addPropertyBtn = await screen.findByTestId('addRequestPropertyBtn');
+      const saveBtn = await screen.findByText(/^SAVE$/i);
+      userEvent.click(editNameBtn);
+      await screen.findByText(/^OK$/i);
+      await userEvent.type(
+        container.querySelector('input[name="name"]') as HTMLInputElement,
+        'My test API'
+      );
+      await userEvent.type(
+        container.querySelector(
+          'textarea[name="description"]'
+        ) as HTMLTextAreaElement,
+        'My test API description'
+      );
+      const modelTypeInputContainer = container.querySelector(
+        'label[for="modelType"]'
+      ) as HTMLElement;
+      userEvent.click(
+        modelTypeInputContainer.querySelector(
+          '.aiv__dropdown-indicator'
+        ) as HTMLElement
+      );
+      await waitFor(async () => {
+        const options = Array.from(
+          modelTypeInputContainer.querySelectorAll('.aiv__option')
+        );
+        expect(options.length).not.toBe(0);
+        const targetOption = options.find(
+          (opt) => opt.textContent === 'Regression'
+        );
+        userEvent.click(targetOption as HTMLElement);
+      });
+
+      await userEvent.type(
+        container.querySelector(
+          'input[name="modelAPI.url"]'
+        ) as HTMLInputElement,
+        'https://localhost:5000/predict/tc001'
+      );
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'age'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'gender'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'race'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'income'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'employment'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'employment_length'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'total_donated'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'num_donation'
+      );
+      await userEvent.click(addPropertyBtn);
+      await waitFor(async () => {
+        expect(
+          Array.from(container.querySelectorAll('.propertyInputRow')).length
+        ).toEqual(9);
+      });
+
+      userEvent.click(await screen.findByText(/^Authentication Settings$/i));
+      await screen.findByText(/^Authentication Type$/i);
+      const authTypeInputContainer = container.querySelector(
+        'label[for="modelAPI.authType"]'
+      ) as HTMLElement;
+      userEvent.click(
+        authTypeInputContainer.querySelector(
+          '.aiv__dropdown-indicator'
+        ) as HTMLElement
+      );
+      await waitFor(async () => {
+        const options = Array.from(
+          authTypeInputContainer.querySelectorAll('.aiv__option')
+        );
+        expect(options.length).not.toBe(0);
+        const targetOption = options.find(
+          (opt) => opt.textContent === 'Basic Auth'
+        );
+        userEvent.click(targetOption as HTMLElement);
+      });
+
+      await screen.findByText(/^Username$/i);
+      await userEvent.type(
+        container.querySelector(
+          'input[name="modelAPI.authTypeConfig.username"]'
+        ) as HTMLInputElement,
+        'test'
+      );
+      await userEvent.type(
+        container.querySelector(
+          'input[name="modelAPI.authTypeConfig.password"]'
+        ) as HTMLInputElement,
+        'p@ssword'
+      );
+
+      userEvent.click(saveBtn);
+      expect(
+        await screen.findByText(/^New API Configuration created$/i)
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText(/^64d5a78656d3605a78346770$/i)
+      ).toBeInTheDocument();
+    }, 30000);
+
+    it('should create the correct payload with POST form-urlencoded request body (tc003)', async () => {
+      const mocks_tc003 = [
+        {
+          request: {
+            query: GQL_CREATE_MODELAPI,
+            variables: { model: saveConfigVariables_tc003 },
+          },
+          result: {
+            data: saveConfigVariables_result,
+          },
+        },
+      ];
+
+      const { container } = render(
+        <MockProviders apolloMocks={mocks_tc003}>
+          <div id="aivModal"></div>
+          <NewModelApiConfigModule />
+        </MockProviders>
+      );
+
+      await screen.findByText(/^Create API Configuration$/i);
+      const editNameBtn = await screen.findByTestId('editConfigIconBtn');
+      const addPropertyBtn = await screen.findByTestId('addRequestPropertyBtn');
+      const saveBtn = await screen.findByText(/^SAVE$/i);
+      userEvent.click(editNameBtn);
+      await screen.findByText(/^OK$/i);
+      await userEvent.type(
+        container.querySelector('input[name="name"]') as HTMLInputElement,
+        'My test API'
+      );
+      await userEvent.type(
+        container.querySelector(
+          'textarea[name="description"]'
+        ) as HTMLTextAreaElement,
+        'My test API description'
+      );
+      const modelTypeInputContainer = container.querySelector(
+        'label[for="modelType"]'
+      ) as HTMLElement;
+      userEvent.click(
+        modelTypeInputContainer.querySelector(
+          '.aiv__dropdown-indicator'
+        ) as HTMLElement
+      );
+      await waitFor(async () => {
+        const options = Array.from(
+          modelTypeInputContainer.querySelectorAll('.aiv__option')
+        );
+        expect(options.length).not.toBe(0);
+        const targetOption = options.find(
+          (opt) => opt.textContent === 'Regression'
+        );
+        userEvent.click(targetOption as HTMLElement);
+      });
+
+      await userEvent.type(
+        container.querySelector(
+          'input[name="modelAPI.url"]'
+        ) as HTMLInputElement,
+        'https://localhost:5000/predict/tc003'
+      );
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'age'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'gender'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'race'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'income'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'employment'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'employment_length'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'total_donated'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'num_donation'
+      );
+      await userEvent.click(addPropertyBtn);
+      await waitFor(async () => {
+        expect(
+          Array.from(container.querySelectorAll('.propertyInputRow')).length
+        ).toEqual(9);
+      });
+
+      userEvent.click(saveBtn);
+      expect(
+        await screen.findByText(/^New API Configuration created$/i)
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText(/^64d5a78656d3605a78346770$/i)
+      ).toBeInTheDocument();
+    }, 30000);
+
+    it('should create the correct payload with POST form-data request body (tc004)', async () => {
+      const mocks_tc004 = [
+        {
+          request: {
+            query: GQL_CREATE_MODELAPI,
+            variables: { model: saveConfigVariables_tc004 },
+          },
+          result: {
+            data: saveConfigVariables_result,
+          },
+        },
+      ];
+
+      const { container } = render(
+        <MockProviders apolloMocks={mocks_tc004}>
+          <div id="aivModal"></div>
+          <NewModelApiConfigModule />
+        </MockProviders>
+      );
+
+      await screen.findByText(/^Create API Configuration$/i);
+      const editNameBtn = await screen.findByTestId('editConfigIconBtn');
+      const addPropertyBtn = await screen.findByTestId('addRequestPropertyBtn');
+      const saveBtn = await screen.findByText(/^SAVE$/i);
+      userEvent.click(editNameBtn);
+      await screen.findByText(/^OK$/i);
+      await userEvent.type(
+        container.querySelector('input[name="name"]') as HTMLInputElement,
+        'My test API'
+      );
+      await userEvent.type(
+        container.querySelector(
+          'textarea[name="description"]'
+        ) as HTMLTextAreaElement,
+        'My test API description'
+      );
+      const modelTypeInputContainer = container.querySelector(
+        'label[for="modelType"]'
+      ) as HTMLElement;
+      userEvent.click(
+        modelTypeInputContainer.querySelector(
+          '.aiv__dropdown-indicator'
+        ) as HTMLElement
+      );
+      await waitFor(async () => {
+        const options = Array.from(
+          modelTypeInputContainer.querySelectorAll('.aiv__option')
+        );
+        expect(options.length).not.toBe(0);
+        const targetOption = options.find(
+          (opt) => opt.textContent === 'Regression'
+        );
+        userEvent.click(targetOption as HTMLElement);
+      });
+
+      await userEvent.type(
+        container.querySelector(
+          'input[name="modelAPI.url"]'
+        ) as HTMLInputElement,
+        'https://localhost:5000/predict/tc004'
+      );
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'age'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'gender'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'race'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'income'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'employment'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'employment_length'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'total_donated'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'num_donation'
+      );
+      await userEvent.click(addPropertyBtn);
+      await waitFor(async () => {
+        expect(
+          Array.from(container.querySelectorAll('.propertyInputRow')).length
+        ).toEqual(9);
+      });
+
+      const mediaTypeInputContainer = container.querySelector(
+        'label[for="modelAPI.requestBody.mediaType"]'
+      ) as HTMLElement;
+      userEvent.click(
+        mediaTypeInputContainer.querySelector(
+          '.aiv__dropdown-indicator'
+        ) as HTMLElement
+      );
+      await waitFor(async () => {
+        const options = Array.from(
+          mediaTypeInputContainer.querySelectorAll('.aiv__option')
+        );
+        expect(options.length).not.toBe(0);
+        const targetOption = options.find(
+          (opt) => opt.textContent === 'multipart/form-data'
+        );
+        userEvent.click(targetOption as HTMLElement);
+      });
+
+      userEvent.click(saveBtn);
+      expect(
+        await screen.findByText(/^New API Configuration created$/i)
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText(/^64d5a78656d3605a78346770$/i)
+      ).toBeInTheDocument();
+    }, 30000);
+
+    it('should create the correct payload with GET query parameters (tc005)', async () => {
+      const mocks_tc005 = [
+        {
+          request: {
+            query: GQL_CREATE_MODELAPI,
+            variables: { model: saveConfigVariables_tc005 },
+          },
+          result: {
+            data: saveConfigVariables_result,
+          },
+        },
+      ];
+
+      const { container } = render(
+        <MockProviders apolloMocks={mocks_tc005}>
+          <div id="aivModal"></div>
+          <NewModelApiConfigModule />
+        </MockProviders>
+      );
+
+      await screen.findByText(/^Create API Configuration$/i);
+      const editNameBtn = await screen.findByTestId('editConfigIconBtn');
+      const saveBtn = await screen.findByText(/^SAVE$/i);
+      userEvent.click(editNameBtn);
+      await screen.findByText(/^OK$/i);
+      await userEvent.type(
+        container.querySelector('input[name="name"]') as HTMLInputElement,
+        'My test API'
+      );
+      await userEvent.type(
+        container.querySelector(
+          'textarea[name="description"]'
+        ) as HTMLTextAreaElement,
+        'My test API description'
+      );
+      const modelTypeInputContainer = container.querySelector(
+        'label[for="modelType"]'
+      ) as HTMLElement;
+      userEvent.click(
+        modelTypeInputContainer.querySelector(
+          '.aiv__dropdown-indicator'
+        ) as HTMLElement
+      );
+      await waitFor(async () => {
+        const options = Array.from(
+          modelTypeInputContainer.querySelectorAll('.aiv__option')
+        );
+        expect(options.length).not.toBe(0);
+        const targetOption = options.find(
+          (opt) => opt.textContent === 'Regression'
+        );
+        userEvent.click(targetOption as HTMLElement);
+      });
+
+      const methodInputContainer = container.querySelector(
+        'label[for="modelAPI.method"]'
+      ) as HTMLElement;
+      userEvent.click(
+        methodInputContainer.querySelector(
+          '.aiv__dropdown-indicator'
+        ) as HTMLElement
+      );
+      await waitFor(async () => {
+        const options = Array.from(
+          methodInputContainer.querySelectorAll('.aiv__option')
+        );
+        expect(options.length).toEqual(2);
+        const targetOption = options.find((opt) => opt.textContent === 'GET');
+        console.log(targetOption?.textContent);
+        userEvent.click(targetOption as HTMLElement);
+      });
+
+      await screen.findByText(/^URL Parameter Type$/i);
+      await screen.findByText(/^Parameter Name$/i);
+      const addUrlParamBtn = await screen.findByTestId('addUrlParamBtn');
+
+      await userEvent.type(
+        container.querySelector(
+          'input[name="modelAPI.url"]'
+        ) as HTMLInputElement,
+        'https://localhost:5000/predict/tc005'
+      );
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'age'
+      );
+      await userEvent.click(addUrlParamBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'gender'
+      );
+      await userEvent.click(addUrlParamBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'race'
+      );
+      await userEvent.click(addUrlParamBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'income'
+      );
+      await userEvent.click(addUrlParamBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'employment'
+      );
+      await userEvent.click(addUrlParamBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'employment_length'
+      );
+      await userEvent.click(addUrlParamBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'total_donated'
+      );
+      await userEvent.click(addUrlParamBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'num_donation'
+      );
+      await userEvent.click(addUrlParamBtn);
+      await waitFor(async () => {
+        const addedParams = await screen.findAllByTestId('urlParamInputRow');
+        expect(addedParams.length).toEqual(9);
+      });
+
+      userEvent.click(saveBtn);
+      expect(
+        await screen.findByText(/^New API Configuration created$/i)
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText(/^64d5a78656d3605a78346770$/i)
+      ).toBeInTheDocument();
+    }, 30000);
+
+    it('should create the correct payload with GET path parameters (tc006)', async () => {
+      const mocks_tc006 = [
+        {
+          request: {
+            query: GQL_CREATE_MODELAPI,
+            variables: { model: saveConfigVariables_tc006 },
+          },
+          result: {
+            data: saveConfigVariables_result,
+          },
+        },
+      ];
+
+      const { container } = render(
+        <MockProviders apolloMocks={mocks_tc006}>
+          <div id="aivModal"></div>
+          <NewModelApiConfigModule />
+        </MockProviders>
+      );
+
+      await screen.findByText(/^Create API Configuration$/i);
+      const editNameBtn = await screen.findByTestId('editConfigIconBtn');
+      const saveBtn = await screen.findByText(/^SAVE$/i);
+      userEvent.click(editNameBtn);
+      await screen.findByText(/^OK$/i);
+      await userEvent.type(
+        container.querySelector('input[name="name"]') as HTMLInputElement,
+        'My test API'
+      );
+      await userEvent.type(
+        container.querySelector(
+          'textarea[name="description"]'
+        ) as HTMLTextAreaElement,
+        'My test API description'
+      );
+      const modelTypeInputContainer = container.querySelector(
+        'label[for="modelType"]'
+      ) as HTMLElement;
+      userEvent.click(
+        modelTypeInputContainer.querySelector(
+          '.aiv__dropdown-indicator'
+        ) as HTMLElement
+      );
+      await waitFor(async () => {
+        const options = Array.from(
+          modelTypeInputContainer.querySelectorAll('.aiv__option')
+        );
+        expect(options.length).not.toBe(0);
+        const targetOption = options.find(
+          (opt) => opt.textContent === 'Regression'
+        );
+        userEvent.click(targetOption as HTMLElement);
+      });
+
+      const methodInputContainer = container.querySelector(
+        'label[for="modelAPI.method"]'
+      ) as HTMLElement;
+      userEvent.click(
+        methodInputContainer.querySelector(
+          '.aiv__dropdown-indicator'
+        ) as HTMLElement
+      );
+      await waitFor(async () => {
+        const options = Array.from(
+          methodInputContainer.querySelectorAll('.aiv__option')
+        );
+        expect(options.length).toEqual(2);
+        const targetOption = options.find((opt) => opt.textContent === 'GET');
+        userEvent.click(targetOption as HTMLElement);
+      });
+
+      await screen.findByText(/^URL Parameter Type$/i);
+      await screen.findByText(/^Parameter Name$/i);
+
+      const paramTypeInputContainer = container.querySelector(
+        'label[for="modelAPI.parameters.paramType"]'
+      ) as HTMLElement;
+      userEvent.click(
+        paramTypeInputContainer.querySelector(
+          '.aiv__dropdown-indicator'
+        ) as HTMLElement
+      );
+      await waitFor(async () => {
+        const options = Array.from(
+          paramTypeInputContainer.querySelectorAll('.aiv__option')
+        );
+        expect(options.length).toEqual(2);
+        const targetOption = options.find((opt) => opt.textContent === 'Path');
+        userEvent.click(targetOption as HTMLElement);
+      });
+
+      // await screen.findByText('e.g. https://hostname/predict/{age}/{gender}');
+      const addUrlParamBtn = await screen.findByTestId('addUrlParamBtn');
+
+      await userEvent.type(
+        container.querySelector(
+          'input[name="modelAPI.url"]'
+        ) as HTMLInputElement,
+        'https://localhost:5000/predict/tc006'
+      );
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'age'
+      );
+      await userEvent.click(addUrlParamBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'gender'
+      );
+      await userEvent.click(addUrlParamBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'race'
+      );
+      await userEvent.click(addUrlParamBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'income'
+      );
+      await userEvent.click(addUrlParamBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'employment'
+      );
+      await userEvent.click(addUrlParamBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'employment_length'
+      );
+      await userEvent.click(addUrlParamBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'total_donated'
+      );
+      await userEvent.click(addUrlParamBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'num_donation'
+      );
+      await userEvent.click(addUrlParamBtn);
+      await waitFor(async () => {
+        const addedParams = await screen.findAllByTestId('urlParamInputRow');
+        expect(addedParams.length).toEqual(9);
+      });
+
+      userEvent.click(saveBtn);
+      expect(
+        await screen.findByText(/^New API Configuration created$/i)
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText(/^64d5a78656d3605a78346770$/i)
+      ).toBeInTheDocument();
+    }, 30000);
+
+    it('should create the correct payload with POST application/json response media type (tc007)', async () => {
+      const mocks_tc007 = [
+        {
+          request: {
+            query: GQL_CREATE_MODELAPI,
+            variables: { model: saveConfigVariables_tc007 },
+          },
+          result: {
+            data: saveConfigVariables_result,
+          },
+        },
+      ];
+
+      const { container } = render(
+        <MockProviders apolloMocks={mocks_tc007}>
+          <div id="aivModal"></div>
+          <NewModelApiConfigModule />
+        </MockProviders>
+      );
+
+      await screen.findByText(/^Create API Configuration$/i);
+      const editNameBtn = await screen.findByTestId('editConfigIconBtn');
+      const addPropertyBtn = await screen.findByTestId('addRequestPropertyBtn');
+      const saveBtn = await screen.findByText(/^SAVE$/i);
+      userEvent.click(editNameBtn);
+      await screen.findByText(/^OK$/i);
+      await userEvent.type(
+        container.querySelector('input[name="name"]') as HTMLInputElement,
+        'My test API'
+      );
+      await userEvent.type(
+        container.querySelector(
+          'textarea[name="description"]'
+        ) as HTMLTextAreaElement,
+        'My test API description'
+      );
+      const modelTypeInputContainer = container.querySelector(
+        'label[for="modelType"]'
+      ) as HTMLElement;
+      userEvent.click(
+        modelTypeInputContainer.querySelector(
+          '.aiv__dropdown-indicator'
+        ) as HTMLElement
+      );
+      await waitFor(async () => {
+        const options = Array.from(
+          modelTypeInputContainer.querySelectorAll('.aiv__option')
+        );
+        expect(options.length).not.toBe(0);
+        const targetOption = options.find(
+          (opt) => opt.textContent === 'Regression'
+        );
+        userEvent.click(targetOption as HTMLElement);
+      });
+
+      await userEvent.type(
+        container.querySelector(
+          'input[name="modelAPI.url"]'
+        ) as HTMLInputElement,
+        'https://localhost:5000/predict/tc007'
+      );
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'age'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'gender'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'race'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'income'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'employment'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'employment_length'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'total_donated'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'num_donation'
+      );
+      await userEvent.click(addPropertyBtn);
+      await waitFor(async () => {
+        expect(
+          Array.from(container.querySelectorAll('.propertyInputRow')).length
+        ).toEqual(9);
+      });
+
+      userEvent.click(await screen.findByText(/^Response Properties$/i));
+      await screen.findByText(/^Status Code$/i);
+      expect(screen.queryByText(/^Field Name$/i)).toBeNull();
+
+      const responseMediaTypeInputContainer = container.querySelector(
+        'label[for="modelAPI.response.mediaType"]'
+      ) as HTMLElement;
+      userEvent.click(
+        responseMediaTypeInputContainer.querySelector(
+          '.aiv__dropdown-indicator'
+        ) as HTMLElement
+      );
+      await waitFor(async () => {
+        const options = Array.from(
+          responseMediaTypeInputContainer.querySelectorAll('.aiv__option')
+        );
+        expect(options.length).toEqual(2);
+        const targetOption = options.find(
+          (opt) => opt.textContent === 'application/json'
+        );
+        userEvent.click(targetOption as HTMLElement);
+      });
+
+      await screen.findByText(/^Field Name$/i);
+
+      userEvent.click(saveBtn);
+      expect(
+        await screen.findByText(/^New API Configuration created$/i)
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText(/^64d5a78656d3605a78346770$/i)
+      ).toBeInTheDocument();
+    }, 30000);
+
+    it('should create the correct payload with POST additional headers (tc008)', async () => {
+      const mocks_tc008 = [
+        {
+          request: {
+            query: GQL_CREATE_MODELAPI,
+            variables: { model: saveConfigVariables_tc008 },
+          },
+          result: {
+            data: saveConfigVariables_result,
+          },
+        },
+      ];
+
+      const { container } = render(
+        <MockProviders apolloMocks={mocks_tc008}>
+          <div id="aivModal"></div>
+          <NewModelApiConfigModule />
+        </MockProviders>
+      );
+
+      await screen.findByText(/^Create API Configuration$/i);
+      const editNameBtn = await screen.findByTestId('editConfigIconBtn');
+      const addPropertyBtn = await screen.findByTestId('addRequestPropertyBtn');
+      const saveBtn = await screen.findByText(/^SAVE$/i);
+      userEvent.click(editNameBtn);
+      await screen.findByText(/^OK$/i);
+      await userEvent.type(
+        container.querySelector('input[name="name"]') as HTMLInputElement,
+        'My test API'
+      );
+      await userEvent.type(
+        container.querySelector(
+          'textarea[name="description"]'
+        ) as HTMLTextAreaElement,
+        'My test API description'
+      );
+      const modelTypeInputContainer = container.querySelector(
+        'label[for="modelType"]'
+      ) as HTMLElement;
+      userEvent.click(
+        modelTypeInputContainer.querySelector(
+          '.aiv__dropdown-indicator'
+        ) as HTMLElement
+      );
+      await waitFor(async () => {
+        const options = Array.from(
+          modelTypeInputContainer.querySelectorAll('.aiv__option')
+        );
+        expect(options.length).not.toBe(0);
+        const targetOption = options.find(
+          (opt) => opt.textContent === 'Regression'
+        );
+        userEvent.click(targetOption as HTMLElement);
+      });
+
+      await userEvent.type(
+        container.querySelector(
+          'input[name="modelAPI.url"]'
+        ) as HTMLInputElement,
+        'https://localhost:5000/predict/tc008'
+      );
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'age'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'gender'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'race'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'income'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'employment'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'employment_length'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'total_donated'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'num_donation'
+      );
+      await userEvent.click(addPropertyBtn);
+      await waitFor(async () => {
+        expect(
+          Array.from(container.querySelectorAll('.propertyInputRow')).length
+        ).toEqual(9);
+      });
+
+      userEvent.click(await screen.findByText(/^Additional Request Headers$/i));
+      await screen.findByText(/^Header Name$/i);
+
+      const headerTypeInputContainer = container.querySelector(
+        'label[for="headerTypeInput"]'
+      ) as HTMLElement;
+      userEvent.click(
+        headerTypeInputContainer.querySelector(
+          '.aiv__dropdown-indicator'
+        ) as HTMLElement
+      );
+      await waitFor(async () => {
+        const options = Array.from(
+          headerTypeInputContainer.querySelectorAll('.aiv__option')
+        );
+        expect(options.length).not.toBe(0);
+        const targetOption = options.find(
+          (opt) => opt.textContent === 'string'
+        );
+        userEvent.click(targetOption as HTMLElement);
+      });
+
+      await userEvent.type(
+        container.querySelector(
+          'input[name="headerNameInput"]'
+        ) as HTMLInputElement,
+        'foo'
+      );
+      await userEvent.type(
+        container.querySelector(
+          'input[name="headerValueInput"]'
+        ) as HTMLInputElement,
+        'bar'
+      );
+      userEvent.click(await screen.findByTestId('headerAddBtn'));
+      await waitFor(async () => {
+        const addedHeaders = await screen.findAllByTestId(
+          'additionalHeaderInputRow'
+        );
+        expect(addedHeaders.length).toEqual(2);
+      });
+
+      userEvent.click(saveBtn);
+      expect(
+        await screen.findByText(/^New API Configuration created$/i)
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText(/^64d5a78656d3605a78346770$/i)
+      ).toBeInTheDocument();
+    }, 30000);
+
+    it('should create the correct payload with connection settings (tc009)', async () => {
+      const mocks_tc009 = [
+        {
+          request: {
+            query: GQL_CREATE_MODELAPI,
+            variables: { model: saveConfigVariables_tc009 },
+          },
+          result: {
+            data: saveConfigVariables_result,
+          },
+        },
+      ];
+
+      const { container } = render(
+        <MockProviders apolloMocks={mocks_tc009}>
+          <div id="aivModal"></div>
+          <NewModelApiConfigModule />
+        </MockProviders>
+      );
+
+      await screen.findByText(/^Create API Configuration$/i);
+      const editNameBtn = await screen.findByTestId('editConfigIconBtn');
+      const addPropertyBtn = await screen.findByTestId('addRequestPropertyBtn');
+      const saveBtn = await screen.findByText(/^SAVE$/i);
+      userEvent.click(editNameBtn);
+      await screen.findByText(/^OK$/i);
+      await userEvent.type(
+        container.querySelector('input[name="name"]') as HTMLInputElement,
+        'My test API'
+      );
+      await userEvent.type(
+        container.querySelector(
+          'textarea[name="description"]'
+        ) as HTMLTextAreaElement,
+        'My test API description'
+      );
+      const modelTypeInputContainer = container.querySelector(
+        'label[for="modelType"]'
+      ) as HTMLElement;
+      userEvent.click(
+        modelTypeInputContainer.querySelector(
+          '.aiv__dropdown-indicator'
+        ) as HTMLElement
+      );
+      await waitFor(async () => {
+        const options = Array.from(
+          modelTypeInputContainer.querySelectorAll('.aiv__option')
+        );
+        expect(options.length).not.toBe(0);
+        const targetOption = options.find(
+          (opt) => opt.textContent === 'Regression'
+        );
+        userEvent.click(targetOption as HTMLElement);
+      });
+
+      await userEvent.type(
+        container.querySelector(
+          'input[name="modelAPI.url"]'
+        ) as HTMLInputElement,
+        'https://localhost:5000/predict/tc009'
+      );
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'age'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'gender'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'race'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'income'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'employment'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'employment_length'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'total_donated'
+      );
+      await userEvent.click(addPropertyBtn);
+      await userEvent.type(
+        container.querySelector('input[name="paramName"]') as HTMLInputElement,
+        'num_donation'
+      );
+      await userEvent.click(addPropertyBtn);
+      await waitFor(async () => {
+        expect(
+          Array.from(container.querySelectorAll('.propertyInputRow')).length
+        ).toEqual(9);
+      });
+
+      userEvent.click(await screen.findByText(/^Connection Settings$/i));
+      await screen.findByText(/^Connection Timeout$/i);
+
+      const connectionTimeoutInput = container.querySelector(
+        'input[name="modelAPI.requestConfig.connectionTimeout"]'
+      ) as HTMLInputElement;
+      const connectionRetriesInput = container.querySelector(
+        'input[name="modelAPI.requestConfig.connectionRetries"]'
+      ) as HTMLInputElement;
+      const maxConnectionsInput = container.querySelector(
+        'input[name="modelAPI.requestConfig.maxConnections"]'
+      ) as HTMLInputElement;
+      const rateLimitInput = container.querySelector(
+        'input[name="modelAPI.requestConfig.rateLimit"]'
+      ) as HTMLInputElement;
+      const rateLimitTimeoutInput = container.querySelector(
+        'input[name="modelAPI.requestConfig.rateLimitTimeout"]'
+      ) as HTMLInputElement;
+      const batchLimitInput = container.querySelector(
+        'input[name="modelAPI.requestConfig.batchLimit"]'
+      ) as HTMLInputElement;
+
+      expect(rateLimitTimeoutInput.getAttribute('disabled')).toBe('');
+      expect(rateLimitTimeoutInput.getAttribute('disabled')).not.toBeNull();
+      expect(batchLimitInput.getAttribute('disabled')).toBe('');
+      expect(batchLimitInput.getAttribute('disabled')).not.toBeNull();
+
+      await userEvent.clear(connectionTimeoutInput);
+      await userEvent.type(connectionTimeoutInput, '4');
+      expect(connectionTimeoutInput).toHaveValue('4');
+      await userEvent.clear(connectionRetriesInput);
+      await userEvent.type(connectionRetriesInput, '5');
+      expect(connectionRetriesInput).toHaveValue('5');
+      await userEvent.clear(maxConnectionsInput);
+      await userEvent.type(maxConnectionsInput, '3');
+      expect(maxConnectionsInput).toHaveValue('3');
+      await userEvent.clear(rateLimitInput);
+      await userEvent.type(rateLimitInput, '5');
+      expect(rateLimitInput).toHaveValue('5');
+
+      await waitFor(async () => {
+        expect(rateLimitTimeoutInput.getAttribute('disabled')).not.toBe('');
+        expect(rateLimitTimeoutInput.getAttribute('disabled')).toBeNull();
+      });
+
+      await userEvent.clear(rateLimitTimeoutInput);
+      await userEvent.type(rateLimitTimeoutInput, '10');
+      expect(rateLimitTimeoutInput).toHaveValue('10');
+
+      const batchStrategyInputContainer = container.querySelector(
+        'label[for="modelAPI.requestConfig.batchStrategy"]'
+      ) as HTMLElement;
+      userEvent.click(
+        batchStrategyInputContainer.querySelector(
+          '.aiv__dropdown-indicator'
+        ) as HTMLElement
+      );
+      await waitFor(async () => {
+        const options = Array.from(
+          batchStrategyInputContainer.querySelectorAll('.aiv__option')
+        );
+        expect(options.length).not.toBe(0);
+        const targetOption = options.find(
+          (opt) => opt.textContent === 'multipart'
+        );
+        userEvent.click(targetOption as HTMLElement);
+      });
+
+      await waitFor(async () => {
+        expect(batchLimitInput.getAttribute('disabled')).not.toBe('');
+        expect(batchLimitInput.getAttribute('disabled')).toBeNull();
+      });
+      await userEvent.clear(batchLimitInput);
+      await userEvent.type(batchLimitInput, '10');
+
+      userEvent.click(saveBtn);
+      expect(
+        await screen.findByText(/^New API Configuration created$/i)
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText(/^64d5a78656d3605a78346770$/i)
+      ).toBeInTheDocument();
+    }, 30000);
   });
 });

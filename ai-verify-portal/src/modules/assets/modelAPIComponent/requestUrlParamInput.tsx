@@ -66,7 +66,7 @@ function UrlParamCaptureInput(props: UrlParameterInputProps) {
   }
 
   return (
-    <div className={styles.keyValRow}>
+    <div className={styles.keyValRow} data-testid="urlParamInputRow">
       <div className={styles.keyValCol}>
         <TextInput
           disabled={disabled}
@@ -95,6 +95,7 @@ function UrlParamCaptureInput(props: UrlParameterInputProps) {
       {showAddBtn ? (
         <div className={styles.iconContainer}>
           <IconButton
+            id="addUrlParamBtn"
             iconComponent={AddIcon}
             onClick={onAddClick}
             disabled={disableAddBtn}>
