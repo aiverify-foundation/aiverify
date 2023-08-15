@@ -127,6 +127,7 @@ export interface ProjectTemplateStore {
   saveProjectAsTemplate: (templateInfo: ProjectInformation) => Promise<string>;
   exportTemplate: (pluginGID: string, templateCID: string) => Promise<string>;
   flushAllUpdates: () => void;
+  flushAllUpdatesAsync: () => Promise<(void | undefined)[]>;
 }
 
 /**
@@ -265,27 +266,20 @@ export function useProjectTemplateStore(
     updateReducer<ProjectInformation>,
     {
       ...data.projectInfo,
-      // name: "Test Project Name",
-      // description: "Test Project Description",
     }
   );
   const _sendProjectInfoUpdates = useCallback(
     _.debounce((id: string | undefined, state: ProjectInformation) => {
-      // console.log("Updating page", id, pages);
-      if (!id || id.length == 0) return;
-      if (isNew)
-        // project create don't update first
-        return;
-      // console.log("sending info update to api");
+      if (!id || id.length == 0) return Promise.resolve();
+      if (isNew) return Promise.resolve();
       const data = _.pick(state, [
         'name',
         'description',
         'reportTitle',
         'company',
       ]);
-      updateProjectFn(id, { projectInfo: data })
+      return updateProjectFn(id, { projectInfo: data })
         .then(() => {
-          // console.log("updated proj", proj);
           setLastSavedTime(moment());
         })
         .catch((err) => {
@@ -306,38 +300,13 @@ export function useProjectTemplateStore(
   };
 
   // @ts-ignore
-  /*
-	const [modelAndDatasets, _dispatchModelAndDatasets] = useReducer(updateReducer<ModelAndDatasets>, data.modelAndDatasets || {});
-	const _sendModelAndDatasets = useCallback(
-		_.debounce((id: string|undefined, state: ModelAndDatasets) => {
-			// console.log("Updating page", id, pages);
-			if (!id || id.length == 0)
-				return;
-			const data = _.pick(state, [ "model", "testDataset", "groundTruthDataset", "groundTruthColumn"]);
-			updateProjectFn(id, { modelAndDatasets: data }).then(proj => {
-				setLastSavedTime(moment());
-			}).catch(err => {
-				console.error("Update Info error:", err);
-			});	
-		}, DEBOUNCE_WAIT), []
-	)
-
-	const dispatchModelAndDatasets = (action: DataUpdateActions<ModelAndDatasets>) => {
-		_dispatchModelAndDatasets({
-			...action,
-			updateFn: _sendModelAndDatasets,
-		});
-	}
-	*/
-
-  // @ts-ignore
   const [pages, _dispatchPages] = useReducer(
     arrayReducer<Page>,
     data.pages || []
   );
   const _sendPageUpdates = useCallback(
     _.debounce((id: string | undefined, pages: Page[]) => {
-      if (!id || id.length == 0) return;
+      if (!id || id.length == 0) return Promise.resolve();
       const _pages = pages.map((page) => {
         const data = _.pick(page, ['layouts', 'reportWidgets']);
         data.layouts = data.layouts.map((layout) => {
@@ -378,9 +347,8 @@ export function useProjectTemplateStore(
         }) as ReportWidgetItem[];
         return data;
       }) as Page[];
-      updateProjectFn(id, { pages: _pages })
+      return updateProjectFn(id, { pages: _pages })
         .then(() => {
-          // console.log("updated proj", proj);
           setLastSavedTime(moment());
         })
         .catch((err) => {
@@ -404,14 +372,12 @@ export function useProjectTemplateStore(
   );
   const _sendGlobalVarsUpdates = useCallback(
     _.debounce((id: string | undefined, globalVars: GlobalVariable[]) => {
-      // console.log("Updating page", id, pages);
-      if (!id || id.length == 0) return;
+      if (!id || id.length == 0) return Promise.resolve();
       const _globalVars = globalVars.map((item) => {
         return _.pick(item, ['key', 'value']);
       }) as GlobalVariable[];
-      updateProjectFn(id, { globalVars: _globalVars })
+      return updateProjectFn(id, { globalVars: _globalVars })
         .then(() => {
-          // console.log("updated proj", proj);
           setLastSavedTime(moment());
         })
         .catch((err) => {
@@ -421,7 +387,6 @@ export function useProjectTemplateStore(
     []
   );
   const dispatchGlobalVars = (action: ARUActions<GlobalVariable>) => {
-    // console.log("dispatchPages", id, action)
     _dispatchGlobalVars({
       ...action,
       updateFn: _sendGlobalVarsUpdates,
@@ -688,6 +653,11 @@ export function useProjectTemplateStore(
     }
   };
 
+  async function flushAllUpdatesAsync() {
+    const promises = _allDebounceFns.map((fn) => fn.flush());
+    return Promise.all(promises);
+  }
+
   return {
     updateReducer,
     mapReducer,
@@ -723,5 +693,6 @@ export function useProjectTemplateStore(
     saveProjectAsTemplate,
     exportTemplate,
     flushAllUpdates,
+    flushAllUpdatesAsync,
   };
 }
