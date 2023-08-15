@@ -38,7 +38,8 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
   const [errorMsg, setErrorMsg] = useState<string>();
   const { values, errors, touched, handleChange } =
     useFormikContext<ModelApiFormModel>();
-  const properties = values.modelAPI.requestBody?.properties || [];
+  const requestBody = values.modelAPI.requestBody;
+  const properties = requestBody?.properties || [];
   const fieldErrors = errors.modelAPI?.requestBody?.properties as
     | FormikErrors<BodyParam>[]
     | undefined;
@@ -66,10 +67,10 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
   function handleAddClick(formikArrayHelpers: FieldArrayRenderProps) {
     return () => {
       if (newParam.field.trim() === '') setErrorMsg(RequiredMsg);
-      if (!values.modelAPI.requestBody) return;
+      if (!requestBody) return;
       const isExist =
-        values.modelAPI.requestBody.properties && // 👈TODO - double check
-        values.modelAPI.requestBody.properties.findIndex(
+        requestBody.properties && // 👈TODO - double check
+        requestBody.properties.findIndex(
           (prop) => prop.field === newParam.field
         ) > -1;
       if (isExist) {
@@ -86,9 +87,7 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
     index: number
   ) {
     return () => {
-      if (
-        values.modelAPI.requestBody?.properties[index].field === newParam.field
-      ) {
+      if (requestBody?.properties[index].field === newParam.field) {
         setErrorMsg(undefined);
       }
       formikArrayHelpers.remove(index);
@@ -107,30 +106,48 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
         label="Media Type"
         name={`${requestBodyFieldName}.mediaType`}
         options={mediaTypeOptions}
-        value={values.modelAPI.requestBody?.mediaType}
+        value={requestBody?.mediaType}
         onSyntheticChange={handleChange}
       />
-      <div style={{ position: 'relative', width: 500, marginBottom: 15 }}>
-        <TextInput
-          label="."
-          disabled={disabled || !values.modelAPI.requestBody?.isArray}
-          name={`${requestBodyFieldName}.name`}
-          onChange={handleChange}
-          value={values.modelAPI.requestBody?.name}
-          maxLength={128}
-          style={{ marginBottom: 0, width: 240 }}
-        />
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+          marginBottom: 15,
+        }}>
         <CheckBox
-          label="Format as array (Provide array variable name below)"
+          label="Format as array"
           disabled={disabled}
-          checked={values.modelAPI.requestBody?.isArray}
+          checked={requestBody?.isArray}
           name={`${requestBodyFieldName}.isArray`}
-          value={values.modelAPI.requestBody?.isArray}
           onChange={handleChange}
-          style={{ position: 'absolute', top: 0 }}
+          style={{ marginBottom: 15 }}
         />
+        {requestBody && requestBody.isArray ? (
+          <div style={{ display: 'flex' }}>
+            <TextInput
+              label="Array Variable Name"
+              disabled={disabled || !requestBody?.isArray}
+              name={`${requestBodyFieldName}.name`}
+              onChange={handleChange}
+              value={requestBody?.name}
+              maxLength={128}
+              style={{ marginBottom: 0, marginRight: 8, width: 200 }}
+            />
+            <TextInput
+              label="Max Items"
+              disabled={disabled || !requestBody?.isArray}
+              name={`${requestBodyFieldName}.maxItems`}
+              onChange={handleChange}
+              value={requestBody?.maxItems}
+              maxLength={128}
+              style={{ marginBottom: 0, marginRight: 8, width: 200 }}
+            />
+          </div>
+        ) : null}
       </div>
-      {values.modelAPI.requestBody?.mediaType !== MediaType.NONE ? (
+      {requestBody?.mediaType !== MediaType.NONE ? (
         <>
           {disabled && !properties.length ? null : <RequestBodyParamsHeading />}
           <FieldArray name={`${requestBodyFieldName}.properties`}>

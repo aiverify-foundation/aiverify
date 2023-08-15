@@ -7,7 +7,7 @@ type CheckBoxProps = {
   label?: string;
   error?: string;
   checked?: boolean;
-  value?: boolean;
+  value?: string;
   disabled?: boolean;
   style?: React.CSSProperties;
   size?: number;

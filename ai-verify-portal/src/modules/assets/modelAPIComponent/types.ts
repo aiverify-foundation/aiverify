@@ -53,7 +53,7 @@ export type SaveResult = {
 
 /*
   Below are types for the (1)API Model Form (formik state), (2)API Model GraphQL response and (3)API Model form submit.
-  Using formik, type all inputs as `string` at form-level. YUP validation schema is used to validate the string inputs.
+  Using formik, type all inputs except for checkboxes. as `string` at form-level. YUP validation schema is used to validate the string inputs.
   Cast numberic types to string when consuming graphql query response and cast numeric types to number at form submit
 */
 export type AdditionalHeader = {
@@ -238,6 +238,7 @@ export type ModelApiGQLQueryResponseModel = Typename & {
           | (Typename & {
               mediaType: MediaType;
               isArray: boolean;
+              maxItems?: number;
               queryParams: Omit<UrlParam, 'reactPropId'>[];
             })
           | null;
@@ -245,6 +246,7 @@ export type ModelApiGQLQueryResponseModel = Typename & {
           | (Typename & {
               mediaType: MediaType;
               isArray: boolean;
+              maxItems?: number;
               pathParams: Omit<UrlParam, 'reactPropId'>[];
             })
           | null;

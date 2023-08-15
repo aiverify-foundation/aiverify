@@ -648,7 +648,7 @@ export const saveConfigVariables_tc009 = {
       type: 'integer',
     },
     requestConfig: {
-      sslVerify: false,
+      sslVerify: true,
       connectionTimeout: 4,
       rateLimit: 5,
       rateLimitTimeout: 10,
@@ -656,6 +656,208 @@ export const saveConfigVariables_tc009 = {
       batchStrategy: 'multipart',
       batchLimit: 10,
       maxConnections: 3,
+    },
+  },
+};
+
+export const saveConfigVariables_tc010 = {
+  name: 'My test API',
+  description: 'My test API description',
+  modelType: 'Regression',
+  modelAPI: {
+    url: 'https://localhost:5000/predict/tc010',
+    method: 'POST',
+    authType: 'No Auth',
+    requestBody: {
+      mediaType: 'application/x-www-form-urlencoded',
+      isArray: true,
+      maxItems: 50,
+      name: 'foo',
+      properties: [
+        {
+          field: 'age',
+          type: 'integer',
+        },
+        {
+          field: 'gender',
+          type: 'integer',
+        },
+        {
+          field: 'race',
+          type: 'integer',
+        },
+        {
+          field: 'income',
+          type: 'integer',
+        },
+        {
+          field: 'employment',
+          type: 'integer',
+        },
+        {
+          field: 'employment_length',
+          type: 'integer',
+        },
+        {
+          field: 'total_donated',
+          type: 'integer',
+        },
+        {
+          field: 'num_donation',
+          type: 'integer',
+        },
+      ],
+    },
+    response: {
+      statusCode: 200,
+      mediaType: 'text/plain',
+      type: 'integer',
+    },
+    requestConfig: {
+      sslVerify: false,
+      connectionTimeout: -1,
+      rateLimit: -1,
+      rateLimitTimeout: -1,
+      connectionRetries: 3,
+      batchStrategy: 'none',
+      batchLimit: -1,
+      maxConnections: -1,
+    },
+  },
+};
+
+export const saveConfigVariables_tc011 = {
+  name: 'My test API',
+  description: 'My test API description',
+  modelType: 'Regression',
+  modelAPI: {
+    url: 'https://localhost:5000/predict/tc011',
+    method: 'GET',
+    authType: 'No Auth',
+    parameters: {
+      queries: {
+        mediaType: 'none',
+        isArray: true,
+        maxItems: 50,
+        name: 'foo',
+        queryParams: [
+          {
+            name: 'age',
+            type: 'integer',
+          },
+          {
+            name: 'gender',
+            type: 'integer',
+          },
+          {
+            name: 'race',
+            type: 'integer',
+          },
+          {
+            name: 'income',
+            type: 'integer',
+          },
+          {
+            name: 'employment',
+            type: 'integer',
+          },
+          {
+            name: 'employment_length',
+            type: 'integer',
+          },
+          {
+            name: 'total_donated',
+            type: 'integer',
+          },
+          {
+            name: 'num_donation',
+            type: 'integer',
+          },
+        ],
+      },
+    },
+    response: {
+      statusCode: 200,
+      mediaType: 'text/plain',
+      type: 'integer',
+    },
+    requestConfig: {
+      sslVerify: false,
+      connectionTimeout: -1,
+      rateLimit: -1,
+      rateLimitTimeout: -1,
+      connectionRetries: 3,
+      batchStrategy: 'none',
+      batchLimit: -1,
+      maxConnections: -1,
+    },
+  },
+};
+
+export const saveConfigVariables_tc012 = {
+  name: 'My test API',
+  description: 'My test API description',
+  modelType: 'Regression',
+  modelAPI: {
+    url: 'https://localhost:5000/predict/tc012',
+    urlParams: '/{foo}',
+    method: 'GET',
+    authType: 'No Auth',
+    parameters: {
+      paths: {
+        mediaType: 'none',
+        isArray: true,
+        maxItems: 50,
+        pathParams: [
+          {
+            name: 'age',
+            type: 'integer',
+          },
+          {
+            name: 'gender',
+            type: 'integer',
+          },
+          {
+            name: 'race',
+            type: 'integer',
+          },
+          {
+            name: 'income',
+            type: 'integer',
+          },
+          {
+            name: 'employment',
+            type: 'integer',
+          },
+          {
+            name: 'employment_length',
+            type: 'integer',
+          },
+          {
+            name: 'total_donated',
+            type: 'integer',
+          },
+          {
+            name: 'num_donation',
+            type: 'integer',
+          },
+        ],
+      },
+    },
+    response: {
+      statusCode: 200,
+      mediaType: 'text/plain',
+      type: 'integer',
+    },
+    requestConfig: {
+      sslVerify: false,
+      connectionTimeout: -1,
+      rateLimit: -1,
+      rateLimitTimeout: -1,
+      connectionRetries: 3,
+      batchStrategy: 'none',
+      batchLimit: -1,
+      maxConnections: -1,
     },
   },
 };

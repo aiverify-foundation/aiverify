@@ -528,32 +528,11 @@ exports[`New Model API Config Initial Render should render with the correct defa
                             </label>
                           </div>
                           <div
-                            style="position: relative; width: 500px; margin-bottom: 15px;"
+                            style="display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 15px;"
                           >
                             <div
-                              class="textInput"
-                              style="margin-bottom: 0px; width: 240px;"
-                            >
-                              <label>
-                                <div
-                                  class="label"
-                                >
-                                  <div>
-                                    .
-                                  </div>
-                                </div>
-                                <input
-                                  disabled=""
-                                  maxlength="128"
-                                  name="modelAPI.requestBody.name"
-                                  type="text"
-                                  value=""
-                                />
-                              </label>
-                            </div>
-                            <div
                               class="checkbox"
-                              style="position: absolute; top: 0px;"
+                              style="margin-bottom: 15px;"
                             >
                               <label
                                 class="control"
@@ -563,14 +542,14 @@ exports[`New Model API Config Initial Render should render with the correct defa
                                   class="input"
                                   name="modelAPI.requestBody.isArray"
                                   type="checkbox"
-                                  value="false"
+                                  value=""
                                 />
                               </label>
                               <div
                                 class="labelText"
                               >
                                 <div>
-                                  Format as array (Provide array variable name below)
+                                  Format as array
                                 </div>
                               </div>
                             </div>

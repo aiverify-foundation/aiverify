@@ -23,6 +23,8 @@ export const defaultFormValues: ModelApiFormModel = {
     requestBody: {
       mediaType: MediaType.FORM_URLENCODED,
       isArray: false,
+      maxItems: '100',
+      name: 'data',
       properties: [],
     },
     parameters: {
@@ -30,11 +32,15 @@ export const defaultFormValues: ModelApiFormModel = {
       paths: {
         mediaType: MediaType.NONE,
         isArray: false,
+        name: 'data',
+        maxItems: '100',
         pathParams: [],
       },
       queries: {
         mediaType: MediaType.NONE,
         isArray: false,
+        name: 'data',
+        maxItems: '100',
         queryParams: [],
       },
     },

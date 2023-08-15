@@ -113,7 +113,11 @@ export const getServerSideProps: GetServerSideProps<{
   ) {
     formValues.modelAPI.requestBody = {
       ...(() => {
-        const { __typename, ...rest } = result.modelAPI.requestBody;
+        const {
+          __typename,
+          maxItems: _ignoreMaxItems,
+          ...rest
+        } = result.modelAPI.requestBody;
         return rest;
       })(),
       // add reactPropId
@@ -123,6 +127,11 @@ export const getServerSideProps: GetServerSideProps<{
         reactPropId: getInputReactKeyId(),
       })),
     };
+    // cast maxItems to string
+    if (result.modelAPI.requestBody.maxItems) {
+      formValues.modelAPI.requestBody.maxItems =
+        result.modelAPI.requestBody.maxItems.toString();
+    }
   } else if (
     result.modelAPI.method === RequestMethod.GET &&
     result.modelAPI.parameters
@@ -132,7 +141,11 @@ export const getServerSideProps: GetServerSideProps<{
         paramType: URLParamType.QUERY,
         queries: {
           ...(() => {
-            const { __typename, ...rest } = result.modelAPI.parameters.queries;
+            const {
+              __typename,
+              maxItems: _ignoreMaxItems,
+              ...rest
+            } = result.modelAPI.parameters.queries;
             return rest;
           })(),
           // add reactPropId
@@ -151,12 +164,25 @@ export const getServerSideProps: GetServerSideProps<{
           pathParams: [],
         },
       };
+      // cast maxItems to string
+      if (
+        result.modelAPI.parameters.queries &&
+        result.modelAPI.parameters.queries.maxItems &&
+        formValues.modelAPI.parameters.queries
+      ) {
+        formValues.modelAPI.parameters.queries.maxItems =
+          result.modelAPI.parameters.queries.maxItems.toString();
+      }
     } else if (result.modelAPI.parameters.paths) {
       formValues.modelAPI.parameters = {
         paramType: URLParamType.PATH,
         paths: {
           ...(() => {
-            const { __typename, ...rest } = result.modelAPI.parameters.paths;
+            const {
+              __typename,
+              maxItems: _ignoreMaxItems,
+              ...rest
+            } = result.modelAPI.parameters.paths;
             return rest;
           })(),
           // add reactPropId
@@ -175,6 +201,15 @@ export const getServerSideProps: GetServerSideProps<{
           queryParams: [],
         },
       };
+      // cast maxItems to string
+      if (
+        result.modelAPI.parameters.paths &&
+        result.modelAPI.parameters.paths.maxItems &&
+        formValues.modelAPI.parameters.paths
+      ) {
+        formValues.modelAPI.parameters.paths.maxItems =
+          result.modelAPI.parameters.paths.maxItems.toString();
+      }
     }
 
     // set requestBody to default

@@ -65,16 +65,35 @@ const TabContentURLParams = forwardRef<
   const { values, errors, touched, setFieldValue, handleChange } =
     useFormikContext<ModelApiFormModel>();
   const formArrayHelpersRef = useRef<FieldArrayRenderProps>();
-  const urlParamsStr =
-    values.modelAPI.parameters && values.modelAPI.parameters.paths
-      ? values.modelAPI.parameters.paths.pathParams.reduce((prev, param) => {
-          return `${prev}/{${param.name}}`;
-        }, '')
-      : '';
+  const parameters = values.modelAPI.parameters;
   useImperativeHandle(ref, () => formArrayHelpersRef.current, []);
-  const paramType =
-    values.modelAPI.parameters && values.modelAPI.parameters.paramType;
-
+  const paramType = parameters && parameters.paramType;
+  const queryIsArrayInputChecked =
+    paramType === URLParamType.QUERY &&
+    parameters &&
+    parameters.queries &&
+    parameters.queries.isArray != undefined
+      ? parameters.queries.isArray
+      : false;
+  const pathIsArrayInputChecked: boolean =
+    paramType === URLParamType.PATH &&
+    parameters &&
+    parameters.paths &&
+    parameters.paths.isArray != undefined
+      ? parameters.paths.isArray
+      : false;
+  let urlParamsStr = '';
+  if (!pathIsArrayInputChecked) {
+    urlParamsStr =
+      parameters && parameters.paths
+        ? parameters.paths.pathParams.reduce((prev, param) => {
+            return `${prev}/{${param.name}}`;
+          }, '')
+        : '';
+  } else {
+    urlParamsStr =
+      parameters && parameters.paths ? `/{${parameters.paths.name}}` || '' : '';
+  }
   let paramErrors: FormikErrors<UrlParam>[] | undefined;
   let touchedParamFields: FormikTouched<UrlParam>[] | undefined;
   if (errors.modelAPI && errors.modelAPI.parameters) {
@@ -144,50 +163,28 @@ const TabContentURLParams = forwardRef<
       return; //no-op because there is no change of selected param type
     }
 
-    if (
-      paramType === URLParamType.QUERY &&
-      values.modelAPI.parameters &&
-      values.modelAPI.parameters.paths
-    ) {
-      setFieldValue(
-        queryParamsFieldName,
-        values.modelAPI.parameters.paths.pathParams
-      );
+    if (paramType === URLParamType.QUERY && parameters && parameters.paths) {
+      setFieldValue(queryParamsFieldName, parameters.paths.pathParams);
       setFieldValue(
         `${queriesFieldName}.mediaType`,
-        values.modelAPI.parameters.paths.mediaType
+        parameters.paths.mediaType
       );
-      setFieldValue(
-        `${queriesFieldName}.isArray`,
-        values.modelAPI.parameters.paths.isArray
-      );
-      setFieldValue(
-        `${queriesFieldName}.name`,
-        values.modelAPI.parameters.paths.name
-      );
+      setFieldValue(`${queriesFieldName}.isArray`, parameters.paths.isArray);
+      setFieldValue(`${queriesFieldName}.name`, parameters.paths.name);
       setFieldValue(pathsFieldName, undefined);
       setSelectedParamType(URLParamType.QUERY);
     } else if (
       paramType === URLParamType.PATH &&
-      values.modelAPI.parameters &&
-      values.modelAPI.parameters.queries
+      parameters &&
+      parameters.queries
     ) {
-      setFieldValue(
-        pathParamsFieldName,
-        values.modelAPI.parameters.queries.queryParams
-      );
+      setFieldValue(pathParamsFieldName, parameters.queries.queryParams);
       setFieldValue(
         `${pathsFieldName}.mediaType`,
-        values.modelAPI.parameters.queries.mediaType
+        parameters.queries.mediaType
       );
-      setFieldValue(
-        `${pathsFieldName}.isArray`,
-        values.modelAPI.parameters.queries.isArray
-      );
-      setFieldValue(
-        `${pathsFieldName}.name`,
-        values.modelAPI.parameters.queries.name
-      );
+      setFieldValue(`${pathsFieldName}.isArray`, parameters.queries.isArray);
+      setFieldValue(`${pathsFieldName}.name`, parameters.queries.name);
       setFieldValue(queriesFieldName, undefined);
       setSelectedParamType(URLParamType.PATH);
     }
@@ -198,8 +195,8 @@ const TabContentURLParams = forwardRef<
       if (newParam.name.trim() === '') setErrorMsg(RequiredMsg);
       const urlParams =
         paramType === URLParamType.QUERY
-          ? values.modelAPI.parameters?.queries?.queryParams
-          : values.modelAPI.parameters?.paths?.pathParams;
+          ? parameters?.queries?.queryParams
+          : parameters?.paths?.pathParams;
       const isExist =
         urlParams &&
         urlParams.findIndex((param) => param.name === newParam.name) > -1;
@@ -219,8 +216,8 @@ const TabContentURLParams = forwardRef<
     return () => {
       const urlParams =
         paramType === URLParamType.QUERY
-          ? values.modelAPI.parameters?.queries?.queryParams
-          : values.modelAPI.parameters?.paths?.pathParams;
+          ? parameters?.queries?.queryParams
+          : parameters?.paths?.pathParams;
       if (urlParams && urlParams[index].name === newParam.name) {
         setErrorMsg(undefined);
       }
@@ -251,11 +248,10 @@ const TabContentURLParams = forwardRef<
           label="URL Parameter Type"
           name={queryTypeFieldName}
           options={optionsUrlParamTypes}
-          value={values.modelAPI.parameters?.paramType}
+          value={parameters?.paramType}
           onSyntheticChange={handleChange}
         />
-        {paramType === URLParamType.QUERY &&
-        !values.modelAPI.parameters?.queries?.isArray ? (
+        {paramType === URLParamType.QUERY && !parameters?.queries?.isArray ? (
           <div
             style={{
               marginLeft: 10,
@@ -268,8 +264,7 @@ const TabContentURLParams = forwardRef<
             =&#123;value&#125;
           </div>
         ) : null}
-        {paramType === URLParamType.QUERY &&
-        values.modelAPI.parameters?.queries?.isArray ? (
+        {paramType === URLParamType.QUERY && parameters?.queries?.isArray ? (
           <div
             style={{
               marginLeft: 10,
@@ -280,8 +275,7 @@ const TabContentURLParams = forwardRef<
             <span className={styles.paramHighlight}>gender</span>: value&#125;
           </div>
         ) : null}
-        {paramType === URLParamType.PATH &&
-        !values.modelAPI.parameters?.paths?.isArray ? (
+        {paramType === URLParamType.PATH && !parameters?.paths?.isArray ? (
           <div
             style={{
               marginLeft: 10,
@@ -292,8 +286,7 @@ const TabContentURLParams = forwardRef<
             <span className={styles.paramHighlight}>&#123;gender&#125;</span>
           </div>
         ) : null}
-        {paramType === URLParamType.PATH &&
-        values.modelAPI.parameters?.paths?.isArray ? (
+        {paramType === URLParamType.PATH && parameters?.paths?.isArray ? (
           <div
             style={{
               marginLeft: 10,
@@ -331,62 +324,98 @@ const TabContentURLParams = forwardRef<
         </Tooltip>
       </div>
       {paramType === URLParamType.QUERY ? (
-        <div style={{ position: 'relative', width: 500, marginBottom: 15 }}>
-          <TextInput
-            disabled={
-              disabled ||
-              !(paramType === URLParamType.QUERY
-                ? values.modelAPI.parameters?.queries?.isArray
-                : values.modelAPI.parameters?.paths?.isArray)
-            }
-            label="."
-            name={
-              paramType === URLParamType.QUERY
-                ? `${queriesFieldName}.name`
-                : `${pathsFieldName}.name`
-            }
-            onChange={handleChange}
-            value={
-              paramType === URLParamType.QUERY
-                ? values.modelAPI.parameters?.queries?.name
-                : values.modelAPI.parameters?.paths?.name
-            }
-            maxLength={128}
-            style={{ marginBottom: 0, width: 240 }}
-          />
-          <CheckBox
-            label="Format as array (Provide array variable name below)"
-            disabled={disabled}
-            checked={
-              paramType === URLParamType.QUERY
-                ? values.modelAPI.parameters?.queries?.isArray
-                : values.modelAPI.parameters?.paths?.isArray
-            }
-            name={
-              paramType === URLParamType.QUERY
-                ? `${queriesFieldName}.isArray`
-                : `${pathsFieldName}.isArray`
-            }
-            value={
-              paramType === URLParamType.QUERY
-                ? values.modelAPI.parameters?.queries?.isArray
-                : values.modelAPI.parameters?.paths?.isArray
-            }
-            onChange={handleChange}
-            style={{ position: 'absolute', top: 0 }}
-          />
-        </div>
-      ) : (
-        <div style={{ position: 'relative', width: 300, marginBottom: 15 }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            justifyContent: 'flex-start',
+          }}>
           <CheckBox
             label="Format as array"
             disabled={disabled}
-            checked={values.modelAPI.parameters?.paths?.isArray}
-            name={`${pathsFieldName}.isArray`}
-            value={values.modelAPI.parameters?.paths?.isArray}
+            checked={queryIsArrayInputChecked}
+            name={`${queriesFieldName}.isArray`}
             onChange={handleChange}
-            style={{ justifyContent: 'flex-start' }}
+            style={{ marginBottom: 15 }}
           />
+          {queryIsArrayInputChecked ? (
+            <div style={{ display: 'flex', marginBottom: 20 }}>
+              <TextInput
+                disabled={disabled || !queryIsArrayInputChecked}
+                label="Array Variable Name"
+                name={`${queriesFieldName}.name`}
+                onChange={handleChange}
+                value={
+                  parameters && parameters.queries
+                    ? parameters.queries.name
+                    : undefined
+                }
+                maxLength={128}
+                style={{ marginBottom: 0, marginRight: 8, width: 200 }}
+              />
+              <TextInput
+                label="Max Items"
+                disabled={disabled || !queryIsArrayInputChecked}
+                name={`${queriesFieldName}.maxItems`}
+                onChange={handleChange}
+                value={
+                  parameters && parameters.queries
+                    ? parameters.queries.maxItems
+                    : undefined
+                }
+                maxLength={128}
+                style={{ marginBottom: 0, marginRight: 8, width: 200 }}
+              />
+            </div>
+          ) : null}
+        </div>
+      ) : (
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            justifyContent: 'flex-start',
+          }}>
+          <CheckBox
+            label="Format as array"
+            disabled={disabled}
+            checked={pathIsArrayInputChecked}
+            name={`${pathsFieldName}.isArray`}
+            onChange={handleChange}
+            style={{ marginBottom: 15 }}
+          />
+          {pathIsArrayInputChecked ? (
+            <div style={{ display: 'flex', marginBottom: 20 }}>
+              <TextInput
+                disabled={disabled}
+                label="Array Variable Name"
+                name={`${pathsFieldName}.name`}
+                onChange={handleChange}
+                value={
+                  parameters && parameters.paths
+                    ? parameters.paths.name
+                    : undefined
+                }
+                maxLength={128}
+                style={{ marginBottom: 0, marginRight: 8, width: 200 }}
+              />
+              <TextInput
+                label="Max Items"
+                disabled={disabled}
+                name={`${pathsFieldName}.maxItems`}
+                onChange={handleChange}
+                value={
+                  parameters && parameters.paths
+                    ? parameters.paths.maxItems
+                    : undefined
+                }
+                maxLength={128}
+                style={{ marginBottom: 0, marginRight: 8, width: 200 }}
+              />
+            </div>
+          ) : null}
         </div>
       )}
       <UrlParamsInputHeading />
@@ -407,14 +436,16 @@ const TabContentURLParams = forwardRef<
                   let params: UrlParam[] = [];
                   if (
                     paramType === URLParamType.QUERY &&
-                    values.modelAPI.parameters?.queries
+                    parameters &&
+                    parameters.queries
                   ) {
-                    params = values.modelAPI.parameters.queries.queryParams;
+                    params = parameters.queries.queryParams;
                   } else if (
                     paramType === URLParamType.PATH &&
-                    values.modelAPI.parameters?.paths
+                    parameters &&
+                    parameters.paths
                   ) {
-                    params = values.modelAPI.parameters?.paths.pathParams;
+                    params = parameters.paths.pathParams;
                   }
                   return (
                     <div

@@ -1,0 +1,23 @@
+// Keep this palette in sync with /src/styles/color-palette.css
+export const ColorPalette = {
+  violet: '#702f8a',
+  violetRed: '#991e66',
+  pink: '#c42983',
+  purple: '#3b2161',
+  darkIndigo1: '#41244d',
+  darkIndigo: '#4b255a',
+  royalBlue: '#3a3d8a',
+  midnightBlue: '#292b61',
+  softPinkTint: '#f3f0f5',
+  white: '#ffffff',
+  lightGray: '#cfcfcf',
+  lightGray2: '#f0f0f0',
+  lightGray3: '#f7f7f7',
+  gray: '#676767',
+  gray2: '#b7b7b7',
+  darkGray: '#484747',
+  alertRed: '#f73939',
+  alertSuccess: '#52be52',
+  alertWarning: '#fabb33',
+  alertInfo: '#357cce',
+};

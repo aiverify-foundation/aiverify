@@ -4,6 +4,10 @@ import { TextInput } from 'src/components/textInput';
 import styles from './styles/newModelApiConfig.module.css';
 import { SelectInput } from 'src/components/selectInput';
 import { optionsBatchStrategies } from './selectOptions';
+import { Tooltip, TooltipPosition } from 'src/components/tooltip';
+import InfoIcon from '@mui/icons-material/Info';
+import { ColorPalette } from 'src/components/colorPalette';
+import { CheckBox } from 'src/components/checkbox';
 
 const otherReqConfigFieldName = 'modelAPI.requestConfig';
 
@@ -15,137 +19,342 @@ function TabContentConnection({ disabled = false }: { disabled?: boolean }) {
   const touchedFields = touched.modelAPI?.requestConfig;
 
   return (
-    <div style={{ display: 'flex', gap: 50 }}>
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          width: 300,
-        }}>
-        <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
-          <TextInput
-            disabled={disabled}
-            label="Connection Timeout"
-            name={`${otherReqConfigFieldName}.connectionTimeout`}
-            onChange={handleChange}
-            value={requestConfig.connectionTimeout}
-            maxLength={128}
-            style={{ marginBottom: 0, width: '100%' }}
-            error={
-              Boolean(
-                fieldErrors?.connectionTimeout &&
-                  touchedFields?.connectionTimeout
-              )
-                ? fieldErrors?.connectionTimeout
-                : undefined
-            }
-          />
-        </div>
-        <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
-          <TextInput
-            disabled={disabled}
-            label="Connection Retries"
-            name={`${otherReqConfigFieldName}.connectionRetries`}
-            onChange={handleChange}
-            value={requestConfig.connectionRetries}
-            maxLength={128}
-            style={{ marginBottom: 0, width: '100%' }}
-            error={
-              Boolean(
-                fieldErrors?.connectionRetries &&
-                  touchedFields?.connectionRetries
-              )
-                ? fieldErrors?.connectionRetries
-                : undefined
-            }
-          />
-        </div>
-        <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
-          <TextInput
-            disabled={disabled}
-            label="Max Connections"
-            name={`${otherReqConfigFieldName}.maxConnections`}
-            onChange={handleChange}
-            value={requestConfig.maxConnections}
-            maxLength={128}
-            style={{ marginBottom: 0, width: '100%' }}
-            error={
-              Boolean(
-                fieldErrors?.maxConnections && touchedFields?.maxConnections
-              )
-                ? fieldErrors?.maxConnections
-                : undefined
-            }
-          />
-        </div>
-        <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
-          <TextInput
-            disabled={disabled}
-            label="Rate Limit"
-            name={`${otherReqConfigFieldName}.rateLimit`}
-            onChange={handleChange}
-            value={requestConfig.rateLimit}
-            maxLength={128}
-            style={{ marginBottom: 0, width: '100%' }}
-            error={
-              Boolean(fieldErrors?.rateLimit && touchedFields?.rateLimit)
-                ? fieldErrors?.rateLimit
-                : undefined
-            }
-          />
-        </div>
-        <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
-          <TextInput
-            disabled={
-              disabled ||
-              requestConfig.rateLimit.trim() === '' ||
-              parseInt(requestConfig.rateLimit) < 0
-            }
-            label="Rate Limit Timeout"
-            name={`${otherReqConfigFieldName}.rateLimitTimeout`}
-            onChange={handleChange}
-            value={requestConfig.rateLimitTimeout}
-            maxLength={128}
-            style={{ marginBottom: 0, width: '100%' }}
-            error={
-              Boolean(
-                fieldErrors?.rateLimitTimeout && touchedFields?.rateLimitTimeout
-              )
-                ? fieldErrors?.rateLimitTimeout
-                : undefined
-            }
-          />
-        </div>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+      }}>
+      <div style={{ display: 'flex' }}>
+        <CheckBox
+          label="SSL Verify"
+          disabled={disabled}
+          checked={values.modelAPI.requestConfig.sslVerify}
+          name={`${otherReqConfigFieldName}.sslVerify`}
+          onChange={handleChange}
+        />
+        <Tooltip
+          backgroundColor={ColorPalette.gray}
+          fontColor={ColorPalette.white}
+          content={
+            <div style={{ marginBottom: 5 }}>
+              Boolean to determine if there is a need to verify the SSL cert
+              when connecting to the server.
+            </div>
+          }
+          position={TooltipPosition.right}
+          offsetLeft={8}
+          offsetTop={42}>
+          <div
+            style={{
+              display: 'flex',
+              color: ColorPalette.gray2,
+              marginLeft: 10,
+            }}>
+            <InfoIcon style={{ fontSize: 18 }} />
+          </div>
+        </Tooltip>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', width: 300 }}>
-        <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
-          <SelectInput<BatchStrategy>
-            disabled={disabled}
-            label="Batch Strategy"
-            name={`${otherReqConfigFieldName}.batchStrategy`}
-            options={optionsBatchStrategies}
-            onSyntheticChange={handleChange}
-            value={requestConfig.batchStrategy}
-            style={{ marginBottom: 0, width: '100%' }}
-          />
+      <div style={{ display: 'flex', gap: 50 }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            width: 300,
+          }}>
+          <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
+            <TextInput
+              disabled={disabled}
+              label="Connection Timeout (seconds)"
+              name={`${otherReqConfigFieldName}.connectionTimeout`}
+              onChange={handleChange}
+              value={requestConfig.connectionTimeout}
+              maxLength={128}
+              style={{ marginBottom: 0, width: '100%' }}
+              error={
+                Boolean(
+                  fieldErrors?.connectionTimeout &&
+                    touchedFields?.connectionTimeout
+                )
+                  ? fieldErrors?.connectionTimeout
+                  : undefined
+              }
+              labelSibling={
+                <Tooltip
+                  backgroundColor={ColorPalette.gray}
+                  fontColor={ColorPalette.white}
+                  content={
+                    <div style={{ marginBottom: 5 }}>
+                      The connection timeout when connecting to the server (in
+                      seconds). Defaults to -1, which means the timeout is set
+                      to httpx's default timeout.
+                    </div>
+                  }
+                  position={TooltipPosition.right}
+                  offsetLeft={8}
+                  offsetTop={42}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      color: ColorPalette.gray2,
+                      marginLeft: 15,
+                    }}>
+                    <InfoIcon style={{ fontSize: 18 }} />
+                  </div>
+                </Tooltip>
+              }
+            />
+          </div>
+          <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
+            <TextInput
+              disabled={disabled}
+              label="Connection Retries"
+              name={`${otherReqConfigFieldName}.connectionRetries`}
+              onChange={handleChange}
+              value={requestConfig.connectionRetries}
+              maxLength={128}
+              style={{ marginBottom: 0, width: '100%' }}
+              error={
+                Boolean(
+                  fieldErrors?.connectionRetries &&
+                    touchedFields?.connectionRetries
+                )
+                  ? fieldErrors?.connectionRetries
+                  : undefined
+              }
+              labelSibling={
+                <Tooltip
+                  backgroundColor={ColorPalette.gray}
+                  fontColor={ColorPalette.white}
+                  content={
+                    <div style={{ marginBottom: 5 }}>
+                      The number of retries for connecting to a server.
+                    </div>
+                  }
+                  position={TooltipPosition.right}
+                  offsetLeft={8}
+                  offsetTop={42}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      color: ColorPalette.gray2,
+                      marginLeft: 15,
+                    }}>
+                    <InfoIcon style={{ fontSize: 18 }} />
+                  </div>
+                </Tooltip>
+              }
+            />
+          </div>
+          <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
+            <TextInput
+              disabled={disabled}
+              label="Max Connections"
+              name={`${otherReqConfigFieldName}.maxConnections`}
+              onChange={handleChange}
+              value={requestConfig.maxConnections}
+              maxLength={128}
+              style={{ marginBottom: 0, width: '100%' }}
+              error={
+                Boolean(
+                  fieldErrors?.maxConnections && touchedFields?.maxConnections
+                )
+                  ? fieldErrors?.maxConnections
+                  : undefined
+              }
+              labelSibling={
+                <Tooltip
+                  backgroundColor={ColorPalette.gray}
+                  fontColor={ColorPalette.white}
+                  content={
+                    <div style={{ marginBottom: 5 }}>
+                      The maximum number of concurrent connection(s) that can be
+                      made to the server. Defaults to -1, which means there is
+                      no maximum number of connection(s).
+                    </div>
+                  }
+                  position={TooltipPosition.right}
+                  offsetLeft={8}
+                  offsetTop={42}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      color: ColorPalette.gray2,
+                      marginLeft: 15,
+                    }}>
+                    <InfoIcon style={{ fontSize: 18 }} />
+                  </div>
+                </Tooltip>
+              }
+            />
+          </div>
+          <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
+            <TextInput
+              disabled={disabled}
+              label="Rate Limit"
+              name={`${otherReqConfigFieldName}.rateLimit`}
+              onChange={handleChange}
+              value={requestConfig.rateLimit}
+              maxLength={128}
+              style={{ marginBottom: 0, width: '100%' }}
+              error={
+                Boolean(fieldErrors?.rateLimit && touchedFields?.rateLimit)
+                  ? fieldErrors?.rateLimit
+                  : undefined
+              }
+              labelSibling={
+                <Tooltip
+                  backgroundColor={ColorPalette.gray}
+                  fontColor={ColorPalette.white}
+                  content={
+                    <div style={{ marginBottom: 5 }}>
+                      The maximum number of request(s) allowed to be made to the
+                      server per second. Defaults to -1, which means there is no
+                      limit to the number of requests(s) made to the server.
+                    </div>
+                  }
+                  position={TooltipPosition.right}
+                  offsetLeft={8}
+                  offsetTop={42}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      color: ColorPalette.gray2,
+                      marginLeft: 15,
+                    }}>
+                    <InfoIcon style={{ fontSize: 18 }} />
+                  </div>
+                </Tooltip>
+              }
+            />
+          </div>
+          <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
+            <TextInput
+              disabled={
+                disabled ||
+                requestConfig.rateLimit.trim() === '' ||
+                parseInt(requestConfig.rateLimit) < 0
+              }
+              label="Rate Limit Timeout (seconds)"
+              name={`${otherReqConfigFieldName}.rateLimitTimeout`}
+              onChange={handleChange}
+              value={requestConfig.rateLimitTimeout}
+              maxLength={128}
+              style={{ marginBottom: 0, width: '100%' }}
+              error={
+                Boolean(
+                  fieldErrors?.rateLimitTimeout &&
+                    touchedFields?.rateLimitTimeout
+                )
+                  ? fieldErrors?.rateLimitTimeout
+                  : undefined
+              }
+              labelSibling={
+                <Tooltip
+                  backgroundColor={ColorPalette.gray}
+                  fontColor={ColorPalette.white}
+                  content={
+                    <div style={{ marginBottom: 5 }}>
+                      The connection timeout when connecting to the server(in
+                      seconds) when there is rate limiting. Defaults to -1,
+                      which means the timeout is set to httpx's default timeout.
+                    </div>
+                  }
+                  position={TooltipPosition.right}
+                  offsetLeft={8}
+                  offsetTop={42}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      color: ColorPalette.gray2,
+                      marginLeft: 15,
+                    }}>
+                    <InfoIcon style={{ fontSize: 18 }} />
+                  </div>
+                </Tooltip>
+              }
+            />
+          </div>
         </div>
-        <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
-          <TextInput
-            disabled={
-              disabled || requestConfig.batchStrategy === BatchStrategy.none
-            }
-            label="Batch Limit"
-            name={`${otherReqConfigFieldName}.batchLimit`}
-            onChange={handleChange}
-            value={requestConfig.batchLimit}
-            maxLength={128}
-            style={{ marginBottom: 0, width: '100%' }}
-            error={
-              Boolean(fieldErrors?.batchLimit && touchedFields?.batchLimit)
-                ? fieldErrors?.batchLimit
-                : undefined
-            }
-          />
+        <div style={{ display: 'flex', flexDirection: 'column', width: 300 }}>
+          <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
+            <SelectInput<BatchStrategy>
+              disabled={disabled}
+              label="Batch Strategy"
+              name={`${otherReqConfigFieldName}.batchStrategy`}
+              options={optionsBatchStrategies}
+              onSyntheticChange={handleChange}
+              value={requestConfig.batchStrategy}
+              style={{ marginBottom: 0, width: '100%' }}
+              labelSibling={
+                <Tooltip
+                  backgroundColor={ColorPalette.gray}
+                  fontColor={ColorPalette.white}
+                  content={
+                    <div style={{ marginBottom: 5 }}>
+                      The strategy on how to batch requests. Currently, we
+                      support multipart. Defaults to none, which means there is
+                      no batching for every request
+                    </div>
+                  }
+                  position={TooltipPosition.right}
+                  offsetLeft={8}
+                  offsetTop={42}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      color: ColorPalette.gray2,
+                      marginLeft: 15,
+                    }}>
+                    <InfoIcon style={{ fontSize: 18 }} />
+                  </div>
+                </Tooltip>
+              }
+            />
+          </div>
+          <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
+            <TextInput
+              disabled={
+                disabled || requestConfig.batchStrategy === BatchStrategy.none
+              }
+              label="Batch Limit"
+              name={`${otherReqConfigFieldName}.batchLimit`}
+              onChange={handleChange}
+              value={requestConfig.batchLimit}
+              maxLength={128}
+              style={{ marginBottom: 0, width: '100%' }}
+              error={
+                Boolean(fieldErrors?.batchLimit && touchedFields?.batchLimit)
+                  ? fieldErrors?.batchLimit
+                  : undefined
+              }
+              labelSibling={
+                <Tooltip
+                  backgroundColor={ColorPalette.gray}
+                  fontColor={ColorPalette.white}
+                  content={
+                    <div style={{ marginBottom: 5 }}>
+                      The maximum number of batched request(s) that can be sent
+                      in a multipart request. This field should only be modified
+                      if batchStrategy is not none. Defaults to -1, which means
+                      there is no limit for the number of batched request(s).
+                    </div>
+                  }
+                  position={TooltipPosition.right}
+                  offsetLeft={8}
+                  offsetTop={42}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      color: ColorPalette.gray2,
+                      marginLeft: 15,
+                    }}>
+                    <InfoIcon style={{ fontSize: 18 }} />
+                  </div>
+                </Tooltip>
+              }
+            />
+          </div>
         </div>
       </div>
     </div>
