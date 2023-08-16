@@ -62,7 +62,11 @@ class TestObject:
 
         ground_truth = "default"
         model_type = ModelType.CLASSIFICATION
-        input_args = {"sensitive_feature": ["gender"]}
+        input_args = {
+            "sensitive_feature": ["gender"],
+            "annotated_labels_path": valid_ground_truth_path,
+            "file_name_label": "image_directory",
+        }
         expected_exception = RuntimeError
         expected_exception_msg = "The algorithm has failed data validation"
         logger_instance = logging.getLogger("PluginTestLogger")
