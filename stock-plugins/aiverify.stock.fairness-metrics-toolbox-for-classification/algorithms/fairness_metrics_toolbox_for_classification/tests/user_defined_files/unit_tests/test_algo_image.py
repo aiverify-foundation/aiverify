@@ -498,8 +498,7 @@ def test_valid_run(get_data_instance_and_serializer_without_ground_truth):
     results = remove_numpy_formats(test_plugin.get_results())
 
     # Load sample JSON file to assert results
-    f = open("tests/user_defined_files/unit_tests/sample_output.json")
-    # f = open("tests/user_defined_files/unit_tests/image_sample_output.json")
+    f = open("tests/user_defined_files/unit_tests/image_sample_output.json")
     sample_data = json.load(f)
     f.close()
 
