@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 from fairness_metrics_toolbox_for_classification import Plugin
 from test_engine_core.interfaces.idata import IData
-from test_engine_core.interfaces.imodel import IModel
+from test_engine_core.interfaces.ipipeline import IPipeline
 from test_engine_core.plugins.enums.model_type import ModelType
 from test_engine_core.plugins.enums.plugin_type import PluginType
 from test_engine_core.plugins.metadata.plugin_metadata import PluginMetadata
@@ -20,10 +20,12 @@ def test_discover_plugin():
     )
 
 
-# Variables for testing
-valid_data_path = "tests/user_defined_files/data/sample_bc_credit_data.sav"
-valid_model_path = "tests/user_defined_files/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav"
-valid_ground_truth_path = "tests/user_defined_files/data/sample_bc_credit_data.sav"
+# Variables for image testing
+valid_data_path = "tests/user_defined_files/data/small_test"
+valid_model_path = "tests/user_defined_files/pipeline/bc_image_face"
+valid_ground_truth_path = (
+    "tests/user_defined_files/data/pickle_pandas_annotated_labels_50.sav"
+)
 
 test_string = "data_str"
 test_int = 1
@@ -49,7 +51,7 @@ class TestObject:
             model_serializer_instance,
             model_error_message,
         ) = PluginManager.get_instance(
-            PluginType.MODEL, **{"filename": valid_model_path}
+            PluginType.PIPELINE, **{"pipeline_path": valid_model_path}
         )
 
         (
@@ -60,9 +62,13 @@ class TestObject:
             PluginType.DATA, **{"filename": valid_ground_truth_path}
         )
 
-        ground_truth = "default"
+        ground_truth = "gender"
         model_type = ModelType.CLASSIFICATION
-        input_args = {"sensitive_feature": ["gender"]}
+        input_args = {
+            "sensitive_feature": ["race"],
+            "annotated_labels_path": valid_ground_truth_path,
+            "file_name_label": "image_directory",
+        }
         expected_exception = RuntimeError
         expected_exception_msg = "The algorithm has failed data validation"
         logger_instance = logging.getLogger("PluginTestLogger")
@@ -141,7 +147,9 @@ def get_model_instance_and_serializer(request):
         model_instance,
         model_serializer_instance,
         model_error_message,
-    ) = PluginManager.get_instance(PluginType.MODEL, **{"filename": request.param})
+    ) = PluginManager.get_instance(
+        PluginType.PIPELINE, **{"pipeline_path": valid_model_path}
+    )
     yield (model_instance, model_serializer_instance)
 
 
@@ -180,7 +188,7 @@ def test_create_plugin_instance_with_all_valid_input():
     )
 
     assert isinstance(test_plugin._data_instance, IData)
-    assert isinstance(test_plugin._model_instance, IModel)
+    assert isinstance(test_plugin._model_instance, IPipeline)
     assert isinstance(test_plugin._ground_truth_instance, IData)
     assert isinstance(test_plugin._logger, logging.Logger)
     assert isinstance(test_plugin._progress_inst, SimpleProgress)
@@ -491,6 +499,7 @@ def test_valid_run(get_data_instance_and_serializer_without_ground_truth):
 
     # Load sample JSON file to assert results
     f = open("tests/user_defined_files/unit_tests/sample_output.json")
+    # f = open("tests/user_defined_files/unit_tests/image_sample_output.json")
     sample_data = json.load(f)
     f.close()
 
