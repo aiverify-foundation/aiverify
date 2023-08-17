@@ -43,16 +43,10 @@ function TabContentConnection({ disabled = false }: { disabled?: boolean }) {
             </div>
           }
           position={TooltipPosition.right}
-          offsetLeft={8}
-          offsetTop={42}>
-          <div
-            style={{
-              display: 'flex',
-              color: ColorPalette.gray2,
-              marginLeft: 10,
-            }}>
-            <InfoIcon style={{ fontSize: 18 }} />
-          </div>
+          offsetLeft={8}>
+          <InfoIcon
+            style={{ fontSize: 18, color: ColorPalette.gray2, marginLeft: 15 }}
+          />
         </Tooltip>
       </div>
       <div style={{ display: 'flex', gap: 50 }}>
@@ -87,20 +81,14 @@ function TabContentConnection({ disabled = false }: { disabled?: boolean }) {
                     <div style={{ marginBottom: 5 }}>
                       The connection timeout when connecting to the server (in
                       seconds). Defaults to -1, which means the timeout is set
-                      to httpx's default timeout.
+                      to httpx&lsquo;s default timeout.
                     </div>
                   }
                   position={TooltipPosition.right}
-                  offsetLeft={8}
-                  offsetTop={42}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      color: ColorPalette.gray2,
-                      marginLeft: 15,
-                    }}>
-                    <InfoIcon style={{ fontSize: 18 }} />
-                  </div>
+                  offsetLeft={8}>
+                  <InfoIcon
+                    style={{ fontSize: 18, color: ColorPalette.gray2 }}
+                  />
                 </Tooltip>
               }
             />
@@ -132,16 +120,10 @@ function TabContentConnection({ disabled = false }: { disabled?: boolean }) {
                     </div>
                   }
                   position={TooltipPosition.right}
-                  offsetLeft={8}
-                  offsetTop={42}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      color: ColorPalette.gray2,
-                      marginLeft: 15,
-                    }}>
-                    <InfoIcon style={{ fontSize: 18 }} />
-                  </div>
+                  offsetLeft={8}>
+                  <InfoIcon
+                    style={{ fontSize: 18, color: ColorPalette.gray2 }}
+                  />
                 </Tooltip>
               }
             />
@@ -174,16 +156,10 @@ function TabContentConnection({ disabled = false }: { disabled?: boolean }) {
                     </div>
                   }
                   position={TooltipPosition.right}
-                  offsetLeft={8}
-                  offsetTop={42}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      color: ColorPalette.gray2,
-                      marginLeft: 15,
-                    }}>
-                    <InfoIcon style={{ fontSize: 18 }} />
-                  </div>
+                  offsetLeft={8}>
+                  <InfoIcon
+                    style={{ fontSize: 18, color: ColorPalette.gray2 }}
+                  />
                 </Tooltip>
               }
             />
@@ -214,16 +190,10 @@ function TabContentConnection({ disabled = false }: { disabled?: boolean }) {
                     </div>
                   }
                   position={TooltipPosition.right}
-                  offsetLeft={8}
-                  offsetTop={42}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      color: ColorPalette.gray2,
-                      marginLeft: 15,
-                    }}>
-                    <InfoIcon style={{ fontSize: 18 }} />
-                  </div>
+                  offsetLeft={8}>
+                  <InfoIcon
+                    style={{ fontSize: 18, color: ColorPalette.gray2 }}
+                  />
                 </Tooltip>
               }
             />
@@ -257,20 +227,15 @@ function TabContentConnection({ disabled = false }: { disabled?: boolean }) {
                     <div style={{ marginBottom: 5 }}>
                       The connection timeout when connecting to the server(in
                       seconds) when there is rate limiting. Defaults to -1,
-                      which means the timeout is set to httpx's default timeout.
+                      which means the timeout is set to httpx&lsquo;s default
+                      timeout.
                     </div>
                   }
                   position={TooltipPosition.right}
-                  offsetLeft={8}
-                  offsetTop={42}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      color: ColorPalette.gray2,
-                      marginLeft: 15,
-                    }}>
-                    <InfoIcon style={{ fontSize: 18 }} />
-                  </div>
+                  offsetLeft={8}>
+                  <InfoIcon
+                    style={{ fontSize: 18, color: ColorPalette.gray2 }}
+                  />
                 </Tooltip>
               }
             />
@@ -298,16 +263,10 @@ function TabContentConnection({ disabled = false }: { disabled?: boolean }) {
                     </div>
                   }
                   position={TooltipPosition.right}
-                  offsetLeft={8}
-                  offsetTop={42}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      color: ColorPalette.gray2,
-                      marginLeft: 15,
-                    }}>
-                    <InfoIcon style={{ fontSize: 18 }} />
-                  </div>
+                  offsetLeft={8}>
+                  <InfoIcon
+                    style={{ fontSize: 18, color: ColorPalette.gray2 }}
+                  />
                 </Tooltip>
               }
             />
@@ -341,16 +300,10 @@ function TabContentConnection({ disabled = false }: { disabled?: boolean }) {
                     </div>
                   }
                   position={TooltipPosition.right}
-                  offsetLeft={8}
-                  offsetTop={42}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      color: ColorPalette.gray2,
-                      marginLeft: 15,
-                    }}>
-                    <InfoIcon style={{ fontSize: 18 }} />
-                  </div>
+                  offsetLeft={8}>
+                  <InfoIcon
+                    style={{ fontSize: 18, color: ColorPalette.gray2 }}
+                  />
                 </Tooltip>
               }
             />
