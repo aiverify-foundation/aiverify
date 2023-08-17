@@ -1,2 +1,4 @@
 /node_modules
 /plugins
+/__mocks__
+/__tests__
