@@ -1,4 +1,3 @@
-import ast
 import asyncio
 import http
 import json
@@ -512,12 +511,9 @@ class Plugin(IModel):
 
         # if return type is json, read from the field that the user has specified
         if response_type == "application/json":
-            # get the field name of the response. e.g. data: {..}
-            openapi_values = next(iter(openapi_response_object.values()))
-            response_field_name = list(openapi_values.schema_.properties)[0]
-
+            response_field_name = self._api_config.get("responseBody").get("field")
             for response in response_list:
-                parsed_response = ast.literal_eval(response.text)
+                parsed_response = json.loads(response.text)
                 parsed_data_value = parsed_response.get(response_field_name)
                 response_data.append(parsed_data_value)
         else:
