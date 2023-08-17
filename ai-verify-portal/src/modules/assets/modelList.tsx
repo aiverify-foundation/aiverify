@@ -47,6 +47,7 @@ import { AlertType, StandardAlert } from 'src/components/standardAlerts';
 import ModelFile, { ModelType } from 'src/types/model.interface';
 import { useUpdateModel, useDeleteModelFile } from 'src/lib/assetService';
 import { useRouter } from 'next/router';
+import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
 
 type Props = {
   showSelectModelBtn?: boolean;
@@ -146,6 +147,7 @@ const GET_MODELS = gql`
       modelType
       errorMessages
       type
+      createdAt
     }
   }
 `;
@@ -347,26 +349,33 @@ export default function ModelListComponent({
       headerName: 'Type',
       flex: 0.1,
       renderCell: (params: GridRenderCellParams) => {
-        if (params.value.toString() === 'Folder') {
-          return (
-            <Tooltip title="Folder">
-              <FolderIcon></FolderIcon>
-            </Tooltip>
-          );
-        } else if (params.value.toString() === 'Pipeline') {
-          return (
-            <div>
-              <Tooltip title="Pipeline">
-                <Icon name={IconName.PIPELINE} size={24} color="#676767" />
+        switch (params.value) {
+          case 'Folder':
+            return (
+              <Tooltip title="Folder">
+                <FolderIcon />
               </Tooltip>
-            </div>
-          );
-        } else {
-          return (
-            <Tooltip title="File">
-              <InsertDriveFileIcon></InsertDriveFileIcon>
-            </Tooltip>
-          );
+            );
+          case 'Pipeline':
+            return (
+              <div>
+                <Tooltip title="Pipeline">
+                  <Icon name={IconName.PIPELINE} size={24} color="#676767" />
+                </Tooltip>
+              </div>
+            );
+          case 'API':
+            return (
+              <Tooltip title="Api">
+                <SettingsApplicationsIcon />
+              </Tooltip>
+            );
+          default:
+            return (
+              <Tooltip title="File">
+                <InsertDriveFileIcon />
+              </Tooltip>
+            );
         }
       },
     },
@@ -422,6 +431,13 @@ export default function ModelListComponent({
     },
     {
       field: 'ctime',
+      valueGetter: (params: GridRenderCellParams) => {
+        if (params.row.type && params.row.type.toUpperCase() === 'API') {
+          return params.row.createdAt;
+        } else {
+          return params.row.ctime;
+        }
+      },
       hideable: false,
       headerName: 'Date',
       flex: 0.5,
@@ -687,12 +703,27 @@ export default function ModelListComponent({
                 </>
               ) : null}
               <b>Type:</b> {focus.type} <br />
+              {focus.type == 'API' && focus.modelAPI ? (
+                <>
+                  <b>Url:</b> {focus.modelAPI.url} <br />
+                </>
+              ) : null}
+              {focus.type == 'API' && focus.modelAPI ? (
+                <>
+                  <b>Http Method</b> {focus.modelAPI.method} <br />
+                </>
+              ) : null}
               {focus.type !== 'API' ? (
                 <>
                   <b>Date Uploaded:</b> {new Date(focus.ctime).toLocaleString()}{' '}
                   <br />
                 </>
-              ) : null}
+              ) : (
+                <>
+                  <b>Date Created:</b>{' '}
+                  {new Date(focus.createdAt).toLocaleString()} <br />
+                </>
+              )}
               {focus.type !== 'API' ? (
                 <>
                   <b>Size:</b> {focus.size ? focus.size : '-'} <br />

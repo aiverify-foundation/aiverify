@@ -25,6 +25,7 @@ export default interface ModelFile {
   name: string; // defaults to filename when upload
   filePath: string; // should be stored relative to data upload folder
   ctime: string; // file create time
+  createdAt: string;
   description?: string;
   status: string;
   size: string;
