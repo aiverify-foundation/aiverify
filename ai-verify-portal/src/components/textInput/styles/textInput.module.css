@@ -42,6 +42,7 @@
 .label {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   color: var(--color-gray);
   font-weight: 600;
   margin-bottom: 4px;

@@ -68,14 +68,14 @@ function calculateTooltipPosition(
       result.top =
         (triggerEl.offsetHeight > tooltipRect.height
           ? triggerRect.top + heightDiff
-          : triggerRect.top - heightDiff) + offsetTop;
+          : triggerRect.top - 10) + offsetTop;
       result.left = triggerRect.left - tooltipEl.offsetWidth + offsetLeft;
       break;
     case TooltipPosition.right:
       result.top =
         (triggerEl.offsetHeight > tooltipRect.height
           ? triggerRect.top + heightDiff
-          : triggerRect.top - heightDiff) + offsetTop;
+          : triggerRect.top - 10) + offsetTop;
       result.left = triggerRect.right + offsetLeft;
       break;
   }
@@ -153,6 +153,7 @@ function Tooltip(props: PropsWithChildren<TooltipProps>) {
         </div>
       </div>
       <div
+        className={styles.childWrapper}
         ref={triggerRef}
         onMouseOver={handleMouseOver}
         onMouseOut={handleMouseOut}>
