@@ -311,27 +311,29 @@ export default function SelectDatasetAndModelSection({
                     }}>
                     {selectedModelFilename}
                   </div>
-                  <div>
-                    <Tooltip
-                      backgroundColor="#676767"
-                      fontColor="#FFFFFF"
-                      content="Edit Configuration"
-                      position={TooltipPosition.right}
-                      offsetLeft={10}>
-                      <IconButton
-                        iconComponent={EditIcon}
-                        style={{ fontSize: 11, padding: 2 }}
-                        onClick={() => {
-                          model !== undefined
-                            ? router.push({
-                                pathname: `/assets/modelApiConfig/${model.id}`,
-                                query: { from: 'selectModel' },
-                              })
-                            : undefined;
-                        }}
-                      />
-                    </Tooltip>
-                  </div>
+                  {model && model.type === 'API' ? (
+                    <div>
+                      <Tooltip
+                        backgroundColor="#676767"
+                        fontColor="#FFFFFF"
+                        content="Edit Configuration"
+                        position={TooltipPosition.right}
+                        offsetLeft={10}>
+                        <IconButton
+                          iconComponent={EditIcon}
+                          style={{ fontSize: 11, padding: 2 }}
+                          onClick={() => {
+                            model !== undefined
+                              ? router.push({
+                                  pathname: `/assets/modelApiConfig/${model.id}`,
+                                  query: { from: 'selectModel' },
+                                })
+                              : undefined;
+                          }}
+                        />
+                      </Tooltip>
+                    </div>
+                  ) : null}
                 </div>
                 <CloseIcon
                   style={{ marginLeft: '10px', cursor: 'pointer' }}

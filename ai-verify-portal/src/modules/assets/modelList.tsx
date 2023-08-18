@@ -645,106 +645,111 @@ export default function ModelListComponent({
               m: 1,
               display: 'flex',
               flexDirection: 'column',
+              justifyContent: 'space-between',
               flex: 1,
               border: '1px solid #C8C8C8',
               borderRadius: 3,
             }}>
-            {focus &&
-              focus.status == FocusStatus.VALID &&
-              focus.type !== 'API' && (
-                <Button
-                  color="secondary"
-                  sx={{ mr: 1, alignSelf: 'flex-end' }}
-                  onClick={showDialog}>
-                  Edit
-                </Button>
-              )}
-            <Typography sx={{ mb: 2, fontWeight: 'bold', size: '14px' }}>
-              {focus.name}
-            </Typography>
-            <Typography sx={{ fontSize: 14 }}>
-              {focus.type !== 'API' ? (
-                <>
-                  <b>Status:</b> {focus.status} <br />
-                </>
-              ) : null}
-              <b>Type:</b> {focus.type} <br />
-              {focus.type == 'API' && focus.modelAPI ? (
-                <>
-                  <b>Url:</b> {focus.modelAPI.url} <br />
-                </>
-              ) : null}
-              {focus.type == 'API' && focus.modelAPI ? (
-                <>
-                  <b>Http Method</b> {focus.modelAPI.method} <br />
-                </>
-              ) : null}
-              {focus.type !== 'API' ? (
-                <>
-                  <b>Date Uploaded:</b> {new Date(focus.ctime).toLocaleString()}{' '}
-                  <br />
-                </>
-              ) : (
-                <>
-                  <b>Date Created:</b>{' '}
-                  {new Date(focus.createdAt).toLocaleString()} <br />
-                </>
-              )}
-              {focus.type !== 'API' ? (
-                <>
-                  <b>Size:</b> {focus.size ? focus.size : '-'} <br />
-                </>
-              ) : null}
-            </Typography>
-
-            {focus.status == FocusStatus.VALID ? (
+            <div>
+              <Typography sx={{ mb: 2, fontWeight: 'bold', size: '14px' }}>
+                {focus.name}
+              </Typography>
               <Typography sx={{ fontSize: 14 }}>
                 {focus.type !== 'API' ? (
                   <>
-                    <b>Serializer:</b> {focus.serializer} <br />
-                    <b>Model Format:</b> {focus.modelFormat} <br />
+                    <b>Status:</b> {focus.status} <br />
                   </>
                 ) : null}
-                <b>Description:</b> {focus.description}
-                <br />
-                <b>Model Type:</b> {focus.modelType} <br />
+                <b>Type:</b> {focus.type} <br />
+                {focus.type == 'API' && focus.modelAPI ? (
+                  <>
+                    <b>Url:</b> {focus.modelAPI.url} <br />
+                  </>
+                ) : null}
+                {focus.type == 'API' && focus.modelAPI ? (
+                  <>
+                    <b>Http Method</b> {focus.modelAPI.method} <br />
+                  </>
+                ) : null}
+                {focus.type !== 'API' ? (
+                  <>
+                    <b>Date Uploaded:</b>{' '}
+                    {new Date(focus.ctime).toLocaleString()} <br />
+                  </>
+                ) : (
+                  <>
+                    <b>Date Created:</b>{' '}
+                    {new Date(focus.createdAt).toLocaleString()} <br />
+                  </>
+                )}
+                {focus.type !== 'API' ? (
+                  <>
+                    <b>Size:</b> {focus.size ? focus.size : '-'} <br />
+                  </>
+                ) : null}
               </Typography>
-            ) : (
-              ''
-            )}
-            {focus && focus.type === 'API' && focus.id ? (
-              <button
-                style={{ width: 240, marginTop: 20 }}
-                className="aivBase-button aivBase-button--secondary aivBase-button--medum"
-                onClick={() => {
-                  router.push(`/assets/modelApiConfig/${focus.id}`);
-                }}>
-                View / Edit Configuration
-              </button>
-            ) : null}
 
-            {focus.errorMessages && (
-              <Box
-                sx={{
-                  width: '90%',
-                  backgroundColor: '#FADFDF',
-                  borderRadius: 3,
-                  p: 3,
-                  m: 2,
-                  overflowWrap: 'anywhere',
-                }}>
+              {focus.status == FocusStatus.VALID ? (
                 <Typography sx={{ fontSize: 14 }}>
-                  {focus.errorMessages}
+                  {focus.type !== 'API' ? (
+                    <>
+                      <b>Serializer:</b> {focus.serializer} <br />
+                      <b>Model Format:</b> {focus.modelFormat} <br />
+                    </>
+                  ) : null}
+                  <b>Description:</b> {focus.description}
+                  <br />
+                  <b>Model Type:</b> {focus.modelType} <br />
                 </Typography>
-              </Box>
-            )}
+              ) : (
+                ''
+              )}
+              {focus && focus.type === 'API' && focus.id ? (
+                <button
+                  style={{ width: 210, marginTop: 20 }}
+                  className="aivBase-button aivBase-button--outlined aivBase-button--small"
+                  onClick={() => {
+                    router.push(`/assets/modelApiConfig/${focus.id}`);
+                  }}>
+                  View / Edit Configuration
+                </button>
+              ) : null}
+              {focus &&
+              focus.status == FocusStatus.VALID &&
+              focus.type !== 'API' ? (
+                <button
+                  style={{ width: 210, marginTop: 20 }}
+                  className="aivBase-button aivBase-button--outlined aivBase-button--small"
+                  onClick={showDialog}>
+                  Edit
+                </button>
+              ) : null}
+
+              {focus.errorMessages && (
+                <Box
+                  sx={{
+                    width: '90%',
+                    backgroundColor: '#FADFDF',
+                    borderRadius: 3,
+                    p: 3,
+                    m: 2,
+                    overflowWrap: 'anywhere',
+                  }}>
+                  <Typography sx={{ fontSize: 14 }}>
+                    {focus.errorMessages}
+                  </Typography>
+                </Box>
+              )}
+            </div>
             {showSelectModelBtn && focus.status == FocusStatus.VALID && (
-              <Button
-                onClick={handleModelBtnClick}
-                variant="contained"
-                style={{ margin: 10 }}>
-                Use Model
-              </Button>
+              <div>
+                <button
+                  style={{ width: '100%', marginTop: 20 }}
+                  className="aivBase-button aivBase-button--primary aivBase-button--medium"
+                  onClick={handleModelBtnClick}>
+                  Use Model
+                </button>
+              </div>
             )}
           </Box>
         )}
