@@ -47,7 +47,7 @@ describe('New Model API Config', () => {
     });
   });
 
-  describe('GraphQL Model API Config Payloads (Happy Flows)', () => {
+  describe('GraphQL Model API Config Payloads (Happy Flow)', () => {
     it(
       'should create the correct payload with No Auth (tc000)',
       async () => {
@@ -2254,5 +2254,115 @@ describe('New Model API Config', () => {
       },
       testTimeout
     );
+  });
+
+  describe('GraphQL Model API Config Payloads (Form Errors)', () => {
+    it('should show field level error messages (POST method)', async () => {
+      const { container } = render(
+        <MockProviders>
+          <div id="aivModal"></div>
+          <NewModelApiConfigModule />
+        </MockProviders>
+      );
+      const user = userEvent.setup();
+      await screen.findByText(/^Create API Configuration$/i);
+      const saveBtn = await screen.findByText(/^SAVE$/i);
+      user.click(saveBtn);
+      await screen.findByText(/^Field-level errors$/i);
+      await screen.findByText(/^Config Name$/i);
+      expect((await screen.findAllByText(/^Required$/i)).length).toBe(3);
+      user.click(await screen.findByText(/^Response Properties$/i));
+      await screen.findByText(/^Status Code$/i);
+      const statusCodeInput = container.querySelector(
+        'input[name="modelAPI.response.statusCode"]'
+      ) as HTMLInputElement;
+      await user.clear(statusCodeInput);
+      expect((await screen.findAllByText(/^Required$/i)).length).toBe(4);
+
+      user.click(await screen.findByText(/^Authentication Settings$/i));
+      await screen.findByText(/^Authentication Type$/i);
+      expect((await screen.findAllByText(/^Required$/i)).length).toBe(3);
+
+      const authTypeInputContainer = container.querySelector(
+        'label[for="modelAPI.authType"]'
+      ) as HTMLElement;
+      user.click(
+        authTypeInputContainer.querySelector(
+          '.aiv__dropdown-indicator'
+        ) as HTMLElement
+      );
+      await waitFor(async () => {
+        const options = Array.from(
+          authTypeInputContainer.querySelectorAll('.aiv__option')
+        );
+        expect(options.length).not.toBe(0);
+        const targetOption = options.find(
+          (opt) => opt.textContent === 'Bearer Token'
+        );
+        user.click(targetOption as HTMLElement);
+      });
+      await screen.findByText(/^Token$/i);
+      await user.clear(
+        container.querySelector(
+          'input[name="modelAPI.authTypeConfig.token"]'
+        ) as HTMLInputElement
+      );
+      expect((await screen.findAllByText(/^Required$/i)).length).toBe(4);
+      user.click(await screen.findByText(/^Connection Settings$/i));
+      await screen.findByText(/^SSL Verify$/i);
+      expect((await screen.findAllByText(/^Required$/i)).length).toBe(3);
+
+      await user.clear(
+        container.querySelector(
+          'input[name="modelAPI.requestConfig.connectionTimeout"]'
+        ) as HTMLInputElement
+      );
+      await user.clear(
+        container.querySelector(
+          'input[name="modelAPI.requestConfig.connectionRetries"]'
+        ) as HTMLInputElement
+      );
+      await user.clear(
+        container.querySelector(
+          'input[name="modelAPI.requestConfig.maxConnections"]'
+        ) as HTMLInputElement
+      );
+      await user.clear(
+        container.querySelector(
+          'input[name="modelAPI.requestConfig.rateLimit"]'
+        ) as HTMLInputElement
+      );
+      await waitFor(async () => {
+        expect((await screen.findAllByText(/^Required$/i)).length).toBe(6);
+      });
+
+      await user.type(
+        container.querySelector(
+          'textArea[name="description"]'
+        ) as HTMLTextAreaElement,
+        'test'
+      );
+      await screen.findByText(/^Min 20 characters$/i);
+
+      const batchStrategyContainer = container.querySelector(
+        'label[for="modelAPI.requestConfig.batchStrategy"]'
+      ) as HTMLElement;
+      user.click(
+        batchStrategyContainer.querySelector(
+          '.aiv__dropdown-indicator'
+        ) as HTMLElement
+      );
+      await waitFor(async () => {
+        const options = Array.from(
+          batchStrategyContainer.querySelectorAll('.aiv__option')
+        );
+        expect(options.length).not.toBe(0);
+        const targetOption = options.find(
+          (opt) => opt.textContent === 'multipart'
+        );
+        user.click(targetOption as HTMLElement);
+      });
+      // expect(container).toMatchSnapshot('temp');
+    });
   });
 });

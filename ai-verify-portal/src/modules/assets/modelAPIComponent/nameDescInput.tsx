@@ -5,10 +5,11 @@ import { ModelApiFormModel } from './types';
 
 type ApiConfigNameDescFormProps = {
   onOKClick: () => void;
+  disabledOkBtn?: boolean;
 };
 
 function ApiConfigNameDescForm(props: ApiConfigNameDescFormProps) {
-  const { onOKClick } = props;
+  const { onOKClick, disabledOkBtn = false } = props;
 
   const { values, errors, touched, handleChange } =
     useFormikContext<ModelApiFormModel>();
@@ -40,6 +41,7 @@ function ApiConfigNameDescForm(props: ApiConfigNameDescFormProps) {
       />
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <button
+          disabled={disabledOkBtn}
           style={{ width: '49%', marginRight: 0 }}
           className="aivBase-button aivBase-button--outlined aivBase-button--small"
           onClick={onOKClick}>

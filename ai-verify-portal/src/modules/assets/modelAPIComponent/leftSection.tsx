@@ -13,6 +13,7 @@ const defaultConfigDescDisplay = 'Description';
 
 function ModelApiLeftSection({ disabled = false }: { disabled: boolean }) {
   const [isEdit, setIsEdit] = useState(false);
+  const [nameDescHasErrors, setNameDescHasErrors] = useState(false);
   const { values, errors, touched, handleChange } =
     useFormikContext<ModelApiFormModel>();
 
@@ -22,6 +23,9 @@ function ModelApiLeftSection({ disabled = false }: { disabled: boolean }) {
       Boolean(errors.description && touched.description)
     ) {
       setIsEdit(true);
+      setNameDescHasErrors(true);
+    } else {
+      setNameDescHasErrors(false);
     }
   }, [errors.name, errors.description]);
 
@@ -50,7 +54,10 @@ function ModelApiLeftSection({ disabled = false }: { disabled: boolean }) {
           </div>
         </div>
       ) : (
-        <ApiConfigNameDescForm onOKClick={() => setIsEdit(false)} />
+        <ApiConfigNameDescForm
+          onOKClick={() => setIsEdit(false)}
+          disabledOkBtn={nameDescHasErrors}
+        />
       )}
       <div style={{ marginTop: 25 }}>
         <SelectInput
