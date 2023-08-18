@@ -38,16 +38,13 @@ import type {} from '@mui/x-data-grid/themeAugmentation';
 import FormControl from '@mui/material/FormControl';
 import MyTextField from 'src/components/myTextField';
 import MySelect from 'src/components/mySelect';
-import {
-  AlertBox,
-  AlertBoxFixedPositions,
-  AlertBoxSize,
-} from 'src/components/alertBox';
+import { AlertBoxSize } from 'src/components/alertBox';
 import { AlertType, StandardAlert } from 'src/components/standardAlerts';
 import ModelFile, { ModelType } from 'src/types/model.interface';
 import { useUpdateModel, useDeleteModelFile } from 'src/lib/assetService';
 import { useRouter } from 'next/router';
 import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
+import ConfirmationDialog from 'src/components/confirmationDialog';
 
 type Props = {
   showSelectModelBtn?: boolean;
@@ -235,14 +232,10 @@ export default function ModelListComponent({
     const newSelected = [...selectedIds];
     const messages: string[] = [];
     for (const id of selectedIds) {
-      // console.log("Deleting modelFile: ", id)
       const idx = data?.modelFiles.findIndex((e: ModelFile) => e.id === id);
-
       if (idx < 0) return;
-
       const ar = [...data?.modelFiles];
       ar.splice(idx, 1);
-
       const response = await deleteModelFileFn(id);
       if (response != id) {
         setAlertTitle('File deletion error');
@@ -557,6 +550,14 @@ export default function ModelListComponent({
     );
   }
 
+  function handleDeleteConfirmation(confirmDelete: boolean) {
+    if (confirmDelete) {
+      onDeleteModelFile(selectionModel);
+    } else {
+      setShowDeleteConfirmationDialog(false);
+    }
+  }
+
   return (
     <React.Fragment>
       {alertTitle && (
@@ -575,48 +576,13 @@ export default function ModelListComponent({
         </Container>
       )}
       {showDeleteConfirmationDialog ? (
-        <AlertBox
-          size={AlertBoxSize.MEDIUM}
-          fixedPosition={AlertBoxFixedPositions.CENTER}
-          onCloseIconClick={() => {
-            setShowDeleteConfirmationDialog(false);
-          }}>
-          <AlertBox.Header
-            heading="Confirm File Deletion"
-            isDragHandle></AlertBox.Header>
-          <AlertBox.Body hasFooter>
-            <div>
-              Are you sure you want to delete these file(s) from AI Verify?
-            </div>
-          </AlertBox.Body>
-          <AlertBox.Footer>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                width: '600px',
-              }}>
-              <Button
-                variant="outlined"
-                component="label"
-                sx={{ m: 2 }}
-                onClick={() => {
-                  setShowDeleteConfirmationDialog(false);
-                }}>
-                Cancel
-              </Button>
-              <Button
-                variant="contained"
-                component="label"
-                sx={{ m: 2 }}
-                onClick={() => {
-                  onDeleteModelFile(selectionModel);
-                }}>
-                Delete Files
-              </Button>
-            </div>
-          </AlertBox.Footer>
-        </AlertBox>
+        <ConfirmationDialog
+          renderInPortal
+          size={AlertBoxSize.SMALL}
+          title="Confirm Model Deletion"
+          message="Are you sure you want to delete these model(s) from AI Verify?"
+          onClose={handleDeleteConfirmation}
+        />
       ) : null}
       <Box
         justifyContent="center"
