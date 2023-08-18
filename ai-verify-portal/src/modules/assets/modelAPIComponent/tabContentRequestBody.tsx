@@ -186,13 +186,15 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
                   ))
                 )}
                 {!disabled ? (
-                  <RequestBodyParameterInput
-                    showAddBtn
-                    value={newParam}
-                    onChange={handleNewParamChange}
-                    onAddClick={handleAddClick(arrayHelpers)}
-                    fieldError={errorMsg}
-                  />
+                  <div style={{ marginTop: 8 }}>
+                    <RequestBodyParameterInput
+                      showAddBtn
+                      value={newParam}
+                      onChange={handleNewParamChange}
+                      onAddClick={handleAddClick(arrayHelpers)}
+                      fieldError={errorMsg}
+                    />
+                  </div>
                 ) : null}
               </div>
             )}

@@ -651,7 +651,13 @@ export default function ModelListComponent({
               borderRadius: 3,
             }}>
             <div>
-              <Typography sx={{ mb: 2, fontWeight: 'bold', size: '14px' }}>
+              <Typography
+                sx={{
+                  mb: 2,
+                  fontWeight: 'bold',
+                  size: '14px',
+                  wordWrap: 'break-word',
+                }}>
                 {focus.name}
               </Typography>
               <Typography sx={{ fontSize: 14 }}>

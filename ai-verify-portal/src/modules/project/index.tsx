@@ -33,6 +33,7 @@ import {
 type Props = {
   data: Project;
   pluginManager: PluginManagerType;
+  designStep?: number;
 };
 
 export enum ProjectStep {
@@ -48,7 +49,11 @@ export const BlankTemplateId = 'blank';
 /**
  * Main project module component
  */
-export default function ProjectModule({ data, pluginManager }: Props) {
+export default function ProjectModule({
+  data,
+  pluginManager,
+  designStep,
+}: Props) {
   const router = useRouter();
   const projectStore = useProjectStore(data, pluginManager);
   const [step, setStep] = useState(
@@ -191,6 +196,10 @@ export default function ProjectModule({ data, pluginManager }: Props) {
   };
 
   useEffect(() => {
+    if (designStep != undefined) {
+      setStep(designStep);
+      return;
+    }
     if (!projectStore.isNew) setStep(ProjectStep.DesignReport);
   }, []);
 

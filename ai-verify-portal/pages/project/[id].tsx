@@ -8,13 +8,23 @@ import { getProject } from 'server/lib/projectServiceBackend';
 import Dataset from 'src/types/dataset.interface';
 import ModelFile from 'src/types/model.interface';
 
-export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+type ModuleProps = {
+  pluginManager: PluginManagerType;
+  data: Project;
+  step?: number;
+};
+
+export const getServerSideProps: GetServerSideProps = async ({
+  params,
+  query,
+}) => {
   if (!params || !params.id) {
     console.log('url parameter required - id');
     return { notFound: true };
   }
 
   const id = params.id as string;
+  const step = query.step as string;
   const data = await getProject(id);
   const pluginManager = await getPlugins();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -49,19 +59,38 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
   data.modelAndDatasets = modelAndDatasets;
 
+  const moduleProps: ModuleProps = {
+    pluginManager,
+    data,
+  };
+
+  if (step) {
+    const castStep = parseInt(step);
+    if (typeof castStep === 'number' && !isNaN(castStep))
+      moduleProps.step = castStep;
+  }
+
   return {
-    props: {
-      pluginManager,
-      data,
-    },
+    props: moduleProps,
   };
 };
 
 type Props = {
   data: Project;
   pluginManager: PluginManagerType;
+  step?: number;
 };
 
-export default function ProjectUpdatePage({ data, pluginManager }: Props) {
-  return <ProjectModule data={data} pluginManager={pluginManager} />;
+export default function ProjectUpdatePage({
+  data,
+  pluginManager,
+  step,
+}: Props) {
+  return (
+    <ProjectModule
+      data={data}
+      pluginManager={pluginManager}
+      designStep={step}
+    />
+  );
 }

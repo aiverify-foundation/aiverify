@@ -35,6 +35,7 @@ export const getServerSideProps: GetServerSideProps<{
 
   const id = params.id as string;
   const from = query.from as string;
+  const projectId = query.projectId as string;
   const result = await getModelAPIConfig(id);
   if (!result) {
     return { notFound: true };
@@ -249,6 +250,10 @@ export const getServerSideProps: GetServerSideProps<{
     moduleProps.entryPoint = from;
   }
 
+  if (projectId) {
+    moduleProps.currentProjectId = projectId;
+  }
+
   return {
     props: moduleProps,
   };
@@ -259,6 +264,7 @@ export default function ModelAPIConfigPage({
   id,
   formValues,
   entryPoint,
+  currentProjectId,
 }: NewModelApiConfigModuleProps) {
   return (
     <NewModelApiConfigModule
@@ -266,6 +272,7 @@ export default function ModelAPIConfigPage({
       formValues={formValues}
       disabled={entryPoint === 'selectModel' ? false : disabled}
       entryPoint={entryPoint}
+      currentProjectId={currentProjectId}
     />
   );
 }

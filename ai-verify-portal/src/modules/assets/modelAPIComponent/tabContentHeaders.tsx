@@ -139,13 +139,15 @@ function TabContentAdditionalHeaders({
               ))
             )}
             {!disabled ? (
-              <AdditionalHeaderInput
-                showAddBtn
-                value={newHeader}
-                onChange={handleNewParamChange}
-                onAddClick={handleAddNewHeader(arrayHelpers)}
-                headerError={headerErrorMsg}
-              />
+              <div style={{ marginTop: 8 }}>
+                <AdditionalHeaderInput
+                  showAddBtn
+                  value={newHeader}
+                  onChange={handleNewParamChange}
+                  onAddClick={handleAddNewHeader(arrayHelpers)}
+                  headerError={headerErrorMsg}
+                />
+              </div>
             ) : null}
           </>
         )}

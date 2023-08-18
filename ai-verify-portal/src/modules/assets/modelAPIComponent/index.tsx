@@ -62,10 +62,17 @@ export type NewModelApiConfigModuleProps = {
   disabled?: boolean;
   formValues?: ModelApiFormModel;
   entryPoint?: string;
+  currentProjectId?: string;
 };
 
 function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
-  const { id, formValues, disabled = false, entryPoint } = props;
+  const {
+    id,
+    formValues,
+    disabled = false,
+    entryPoint,
+    currentProjectId,
+  } = props;
   const [activeTab, setActiveTab] = useState<Tab>(() => {
     if (formValues) {
       return formValues.modelAPI.method === RequestMethod.POST
@@ -188,9 +195,18 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
   }
 
   function handleBackClick() {
-    entryPoint === 'selectModel'
-      ? router.back()
-      : router.push('/assets/models');
+    if (entryPoint === 'selectModel') {
+      if (!currentProjectId) {
+        router.back();
+      } else {
+        router.push({
+          pathname: `/project/${currentProjectId}`,
+          query: { step: '4' },
+        });
+      }
+    } else {
+      router.push('/assets/models');
+    }
   }
 
   function handleCloseAlertClick() {

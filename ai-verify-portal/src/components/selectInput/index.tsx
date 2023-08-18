@@ -19,6 +19,7 @@ type SelectInputProps<valueType = string> = {
   labelSibling?: React.ReactElement;
   options: SelectOption<valueType>[];
   style?: React.CSSProperties;
+  inputBgColor?: string;
   selectedOptionPredicateFn?: (option: SelectOption<valueType>) => boolean;
   onChange?: (value: valueType) => void;
   // change handler to support formik's `handleChange` method. If this becomes unstable, use onChange prop with formik's `setFieldValue` method at the consumer
@@ -46,6 +47,7 @@ function SelectInput<T = string>(props: SelectInputProps<T>) {
     labelSibling,
     options,
     style,
+    inputBgColor,
     selectedOptionPredicateFn,
     onSyntheticChange,
     onChange,
@@ -106,7 +108,7 @@ function SelectInput<T = string>(props: SelectInputProps<T>) {
               },
               backgroundColor: state.isDisabled
                 ? CONTROL_DISABLED_COLOR
-                : CONTROL_ENABLED_COLOR,
+                : inputBgColor || CONTROL_ENABLED_COLOR,
             }),
             valueContainer: (baseStyles) => ({
               ...baseStyles,

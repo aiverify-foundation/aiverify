@@ -302,7 +302,7 @@ const TabContentURLParams = forwardRef<
           fontColor="#FFFFFF"
           content={
             <div>
-              <div style={{ marginBottom: 5 }}>
+              <div style={{ marginBottom: 8 }}>
                 Example of URL with 2 parameters defined - &quot;age&quot; &
                 &quot;gender&quot;
               </div>
@@ -311,8 +311,7 @@ const TabContentURLParams = forwardRef<
             </div>
           }
           position={TooltipPosition.right}
-          offsetLeft={8}
-          offsetTop={42}>
+          offsetLeft={8}>
           <div
             style={{
               display: 'flex',
@@ -501,14 +500,16 @@ const TabContentURLParams = forwardRef<
                       ))}
                       {provided.placeholder}
                       {!disabled ? (
-                        <UrlParamCaptureInput
-                          disabled={disabled}
-                          showAddBtn
-                          value={newParam}
-                          onChange={handleNewParamChange}
-                          onAddClick={handleAddClick(arrayHelpers)}
-                          paramError={errorMsg}
-                        />
+                        <div style={{ marginTop: 5 }}>
+                          <UrlParamCaptureInput
+                            disabled={disabled}
+                            showAddBtn
+                            value={newParam}
+                            onChange={handleNewParamChange}
+                            onAddClick={handleAddClick(arrayHelpers)}
+                            paramError={errorMsg}
+                          />
+                        </div>
                       ) : null}
                     </div>
                   );

@@ -311,6 +311,8 @@ export default function SelectDatasetAndModelSection({
                     }}>
                     {selectedModelFilename}
                   </div>
+                </div>
+                <div style={{ display: 'flex' }}>
                   {model && model.type === 'API' ? (
                     <div>
                       <Tooltip
@@ -326,7 +328,10 @@ export default function SelectDatasetAndModelSection({
                             model !== undefined
                               ? router.push({
                                   pathname: `/assets/modelApiConfig/${model.id}`,
-                                  query: { from: 'selectModel' },
+                                  query: {
+                                    from: 'selectModel',
+                                    projectId: projectStore.id,
+                                  },
                                 })
                               : undefined;
                           }}
@@ -334,11 +339,11 @@ export default function SelectDatasetAndModelSection({
                       </Tooltip>
                     </div>
                   ) : null}
+                  <CloseIcon
+                    style={{ marginLeft: '10px', cursor: 'pointer' }}
+                    onClick={() => removeFileHandler(FileSelectMode.MODEL)}
+                  />
                 </div>
-                <CloseIcon
-                  style={{ marginLeft: '10px', cursor: 'pointer' }}
-                  onClick={() => removeFileHandler(FileSelectMode.MODEL)}
-                />
               </div>
               {model && model.type === 'API' ? (
                 <div>
