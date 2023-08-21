@@ -17,11 +17,12 @@ on:
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [ "main" ]
+  # trigger every Friday at 10:05pm (14:05 UTC)
   schedule:
-    - cron: '21 10 * * 5'
-
+    - cron: "5 14 * * 5"
+    
 jobs:
-  analyze:
+  analyze:y
     name: Analyze
     # Runner size impacts CodeQL analysis time. To learn more, please see:
     #   - https://gh.io/recommended-hardware-resources-for-running-codeql
