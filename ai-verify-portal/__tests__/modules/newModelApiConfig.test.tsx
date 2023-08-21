@@ -2336,14 +2336,6 @@ describe('New Model API Config', () => {
         expect((await screen.findAllByText(/^Required$/i)).length).toBe(6);
       });
 
-      await user.type(
-        container.querySelector(
-          'textArea[name="description"]'
-        ) as HTMLTextAreaElement,
-        'test'
-      );
-      await screen.findByText(/^Min 20 characters$/i);
-
       const batchStrategyContainer = container.querySelector(
         'label[for="modelAPI.requestConfig.batchStrategy"]'
       ) as HTMLElement;
@@ -2362,7 +2354,24 @@ describe('New Model API Config', () => {
         );
         user.click(targetOption as HTMLElement);
       });
-      // expect(container).toMatchSnapshot('temp');
+
+      const batchLimitInput = container.querySelector(
+        'input[name="modelAPI.requestConfig.batchLimit"]'
+      ) as HTMLInputElement;
+      await waitFor(async () =>
+        expect(batchLimitInput.getAttribute('disabled')).toBeNull()
+      );
+      await user.clear(batchLimitInput);
+      expect((await screen.findAllByText(/^Required$/i)).length).toBe(7);
+
+      await user.type(
+        container.querySelector(
+          'textArea[name="description"]'
+        ) as HTMLTextAreaElement,
+        'test'
+      );
+      await screen.findByText(/^Min 20 characters$/i);
+      expect((await screen.findAllByText(/^Required$/i)).length).toBe(6);
     });
   });
 });
