@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
+  transpilePackages: ['nanoid'],
   reactStrictMode: true,
   async redirects() {
     return [
