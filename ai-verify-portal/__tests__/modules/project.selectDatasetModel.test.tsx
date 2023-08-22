@@ -6,8 +6,19 @@ import ProjectCreatePage from 'pages/project/create';
 import { getPlugins } from 'server/pluginManager';
 import { MockProviders } from '__mocks__/mockProviders';
 import PluginManagerType from 'src/types/pluginManager.interface';
-import { mockGqlData, mockGqlDataMinimal } from '__mocks__/mockGqlResponse';
+import { mockGqlDataMinimal } from '__mocks__/mockGqlResponse';
 import { fmtInterpretationMAEBundleResponse } from '__mocks__/mockPlugins';
+// import { DataGridProps } from '@mui/x-data-grid';
+
+// jest.mock('@mui/x-data-grid', () => {
+//   const { DataGrid } = jest.requireActual('@mui/x-data-grid');
+//   return {
+//     ...jest.requireActual('@mui/x-data-grid'),
+//     DataGrid: (props: DataGridProps) => {
+//       return <DataGrid {...props} disableVirtualization />; //must disable table virtualization in jest
+//     },
+//   };
+// });
 
 const GRID_LAYOUT_CLASSNAME = '.react-grid-layout';
 const GRID_ITEM_CLASSNAME = '.react-grid-item';
@@ -30,7 +41,7 @@ function ProjectCreatePageWrapper() {
 
 describe('Project Flow - Select Dataset And Model', () => {
   beforeAll(() => {
-    silentConsoleLogs();
+    // silentConsoleLogs();
     mockDomMatrix();
   });
 
@@ -202,6 +213,13 @@ describe('Project Flow - Select Dataset And Model', () => {
       const chooseDatasetBtns = await screen.findAllByText(/^Choose Dataset$/i);
       await user.click(chooseDatasetBtns[0]);
       await screen.findByText(/^Choose the Dataset$/i);
+      // await screen.findByText(/^pickle_pandas_tabular_compas_testing$/i);
+      await waitFor(async () => {
+        expect(container.querySelectorAll('div[role="row"]').length).toBe(3);
+      });
+      expect(container.querySelector('.layoutContentArea')).toMatchSnapshot(
+        'Temp'
+      ); // snapshot without header, because header has dynamic autosave time display
     });
   });
 });
