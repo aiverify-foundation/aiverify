@@ -77,8 +77,8 @@ export const mockGqlDataMinimal = [
           {
             __typename: 'Dataset',
             id: '647d8bf214ae095e2e890add',
-            name: 'pickle_pandas_tabular_compas_testing',
-            filename: 'pickle_pandas_tabular_compas_testing',
+            name: 'pickle_pandas_tabular_compas_testing.sav',
+            filename: 'pickle_pandas_tabular_compas_testing.sav',
             filePath:
               '/home/aiverify/uploads/data/pickle_pandas_tabular_compas_testing.sav',
             ctime: '2023-06-05T07:17:06.360Z',

@@ -268,7 +268,7 @@ exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Sc
 </div>
 `;
 
-exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Screen should select test Dataset: Temp 1`] = `
+exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Screen should select test Dataset: Datasets/Model-Selection-Filepicker 1`] = `
 <div
   class="layoutContentArea"
 >
@@ -302,7 +302,7 @@ exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Sc
           <div
             aria-colcount="5"
             aria-multiselectable="false"
-            aria-rowcount="1"
+            aria-rowcount="3"
             class="MuiDataGrid-root MuiDataGrid-root--densityStandard css-1fqyl8-MuiDataGrid-root"
             role="grid"
           >
@@ -332,7 +332,7 @@ exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Sc
                       <input
                         aria-invalid="false"
                         class="MuiInputBase-input MuiInput-input MuiInputBase-inputTypeSearch MuiInputBase-inputAdornedStart MuiInputBase-inputAdornedEnd css-c63i49-MuiInputBase-input-MuiInput-input"
-                        id=":r4:"
+                        id=":rg:"
                         placeholder="Search…"
                         type="search"
                         value=""
@@ -403,15 +403,6 @@ exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Sc
             <div
               class="MuiDataGrid-main css-204u17-MuiDataGrid-main"
             >
-              <div
-                style="height: -56px; width: 0px; position: absolute; top: 56px;"
-              >
-                <div
-                  class="MuiDataGrid-overlay css-c1gd0l-MuiDataGrid-overlay"
-                >
-                  No dataset files uploaded. Click "NEW DATASET +" to upload new dataset files.
-                </div>
-              </div>
               <div
                 class="MuiDataGrid-columnHeaders css-z8fhq1-MuiDataGrid-columnHeaders"
                 style="min-height: 56px; max-height: 56px; line-height: 56px;"
@@ -749,7 +740,174 @@ exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Sc
                     <div
                       class="MuiDataGrid-virtualScrollerRenderZone css-s1v7zr-MuiDataGrid-virtualScrollerRenderZone"
                       style="transform: translate3d(0px, undefinedpx, 0px);"
-                    />
+                    >
+                      <div
+                        aria-rowindex="2"
+                        aria-selected="false"
+                        class="MuiDataGrid-row"
+                        data-id="64cb013aad81d1d5d0227bf5"
+                        data-rowindex="0"
+                        role="row"
+                        style="max-height: 52px; min-height: 52px;"
+                      >
+                        <div
+                          aria-colindex="1"
+                          aria-colspan="1"
+                          class="MuiDataGrid-cell--withRenderer MuiDataGrid-cell MuiDataGrid-cell--textLeft"
+                          data-colindex="0"
+                          data-field="type"
+                          role="cell"
+                          style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                          tabindex="-1"
+                        >
+                          <svg
+                            aria-hidden="true"
+                            aria-label="File"
+                            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                            data-mui-internal-clone-element="true"
+                            data-testid="InsertDriveFileIcon"
+                            focusable="false"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"
+                            />
+                          </svg>
+                        </div>
+                        <div
+                          aria-colindex="2"
+                          aria-colspan="1"
+                          class="MuiDataGrid-cell--withRenderer MuiDataGrid-cell MuiDataGrid-cell--textLeft"
+                          data-colindex="1"
+                          data-field="name"
+                          role="cell"
+                          style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                          tabindex="-1"
+                        >
+                          <div
+                            class="MuiBox-root css-0"
+                          >
+                            <p
+                              class="MuiTypography-root MuiTypography-body1 css-15for3s-MuiTypography-root"
+                            >
+                              image-test.png
+                            </p>
+                            <p
+                              class="MuiTypography-root MuiTypography-body1 css-1d9ye53-MuiTypography-root"
+                            >
+                              71.09 KB
+                            </p>
+                          </div>
+                        </div>
+                        <div
+                          aria-colindex="3"
+                          aria-colspan="1"
+                          class="MuiDataGrid-cell--withRenderer MuiDataGrid-cell MuiDataGrid-cell--textLeft"
+                          data-colindex="2"
+                          data-field="numRows"
+                          role="cell"
+                          style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                          tabindex="-1"
+                        >
+                          <div
+                            class="MuiChip-root MuiChip-outlined MuiChip-sizeMedium MuiChip-colorError MuiChip-outlinedError css-hn6kvm-MuiChip-root"
+                          >
+                            <svg
+                              aria-hidden="true"
+                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiChip-icon MuiChip-iconMedium MuiChip-iconColorError css-i4bv87-MuiSvgIcon-root"
+                              data-testid="CancelIcon"
+                              focusable="false"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"
+                              />
+                            </svg>
+                            <span
+                              class="MuiChip-label MuiChip-labelMedium css-6od3lo-MuiChip-label"
+                            >
+                              Invalid
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        aria-rowindex="3"
+                        aria-selected="false"
+                        class="MuiDataGrid-row MuiDataGrid-row--lastVisible"
+                        data-id="647d8bf214ae095e2e890add"
+                        data-rowindex="1"
+                        role="row"
+                        style="max-height: 52px; min-height: 52px;"
+                      >
+                        <div
+                          aria-colindex="1"
+                          aria-colspan="1"
+                          class="MuiDataGrid-cell--withRenderer MuiDataGrid-cell MuiDataGrid-cell--textLeft"
+                          data-colindex="0"
+                          data-field="type"
+                          role="cell"
+                          style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                          tabindex="-1"
+                        >
+                          <svg
+                            aria-hidden="true"
+                            aria-label="File"
+                            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                            data-mui-internal-clone-element="true"
+                            data-testid="InsertDriveFileIcon"
+                            focusable="false"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"
+                            />
+                          </svg>
+                        </div>
+                        <div
+                          aria-colindex="2"
+                          aria-colspan="1"
+                          class="MuiDataGrid-cell--withRenderer MuiDataGrid-cell MuiDataGrid-cell--textLeft"
+                          data-colindex="1"
+                          data-field="name"
+                          role="cell"
+                          style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                          tabindex="-1"
+                        >
+                          <div
+                            class="MuiBox-root css-0"
+                          >
+                            <p
+                              class="MuiTypography-root MuiTypography-body1 css-15for3s-MuiTypography-root"
+                            >
+                              pickle_pandas_tabular_compas_testing.sav
+                            </p>
+                            <p
+                              class="MuiTypography-root MuiTypography-body1 css-1d9ye53-MuiTypography-root"
+                            >
+                              68.33 KB
+                            </p>
+                          </div>
+                        </div>
+                        <div
+                          aria-colindex="3"
+                          aria-colspan="1"
+                          class="MuiDataGrid-cell--withRenderer MuiDataGrid-cell MuiDataGrid-cell--textLeft"
+                          data-colindex="2"
+                          data-field="numRows"
+                          role="cell"
+                          style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                          tabindex="-1"
+                        >
+                          <p
+                            class="MuiTypography-root MuiTypography-body1 css-197tr25-MuiTypography-root"
+                          >
+                            1235
+                             Rows
+                          </p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

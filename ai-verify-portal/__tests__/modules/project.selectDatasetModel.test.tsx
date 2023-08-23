@@ -8,17 +8,17 @@ import { MockProviders } from '__mocks__/mockProviders';
 import PluginManagerType from 'src/types/pluginManager.interface';
 import { mockGqlDataMinimal } from '__mocks__/mockGqlResponse';
 import { fmtInterpretationMAEBundleResponse } from '__mocks__/mockPlugins';
-// import { DataGridProps } from '@mui/x-data-grid';
+import { DataGridProps } from '@mui/x-data-grid';
 
-// jest.mock('@mui/x-data-grid', () => {
-//   const { DataGrid } = jest.requireActual('@mui/x-data-grid');
-//   return {
-//     ...jest.requireActual('@mui/x-data-grid'),
-//     DataGrid: (props: DataGridProps) => {
-//       return <DataGrid {...props} disableVirtualization />; //must disable table virtualization in jest
-//     },
-//   };
-// });
+jest.mock('@mui/x-data-grid', () => {
+  const { DataGrid } = jest.requireActual('@mui/x-data-grid');
+  return {
+    ...jest.requireActual('@mui/x-data-grid'),
+    DataGrid: (props: DataGridProps) => {
+      return <DataGrid {...props} autoPageSize={false} />; //autoPageSize={false} to overcome rows not rendered in jsdom
+    },
+  };
+});
 
 const GRID_LAYOUT_CLASSNAME = '.react-grid-layout';
 const GRID_ITEM_CLASSNAME = '.react-grid-item';
@@ -41,7 +41,7 @@ function ProjectCreatePageWrapper() {
 
 describe('Project Flow - Select Dataset And Model', () => {
   beforeAll(() => {
-    // silentConsoleLogs();
+    silentConsoleLogs();
     mockDomMatrix();
   });
 
@@ -209,16 +209,18 @@ describe('Project Flow - Select Dataset And Model', () => {
       await screen.findByText(
         /^Select the Datasets and AI Model to be tested$/i
       );
-
       const chooseDatasetBtns = await screen.findAllByText(/^Choose Dataset$/i);
       await user.click(chooseDatasetBtns[0]);
       await screen.findByText(/^Choose the Dataset$/i);
-      // await screen.findByText(/^pickle_pandas_tabular_compas_testing$/i);
+      await screen.findByText(/^pickle_pandas_tabular_compas_testing\.sav$/i);
       await waitFor(async () => {
-        expect(container.querySelectorAll('div[role="row"]').length).toBe(3);
+        expect(
+          container.querySelectorAll('div[aria-rowcount="3"]').length
+        ).toBe(1);
       });
+      expect(container.querySelectorAll('div[role="row"]').length).toBe(3);
       expect(container.querySelector('.layoutContentArea')).toMatchSnapshot(
-        'Temp'
+        'Datasets/Model-Selection-Filepicker'
       ); // snapshot without header, because header has dynamic autosave time display
     });
   });

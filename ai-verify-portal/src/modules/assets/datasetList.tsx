@@ -71,7 +71,7 @@ enum DatasetFilters {
   FOLDER = 'Folder',
 }
 
-const GET_DATASETS = gql`
+export const GET_DATASETS = gql`
   query Query {
     datasets {
       id
