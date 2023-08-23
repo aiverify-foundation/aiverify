@@ -209,10 +209,17 @@ describe('Project Flow - Select Dataset And Model', () => {
       await screen.findByText(
         /^Select the Datasets and AI Model to be tested$/i
       );
-      const chooseDatasetBtns = await screen.findAllByText(/^Choose Dataset$/i);
-      await user.click(chooseDatasetBtns[0]);
+      const chooseDatasetBtns1 = await screen.findAllByText(
+        /^Choose Dataset$/i
+      );
+      expect(chooseDatasetBtns1.length).toBe(2);
+
+      // Select Dataset (file picker)
+      await user.click(chooseDatasetBtns1[0]);
       await screen.findByText(/^Choose the Dataset$/i);
-      await screen.findByText(/^pickle_pandas_tabular_compas_testing\.sav$/i);
+      const datasetFile = await screen.findByText(
+        /^pickle_pandas_tabular_compas_testing\.sav$/i
+      );
       await waitFor(async () => {
         expect(
           container.querySelectorAll('div[aria-rowcount="3"]').length
@@ -222,6 +229,45 @@ describe('Project Flow - Select Dataset And Model', () => {
       expect(container.querySelector('.layoutContentArea')).toMatchSnapshot(
         'Datasets/Model-Selection-Filepicker'
       ); // snapshot without header, because header has dynamic autosave time display
+
+      await user.click(datasetFile);
+      await user.click(await screen.findByText(/^Use Dataset$/i));
+      await screen.findByText(
+        /^Select the Datasets and AI Model to be tested$/i
+      );
+      await screen.findByText(/^pickle_pandas_tabular_compas_testing\.sav$/i);
+      const chooseDatasetBtns2 = await screen.findAllByText('Choose Dataset');
+      expect(chooseDatasetBtns2.length).toBe(1);
+
+      // Select Ground Truth Dataset (file picker)
+      await user.click(chooseDatasetBtns2[0]);
+      await screen.findByText(/^Choose Ground Truth Dataset$/i);
+      await waitFor(async () => {
+        expect(
+          container.querySelectorAll('div[aria-rowcount="3"]').length
+        ).toBe(1);
+      });
+      expect(container.querySelectorAll('div[role="row"]').length).toBe(3);
+      const groundTruthFile = await screen.findByText(
+        /^pickle_pandas_tabular_compas_testing\.sav$/i
+      );
+      await user.click(groundTruthFile);
+      await user.click(await screen.findByText(/^Use Dataset$/i));
+      await screen.findByText(
+        /^Select the Datasets and AI Model to be tested$/i
+      );
+
+      // Select Ground Truth column
+      await screen.findByText(/^Select Ground Truth:$/i);
+      const groundTruthSelectInput = container.querySelector(
+        '.inputCard #groundTruthSelect'
+      ) as HTMLElement;
+      await user.click(groundTruthSelectInput);
+      await screen.findByText(/^Please Select$/i);
+      const groundTruthSelectIems = container.querySelectorAll(
+        'div[role="presentation"] li[role="option"]'
+      );
+      expect(groundTruthSelectIems.length).toBe(7);
     });
   });
 });
