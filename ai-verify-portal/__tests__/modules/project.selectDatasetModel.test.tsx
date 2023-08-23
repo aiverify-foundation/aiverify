@@ -130,7 +130,7 @@ describe('Project Flow - Select Dataset And Model', () => {
       ); // snapshot without header, because header has dynamic autosave time display
     });
 
-    it('should select test Dataset', async () => {
+    it('should select datasets, ground truth', async () => {
       const fetchSpy = jest.spyOn(global, 'fetch');
       fetchSpy.mockImplementation(
         jest.fn(() =>
@@ -264,10 +264,30 @@ describe('Project Flow - Select Dataset And Model', () => {
       ) as HTMLElement;
       await user.click(groundTruthSelectInput);
       await screen.findByText(/^Please Select$/i);
-      const groundTruthSelectIems = container.querySelectorAll(
-        'div[role="presentation"] li[role="option"]'
+      await screen.findByText(/^age_cat_cat$/i);
+      await screen.findByText(/^sex_code$/i);
+      await screen.findByText(/^race_code$/i);
+      await screen.findByText(/^priors_count$/i);
+      await screen.findByText(/^c_charge_degree_cat$/i);
+      const selected = await screen.findByText(/^two_year_recid$/i);
+      await user.click(selected);
+      await waitFor(async () => {
+        expect(await screen.queryByText(/^Please Select$/i)).toBeNull();
+      });
+      expect(await screen.queryByText(/^two_year_recid$/i)).not.toBeNull();
+
+      // Select Model
+      await user.click(await screen.findByText(/^Choose Model$/i));
+      await screen.findByText(/^Choose the Model$/i);
+      const modelFile = await screen.findByText(
+        /^pickle_scikit_bc_compas.sav$/i
       );
-      expect(groundTruthSelectIems.length).toBe(7);
+      await user.click(modelFile);
+      await user.click(await screen.findByText(/^Use Model$/i));
+      await screen.findByText(
+        /^Select the Datasets and AI Model to be tested$/i
+      );
+      await screen.findByText(/^pickle_scikit_bc_compas.sav$/i);
     });
   });
 });

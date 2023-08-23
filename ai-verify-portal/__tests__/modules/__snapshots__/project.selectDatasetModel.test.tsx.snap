@@ -145,6 +145,7 @@ exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Sc
                 >
                   <button
                     class="aivBase-button aivBase-button--outlined aivBase-button--small"
+                    id="chooseTestDatasetBtn"
                   >
                     Choose Dataset
                   </button>
@@ -172,6 +173,7 @@ exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Sc
                 >
                   <button
                     class="aivBase-button aivBase-button--outlined aivBase-button--small"
+                    id="chooseGroundTruthBtn"
                   >
                     Choose Dataset
                   </button>
@@ -268,7 +270,7 @@ exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Sc
 </div>
 `;
 
-exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Screen should select test Dataset: Datasets/Model-Selection-Filepicker 1`] = `
+exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Screen should select datasets, ground truth: Datasets/Model-Selection-Filepicker 1`] = `
 <div
   class="layoutContentArea"
 >

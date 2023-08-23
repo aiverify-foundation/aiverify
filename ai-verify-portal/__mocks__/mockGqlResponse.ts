@@ -1,6 +1,7 @@
 import { CREATE_PROJECT, UPDATE_PROJECT } from 'src/lib/projectService';
 import { GET_PROJECT_TEMPLATES } from 'src/lib/projectTemplateService';
 import { GET_DATASETS } from 'src/modules/assets/datasetList';
+import { GET_MODELS } from 'src/modules/assets/modelList';
 
 export const mockGqlData = [
   {
@@ -154,6 +155,34 @@ export const mockGqlDataMinimal = [
             errorMessages:
               'The dataset /home/amdlahir/aiverify/uploads/data/aiv-homescreen-v1.png is not supported. Please upload a supported dataset: Unable to get data instance: ',
             type: 'File',
+          },
+        ],
+      },
+    },
+  },
+  {
+    request: {
+      query: GET_MODELS,
+    },
+    result: {
+      data: {
+        modelFiles: [
+          {
+            id: '647d8c0514ae095e2e890af4',
+            name: 'pickle_scikit_bc_compas.sav',
+            filename: 'pickle_scikit_bc_compas.sav',
+            filePath:
+              '/home/amdlahir/aiverify/uploads/model/pickle_scikit_bc_compas.sav',
+            ctime: '2023-06-05T07:17:25.132Z',
+            size: '502.71 KB',
+            status: 'Valid',
+            description: '',
+            serializer: 'pickle',
+            modelFormat: 'sklearn',
+            modelType: 'Classification',
+            errorMessages: '',
+            type: 'File',
+            __typename: 'ModelFile',
           },
         ],
       },
