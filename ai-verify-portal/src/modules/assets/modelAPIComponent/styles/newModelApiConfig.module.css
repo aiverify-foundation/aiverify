@@ -194,3 +194,7 @@
 .delIconContainer {
   display: flex;
 }
+
+.formGuideList li {
+  cursor: pointer;
+}

@@ -39,6 +39,7 @@ import { MinimalHeader } from 'src/modules/home/header';
 import ConfirmationDialog from 'src/components/confirmationDialog';
 import { AlertBoxSize } from 'src/components/alertBox';
 import { PageLevelErrorAlert } from 'src/components/pageLeverlErrorAlert';
+import { FormGuidelines, GuidelineType } from './formGuideLines';
 
 type FormikSetFieldvalueFn = (
   field: string,
@@ -82,6 +83,8 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
     return Tab.REQUEST_BODY;
   });
   const [showPageLevelAlert, setShowPageLevelAlert] = useState(false);
+  const [showFormGuidelines, setShowFormGuidelines] = useState(true);
+  const [guidelineTypes, setGuidelineTypes] = useState<GuidelineType[]>([]);
   const [saveResult, setSaveResult] = useState<ErrorWithMessage | SaveResult>();
   const [saveInProgress, setSaveInProgress] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
@@ -95,6 +98,36 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
     useMutation<GqlDeleteModelAPIConfigResult>(GQL_DELETE_MODELAPI);
   const router = useRouter();
   const initialFormValues = formValues || defaultFormValues;
+  let visibleTabs: Tab[] = [];
+
+  if (guidelineTypes.indexOf(GuidelineType.GET) > -1) {
+    visibleTabs.push(Tab.URL_PARAMS);
+  }
+  if (guidelineTypes.indexOf(GuidelineType.POST) > -1) {
+    visibleTabs.push(Tab.REQUEST_BODY);
+  }
+  if (guidelineTypes.indexOf(GuidelineType.HEADERS) > -1) {
+    visibleTabs.push(Tab.HEADERS);
+  }
+  if (
+    guidelineTypes.indexOf(GuidelineType.BASIC_AUTH) > -1 ||
+    guidelineTypes.indexOf(GuidelineType.AUTH_TOKEN) > -1
+  ) {
+    visibleTabs.push(Tab.AUTHENTICATION);
+  }
+
+  if (!showFormGuidelines || guidelineTypes.length === 0) {
+    visibleTabs = [
+      Tab.URL_PARAMS,
+      Tab.REQUEST_BODY,
+      Tab.RESPONSE,
+      Tab.HEADERS,
+      Tab.AUTHENTICATION,
+      Tab.OTHERS,
+    ];
+  }
+
+  console.log(visibleTabs);
 
   let modalResultTitle = '';
   let modalResultHeading = '';
@@ -255,9 +288,24 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
       );
   }
 
+  function handleGuidelineSelected(setFieldValue: FormikSetFieldvalueFn) {
+    return (types: GuidelineType[]) => (_e: React.MouseEvent) => {
+      if (types.indexOf(GuidelineType.GET)) {
+        setFieldValue('modelAPI.method', RequestMethod.GET);
+      } else {
+        setFieldValue('modelAPI.method', RequestMethod.POST);
+      }
+      setGuidelineTypes([...types]);
+    };
+  }
+
   useEffect(() => {
     setIsDisabled(disabled);
   }, [disabled]);
+
+  useEffect(() => {
+    console.log(guidelineTypes);
+  }, [guidelineTypes]);
 
   return (
     <div>
@@ -305,6 +353,13 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                                 onCloseIconClick={handleCloseAlertClick}
                               />
                             ) : null}
+                            {showFormGuidelines ? (
+                              <FormGuidelines
+                                onSelect={handleGuidelineSelected(
+                                  setFieldValue
+                                )}
+                              />
+                            ) : null}
                           </div>
                           <div className={styles.apiConfigForm}>
                             <div className={styles.leftSection}>
@@ -349,6 +404,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                                   HTTP Request and Connection Settings
                                 </div>
                                 <TabButtonsGroup
+                                  visibleTabs={visibleTabs}
                                   onTabClick={handleTabClick}
                                   activeTab={activeTab}
                                 />
