@@ -681,6 +681,14 @@ class Plugin(IAlgorithm):
                                 )
                                 adversarial_list.append(adversarial_value)
 
+                            adversarial_list_to_predict = self._transform_to_df(
+                                np.array(adversarial_list),
+                                image_shapes,
+                                subfolder_name="adv_pred"
+                                + str(iteration)
+                                + str(count_test),
+                            )
+
                             if self._check_for_xgb_model_type():
                                 if (
                                     self._model_instance._model_algorithm
@@ -690,14 +698,6 @@ class Plugin(IAlgorithm):
                                         adversarial_list, columns=self._data_labels
                                     )
 
-                            else:
-                                adversarial_list_to_predict = self._transform_to_df(
-                                    np.array(adversarial_list),
-                                    image_shapes,
-                                    subfolder_name="adv_pred"
-                                    + str(iteration)
-                                    + str(count_test),
-                                )
                             # Check predictions for adversarial
                             potential_adversarials_prediction = self._model.predict(
                                 adversarial_list_to_predict, self._data_labels
