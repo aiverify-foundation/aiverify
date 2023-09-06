@@ -47,6 +47,7 @@ export interface ProjectStore extends ProjectTemplateStore {
   dispatchModelAndDatasets: Dispatch<DataUpdateActions<ModelAndDatasets>>;
   modelAndDatasets: ModelAndDatasets;
   flushAllUpdates: () => void;
+  flushAllUpdatesAsync(): Promise<any[]>;
 }
 
 /**
@@ -83,11 +84,9 @@ export function useProjectStore(
   );
   const _sendInputBlockDataUpdates = useCallback(
     _.debounce((id: string | undefined, state: any) => {
-      // console.log("Updating page", id, pages);
-      if (!id || id.length == 0) return;
-      updateProjectFn(id, { inputBlockData: state })
+      if (!id || id.length == 0) return Promise.resolve();
+      return updateProjectFn(id, { inputBlockData: state })
         .then(() => {
-          // console.log("updated proj", proj);
           templateStore.setLastSavedTime(moment());
         })
         .catch((err) => {
@@ -97,7 +96,6 @@ export function useProjectStore(
     []
   );
   const dispatchInputBlockData = (action: MapActions<any>) => {
-    // console.log("dispatchPages", id, action)
     _dispatchInputBlockData({
       ...action,
       updateFn: _sendInputBlockDataUpdates,
@@ -124,19 +122,15 @@ export function useProjectStore(
   );
   const _sendTestInformationUpdates = useCallback(
     _.debounce((id: string | undefined, state: GenericMap<TestInformation>) => {
-      if (!id || id.length == 0) return;
-      // console.log("Updating TestInformationData", id, Object.values(state));
+      if (!id || id.length == 0) return Promise.resolve();
       const testInformationArray = Object.values(state).map((info) => {
         return {
           algorithmGID: info.algorithmGID,
-          // isTestArgumentsValid: info.isTestArgumentsValid,
           testArguments: info.testArguments,
         };
       }) as any[];
-      // console.log("testInformationArray", testInformationArray)
-      updateProjectFn(id, { testInformationData: testInformationArray })
+      return updateProjectFn(id, { testInformationData: testInformationArray })
         .then(() => {
-          // console.log("updated proj", proj);
           templateStore.setLastSavedTime(moment());
         })
         .catch((err) => {
@@ -146,7 +140,6 @@ export function useProjectStore(
     []
   );
   const dispatchTestInformationData = (action: MapActions<TestInformation>) => {
-    // console.log("dispatchPages", id, action)
     _dispatchTestInformationData({
       ...action,
       updateFn: _sendTestInformationUpdates,
@@ -160,7 +153,7 @@ export function useProjectStore(
   );
   const _sendModelAndDatasets = useCallback(
     _.debounce((id: string | undefined, state: ModelAndDatasets) => {
-      if (!id || id.length == 0) return;
+      if (!id || id.length == 0) return Promise.resolve();
       const modelAndDatasets = {
         modelId: state.model ? state.model.id : undefined,
         testDatasetId: state.testDataset ? state.testDataset.id : undefined,
@@ -170,7 +163,7 @@ export function useProjectStore(
         groundTruthColumn: state.groundTruthColumn,
         apiConfig: state.apiConfig,
       };
-      updateProjectFn(id, { modelAndDatasets })
+      return updateProjectFn(id, { modelAndDatasets })
         .then(() => {
           templateStore.setLastSavedTime(moment());
         })
@@ -253,15 +246,16 @@ export function useProjectStore(
   const generateReportFn = useGenerateReport();
   const generateReport = (algorithms: string[]) => {
     return new Promise<Partial<Report>>((resolve, reject) => {
-      flushAllUpdates();
-      setReportStatus(ProjectReportStatus.GeneratingReport);
-      generateReportFn(templateStore.id as string, algorithms)
-        .then((result: Partial<Report>) => {
-          resolve(result);
-        })
-        .catch((err) => {
-          reject(err);
-        });
+      flushAllUpdatesAsync().then(() => {
+        setReportStatus(ProjectReportStatus.GeneratingReport);
+        generateReportFn(templateStore.id as string, algorithms)
+          .then((result: Partial<Report>) => {
+            resolve(result);
+          })
+          .catch((err) => {
+            reject(err);
+          });
+      });
     });
   };
 
@@ -281,6 +275,7 @@ export function useProjectStore(
   };
 
   const _allDebounceFns = [
+    _sendModelAndDatasets,
     _sendInputBlockDataUpdates,
     _sendTestInformationUpdates,
   ];
@@ -292,6 +287,13 @@ export function useProjectStore(
       fn.flush();
     }
   };
+
+  async function flushAllUpdatesAsync() {
+    return Promise.all([
+      _allDebounceFns.map((fn) => fn.flush()),
+      templateStore.flushAllUpdatesAsync(),
+    ]);
+  }
 
   return {
     ...templateStore,
@@ -309,5 +311,6 @@ export function useProjectStore(
     generateReport,
     cancelTestRuns,
     flushAllUpdates,
+    flushAllUpdatesAsync,
   };
 }

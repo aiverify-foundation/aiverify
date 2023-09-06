@@ -1,4 +1,5 @@
 import logging
+import pickle
 from pathlib import Path, PurePath
 from typing import Dict, List, Tuple, Union
 
@@ -12,6 +13,7 @@ from test_engine_core.interfaces.iserializer import ISerializer
 from test_engine_core.plugins.enums.data_plugin_type import DataPluginType
 from test_engine_core.plugins.enums.model_type import ModelType
 from test_engine_core.plugins.enums.plugin_type import PluginType
+from test_engine_core.plugins.enums.serializer_plugin_type import SerializerPluginType
 from test_engine_core.plugins.metadata.plugin_metadata import PluginMetadata
 from test_engine_core.utils.json_utils import load_schema_file, validate_json
 from test_engine_core.utils.simple_progress import SimpleProgress
@@ -107,6 +109,7 @@ class Plugin(IAlgorithm):
         self._data_instance = data_instance_and_serializer[0]
         self._model_instance = model_instance_and_serializer[0]
         self._model_type = kwargs.get("model_type")
+        self._serializer_instance = data_instance_and_serializer[1]
 
         if Plugin._requires_ground_truth:
             # Check if ground truth instance is tuple and if the tuple contains 2 items
@@ -327,11 +330,53 @@ class Plugin(IAlgorithm):
         A method to generate the algorithm results with the provided data, model, ground truth information.
         """
 
-        # Retrieve data information
-        self._data = self._data_instance.get_data()
+        try:
+            # check if input data type is image
+            if (
+                self._serializer_instance.get_serializer_plugin_type()
+                is SerializerPluginType.IMAGE
+            ):
+                self._model = self._initial_model_instance
+                self._data = self._initial_data_instance.get_data()
+                self._data_labels = list(
+                    self._initial_data_instance.read_labels().keys()
+                )
+                annotated_labels_path = self._input_arguments.get(
+                    "annotated_labels_path", ""
+                )
+                # reindex the ground truth using the order that has been read by AI Verify
+                annotated_labels = pickle.load(
+                    open(annotated_labels_path, "rb")
+                ).set_index(self._input_arguments.get("file_name_label"))
+                file_names = [Path(i).name for i in self._data["image_directory"]]
+                self._ordered_annotations = annotated_labels.reindex(file_names)
+                self._y_test = self._ordered_annotations[self._ground_truth]
 
-        # Compute score for features.
-        self._compute_score_for_features()
+                # get col(s) of sensitive feature(s)
+                self._data_sensitive_feature_np = self._ordered_annotations[
+                    self._sensitive_feature
+                ].to_numpy()
+
+            else:
+                # for tabular use case
+                self._model = self._model_instance
+                self._data = self._data_instance.get_data()
+                self._data_labels = list(self._data_instance.read_labels().keys())
+                self._y_test = self._ground_truth_instance.get_data()[
+                    self._ground_truth
+                ]
+
+                # get col(s) of sensitive feature(s)
+                self._data_sensitive_feature_np = self._data[
+                    self._sensitive_feature
+                ].to_numpy()
+
+            # Compute score for features
+            self._compute_score_for_features()
+        except Exception:
+            import traceback
+
+            traceback.print_exc()
 
         # Update progress (For 100% completion)
         self._progress_inst.update(1)
@@ -403,21 +448,14 @@ class Plugin(IAlgorithm):
         if self._data_instance.get_data_plugin_type() is DataPluginType.PANDAS:
             # # Declarations
             # get ground truth in numpy
-            y_test = self._ground_truth_instance.get_data()[self._ground_truth]
-
-            data_ground_truth_np = y_test.transpose().to_numpy()
+            data_ground_truth_np = self._y_test.transpose().to_numpy()
 
             # get predicted data
             data_predicted = self._predict_data()
 
-            # get col(s) of sensitive feature(s)
-            data_sensitive_feature_np = self._data_instance.get_data()[
-                self._sensitive_feature
-            ].to_numpy()
-
             # compute scores for all groups
             results = self._compute_between_group(
-                data_ground_truth_np, data_predicted, data_sensitive_feature_np
+                data_ground_truth_np, data_predicted, self._data_sensitive_feature_np
             )
 
             self._results = results
@@ -441,9 +479,9 @@ class Plugin(IAlgorithm):
         """
 
         # Predict data from data instance and return predicted_data
-        predicted_data = self._model_instance.predict(
-            self._data_instance.get_data(),
-            list(self._data_instance.read_labels().keys()),
+        predicted_data = self._model.predict(
+            self._data,
+            self._data_labels,
         )
         return predicted_data
 

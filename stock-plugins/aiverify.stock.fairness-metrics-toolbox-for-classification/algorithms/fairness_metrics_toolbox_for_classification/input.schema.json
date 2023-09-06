@@ -3,7 +3,7 @@
     "description": "A schema for algorithm plugin input arguments",
     "type": "object",
     "required": [
-        "sensitive_feature"
+        "sensitive_feature", "annotated_labels_path","file_name_label"
     ],
     "properties": {
         "sensitive_feature": {
@@ -14,6 +14,17 @@
                 "type": "string"
             },
             "minItems": 1
+        },
+        "annotated_labels_path": {
+            "title": "Annotated labels path",
+            "description": "Annotated labels path",
+            "type": "string",
+            "ui:widget": "selectDataset"
+        },
+        "file_name_label": {
+            "title": "Name of column containing image file names",
+            "description": "Key in the name of the column containing the file names in the annotated ground truth dataset",
+            "type": "string"
         }
     }
 }
