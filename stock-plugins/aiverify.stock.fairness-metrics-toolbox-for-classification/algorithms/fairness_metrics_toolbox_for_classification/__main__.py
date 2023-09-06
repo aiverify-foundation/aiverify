@@ -2,14 +2,14 @@ from test_engine_core.plugins.enums.model_type import ModelType
 from tests.plugin_test import PluginTest
 
 if __name__ == "__main__":
-    # Binary Classification Non-Pipeline
-    data_path = "tests/user_defined_files/data/sample_bc_credit_data.sav"
-    model_path = "tests/user_defined_files/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav"
-    ground_truth_path = "tests/user_defined_files/data/sample_bc_credit_data.sav"
-    ground_truth = "default"
-    sensitive_feature = ["gender"]
-    run_pipeline = False
-    model_type = ModelType.CLASSIFICATION
+    # # Binary Classification Non-Pipeline
+    # data_path = "tests/user_defined_files/data/sample_bc_credit_data.sav"
+    # model_path = "tests/user_defined_files/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav"
+    # ground_truth_path = "tests/user_defined_files/data/sample_bc_credit_data.sav"
+    # ground_truth = "default"
+    # sensitive_feature = ["gender"]
+    # run_pipeline = False
+    # model_type = ModelType.CLASSIFICATION
 
     # # Multiclass Classification Non-Pipeline
     # data_path = "tests/user_defined_files/data/sample_mc_toxic_data.sav"
@@ -38,9 +38,29 @@ if __name__ == "__main__":
     # run_pipeline = True
     # model_type = ModelType.CLASSIFICATION
 
+    # core_modules_path = ""
+    # plugin_argument_values = {
+    #     "sensitive_feature": sensitive_feature,
+    #     "annotated_labels_path": "",
+    #     "file_name_label": ""
+    # }
+
+    # Image Pipeline
+    data_path = "tests/user_defined_files/data/small_test"
+    model_path = "tests/user_defined_files/pipeline/bc_image_face"
+    ground_truth_path = (
+        "tests/user_defined_files/data/pickle_pandas_annotated_labels_50.sav"
+    )
+    ground_truth = "gender"
+    sensitive_feature = ["race"]
+    run_pipeline = True
+    model_type = ModelType.CLASSIFICATION
+
     core_modules_path = ""
     plugin_argument_values = {
         "sensitive_feature": sensitive_feature,
+        "annotated_labels_path": "tests/user_defined_files/data/pickle_pandas_annotated_labels_50.sav",
+        "file_name_label": "image_directory",
     }
 
     # =====================================================================================
