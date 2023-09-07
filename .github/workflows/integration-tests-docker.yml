@@ -1,0 +1,128 @@
+# Integration Tests
+# Build aiverify docker image and run QA test suites
+
+name: Integration Tests for aiverify-user (Docker)
+
+on:
+#  # Runs when a pull request review is being submitted
+#  pull_request_review:
+#    types: [submitted]
+#    branches:
+#      - 'main'
+#      - 'v0.*'
+
+  # Run this workflow manually from Actions tab
+  workflow_dispatch:
+    inputs:
+      branch_to_test:
+        description: 'Branch or tag to run test'
+        required: true
+        default: 'main'
+        type: string
+
+# Allow one concurrent deployment
+concurrency:
+  group: ${{ github.repository }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+
+  integration-tests-docker:
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.branch_to_test }}
+          sparse-checkout: |
+            setup-aiverify
+
+      - name: Build aiverify docker image
+        working-directory: ${{ github.workspace }}/setup-aiverify
+        run: |
+          cd aiverify-user
+          bash docker-build.sh --build-arg BRANCH_TAG=${{ inputs.branch_to_test }}
+
+      - name: Run aiverify containers
+        working-directory: ${{ github.workspace }}/setup-aiverify
+        run: |
+          cd aiverify-user
+          
+          mkdir -m 777 -p ../../uploads/data
+          mkdir -m 777 -p ../../uploads/model
+
+          # Modify docker-compose.yml to support integration-tests (frontend, backend)
+          sed -i -e 's/redis:6.2-alpine/redis:6.2-alpine\n    ports:\n      - "6379:6379"/g' docker-compose.yml
+          sed -i -e 's/mongo:6.0.4/mongo:6.0.4\n    ports:\n      - "27017:27017"/g' docker-compose.yml
+          sed -i -e 's/- uploads-data-volume:/- \.\.\/\.\.\/uploads\/data:/g' docker-compose.yml
+          sed -i -e 's/- uploads-model-volume:/- \.\.\/\.\.\/uploads\/model:/g' docker-compose.yml
+          sed -i -e 's/  uploads-data-volume://g' docker-compose.yml
+          sed -i -e 's/  uploads-model-volume://g' docker-compose.yml
+
+          cat docker-compose.yml
+          
+          if ! bash docker-start.sh -d ; then
+            bash docker-start.sh -d
+          fi
+
+      - name: Checkout smoke tests
+        uses: actions/checkout@v3
+        with:
+          repository: IMDA-BTG/smoke-testing
+          token: ${{ secrets.CHECKOUT_TOKEN }}
+          ref: main
+          path: qa-test/smoke-testing
+
+      - name: Checkout frontend tests
+        uses: actions/checkout@v3
+        with:
+          repository: IMDA-BTG/frontend-testing
+          token: ${{ secrets.CHECKOUT_TOKEN }}
+          ref: main
+          path: qa-test/frontend-testing
+
+      - name: Checkout backend tests
+        uses: actions/checkout@v3
+        with:
+          repository: IMDA-BTG/backend-testing
+          token: ${{ secrets.CHECKOUT_TOKEN }}
+          ref: main
+          path: qa-test/backend-testing
+          submodules: recursive
+
+      - name: Run smoke tests
+        if: ${{ ! cancelled() }}
+        run: |
+          cd qa-test/smoke-testing
+          npm install
+          npx playwright install
+          npx playwright test
+
+#      - name: Run frontend tests
+#        if: ${{ ! cancelled() }}
+#        run: |
+#          cd qa-test/frontend-testing
+#          npm install
+#          npx playwright test
+#
+#      - name: Run backend tests
+#        if: ${{ ! cancelled() }}
+#        run: |
+#          cd qa-test/backend-testing
+#          npm install
+#          BASEDIR=${{ github.workspace }} npx playwright test
+
+      - name: Show logs
+        if: ${{ ! cancelled() }}
+        working-directory: ${{ github.workspace }}/setup-aiverify
+        run: |
+          cd aiverify-user
+          echo "================= Start of test-engine log ================="
+          docker-compose logs -t test-engine
+          echo "================= Start of portal/apigw log ================="
+          docker-compose logs -t portal
+  
