@@ -2,17 +2,29 @@
 
 export CUR_UID=$(id -u)
 export CUR_GID=$(id -g)
-echo "uid=$CUR_UID gid=$CUR_GID"
 
-echo "Resetting container environment..."
-echo "This script requires sudo permission"
-sudo -v
-sudo rm -rf ~/data
-sudo rm -rf ~/uploads
-sudo rm -rf ~/logs
+while true; do
+    echo "WARNING! This will delete all datasets, models, 3rd party plugins, templates and projects"
+    read -p "Are your sure you want to proceed? [y/n] " yn
+    case $yn in
+        [Yy]* ) read -p "Please enter 'reset' to confirm: " userInput;
+                if [[ "$userInput" == "reset" ]]; then
+                    break;
+                else
+                    echo "Reset aborted";
+                    exit;
+                fi;;
+        [Nn]* ) echo "Reset aborted";
+                exit;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
+
+echo "Resetting aiverify container environment..."
+rm -rf ~/data
+rm -rf ~/logs
 mkdir -p ~/data/db
-mkdir -p ~/uploads/data
-mkdir -p ~/uploads/model
 mkdir -p ~/logs/db
-mkdir -p ~/logs/test-engine
 docker-compose down --volumes
+
+echo "aiverify container environment reset completed"

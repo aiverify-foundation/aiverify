@@ -8,7 +8,7 @@ import {
   emptyListResponse,
   installPluginResponse,
   pluginsListResponse,
-} from '__mocks__/plugins';
+} from '__mocks__/mockPlugins';
 import { MockProviders } from '__mocks__/mockProviders';
 import { silentConsoleLogs } from '__mocks__/mockGlobals';
 

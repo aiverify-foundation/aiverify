@@ -38,9 +38,9 @@ services:
     command: python3 -m test_engine_app
     volumes:
       - plugins-volume:/app/aiverify/ai-verify-portal/plugins
-      - ~/logs/test-engine:/app/aiverify/test-engine-app/logs
-      - ~/uploads/data:/app/aiverify/uploads/data
-      - ~/uploads/model:/app/aiverify/uploads/model
+      - logs-volume:/app/aiverify/test-engine-app/logs
+      - uploads-data-volume:/app/aiverify/uploads/data
+      - uploads-model-volume:/app/aiverify/uploads/model
     networks:
       - app-network
 
@@ -57,9 +57,9 @@ services:
     command: bash -c "cd ../ai-verify-apigw && node app.mjs & cd ../ai-verify-portal && npm run start"
     volumes:
       - plugins-volume:/app/aiverify/ai-verify-portal/plugins
-      - ~/logs/test-engine:/app/aiverify/test-engine-app/logs
-      - ~/uploads/data:/app/aiverify/uploads/data
-      - ~/uploads/model:/app/aiverify/uploads/model
+      - logs-volume:/app/aiverify/test-engine-app/logs
+      - uploads-data-volume:/app/aiverify/uploads/data
+      - uploads-model-volume:/app/aiverify/uploads/model
     networks:
       - app-network
 
@@ -69,3 +69,6 @@ networks:
 
 volumes:
   plugins-volume:
+  logs-volume:
+  uploads-data-volume:
+  uploads-model-volume:

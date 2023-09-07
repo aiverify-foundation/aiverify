@@ -79,7 +79,7 @@ export const ProcessChecklist = ({ principle, props, }) => {
       {section.checklist.map((check, tcIndex) => (
         <>
           {<div className="c-primary" style={styles.tcBox}>
-            <b>Criteria {config.index+1}.{tcIndex+1} - </b>
+            <b>Criteria {config.index+1}.{check.index+1} - </b>
             <span dangerouslySetInnerHTML={{ __html:check.testableCriteria }}></span>
           </div>}
           {check.processes.map(process => (

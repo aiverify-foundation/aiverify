@@ -69,6 +69,7 @@ function DatasetsPicking({
   updateFileList,
 }: DatasetsPickingProps) {
   const [filesToUpload, setFilesToUpload] = useState<File[]>([]);
+  const [fileUploaderReset, setFileUploaderReset] = useState<File[] | null>([]);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [progress, setProgress] = useState(0);
   const [isCancelled, setIsCancelled] = useState<boolean>(false);
@@ -95,7 +96,6 @@ function DatasetsPicking({
     if (!event.target) return;
     else {
       const { files } = event.target;
-      // console.log("files selected are", files)
       const fileList = files as FileList;
       let isLargeFile = false;
       for (const file of fileList) {
@@ -117,7 +117,6 @@ function DatasetsPicking({
         if (fileList) {
           const relativePath = fileList[0].webkitRelativePath;
           const folder = relativePath.split('/');
-          // console.log("folder selected is: ", folder[0])
           setFoldersToUpload((current) => [...current, folder[0]]);
         }
       }
@@ -136,6 +135,12 @@ function DatasetsPicking({
     if (!files) return;
     else {
       const fileList = files;
+      const dedupedFiles = Array.from(fileList).filter(
+        (selectedFile) =>
+          filesToUpload.findIndex(
+            (addedFile) => selectedFile.name === addedFile.name
+          ) < 0
+      );
       if (fileList.length > 10) {
         messages.push(
           'Maximum 10 files to be uploaded at once. Please select less files.'
@@ -172,16 +177,18 @@ function DatasetsPicking({
           } else {
             setAlertTitle(null);
             setAlertMessages([]);
-            const pickedFiles = [...filesToUpload, ...Array.from(fileList)];
+            const pickedFiles = [...filesToUpload, ...dedupedFiles];
             setFilesToUpload(pickedFiles);
+            setFileUploaderReset(pickedFiles);
           }
         }
       }
     }
+    // reset fileuploader - fixes issue with reselecting same previous removed file (issue 161)
+    setTimeout(() => setFileUploaderReset(null), 0);
   }
 
   const unpickDatasetFile = (file: File) => {
-    // console.log("Unpicking dataset: ", file.name)
     const idx = filesToUpload.indexOf(file);
     if (idx < 0) return;
     const ar = [...filesToUpload];
@@ -192,8 +199,6 @@ function DatasetsPicking({
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
-    // console.log("isCancelled is now: ", isCancelled)
-
     const uploadDatasetFiles = async (signal: AbortSignal) => {
       if (!filesToUpload) {
         return;
@@ -207,10 +212,8 @@ function DatasetsPicking({
         if (folder.length > 0) {
           // remove filename
           folder = folder.split('/').slice(0, -1).join('/');
-          // console.log("folder", folder)
         }
         formData.append('myFolders', folder);
-        // console.log('formData is : ', formData);
       }
 
       if (foldersToUpload.length != 0) {
@@ -232,7 +235,6 @@ function DatasetsPicking({
           },
         })
         .then((response) => {
-          console.log('response is: ', response);
           const fileList: Dataset[] = [];
           const data = response.data;
           for (const file of data) {
@@ -241,10 +243,8 @@ function DatasetsPicking({
           updateFileList(fileList);
           updateValidatingState(true);
           setIsUploading(false);
-          // console.log("fileList is now: ", fileList)
         })
         .catch((error) => {
-          console.log(error);
           if (error.code == 'ERR_CANCELLED') {
             console.log('Upload cancelled');
           } else {
@@ -392,6 +392,7 @@ function DatasetsPicking({
             multiple={true}
             handleChange={pickFiles}
             disabled={isUploading}
+            fileOrFiles={fileUploaderReset}
             name="file-dropbox">
             <Dropbox />
           </FileUploader>
@@ -575,9 +576,7 @@ function DatasetsValidating({
   }, [filesValidating]);
 
   useEffect(() => {
-    // console.log("datasetsValidating just updated to: ", JSON.stringify(datasetsValidating));
     if (focus) {
-      // console.log("Updating Focus...");
       const dataset = datasetsValidating.find(
         (e: Dataset) => e.id?.toString() === focus.id
       );
@@ -585,7 +584,6 @@ function DatasetsValidating({
         setFocus(dataset);
       }
     } else {
-      // console.log("No files focused");
       onSetFocus(datasetsValidating[0]);
     }
   }, [JSON.stringify(datasetsValidating)]);
@@ -616,7 +614,6 @@ function DatasetsValidating({
 
   useEffect(() => {
     const timerId = setTimeout(() => {
-      console.log('Timeout ended');
       setIsFailed(true);
       /// call file deletion for files that are still in pending
       for (const datasetValidating of datasetsValidating) {
@@ -648,9 +645,7 @@ function DatasetsValidating({
 
   const onUpdateDataset = async (id: any, dataset: Partial<Dataset>) => {
     const datasetInput = _.pick(dataset, ['description', 'name']);
-    // console.log("datasetInput is: ", datasetInput);
     const response = await updateDatasetFn(id.toString(), datasetInput);
-    // console.log("response is: ", response)
     if (response == 'Duplicate File') {
       console.log(
         'Another file with the same name already exists, unable to update name to: ',
@@ -1149,7 +1144,6 @@ export default function NewDatasetModule({
   useSubscription(VALIDATE_DATASET_UPDATED, {
     fetchPolicy: 'network-only',
     onData: (payload) => {
-      console.log('Status updated Event----', payload);
       const { data } = payload;
       if (
         data == undefined ||
@@ -1216,24 +1210,15 @@ export default function NewDatasetModule({
     });
   };
 
-  // useEffect(() => {
-  //     console.log("fileList updated to : ", fileList)
-  // }, [fileList])
-
   //populate filesValidating with Dataset[] from picking
   useEffect(() => {
     if (fileList.length === 0) return;
-    // console.log("fileList is now: ", fileList);
-
     //add most recently uploaded datasets to datasetsValidating list (regardless of pending/done state)
     for (const file of fileList) {
       const fileValidating = filesValidating.find(
         (e) => e.id?.toString() === file.id?.toString()
       );
-      if (fileValidating) {
-        // console.log("File ", file.name, " already in datasetsValidating")
-      } else {
-        // console.log("File ", file.name, " is not in datasetsValidating, adding file to datasetsValidating")
+      if (!fileValidating) {
         setFilesValidating((filesValidating) => [
           ...filesValidating,
           { ...file },
