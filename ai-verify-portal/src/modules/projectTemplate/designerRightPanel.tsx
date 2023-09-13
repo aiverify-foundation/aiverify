@@ -124,6 +124,7 @@ function DesignerRightPanel(props: PropsWithChildren<RightPanelProps>) {
               <AccordionDetails>
                 <GlobalVars
                   variables={globalVariables}
+                  // onEditConfirm={}
                   onAddClick={handleAddGlobalVarClick}
                   onRemoveClick={handleRemoveGlobalVarClick}
                   ref={globalVarsKeyInputRef}
