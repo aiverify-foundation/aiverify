@@ -10,17 +10,17 @@ type GlobalVar = GlobalVariable;
 
 type GlobalVarsProps = {
   variables: GlobalVar[];
+  onEditSave: (index: number, gVar: GlobalVar) => void;
   onAddClick: (variables: GlobalVar) => void;
   onRemoveClick: (variables: GlobalVar) => void;
 };
 
 type VariableRowProps = {
+  index: number;
   globalVariable: GlobalVar;
   editable?: boolean;
-  onEditClick: () => void;
+  onEditClick: (idx: number) => void;
   onEditConfirm: () => void;
-  onKeyChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onValueChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   setEditGlobalVar: React.Dispatch<React.SetStateAction<GlobalVariable>>;
   onRemoveBtnClick: (globalVar: GlobalVar) => void;
   editedKey?: string;
@@ -32,13 +32,12 @@ const newVar = { key: '', value: '' };
 
 function VariableRow(props: VariableRowProps) {
   const {
+    index,
     globalVariable,
     onRemoveBtnClick,
     onEditClick,
     onEditConfirm,
     editable = true,
-    onKeyChange,
-    onValueChange,
     setEditGlobalVar,
     editModeGlobalVar,
   } = props;
@@ -63,7 +62,7 @@ function VariableRow(props: VariableRowProps) {
     if (!editable) return;
     setIsEditMode(true);
     setEditGlobalVar({ ...globalVariable });
-    if (onEditClick) onEditClick();
+    if (onEditClick) onEditClick(index);
   }
 
   function handeEditConfirm() {
@@ -131,12 +130,13 @@ function VariableRow(props: VariableRowProps) {
 
 const GlobalVars = forwardRef<HTMLInputElement, GlobalVarsProps>(
   function GlobalVars(props: GlobalVarsProps, keyInputRef) {
-    const { variables, onAddClick, onRemoveClick } = props;
+    const { variables, onAddClick, onRemoveClick, onEditSave } = props;
     const [newGlobalVar, setNewGlobalVar] = useState<GlobalVar>(newVar);
     const [disableAddBtn, setDisableAddBtn] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [editGlobalVar, setEditGlobalVar] = useState<GlobalVar>(newVar);
+    const [editIndex, setEditIndex] = useState<number>();
     const { key, value } = newGlobalVar;
 
     function handleAddClick() {
@@ -176,12 +176,16 @@ const GlobalVars = forwardRef<HTMLInputElement, GlobalVarsProps>(
       }
     }
 
-    function handeOnGlobalVarEdit() {
+    function handeOnGlobalVarEdit(editedIndex: number) {
       setIsEditing(true);
+      setEditIndex(editedIndex);
     }
 
     function handleOnGlobalVarEditConfirm() {
       setIsEditing(false);
+      if (editIndex != undefined) {
+        onEditSave(editIndex, editGlobalVar);
+      }
     }
 
     useEffect(() => {
@@ -219,8 +223,9 @@ const GlobalVars = forwardRef<HTMLInputElement, GlobalVarsProps>(
           <div className={styles.gVarsDelCol}></div>
         </div>
         <div className={styles.gVarsScrollContainer} ref={scrollContainerRef}>
-          {variables.map((globalVar) => (
+          {variables.map((globalVar, idx) => (
             <VariableRow
+              index={idx}
               editable={!isEditing}
               key={globalVar.key}
               globalVariable={globalVar}

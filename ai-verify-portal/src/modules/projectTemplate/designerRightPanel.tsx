@@ -79,6 +79,18 @@ function DesignerRightPanel(props: PropsWithChildren<RightPanelProps>) {
     });
   }
 
+  function handleSaveGlobalVarEdit(index: number, gVar: GlobalVar) {
+    produce((draft) => {
+      draft[index] = { ...gVar };
+    });
+
+    projectStore.dispatchGlobalVars({
+      type: ARUActionTypes.UPDATE,
+      index,
+      payload: gVar,
+    });
+  }
+
   function handleRemoveGlobalVarClick(selectedGlobalVar: GlobalVar) {
     setGlobalVariables(
       produce((draft) => {
@@ -124,7 +136,7 @@ function DesignerRightPanel(props: PropsWithChildren<RightPanelProps>) {
               <AccordionDetails>
                 <GlobalVars
                   variables={globalVariables}
-                  // onEditConfirm={}
+                  onEditSave={handleSaveGlobalVarEdit}
                   onAddClick={handleAddGlobalVarClick}
                   onRemoveClick={handleRemoveGlobalVarClick}
                   ref={globalVarsKeyInputRef}
