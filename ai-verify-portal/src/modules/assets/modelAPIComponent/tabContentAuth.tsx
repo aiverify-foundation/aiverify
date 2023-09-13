@@ -4,6 +4,8 @@ import { useFormikContext } from 'formik';
 import { AuthType, ModelApiFormModel } from './types';
 import { TextInput } from 'src/components/textInput';
 import { useEffect } from 'react';
+import { useFormGuide } from './providers/formGuideProvider';
+import { ColorPalette } from 'src/components/colorPalette';
 
 const authTypeFieldName = 'modelAPI.authType';
 const authTypeConfigFieldName = 'modelAPI.authTypeConfig';
@@ -11,6 +13,7 @@ const authTypeConfigFieldName = 'modelAPI.authTypeConfig';
 function TabContentAuth({ disabled = false }: { disabled?: boolean }) {
   const { values, errors, touched, setFieldValue, handleChange } =
     useFormikContext<ModelApiFormModel>();
+  const { inputFieldsDisabledStatus, highlightedFields } = useFormGuide();
 
   const fieldErrors = errors.modelAPI?.authTypeConfig;
   const touchedFields = touched.modelAPI?.authTypeConfig;
@@ -29,7 +32,7 @@ function TabContentAuth({ disabled = false }: { disabled?: boolean }) {
         flexDirection: 'column',
       }}>
       <SelectInput<AuthType>
-        disabled={disabled}
+        disabled={disabled || inputFieldsDisabledStatus[authTypeFieldName]}
         width={200}
         label="Authentication Type"
         name={authTypeFieldName}
@@ -52,6 +55,14 @@ function TabContentAuth({ disabled = false }: { disabled?: boolean }) {
                 ? fieldErrors?.token
                 : undefined
             }
+            inputStyle={
+              highlightedFields[`${authTypeConfigFieldName}.token`]
+                ? {
+                    border: `2px solid ${ColorPalette.gray}`,
+                    backgroundColor: ColorPalette.softPurpleTint,
+                  }
+                : undefined
+            }
           />
         </div>
       ) : null}
@@ -72,6 +83,14 @@ function TabContentAuth({ disabled = false }: { disabled?: boolean }) {
                 ? fieldErrors?.username
                 : undefined
             }
+            inputStyle={
+              highlightedFields[`${authTypeConfigFieldName}.username`]
+                ? {
+                    border: `2px solid ${ColorPalette.gray}`,
+                    backgroundColor: ColorPalette.softPurpleTint,
+                  }
+                : undefined
+            }
           />
           <TextInput
             disabled={disabled}
@@ -83,6 +102,14 @@ function TabContentAuth({ disabled = false }: { disabled?: boolean }) {
             error={
               Boolean(fieldErrors?.password && touchedFields?.password)
                 ? fieldErrors?.password
+                : undefined
+            }
+            inputStyle={
+              highlightedFields[`${authTypeConfigFieldName}.password`]
+                ? {
+                    border: `2px solid ${ColorPalette.gray}`,
+                    backgroundColor: ColorPalette.softPurpleTint,
+                  }
                 : undefined
             }
           />

@@ -8,6 +8,8 @@ import { ChangeEvent } from 'react';
 import { SelectInput } from 'src/components/selectInput';
 import { optionsOpenApiDataTypes } from './selectOptions';
 import { OpenApiDataTypes, UrlParam } from './types';
+import { useFormGuide } from './providers/formGuideProvider';
+import { ColorPalette } from 'src/components/colorPalette';
 
 type UrlParameterInputProps = {
   isFormikBinded?: boolean;
@@ -49,6 +51,7 @@ function UrlParamCaptureInput(props: UrlParameterInputProps) {
     onAddClick,
     onDeleteClick,
   } = props;
+  const { highlightedFields } = useFormGuide();
   const disableAddBtn = value.name.trim() === '' || value.type.trim() === '';
 
   function handleRemoveBtnClick(param: UrlParam) {
@@ -71,18 +74,28 @@ function UrlParamCaptureInput(props: UrlParameterInputProps) {
         <TextInput
           disabled={disabled}
           value={value.name}
-          name={isFormikBinded && paramInputName ? paramInputName : 'paramName'}
+          name={
+            isFormikBinded && paramInputName ? paramInputName : 'urlParamName'
+          }
           style={{ marginBottom: 0 }}
           maxLength={100}
           onChange={isFormikBinded ? onChange : handleKeyChange}
           error={paramError}
+          inputStyle={
+            highlightedFields['urlParamName']
+              ? {
+                  border: `2px solid ${ColorPalette.gray}`,
+                  backgroundColor: ColorPalette.softPurpleTint,
+                }
+              : undefined
+          }
         />
       </div>
       <div className={styles.keyValCol}>
         <SelectInput<OpenApiDataTypes>
           disabled={disabled}
           name={
-            isFormikBinded && paramTypeName ? paramTypeName : 'paramDataType'
+            isFormikBinded && paramTypeName ? paramTypeName : 'urlParamDataType'
           }
           options={optionsOpenApiDataTypes}
           onChange={isFormikBinded ? undefined : handleTypeChange}
@@ -90,6 +103,14 @@ function UrlParamCaptureInput(props: UrlParameterInputProps) {
           value={value.type}
           style={{ marginBottom: 0 }}
           error={typeError}
+          inputStyle={
+            highlightedFields['urlParamDataType']
+              ? {
+                  border: `2px solid ${ColorPalette.gray}`,
+                  backgroundColor: ColorPalette.softPurpleTint,
+                }
+              : undefined
+          }
         />
       </div>
       {showAddBtn ? (

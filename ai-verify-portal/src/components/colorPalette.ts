@@ -9,6 +9,7 @@ export const ColorPalette = {
   royalBlue: '#3a3d8a',
   midnightBlue: '#292b61',
   softPinkTint: '#f3f0f5',
+  softPurpleTint: '#eed5ff',
   white: '#ffffff',
   lightGray: '#cfcfcf',
   lightGray2: '#f0f0f0',

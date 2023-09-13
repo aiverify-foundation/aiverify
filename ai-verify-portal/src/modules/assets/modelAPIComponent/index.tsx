@@ -3,12 +3,18 @@ import styles from './styles/newModelApiConfig.module.css';
 import { SelectInput } from 'src/components/selectInput';
 import { useEffect, useRef, useState } from 'react';
 import { DragDropContext, DragUpdate } from 'react-beautiful-dnd';
-import { optionsRequestMethods } from './selectOptions';
 import {
+  optionsAuthMethods,
+  optionsRequestMethods,
+  optionsUrlParamTypes,
+} from './selectOptions';
+import {
+  AuthType,
   ModelApiFormModel,
   ModelApiGQLModel,
   RequestMethod,
   SaveResult,
+  URLParamType,
 } from './types';
 import { Formik, Form, FieldArrayRenderProps, FormikErrors } from 'formik';
 import { ModelApiLeftSection } from './leftSection';
@@ -40,10 +46,12 @@ import ConfirmationDialog from 'src/components/confirmationDialog';
 import { AlertBoxSize } from 'src/components/alertBox';
 import { PageLevelErrorAlert } from 'src/components/pageLeverlErrorAlert';
 import { FormGuidelines, GuidelineType } from './formGuideLines';
+import { FormGuideProvider } from './providers/formGuideProvider';
+import { MethodUrlInput } from './methodUrlInput';
 
 type FormikSetFieldvalueFn = (
   field: string,
-  value: RequestMethod,
+  value: RequestMethod | AuthType | URLParamType,
   shouldValidate?: boolean | undefined
 ) => Promise<void | FormikErrors<ModelApiFormModel>>;
 
@@ -83,12 +91,14 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
     return Tab.REQUEST_BODY;
   });
   const [showPageLevelAlert, setShowPageLevelAlert] = useState(false);
-  const [showFormGuidelines, setShowFormGuidelines] = useState(true);
+  const [showFormGuidelines, setShowFormGuidelines] = useState(false);
+  const [showHelperBtn, setShowHelperBtn] = useState(() => id == undefined);
   const [guidelineTypes, setGuidelineTypes] = useState<GuidelineType[]>([]);
   const [saveResult, setSaveResult] = useState<ErrorWithMessage | SaveResult>();
   const [saveInProgress, setSaveInProgress] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [useVisibleTabsList, setUseVisibleTabsList] = useState(false);
   const paramsFormikArrayHelpersRef = useRef<FieldArrayRenderProps>();
   const [addNewModelAPIConfig] =
     useMutation<GqlCreateModelAPIConfigResult>(GQL_CREATE_MODELAPI);
@@ -116,7 +126,11 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
     visibleTabs.push(Tab.AUTHENTICATION);
   }
 
-  if (!showFormGuidelines || guidelineTypes.length === 0) {
+  if (
+    !showFormGuidelines ||
+    guidelineTypes.length === 0 ||
+    !useVisibleTabsList
+  ) {
     visibleTabs = [
       Tab.URL_PARAMS,
       Tab.REQUEST_BODY,
@@ -263,20 +277,17 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
     setSaveResult(undefined);
   }
 
-  function handleRequestMethodChange(setFieldValue: FormikSetFieldvalueFn) {
-    return (val: RequestMethod) => {
-      if (
-        activeTab !== Tab.AUTHENTICATION &&
-        activeTab !== Tab.RESPONSE &&
-        activeTab !== Tab.HEADERS &&
-        activeTab !== Tab.OTHERS
-      ) {
-        setActiveTab(
-          val === RequestMethod.GET ? Tab.URL_PARAMS : Tab.REQUEST_BODY
-        );
-      }
-      setFieldValue('modelAPI.method', val);
-    };
+  function handleRequestMethodChange(val: RequestMethod) {
+    if (
+      activeTab !== Tab.AUTHENTICATION &&
+      activeTab !== Tab.RESPONSE &&
+      activeTab !== Tab.HEADERS &&
+      activeTab !== Tab.OTHERS
+    ) {
+      setActiveTab(
+        val === RequestMethod.GET ? Tab.URL_PARAMS : Tab.REQUEST_BODY
+      );
+    }
   }
 
   function handleDrop(droppedItem: DragUpdate) {
@@ -289,23 +300,57 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
   }
 
   function handleGuidelineSelected(setFieldValue: FormikSetFieldvalueFn) {
-    return (types: GuidelineType[]) => (_e: React.MouseEvent) => {
-      if (types.indexOf(GuidelineType.GET)) {
+    return (types: GuidelineType[]) => {
+      if (types.indexOf(GuidelineType.GET) > -1) {
         setFieldValue('modelAPI.method', RequestMethod.GET);
-      } else {
+        if (types.indexOf(GuidelineType.QUERY) > -1) {
+          setFieldValue('modelAPI.parameters.paramType', URLParamType.QUERY);
+        } else if (types.indexOf(GuidelineType.PATH)) {
+          setFieldValue('modelAPI.parameters.paramType', URLParamType.PATH);
+        }
+        handleRequestMethodChange(RequestMethod.GET);
+      } else if (types.indexOf(GuidelineType.POST) > -1) {
         setFieldValue('modelAPI.method', RequestMethod.POST);
+        handleRequestMethodChange(RequestMethod.POST);
+      }
+
+      if (types.indexOf(GuidelineType.BASIC_AUTH) > -1) {
+        setFieldValue('modelAPI.authType', AuthType.BASIC);
+      } else if (types.indexOf(GuidelineType.AUTH_TOKEN) > -1) {
+        setFieldValue('modelAPI.authType', AuthType.BEARER_TOKEN);
+      } else if (types.indexOf(GuidelineType.NO_AUTH) > -1) {
+        setFieldValue('modelAPI.authType', AuthType.NO_AUTH);
+        if (types.indexOf(GuidelineType.GET) > -1) {
+          setActiveTab(Tab.URL_PARAMS);
+        } else if (types.indexOf(GuidelineType.POST) > -1) {
+          setActiveTab(Tab.REQUEST_BODY);
+        }
+      }
+
+      if (guidelineTypes.length === 0) {
+        handleGuideToggleAllTabs(true);
       }
       setGuidelineTypes([...types]);
     };
   }
 
+  function handleNeedHelpClick() {
+    setShowFormGuidelines(true);
+    setShowHelperBtn(false);
+  }
+
+  function handleCloseGuidelinesClick() {
+    setShowFormGuidelines(false);
+    setShowHelperBtn(true);
+  }
+
+  function handleGuideToggleAllTabs(useVisibleTabsList: boolean) {
+    setUseVisibleTabsList(useVisibleTabsList);
+  }
+
   useEffect(() => {
     setIsDisabled(disabled);
   }, [disabled]);
-
-  useEffect(() => {
-    console.log(guidelineTypes);
-  }, [guidelineTypes]);
 
   return (
     <div>
@@ -320,234 +365,221 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                     initialValues={initialFormValues}
                     validationSchema={ModelAPIFormValidationSchema}
                     onSubmit={handleFormSubmit}>
-                    {({
-                      values,
-                      handleChange,
-                      setFieldValue,
-                      errors,
-                      touched,
-                    }) => {
+                    {({ values, setFieldValue, errors, touched }) => {
                       return (
-                        <Form>
-                          <div style={{ marginBottom: '25px' }}>
-                            <h3 className="screenHeading">
-                              {id !== undefined
-                                ? 'Update API Configuration'
-                                : 'Create API Configuration'}
-                            </h3>
-                            <p className="headingDescription">
-                              {id !== undefined
-                                ? 'Update API configuration needed to connect to the AI model server'
-                                : 'Create a new API configuration needed to connect to the AI model server'}
-                            </p>
-                          </div>
-                          <div className={styles.pageLevelError}>
-                            {showPageLevelAlert &&
-                            Object.keys(errors).length &&
-                            Object.keys(touched).length ? (
-                              <PageLevelErrorAlert
-                                headingText="Field-level errors"
-                                content="Please ensure all the necessary inputs are
-                              valid"
-                                disableCloseIcon={false}
-                                onCloseIconClick={handleCloseAlertClick}
-                              />
-                            ) : null}
-                            {showFormGuidelines ? (
-                              <FormGuidelines
-                                onSelect={handleGuidelineSelected(
-                                  setFieldValue
-                                )}
-                              />
-                            ) : null}
-                          </div>
-                          <div className={styles.apiConfigForm}>
-                            <div className={styles.leftSection}>
-                              <ModelApiLeftSection disabled={isDisabled} />
+                        <FormGuideProvider>
+                          <Form>
+                            <div style={{ marginBottom: '25px' }}>
+                              <h3 className="screenHeading">
+                                {id !== undefined
+                                  ? 'Update API Configuration'
+                                  : 'Create API Configuration'}
+                              </h3>
+                              <p className="headingDescription">
+                                {id !== undefined
+                                  ? 'Update API configuration needed to connect to the AI model server'
+                                  : 'Create a new API configuration needed to connect to the AI model server'}
+                              </p>
                             </div>
-                            <div className={styles.vDivider} />
-                            <div className={styles.rightSection}>
-                              <div style={{ display: 'flex' }}>
-                                <div style={{ marginRight: 10 }}>
-                                  <SelectInput
-                                    disabled={isDisabled}
-                                    width={140}
-                                    label="Request Method"
-                                    name="modelAPI.method"
-                                    options={optionsRequestMethods}
-                                    onChange={handleRequestMethodChange(
-                                      setFieldValue
-                                    )}
-                                    value={values.modelAPI.method}
-                                  />
-                                </div>
-                                <div style={{ flexGrow: 1 }}>
-                                  <TextInput
-                                    disabled={isDisabled}
-                                    label="Model URL"
-                                    name="modelAPI.url"
-                                    onChange={handleChange}
-                                    value={values.modelAPI.url}
-                                    error={
-                                      Boolean(
-                                        errors.modelAPI?.url &&
-                                          touched.modelAPI?.url
-                                      )
-                                        ? errors.modelAPI?.url
-                                        : undefined
-                                    }
-                                  />
-                                </div>
-                              </div>
-                              <div className={styles.tabs}>
-                                <div className={styles.tabsHeading}>
-                                  HTTP Request and Connection Settings
-                                </div>
-                                <TabButtonsGroup
-                                  visibleTabs={visibleTabs}
-                                  onTabClick={handleTabClick}
-                                  activeTab={activeTab}
+                            <div className={styles.pageLevelError}>
+                              {showPageLevelAlert &&
+                              Object.keys(errors).length &&
+                              Object.keys(touched).length ? (
+                                <PageLevelErrorAlert
+                                  headingText="Field-level errors"
+                                  content="Please ensure all the necessary inputs are
+                                valid"
+                                  disableCloseIcon={false}
+                                  onCloseIconClick={handleCloseAlertClick}
                                 />
-                                <div className={styles.tabsDivider} />
-                                <div className={styles.tabContent}>
-                                  {values.modelAPI.method ===
-                                    RequestMethod.GET &&
-                                  activeTab === Tab.URL_PARAMS ? (
-                                    <TabContentURLParams
-                                      ref={paramsFormikArrayHelpersRef}
-                                      disabled={isDisabled}
-                                    />
-                                  ) : null}
+                              ) : null}
+                              {showFormGuidelines && !showPageLevelAlert ? (
+                                <FormGuidelines
+                                  onSelect={handleGuidelineSelected(
+                                    setFieldValue
+                                  )}
+                                  onCloseIconClick={handleCloseGuidelinesClick}
+                                  onToggleAllTabsClick={
+                                    handleGuideToggleAllTabs
+                                  }
+                                />
+                              ) : null}
+                            </div>
+                            {showHelperBtn ? (
+                              <div className={styles.needHelpRow}>
+                                <button
+                                  type="button"
+                                  style={{ textTransform: 'none', padding: 0 }}
+                                  className="aivBase-button aivBase-button--link aivBase-button--small"
+                                  onClick={handleNeedHelpClick}>
+                                  Need Help?
+                                </button>
+                              </div>
+                            ) : null}
+                            <div className={styles.apiConfigForm}>
+                              <div className={styles.leftSection}>
+                                <ModelApiLeftSection disabled={isDisabled} />
+                              </div>
+                              <div className={styles.vDivider} />
+                              <div className={styles.rightSection}>
+                                <MethodUrlInput
+                                  disabled={isDisabled}
+                                  onRequestMethodChange={
+                                    handleRequestMethodChange
+                                  }
+                                />
+                                <div className={styles.tabs}>
+                                  <div className={styles.tabsHeading}>
+                                    HTTP Request and Connection Settings
+                                  </div>
+                                  <TabButtonsGroup
+                                    visibleTabs={visibleTabs}
+                                    onTabClick={handleTabClick}
+                                    activeTab={activeTab}
+                                  />
+                                  <div className={styles.tabsDivider} />
+                                  <div className={styles.tabContent}>
+                                    {values.modelAPI.method ===
+                                      RequestMethod.GET &&
+                                    activeTab === Tab.URL_PARAMS ? (
+                                      <TabContentURLParams
+                                        ref={paramsFormikArrayHelpersRef}
+                                        disabled={isDisabled}
+                                      />
+                                    ) : null}
 
-                                  {activeTab === Tab.REQUEST_BODY ? (
-                                    <TabContentRequestBody
-                                      disabled={isDisabled}
-                                    />
-                                  ) : null}
+                                    {activeTab === Tab.REQUEST_BODY ? (
+                                      <TabContentRequestBody
+                                        disabled={isDisabled}
+                                      />
+                                    ) : null}
 
-                                  {activeTab === Tab.HEADERS ? (
-                                    <TabContentAdditionalHeaders
-                                      disabled={isDisabled}
-                                    />
-                                  ) : null}
+                                    {activeTab === Tab.HEADERS ? (
+                                      <TabContentAdditionalHeaders
+                                        disabled={isDisabled}
+                                      />
+                                    ) : null}
 
-                                  {activeTab === Tab.RESPONSE ? (
-                                    <TabContentResponse disabled={isDisabled} />
-                                  ) : null}
+                                    {activeTab === Tab.RESPONSE ? (
+                                      <TabContentResponse
+                                        disabled={isDisabled}
+                                      />
+                                    ) : null}
 
-                                  {activeTab === Tab.AUTHENTICATION ? (
-                                    <TabContentAuth disabled={isDisabled} />
-                                  ) : null}
+                                    {activeTab === Tab.AUTHENTICATION ? (
+                                      <TabContentAuth disabled={isDisabled} />
+                                    ) : null}
 
-                                  {activeTab === Tab.OTHERS ? (
-                                    <TabContentConnection
-                                      disabled={isDisabled}
-                                    />
-                                  ) : null}
+                                    {activeTab === Tab.OTHERS ? (
+                                      <TabContentConnection
+                                        disabled={isDisabled}
+                                      />
+                                    ) : null}
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                          <div className={styles.buttons}>
-                            <button
-                              type="button"
-                              style={{ width: 180 }}
-                              className="aivBase-button aivBase-button--secondary aivBase-button--medum"
-                              onClick={handleBackClick}>
-                              {entryPoint === 'selectModel'
-                                ? 'Back to Project'
-                                : 'Back to AI Models'}
-                            </button>
-                            <div>
-                              {isDisabled && id !== undefined ? (
-                                <button
-                                  type="button"
-                                  style={{ width: 100 }}
-                                  className="aivBase-button aivBase-button--outlined aivBase-button--medium"
-                                  onClick={() => {
-                                    setIsDisabled(true);
-                                    setShowConfirmation(true);
-                                  }}>
-                                  Delete
-                                </button>
-                              ) : null}
-                              {isDisabled && id !== undefined ? (
-                                <button
-                                  type="button"
-                                  style={{ width: 100 }}
-                                  className="aivBase-button aivBase-button--primary aivBase-button--medium"
-                                  onClick={() => setIsDisabled(false)}>
-                                  Edit
-                                </button>
-                              ) : null}
-                              {!isDisabled && id !== undefined ? (
-                                <button
-                                  type="button"
-                                  style={{ width: 140 }}
-                                  className="aivBase-button aivBase-button--secondary aivBase-button--medium"
-                                  onClick={() => setIsDisabled(true)}>
-                                  Cancel Edit
-                                </button>
-                              ) : null}
-                              {!isDisabled ? (
-                                <button
-                                  disabled={saveInProgress}
-                                  type="submit"
-                                  style={{ width: 100, marginRight: 0 }}
-                                  className="aivBase-button aivBase-button--primary aivBase-button--medium"
-                                  onClick={() => {
-                                    setShowPageLevelAlert(true);
-                                  }}>
-                                  Save
-                                </button>
-                              ) : null}
+                            <div className={styles.buttons}>
+                              <button
+                                type="button"
+                                style={{ width: 180 }}
+                                className="aivBase-button aivBase-button--secondary aivBase-button--medum"
+                                onClick={handleBackClick}>
+                                {entryPoint === 'selectModel'
+                                  ? 'Back to Project'
+                                  : 'Back to AI Models'}
+                              </button>
+                              <div>
+                                {isDisabled && id !== undefined ? (
+                                  <button
+                                    type="button"
+                                    style={{ width: 100 }}
+                                    className="aivBase-button aivBase-button--outlined aivBase-button--medium"
+                                    onClick={() => {
+                                      setIsDisabled(true);
+                                      setShowConfirmation(true);
+                                    }}>
+                                    Delete
+                                  </button>
+                                ) : null}
+                                {isDisabled && id !== undefined ? (
+                                  <button
+                                    type="button"
+                                    style={{ width: 100 }}
+                                    className="aivBase-button aivBase-button--primary aivBase-button--medium"
+                                    onClick={() => setIsDisabled(false)}>
+                                    Edit
+                                  </button>
+                                ) : null}
+                                {!isDisabled && id !== undefined ? (
+                                  <button
+                                    type="button"
+                                    style={{ width: 140 }}
+                                    className="aivBase-button aivBase-button--secondary aivBase-button--medium"
+                                    onClick={() => setIsDisabled(true)}>
+                                    Cancel Edit
+                                  </button>
+                                ) : null}
+                                {!isDisabled ? (
+                                  <button
+                                    disabled={saveInProgress}
+                                    type="submit"
+                                    style={{ width: 100, marginRight: 0 }}
+                                    className="aivBase-button aivBase-button--primary aivBase-button--medium"
+                                    onClick={() => {
+                                      setShowPageLevelAlert(true);
+                                    }}>
+                                    Save
+                                  </button>
+                                ) : null}
+                              </div>
                             </div>
-                          </div>
-                          {showConfirmation ? (
-                            <ConfirmationDialog
-                              renderInPortal
-                              disablePrimaryBtn={saveInProgress}
-                              size={AlertBoxSize.MEDIUM}
-                              title="Delete Model API Config"
-                              onClose={handleConfirmation}>
-                              <StandardAlert
-                                disableCloseIcon
-                                alertType={AlertType.WARNING}
-                                headingText="Confirm Delete"
-                                style={{ border: 'none' }}>
-                                <div
-                                  style={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    fontSize: 14,
-                                  }}>
-                                  <div>
-                                    Are you sure you want to delete this
-                                    configuration?
+                            {showConfirmation ? (
+                              <ConfirmationDialog
+                                renderInPortal
+                                disablePrimaryBtn={saveInProgress}
+                                size={AlertBoxSize.MEDIUM}
+                                title="Delete Model API Config"
+                                onClose={handleConfirmation}>
+                                <StandardAlert
+                                  disableCloseIcon
+                                  alertType={AlertType.WARNING}
+                                  headingText="Confirm Delete"
+                                  style={{ border: 'none' }}>
+                                  <div
+                                    style={{
+                                      display: 'flex',
+                                      flexDirection: 'column',
+                                      fontSize: 14,
+                                    }}>
+                                    <div>
+                                      Are you sure you want to delete this
+                                      configuration?
+                                    </div>
+                                    <div style={{ marginTop: 5 }}>
+                                      ID:&nbsp;
+                                      <span style={{ fontWeight: 800 }}>
+                                        {id}
+                                      </span>
+                                    </div>
+                                    <div>
+                                      Config Name:&nbsp;
+                                      <span style={{ fontWeight: 800 }}>
+                                        {values.name}
+                                      </span>
+                                    </div>
+                                    <div>
+                                      Model Type:&nbsp;
+                                      <span style={{ fontWeight: 800 }}>
+                                        {values.modelType}
+                                      </span>
+                                    </div>
                                   </div>
-                                  <div style={{ marginTop: 5 }}>
-                                    ID:&nbsp;
-                                    <span style={{ fontWeight: 800 }}>
-                                      {id}
-                                    </span>
-                                  </div>
-                                  <div>
-                                    Config Name:&nbsp;
-                                    <span style={{ fontWeight: 800 }}>
-                                      {values.name}
-                                    </span>
-                                  </div>
-                                  <div>
-                                    Model Type:&nbsp;
-                                    <span style={{ fontWeight: 800 }}>
-                                      {values.modelType}
-                                    </span>
-                                  </div>
-                                </div>
-                              </StandardAlert>
-                            </ConfirmationDialog>
-                          ) : null}
-                        </Form>
+                                </StandardAlert>
+                              </ConfirmationDialog>
+                            ) : null}
+                          </Form>
+                        </FormGuideProvider>
                       );
                     }}
                   </Formik>

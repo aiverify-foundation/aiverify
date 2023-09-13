@@ -8,6 +8,8 @@ import { SelectInput } from 'src/components/selectInput';
 import { optionsOpenApiDataTypes } from './selectOptions';
 import { BodyParam, OpenApiDataTypes } from './types';
 import clsx from 'clsx';
+import { ColorPalette } from 'src/components/colorPalette';
+import { useFormGuide } from './providers/formGuideProvider';
 
 type RequestBodyParameterInputProps = {
   isFormikBinded?: boolean;
@@ -49,6 +51,7 @@ function RequestBodyParameterInput(props: RequestBodyParameterInputProps) {
     onAddClick,
     onDeleteClick,
   } = props;
+  const { highlightedFields } = useFormGuide();
   const disableAddBtn = value.field.trim() === '' || value.type.trim() === '';
 
   function handleRemoveBtnClick(param: BodyParam) {
@@ -71,17 +74,39 @@ function RequestBodyParameterInput(props: RequestBodyParameterInputProps) {
         <TextInput
           disabled={disabled}
           value={value.field}
-          name={isFormikBinded && propInputName ? propInputName : 'paramName'}
+          name={
+            isFormikBinded && propInputName ? propInputName : 'reqBodyParamName'
+          }
           onChange={isFormikBinded ? onChange : handleKeyChange}
           maxLength={100}
           style={{ marginBottom: 0 }}
           error={fieldError}
+          inputStyle={
+            highlightedFields['reqBodyParamName']
+              ? {
+                  border: `2px solid ${ColorPalette.gray}`,
+                  backgroundColor: ColorPalette.softPurpleTint,
+                }
+              : undefined
+          }
         />
       </div>
       <div className={styles.keyValCol}>
         <SelectInput<OpenApiDataTypes>
+          inputStyle={
+            highlightedFields['reqBodyPropDataType']
+              ? {
+                  border: `2px solid ${ColorPalette.gray}`,
+                  backgroundColor: ColorPalette.softPurpleTint,
+                }
+              : undefined
+          }
           disabled={disabled}
-          name={isFormikBinded && propTypeName ? propTypeName : 'propDataType'}
+          name={
+            isFormikBinded && propTypeName
+              ? propTypeName
+              : 'reqBodyPropDataType'
+          }
           options={optionsOpenApiDataTypes}
           onChange={isFormikBinded ? undefined : handleTypeChange}
           onSyntheticChange={isFormikBinded ? onChange : undefined}
