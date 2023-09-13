@@ -6,6 +6,7 @@ import { TextInput } from 'src/components/textInput';
 import { useEffect } from 'react';
 import { useFormGuide } from './providers/formGuideProvider';
 import { ColorPalette } from 'src/components/colorPalette';
+import { Tooltip, TooltipPosition } from 'src/components/tooltip';
 
 const authTypeFieldName = 'modelAPI.authType';
 const authTypeConfigFieldName = 'modelAPI.authTypeConfig';
@@ -58,7 +59,7 @@ function TabContentAuth({ disabled = false }: { disabled?: boolean }) {
             inputStyle={
               highlightedFields[`${authTypeConfigFieldName}.token`]
                 ? {
-                    border: `2px solid ${ColorPalette.gray}`,
+                    border: `1px solid ${ColorPalette.gray}`,
                     backgroundColor: ColorPalette.softPurpleTint,
                   }
                 : undefined
@@ -68,6 +69,21 @@ function TabContentAuth({ disabled = false }: { disabled?: boolean }) {
       ) : null}
       {values.modelAPI.authType === AuthType.BASIC ? (
         <div style={{ display: 'flex' }}>
+          {/* <Tooltip
+            defaultShow={highlightedFields['username`']}
+            disabled
+            backgroundColor={ColorPalette.gray}
+            fontColor={ColorPalette.white}
+            content={
+              <div style={{ marginBottom: 5, textAlign: 'left' }}>
+                Add all data keynames that are required by the API to do the
+                prediction.
+              </div>
+            }
+            position={TooltipPosition.left}
+            offsetLeft={-10}
+            offsetTop={15}>
+            <div> */}
           <TextInput
             disabled={disabled}
             label="Username"
@@ -86,12 +102,14 @@ function TabContentAuth({ disabled = false }: { disabled?: boolean }) {
             inputStyle={
               highlightedFields[`${authTypeConfigFieldName}.username`]
                 ? {
-                    border: `2px solid ${ColorPalette.gray}`,
+                    border: `1px solid ${ColorPalette.gray}`,
                     backgroundColor: ColorPalette.softPurpleTint,
                   }
                 : undefined
             }
           />
+          {/* </div>
+          </Tooltip> */}
           <TextInput
             disabled={disabled}
             label="Password"
@@ -107,7 +125,7 @@ function TabContentAuth({ disabled = false }: { disabled?: boolean }) {
             inputStyle={
               highlightedFields[`${authTypeConfigFieldName}.password`]
                 ? {
-                    border: `2px solid ${ColorPalette.gray}`,
+                    border: `1px solid ${ColorPalette.gray}`,
                     backgroundColor: ColorPalette.softPurpleTint,
                   }
                 : undefined

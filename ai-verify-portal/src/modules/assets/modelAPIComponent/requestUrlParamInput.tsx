@@ -10,6 +10,7 @@ import { optionsOpenApiDataTypes } from './selectOptions';
 import { OpenApiDataTypes, UrlParam } from './types';
 import { useFormGuide } from './providers/formGuideProvider';
 import { ColorPalette } from 'src/components/colorPalette';
+import { Tooltip, TooltipPosition } from 'src/components/tooltip';
 
 type UrlParameterInputProps = {
   isFormikBinded?: boolean;
@@ -71,25 +72,44 @@ function UrlParamCaptureInput(props: UrlParameterInputProps) {
   return (
     <div className={styles.keyValRow} data-testid="urlParamInputRow">
       <div className={styles.keyValCol}>
-        <TextInput
-          disabled={disabled}
-          value={value.name}
-          name={
-            isFormikBinded && paramInputName ? paramInputName : 'urlParamName'
+        <Tooltip
+          defaultShow={highlightedFields['urlParamName']}
+          disabled
+          backgroundColor={ColorPalette.gray}
+          fontColor={ColorPalette.white}
+          content={
+            <div style={{ marginBottom: 5, textAlign: 'left' }}>
+              Add all data keynames that are required by the API to do the
+              prediction.
+            </div>
           }
-          style={{ marginBottom: 0 }}
-          maxLength={100}
-          onChange={isFormikBinded ? onChange : handleKeyChange}
-          error={paramError}
-          inputStyle={
-            highlightedFields['urlParamName']
-              ? {
-                  border: `2px solid ${ColorPalette.gray}`,
-                  backgroundColor: ColorPalette.softPurpleTint,
-                }
-              : undefined
-          }
-        />
+          position={TooltipPosition.left}
+          offsetLeft={-10}
+          offsetTop={15}>
+          <div>
+            <TextInput
+              disabled={disabled}
+              value={value.name}
+              name={
+                isFormikBinded && paramInputName
+                  ? paramInputName
+                  : 'urlParamName'
+              }
+              style={{ marginBottom: 0 }}
+              maxLength={100}
+              onChange={isFormikBinded ? onChange : handleKeyChange}
+              error={paramError}
+              inputStyle={
+                !isFormikBinded && highlightedFields['urlParamName']
+                  ? {
+                      border: `1px solid ${ColorPalette.gray}`,
+                      backgroundColor: ColorPalette.softPurpleTint,
+                    }
+                  : undefined
+              }
+            />
+          </div>
+        </Tooltip>
       </div>
       <div className={styles.keyValCol}>
         <SelectInput<OpenApiDataTypes>
@@ -104,9 +124,9 @@ function UrlParamCaptureInput(props: UrlParameterInputProps) {
           style={{ marginBottom: 0 }}
           error={typeError}
           inputStyle={
-            highlightedFields['urlParamDataType']
+            !isFormikBinded && highlightedFields['urlParamDataType']
               ? {
-                  border: `2px solid ${ColorPalette.gray}`,
+                  border: `1px solid ${ColorPalette.gray}`,
                   backgroundColor: ColorPalette.softPurpleTint,
                 }
               : undefined

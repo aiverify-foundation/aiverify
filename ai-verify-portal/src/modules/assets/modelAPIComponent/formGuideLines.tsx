@@ -6,6 +6,7 @@ import { ColorPalette } from 'src/components/colorPalette';
 import { Tab } from './tabButtons';
 import { useFormikContext } from 'formik';
 import { ModelApiFormModel, RequestMethod } from './types';
+import { Tooltip, TooltipPosition } from 'src/components/tooltip';
 
 enum GuidelineType {
   POST,
@@ -136,8 +137,8 @@ function FormGuidelines(props: FormGuidelinesProps) {
     ) {
       disableInputField('modelAPI.authType');
       if (types.indexOf(GuidelineType.BASIC_AUTH) > -1) {
-        removeGuideStep('Enter Auth Token');
-        addGuideStep('Enter Username/Password', [
+        removeGuideStep('Auth Token');
+        addGuideStep('Username/Password', [
           {
             fieldName: 'modelAPI.authTypeConfig.username',
             tabName: Tab.AUTHENTICATION,
@@ -148,8 +149,8 @@ function FormGuidelines(props: FormGuidelinesProps) {
           },
         ]);
       } else {
-        removeGuideStep('Enter Username/Password');
-        addGuideStep('Enter Auth Token', [
+        removeGuideStep('Username/Password');
+        addGuideStep('Auth Token', [
           {
             fieldName: 'modelAPI.authTypeConfig.token',
             tabName: Tab.AUTHENTICATION,
@@ -158,8 +159,8 @@ function FormGuidelines(props: FormGuidelinesProps) {
       }
     } else {
       enableInputField('modelAPI.authType');
-      removeGuideStep('Enter Auth Token');
-      removeGuideStep('Enter Username/Password');
+      removeGuideStep('Auth Token');
+      removeGuideStep('Username/Password');
     }
 
     if (
@@ -193,14 +194,14 @@ function FormGuidelines(props: FormGuidelinesProps) {
         highlightInputFields(['urlParamName', 'urlParamDataType']);
         selectTab(Tab.URL_PARAMS);
       }
-      if (stepName === 'Enter Username/Password') {
+      if (stepName === 'Username/Password') {
         highlightInputFields([
           'modelAPI.authTypeConfig.username',
           'modelAPI.authTypeConfig.password',
         ]);
         selectTab(Tab.AUTHENTICATION);
       }
-      if (stepName === 'Enter Auth Token') {
+      if (stepName === 'Auth Token') {
         highlightInputFields(['modelAPI.authTypeConfig.token']);
       }
       selectGuideStep(stepName);
@@ -275,19 +276,49 @@ function FormGuidelines(props: FormGuidelinesProps) {
           </div>
           <div style={{ textAlign: 'right', width: '100%' }}>
             {showToggleTabsBtn ? (
-              <button
-                type="button"
+              <div
                 style={{
-                  textTransform: 'none',
-                  padding: 0,
-                  margin: 0,
-                  position: 'relative',
-                  right: -15,
-                }}
-                className="aivBase-button aivBase-button--link aivBase-button--small"
-                onClick={handleToggleAllTabsClick}>
-                {showAllTabs ? 'Hide other tabs' : 'Show all tabs'}
-              </button>
+                  position: 'absolute',
+                  right: 15,
+                  bottom: 5,
+                }}>
+                {!showAllTabs ? (
+                  <Tooltip
+                    backgroundColor={ColorPalette.gray}
+                    fontColor={ColorPalette.white}
+                    content={
+                      <div style={{ marginBottom: 5, textAlign: 'left' }}>
+                        Show all other available tabs and settings
+                      </div>
+                    }
+                    position={TooltipPosition.left}
+                    offsetLeft={-10}>
+                    <button
+                      type="button"
+                      style={{
+                        textTransform: 'none',
+                        padding: 0,
+                        margin: 0,
+                      }}
+                      className="aivBase-button aivBase-button--link aivBase-button--small"
+                      onClick={handleToggleAllTabsClick}>
+                      {showAllTabs ? 'Hide other tabs' : 'Show all tabs'}
+                    </button>
+                  </Tooltip>
+                ) : (
+                  <button
+                    type="button"
+                    style={{
+                      textTransform: 'none',
+                      padding: 0,
+                      margin: 0,
+                    }}
+                    className="aivBase-button aivBase-button--link aivBase-button--small"
+                    onClick={handleToggleAllTabsClick}>
+                    {showAllTabs ? 'Hide other tabs' : 'Show all tabs'}
+                  </button>
+                )}
+              </div>
             ) : null}
           </div>
         </div>

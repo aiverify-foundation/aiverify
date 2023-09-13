@@ -1,11 +1,13 @@
 import React, {
   PropsWithChildren,
   ReactElement,
+  useEffect,
   useRef,
   useState,
 } from 'react';
 import styles from './styles/tooltip.module.css';
 import clsx from 'clsx';
+import { boolean } from 'yup';
 
 enum TooltipPosition {
   top = 'top',
@@ -15,6 +17,8 @@ enum TooltipPosition {
 }
 
 type TooltipProps = {
+  defaultShow?: boolean;
+  disabled?: boolean;
   backgroundColor?: string;
   fontColor?: string;
   position?: TooltipPosition;
@@ -91,6 +95,8 @@ const defaultPlacement: TooltipPlacementStyle = {
 
 function Tooltip(props: PropsWithChildren<TooltipProps>) {
   const {
+    defaultShow = false,
+    disabled = false,
     content,
     position = TooltipPosition.left,
     backgroundColor = '#FFFFFF',
@@ -123,6 +129,7 @@ function Tooltip(props: PropsWithChildren<TooltipProps>) {
   }
 
   function handleMouseOver() {
+    if (disabled && !defaultShow) return;
     if (!tooltipRef.current || !triggerRef.current) return;
     const placementStyle = calculateTooltipPosition(
       triggerRef.current,
@@ -135,8 +142,16 @@ function Tooltip(props: PropsWithChildren<TooltipProps>) {
   }
 
   function handleMouseOut() {
+    if (disabled && defaultShow) return;
     setPlacement(defaultPlacement);
   }
+
+  useEffect(() => {
+    if (defaultShow) handleMouseOver();
+    else {
+      handleMouseOut();
+    }
+  }, [defaultShow]);
 
   return (
     <>

@@ -6,6 +6,7 @@ import { TextInput } from 'src/components/textInput';
 import { useFormGuide } from './providers/formGuideProvider';
 import { useEffect } from 'react';
 import { ColorPalette } from 'src/components/colorPalette';
+import { Tooltip, TooltipPosition } from 'src/components/tooltip';
 
 type MethodUrlInputProps = {
   disabled?: boolean;
@@ -39,26 +40,42 @@ function MethodUrlInput(props: MethodUrlInputProps) {
         />
       </div>
       <div style={{ flexGrow: 1 }}>
-        <TextInput
-          disabled={disabled}
-          label="Model URL"
-          name="modelAPI.url"
-          onChange={handleChange}
-          value={values.modelAPI.url}
-          inputStyle={
-            highlightedFields['modelAPI.url']
-              ? {
-                  border: `2px solid ${ColorPalette.gray}`,
-                  backgroundColor: ColorPalette.softPurpleTint,
-                }
-              : undefined
+        <Tooltip
+          defaultShow={highlightedFields['modelAPI.url']}
+          disabled
+          backgroundColor={ColorPalette.gray}
+          fontColor={ColorPalette.white}
+          content={
+            <div style={{ marginBottom: 5, textAlign: 'left' }}>
+              Enter the URL of the model prediction API
+            </div>
           }
-          error={
-            Boolean(errors.modelAPI?.url && touched.modelAPI?.url)
-              ? errors.modelAPI?.url
-              : undefined
-          }
-        />
+          position={TooltipPosition.bottom}
+          offsetTop={-10}
+          offsetLeft={-400}>
+          <div style={{ width: '100%' }}>
+            <TextInput
+              disabled={disabled}
+              label="Model URL"
+              name="modelAPI.url"
+              onChange={handleChange}
+              value={values.modelAPI.url}
+              inputStyle={
+                highlightedFields['modelAPI.url']
+                  ? {
+                      border: `1px solid ${ColorPalette.gray}`,
+                      backgroundColor: ColorPalette.softPurpleTint,
+                    }
+                  : undefined
+              }
+              error={
+                Boolean(errors.modelAPI?.url && touched.modelAPI?.url)
+                  ? errors.modelAPI?.url
+                  : undefined
+              }
+            />
+          </div>
+        </Tooltip>
       </div>
     </div>
   );

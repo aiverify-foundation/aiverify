@@ -10,6 +10,7 @@ import { BodyParam, OpenApiDataTypes } from './types';
 import clsx from 'clsx';
 import { ColorPalette } from 'src/components/colorPalette';
 import { useFormGuide } from './providers/formGuideProvider';
+import { Tooltip, TooltipPosition } from 'src/components/tooltip';
 
 type RequestBodyParameterInputProps = {
   isFormikBinded?: boolean;
@@ -71,32 +72,51 @@ function RequestBodyParameterInput(props: RequestBodyParameterInputProps) {
   return (
     <div className={clsx(styles.keyValRow, 'propertyInputRow')}>
       <div className={styles.keyValCol}>
-        <TextInput
-          disabled={disabled}
-          value={value.field}
-          name={
-            isFormikBinded && propInputName ? propInputName : 'reqBodyParamName'
+        <Tooltip
+          defaultShow={highlightedFields['reqBodyParamName']}
+          disabled
+          backgroundColor={ColorPalette.gray}
+          fontColor={ColorPalette.white}
+          content={
+            <div style={{ marginBottom: 5, textAlign: 'left' }}>
+              Add all data keynames that are required by the API to do the
+              prediction.
+            </div>
           }
-          onChange={isFormikBinded ? onChange : handleKeyChange}
-          maxLength={100}
-          style={{ marginBottom: 0 }}
-          error={fieldError}
-          inputStyle={
-            highlightedFields['reqBodyParamName']
-              ? {
-                  border: `2px solid ${ColorPalette.gray}`,
-                  backgroundColor: ColorPalette.softPurpleTint,
-                }
-              : undefined
-          }
-        />
+          position={TooltipPosition.left}
+          offsetLeft={-10}
+          offsetTop={15}>
+          <div>
+            <TextInput
+              disabled={disabled}
+              value={value.field}
+              name={
+                isFormikBinded && propInputName
+                  ? propInputName
+                  : 'reqBodyParamName'
+              }
+              onChange={isFormikBinded ? onChange : handleKeyChange}
+              maxLength={100}
+              style={{ marginBottom: 0 }}
+              error={fieldError}
+              inputStyle={
+                !isFormikBinded && highlightedFields['reqBodyParamName']
+                  ? {
+                      border: `1px solid ${ColorPalette.gray}`,
+                      backgroundColor: ColorPalette.softPurpleTint,
+                    }
+                  : undefined
+              }
+            />
+          </div>
+        </Tooltip>
       </div>
       <div className={styles.keyValCol}>
         <SelectInput<OpenApiDataTypes>
           inputStyle={
-            highlightedFields['reqBodyPropDataType']
+            !isFormikBinded && highlightedFields['reqBodyPropDataType']
               ? {
-                  border: `2px solid ${ColorPalette.gray}`,
+                  border: `1px solid ${ColorPalette.gray}`,
                   backgroundColor: ColorPalette.softPurpleTint,
                 }
               : undefined
