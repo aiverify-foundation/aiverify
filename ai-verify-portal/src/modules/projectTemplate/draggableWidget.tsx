@@ -51,6 +51,7 @@ function DraggableWidget(props: PropsWithChildren<DraggableWidgetProp>) {
     <div
       key={widget.gid}
       ref={divRef}
+      data-test-id={`draggableWidget-${widget.gid}`}
       className={clsx(
         styles.draggableWidget,
         disabled ? styles.draggableWidget_disabled : null

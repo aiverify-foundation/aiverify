@@ -138,8 +138,10 @@ class Plugin(IModel):
         try:
             if self._model_algorithm == "xgboost.core.Booster":
                 return self._model.predict(xgboost.DMatrix(data))
+
             else:
                 return self._model.predict(data)
+
         except Exception:
             raise
 

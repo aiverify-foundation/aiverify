@@ -64,6 +64,7 @@ function ModelsPicking({
 }: ModelsPickingProps) {
   const router = useRouter();
   const [filesToUpload, setFilesToUpload] = useState<File[]>([]);
+  const [fileUploaderReset, setFileUploaderReset] = useState<File[] | null>([]);
   const [foldersToUpload, setFoldersToUpload] = useState<string[]>([]);
   const [modelTypes, setModelTypes] = useState<string[]>([]);
   const [folderModelType, setFolderModelType] =
@@ -93,7 +94,6 @@ function ModelsPicking({
     if (!event.target) return;
     else {
       const { files } = event.target;
-      // console.log("files selected are", files)
       const fileList = files as FileList;
       let isLargeFile = false;
       for (const file of fileList) {
@@ -115,7 +115,6 @@ function ModelsPicking({
         if (fileList) {
           const relativePath = fileList[0].webkitRelativePath;
           const folder = relativePath.split('/');
-          // console.log("folder selected is: ", folder[0])
           setFoldersToUpload((current) => [...current, folder[0]]);
         }
       }
@@ -136,6 +135,12 @@ function ModelsPicking({
     if (!files) return;
     else {
       const fileList = files;
+      const dedupedFiles = Array.from(fileList).filter(
+        (selectedFile) =>
+          filesToUpload.findIndex(
+            (addedFile) => selectedFile.name === addedFile.name
+          ) < 0
+      );
       if (fileList.length > 10) {
         messages.push(
           'Maximum 10 files to be uploaded at once. Please select less files.'
@@ -171,8 +176,9 @@ function ModelsPicking({
           } else {
             setAlertTitle(null);
             setAlertMessages([]);
-            const pickedFiles = [...filesToUpload, ...Array.from(fileList)];
+            const pickedFiles = [...filesToUpload, ...dedupedFiles];
             setFilesToUpload(pickedFiles);
+            setFileUploaderReset(pickedFiles);
             for (const file of files) {
               setModelTypes((current) => [...current, 'Classification']);
             }
@@ -180,10 +186,11 @@ function ModelsPicking({
         }
       }
     }
+    // reset fileuploader - fixes issue with reselecting same previous removed file (issue 161)
+    setTimeout(() => setFileUploaderReset(null), 0);
   }
 
   const unpickModelFile = (file: File) => {
-    // console.log("Unpicking model: ", file.name)
     const idx = filesToUpload.indexOf(file);
     if (idx < 0) return;
     const ar = [...filesToUpload];
@@ -204,22 +211,9 @@ function ModelsPicking({
     setFolderModelType(value);
   };
 
-  // useEffect(() => {
-  //     // set model type of all subfolders and files to folder model type
-  //     if (foldersToUpload.length != 0) {
-  //         let ar = [];
-  //         for ( const file of filesToUpload ) {
-  //             ar.push(folderModelType);
-  //         }
-  //         setModelTypes(ar);
-  //     }
-  // }, [filesToUpload, folderModelType])
-
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
-    // console.log("isCancelled is now: ", isCancelled)
-
     const uploadModelFiles = async (signal: AbortSignal) => {
       if (!filesToUpload) {
         return;
@@ -236,12 +230,10 @@ function ModelsPicking({
         if (folder.length > 0) {
           // remove filename
           folder = folder.split('/').slice(0, -1).join('/');
-          // console.log("folder", folder)
         }
         formData.append('myModelFolders', folder);
         formData.append('myModelType', modelTypes[index]);
         formData.append('type', 'model');
-        console.log('formData is : ', formData);
       }
 
       if (foldersToUpload.length != 0) {
@@ -272,7 +264,6 @@ function ModelsPicking({
           updateFileList(fileList);
           updateValidatingState(true);
           setIsUploading(false);
-          // console.log("fileList is now: ", fileList)
         })
         .catch((error) => {
           console.log(error);
@@ -429,6 +420,7 @@ function ModelsPicking({
             multiple={true}
             handleChange={pickFiles}
             disabled={isUploading || foldersToUpload.length != 0}
+            fileOrFiles={fileUploaderReset}
             name="file">
             <Dropbox />
           </FileUploader>
@@ -652,9 +644,7 @@ function ModelsValidating({
   }, [filesValidating]);
 
   useEffect(() => {
-    // console.log("modelsValidating just updated to: ", JSON.stringify(modelsValidating));
     if (focus) {
-      // console.log("Updating Focus...");
       const modelFile = modelsValidating.find(
         (e: ModelFile) => e.id?.toString() === focus.id
       );
@@ -662,7 +652,6 @@ function ModelsValidating({
         setFocus(modelFile);
       }
     } else {
-      // console.log("No files focused");
       onSetFocus(modelsValidating[0]);
     }
   }, [JSON.stringify(modelsValidating)]);
@@ -692,7 +681,6 @@ function ModelsValidating({
 
   useEffect(() => {
     const timerId = setTimeout(() => {
-      console.log('Timeout ended');
       setIsFailed(true);
       for (const modelValidating of modelsValidating) {
         if (modelValidating.status == FileStatus.PENDING) {
@@ -723,9 +711,7 @@ function ModelsValidating({
 
   const onUpdateModel = async (id: any, model: Partial<ModelFile>) => {
     const modelInput = _.pick(model, ['description', 'name', 'modelType']);
-    // console.log("modelInput is: ", modelInput);
     const response = await updateModelFn(id.toString(), modelInput);
-    // console.log("response is: ", response)
     if (response == 'Duplicate File') {
       console.log(
         'Another file with the same name already exists, unable to update name to: ',
@@ -1161,7 +1147,6 @@ export default function NewModelUploadModule({
   useSubscription(VALIDATE_MODEL_UPDATED, {
     fetchPolicy: 'network-only',
     onData: (payload) => {
-      console.log('Status updated Event----', payload);
       const { data } = payload;
       if (
         data == undefined ||
@@ -1225,17 +1210,13 @@ export default function NewModelUploadModule({
   //populate filesValidating with Dataset[] from picking
   useEffect(() => {
     if (fileList.length === 0) return;
-    // console.log("fileList is now: ", fileList);
 
     //add most recently uploaded datasets to datasetsValidating list (regardless of pending/done state)
     for (const file of fileList) {
       const fileValidating = filesValidating.find(
         (e) => e.id?.toString() === file.id?.toString()
       );
-      if (fileValidating) {
-        // console.log("File ", file.name, " already in modelsValidating")
-      } else {
-        // console.log("File ", file.name, " is not in modelsValidating, adding file to modelsValidating")
+      if (!fileValidating) {
         setFilesValidating((filesValidating) => [
           ...filesValidating,
           { ...file },

@@ -33,7 +33,7 @@ function AssetStatusCard(props: SpecializedCardProps<AssetStatusNotification>) {
       subjectText = `${assetTypeText} validation is pending`;
       break;
     case AssetValidationStatus.Error:
-      subjectText = `Error encountered while validatin ${assetTypeText}`;
+      subjectText = `Error encountered while validating ${assetTypeText}`;
       break;
     case AssetValidationStatus.Cancelled:
       subjectText = `${assetTypeText} validation cancelled`;
