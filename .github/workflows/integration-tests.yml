@@ -182,6 +182,7 @@ jobs:
           token: ${{ secrets.CHECKOUT_TOKEN }}
           ref: main
           path: qa-test/smoke-testing
+          submodules: recursive
 
       - name: Checkout frontend tests
         uses: actions/checkout@v3
