@@ -182,6 +182,7 @@ jobs:
           token: ${{ secrets.CHECKOUT_TOKEN }}
           ref: main
           path: qa-test/smoke-testing
+          submodules: recursive
 
       - name: Checkout frontend tests
         uses: actions/checkout@v3
@@ -198,6 +199,7 @@ jobs:
           token: ${{ secrets.CHECKOUT_TOKEN }}
           ref: main
           path: qa-test/backend-testing
+          submodules: recursive
 
       - name: Run smoke tests
         if: ${{ ! cancelled() }}
