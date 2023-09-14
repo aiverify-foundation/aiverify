@@ -5,18 +5,19 @@ import pathlib
 import time
 from enum import Enum, auto
 from typing import Any, Callable, Dict, List, Tuple, Union
-
+import numpy as np
 import aiopenapi3
 import httpx as httpx
 import pandas as pd
 from aiopenapi3 import FileSystemLoader, OpenAPI
+from aiopenapi3.v30.media import MediaType
 from httpx import Response
 from openapi_schema_validator import OAS30Validator, validate
 from test_engine_core.interfaces.imodel import IModel
 from test_engine_core.plugins.enums.model_plugin_type import ModelPluginType
 from test_engine_core.plugins.enums.plugin_type import PluginType
 from test_engine_core.plugins.metadata.plugin_metadata import PluginMetadata
-
+from ast import literal_eval
 
 class BatchStrategy(Enum):
     """
@@ -58,7 +59,7 @@ class Plugin(IModel):
     _api_batch_strategy_default: BatchStrategy = BatchStrategy.MULTIPART
     _api_batch_limit_default: int = 5
     _api_max_connections_default: int = -1
-    _api_connection_retries_default: int = 3
+    _api_connection_retries_default: int = 1000
     # Set request options values
     _api_ssl_verify: bool = _api_ssl_verify_default
     _api_ssl_cert: Union[str, None] = _api_ssl_cert_default
@@ -331,18 +332,21 @@ class Plugin(IModel):
             "application/json"
             in self._api_instance._.predict_api.operation.requestBody.content
         ):
+            self._api_batch_strategy = BatchStrategy.NONE
             return self._api_instance._.predict_api.operation.requestBody.content[
                 "application/json"
             ].schema_
         elif (
             ct := "multipart/form-data"
         ) in self._api_instance._.predict_api.operation.requestBody.content:
+            self._api_batch_strategy = BatchStrategy.MULTIPART
             return self._api_instance._.predict_api.operation.requestBody.content[
                 ct
             ].schema_
         elif (
             ct := "application/x-www-form-urlencoded"
         ) in self._api_instance._.predict_api.operation.requestBody.content:
+            self._api_batch_strategy = BatchStrategy.NONE
             return self._api_instance._.predict_api.operation.requestBody.content[
                 ct
             ].schema_
@@ -364,7 +368,7 @@ class Plugin(IModel):
             the corresponding field name in the input data_row.
 
         Returns:
-            Dict: A dictionary containing the formatted data payload with field names as keys and their respective
+            Dict: A dictionary containing the formatted dFata payload with field names as keys and their respective
             values extracted from the data_row.
 
         Notes:
@@ -424,7 +428,6 @@ class Plugin(IModel):
             instance's predict_api attribute to access the API details.
             - The method returns the API response object containing the results of the API request.
         """
-
         row_data_to_send = await self.get_data_payload(row, *args)
         if self._api_instance._.predict_api.method.lower() == "post":
             # POST method. Get API Instance schema
@@ -435,9 +438,10 @@ class Plugin(IModel):
                 if str(parameter.in_.name).lower() == "header" and parameter.required:
                     if len(parameter.schema_.enum) > 0:
                         headers.update({parameter.name: parameter.schema_.enum[0]})
+            
             # Populate body with payload values
             body = self._api_instance_schema.get_type().construct(**row_data_to_send)
-            # Perform api request
+
             headers, data, result = await self._api_instance._.predict_api.request(
                 parameters=headers, data=body
             )
@@ -450,7 +454,60 @@ class Plugin(IModel):
             headers, data, result = await self._api_instance._.predict_api.request(
                 parameters=row_data_to_send, data=body
             )
+        return result
 
+    async def send_batched_request(self, list_of_rows, *args) -> Response:
+        """
+        An async method to send an API request based on the provided row data.
+
+        Args:
+            row_data_to_send (Dict): A dictionary containing the data to be sent in the API request. The keys represent
+            the parameter names, and the values represent their corresponding values.
+
+        Returns:
+            Response: The response object representing the API response.
+
+        Notes:
+            - This method is used to send API requests based on the provided row data. It supports both POST
+            and GET methods.
+            - If the API method is "POST," the method constructs the request payload using the provided row_data_to_send
+              dictionary and sends it in the request body. The method also populates the request headers with required
+              header parameters specified in the API schema.
+            - If the API method is "GET," the method sends the row_data_to_send dictionary as parameters in the
+            API request URL without a request body.
+            - The method retrieves the API schema by calling the get_schema_content method, and it uses the API
+            instance's predict_api attribute to access the API details.
+            - The method returns the API response object containing the results of the API request.
+        """
+        list_of_processed_rows = []
+        for row in list_of_rows:
+            row_data_to_send = await self.get_data_payload(row, *args)
+            list_of_processed_rows.append(row_data_to_send)
+
+        dict_of_processed_rows = ({key: [i[key] for i in list_of_processed_rows] for key in list_of_processed_rows[0]})
+        if self._api_instance._.predict_api.method.lower() == "post":
+            # POST method. Get API Instance schema
+            self._api_instance_schema = await self.get_schema_content()
+            # Populate headers
+            headers = dict()
+            for parameter in self._api_instance._.predict_api.parameters:
+                if str(parameter.in_.name).lower() == "header" and parameter.required:
+                    if len(parameter.schema_.enum) > 0:
+                        headers.update({parameter.name: parameter.schema_.enum[0]})
+            
+            # Populate body with payload values
+            body = self._api_instance_schema.get_type().construct(**dict_of_processed_rows)
+            headers, data, result = await self._api_instance._.predict_api.request(
+                parameters=headers, data=body
+            )
+        else:
+            # GET method. Populate body with payload values
+            body = None
+
+            # Perform api request
+            headers, data, result = await self._api_instance._.predict_api.request(
+                parameters=row_data_to_send, data=body
+            )
         return result
 
     async def make_request(self, data: Any, *args) -> Any:
@@ -485,28 +542,46 @@ class Plugin(IModel):
         response_data = list()
         request_task_list = []
 
-        # Loop through the data list. It can be a list of mixed data to be predicted such as DF or numpy.
-        batched_rows = []
-        for data_to_predict in data:
-            if self._api_batch_strategy == BatchStrategy.MULTIPART:
+        # self._api_batch_strategy = BatchStrategy.NONE
+        self._api_batch_strategy = BatchStrategy.MULTIPART
+        # MULTIPART
+        if self._api_batch_strategy == BatchStrategy.MULTIPART:
+            batched_data = []     
+            # Loop through the data list. It can be a list of mixed data to be predicted such as DF or numpy.
+            for data_to_predict in data:                
+
+                # PANDAS DF
                 if type(data_to_predict) is pd.DataFrame:
-                    # PANDAS DF
+                    for _, row in data_to_predict.iterrows():
+                        batched_data.append(row)
+                    for i in range(0, len(batched_data), self._api_batch_limit):
+                        request_task_list.append(self.send_batched_request(batched_data[i:i+self._api_batch_limit], *args))
+                # NDARRAY                            
+                else:
+                    for row in data_to_predict:
+                        # Pass this information to the send request function to request
+                        request_task_list.append(self.send_batched_request(row, *args))
+
+        # NON-MULTIPART
+        else:
+            # Loop through the data list. It can be a list of mixed data to be predicted such as DF or numpy.
+            for data_to_predict in data:
+                # PANDAS DF
+                if type(data_to_predict) is pd.DataFrame:
                     for _, row in data_to_predict.iterrows():
                         # Pass this information to the send request function to request
-                        batched_rows.append(row)
-                        request_task_list.append(self.send_request(row, *args))
+                        request_task_list.append(self.send_request(row, *args))                              
+                # NDARRAY                            
                 else:
-                    # NDARRAY
                     for row in data_to_predict:
                         # Pass this information to the send request function to request
                         request_task_list.append(self.send_request(row, *args))
-
         response_list = await asyncio.gather(*request_task_list)
 
         # get the content type of response
         openapi_response_object = next(
             iter(self._api_instance._.predict_api.operation.responses.values())
-        ).content
+        ).content             
         response_type = list(openapi_response_object.keys())[0]
 
         # if return type is json, read from the field that the user has specified
@@ -517,12 +592,21 @@ class Plugin(IModel):
                 parsed_data_value = parsed_response.get(response_field_name)
                 response_data.append(parsed_data_value)
         else:
-            for response in response_list:
-                response_data.append(response.text)
-
+            response_body_type = self._api_config.get("responseBody").get("type")
+            if response_body_type == "array":
+                i = 0
+                for response in response_list:
+                    i += 1
+                    list_of_parsed_response = literal_eval(response.text)
+                    for item in list_of_parsed_response:
+                        response_data.append(item)
+            else:
+                for response in response_list:
+                    response_data.append(response.text)
+        
         end_time = time.time()
         elapsed_time = end_time - start_time
-        print("time taken:", elapsed_time)
+        print("========================================time taken========================================:\n", elapsed_time)
         return response_data
 
     def _setup_api_authentication(self) -> None:
