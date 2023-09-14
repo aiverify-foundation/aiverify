@@ -1,79 +1,20 @@
 import { AlertType, StandardAlert } from 'src/components/standardAlerts';
 import { useState } from 'react';
 import { SelectInput } from 'src/components/selectInput';
-import { useFormGuide } from './providers/formGuideProvider';
+import { usePresetHelper } from './providers/presetHelperProvider';
 import { ColorPalette } from 'src/components/colorPalette';
 import { Tab } from './tabButtons';
-import { useFormikContext } from 'formik';
-import { ModelApiFormModel, RequestMethod } from './types';
 import { Tooltip, TooltipPosition } from 'src/components/tooltip';
+import { PresetGuideSteps, PresetHelpItem } from './types';
+import { presetOptions } from './selectOptions';
 
-enum GuidelineType {
-  POST,
-  GET,
-  QUERY,
-  PATH,
-  BASIC_AUTH,
-  AUTH_TOKEN,
-  NO_AUTH,
-  HEADERS,
-}
-
-type FormGuidelinesProps = {
+type PresetHelperProps = {
   onToggleAllTabsClick: (showAllTabs: boolean) => void;
   onCloseIconClick: () => void;
-  onSelect: (types: GuidelineType[]) => void;
+  onSelect: (types: PresetHelpItem[]) => void;
 };
 
-type PresetOption = {
-  value: GuidelineType[];
-  label: string;
-};
-
-const presetOptions: PresetOption[] = [
-  // {
-  //   value: [],
-  //   label: 'None',
-  // },
-  {
-    value: [GuidelineType.POST, GuidelineType.NO_AUTH],
-    label: 'POST request, no authentication',
-  },
-  {
-    value: [GuidelineType.POST, GuidelineType.BASIC_AUTH],
-    label: 'POST request with Username/Password authentication',
-  },
-  {
-    value: [GuidelineType.POST, GuidelineType.AUTH_TOKEN],
-    label: 'POST request with Authentication Token',
-  },
-  {
-    value: [GuidelineType.GET, GuidelineType.QUERY, GuidelineType.NO_AUTH],
-    label: 'URL Query parameters, no authentication',
-  },
-  {
-    value: [GuidelineType.GET, GuidelineType.QUERY, GuidelineType.BASIC_AUTH],
-    label: 'URL Query parameters with Password authentication',
-  },
-  {
-    value: [GuidelineType.GET, GuidelineType.QUERY, GuidelineType.AUTH_TOKEN],
-    label: 'URL Query parameters with Authentication Token',
-  },
-  {
-    value: [GuidelineType.GET, GuidelineType.PATH, GuidelineType.NO_AUTH],
-    label: 'URL Path parameters, no authentication',
-  },
-  {
-    value: [GuidelineType.GET, GuidelineType.PATH, GuidelineType.BASIC_AUTH],
-    label: 'URL Path parameters with Password authentication',
-  },
-  {
-    value: [GuidelineType.GET, GuidelineType.PATH, GuidelineType.AUTH_TOKEN],
-    label: 'URL Path parameters with Authentication Token',
-  },
-];
-
-function FormGuidelines(props: FormGuidelinesProps) {
+function PresetHelper(props: PresetHelperProps) {
   const { onCloseIconClick, onSelect, onToggleAllTabsClick } = props;
   const [showAllTabs, setShowAllTabs] = useState(false);
   const {
@@ -82,14 +23,11 @@ function FormGuidelines(props: FormGuidelinesProps) {
     reset,
     addGuideStep,
     removeGuideStep,
-    selectGuideStep,
     highlightInputFields,
     clearHighlightedFields,
     guideStepToFieldMap,
     selectTab,
-    clearSelectedTab,
-  } = useFormGuide();
-  const { values } = useFormikContext<ModelApiFormModel>();
+  } = usePresetHelper();
   const [showToggleTabsBtn, setShowToggleTabsBtn] = useState(false);
   const guideSteps = Object.keys(guideStepToFieldMap);
 
@@ -98,7 +36,7 @@ function FormGuidelines(props: FormGuidelinesProps) {
     if (onToggleAllTabsClick) onToggleAllTabsClick(showAllTabs);
   }
 
-  function handleGuideSelect(types: GuidelineType[]) {
+  function handleGuideSelect(types: PresetHelpItem[]) {
     if (types.length === 0) {
       setShowToggleTabsBtn(false);
     } else {
@@ -106,39 +44,41 @@ function FormGuidelines(props: FormGuidelinesProps) {
     }
 
     if (
-      types.indexOf(GuidelineType.GET) > -1 ||
-      types.indexOf(GuidelineType.POST) > -1
+      types.indexOf(PresetHelpItem.GET) > -1 ||
+      types.indexOf(PresetHelpItem.POST) > -1
     ) {
       disableInputField('modelAPI.method');
-      addGuideStep('Model URL', [{ fieldName: 'modelAPI.method' }]);
-      if (types.indexOf(GuidelineType.POST) > -1) {
-        removeGuideStep('URL Parameters');
-        addGuideStep('Parameters in request data', [
+      addGuideStep(PresetGuideSteps.MODEL_URL, [
+        { fieldName: 'modelAPI.method' },
+      ]);
+      if (types.indexOf(PresetHelpItem.POST) > -1) {
+        removeGuideStep(PresetGuideSteps.URL_PARAMS);
+        addGuideStep(PresetGuideSteps.REQUESTBODY_PARAMS, [
           { fieldName: 'reqBodyParamName', tabName: Tab.REQUEST_BODY },
           { fieldName: 'reqBodyPropDataType', tabName: Tab.REQUEST_BODY },
         ]);
       } else {
-        removeGuideStep('Parameters in request data');
-        addGuideStep('URL Parameters', [
+        removeGuideStep(PresetGuideSteps.REQUESTBODY_PARAMS);
+        addGuideStep(PresetGuideSteps.URL_PARAMS, [
           { fieldName: 'urlParamName', tabName: Tab.REQUEST_BODY },
           { fieldName: 'urlPropDataType', tabName: Tab.URL_PARAMS },
         ]);
       }
     } else {
       enableInputField('modelAPI.method');
-      removeGuideStep('Model URL');
-      removeGuideStep('Parameters in request data');
-      removeGuideStep('URL Parameters');
+      removeGuideStep(PresetGuideSteps.MODEL_URL);
+      removeGuideStep(PresetGuideSteps.REQUESTBODY_PARAMS);
+      removeGuideStep(PresetGuideSteps.URL_PARAMS);
     }
 
     if (
-      types.indexOf(GuidelineType.BASIC_AUTH) > -1 ||
-      types.indexOf(GuidelineType.AUTH_TOKEN) > -1
+      types.indexOf(PresetHelpItem.BASIC_AUTH) > -1 ||
+      types.indexOf(PresetHelpItem.AUTH_TOKEN) > -1
     ) {
       disableInputField('modelAPI.authType');
-      if (types.indexOf(GuidelineType.BASIC_AUTH) > -1) {
-        removeGuideStep('Auth Token');
-        addGuideStep('Username/Password', [
+      if (types.indexOf(PresetHelpItem.BASIC_AUTH) > -1) {
+        removeGuideStep(PresetGuideSteps.BEARER_TOKEN);
+        addGuideStep(PresetGuideSteps.USER_PASSWORD, [
           {
             fieldName: 'modelAPI.authTypeConfig.username',
             tabName: Tab.AUTHENTICATION,
@@ -149,8 +89,8 @@ function FormGuidelines(props: FormGuidelinesProps) {
           },
         ]);
       } else {
-        removeGuideStep('Username/Password');
-        addGuideStep('Auth Token', [
+        removeGuideStep(PresetGuideSteps.USER_PASSWORD);
+        addGuideStep(PresetGuideSteps.BEARER_TOKEN, [
           {
             fieldName: 'modelAPI.authTypeConfig.token',
             tabName: Tab.AUTHENTICATION,
@@ -159,13 +99,13 @@ function FormGuidelines(props: FormGuidelinesProps) {
       }
     } else {
       enableInputField('modelAPI.authType');
-      removeGuideStep('Auth Token');
-      removeGuideStep('Username/Password');
+      removeGuideStep(PresetGuideSteps.BEARER_TOKEN);
+      removeGuideStep(PresetGuideSteps.USER_PASSWORD);
     }
 
     if (
-      types.indexOf(GuidelineType.PATH) > -1 ||
-      types.indexOf(GuidelineType.QUERY) > -1
+      types.indexOf(PresetHelpItem.PATH) > -1 ||
+      types.indexOf(PresetHelpItem.QUERY) > -1
     ) {
       disableInputField('modelAPI.parameters.paramType');
     } else {
@@ -183,28 +123,28 @@ function FormGuidelines(props: FormGuidelinesProps) {
   function handleGuideStepMouseover(stepName: string) {
     return () => {
       clearHighlightedFields();
-      if (stepName === 'Model URL') {
+      if (stepName === PresetGuideSteps.MODEL_URL) {
         highlightInputFields(['modelAPI.url']);
       }
-      if (stepName === 'Parameters in request data') {
+      if (stepName === PresetGuideSteps.REQUESTBODY_PARAMS) {
         highlightInputFields(['reqBodyParamName', 'reqBodyPropDataType']);
         selectTab(Tab.REQUEST_BODY);
       }
-      if (stepName === 'URL Parameters') {
+      if (stepName === PresetGuideSteps.URL_PARAMS) {
         highlightInputFields(['urlParamName', 'urlParamDataType']);
         selectTab(Tab.URL_PARAMS);
       }
-      if (stepName === 'Username/Password') {
+      if (stepName === PresetGuideSteps.USER_PASSWORD) {
         highlightInputFields([
           'modelAPI.authTypeConfig.username',
           'modelAPI.authTypeConfig.password',
         ]);
         selectTab(Tab.AUTHENTICATION);
       }
-      if (stepName === 'Auth Token') {
+      if (stepName === PresetGuideSteps.BEARER_TOKEN) {
         highlightInputFields(['modelAPI.authTypeConfig.token']);
+        selectTab(Tab.AUTHENTICATION);
       }
-      selectGuideStep(stepName);
     };
   }
 
@@ -225,7 +165,7 @@ function FormGuidelines(props: FormGuidelinesProps) {
         onCloseIconClick={handleCloseIconClick}>
         <div style={{ fontSize: 15, width: '100%' }}>
           <div style={{ display: 'flex', gap: 50 }}>
-            <SelectInput<GuidelineType[]>
+            <SelectInput<PresetHelpItem[]>
               width={500}
               label="Select a preset"
               name="forGuidePresets"
@@ -241,7 +181,7 @@ function FormGuidelines(props: FormGuidelinesProps) {
                     marginBottom: 4,
                     fontSize: 14,
                   }}>
-                  You need to fill these inputs:
+                  You have to fill these inputs:
                 </div>
                 <ol
                   style={{
@@ -327,4 +267,4 @@ function FormGuidelines(props: FormGuidelinesProps) {
   );
 }
 
-export { FormGuidelines, GuidelineType };
+export { PresetHelper, PresetHelpItem };

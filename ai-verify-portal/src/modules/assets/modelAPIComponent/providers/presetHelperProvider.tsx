@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 import { Tab } from '../tabButtons';
 
 type FormGuideProviderProps = { children: React.ReactNode };
@@ -8,7 +8,7 @@ type HighlightedInputField = {
   fieldName: string;
 };
 
-const FormGuideContext = createContext<
+const PresetHelpContext = createContext<
   | {
       inputFieldsDisabledStatus: Record<string, boolean>;
       guideStepToFieldMap: Record<string, HighlightedInputField[]>;
@@ -19,9 +19,6 @@ const FormGuideContext = createContext<
         inputFields: HighlightedInputField[]
       ) => void;
       removeGuideStep: (stepName: string) => void;
-      selectGuideStep: (stepName: string) => void;
-      clearSelectedGuideStep: () => void;
-      selectedGuideStep: string | undefined;
       highlightInputFields: (names: string[]) => void;
       highlightedFields: Record<string, true>;
       clearHighlightedFields: () => void;
@@ -33,16 +30,13 @@ const FormGuideContext = createContext<
   | undefined
 >(undefined);
 
-function FormGuideProvider({ children }: FormGuideProviderProps) {
+function PresetHelperProvider({ children }: FormGuideProviderProps) {
   const [inputFieldsDisabledStatus, setInputFieldsDisabledStatus] = useState<
     Record<string, boolean>
   >({});
   const [guideStepToFieldMap, setGuideStepToFieldMap] = useState<
     Record<string, HighlightedInputField[]>
   >({});
-  const [selectedGuideStep, setSelectedGuideStep] = useState<
-    string | undefined
-  >();
   const [highlightedFields, setHighlightedFields] = useState<
     Record<string, true>
   >({});
@@ -83,14 +77,6 @@ function FormGuideProvider({ children }: FormGuideProviderProps) {
     );
   }
 
-  function selectGuideStep(stepName: string) {
-    setSelectedGuideStep(stepName);
-  }
-
-  function clearSelectedGuideStep() {
-    setSelectedGuideStep(undefined);
-  }
-
   function highlightInputFields(names: string[]) {
     setHighlightedFields(
       produce((draft) => {
@@ -116,10 +102,6 @@ function FormGuideProvider({ children }: FormGuideProviderProps) {
     setGuideStepToFieldMap({});
   }
 
-  useEffect(() => {
-    console.log(highlightedFields);
-  }, [highlightedFields]);
-
   const contextValue = {
     inputFieldsDisabledStatus,
     guideStepToFieldMap,
@@ -127,9 +109,6 @@ function FormGuideProvider({ children }: FormGuideProviderProps) {
     enableInputField,
     addGuideStep,
     removeGuideStep,
-    selectGuideStep,
-    clearSelectedGuideStep,
-    selectedGuideStep,
     highlightInputFields,
     clearHighlightedFields,
     highlightedFields,
@@ -140,18 +119,20 @@ function FormGuideProvider({ children }: FormGuideProviderProps) {
   };
 
   return (
-    <FormGuideContext.Provider value={contextValue}>
+    <PresetHelpContext.Provider value={contextValue}>
       {children}
-    </FormGuideContext.Provider>
+    </PresetHelpContext.Provider>
   );
 }
 
-function useFormGuide() {
-  const context = useContext(FormGuideContext);
+function usePresetHelper() {
+  const context = useContext(PresetHelpContext);
   if (context === undefined) {
-    throw new Error('useFormGuide must be used within a FormGuideProvider');
+    throw new Error(
+      'usePresetHelper must be used within a PresetHelperProvider'
+    );
   }
   return context;
 }
 
-export { FormGuideProvider, useFormGuide };
+export { PresetHelperProvider, usePresetHelper };

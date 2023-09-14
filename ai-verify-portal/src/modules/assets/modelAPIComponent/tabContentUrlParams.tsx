@@ -33,7 +33,7 @@ import {
 import { getInputReactKeyId } from '.';
 import { CheckBox } from 'src/components/checkbox';
 import { TextInput } from 'src/components/textInput';
-import { useFormGuide } from './providers/formGuideProvider';
+import { usePresetHelper } from './providers/presetHelperProvider';
 
 const PropExistsMsg = 'Parameter exists';
 const RequiredMsg = 'Required';
@@ -66,7 +66,7 @@ const TabContentURLParams = forwardRef<
   const { values, errors, touched, setFieldValue, handleChange } =
     useFormikContext<ModelApiFormModel>();
   const formArrayHelpersRef = useRef<FieldArrayRenderProps>();
-  const { inputFieldsDisabledStatus } = useFormGuide();
+  const { inputFieldsDisabledStatus } = usePresetHelper();
   const parameters = values.modelAPI.parameters;
   useImperativeHandle(ref, () => formArrayHelpersRef.current, []);
   const paramType = parameters && parameters.paramType;

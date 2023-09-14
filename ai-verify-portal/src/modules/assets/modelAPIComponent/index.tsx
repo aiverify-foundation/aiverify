@@ -45,8 +45,8 @@ import { MinimalHeader } from 'src/modules/home/header';
 import ConfirmationDialog from 'src/components/confirmationDialog';
 import { AlertBoxSize } from 'src/components/alertBox';
 import { PageLevelErrorAlert } from 'src/components/pageLeverlErrorAlert';
-import { FormGuidelines, GuidelineType } from './formGuideLines';
-import { FormGuideProvider } from './providers/formGuideProvider';
+import { PresetHelper, PresetHelpItem } from './presetHelper';
+import { PresetHelperProvider } from './providers/presetHelperProvider';
 import { MethodUrlInput } from './methodUrlInput';
 
 type FormikSetFieldvalueFn = (
@@ -93,7 +93,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
   const [showPageLevelAlert, setShowPageLevelAlert] = useState(false);
   const [showFormGuidelines, setShowFormGuidelines] = useState(false);
   const [showHelperBtn, setShowHelperBtn] = useState(() => id == undefined);
-  const [guidelineTypes, setGuidelineTypes] = useState<GuidelineType[]>([]);
+  const [PresetHelpItems, setPresetHelpItems] = useState<PresetHelpItem[]>([]);
   const [saveResult, setSaveResult] = useState<ErrorWithMessage | SaveResult>();
   const [saveInProgress, setSaveInProgress] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
@@ -110,25 +110,25 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
   const initialFormValues = formValues || defaultFormValues;
   let visibleTabs: Tab[] = [];
 
-  if (guidelineTypes.indexOf(GuidelineType.GET) > -1) {
+  if (PresetHelpItems.indexOf(PresetHelpItem.GET) > -1) {
     visibleTabs.push(Tab.URL_PARAMS);
   }
-  if (guidelineTypes.indexOf(GuidelineType.POST) > -1) {
+  if (PresetHelpItems.indexOf(PresetHelpItem.POST) > -1) {
     visibleTabs.push(Tab.REQUEST_BODY);
   }
-  if (guidelineTypes.indexOf(GuidelineType.HEADERS) > -1) {
+  if (PresetHelpItems.indexOf(PresetHelpItem.HEADERS) > -1) {
     visibleTabs.push(Tab.HEADERS);
   }
   if (
-    guidelineTypes.indexOf(GuidelineType.BASIC_AUTH) > -1 ||
-    guidelineTypes.indexOf(GuidelineType.AUTH_TOKEN) > -1
+    PresetHelpItems.indexOf(PresetHelpItem.BASIC_AUTH) > -1 ||
+    PresetHelpItems.indexOf(PresetHelpItem.AUTH_TOKEN) > -1
   ) {
     visibleTabs.push(Tab.AUTHENTICATION);
   }
 
   if (
     !showFormGuidelines ||
-    guidelineTypes.length === 0 ||
+    PresetHelpItems.length === 0 ||
     !useVisibleTabsList
   ) {
     visibleTabs = [
@@ -300,37 +300,37 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
   }
 
   function handleGuidelineSelected(setFieldValue: FormikSetFieldvalueFn) {
-    return (types: GuidelineType[]) => {
-      if (types.indexOf(GuidelineType.GET) > -1) {
+    return (types: PresetHelpItem[]) => {
+      if (types.indexOf(PresetHelpItem.GET) > -1) {
         setFieldValue('modelAPI.method', RequestMethod.GET);
-        if (types.indexOf(GuidelineType.QUERY) > -1) {
+        if (types.indexOf(PresetHelpItem.QUERY) > -1) {
           setFieldValue('modelAPI.parameters.paramType', URLParamType.QUERY);
-        } else if (types.indexOf(GuidelineType.PATH)) {
+        } else if (types.indexOf(PresetHelpItem.PATH)) {
           setFieldValue('modelAPI.parameters.paramType', URLParamType.PATH);
         }
         handleRequestMethodChange(RequestMethod.GET);
-      } else if (types.indexOf(GuidelineType.POST) > -1) {
+      } else if (types.indexOf(PresetHelpItem.POST) > -1) {
         setFieldValue('modelAPI.method', RequestMethod.POST);
         handleRequestMethodChange(RequestMethod.POST);
       }
 
-      if (types.indexOf(GuidelineType.BASIC_AUTH) > -1) {
+      if (types.indexOf(PresetHelpItem.BASIC_AUTH) > -1) {
         setFieldValue('modelAPI.authType', AuthType.BASIC);
-      } else if (types.indexOf(GuidelineType.AUTH_TOKEN) > -1) {
+      } else if (types.indexOf(PresetHelpItem.AUTH_TOKEN) > -1) {
         setFieldValue('modelAPI.authType', AuthType.BEARER_TOKEN);
-      } else if (types.indexOf(GuidelineType.NO_AUTH) > -1) {
+      } else if (types.indexOf(PresetHelpItem.NO_AUTH) > -1) {
         setFieldValue('modelAPI.authType', AuthType.NO_AUTH);
-        if (types.indexOf(GuidelineType.GET) > -1) {
+        if (types.indexOf(PresetHelpItem.GET) > -1) {
           setActiveTab(Tab.URL_PARAMS);
-        } else if (types.indexOf(GuidelineType.POST) > -1) {
+        } else if (types.indexOf(PresetHelpItem.POST) > -1) {
           setActiveTab(Tab.REQUEST_BODY);
         }
       }
 
-      if (guidelineTypes.length === 0) {
+      if (PresetHelpItems.length === 0) {
         handleGuideToggleAllTabs(true);
       }
-      setGuidelineTypes([...types]);
+      setPresetHelpItems([...types]);
     };
   }
 
@@ -367,7 +367,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                     onSubmit={handleFormSubmit}>
                     {({ values, setFieldValue, errors, touched }) => {
                       return (
-                        <FormGuideProvider>
+                        <PresetHelperProvider>
                           <Form>
                             <div style={{ marginBottom: '25px' }}>
                               <h3 className="screenHeading">
@@ -394,7 +394,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                                 />
                               ) : null}
                               {showFormGuidelines && !showPageLevelAlert ? (
-                                <FormGuidelines
+                                <PresetHelper
                                   onSelect={handleGuidelineSelected(
                                     setFieldValue
                                   )}
@@ -579,7 +579,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                               </ConfirmationDialog>
                             ) : null}
                           </Form>
-                        </FormGuideProvider>
+                        </PresetHelperProvider>
                       );
                     }}
                   </Formik>

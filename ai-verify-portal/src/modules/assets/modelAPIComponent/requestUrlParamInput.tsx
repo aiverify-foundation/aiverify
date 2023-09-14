@@ -7,10 +7,16 @@ import styles from './styles/newModelApiConfig.module.css';
 import { ChangeEvent } from 'react';
 import { SelectInput } from 'src/components/selectInput';
 import { optionsOpenApiDataTypes } from './selectOptions';
-import { OpenApiDataTypes, UrlParam } from './types';
-import { useFormGuide } from './providers/formGuideProvider';
+import {
+  ModelApiFormModel,
+  OpenApiDataTypes,
+  URLParamType,
+  UrlParam,
+} from './types';
+import { usePresetHelper } from './providers/presetHelperProvider';
 import { ColorPalette } from 'src/components/colorPalette';
 import { Tooltip, TooltipPosition } from 'src/components/tooltip';
+import { useFormikContext } from 'formik';
 
 type UrlParameterInputProps = {
   isFormikBinded?: boolean;
@@ -52,8 +58,9 @@ function UrlParamCaptureInput(props: UrlParameterInputProps) {
     onAddClick,
     onDeleteClick,
   } = props;
-  const { highlightedFields } = useFormGuide();
+  const { highlightedFields } = usePresetHelper();
   const disableAddBtn = value.name.trim() === '' || value.type.trim() === '';
+  const { values } = useFormikContext<ModelApiFormModel>();
 
   function handleRemoveBtnClick(param: UrlParam) {
     return () => onDeleteClick && onDeleteClick(param);
@@ -79,8 +86,13 @@ function UrlParamCaptureInput(props: UrlParameterInputProps) {
           fontColor={ColorPalette.white}
           content={
             <div style={{ marginBottom: 5, textAlign: 'left' }}>
-              Add all data keynames that are required by the API to do the
-              prediction.
+              {values.modelAPI.parameters?.paramType === URLParamType.QUERY
+                ? `
+              Add the URL parameter names and corresponding data types. URL query parameters or
+              query strings are the part of a URL that typically comes after a
+              question mark (?) and are used to pass data along with the URL.`
+                : `Add the URL parameter names and corresponding data types.
+              Path parameters are variable parts of a URL path. Order of the parameters matter.`}
             </div>
           }
           position={TooltipPosition.left}

@@ -4,6 +4,8 @@ import {
   BatchStrategy,
   MediaType,
   OpenApiDataTypes,
+  PresetHelpItem,
+  PresetOption,
   RequestMethod,
   URLParamType,
 } from './types';
@@ -47,4 +49,51 @@ export const optionsOpenApiDataTypes = [
 export const optionsBatchStrategies = [
   { value: BatchStrategy.none, label: BatchStrategy.none },
   { value: BatchStrategy.multipart, label: BatchStrategy.multipart },
+];
+
+export const presetOptions: PresetOption[] = [
+  {
+    value: [PresetHelpItem.POST, PresetHelpItem.NO_AUTH],
+    label: 'POST request, no authentication',
+  },
+  {
+    value: [PresetHelpItem.POST, PresetHelpItem.BASIC_AUTH],
+    label: 'POST request with Username/Password authentication',
+  },
+  {
+    value: [PresetHelpItem.POST, PresetHelpItem.AUTH_TOKEN],
+    label: 'POST request with Authentication Bearer Token',
+  },
+  {
+    value: [PresetHelpItem.GET, PresetHelpItem.QUERY, PresetHelpItem.NO_AUTH],
+    label: 'URL Query parameters, no authentication',
+  },
+  {
+    value: [
+      PresetHelpItem.GET,
+      PresetHelpItem.QUERY,
+      PresetHelpItem.BASIC_AUTH,
+    ],
+    label: 'URL Query parameters with Password authentication',
+  },
+  {
+    value: [
+      PresetHelpItem.GET,
+      PresetHelpItem.QUERY,
+      PresetHelpItem.AUTH_TOKEN,
+    ],
+    label: 'URL Query parameters with Authentication Bearer Token',
+  },
+  {
+    value: [PresetHelpItem.GET, PresetHelpItem.PATH, PresetHelpItem.NO_AUTH],
+    label: 'URL Path parameters, no authentication',
+  },
+  {
+    value: [PresetHelpItem.GET, PresetHelpItem.PATH, PresetHelpItem.BASIC_AUTH],
+    label: 'URL Path parameters with Password authentication',
+  },
+  {
+    value: [PresetHelpItem.GET, PresetHelpItem.PATH, PresetHelpItem.AUTH_TOKEN],
+    label: 'URL Path parameters with Authentication Bearer Token',
+  },
 ];

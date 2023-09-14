@@ -2,7 +2,7 @@ import styles from './styles/newModelApiConfig.module.css';
 import clsx from 'clsx';
 import { useFormikContext } from 'formik';
 import { ModelApiFormModel, RequestMethod } from './types';
-import { useFormGuide } from './providers/formGuideProvider';
+import { usePresetHelper } from './providers/presetHelperProvider';
 import { useEffect } from 'react';
 
 export enum Tab {
@@ -23,7 +23,7 @@ type TabButtonsGroupProps = {
 function TabButtonsGroup(props: TabButtonsGroupProps) {
   const { visibleTabs, activeTab, onTabClick } = props;
   const { values } = useFormikContext<ModelApiFormModel>();
-  const { highlightedTab } = useFormGuide();
+  const { highlightedTab } = usePresetHelper();
 
   function isTabVisible(tab: Tab) {
     return visibleTabs.indexOf(tab) > -1;

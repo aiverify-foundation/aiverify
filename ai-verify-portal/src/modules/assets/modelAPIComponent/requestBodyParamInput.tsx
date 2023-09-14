@@ -9,7 +9,7 @@ import { optionsOpenApiDataTypes } from './selectOptions';
 import { BodyParam, OpenApiDataTypes } from './types';
 import clsx from 'clsx';
 import { ColorPalette } from 'src/components/colorPalette';
-import { useFormGuide } from './providers/formGuideProvider';
+import { usePresetHelper } from './providers/presetHelperProvider';
 import { Tooltip, TooltipPosition } from 'src/components/tooltip';
 
 type RequestBodyParameterInputProps = {
@@ -52,7 +52,7 @@ function RequestBodyParameterInput(props: RequestBodyParameterInputProps) {
     onAddClick,
     onDeleteClick,
   } = props;
-  const { highlightedFields } = useFormGuide();
+  const { highlightedFields } = usePresetHelper();
   const disableAddBtn = value.field.trim() === '' || value.type.trim() === '';
 
   function handleRemoveBtnClick(param: BodyParam) {

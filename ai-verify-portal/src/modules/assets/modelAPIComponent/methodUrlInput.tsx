@@ -3,8 +3,7 @@ import { SelectInput } from 'src/components/selectInput';
 import { ModelApiFormModel, RequestMethod } from './types';
 import { optionsRequestMethods } from './selectOptions';
 import { TextInput } from 'src/components/textInput';
-import { useFormGuide } from './providers/formGuideProvider';
-import { useEffect } from 'react';
+import { usePresetHelper } from './providers/presetHelperProvider';
 import { ColorPalette } from 'src/components/colorPalette';
 import { Tooltip, TooltipPosition } from 'src/components/tooltip';
 
@@ -17,7 +16,7 @@ function MethodUrlInput(props: MethodUrlInputProps) {
   const { onRequestMethodChange, disabled = false } = props;
   const { values, errors, touched, setFieldValue, handleChange } =
     useFormikContext<ModelApiFormModel>();
-  const { inputFieldsDisabledStatus, highlightedFields } = useFormGuide();
+  const { inputFieldsDisabledStatus, highlightedFields } = usePresetHelper();
 
   function handleRequestMethodChange(val: RequestMethod) {
     setFieldValue('modelAPI.method', val);
@@ -52,7 +51,7 @@ function MethodUrlInput(props: MethodUrlInputProps) {
           }
           position={TooltipPosition.bottom}
           offsetTop={-10}
-          offsetLeft={-400}>
+          offsetLeft={-200}>
           <div style={{ width: '100%' }}>
             <TextInput
               disabled={disabled}
