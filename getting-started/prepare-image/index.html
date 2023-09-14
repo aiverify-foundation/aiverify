@@ -3432,6 +3432,13 @@ class imageProcessingStage():
 <li>Ground Truth Dataset/ Annotated Ground Truth Path: 'data/pickle_pandas_fashion_mnist_annotated_labels_10.sav' ; Select Ground Truth : <code>default</code> ; Name of column containing image file names : <code>file_name</code></li>
 <li>Model: 'pipeline/multiclass_classification_image_mnist_fashion' ; Note that the model should be uploaded as a folder as it is a pipeline</li>
 </ul>
+<p>Alternatively, users can also test fairness on images with our sample data and model. The data, ground truth dataset and model can be found <a href="https://github.com/IMDA-BTG/aiverify/tree/main/stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification/tests/user_defined_files">here</a>:</p>
+<ul>
+<li>Data: 'data:/small_test'</li>
+<li>Ground Truth Dataset/ Annotated Ground Truth Path: 'data/pickle_pandas_annotated_labels_50.sav' ; Select Ground Truth : <code>gender</code> ; Name of column containing image file names : <code>image_directory</code></li>
+<li>Model: 'pipeline/bc_image_face'</li>
+<li>Sensitive Feature: <code>race</code></li>
+</ul>
 </div>
 </div>
 </div>

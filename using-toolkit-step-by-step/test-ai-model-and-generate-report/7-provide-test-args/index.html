@@ -1330,6 +1330,9 @@
 <p><img alt="test-args" src="../../../res/test-ai-model-generate-report/input-block-3.png" /></p>
 <h3 id="fairness-metrics-toolbox-for-classification">Fairness Metrics Toolbox for Classification</h3>
 <p>Click on <strong>‘Open’</strong> for Fairness Metrics Toolbox for Classification. Provide the test argument:</p>
+<ul>
+<li>We are using tabular data for testing in this tutorial. The <strong>Annotated ground truth path</strong> and <strong>Name of column containing image file names</strong> fields are used for image datasets but not tabular datasets. They are required parameters so something has to be filled for these fields. We are currently working on making the fields optional for tabular data testing. </li>
+</ul>
 <table>
 <thead>
 <tr>
@@ -1340,9 +1343,19 @@
 </thead>
 <tbody>
 <tr>
-<td><strong>(required) Sensitive Feature Names:</strong></td>
+<td><strong>(required) Sensitive Feature Names</strong></td>
 <td>This is the column name of the sensitive feature in the testing dataset.</td>
 <td>gender, race</td>
+</tr>
+<tr>
+<td><strong>(required) Annotated ground truth path</strong></td>
+<td>This is the path to the annotated ground truth file for image datasets. For image datasets, it is the path to the annotated ground truth file. <a href="../../../getting-started/preparation-of-input-files/">(See Getting Started &gt; Preparation of Input Files)</a></td>
+<td>Select the path to <code>sample_bc_credit_data.sav</code></td>
+</tr>
+<tr>
+<td><strong>(required) Name of column containing image file names</strong></td>
+<td>This is the column name of the ground truth. For image datasets, it is the column name in the annotated ground truth file that contains the image file names.</td>
+<td>file_name</td>
 </tr>
 </tbody>
 </table>
@@ -1351,6 +1364,9 @@
 <p><img alt="sensitive-feature" src="../../../res/test-ai-model-generate-report/fmt.png" /></p>
 <h3 id="robustness-toolbox">Robustness Toolbox</h3>
 <p>Click on <strong>‘Open’</strong> for Robustness Toolbox.</p>
+<ul>
+<li>We are using tabular data for testing in this tutorial. The <strong>Annotated ground truth path</strong> and <strong>Name of column containing image file names</strong> fields are used for image datasets but not tabular datasets. They are required parameters so something has to be filled for these fields. We are currently working on making the fields optional for tabular data testing.</li>
+</ul>
 <p>Provide the test arguments:</p>
 <table>
 <thead>
