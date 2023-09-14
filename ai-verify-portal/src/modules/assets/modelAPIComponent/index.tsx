@@ -1,13 +1,6 @@
-import { TextInput } from 'src/components/textInput';
 import styles from './styles/newModelApiConfig.module.css';
-import { SelectInput } from 'src/components/selectInput';
 import { useEffect, useRef, useState } from 'react';
 import { DragDropContext, DragUpdate } from 'react-beautiful-dnd';
-import {
-  optionsAuthMethods,
-  optionsRequestMethods,
-  optionsUrlParamTypes,
-} from './selectOptions';
 import {
   AuthType,
   ModelApiFormModel,
