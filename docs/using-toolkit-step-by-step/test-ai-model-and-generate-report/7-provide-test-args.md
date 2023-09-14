@@ -7,9 +7,13 @@ The _AI Verify Summary Report Template for Classification Models_ requires **Fai
 
 Click on **‘Open’** for Fairness Metrics Toolbox for Classification. Provide the test argument:
 
+* We are using tabular data for testing in this tutorial. The **Annotated ground truth path** and **Name of column containing image file names** fields are used for image datasets but not tabular datasets. They are required parameters so something has to be filled for these fields. We are currently working on making the fields optional for tabular data testing. 
+
 | Test Argument                           | Description                                                              | Tutorial Value | 
 | --------------------------------------- | ------------------------------------------------------------------------ | ----- |
-| **(required) Sensitive Feature Names:** | This is the column name of the sensitive feature in the testing dataset. | gender, race |
+| **(required) Sensitive Feature Names** | This is the column name of the sensitive feature in the testing dataset. | gender, race |
+| **(required) Annotated ground truth path** | This is the path to the annotated ground truth file for image datasets. For image datasets, it is the path to the annotated ground truth file. [(See Getting Started > Preparation of Input Files)](../../getting-started/preparation-of-input-files.md) | Select the path to `sample_bc_credit_data.sav`|
+| **(required) Name of column containing image file names** | This is the column name of the ground truth. For image datasets, it is the column name in the annotated ground truth file that contains the image file names. | file_name |
 
 If there are more than one sensitive feature, click on ‘+’.
 
@@ -20,6 +24,8 @@ Click on **‘Ok’**.
 ### Robustness Toolbox
 
 Click on **‘Open’** for Robustness Toolbox.
+
+* We are using tabular data for testing in this tutorial. The **Annotated ground truth path** and **Name of column containing image file names** fields are used for image datasets but not tabular datasets. They are required parameters so something has to be filled for these fields. We are currently working on making the fields optional for tabular data testing.
 
 Provide the test arguments:
 
