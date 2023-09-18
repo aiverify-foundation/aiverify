@@ -26,6 +26,7 @@ class BatchStrategy(Enum):
 
     NONE = auto()
     MULTIPART = auto()
+    APPLICATION_JSON = auto()
 
 
 # NOTE: Do not change the class name, else the plugin cannot be read by the system
@@ -54,18 +55,18 @@ class Plugin(IModel):
     _api_ssl_verify_default: bool = False
     _api_ssl_cert_default: None = None
     _api_request_timeout_default: float = 3.0
-    _api_rate_limit_default: int = -1
-    _api_rate_limit_timeout_default: int = 3
-    _api_batch_strategy_default: BatchStrategy = BatchStrategy.MULTIPART
-    _api_batch_limit_default: int = 5
-    _api_max_connections_default: int = -1
+    _api_rate_limit_default: int = 0
+    _api_rate_limit_timeout_default: int = 3.0
+    _api_batch_strategy_default: BatchStrategy = BatchStrategy.NONE
+    _api_batch_limit_default: int = 500
+    _api_max_connections_default: int = 1
     _api_connection_retries_default: int = 1000
     # Set request options values
     _api_ssl_verify: bool = _api_ssl_verify_default
     _api_ssl_cert: Union[str, None] = _api_ssl_cert_default
     _api_request_timeout: float = _api_request_timeout_default
     _api_rate_limit: int = _api_rate_limit_default
-    _api_rate_limit_timeout: int = _api_rate_limit_timeout_default
+    _api_rate_limit_timeout: float = _api_rate_limit_timeout_default
     _api_batch_strategy: BatchStrategy = _api_batch_strategy_default
     _api_batch_limit: int = _api_batch_limit_default
     _api_max_connections: int = _api_max_connections_default
@@ -112,7 +113,7 @@ class Plugin(IModel):
         Returns:
             httpx.AsyncClient: Returns a httpx AsyncClient
         """
-        kwargs["timeout"] = Plugin._api_request_timeout
+        kwargs["timeout"] = Plugin._api_request_timeout  
         kwargs["transport"] = OpenAPICustomTransport(
             verify=Plugin._api_ssl_verify,
             cert=Plugin._api_ssl_cert,
@@ -124,6 +125,7 @@ class Plugin(IModel):
             connection_retries=Plugin._api_connection_retries,
             response_error_callback=Plugin._notify_response_error,
         )
+
         return httpx.AsyncClient(*args, **kwargs)
 
     def __init__(self, **kwargs) -> None:
@@ -188,22 +190,27 @@ class Plugin(IModel):
             Plugin._api_rate_limit_timeout = self._api_config.get(
                 "requestOptions", {}
             ).get("rateLimitTimeout", Plugin._api_rate_limit_timeout_default)
+
             temp_strategy = self._api_config.get("requestOptions", {}).get(
                 "batchStrategy", Plugin._api_batch_strategy_default.name.lower()
             )
             if temp_strategy == "none":
                 Plugin._api_batch_strategy = BatchStrategy.NONE
             else:
-                Plugin._api_batch_strategy = BatchStrategy.MULTIPART
-            Plugin.api_batch_limit = self._api_config.get("requestOptions", {}).get(
+                Plugin._api_batch_strategy = BatchStrategy.APPLICATION_JSON
+            Plugin._api_batch_limit = self._api_config.get("requestOptions", {}).get(
                 "batchLimit", Plugin._api_batch_limit_default
             )
+
             Plugin._api_max_connections = self._api_config.get(
                 "requestOptions", {}
             ).get("maxConnections", Plugin._api_max_connections_default)
             Plugin._api_connection_retries = self._api_config.get(
                 "requestOptions", {}
             ).get("connectionRetries", Plugin._api_connection_retries_default)
+
+            # Perform input validation
+            self._validate_input()
 
             # Create the api instance based on the provided api schema
             self._api_instance = OpenAPI.loads(
@@ -213,6 +220,7 @@ class Plugin(IModel):
                 loader=FileSystemLoader(pathlib.Path("")),
                 use_operation_tags=True,
             )
+
 
             # Setup API Authentication
             self._setup_api_authentication()
@@ -332,21 +340,18 @@ class Plugin(IModel):
             "application/json"
             in self._api_instance._.predict_api.operation.requestBody.content
         ):
-            self._api_batch_strategy = BatchStrategy.NONE
             return self._api_instance._.predict_api.operation.requestBody.content[
                 "application/json"
             ].schema_
         elif (
             ct := "multipart/form-data"
         ) in self._api_instance._.predict_api.operation.requestBody.content:
-            self._api_batch_strategy = BatchStrategy.MULTIPART
             return self._api_instance._.predict_api.operation.requestBody.content[
                 ct
             ].schema_
         elif (
             ct := "application/x-www-form-urlencoded"
         ) in self._api_instance._.predict_api.operation.requestBody.content:
-            self._api_batch_strategy = BatchStrategy.NONE
             return self._api_instance._.predict_api.operation.requestBody.content[
                 ct
             ].schema_
@@ -441,7 +446,6 @@ class Plugin(IModel):
             
             # Populate body with payload values
             body = self._api_instance_schema.get_type().construct(**row_data_to_send)
-
             headers, data, result = await self._api_instance._.predict_api.request(
                 parameters=headers, data=body
             )
@@ -449,7 +453,6 @@ class Plugin(IModel):
         else:
             # GET method. Populate body with payload values
             body = None
-
             # Perform api request
             headers, data, result = await self._api_instance._.predict_api.request(
                 parameters=row_data_to_send, data=body
@@ -484,7 +487,6 @@ class Plugin(IModel):
             row_data_to_send = await self.get_data_payload(row, *args)
             list_of_processed_rows.append(row_data_to_send)
 
-        dict_of_processed_rows = ({key: [i[key] for i in list_of_processed_rows] for key in list_of_processed_rows[0]})
         if self._api_instance._.predict_api.method.lower() == "post":
             # POST method. Get API Instance schema
             self._api_instance_schema = await self.get_schema_content()
@@ -496,9 +498,8 @@ class Plugin(IModel):
                         headers.update({parameter.name: parameter.schema_.enum[0]})
             
             # Populate body with payload values
-            body = self._api_instance_schema.get_type().construct(**dict_of_processed_rows)
             headers, data, result = await self._api_instance._.predict_api.request(
-                parameters=headers, data=body
+                parameters=headers, data=list_of_processed_rows
             )
         else:
             # GET method. Populate body with payload values
@@ -509,7 +510,7 @@ class Plugin(IModel):
                 parameters=row_data_to_send, data=body
             )
         return result
-
+    
     async def make_request(self, data: Any, *args) -> Any:
         """
         An async method to make multiple API requests using the provided data.
@@ -542,10 +543,8 @@ class Plugin(IModel):
         response_data = list()
         request_task_list = []
 
-        # self._api_batch_strategy = BatchStrategy.NONE
-        self._api_batch_strategy = BatchStrategy.MULTIPART
-        # MULTIPART
-        if self._api_batch_strategy == BatchStrategy.MULTIPART:
+        # Batching using application/json
+        if self._api_batch_strategy == BatchStrategy.APPLICATION_JSON:
             batched_data = []     
             # Loop through the data list. It can be a list of mixed data to be predicted such as DF or numpy.
             for data_to_predict in data:                
@@ -562,7 +561,7 @@ class Plugin(IModel):
                         # Pass this information to the send request function to request
                         request_task_list.append(self.send_batched_request(row, *args))
 
-        # NON-MULTIPART
+        # No batching
         else:
             # Loop through the data list. It can be a list of mixed data to be predicted such as DF or numpy.
             for data_to_predict in data:
@@ -590,23 +589,18 @@ class Plugin(IModel):
             for response in response_list:
                 parsed_response = json.loads(response.text)
                 parsed_data_value = parsed_response.get(response_field_name)
-                response_data.append(parsed_data_value)
+                if self._api_batch_strategy == BatchStrategy.APPLICATION_JSON:
+                    ast_parsed_data_value = literal_eval(parsed_data_value)
+                    for nested_parsed_data_value in ast_parsed_data_value:
+                        response_data.append(nested_parsed_data_value)
+                else:
+                    response_data.append(parsed_data_value)
         else:
-            response_body_type = self._api_config.get("responseBody").get("type")
-            if response_body_type == "array":
-                i = 0
-                for response in response_list:
-                    i += 1
-                    list_of_parsed_response = literal_eval(response.text)
-                    for item in list_of_parsed_response:
-                        response_data.append(item)
-            else:
-                for response in response_list:
-                    response_data.append(response.text)
-        
+            for response in response_list:
+                response_data.append(response.text)
+            
         end_time = time.time()
         elapsed_time = end_time - start_time
-        print("========================================time taken========================================:\n", elapsed_time)
         return response_data
 
     def _setup_api_authentication(self) -> None:
@@ -656,6 +650,48 @@ class Plugin(IModel):
         except Exception as error:
             return False, str(error)
 
+    def _validate_input(self) -> None:
+        error_message = ""
+
+        if not isinstance(self._api_ssl_verify, bool):
+            error_message += "Bool expected for SSL Verification;"
+            
+        # if (self._api_ssl_cert!=valid_cert):
+            # error_message += "Invalid SSL Cert;"
+        
+        if (not isinstance(self._api_request_timeout, int) and \
+           not isinstance(self._api_request_timeout, float)) or \
+           self._api_request_timeout < 0:
+            error_message += "Positive int/float expected for Request Timeout;"
+
+        if not isinstance(self._api_rate_limit, int) or \
+           self._api_rate_limit < 0:
+            error_message += "Positive int expected for Rate Limit;"
+        
+        if (not isinstance(self._api_rate_limit_timeout, int) and \
+           not isinstance(self._api_rate_limit_timeout, float)) or \
+           self._api_rate_limit_timeout < 0:
+            error_message += "Positive int/float expected for Rate Limit Timeout;"
+
+        if self._api_batch_strategy not in BatchStrategy:
+            error_message += "Invalid Batch Strategy;"
+
+        if not isinstance(self._api_batch_limit, int) or \
+           self._api_batch_limit < 0:
+            error_message += "Positive int expected for Batch Limit;"     
+
+        if not isinstance(self._api_max_connections, int) or \
+           self._api_max_connections < 0:
+            error_message += "Positive int expected for Max Connections;"  
+
+        if not isinstance(self._api_connection_retries, int) or \
+           self._api_connection_retries < 0:
+            error_message += "Positive int expected for Connection Retries;"  
+
+        if error_message != "":
+            raise RuntimeError(
+                f"Validation failed for API Connector: {error_message}"
+            )
 
 class OpenAPICustomTransport(httpx.AsyncHTTPTransport):
     """
@@ -688,11 +724,14 @@ class OpenAPICustomTransport(httpx.AsyncHTTPTransport):
         self._max_connection = max_connections
         self._connection_retries = connection_retries
         self._response_error_callback = response_error_callback
-
+        self._limit_class = OpenAPICustomLimits(no_of_max_connections = 1)
+        
         # Initialize super class
         super().__init__(
             verify=self._ssl_verify,
             cert=self._ssl_cert,
+            retries=self._connection_retries,
+            limits=self._limit_class
         )
 
     async def handle_attempt_retries(
@@ -768,3 +807,24 @@ class OpenAPICustomTransport(httpx.AsyncHTTPTransport):
                     raise RuntimeError(
                         f"Maximum retries exceeded ({self._connection_retries}) {error_message}"
                     )
+
+class OpenAPICustomLimits(httpx.Limits):
+    """
+    A custom Limits module that helps us manage connection configurations
+    """
+    
+    def __init__(
+        self,
+        no_of_max_connections: int,
+    ):
+        # Save the variables
+        self._max_connections = no_of_max_connections
+        self._max_keepalive_connections = None
+        self._keepalive_expiry = None
+
+        # Initialize super class
+        super().__init__(
+            max_connections = self._max_connections,
+            max_keepalive_connections = self._max_keepalive_connections,
+            keepalive_expiry = self._keepalive_expiry
+        )
