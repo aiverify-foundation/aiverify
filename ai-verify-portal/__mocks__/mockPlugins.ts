@@ -2180,6 +2180,7 @@ const algoPackageDependencyStatusResponse: ApiResult<DependencyStatusResult[]> =
     ],
   };
 
+// mock used as response from server/PluginManager getPlugins
 const pluginsFromDir: PluginManagerType = {
   plugins: [
     {

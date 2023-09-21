@@ -33,6 +33,7 @@ import {
   useUpdateProject,
   useSaveProjectAsTemplate,
 } from 'src/lib/projectService';
+import { toErrorWithMessage } from 'src/lib/errorUtils';
 
 export enum UpdateActionTypes {
   UPDATE = 'UPDATE',
@@ -127,7 +128,7 @@ export interface ProjectTemplateStore {
   saveProjectAsTemplate: (templateInfo: ProjectInformation) => Promise<string>;
   exportTemplate: (pluginGID: string, templateCID: string) => Promise<string>;
   flushAllUpdates: () => void;
-  flushAllUpdatesAsync: () => Promise<(void | undefined)[]>;
+  flushAllUpdatesAsync: () => Promise<(boolean | void | undefined)[]>;
 }
 
 /**
@@ -158,7 +159,6 @@ export function useProjectTemplateStore(
     state: Type,
     action: DataUpdateActions<Type>
   ): Type {
-    // console.log("projectInfoReducer", state, action)
     switch (action.type) {
       case UpdateActionTypes.UPDATE:
         const newState = {
@@ -177,7 +177,6 @@ export function useProjectTemplateStore(
       case ARUActionTypes.ADD:
         if (!action.payload) throw new Error('Missing payload');
         const newState = [...state, action.payload as Type] as Type[];
-        // console.log("newState", JSON.stringify(newState))
         if (action.updateFn) action.updateFn(id, newState as Type[]);
         return newState;
       case ARUActionTypes.INSERT:
@@ -197,15 +196,11 @@ export function useProjectTemplateStore(
         return newState4;
       case ARUActionTypes.REMOVE:
         if (_.isNil(action.index)) throw new Error('Missing index');
-        // console.log("before slice", JSON.stringify(state))
-        // state.splice(action.index, 1);
-        // console.log("after slice", JSON.stringify(state))
         const newState2 = [...state]; // clone the array
         newState2.splice(action.index, 1);
         if (action.updateFn) action.updateFn(id, newState2 as Type[]);
         return newState2;
       case ARUActionTypes.UPDATE:
-        // console.log("ACTION UPDATE", action, state.length)
         if (_.isNil(action.index) || !action.payload)
           throw new Error('Missing index or payload');
         if (action.index < 0 || action.index >= state.length) return state;
@@ -214,23 +209,20 @@ export function useProjectTemplateStore(
           ...action.payload,
         };
         if (action.updateFn) action.updateFn(id, state as Type[]);
-        // console.log("updateState", JSON.stringify(state))
         return state;
       case ARUActionTypes.REPLACE:
         if (!action.payloadArray) throw new Error('payload');
         if (action.updateFn) action.updateFn(id, action.payloadArray);
-        // console.log("updateState", JSON.stringify(state))
         return action.payloadArray as Type[];
       default:
         throw new Error('Invalid action');
     }
-  } // arrayReducer
+  }
 
   function mapReducer<Type>(
     state: GenericMap<Type>,
     action: MapActions<Type>
   ): GenericMap<Type> {
-    // console.log("projectInfoReducer", state, action)
     switch (action.type) {
       case MapActionTypes.SET:
         if (!action.key || !action.payload) return state;
@@ -261,7 +253,6 @@ export function useProjectTemplateStore(
 
   /** create the reducers */
 
-  // @ts-ignore
   const [projectInfo, _dispatchProjectInfo] = useReducer(
     updateReducer<ProjectInformation>,
     {
@@ -270,8 +261,11 @@ export function useProjectTemplateStore(
   );
   const _sendProjectInfoUpdates = useCallback(
     _.debounce((id: string | undefined, state: ProjectInformation) => {
-      if (!id || id.length == 0) return Promise.resolve();
       if (isNew) return Promise.resolve();
+      if (!id || id.length == 0)
+        return Promise.reject(
+          toErrorWithMessage(new Error('_sendProjectInfoUpdates: Invalid ID'))
+        );
       const data = _.pick(state, [
         'name',
         'description',
@@ -281,9 +275,11 @@ export function useProjectTemplateStore(
       return updateProjectFn(id, { projectInfo: data })
         .then(() => {
           setLastSavedTime(moment());
+          return Promise.resolve(true);
         })
         .catch((err) => {
           console.error('Update Info error:', err);
+          return Promise.reject(toErrorWithMessage(err));
         });
     }, DEBOUNCE_WAIT),
     []
@@ -292,35 +288,32 @@ export function useProjectTemplateStore(
   const dispatchProjectInfo = (
     action: DataUpdateActions<ProjectInformation>
   ) => {
-    // console.log("dispatchPages", id, action)
     _dispatchProjectInfo({
       ...action,
       updateFn: _sendProjectInfoUpdates,
     });
   };
 
-  // @ts-ignore
   const [pages, _dispatchPages] = useReducer(
     arrayReducer<Page>,
     data.pages || []
   );
   const _sendPageUpdates = useCallback(
     _.debounce((id: string | undefined, pages: Page[]) => {
-      if (!id || id.length == 0) return Promise.resolve();
+      if (!id || id.length == 0)
+        return Promise.reject(
+          toErrorWithMessage(new Error('_sendPageUpdates: Invalid ID'))
+        );
       const _pages = pages.map((page) => {
         const data = _.pick(page, ['layouts', 'reportWidgets']);
         data.layouts = data.layouts.map((layout) => {
           const l = _.pick(layout, [
             'h',
             'i',
-            'isBounded',
-            'isDraggable',
-            'isResizable',
             'maxH',
             'maxW',
             'minH',
             'minW',
-            'resizeHandles',
             'static',
             'w',
             'x',
@@ -350,9 +343,11 @@ export function useProjectTemplateStore(
       return updateProjectFn(id, { pages: _pages })
         .then(() => {
           setLastSavedTime(moment());
+          return Promise.resolve(true);
         })
         .catch((err) => {
           console.error('Update page error', err);
+          return Promise.reject(toErrorWithMessage(err));
         });
     }, DEBOUNCE_WAIT),
     []
@@ -365,23 +360,27 @@ export function useProjectTemplateStore(
     });
   };
 
-  // @ts-ignore
   const [globalVars, _dispatchGlobalVars] = useReducer(
     arrayReducer<GlobalVariable>,
     data.globalVars || []
   );
   const _sendGlobalVarsUpdates = useCallback(
     _.debounce((id: string | undefined, globalVars: GlobalVariable[]) => {
-      if (!id || id.length == 0) return Promise.resolve();
+      if (!id || id.length == 0)
+        return Promise.reject(
+          toErrorWithMessage(new Error('_sendGlobalVarsUpdates: Invalid ID'))
+        );
       const _globalVars = globalVars.map((item) => {
         return _.pick(item, ['key', 'value']);
       }) as GlobalVariable[];
       return updateProjectFn(id, { globalVars: _globalVars })
         .then(() => {
           setLastSavedTime(moment());
+          return Promise.resolve(true);
         })
         .catch((err) => {
           console.error('Update global vars error', err);
+          return Promise.reject(toErrorWithMessage(err));
         });
     }, DEBOUNCE_WAIT),
     []
@@ -550,7 +549,6 @@ export function useProjectTemplateStore(
   const deletePage = (pageIdx: number) => {
     const page = pages[pageIdx];
     let ibMap = null as dependency2ReportWidgetsMapType | null;
-    // let tmpInputBlocks = null as InputBlock[] | null;
     for (const reportWidget of page.reportWidgets) {
       if (!reportWidget.widget) continue;
       if (
@@ -571,20 +569,10 @@ export function useProjectTemplateStore(
         ibMap[dep.gid].splice(idx, 1);
         if (ibMap[dep.gid].length == 0) {
           delete ibMap[dep.gid];
-          // remove input block
-          // if (!tmpInputBlocks)
-          // 	tmpInputBlocks = _.cloneDeep(inputBlocks)
-          // const idx2 = tmpInputBlocks.findIndex(e => e.gid == dep.gid);
-          // if (idx2 >= 0) {
-          // 	tmpInputBlocks.splice(idx2, 1)
-          // }
         }
       }
     }
     if (ibMap) setDependency2ReportWidgetsMap(ibMap);
-    // if (tmpInputBlocks)
-    // 	dispatchInputBlocks({ type:ARUActionTypes.REPLACE, payloadArray:tmpInputBlocks })
-    // projectStore.dispatchPages({ type:ARUActionTypes.REMOVE, index:pageIdx })
   };
 
   // store the widget MDX bundle

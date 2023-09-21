@@ -1,7 +1,15 @@
-import { CREATE_PROJECT, UPDATE_PROJECT } from 'src/lib/projectService';
+import {
+  CREATE_PROJECT,
+  GENERATE_REPORT,
+  UPDATE_PROJECT,
+} from 'src/lib/projectService';
 import { GET_PROJECT_TEMPLATES } from 'src/lib/projectTemplateService';
 import { GET_DATASETS } from 'src/modules/assets/datasetList';
 import { GET_MODELS } from 'src/modules/assets/modelList';
+
+const MOCK_PROJECTID = '64c82da4c99adb254a4203ad';
+
+export const MOCK_DATE_WIDGET_1 = 1695202143375;
 
 export const mockGqlData = [
   {
@@ -32,7 +40,7 @@ export const mockGqlData = [
     result: {
       data: {
         createProject: {
-          id: '64c82da4c99adb254a4203ad',
+          id: MOCK_PROJECTID,
         },
       },
     },
@@ -50,6 +58,7 @@ export const mockGqlDataMinimal = [
       },
     },
   },
+
   {
     request: {
       query: CREATE_PROJECT,
@@ -63,11 +72,12 @@ export const mockGqlDataMinimal = [
     result: {
       data: {
         createProject: {
-          id: '64c82da4c99adb254a4203ad',
+          id: MOCK_PROJECTID,
         },
       },
     },
   },
+
   {
     request: {
       query: GET_DATASETS,
@@ -160,6 +170,7 @@ export const mockGqlDataMinimal = [
       },
     },
   },
+
   {
     request: {
       query: GET_MODELS,
@@ -185,6 +196,120 @@ export const mockGqlDataMinimal = [
             __typename: 'ModelFile',
           },
         ],
+      },
+    },
+  },
+
+  {
+    request: {
+      query: UPDATE_PROJECT,
+      variables: {
+        id: `${MOCK_PROJECTID}`,
+        project: {
+          pages: [
+            {
+              layouts: [
+                {
+                  h: 3,
+                  i: `${MOCK_DATE_WIDGET_1}`,
+                  maxH: 36,
+                  maxW: 12,
+                  minH: 3,
+                  minW: 6,
+                  static: false,
+                  w: 6,
+                  x: 1,
+                  y: 1,
+                },
+              ],
+              reportWidgets: [
+                {
+                  widgetGID:
+                    'aiverify.stock.fairness_metrics_toolbox_for_regression:mae_interpretation',
+                  key: `${MOCK_DATE_WIDGET_1}`,
+                  layoutItemProperties: {
+                    justifyContent: 'left',
+                    alignItems: 'top',
+                  },
+                  properties: {},
+                },
+              ],
+            },
+          ],
+        },
+      },
+    },
+    result: {
+      data: {
+        updateProject: {
+          id: `${MOCK_PROJECTID}`, // Note: the actual result actually has many more properties than just `id`. In unit test, we do not need them so omitting in this mock
+        },
+      },
+    },
+  },
+
+  {
+    request: {
+      query: UPDATE_PROJECT,
+      variables: {
+        id: `${MOCK_PROJECTID}`,
+        project: {
+          modelAndDatasets: {
+            modelId: '647d8c0514ae095e2e890af4',
+            testDatasetId: '647d8bf214ae095e2e890add',
+            groundTruthDatasetId: '647d8bf214ae095e2e890add',
+            groundTruthColumn: 'two_year_recid',
+          },
+        },
+      },
+    },
+    result: {
+      data: {
+        updateProject: {
+          id: `${MOCK_PROJECTID}`, // Note: the actual result actually has many more properties than just `id`. In unit test, we do not need them so omitting in this mock
+        },
+      },
+    },
+  },
+
+  {
+    request: {
+      query: UPDATE_PROJECT,
+      variables: {
+        id: `${MOCK_PROJECTID}`,
+        project: {
+          testInformationData: [
+            {
+              algorithmGID:
+                'aiverify.stock.fairness_metrics_toolbox_for_regression:fairness_metrics_toolbox_for_regression',
+              testArguments: { sensitive_feature: ['race_code'] },
+            },
+          ],
+        },
+      },
+    },
+    result: {
+      data: {
+        updateProject: {
+          id: `${MOCK_PROJECTID}`, // Note: the actual result actually has many more properties than just `id`. In unit test, we do not need them so omitting in this mock
+        },
+      },
+    },
+  },
+
+  {
+    request: {
+      query: GENERATE_REPORT,
+      variables: {
+        projectID: MOCK_PROJECTID,
+        algorithms: [
+          'aiverify.stock.fairness_metrics_toolbox_for_regression:fairness_metrics_toolbox_for_regression',
+        ],
+      },
+    },
+    result: {
+      generateReport: {
+        status: 'RunningTests',
       },
     },
   },

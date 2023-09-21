@@ -13,15 +13,12 @@ import {
   DataUpdateActions,
 } from '../projectTemplate/projectTemplateContext';
 export * from '../projectTemplate/projectTemplateContext';
-// import ProjectTemplate, { ProjectInformation, Page, ReportWidgetItem, GlobalVariable } from 'src/types/projectTemplate.interface';
 import Project, {
   Report,
   ProjectReportStatus,
   ModelAndDatasets,
 } from 'src/types/project.interface';
-// import { InputBlock, Algorithm } from 'src/types/plugin.interface';
 import { TestInformation } from 'src/types/test.interface';
-// import { WidgetProperties, useWidgetProperties } from 'src/lib/canvasUtils';
 
 import PluginManagerType from 'src/types/pluginManager.interface';
 import {
@@ -31,6 +28,7 @@ import {
   useGenerateReport,
   useCancelTestRuns,
 } from 'src/lib/projectService';
+import { toErrorWithMessage } from 'src/lib/errorUtils';
 
 export interface ProjectStore extends ProjectTemplateStore {
   requireGroundTruth: boolean;
@@ -60,7 +58,6 @@ export function useProjectStore(
   pluginManager: PluginManagerType
 ): ProjectStore {
   const templateStore = useProjectTemplateStore(data, pluginManager, true);
-  // console.log("templateStore", templateStore);
 
   const updateProjectFn = useUpdateProject();
 
@@ -84,13 +81,20 @@ export function useProjectStore(
   );
   const _sendInputBlockDataUpdates = useCallback(
     _.debounce((id: string | undefined, state: any) => {
-      if (!id || id.length == 0) return Promise.resolve();
+      if (!id || id.length == 0)
+        return Promise.reject(
+          toErrorWithMessage(
+            new Error('_sendInputBlockDataUpdates: Invalid ID')
+          )
+        );
       return updateProjectFn(id, { inputBlockData: state })
         .then(() => {
           templateStore.setLastSavedTime(moment());
+          return Promise.resolve(true);
         })
         .catch((err) => {
           console.error('Update input block error:', err);
+          return Promise.reject(toErrorWithMessage(err));
         });
     }, DEBOUNCE_WAIT),
     []
@@ -103,7 +107,6 @@ export function useProjectStore(
   };
 
   // Test Information
-  // @ts-ignore
   const [testInformationData, _dispatchTestInformationData] = useReducer(
     templateStore.mapReducer<TestInformation>,
     {},
@@ -122,7 +125,12 @@ export function useProjectStore(
   );
   const _sendTestInformationUpdates = useCallback(
     _.debounce((id: string | undefined, state: GenericMap<TestInformation>) => {
-      if (!id || id.length == 0) return Promise.resolve();
+      if (!id || id.length == 0)
+        return Promise.reject(
+          toErrorWithMessage(
+            new Error('_sendTestInformationUpdates: Invalid ID')
+          )
+        );
       const testInformationArray = Object.values(state).map((info) => {
         return {
           algorithmGID: info.algorithmGID,
@@ -132,9 +140,11 @@ export function useProjectStore(
       return updateProjectFn(id, { testInformationData: testInformationArray })
         .then(() => {
           templateStore.setLastSavedTime(moment());
+          return Promise.resolve(true);
         })
         .catch((err) => {
           console.error('Update test info error:', err);
+          return Promise.reject(toErrorWithMessage(err));
         });
     }, DEBOUNCE_WAIT),
     []
@@ -153,7 +163,10 @@ export function useProjectStore(
   );
   const _sendModelAndDatasets = useCallback(
     _.debounce((id: string | undefined, state: ModelAndDatasets) => {
-      if (!id || id.length == 0) return Promise.resolve();
+      if (!id || id.length == 0)
+        return Promise.reject(
+          toErrorWithMessage(new Error('_sendModelAndDatasets: Invalid ID'))
+        );
       const modelAndDatasets = {
         modelId: state.model ? state.model.id : undefined,
         testDatasetId: state.testDataset ? state.testDataset.id : undefined,
@@ -165,9 +178,11 @@ export function useProjectStore(
       return updateProjectFn(id, { modelAndDatasets })
         .then(() => {
           templateStore.setLastSavedTime(moment());
+          return Promise.resolve(true);
         })
         .catch((err) => {
-          console.error('Update Info error:', err);
+          console.error('Update modelAndDatasets error:', err);
+          return Promise.reject(toErrorWithMessage(err));
         });
     }, DEBOUNCE_WAIT),
     []
@@ -208,10 +223,8 @@ export function useProjectStore(
         projectInfo: templateStore.projectInfo,
         pages: [],
       };
-      // console.log("create project", project)
       createProjectFn(project)
         .then((result: string) => {
-          // console.log("New project id", result)
           templateStore.setId(result);
           templateStore.setIsNew(false);
           templateStore.setLastSavedTime(moment());
@@ -261,10 +274,8 @@ export function useProjectStore(
   const cancelTestRunsFn = useCancelTestRuns();
   const cancelTestRuns = (algorithms: string[]) => {
     return new Promise<Report>((resolve, reject) => {
-      // console.log("create project", project)
       cancelTestRunsFn(templateStore.id as string, algorithms)
         .then((result: Report) => {
-          // console.log("New project id", result)
           resolve(result);
         })
         .catch((err) => {

@@ -270,7 +270,7 @@ exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Sc
 </div>
 `;
 
-exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Screen should select datasets, ground truth: Datasets/Model-Selection-Filepicker 1`] = `
+exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Screen should select datasets, ground truth, test arguments and generate report: Datasets/Model-Selection-Filepicker 1`] = `
 <div
   class="layoutContentArea"
 >

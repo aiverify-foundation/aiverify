@@ -3,6 +3,7 @@ import graphqlClient from './graphqlClient';
 
 import Dataset from 'src/types/dataset.interface';
 import ModelFile from 'src/types/model.interface';
+import { ErrorWithMessage, toErrorWithMessage } from './errorUtils';
 
 export const DELETE_DATASET = gql`
   mutation Mutation($id: ObjectID!) {
@@ -158,15 +159,20 @@ export const GET_DATASETS = gql`
   }
 `;
 
-export const getDatasets = () => {
+type GetDatasetFn = () => Promise<Partial<Dataset>[] | ErrorWithMessage>;
+type QueryResult = {
+  datasets: Partial<Dataset>[];
+};
+
+export const getDatasets: GetDatasetFn = () => {
   return new Promise(async (resolve, reject) => {
     try {
-      const { data } = await graphqlClient().query({
+      const { data } = await graphqlClient().query<QueryResult>({
         query: GET_DATASETS,
       });
       resolve(data.datasets);
     } catch (err) {
-      reject(err);
+      reject(toErrorWithMessage(err));
     }
   });
 };

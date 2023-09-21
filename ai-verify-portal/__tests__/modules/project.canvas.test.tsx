@@ -6,7 +6,11 @@ import ProjectCreatePage from 'pages/project/create';
 import { getPlugins } from 'server/pluginManager';
 import { MockProviders } from '__mocks__/mockProviders';
 import PluginManagerType from 'src/types/pluginManager.interface';
-import { mockGqlData, mockGqlDataMinimal } from '__mocks__/mockGqlResponse';
+import {
+  MOCK_DATE_WIDGET_1,
+  mockGqlData,
+  mockGqlDataMinimal,
+} from '__mocks__/mockGqlResponse';
 import { fmtInterpretationMAEBundleResponse } from '__mocks__/mockPlugins';
 
 const GRID_LAYOUT_CLASSNAME = '.react-grid-layout';
@@ -220,23 +224,28 @@ describe('Project Flow', () => {
       const maeInterWidget = container.querySelector(
         '[data-test-id="draggableWidget-aiverify.stock.fairness_metrics_toolbox_for_regression:mae_interpretation"]'
       );
+      // stub date down to return mock date, which is used as a 'key' value when widget added to canvas
+      const dateNowStub = jest.fn(() => MOCK_DATE_WIDGET_1);
+      const actualDateNowFn = Date.now.bind(global.Date);
+      global.Date.now = dateNowStub;
+
       fireEvent.dragStart(maeInterWidget as Element, {
         dataTransfer: { setData: (_str: string) => undefined },
-        clientX: 518,
-        clientY: 326,
-        screenX: -1402,
-        screenY: 435,
-        x: 374,
-        y: 218,
+        clientX: 100,
+        clientY: 200,
+        screenX: -1500,
+        screenY: 200,
+        x: 100,
+        y: 200,
       });
 
       fireEvent.dragOver(gridLayoutArea as Element, {
-        clientX: 518,
-        clientY: 326,
-        screenX: -1402,
-        screenY: 435,
-        x: 374,
-        y: 218,
+        clientX: 100,
+        clientY: 200,
+        screenX: 600,
+        screenY: 200,
+        x: 200,
+        y: 200,
       });
 
       await waitFor(() => {
@@ -244,18 +253,21 @@ describe('Project Flow', () => {
       });
 
       fireEvent.drop(gridLayoutArea as Element, {
-        clientX: 518,
-        clientY: 326,
-        screenX: -1402,
-        screenY: 435,
-        x: 374,
-        y: 218,
+        clientX: 100,
+        clientY: 200,
+        screenX: 600,
+        screenY: 200,
+        x: 300,
+        y: 500,
       });
 
       //widget should be on canvas
       await waitFor(() => {
         expect(container.querySelector('.widgetContainer')).not.toBeNull();
       });
+
+      global.Date.now = actualDateNowFn;
+
       expect(gridLayoutArea.children.length).toBe(1);
       //snapshot of widget
       expect(container.querySelector('.widgetContainer')).toMatchSnapshot(
@@ -346,23 +358,29 @@ describe('Project Flow', () => {
       const maeInterWidget = container.querySelector(
         '[data-test-id="draggableWidget-aiverify.stock.fairness_metrics_toolbox_for_regression:mae_interpretation"]'
       );
+
+      // stub date down to return mock date, which is used as a 'key' value when widget added to canvas
+      const dateNowStub = jest.fn(() => MOCK_DATE_WIDGET_1);
+      const actualDateNowFn = Date.now.bind(global.Date);
+      global.Date.now = dateNowStub;
+
       fireEvent.dragStart(maeInterWidget as Element, {
         dataTransfer: { setData: (_str: string) => undefined },
-        clientX: 518,
-        clientY: 326,
-        screenX: -1402,
-        screenY: 435,
-        x: 374,
-        y: 218,
+        clientX: 100,
+        clientY: 200,
+        screenX: -1500,
+        screenY: 200,
+        x: 100,
+        y: 200,
       });
 
       fireEvent.dragOver(gridLayoutArea as Element, {
-        clientX: 518,
-        clientY: 326,
-        screenX: -1402,
-        screenY: 435,
-        x: 374,
-        y: 218,
+        clientX: 100,
+        clientY: 200,
+        screenX: 600,
+        screenY: 200,
+        x: 200,
+        y: 200,
       });
 
       await waitFor(() => {
@@ -370,18 +388,20 @@ describe('Project Flow', () => {
       });
 
       fireEvent.drop(gridLayoutArea as Element, {
-        clientX: 518,
-        clientY: 326,
-        screenX: -1402,
-        screenY: 435,
-        x: 374,
-        y: 218,
+        clientX: 100,
+        clientY: 200,
+        screenX: 600,
+        screenY: 200,
+        x: 300,
+        y: 500,
       });
 
       //widget should be on canvas
       await waitFor(() => {
         expect(container.querySelector('.widgetContainer')).not.toBeNull();
       });
+
+      global.Date.now = actualDateNowFn;
 
       const topMenuIcons = container.querySelectorAll(
         '.canvas_topbar .iconBtn'
