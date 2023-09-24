@@ -226,7 +226,7 @@ exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Sc
               </div>
               <div
                 class="inputCard"
-                id="algocard-aiverify.stock.fairness_metrics_toolbox_for_regression:fairness_metrics_toolbox_for_regression"
+                id="algocard-aiverify.test.mock_test_plugin1:mock_algo1"
               >
                 <div
                   class="inputDescription"
@@ -243,7 +243,7 @@ exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Sc
                   class="inputMain"
                 >
                   <p>
-                    This algorithm computes a list of fairness metrics to measure how correctly your model predicts among the given set of sensitive features.
+                    This is a mock description of mock algo 1
                   </p>
                   <div
                     class="buttonRow"

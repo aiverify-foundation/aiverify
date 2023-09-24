@@ -6,11 +6,8 @@ import ProjectCreatePage from 'pages/project/create';
 import { getPlugins } from 'server/pluginManager';
 import { MockProviders } from '__mocks__/mockProviders';
 import PluginManagerType from 'src/types/pluginManager.interface';
-import {
-  MOCK_DATE_WIDGET_1,
-  mockGqlDataMinimal,
-} from '__mocks__/mockGqlResponse';
-import { fmtInterpretationMAEBundleResponse } from '__mocks__/mockPlugins';
+import { MOCK_DATE_WIDGET_1, mockGqlDataE2E } from '__mocks__/mockGqlResponse';
+import { widgetMdxBundleResponse } from '__mocks__/mockPlugins';
 import { DataGridProps } from '@mui/x-data-grid';
 
 jest.mock('@mui/x-data-grid', () => {
@@ -59,13 +56,13 @@ describe('Project Flow - Select Dataset And Model', () => {
       fetchSpy.mockImplementation(
         jest.fn(() =>
           Promise.resolve({
-            json: () => Promise.resolve(fmtInterpretationMAEBundleResponse),
+            json: () => Promise.resolve(widgetMdxBundleResponse),
           })
         ) as jest.Mock
       );
       const user = userEvent.setup();
       const { container } = render(
-        <MockProviders apolloMocks={mockGqlDataMinimal}>
+        <MockProviders apolloMocks={mockGqlDataE2E}>
           <ProjectCreatePageWrapper />
         </MockProviders>
       );
@@ -90,7 +87,7 @@ describe('Project Flow - Select Dataset And Model', () => {
       ) as HTMLDivElement;
       expect(gridLayoutArea.children.length).toBe(0);
       const maeInterWidget = container.querySelector(
-        '[data-test-id="draggableWidget-aiverify.stock.fairness_metrics_toolbox_for_regression:mae_interpretation"]'
+        '[data-test-id="draggableWidget-aiverify.test.mock_test_plugin1:widget_cid_1"]'
       );
 
       // stub date.now to return mock date, which is used as a 'key' value when widget added to canvas
@@ -158,13 +155,13 @@ describe('Project Flow - Select Dataset And Model', () => {
       fetchSpy.mockImplementation(
         jest.fn(() =>
           Promise.resolve({
-            json: () => Promise.resolve(fmtInterpretationMAEBundleResponse),
+            json: () => Promise.resolve(widgetMdxBundleResponse),
           })
         ) as jest.Mock
       );
       const user = userEvent.setup();
       const { container } = render(
-        <MockProviders apolloMocks={mockGqlDataMinimal}>
+        <MockProviders apolloMocks={mockGqlDataE2E}>
           <ProjectCreatePageWrapper />
         </MockProviders>
       );
@@ -189,7 +186,7 @@ describe('Project Flow - Select Dataset And Model', () => {
       ) as HTMLDivElement;
       expect(gridLayoutArea.children.length).toBe(0);
       const maeInterWidget = container.querySelector(
-        '[data-test-id="draggableWidget-aiverify.stock.fairness_metrics_toolbox_for_regression:mae_interpretation"]'
+        '[data-test-id="draggableWidget-aiverify.test.mock_test_plugin1:widget_cid_1"]'
       );
 
       // stub date down to return mock date, which is used as a 'key' value when widget added to canvas
@@ -322,7 +319,7 @@ describe('Project Flow - Select Dataset And Model', () => {
 
       // Enter Test Arguments
       const algoTestArgsCard = container.querySelector(
-        'div[id="algocard-aiverify.stock.fairness_metrics_toolbox_for_regression:fairness_metrics_toolbox_for_regression"]'
+        'div[id="algocard-aiverify.test.mock_test_plugin1:mock_algo1"]'
       ) as HTMLElement;
       expect(algoTestArgsCard).not.toBeNull();
       await screen.findByText(/^Invalid Arguments$/i);

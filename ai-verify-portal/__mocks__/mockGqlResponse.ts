@@ -8,10 +8,12 @@ import { GET_DATASETS } from 'src/modules/assets/datasetList';
 import { GET_MODELS } from 'src/modules/assets/modelList';
 
 const MOCK_PROJECTID = '64c82da4c99adb254a4203ad';
-
+const MOCK_MODELID = '647d8c0514ae095e2e890af4';
+const MOCK_DATASETID = '647d8bf214ae095e2e890add';
+export const MOCK_ALGO_ID = 'aiverify.test.mock_test_plugin1:mock_algo1';
 export const MOCK_DATE_WIDGET_1 = 1695202143375;
 
-export const mockGqlData = [
+export const mockGqlCreateProject = [
   {
     request: {
       query: GET_PROJECT_TEMPLATES,
@@ -47,7 +49,7 @@ export const mockGqlData = [
   },
 ];
 
-export const mockGqlDataMinimal = [
+export const mockGqlDataE2E = [
   {
     request: {
       query: GET_PROJECT_TEMPLATES,
@@ -179,7 +181,7 @@ export const mockGqlDataMinimal = [
       data: {
         modelFiles: [
           {
-            id: '647d8c0514ae095e2e890af4',
+            id: `${MOCK_MODELID}`,
             name: 'pickle_scikit_bc_compas.sav',
             filename: 'pickle_scikit_bc_compas.sav',
             filePath:
@@ -224,8 +226,7 @@ export const mockGqlDataMinimal = [
               ],
               reportWidgets: [
                 {
-                  widgetGID:
-                    'aiverify.stock.fairness_metrics_toolbox_for_regression:mae_interpretation',
+                  widgetGID: 'aiverify.test.mock_test_plugin1:widget_cid_1',
                   key: `${MOCK_DATE_WIDGET_1}`,
                   layoutItemProperties: {
                     justifyContent: 'left',
@@ -255,9 +256,9 @@ export const mockGqlDataMinimal = [
         id: `${MOCK_PROJECTID}`,
         project: {
           modelAndDatasets: {
-            modelId: '647d8c0514ae095e2e890af4',
-            testDatasetId: '647d8bf214ae095e2e890add',
-            groundTruthDatasetId: '647d8bf214ae095e2e890add',
+            modelId: `${MOCK_MODELID}`,
+            testDatasetId: `${MOCK_DATASETID}`,
+            groundTruthDatasetId: `${MOCK_DATASETID}`,
             groundTruthColumn: 'two_year_recid',
           },
         },
@@ -280,8 +281,7 @@ export const mockGqlDataMinimal = [
         project: {
           testInformationData: [
             {
-              algorithmGID:
-                'aiverify.stock.fairness_metrics_toolbox_for_regression:fairness_metrics_toolbox_for_regression',
+              algorithmGID: `${MOCK_ALGO_ID}`,
               testArguments: { sensitive_feature: ['race_code'] },
             },
           ],
@@ -302,9 +302,7 @@ export const mockGqlDataMinimal = [
       query: GENERATE_REPORT,
       variables: {
         projectID: MOCK_PROJECTID,
-        algorithms: [
-          'aiverify.stock.fairness_metrics_toolbox_for_regression:fairness_metrics_toolbox_for_regression',
-        ],
+        algorithms: [`${MOCK_ALGO_ID}`],
       },
     },
     result: {

@@ -2,8 +2,9 @@ import PluginManagerType from 'src/types/pluginManager.interface';
 import { ApiResult } from '../src/modules/plugins/api/plugins';
 import AIFPlugin from 'src/types/plugin.interface';
 import { DependencyStatusResult } from 'src/modules/plugins/api/algorithms';
+import { MOCK_ALGO_ID } from './mockGqlResponse';
 
-const pluginsListResponse: ApiResult<PluginManagerType> = {
+const managePluginsTests_pluginsList: ApiResult<PluginManagerType> = {
   status: 200,
   data: {
     plugins: [
@@ -2181,79 +2182,19 @@ const algoPackageDependencyStatusResponse: ApiResult<DependencyStatusResult[]> =
   };
 
 // mock used as response from server/PluginManager getPlugins
-const pluginsFromDir: PluginManagerType = {
+const projectFlow_mockPlugins: PluginManagerType = {
   plugins: [
     {
-      gid: 'aiverify.stock.decorators',
-      name: 'AI Verify Stock Decorators',
-      version: '1.0.0',
-      reportWidgets: [
-        {
-          cid: 'divider',
-          name: 'Divider',
-          tags: ['stock', 'decorator'],
-          properties: [],
-          widgetSize: {
-            minW: 1,
-            minH: 1,
-            maxW: 12,
-            maxH: 1,
-          },
-          dependencies: [],
-          mockdata: [],
-          type: 'ReportWidget',
-          gid: 'aiverify.stock.decorators:divider',
-          version: '1.0.0',
-          pluginGID: 'aiverify.stock.decorators',
-          mdxPath: 'stock.decorators/widgets/divider.mdx',
-          status: 'OK',
-        },
-        {
-          cid: 'header1',
-          name: 'Header 1',
-          tags: ['stock', 'decorator', 'header'],
-          properties: [
-            {
-              key: 'title',
-              helper: 'Enter the header title',
-              default: '',
-            },
-            {
-              key: 'text',
-              helper: 'Enter the text for paragraph below header',
-              default: '',
-            },
-          ],
-          widgetSize: {
-            minW: 1,
-            minH: 2,
-            maxW: 12,
-            maxH: 36,
-          },
-          dependencies: [],
-          mockdata: [],
-          type: 'ReportWidget',
-          gid: 'aiverify.stock.decorators:header1',
-          version: '1.0.0',
-          pluginGID: 'aiverify.stock.decorators',
-          mdxPath: 'stock.decorators/widgets/header1.mdx',
-          status: 'OK',
-        },
-      ],
-      isStock: true,
-      installedAt: 1688098059192,
-    },
-    {
-      gid: 'aiverify.stock.fairness_metrics_toolbox_for_regression',
+      gid: 'aiverify.test.mock_test_plugin1',
       version: '0.9.0',
-      name: 'Fairness for Regression',
+      name: 'Mock Plugin for Unit Test',
       author: 'AI Verify',
       description:
         'This plugin computes and displays a list of fairness metrics to measure how correctly your regression model predicts among the given set of sensitive features.',
       tags: ['regression', 'fairness'],
       reportWidgets: [
         {
-          cid: 'mae_interpretation',
+          cid: 'widget_cid_1',
           widgetSize: {
             minW: 6,
             minH: 3,
@@ -2264,17 +2205,17 @@ const pluginsFromDir: PluginManagerType = {
           description: 'To interpret the mean absolute error parity results',
           dependencies: [
             {
-              cid: 'fairness_metrics_toolbox_for_regression',
-              gid: 'aiverify.stock.fairness_metrics_toolbox_for_regression:fairness_metrics_toolbox_for_regression',
+              cid: 'mock_algo1',
+              gid: `${MOCK_ALGO_ID}`,
               valid: true,
             },
           ],
           mockdata: [
             {
               type: 'Algorithm',
-              cid: 'fairness_metrics_toolbox_for_regression',
-              datapath: 'fairness_metrics_toolbox_for_regression.sample.json',
-              gid: 'aiverify.stock.fairness_metrics_toolbox_for_regression:fairness_metrics_toolbox_for_regression',
+              cid: 'mock_algo1',
+              datapath: 'mock_algo1.sample.json',
+              gid: `${MOCK_ALGO_ID}`,
               data: {
                 results: [
                   {
@@ -2307,23 +2248,22 @@ const pluginsFromDir: PluginManagerType = {
             },
           ],
           type: 'ReportWidget',
-          gid: 'aiverify.stock.fairness_metrics_toolbox_for_regression:mae_interpretation',
+          gid: 'aiverify.test.mock_test_plugin1:widget_cid_1',
           version: '0.9.0',
-          pluginGID: 'aiverify.stock.fairness_metrics_toolbox_for_regression',
+          pluginGID: 'aiverify.test.mock_test_plugin1',
           mdxPath:
-            'stock.fairness-metrics-toolbox-for-regression/widgets/mae_interpretation.mdx',
+            'stock.fairness-metrics-toolbox-for-regression/widgets/widget_cid_1.mdx',
           status: 'OK',
         },
       ],
       algorithms: [
         {
-          cid: 'fairness_metrics_toolbox_for_regression',
+          cid: 'mock_algo1',
           name: 'Fairness Metrics Toolbox for Regression',
           modelType: ['regression'],
           version: '0.9.0',
           author: 'AI Verify',
-          description:
-            'This algorithm computes a list of fairness metrics to measure how correctly your model predicts among the given set of sensitive features.',
+          description: 'This is a mock description of mock algo 1',
           tags: [
             'Fairness Metrics Toolbox for Regression',
             'regression',
@@ -2336,17 +2276,17 @@ const pluginsFromDir: PluginManagerType = {
             'input.schema.json',
             'LICENSE',
             'output.schema.json',
-            'fairness_metrics_toolbox_for_regression.meta.json',
-            'fairness_metrics_toolbox_for_regression.py',
+            'mock_algo1.meta.json',
+            'mock_algo1.py',
             'README.md',
             'requirements.txt',
             'syntax_checker.py',
           ],
           type: 'Algorithm',
-          gid: 'aiverify.stock.fairness_metrics_toolbox_for_regression:fairness_metrics_toolbox_for_regression',
-          pluginGID: 'aiverify.stock.fairness_metrics_toolbox_for_regression',
+          gid: `${MOCK_ALGO_ID}`,
+          pluginGID: 'aiverify.test.mock_test_plugin1',
           algoPath:
-            '/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/algorithms/fairness_metrics_toolbox_for_regression',
+            '/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/algorithms/mock_algo1',
           requirements: [
             'joblib==1.2.0 ; python_version >= "3.10" and python_version < "4.0"',
             'numpy==1.23.5 ; python_version >= "3.10" and python_version < "4.0"',
@@ -2418,6 +2358,66 @@ const pluginsFromDir: PluginManagerType = {
       ],
       isStock: true,
       installedAt: 1690830700625,
+    },
+    {
+      gid: 'aiverify.stock.decorators',
+      name: 'AI Verify Stock Decorators',
+      version: '1.0.0',
+      reportWidgets: [
+        {
+          cid: 'divider',
+          name: 'Divider',
+          tags: ['stock', 'decorator'],
+          properties: [],
+          widgetSize: {
+            minW: 1,
+            minH: 1,
+            maxW: 12,
+            maxH: 1,
+          },
+          dependencies: [],
+          mockdata: [],
+          type: 'ReportWidget',
+          gid: 'aiverify.stock.decorators:divider',
+          version: '1.0.0',
+          pluginGID: 'aiverify.stock.decorators',
+          mdxPath: 'stock.decorators/widgets/divider.mdx',
+          status: 'OK',
+        },
+        {
+          cid: 'header1',
+          name: 'Header 1',
+          tags: ['stock', 'decorator', 'header'],
+          properties: [
+            {
+              key: 'title',
+              helper: 'Enter the header title',
+              default: '',
+            },
+            {
+              key: 'text',
+              helper: 'Enter the text for paragraph below header',
+              default: '',
+            },
+          ],
+          widgetSize: {
+            minW: 1,
+            minH: 2,
+            maxW: 12,
+            maxH: 36,
+          },
+          dependencies: [],
+          mockdata: [],
+          type: 'ReportWidget',
+          gid: 'aiverify.stock.decorators:header1',
+          version: '1.0.0',
+          pluginGID: 'aiverify.stock.decorators',
+          mdxPath: 'stock.decorators/widgets/header1.mdx',
+          status: 'OK',
+        },
+      ],
+      isStock: true,
+      installedAt: 1688098059192,
     },
     {
       gid: 'aiverify.tests',
@@ -3613,13 +3613,12 @@ const pluginsFromDir: PluginManagerType = {
   ],
   algorithms: [
     {
-      cid: 'fairness_metrics_toolbox_for_regression',
+      cid: 'mock_algo1',
       name: 'Fairness Metrics Toolbox for Regression',
       modelType: ['regression'],
       version: '0.9.0',
       author: 'AI Verify',
-      description:
-        'This algorithm computes a list of fairness metrics to measure how correctly your model predicts among the given set of sensitive features.',
+      description: 'This is a mock description of mock algo 1',
       tags: [
         'Fairness Metrics Toolbox for Regression',
         'regression',
@@ -3632,17 +3631,17 @@ const pluginsFromDir: PluginManagerType = {
         'input.schema.json',
         'LICENSE',
         'output.schema.json',
-        'fairness_metrics_toolbox_for_regression.meta.json',
-        'fairness_metrics_toolbox_for_regression.py',
+        'mock_algo1.meta.json',
+        'mock_algo1.py',
         'README.md',
         'requirements.txt',
         'syntax_checker.py',
       ],
       type: 'Algorithm',
-      gid: 'aiverify.stock.fairness_metrics_toolbox_for_regression:fairness_metrics_toolbox_for_regression',
-      pluginGID: 'aiverify.stock.fairness_metrics_toolbox_for_regression',
+      gid: `${MOCK_ALGO_ID}`,
+      pluginGID: 'aiverify.test.mock_test_plugin1',
       algoPath:
-        '/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/algorithms/fairness_metrics_toolbox_for_regression',
+        '/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/algorithms/mock_algo1',
       requirements: [
         'joblib==1.2.0 ; python_version >= "3.10" and python_version < "4.0"',
         'numpy==1.23.5 ; python_version >= "3.10" and python_version < "4.0"',
@@ -3717,7 +3716,7 @@ const pluginsFromDir: PluginManagerType = {
     'aiverify.stock.accumulated_local_effect',
     'aiverify.stock.partial_dependence_plot',
     'aiverify.stock.fairness_metrics_toolbox_for_classification',
-    'aiverify.stock.fairness_metrics_toolbox_for_regression',
+    'aiverify.test.mock_test_plugin1',
     'aiverify.stock.shap_toolbox',
     'aiverify.stock.robustness_toolbox',
     'aiverify.stock.image_corruption_toolbox',
@@ -3727,16 +3726,16 @@ const pluginsFromDir: PluginManagerType = {
   ],
 };
 
-const fmtInterpretationMAEBundleResponse = {
-  code: 'var Component=(()=>{var mr=Object.create;var Y=Object.defineProperty;var vr=Object.getOwnPropertyDescriptor;var pr=Object.getOwnPropertyNames;var gr=Object.getPrototypeOf,hr=Object.prototype.hasOwnProperty;var Q=(s,u)=>()=>(u||s((u={exports:{}}).exports,u),u.exports),br=(s,u)=>{for(var g in u)Y(s,g,{get:u[g],enumerable:!0})},Oe=(s,u,g,h)=>{if(u&&typeof u=="object"||typeof u=="function")for(let b of pr(u))!hr.call(s,b)&&b!==g&&Y(s,b,{get:()=>u[b],enumerable:!(h=vr(u,b))||h.enumerable});return s};var ee=(s,u,g)=>(g=s!=null?mr(gr(s)):{},Oe(u||!s||!s.__esModule?Y(g,"default",{value:s,enumerable:!0}):g,s)),yr=s=>Oe(Y({},"__esModule",{value:!0}),s);var re=Q((wr,Pe)=>{Pe.exports=React});var Se=Q(te=>{"use strict";(function(){"use strict";var s=re(),u=Symbol.for("react.element"),g=Symbol.for("react.portal"),h=Symbol.for("react.fragment"),b=Symbol.for("react.strict_mode"),W=Symbol.for("react.profiler"),L=Symbol.for("react.provider"),U=Symbol.for("react.context"),w=Symbol.for("react.forward_ref"),j=Symbol.for("react.suspense"),R=Symbol.for("react.suspense_list"),y=Symbol.for("react.memo"),S=Symbol.for("react.lazy"),B=Symbol.for("react.offscreen"),C=Symbol.iterator,ae="@@iterator";function D(e){if(e===null||typeof e!="object")return null;var r=C&&e[C]||e[ae];return typeof r=="function"?r:null}var x=s.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;function d(e){{for(var r=arguments.length,t=new Array(r>1?r-1:0),i=1;i<r;i++)t[i-1]=arguments[i];Ie("error",e,t)}}function Ie(e,r,t){{var i=x.ReactDebugCurrentFrame,o=i.getStackAddendum();o!==""&&(r+="%s",t=t.concat([o]));var l=t.map(function(n){return String(n)});l.unshift("Warning: "+r),Function.prototype.apply.call(console[e],console,l)}}var $e=!1,Me=!1,Ye=!1,Ve=!1,We=!1,ne;ne=Symbol.for("react.module.reference");function Le(e){return!!(typeof e=="string"||typeof e=="function"||e===h||e===W||We||e===b||e===j||e===R||Ve||e===B||$e||Me||Ye||typeof e=="object"&&e!==null&&(e.$$typeof===S||e.$$typeof===y||e.$$typeof===L||e.$$typeof===U||e.$$typeof===w||e.$$typeof===ne||e.getModuleId!==void 0))}function Ue(e,r,t){var i=e.displayName;if(i)return i;var o=r.displayName||r.name||"";return o!==""?t+"("+o+")":t}function oe(e){return e.displayName||"Context"}function E(e){if(e==null)return null;if(typeof e.tag=="number"&&d("Received an unexpected object in getComponentNameFromType(). This is likely a bug in React. Please file an issue."),typeof e=="function")return e.displayName||e.name||null;if(typeof e=="string")return e;switch(e){case h:return"Fragment";case g:return"Portal";case W:return"Profiler";case b:return"StrictMode";case j:return"Suspense";case R:return"SuspenseList"}if(typeof e=="object")switch(e.$$typeof){case U:var r=e;return oe(r)+".Consumer";case L:var t=e;return oe(t._context)+".Provider";case w:return Ue(e,e.render,"ForwardRef");case y:var i=e.displayName||null;return i!==null?i:E(e.type)||"Memo";case S:{var o=e,l=o._payload,n=o._init;try{return E(n(l))}catch{return null}}}return null}var T=Object.assign,k=0,se,le,ue,fe,ce,de,me;function ve(){}ve.__reactDisabledLog=!0;function Be(){{if(k===0){se=console.log,le=console.info,ue=console.warn,fe=console.error,ce=console.group,de=console.groupCollapsed,me=console.groupEnd;var e={configurable:!0,enumerable:!0,value:ve,writable:!0};Object.defineProperties(console,{info:e,log:e,warn:e,error:e,group:e,groupCollapsed:e,groupEnd:e})}k++}}function Xe(){{if(k--,k===0){var e={configurable:!0,enumerable:!0,writable:!0};Object.defineProperties(console,{log:T({},e,{value:se}),info:T({},e,{value:le}),warn:T({},e,{value:ue}),error:T({},e,{value:fe}),group:T({},e,{value:ce}),groupCollapsed:T({},e,{value:de}),groupEnd:T({},e,{value:me})})}k<0&&d("disabledDepth fell below zero. This is a bug in React. Please file an issue.")}}var X=x.ReactCurrentDispatcher,G;function F(e,r,t){{if(G===void 0)try{throw Error()}catch(o){var i=o.stack.trim().match(/\\n( *(at )?)/);G=i&&i[1]||""}return`\n`+G+e}}var q=!1,A;{var Ge=typeof WeakMap=="function"?WeakMap:Map;A=new Ge}function pe(e,r){if(!e||q)return"";{var t=A.get(e);if(t!==void 0)return t}var i;q=!0;var o=Error.prepareStackTrace;Error.prepareStackTrace=void 0;var l;l=X.current,X.current=null,Be();try{if(r){var n=function(){throw Error()};if(Object.defineProperty(n.prototype,"props",{set:function(){throw Error()}}),typeof Reflect=="object"&&Reflect.construct){try{Reflect.construct(n,[])}catch(_){i=_}Reflect.construct(e,[],n)}else{try{n.call()}catch(_){i=_}e.call(n.prototype)}}else{try{throw Error()}catch(_){i=_}e()}}catch(_){if(_&&i&&typeof _.stack=="string"){for(var a=_.stack.split(`\n`),m=i.stack.split(`\n`),f=a.length-1,c=m.length-1;f>=1&&c>=0&&a[f]!==m[c];)c--;for(;f>=1&&c>=0;f--,c--)if(a[f]!==m[c]){if(f!==1||c!==1)do if(f--,c--,c<0||a[f]!==m[c]){var v=`\n`+a[f].replace(" at new "," at ");return e.displayName&&v.includes("<anonymous>")&&(v=v.replace("<anonymous>",e.displayName)),typeof e=="function"&&A.set(e,v),v}while(f>=1&&c>=0);break}}}finally{q=!1,X.current=l,Xe(),Error.prepareStackTrace=o}var P=e?e.displayName||e.name:"",Ce=P?F(P):"";return typeof e=="function"&&A.set(e,Ce),Ce}function qe(e,r,t){return pe(e,!1)}function ze(e){var r=e.prototype;return!!(r&&r.isReactComponent)}function I(e,r,t){if(e==null)return"";if(typeof e=="function")return pe(e,ze(e));if(typeof e=="string")return F(e);switch(e){case j:return F("Suspense");case R:return F("SuspenseList")}if(typeof e=="object")switch(e.$$typeof){case w:return qe(e.render);case y:return I(e.type,r,t);case S:{var i=e,o=i._payload,l=i._init;try{return I(l(o),r,t)}catch{}}}return""}var $=Object.prototype.hasOwnProperty,ge={},he=x.ReactDebugCurrentFrame;function M(e){if(e){var r=e._owner,t=I(e.type,e._source,r?r.type:null);he.setExtraStackFrame(t)}else he.setExtraStackFrame(null)}function Ke(e,r,t,i,o){{var l=Function.call.bind($);for(var n in e)if(l(e,n)){var a=void 0;try{if(typeof e[n]!="function"){var m=Error((i||"React class")+": "+t+" type `"+n+"` is invalid; it must be a function, usually from the `prop-types` package, but received `"+typeof e[n]+"`.This often happens because of typos such as `PropTypes.function` instead of `PropTypes.func`.");throw m.name="Invariant Violation",m}a=e[n](r,n,i,t,null,"SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED")}catch(f){a=f}a&&!(a instanceof Error)&&(M(o),d("%s: type specification of %s `%s` is invalid; the type checker function must return `null` or an `Error` but returned a %s. You may have forgotten to pass an argument to the type checker creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and shape all require an argument).",i||"React class",t,n,typeof a),M(null)),a instanceof Error&&!(a.message in ge)&&(ge[a.message]=!0,M(o),d("Failed %s type: %s",t,a.message),M(null))}}}var He=Array.isArray;function z(e){return He(e)}function Je(e){{var r=typeof Symbol=="function"&&Symbol.toStringTag,t=r&&e[Symbol.toStringTag]||e.constructor.name||"Object";return t}}function Ze(e){try{return be(e),!1}catch{return!0}}function be(e){return""+e}function ye(e){if(Ze(e))return d("The provided key is an unsupported type %s. This value must be coerced to a string before before using it here.",Je(e)),be(e)}var N=x.ReactCurrentOwner,Qe={key:!0,ref:!0,__self:!0,__source:!0},Ee,_e,K;K={};function er(e){if($.call(e,"ref")){var r=Object.getOwnPropertyDescriptor(e,"ref").get;if(r&&r.isReactWarning)return!1}return e.ref!==void 0}function rr(e){if($.call(e,"key")){var r=Object.getOwnPropertyDescriptor(e,"key").get;if(r&&r.isReactWarning)return!1}return e.key!==void 0}function tr(e,r){if(typeof e.ref=="string"&&N.current&&r&&N.current.stateNode!==r){var t=E(N.current.type);K[t]||(d(\'Component "%s" contains the string ref "%s". Support for string refs will be removed in a future major release. This case cannot be automatically converted to an arrow function. We ask you to manually fix this case by using useRef() or createRef() instead. Learn more about using refs safely here: https://reactjs.org/link/strict-mode-string-ref\',E(N.current.type),e.ref),K[t]=!0)}}function ir(e,r){{var t=function(){Ee||(Ee=!0,d("%s: `key` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)",r))};t.isReactWarning=!0,Object.defineProperty(e,"key",{get:t,configurable:!0})}}function ar(e,r){{var t=function(){_e||(_e=!0,d("%s: `ref` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)",r))};t.isReactWarning=!0,Object.defineProperty(e,"ref",{get:t,configurable:!0})}}var nr=function(e,r,t,i,o,l,n){var a={$$typeof:u,type:e,key:r,ref:t,props:n,_owner:l};return a._store={},Object.defineProperty(a._store,"validated",{configurable:!1,enumerable:!1,writable:!0,value:!1}),Object.defineProperty(a,"_self",{configurable:!1,enumerable:!1,writable:!1,value:i}),Object.defineProperty(a,"_source",{configurable:!1,enumerable:!1,writable:!1,value:o}),Object.freeze&&(Object.freeze(a.props),Object.freeze(a)),a};function or(e,r,t,i,o){{var l,n={},a=null,m=null;t!==void 0&&(ye(t),a=""+t),rr(r)&&(ye(r.key),a=""+r.key),er(r)&&(m=r.ref,tr(r,o));for(l in r)$.call(r,l)&&!Qe.hasOwnProperty(l)&&(n[l]=r[l]);if(e&&e.defaultProps){var f=e.defaultProps;for(l in f)n[l]===void 0&&(n[l]=f[l])}if(a||m){var c=typeof e=="function"?e.displayName||e.name||"Unknown":e;a&&ir(n,c),m&&ar(n,c)}return nr(e,a,m,o,i,N.current,n)}}var H=x.ReactCurrentOwner,Re=x.ReactDebugCurrentFrame;function O(e){if(e){var r=e._owner,t=I(e.type,e._source,r?r.type:null);Re.setExtraStackFrame(t)}else Re.setExtraStackFrame(null)}var J;J=!1;function Z(e){return typeof e=="object"&&e!==null&&e.$$typeof===u}function xe(){{if(H.current){var e=E(H.current.type);if(e)return`\n\nCheck the render method of \\``+e+"`."}return""}}function sr(e){{if(e!==void 0){var r=e.fileName.replace(/^.*[\\\\\\/]/,""),t=e.lineNumber;return`\n\nCheck your code at `+r+":"+t+"."}return""}}var we={};function lr(e){{var r=xe();if(!r){var t=typeof e=="string"?e:e.displayName||e.name;t&&(r=`\n\nCheck the top-level render call using <`+t+">.")}return r}}function Te(e,r){{if(!e._store||e._store.validated||e.key!=null)return;e._store.validated=!0;var t=lr(r);if(we[t])return;we[t]=!0;var i="";e&&e._owner&&e._owner!==H.current&&(i=" It was passed a child from "+E(e._owner.type)+"."),O(e),d(\'Each child in a list should have a unique "key" prop.%s%s See https://reactjs.org/link/warning-keys for more information.\',t,i),O(null)}}function je(e,r){{if(typeof e!="object")return;if(z(e))for(var t=0;t<e.length;t++){var i=e[t];Z(i)&&Te(i,r)}else if(Z(e))e._store&&(e._store.validated=!0);else if(e){var o=D(e);if(typeof o=="function"&&o!==e.entries)for(var l=o.call(e),n;!(n=l.next()).done;)Z(n.value)&&Te(n.value,r)}}}function ur(e){{var r=e.type;if(r==null||typeof r=="string")return;var t;if(typeof r=="function")t=r.propTypes;else if(typeof r=="object"&&(r.$$typeof===w||r.$$typeof===y))t=r.propTypes;else return;if(t){var i=E(r);Ke(t,e.props,"prop",i,e)}else if(r.PropTypes!==void 0&&!J){J=!0;var o=E(r);d("Component %s declared `PropTypes` instead of `propTypes`. Did you misspell the property assignment?",o||"Unknown")}typeof r.getDefaultProps=="function"&&!r.getDefaultProps.isReactClassApproved&&d("getDefaultProps is only used on classic React.createClass definitions. Use a static property named `defaultProps` instead.")}}function fr(e){{for(var r=Object.keys(e.props),t=0;t<r.length;t++){var i=r[t];if(i!=="children"&&i!=="key"){O(e),d("Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props.",i),O(null);break}}e.ref!==null&&(O(e),d("Invalid attribute `ref` supplied to `React.Fragment`."),O(null))}}function cr(e,r,t,i,o,l){{var n=Le(e);if(!n){var a="";(e===void 0||typeof e=="object"&&e!==null&&Object.keys(e).length===0)&&(a+=" You likely forgot to export your component from the file it\'s defined in, or you might have mixed up default and named imports.");var m=sr(o);m?a+=m:a+=xe();var f;e===null?f="null":z(e)?f="array":e!==void 0&&e.$$typeof===u?(f="<"+(E(e.type)||"Unknown")+" />",a=" Did you accidentally export a JSX literal instead of a component?"):f=typeof e,d("React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s",f,a)}var c=or(e,r,t,o,l);if(c==null)return c;if(n){var v=r.children;if(v!==void 0)if(i)if(z(v)){for(var P=0;P<v.length;P++)je(v[P],e);Object.freeze&&Object.freeze(v)}else d("React.jsx: Static children should always be an array. You are likely explicitly calling React.jsxs or React.jsxDEV. Use the Babel transform instead.");else je(v,e)}return e===h?fr(c):ur(c),c}}var dr=cr;te.Fragment=h,te.jsxDEV=dr})()});var ie=Q((jr,ke)=>{"use strict";ke.exports=Se()});var Rr={};br(Rr,{cid:()=>Ae,default:()=>_r});var V=ee(ie());var p=ee(ie()),Ne=ee(re()),De=({metric:s,metric_name:u,container:g,data:h,parity:b})=>{let[W,L]=(0,Ne.useState)({data:[],bars:[]}),U="",w="",j="",R=0,y=0,S=h.sensitive_feature;for(let C of h.results){let ae=C,D=S.map((x,d)=>`${x}:${C.subgroup.split(",")[d]}`).join(",");local_metric=C[s],(y==0||local_metric<y)&&(y=local_metric,j=D),(R==-1||local_metric>=R)&&(R=local_metric,w=D)}let B=R-y;return(0,p.jsxDEV)("div",{style:{width:"100%"},children:[(0,p.jsxDEV)("p",{children:(0,p.jsxDEV)("b",{children:"Results"},void 0,!1,{fileName:"/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/widgets/interpretation.mdx",lineNumber:40,columnNumber:9},void 0)},void 0,!1,{fileName:"/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/widgets/interpretation.mdx",lineNumber:39,columnNumber:7},void 0),(0,p.jsxDEV)("p",{children:["The difference between ",(0,p.jsxDEV)("b",{children:(0,p.jsxDEV)("i",{children:w},void 0,!1,{fileName:"/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/widgets/interpretation.mdx",lineNumber:44,columnNumber:35},void 0)},void 0,!1,{fileName:"/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/widgets/interpretation.mdx",lineNumber:44,columnNumber:32},void 0)," (group with highest value) and ",(0,p.jsxDEV)("b",{children:(0,p.jsxDEV)("i",{children:j},void 0,!1,{fileName:"/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/widgets/interpretation.mdx",lineNumber:44,columnNumber:92},void 0)},void 0,!1,{fileName:"/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/widgets/interpretation.mdx",lineNumber:44,columnNumber:89},void 0)," (group with lowest value) is ",(0,p.jsxDEV)("b",{children:B},void 0,!1,{fileName:"/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/widgets/interpretation.mdx",lineNumber:44,columnNumber:144},void 0)," for ",(0,p.jsxDEV)("i",{children:u},void 0,!1,{fileName:"/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/widgets/interpretation.mdx",lineNumber:44,columnNumber:162},void 0),". In an ideal situation, the parity should be close to ",b,"."]},void 0,!0,{fileName:"/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/widgets/interpretation.mdx",lineNumber:43,columnNumber:7},void 0)]},void 0,!0,{fileName:"/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/widgets/interpretation.mdx",lineNumber:38,columnNumber:5},void 0)};var Ae="fairness_metrics_toolbox_for_regression";function Fe(s){return(0,V.jsxDEV)(De,{metric:"mae",metric_name:"Mean Absolute Error Parity",container:s.container,data:s.getResults(Ae),parity:"0"},void 0,!1,{fileName:"/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/widgets/mae_interpretation.mdx",lineNumber:5,columnNumber:1},this)}function Er(s={}){let{wrapper:u}=s.components||{};return u?(0,V.jsxDEV)(u,Object.assign({},s,{children:(0,V.jsxDEV)(Fe,s,void 0,!1,{fileName:"/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/widgets/mae_interpretation.mdx"},this)}),void 0,!1,{fileName:"/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/widgets/mae_interpretation.mdx"},this):Fe(s)}var _r=Er;return yr(Rr);})();\n/**\n * @license React\n * react-jsx-dev-runtime.development.js\n *\n * Copyright (c) Facebook, Inc. and its affiliates.\n *\n * This source code is licensed under the MIT license found in the\n * LICENSE file in the root directory of this source tree.\n */\n;return Component;',
+const widgetMdxBundleResponse = {
+  code: 'var Component=(()=>{var mr=Object.create;var Y=Object.defineProperty;var vr=Object.getOwnPropertyDescriptor;var pr=Object.getOwnPropertyNames;var gr=Object.getPrototypeOf,hr=Object.prototype.hasOwnProperty;var Q=(s,u)=>()=>(u||s((u={exports:{}}).exports,u),u.exports),br=(s,u)=>{for(var g in u)Y(s,g,{get:u[g],enumerable:!0})},Oe=(s,u,g,h)=>{if(u&&typeof u=="object"||typeof u=="function")for(let b of pr(u))!hr.call(s,b)&&b!==g&&Y(s,b,{get:()=>u[b],enumerable:!(h=vr(u,b))||h.enumerable});return s};var ee=(s,u,g)=>(g=s!=null?mr(gr(s)):{},Oe(u||!s||!s.__esModule?Y(g,"default",{value:s,enumerable:!0}):g,s)),yr=s=>Oe(Y({},"__esModule",{value:!0}),s);var re=Q((wr,Pe)=>{Pe.exports=React});var Se=Q(te=>{"use strict";(function(){"use strict";var s=re(),u=Symbol.for("react.element"),g=Symbol.for("react.portal"),h=Symbol.for("react.fragment"),b=Symbol.for("react.strict_mode"),W=Symbol.for("react.profiler"),L=Symbol.for("react.provider"),U=Symbol.for("react.context"),w=Symbol.for("react.forward_ref"),j=Symbol.for("react.suspense"),R=Symbol.for("react.suspense_list"),y=Symbol.for("react.memo"),S=Symbol.for("react.lazy"),B=Symbol.for("react.offscreen"),C=Symbol.iterator,ae="@@iterator";function D(e){if(e===null||typeof e!="object")return null;var r=C&&e[C]||e[ae];return typeof r=="function"?r:null}var x=s.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;function d(e){{for(var r=arguments.length,t=new Array(r>1?r-1:0),i=1;i<r;i++)t[i-1]=arguments[i];Ie("error",e,t)}}function Ie(e,r,t){{var i=x.ReactDebugCurrentFrame,o=i.getStackAddendum();o!==""&&(r+="%s",t=t.concat([o]));var l=t.map(function(n){return String(n)});l.unshift("Warning: "+r),Function.prototype.apply.call(console[e],console,l)}}var $e=!1,Me=!1,Ye=!1,Ve=!1,We=!1,ne;ne=Symbol.for("react.module.reference");function Le(e){return!!(typeof e=="string"||typeof e=="function"||e===h||e===W||We||e===b||e===j||e===R||Ve||e===B||$e||Me||Ye||typeof e=="object"&&e!==null&&(e.$$typeof===S||e.$$typeof===y||e.$$typeof===L||e.$$typeof===U||e.$$typeof===w||e.$$typeof===ne||e.getModuleId!==void 0))}function Ue(e,r,t){var i=e.displayName;if(i)return i;var o=r.displayName||r.name||"";return o!==""?t+"("+o+")":t}function oe(e){return e.displayName||"Context"}function E(e){if(e==null)return null;if(typeof e.tag=="number"&&d("Received an unexpected object in getComponentNameFromType(). This is likely a bug in React. Please file an issue."),typeof e=="function")return e.displayName||e.name||null;if(typeof e=="string")return e;switch(e){case h:return"Fragment";case g:return"Portal";case W:return"Profiler";case b:return"StrictMode";case j:return"Suspense";case R:return"SuspenseList"}if(typeof e=="object")switch(e.$$typeof){case U:var r=e;return oe(r)+".Consumer";case L:var t=e;return oe(t._context)+".Provider";case w:return Ue(e,e.render,"ForwardRef");case y:var i=e.displayName||null;return i!==null?i:E(e.type)||"Memo";case S:{var o=e,l=o._payload,n=o._init;try{return E(n(l))}catch{return null}}}return null}var T=Object.assign,k=0,se,le,ue,fe,ce,de,me;function ve(){}ve.__reactDisabledLog=!0;function Be(){{if(k===0){se=console.log,le=console.info,ue=console.warn,fe=console.error,ce=console.group,de=console.groupCollapsed,me=console.groupEnd;var e={configurable:!0,enumerable:!0,value:ve,writable:!0};Object.defineProperties(console,{info:e,log:e,warn:e,error:e,group:e,groupCollapsed:e,groupEnd:e})}k++}}function Xe(){{if(k--,k===0){var e={configurable:!0,enumerable:!0,writable:!0};Object.defineProperties(console,{log:T({},e,{value:se}),info:T({},e,{value:le}),warn:T({},e,{value:ue}),error:T({},e,{value:fe}),group:T({},e,{value:ce}),groupCollapsed:T({},e,{value:de}),groupEnd:T({},e,{value:me})})}k<0&&d("disabledDepth fell below zero. This is a bug in React. Please file an issue.")}}var X=x.ReactCurrentDispatcher,G;function F(e,r,t){{if(G===void 0)try{throw Error()}catch(o){var i=o.stack.trim().match(/\\n( *(at )?)/);G=i&&i[1]||""}return`\n`+G+e}}var q=!1,A;{var Ge=typeof WeakMap=="function"?WeakMap:Map;A=new Ge}function pe(e,r){if(!e||q)return"";{var t=A.get(e);if(t!==void 0)return t}var i;q=!0;var o=Error.prepareStackTrace;Error.prepareStackTrace=void 0;var l;l=X.current,X.current=null,Be();try{if(r){var n=function(){throw Error()};if(Object.defineProperty(n.prototype,"props",{set:function(){throw Error()}}),typeof Reflect=="object"&&Reflect.construct){try{Reflect.construct(n,[])}catch(_){i=_}Reflect.construct(e,[],n)}else{try{n.call()}catch(_){i=_}e.call(n.prototype)}}else{try{throw Error()}catch(_){i=_}e()}}catch(_){if(_&&i&&typeof _.stack=="string"){for(var a=_.stack.split(`\n`),m=i.stack.split(`\n`),f=a.length-1,c=m.length-1;f>=1&&c>=0&&a[f]!==m[c];)c--;for(;f>=1&&c>=0;f--,c--)if(a[f]!==m[c]){if(f!==1||c!==1)do if(f--,c--,c<0||a[f]!==m[c]){var v=`\n`+a[f].replace(" at new "," at ");return e.displayName&&v.includes("<anonymous>")&&(v=v.replace("<anonymous>",e.displayName)),typeof e=="function"&&A.set(e,v),v}while(f>=1&&c>=0);break}}}finally{q=!1,X.current=l,Xe(),Error.prepareStackTrace=o}var P=e?e.displayName||e.name:"",Ce=P?F(P):"";return typeof e=="function"&&A.set(e,Ce),Ce}function qe(e,r,t){return pe(e,!1)}function ze(e){var r=e.prototype;return!!(r&&r.isReactComponent)}function I(e,r,t){if(e==null)return"";if(typeof e=="function")return pe(e,ze(e));if(typeof e=="string")return F(e);switch(e){case j:return F("Suspense");case R:return F("SuspenseList")}if(typeof e=="object")switch(e.$$typeof){case w:return qe(e.render);case y:return I(e.type,r,t);case S:{var i=e,o=i._payload,l=i._init;try{return I(l(o),r,t)}catch{}}}return""}var $=Object.prototype.hasOwnProperty,ge={},he=x.ReactDebugCurrentFrame;function M(e){if(e){var r=e._owner,t=I(e.type,e._source,r?r.type:null);he.setExtraStackFrame(t)}else he.setExtraStackFrame(null)}function Ke(e,r,t,i,o){{var l=Function.call.bind($);for(var n in e)if(l(e,n)){var a=void 0;try{if(typeof e[n]!="function"){var m=Error((i||"React class")+": "+t+" type `"+n+"` is invalid; it must be a function, usually from the `prop-types` package, but received `"+typeof e[n]+"`.This often happens because of typos such as `PropTypes.function` instead of `PropTypes.func`.");throw m.name="Invariant Violation",m}a=e[n](r,n,i,t,null,"SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED")}catch(f){a=f}a&&!(a instanceof Error)&&(M(o),d("%s: type specification of %s `%s` is invalid; the type checker function must return `null` or an `Error` but returned a %s. You may have forgotten to pass an argument to the type checker creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and shape all require an argument).",i||"React class",t,n,typeof a),M(null)),a instanceof Error&&!(a.message in ge)&&(ge[a.message]=!0,M(o),d("Failed %s type: %s",t,a.message),M(null))}}}var He=Array.isArray;function z(e){return He(e)}function Je(e){{var r=typeof Symbol=="function"&&Symbol.toStringTag,t=r&&e[Symbol.toStringTag]||e.constructor.name||"Object";return t}}function Ze(e){try{return be(e),!1}catch{return!0}}function be(e){return""+e}function ye(e){if(Ze(e))return d("The provided key is an unsupported type %s. This value must be coerced to a string before before using it here.",Je(e)),be(e)}var N=x.ReactCurrentOwner,Qe={key:!0,ref:!0,__self:!0,__source:!0},Ee,_e,K;K={};function er(e){if($.call(e,"ref")){var r=Object.getOwnPropertyDescriptor(e,"ref").get;if(r&&r.isReactWarning)return!1}return e.ref!==void 0}function rr(e){if($.call(e,"key")){var r=Object.getOwnPropertyDescriptor(e,"key").get;if(r&&r.isReactWarning)return!1}return e.key!==void 0}function tr(e,r){if(typeof e.ref=="string"&&N.current&&r&&N.current.stateNode!==r){var t=E(N.current.type);K[t]||(d(\'Component "%s" contains the string ref "%s". Support for string refs will be removed in a future major release. This case cannot be automatically converted to an arrow function. We ask you to manually fix this case by using useRef() or createRef() instead. Learn more about using refs safely here: https://reactjs.org/link/strict-mode-string-ref\',E(N.current.type),e.ref),K[t]=!0)}}function ir(e,r){{var t=function(){Ee||(Ee=!0,d("%s: `key` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)",r))};t.isReactWarning=!0,Object.defineProperty(e,"key",{get:t,configurable:!0})}}function ar(e,r){{var t=function(){_e||(_e=!0,d("%s: `ref` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)",r))};t.isReactWarning=!0,Object.defineProperty(e,"ref",{get:t,configurable:!0})}}var nr=function(e,r,t,i,o,l,n){var a={$$typeof:u,type:e,key:r,ref:t,props:n,_owner:l};return a._store={},Object.defineProperty(a._store,"validated",{configurable:!1,enumerable:!1,writable:!0,value:!1}),Object.defineProperty(a,"_self",{configurable:!1,enumerable:!1,writable:!1,value:i}),Object.defineProperty(a,"_source",{configurable:!1,enumerable:!1,writable:!1,value:o}),Object.freeze&&(Object.freeze(a.props),Object.freeze(a)),a};function or(e,r,t,i,o){{var l,n={},a=null,m=null;t!==void 0&&(ye(t),a=""+t),rr(r)&&(ye(r.key),a=""+r.key),er(r)&&(m=r.ref,tr(r,o));for(l in r)$.call(r,l)&&!Qe.hasOwnProperty(l)&&(n[l]=r[l]);if(e&&e.defaultProps){var f=e.defaultProps;for(l in f)n[l]===void 0&&(n[l]=f[l])}if(a||m){var c=typeof e=="function"?e.displayName||e.name||"Unknown":e;a&&ir(n,c),m&&ar(n,c)}return nr(e,a,m,o,i,N.current,n)}}var H=x.ReactCurrentOwner,Re=x.ReactDebugCurrentFrame;function O(e){if(e){var r=e._owner,t=I(e.type,e._source,r?r.type:null);Re.setExtraStackFrame(t)}else Re.setExtraStackFrame(null)}var J;J=!1;function Z(e){return typeof e=="object"&&e!==null&&e.$$typeof===u}function xe(){{if(H.current){var e=E(H.current.type);if(e)return`\n\nCheck the render method of \\``+e+"`."}return""}}function sr(e){{if(e!==void 0){var r=e.fileName.replace(/^.*[\\\\\\/]/,""),t=e.lineNumber;return`\n\nCheck your code at `+r+":"+t+"."}return""}}var we={};function lr(e){{var r=xe();if(!r){var t=typeof e=="string"?e:e.displayName||e.name;t&&(r=`\n\nCheck the top-level render call using <`+t+">.")}return r}}function Te(e,r){{if(!e._store||e._store.validated||e.key!=null)return;e._store.validated=!0;var t=lr(r);if(we[t])return;we[t]=!0;var i="";e&&e._owner&&e._owner!==H.current&&(i=" It was passed a child from "+E(e._owner.type)+"."),O(e),d(\'Each child in a list should have a unique "key" prop.%s%s See https://reactjs.org/link/warning-keys for more information.\',t,i),O(null)}}function je(e,r){{if(typeof e!="object")return;if(z(e))for(var t=0;t<e.length;t++){var i=e[t];Z(i)&&Te(i,r)}else if(Z(e))e._store&&(e._store.validated=!0);else if(e){var o=D(e);if(typeof o=="function"&&o!==e.entries)for(var l=o.call(e),n;!(n=l.next()).done;)Z(n.value)&&Te(n.value,r)}}}function ur(e){{var r=e.type;if(r==null||typeof r=="string")return;var t;if(typeof r=="function")t=r.propTypes;else if(typeof r=="object"&&(r.$$typeof===w||r.$$typeof===y))t=r.propTypes;else return;if(t){var i=E(r);Ke(t,e.props,"prop",i,e)}else if(r.PropTypes!==void 0&&!J){J=!0;var o=E(r);d("Component %s declared `PropTypes` instead of `propTypes`. Did you misspell the property assignment?",o||"Unknown")}typeof r.getDefaultProps=="function"&&!r.getDefaultProps.isReactClassApproved&&d("getDefaultProps is only used on classic React.createClass definitions. Use a static property named `defaultProps` instead.")}}function fr(e){{for(var r=Object.keys(e.props),t=0;t<r.length;t++){var i=r[t];if(i!=="children"&&i!=="key"){O(e),d("Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props.",i),O(null);break}}e.ref!==null&&(O(e),d("Invalid attribute `ref` supplied to `React.Fragment`."),O(null))}}function cr(e,r,t,i,o,l){{var n=Le(e);if(!n){var a="";(e===void 0||typeof e=="object"&&e!==null&&Object.keys(e).length===0)&&(a+=" You likely forgot to export your component from the file it\'s defined in, or you might have mixed up default and named imports.");var m=sr(o);m?a+=m:a+=xe();var f;e===null?f="null":z(e)?f="array":e!==void 0&&e.$$typeof===u?(f="<"+(E(e.type)||"Unknown")+" />",a=" Did you accidentally export a JSX literal instead of a component?"):f=typeof e,d("React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s",f,a)}var c=or(e,r,t,o,l);if(c==null)return c;if(n){var v=r.children;if(v!==void 0)if(i)if(z(v)){for(var P=0;P<v.length;P++)je(v[P],e);Object.freeze&&Object.freeze(v)}else d("React.jsx: Static children should always be an array. You are likely explicitly calling React.jsxs or React.jsxDEV. Use the Babel transform instead.");else je(v,e)}return e===h?fr(c):ur(c),c}}var dr=cr;te.Fragment=h,te.jsxDEV=dr})()});var ie=Q((jr,ke)=>{"use strict";ke.exports=Se()});var Rr={};br(Rr,{cid:()=>Ae,default:()=>_r});var V=ee(ie());var p=ee(ie()),Ne=ee(re()),De=({metric:s,metric_name:u,container:g,data:h,parity:b})=>{let[W,L]=(0,Ne.useState)({data:[],bars:[]}),U="",w="",j="",R=0,y=0,S=h.sensitive_feature;for(let C of h.results){let ae=C,D=S.map((x,d)=>`${x}:${C.subgroup.split(",")[d]}`).join(",");local_metric=C[s],(y==0||local_metric<y)&&(y=local_metric,j=D),(R==-1||local_metric>=R)&&(R=local_metric,w=D)}let B=R-y;return(0,p.jsxDEV)("div",{style:{width:"100%"},children:[(0,p.jsxDEV)("p",{children:(0,p.jsxDEV)("b",{children:"Results"},void 0,!1,{fileName:"/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/widgets/interpretation.mdx",lineNumber:40,columnNumber:9},void 0)},void 0,!1,{fileName:"/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/widgets/interpretation.mdx",lineNumber:39,columnNumber:7},void 0),(0,p.jsxDEV)("p",{children:["The difference between ",(0,p.jsxDEV)("b",{children:(0,p.jsxDEV)("i",{children:w},void 0,!1,{fileName:"/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/widgets/interpretation.mdx",lineNumber:44,columnNumber:35},void 0)},void 0,!1,{fileName:"/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/widgets/interpretation.mdx",lineNumber:44,columnNumber:32},void 0)," (group with highest value) and ",(0,p.jsxDEV)("b",{children:(0,p.jsxDEV)("i",{children:j},void 0,!1,{fileName:"/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/widgets/interpretation.mdx",lineNumber:44,columnNumber:92},void 0)},void 0,!1,{fileName:"/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/widgets/interpretation.mdx",lineNumber:44,columnNumber:89},void 0)," (group with lowest value) is ",(0,p.jsxDEV)("b",{children:B},void 0,!1,{fileName:"/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/widgets/interpretation.mdx",lineNumber:44,columnNumber:144},void 0)," for ",(0,p.jsxDEV)("i",{children:u},void 0,!1,{fileName:"/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/widgets/interpretation.mdx",lineNumber:44,columnNumber:162},void 0),". In an ideal situation, the parity should be close to ",b,"."]},void 0,!0,{fileName:"/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/widgets/interpretation.mdx",lineNumber:43,columnNumber:7},void 0)]},void 0,!0,{fileName:"/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/widgets/interpretation.mdx",lineNumber:38,columnNumber:5},void 0)};var Ae="mock_algo1";function Fe(s){return(0,V.jsxDEV)(De,{metric:"mae",metric_name:"Mean Absolute Error Parity",container:s.container,data:s.getResults(Ae),parity:"0"},void 0,!1,{fileName:"/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/widgets/widget_cid_1.mdx",lineNumber:5,columnNumber:1},this)}function Er(s={}){let{wrapper:u}=s.components||{};return u?(0,V.jsxDEV)(u,Object.assign({},s,{children:(0,V.jsxDEV)(Fe,s,void 0,!1,{fileName:"/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/widgets/widget_cid_1.mdx"},this)}),void 0,!1,{fileName:"/home/amdlahir/imda/projects/aiverify/ai-verify-portal/plugins/stock.fairness-metrics-toolbox-for-regression/widgets/widget_cid_1.mdx"},this):Fe(s)}var _r=Er;return yr(Rr);})();\n/**\n * @license React\n * react-jsx-dev-runtime.development.js\n *\n * Copyright (c) Facebook, Inc. and its affiliates.\n *\n * This source code is licensed under the MIT license found in the\n * LICENSE file in the root directory of this source tree.\n */\n;return Component;',
   frontmatter: {},
 };
 
 export {
-  pluginsListResponse,
+  managePluginsTests_pluginsList,
   emptyListResponse,
   installPluginResponse,
   algoPackageDependencyStatusResponse,
-  pluginsFromDir,
-  fmtInterpretationMAEBundleResponse,
+  projectFlow_mockPlugins,
+  widgetMdxBundleResponse,
 };
