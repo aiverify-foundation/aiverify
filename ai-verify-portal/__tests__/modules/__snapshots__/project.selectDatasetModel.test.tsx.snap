@@ -100,6 +100,103 @@ exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Sc
               </div>
             </div>
           </div>
+          <div
+            class="root list__expanded"
+            style="margin-top: 10px;"
+          >
+            <div
+              class="header"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium arrowIcon css-i4bv87-MuiSvgIcon-root"
+                data-testid="ArrowDropDownIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="m7 10 5 5 5-5z"
+                />
+              </svg>
+              <div
+                class="headerContent"
+              >
+                <div
+                  class="headerChild"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                    data-testid="DynamicFormIcon"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M17 20v-9h-2V4h7l-2 5h2l-5 11zm-2-7v7H4c-1.1 0-2-.9-2-2v-3c0-1.1.9-2 2-2h11zm-8.75 2.75h-1.5v1.5h1.5v-1.5zM13 4v7H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2h9zM6.25 6.75h-1.5v1.5h1.5v-1.5z"
+                    />
+                  </svg>
+                  <span
+                    style="color: rgb(103, 103, 103); font-weight: 500;"
+                  >
+                    Input Blocks Progress
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div
+              class="list"
+            >
+              <div
+                class="iBlockStepperWrapper"
+              >
+                <div
+                  style="margin-top: 10px; margin-bottom: 10px;"
+                >
+                  <div
+                    class="MuiStepper-root MuiStepper-vertical css-9tmuzo-MuiStepper-root"
+                    style="text-align: center;"
+                  >
+                    <div
+                      class="MuiStep-root MuiStep-vertical css-8wcvy5-MuiStep-root"
+                    >
+                      <span
+                        class="MuiStepLabel-root MuiStepLabel-vertical css-14sza3e-MuiStepLabel-root"
+                      >
+                        <span
+                          class="MuiStepLabel-iconContainer Mui-active css-vnkopk-MuiStepLabel-iconContainer"
+                        >
+                          <svg
+                            aria-hidden="true"
+                            class="MuiSvgIcon-root MuiSvgIcon-colorPrimary MuiSvgIcon-fontSizeLarge css-1p22c1a-MuiSvgIcon-root"
+                            data-testid="CircleIcon"
+                            focusable="false"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2z"
+                            />
+                          </svg>
+                        </span>
+                        <span
+                          class="MuiStepLabel-labelContainer css-1vyamtt-MuiStepLabel-labelContainer"
+                        >
+                          <span
+                            class="MuiStepLabel-label Mui-active css-1hv8oq8-MuiStepLabel-label"
+                          >
+                            <div
+                              style="cursor: pointer; color: rgb(103, 103, 103); font-weight: 600;"
+                            >
+                              Mock Input Block 1
+                            </div>
+                          </span>
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div
           class="inputsRightpanel"
@@ -258,6 +355,61 @@ exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Sc
                     >
                       Invalid Arguments
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="inputSection"
+          >
+            <div
+              class="sectionHeading"
+            >
+              <h3
+                class="screenHeading"
+              >
+                Complete Input Blocks
+              </h3>
+              <p
+                class="headingDescription"
+              >
+                Open each input block to provide the information required
+              </p>
+            </div>
+            <div
+              class="MuiBox-root css-0"
+            >
+              <div
+                class="inputCard"
+                id="ibcard-aiverify.test.mock_test_plugin1:mock_iblock1"
+              >
+                <div
+                  class="inputDescription"
+                  style="width: 350px;"
+                >
+                  <h4>
+                    Mock Input Block 1
+                  </h4>
+                  <div
+                    class="inputSummary"
+                  />
+                </div>
+                <div
+                  class="divider"
+                />
+                <div
+                  class="inputMain"
+                >
+                  <p />
+                  <div
+                    class="buttonRow"
+                  >
+                    <button
+                      class="aivBase-button aivBase-button--primary aivBase-button--small"
+                    >
+                      Open
+                    </button>
                   </div>
                 </div>
               </div>

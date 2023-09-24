@@ -11,6 +11,7 @@ const MOCK_PROJECTID = '64c82da4c99adb254a4203ad';
 const MOCK_MODELID = '647d8c0514ae095e2e890af4';
 const MOCK_DATASETID = '647d8bf214ae095e2e890add';
 export const MOCK_ALGO_ID = 'aiverify.test.mock_test_plugin1:mock_algo1';
+export const MOCK_IBLOCK_ID = 'aiverify.test.mock_test_plugin1:mock_iblock1';
 export const MOCK_DATE_WIDGET_1 = 1695202143375;
 
 export const mockGqlCreateProject = [
@@ -243,7 +244,14 @@ export const mockGqlDataE2E = [
     result: {
       data: {
         updateProject: {
-          id: `${MOCK_PROJECTID}`, // Note: the actual result actually has many more properties than just `id`. In unit test, we do not need them so omitting in this mock
+          id: `${MOCK_PROJECTID}`,
+          // Note: the actual result actually might or might not have below properties and they should contain sub properties. In unit test, we can just omit them. These returned properties are not used in the UI.
+          projectInfo: {},
+          globalVars: {},
+          inpuBlockData: {},
+          testInformation: {},
+          pages: [],
+          modelAndDatasets: {},
         },
       },
     },
@@ -291,7 +299,42 @@ export const mockGqlDataE2E = [
     result: {
       data: {
         updateProject: {
-          id: `${MOCK_PROJECTID}`, // Note: the actual result actually has many more properties than just `id`. In unit test, we do not need them so omitting in this mock
+          id: `${MOCK_PROJECTID}`,
+          // Note: the actual result actually might or might not have below properties and they should contain sub properties. In unit test, we can just omit them. These returned properties are not used in the UI.
+          projectInfo: {},
+          globalVars: {},
+          inpuBlockData: {},
+          testInformation: {},
+          pages: [],
+          modelAndDatasets: {},
+        },
+      },
+    },
+  },
+
+  {
+    request: {
+      query: UPDATE_PROJECT,
+      variables: {
+        id: `${MOCK_PROJECTID}`,
+        project: {
+          inputBlockData: {
+            'aiverify.test.mock_test_plugin1:mock_iblock1': {},
+          },
+        },
+      },
+    },
+    result: {
+      data: {
+        updateProject: {
+          id: `${MOCK_PROJECTID}`,
+          // Note: the actual result actually might or might not have below properties and they should contain sub properties. In unit test, we can just omit them. These returned properties are not used in the UI.
+          projectInfo: {},
+          globalVars: {},
+          inpuBlockData: {},
+          testInformation: {},
+          pages: [],
+          modelAndDatasets: {},
         },
       },
     },

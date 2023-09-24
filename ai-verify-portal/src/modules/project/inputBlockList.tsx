@@ -107,20 +107,20 @@ export default function InputBlockList(props: InputBlockListProps) {
       // load widget if not cached yet
       const createDynamic = async () => {
         const apiPath = `/api/bundler/${gid}`;
-        // console.log("apiPath", apiPath)
-        // const { data, error } = useSWR(apiPath, fetcher)
-        // console.log("data", data);
         fetch(apiPath)
           .then(async (res) => {
             if (res.status === 200) {
               const data = await res.json();
               state.status = WidgetStatus.loaded;
-              // console.log("data", data);
               state.mdxBundle = {
                 code: data.code,
                 frontmatter: data.frontmatter,
               };
               state.open = true;
+              console.log(
+                '======================================================='
+              );
+              console.log(state.mdxBundle);
             } else {
               state.status = WidgetStatus.invalid;
               state.open = true;
@@ -161,6 +161,8 @@ export default function InputBlockList(props: InputBlockListProps) {
   };
 
   const showInputBlock = (gid: string): void => {
+    console.log('+++++showInputBlock');
+    console.log(currentState);
     const state = inputBlockStates[gid];
     if (currentState && currentState.inputBlock.gid === gid) {
       state.open = true;
@@ -176,6 +178,7 @@ export default function InputBlockList(props: InputBlockListProps) {
         onChangeData: (key: string, value: any) =>
           _onChangeData(gid, key, value),
       });
+      console.log('+++++setCurrentState');
       setCurrentState(state);
     }
   };
@@ -206,6 +209,9 @@ export default function InputBlockList(props: InputBlockListProps) {
   function handleOpenBtnClick(iblock: InputBlock) {
     return () => showInputBlock(iblock.gid);
   }
+
+  console.log('--------------------------------------------------------------');
+  console.log(currentState);
 
   return (
     <div className={styles.inputSection}>

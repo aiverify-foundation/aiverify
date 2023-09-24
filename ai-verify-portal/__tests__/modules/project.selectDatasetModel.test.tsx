@@ -6,8 +6,17 @@ import ProjectCreatePage from 'pages/project/create';
 import { getPlugins } from 'server/pluginManager';
 import { MockProviders } from '__mocks__/mockProviders';
 import PluginManagerType from 'src/types/pluginManager.interface';
-import { MOCK_DATE_WIDGET_1, mockGqlDataE2E } from '__mocks__/mockGqlResponse';
-import { widgetMdxBundleResponse } from '__mocks__/mockPlugins';
+import {
+  MOCK_ALGO_ID,
+  MOCK_DATE_WIDGET_1,
+  MOCK_IBLOCK_ID,
+  mockGqlDataE2E,
+} from '__mocks__/mockGqlResponse';
+import {
+  inputBlockMdxCompBundleResponse,
+  inputBlockMdxSummaryBundleResponse,
+  widgetMdxBundleResponse,
+} from '__mocks__/mockPlugins';
 import { DataGridProps } from '@mui/x-data-grid';
 
 jest.mock('@mui/x-data-grid', () => {
@@ -152,13 +161,28 @@ describe('Project Flow - Select Dataset And Model', () => {
 
     it('should select datasets, ground truth, test arguments and generate report', async () => {
       const fetchSpy = jest.spyOn(global, 'fetch');
-      fetchSpy.mockImplementation(
-        jest.fn(() =>
-          Promise.resolve({
-            json: () => Promise.resolve(widgetMdxBundleResponse),
-          })
-        ) as jest.Mock
-      );
+      fetchSpy
+        .mockImplementationOnce(
+          jest.fn(() =>
+            Promise.resolve({
+              json: () => Promise.resolve(widgetMdxBundleResponse),
+            })
+          ) as jest.Mock
+        )
+        .mockImplementationOnce(
+          jest.fn(() =>
+            Promise.resolve({
+              json: () => Promise.resolve(inputBlockMdxSummaryBundleResponse),
+            })
+          ) as jest.Mock
+        )
+        .mockImplementationOnce(
+          jest.fn(() =>
+            Promise.resolve({
+              json: () => Promise.resolve(inputBlockMdxCompBundleResponse),
+            })
+          ) as jest.Mock
+        );
       const user = userEvent.setup();
       const { container } = render(
         <MockProviders apolloMocks={mockGqlDataE2E}>
@@ -232,6 +256,12 @@ describe('Project Flow - Select Dataset And Model', () => {
       });
 
       global.Date.now = actualDateNowFn;
+
+      const counterChips = Array.from(
+        container.querySelectorAll('.testsCountChip')
+      );
+      expect(counterChips[0].textContent).toBe('1'); //tests to run
+      expect(counterChips[1].textContent).toBe('1'); //input blocks
 
       await user.click(await screen.findByText(/^Next$/i));
       await screen.findByText(
@@ -319,7 +349,7 @@ describe('Project Flow - Select Dataset And Model', () => {
 
       // Enter Test Arguments
       const algoTestArgsCard = container.querySelector(
-        'div[id="algocard-aiverify.test.mock_test_plugin1:mock_algo1"]'
+        `div[id="algocard-${MOCK_ALGO_ID}"]`
       ) as HTMLElement;
       expect(algoTestArgsCard).not.toBeNull();
       await screen.findByText(/^Invalid Arguments$/i);
@@ -336,6 +366,18 @@ describe('Project Flow - Select Dataset And Model', () => {
       await user.click(await screen.findByText(/^OK$/i));
       expect(await screen.queryByText(/^Sensitive Feature Names$/i)).toBeNull();
       expect(await screen.queryByText(/^Invalid Arguments$/i)).toBeNull();
+
+      // Fill Input Block
+      const iblockCard = container.querySelector(
+        `div[id="ibcard-${MOCK_IBLOCK_ID}"]`
+      ) as HTMLElement;
+      expect(iblockCard).not.toBeNull();
+      const openIblockBtn = iblockCard.querySelector(
+        '.aivBase-button'
+      ) as HTMLButtonElement;
+      expect(openIblockBtn).not.toBeNull();
+      await user.click(openIblockBtn);
+      // await screen.findByText(/^My MDX Input Block$/i);
 
       // click save
       const saveBtn = container.querySelector(
