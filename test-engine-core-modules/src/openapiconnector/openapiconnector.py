@@ -288,7 +288,7 @@ class Plugin(IModel):
         Returns:
             Any: predicted result
         """
-        return self.predict(data, *args)
+        return asyncio.run(self.make_request(data, *args))
 
     def score(self, data: Any, y_true: Any) -> Any:
         """
@@ -373,7 +373,7 @@ class Plugin(IModel):
             the corresponding field name in the input data_row.
 
         Returns:
-            Dict: A dictionary containing the formatted dFata payload with field names as keys and their respective
+            Dict: A dictionary containing the formatted data payload with field names as keys and their respective
             values extracted from the data_row.
 
         Notes:
@@ -486,7 +486,7 @@ class Plugin(IModel):
         for row in list_of_rows:
             row_data_to_send = await self.get_data_payload(row, *args)
             list_of_processed_rows.append(row_data_to_send)
-
+        
         if self._api_instance._.predict_api.method.lower() == "post":
             # POST method. Get API Instance schema
             self._api_instance_schema = await self.get_schema_content()
@@ -496,7 +496,7 @@ class Plugin(IModel):
                 if str(parameter.in_.name).lower() == "header" and parameter.required:
                     if len(parameter.schema_.enum) > 0:
                         headers.update({parameter.name: parameter.schema_.enum[0]})
-            
+
             # Populate body with payload values
             headers, data, result = await self._api_instance._.predict_api.request(
                 parameters=headers, data=list_of_processed_rows
@@ -504,7 +504,6 @@ class Plugin(IModel):
         else:
             # GET method. Populate body with payload values
             body = None
-
             # Perform api request
             headers, data, result = await self._api_instance._.predict_api.request(
                 parameters=row_data_to_send, data=body
@@ -559,7 +558,9 @@ class Plugin(IModel):
                 else:
                     for row in data_to_predict:
                         # Pass this information to the send request function to request
-                        request_task_list.append(self.send_batched_request(row, *args))
+                        batched_data.append(row)
+                    for i in range(0, len(batched_data), self._api_batch_limit):
+                        request_task_list.append(self.send_batched_request(batched_data[i:i+self._api_batch_limit], *args))
 
         # No batching
         else:
@@ -576,7 +577,6 @@ class Plugin(IModel):
                         # Pass this information to the send request function to request
                         request_task_list.append(self.send_request(row, *args))
         response_list = await asyncio.gather(*request_task_list)
-
         # get the content type of response
         openapi_response_object = next(
             iter(self._api_instance._.predict_api.operation.responses.values())
@@ -601,6 +601,7 @@ class Plugin(IModel):
             
         end_time = time.time()
         elapsed_time = end_time - start_time
+        print("time taken: ", elapsed_time)
         return response_data
 
     def _setup_api_authentication(self) -> None:
