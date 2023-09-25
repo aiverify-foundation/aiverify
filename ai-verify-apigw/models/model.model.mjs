@@ -91,6 +91,7 @@ const modelAPISchema = new Schema({
       required: true,
       enum: ["text/plain", "application/json"],
     },
+    isArray: { type: Boolean, required: false, default: false },
     type: { type: String, enum: ALL_TYPES, default: "integer" },
     field: { type: String }, // for object, define the prediction field use dot, e.g. xxx.yyy, to denote nested field
   },
@@ -183,6 +184,8 @@ function _exportModelAPI(modelAPI) {
   };
 
   // build the path
+  // const responseType = (modelAPI.response.mediaType === "text/plain") ? modelAPI.response.type : "object";
+  const responseType = modelAPI.response.type;
   let pathObj = {
     parameters: [],
     responses: {
@@ -191,10 +194,12 @@ function _exportModelAPI(modelAPI) {
         content: {
           [modelAPI.response.mediaType]: {
             schema: {
-              type:
-                modelAPI.response.mediaType === "text/plain"
-                  ? "integer"
-                  : "object",
+              type: modelAPI.response.isArray? {
+                type: "array",
+                items: {
+                  type: responseType
+                }
+              } : responseType
             },
           },
         },
