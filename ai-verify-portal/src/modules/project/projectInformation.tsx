@@ -1,5 +1,6 @@
 import { TextInput } from 'src/components/textInput';
 import {
+  ARUActionTypes,
   ProjectTemplateStore,
   UpdateActionTypes,
 } from '../projectTemplate/projectTemplateContext';
@@ -65,6 +66,31 @@ export default function ProjectInformationComponent(props: ProjectInfoProps) {
       type: UpdateActionTypes.UPDATE,
       payload: projectGeneralInfo,
     });
+    for (const propertyName in projectGeneralInfo) {
+      if (propertyName === '__typename') continue;
+      const idx = projectStore.globalVars.findIndex(
+        (gvar) => gvar.key === propertyName
+      );
+      const gVarValue =
+        projectGeneralInfo[
+          propertyName as 'name' | 'company' | 'reportTitle' | 'description'
+        ];
+      if (gVarValue == null) continue;
+      if (idx < 0 || gVarValue !== projectStore.globalVars[idx].value) {
+        if (idx < 0) {
+          projectStore.dispatchGlobalVars({
+            type: ARUActionTypes.ADD,
+            payload: { key: propertyName, value: gVarValue },
+          });
+        } else {
+          projectStore.dispatchGlobalVars({
+            type: ARUActionTypes.UPDATE,
+            index: idx,
+            payload: { key: propertyName, value: gVarValue },
+          });
+        }
+      }
+    }
   }, [projectGeneralInfo]);
 
   useEffect(() => {

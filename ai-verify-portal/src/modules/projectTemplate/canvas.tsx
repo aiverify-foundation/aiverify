@@ -380,14 +380,7 @@ export default function CanvasComponent(props: CanvasProps) {
     return projectStore.pages[currentPageNo.current];
   };
 
-  const combinedGlobalVars = useMemo(() => {
-    return [
-      ...Object.entries(projectStore.projectInfo)
-        .filter((item) => item[0] !== '__typename')
-        .map((item) => ({ key: item[0], value: item[1] })),
-      ...projectStore.globalVars,
-    ] as GlobalVariable[];
-  }, [projectStore.globalVars, projectStore.projectInfo]);
+  const combinedGlobalVars = projectStore.globalVars;
 
   function handleAddPageClick(pageIndex = -1) {
     setinitialLayout([]);
