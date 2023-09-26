@@ -137,10 +137,17 @@ class Plugin(IModel):
             Any: predicted result
         """
         try:
-            if self._model_algorithm == "xgboost.core.Booster":
-                return self._model.predict(xgboost.DMatrix(data))
+            if isinstance(data, list):
+                for item in data:
+                    if self._model_algorithm == "xgboost.core.Booster":
+                        return self._model.predict(xgboost.DMatrix(item))
+                    else:
+                        return self._model.predict(item)
             else:
-                return self._model.predict(data)
+                if self._model_algorithm == "xgboost.core.Booster":
+                    return self._model.predict(xgboost.DMatrix(data))
+                else:
+                    return self._model.predict(data)
         except Exception:
             raise
 

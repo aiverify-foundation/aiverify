@@ -145,7 +145,11 @@ class Plugin(IModel):
             Any: predicted result
         """
         try:
-            return self._model.predict(data)
+            if isinstance(data, list):
+                for item in data:
+                    return self._model.predict(item)
+            else:
+                return self._model.predict(data)
         except Exception:
             raise
 
@@ -160,7 +164,11 @@ class Plugin(IModel):
             Any: predicted result
         """
         try:
-            return self._model.predict_proba(data)
+            if isinstance(data, list):
+                for item in data:
+                    return self._model.predict_proba(item)
+            else:
+                return self._model.predict_proba(data)
         except Exception:
             raise
 
