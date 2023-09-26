@@ -91,9 +91,10 @@ const modelAPISchema = new Schema({
       required: true,
       enum: ["text/plain", "application/json"],
     },
-    isArray: { type: Boolean, required: false, default: false },
-    type: { type: String, enum: ALL_TYPES, default: "integer" },
+    type: { type: String, required: true, enum: ALL_TYPES, default: "integer" },
     field: { type: String }, // for object, define the prediction field use dot, e.g. xxx.yyy, to denote nested field
+    objectType: { type: String, enum: ALL_TYPES },
+    arrayType: { type: String, enum: ALL_TYPES },
   },
   requestConfig: {
     sslVerify: { type: Boolean, default: true },
@@ -185,7 +186,38 @@ function _exportModelAPI(modelAPI) {
 
   // build the path
   // const responseType = (modelAPI.response.mediaType === "text/plain") ? modelAPI.response.type : "object";
-  const responseType = modelAPI.response.type;
+  const responseType = {
+    type: modelAPI.response.type,
+  }
+  console.log("modelAPI.response", modelAPI.response)
+  const getResponseType = (responseType) => {
+    console.log("  responseType.type", responseType.type);
+    if (responseType.type === 'array') {
+      if (typeof(modelAPI.response.arrayType) !== 'string' || modelAPI.response.arrayType.length == 0) {
+        throw new Error("Missing responseBody property arrayType");
+      }
+      responseType["items"] = {
+        type: modelAPI.response.arrayType
+      }
+      getResponseType(responseType.items);
+    } else if (responseType.type === 'object') {
+      if (typeof(modelAPI.response.objectType) !== 'string' || modelAPI.response.objectType.length == 0) {
+        throw new Error("Missing responseBody property objectType");
+      }
+      if (typeof(modelAPI.response.field) !== 'string' || modelAPI.response.field.length == 0) {
+        throw new Error("Missing responseBody property field");
+      }
+      responseType["properties"] = {
+        [modelAPI.response.field]: {
+          type: modelAPI.response.objectType 
+        }
+      }
+      getResponseType(responseType.properties[modelAPI.response.field]);
+    }
+    // return responseType;
+  }
+  getResponseType(responseType);
+  console.log("responseType", responseType);
   let pathObj = {
     parameters: [],
     responses: {
@@ -193,14 +225,7 @@ function _exportModelAPI(modelAPI) {
         description: "successful operation",
         content: {
           [modelAPI.response.mediaType]: {
-            schema: {
-              type: modelAPI.response.isArray? {
-                type: "array",
-                items: {
-                  type: responseType
-                }
-              } : responseType
-            },
+            schema: responseType,
           },
         },
       },

@@ -71,9 +71,10 @@ type OpenAPIRequestBodyType {
 type OpenAPIResponseType {
   statusCode: Int! @constraint(min: 200, max: 299)
   mediaType: OpenAPIMediaType!
-  isArray: Boolean # indicate if is array, default false
   type: OpenAPIAllTypes
   field: String @constraint(minLength: 1, maxLength: 128) # for object, define the prediction field use dot, e.g. xxx.yyy, to denote nested field
+  objectType: OpenAPIAllTypes
+  arrayType: OpenAPIAllTypes
 }
 
 enum ModelAPIRequestConfigBatchStrategy {
@@ -157,9 +158,10 @@ input OpenAPIRequestBodyInput {
 input OpenAPIResponseInput {
   statusCode: Int! @constraint(min: 200, max: 299)
   mediaType: OpenAPIMediaType!
-  isArray: Boolean # indicate if is array, default false
   type: OpenAPIAllTypes!
   field: String @constraint(minLength: 1, maxLength: 128) # for object, define the prediction field use dot, e.g. xxx.yyy, to denote nested field
+  objectType: OpenAPIAllTypes
+  arrayType: OpenAPIAllTypes
 }
 
 input OpenAPIRequestConfigInput {

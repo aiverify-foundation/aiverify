@@ -120,7 +120,8 @@ export const queueTests = async (report, modelAndDatasets) => {
         responseBody: {
           field: modelAPI.response.field,
           type: modelAPI.response.type,
-          isArray: modelAPI.response.isArray,
+          objectType: modelAPI.response.objectType,
+          arrayType: modelAPI.response.arrayType,
         },
       };
       delete apiConfig._id; // remove this field not required
