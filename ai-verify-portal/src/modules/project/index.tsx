@@ -94,44 +94,17 @@ export default function ProjectModule({ data, pluginManager }: Props) {
         if (selectedProjectTemplateId == BlankTemplateId) {
           if (projectStore.isNew) {
             await projectStore.createProject();
-            for (const propertyName in projectStore.projectInfo) {
-              if (propertyName === '__typename') continue;
-              const idx = projectStore.globalVars.findIndex(
-                (gvar) => gvar.key === propertyName
-              );
-              const gVarValue =
-                projectStore.projectInfo[
-                  propertyName as
-                    | 'name'
-                    | 'company'
-                    | 'reportTitle'
-                    | 'description'
-                ];
-              if (gVarValue == null) continue;
-              if (idx < 0 || gVarValue !== projectStore.globalVars[idx].value) {
-                if (idx < 0) {
-                  projectStore.dispatchGlobalVars({
-                    type: ARUActionTypes.ADD,
-                    payload: { key: propertyName, value: gVarValue },
-                  });
-                } else {
-                  projectStore.dispatchGlobalVars({
-                    type: ARUActionTypes.UPDATE,
-                    index: idx,
-                    payload: { key: propertyName, value: gVarValue },
-                  });
-                }
-              }
-            }
             setStep(ProjectStep.DesignReport);
             return;
           }
         }
         if (projectStore.isNew) {
           const id = await projectStore.createProjectFromTemplate(
-            selectedProjectTemplateId
+            selectedProjectTemplateId,
+            () => {
+              if (id) router.push(`/project/${id}`);
+            }
           );
-          if (id) router.push(`/project/${id}`);
         }
         break;
       case ProjectStep.CaptureTestInput:

@@ -59,7 +59,13 @@ export type ARUActions<Type> = {
   index2?: number;
   payload?: Type | Partial<Type>;
   payloadArray?: Type[];
-  updateFn?: _.DebouncedFunc<(id: string | undefined, state: Type[]) => void>;
+  updateFn?:
+    | _.DebouncedFunc<
+        (id: string | undefined, state: Type[], callback?: () => void) => void
+      >
+    | ((id: string | undefined, state: Type[], callback?: () => void) => void);
+  onCompleted?: () => void;
+  noDebounce?: boolean;
 };
 
 export enum MapActionTypes {
@@ -111,10 +117,7 @@ export interface ProjectTemplateStore {
   dispatchPages: Dispatch<ARUActions<Page>>;
   globalVars: GlobalVariable[];
   dispatchGlobalVars: Dispatch<ARUActions<GlobalVariable>>;
-  // inputBlocks: InputBlock[];
-  // algorithms: Algorithm[];
   dependencies: DependencyList;
-  // dispatchInputBlocks: Dispatch<ARUActions<InputBlock>>;
   dependency2ReportWidgetsMap: dependency2ReportWidgetsMapType;
   addReportWidget: (reportWidget: ReportWidgetItem) => void;
   removeReportWidget: (reportWidget: ReportWidgetItem) => void;
@@ -139,7 +142,7 @@ export function useProjectTemplateStore(
   pluginManager: PluginManagerType,
   projectMode = false
 ): ProjectTemplateStore {
-  const [isNew, setIsNew] = useState<boolean>(!!!data.id);
+  const [isNew, setIsNew] = useState<boolean>(() => data.id == undefined);
   const [id, setId] = useState<string | undefined>(data.id);
   const [lastSavedTime, setLastSavedTime] = useState<moment.Moment | null>(
     null
@@ -177,7 +180,6 @@ export function useProjectTemplateStore(
       case ARUActionTypes.ADD:
         if (!action.payload) throw new Error('Missing payload');
         const newState = [...state, action.payload as Type] as Type[];
-        // console.log("newState", JSON.stringify(newState))
         if (action.updateFn) action.updateFn(id, newState as Type[]);
         return newState;
       case ARUActionTypes.INSERT:
@@ -197,15 +199,11 @@ export function useProjectTemplateStore(
         return newState4;
       case ARUActionTypes.REMOVE:
         if (_.isNil(action.index)) throw new Error('Missing index');
-        // console.log("before slice", JSON.stringify(state))
-        // state.splice(action.index, 1);
-        // console.log("after slice", JSON.stringify(state))
         const newState2 = [...state]; // clone the array
         newState2.splice(action.index, 1);
         if (action.updateFn) action.updateFn(id, newState2 as Type[]);
         return newState2;
       case ARUActionTypes.UPDATE:
-        // console.log("ACTION UPDATE", action, state.length)
         if (_.isNil(action.index) || !action.payload)
           throw new Error('Missing index or payload');
         if (action.index < 0 || action.index >= state.length) return state;
@@ -214,12 +212,11 @@ export function useProjectTemplateStore(
           ...action.payload,
         };
         if (action.updateFn) action.updateFn(id, state as Type[]);
-        // console.log("updateState", JSON.stringify(state))
         return state;
       case ARUActionTypes.REPLACE:
         if (!action.payloadArray) throw new Error('payload');
-        if (action.updateFn) action.updateFn(id, action.payloadArray);
-        // console.log("updateState", JSON.stringify(state))
+        if (action.updateFn)
+          action.updateFn(id, action.payloadArray, action.onCompleted);
         return action.payloadArray as Type[];
       default:
         throw new Error('Invalid action');
@@ -261,7 +258,6 @@ export function useProjectTemplateStore(
 
   /** create the reducers */
 
-  // @ts-ignore
   const [projectInfo, _dispatchProjectInfo] = useReducer(
     updateReducer<ProjectInformation>,
     {
@@ -286,20 +282,18 @@ export function useProjectTemplateStore(
           console.error('Update Info error:', err);
         });
     }, DEBOUNCE_WAIT),
-    []
+    [isNew]
   );
 
   const dispatchProjectInfo = (
     action: DataUpdateActions<ProjectInformation>
   ) => {
-    // console.log("dispatchPages", id, action)
     _dispatchProjectInfo({
       ...action,
       updateFn: _sendProjectInfoUpdates,
     });
   };
 
-  // @ts-ignore
   const [pages, _dispatchPages] = useReducer(
     arrayReducer<Page>,
     data.pages || []
@@ -365,13 +359,41 @@ export function useProjectTemplateStore(
     });
   };
 
-  // @ts-ignore
   const [globalVars, _dispatchGlobalVars] = useReducer(
     arrayReducer<GlobalVariable>,
     data.globalVars || []
   );
   const _sendGlobalVarsUpdates = useCallback(
-    _.debounce((id: string | undefined, globalVars: GlobalVariable[]) => {
+    _.debounce(
+      (
+        id: string | undefined,
+        globalVars: GlobalVariable[],
+        callback?: () => void
+      ) => {
+        if (!id || id.length == 0) return Promise.resolve();
+        const _globalVars = globalVars.map((item) => {
+          return _.pick(item, ['key', 'value']);
+        }) as GlobalVariable[];
+        return updateProjectFn(id, { globalVars: _globalVars })
+          .then(() => {
+            setLastSavedTime(moment());
+            if (callback) callback();
+          })
+          .catch((err) => {
+            console.error('Update global vars error', err);
+            if (callback) callback();
+          });
+      },
+      DEBOUNCE_WAIT
+    ),
+    []
+  );
+  const _sendGlobalVarsUpdatesWithoutDebounce = useCallback(
+    (
+      id: string | undefined,
+      globalVars: GlobalVariable[],
+      callback?: () => void
+    ) => {
       if (!id || id.length == 0) return Promise.resolve();
       const _globalVars = globalVars.map((item) => {
         return _.pick(item, ['key', 'value']);
@@ -379,17 +401,21 @@ export function useProjectTemplateStore(
       return updateProjectFn(id, { globalVars: _globalVars })
         .then(() => {
           setLastSavedTime(moment());
+          if (callback) callback();
         })
         .catch((err) => {
           console.error('Update global vars error', err);
+          if (callback) callback();
         });
-    }, DEBOUNCE_WAIT),
+    },
     []
   );
   const dispatchGlobalVars = (action: ARUActions<GlobalVariable>) => {
     _dispatchGlobalVars({
       ...action,
-      updateFn: _sendGlobalVarsUpdates,
+      updateFn: action.noDebounce
+        ? _sendGlobalVarsUpdatesWithoutDebounce
+        : _sendGlobalVarsUpdates,
     });
   };
 
@@ -588,14 +614,12 @@ export function useProjectTemplateStore(
   };
 
   // store the widget MDX bundle
-  // @ts-ignore
   const [widgetBundleCache, dispatchWidgetBundleCache] = useReducer(
     mapReducer<any>,
     {}
   );
 
   // store the report widget components built from MDX
-  // @ts-ignore
   const [reportWidgetComponents, dispatchReportWidgetComponents] = useReducer(
     mapReducer<any>,
     {}
@@ -678,8 +702,6 @@ export function useProjectTemplateStore(
     dispatchPages,
     globalVars,
     dispatchGlobalVars,
-    // inputBlocks,
-    // algorithms,
     dependencies,
     dependency2ReportWidgetsMap,
     addReportWidget,

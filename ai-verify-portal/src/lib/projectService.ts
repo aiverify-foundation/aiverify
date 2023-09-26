@@ -67,6 +67,8 @@ export const CREATE_PROJECT_FROM_TEMPLATE = gql`
       projectInfo {
         name
         description
+        reportTitle
+        company
       }
       globalVars {
         key
