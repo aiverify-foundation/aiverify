@@ -518,7 +518,7 @@ class Plugin(IAlgorithm):
             Any: predicted value
         """
         dict_item_labels = self._data_instance.read_labels().items()
-        return self._model_instance.predict([data], dict_item_labels)
+        return self._model_instance.predict([data.tolist()], dict_item_labels)
 
     def _get_explainer(self) -> Union[shap.TreeExplainer, shap.KernelExplainer]:
         """

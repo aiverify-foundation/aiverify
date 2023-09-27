@@ -5,19 +5,18 @@ import pathlib
 import time
 from enum import Enum, auto
 from typing import Any, Callable, Dict, List, Tuple, Union
-import numpy as np
+
 import aiopenapi3
 import httpx as httpx
 import pandas as pd
 from aiopenapi3 import FileSystemLoader, OpenAPI
-from aiopenapi3.v30.media import MediaType
 from httpx import Response
 from openapi_schema_validator import OAS30Validator, validate
 from test_engine_core.interfaces.imodel import IModel
 from test_engine_core.plugins.enums.model_plugin_type import ModelPluginType
 from test_engine_core.plugins.enums.plugin_type import PluginType
 from test_engine_core.plugins.metadata.plugin_metadata import PluginMetadata
-from ast import literal_eval
+
 
 class BatchStrategy(Enum):
     """
@@ -25,7 +24,6 @@ class BatchStrategy(Enum):
     """
 
     NONE = auto()
-    MULTIPART = auto()
     APPLICATION_JSON = auto()
 
 
@@ -113,7 +111,7 @@ class Plugin(IModel):
         Returns:
             httpx.AsyncClient: Returns a httpx AsyncClient
         """
-        kwargs["timeout"] = Plugin._api_request_timeout  
+        kwargs["timeout"] = Plugin._api_request_timeout
         kwargs["transport"] = OpenAPICustomTransport(
             verify=Plugin._api_ssl_verify,
             cert=Plugin._api_ssl_cert,
@@ -221,7 +219,6 @@ class Plugin(IModel):
                 use_operation_tags=True,
             )
 
-
             # Setup API Authentication
             self._setup_api_authentication()
 
@@ -288,7 +285,12 @@ class Plugin(IModel):
         Returns:
             Any: predicted result
         """
-        return asyncio.run(self.make_request(data, *args))
+        # Call the function to make multiple requests
+        try:
+            return asyncio.run(self.make_request(data, *args))
+
+        except aiopenapi3.RequestError:
+            raise RuntimeError(Plugin._response_error_message)
 
     def score(self, data: Any, y_true: Any) -> Any:
         """
@@ -443,7 +445,7 @@ class Plugin(IModel):
                 if str(parameter.in_.name).lower() == "header" and parameter.required:
                     if len(parameter.schema_.enum) > 0:
                         headers.update({parameter.name: parameter.schema_.enum[0]})
-            
+
             # Populate body with payload values
             body = self._api_instance_schema.get_type().construct(**row_data_to_send)
             headers, data, result = await self._api_instance._.predict_api.request(
@@ -464,8 +466,8 @@ class Plugin(IModel):
         An async method to send an API request based on the provided row data.
 
         Args:
-            row_data_to_send (Dict): A dictionary containing the data to be sent in the API request. The keys represent
-            the parameter names, and the values represent their corresponding values.
+            list_of_rows (List): A list containing the rows of data to be sent in the API request.The number
+            of data in the list is dependent on the self._api_batch_limit (based on the user's input).
 
         Returns:
             Response: The response object representing the API response.
@@ -486,7 +488,7 @@ class Plugin(IModel):
         for row in list_of_rows:
             row_data_to_send = await self.get_data_payload(row, *args)
             list_of_processed_rows.append(row_data_to_send)
-        
+
         if self._api_instance._.predict_api.method.lower() == "post":
             # POST method. Get API Instance schema
             self._api_instance_schema = await self.get_schema_content()
@@ -509,7 +511,7 @@ class Plugin(IModel):
                 parameters=row_data_to_send, data=body
             )
         return result
-    
+
     async def make_request(self, data: Any, *args) -> Any:
         """
         An async method to make multiple API requests using the provided data.
@@ -542,67 +544,140 @@ class Plugin(IModel):
         response_data = list()
         request_task_list = []
 
-        # Batching using application/json
+        # batching using application/json
         if self._api_batch_strategy == BatchStrategy.APPLICATION_JSON:
-            batched_data = []     
-            # Loop through the data list. It can be a list of mixed data to be predicted such as DF or numpy.
-            for data_to_predict in data:                
-
-                # PANDAS DF
-                if type(data_to_predict) is pd.DataFrame:
-                    for _, row in data_to_predict.iterrows():
-                        batched_data.append(row)
-                    for i in range(0, len(batched_data), self._api_batch_limit):
-                        request_task_list.append(self.send_batched_request(batched_data[i:i+self._api_batch_limit], *args))
-                # NDARRAY                            
-                else:
-                    for row in data_to_predict:
-                        # Pass this information to the send request function to request
-                        batched_data.append(row)
-                    for i in range(0, len(batched_data), self._api_batch_limit):
-                        request_task_list.append(self.send_batched_request(batched_data[i:i+self._api_batch_limit], *args))
-
-        # No batching
-        else:
+            batched_data = []
             # Loop through the data list. It can be a list of mixed data to be predicted such as DF or numpy.
             for data_to_predict in data:
                 # PANDAS DF
                 if type(data_to_predict) is pd.DataFrame:
                     for _, row in data_to_predict.iterrows():
+                        batched_data.append(row)
+                    for i in range(0, len(batched_data), self._api_batch_limit):
+                        request_task_list.append(
+                            self.send_batched_request(
+                                batched_data[i : i + self._api_batch_limit], *args
+                            )
+                        )
+                # NDARRAY
+                else:
+                    for row in data_to_predict:
                         # Pass this information to the send request function to request
-                        request_task_list.append(self.send_request(row, *args))                              
-                # NDARRAY                            
+                        batched_data.append(row)
+                    for i in range(0, len(batched_data), self._api_batch_limit):
+                        request_task_list.append(
+                            self.send_batched_request(
+                                batched_data[i : i + self._api_batch_limit], *args
+                            )
+                        )
+
+        # no batching
+        else:
+            # loop through the data list. it can be a list of mixed data to be predicted such as DF or numpy
+            for data_to_predict in data:
+                # PANDAS DF
+                if type(data_to_predict) is pd.DataFrame:
+                    for _, row in data_to_predict.iterrows():
+                        # Pass this information to the send request function to request
+                        request_task_list.append(self.send_request(row, *args))
+                # NDARRAY
                 else:
                     for row in data_to_predict:
                         # Pass this information to the send request function to request
                         request_task_list.append(self.send_request(row, *args))
         response_list = await asyncio.gather(*request_task_list)
-        # get the content type of response
-        openapi_response_object = next(
-            iter(self._api_instance._.predict_api.operation.responses.values())
-        ).content             
-        response_type = list(openapi_response_object.keys())[0]
 
-        # if return type is json, read from the field that the user has specified
-        if response_type == "application/json":
-            response_field_name = self._api_config.get("responseBody").get("field")
-            for response in response_list:
-                parsed_response = json.loads(response.text)
-                parsed_data_value = parsed_response.get(response_field_name)
-                if self._api_batch_strategy == BatchStrategy.APPLICATION_JSON:
-                    ast_parsed_data_value = literal_eval(parsed_data_value)
-                    for nested_parsed_data_value in ast_parsed_data_value:
-                        response_data.append(nested_parsed_data_value)
-                else:
-                    response_data.append(parsed_data_value)
+        # get the response data_type: array/object/string/number/integer/boolean
+        response_data_type = self._api_config.get("responseBody").get("type", None)
+
+        # process list data type
+        if response_data_type.lower() == "array":
+            response_array_type = self._api_config.get("responseBody").get(
+                "arrayType", None
+            )
+            # if list data consists of objects like response_body: [{age:1, gender:0},{age:2, gender:1}]
+            if response_array_type.lower() == "object":
+                response_object_type = self._api_config.get("responseBody").get(
+                    "objectType", None
+                )
+                response_keyname = self._api_config.get("responseBody").get(
+                    "field", None
+                )
+                for response in response_list:
+                    response_body = json.loads(response.text)
+                    for response_body_item in response_body:
+                        data = response_body_item.get(response_keyname)
+                        response_data.append(data)
+            # if list data consists of primitive data type like response_body: [1, 2, 3]
+            else:
+                for response in response_list:
+                    response_body = json.loads(response.text)
+                    for data in response_body:
+                        # self._validate_data_type(data, response_array_type)
+                        response_data.append(data)
+
+        # process dictionary data type
+        elif response_data_type.lower() == "object":
+            response_object_type = self._api_config.get("responseBody").get(
+                "objectType", None
+            )
+            response_keyname = self._api_config.get("responseBody").get("field", None)
+
+            # if dictionary data consists of list {data: [1,2,3]}
+            if response_object_type.lower() == "array":
+                response_array_type = self._api_config.get("responseBody").get(
+                    "arrayType", None
+                )
+                for response in response_list:
+                    response_body = json.loads(response.text)
+                    response_body_value = response_body.get(response_keyname)
+                    for data in response_body_value:
+                        response_data.append(data)
+
+            # if dictionary data consists of primitive data type: {data: 100}
+            else:
+                for response in response_list:
+                    response_body = json.loads(response.text)
+                    data = response_body.get(response_keyname)
+                    response_data.append(data)
+
+        # process primitive data types
         else:
             for response in response_list:
-                response_data.append(response.text)
-            
+                data = response.text
+                response_data.append(data)
+
         end_time = time.time()
         elapsed_time = end_time - start_time
         print("time taken: ", elapsed_time)
         return response_data
+
+    def _validate_data_type(self, data: Any, data_type: str) -> None:
+        """
+        A method to make perform validation on the response's data type. The data type should match the data
+        type the user has set before running the algorithm
+
+        Args:
+            data (Any): The data to be validated
+            data_type (str): The name of the data type that the data is supposed to be
+        """
+        if data_type.lower() == "string":
+            if isinstance(data, str):
+                return True
+        elif data_type.lower() == "number":
+            if isinstance(data, int) or isinstance(data, float):
+                return True
+        elif data_type.lower() == "integer":
+            if isinstance(data, int):
+                return True
+        elif data_type.lower() == "boolean":
+            if type(data) == bool:
+                return True
+        else:
+            raise RuntimeError("Unknown data type.")
+        raise RuntimeError(
+            f"Validation failed for response. Current data type:{type(data)}. Expected type:{data_type}."
+        )
 
     def _setup_api_authentication(self) -> None:
         """
@@ -652,47 +727,57 @@ class Plugin(IModel):
             return False, str(error)
 
     def _validate_input(self) -> None:
+        """
+        A method to perform validation on the user's API configuration
+        """
         error_message = ""
 
         if not isinstance(self._api_ssl_verify, bool):
             error_message += "Bool expected for SSL Verification;"
-            
-        # if (self._api_ssl_cert!=valid_cert):
-            # error_message += "Invalid SSL Cert;"
-        
-        if (not isinstance(self._api_request_timeout, int) and \
-           not isinstance(self._api_request_timeout, float)) or \
-           self._api_request_timeout < 0:
-            error_message += "Positive int/float expected for Request Timeout;"
 
-        if not isinstance(self._api_rate_limit, int) or \
-           self._api_rate_limit < 0:
-            error_message += "Positive int expected for Rate Limit;"
-        
-        if (not isinstance(self._api_rate_limit_timeout, int) and \
-           not isinstance(self._api_rate_limit_timeout, float)) or \
-           self._api_rate_limit_timeout < 0:
-            error_message += "Positive int/float expected for Rate Limit Timeout;"
+        # if (self._api_ssl_cert!=valid_cert):
+        # error_message += "Invalid SSL Cert;"
+
+        if (
+            not isinstance(self._api_request_timeout, int)
+            and not isinstance(self._api_request_timeout, float)
+        ) or self._api_request_timeout < 0:
+            error_message += "Please provide a positive whole/decimal number in seconds for Request Timeout;"
+
+        if not isinstance(self._api_rate_limit, int) or self._api_rate_limit < 0:
+            error_message += "Please provide a positive whole number for Rate Limit;"
+
+        if (
+            not isinstance(self._api_rate_limit_timeout, int)
+            and not isinstance(self._api_rate_limit_timeout, float)
+        ) or self._api_rate_limit_timeout < 0:
+            error_message += "Please provide a positive whole/decimal number in seconds for Rate Limit Timeout;"
 
         if self._api_batch_strategy not in BatchStrategy:
             error_message += "Invalid Batch Strategy;"
 
-        if not isinstance(self._api_batch_limit, int) or \
-           self._api_batch_limit < 0:
-            error_message += "Positive int expected for Batch Limit;"     
+        if not isinstance(self._api_batch_limit, int) or self._api_batch_limit < 0:
+            error_message += "Please provide a positive whole number for Batch Limit;"
 
-        if not isinstance(self._api_max_connections, int) or \
-           self._api_max_connections < 0:
-            error_message += "Positive int expected for Max Connections;"  
+        if (
+            not isinstance(self._api_max_connections, int)
+            or self._api_max_connections < 0
+        ):
+            error_message += (
+                "Please provide a positive whole number for Max Connections;"
+            )
 
-        if not isinstance(self._api_connection_retries, int) or \
-           self._api_connection_retries < 0:
-            error_message += "Positive int expected for Connection Retries;"  
+        if (
+            not isinstance(self._api_connection_retries, int)
+            or self._api_connection_retries < 0
+        ):
+            error_message += (
+                "Please provide a positive whole number for Connection Retries;"
+            )
 
         if error_message != "":
-            raise RuntimeError(
-                f"Validation failed for API Connector: {error_message}"
-            )
+            raise RuntimeError(f"Validation failed for API Connector: {error_message}")
+
 
 class OpenAPICustomTransport(httpx.AsyncHTTPTransport):
     """
@@ -725,14 +810,14 @@ class OpenAPICustomTransport(httpx.AsyncHTTPTransport):
         self._max_connection = max_connections
         self._connection_retries = connection_retries
         self._response_error_callback = response_error_callback
-        self._limit_class = OpenAPICustomLimits(no_of_max_connections = 1)
-        
+        self._limit_class = OpenAPICustomLimits(no_of_max_connections=1)
+
         # Initialize super class
         super().__init__(
             verify=self._ssl_verify,
             cert=self._ssl_cert,
             retries=self._connection_retries,
-            limits=self._limit_class
+            limits=self._limit_class,
         )
 
     async def handle_attempt_retries(
@@ -809,11 +894,12 @@ class OpenAPICustomTransport(httpx.AsyncHTTPTransport):
                         f"Maximum retries exceeded ({self._connection_retries}) {error_message}"
                     )
 
+
 class OpenAPICustomLimits(httpx.Limits):
     """
     A custom Limits module that helps us manage connection configurations
     """
-    
+
     def __init__(
         self,
         no_of_max_connections: int,
@@ -825,7 +911,7 @@ class OpenAPICustomLimits(httpx.Limits):
 
         # Initialize super class
         super().__init__(
-            max_connections = self._max_connections,
-            max_keepalive_connections = self._max_keepalive_connections,
-            keepalive_expiry = self._keepalive_expiry
+            max_connections=self._max_connections,
+            max_keepalive_connections=self._max_keepalive_connections,
+            keepalive_expiry=self._keepalive_expiry,
         )

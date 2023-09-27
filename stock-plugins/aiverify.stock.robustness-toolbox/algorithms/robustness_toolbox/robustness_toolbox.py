@@ -401,10 +401,13 @@ class Plugin(IAlgorithm):
             ground_truth_in_numpy = self._ordered_ground_truth.to_numpy().astype(int)
             min_feature_value = np.min(data_in_numpy)
             max_feature_value = np.max(data_in_numpy)
+
             predictions = self._model.predict(
-                self._transform_to_df(
-                    data_in_numpy, raw_shapes, subfolder_name="pred_init"
-                ),
+                [
+                    self._transform_to_df(
+                        data_in_numpy, raw_shapes, subfolder_name="pred_init"
+                    )
+                ],
                 self._data_labels,
             )
             # Update the progress total value (initial adversarial + final adversarial samples)
@@ -574,9 +577,11 @@ class Plugin(IAlgorithm):
 
                 perturbed_input = self._salt_and_pepper(original, 2)
                 adversarial_prediction = self._model.predict(
-                    self._transform_to_df(
-                        [perturbed_input], image_shapes, subfolder_name="adv_pred"
-                    ),
+                    [
+                        self._transform_to_df(
+                            [perturbed_input], image_shapes, subfolder_name="adv_pred"
+                        )
+                    ],
                     self._data_labels,
                 )
 
@@ -655,13 +660,15 @@ class Plugin(IAlgorithm):
 
                             # Check predictions for adversarial
                             potential_adversarials_prediction = self._model.predict(
-                                self._transform_to_df(
-                                    np.array(adversarial_list),
-                                    image_shapes,
-                                    subfolder_name="adv_pred"
-                                    + str(iteration)
-                                    + str(count_test),
-                                ),
+                                [
+                                    self._transform_to_df(
+                                        np.array(adversarial_list),
+                                        image_shapes,
+                                        subfolder_name="adv_pred"
+                                        + str(iteration)
+                                        + str(count_test),
+                                    )
+                                ],
                                 self._data_labels,
                             )
                             satisfied = (
@@ -695,13 +702,15 @@ class Plugin(IAlgorithm):
                                 max_feature_value,
                             )
                             potential_adversarials_prediction = self._model.predict(
-                                self._transform_to_df(
-                                    np.array(potential_adversarials),
-                                    image_shapes,
-                                    subfolder_name="potential_adv_pred"
-                                    + str(iteration)
-                                    + str(count_test),
-                                ),
+                                [
+                                    self._transform_to_df(
+                                        np.array(potential_adversarials),
+                                        image_shapes,
+                                        subfolder_name="potential_adv_pred"
+                                        + str(iteration)
+                                        + str(count_test),
+                                    )
+                                ],
                                 self._data_labels,
                             )
                             satisfied = (
@@ -773,9 +782,13 @@ class Plugin(IAlgorithm):
 
         # Calculate the adversarial predictions and accuracy
         adversarial_prediction = self._model.predict(
-            self._transform_to_df(
-                final_adversarial_samples, image_shapes, subfolder_name="adv_prediction"
-            ),
+            [
+                self._transform_to_df(
+                    final_adversarial_samples,
+                    image_shapes,
+                    subfolder_name="adv_prediction",
+                )
+            ],
             self._data_labels,
         )
 
