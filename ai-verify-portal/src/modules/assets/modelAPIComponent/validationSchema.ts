@@ -130,12 +130,14 @@ export const ModelAPIFormValidationSchema = object({
         object({
           mediaType: string().required('Required'),
           isArray: bool(),
-          properties: array().of(
-            object({
-              field: string().required('Required'),
-              type: string().required('Required'),
-            }).uniqueProperty('field', 'Property Exists')
-          ),
+          properties: array()
+            .of(
+              object({
+                field: string().required('Required'),
+                type: string().required('Required'),
+              }).uniqueProperty('field', 'Property Exists')
+            )
+            .min(1, 'Properties required'),
         }),
       otherwise: () => object({}),
     }),
@@ -147,12 +149,14 @@ export const ModelAPIFormValidationSchema = object({
           object({
             mediaType: string().required('Required'),
             isArray: bool(),
-            queryParams: array().of(
-              object({
-                name: string().required('Required'),
-                type: string().required('Required'),
-              }).uniqueProperty('name', 'Property Exists')
-            ),
+            queryParams: array()
+              .of(
+                object({
+                  name: string().required('Required'),
+                  type: string().required('Required'),
+                }).uniqueProperty('name', 'Property Exists')
+              )
+              .min(1, 'Path Parameters required'),
           }),
         otherwise: () => object({}),
       }),
@@ -162,12 +166,14 @@ export const ModelAPIFormValidationSchema = object({
           object({
             mediaType: string().required('Required'),
             isArray: bool(),
-            pathParams: array().of(
-              object({
-                name: string().required('Required'),
-                type: string().required('Required'),
-              }).uniqueProperty('name', 'Property Exists')
-            ),
+            pathParams: array()
+              .of(
+                object({
+                  name: string().required('Required'),
+                  type: string().required('Required'),
+                }).uniqueProperty('name', 'Property Exists')
+              )
+              .min(1, 'URL Parameters required'),
           }),
         otherwise: () => object({}),
       }),

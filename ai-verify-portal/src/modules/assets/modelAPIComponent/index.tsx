@@ -84,7 +84,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
     return Tab.REQUEST_BODY;
   });
   const [showPageLevelAlert, setShowPageLevelAlert] = useState(false);
-  const [showFormGuidelines, setShowFormGuidelines] = useState(false);
+  const [showPresetHelper, setShowPresetHelper] = useState(false);
   const [showHelperBtn, setShowHelperBtn] = useState(() => id == undefined);
   const [PresetHelpItems, setPresetHelpItems] = useState<PresetHelpItem[]>([]);
   const [saveResult, setSaveResult] = useState<ErrorWithMessage | SaveResult>();
@@ -120,7 +120,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
   }
 
   if (
-    !showFormGuidelines ||
+    !showPresetHelper ||
     PresetHelpItems.length === 0 ||
     !useVisibleTabsList
   ) {
@@ -133,8 +133,6 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
       Tab.OTHERS,
     ];
   }
-
-  console.log(visibleTabs);
 
   let modalResultTitle = '';
   let modalResultHeading = '';
@@ -328,12 +326,12 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
   }
 
   function handleNeedHelpClick() {
-    setShowFormGuidelines(true);
+    setShowPresetHelper(true);
     setShowHelperBtn(false);
   }
 
   function handleCloseGuidelinesClick() {
-    setShowFormGuidelines(false);
+    setShowPresetHelper(false);
     setShowHelperBtn(true);
   }
 
@@ -386,7 +384,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                                   onCloseIconClick={handleCloseAlertClick}
                                 />
                               ) : null}
-                              {showFormGuidelines && !showPageLevelAlert ? (
+                              {showPresetHelper && !showPageLevelAlert ? (
                                 <PresetHelper
                                   onSelect={handleGuidelineSelected(
                                     setFieldValue

@@ -21,6 +21,7 @@ import {
 } from './requestBodyParamInput';
 import { CheckBox } from 'src/components/checkbox';
 import { TextInput } from 'src/components/textInput';
+import { ColorPalette } from 'src/components/colorPalette';
 
 const defaultBodyParameter: BodyParam = {
   reactPropId: '',
@@ -42,6 +43,7 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
   const properties = requestBody?.properties || [];
   const fieldErrors = errors.modelAPI?.requestBody?.properties as
     | FormikErrors<BodyParam>[]
+    | string
     | undefined;
   const touchedFields = touched.modelAPI?.requestBody?.properties as
     | FormikTouched<BodyParam>[]
@@ -175,6 +177,7 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
                       fieldError={
                         Boolean(
                           fieldErrors &&
+                            typeof fieldErrors === 'object' &&
                             fieldErrors[index]?.field &&
                             touchedFields &&
                             touchedFields[index]?.field
@@ -194,6 +197,13 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
                       onAddClick={handleAddClick(arrayHelpers)}
                       fieldError={errorMsg}
                     />
+                    {Object.keys(touched).length &&
+                    typeof fieldErrors === 'string' ? (
+                      <div
+                        style={{ color: ColorPalette.alertRed, fontSize: 14 }}>
+                        {fieldErrors}
+                      </div>
+                    ) : null}
                   </div>
                 ) : null}
               </div>

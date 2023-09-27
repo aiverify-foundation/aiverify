@@ -34,6 +34,7 @@ import { getInputReactKeyId } from '.';
 import { CheckBox } from 'src/components/checkbox';
 import { TextInput } from 'src/components/textInput';
 import { usePresetHelper } from './providers/presetHelperProvider';
+import { ColorPalette } from 'src/components/colorPalette';
 
 const PropExistsMsg = 'Parameter exists';
 const RequiredMsg = 'Required';
@@ -96,7 +97,7 @@ const TabContentURLParams = forwardRef<
     urlParamsStr =
       parameters && parameters.paths ? `/{${parameters.paths.name}}` || '' : '';
   }
-  let paramErrors: FormikErrors<UrlParam>[] | undefined;
+  let paramErrors: FormikErrors<UrlParam>[] | string | undefined;
   let touchedParamFields: FormikTouched<UrlParam>[] | undefined;
   if (errors.modelAPI && errors.modelAPI.parameters) {
     if (
@@ -105,6 +106,7 @@ const TabContentURLParams = forwardRef<
     ) {
       paramErrors = errors.modelAPI.parameters.queries.queryParams as
         | FormikErrors<UrlParam>[]
+        | string
         | undefined;
     } else if (
       paramType === URLParamType.PATH &&
@@ -112,6 +114,7 @@ const TabContentURLParams = forwardRef<
     ) {
       paramErrors = errors.modelAPI.parameters.paths.pathParams as
         | FormikErrors<UrlParam>[]
+        | string
         | undefined;
     }
   }
@@ -488,6 +491,7 @@ const TabContentURLParams = forwardRef<
                                 paramError={
                                   Boolean(
                                     paramErrors &&
+                                      typeof paramErrors === 'object' &&
                                       paramErrors[index]?.name &&
                                       touchedParamFields &&
                                       touchedParamFields[index]
@@ -511,6 +515,16 @@ const TabContentURLParams = forwardRef<
                             onAddClick={handleAddClick(arrayHelpers)}
                             paramError={errorMsg}
                           />
+                          {Object.keys(touched).length &&
+                          typeof paramErrors === 'string' ? (
+                            <div
+                              style={{
+                                color: ColorPalette.alertRed,
+                                fontSize: 14,
+                              }}>
+                              {paramErrors}
+                            </div>
+                          ) : null}
                         </div>
                       ) : null}
                     </div>
