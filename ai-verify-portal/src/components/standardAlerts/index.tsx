@@ -11,6 +11,7 @@ enum AlertType {
   WARNING = 'warning',
   INFO = 'info',
   SUCCESS = 'success',
+  NONE = 'none',
 }
 
 type StandardAlertProps = {
@@ -98,9 +99,11 @@ function StandardAlert(props: PropsWithChildren<StandardAlertProps>) {
       iconStyles={customIconStyles}
       onCloseIconClick={onCloseIconClick}>
       <div className={clsx(styles.stdAlertBody, styles[modifierClass])}>
-        <div className={styles.iconWrapper}>
-          <AlertIcon type={alertType} style={iconStyle} />
-        </div>
+        {alertType !== AlertType.NONE ? (
+          <div className={styles.iconWrapper}>
+            <AlertIcon type={alertType} style={iconStyle} />
+          </div>
+        ) : null}
         <div className={clsx(styles.stdAlertContent, styles[modifierClass])}>
           <div className={styles.stdAlertHeading} style={headingStyle}>
             {headingText}

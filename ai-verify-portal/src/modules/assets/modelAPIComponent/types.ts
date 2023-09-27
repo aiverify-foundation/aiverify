@@ -264,3 +264,27 @@ export type ModelApiGQLQueryResponseModel = Typename & {
     };
   updatedAt: string;
 };
+
+export enum PresetHelpItem {
+  POST,
+  GET,
+  QUERY,
+  PATH,
+  BASIC_AUTH,
+  AUTH_TOKEN,
+  NO_AUTH,
+  HEADERS,
+}
+
+export type PresetOption = {
+  value: PresetHelpItem[];
+  label: string;
+};
+
+export enum PresetGuideSteps {
+  MODEL_URL = 'Model URL',
+  URL_PARAMS = 'URL Parameters',
+  REQUESTBODY_PARAMS = 'Parameters in request data',
+  BEARER_TOKEN = 'Bearer Token',
+  USER_PASSWORD = 'Username/Password',
+}

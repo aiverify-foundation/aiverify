@@ -33,6 +33,7 @@ import {
 import { getInputReactKeyId } from '.';
 import { CheckBox } from 'src/components/checkbox';
 import { TextInput } from 'src/components/textInput';
+import { usePresetHelper } from './providers/presetHelperProvider';
 
 const PropExistsMsg = 'Parameter exists';
 const RequiredMsg = 'Required';
@@ -65,6 +66,7 @@ const TabContentURLParams = forwardRef<
   const { values, errors, touched, setFieldValue, handleChange } =
     useFormikContext<ModelApiFormModel>();
   const formArrayHelpersRef = useRef<FieldArrayRenderProps>();
+  const { inputFieldsDisabledStatus } = usePresetHelper();
   const parameters = values.modelAPI.parameters;
   useImperativeHandle(ref, () => formArrayHelpersRef.current, []);
   const paramType = parameters && parameters.paramType;
@@ -244,7 +246,7 @@ const TabContentURLParams = forwardRef<
           alignItems: 'center',
         }}>
         <SelectInput<URLParamType>
-          disabled={disabled}
+          disabled={disabled || inputFieldsDisabledStatus[queryTypeFieldName]}
           label="URL Parameter Type"
           name={queryTypeFieldName}
           options={optionsUrlParamTypes}
