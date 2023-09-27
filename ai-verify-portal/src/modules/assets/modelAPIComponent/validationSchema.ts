@@ -141,42 +141,52 @@ export const ModelAPIFormValidationSchema = object({
         }),
       otherwise: () => object({}),
     }),
-    parameters: object({
-      paramType: string(),
-      queries: object().when('paramType', {
-        is: (paramType: string) => paramType === URLParamType.QUERY,
-        then: () =>
-          object({
-            mediaType: string().required('Required'),
-            isArray: bool(),
-            queryParams: array()
-              .of(
-                object({
-                  name: string().required('Required'),
-                  type: string().required('Required'),
-                }).uniqueProperty('name', 'Property Exists')
-              )
-              .min(1, 'Path Parameters required'),
+    parameters: object().when('method', {
+      is: RequestMethod.GET,
+      then: () =>
+        object({
+          paramType: string(),
+          queries: object().when('paramType', {
+            is: (paramType: string) => paramType === URLParamType.QUERY,
+            then: () =>
+              object({
+                mediaType: string().required('Required'),
+                isArray: bool(),
+                queryParams: array()
+                  .of(
+                    object({
+                      name: string().required('Required'),
+                      type: string().required('Required'),
+                    }).uniqueProperty('name', 'Property Exists')
+                  )
+                  .min(1, 'Path Parameters required'),
+              }),
+            otherwise: () => object({}),
           }),
-        otherwise: () => object({}),
-      }),
-      paths: object().when('paramType', {
-        is: (paramType: string) => paramType === URLParamType.PATH,
-        then: () =>
-          object({
-            mediaType: string().required('Required'),
-            isArray: bool(),
-            pathParams: array()
-              .of(
-                object({
-                  name: string().required('Required'),
-                  type: string().required('Required'),
-                }).uniqueProperty('name', 'Property Exists')
-              )
-              .min(1, 'URL Parameters required'),
-          }),
-        otherwise: () => object({}),
-      }),
+        }),
+      otherwise: () => object({}),
+    }),
+    paths: object().when('method', {
+      is: RequestMethod.GET,
+      then: () =>
+        object().when('paramType', {
+          is: (paramType: string) => paramType === URLParamType.PATH,
+          then: () =>
+            object({
+              mediaType: string().required('Required'),
+              isArray: bool(),
+              pathParams: array()
+                .of(
+                  object({
+                    name: string().required('Required'),
+                    type: string().required('Required'),
+                  }).uniqueProperty('name', 'Property Exists')
+                )
+                .min(1, 'URL Parameters required'),
+            }),
+          otherwise: () => object({}),
+        }),
+      otherwise: () => object({}),
     }),
     additionalHeaders: array().of(
       object({

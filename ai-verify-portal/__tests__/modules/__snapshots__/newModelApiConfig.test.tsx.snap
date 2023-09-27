@@ -106,6 +106,17 @@ exports[`New Model API Config Initial Render should render with the correct defa
                   class="pageLevelError"
                 />
                 <div
+                  class="needHelpRow"
+                >
+                  <button
+                    class="aivBase-button aivBase-button--link aivBase-button--small"
+                    style="text-transform: none; padding: 0px;"
+                    type="button"
+                  >
+                    Need Help?
+                  </button>
+                </div>
+                <div
                   class="apiConfigForm"
                 >
                   <div
@@ -369,22 +380,49 @@ exports[`New Model API Config Initial Render should render with the correct defa
                         style="flex-grow: 1;"
                       >
                         <div
-                          class="textInput"
+                          class="tooltip"
+                          style="top: -9999px; left: -9999px; opacity: 0; background-color: rgb(103, 103, 103); color: rgb(255, 255, 255);"
                         >
-                          <label>
+                          <div
+                            class="pointer pos__bottom"
+                            style="border-color: transparent #676767 #676767 transparent;"
+                          />
+                          <div
+                            class="content"
+                            style="background-color: rgb(103, 103, 103);"
+                          >
                             <div
-                              class="label"
+                              style="margin-bottom: 5px; text-align: left;"
                             >
-                              <div>
-                                Model URL
-                              </div>
+                              Enter the URL of the model prediction API
                             </div>
-                            <input
-                              name="modelAPI.url"
-                              type="text"
-                              value=""
-                            />
-                          </label>
+                          </div>
+                        </div>
+                        <div
+                          class="childWrapper"
+                        >
+                          <div
+                            style="width: 100%;"
+                          >
+                            <div
+                              class="textInput"
+                            >
+                              <label>
+                                <div
+                                  class="label"
+                                >
+                                  <div>
+                                    Model URL
+                                  </div>
+                                </div>
+                                <input
+                                  name="modelAPI.url"
+                                  type="text"
+                                  value=""
+                                />
+                              </label>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -401,26 +439,31 @@ exports[`New Model API Config Initial Render should render with the correct defa
                       >
                         <div
                           class="tabBtn tabBtn__selected"
+                          id="tab3"
                         >
                           Request Body
                         </div>
                         <div
                           class="tabBtn"
+                          id="tab1"
                         >
                           Additional Request Headers
                         </div>
                         <div
                           class="tabBtn"
+                          id="tab4"
                         >
                           Response Properties
                         </div>
                         <div
                           class="tabBtn"
+                          id="tab2"
                         >
                           Authentication Settings
                         </div>
                         <div
                           class="tabBtn"
+                          id="tab5"
                         >
                           Connection Settings
                         </div>
@@ -581,17 +624,42 @@ exports[`New Model API Config Initial Render should render with the correct defa
                                   class="keyValCol"
                                 >
                                   <div
-                                    class="textInput"
-                                    style="margin-bottom: 0px;"
+                                    class="tooltip"
+                                    style="top: -9999px; left: -9999px; opacity: 0; background-color: rgb(103, 103, 103); color: rgb(255, 255, 255);"
                                   >
-                                    <label>
-                                      <input
-                                        maxlength="100"
-                                        name="paramName"
-                                        type="text"
-                                        value=""
-                                      />
-                                    </label>
+                                    <div
+                                      class="pointer pos__left"
+                                      style="border-color: #676767 #676767 transparent transparent;"
+                                    />
+                                    <div
+                                      class="content"
+                                      style="background-color: rgb(103, 103, 103);"
+                                    >
+                                      <div
+                                        style="margin-bottom: 5px; text-align: left;"
+                                      >
+                                        Add all data keynames that are required by the API to do the prediction.
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="childWrapper"
+                                  >
+                                    <div>
+                                      <div
+                                        class="textInput"
+                                        style="margin-bottom: 0px;"
+                                      >
+                                        <label>
+                                          <input
+                                            maxlength="100"
+                                            name="reqBodyParamName"
+                                            type="text"
+                                            value=""
+                                          />
+                                        </label>
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
                                 <div
@@ -602,7 +670,7 @@ exports[`New Model API Config Initial Render should render with the correct defa
                                     style="width: auto; margin-bottom: 0px;"
                                   >
                                     <label
-                                      for="propDataType"
+                                      for="reqBodyPropDataType"
                                     >
                                       <div
                                         class=" css-fyq6mk-container"
@@ -676,7 +744,7 @@ exports[`New Model API Config Initial Render should render with the correct defa
                                           </div>
                                         </div>
                                         <input
-                                          name="propDataType"
+                                          name="reqBodyPropDataType"
                                           type="hidden"
                                           value="integer"
                                         />

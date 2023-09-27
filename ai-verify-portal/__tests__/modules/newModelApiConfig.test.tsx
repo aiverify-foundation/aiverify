@@ -115,56 +115,56 @@ describe('New Model API Config', () => {
         );
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'age'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'gender'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'race'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'income'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'employment'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'employment_length'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'total_donated'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'num_donation'
         );
@@ -253,56 +253,56 @@ describe('New Model API Config', () => {
         );
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'age'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'gender'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'race'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'income'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'employment'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'employment_length'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'total_donated'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'num_donation'
         );
@@ -420,56 +420,56 @@ describe('New Model API Config', () => {
         );
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'age'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'gender'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'race'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'income'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'employment'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'employment_length'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'total_donated'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'num_donation'
         );
@@ -593,56 +593,56 @@ describe('New Model API Config', () => {
         );
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'age'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'gender'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'race'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'income'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'employment'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'employment_length'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'total_donated'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'num_donation'
         );
@@ -731,56 +731,56 @@ describe('New Model API Config', () => {
         );
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'age'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'gender'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'race'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'income'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'employment'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'employment_length'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'total_donated'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'num_donation'
         );
@@ -907,56 +907,56 @@ describe('New Model API Config', () => {
         );
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'age'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'gender'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'race'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'income'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'employment'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'employment_length'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'total_donated'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'num_donation'
         );
@@ -1083,56 +1083,56 @@ describe('New Model API Config', () => {
         );
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'age'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'gender'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'race'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'income'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'employment'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'employment_length'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'total_donated'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'num_donation'
         );
@@ -1220,56 +1220,56 @@ describe('New Model API Config', () => {
         );
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'age'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'gender'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'race'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'income'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'employment'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'employment_length'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'total_donated'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'num_donation'
         );
@@ -1383,56 +1383,56 @@ describe('New Model API Config', () => {
         );
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'age'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'gender'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'race'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'income'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'employment'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'employment_length'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'total_donated'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'num_donation'
         );
@@ -1565,56 +1565,56 @@ describe('New Model API Config', () => {
         );
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'age'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'gender'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'race'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'income'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'employment'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'employment_length'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'total_donated'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'num_donation'
         );
@@ -1805,56 +1805,56 @@ describe('New Model API Config', () => {
         );
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'age'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'gender'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'race'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'income'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'employment'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'employment_length'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'total_donated'
         );
         await userEvent.click(addPropertyBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="reqBodyParamName"]'
           ) as HTMLInputElement,
           'num_donation'
         );
@@ -1986,56 +1986,56 @@ describe('New Model API Config', () => {
 
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'age'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'gender'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'race'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'income'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'employment'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'employment_length'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'total_donated'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'num_donation'
         );
@@ -2185,56 +2185,56 @@ describe('New Model API Config', () => {
 
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'age'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'gender'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'race'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'income'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'employment'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'employment_length'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'total_donated'
         );
         await userEvent.click(addUrlParamBtn);
         await userEvent.type(
           container.querySelector(
-            'input[name="paramName"]'
+            'input[name="urlParamName"]'
           ) as HTMLInputElement,
           'num_donation'
         );
