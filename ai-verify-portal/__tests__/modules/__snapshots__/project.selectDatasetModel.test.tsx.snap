@@ -889,11 +889,11 @@ exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Sc
                 >
                   <div
                     class="MuiDataGrid-virtualScrollerContent MuiDataGrid-virtualScrollerContent--overflowed css-1kwdphh-MuiDataGrid-virtualScrollerContent"
-                    style="width: auto; height: 1px; min-height: auto;"
+                    style="width: auto; height: 104px; min-height: auto;"
                   >
                     <div
                       class="MuiDataGrid-virtualScrollerRenderZone css-s1v7zr-MuiDataGrid-virtualScrollerRenderZone"
-                      style="transform: translate3d(0px, undefinedpx, 0px);"
+                      style="transform: translate3d(0px, 0px, 0px);"
                     >
                       <div
                         aria-rowindex="2"
@@ -1111,6 +1111,20 @@ exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Sc
                             d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"
                           />
                         </svg>
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        aria-current="true"
+                        aria-label="page 1"
+                        class="MuiButtonBase-root MuiPaginationItem-root MuiPaginationItem-sizeMedium MuiPaginationItem-text MuiPaginationItem-circular MuiPaginationItem-textPrimary Mui-selected MuiPaginationItem-page css-1to7aaw-MuiButtonBase-root-MuiPaginationItem-root"
+                        tabindex="0"
+                        type="button"
+                      >
+                        1
+                        <span
+                          class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
+                        />
                       </button>
                     </li>
                     <li>

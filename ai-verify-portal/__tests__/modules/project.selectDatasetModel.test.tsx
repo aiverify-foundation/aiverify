@@ -57,7 +57,8 @@ const fetchSpy = jest.spyOn(global, 'fetch');
 
 describe('Project Flow - Select Dataset And Model', () => {
   beforeAll(() => {
-    // silentConsoleLogs();
+    jest.useFakeTimers({ advanceTimers: true });
+    silentConsoleLogs();
     mockDomMatrix();
   });
 
@@ -90,6 +91,7 @@ describe('Project Flow - Select Dataset And Model', () => {
       expect(projNameInput).not.toBeNull();
 
       await user.type(projNameInput, 'Test Project');
+      jest.runAllTimers();
       const nextBtn = await screen.findByText(/^Next$/i);
       await user.click(nextBtn.parentElement as HTMLDivElement);
       await screen.findByText(/^Select Report Template$/i);
@@ -211,6 +213,7 @@ describe('Project Flow - Select Dataset And Model', () => {
           /^Enter name of this project e.g. Credit Scoring Model Tests$/i
         );
       await user.type(projNameInput, 'Test Project');
+      jest.runAllTimers();
       const nextBtn = await screen.findByText(/^Next$/i);
       await user.click(nextBtn.parentElement as HTMLDivElement);
       await screen.findByText(/^Select Report Template$/i);
