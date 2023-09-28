@@ -328,6 +328,7 @@ mutation($model: ModelAPIInput!) {
 }
 `;
     for (let model of modelAPIData) {
+      // console.debug("model", model);
       const response = await server.executeOperation({
         query,
         variables: {

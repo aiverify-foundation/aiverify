@@ -164,8 +164,7 @@ const modelFileSchema = new Schema(
 );
 
 // very simple URL regex match
-const _url_pattern =
-  /^(?<base>https?:\/\/(?:[a-z0-9.@:])+)(?<path>\/?[^?]+)(?<query>\?\/?.+)?/i;
+// const _url_pattern = /^(?<base>https?:\/\/(?:[a-z0-9.@:])+)(?<path>\/?[^?]+)(?<query>\?\/?.+)?/i;
 const _url_path_pattern = /\{([a-z0-9_\-\s]+)\}/gi;
 
 modelFileSchema.methods.exportModelAPI = async function () {
@@ -187,39 +186,6 @@ async function _exportModelAPI(modelAPI) {
   };
 
   // build the path
-  // const responseType = (modelAPI.response.mediaType === "text/plain") ? modelAPI.response.type : "object";
-  // const responseType = {
-  //   type: modelAPI.response.type,
-  // }
-  // console.log("modelAPI.response", modelAPI.response)
-  // const getResponseType = (responseType) => {
-  //   // console.log("  responseType.type", responseType.type);
-  //   if (responseType.type === 'array') {
-  //     if (typeof(modelAPI.response.arrayType) !== 'string' || modelAPI.response.arrayType.length == 0) {
-  //       throw new Error("Missing responseBody property arrayType");
-  //     }
-  //     responseType["items"] = {
-  //       type: modelAPI.response.arrayType
-  //     }
-  //     getResponseType(responseType.items);
-  //   } else if (responseType.type === 'object') {
-  //     if (typeof(modelAPI.response.objectType) !== 'string' || modelAPI.response.objectType.length == 0) {
-  //       throw new Error("Missing responseBody property objectType");
-  //     }
-  //     if (typeof(modelAPI.response.field) !== 'string' || modelAPI.response.field.length == 0) {
-  //       throw new Error("Missing responseBody property field");
-  //     }
-  //     responseType["properties"] = {
-  //       [modelAPI.response.field]: {
-  //         type: modelAPI.response.objectType 
-  //       }
-  //     }
-  //     getResponseType(responseType.properties[modelAPI.response.field]);
-  //   }
-  //   // return responseType;
-  // }
-  // getResponseType(responseType);
-  // console.log("responseType", responseType);
   let pathObj = {
     parameters: [],
     responses: {
@@ -234,12 +200,19 @@ async function _exportModelAPI(modelAPI) {
     },
   };
 
-  const url = modelAPI.url + (modelAPI.urlParams || "");
-  const url_match = url.match(_url_pattern);
+  // const url = modelAPI.url + (modelAPI.urlParams || "");
+  let urlstr = modelAPI.url;
+  if (urlstr.endsWith('/')) {
+    urlstr = urlstr.replace(/(\/+)$/, '');
+  }
+  urlstr = urlstr + (modelAPI.urlParams || "");
+  const url = new URL(urlstr);
+  const urlBase = url.protocol + "//"  + url.host;
+  const urlPathname = decodeURIComponent(url.pathname);
   // add servers
   spec["servers"] = [
     {
-      url: url_match.groups.base,
+      url: urlBase,
     },
   ];
 
@@ -285,7 +258,8 @@ async function _exportModelAPI(modelAPI) {
   }
 
   // add path params if any
-  const path_match = url_match.groups.path.match(_url_path_pattern);
+  const path_match = urlPathname.match(_url_path_pattern);
+  // console.log("path_match", path_match);
   if (
     path_match &&
     modelAPI.parameters &&
@@ -293,7 +267,6 @@ async function _exportModelAPI(modelAPI) {
     modelAPI.parameters.paths.pathParams &&
     modelAPI.parameters.paths.pathParams.length > 0
   ) {
-    // console.log("path_match", path_match);
     // const parameters = [];
     const isComplex = modelAPI.parameters.paths.mediaType !== "none";
     if (!isComplex) {
@@ -506,12 +479,12 @@ async function _exportModelAPI(modelAPI) {
   }
 
   spec["paths"] = {
-    [url_match.groups.path]: {
+    [urlPathname]: {
       [modelAPI.method.toLowerCase()]: pathObj,
     },
   };
   // const json = JSON.parse(spec.getSpecAsJson());
-  // console.log("spec", spec)
+  // console.log("spec", JSON.stringify(spec, null, 2))
   // console.log("config", config)
 
   const [openapi, error, warning] = await Enforcer(spec, {

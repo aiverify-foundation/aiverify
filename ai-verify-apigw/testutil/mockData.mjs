@@ -248,13 +248,19 @@ casual.define("modelAPI", function (encoding, isArray) {
     response: {
       statusCode: 200,
       mediaType: "text/plain",
-      type: "integer",
+      schema: {
+        "type": "integer"
+      }
     },
     requestConfig: {
-      rateLimit: -1,
-      batchStrategy: "none",
-      maxConnections: 100,
-      requestTimeout: 30000,
+      "sslVerify": false,
+      "connectionTimeout": -1,
+      "rateLimit": -1,
+      "rateLimitTimeout": -1,
+      "batchLimit": -1,
+      "connectionRetries": 3,
+      "maxConnections": -1,
+      "batchStrategy": "none"
     },
   };
 
@@ -325,6 +331,8 @@ casual.define("modelAPI", function (encoding, isArray) {
       },
     };
   }
+
+  console.debug("modelAPI", JSON.stringify(modelAPI, null, 2));
 
   return {
     name: casual.word,

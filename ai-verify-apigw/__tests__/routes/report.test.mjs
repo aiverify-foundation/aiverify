@@ -4,6 +4,7 @@ import supertest from 'supertest';
 import { setupServerWithRouter } from '#testutil/testExpressRouter.mjs';
 import path from 'node:path';
 import url from 'url';
+import mongoose from 'mongoose';
 
 const __filename = url.fileURLToPath(import.meta.url);
 export const srcDir = path.dirname(__filename);
@@ -16,7 +17,7 @@ describe("Test /report route", () => {
   let fs;
   let server;
   let request;
-  const projectId = "fakeProject";
+  const projectId = mongoose.Types.ObjectId();
   const pdf_path = path.join(srcDir, "./mock_report.pdf");
 
   beforeAll(async() => {
@@ -54,9 +55,12 @@ describe("Test /report route", () => {
 
   it("/report/:projectId should not download PDF report with invalid project id", async() => {
     fs.existsSync.mockReturnValue(true);
-    const response = await request.get(`/report/${projectId}`);
+    const response = await request.get(`/report/fakeid`);
     expect(response).toBeDefined();
-    expect(response.status).toBe(500);
+    expect(response.status).toBe(400);
+    const response2 = await request.get(`/report/${projectId}`);
+    expect(response2).toBeDefined();
+    expect(response2.status).toBe(500);
   })
 
   it("/report/:projectId should download PDF report", async() => {
