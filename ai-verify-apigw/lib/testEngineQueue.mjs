@@ -123,9 +123,9 @@ export const queueTests = async (report, modelAndDatasets) => {
         //   objectType: modelAPI.response.objectType,
         //   arrayType: modelAPI.response.arrayType,
         // },
+        responseBody: modelAPI.response,
       };
       delete apiConfig._id; // remove this field not required
-      delete apiConfig.responseBody; // remove this field not required
       if (modelAPI.authType !== "No Auth") {
         apiConfig["authentication"] = modelAPI.authTypeConfig;
       }
