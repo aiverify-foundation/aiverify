@@ -285,7 +285,7 @@ exports[`Project Flow Project Information Capture and Select Template screens sh
             />
           </div>
           <div
-            class="reportNavBtn disableNavBtn"
+            class="reportNavBtn"
             style="margin-left: 20px;"
           >
             <div>
@@ -566,11 +566,9 @@ exports[`Project Flow Report Designer Screen should place widget on canvas, high
         >
           <div>
             W: 
-            6
           </div>
           <div>
             H: 
-            3
           </div>
         </div>
         <div
@@ -578,11 +576,9 @@ exports[`Project Flow Report Designer Screen should place widget on canvas, high
         >
           <div>
             minW: 
-            6
           </div>
           <div>
             minH: 
-            3
           </div>
         </div>
         <div
@@ -590,11 +586,9 @@ exports[`Project Flow Report Designer Screen should place widget on canvas, high
         >
           <div>
             maxW: 
-            12
           </div>
           <div>
             maxH: 
-            36
           </div>
         </div>
       </div>
@@ -915,7 +909,1103 @@ exports[`Project Flow Report Designer Screen should render Report Designer scree
             >
               <div
                 class="widgetsContainer"
-              />
+              >
+                <div
+                  class="pluginAccordion"
+                >
+                  <div
+                    class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded css-1wc0u5o-MuiPaper-root-MuiAccordion-root"
+                  >
+                    <div
+                      aria-expanded="false"
+                      class="MuiButtonBase-root MuiAccordionSummary-root css-k8fp39-MuiButtonBase-root-MuiAccordionSummary-root"
+                      role="button"
+                      tabindex="0"
+                    >
+                      <div
+                        class="MuiAccordionSummary-content css-1betqn-MuiAccordionSummary-content"
+                      >
+                        <div
+                          class="headingContainer"
+                        >
+                          <div
+                            class="pluginHeading"
+                          >
+                            AI Verify Stock Decorators
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="MuiAccordionSummary-expandIconWrapper css-yw020d-MuiAccordionSummary-expandIconWrapper"
+                      >
+                        <svg
+                          aria-hidden="true"
+                          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium expandIcon css-i4bv87-MuiSvgIcon-root"
+                          data-testid="ExpandMoreIcon"
+                          focusable="false"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                    <div
+                      class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-bz4dnt-MuiCollapse-root"
+                      style="min-height: 0px;"
+                    >
+                      <div
+                        class="MuiCollapse-wrapper MuiCollapse-vertical css-smkl36-MuiCollapse-wrapper"
+                      >
+                        <div
+                          class="MuiCollapse-wrapperInner MuiCollapse-vertical css-9l5vo-MuiCollapse-wrapperInner"
+                        >
+                          <div
+                            class="MuiAccordion-region"
+                            role="region"
+                          >
+                            <div
+                              class="MuiAccordionDetails-root css-15v22id-MuiAccordionDetails-root"
+                            >
+                              <div
+                                class="draggableWidget"
+                                data-test-id="draggableWidget-aiverify.stock.decorators:divider"
+                                draggable="true"
+                                unselectable="on"
+                              >
+                                <div
+                                  class="widgetHeadingWrapper"
+                                >
+                                  <div
+                                    style="display: flex;"
+                                  >
+                                    <svg
+                                      aria-hidden="true"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium draggableWidgetIcon css-i4bv87-MuiSvgIcon-root"
+                                      data-testid="WidgetsIcon"
+                                      focusable="false"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        d="M13 13v8h8v-8h-8zM3 21h8v-8H3v8zM3 3v8h8V3H3zm13.66-1.31L11 7.34 16.66 13l5.66-5.66-5.66-5.65z"
+                                      />
+                                    </svg>
+                                    <div
+                                      class="widgetHeading"
+                                    >
+                                      Divider
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="draggableHandleIconWrapper"
+                                    style="display: flex;"
+                                  >
+                                    <svg
+                                      aria-hidden="true"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium draggableHandleIcon css-i4bv87-MuiSvgIcon-root"
+                                      data-testid="DragIndicatorIcon"
+                                      focusable="false"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                                      />
+                                    </svg>
+                                  </div>
+                                </div>
+                                <div
+                                  class="widgetDetailsDivider"
+                                />
+                                <div
+                                  class="widgetDetailsScrollContainer"
+                                >
+                                  <div
+                                    class="widgetDetailsRow"
+                                    style="flex-direction: column;"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Description:
+                                    </div>
+                                    <div
+                                      class="widgetDetailText"
+                                    />
+                                  </div>
+                                  <div
+                                    class="widgetDetailsRow"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Version:
+                                    </div>
+                                    <div
+                                      class="widgetDetailText"
+                                    >
+                                      1.0.0
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="widgetDetailsRow"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Tags: 
+                                    </div>
+                                    <div
+                                      class="widgetDetailText"
+                                    >
+                                      stock, decorator
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div
+                                class="draggableWidget"
+                                data-test-id="draggableWidget-aiverify.stock.decorators:header1"
+                                draggable="true"
+                                unselectable="on"
+                              >
+                                <div
+                                  class="widgetHeadingWrapper"
+                                >
+                                  <div
+                                    style="display: flex;"
+                                  >
+                                    <svg
+                                      aria-hidden="true"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium draggableWidgetIcon css-i4bv87-MuiSvgIcon-root"
+                                      data-testid="WidgetsIcon"
+                                      focusable="false"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        d="M13 13v8h8v-8h-8zM3 21h8v-8H3v8zM3 3v8h8V3H3zm13.66-1.31L11 7.34 16.66 13l5.66-5.66-5.66-5.65z"
+                                      />
+                                    </svg>
+                                    <div
+                                      class="widgetHeading"
+                                    >
+                                      Header 1
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="draggableHandleIconWrapper"
+                                    style="display: flex;"
+                                  >
+                                    <svg
+                                      aria-hidden="true"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium draggableHandleIcon css-i4bv87-MuiSvgIcon-root"
+                                      data-testid="DragIndicatorIcon"
+                                      focusable="false"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                                      />
+                                    </svg>
+                                  </div>
+                                </div>
+                                <div
+                                  class="widgetDetailsDivider"
+                                />
+                                <div
+                                  class="widgetDetailsScrollContainer"
+                                >
+                                  <div
+                                    class="widgetDetailsRow"
+                                    style="flex-direction: column;"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Description:
+                                    </div>
+                                    <div
+                                      class="widgetDetailText"
+                                    />
+                                  </div>
+                                  <div
+                                    class="widgetDetailsRow"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Version:
+                                    </div>
+                                    <div
+                                      class="widgetDetailText"
+                                    >
+                                      1.0.0
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="widgetDetailsRow"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Tags: 
+                                    </div>
+                                    <div
+                                      class="widgetDetailText"
+                                    >
+                                      stock, decorator, header
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="pluginAccordion"
+                >
+                  <div
+                    class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded css-1wc0u5o-MuiPaper-root-MuiAccordion-root"
+                  >
+                    <div
+                      aria-expanded="false"
+                      class="MuiButtonBase-root MuiAccordionSummary-root css-k8fp39-MuiButtonBase-root-MuiAccordionSummary-root"
+                      role="button"
+                      tabindex="0"
+                    >
+                      <div
+                        class="MuiAccordionSummary-content css-1betqn-MuiAccordionSummary-content"
+                      >
+                        <div
+                          class="headingContainer"
+                        >
+                          <div
+                            class="pluginHeading"
+                          >
+                            Fairness for Regression
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="MuiAccordionSummary-expandIconWrapper css-yw020d-MuiAccordionSummary-expandIconWrapper"
+                      >
+                        <svg
+                          aria-hidden="true"
+                          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium expandIcon css-i4bv87-MuiSvgIcon-root"
+                          data-testid="ExpandMoreIcon"
+                          focusable="false"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                    <div
+                      class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-bz4dnt-MuiCollapse-root"
+                      style="min-height: 0px;"
+                    >
+                      <div
+                        class="MuiCollapse-wrapper MuiCollapse-vertical css-smkl36-MuiCollapse-wrapper"
+                      >
+                        <div
+                          class="MuiCollapse-wrapperInner MuiCollapse-vertical css-9l5vo-MuiCollapse-wrapperInner"
+                        >
+                          <div
+                            class="MuiAccordion-region"
+                            role="region"
+                          >
+                            <div
+                              class="MuiAccordionDetails-root css-15v22id-MuiAccordionDetails-root"
+                            >
+                              <div
+                                class="draggableWidget"
+                                data-test-id="draggableWidget-aiverify.stock.fairness_metrics_toolbox_for_regression:mae_interpretation"
+                                draggable="true"
+                                unselectable="on"
+                              >
+                                <div
+                                  class="widgetHeadingWrapper"
+                                >
+                                  <div
+                                    style="display: flex;"
+                                  >
+                                    <svg
+                                      aria-hidden="true"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium draggableWidgetIcon css-i4bv87-MuiSvgIcon-root"
+                                      data-testid="WidgetsIcon"
+                                      focusable="false"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        d="M13 13v8h8v-8h-8zM3 21h8v-8H3v8zM3 3v8h8V3H3zm13.66-1.31L11 7.34 16.66 13l5.66-5.66-5.66-5.65z"
+                                      />
+                                    </svg>
+                                    <div
+                                      class="widgetHeading"
+                                    >
+                                      Interpretation (MAE)
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="draggableHandleIconWrapper"
+                                    style="display: flex;"
+                                  >
+                                    <svg
+                                      aria-hidden="true"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium draggableHandleIcon css-i4bv87-MuiSvgIcon-root"
+                                      data-testid="DragIndicatorIcon"
+                                      focusable="false"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                                      />
+                                    </svg>
+                                  </div>
+                                </div>
+                                <div
+                                  class="widgetDetailsDivider"
+                                />
+                                <div
+                                  class="widgetDetailsScrollContainer"
+                                >
+                                  <div
+                                    class="widgetDetailsRow"
+                                    style="flex-direction: column;"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Description:
+                                    </div>
+                                    <div
+                                      class="widgetDetailText"
+                                    >
+                                      To interpret the mean absolute error parity results
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="widgetDetailsRow"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Version:
+                                    </div>
+                                    <div
+                                      class="widgetDetailText"
+                                    >
+                                      0.9.0
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="widgetDetailsRow"
+                                    style="flex-direction: column;"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Dependencies:
+                                    </div>
+                                    <ul>
+                                      <li>
+                                        <div
+                                          color="inherit"
+                                        >
+                                          aiverify.stock.fairness_metrics_toolbox_for_regression:fairness_metrics_toolbox_for_regression
+                                        </div>
+                                      </li>
+                                    </ul>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="pluginAccordion"
+                >
+                  <div
+                    class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded css-1wc0u5o-MuiPaper-root-MuiAccordion-root"
+                  >
+                    <div
+                      aria-expanded="false"
+                      class="MuiButtonBase-root MuiAccordionSummary-root css-k8fp39-MuiButtonBase-root-MuiAccordionSummary-root"
+                      role="button"
+                      tabindex="0"
+                    >
+                      <div
+                        class="MuiAccordionSummary-content css-1betqn-MuiAccordionSummary-content"
+                      >
+                        <div
+                          class="headingContainer"
+                        >
+                          <div
+                            class="pluginHeading"
+                          >
+                            Test Plugin
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="MuiAccordionSummary-expandIconWrapper css-yw020d-MuiAccordionSummary-expandIconWrapper"
+                      >
+                        <svg
+                          aria-hidden="true"
+                          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium expandIcon css-i4bv87-MuiSvgIcon-root"
+                          data-testid="ExpandMoreIcon"
+                          focusable="false"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                    <div
+                      class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-bz4dnt-MuiCollapse-root"
+                      style="min-height: 0px;"
+                    >
+                      <div
+                        class="MuiCollapse-wrapper MuiCollapse-vertical css-smkl36-MuiCollapse-wrapper"
+                      >
+                        <div
+                          class="MuiCollapse-wrapperInner MuiCollapse-vertical css-9l5vo-MuiCollapse-wrapperInner"
+                        >
+                          <div
+                            class="MuiAccordion-region"
+                            role="region"
+                          >
+                            <div
+                              class="MuiAccordionDetails-root css-15v22id-MuiAccordionDetails-root"
+                            >
+                              <div
+                                class="draggableWidget draggableWidget_disabled"
+                                data-test-id="draggableWidget-aiverify.tests:pdpOutput"
+                                draggable="false"
+                                unselectable="on"
+                              >
+                                <div
+                                  class="widgetHeadingWrapper"
+                                >
+                                  <div
+                                    style="display: flex;"
+                                  >
+                                    <svg
+                                      aria-hidden="true"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium draggableWidgetIcon css-i4bv87-MuiSvgIcon-root"
+                                      data-testid="WidgetsIcon"
+                                      focusable="false"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        d="M13 13v8h8v-8h-8zM3 21h8v-8H3v8zM3 3v8h8V3H3zm13.66-1.31L11 7.34 16.66 13l5.66-5.66-5.66-5.65z"
+                                      />
+                                    </svg>
+                                    <div
+                                      class="widgetHeading"
+                                    >
+                                      Test Algo Output
+                                    </div>
+                                  </div>
+                                </div>
+                                <div
+                                  class="widgetDetailsDivider"
+                                />
+                                <div
+                                  class="widgetDetailsScrollContainer"
+                                >
+                                  <div
+                                    class="widgetDetailsRow"
+                                    style="flex-direction: column;"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Description:
+                                    </div>
+                                    <div
+                                      class="widgetDetailText"
+                                    >
+                                      JSON display for Algo
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="widgetDetailsRow"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Version:
+                                    </div>
+                                    <div
+                                      class="widgetDetailText"
+                                    >
+                                      1.0.0-alpha
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="widgetDetailsRow"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Tags: 
+                                    </div>
+                                    <div
+                                      class="widgetDetailText"
+                                    >
+                                      test
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="widgetDetailsRow"
+                                    style="flex-direction: column;"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Dependencies:
+                                    </div>
+                                    <ul>
+                                      <li>
+                                        <div
+                                          style="color: red;"
+                                        >
+                                          aiverify.stock.algorithms.fairness_metrics_toolbox_for_classification:fairness_metrics_toolbox_for_classification
+                                        </div>
+                                      </li>
+                                    </ul>
+                                  </div>
+                                </div>
+                              </div>
+                              <div
+                                class="draggableWidget draggableWidget_disabled"
+                                data-test-id="draggableWidget-aiverify.tests:test1"
+                                draggable="false"
+                                unselectable="on"
+                              >
+                                <div
+                                  class="widgetHeadingWrapper"
+                                >
+                                  <div
+                                    style="display: flex;"
+                                  >
+                                    <svg
+                                      aria-hidden="true"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium draggableWidgetIcon css-i4bv87-MuiSvgIcon-root"
+                                      data-testid="WidgetsIcon"
+                                      focusable="false"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        d="M13 13v8h8v-8h-8zM3 21h8v-8H3v8zM3 3v8h8V3H3zm13.66-1.31L11 7.34 16.66 13l5.66-5.66-5.66-5.65z"
+                                      />
+                                    </svg>
+                                    <div
+                                      class="widgetHeading"
+                                    >
+                                      Test widget 1
+                                    </div>
+                                  </div>
+                                </div>
+                                <div
+                                  class="widgetDetailsDivider"
+                                />
+                                <div
+                                  class="widgetDetailsScrollContainer"
+                                >
+                                  <div
+                                    class="widgetDetailsRow"
+                                    style="flex-direction: column;"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Description:
+                                    </div>
+                                    <div
+                                      class="widgetDetailText"
+                                    >
+                                      Test Widget 1
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="widgetDetailsRow"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Version:
+                                    </div>
+                                    <div
+                                      class="widgetDetailText"
+                                    >
+                                      1.0.0-alpha
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="widgetDetailsRow"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Tags: 
+                                    </div>
+                                    <div
+                                      class="widgetDetailText"
+                                    >
+                                      test
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="widgetDetailsRow"
+                                    style="flex-direction: column;"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Dependencies:
+                                    </div>
+                                    <ul>
+                                      <li>
+                                        <div
+                                          style="color: red;"
+                                        >
+                                          aiverify.tests:ThisIsAnInvalidInputBlockGID
+                                        </div>
+                                      </li>
+                                      <li>
+                                        <div
+                                          style="color: red;"
+                                        >
+                                          fakealgoplugin:fakealgo1
+                                        </div>
+                                      </li>
+                                    </ul>
+                                  </div>
+                                </div>
+                              </div>
+                              <div
+                                class="draggableWidget"
+                                data-test-id="draggableWidget-aiverify.tests:test2"
+                                draggable="true"
+                                unselectable="on"
+                              >
+                                <div
+                                  class="widgetHeadingWrapper"
+                                >
+                                  <div
+                                    style="display: flex;"
+                                  >
+                                    <svg
+                                      aria-hidden="true"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium draggableWidgetIcon css-i4bv87-MuiSvgIcon-root"
+                                      data-testid="WidgetsIcon"
+                                      focusable="false"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        d="M13 13v8h8v-8h-8zM3 21h8v-8H3v8zM3 3v8h8V3H3zm13.66-1.31L11 7.34 16.66 13l5.66-5.66-5.66-5.65z"
+                                      />
+                                    </svg>
+                                    <div
+                                      class="widgetHeading"
+                                    >
+                                      Test widget 2
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="draggableHandleIconWrapper"
+                                    style="display: flex;"
+                                  >
+                                    <svg
+                                      aria-hidden="true"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium draggableHandleIcon css-i4bv87-MuiSvgIcon-root"
+                                      data-testid="DragIndicatorIcon"
+                                      focusable="false"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                                      />
+                                    </svg>
+                                  </div>
+                                </div>
+                                <div
+                                  class="widgetDetailsDivider"
+                                />
+                                <div
+                                  class="widgetDetailsScrollContainer"
+                                >
+                                  <div
+                                    class="widgetDetailsRow"
+                                    style="flex-direction: column;"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Description:
+                                    </div>
+                                    <div
+                                      class="widgetDetailText"
+                                    >
+                                      Test Widget 2
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="widgetDetailsRow"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Version:
+                                    </div>
+                                    <div
+                                      class="widgetDetailText"
+                                    >
+                                      1.0.0-alpha
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="widgetDetailsRow"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Tags: 
+                                    </div>
+                                    <div
+                                      class="widgetDetailText"
+                                    >
+                                      test
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="widgetDetailsRow"
+                                    style="flex-direction: column;"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Dependencies:
+                                    </div>
+                                    <ul>
+                                      <li>
+                                        <div
+                                          color="inherit"
+                                        >
+                                          aiverify.tests:testib
+                                        </div>
+                                      </li>
+                                    </ul>
+                                  </div>
+                                </div>
+                              </div>
+                              <div
+                                class="draggableWidget draggableWidget_disabled"
+                                data-test-id="draggableWidget-aiverify.tests:test3"
+                                draggable="false"
+                                unselectable="on"
+                              >
+                                <div
+                                  class="widgetHeadingWrapper"
+                                >
+                                  <div
+                                    style="display: flex;"
+                                  >
+                                    <svg
+                                      aria-hidden="true"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium draggableWidgetIcon css-i4bv87-MuiSvgIcon-root"
+                                      data-testid="WidgetsIcon"
+                                      focusable="false"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        d="M13 13v8h8v-8h-8zM3 21h8v-8H3v8zM3 3v8h8V3H3zm13.66-1.31L11 7.34 16.66 13l5.66-5.66-5.66-5.65z"
+                                      />
+                                    </svg>
+                                    <div
+                                      class="widgetHeading"
+                                    >
+                                      Test widget 3
+                                    </div>
+                                  </div>
+                                </div>
+                                <div
+                                  class="widgetDetailsDivider"
+                                />
+                                <div
+                                  class="widgetDetailsScrollContainer"
+                                >
+                                  <div
+                                    class="widgetDetailsRow"
+                                    style="flex-direction: column;"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Description:
+                                    </div>
+                                    <div
+                                      class="widgetDetailText"
+                                    >
+                                      Test Widget 3 description
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="widgetDetailsRow"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Version:
+                                    </div>
+                                    <div
+                                      class="widgetDetailText"
+                                    >
+                                      1.0.0-alpha
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="widgetDetailsRow"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Tags: 
+                                    </div>
+                                    <div
+                                      class="widgetDetailText"
+                                    >
+                                      test
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="widgetDetailsRow"
+                                    style="flex-direction: column;"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Dependencies:
+                                    </div>
+                                    <ul>
+                                      <li>
+                                        <div
+                                          color="inherit"
+                                        >
+                                          aiverify.tests:testib
+                                        </div>
+                                      </li>
+                                      <li>
+                                        <div
+                                          style="color: red;"
+                                        >
+                                          fakealgoplugin:fakealgo1
+                                        </div>
+                                      </li>
+                                    </ul>
+                                  </div>
+                                </div>
+                              </div>
+                              <div
+                                class="draggableWidget"
+                                data-test-id="draggableWidget-aiverify.tests:testchart"
+                                draggable="true"
+                                unselectable="on"
+                              >
+                                <div
+                                  class="widgetHeadingWrapper"
+                                >
+                                  <div
+                                    style="display: flex;"
+                                  >
+                                    <svg
+                                      aria-hidden="true"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium draggableWidgetIcon css-i4bv87-MuiSvgIcon-root"
+                                      data-testid="WidgetsIcon"
+                                      focusable="false"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        d="M13 13v8h8v-8h-8zM3 21h8v-8H3v8zM3 3v8h8V3H3zm13.66-1.31L11 7.34 16.66 13l5.66-5.66-5.66-5.65z"
+                                      />
+                                    </svg>
+                                    <div
+                                      class="widgetHeading"
+                                    >
+                                      Test Chart
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="draggableHandleIconWrapper"
+                                    style="display: flex;"
+                                  >
+                                    <svg
+                                      aria-hidden="true"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium draggableHandleIcon css-i4bv87-MuiSvgIcon-root"
+                                      data-testid="DragIndicatorIcon"
+                                      focusable="false"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                                      />
+                                    </svg>
+                                  </div>
+                                </div>
+                                <div
+                                  class="widgetDetailsDivider"
+                                />
+                                <div
+                                  class="widgetDetailsScrollContainer"
+                                >
+                                  <div
+                                    class="widgetDetailsRow"
+                                    style="flex-direction: column;"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Description:
+                                    </div>
+                                    <div
+                                      class="widgetDetailText"
+                                    >
+                                      For testing charts
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="widgetDetailsRow"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Version:
+                                    </div>
+                                    <div
+                                      class="widgetDetailText"
+                                    >
+                                      1.0.0-alpha
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="widgetDetailsRow"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Tags: 
+                                    </div>
+                                    <div
+                                      class="widgetDetailText"
+                                    >
+                                      test
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div
+                                class="draggableWidget"
+                                data-test-id="draggableWidget-aiverify.tests:testdh"
+                                draggable="true"
+                                unselectable="on"
+                              >
+                                <div
+                                  class="widgetHeadingWrapper"
+                                >
+                                  <div
+                                    style="display: flex;"
+                                  >
+                                    <svg
+                                      aria-hidden="true"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium draggableWidgetIcon css-i4bv87-MuiSvgIcon-root"
+                                      data-testid="WidgetsIcon"
+                                      focusable="false"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        d="M13 13v8h8v-8h-8zM3 21h8v-8H3v8zM3 3v8h8V3H3zm13.66-1.31L11 7.34 16.66 13l5.66-5.66-5.66-5.65z"
+                                      />
+                                    </svg>
+                                    <div
+                                      class="widgetHeading"
+                                    >
+                                      Test Dynamic Height
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="draggableHandleIconWrapper"
+                                    style="display: flex;"
+                                  >
+                                    <svg
+                                      aria-hidden="true"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium draggableHandleIcon css-i4bv87-MuiSvgIcon-root"
+                                      data-testid="DragIndicatorIcon"
+                                      focusable="false"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                                      />
+                                    </svg>
+                                  </div>
+                                </div>
+                                <div
+                                  class="widgetDetailsDivider"
+                                />
+                                <div
+                                  class="widgetDetailsScrollContainer"
+                                >
+                                  <div
+                                    class="widgetDetailsRow"
+                                    style="flex-direction: column;"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Description:
+                                    </div>
+                                    <div
+                                      class="widgetDetailText"
+                                    />
+                                  </div>
+                                  <div
+                                    class="widgetDetailsRow"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Version:
+                                    </div>
+                                    <div
+                                      class="widgetDetailText"
+                                    >
+                                      1.0.0-alpha
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1088,6 +2178,20 @@ exports[`Project Flow Report Designer Screen should render Report Designer scree
                           d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"
                         />
                       </svg>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      aria-current="true"
+                      aria-label="page 1"
+                      class="MuiButtonBase-root MuiPaginationItem-root MuiPaginationItem-sizeSmall MuiPaginationItem-text MuiPaginationItem-circular MuiPaginationItem-textSecondary Mui-selected MuiPaginationItem-page css-hnd4u0-MuiButtonBase-root-MuiPaginationItem-root"
+                      tabindex="0"
+                      type="button"
+                    >
+                      1
+                      <span
+                        class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
+                      />
                     </button>
                   </li>
                   <li>
@@ -1533,7 +2637,80 @@ exports[`Project Flow Report Designer Screen should render Report Designer scree
                             </div>
                             <div
                               class="gVarsScrollContainer"
-                            />
+                            >
+                              <div
+                                class="gVarsRow"
+                                id="varkey-name"
+                              >
+                                <div
+                                  class="gVarsCol"
+                                >
+                                  name
+                                </div>
+                                <div
+                                  class="gVarsCol"
+                                >
+                                  Test Project
+                                </div>
+                                <div
+                                  class="gVarsDelCol"
+                                />
+                              </div>
+                              <div
+                                class="gVarsRow"
+                                id="varkey-description"
+                              >
+                                <div
+                                  class="gVarsCol"
+                                >
+                                  description
+                                </div>
+                                <div
+                                  class="gVarsCol"
+                                >
+                                  Test Description
+                                </div>
+                                <div
+                                  class="gVarsDelCol"
+                                />
+                              </div>
+                              <div
+                                class="gVarsRow"
+                                id="varkey-reportTitle"
+                              >
+                                <div
+                                  class="gVarsCol"
+                                >
+                                  reportTitle
+                                </div>
+                                <div
+                                  class="gVarsCol"
+                                >
+                                  Test Report Name
+                                </div>
+                                <div
+                                  class="gVarsDelCol"
+                                />
+                              </div>
+                              <div
+                                class="gVarsRow"
+                                id="varkey-company"
+                              >
+                                <div
+                                  class="gVarsCol"
+                                >
+                                  company
+                                </div>
+                                <div
+                                  class="gVarsCol"
+                                >
+                                  Test Company Pte Ltd
+                                </div>
+                                <div
+                                  class="gVarsDelCol"
+                                />
+                              </div>
+                            </div>
                             <div
                               class="gVarsInputRow gVarsRow_padRight"
                             >

@@ -1,11 +1,12 @@
 import { TextInput } from 'src/components/textInput';
 import {
+  ARUActionTypes,
   ProjectTemplateStore,
   UpdateActionTypes,
 } from '../projectTemplate/projectTemplateContext';
 import styles from './styles/projectInfo.module.css';
 import { produce } from 'immer';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { TextArea } from 'src/components/textArea';
 
 type ProjectInfoProps = {
@@ -43,6 +44,7 @@ export default function ProjectInformationComponent(props: ProjectInfoProps) {
     useState<ProjectGeneralInfo>(
       () => projectStore.projectInfo || initialProjectInfo
     );
+  const timer = useRef<NodeJS.Timeout>();
 
   function handleCheckboxChange() {
     setUseProjectNameAsTitle((prev) => !prev);
@@ -58,13 +60,44 @@ export default function ProjectInformationComponent(props: ProjectInfoProps) {
     );
   }
 
+  const debouncedProjectInfoChangeHandler = () => {
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => {
+      if (onProjectInfoChange)
+        onProjectInfoChange(validateProjectInfo(projectGeneralInfo));
+      projectStore.dispatchProjectInfo({
+        type: UpdateActionTypes.UPDATE,
+        payload: projectGeneralInfo,
+      });
+      if (projectStore.isNew) return;
+      for (const propertyName in projectGeneralInfo) {
+        if (propertyName === '__typename') continue;
+        const idx = projectStore.globalVars.findIndex(
+          (gvar) => gvar.key === propertyName
+        );
+        const gVarValue =
+          projectGeneralInfo[
+            propertyName as 'name' | 'company' | 'reportTitle' | 'description'
+          ];
+        if (gVarValue == null) continue;
+        if (idx < 0) {
+          projectStore.dispatchGlobalVars({
+            type: ARUActionTypes.ADD,
+            payload: { key: propertyName, value: gVarValue },
+          });
+        } else if (gVarValue !== projectStore.globalVars[idx].value) {
+          projectStore.dispatchGlobalVars({
+            type: ARUActionTypes.UPDATE,
+            index: idx,
+            payload: { key: propertyName, value: gVarValue },
+          });
+        }
+      }
+    }, 450);
+  };
+
   useEffect(() => {
-    if (onProjectInfoChange)
-      onProjectInfoChange(validateProjectInfo(projectGeneralInfo));
-    projectStore.dispatchProjectInfo({
-      type: UpdateActionTypes.UPDATE,
-      payload: projectGeneralInfo,
-    });
+    debouncedProjectInfoChangeHandler();
   }, [projectGeneralInfo]);
 
   useEffect(() => {

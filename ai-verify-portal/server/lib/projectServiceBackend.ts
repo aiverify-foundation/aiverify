@@ -177,7 +177,6 @@ export async function listProjects(): Promise<Project[]> {
 }
 
 export async function getProject(id: string): Promise<Project> {
-  console.log('getProject');
   const client = graphqlClient(true);
   try {
     const { data } = await client.query({

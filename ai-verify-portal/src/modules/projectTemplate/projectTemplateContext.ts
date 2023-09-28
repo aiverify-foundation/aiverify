@@ -60,7 +60,13 @@ export type ARUActions<Type> = {
   index2?: number;
   payload?: Type | Partial<Type>;
   payloadArray?: Type[];
-  updateFn?: _.DebouncedFunc<(id: string | undefined, state: Type[]) => void>;
+  updateFn?:
+    | _.DebouncedFunc<
+        (id: string | undefined, state: Type[], callback?: () => void) => void
+      >
+    | ((id: string | undefined, state: Type[], callback?: () => void) => void);
+  onCompleted?: () => void;
+  noDebounce?: boolean;
 };
 
 export enum MapActionTypes {
@@ -112,10 +118,7 @@ export interface ProjectTemplateStore {
   dispatchPages: Dispatch<ARUActions<Page>>;
   globalVars: GlobalVariable[];
   dispatchGlobalVars: Dispatch<ARUActions<GlobalVariable>>;
-  // inputBlocks: InputBlock[];
-  // algorithms: Algorithm[];
   dependencies: DependencyList;
-  // dispatchInputBlocks: Dispatch<ARUActions<InputBlock>>;
   dependency2ReportWidgetsMap: dependency2ReportWidgetsMapType;
   addReportWidget: (reportWidget: ReportWidgetItem) => void;
   removeReportWidget: (reportWidget: ReportWidgetItem) => void;
@@ -140,7 +143,7 @@ export function useProjectTemplateStore(
   pluginManager: PluginManagerType,
   projectMode = false
 ): ProjectTemplateStore {
-  const [isNew, setIsNew] = useState<boolean>(!!!data.id);
+  const [isNew, setIsNew] = useState<boolean>(() => data.id == undefined);
   const [id, setId] = useState<string | undefined>(data.id);
   const [lastSavedTime, setLastSavedTime] = useState<moment.Moment | null>(
     null
@@ -212,7 +215,8 @@ export function useProjectTemplateStore(
         return state;
       case ARUActionTypes.REPLACE:
         if (!action.payloadArray) throw new Error('payload');
-        if (action.updateFn) action.updateFn(id, action.payloadArray);
+        if (action.updateFn)
+          action.updateFn(id, action.payloadArray, action.onCompleted);
         return action.payloadArray as Type[];
       default:
         throw new Error('Invalid action');
@@ -282,7 +286,7 @@ export function useProjectTemplateStore(
           return Promise.reject(toErrorWithMessage(err));
         });
     }, DEBOUNCE_WAIT),
-    []
+    [isNew]
   );
 
   const dispatchProjectInfo = (
@@ -365,30 +369,58 @@ export function useProjectTemplateStore(
     data.globalVars || []
   );
   const _sendGlobalVarsUpdates = useCallback(
-    _.debounce((id: string | undefined, globalVars: GlobalVariable[]) => {
-      if (!id || id.length == 0)
-        return Promise.reject(
-          toErrorWithMessage(new Error('_sendGlobalVarsUpdates: Invalid ID'))
-        );
+    _.debounce(
+      (
+        id: string | undefined,
+        globalVars: GlobalVariable[],
+        callback?: () => void
+      ) => {
+        if (!id || id.length == 0) return Promise.resolve();
+        const _globalVars = globalVars.map((item) => {
+          return _.pick(item, ['key', 'value']);
+        }) as GlobalVariable[];
+        return updateProjectFn(id, { globalVars: _globalVars })
+          .then(() => {
+            setLastSavedTime(moment());
+            if (callback) callback();
+          })
+          .catch((err) => {
+            console.error('Update global vars error', err);
+            if (callback) callback();
+          });
+      },
+      DEBOUNCE_WAIT
+    ),
+    []
+  );
+  const _sendGlobalVarsUpdatesWithoutDebounce = useCallback(
+    (
+      id: string | undefined,
+      globalVars: GlobalVariable[],
+      callback?: () => void
+    ) => {
+      if (!id || id.length == 0) return Promise.resolve();
       const _globalVars = globalVars.map((item) => {
         return _.pick(item, ['key', 'value']);
       }) as GlobalVariable[];
       return updateProjectFn(id, { globalVars: _globalVars })
         .then(() => {
           setLastSavedTime(moment());
-          return Promise.resolve(true);
+          if (callback) callback();
         })
         .catch((err) => {
           console.error('Update global vars error', err);
-          return Promise.reject(toErrorWithMessage(err));
+          if (callback) callback();
         });
-    }, DEBOUNCE_WAIT),
+    },
     []
   );
   const dispatchGlobalVars = (action: ARUActions<GlobalVariable>) => {
     _dispatchGlobalVars({
       ...action,
-      updateFn: _sendGlobalVarsUpdates,
+      updateFn: action.noDebounce
+        ? _sendGlobalVarsUpdatesWithoutDebounce
+        : _sendGlobalVarsUpdates,
     });
   };
 
@@ -576,14 +608,12 @@ export function useProjectTemplateStore(
   };
 
   // store the widget MDX bundle
-  // @ts-ignore
   const [widgetBundleCache, dispatchWidgetBundleCache] = useReducer(
     mapReducer<any>,
     {}
   );
 
   // store the report widget components built from MDX
-  // @ts-ignore
   const [reportWidgetComponents, dispatchReportWidgetComponents] = useReducer(
     mapReducer<any>,
     {}
@@ -666,8 +696,6 @@ export function useProjectTemplateStore(
     dispatchPages,
     globalVars,
     dispatchGlobalVars,
-    // inputBlocks,
-    // algorithms,
     dependencies,
     dependency2ReportWidgetsMap,
     addReportWidget,

@@ -11,6 +11,7 @@ import {
   MapActions,
   DEBOUNCE_WAIT,
   DataUpdateActions,
+  ARUActionTypes,
 } from '../projectTemplate/projectTemplateContext';
 export * from '../projectTemplate/projectTemplateContext';
 import Project, {
@@ -39,7 +40,10 @@ export interface ProjectStore extends ProjectTemplateStore {
   dispatchTestInformationData: Dispatch<MapActions<TestInformation>>;
   reportStatus: ProjectReportStatus;
   createProject: () => Promise<string>;
-  createProjectFromTemplate: (templateId: string) => Promise<string>;
+  createProjectFromTemplate: (
+    templateId: string,
+    onProjectCreated?: () => void
+  ) => Promise<string>;
   generateReport: (algorithms: string[]) => Promise<Partial<Report>>;
   cancelTestRuns: (algorithms: string[]) => Promise<Report>;
   dispatchModelAndDatasets: Dispatch<DataUpdateActions<ModelAndDatasets>>;
@@ -224,6 +228,28 @@ export function useProjectStore(
         pages: [],
       };
       createProjectFn(project)
+        .then(async (result: string) => {
+          const newGlobalVars = [];
+          for (const propertyName in project.projectInfo) {
+            if (propertyName === '__typename') continue;
+            const gVarValue =
+              project.projectInfo[
+                propertyName as
+                  | 'name'
+                  | 'company'
+                  | 'reportTitle'
+                  | 'description'
+              ];
+            if (gVarValue == null) continue;
+            newGlobalVars.push({ key: propertyName, value: gVarValue });
+          }
+          templateStore.dispatchGlobalVars({
+            type: ARUActionTypes.REPLACE,
+            payloadArray: newGlobalVars,
+          });
+          await templateStore.flushAllUpdatesAsync();
+          return result;
+        })
         .then((result: string) => {
           templateStore.setId(result);
           templateStore.setIsNew(false);
@@ -237,12 +263,38 @@ export function useProjectStore(
   };
 
   const createProjectFromTemplateFn = useCreateProjectFromTemplate();
-  const createProjectFromTemplate = (templateId: string) => {
+  const createProjectFromTemplate = (
+    templateId: string,
+    onProjectCreated?: () => void
+  ) => {
     return new Promise<string>((resolve, reject) => {
       const project = {
         projectInfo: templateStore.projectInfo,
       };
       createProjectFromTemplateFn(project, templateId)
+        .then(async (doc: Partial<Project>) => {
+          const newGlobalVars = [];
+          for (const propertyName in doc.projectInfo) {
+            if (propertyName === '__typename') continue;
+            const gVarValue =
+              doc.projectInfo[
+                propertyName as
+                  | 'name'
+                  | 'company'
+                  | 'reportTitle'
+                  | 'description'
+              ];
+            if (gVarValue == null) continue;
+            newGlobalVars.push({ key: propertyName, value: gVarValue });
+          }
+          templateStore.dispatchGlobalVars({
+            type: ARUActionTypes.REPLACE,
+            payloadArray: newGlobalVars,
+            onCompleted: onProjectCreated,
+            noDebounce: true,
+          });
+          return doc;
+        })
         .then((doc: Partial<Project>) => {
           templateStore.setId(doc.id);
           templateStore.setIsNew(false);
