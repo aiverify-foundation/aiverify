@@ -14,42 +14,6 @@ export const MOCK_ALGO_ID = 'aiverify.test.mock_test_plugin1:mock_algo1';
 export const MOCK_IBLOCK_ID = 'aiverify.test.mock_test_plugin1:mock_iblock1';
 export const MOCK_DATE_WIDGET_1 = 1695202143375;
 
-export const mockGqlCreateProject = [
-  {
-    request: {
-      query: GET_PROJECT_TEMPLATES,
-    },
-    result: {
-      data: {
-        projectTemplates: [],
-      },
-    },
-  },
-  {
-    request: {
-      query: CREATE_PROJECT,
-      variables: {
-        project: {
-          projectInfo: {
-            name: 'Test Project',
-            description: 'Test Description',
-            reportTitle: 'Test Report Name',
-            company: 'Test Company Pte Ltd',
-          },
-          pages: [],
-        },
-      },
-    },
-    result: {
-      data: {
-        createProject: {
-          id: MOCK_PROJECTID,
-        },
-      },
-    },
-  },
-];
-
 export const mockGqlDataE2E = [
   {
     request: {
@@ -68,6 +32,30 @@ export const mockGqlDataE2E = [
       variables: {
         project: {
           projectInfo: { name: 'Test Project' },
+          pages: [],
+        },
+      },
+    },
+    result: {
+      data: {
+        createProject: {
+          id: MOCK_PROJECTID,
+        },
+      },
+    },
+  },
+
+  {
+    request: {
+      query: CREATE_PROJECT,
+      variables: {
+        project: {
+          projectInfo: {
+            name: 'Test Project',
+            description: 'Test Description',
+            reportTitle: 'Test Report Name',
+            company: 'Test Company Pte Ltd',
+          },
           pages: [],
         },
       },
@@ -199,6 +187,37 @@ export const mockGqlDataE2E = [
             __typename: 'ModelFile',
           },
         ],
+      },
+    },
+  },
+
+  {
+    request: {
+      query: UPDATE_PROJECT,
+      variables: {
+        id: `${MOCK_PROJECTID}`,
+        project: {
+          pages: [
+            {
+              layouts: [],
+              reportWidgets: [],
+            },
+          ],
+        },
+      },
+    },
+    result: {
+      data: {
+        updateProject: {
+          id: `${MOCK_PROJECTID}`,
+          // Note: the actual result actually might or might not have below properties and they should contain sub properties. In unit test, we can just omit them. These returned properties are not used in the UI.
+          projectInfo: {},
+          globalVars: {},
+          inpuBlockData: {},
+          testInformation: {},
+          pages: [],
+          modelAndDatasets: {},
+        },
       },
     },
   },

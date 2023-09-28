@@ -6,11 +6,7 @@ import ProjectCreatePage from 'pages/project/create';
 import { getPlugins } from 'server/pluginManager';
 import { MockProviders } from '__mocks__/mockProviders';
 import PluginManagerType from 'src/types/pluginManager.interface';
-import {
-  MOCK_DATE_WIDGET_1,
-  mockGqlCreateProject,
-  mockGqlDataE2E,
-} from '__mocks__/mockGqlResponse';
+import { MOCK_DATE_WIDGET_1, mockGqlDataE2E } from '__mocks__/mockGqlResponse';
 import { widgetMdxBundleResponse } from '__mocks__/mockPlugins';
 
 const GRID_LAYOUT_CLASSNAME = '.react-grid-layout';
@@ -33,11 +29,10 @@ function ProjectCreatePageWrapper() {
 }
 
 describe('Project Flow', () => {
-  jest.useFakeTimers({ advanceTimers: true });
-
   beforeAll(() => {
-    // silentConsoleLogs();
+    silentConsoleLogs();
     mockDomMatrix();
+    jest.useFakeTimers({ advanceTimers: true });
   });
 
   describe('Project Information Capture and Select Template screens', () => {
@@ -117,7 +112,7 @@ describe('Project Flow', () => {
     it('should render Report Designer screen', async () => {
       const user = userEvent.setup();
       const { container } = render(
-        <MockProviders apolloMocks={mockGqlCreateProject}>
+        <MockProviders apolloMocks={mockGqlDataE2E}>
           <ProjectCreatePageWrapper />
         </MockProviders>
       );
@@ -154,7 +149,8 @@ describe('Project Flow', () => {
       });
       await userEvent.click(nextBtn);
       await screen.queryByText(/^Design Report$/i);
-      await screen.findAllByText(/^Test Project$/i);
+      // 1 Project name in left panel and another should be in global vars panel
+      expect((await screen.findAllByText(/^Test Project$/i)).length).toBe(2);
       expect(container.querySelector('.layoutContentArea')).toMatchSnapshot(
         'Report Designer Screen'
       ); // snapshot without header, because header has dynamic autosave time display

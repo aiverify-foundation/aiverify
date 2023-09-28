@@ -554,11 +554,9 @@ exports[`Project Flow Report Designer Screen should place widget on canvas, high
         >
           <div>
             x: 
-            1
           </div>
           <div>
             y: 
-            1
           </div>
         </div>
         <div
@@ -931,6 +929,180 @@ exports[`Project Flow Report Designer Screen should render Report Designer scree
                           <div
                             class="pluginHeading"
                           >
+                            Mock Plugin for Unit Test
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="MuiAccordionSummary-expandIconWrapper css-yw020d-MuiAccordionSummary-expandIconWrapper"
+                      >
+                        <svg
+                          aria-hidden="true"
+                          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium expandIcon css-i4bv87-MuiSvgIcon-root"
+                          data-testid="ExpandMoreIcon"
+                          focusable="false"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                    <div
+                      class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-bz4dnt-MuiCollapse-root"
+                      style="min-height: 0px;"
+                    >
+                      <div
+                        class="MuiCollapse-wrapper MuiCollapse-vertical css-smkl36-MuiCollapse-wrapper"
+                      >
+                        <div
+                          class="MuiCollapse-wrapperInner MuiCollapse-vertical css-9l5vo-MuiCollapse-wrapperInner"
+                        >
+                          <div
+                            class="MuiAccordion-region"
+                            role="region"
+                          >
+                            <div
+                              class="MuiAccordionDetails-root css-15v22id-MuiAccordionDetails-root"
+                            >
+                              <div
+                                class="draggableWidget"
+                                data-test-id="draggableWidget-aiverify.test.mock_test_plugin1:widget_cid_1"
+                                draggable="true"
+                                unselectable="on"
+                              >
+                                <div
+                                  class="widgetHeadingWrapper"
+                                >
+                                  <div
+                                    style="display: flex;"
+                                  >
+                                    <svg
+                                      aria-hidden="true"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium draggableWidgetIcon css-i4bv87-MuiSvgIcon-root"
+                                      data-testid="WidgetsIcon"
+                                      focusable="false"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        d="M13 13v8h8v-8h-8zM3 21h8v-8H3v8zM3 3v8h8V3H3zm13.66-1.31L11 7.34 16.66 13l5.66-5.66-5.66-5.65z"
+                                      />
+                                    </svg>
+                                    <div
+                                      class="widgetHeading"
+                                    >
+                                      Interpretation (MAE)
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="draggableHandleIconWrapper"
+                                    style="display: flex;"
+                                  >
+                                    <svg
+                                      aria-hidden="true"
+                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium draggableHandleIcon css-i4bv87-MuiSvgIcon-root"
+                                      data-testid="DragIndicatorIcon"
+                                      focusable="false"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                                      />
+                                    </svg>
+                                  </div>
+                                </div>
+                                <div
+                                  class="widgetDetailsDivider"
+                                />
+                                <div
+                                  class="widgetDetailsScrollContainer"
+                                >
+                                  <div
+                                    class="widgetDetailsRow"
+                                    style="flex-direction: column;"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Description:
+                                    </div>
+                                    <div
+                                      class="widgetDetailText"
+                                    >
+                                      To interpret the mean absolute error parity results
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="widgetDetailsRow"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Version:
+                                    </div>
+                                    <div
+                                      class="widgetDetailText"
+                                    >
+                                      0.9.0
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="widgetDetailsRow"
+                                    style="flex-direction: column;"
+                                  >
+                                    <div
+                                      class="widgetDetailLabel"
+                                    >
+                                      Dependencies:
+                                    </div>
+                                    <ul>
+                                      <li>
+                                        <div
+                                          color="inherit"
+                                        >
+                                          aiverify.test.mock_test_plugin1:mock_algo1
+                                        </div>
+                                      </li>
+                                      <li>
+                                        <div
+                                          style="color: red;"
+                                        >
+                                          aiverify.test.mock_test_plugin1:mock_iblock1
+                                        </div>
+                                      </li>
+                                    </ul>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="pluginAccordion"
+                >
+                  <div
+                    class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded css-1wc0u5o-MuiPaper-root-MuiAccordion-root"
+                  >
+                    <div
+                      aria-expanded="false"
+                      class="MuiButtonBase-root MuiAccordionSummary-root css-k8fp39-MuiButtonBase-root-MuiAccordionSummary-root"
+                      role="button"
+                      tabindex="0"
+                    >
+                      <div
+                        class="MuiAccordionSummary-content css-1betqn-MuiAccordionSummary-content"
+                      >
+                        <div
+                          class="headingContainer"
+                        >
+                          <div
+                            class="pluginHeading"
+                          >
                             AI Verify Stock Decorators
                           </div>
                         </div>
@@ -1155,173 +1327,6 @@ exports[`Project Flow Report Designer Screen should render Report Designer scree
                                     >
                                       stock, decorator, header
                                     </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="pluginAccordion"
-                >
-                  <div
-                    class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded css-1wc0u5o-MuiPaper-root-MuiAccordion-root"
-                  >
-                    <div
-                      aria-expanded="false"
-                      class="MuiButtonBase-root MuiAccordionSummary-root css-k8fp39-MuiButtonBase-root-MuiAccordionSummary-root"
-                      role="button"
-                      tabindex="0"
-                    >
-                      <div
-                        class="MuiAccordionSummary-content css-1betqn-MuiAccordionSummary-content"
-                      >
-                        <div
-                          class="headingContainer"
-                        >
-                          <div
-                            class="pluginHeading"
-                          >
-                            Fairness for Regression
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        class="MuiAccordionSummary-expandIconWrapper css-yw020d-MuiAccordionSummary-expandIconWrapper"
-                      >
-                        <svg
-                          aria-hidden="true"
-                          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium expandIcon css-i4bv87-MuiSvgIcon-root"
-                          data-testid="ExpandMoreIcon"
-                          focusable="false"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                    <div
-                      class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-bz4dnt-MuiCollapse-root"
-                      style="min-height: 0px;"
-                    >
-                      <div
-                        class="MuiCollapse-wrapper MuiCollapse-vertical css-smkl36-MuiCollapse-wrapper"
-                      >
-                        <div
-                          class="MuiCollapse-wrapperInner MuiCollapse-vertical css-9l5vo-MuiCollapse-wrapperInner"
-                        >
-                          <div
-                            class="MuiAccordion-region"
-                            role="region"
-                          >
-                            <div
-                              class="MuiAccordionDetails-root css-15v22id-MuiAccordionDetails-root"
-                            >
-                              <div
-                                class="draggableWidget"
-                                data-test-id="draggableWidget-aiverify.stock.fairness_metrics_toolbox_for_regression:mae_interpretation"
-                                draggable="true"
-                                unselectable="on"
-                              >
-                                <div
-                                  class="widgetHeadingWrapper"
-                                >
-                                  <div
-                                    style="display: flex;"
-                                  >
-                                    <svg
-                                      aria-hidden="true"
-                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium draggableWidgetIcon css-i4bv87-MuiSvgIcon-root"
-                                      data-testid="WidgetsIcon"
-                                      focusable="false"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path
-                                        d="M13 13v8h8v-8h-8zM3 21h8v-8H3v8zM3 3v8h8V3H3zm13.66-1.31L11 7.34 16.66 13l5.66-5.66-5.66-5.65z"
-                                      />
-                                    </svg>
-                                    <div
-                                      class="widgetHeading"
-                                    >
-                                      Interpretation (MAE)
-                                    </div>
-                                  </div>
-                                  <div
-                                    class="draggableHandleIconWrapper"
-                                    style="display: flex;"
-                                  >
-                                    <svg
-                                      aria-hidden="true"
-                                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium draggableHandleIcon css-i4bv87-MuiSvgIcon-root"
-                                      data-testid="DragIndicatorIcon"
-                                      focusable="false"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path
-                                        d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
-                                      />
-                                    </svg>
-                                  </div>
-                                </div>
-                                <div
-                                  class="widgetDetailsDivider"
-                                />
-                                <div
-                                  class="widgetDetailsScrollContainer"
-                                >
-                                  <div
-                                    class="widgetDetailsRow"
-                                    style="flex-direction: column;"
-                                  >
-                                    <div
-                                      class="widgetDetailLabel"
-                                    >
-                                      Description:
-                                    </div>
-                                    <div
-                                      class="widgetDetailText"
-                                    >
-                                      To interpret the mean absolute error parity results
-                                    </div>
-                                  </div>
-                                  <div
-                                    class="widgetDetailsRow"
-                                  >
-                                    <div
-                                      class="widgetDetailLabel"
-                                    >
-                                      Version:
-                                    </div>
-                                    <div
-                                      class="widgetDetailText"
-                                    >
-                                      0.9.0
-                                    </div>
-                                  </div>
-                                  <div
-                                    class="widgetDetailsRow"
-                                    style="flex-direction: column;"
-                                  >
-                                    <div
-                                      class="widgetDetailLabel"
-                                    >
-                                      Dependencies:
-                                    </div>
-                                    <ul>
-                                      <li>
-                                        <div
-                                          color="inherit"
-                                        >
-                                          aiverify.stock.fairness_metrics_toolbox_for_regression:fairness_metrics_toolbox_for_regression
-                                        </div>
-                                      </li>
-                                    </ul>
                                   </div>
                                 </div>
                               </div>
