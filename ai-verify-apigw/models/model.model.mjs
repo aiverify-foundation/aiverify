@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import _ from "lodash";
+import Enforcer from 'openapi-enforcer';
 
 const PRIMITIVE_TYPES = ["string", "number", "integer", "boolean"];
 const ALL_TYPES = [...PRIMITIVE_TYPES, "array", "object"];
@@ -91,10 +92,11 @@ const modelAPISchema = new Schema({
       required: true,
       enum: ["text/plain", "application/json"],
     },
-    type: { type: String, required: true, enum: ALL_TYPES, default: "integer" },
-    field: { type: String }, // for object, define the prediction field use dot, e.g. xxx.yyy, to denote nested field
-    objectType: { type: String, enum: ALL_TYPES },
-    arrayType: { type: String, enum: ALL_TYPES },
+    schema: { type: Object, required: true },
+    // type: { type: String, required: true, enum: ALL_TYPES, default: "integer" },
+    // field: { type: String }, // for object, define the prediction field use dot, e.g. xxx.yyy, to denote nested field
+    // objectType: { type: String, enum: ALL_TYPES },
+    // arrayType: { type: String, enum: ALL_TYPES },
   },
   requestConfig: {
     sslVerify: { type: Boolean, default: true },
@@ -126,9 +128,9 @@ const modelFileSchema = new Schema(
       type: modelAPISchema,
       validate: {
         validator: function (api) {
-          return new Promise((resolve, reject) => {
+          return new Promise(async (resolve, reject) => {
             try {
-              const spec = _exportModelAPI(api);
+              const spec = await _exportModelAPI(api);
               if (spec) resolve(true);
               else reject(new Error("Invalid model API"));
             } catch (err) {
@@ -166,14 +168,14 @@ const _url_pattern =
   /^(?<base>https?:\/\/(?:[a-z0-9.@:])+)(?<path>\/?[^?]+)(?<query>\?\/?.+)?/i;
 const _url_path_pattern = /\{([a-z0-9_\-\s]+)\}/gi;
 
-modelFileSchema.methods.exportModelAPI = function () {
+modelFileSchema.methods.exportModelAPI = async function () {
   if (this.type !== "API") {
     throw new Error("Model is not of type API");
   }
   return _exportModelAPI(this.modelAPI);
 };
 
-function _exportModelAPI(modelAPI) {
+async function _exportModelAPI(modelAPI) {
   // const modelAPI = this.modelAPI;
   // console.log("exportModelAPI", modelAPI)
   let spec = {
@@ -186,38 +188,38 @@ function _exportModelAPI(modelAPI) {
 
   // build the path
   // const responseType = (modelAPI.response.mediaType === "text/plain") ? modelAPI.response.type : "object";
-  const responseType = {
-    type: modelAPI.response.type,
-  }
-  console.log("modelAPI.response", modelAPI.response)
-  const getResponseType = (responseType) => {
-    console.log("  responseType.type", responseType.type);
-    if (responseType.type === 'array') {
-      if (typeof(modelAPI.response.arrayType) !== 'string' || modelAPI.response.arrayType.length == 0) {
-        throw new Error("Missing responseBody property arrayType");
-      }
-      responseType["items"] = {
-        type: modelAPI.response.arrayType
-      }
-      getResponseType(responseType.items);
-    } else if (responseType.type === 'object') {
-      if (typeof(modelAPI.response.objectType) !== 'string' || modelAPI.response.objectType.length == 0) {
-        throw new Error("Missing responseBody property objectType");
-      }
-      if (typeof(modelAPI.response.field) !== 'string' || modelAPI.response.field.length == 0) {
-        throw new Error("Missing responseBody property field");
-      }
-      responseType["properties"] = {
-        [modelAPI.response.field]: {
-          type: modelAPI.response.objectType 
-        }
-      }
-      getResponseType(responseType.properties[modelAPI.response.field]);
-    }
-    // return responseType;
-  }
-  getResponseType(responseType);
-  console.log("responseType", responseType);
+  // const responseType = {
+  //   type: modelAPI.response.type,
+  // }
+  // console.log("modelAPI.response", modelAPI.response)
+  // const getResponseType = (responseType) => {
+  //   // console.log("  responseType.type", responseType.type);
+  //   if (responseType.type === 'array') {
+  //     if (typeof(modelAPI.response.arrayType) !== 'string' || modelAPI.response.arrayType.length == 0) {
+  //       throw new Error("Missing responseBody property arrayType");
+  //     }
+  //     responseType["items"] = {
+  //       type: modelAPI.response.arrayType
+  //     }
+  //     getResponseType(responseType.items);
+  //   } else if (responseType.type === 'object') {
+  //     if (typeof(modelAPI.response.objectType) !== 'string' || modelAPI.response.objectType.length == 0) {
+  //       throw new Error("Missing responseBody property objectType");
+  //     }
+  //     if (typeof(modelAPI.response.field) !== 'string' || modelAPI.response.field.length == 0) {
+  //       throw new Error("Missing responseBody property field");
+  //     }
+  //     responseType["properties"] = {
+  //       [modelAPI.response.field]: {
+  //         type: modelAPI.response.objectType 
+  //       }
+  //     }
+  //     getResponseType(responseType.properties[modelAPI.response.field]);
+  //   }
+  //   // return responseType;
+  // }
+  // getResponseType(responseType);
+  // console.log("responseType", responseType);
   let pathObj = {
     parameters: [],
     responses: {
@@ -225,7 +227,7 @@ function _exportModelAPI(modelAPI) {
         description: "successful operation",
         content: {
           [modelAPI.response.mediaType]: {
-            schema: responseType,
+            schema: modelAPI.response.schema,
           },
         },
       },
@@ -511,6 +513,15 @@ function _exportModelAPI(modelAPI) {
   // const json = JSON.parse(spec.getSpecAsJson());
   // console.log("spec", spec)
   // console.log("config", config)
+
+  const [openapi, error, warning] = await Enforcer(spec, {
+    fullResult: true
+  })
+  if (error !== undefined) throw new Error(error)
+  if (warning !== undefined) console.warn(warning)
+  if (!(openapi instanceof Enforcer.v3_0.OpenApi))
+    throw new Error("Not 3.x OpenAPI schema")
+
   return spec;
 }
 

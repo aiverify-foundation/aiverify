@@ -33,11 +33,11 @@ const resolvers = {
     },
     getOpenAPISpecFromModel: (parent, { modelFileID }) => {
       return new Promise((resolve, reject) => {
-        ModelFileModel.findById(modelFileID).then((doc) => {
+        ModelFileModel.findById(modelFileID).then(async (doc) => {
           if (!doc) return reject("Invalid ID");
           if (doc.type !== "API") return reject("Model is not of type API");
           try {
-            const spec = doc.exportModelAPI();
+            const spec = await doc.exportModelAPI();
             // console.log("spec", spec);
             if (!spec) return reject("Unable to generate spec");
             resolve(spec);

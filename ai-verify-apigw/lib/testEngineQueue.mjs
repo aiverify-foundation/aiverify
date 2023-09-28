@@ -117,20 +117,21 @@ export const queueTests = async (report, modelAndDatasets) => {
       const apiConfig = {
         ...modelAndDatasets.apiConfig.toObject(),
         requestConfig: modelAPI.requestConfig,
-        responseBody: {
-          field: modelAPI.response.field,
-          type: modelAPI.response.type,
-          objectType: modelAPI.response.objectType,
-          arrayType: modelAPI.response.arrayType,
-        },
+        // responseBody: {
+        //   field: modelAPI.response.field,
+        //   type: modelAPI.response.type,
+        //   objectType: modelAPI.response.objectType,
+        //   arrayType: modelAPI.response.arrayType,
+        // },
       };
       delete apiConfig._id; // remove this field not required
+      delete apiConfig.responseBody; // remove this field not required
       if (modelAPI.authType !== "No Auth") {
         apiConfig["authentication"] = modelAPI.authTypeConfig;
       }
       // console.log("apiConfig", apiConfig)
       task.apiConfig = apiConfig;
-      task.apiSchema = modelAndDatasets.model.exportModelAPI();
+      task.apiSchema = await modelAndDatasets.model.exportModelAPI();
     } else {
       task.modelFile = modelAndDatasets.model.filePath;
     }
