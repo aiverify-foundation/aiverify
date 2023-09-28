@@ -53,22 +53,30 @@ function ProjectCreatePageWrapper() {
   );
 }
 
+const fetchSpy = jest.spyOn(global, 'fetch');
+
 describe('Project Flow - Select Dataset And Model', () => {
   beforeAll(() => {
     // silentConsoleLogs();
     mockDomMatrix();
   });
 
+  afterEach(() => {
+    fetchSpy.mockRestore();
+  });
+
   describe('Datasets and Model Selection Screen', () => {
     it('should render Datasets / Model selection screen', async () => {
-      const fetchSpy = jest.spyOn(global, 'fetch');
-      fetchSpy.mockImplementation(
-        jest.fn(() =>
-          Promise.resolve({
-            json: () => Promise.resolve(widgetMdxBundleResponse),
-          })
-        ) as jest.Mock
-      );
+      // const fetchSpy = jest.spyOn(global, 'fetch');
+      fetchSpy
+        .mockResolvedValueOnce({
+          status: 200,
+          json: () => Promise.resolve(widgetMdxBundleResponse),
+        } as unknown as Response)
+        .mockResolvedValueOnce({
+          status: 200,
+          json: () => Promise.resolve(inputBlockMdxSummaryBundleResponse),
+        } as unknown as Response);
       const user = userEvent.setup();
       const { container } = render(
         <MockProviders apolloMocks={mockGqlDataE2E}>
@@ -79,16 +87,18 @@ describe('Project Flow - Select Dataset And Model', () => {
         await screen.findByPlaceholderText(
           /^Enter name of this project e.g. Credit Scoring Model Tests$/i
         );
-      await userEvent.type(projNameInput, 'Test Project');
+      expect(projNameInput).not.toBeNull();
+
+      await user.type(projNameInput, 'Test Project');
       const nextBtn = await screen.findByText(/^Next$/i);
       await user.click(nextBtn.parentElement as HTMLDivElement);
       await screen.findByText(/^Select Report Template$/i);
       const blankCard = await screen.findByText(/^Blank Canvas$/i);
-      await userEvent.click(blankCard);
+      await user.click(blankCard);
       await waitFor(() => {
         expect(container.querySelector('.card__highlighted')).toBeDefined();
       });
-      await userEvent.click(nextBtn);
+      await user.click(nextBtn);
       await screen.queryByText(/^Design Report$/i);
       await screen.findByText(/^Interpretation \(MAE\)$/i);
       const gridLayoutArea = container.querySelector(
@@ -160,29 +170,36 @@ describe('Project Flow - Select Dataset And Model', () => {
     });
 
     it('should select datasets, ground truth, test arguments and generate report', async () => {
-      const fetchSpy = jest.spyOn(global, 'fetch');
+      // Note: /api/bundler/summary is being called 5 times on select user input screen in unit test. On browser it's called twice. Consider using react.query for chaching strategy
       fetchSpy
-        .mockImplementationOnce(
-          jest.fn(() =>
-            Promise.resolve({
-              json: () => Promise.resolve(widgetMdxBundleResponse),
-            })
-          ) as jest.Mock
-        )
-        .mockImplementationOnce(
-          jest.fn(() =>
-            Promise.resolve({
-              json: () => Promise.resolve(inputBlockMdxSummaryBundleResponse),
-            })
-          ) as jest.Mock
-        )
-        .mockImplementationOnce(
-          jest.fn(() =>
-            Promise.resolve({
-              json: () => Promise.resolve(inputBlockMdxCompBundleResponse),
-            })
-          ) as jest.Mock
-        );
+        .mockResolvedValueOnce({
+          status: 200,
+          json: () => Promise.resolve(widgetMdxBundleResponse),
+        } as unknown as Response)
+        .mockResolvedValueOnce({
+          status: 200,
+          json: () => Promise.resolve(inputBlockMdxSummaryBundleResponse), // mocked 5 times. here and next few ones
+        } as unknown as Response)
+        .mockResolvedValueOnce({
+          status: 200,
+          json: () => Promise.resolve(inputBlockMdxSummaryBundleResponse), // same as previous
+        } as unknown as Response)
+        .mockResolvedValueOnce({
+          status: 200,
+          json: () => Promise.resolve(inputBlockMdxSummaryBundleResponse), // same as previous
+        } as unknown as Response)
+        .mockResolvedValueOnce({
+          status: 200,
+          json: () => Promise.resolve(inputBlockMdxSummaryBundleResponse), // same as previous
+        } as unknown as Response)
+        .mockResolvedValueOnce({
+          status: 200,
+          json: () => Promise.resolve(inputBlockMdxSummaryBundleResponse), // same as previous
+        } as unknown as Response)
+        .mockResolvedValueOnce({
+          status: 200,
+          json: () => Promise.resolve(inputBlockMdxCompBundleResponse),
+        } as unknown as Response);
       const user = userEvent.setup();
       const { container } = render(
         <MockProviders apolloMocks={mockGqlDataE2E}>
@@ -193,16 +210,16 @@ describe('Project Flow - Select Dataset And Model', () => {
         await screen.findByPlaceholderText(
           /^Enter name of this project e.g. Credit Scoring Model Tests$/i
         );
-      await userEvent.type(projNameInput, 'Test Project');
+      await user.type(projNameInput, 'Test Project');
       const nextBtn = await screen.findByText(/^Next$/i);
       await user.click(nextBtn.parentElement as HTMLDivElement);
       await screen.findByText(/^Select Report Template$/i);
       const blankCard = await screen.findByText(/^Blank Canvas$/i);
-      await userEvent.click(blankCard);
+      await user.click(blankCard);
       await waitFor(() => {
         expect(container.querySelector('.card__highlighted')).toBeDefined();
       });
-      await userEvent.click(nextBtn);
+      await user.click(nextBtn);
       await screen.queryByText(/^Design Report$/i);
       await screen.findByText(/^Interpretation \(MAE\)$/i);
       const gridLayoutArea = container.querySelector(
@@ -271,6 +288,10 @@ describe('Project Flow - Select Dataset And Model', () => {
         /^Choose Dataset$/i
       );
       expect(chooseDatasetBtns1.length).toBe(2);
+
+      expect(container.querySelector('#inputsLeftpanel')).toMatchSnapshot(
+        'leftPanel progress tracker BEFORE valid inputs'
+      );
 
       // Select Dataset (file picker)
       await user.click(chooseDatasetBtns1[0]);
@@ -364,8 +385,12 @@ describe('Project Flow - Select Dataset And Model', () => {
       ) as HTMLElement;
       await user.type(sensitiveFeatureInput0, 'race_code');
       await user.click(await screen.findByText(/^OK$/i));
-      expect(await screen.queryByText(/^Sensitive Feature Names$/i)).toBeNull();
-      expect(await screen.queryByText(/^Invalid Arguments$/i)).toBeNull();
+      expect(
+        await screen.queryByText(/^Sensitive Feature Names$/i)
+      ).not.toBeInTheDocument();
+      expect(
+        await screen.queryByText(/^Invalid Arguments$/i)
+      ).not.toBeInTheDocument();
 
       // Fill Input Block
       const iblockCard = container.querySelector(
@@ -377,7 +402,24 @@ describe('Project Flow - Select Dataset And Model', () => {
       ) as HTMLButtonElement;
       expect(openIblockBtn).not.toBeNull();
       await user.click(openIblockBtn);
-      // await screen.findByText(/^My MDX Input Block$/i);
+      await screen.findByText(/^My MDX Input Block$/i);
+      const fNameInput = container.querySelector('#fname') as HTMLInputElement;
+      const lNameInput = container.querySelector('#lname') as HTMLInputElement;
+      await user.type(fNameInput, 'John');
+      await user.type(lNameInput, 'Doe');
+      await user.click(await screen.findByText(/^OK$/i));
+      expect(await screen.findByText(/^Invalid Inputs$/i)).toBeInTheDocument();
+      await user.click(openIblockBtn);
+      const bioInput = container.querySelector(
+        'textarea'
+      ) as HTMLTextAreaElement;
+      await user.type(bioInput, 'Test input block');
+      await user.click(await screen.findByText(/^OK$/i));
+      await waitFor(async () => {
+        expect(
+          await screen.queryByTitle(/^Invalid Inputs$/i)
+        ).not.toBeInTheDocument();
+      });
 
       // click save
       const saveBtn = container.querySelector(
@@ -385,6 +427,10 @@ describe('Project Flow - Select Dataset And Model', () => {
       ) as HTMLElement;
       await user.click(saveBtn);
       await screen.findByText(/^Project saved$/i);
+
+      expect(container.querySelector('#inputsLeftpanel')).toMatchSnapshot(
+        'leftPanel progress tracker AFTER valid inputs'
+      );
 
       // Popup generate report confirmation
       await user.click(await screen.findByText(/^Next$/i));
@@ -397,6 +443,6 @@ describe('Project Flow - Select Dataset And Model', () => {
       await user.click(await screen.findByText(/^Next$/i));
       await screen.findByText(/^Confirm Generate Report$/i);
       await user.click(await screen.findByText(/^PROCEED$/i));
-    });
+    }, 10000);
   });
 });

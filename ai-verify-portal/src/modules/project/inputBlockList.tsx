@@ -111,16 +111,14 @@ export default function InputBlockList(props: InputBlockListProps) {
           .then(async (res) => {
             if (res.status === 200) {
               const data = await res.json();
+              console.log('&&&&&&&&&=/api/bundler');
+              console.log(data.code);
               state.status = WidgetStatus.loaded;
               state.mdxBundle = {
                 code: data.code,
                 frontmatter: data.frontmatter,
               };
               state.open = true;
-              console.log(
-                '======================================================='
-              );
-              console.log(state.mdxBundle);
             } else {
               state.status = WidgetStatus.invalid;
               state.open = true;

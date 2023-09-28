@@ -342,6 +342,40 @@ export const mockGqlDataE2E = [
 
   {
     request: {
+      query: UPDATE_PROJECT,
+      variables: {
+        id: `${MOCK_PROJECTID}`,
+        project: {
+          inputBlockData: {
+            'aiverify.test.mock_test_plugin1:mock_iblock1': {
+              fname: 'John',
+              lname: 'Doe',
+              bio: 'Test input block',
+            },
+          },
+        },
+      },
+    },
+    result: {
+      data: {
+        updateProject: {
+          updateProject: {
+            id: `${MOCK_PROJECTID}`,
+            // Note: the actual result actually might or might not have below properties and they should contain sub properties. In unit test, we can just omit them. These returned properties are not used in the UI.
+            projectInfo: {},
+            globalVars: {},
+            inpuBlockData: {},
+            testInformation: {},
+            pages: [],
+            modelAndDatasets: {},
+          },
+        },
+      },
+    },
+  },
+
+  {
+    request: {
       query: GENERATE_REPORT,
       variables: {
         projectID: MOCK_PROJECTID,
