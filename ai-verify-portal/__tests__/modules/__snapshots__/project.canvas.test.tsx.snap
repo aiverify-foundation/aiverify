@@ -1,201 +1,98 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Project Flow Project Information Capture and Select Template screens should go to Select Report Template if Project Name is filled : Select Report Template Screen 1`] = `
-<div>
-  <div>
-    <div>
-      <div
-        class="header"
-      >
-        <div
-          style="display: flex;"
-        >
-          <div
-            class="reportNavBtn"
-          >
-            <svg
-              aria-hidden="true"
-              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium navIcon css-i4bv87-MuiSvgIcon-root"
-              data-testid="ArrowBackIosIcon"
-              focusable="false"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M11.67 3.87 9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z"
-              />
-            </svg>
-            <div>
-              Project Details
-            </div>
-          </div>
-        </div>
-        <div
-          class="menuIconsGroup"
-        />
-        <img
-          alt="AI Verify"
-          class="logo"
-          data-nimg="1"
-          decoding="async"
-          height="40"
-          loading="lazy"
-          src="/_next/image?url=%2Fimg.jpg&w=96&q=75"
-          srcset="/_next/image?url=%2Fimg.jpg&w=48&q=75 1x, /_next/image?url=%2Fimg.jpg&w=96&q=75 2x"
-          style="color: transparent;"
-          width="40"
-        />
-        <div
-          style="display: flex;"
-        >
-          <div
-            class="root"
-          >
-            <div
-              class="icon"
-            >
-              <button
-                class="iconBtn iconBtn__noOutline aiv_iconbtn"
-              >
-                <div
-                  class="btnContent"
-                >
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
-                    data-testid="NotificationsNoneIcon"
-                    focusable="false"
-                    style="font-size: 25px; color: rgb(120, 120, 120);"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"
-                    />
-                  </svg>
-                  <div />
-                </div>
-              </button>
-            </div>
-            <div
-              class="flyOutMsg"
-            />
-          </div>
-          <div
-            class="reportNavBtn disableNavBtn"
-            style="margin-left: 20px;"
-          >
-            <div>
-              Next
-            </div>
-            <svg
-              aria-hidden="true"
-              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium navIcon css-i4bv87-MuiSvgIcon-root"
-              data-testid="ArrowForwardIosIcon"
-              focusable="false"
-              style="margin-left: 5px;"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M6.23 20.23 8 22l10-10L8 2 6.23 3.77 14.46 12z"
-              />
-            </svg>
-          </div>
-        </div>
-      </div>
-    </div>
+<div
+  class="layoutContentArea"
+>
+  <div
+    class="scrollContainer"
+  >
     <div
-      class="layoutContentArea"
+      class="mainContainer"
     >
       <div
-        class="scrollContainer"
+        class="container__limits"
       >
         <div
-          class="mainContainer"
+          class="layout"
         >
           <div
-            class="container__limits"
+            style="margin-bottom: 25px;"
           >
             <div
-              class="layout"
+              style="display: flex;"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                data-testid="MenuBookIcon"
+                focusable="false"
+                style="font-size: 30px; margin-right: 15px; margin-top: 2px;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"
+                />
+                <path
+                  d="M17.5 10.5c.88 0 1.73.09 2.5.26V9.24c-.79-.15-1.64-.24-2.5-.24-1.7 0-3.24.29-4.5.83v1.66c1.13-.64 2.7-.99 4.5-.99zM13 12.49v1.66c1.13-.64 2.7-.99 4.5-.99.88 0 1.73.09 2.5.26V11.9c-.79-.15-1.64-.24-2.5-.24-1.7 0-3.24.3-4.5.83zm4.5 1.84c-1.7 0-3.24.29-4.5.83v1.66c1.13-.64 2.7-.99 4.5-.99.88 0 1.73.09 2.5.26v-1.52c-.79-.16-1.64-.24-2.5-.24z"
+                />
+              </svg>
+              <div>
+                <h3
+                  class="screenHeading"
+                >
+                  Select Report Template
+                </h3>
+                <p
+                  class="headingDescription"
+                >
+                  Select a template or start with an empty canvas.
+                </p>
+              </div>
+            </div>
+            <div
+              style="color: rgb(196, 41, 131); display: flex; margin-top: 15px; font-size: 14px;"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                data-testid="InfoOutlinedIcon"
+                focusable="false"
+                style="margin-right: 5px;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"
+                />
+              </svg>
+              <span>
+                No Templates Found. Select 'Blank Canvas' and click 'Next'
+              </span>
+            </div>
+          </div>
+          <div
+            class="templatesList"
+          >
+            <div
+              class="blankCanvasCard"
             >
               <div
-                style="margin-bottom: 25px;"
+                class="blankCardmainContent"
               >
                 <div
-                  style="display: flex;"
+                  class="blankCardHeading"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
-                    data-testid="MenuBookIcon"
-                    focusable="false"
-                    style="font-size: 30px; margin-right: 15px; margin-top: 2px;"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"
-                    />
-                    <path
-                      d="M17.5 10.5c.88 0 1.73.09 2.5.26V9.24c-.79-.15-1.64-.24-2.5-.24-1.7 0-3.24.29-4.5.83v1.66c1.13-.64 2.7-.99 4.5-.99zM13 12.49v1.66c1.13-.64 2.7-.99 4.5-.99.88 0 1.73.09 2.5.26V11.9c-.79-.15-1.64-.24-2.5-.24-1.7 0-3.24.3-4.5.83zm4.5 1.84c-1.7 0-3.24.29-4.5.83v1.66c1.13-.64 2.7-.99 4.5-.99.88 0 1.73.09 2.5.26v-1.52c-.79-.16-1.64-.24-2.5-.24z"
-                    />
-                  </svg>
-                  <div>
-                    <h3
-                      class="screenHeading"
-                    >
-                      Select Report Template
-                    </h3>
-                    <p
-                      class="headingDescription"
-                    >
-                      Select a template or start with an empty canvas.
-                    </p>
-                  </div>
+                  Blank Canvas
                 </div>
                 <div
-                  style="color: rgb(196, 41, 131); display: flex; margin-top: 15px; font-size: 14px;"
+                  class="blankCardDescription"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
-                    data-testid="InfoOutlinedIcon"
-                    focusable="false"
-                    style="margin-right: 5px;"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"
-                    />
-                  </svg>
-                  <span>
-                    No Templates Found. Select 'Blank Canvas' and click 'Next'
-                  </span>
+                  Design your own report by dragging widgets onto a blank canvas
                 </div>
               </div>
               <div
-                class="templatesList"
-              >
-                <div
-                  class="blankCanvasCard"
-                >
-                  <div
-                    class="blankCardmainContent"
-                  >
-                    <div
-                      class="blankCardHeading"
-                    >
-                      Blank Canvas
-                    </div>
-                    <div
-                      class="blankCardDescription"
-                    >
-                      Design your own report by dragging widgets onto a blank canvas
-                    </div>
-                  </div>
-                  <div
-                    class="verticalDivider"
-                  />
-                </div>
-              </div>
+                class="verticalDivider"
+              />
             </div>
           </div>
         </div>

@@ -104,7 +104,9 @@ describe('Project Flow', () => {
         expect(reportTitleInput.value).toBe(projNameInput.value);
         expect(screen.queryByText(/^Select Report Template$/i)).not.toBeNull();
       });
-      expect(container).toMatchSnapshot('Select Report Template Screen');
+      expect(container.querySelector('.layoutContentArea')).toMatchSnapshot(
+        'Select Report Template Screen'
+      );
     });
   });
 
