@@ -114,9 +114,6 @@ export default function UserInputComponent({
               .then(async (res) => {
                 if (res.status === 200) {
                   const data = await res.json();
-                  console.log('&&&&&&&&&=/api/bundler/summary');
-                  console.log(res);
-                  console.log(data.code);
                   if (!data.code) return reject('Invalid MDX');
                   resolve(data.code);
                 } else {
@@ -132,9 +129,6 @@ export default function UserInputComponent({
         try {
           const code = await createDynamic();
           const mdxExport = getMDXExport(code);
-          console.log(mdxExport.summary);
-          console.log(mdxExport.progress);
-          console.log(mdxExport.progress);
           const state: InputBlockState = {
             open: false,
             status: WidgetStatus.unloaded,

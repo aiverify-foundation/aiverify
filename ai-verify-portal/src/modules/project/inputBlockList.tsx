@@ -111,8 +111,6 @@ export default function InputBlockList(props: InputBlockListProps) {
           .then(async (res) => {
             if (res.status === 200) {
               const data = await res.json();
-              console.log('&&&&&&&&&=/api/bundler');
-              console.log(data.code);
               state.status = WidgetStatus.loaded;
               state.mdxBundle = {
                 code: data.code,
@@ -159,8 +157,6 @@ export default function InputBlockList(props: InputBlockListProps) {
   };
 
   const showInputBlock = (gid: string): void => {
-    console.log('+++++showInputBlock');
-    console.log(currentState);
     const state = inputBlockStates[gid];
     if (currentState && currentState.inputBlock.gid === gid) {
       state.open = true;
@@ -176,7 +172,6 @@ export default function InputBlockList(props: InputBlockListProps) {
         onChangeData: (key: string, value: any) =>
           _onChangeData(gid, key, value),
       });
-      console.log('+++++setCurrentState');
       setCurrentState(state);
     }
   };
@@ -207,9 +202,6 @@ export default function InputBlockList(props: InputBlockListProps) {
   function handleOpenBtnClick(iblock: InputBlock) {
     return () => showInputBlock(iblock.gid);
   }
-
-  console.log('--------------------------------------------------------------');
-  console.log(currentState);
 
   return (
     <div className={styles.inputSection}>
