@@ -262,7 +262,8 @@ export default function CanvasComponent(props: CanvasProps) {
   ): Promise<ReportWidgetItem | undefined> {
     if (!currentPage()) return;
 
-    const key = new Date().getTime().toString();
+    // const key = new Date().getTime().toString();
+    const key = Date.now().toString();
     const properties: PropertyMap = {};
     if (widget.properties) {
       for (const prop of widget.properties) {
@@ -624,7 +625,12 @@ export default function CanvasComponent(props: CanvasProps) {
     if (!dragItem || !layout) return;
     let addedWidgetGridItem: ReportWidgetItem | undefined;
     const widget = dragItem;
-    const { i, x, y, w, h } = layout;
+    const { i, w, h } = layout;
+
+    // x, y will never be NaN except if in jsdom because there are no pixel-level details (unit tests) - setting to 1 if NaN
+    const x = isNaN(layout.x) ? 1 : layout.x;
+    const y = isNaN(layout.y) ? 1 : layout.y;
+
     const { minW, minH, maxW, maxH } = widget.widgetSize;
     const newLayout = { x, y, w, h, minW, minH, maxW, maxH };
     if (widget.dynamicHeight) {

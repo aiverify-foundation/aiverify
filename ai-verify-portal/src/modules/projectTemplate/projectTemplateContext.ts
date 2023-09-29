@@ -33,6 +33,7 @@ import {
   useUpdateProject,
   useSaveProjectAsTemplate,
 } from 'src/lib/projectService';
+import { toErrorWithMessage } from 'src/lib/errorUtils';
 
 export enum UpdateActionTypes {
   UPDATE = 'UPDATE',
@@ -130,7 +131,7 @@ export interface ProjectTemplateStore {
   saveProjectAsTemplate: (templateInfo: ProjectInformation) => Promise<string>;
   exportTemplate: (pluginGID: string, templateCID: string) => Promise<string>;
   flushAllUpdates: () => void;
-  flushAllUpdatesAsync: () => Promise<(void | undefined)[]>;
+  flushAllUpdatesAsync: () => Promise<(boolean | void | undefined)[]>;
 }
 
 /**
@@ -161,7 +162,6 @@ export function useProjectTemplateStore(
     state: Type,
     action: DataUpdateActions<Type>
   ): Type {
-    // console.log("projectInfoReducer", state, action)
     switch (action.type) {
       case UpdateActionTypes.UPDATE:
         const newState = {
@@ -221,13 +221,12 @@ export function useProjectTemplateStore(
       default:
         throw new Error('Invalid action');
     }
-  } // arrayReducer
+  }
 
   function mapReducer<Type>(
     state: GenericMap<Type>,
     action: MapActions<Type>
   ): GenericMap<Type> {
-    // console.log("projectInfoReducer", state, action)
     switch (action.type) {
       case MapActionTypes.SET:
         if (!action.key || !action.payload) return state;
@@ -266,8 +265,11 @@ export function useProjectTemplateStore(
   );
   const _sendProjectInfoUpdates = useCallback(
     _.debounce((id: string | undefined, state: ProjectInformation) => {
-      if (!id || id.length == 0) return Promise.resolve();
       if (isNew) return Promise.resolve();
+      if (!id || id.length == 0)
+        return Promise.reject(
+          toErrorWithMessage(new Error('_sendProjectInfoUpdates: Invalid ID'))
+        );
       const data = _.pick(state, [
         'name',
         'description',
@@ -277,9 +279,11 @@ export function useProjectTemplateStore(
       return updateProjectFn(id, { projectInfo: data })
         .then(() => {
           setLastSavedTime(moment());
+          return Promise.resolve(true);
         })
         .catch((err) => {
           console.error('Update Info error:', err);
+          return Promise.reject(toErrorWithMessage(err));
         });
     }, DEBOUNCE_WAIT),
     [isNew]
@@ -300,21 +304,20 @@ export function useProjectTemplateStore(
   );
   const _sendPageUpdates = useCallback(
     _.debounce((id: string | undefined, pages: Page[]) => {
-      if (!id || id.length == 0) return Promise.resolve();
+      if (!id || id.length == 0)
+        return Promise.reject(
+          toErrorWithMessage(new Error('_sendPageUpdates: Invalid ID'))
+        );
       const _pages = pages.map((page) => {
         const data = _.pick(page, ['layouts', 'reportWidgets']);
         data.layouts = data.layouts.map((layout) => {
           const l = _.pick(layout, [
             'h',
             'i',
-            'isBounded',
-            'isDraggable',
-            'isResizable',
             'maxH',
             'maxW',
             'minH',
             'minW',
-            'resizeHandles',
             'static',
             'w',
             'x',
@@ -344,9 +347,11 @@ export function useProjectTemplateStore(
       return updateProjectFn(id, { pages: _pages })
         .then(() => {
           setLastSavedTime(moment());
+          return Promise.resolve(true);
         })
         .catch((err) => {
           console.error('Update page error', err);
+          return Promise.reject(toErrorWithMessage(err));
         });
     }, DEBOUNCE_WAIT),
     []
@@ -576,7 +581,6 @@ export function useProjectTemplateStore(
   const deletePage = (pageIdx: number) => {
     const page = pages[pageIdx];
     let ibMap = null as dependency2ReportWidgetsMapType | null;
-    // let tmpInputBlocks = null as InputBlock[] | null;
     for (const reportWidget of page.reportWidgets) {
       if (!reportWidget.widget) continue;
       if (
@@ -597,20 +601,10 @@ export function useProjectTemplateStore(
         ibMap[dep.gid].splice(idx, 1);
         if (ibMap[dep.gid].length == 0) {
           delete ibMap[dep.gid];
-          // remove input block
-          // if (!tmpInputBlocks)
-          // 	tmpInputBlocks = _.cloneDeep(inputBlocks)
-          // const idx2 = tmpInputBlocks.findIndex(e => e.gid == dep.gid);
-          // if (idx2 >= 0) {
-          // 	tmpInputBlocks.splice(idx2, 1)
-          // }
         }
       }
     }
     if (ibMap) setDependency2ReportWidgetsMap(ibMap);
-    // if (tmpInputBlocks)
-    // 	dispatchInputBlocks({ type:ARUActionTypes.REPLACE, payloadArray:tmpInputBlocks })
-    // projectStore.dispatchPages({ type:ARUActionTypes.REMOVE, index:pageIdx })
   };
 
   // store the widget MDX bundle

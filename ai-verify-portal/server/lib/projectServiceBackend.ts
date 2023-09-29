@@ -87,14 +87,10 @@ export const GET_PROJECT = gql`
         layouts {
           h
           i
-          isBounded
-          isDraggable
-          isResizable
           maxH
           maxW
           minH
           minW
-          resizeHandles
           static
           w
           x
@@ -252,14 +248,10 @@ export const GET_REPORT = gql`
           layouts {
             h
             i
-            isBounded
-            isDraggable
-            isResizable
             maxH
             maxW
             minH
             minW
-            resizeHandles
             static
             w
             x
@@ -346,14 +338,10 @@ export const GET_PROJECT_TEMPLATE = gql`
         layouts {
           h
           i
-          isBounded
-          isDraggable
-          isResizable
           maxH
           maxW
           minH
           minW
-          resizeHandles
           static
           w
           x
