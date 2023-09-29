@@ -129,7 +129,12 @@ export function useProjectStore(
   );
   const _sendTestInformationUpdates = useCallback(
     _.debounce((id: string | undefined, state: GenericMap<TestInformation>) => {
-      if (!id || id.length == 0) return Promise.resolve();
+      if (!id || id.length == 0)
+        return Promise.reject(
+          toErrorWithMessage(
+            new Error('_sendTestInformationUpdates: Invalid ID')
+          )
+        );
       const testInformationArray = Object.values(state).map((info) => {
         return {
           algorithmGID: info.algorithmGID,
@@ -139,9 +144,11 @@ export function useProjectStore(
       return updateProjectFn(id, { testInformationData: testInformationArray })
         .then(() => {
           templateStore.setLastSavedTime(moment());
+          return Promise.resolve(true);
         })
         .catch((err) => {
           console.error('Update test info error:', err);
+          return Promise.reject(toErrorWithMessage(err));
         });
     }, DEBOUNCE_WAIT),
     []
@@ -160,7 +167,10 @@ export function useProjectStore(
   );
   const _sendModelAndDatasets = useCallback(
     _.debounce((id: string | undefined, state: ModelAndDatasets) => {
-      if (!id || id.length == 0) return Promise.resolve();
+      if (!id || id.length == 0)
+        return Promise.reject(
+          toErrorWithMessage(new Error('_sendModelAndDatasets: Invalid ID'))
+        );
       const modelAndDatasets = {
         modelId: state.model ? state.model.id : undefined,
         testDatasetId: state.testDataset ? state.testDataset.id : undefined,
@@ -172,9 +182,11 @@ export function useProjectStore(
       return updateProjectFn(id, { modelAndDatasets })
         .then(() => {
           templateStore.setLastSavedTime(moment());
+          return Promise.resolve(true);
         })
         .catch((err) => {
           console.error('Update modelAndDatasets error:', err);
+          return Promise.reject(toErrorWithMessage(err));
         });
     }, DEBOUNCE_WAIT),
     []
