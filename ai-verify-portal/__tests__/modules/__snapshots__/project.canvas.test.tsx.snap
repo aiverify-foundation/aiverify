@@ -80,7 +80,7 @@ exports[`Project Flow Project Information Capture and Select Template screens sh
             />
           </div>
           <div
-            class="reportNavBtn disableNavBtn"
+            class="reportNavBtn"
             style="margin-left: 20px;"
           >
             <div>
