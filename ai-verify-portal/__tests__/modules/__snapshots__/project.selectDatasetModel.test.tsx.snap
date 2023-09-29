@@ -422,7 +422,7 @@ exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Sc
 </div>
 `;
 
-exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Screen should select datasets, ground truth, test arguments and generate report: Datasets/Model-Selection-Filepicker 1`] = `
+exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Screen should select Datasets, Ground truth, capture Test arguments, Input Blocks and call generate report endpoints: Datasets/Model-Selection-Filepicker 1`] = `
 <div
   class="layoutContentArea"
 >
@@ -1160,7 +1160,7 @@ exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Sc
 </div>
 `;
 
-exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Screen should select datasets, ground truth, test arguments and generate report: leftPanel progress tracker AFTER valid inputs 1`] = `
+exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Screen should select Datasets, Ground truth, capture Test arguments, Input Blocks and call generate report endpoints: leftPanel progress tracker AFTER valid inputs 1`] = `
 <div
   class="stickyInputsLeftpanel"
   id="inputsLeftpanel"
@@ -1348,7 +1348,7 @@ exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Sc
 </div>
 `;
 
-exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Screen should select datasets, ground truth, test arguments and generate report: leftPanel progress tracker BEFORE valid inputs 1`] = `
+exports[`Project Flow - Select Dataset And Model Datasets and Model Selection Screen should select Datasets, Ground truth, capture Test arguments, Input Blocks and call generate report endpoints: leftPanel progress tracker BEFORE valid inputs 1`] = `
 <div
   class="stickyInputsLeftpanel"
   id="inputsLeftpanel"
