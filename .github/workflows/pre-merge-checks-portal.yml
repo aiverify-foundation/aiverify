@@ -105,10 +105,10 @@ jobs:
         working-directory: ${{ github.workspace }}/ai-verify-portal
         run: |
           set +e
-          npx eslint .
+          npm run lint
           exit_code_lint=$?
-          npx eslint -f html -o eslint-report.html .
-          npx eslint -f json -o eslint-report.json .
+          npm run lint-html-report
+          npm run lint-json-report
           node ci/createBadges.mjs lint
           set -e
           if [ $exit_code_lint -ne 0 ]; then
