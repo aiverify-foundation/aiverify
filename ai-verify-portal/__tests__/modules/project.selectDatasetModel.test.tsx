@@ -171,7 +171,7 @@ describe('Project Flow - Select Dataset And Model', () => {
       ); // snapshot without header, because header has dynamic autosave time display
     });
 
-    it('should select datasets, ground truth, test arguments and generate report', async () => {
+    it('should select Datasets, Ground truth, capture Test arguments, Input Blocks and call generate report endpoints', async () => {
       // Note: /api/bundler/summary is being called 5 times on select user input screen in unit test. On browser it's called twice. Consider using react.query for chaching strategy
       fetchSpy
         .mockResolvedValueOnce({
