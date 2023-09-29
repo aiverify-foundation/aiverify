@@ -70,7 +70,7 @@ export default function AlgorithmWidgetComponent({
   return (
     <div>
       <Form
-        ref={formRef}
+        ref={formRef as any} //Todo - fix lint
         schema={rjsfSchema}
         formData={testInfo.testArguments}
         onChange={handleDataChange}
