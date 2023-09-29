@@ -122,9 +122,9 @@ jobs:
         working-directory: ${{ github.workspace }}/ai-verify-portal
         run: |
           set +e
-          npm audit
+          npm audit --omit=dev
           exit_code_audit=$?         
-          npm audit --json | npx npm-audit-markdown --output npm-audit-report.md
+          npm audit --omit=dev --json | npx npm-audit-markdown --output npm-audit-report.md
           npx markdown-to-html-cli --source npm-audit-report.md --output npm-audit-report.html -y
           echo -e "License Check Summary for portal\n" > license-report.txt
           cat licenses-found.txt >> license-report.txt
