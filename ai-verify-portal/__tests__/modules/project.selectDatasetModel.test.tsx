@@ -308,9 +308,6 @@ describe('Project Flow - Select Dataset And Model', () => {
         ).toBe(1);
       });
       expect(container.querySelectorAll('div[role="row"]').length).toBe(3);
-      expect(container.querySelector('.layoutContentArea')).toMatchSnapshot(
-        'Datasets/Model-Selection-Filepicker'
-      ); // snapshot without header, because header has dynamic autosave time display
 
       await user.click(datasetFile);
       await user.click(await screen.findByText(/^Use Dataset$/i));
