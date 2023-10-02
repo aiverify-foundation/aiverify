@@ -80,9 +80,11 @@ function DesignerRightPanel(props: PropsWithChildren<RightPanelProps>) {
   }
 
   function handleSaveGlobalVarEdit(index: number, gVar: GlobalVar) {
-    produce((draft) => {
-      draft[index] = { ...gVar };
-    });
+    setGlobalVariables(
+      produce((draft) => {
+        draft[index] = { ...gVar };
+      })
+    );
 
     projectStore.dispatchGlobalVars({
       type: ARUActionTypes.UPDATE,

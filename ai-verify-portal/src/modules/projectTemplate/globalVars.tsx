@@ -5,6 +5,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import produce from 'immer';
 import styles from './styles/rightpanel.module.css';
 import clsx from 'clsx';
+import { Tooltip, TooltipPosition } from 'src/components/tooltip';
 
 type GlobalVar = GlobalVariable;
 
@@ -26,6 +27,8 @@ type VariableRowProps = {
   editedKey?: string;
   editedValue?: string;
   editModeGlobalVar?: GlobalVariable;
+  disableAddBtn?: boolean;
+  onChange?: (globalVar: GlobalVar, index: number) => void;
 };
 
 const newVar = { key: '', value: '' };
@@ -40,9 +43,16 @@ function VariableRow(props: VariableRowProps) {
     editable = true,
     setEditGlobalVar,
     editModeGlobalVar,
+    disableAddBtn = false,
+    onChange,
   } = props;
   const [showRemoveBtn, setShowRemoveBtn] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const isProjectInfoVars =
+    globalVariable.key == 'name' ||
+    globalVariable.key == 'description' ||
+    globalVariable.key == 'reportTitle' ||
+    globalVariable.key == 'company';
 
   function handleVarMouseOver() {
     setShowRemoveBtn(true);
@@ -60,9 +70,17 @@ function VariableRow(props: VariableRowProps) {
 
   function handleVarClick() {
     if (!editable) return;
+    if (isProjectInfoVars) return;
     setIsEditMode(true);
     setEditGlobalVar({ ...globalVariable });
     if (onEditClick) onEditClick(index);
+  }
+
+  function handleEnterKey(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Enter' && editModeGlobalVar) {
+      setIsEditMode(false);
+      if (onEditConfirm) onEditConfirm();
+    }
   }
 
   function handeEditConfirm() {
@@ -86,6 +104,11 @@ function VariableRow(props: VariableRowProps) {
     );
   }
 
+  useEffect(() => {
+    if (onChange && editModeGlobalVar != undefined)
+      onChange(editModeGlobalVar, index);
+  }, [editModeGlobalVar]);
+
   return !isEditMode ? (
     <div
       id={`varkey-${globalVariable.key}`}
@@ -94,9 +117,29 @@ function VariableRow(props: VariableRowProps) {
       onMouseLeave={handleVarMouseLeave}
       onClick={handleVarClick}>
       <div className={styles.gVarsCol}>{globalVariable.key}</div>
-      <div className={styles.gVarsCol}>{globalVariable.value}</div>
+      <div className={styles.gVarsCol}>
+        {globalVariable.value.length > 21 ? (
+          <Tooltip
+            content={globalVariable.value}
+            backgroundColor="#676767"
+            fontColor="#FFFFFF"
+            position={TooltipPosition.top}>
+            <div
+              style={{
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis',
+                paddingLeft: 5,
+              }}>
+              {globalVariable.value}
+            </div>
+          </Tooltip>
+        ) : (
+          <div>{globalVariable.value}</div>
+        )}
+      </div>
       <div className={styles.gVarsDelCol} onClick={handleRemoveBtnClick}>
-        {showRemoveBtn ? (
+        {showRemoveBtn && !isProjectInfoVars ? (
           <CloseIcon
             className={styles.gVarsRemoveBtn}
             fontSize="small"
@@ -112,6 +155,7 @@ function VariableRow(props: VariableRowProps) {
           type="text"
           value={editModeGlobalVar && editModeGlobalVar.key}
           onChange={handleEditKeyChange}
+          onKeyUp={handleEnterKey}
         />
       </div>
       <div className={styles.gVarsInputCol}>
@@ -119,9 +163,13 @@ function VariableRow(props: VariableRowProps) {
           type="text"
           value={editModeGlobalVar && editModeGlobalVar.value}
           onChange={handleEditValueChange}
+          onKeyUp={handleEnterKey}
         />
       </div>
-      <button className={styles.gVarsAddBtn} onClick={handeEditConfirm}>
+      <button
+        className={styles.gVarsAddBtn}
+        onClick={handeEditConfirm}
+        disabled={disableAddBtn}>
         <AddIcon fontSize="small" style={{ color: '#676767' }} />
       </button>
     </div>
@@ -133,6 +181,7 @@ const GlobalVars = forwardRef<HTMLInputElement, GlobalVarsProps>(
     const { variables, onAddClick, onRemoveClick, onEditSave } = props;
     const [newGlobalVar, setNewGlobalVar] = useState<GlobalVar>(newVar);
     const [disableAddBtn, setDisableAddBtn] = useState(true);
+    const [disableEditingAddBtn, setDisableEditingAddBtn] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [editGlobalVar, setEditGlobalVar] = useState<GlobalVar>(newVar);
@@ -144,6 +193,10 @@ const GlobalVars = forwardRef<HTMLInputElement, GlobalVarsProps>(
         onAddClick(newGlobalVar);
       }
       setNewGlobalVar(newVar);
+    }
+
+    function handleOnDeleteClick(gvar: GlobalVariable) {
+      if (onRemoveClick) onRemoveClick(gvar);
     }
 
     function handleKeyChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -188,7 +241,30 @@ const GlobalVars = forwardRef<HTMLInputElement, GlobalVarsProps>(
       }
     }
 
+    function handleOnGlobalVarEditChange(
+      editingVar: GlobalVariable,
+      idx: number
+    ) {
+      if (!isEditing) return;
+      if (
+        variables.find(
+          (gvar, i) => gvar.key === editingVar.key && i !== idx
+        ) !== undefined
+      ) {
+        setDisableEditingAddBtn(true);
+        return;
+      }
+
+      if (editingVar.key === '' || editingVar.value === '') {
+        setDisableEditingAddBtn(true);
+        return;
+      }
+
+      setDisableEditingAddBtn(false);
+    }
+
     useEffect(() => {
+      if (isEditing) return;
       if (variables.find((gvar) => gvar.key === key) !== undefined) {
         setDisableAddBtn(true);
         return;
@@ -203,6 +279,10 @@ const GlobalVars = forwardRef<HTMLInputElement, GlobalVarsProps>(
     }, [key, value, variables]);
 
     useEffect(() => {
+      setIsEditing(false);
+    }, [variables]);
+
+    useEffect(() => {
       if (scrollContainerRef.current) {
         scrollContainerRef.current.scrollTo(
           0,
@@ -210,10 +290,6 @@ const GlobalVars = forwardRef<HTMLInputElement, GlobalVarsProps>(
         );
       }
     }, [variables]);
-
-    useEffect(() => {
-      console.log(editGlobalVar);
-    }, [editGlobalVar]);
 
     return (
       <div className={styles.gVarsContainer}>
@@ -229,11 +305,13 @@ const GlobalVars = forwardRef<HTMLInputElement, GlobalVarsProps>(
               editable={!isEditing}
               key={globalVar.key}
               globalVariable={globalVar}
-              onRemoveBtnClick={onRemoveClick}
+              onRemoveBtnClick={handleOnDeleteClick}
               onEditClick={handeOnGlobalVarEdit}
               onEditConfirm={handleOnGlobalVarEditConfirm}
+              onChange={handleOnGlobalVarEditChange}
               setEditGlobalVar={setEditGlobalVar}
               editModeGlobalVar={editGlobalVar}
+              disableAddBtn={disableEditingAddBtn}
             />
           ))}
         </div>
