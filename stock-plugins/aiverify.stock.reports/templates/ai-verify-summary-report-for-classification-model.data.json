@@ -342,7 +342,7 @@
           "isBounded": null
         },
         {
-          "i": "1685631388849",
+          "i": "1696318020817",
           "x": 0,
           "y": 3,
           "w": 12,
@@ -350,7 +350,7 @@
           "maxW": 12,
           "maxH": 36,
           "minW": 12,
-          "minH": 25,
+          "minH": 27,
           "static": false,
           "isDraggable": null,
           "isResizable": null,
@@ -396,10 +396,10 @@
             "bgcolor": null
           },
           "widgetGID": "aiverify.stock.process_checklist:area_descriptions",
-          "key": "1685631388849",
+          "key": "1696318020817",
           "properties": {
             "startIndex": "0",
-            "numAreas": "5"
+            "numAreas": "6"
           }
         }
       ]
@@ -1865,6 +1865,70 @@
     {
       "layouts": [
         {
+          "i": "1696318155552",
+          "x": 0,
+          "y": 2,
+          "w": 12,
+          "h": 34,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 10,
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
+        },
+        {
+          "i": "1696318190927",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 2,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 6,
+          "minH": 1,
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.process_checklist:summary_organisational_considerations",
+          "key": "1696318155552",
+          "properties": null
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "center",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.process_checklist:principle_summary_header",
+          "key": "1696318190927",
+          "properties": {
+            "principle": "Organisational Considerations"
+          }
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
           "i": "1684930052804",
           "x": 0,
           "y": 0,
@@ -2914,6 +2978,98 @@
     {
       "layouts": [
         {
+          "i": "1696318292761",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 1,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 1,
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
+        },
+        {
+          "i": "1696318333665",
+          "x": 0,
+          "y": 1,
+          "w": 12,
+          "h": 1,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
+        },
+        {
+          "i": "1696318354512",
+          "x": 0,
+          "y": 2,
+          "w": 12,
+          "h": 34,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 10,
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "center",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_title2",
+          "key": "1696318292761",
+          "properties": {
+            "title": "Organisational Considerations"
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_divider",
+          "key": "1696318333665",
+          "properties": null
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.process_checklist:organisational_considerations_responses",
+          "key": "1696318354512",
+          "properties": null
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
           "i": "1684934721040",
           "x": 0,
           "y": 0,
@@ -3395,12 +3551,16 @@
   ],
   "globalVars": [
     {
-      "key": "modelName",
-      "value": "User input model name"
+      "key": "name",
+      "value": "AI Verify Summary Report for Classification Model"
     },
     {
-      "key": "modelPurpose",
-      "value": "User input model Purpose"
+      "key": "description",
+      "value": "Template AI Verify summary report for classification model"
+    },
+    {
+      "key": "reportTitle",
+      "value": "AI Verify Summary Report for Classification Model"
     }
   ]
 }
