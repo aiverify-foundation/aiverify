@@ -1,0 +1,28 @@
+{
+  "cid": "organisational_considerations_responses",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 10,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "User Responses - Organisational Considerations",
+  "description": "List the user responses for Organisational Considerations",
+  "tag": [
+    "stock",
+    "process-checklist"
+  ],
+  "dynamicHeight": true,
+  "dependencies": [
+    {
+      "cid": "organisational_considerations_process_checklist"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "InputBlock",
+      "cid": "organisational_considerations_process_checklist",
+      "datapath": "organisational_considerations_process_checklist.sample.json"
+    }
+  ]
+}
