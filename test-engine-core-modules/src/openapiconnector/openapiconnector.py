@@ -8,6 +8,7 @@ from typing import Any, Callable, Dict, List, Tuple, Union
 
 import aiopenapi3
 import httpx as httpx
+import numpy as np
 import pandas as pd
 from aiopenapi3 import FileSystemLoader, OpenAPI
 from httpx import Response
@@ -173,38 +174,38 @@ class Plugin(IModel):
                     first_api_http_value.update({"operationId": "predict_api"})
 
             # Update session variables if necessary
-            Plugin._api_ssl_verify = self._api_config.get("requestOptions", {}).get(
+            Plugin._api_ssl_verify = self._api_config.get("requestConfig", {}).get(
                 "sslVerify", Plugin._api_ssl_verify_default
             )
-            Plugin._api_ssl_cert = self._api_config.get("requestOptions", {}).get(
+            Plugin._api_ssl_cert = self._api_config.get("requestConfig", {}).get(
                 "sslCert", Plugin._api_ssl_cert_default
             )
-            Plugin._api_request_timeout = self._api_config.get(
-                "requestOptions", {}
-            ).get("requestTimeout", Plugin._api_request_timeout_default)
-            Plugin._api_rate_limit = self._api_config.get("requestOptions", {}).get(
+            Plugin._api_request_timeout = self._api_config.get("requestConfig", {}).get(
+                "requestTimeout", Plugin._api_request_timeout_default
+            )
+            Plugin._api_rate_limit = self._api_config.get("requestConfig", {}).get(
                 "rateLimit", Plugin._api_rate_limit_default
             )
             Plugin._api_rate_limit_timeout = self._api_config.get(
-                "requestOptions", {}
+                "requestConfig", {}
             ).get("rateLimitTimeout", Plugin._api_rate_limit_timeout_default)
 
-            temp_strategy = self._api_config.get("requestOptions", {}).get(
+            temp_strategy = self._api_config.get("requestConfig", {}).get(
                 "batchStrategy", Plugin._api_batch_strategy_default.name.lower()
             )
             if temp_strategy == "none":
                 Plugin._api_batch_strategy = BatchStrategy.NONE
             else:
                 Plugin._api_batch_strategy = BatchStrategy.APPLICATION_JSON
-            Plugin._api_batch_limit = self._api_config.get("requestOptions", {}).get(
+            Plugin._api_batch_limit = self._api_config.get("requestConfig", {}).get(
                 "batchLimit", Plugin._api_batch_limit_default
             )
 
-            Plugin._api_max_connections = self._api_config.get(
-                "requestOptions", {}
-            ).get("maxConnections", Plugin._api_max_connections_default)
+            Plugin._api_max_connections = self._api_config.get("requestConfig", {}).get(
+                "maxConnections", Plugin._api_max_connections_default
+            )
             Plugin._api_connection_retries = self._api_config.get(
-                "requestOptions", {}
+                "requestConfig", {}
             ).get("connectionRetries", Plugin._api_connection_retries_default)
 
             # Perform input validation
@@ -409,7 +410,13 @@ class Plugin(IModel):
                 ),
                 None,
             )
-            return_list[key] = data_row_list[index]
+
+            # if type is numpy float32, convert to numpy float64 as numpy float32 is non-JSON serializable
+            if type(data_row_list[index]) == np.float32:
+                return_list[key] = np.float64(data_row_list[index])
+            else:
+                return_list[key] = data_row_list[index]
+
         return return_list
 
     async def send_request(self, row, *args) -> Response:
@@ -498,7 +505,6 @@ class Plugin(IModel):
                 if str(parameter.in_.name).lower() == "header" and parameter.required:
                     if len(parameter.schema_.enum) > 0:
                         headers.update({parameter.name: parameter.schema_.enum[0]})
-
             # Populate body with payload values
             headers, data, result = await self._api_instance._.predict_api.request(
                 parameters=headers, data=list_of_processed_rows
@@ -587,65 +593,135 @@ class Plugin(IModel):
                         request_task_list.append(self.send_request(row, *args))
         response_list = await asyncio.gather(*request_task_list)
 
-        # get the response data_type: array/object/string/number/integer/boolean
-        response_data_type = self._api_config.get("responseBody").get("type", None)
+        # # get the response data_type: array/object/string/number/integer/boolean
+        # response_data_type = self._api_config.get("responseBody").get("type", None)
+
+        # get the content type of response
+        # openapi_response_object = next(
+        #     iter(self._api_instance._.predict_api.operation.responses.values())
+        # ).content
+        # response_type = list(openapi_response_object.keys())[0]
+
+        # response_array_type = self._api_config.get("responseBody").get(
+        #         "arrayType", None
+        #     )
+
+        # # get the response data_type: array/object/string/number/integer/boolean
+        response_data_type = (
+            self._api_config.get("responseBody").get("schema").get("type")
+        )
 
         # process list data type
         if response_data_type.lower() == "array":
-            response_array_type = self._api_config.get("responseBody").get(
-                "arrayType", None
+            response_array_type = (
+                self._api_config.get("responseBody")
+                .get("schema")
+                .get("items")
+                .get("type")
             )
-            # if list data consists of objects like response_body: [{age:1, gender:0},{age:2, gender:1}]
+
+            # if list data consists of objects like response_body: [{data:123},{data:234}]
             if response_array_type.lower() == "object":
-                response_object_type = self._api_config.get("responseBody").get(
-                    "objectType", None
+                response_keyname = next(
+                    iter(
+                        self._api_config.get("responseBody")
+                        .get("schema")
+                        .get("items")
+                        .get("properties")
+                        .keys()
+                    )
                 )
-                response_keyname = self._api_config.get("responseBody").get(
-                    "field", None
+                response_object_type = (
+                    self._api_config.get("responseBody")
+                    .get("schema")
+                    .get("items")
+                    .get("properties")
+                    .get(response_keyname)
+                    .get("type")
                 )
                 for response in response_list:
                     response_body = json.loads(response.text)
                     for response_body_item in response_body:
                         data = response_body_item.get(response_keyname)
-                        response_data.append(data)
+                        response_data.append(
+                            self._validate_data_type(data, response_object_type)
+                        )
+            elif response_array_type.lower() == "array":
+                response_nested_array_type = (
+                    self._api_config.get("responseBody")
+                    .get("schema")
+                    .get("items")
+                    .get("items")
+                    .get("type")
+                )
+                for response in response_list:
+                    response_body = json.loads(response.text)
+                    for nested_array in response_body:
+                        for data in nested_array:
+                            response_data.append(
+                                self._validate_data_type(
+                                    data, response_nested_array_type
+                                )
+                            )
             # if list data consists of primitive data type like response_body: [1, 2, 3]
             else:
                 for response in response_list:
                     response_body = json.loads(response.text)
                     for data in response_body:
-                        # self._validate_data_type(data, response_array_type)
-                        response_data.append(data)
+                        response_data.append(
+                            self._validate_data_type(data, response_array_type)
+                        )
 
         # process dictionary data type
         elif response_data_type.lower() == "object":
-            response_object_type = self._api_config.get("responseBody").get(
-                "objectType", None
+            response_keyname = next(
+                iter(
+                    self._api_config.get("responseBody")
+                    .get("schema")
+                    .get("properties")
+                    .keys()
+                )
             )
-            response_keyname = self._api_config.get("responseBody").get("field", None)
+            response_object_type = (
+                self._api_config.get("responseBody")
+                .get("schema")
+                .get("properties")
+                .get(response_keyname)
+                .get("type")
+            )
 
             # if dictionary data consists of list {data: [1,2,3]}
             if response_object_type.lower() == "array":
-                response_array_type = self._api_config.get("responseBody").get(
-                    "arrayType", None
+                response_array_type = (
+                    self._api_config.get("responseBody")
+                    .get("schema")
+                    .get("properties")
+                    .get(response_keyname)
+                    .get("items")
+                    .get("type")
                 )
                 for response in response_list:
                     response_body = json.loads(response.text)
                     response_body_value = response_body.get(response_keyname)
                     for data in response_body_value:
-                        response_data.append(data)
+                        response_data.append(
+                            self._validate_data_type(data, response_array_type)
+                        )
 
             # if dictionary data consists of primitive data type: {data: 100}
             else:
                 for response in response_list:
                     response_body = json.loads(response.text)
                     data = response_body.get(response_keyname)
-                    response_data.append(data)
+                    response_data.append(
+                        self._validate_data_type(data, response_object_type)
+                    )
 
         # process primitive data types
         else:
             for response in response_list:
                 data = response.text
-                response_data.append(data)
+                response_data.append(self._validate_data_type(data, response_data_type))
 
         end_time = time.time()
         elapsed_time = end_time - start_time
@@ -662,22 +738,20 @@ class Plugin(IModel):
             data_type (str): The name of the data type that the data is supposed to be
         """
         if data_type.lower() == "string":
-            if isinstance(data, str):
-                return True
+            type_to_cast = str
         elif data_type.lower() == "number":
-            if isinstance(data, int) or isinstance(data, float):
-                return True
+            type_to_cast = float
         elif data_type.lower() == "integer":
-            if isinstance(data, int):
-                return True
+            type_to_cast = int
         elif data_type.lower() == "boolean":
-            if type(data) == bool:
-                return True
+            type_to_cast = bool
         else:
             raise RuntimeError("Unknown data type.")
-        raise RuntimeError(
-            f"Validation failed for response. Current data type:{type(data)}. Expected type:{data_type}."
-        )
+
+        try:
+            return type_to_cast(data)
+        except (ValueError, TypeError):
+            raise
 
     def _setup_api_authentication(self) -> None:
         """

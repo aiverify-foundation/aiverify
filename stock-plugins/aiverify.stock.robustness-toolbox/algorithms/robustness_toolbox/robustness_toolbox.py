@@ -349,6 +349,9 @@ class Plugin(IAlgorithm):
                 self._data_labels = list(
                     self._initial_data_instance.read_labels().keys()
                 )
+                self._data_labels_items = list(
+                    self._initial_data_instance.read_labels().items()
+                )
                 annotated_ground_truth_path = self._input_arguments.get(
                     "annotated_ground_truth_path", ""
                 )
@@ -368,6 +371,7 @@ class Plugin(IAlgorithm):
                 self._model = self._model_instance
                 self._data = self._data_instance
                 self._data_labels = list(self._data_instance.read_labels().keys())
+                self._data_labels_items = self._data_instance.read_labels().items()
                 self._ordered_ground_truth = self._ground_truth_instance.get_data()
 
             # Perform boundary attack
@@ -408,7 +412,7 @@ class Plugin(IAlgorithm):
                         data_in_numpy, raw_shapes, subfolder_name="pred_init"
                     )
                 ],
-                self._data_labels,
+                self._data_labels_items,
             )
             # Update the progress total value (initial adversarial + final adversarial samples)
             self._progress_inst.add_total(2 * len(data_in_numpy))
@@ -582,7 +586,7 @@ class Plugin(IAlgorithm):
                             [perturbed_input], image_shapes, subfolder_name="adv_pred"
                         )
                     ],
-                    self._data_labels,
+                    self._data_labels_items,
                 )
 
             # Update the progress
@@ -669,7 +673,7 @@ class Plugin(IAlgorithm):
                                         + str(count_test),
                                     )
                                 ],
-                                self._data_labels,
+                                self._data_labels_items,
                             )
                             satisfied = (
                                 potential_adversarials_prediction
@@ -711,7 +715,7 @@ class Plugin(IAlgorithm):
                                         + str(count_test),
                                     )
                                 ],
-                                self._data_labels,
+                                self._data_labels_items,
                             )
                             satisfied = (
                                 potential_adversarials_prediction
@@ -789,7 +793,7 @@ class Plugin(IAlgorithm):
                     subfolder_name="adv_prediction",
                 )
             ],
-            self._data_labels,
+            self._data_labels_items,
         )
 
         # get the sample predictions to use for the sample section later
