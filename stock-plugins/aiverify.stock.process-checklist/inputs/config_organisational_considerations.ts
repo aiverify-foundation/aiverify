@@ -1,7 +1,7 @@
 export const config = {
   principle: "Organisational Considerations",
   description:
-    "Beyond assessment of individual AI systems, organisations need to consider issues such as the use of AI (verses non-AI options), norms and expectations as well as resources to manage the use of AI",
+    "Beyond assessment of individual AI systems, organisations need to consider issues such as the use of AI (versus non-AI options), norms and expectations as well as resources to manage the use of AI",
   sections: [
     {
       section: "Organisational Considerations",
@@ -83,7 +83,7 @@ export const config = {
             {
               pid: "12.6",
               process:
-                "Conduct impact assessment on the use of AI verses non-AI alternative systems, approaches, or methods, and the resources required to manage the risk of using AI",
+                "Conduct impact assessment on the use of AI versus non-AI alternative systems, approaches, or methods, and the resources required to manage the risk of using AI",
               metric: "Internal documentation",
               processChecks: "Documentary evidence of impact assessment",
             },
