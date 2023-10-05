@@ -33,9 +33,10 @@ export const MyAreaHeader = ({ props }) => {
 
   return (
     <div>
-    {area && areaNum && (
-        <MyPageTitle1 title={`${areaNum} / ${area}`} />
-    )}
+    {area && areaNum && (areaNum < 6)?
+        <MyPageTitle1 title={`${areaNum} / ${area}`} />:
+        <MyPageTitle1 title={`${area}`} />
+    }
     {areaDesc && (
         <div><b>{areaDesc}</b></div>
     )}
