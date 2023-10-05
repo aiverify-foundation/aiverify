@@ -133,7 +133,7 @@ RUN for plugin_dir in *; do \
       unzip $plugin_dir/dist/*.zip -d ../ai-verify-portal/plugins/$plugin_dir; \
     done
 
-RUN chown -R 10000:10000 /app/aiverify/stock-plugins
+RUN chown -R 10000:10000 /app/aiverify/ai-verify-portal/plugins
 
 ############### Python #################
 

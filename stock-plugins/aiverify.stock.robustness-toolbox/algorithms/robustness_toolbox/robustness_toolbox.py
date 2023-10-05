@@ -15,6 +15,7 @@ from test_engine_core.interfaces.imodel import IModel
 from test_engine_core.interfaces.ipipeline import IPipeline
 from test_engine_core.interfaces.iserializer import ISerializer
 from test_engine_core.plugins.enums.data_plugin_type import DataPluginType
+from test_engine_core.plugins.enums.model_plugin_type import ModelPluginType
 from test_engine_core.plugins.enums.model_type import ModelType
 from test_engine_core.plugins.enums.plugin_type import PluginType
 from test_engine_core.plugins.enums.serializer_plugin_type import SerializerPluginType
@@ -403,17 +404,22 @@ class Plugin(IAlgorithm):
                 shutil.rmtree(str(self._tmp_path))
             data_in_numpy, raw_shapes = self._transform_to_numpy(self._data.get_data())
             ground_truth_in_numpy = self._ordered_ground_truth.to_numpy().astype(int)
+
             min_feature_value = np.min(data_in_numpy)
             max_feature_value = np.max(data_in_numpy)
 
-            predictions = self._model.predict(
-                [
-                    self._transform_to_df(
-                        data_in_numpy, raw_shapes, subfolder_name="pred_init"
-                    )
-                ],
-                self._data_labels_items,
-            )
+            # if model is XGB core, pass in dataframe instead of numpy array
+            if (
+                self._check_for_xgb_model_type()
+                and self._model_instance._model_algorithm == "xgboost.core.Booster"
+            ):
+                data_to_predict = self._data.get_data()
+            else:
+                data_to_predict = self._transform_to_df(
+                    data_in_numpy, raw_shapes, subfolder_name="pred_init"
+                )
+            predictions = self._model.predict(data_to_predict, self._data_labels)
+
             # Update the progress total value (initial adversarial + final adversarial samples)
             self._progress_inst.add_total(2 * len(data_in_numpy))
 
@@ -487,7 +493,7 @@ class Plugin(IAlgorithm):
         for dir in dir_df[
             "image_directory"
         ]:  # work directly with the raw image by reading from the directory itself
-            image_array = np.array(Image.open(dir))
+            image_array = np.array(Image.open(dir), dtype=float)
             image_shapes.append(image_array.shape)
             image_array = image_array.reshape(image_array.size)
             count += 1
@@ -580,18 +586,36 @@ class Plugin(IAlgorithm):
                         break
 
                 perturbed_input = self._salt_and_pepper(original, 2)
-                adversarial_prediction = self._model.predict(
-                    [
+
+                # if model is XGBoost, cast perturbed_input into a 2D np array to pass into XGBoost's predict
+                # this is required to fit into the model's expected fields
+                if self._check_for_xgb_model_type():
+                    if self._model_instance._model_algorithm == "xgboost.core.Booster":
+                        my_array = np.array([perturbed_input])
+                        transformed_pertubed_input = pd.DataFrame(
+                            my_array, columns=self._data_labels
+                        )
+                    else:
+                        transformed_pertubed_input = np.array([perturbed_input])
+                    adversarial_prediction = self._model.predict(
+                        self._transform_to_df(
+                            transformed_pertubed_input,
+                            image_shapes,
+                            subfolder_name="adv_pred",
+                        ),
+                        self._data_labels,
+                    )
+
+                else:
+                    adversarial_prediction = self._model.predict(
                         self._transform_to_df(
                             [perturbed_input], image_shapes, subfolder_name="adv_pred"
-                        )
-                    ],
-                    self._data_labels_items,
-                )
+                        ),
+                        self._data_labels,
+                    )
 
             # Update the progress
             self._progress_inst.update(1)
-
         return initial_adversarial_samples, initial_adversarial_predictions
 
     def _get_final_adversarial_samples(
@@ -662,18 +686,26 @@ class Plugin(IAlgorithm):
                                 )
                                 adversarial_list.append(adversarial_value)
 
+                            adversarial_list_to_predict = self._transform_to_df(
+                                np.array(adversarial_list),
+                                image_shapes,
+                                subfolder_name="adv_pred"
+                                + str(iteration)
+                                + str(count_test),
+                            )
+
+                            if self._check_for_xgb_model_type():
+                                if (
+                                    self._model_instance._model_algorithm
+                                    == "xgboost.core.Booster"
+                                ):
+                                    adversarial_list_to_predict = pd.DataFrame(
+                                        adversarial_list, columns=self._data_labels
+                                    )
+
                             # Check predictions for adversarial
                             potential_adversarials_prediction = self._model.predict(
-                                [
-                                    self._transform_to_df(
-                                        np.array(adversarial_list),
-                                        image_shapes,
-                                        subfolder_name="adv_pred"
-                                        + str(iteration)
-                                        + str(count_test),
-                                    )
-                                ],
-                                self._data_labels_items,
+                                adversarial_list_to_predict, self._data_labels
                             )
                             satisfied = (
                                 potential_adversarials_prediction
@@ -688,7 +720,6 @@ class Plugin(IAlgorithm):
                             if delta_ratio > delta_ratio_zero_threshold:
                                 x_adversarial_array = np.array(adversarial_list)
                                 break
-
                         for count_test in range(self._max_test):
                             perturb = (
                                 np.repeat(
@@ -705,18 +736,29 @@ class Plugin(IAlgorithm):
                                 min_feature_value,
                                 max_feature_value,
                             )
-                            potential_adversarials_prediction = self._model.predict(
-                                [
+                            if self._check_for_xgb_model_type():
+                                if (
+                                    self._model_instance._model_algorithm
+                                    == "xgboost.core.Booster"
+                                ):
+                                    df = pd.DataFrame(
+                                        potential_adversarials,
+                                        columns=self._data_labels,
+                                    )
+                                    potential_adversarials_prediction = (
+                                        self._model.predict(df, self._data_labels)
+                                    )
+                            else:
+                                potential_adversarials_prediction = self._model.predict(
                                     self._transform_to_df(
                                         np.array(potential_adversarials),
                                         image_shapes,
                                         subfolder_name="potential_adv_pred"
                                         + str(iteration)
                                         + str(count_test),
-                                    )
-                                ],
-                                self._data_labels_items,
-                            )
+                                    ),
+                                    self._data_labels,
+                                )
                             satisfied = (
                                 potential_adversarials_prediction
                                 != ground_truth_in_numpy
@@ -784,16 +826,22 @@ class Plugin(IAlgorithm):
             shutil.move(self._tmp_path / "adv_samples", self._save_path / "adv_samples")
             shutil.move(self._tmp_path / "org_samples", self._save_path / "org_samples")
 
-        # Calculate the adversarial predictions and accuracy
-        adversarial_prediction = self._model.predict(
-            [
-                self._transform_to_df(
-                    final_adversarial_samples,
-                    image_shapes,
-                    subfolder_name="adv_prediction",
+        if self._check_for_xgb_model_type():
+            if self._model_instance._model_algorithm == "xgboost.core.Booster":
+                final_adversarial_samples_to_predict = pd.DataFrame(
+                    final_adversarial_samples, columns=self._data_labels
                 )
-            ],
-            self._data_labels_items,
+            else:
+                final_adversarial_samples_to_predict = np.array(
+                    final_adversarial_samples
+                )
+        else:
+            # Calculate the adversarial predictions and accuracy
+            final_adversarial_samples_to_predict = self._transform_to_df(
+                final_adversarial_samples, image_shapes, subfolder_name="adv_prediction"
+            )
+        adversarial_prediction = self._model.predict(
+            final_adversarial_samples_to_predict, self._data_labels
         )
 
         # get the sample predictions to use for the sample section later
@@ -803,12 +851,14 @@ class Plugin(IAlgorithm):
         adversarial_accuracy = None
         org_accuracy = None
 
+        adversarial_prediction_rint = np.rint(adversarial_prediction)
         if self._model_type == ModelType.CLASSIFICATION:
             adversarial_accuracy = accuracy_score(
-                ground_truth_in_numpy, adversarial_prediction
+                ground_truth_in_numpy, adversarial_prediction_rint
             )
+            predictions_rint = np.rint(predictions)
+            org_accuracy = accuracy_score(ground_truth_in_numpy, predictions_rint)
 
-            org_accuracy = accuracy_score(ground_truth_in_numpy, predictions)
         elif self._model_type == ModelType.REGRESSION:
             adversarial_accuracy = mean_absolute_error(
                 ground_truth_in_numpy, adversarial_prediction
@@ -972,3 +1022,15 @@ class Plugin(IAlgorithm):
 
         output_dict["results"].update(results_dict)
         return output_dict
+
+    def _check_for_xgb_model_type(self) -> bool:
+        """
+        A helper function to check if model used is XGBoost as XGBoost's predict function
+        takes in a different data type
+        """
+        if (
+            self._model_instance.get_plugin_type() is PluginType.MODEL
+            and self._model_instance.get_model_plugin_type() is ModelPluginType.XGBOOST
+        ):
+            return True
+        return False

@@ -42,6 +42,8 @@ export const CREATE_PROJECT_FROM_TEMPLATE = gql`
       projectInfo {
         name
         description
+        reportTitle
+        company
       }
       globalVars {
         key
@@ -51,14 +53,10 @@ export const CREATE_PROJECT_FROM_TEMPLATE = gql`
         layouts {
           h
           i
-          isBounded
-          isDraggable
-          isResizable
           maxH
           maxW
           minH
           minW
-          resizeHandles
           static
           w
           x
@@ -300,14 +298,10 @@ export const CLONE_PROJECT = gql`
         layouts {
           h
           i
-          isBounded
-          isDraggable
-          isResizable
           maxH
           maxW
           minH
           minW
-          resizeHandles
           static
           w
           x

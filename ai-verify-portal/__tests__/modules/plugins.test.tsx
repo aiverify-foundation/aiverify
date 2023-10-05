@@ -7,7 +7,7 @@ import {
   algoPackageDependencyStatusResponse,
   emptyListResponse,
   installPluginResponse,
-  pluginsListResponse,
+  managePluginsTests_pluginsList,
 } from '__mocks__/mockPlugins';
 import { MockProviders } from '__mocks__/mockProviders';
 import { silentConsoleLogs } from '__mocks__/mockGlobals';
@@ -43,7 +43,7 @@ describe('Plugins Manager', () => {
 
   describe('Initial Render', () => {
     it('should fetch all plugins on render and sort by Installed Date (asc)', async () => {
-      fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
+      fetchAllPluginsSpy.mockResolvedValue(managePluginsTests_pluginsList);
       const { container } = render(
         <MockProviders>
           <PluginsModule />
@@ -91,7 +91,7 @@ describe('Plugins Manager', () => {
     });
 
     it('should display details of first plugin on plugins list', async () => {
-      fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
+      fetchAllPluginsSpy.mockResolvedValue(managePluginsTests_pluginsList);
       const { container } = render(
         <MockProviders>
           <PluginsModule />
@@ -155,7 +155,7 @@ describe('Plugins Manager', () => {
     });
 
     it('should sort by Installed Date (desc) ', async () => {
-      fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
+      fetchAllPluginsSpy.mockResolvedValue(managePluginsTests_pluginsList);
       const { container } = render(
         <MockProviders>
           <PluginsModule />
@@ -198,7 +198,7 @@ describe('Plugins Manager', () => {
     });
 
     it('should sort by Plugin Name (asc) ', async () => {
-      fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
+      fetchAllPluginsSpy.mockResolvedValue(managePluginsTests_pluginsList);
       const { container } = render(
         <MockProviders>
           <PluginsModule />
@@ -241,7 +241,7 @@ describe('Plugins Manager', () => {
     });
 
     it('should sort by Plugin Name (desc) ', async () => {
-      fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
+      fetchAllPluginsSpy.mockResolvedValue(managePluginsTests_pluginsList);
       const { container } = render(
         <MockProviders>
           <PluginsModule />
@@ -284,7 +284,7 @@ describe('Plugins Manager', () => {
     });
 
     it('should filter plugins by text search - match in plugin name', async () => {
-      fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
+      fetchAllPluginsSpy.mockResolvedValue(managePluginsTests_pluginsList);
       const { container } = render(
         <MockProviders>
           <PluginsModule />
@@ -334,7 +334,7 @@ describe('Plugins Manager', () => {
     });
 
     it('should filter plugins by text search - match in widget name', async () => {
-      fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
+      fetchAllPluginsSpy.mockResolvedValue(managePluginsTests_pluginsList);
       const { container } = render(
         <MockProviders>
           <PluginsModule />
@@ -366,7 +366,7 @@ describe('Plugins Manager', () => {
     });
 
     it('should filter plugins by text search - match in plugin description', async () => {
-      fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
+      fetchAllPluginsSpy.mockResolvedValue(managePluginsTests_pluginsList);
       const { container } = render(
         <MockProviders>
           <PluginsModule />
@@ -497,7 +497,7 @@ describe('Plugins Manager', () => {
 
   describe('Plugins List Card and Plugin Details', () => {
     it('should display correct information on list card', async () => {
-      fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
+      fetchAllPluginsSpy.mockResolvedValue(managePluginsTests_pluginsList);
       render(
         <MockProviders>
           <PluginsModule />
@@ -607,7 +607,7 @@ describe('Plugins Manager', () => {
     });
 
     it('should highlight selected plugin and display the plugin details when clicked', async () => {
-      fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
+      fetchAllPluginsSpy.mockResolvedValue(managePluginsTests_pluginsList);
       render(
         <MockProviders>
           <PluginsModule />
@@ -628,7 +628,7 @@ describe('Plugins Manager', () => {
     });
 
     it('should display tabs and number of components', async () => {
-      fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
+      fetchAllPluginsSpy.mockResolvedValue(managePluginsTests_pluginsList);
       const { container } = render(
         <MockProviders>
           <PluginsModule />
@@ -655,7 +655,7 @@ describe('Plugins Manager', () => {
     });
 
     it('should display plugin details under tabs', async () => {
-      fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
+      fetchAllPluginsSpy.mockResolvedValue(managePluginsTests_pluginsList);
       const { container } = render(
         <MockProviders>
           <PluginsModule />
@@ -836,7 +836,7 @@ describe('Plugins Manager', () => {
     });
 
     it('should display plugin algo environment dependencies statuses', async () => {
-      fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
+      fetchAllPluginsSpy.mockResolvedValue(managePluginsTests_pluginsList);
       getPythonPackageDependencyStatusSpy.mockResolvedValue(
         algoPackageDependencyStatusResponse
       );
@@ -933,7 +933,7 @@ describe('Plugins Manager', () => {
 
   describe('Delete Plugin', () => {
     it('should show delete plugin confirmation modal dialog delete button is clicked', async () => {
-      fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
+      fetchAllPluginsSpy.mockResolvedValue(managePluginsTests_pluginsList);
       render(
         <MockProviders>
           <PluginsModule />
@@ -953,7 +953,7 @@ describe('Plugins Manager', () => {
     });
 
     it('should delete plugin and show success message', async () => {
-      fetchAllPluginsSpy.mockResolvedValue(pluginsListResponse);
+      fetchAllPluginsSpy.mockResolvedValue(managePluginsTests_pluginsList);
       const GID = 'aiverify.stock.algorithms.partial_dependence_plot';
       deletePluginSpy.mockResolvedValueOnce({ status: 200, data: GID });
       render(

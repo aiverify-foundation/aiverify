@@ -69,7 +69,7 @@ enum ModelFilters {
   // API
 }
 
-const GET_MODELS = gql`
+export const GET_MODELS = gql`
   query Query {
     modelFiles {
       id

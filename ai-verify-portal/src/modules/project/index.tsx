@@ -10,7 +10,7 @@ import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 
 import Project, { ProjectReportStatus } from 'src/types/project.interface';
-import { useProjectStore } from './projectContext';
+import { ARUActionTypes, useProjectStore } from './projectContext';
 
 import { Algorithm } from 'src/types/plugin.interface';
 import ProjectInformationComponent from './projectInformation';
@@ -105,9 +105,11 @@ export default function ProjectModule({
         }
         if (projectStore.isNew) {
           const id = await projectStore.createProjectFromTemplate(
-            selectedProjectTemplateId
+            selectedProjectTemplateId,
+            () => {
+              if (id) router.push(`/project/${id}`);
+            }
           );
-          if (id) router.push(`/project/${id}`);
         }
         break;
       case ProjectStep.CaptureTestInput:

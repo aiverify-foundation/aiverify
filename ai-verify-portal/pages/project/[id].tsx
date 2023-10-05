@@ -27,7 +27,6 @@ export const getServerSideProps: GetServerSideProps = async ({
   const step = query.step as string;
   const data = await getProject(id);
   const pluginManager = await getPlugins();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { __typename, ...modelAndDatasets } =
     data.modelAndDatasets as ModelAndDatasets & {
       __typename: string | undefined;
@@ -35,21 +34,18 @@ export const getServerSideProps: GetServerSideProps = async ({
   if (modelAndDatasets) {
     const { groundTruthDataset, model, testDataset } = modelAndDatasets;
     if (groundTruthDataset) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { __typename, ...rest } = groundTruthDataset as Dataset & {
         __typename: string;
       };
       modelAndDatasets.groundTruthDataset = rest;
     }
     if (model) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { __typename, ...rest } = model as ModelFile & {
         __typename: string;
       };
       modelAndDatasets.model = rest;
     }
     if (testDataset) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { __typename, ...rest } = testDataset as Dataset & {
         __typename: string;
       };

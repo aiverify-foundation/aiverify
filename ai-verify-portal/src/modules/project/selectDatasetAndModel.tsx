@@ -193,6 +193,7 @@ export default function SelectDatasetAndModelSection({
             </div>
           ) : (
             <button
+              id="chooseTestDatasetBtn"
               className="aivBase-button aivBase-button--outlined aivBase-button--small"
               onClick={onSelectDataset}>
               Choose Dataset
@@ -236,6 +237,7 @@ export default function SelectDatasetAndModelSection({
               </div>
             ) : (
               <button
+                id="chooseGroundTruthBtn"
                 className="aivBase-button aivBase-button--outlined aivBase-button--small"
                 onClick={onSelectGroundTruthDataset}>
                 Choose Dataset
@@ -250,7 +252,7 @@ export default function SelectDatasetAndModelSection({
                 }}>
                 <div style={{ marginRight: '5px' }}> Select Ground Truth: </div>
                 <Select
-                  id="demo-simple-select"
+                  id="groundTruthSelect"
                   value={groundTruthColVal}
                   onChange={handleSelectChange}
                   placeholder="Ground Truth"
