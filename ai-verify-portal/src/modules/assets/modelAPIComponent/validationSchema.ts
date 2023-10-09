@@ -95,7 +95,9 @@ export const ModelAPIFormValidationSchema = object({
         .max(599, 'Invalid Status Code')
         .required('Required'),
       mediaType: string().required('Required'),
-      type: string().required('Required'),
+      schema: object({
+        type: string().required('Required'),
+      }),
       field: string().when('mediaType', {
         is: MediaType.APP_JSON,
         then: (schema) => schema.required('Required'),

@@ -4,6 +4,7 @@ import {
   MediaType,
   ModelApiFormModel,
   ModelApiGQLModel,
+  OpenApiDataTypes,
   RequestMethod,
   URLParamType,
 } from '../types';
@@ -46,9 +47,33 @@ export function transformFormValuesToGraphModel(
     ...otherProps,
   };
 
-  // add response.field if media type is `application/json`
+  // add response.schema.properties if media type is `application/json`
   if (otherResponseProps.mediaType === MediaType.APP_JSON) {
-    formToModelApiGqlPayload.modelAPI.response.field = field;
+    if (
+      otherResponseProps.schema.type === OpenApiDataTypes.ARRAY &&
+      otherResponseProps.schema.items !== undefined
+    ) {
+      formToModelApiGqlPayload.modelAPI.response.schema = {
+        type: OpenApiDataTypes.ARRAY,
+        items: {
+          type: otherResponseProps.schema.items.type,
+        },
+      };
+    } else if (
+      otherResponseProps.schema.type === OpenApiDataTypes.OBJECT &&
+      otherResponseProps.fieldValueType !== undefined
+    ) {
+      formToModelApiGqlPayload.modelAPI.response.schema = {
+        type: OpenApiDataTypes.OBJECT,
+        properties: {
+          [field as string]: {
+            type: otherResponseProps.fieldValueType,
+          },
+        },
+      };
+    }
+    delete formToModelApiGqlPayload.modelAPI.response.field;
+    delete formToModelApiGqlPayload.modelAPI.response.fieldValueType;
   }
 
   //populate authType config if not `NO_AUTH`

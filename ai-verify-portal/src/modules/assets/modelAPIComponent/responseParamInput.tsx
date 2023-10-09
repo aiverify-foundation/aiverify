@@ -11,6 +11,12 @@ type ResponseInputHeadingProps = {
   formikContext: FormikContextType<ModelApiFormModel>;
 };
 
+const arrayItemsDataOptions = optionsOpenApiDataTypes.filter(
+  (item) =>
+    item.value !== OpenApiDataTypes.ARRAY &&
+    item.value !== OpenApiDataTypes.OBJECT
+);
+
 function ResponseInputHeading(props: ResponseInputHeadingProps) {
   const { formikContext } = props;
   const { values } = formikContext;
@@ -22,8 +28,16 @@ function ResponseInputHeading(props: ResponseInputHeadingProps) {
       </div>
       <div className={styles.headingVal}>Media Type</div>
       <div className={styles.headingVal}>Data Type</div>
-      {values.modelAPI.response.mediaType === MediaType.APP_JSON ? (
-        <div className={styles.headingVal}>Field Name</div>
+      {values.modelAPI.response.mediaType === MediaType.APP_JSON &&
+      values.modelAPI.response.schema.type === OpenApiDataTypes.OBJECT ? (
+        <>
+          <div className={styles.headingVal}>Field Name</div>
+          <div className={styles.headingVal}>Field Data Type</div>
+        </>
+      ) : null}
+      {values.modelAPI.response.mediaType === MediaType.APP_JSON &&
+      values.modelAPI.response.schema.type === OpenApiDataTypes.ARRAY ? (
+        <div className={styles.headingVal}>Array Items Data Type</div>
       ) : null}
       <div></div>
     </div>
@@ -72,14 +86,28 @@ function ResponsePropertyInput(props: ResponsePropertyInputProps) {
       <div className={styles.keyValCol}>
         <SelectInput<OpenApiDataTypes>
           disabled={disabled}
-          name={`${responseFieldName}.type`}
+          name={`${responseFieldName}.schema.type`}
           options={optionsOpenApiDataTypes}
-          value={values.modelAPI.response.type}
+          value={values.modelAPI.response.schema.type}
           onSyntheticChange={handleChange}
           style={{ marginBottom: 0 }}
         />
       </div>
-      {values.modelAPI.response.mediaType === MediaType.APP_JSON ? (
+      {values.modelAPI.response.mediaType === MediaType.APP_JSON &&
+      values.modelAPI.response.schema.type === OpenApiDataTypes.ARRAY ? (
+        <div className={styles.keyValCol}>
+          <SelectInput<OpenApiDataTypes>
+            disabled={disabled}
+            name={`${responseFieldName}.schema.items.type`}
+            options={arrayItemsDataOptions}
+            value={values.modelAPI.response.schema.items?.type}
+            onSyntheticChange={handleChange}
+            style={{ marginBottom: 0 }}
+          />
+        </div>
+      ) : null}
+      {values.modelAPI.response.mediaType === MediaType.APP_JSON &&
+      values.modelAPI.response.schema.type === OpenApiDataTypes.OBJECT ? (
         <div className={styles.keyValCol}>
           <TextInput
             disabled={disabled}
@@ -93,6 +121,19 @@ function ResponsePropertyInput(props: ResponsePropertyInputProps) {
                 ? fieldErrors?.field
                 : undefined
             }
+          />
+        </div>
+      ) : null}
+      {values.modelAPI.response.mediaType === MediaType.APP_JSON &&
+      values.modelAPI.response.schema.type === OpenApiDataTypes.OBJECT ? (
+        <div className={styles.keyValCol}>
+          <SelectInput<OpenApiDataTypes>
+            disabled={disabled}
+            name={`${responseFieldName}.fieldValueType`}
+            options={arrayItemsDataOptions}
+            value={values.modelAPI.response.fieldValueType}
+            onSyntheticChange={handleChange}
+            style={{ marginBottom: 0 }}
           />
         </div>
       ) : null}

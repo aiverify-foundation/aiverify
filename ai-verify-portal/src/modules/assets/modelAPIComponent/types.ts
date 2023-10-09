@@ -131,15 +131,25 @@ export type RequestConfigGQL = {
 export type ResponseForm = {
   statusCode: string;
   mediaType: MediaType;
-  type: OpenApiDataTypes;
+  schema: {
+    type: OpenApiDataTypes;
+    properties?: Record<string, { type: OpenApiDataTypes }>;
+    items?: { type: OpenApiDataTypes };
+  };
   field?: string;
+  fieldValueType?: OpenApiDataTypes;
 };
 
 export type ResponseGQL = {
   statusCode: number;
   mediaType: MediaType;
-  type: OpenApiDataTypes;
+  schema: {
+    type: OpenApiDataTypes;
+    properties?: Record<string, { type: OpenApiDataTypes }>;
+    items?: { type: OpenApiDataTypes };
+  };
   field?: string;
+  fieldValueType?: OpenApiDataTypes;
 };
 
 export type AuthTypeConfig = {

@@ -47,7 +47,9 @@ export const saveConfigVariables_tc000 = {
     response: {
       statusCode: 200,
       mediaType: 'text/plain',
-      type: 'integer',
+      schema: {
+        type: 'integer',
+      },
     },
     requestConfig: {
       sslVerify: false,
@@ -115,7 +117,9 @@ export const saveConfigVariables_tc001 = {
     response: {
       statusCode: 200,
       mediaType: 'text/plain',
-      type: 'integer',
+      schema: {
+        type: 'integer',
+      },
     },
     requestConfig: {
       sslVerify: false,
@@ -183,7 +187,9 @@ export const saveConfigVariables_tc002 = {
     response: {
       statusCode: 200,
       mediaType: 'text/plain',
-      type: 'integer',
+      schema: {
+        type: 'integer',
+      },
     },
     requestConfig: {
       sslVerify: false,
@@ -247,7 +253,9 @@ export const saveConfigVariables_tc003 = {
     response: {
       statusCode: 200,
       mediaType: 'text/plain',
-      type: 'integer',
+      schema: {
+        type: 'integer',
+      },
     },
     requestConfig: {
       sslVerify: false,
@@ -311,7 +319,9 @@ export const saveConfigVariables_tc004 = {
     response: {
       statusCode: 200,
       mediaType: 'text/plain',
-      type: 'integer',
+      schema: {
+        type: 'integer',
+      },
     },
     requestConfig: {
       sslVerify: false,
@@ -377,7 +387,9 @@ export const saveConfigVariables_tc005 = {
     response: {
       statusCode: 200,
       mediaType: 'text/plain',
-      type: 'integer',
+      schema: {
+        type: 'integer',
+      },
     },
     requestConfig: {
       sslVerify: false,
@@ -445,7 +457,9 @@ export const saveConfigVariables_tc006 = {
     response: {
       statusCode: 200,
       mediaType: 'text/plain',
-      type: 'integer',
+      schema: {
+        type: 'integer',
+      },
     },
     requestConfig: {
       sslVerify: false,
@@ -509,8 +523,14 @@ export const saveConfigVariables_tc007 = {
     response: {
       statusCode: 200,
       mediaType: 'application/json',
-      type: 'integer',
-      field: 'data',
+      schema: {
+        type: 'object',
+        properties: {
+          data: {
+            type: 'integer',
+          },
+        },
+      },
     },
     requestConfig: {
       sslVerify: false,
@@ -581,7 +601,9 @@ export const saveConfigVariables_tc008 = {
     response: {
       statusCode: 200,
       mediaType: 'text/plain',
-      type: 'integer',
+      schema: {
+        type: 'integer',
+      },
     },
     requestConfig: {
       sslVerify: false,
@@ -645,7 +667,9 @@ export const saveConfigVariables_tc009 = {
     response: {
       statusCode: 200,
       mediaType: 'text/plain',
-      type: 'integer',
+      schema: {
+        type: 'integer',
+      },
     },
     requestConfig: {
       sslVerify: true,
@@ -711,7 +735,9 @@ export const saveConfigVariables_tc010 = {
     response: {
       statusCode: 200,
       mediaType: 'text/plain',
-      type: 'integer',
+      schema: {
+        type: 'integer',
+      },
     },
     requestConfig: {
       sslVerify: false,
@@ -779,7 +805,9 @@ export const saveConfigVariables_tc011 = {
     response: {
       statusCode: 200,
       mediaType: 'text/plain',
-      type: 'integer',
+      schema: {
+        type: 'integer',
+      },
     },
     requestConfig: {
       sslVerify: false,
@@ -847,7 +875,79 @@ export const saveConfigVariables_tc012 = {
     response: {
       statusCode: 200,
       mediaType: 'text/plain',
-      type: 'integer',
+      schema: {
+        type: 'integer',
+      },
+    },
+    requestConfig: {
+      sslVerify: false,
+      connectionTimeout: -1,
+      rateLimit: -1,
+      rateLimitTimeout: -1,
+      connectionRetries: 3,
+      batchStrategy: 'none',
+      batchLimit: -1,
+      maxConnections: -1,
+    },
+  },
+};
+
+export const saveConfigVariables_tc013 = {
+  name: 'My test API',
+  description: 'My test API description',
+  modelType: 'Regression',
+  modelAPI: {
+    url: 'https://localhost:5000/predict/tc013',
+    method: 'POST',
+    authType: 'No Auth',
+    requestBody: {
+      mediaType: 'application/json',
+      isArray: true,
+      maxItems: 100,
+      properties: [
+        {
+          field: 'age',
+          type: 'integer',
+        },
+        {
+          field: 'gender',
+          type: 'integer',
+        },
+        {
+          field: 'race',
+          type: 'integer',
+        },
+        {
+          field: 'income',
+          type: 'integer',
+        },
+        {
+          field: 'employment',
+          type: 'integer',
+        },
+        {
+          field: 'employment_length',
+          type: 'integer',
+        },
+        {
+          field: 'total_donated',
+          type: 'integer',
+        },
+        {
+          field: 'num_donation',
+          type: 'integer',
+        },
+      ],
+    },
+    response: {
+      statusCode: 200,
+      mediaType: 'application/json',
+      schema: {
+        type: 'array',
+        items: {
+          type: 'integer',
+        },
+      },
     },
     requestConfig: {
       sslVerify: false,

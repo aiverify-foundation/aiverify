@@ -44,6 +44,7 @@ export const optionsOpenApiDataTypes = [
   { value: OpenApiDataTypes.INTEGER, label: OpenApiDataTypes.INTEGER },
   { value: OpenApiDataTypes.BOOLEAN, label: OpenApiDataTypes.BOOLEAN },
   { value: OpenApiDataTypes.ARRAY, label: OpenApiDataTypes.ARRAY },
+  { value: OpenApiDataTypes.OBJECT, label: OpenApiDataTypes.OBJECT },
 ];
 
 export const optionsBatchStrategies = [

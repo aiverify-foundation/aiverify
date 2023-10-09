@@ -57,8 +57,14 @@ export const defaultFormValues: ModelApiFormModel = {
     response: {
       statusCode: '200',
       mediaType: MediaType.TEXT_PLAIN,
-      type: OpenApiDataTypes.INTEGER,
+      schema: {
+        type: OpenApiDataTypes.INTEGER,
+        items: {
+          type: OpenApiDataTypes.INTEGER,
+        },
+      },
       field: 'data',
+      fieldValueType: OpenApiDataTypes.INTEGER,
     },
     authTypeConfig: {
       authType: AuthType.NO_AUTH, // authType is duplicated here in Form Model to allow easy Yup validation dependency rules. Remove in gql request.

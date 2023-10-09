@@ -48,7 +48,11 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
   const touchedFields = touched.modelAPI?.requestBody?.properties as
     | FormikTouched<BodyParam>[]
     | undefined;
-  const mediaTypeOptions = [optionsMediaTypes[1], optionsMediaTypes[2]];
+  const mediaTypeOptions = [
+    optionsMediaTypes[1],
+    optionsMediaTypes[2],
+    optionsMediaTypes[3],
+  ];
 
   // overloading just to make the type compatible with formik's `handleChange` signature
   function handleNewParamChange(e: ChangeEvent<HTMLInputElement>): void;
