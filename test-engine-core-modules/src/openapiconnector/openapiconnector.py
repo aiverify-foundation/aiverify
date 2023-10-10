@@ -1,4 +1,5 @@
 import asyncio
+import functools
 import http
 import json
 import pathlib
@@ -6,6 +7,7 @@ import time
 from enum import Enum, auto
 from typing import Any, Callable, Dict, List, Tuple, Union
 
+import aiometer
 import aiopenapi3
 import httpx as httpx
 import numpy as np
@@ -53,17 +55,17 @@ class Plugin(IModel):
     # Default request options values
     _api_ssl_verify_default: bool = False
     _api_ssl_cert_default: None = None
-    _api_request_timeout_default: float = 3.0
-    _api_rate_limit_default: int = 0
+    _api_connection_timeout_default: float = 3.0
+    _api_rate_limit_default: int = 50
     _api_rate_limit_timeout_default: int = 3.0
     _api_batch_strategy_default: BatchStrategy = BatchStrategy.NONE
     _api_batch_limit_default: int = 500
-    _api_max_connections_default: int = 1
-    _api_connection_retries_default: int = 1000
+    _api_max_connections_default: int = 20
+    _api_connection_retries_default: int = 3
     # Set request options values
     _api_ssl_verify: bool = _api_ssl_verify_default
     _api_ssl_cert: Union[str, None] = _api_ssl_cert_default
-    _api_request_timeout: float = _api_request_timeout_default
+    _api_connection_timeout: float = _api_connection_timeout_default
     _api_rate_limit: int = _api_rate_limit_default
     _api_rate_limit_timeout: float = _api_rate_limit_timeout_default
     _api_batch_strategy: BatchStrategy = _api_batch_strategy_default
@@ -112,7 +114,13 @@ class Plugin(IModel):
         Returns:
             httpx.AsyncClient: Returns a httpx AsyncClient
         """
-        kwargs["timeout"] = Plugin._api_request_timeout
+        if Plugin._api_connection_timeout == -1:
+            httpx_timeout = Plugin._api_connection_timeout
+        else:
+            httpx_timeout = httpx.Timeout(
+                Plugin._api_connection_timeout, connect=Plugin._api_connection_timeout
+            )
+        kwargs["timeout"] = httpx_timeout
         kwargs["transport"] = OpenAPICustomTransport(
             verify=Plugin._api_ssl_verify,
             cert=Plugin._api_ssl_cert,
@@ -180,9 +188,9 @@ class Plugin(IModel):
             Plugin._api_ssl_cert = self._api_config.get("requestConfig", {}).get(
                 "sslCert", Plugin._api_ssl_cert_default
             )
-            Plugin._api_request_timeout = self._api_config.get("requestConfig", {}).get(
-                "requestTimeout", Plugin._api_request_timeout_default
-            )
+            Plugin._api_connection_timeout = self._api_config.get(
+                "requestConfig", {}
+            ).get("connectionTimeout", Plugin._api_connection_timeout_default)
             Plugin._api_rate_limit = self._api_config.get("requestConfig", {}).get(
                 "rateLimit", Plugin._api_rate_limit_default
             )
@@ -548,7 +556,7 @@ class Plugin(IModel):
 
         start_time = time.time()
         response_data = list()
-        request_task_list = []
+        new_list_of_data = []
 
         # batching using application/json
         if self._api_batch_strategy == BatchStrategy.APPLICATION_JSON:
@@ -560,10 +568,8 @@ class Plugin(IModel):
                     for _, row in data_to_predict.iterrows():
                         batched_data.append(row)
                     for i in range(0, len(batched_data), self._api_batch_limit):
-                        request_task_list.append(
-                            self.send_batched_request(
-                                batched_data[i : i + self._api_batch_limit], *args
-                            )
+                        new_list_of_data.append(
+                            batched_data[i : i + self._api_batch_limit]
                         )
                 # NDARRAY
                 else:
@@ -571,12 +577,13 @@ class Plugin(IModel):
                         # Pass this information to the send request function to request
                         batched_data.append(row)
                     for i in range(0, len(batched_data), self._api_batch_limit):
-                        request_task_list.append(
-                            self.send_batched_request(
-                                batched_data[i : i + self._api_batch_limit], *args
-                            )
+                        new_list_of_data.append(
+                            batched_data[i : i + self._api_batch_limit]
                         )
-
+            jobs = [
+                functools.partial(self.send_batched_request, row_data, *args)
+                for row_data in new_list_of_data
+            ]
         # no batching
         else:
             # loop through the data list. it can be a list of mixed data to be predicted such as DF or numpy
@@ -585,28 +592,35 @@ class Plugin(IModel):
                 if type(data_to_predict) is pd.DataFrame:
                     for _, row in data_to_predict.iterrows():
                         # Pass this information to the send request function to request
-                        request_task_list.append(self.send_request(row, *args))
+                        new_list_of_data.append(row)
                 # NDARRAY
                 else:
                     for row in data_to_predict:
                         # Pass this information to the send request function to request
-                        request_task_list.append(self.send_request(row, *args))
-        response_list = await asyncio.gather(*request_task_list)
+                        new_list_of_data.append(row)
+            jobs = [
+                functools.partial(self.send_request, row_data, *args)
+                for row_data in new_list_of_data
+            ]
 
+        if self._api_max_connections == -1 and self._api_rate_limit == -1:
+            response_list = await aiometer.run_all(jobs)
+        elif self._api_max_connections == -1:
+            response_list = await aiometer.run_all(
+                jobs, max_per_second=self._api_rate_limit
+            )
+        elif self._api_rate_limit == -1:
+            response_list = await aiometer.run_all(
+                jobs, max_at_once=self._api_max_connections
+            )
+        else:
+            response_list = await aiometer.run_all(
+                jobs,
+                max_at_once=self._api_max_connections,
+                max_per_second=self._api_rate_limit,
+            )
         # # get the response data_type: array/object/string/number/integer/boolean
-        # response_data_type = self._api_config.get("responseBody").get("type", None)
 
-        # get the content type of response
-        # openapi_response_object = next(
-        #     iter(self._api_instance._.predict_api.operation.responses.values())
-        # ).content
-        # response_type = list(openapi_response_object.keys())[0]
-
-        # response_array_type = self._api_config.get("responseBody").get(
-        #         "arrayType", None
-        #     )
-
-        # # get the response data_type: array/object/string/number/integer/boolean
         response_data_type = (
             self._api_config.get("responseBody").get("schema").get("type")
         )
@@ -813,37 +827,39 @@ class Plugin(IModel):
         # error_message += "Invalid SSL Cert;"
 
         if (
-            not isinstance(self._api_request_timeout, int)
-            and not isinstance(self._api_request_timeout, float)
-        ) or self._api_request_timeout < 0:
-            error_message += "Please provide a positive whole/decimal number in seconds for Request Timeout;"
+            not isinstance(self._api_connection_timeout, int)
+            and not isinstance(self._api_connection_timeout, float)
+        ) or (self._api_connection_timeout < 0 and self._api_connection_timeout != -1):
+            error_message += "Please provide a positive whole/decimal number in seconds for Connection Timeout;"
 
-        if not isinstance(self._api_rate_limit, int) or self._api_rate_limit < 0:
+        if not isinstance(self._api_rate_limit, int) or (
+            self._api_rate_limit < 0 and self._api_rate_limit != -1
+        ):
             error_message += "Please provide a positive whole number for Rate Limit;"
 
         if (
             not isinstance(self._api_rate_limit_timeout, int)
             and not isinstance(self._api_rate_limit_timeout, float)
-        ) or self._api_rate_limit_timeout < 0:
+        ) or (self._api_rate_limit_timeout < 0 and self._api_rate_limit_timeout != -1):
             error_message += "Please provide a positive whole/decimal number in seconds for Rate Limit Timeout;"
 
         if self._api_batch_strategy not in BatchStrategy:
             error_message += "Invalid Batch Strategy;"
 
-        if not isinstance(self._api_batch_limit, int) or self._api_batch_limit < 0:
+        if not isinstance(self._api_batch_limit, int) and (
+            self._api_batch_limit < 0 and self._api_batch_limit != -1
+        ):
             error_message += "Please provide a positive whole number for Batch Limit;"
 
-        if (
-            not isinstance(self._api_max_connections, int)
-            or self._api_max_connections < 0
+        if not isinstance(self._api_max_connections, int) and (
+            self._api_max_connections < 0 and self._api_max_connections != -1
         ):
             error_message += (
                 "Please provide a positive whole number for Max Connections;"
             )
 
-        if (
-            not isinstance(self._api_connection_retries, int)
-            or self._api_connection_retries < 0
+        if not isinstance(self._api_connection_retries, int) and (
+            self._api_connection_retries < 0 and self._api_connection_retries != -1
         ):
             error_message += (
                 "Please provide a positive whole number for Connection Retries;"
@@ -935,24 +951,28 @@ class OpenAPICustomTransport(httpx.AsyncHTTPTransport):
             httpx.Response: The response that is not within the error code list
         """
         # Send the async request to the server
+
         error_message = ""
+        start_time = time.time()
+
         for attempt in range(self._connection_retries + 1):
             try:
                 response = await super().handle_async_request(request)
-            except (
-                httpx.ConnectTimeout,
-                httpx.ReadTimeout,
-                httpx.NetworkError,
-            ) as exception:
-                error_message = f"{str(exception)}"
+            except httpx.ConnectTimeout as connection_exception:
+                error_message = f"{str(connection_exception)}, connection_exception"
+                await self.handle_attempt_retries(attempt, None)
+            except httpx.ReadTimeout as read_exception:
+                error_message = f"{str(read_exception)}, read_exception"
+                await self.handle_attempt_retries(attempt, None)
+            except httpx.NetworkError as network_exception:
+                error_message = f"{str(network_exception)}, network_exception"
                 await self.handle_attempt_retries(attempt, None)
             else:
                 if response.status_code not in self._api_status_code:
                     # Assume that the response is okay, not in the list of error status codes
                     return response
                 else:
-                    # The response status code in list of retries status code.
-                    # Proceed to attempt retries
+                    # The response status code in list of retries status code. Proceed to attempt retries
                     error_message = (
                         f"Response status code: {response.status_code} "
                         f"({http.HTTPStatus(response.status_code).name})"
@@ -960,13 +980,15 @@ class OpenAPICustomTransport(httpx.AsyncHTTPTransport):
                     await self.handle_attempt_retries(attempt, response.status_code)
             finally:
                 # Exceeded the number of attempts
+                end_time = time.time()
+                connection_elapsed_time = round((end_time - start_time), 1)
                 if attempt == self._connection_retries:
+                    custom_error_message = f"Maximum retries exceeded ({self._connection_retries}) \
+                        after {connection_elapsed_time}s."
                     await self._response_error_callback(
-                        f"Maximum retries exceeded ({self._connection_retries}) {error_message}"
+                        f"{custom_error_message} {error_message}"
                     )
-                    raise RuntimeError(
-                        f"Maximum retries exceeded ({self._connection_retries}) {error_message}"
-                    )
+                    raise RuntimeError(f"{custom_error_message} {error_message}")
 
 
 class OpenAPICustomLimits(httpx.Limits):
