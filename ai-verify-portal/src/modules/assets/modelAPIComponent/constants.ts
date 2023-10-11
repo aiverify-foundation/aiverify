@@ -61,6 +61,11 @@ export const defaultFormValues: ModelApiFormModel = {
         type: OpenApiDataTypes.INTEGER,
         items: {
           type: OpenApiDataTypes.INTEGER,
+          properties: {
+            data: {
+              type: OpenApiDataTypes.INTEGER,
+            },
+          },
         },
       },
       field: 'data',

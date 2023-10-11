@@ -962,6 +962,156 @@ export const saveConfigVariables_tc013 = {
   },
 };
 
+export const saveConfigVariables_tc014 = {
+  name: 'My test API',
+  description: 'My test API description',
+  modelType: 'Regression',
+  modelAPI: {
+    url: 'https://localhost:5000/predict/tc014',
+    method: 'POST',
+    authType: 'No Auth',
+    requestBody: {
+      mediaType: 'application/json',
+      isArray: true,
+      maxItems: 100,
+      properties: [
+        {
+          field: 'age',
+          type: 'integer',
+        },
+        {
+          field: 'gender',
+          type: 'integer',
+        },
+        {
+          field: 'race',
+          type: 'integer',
+        },
+        {
+          field: 'income',
+          type: 'integer',
+        },
+        {
+          field: 'employment',
+          type: 'integer',
+        },
+        {
+          field: 'employment_length',
+          type: 'integer',
+        },
+        {
+          field: 'total_donated',
+          type: 'integer',
+        },
+        {
+          field: 'num_donation',
+          type: 'integer',
+        },
+      ],
+    },
+    response: {
+      statusCode: 200,
+      mediaType: 'application/json',
+      schema: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            data: {
+              type: 'integer',
+            },
+          },
+        },
+      },
+    },
+    requestConfig: {
+      sslVerify: false,
+      connectionTimeout: -1,
+      rateLimit: -1,
+      rateLimitTimeout: -1,
+      connectionRetries: 3,
+      batchStrategy: 'none',
+      batchLimit: -1,
+      maxConnections: -1,
+    },
+  },
+};
+
+export const saveConfigVariables_tc015 = {
+  name: 'My test API',
+  description: 'My test API description',
+  modelType: 'Regression',
+  modelAPI: {
+    url: 'https://localhost:5000/predict/tc015',
+    method: 'POST',
+    authType: 'No Auth',
+    requestBody: {
+      mediaType: 'application/json',
+      isArray: true,
+      maxItems: 100,
+      properties: [
+        {
+          field: 'age',
+          type: 'integer',
+        },
+        {
+          field: 'gender',
+          type: 'integer',
+        },
+        {
+          field: 'race',
+          type: 'integer',
+        },
+        {
+          field: 'income',
+          type: 'integer',
+        },
+        {
+          field: 'employment',
+          type: 'integer',
+        },
+        {
+          field: 'employment_length',
+          type: 'integer',
+        },
+        {
+          field: 'total_donated',
+          type: 'integer',
+        },
+        {
+          field: 'num_donation',
+          type: 'integer',
+        },
+      ],
+    },
+    response: {
+      statusCode: 200,
+      mediaType: 'application/json',
+      schema: {
+        type: 'object',
+        properties: {
+          data: {
+            type: 'array',
+            items: {
+              type: 'integer',
+            },
+          },
+        },
+      },
+    },
+    requestConfig: {
+      sslVerify: false,
+      connectionTimeout: -1,
+      rateLimit: -1,
+      rateLimitTimeout: -1,
+      connectionRetries: 3,
+      batchStrategy: 'none',
+      batchLimit: -1,
+      maxConnections: -1,
+    },
+  },
+};
+
 export const saveConfigVariables_result = {
   createModelAPI: {
     id: '64d5a78656d3605a78346770',

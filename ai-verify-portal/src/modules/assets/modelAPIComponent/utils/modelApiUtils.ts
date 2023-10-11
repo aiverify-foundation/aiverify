@@ -59,6 +59,20 @@ export function transformFormValuesToGraphModel(
           type: otherResponseProps.schema.items.type,
         },
       };
+      // update nested properties if items.type is object
+      if (otherResponseProps.schema.items.type === OpenApiDataTypes.OBJECT) {
+        const schema = formToModelApiGqlPayload.modelAPI.response.schema;
+        if (
+          schema.items !== undefined &&
+          otherResponseProps.schema.items.properties !== undefined
+        ) {
+          schema.items.properties = {
+            data: {
+              type: otherResponseProps.schema.items.properties.data.type,
+            },
+          };
+        }
+      }
     } else if (
       otherResponseProps.schema.type === OpenApiDataTypes.OBJECT &&
       otherResponseProps.fieldValueType !== undefined
@@ -72,9 +86,12 @@ export function transformFormValuesToGraphModel(
         },
       };
     }
-    delete formToModelApiGqlPayload.modelAPI.response.field;
-    delete formToModelApiGqlPayload.modelAPI.response.fieldValueType;
+  } else {
+    delete formToModelApiGqlPayload.modelAPI.response.schema.items;
   }
+
+  delete formToModelApiGqlPayload.modelAPI.response.field;
+  delete formToModelApiGqlPayload.modelAPI.response.fieldValueType;
 
   //populate authType config if not `NO_AUTH`
   if (authType !== AuthType.NO_AUTH) {
@@ -158,9 +175,15 @@ export function transformFormValuesToGraphModel(
       };
 
       if (requestBody.isArray === true) {
-        formToModelApiGqlPayload.modelAPI.requestBody.name = requestBody.name;
-        if (!formToModelApiGqlPayload.modelAPI.requestBody.name) {
-          console.error('POST:isArray - requestbody.name is required');
+        if (requestBody.mediaType === MediaType.FORM_URLENCODED) {
+          formToModelApiGqlPayload.modelAPI.requestBody.name = requestBody.name;
+          if (!formToModelApiGqlPayload.modelAPI.requestBody.name) {
+            console.error(
+              'POST:app-json:isArray - requestbody.name is required'
+            );
+          }
+        } else {
+          delete requestBody.name;
         }
 
         if (requestBody.maxItems != undefined) {

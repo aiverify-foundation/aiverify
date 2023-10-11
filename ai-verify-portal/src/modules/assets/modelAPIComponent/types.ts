@@ -133,8 +133,24 @@ export type ResponseForm = {
   mediaType: MediaType;
   schema: {
     type: OpenApiDataTypes;
-    properties?: Record<string, { type: OpenApiDataTypes }>;
-    items?: { type: OpenApiDataTypes };
+    properties?:
+      | Record<string, { type: OpenApiDataTypes }>
+      | {
+          [key: string]: {
+            type: OpenApiDataTypes;
+            items: {
+              type: OpenApiDataTypes;
+            };
+          };
+        };
+    items?: {
+      type: OpenApiDataTypes;
+      properties?: {
+        data: {
+          type: OpenApiDataTypes;
+        };
+      };
+    };
   };
   field?: string;
   fieldValueType?: OpenApiDataTypes;
@@ -145,8 +161,24 @@ export type ResponseGQL = {
   mediaType: MediaType;
   schema: {
     type: OpenApiDataTypes;
-    properties?: Record<string, { type: OpenApiDataTypes }>;
-    items?: { type: OpenApiDataTypes };
+    properties?:
+      | Record<string, { type: OpenApiDataTypes }>
+      | {
+          [key: string]: {
+            type: OpenApiDataTypes;
+            items: {
+              type: OpenApiDataTypes;
+            };
+          };
+        };
+    items?: {
+      type: OpenApiDataTypes;
+      properties?: {
+        data: {
+          type: OpenApiDataTypes;
+        };
+      };
+    };
   };
   field?: string;
   fieldValueType?: OpenApiDataTypes;

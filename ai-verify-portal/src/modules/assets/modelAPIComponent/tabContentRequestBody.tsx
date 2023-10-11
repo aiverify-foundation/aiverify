@@ -132,15 +132,17 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
         />
         {requestBody && requestBody.isArray ? (
           <div style={{ display: 'flex' }}>
-            <TextInput
-              label="Array Variable Name"
-              disabled={disabled || !requestBody?.isArray}
-              name={`${requestBodyFieldName}.name`}
-              onChange={handleChange}
-              value={requestBody?.name}
-              maxLength={128}
-              style={{ marginBottom: 0, marginRight: 8, width: 200 }}
-            />
+            {requestBody.mediaType === MediaType.FORM_URLENCODED ? (
+              <TextInput
+                label="Array Variable Name"
+                disabled={disabled || !requestBody?.isArray}
+                name={`${requestBodyFieldName}.name`}
+                onChange={handleChange}
+                value={requestBody?.name}
+                maxLength={128}
+                style={{ marginBottom: 0, marginRight: 8, width: 200 }}
+              />
+            ) : null}
             <TextInput
               label="Max Items"
               disabled={disabled || !requestBody?.isArray}
