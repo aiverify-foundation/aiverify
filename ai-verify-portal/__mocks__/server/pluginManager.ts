@@ -1,5 +1,5 @@
-import { pluginsFromDir } from '__mocks__/mockPlugins';
+import { projectFlow_mockPlugins } from '__mocks__/mockPlugins';
 
 export function getPlugins() {
-  return pluginsFromDir;
+  return projectFlow_mockPlugins;
 }

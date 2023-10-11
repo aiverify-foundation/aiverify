@@ -107,15 +107,11 @@ export default function InputBlockList(props: InputBlockListProps) {
       // load widget if not cached yet
       const createDynamic = async () => {
         const apiPath = `/api/bundler/${gid}`;
-        // console.log("apiPath", apiPath)
-        // const { data, error } = useSWR(apiPath, fetcher)
-        // console.log("data", data);
         fetch(apiPath)
           .then(async (res) => {
             if (res.status === 200) {
               const data = await res.json();
               state.status = WidgetStatus.loaded;
-              // console.log("data", data);
               state.mdxBundle = {
                 code: data.code,
                 frontmatter: data.frontmatter,

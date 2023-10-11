@@ -17,7 +17,7 @@
     {
       "key": "numAreas",
       "helper": "Number of area descriptions to output (default 5)",
-      "default": "5"
+      "default": "6"
     }
   ]
 }

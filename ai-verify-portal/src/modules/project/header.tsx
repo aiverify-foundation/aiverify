@@ -45,7 +45,7 @@ function ReportDesignerHeader(props: ReportsHeaderProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
-  const [showManualSavedMsg, setShowManualSavedMsg] = useState(false);
+  const [manualSavedMsg, setManualSavedMsg] = useState<string | undefined>();
   const [disableManualSaveBtn, setDisableManualSaveBtn] = useState(false);
   const menuTimer = useRef<NodeJS.Timeout>(); // TODO - figure out type of window timer
   const router = useRouter();
@@ -107,17 +107,27 @@ function ReportDesignerHeader(props: ReportsHeaderProps) {
     setShowExportDialog(true);
   }
 
-  function handleManualSaveClick() {
+  async function handleManualSaveClick() {
     if (disableManualSaveBtn) return;
     if (projectStore) {
-      projectStore.flushAllUpdates();
+      try {
+        await projectStore.flushAllUpdatesAsync();
+        setManualSavedMsg('Project Saved');
+        setDisableManualSaveBtn(true);
+        setTimeout(() => {
+          setManualSavedMsg(undefined);
+          setDisableManualSaveBtn(false);
+        }, 2500);
+      } catch (err) {
+        console.log(err);
+        setManualSavedMsg('Save unsuccessful');
+        setDisableManualSaveBtn(true);
+        setTimeout(() => {
+          setManualSavedMsg(undefined);
+          setDisableManualSaveBtn(false);
+        }, 2500);
+      }
     }
-    setShowManualSavedMsg(true);
-    setDisableManualSaveBtn(true);
-    setTimeout(() => {
-      setShowManualSavedMsg(false);
-      setDisableManualSaveBtn(false);
-    }, 2500);
   }
 
   return (
@@ -215,10 +225,10 @@ function ReportDesignerHeader(props: ReportsHeaderProps) {
               />
             </StyledTooltip>
           ) : null}
-          {showManualSavedMsg ? (
-            <div className={styles.savedMsgDisplay}>Project saved</div>
+          {manualSavedMsg !== undefined ? (
+            <div className={styles.savedMsgDisplay}>{manualSavedMsg}</div>
           ) : null}
-          {!showManualSavedMsg && lastSavedTime ? (
+          {manualSavedMsg === undefined && lastSavedTime ? (
             <div className={styles.savedTimeDisplay}>
               Autosaved at {lastSavedTime}
             </div>
