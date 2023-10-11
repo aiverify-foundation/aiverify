@@ -73,14 +73,10 @@ export const UPDATE_PROJECT_TEMPLATE = gql`
         layouts {
           h
           i
-          isBounded
-          isDraggable
-          isResizable
           maxH
           maxW
           minH
           minW
-          resizeHandles
           static
           w
           x
@@ -177,14 +173,10 @@ export const CLONE_PROJECT_TEMPLATE = gql`
         layouts {
           h
           i
-          isBounded
-          isDraggable
-          isResizable
           maxH
           maxW
           minH
           minW
-          resizeHandles
           static
           w
           x

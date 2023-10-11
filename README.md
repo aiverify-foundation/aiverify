@@ -1,4 +1,5 @@
 # README.md
+[![Integration Tests](https://github.com/IMDA-BTG/aiverify/actions/workflows/integration-tests.yml/badge.svg)](https://github.com/IMDA-BTG/aiverify/actions/workflows/integration-tests.yml)
 
 ## Introduction
 

@@ -39,11 +39,9 @@ export default function AlgorithmWidgetComponent({
         : {};
       const uiw = await parseRJSFSchema(
         schema,
-        //@ts-ignore
-        getDatasets,
+        getDatasets as () => Promise<unknown[]>,
         modelAndDatasets.testDataset
       );
-      console.log('uiw', uiw);
       setRjsfSchema({
         ...schema,
         title: '',
@@ -72,8 +70,7 @@ export default function AlgorithmWidgetComponent({
   return (
     <div>
       <Form
-        //@ts-ignore
-        ref={formRef}
+        ref={formRef as any} //Todo - fix lint
         schema={rjsfSchema}
         formData={testInfo.testArguments}
         onChange={handleDataChange}

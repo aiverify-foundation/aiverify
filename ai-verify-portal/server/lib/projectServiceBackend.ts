@@ -87,14 +87,10 @@ export const GET_PROJECT = gql`
         layouts {
           h
           i
-          isBounded
-          isDraggable
-          isResizable
           maxH
           maxW
           minH
           minW
-          resizeHandles
           static
           w
           x
@@ -181,7 +177,6 @@ export async function listProjects(): Promise<Project[]> {
 }
 
 export async function getProject(id: string): Promise<Project> {
-  console.log('getProject');
   const client = graphqlClient(true);
   try {
     const { data } = await client.query({
@@ -253,14 +248,10 @@ export const GET_REPORT = gql`
           layouts {
             h
             i
-            isBounded
-            isDraggable
-            isResizable
             maxH
             maxW
             minH
             minW
-            resizeHandles
             static
             w
             x
@@ -347,14 +338,10 @@ export const GET_PROJECT_TEMPLATE = gql`
         layouts {
           h
           i
-          isBounded
-          isDraggable
-          isResizable
           maxH
           maxW
           minH
           minW
-          resizeHandles
           static
           w
           x
