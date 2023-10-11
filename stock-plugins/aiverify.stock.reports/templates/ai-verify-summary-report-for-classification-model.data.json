@@ -133,7 +133,7 @@
           "static": false
         },
         {
-          "i": "1685886404602",
+          "i": "1697012980153",
           "x": 0,
           "y": 14,
           "w": 12,
@@ -259,7 +259,7 @@
             "bgcolor": null
           },
           "widgetGID": "aiverify.stock.reports:use_case_model",
-          "key": "1685886404602",
+          "key": "1697012980153",
           "properties": {
             "modelTested": "{modelName}",
             "modelPurpose": "{modelPurpose}"
@@ -427,7 +427,7 @@
           "static": false
         },
         {
-          "i": "1685893522216",
+          "i": "1697012847253",
           "x": 0,
           "y": 2,
           "w": 12,
@@ -527,7 +527,7 @@
             "bgcolor": null
           },
           "widgetGID": "aiverify.stock.reports:report_summary",
-          "key": "1685893522216",
+          "key": "1697012847253",
           "properties": {
             "modelName": "{modelName}"
           }
@@ -3095,16 +3095,12 @@
   ],
   "globalVars": [
     {
-      "key": "name",
-      "value": "AI Verify Summary Report for Classification Model"
+      "key": "modelName",
+      "value": "My Model Name"
     },
     {
-      "key": "description",
-      "value": "Template AI Verify summary report for classification model"
-    },
-    {
-      "key": "reportTitle",
-      "value": "AI Verify Summary Report for Classification Model"
+      "key": "modelPurpose",
+      "value": "My Model Purpose"
     }
   ]
 }
