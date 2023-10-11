@@ -3374,16 +3374,12 @@
   ],
   "globalVars": [
     {
-      "key": "name",
-      "value": "AI Verify Summary Report for Regression Model"
+      "key": "modelName",
+      "value": "My Model Name"
     },
     {
-      "key": "description",
-      "value": "Template AI Verify summary report for regression model"
-    },
-    {
-      "key": "reportTitle",
-      "value": "AI Verify Summary Report for Regression Model"
+      "key": "modelPurpose",
+      "value": "My Model Purpose"
     }
   ]
 }
