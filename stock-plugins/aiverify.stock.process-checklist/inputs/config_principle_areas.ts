@@ -125,6 +125,19 @@ export const areaConfigs = [
       },
     ] 
   },
+  {
+    id: "others",
+    area: "Organisational Considerations",
+    short_description: "Organisational Concerns was assessed through 6 process checks",
+    principles: [
+      {
+        principle: "Organisational Considerations",
+        name: "Organisational Considerations",
+        cid: "organisational_considerations_process_checklist",
+        short_description: "Beyond assessment of individual AI systems, there are broader organisational considerations when deciding AI deployment. These include issues such as the use of AI (versus non-AI options), norms and expectations as well as resources to manage the use of AI",
+      },
+    ]
+  }
 ].map((config: any, index) => {
   config.index = index;
   return config;

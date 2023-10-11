@@ -109,14 +109,12 @@ export default function UserInputComponent({
       for (const inputBlock of projectStore.dependencies.inputBlocks) {
         const createDynamic = () => {
           const apiPath = `/api/bundler/summary/${inputBlock.gid}`;
-          // console.log("apiPath", apiPath)
           return new Promise<string>((resolve, reject) => {
             fetch(apiPath)
               .then(async (res) => {
                 if (res.status === 200) {
                   const data = await res.json();
                   if (!data.code) return reject('Invalid MDX');
-                  // console.log("data", data);
                   resolve(data.code);
                 } else {
                   reject('Invalid MDX');
@@ -129,7 +127,6 @@ export default function UserInputComponent({
           });
         };
         try {
-          // const {summary, progress} = await import(`../../../plugins/${inputBlock.pluginGID}/inputs/${inputBlock.cid}.ts`);
           const code = await createDynamic();
           const mdxExport = getMDXExport(code);
           const state: InputBlockState = {

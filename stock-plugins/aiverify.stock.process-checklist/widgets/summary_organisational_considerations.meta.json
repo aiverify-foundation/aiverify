@@ -1,0 +1,24 @@
+{
+  "cid": "summary_organisational_considerations",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 10,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Summary - Organisational Considerations",
+  "description": "Summary of the process checklist for Organisational Considerations checklist",
+  "dynamicHeight": true,
+  "dependencies": [
+    {
+      "cid": "organisational_considerations_process_checklist"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "InputBlock",
+      "cid": "organisational_considerations_process_checklist",
+      "datapath": "organisational_considerations_process_checklist.sample.json"
+    }
+  ]
+}

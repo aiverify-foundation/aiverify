@@ -10,11 +10,11 @@ name: Pre-Merge Checks (ai-verify-portal)
 on:
   # Runs when a pull request to main is being assigned
   pull_request:
-    types: [ assigned, synchronize ]
+    types: [assigned, synchronize]
     branches:
-      - 'main'
+      - "main"
     paths:
-      - 'ai-verify-portal/**'
+      - "ai-verify-portal/**"
 
   # Run this workflow manually from Actions tab
   workflow_dispatch:
@@ -25,7 +25,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-
   pre-merge-checks:
     # Run only when PR is assigned, even on subsequent commits (i.e. synchronize)
     if: (github.event_name == 'pull_request' && github.event.pull_request.assignee != null) || github.event_name == 'workflow_dispatch'
@@ -34,7 +33,6 @@ jobs:
     timeout-minutes: 40
 
     steps:
-
       # Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
@@ -48,7 +46,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: ai-verify-portal
 
       - name: Install dependencies for shared-library
@@ -65,8 +63,8 @@ jobs:
           npm install --omit=dev
           npx license-checker --summary --out licenses-found.txt -y
           npm install -D
-          npm i -D jest jest-html-reporter jest-json-reporter ts-jest @jest/globals badge-maker
-          npm i -D eslint eslint-formatter-html @typescript-eslint/eslint-plugin @typescript-eslint/parser
+          npm i -D badge-maker
+          npm i -D eslint-formatter-html
           npm link ../ai-verify-shared-library
 
       # Compile typescript source files
@@ -107,10 +105,10 @@ jobs:
         working-directory: ${{ github.workspace }}/ai-verify-portal
         run: |
           set +e
-          npx eslint .
+          npm run lint
           exit_code_lint=$?
-          npx eslint -f html -o eslint-report.html .
-          npx eslint -f json -o eslint-report.json .
+          npm run lint-html-report
+          npm run lint-json-report
           node ci/createBadges.mjs lint
           set -e
           if [ $exit_code_lint -ne 0 ]; then
@@ -124,9 +122,9 @@ jobs:
         working-directory: ${{ github.workspace }}/ai-verify-portal
         run: |
           set +e
-          npm audit
+          npm audit --omit=dev
           exit_code_audit=$?         
-          npm audit --json | npx npm-audit-markdown --output npm-audit-report.md
+          npm audit --omit=dev --json | npx npm-audit-markdown --output npm-audit-report.md
           npx markdown-to-html-cli --source npm-audit-report.md --output npm-audit-report.html -y
           echo -e "License Check Summary for portal\n" > license-report.txt
           cat licenses-found.txt >> license-report.txt
