@@ -128,30 +128,55 @@ export type RequestConfigGQL = {
   maxConnections: number;
 };
 
-export type ResponseForm = {
-  statusCode: string;
-  mediaType: MediaType;
-  schema: {
-    type: OpenApiDataTypes;
-    properties?:
-      | Record<string, { type: OpenApiDataTypes }>
-      | {
-          [key: string]: {
-            type: OpenApiDataTypes;
-            items: {
-              type: OpenApiDataTypes;
-            };
-          };
-        };
-    items?: {
+/*
+ * The the form state (formik), we use _AIVDATA_ as the name
+ * of a property that is dynamic. It should be replaced with the value
+ * of 'ResponseForm.field'
+ */
+export type ResponseSchemaForm = {
+  type: OpenApiDataTypes;
+  properties?: {
+    _AIVDATA_: {
       type: OpenApiDataTypes;
-      properties?: {
-        data: {
-          type: OpenApiDataTypes;
-        };
+      items?: {
+        type: OpenApiDataTypes;
       };
     };
   };
+  items?: {
+    type: OpenApiDataTypes;
+    properties?: {
+      _AIVDATA_: {
+        type: OpenApiDataTypes;
+      };
+    };
+  };
+};
+
+export type ResponseSchemaGQL = {
+  type: OpenApiDataTypes;
+  properties?: {
+    [key: string]: {
+      type: OpenApiDataTypes;
+      items?: {
+        type: OpenApiDataTypes;
+      };
+    };
+  };
+  items?: {
+    type: OpenApiDataTypes;
+    properties?: {
+      [key: string]: {
+        type: OpenApiDataTypes;
+      };
+    };
+  };
+};
+
+export type ResponseForm = {
+  statusCode: string;
+  mediaType: MediaType;
+  schema: ResponseSchemaForm;
   field?: string;
   fieldValueType?: OpenApiDataTypes;
 };
@@ -159,29 +184,7 @@ export type ResponseForm = {
 export type ResponseGQL = {
   statusCode: number;
   mediaType: MediaType;
-  schema: {
-    type: OpenApiDataTypes;
-    properties?:
-      | Record<string, { type: OpenApiDataTypes }>
-      | {
-          [key: string]: {
-            type: OpenApiDataTypes;
-            items: {
-              type: OpenApiDataTypes;
-            };
-          };
-        };
-    items?: {
-      type: OpenApiDataTypes;
-      properties?: {
-        data: {
-          type: OpenApiDataTypes;
-        };
-      };
-    };
-  };
-  field?: string;
-  fieldValueType?: OpenApiDataTypes;
+  schema: ResponseSchemaGQL;
 };
 
 export type AuthTypeConfig = {

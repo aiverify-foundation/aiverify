@@ -117,8 +117,7 @@ const GQL_GET_MODELAPI = gql`
         response {
           statusCode
           mediaType
-          type
-          field
+          schema
         }
         requestConfig {
           sslVerify

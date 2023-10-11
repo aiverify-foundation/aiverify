@@ -11,6 +11,7 @@ import {
   RequestMethod,
   URLParamType,
 } from 'src/modules/assets/modelAPIComponent/types';
+import { replaceDynamicFieldnameWith_AIVDATA } from 'src/modules/assets/modelAPIComponent/utils/modelApiUtils';
 
 /*
   This id is only used for react component `key` props for the list of urlparams and request body property fields rendered.
@@ -84,9 +85,21 @@ export const getServerSideProps: GetServerSideProps<{
       })(),
       response: (() => {
         const { __typename, statusCode, ...rest } = result.modelAPI.response;
+        const output = replaceDynamicFieldnameWith_AIVDATA(rest.schema);
+        if (Array.isArray(output)) {
+          const [schemaWith_AIVDATA_, field, fieldValueType] = output;
+          return {
+            statusCode: statusCode.toString(),
+            mediaType: rest.mediaType,
+            schema: schemaWith_AIVDATA_,
+            field,
+            fieldValueType,
+          };
+        }
         return {
           statusCode: statusCode.toString(),
-          ...rest,
+          mediaType: rest.mediaType,
+          schema: output,
         };
       })(),
       requestBody: {} as never, // populate at next step

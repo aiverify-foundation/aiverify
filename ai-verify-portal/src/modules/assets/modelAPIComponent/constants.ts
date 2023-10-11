@@ -59,10 +59,18 @@ export const defaultFormValues: ModelApiFormModel = {
       mediaType: MediaType.TEXT_PLAIN,
       schema: {
         type: OpenApiDataTypes.INTEGER,
+        properties: {
+          _AIVDATA_: {
+            type: OpenApiDataTypes.ARRAY,
+            items: {
+              type: OpenApiDataTypes.INTEGER,
+            },
+          },
+        },
         items: {
           type: OpenApiDataTypes.INTEGER,
           properties: {
-            data: {
+            _AIVDATA_: {
               type: OpenApiDataTypes.INTEGER,
             },
           },

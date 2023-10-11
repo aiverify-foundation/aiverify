@@ -5,6 +5,7 @@ import { SelectInput } from 'src/components/selectInput';
 import { optionsMediaTypes, optionsOpenApiDataTypes } from './selectOptions';
 import { FormikContextType } from 'formik';
 import { ColorPalette } from 'src/components/colorPalette';
+import { useEffect } from 'react';
 
 const responseFieldName = 'modelAPI.response';
 
@@ -56,7 +57,8 @@ type ResponsePropertyInputProps = {
 
 function ResponsePropertyInput(props: ResponsePropertyInputProps) {
   const { disabled, formikContext } = props;
-  const { values, errors, touched, handleChange } = formikContext;
+  const { values, errors, touched, handleChange, setFieldValue } =
+    formikContext;
   const fieldErrors = errors.modelAPI?.response;
   const touchedFields = touched.modelAPI?.response;
   const mediaTypeOptions = [optionsMediaTypes[3], optionsMediaTypes[4]];
@@ -71,7 +73,28 @@ function ResponsePropertyInput(props: ResponsePropertyInputProps) {
       optionsOpenApiDataTypes[1],
       optionsOpenApiDataTypes[2],
     ];
+  } else if (values.modelAPI.response.mediaType === MediaType.APP_JSON) {
+    dataTypeOptions = [optionsOpenApiDataTypes[3], optionsOpenApiDataTypes[4]];
   }
+
+  const fieldDataTypeOptions = [
+    optionsOpenApiDataTypes[0],
+    optionsOpenApiDataTypes[1],
+    optionsOpenApiDataTypes[2],
+    optionsOpenApiDataTypes[3],
+  ];
+
+  useEffect(() => {
+    const mediaType = values.modelAPI.response.mediaType;
+    if (mediaType === MediaType.TEXT_PLAIN) {
+      setFieldValue(
+        `${responseFieldName}.schema.type`,
+        OpenApiDataTypes.INTEGER
+      );
+    } else if (mediaType === MediaType.APP_JSON) {
+      setFieldValue(`${responseFieldName}.schema.type`, OpenApiDataTypes.ARRAY);
+    }
+  }, [values.modelAPI.response.mediaType]);
 
   console.log(values.modelAPI);
 
@@ -148,7 +171,7 @@ function ResponsePropertyInput(props: ResponsePropertyInputProps) {
               <SelectInput<OpenApiDataTypes>
                 disabled={disabled}
                 name={`${responseFieldName}.fieldValueType`}
-                options={arrayItemsDataOptions}
+                options={fieldDataTypeOptions}
                 value={values.modelAPI.response.fieldValueType}
                 onSyntheticChange={handleChange}
                 style={{ marginBottom: 0 }}
@@ -168,10 +191,63 @@ function ResponsePropertyInput(props: ResponsePropertyInputProps) {
               color: ColorPalette.gray,
               fontWeight: 600,
               marginBottom: 10,
-              marginTop: 15,
+              marginTop: 25,
               fontSize: 14,
             }}>
             Describe the Array Item Object
+          </div>
+          <div style={{ display: 'flex', marginBottom: 4 }}>
+            <div className={styles.headingName} style={{ width: 90 }}>
+              Field Name
+            </div>
+            <div className={styles.headingVal}>Data Type</div>
+          </div>
+          <div className={styles.keyValRow}>
+            <div className={styles.keyValCol}>
+              <TextInput
+                disabled={disabled}
+                name={`${responseFieldName}.field`}
+                onChange={handleChange}
+                value={values.modelAPI.response.field}
+                maxLength={128}
+                style={{ marginBottom: 0 }}
+                error={
+                  Boolean(fieldErrors?.field && touchedFields?.field)
+                    ? fieldErrors?.field
+                    : undefined
+                }
+              />
+            </div>
+            <div className={styles.keyValCol}>
+              <SelectInput<OpenApiDataTypes>
+                disabled={disabled}
+                name={`${responseFieldName}.schema.items.properties._AIVDATA_.type`}
+                options={arrItemObjDataTypeOptions}
+                value={
+                  values.modelAPI.response.schema.items?.properties?._AIVDATA_
+                    .type
+                }
+                onSyntheticChange={handleChange}
+                style={{ marginBottom: 0 }}
+              />
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {values.modelAPI.response.mediaType === MediaType.APP_JSON &&
+      values.modelAPI.response.schema.type === OpenApiDataTypes.OBJECT &&
+      values.modelAPI.response.fieldValueType === OpenApiDataTypes.ARRAY ? (
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div
+            style={{
+              color: ColorPalette.gray,
+              fontWeight: 600,
+              marginBottom: 10,
+              marginTop: 15,
+              fontSize: 14,
+            }}>
+            Describe the Field Array Item
           </div>
           <div style={{ display: 'flex', marginBottom: 4 }}>
             <div className={styles.headingName} style={{ width: 90 }}>
@@ -182,10 +258,11 @@ function ResponsePropertyInput(props: ResponsePropertyInputProps) {
             <div className={styles.keyValCol}>
               <SelectInput<OpenApiDataTypes>
                 disabled={disabled}
-                name={`${responseFieldName}.schema.items.properties.data.type`}
+                name={`${responseFieldName}.schema.properties._AIVDATA_.items.type`}
                 options={arrItemObjDataTypeOptions}
                 value={
-                  values.modelAPI.response.schema.items?.properties?.data.type
+                  values.modelAPI.response.schema.properties?._AIVDATA_.items
+                    ?.type
                 }
                 onSyntheticChange={handleChange}
                 style={{ marginBottom: 0 }}

@@ -30,7 +30,6 @@
     "test-withlogs": "jest --verbose",
     "test-nocov": "jest --silent --verbose --coverage=false --watch",
     "test-cov": "jest --coverage",
-    "test": "jest --silent --verbose",
     "post-update": "echo \"codesandbox preview only, need an update\" && yarn upgrade --latest",
     "coverage": "npx jest --silent",
     "dep-check": "npm audit --json | npx npm-audit-markdown --output npm-audit-report.md & npx markdown-to-html-cli --source npm-audit-report.md --output npm-audit-report.html"
