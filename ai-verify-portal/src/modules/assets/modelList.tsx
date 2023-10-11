@@ -121,8 +121,7 @@ export const GET_MODELS = gql`
         response {
           statusCode
           mediaType
-          type
-          field
+          schema
         }
         requestConfig {
           sslVerify
