@@ -12,7 +12,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 36,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -46,7 +50,11 @@
           "maxH": 36,
           "minW": 1,
           "minH": 2,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1684304879591",
@@ -58,7 +66,11 @@
           "maxH": 36,
           "minW": 1,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1684304911088",
@@ -70,7 +82,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 7,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1684304925928",
@@ -82,7 +98,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1684304938875",
@@ -94,7 +114,11 @@
           "maxH": 36,
           "minW": 1,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1684305199177",
@@ -106,7 +130,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1684305207089",
@@ -118,7 +146,11 @@
           "maxH": 36,
           "minW": 1,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685631370924",
@@ -130,7 +162,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 14,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685886404602",
@@ -142,7 +178,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 3,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -279,7 +319,11 @@
           "maxH": 36,
           "minW": 1,
           "minH": 2,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1684928997631",
@@ -291,10 +335,14 @@
           "maxH": 36,
           "minW": 1,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
-          "i": "1696473432607",
+          "i": "1685631388849",
           "x": 0,
           "y": 3,
           "w": 12,
@@ -302,8 +350,12 @@
           "maxW": 12,
           "maxH": 36,
           "minW": 12,
-          "minH": 27,
-          "static": false
+          "minH": 25,
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -344,10 +396,10 @@
             "bgcolor": null
           },
           "widgetGID": "aiverify.stock.process_checklist:area_descriptions",
-          "key": "1696473432607",
+          "key": "1685631388849",
           "properties": {
             "startIndex": "0",
-            "numAreas": "6"
+            "numAreas": "5"
           }
         }
       ]
@@ -364,7 +416,11 @@
           "maxH": 36,
           "minW": 1,
           "minH": 2,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1684305382986",
@@ -376,7 +432,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1684465230294",
@@ -388,7 +448,11 @@
           "maxH": 36,
           "minW": 1,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1684465261406",
@@ -400,7 +464,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 5,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1684929172245",
@@ -412,7 +480,11 @@
           "maxH": 36,
           "minW": 1,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685631407575",
@@ -424,7 +496,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 12,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685893522216",
@@ -436,7 +512,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 8,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -546,7 +626,11 @@
           "maxH": 5,
           "minW": 12,
           "minH": 3,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685516237216",
@@ -558,7 +642,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685889250883",
@@ -570,7 +658,11 @@
           "maxH": 36,
           "minW": 6,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1689038789267",
@@ -582,7 +674,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 10,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -652,7 +748,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 10,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1689124848774",
@@ -664,7 +764,11 @@
           "maxH": 5,
           "minW": 12,
           "minH": 3,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1689124873005",
@@ -676,7 +780,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1689124907239",
@@ -688,7 +796,11 @@
           "maxH": 36,
           "minW": 6,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -758,7 +870,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 12,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685887277893",
@@ -770,7 +886,11 @@
           "maxH": 36,
           "minW": 1,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -816,7 +936,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 10,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685889602140",
@@ -828,7 +952,11 @@
           "maxH": 36,
           "minW": 6,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -872,7 +1000,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 10,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685516376598",
@@ -884,7 +1016,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685516380843",
@@ -896,7 +1032,11 @@
           "maxH": 5,
           "minW": 12,
           "minH": 3,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685889740917",
@@ -908,7 +1048,11 @@
           "maxH": 36,
           "minW": 6,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -978,7 +1122,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 10,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685889767504",
@@ -990,7 +1138,11 @@
           "maxH": 36,
           "minW": 6,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -1034,7 +1186,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 10,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -1064,7 +1220,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 6,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685889893427",
@@ -1076,7 +1236,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 18,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685889916737",
@@ -1088,7 +1252,11 @@
           "maxH": 36,
           "minW": 1,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -1144,7 +1312,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 10,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1689125218480",
@@ -1156,7 +1328,11 @@
           "maxH": 5,
           "minW": 12,
           "minH": 3,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1689125246446",
@@ -1168,7 +1344,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1689125257767",
@@ -1180,7 +1360,11 @@
           "maxH": 36,
           "minW": 6,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -1250,7 +1434,11 @@
           "maxH": 36,
           "minW": 1,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685890208476",
@@ -1262,7 +1450,11 @@
           "maxH": 36,
           "minW": 6,
           "minH": 3,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685890331001",
@@ -1274,7 +1466,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 15,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -1330,7 +1526,11 @@
           "maxH": 36,
           "minW": 6,
           "minH": 3,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -1360,7 +1560,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 10,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685890447088",
@@ -1372,7 +1576,11 @@
           "maxH": 36,
           "minW": 6,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -1416,7 +1624,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 10,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685516477764",
@@ -1428,7 +1640,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685516484179",
@@ -1440,7 +1656,11 @@
           "maxH": 5,
           "minW": 12,
           "minH": 3,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685890471172",
@@ -1452,7 +1672,11 @@
           "maxH": 36,
           "minW": 6,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -1522,7 +1746,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 10,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685890498307",
@@ -1534,7 +1762,11 @@
           "maxH": 36,
           "minW": 6,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -1578,7 +1810,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 10,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685890535206",
@@ -1590,7 +1826,11 @@
           "maxH": 36,
           "minW": 6,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -1625,62 +1865,6 @@
     {
       "layouts": [
         {
-          "i": "1696318155552",
-          "x": 0,
-          "y": 3,
-          "w": 12,
-          "h": 33,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false
-        },
-        {
-          "i": "1696467381716",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 3,
-          "maxW": 12,
-          "maxH": 5,
-          "minW": 12,
-          "minH": 3,
-          "static": false
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:summary_organisational_considerations",
-          "key": "1696318155552",
-          "properties": null
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:area_header",
-          "key": "1696467381716",
-          "properties": {
-            "areaIndex": "6"
-          }
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
           "i": "1684930052804",
           "x": 0,
           "y": 0,
@@ -1690,7 +1874,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 36,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -1723,7 +1911,11 @@
           "maxH": 36,
           "minW": 1,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685516588483",
@@ -1735,7 +1927,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1689037960180",
@@ -1747,7 +1943,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 10,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -1803,7 +2003,11 @@
           "maxH": 36,
           "minW": 1,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685516667515",
@@ -1815,7 +2019,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1689038035534",
@@ -1827,7 +2035,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 10,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -1883,7 +2095,11 @@
           "maxH": 36,
           "minW": 1,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685516785323",
@@ -1895,7 +2111,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1689038053574",
@@ -1907,7 +2127,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 10,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -1963,7 +2187,11 @@
           "maxH": 36,
           "minW": 1,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685518211988",
@@ -1975,7 +2203,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1689038119514",
@@ -1987,7 +2219,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 10,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -2043,7 +2279,11 @@
           "maxH": 36,
           "minW": 1,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685518538928",
@@ -2055,7 +2295,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1689038150392",
@@ -2067,7 +2311,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 10,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -2123,7 +2371,11 @@
           "maxH": 36,
           "minW": 1,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685518757391",
@@ -2135,7 +2387,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1689038218493",
@@ -2147,7 +2403,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 10,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -2203,7 +2463,11 @@
           "maxH": 36,
           "minW": 1,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685518875495",
@@ -2215,7 +2479,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1689038282752",
@@ -2227,7 +2495,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 6,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -2283,7 +2555,11 @@
           "maxH": 36,
           "minW": 1,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685519317659",
@@ -2295,7 +2571,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1689038305748",
@@ -2307,7 +2587,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 10,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -2363,7 +2647,11 @@
           "maxH": 36,
           "minW": 1,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685519519853",
@@ -2375,7 +2663,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1689038357949",
@@ -2387,7 +2679,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 10,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -2443,7 +2739,11 @@
           "maxH": 36,
           "minW": 1,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685519702139",
@@ -2455,7 +2755,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1689038400593",
@@ -2467,7 +2771,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 10,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -2523,7 +2831,11 @@
           "maxH": 36,
           "minW": 1,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685519928964",
@@ -2535,7 +2847,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1689038443355",
@@ -2547,7 +2863,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 10,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -2594,86 +2914,6 @@
     {
       "layouts": [
         {
-          "i": "1696318292761",
-          "x": 0,
-          "y": 0,
-          "w": 12,
-          "h": 1,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 1,
-          "minH": 1,
-          "static": false
-        },
-        {
-          "i": "1696318333665",
-          "x": 0,
-          "y": 1,
-          "w": 12,
-          "h": 1,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 1,
-          "static": false
-        },
-        {
-          "i": "1696318354512",
-          "x": 0,
-          "y": 2,
-          "w": 12,
-          "h": 34,
-          "maxW": 12,
-          "maxH": 36,
-          "minW": 12,
-          "minH": 10,
-          "static": false
-        }
-      ],
-      "reportWidgets": [
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "center",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.reports:page_title2",
-          "key": "1696318292761",
-          "properties": {
-            "title": "Organisational Considerations"
-          }
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.reports:page_divider",
-          "key": "1696318333665",
-          "properties": null
-        },
-        {
-          "layoutItemProperties": {
-            "justifyContent": "left",
-            "alignItems": "top",
-            "textAlign": "left",
-            "color": null,
-            "bgcolor": null
-          },
-          "widgetGID": "aiverify.stock.process_checklist:organisational_considerations_responses",
-          "key": "1696318354512",
-          "properties": null
-        }
-      ]
-    },
-    {
-      "layouts": [
-        {
           "i": "1684934721040",
           "x": 0,
           "y": 0,
@@ -2683,7 +2923,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 36,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -2716,7 +2960,11 @@
           "maxH": 36,
           "minW": 1,
           "minH": 2,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685630872994",
@@ -2728,7 +2976,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 3,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -2772,7 +3024,11 @@
           "maxH": 36,
           "minW": 6,
           "minH": 3,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -2802,7 +3058,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 15,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -2832,7 +3092,11 @@
           "maxH": 36,
           "minW": 1,
           "minH": 2,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685630924980",
@@ -2844,7 +3108,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 5,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -2888,7 +3156,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 18,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685894027970",
@@ -2900,7 +3172,11 @@
           "maxH": 36,
           "minW": 1,
           "minH": 1,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -2944,7 +3220,11 @@
           "maxH": 36,
           "minW": 1,
           "minH": 2,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685630985111",
@@ -2956,7 +3236,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 4,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -3000,7 +3284,11 @@
           "maxH": 36,
           "minW": 4,
           "minH": 2,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685891214915",
@@ -3012,7 +3300,11 @@
           "maxH": 36,
           "minW": 2,
           "minH": 2,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685891223150",
@@ -3024,7 +3316,11 @@
           "maxH": 36,
           "minW": 12,
           "minH": 16,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         },
         {
           "i": "1685891232501",
@@ -3036,7 +3332,11 @@
           "maxH": 36,
           "minW": 2,
           "minH": 2,
-          "static": false
+          "static": false,
+          "isDraggable": null,
+          "isResizable": null,
+          "resizeHandles": null,
+          "isBounded": null
         }
       ],
       "reportWidgets": [
@@ -3095,16 +3395,12 @@
   ],
   "globalVars": [
     {
-      "key": "name",
-      "value": "AI Verify Summary Report for Classification Model"
+      "key": "modelName",
+      "value": "User input model name"
     },
     {
-      "key": "description",
-      "value": "Template AI Verify summary report for classification model"
-    },
-    {
-      "key": "reportTitle",
-      "value": "AI Verify Summary Report for Classification Model"
+      "key": "modelPurpose",
+      "value": "User input model Purpose"
     }
   ]
 }
