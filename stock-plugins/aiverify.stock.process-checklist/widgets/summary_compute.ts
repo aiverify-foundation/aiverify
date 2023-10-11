@@ -10,6 +10,7 @@ import { config as dataGovernanceConfig } from '../inputs/config_data_governance
 import { config as accountabilityConfig } from '../inputs/config_accountability';
 import { config as humanAgencyOversightConfig } from '../inputs/config_human_agency_oversight';
 import { config as inclusiveGrowthConfig } from '../inputs/config_inclusive_growth_soc_env';
+import { config as organisationConsiderationsConfig } from '../inputs/config_organisational_considerations';
 
 export const processChecklistCids = [
 	"transparency_process_checklist",
@@ -23,6 +24,7 @@ export const processChecklistCids = [
 	"accountability_process_checklist",
 	"human_agency_oversight_process_checklist",
 	"inclusive_growth_process_checklist",
+	"organisational_considerations_process_checklist",
 ]
 
 export const processChecklistConfigs = {
@@ -37,6 +39,7 @@ export const processChecklistConfigs = {
   [processChecklistCids[8]]: accountabilityConfig,
   [processChecklistCids[9]]: humanAgencyOversightConfig,
   [processChecklistCids[10]]: inclusiveGrowthConfig,
+  [processChecklistCids[11]]: organisationConsiderationsConfig,
 }
 
 export const processChecklistConfigsByPrinciple = processChecklistCids.reduce((acc, cid, index) => {
@@ -115,9 +118,7 @@ export function getPrincipleCompletionStatistics(config, data): ProcessChecklist
 
 
 export function getCompletionStatistics(getIBData) {
-	// console.log("getCompletionStatistics", processChecklist);
 	const totals: ProcessChecklistStatistics = {
-
 		totalQuestions: 0,
 		numCompleted: 0,
 		numYes: 0,
@@ -129,7 +130,7 @@ export function getCompletionStatistics(getIBData) {
 
 	for (const cid of processChecklistCids) {
     const config = processChecklistConfigs[cid];
-    const data = getIBData(cid);
+    const data = getIBData(cid) || {};
 		const substats = getPrincipleCompletionStatistics(config, data);
 		totals.totalQuestions += substats.totalQuestions;
 		totals.numCompleted += substats.numCompleted;

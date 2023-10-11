@@ -36,7 +36,7 @@ export const MyAreaDescriptions = ({ props }) => {
       startIndex = 0;
     let numAreas = myParseInt(props.properties.numAreas);
     if (numAreas <= 0 || isNaN(numAreas))
-      numAreas = 5;
+      numAreas = 6;
     // console.log("startIndex", startIndex, "numAreas", numAreas)
     setData({
       startIndex,
@@ -50,18 +50,36 @@ export const MyAreaDescriptions = ({ props }) => {
     {data && data.areaSlice.map((area, index) => (
       <div key={`area-desc-${area}`}>
         <MyHR />
-        <div className="c-primary" style={styles.area}><b>Area {data.startIndex+index+1}:</b> {area.short_description}</div>
-        <div style={styles.paragraph}>
+        {area.id === 'others'?
+        <>
           {area.principles.map(principle => (
-            <div 
-              key={`area-principle-desc-${principle.principle}`}
-              style={styles.principle}
-            >
-              <b>{principle.name}</b>&nbsp;-&nbsp; 
-              <span>{principle.short_description2}</span>
+          <>
+            <div className="c-primary" style={styles.area}><b>{principle.principle}</b></div>
+            <div style={styles.paragraph}>
+              <div 
+                key={`area-principle-desc-${principle.principle}`}
+                style={styles.principle}
+              >
+                <span>{principle.short_description}</span>
+              </div>
             </div>
+          </>
           ))}
-        </div>
+        </> : <>
+          <div className="c-primary" style={styles.area}><b>Area {data.startIndex+index+1}:</b> {area.short_description}</div>
+          <div style={styles.paragraph}>
+            {area.principles.map(principle => (
+              <div 
+                key={`area-principle-desc-${principle.principle}`}
+                style={styles.principle}
+              >
+                <b>{principle.name}</b>&nbsp;-&nbsp; 
+                <span>{principle.short_description2}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      }
       </div>
     ))}
     </div>
