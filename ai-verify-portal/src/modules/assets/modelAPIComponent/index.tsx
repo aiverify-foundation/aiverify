@@ -101,7 +101,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
     useMutation<GqlDeleteModelAPIConfigResult>(GQL_DELETE_MODELAPI);
   const router = useRouter();
   const initialFormValues = formValues || defaultFormValues;
-  let visibleTabs: Tab[] = [];
+  let visibleTabs: Tab[] = [Tab.RESPONSE];
 
   if (PresetHelpItems.indexOf(PresetHelpItem.GET) > -1) {
     visibleTabs.push(Tab.URL_PARAMS);

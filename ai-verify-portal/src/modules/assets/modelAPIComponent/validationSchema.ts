@@ -1,5 +1,11 @@
 import { object, string, number, bool, array, addMethod, boolean } from 'yup';
-import { AuthType, MediaType, RequestMethod, URLParamType } from './types';
+import {
+  AuthType,
+  MediaType,
+  OpenApiDataTypes,
+  RequestMethod,
+  URLParamType,
+} from './types';
 
 declare module 'yup' {
   //@ts-ignore
@@ -97,9 +103,29 @@ export const ModelAPIFormValidationSchema = object({
       mediaType: string().required('Required'),
       schema: object({
         type: string().required('Required'),
+        items: object().when('type', {
+          is: OpenApiDataTypes.ARRAY,
+          then: () =>
+            object({
+              type: string().required('Required'),
+            }),
+          otherwise: () => object({}),
+        }),
       }),
-      field: string().when('mediaType', {
-        is: MediaType.APP_JSON,
+      field: string().when(['mediaType', 'schema.type', 'schema.items.type'], {
+        is: (
+          mediaType: string,
+          schemaRootType: string,
+          schemaArrayItemsType: string
+        ) => {
+          return (
+            (mediaType === MediaType.APP_JSON &&
+              schemaRootType === OpenApiDataTypes.OBJECT) ||
+            (mediaType === MediaType.APP_JSON &&
+              schemaRootType === OpenApiDataTypes.ARRAY &&
+              schemaArrayItemsType === OpenApiDataTypes.OBJECT)
+          );
+        },
         then: (schema) => schema.required('Required'),
       }),
     }),

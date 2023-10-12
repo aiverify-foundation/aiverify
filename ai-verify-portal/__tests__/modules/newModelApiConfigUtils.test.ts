@@ -36,7 +36,7 @@ describe('Model API Config Utility Functions', () => {
     ];
     expect(result[0]).toMatchObject(expected1);
     expect(result[1]).toBe('dataTestField');
-    expect(result[2]).toBe('array');
+    expect(result[2]).toBe('string');
   });
 
   it('should replace schema.items.properties.dataTestField with _AIVDATA_', () => {
@@ -70,6 +70,33 @@ describe('Model API Config Utility Functions', () => {
     expect(result[0]).toMatchObject(expected2);
     expect(result[1]).toBe('dataTestField');
     expect(result[2]).toBe('object');
+  });
+
+  it('should replace schema.properties.dataTestField with _AIVDATA_', () => {
+    const response3 = {
+      type: 'object',
+      properties: {
+        dataTestField: {
+          type: 'string',
+        },
+      },
+    } as ResponseSchemaGQL;
+    const expected3 = {
+      type: 'object',
+      properties: {
+        _AIVDATA_: {
+          type: 'string',
+        },
+      },
+    };
+    const result = replaceDynamicFieldnameWith_AIVDATA(response3) as [
+      ResponseSchemaForm,
+      string,
+      OpenApiDataTypes
+    ];
+    expect(result[0]).toMatchObject(expected3);
+    expect(result[1]).toBe('dataTestField');
+    expect(result[2]).toBe('string');
   });
 
   it('should return the same response', () => {

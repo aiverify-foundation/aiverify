@@ -62,17 +62,6 @@ function TabButtonsGroup(props: TabButtonsGroupProps) {
               Request Body
             </div>
           )}
-      {isTabVisible(Tab.HEADERS) && (
-        <div
-          id={`tab${Tab.HEADERS}`}
-          className={clsx(
-            styles.tabBtn,
-            activeTab === Tab.HEADERS ? styles.tabBtn__selected : null
-          )}
-          onClick={handleTabClick(Tab.HEADERS)}>
-          Additional Request Headers
-        </div>
-      )}
       {isTabVisible(Tab.RESPONSE) && (
         <div
           id={`tab${Tab.RESPONSE}`}
@@ -82,6 +71,17 @@ function TabButtonsGroup(props: TabButtonsGroupProps) {
           )}
           onClick={handleTabClick(Tab.RESPONSE)}>
           Response Properties
+        </div>
+      )}
+      {isTabVisible(Tab.HEADERS) && (
+        <div
+          id={`tab${Tab.HEADERS}`}
+          className={clsx(
+            styles.tabBtn,
+            activeTab === Tab.HEADERS ? styles.tabBtn__selected : null
+          )}
+          onClick={handleTabClick(Tab.HEADERS)}>
+          Additional Request Headers
         </div>
       )}
       {isTabVisible(Tab.AUTHENTICATION) && (

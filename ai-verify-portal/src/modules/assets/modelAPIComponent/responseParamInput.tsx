@@ -89,14 +89,15 @@ function ResponsePropertyInput(props: ResponsePropertyInputProps) {
     if (mediaType === MediaType.TEXT_PLAIN) {
       setFieldValue(
         `${responseFieldName}.schema.type`,
-        OpenApiDataTypes.INTEGER
+        values.modelAPI.response.schema.type || OpenApiDataTypes.INTEGER
       );
     } else if (mediaType === MediaType.APP_JSON) {
-      setFieldValue(`${responseFieldName}.schema.type`, OpenApiDataTypes.ARRAY);
+      setFieldValue(
+        `${responseFieldName}.schema.type`,
+        values.modelAPI.response.schema.type || OpenApiDataTypes.ARRAY
+      );
     }
   }, [values.modelAPI.response.mediaType]);
-
-  console.log(values.modelAPI);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>

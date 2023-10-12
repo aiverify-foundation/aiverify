@@ -271,24 +271,37 @@ export function replaceDynamicFieldnameWith_AIVDATA(
         OpenApiDataTypes.ARRAY &&
       schema.properties[objectPropertyNames[0]].items !== undefined
     ) {
+      const itemDataType = schema.properties[objectPropertyNames[0]].items
+        ?.type as OpenApiDataTypes;
       outputSchema = {
         type: schema.type,
         properties: {
           _AIVDATA_: {
             type: schema.properties[objectPropertyNames[0]].type,
             items: {
-              type: schema.properties[objectPropertyNames[0]].items
-                ?.type as OpenApiDataTypes,
+              type: itemDataType,
             },
           },
         },
       };
 
-      return [
-        outputSchema,
-        objectPropertyNames[0],
-        schema.properties[objectPropertyNames[0]].type,
-      ];
+      return [outputSchema, objectPropertyNames[0], itemDataType];
+    }
+
+    if (
+      schema.properties[objectPropertyNames[0]].type !== OpenApiDataTypes.ARRAY
+    ) {
+      const itemDataType = schema.properties[objectPropertyNames[0]].type;
+      outputSchema = {
+        type: schema.type,
+        properties: {
+          _AIVDATA_: {
+            type: itemDataType,
+          },
+        },
+      };
+
+      return [outputSchema, objectPropertyNames[0], itemDataType];
     }
   }
 
