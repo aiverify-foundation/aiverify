@@ -174,8 +174,7 @@ export const GET_PROJECT = gql`
             response {
               statusCode
               mediaType
-              type
-              field
+              schema
             }
             requestConfig {
               sslVerify

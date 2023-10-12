@@ -6,6 +6,7 @@ import { optionsMediaTypes, optionsOpenApiDataTypes } from './selectOptions';
 import { FormikContextType } from 'formik';
 import { ColorPalette } from 'src/components/colorPalette';
 import { useEffect } from 'react';
+import { ResponsePreview } from './responsePreview';
 
 const responseFieldName = 'modelAPI.response';
 
@@ -30,7 +31,7 @@ function ResponseInputHeading(props: ResponseInputHeadingProps) {
   return (
     <div style={{ display: 'flex', marginBottom: 4 }}>
       <div className={styles.headingName} style={{ width: 90 }}>
-        Status Code
+        Success Status Code
       </div>
       <div className={styles.headingVal}>Media Type</div>
       <div className={styles.headingVal}>Data Type</div>
@@ -192,7 +193,7 @@ function ResponsePropertyInput(props: ResponsePropertyInputProps) {
               color: ColorPalette.gray,
               fontWeight: 600,
               marginBottom: 10,
-              marginTop: 25,
+              marginTop: 35,
               fontSize: 14,
             }}>
             Describe the Array Item Object
@@ -245,7 +246,7 @@ function ResponsePropertyInput(props: ResponsePropertyInputProps) {
               color: ColorPalette.gray,
               fontWeight: 600,
               marginBottom: 10,
-              marginTop: 15,
+              marginTop: 35,
               fontSize: 14,
             }}>
             Describe the Field Array Item
@@ -272,6 +273,7 @@ function ResponsePropertyInput(props: ResponsePropertyInputProps) {
           </div>
         </div>
       ) : null}
+      <ResponsePreview responseType={values.modelAPI.response} />
     </div>
   );
 }
