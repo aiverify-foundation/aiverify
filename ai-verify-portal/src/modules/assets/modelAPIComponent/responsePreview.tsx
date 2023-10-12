@@ -17,7 +17,7 @@ function ResponsePreview(props: ReponsePreviewProps) {
       if (responseType.fieldValueType !== OpenApiDataTypes.ARRAY) {
         let val = '0.1';
         if (responseType.fieldValueType === OpenApiDataTypes.STRING) {
-          val = 'age';
+          val = "'aa'";
         } else if (responseType.fieldValueType === OpenApiDataTypes.BOOLEAN) {
           val = 'true';
         }
@@ -35,7 +35,7 @@ function ResponsePreview(props: ReponsePreviewProps) {
           responseType.schema.properties?._AIVDATA_.items?.type ===
           OpenApiDataTypes.STRING
         ) {
-          val = 'age, name, gender';
+          val = "'aa', 'cc', 'zz'";
         } else if (
           responseType.schema.properties?._AIVDATA_.items?.type ===
           OpenApiDataTypes.BOOLEAN
@@ -50,7 +50,7 @@ function ResponsePreview(props: ReponsePreviewProps) {
       if (responseType.schema.items?.type !== OpenApiDataTypes.OBJECT) {
         let val = '0.1, 0.4, 0.7';
         if (responseType.schema.items?.type === OpenApiDataTypes.STRING) {
-          val = 'age, name, gender';
+          val = "'aa', 'cc', 'zz'";
         } else if (
           responseType.schema.items?.type === OpenApiDataTypes.BOOLEAN
         ) {
@@ -65,17 +65,17 @@ function ResponsePreview(props: ReponsePreviewProps) {
           responseType.schema.items.properties?._AIVDATA_.type ===
           OpenApiDataTypes.INTEGER
         ) {
-          val = `{ ${responseType.field}: '0.1' }, { ${responseType.field}: '0.4' }, { ${responseType.field}: '0.7' }`;
+          val = `{ ${responseType.field}: 0.1 }, { ${responseType.field}: 0.4 }, { ${responseType.field}: 0.7 }`;
         } else if (
           responseType.schema.items.properties?._AIVDATA_.type ===
           OpenApiDataTypes.STRING
         ) {
-          val = `{ ${responseType.field}: 'age' }, { ${responseType.field}: 'name' }, { ${responseType.field}: 'gender' }`;
+          val = `{ ${responseType.field}: 'aa' }, { ${responseType.field}: 'cc' }, { ${responseType.field}: 'zz' }`;
         } else if (
           responseType.schema.items.properties?._AIVDATA_.type ===
           OpenApiDataTypes.BOOLEAN
         ) {
-          val = `{ ${responseType.field}: 'true' }, { ${responseType.field}: 'true' }, { ${responseType.field}: 'false' }`;
+          val = `{ ${responseType.field}: true }, { ${responseType.field}: true }, { ${responseType.field}: false }`;
         }
         shape = `[
   ${val}
