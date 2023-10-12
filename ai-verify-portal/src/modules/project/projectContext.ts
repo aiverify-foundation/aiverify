@@ -273,7 +273,7 @@ export function useProjectStore(
       };
       createProjectFromTemplateFn(project, templateId)
         .then(async (doc: Partial<Project>) => {
-          const newGlobalVars = [];
+          const newGlobalVars = doc.globalVars || [];
           for (const propertyName in doc.projectInfo) {
             if (propertyName === '__typename') continue;
             const gVarValue =
