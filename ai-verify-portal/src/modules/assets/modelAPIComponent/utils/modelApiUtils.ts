@@ -331,6 +331,17 @@ export function replaceDynamicFieldnameWith_AIVDATA(
 
       return [outputSchema, objectPropertyNames[0], schema.items.type];
     }
+
+    if (schema.items.type !== OpenApiDataTypes.OBJECT) {
+      outputSchema = {
+        type: schema.type,
+        items: {
+          type: schema.items.type,
+        },
+      };
+
+      return outputSchema;
+    }
   }
 
   return {

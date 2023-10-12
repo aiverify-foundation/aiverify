@@ -89,7 +89,6 @@ export const ModelAPIFormValidationSchema = object({
         .typeError('Must be a number'),
       connectionTimeout: number()
         .min(unlimited, 'Invalid. Enter -1 for no timeout')
-        .max(5, 'Must be less than 6')
         .required('Required')
         .typeError('Must be a number'),
       sslVerify: boolean().required('Required'),
