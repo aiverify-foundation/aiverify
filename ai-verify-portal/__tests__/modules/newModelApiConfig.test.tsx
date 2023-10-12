@@ -1290,7 +1290,7 @@ describe('New Model API Config', () => {
         });
 
         userEvent.click(await screen.findByText(/^Response Properties$/i));
-        await screen.findByText(/^Status Code$/i);
+        await screen.findByText(/^Success Status Code$/i);
         expect(screen.queryByText(/^Field Name$/i)).toBeNull();
 
         const responseMediaTypeInputContainer = container.querySelector(
@@ -2437,7 +2437,7 @@ describe('New Model API Config', () => {
         });
 
         userEvent.click(await screen.findByText(/^Response Properties$/i));
-        await screen.findByText(/^Status Code$/i);
+        await screen.findByText(/^Success Status Code$/i);
         expect(screen.queryByText(/^Field Name$/i)).toBeNull();
 
         const responseMediaTypeInputContainer = container.querySelector(
@@ -2644,7 +2644,7 @@ describe('New Model API Config', () => {
         });
 
         userEvent.click(await screen.findByText(/^Response Properties$/i));
-        await screen.findByText(/^Status Code$/i);
+        await screen.findByText(/^Success Status Code$/i);
         expect(screen.queryByText(/^Field Name$/i)).toBeNull();
 
         const responseMediaTypeInputContainer = container.querySelector(
@@ -2872,7 +2872,7 @@ describe('New Model API Config', () => {
         });
 
         userEvent.click(await screen.findByText(/^Response Properties$/i));
-        await screen.findByText(/^Status Code$/i);
+        await screen.findByText(/^Success Status Code$/i);
         expect(screen.queryByText(/^Field Name$/i)).toBeNull();
 
         const responseMediaTypeInputContainer = container.querySelector(
@@ -2965,7 +2965,7 @@ describe('New Model API Config', () => {
       await screen.findByText(/^Config Name$/i);
       expect((await screen.findAllByText(/^Required$/i)).length).toBe(3);
       user.click(await screen.findByText(/^Response Properties$/i));
-      await screen.findByText(/^Status Code$/i);
+      await screen.findByText(/^Success Status Code$/i);
       const statusCodeInput = container.querySelector(
         'input[name="modelAPI.response.statusCode"]'
       ) as HTMLInputElement;

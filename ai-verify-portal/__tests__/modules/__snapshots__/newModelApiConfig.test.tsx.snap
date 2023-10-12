@@ -445,15 +445,15 @@ exports[`New Model API Config Initial Render should render with the correct defa
                         </div>
                         <div
                           class="tabBtn"
-                          id="tab1"
-                        >
-                          Additional Request Headers
-                        </div>
-                        <div
-                          class="tabBtn"
                           id="tab4"
                         >
                           Response Properties
+                        </div>
+                        <div
+                          class="tabBtn"
+                          id="tab1"
+                        >
+                          Additional Request Headers
                         </div>
                         <div
                           class="tabBtn"
