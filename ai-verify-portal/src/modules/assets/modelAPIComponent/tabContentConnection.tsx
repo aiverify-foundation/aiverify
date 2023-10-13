@@ -8,15 +8,24 @@ import { Tooltip, TooltipPosition } from 'src/components/tooltip';
 import InfoIcon from '@mui/icons-material/Info';
 import { ColorPalette } from 'src/components/colorPalette';
 import { CheckBox } from 'src/components/checkbox';
+import { useEffect } from 'react';
 
 const otherReqConfigFieldName = 'modelAPI.requestConfig';
 
 function TabContentConnection({ disabled = false }: { disabled?: boolean }) {
-  const { values, errors, touched, handleChange } =
+  const { values, errors, touched, handleChange, setFieldValue } =
     useFormikContext<ModelApiFormModel>();
   const requestConfig = values.modelAPI.requestConfig;
   const fieldErrors = errors.modelAPI?.requestConfig;
   const touchedFields = touched.modelAPI?.requestConfig;
+
+  useEffect(() => {
+    if (requestConfig.batchStrategy === BatchStrategy.multipart) {
+      setFieldValue('modelAPI.requestBody.isArray', true);
+    } else {
+      setFieldValue('modelAPI.requestBody.isArray', false);
+    }
+  }, [requestConfig.batchStrategy]);
 
   return (
     <div
@@ -245,7 +254,7 @@ function TabContentConnection({ disabled = false }: { disabled?: boolean }) {
           <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
             <SelectInput<BatchStrategy>
               disabled={disabled}
-              label="Batch Strategy"
+              label="Batch Requests"
               name={`${otherReqConfigFieldName}.batchStrategy`}
               options={optionsBatchStrategies}
               onSyntheticChange={handleChange}

@@ -90,13 +90,10 @@ function ResponsePropertyInput(props: ResponsePropertyInputProps) {
     if (mediaType === MediaType.TEXT_PLAIN) {
       setFieldValue(
         `${responseFieldName}.schema.type`,
-        values.modelAPI.response.schema.type || OpenApiDataTypes.INTEGER
+        OpenApiDataTypes.INTEGER
       );
     } else if (mediaType === MediaType.APP_JSON) {
-      setFieldValue(
-        `${responseFieldName}.schema.type`,
-        values.modelAPI.response.schema.type || OpenApiDataTypes.ARRAY
-      );
+      setFieldValue(`${responseFieldName}.schema.type`, OpenApiDataTypes.ARRAY);
     }
   }, [values.modelAPI.response.mediaType]);
 

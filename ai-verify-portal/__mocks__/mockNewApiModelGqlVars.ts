@@ -695,7 +695,7 @@ export const saveConfigVariables_tc010 = {
     requestBody: {
       mediaType: 'application/x-www-form-urlencoded',
       isArray: true,
-      maxItems: 50,
+      // maxItems: 50,
       name: 'foo',
       properties: [
         {
@@ -903,7 +903,7 @@ export const saveConfigVariables_tc013 = {
     requestBody: {
       mediaType: 'application/json',
       isArray: true,
-      maxItems: 100,
+      // maxItems: 100,
       properties: [
         {
           field: 'age',
@@ -973,7 +973,7 @@ export const saveConfigVariables_tc014 = {
     requestBody: {
       mediaType: 'application/json',
       isArray: true,
-      maxItems: 100,
+      // maxItems: 100,
       properties: [
         {
           field: 'age',
@@ -1048,7 +1048,7 @@ export const saveConfigVariables_tc015 = {
     requestBody: {
       mediaType: 'application/json',
       isArray: true,
-      maxItems: 100,
+      // maxItems: 100,
       properties: [
         {
           field: 'age',

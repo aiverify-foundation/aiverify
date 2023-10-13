@@ -23,12 +23,6 @@ import {
   saveConfigVariables_tc014,
   saveConfigVariables_tc015,
 } from '__mocks__/mockNewApiModelGqlVars';
-import { replaceDynamicFieldnameWith_AIVDATA } from 'src/modules/assets/modelAPIComponent/utils/modelApiUtils';
-import {
-  OpenApiDataTypes,
-  ResponseSchemaForm,
-  ResponseSchemaGQL,
-} from 'src/modules/assets/modelAPIComponent/types';
 
 const testTimeout = 20000;
 
@@ -1803,28 +1797,46 @@ describe('New Model API Config', () => {
           userEvent.click(targetOption as HTMLElement);
         });
 
-        await userEvent.click(
-          container.querySelector(
-            'input[name="modelAPI.requestBody.isArray"]'
-          ) as HTMLInputElement
+        // await userEvent.click(
+        //   container.querySelector(
+        //     'input[name="modelAPI.requestBody.isArray"]'
+        //   ) as HTMLInputElement
+        // );
+        const batchStrategyContainer = container.querySelector(
+          'label[for="modelAPI.requestConfig.batchStrategy"]'
+        ) as HTMLElement;
+        userEvent.click(
+          batchStrategyContainer.querySelector(
+            '.aiv__dropdown-indicator'
+          ) as HTMLElement
         );
+        await waitFor(async () => {
+          const options = Array.from(
+            batchStrategyContainer.querySelectorAll('.aiv__option')
+          );
+          expect(options.length).not.toBe(0);
+          const targetOption = options.find(
+            (opt) => opt.textContent === 'multipart'
+          );
+          userEvent.click(targetOption as HTMLElement);
+        });
 
-        await screen.findByText(/^Array Variable Name$/i);
+        // await screen.findByText(/^Array Variable Name$/i);
 
-        const variableNameInput = container.querySelector(
-          'input[name="modelAPI.requestBody.name"]'
-        ) as HTMLInputElement;
-        const maxItemsNameInput = container.querySelector(
-          'input[name="modelAPI.requestBody.maxItems"]'
-        ) as HTMLInputElement;
+        // const variableNameInput = container.querySelector(
+        //   'input[name="modelAPI.requestBody.name"]'
+        // ) as HTMLInputElement;
+        // const maxItemsNameInput = container.querySelector(
+        //   'input[name="modelAPI.requestBody.maxItems"]'
+        // ) as HTMLInputElement;
 
-        expect(variableNameInput).toHaveValue('data');
-        await userEvent.clear(variableNameInput);
-        await userEvent.type(variableNameInput, 'foo');
+        // expect(variableNameInput).toHaveValue('data');
+        // await userEvent.clear(variableNameInput);
+        // await userEvent.type(variableNameInput, 'foo');
 
-        expect(maxItemsNameInput).toHaveValue('100');
-        await userEvent.clear(maxItemsNameInput);
-        await userEvent.type(maxItemsNameInput, '50');
+        // expect(maxItemsNameInput).toHaveValue('100');
+        // await userEvent.clear(maxItemsNameInput);
+        // await userEvent.type(maxItemsNameInput, '50');
 
         await userEvent.type(
           container.querySelector(
@@ -2368,12 +2380,12 @@ describe('New Model API Config', () => {
           ) as HTMLInputElement,
           'https://localhost:5000/predict/tc013'
         );
-        await userEvent.click(
-          container.querySelector(
-            'input[name="modelAPI.requestBody.isArray"]'
-          ) as HTMLInputElement
-        );
-        await screen.findByText(/^Max Items$/i);
+        // await userEvent.click(
+        //   container.querySelector(
+        //     'input[name="modelAPI.requestBody.isArray"]'
+        //   ) as HTMLInputElement
+        // );
+        // await screen.findByText(/^Max Items$/i);
         await userEvent.type(
           container.querySelector(
             'input[name="reqBodyParamName"]'
@@ -2575,12 +2587,12 @@ describe('New Model API Config', () => {
           ) as HTMLInputElement,
           'https://localhost:5000/predict/tc014'
         );
-        await userEvent.click(
-          container.querySelector(
-            'input[name="modelAPI.requestBody.isArray"]'
-          ) as HTMLInputElement
-        );
-        await screen.findByText(/^Max Items$/i);
+        // await userEvent.click(
+        //   container.querySelector(
+        //     'input[name="modelAPI.requestBody.isArray"]'
+        //   ) as HTMLInputElement
+        // );
+        // await screen.findByText(/^Max Items$/i);
         await userEvent.type(
           container.querySelector(
             'input[name="reqBodyParamName"]'
@@ -2803,12 +2815,12 @@ describe('New Model API Config', () => {
           ) as HTMLInputElement,
           'https://localhost:5000/predict/tc015'
         );
-        await userEvent.click(
-          container.querySelector(
-            'input[name="modelAPI.requestBody.isArray"]'
-          ) as HTMLInputElement
-        );
-        await screen.findByText(/^Max Items$/i);
+        // await userEvent.click(
+        //   container.querySelector(
+        //     'input[name="modelAPI.requestBody.isArray"]'
+        //   ) as HTMLInputElement
+        // );
+        // await screen.findByText(/^Max Items$/i);
         await userEvent.type(
           container.querySelector(
             'input[name="reqBodyParamName"]'

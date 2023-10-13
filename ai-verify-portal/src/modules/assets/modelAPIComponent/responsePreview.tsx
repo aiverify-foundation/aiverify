@@ -7,7 +7,6 @@ type ReponsePreviewProps = {
 
 function ResponsePreview(props: ReponsePreviewProps) {
   const { responseType } = props;
-  const { schema } = responseType;
 
   let shape = '';
   if (responseType.mediaType === MediaType.TEXT_PLAIN) {
@@ -15,7 +14,7 @@ function ResponsePreview(props: ReponsePreviewProps) {
   } else if (responseType.mediaType === MediaType.APP_JSON) {
     if (responseType.schema.type === OpenApiDataTypes.OBJECT) {
       if (responseType.fieldValueType !== OpenApiDataTypes.ARRAY) {
-        let val = '0.1';
+        let val = '1';
         if (responseType.fieldValueType === OpenApiDataTypes.STRING) {
           val = "'aa'";
         } else if (responseType.fieldValueType === OpenApiDataTypes.BOOLEAN) {
@@ -30,7 +29,7 @@ function ResponsePreview(props: ReponsePreviewProps) {
           responseType.schema.properties?._AIVDATA_.items?.type ===
           OpenApiDataTypes.INTEGER
         ) {
-          val = '0.1, 0.4, 0.7';
+          val = '1, 4, 7';
         } else if (
           responseType.schema.properties?._AIVDATA_.items?.type ===
           OpenApiDataTypes.STRING
@@ -48,7 +47,7 @@ function ResponsePreview(props: ReponsePreviewProps) {
       }
     } else if (responseType.schema.type === OpenApiDataTypes.ARRAY) {
       if (responseType.schema.items?.type !== OpenApiDataTypes.OBJECT) {
-        let val = '0.1, 0.4, 0.7';
+        let val = '1, 4, 7';
         if (responseType.schema.items?.type === OpenApiDataTypes.STRING) {
           val = "'aa', 'cc', 'zz'";
         } else if (
@@ -65,7 +64,7 @@ function ResponsePreview(props: ReponsePreviewProps) {
           responseType.schema.items.properties?._AIVDATA_.type ===
           OpenApiDataTypes.INTEGER
         ) {
-          val = `{ ${responseType.field}: 0.1 }, { ${responseType.field}: 0.4 }, { ${responseType.field}: 0.7 }`;
+          val = `{ ${responseType.field}: 1 }, { ${responseType.field}: 4 }, { ${responseType.field}: 7 }`;
         } else if (
           responseType.schema.items.properties?._AIVDATA_.type ===
           OpenApiDataTypes.STRING

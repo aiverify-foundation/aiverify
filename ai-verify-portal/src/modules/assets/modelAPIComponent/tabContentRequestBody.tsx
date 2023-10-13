@@ -122,7 +122,7 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
           alignItems: 'flex-start',
           marginBottom: 15,
         }}>
-        <CheckBox
+        {/* <CheckBox
           label="Format as array"
           disabled={disabled}
           checked={requestBody?.isArray}
@@ -153,7 +153,7 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
               style={{ marginBottom: 0, marginRight: 8, width: 200 }}
             />
           </div>
-        ) : null}
+        ) : null} */}
       </div>
       {requestBody?.mediaType !== MediaType.NONE ? (
         <>
