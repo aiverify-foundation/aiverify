@@ -1,6 +1,12 @@
 import { TextInput } from 'src/components/textInput';
 import styles from './styles/newModelApiConfig.module.css';
-import { MediaType, ModelApiFormModel, OpenApiDataTypes } from './types';
+import {
+  BatchStrategy,
+  MediaType,
+  ModelApiFormModel,
+  OpenApiDataTypes,
+  RequestMethod,
+} from './types';
 import { SelectInput } from 'src/components/selectInput';
 import { optionsMediaTypes, optionsOpenApiDataTypes } from './selectOptions';
 import { FormikContextType } from 'formik';
@@ -63,6 +69,8 @@ function ResponsePropertyInput(props: ResponsePropertyInputProps) {
   const fieldErrors = errors.modelAPI?.response;
   const touchedFields = touched.modelAPI?.response;
   const mediaTypeOptions = [optionsMediaTypes[3], optionsMediaTypes[4]];
+  const requestConfigBatchStrat = values.modelAPI.requestConfig.batchStrategy;
+  const requestMethod = values.modelAPI.method;
 
   let dataTypeOptions: {
     value: OpenApiDataTypes;
@@ -84,6 +92,24 @@ function ResponsePropertyInput(props: ResponsePropertyInputProps) {
     optionsOpenApiDataTypes[2],
     optionsOpenApiDataTypes[3],
   ];
+
+  useEffect(() => {
+    if (
+      requestConfigBatchStrat === BatchStrategy.multipart &&
+      requestMethod === RequestMethod.POST
+    ) {
+      setFieldValue(`${responseFieldName}.mediaType`, MediaType.APP_JSON);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (
+      requestConfigBatchStrat === BatchStrategy.multipart &&
+      requestMethod === RequestMethod.POST
+    ) {
+      setFieldValue(`${responseFieldName}.mediaType`, MediaType.APP_JSON);
+    }
+  }, [requestConfigBatchStrat, requestMethod]);
 
   useEffect(() => {
     const mediaType = values.modelAPI.response.mediaType;
@@ -117,7 +143,11 @@ function ResponsePropertyInput(props: ResponsePropertyInputProps) {
         </div>
         <div className={styles.keyValCol}>
           <SelectInput<MediaType>
-            disabled={disabled}
+            disabled={
+              disabled ||
+              (requestConfigBatchStrat === BatchStrategy.multipart &&
+                requestMethod === RequestMethod.POST)
+            }
             name={`${responseFieldName}.mediaType`}
             options={mediaTypeOptions}
             value={values.modelAPI.response.mediaType}
