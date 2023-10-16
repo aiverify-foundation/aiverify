@@ -214,25 +214,6 @@ export function transformFormValuesToGraphModel(
           type: prop.type,
         })),
       };
-
-      if (requestBody.isArray === true) {
-        if (requestBody.mediaType === MediaType.FORM_URLENCODED) {
-          formToModelApiGqlPayload.modelAPI.requestBody.name = requestBody.name;
-          if (!formToModelApiGqlPayload.modelAPI.requestBody.name) {
-            console.error(
-              'POST:app-json:isArray - requestbody.name is required'
-            );
-          }
-        } else {
-          delete requestBody.name;
-        }
-
-        if (requestBody.maxItems != undefined) {
-          formToModelApiGqlPayload.modelAPI.requestBody.maxItems = parseInt(
-            requestBody.maxItems
-          );
-        }
-      }
     }
   }
 

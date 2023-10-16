@@ -1,5 +1,6 @@
 import { SelectInput } from 'src/components/selectInput';
 import {
+  BatchStrategy,
   BodyParam,
   MediaType,
   ModelApiFormModel,
@@ -12,16 +13,17 @@ import {
   FormikErrors,
   FormikTouched,
 } from 'formik';
-import { optionsMediaTypes } from './selectOptions';
-import { ChangeEvent, useState } from 'react';
+import { optionsBatchStrategies, optionsMediaTypes } from './selectOptions';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { getInputReactKeyId } from '.';
 import {
   RequestBodyParameterInput,
   RequestBodyParamsHeading,
 } from './requestBodyParamInput';
-import { CheckBox } from 'src/components/checkbox';
-import { TextInput } from 'src/components/textInput';
 import { ColorPalette } from 'src/components/colorPalette';
+import InfoIcon from '@mui/icons-material/Info';
+import { Tooltip, TooltipPosition } from 'src/components/tooltip';
+import { TextInput } from 'src/components/textInput';
 
 const defaultBodyParameter: BodyParam = {
   reactPropId: '',
@@ -30,6 +32,7 @@ const defaultBodyParameter: BodyParam = {
 };
 
 const requestBodyFieldName = 'modelAPI.requestBody';
+const otherReqConfigFieldName = 'modelAPI.requestConfig';
 
 const PropExistsMsg = 'Property exists';
 const RequiredMsg = 'Required';
@@ -37,10 +40,13 @@ const RequiredMsg = 'Required';
 function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
   const [newParam, setNewParam] = useState<BodyParam>(defaultBodyParameter);
   const [errorMsg, setErrorMsg] = useState<string>();
-  const { values, errors, touched, handleChange } =
+  const { values, errors, touched, handleChange, setFieldValue } =
     useFormikContext<ModelApiFormModel>();
   const requestBody = values.modelAPI.requestBody;
   const properties = requestBody?.properties || [];
+  const requestConfig = values.modelAPI.requestConfig;
+  const reqConfFieldErrors = errors.modelAPI?.requestConfig;
+  const reqConfTouchedFields = touched.modelAPI?.requestConfig;
   const fieldErrors = errors.modelAPI?.requestBody?.properties as
     | FormikErrors<BodyParam>[]
     | string
@@ -100,60 +106,99 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
     };
   }
 
+  useEffect(() => {
+    if (requestConfig.batchStrategy === BatchStrategy.multipart) {
+      setFieldValue(`${requestBodyFieldName}.mediaType`, MediaType.APP_JSON);
+    }
+  }, [requestConfig.batchStrategy]);
+
   return (
     <div
       style={{
         display: 'flex',
         flexDirection: 'column',
+        marginBottom: 15,
       }}>
-      <SelectInput<MediaType>
-        disabled={disabled}
-        width={240}
-        label="Media Type"
-        name={`${requestBodyFieldName}.mediaType`}
-        options={mediaTypeOptions}
-        value={requestBody?.mediaType}
-        onSyntheticChange={handleChange}
-      />
       <div
         style={{
           display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-start',
+          gap: 10,
+          justifyContent: 'space-between',
           marginBottom: 15,
+          width: 825,
         }}>
-        {/* <CheckBox
-          label="Format as array"
-          disabled={disabled}
-          checked={requestBody?.isArray}
-          name={`${requestBodyFieldName}.isArray`}
-          onChange={handleChange}
-          style={{ marginBottom: 15 }}
+        <SelectInput<MediaType>
+          disabled={
+            disabled || requestConfig.batchStrategy === BatchStrategy.multipart
+          }
+          width={240}
+          label="Media Type"
+          name={`${requestBodyFieldName}.mediaType`}
+          options={mediaTypeOptions}
+          value={requestBody?.mediaType}
+          onSyntheticChange={handleChange}
         />
-        {requestBody && requestBody.isArray ? (
-          <div style={{ display: 'flex' }}>
-            {requestBody.mediaType === MediaType.FORM_URLENCODED ? (
-              <TextInput
-                label="Array Variable Name"
-                disabled={disabled || !requestBody?.isArray}
-                name={`${requestBodyFieldName}.name`}
-                onChange={handleChange}
-                value={requestBody?.name}
-                maxLength={128}
-                style={{ marginBottom: 0, marginRight: 8, width: 200 }}
-              />
-            ) : null}
-            <TextInput
-              label="Max Items"
-              disabled={disabled || !requestBody?.isArray}
-              name={`${requestBodyFieldName}.maxItems`}
-              onChange={handleChange}
-              value={requestBody?.maxItems}
-              maxLength={128}
-              style={{ marginBottom: 0, marginRight: 8, width: 200 }}
-            />
-          </div>
-        ) : null} */}
+        <div style={{ display: 'flex', gap: 10 }}>
+          <SelectInput<BatchStrategy>
+            disabled={disabled}
+            label="Batch Requests"
+            name={`${otherReqConfigFieldName}.batchStrategy`}
+            options={optionsBatchStrategies}
+            onSyntheticChange={handleChange}
+            value={requestConfig.batchStrategy}
+            style={{ marginBottom: 0, width: '100%' }}
+            labelSibling={
+              <Tooltip
+                backgroundColor={ColorPalette.gray}
+                fontColor={ColorPalette.white}
+                content={
+                  <div style={{ marginBottom: 5 }}>
+                    Request batching might improve the time for the test to run.
+                    Batching can only be done with application/json media type.
+                    Enabling this config will change the media/type to
+                    application/json
+                  </div>
+                }
+                position={TooltipPosition.right}
+                offsetLeft={8}>
+                <InfoIcon style={{ fontSize: 18, color: ColorPalette.gray2 }} />
+              </Tooltip>
+            }
+          />
+          <TextInput
+            disabled={
+              disabled || requestConfig.batchStrategy === BatchStrategy.none
+            }
+            label="Batch Limit"
+            name={`${otherReqConfigFieldName}.batchLimit`}
+            onChange={handleChange}
+            value={requestConfig.batchLimit}
+            maxLength={128}
+            style={{ marginBottom: 0, width: '100%' }}
+            error={
+              Boolean(
+                reqConfFieldErrors?.batchLimit &&
+                  reqConfTouchedFields?.batchLimit
+              )
+                ? reqConfFieldErrors?.batchLimit
+                : undefined
+            }
+            labelSibling={
+              <Tooltip
+                backgroundColor={ColorPalette.gray}
+                fontColor={ColorPalette.white}
+                content={
+                  <div style={{ marginBottom: 5 }}>
+                    Defaults to -1, which means there is no limit.
+                  </div>
+                }
+                position={TooltipPosition.right}
+                offsetLeft={8}>
+                <InfoIcon style={{ fontSize: 18, color: ColorPalette.gray2 }} />
+              </Tooltip>
+            }
+          />
+        </div>
       </div>
       {requestBody?.mediaType !== MediaType.NONE ? (
         <>

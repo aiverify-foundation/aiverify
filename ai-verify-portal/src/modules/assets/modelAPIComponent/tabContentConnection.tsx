@@ -8,24 +8,15 @@ import { Tooltip, TooltipPosition } from 'src/components/tooltip';
 import InfoIcon from '@mui/icons-material/Info';
 import { ColorPalette } from 'src/components/colorPalette';
 import { CheckBox } from 'src/components/checkbox';
-import { useEffect } from 'react';
 
 const otherReqConfigFieldName = 'modelAPI.requestConfig';
 
 function TabContentConnection({ disabled = false }: { disabled?: boolean }) {
-  const { values, errors, touched, handleChange, setFieldValue } =
+  const { values, errors, touched, handleChange } =
     useFormikContext<ModelApiFormModel>();
   const requestConfig = values.modelAPI.requestConfig;
   const fieldErrors = errors.modelAPI?.requestConfig;
   const touchedFields = touched.modelAPI?.requestConfig;
-
-  useEffect(() => {
-    if (requestConfig.batchStrategy === BatchStrategy.multipart) {
-      setFieldValue('modelAPI.requestBody.isArray', true);
-    } else {
-      setFieldValue('modelAPI.requestBody.isArray', false);
-    }
-  }, [requestConfig.batchStrategy]);
 
   return (
     <div
@@ -238,74 +229,6 @@ function TabContentConnection({ disabled = false }: { disabled?: boolean }) {
                       seconds) when there is rate limiting. Defaults to -1,
                       which means the timeout is set to httpx&lsquo;s default
                       timeout.
-                    </div>
-                  }
-                  position={TooltipPosition.right}
-                  offsetLeft={8}>
-                  <InfoIcon
-                    style={{ fontSize: 18, color: ColorPalette.gray2 }}
-                  />
-                </Tooltip>
-              }
-            />
-          </div>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', width: 300 }}>
-          <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
-            <SelectInput<BatchStrategy>
-              disabled={disabled}
-              label="Batch Requests"
-              name={`${otherReqConfigFieldName}.batchStrategy`}
-              options={optionsBatchStrategies}
-              onSyntheticChange={handleChange}
-              value={requestConfig.batchStrategy}
-              style={{ marginBottom: 0, width: '100%' }}
-              labelSibling={
-                <Tooltip
-                  backgroundColor={ColorPalette.gray}
-                  fontColor={ColorPalette.white}
-                  content={
-                    <div style={{ marginBottom: 5 }}>
-                      The strategy on how to batch requests. Currently, we
-                      support multipart. Defaults to none, which means there is
-                      no batching for every request
-                    </div>
-                  }
-                  position={TooltipPosition.right}
-                  offsetLeft={8}>
-                  <InfoIcon
-                    style={{ fontSize: 18, color: ColorPalette.gray2 }}
-                  />
-                </Tooltip>
-              }
-            />
-          </div>
-          <div className={styles.keyValRow} style={{ marginBottom: 8 }}>
-            <TextInput
-              disabled={
-                disabled || requestConfig.batchStrategy === BatchStrategy.none
-              }
-              label="Batch Limit"
-              name={`${otherReqConfigFieldName}.batchLimit`}
-              onChange={handleChange}
-              value={requestConfig.batchLimit}
-              maxLength={128}
-              style={{ marginBottom: 0, width: '100%' }}
-              error={
-                Boolean(fieldErrors?.batchLimit && touchedFields?.batchLimit)
-                  ? fieldErrors?.batchLimit
-                  : undefined
-              }
-              labelSibling={
-                <Tooltip
-                  backgroundColor={ColorPalette.gray}
-                  fontColor={ColorPalette.white}
-                  content={
-                    <div style={{ marginBottom: 5 }}>
-                      The maximum number of batched request(s) that can be sent
-                      in a multipart request. This field should only be modified
-                      if batchStrategy is not none. Defaults to -1, which means
-                      there is no limit for the number of batched request(s).
                     </div>
                   }
                   position={TooltipPosition.right}
