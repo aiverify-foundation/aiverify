@@ -381,8 +381,6 @@ export default function CanvasComponent(props: CanvasProps) {
     return projectStore.pages[currentPageNo.current];
   };
 
-  const combinedGlobalVars = projectStore.globalVars;
-
   function handleAddPageClick(pageIndex = -1) {
     setinitialLayout([]);
     setShowPropertiesDialog(false);
@@ -689,7 +687,7 @@ export default function CanvasComponent(props: CanvasProps) {
 
     if (initialLayout.length == 0) {
       projectStore.dispatchPages({
-        type: ARUActionTypes.UPDATE,
+        type: ARUActionTypes.UPDATE_MUTATE,
         index: currentPageNo.current,
         payload: { layouts },
       });
@@ -861,7 +859,6 @@ export default function CanvasComponent(props: CanvasProps) {
       mounted.current = true;
     };
   }, []);
-
   // update report context if global variables updated
   useEffect(() => {
     const page = currentPage();
@@ -1067,8 +1064,7 @@ export default function CanvasComponent(props: CanvasProps) {
         <WidgetDataPopulationDialog
           defaultPosition={dataPopulationDialogPosition}
           reportWidget={selectedWidget}
-          combinedGlobalVars={combinedGlobalVars}
-          getPropertyValueFn={projectStore.widgetProperties.getProperty}
+          globalVars={projectStore.globalVars}
           onClose={handlePropertiesClose}
           onChangeProperty={handleChangeProperty}
         />
