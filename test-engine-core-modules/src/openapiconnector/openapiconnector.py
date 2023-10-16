@@ -115,7 +115,10 @@ class Plugin(IModel):
             httpx.AsyncClient: Returns a httpx AsyncClient
         """
         if Plugin._api_connection_timeout == -1:
-            httpx_timeout = Plugin._api_connection_timeout
+            httpx_timeout = httpx.Timeout(
+                Plugin._api_connection_timeout_default,
+                connect=Plugin._api_connection_timeout_default,
+            )
         else:
             httpx_timeout = httpx.Timeout(
                 Plugin._api_connection_timeout, connect=Plugin._api_connection_timeout
