@@ -247,6 +247,7 @@ const TabContentURLParams = forwardRef<
         style={{
           display: 'flex',
           alignItems: 'center',
+          marginBottom: 18,
         }}>
         <SelectInput<URLParamType>
           disabled={disabled || inputFieldsDisabledStatus[queryTypeFieldName]}
@@ -327,101 +328,6 @@ const TabContentURLParams = forwardRef<
           </div>
         </Tooltip>
       </div>
-      {paramType === URLParamType.QUERY ? (
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            justifyContent: 'flex-start',
-          }}>
-          <CheckBox
-            label="Format as array"
-            disabled={disabled}
-            checked={queryIsArrayInputChecked}
-            name={`${queriesFieldName}.isArray`}
-            onChange={handleChange}
-            style={{ marginBottom: 15 }}
-          />
-          {queryIsArrayInputChecked ? (
-            <div style={{ display: 'flex', marginBottom: 20 }}>
-              <TextInput
-                disabled={disabled || !queryIsArrayInputChecked}
-                label="Array Variable Name"
-                name={`${queriesFieldName}.name`}
-                onChange={handleChange}
-                value={
-                  parameters && parameters.queries
-                    ? parameters.queries.name
-                    : undefined
-                }
-                maxLength={128}
-                style={{ marginBottom: 0, marginRight: 8, width: 200 }}
-              />
-              <TextInput
-                label="Max Items"
-                disabled={disabled || !queryIsArrayInputChecked}
-                name={`${queriesFieldName}.maxItems`}
-                onChange={handleChange}
-                value={
-                  parameters && parameters.queries
-                    ? parameters.queries.maxItems
-                    : undefined
-                }
-                maxLength={128}
-                style={{ marginBottom: 0, marginRight: 8, width: 200 }}
-              />
-            </div>
-          ) : null}
-        </div>
-      ) : (
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            justifyContent: 'flex-start',
-          }}>
-          <CheckBox
-            label="Format as array"
-            disabled={disabled}
-            checked={pathIsArrayInputChecked}
-            name={`${pathsFieldName}.isArray`}
-            onChange={handleChange}
-            style={{ marginBottom: 15 }}
-          />
-          {pathIsArrayInputChecked ? (
-            <div style={{ display: 'flex', marginBottom: 20 }}>
-              <TextInput
-                disabled={disabled}
-                label="Array Variable Name"
-                name={`${pathsFieldName}.name`}
-                onChange={handleChange}
-                value={
-                  parameters && parameters.paths
-                    ? parameters.paths.name
-                    : undefined
-                }
-                maxLength={128}
-                style={{ marginBottom: 0, marginRight: 8, width: 200 }}
-              />
-              <TextInput
-                label="Max Items"
-                disabled={disabled}
-                name={`${pathsFieldName}.maxItems`}
-                onChange={handleChange}
-                value={
-                  parameters && parameters.paths
-                    ? parameters.paths.maxItems
-                    : undefined
-                }
-                maxLength={128}
-                style={{ marginBottom: 0, marginRight: 8, width: 200 }}
-              />
-            </div>
-          ) : null}
-        </div>
-      )}
       <UrlParamsInputHeading />
       <Droppable droppableId="list-container">
         {(provided) => {

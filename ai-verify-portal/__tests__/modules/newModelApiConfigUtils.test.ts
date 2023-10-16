@@ -99,6 +99,20 @@ describe('Model API Config Utility Functions', () => {
     expect(result[2]).toBe('string');
   });
 
+  it('should return the same response with items', () => {
+    const response = {
+      type: 'array',
+      items: {
+        type: 'boolean',
+      },
+    } as ResponseSchemaGQL;
+    const expected = response;
+    const result = replaceDynamicFieldnameWith_AIVDATA(
+      response
+    ) as ResponseSchemaForm;
+    expect(result).toMatchObject(expected);
+  });
+
   it('should return the same response', () => {
     const response3 = {
       type: 'integer',

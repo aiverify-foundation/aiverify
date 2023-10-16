@@ -20,11 +20,15 @@ export const defaultFormValues: ModelApiFormModel = {
     urlParams: '',
     method: RequestMethod.POST,
     authType: AuthType.NO_AUTH,
+    /*
+     * RequestBody
+     * - isArray and maxItems are not read at all by backend(test-engine) openapi schema translater.
+     * - leaving isArray as false by default. It is not set to true by any UI controls on the form.
+     * - Not removing from here in case backend wants to support it in the future
+     */
     requestBody: {
       mediaType: MediaType.FORM_URLENCODED,
       isArray: false,
-      maxItems: '100',
-      name: 'data',
       properties: [],
     },
     parameters: {

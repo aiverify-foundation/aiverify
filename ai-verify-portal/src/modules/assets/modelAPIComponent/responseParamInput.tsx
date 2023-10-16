@@ -1,11 +1,18 @@
 import { TextInput } from 'src/components/textInput';
 import styles from './styles/newModelApiConfig.module.css';
-import { MediaType, ModelApiFormModel, OpenApiDataTypes } from './types';
+import {
+  BatchStrategy,
+  MediaType,
+  ModelApiFormModel,
+  OpenApiDataTypes,
+  RequestMethod,
+} from './types';
 import { SelectInput } from 'src/components/selectInput';
 import { optionsMediaTypes, optionsOpenApiDataTypes } from './selectOptions';
 import { FormikContextType } from 'formik';
 import { ColorPalette } from 'src/components/colorPalette';
 import { useEffect } from 'react';
+import { ResponsePreview } from './responsePreview';
 
 const responseFieldName = 'modelAPI.response';
 
@@ -30,7 +37,7 @@ function ResponseInputHeading(props: ResponseInputHeadingProps) {
   return (
     <div style={{ display: 'flex', marginBottom: 4 }}>
       <div className={styles.headingName} style={{ width: 90 }}>
-        Status Code
+        Success Status Code
       </div>
       <div className={styles.headingVal}>Media Type</div>
       <div className={styles.headingVal}>Data Type</div>
@@ -62,6 +69,8 @@ function ResponsePropertyInput(props: ResponsePropertyInputProps) {
   const fieldErrors = errors.modelAPI?.response;
   const touchedFields = touched.modelAPI?.response;
   const mediaTypeOptions = [optionsMediaTypes[3], optionsMediaTypes[4]];
+  const requestConfigBatchStrat = values.modelAPI.requestConfig.batchStrategy;
+  const requestMethod = values.modelAPI.method;
 
   let dataTypeOptions: {
     value: OpenApiDataTypes;
@@ -85,17 +94,32 @@ function ResponsePropertyInput(props: ResponsePropertyInputProps) {
   ];
 
   useEffect(() => {
+    if (
+      requestConfigBatchStrat === BatchStrategy.multipart &&
+      requestMethod === RequestMethod.POST
+    ) {
+      setFieldValue(`${responseFieldName}.mediaType`, MediaType.APP_JSON);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (
+      requestConfigBatchStrat === BatchStrategy.multipart &&
+      requestMethod === RequestMethod.POST
+    ) {
+      setFieldValue(`${responseFieldName}.mediaType`, MediaType.APP_JSON);
+    }
+  }, [requestConfigBatchStrat, requestMethod]);
+
+  useEffect(() => {
     const mediaType = values.modelAPI.response.mediaType;
     if (mediaType === MediaType.TEXT_PLAIN) {
       setFieldValue(
         `${responseFieldName}.schema.type`,
-        values.modelAPI.response.schema.type || OpenApiDataTypes.INTEGER
+        OpenApiDataTypes.INTEGER
       );
     } else if (mediaType === MediaType.APP_JSON) {
-      setFieldValue(
-        `${responseFieldName}.schema.type`,
-        values.modelAPI.response.schema.type || OpenApiDataTypes.ARRAY
-      );
+      setFieldValue(`${responseFieldName}.schema.type`, OpenApiDataTypes.ARRAY);
     }
   }, [values.modelAPI.response.mediaType]);
 
@@ -119,7 +143,11 @@ function ResponsePropertyInput(props: ResponsePropertyInputProps) {
         </div>
         <div className={styles.keyValCol}>
           <SelectInput<MediaType>
-            disabled={disabled}
+            disabled={
+              disabled ||
+              (requestConfigBatchStrat === BatchStrategy.multipart &&
+                requestMethod === RequestMethod.POST)
+            }
             name={`${responseFieldName}.mediaType`}
             options={mediaTypeOptions}
             value={values.modelAPI.response.mediaType}
@@ -192,7 +220,7 @@ function ResponsePropertyInput(props: ResponsePropertyInputProps) {
               color: ColorPalette.gray,
               fontWeight: 600,
               marginBottom: 10,
-              marginTop: 25,
+              marginTop: 35,
               fontSize: 14,
             }}>
             Describe the Array Item Object
@@ -245,7 +273,7 @@ function ResponsePropertyInput(props: ResponsePropertyInputProps) {
               color: ColorPalette.gray,
               fontWeight: 600,
               marginBottom: 10,
-              marginTop: 15,
+              marginTop: 35,
               fontSize: 14,
             }}>
             Describe the Field Array Item
@@ -272,6 +300,7 @@ function ResponsePropertyInput(props: ResponsePropertyInputProps) {
           </div>
         </div>
       ) : null}
+      <ResponsePreview responseType={values.modelAPI.response} />
     </div>
   );
 }

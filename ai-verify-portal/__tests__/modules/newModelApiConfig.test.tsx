@@ -16,19 +16,11 @@ import {
   saveConfigVariables_tc007,
   saveConfigVariables_tc008,
   saveConfigVariables_tc009,
-  saveConfigVariables_tc010,
-  saveConfigVariables_tc011,
-  saveConfigVariables_tc012,
   saveConfigVariables_tc013,
   saveConfigVariables_tc014,
   saveConfigVariables_tc015,
 } from '__mocks__/mockNewApiModelGqlVars';
-import { replaceDynamicFieldnameWith_AIVDATA } from 'src/modules/assets/modelAPIComponent/utils/modelApiUtils';
-import {
-  OpenApiDataTypes,
-  ResponseSchemaForm,
-  ResponseSchemaGQL,
-} from 'src/modules/assets/modelAPIComponent/types';
+import { MediaType } from 'src/modules/assets/modelAPIComponent/types';
 
 const testTimeout = 20000;
 
@@ -1290,7 +1282,7 @@ describe('New Model API Config', () => {
         });
 
         userEvent.click(await screen.findByText(/^Response Properties$/i));
-        await screen.findByText(/^Status Code$/i);
+        await screen.findByText(/^Success Status Code$/i);
         expect(screen.queryByText(/^Field Name$/i)).toBeNull();
 
         const responseMediaTypeInputContainer = container.querySelector(
@@ -1675,14 +1667,9 @@ describe('New Model API Config', () => {
         const rateLimitTimeoutInput = container.querySelector(
           'input[name="modelAPI.requestConfig.rateLimitTimeout"]'
         ) as HTMLInputElement;
-        const batchLimitInput = container.querySelector(
-          'input[name="modelAPI.requestConfig.batchLimit"]'
-        ) as HTMLInputElement;
 
         expect(rateLimitTimeoutInput.getAttribute('disabled')).toBe('');
         expect(rateLimitTimeoutInput.getAttribute('disabled')).not.toBeNull();
-        expect(batchLimitInput.getAttribute('disabled')).toBe('');
-        expect(batchLimitInput.getAttribute('disabled')).not.toBeNull();
 
         userEvent.click(sslVerifyCheckbox);
         await userEvent.clear(connectionTimeoutInput);
@@ -1707,32 +1694,6 @@ describe('New Model API Config', () => {
         await userEvent.type(rateLimitTimeoutInput, '10');
         expect(rateLimitTimeoutInput).toHaveValue('10');
 
-        const batchStrategyInputContainer = container.querySelector(
-          'label[for="modelAPI.requestConfig.batchStrategy"]'
-        ) as HTMLElement;
-        userEvent.click(
-          batchStrategyInputContainer.querySelector(
-            '.aiv__dropdown-indicator'
-          ) as HTMLElement
-        );
-        await waitFor(async () => {
-          const options = Array.from(
-            batchStrategyInputContainer.querySelectorAll('.aiv__option')
-          );
-          expect(options.length).not.toBe(0);
-          const targetOption = options.find(
-            (opt) => opt.textContent === 'multipart'
-          );
-          userEvent.click(targetOption as HTMLElement);
-        });
-
-        await waitFor(async () => {
-          expect(batchLimitInput.getAttribute('disabled')).not.toBe('');
-          expect(batchLimitInput.getAttribute('disabled')).toBeNull();
-        });
-        await userEvent.clear(batchLimitInput);
-        await userEvent.type(batchLimitInput, '10');
-
         userEvent.click(saveBtn);
         expect(
           await screen.findByText(/^New API Configuration created$/i)
@@ -1743,547 +1704,7 @@ describe('New Model API Config', () => {
       },
       testTimeout
     );
-    //tc010
-    it(
-      'should create the correct payload with POST request body array support (tc010)',
-      async () => {
-        const mocks_tc010 = [
-          {
-            request: {
-              query: GQL_CREATE_MODELAPI,
-              variables: { model: saveConfigVariables_tc010 },
-            },
-            result: {
-              data: saveConfigVariables_result,
-            },
-          },
-        ];
-
-        const { container } = render(
-          <MockProviders apolloMocks={mocks_tc010}>
-            <div id="aivModal"></div>
-            <NewModelApiConfigModule />
-          </MockProviders>
-        );
-
-        await screen.findByText(/^Create API Configuration$/i);
-        const editNameBtn = await screen.findByTestId('editConfigIconBtn');
-        const addPropertyBtn = await screen.findByTestId(
-          'addRequestPropertyBtn'
-        );
-        const saveBtn = await screen.findByText(/^SAVE$/i);
-        userEvent.click(editNameBtn);
-        await screen.findByText(/^OK$/i);
-        await userEvent.type(
-          container.querySelector('input[name="name"]') as HTMLInputElement,
-          'My test API'
-        );
-        await userEvent.type(
-          container.querySelector(
-            'textarea[name="description"]'
-          ) as HTMLTextAreaElement,
-          'My test API description'
-        );
-        const modelTypeInputContainer = container.querySelector(
-          'label[for="modelType"]'
-        ) as HTMLElement;
-        userEvent.click(
-          modelTypeInputContainer.querySelector(
-            '.aiv__dropdown-indicator'
-          ) as HTMLElement
-        );
-        await waitFor(async () => {
-          const options = Array.from(
-            modelTypeInputContainer.querySelectorAll('.aiv__option')
-          );
-          expect(options.length).not.toBe(0);
-          const targetOption = options.find(
-            (opt) => opt.textContent === 'Regression'
-          );
-          userEvent.click(targetOption as HTMLElement);
-        });
-
-        await userEvent.click(
-          container.querySelector(
-            'input[name="modelAPI.requestBody.isArray"]'
-          ) as HTMLInputElement
-        );
-
-        await screen.findByText(/^Array Variable Name$/i);
-
-        const variableNameInput = container.querySelector(
-          'input[name="modelAPI.requestBody.name"]'
-        ) as HTMLInputElement;
-        const maxItemsNameInput = container.querySelector(
-          'input[name="modelAPI.requestBody.maxItems"]'
-        ) as HTMLInputElement;
-
-        expect(variableNameInput).toHaveValue('data');
-        await userEvent.clear(variableNameInput);
-        await userEvent.type(variableNameInput, 'foo');
-
-        expect(maxItemsNameInput).toHaveValue('100');
-        await userEvent.clear(maxItemsNameInput);
-        await userEvent.type(maxItemsNameInput, '50');
-
-        await userEvent.type(
-          container.querySelector(
-            'input[name="modelAPI.url"]'
-          ) as HTMLInputElement,
-          'https://localhost:5000/predict/tc010'
-        );
-        await userEvent.type(
-          container.querySelector(
-            'input[name="reqBodyParamName"]'
-          ) as HTMLInputElement,
-          'age'
-        );
-        await userEvent.click(addPropertyBtn);
-        await userEvent.type(
-          container.querySelector(
-            'input[name="reqBodyParamName"]'
-          ) as HTMLInputElement,
-          'gender'
-        );
-        await userEvent.click(addPropertyBtn);
-        await userEvent.type(
-          container.querySelector(
-            'input[name="reqBodyParamName"]'
-          ) as HTMLInputElement,
-          'race'
-        );
-        await userEvent.click(addPropertyBtn);
-        await userEvent.type(
-          container.querySelector(
-            'input[name="reqBodyParamName"]'
-          ) as HTMLInputElement,
-          'income'
-        );
-        await userEvent.click(addPropertyBtn);
-        await userEvent.type(
-          container.querySelector(
-            'input[name="reqBodyParamName"]'
-          ) as HTMLInputElement,
-          'employment'
-        );
-        await userEvent.click(addPropertyBtn);
-        await userEvent.type(
-          container.querySelector(
-            'input[name="reqBodyParamName"]'
-          ) as HTMLInputElement,
-          'employment_length'
-        );
-        await userEvent.click(addPropertyBtn);
-        await userEvent.type(
-          container.querySelector(
-            'input[name="reqBodyParamName"]'
-          ) as HTMLInputElement,
-          'total_donated'
-        );
-        await userEvent.click(addPropertyBtn);
-        await userEvent.type(
-          container.querySelector(
-            'input[name="reqBodyParamName"]'
-          ) as HTMLInputElement,
-          'num_donation'
-        );
-        await userEvent.click(addPropertyBtn);
-        await waitFor(async () => {
-          expect(
-            Array.from(container.querySelectorAll('.propertyInputRow')).length
-          ).toEqual(9);
-        });
-
-        userEvent.click(saveBtn);
-        expect(
-          await screen.findByText(/^New API Configuration created$/i)
-        ).toBeInTheDocument();
-        expect(
-          await screen.findByText(/^64d5a78656d3605a78346770$/i)
-        ).toBeInTheDocument();
-      },
-      testTimeout
-    );
-    //tc011
-    it(
-      'should create the correct payload with GET query parameters array support (tc011)',
-      async () => {
-        const mocks_tc011 = [
-          {
-            request: {
-              query: GQL_CREATE_MODELAPI,
-              variables: { model: saveConfigVariables_tc011 },
-            },
-            result: {
-              data: saveConfigVariables_result,
-            },
-          },
-        ];
-
-        const { container } = render(
-          <MockProviders apolloMocks={mocks_tc011}>
-            <div id="aivModal"></div>
-            <NewModelApiConfigModule />
-          </MockProviders>
-        );
-
-        await screen.findByText(/^Create API Configuration$/i);
-        const editNameBtn = await screen.findByTestId('editConfigIconBtn');
-        const saveBtn = await screen.findByText(/^SAVE$/i);
-        userEvent.click(editNameBtn);
-        await screen.findByText(/^OK$/i);
-        await userEvent.type(
-          container.querySelector('input[name="name"]') as HTMLInputElement,
-          'My test API'
-        );
-        await userEvent.type(
-          container.querySelector(
-            'textarea[name="description"]'
-          ) as HTMLTextAreaElement,
-          'My test API description'
-        );
-        const modelTypeInputContainer = container.querySelector(
-          'label[for="modelType"]'
-        ) as HTMLElement;
-        userEvent.click(
-          modelTypeInputContainer.querySelector(
-            '.aiv__dropdown-indicator'
-          ) as HTMLElement
-        );
-        await waitFor(async () => {
-          const options = Array.from(
-            modelTypeInputContainer.querySelectorAll('.aiv__option')
-          );
-          expect(options.length).not.toBe(0);
-          const targetOption = options.find(
-            (opt) => opt.textContent === 'Regression'
-          );
-          userEvent.click(targetOption as HTMLElement);
-        });
-
-        const methodInputContainer = container.querySelector(
-          'label[for="modelAPI.method"]'
-        ) as HTMLElement;
-        userEvent.click(
-          methodInputContainer.querySelector(
-            '.aiv__dropdown-indicator'
-          ) as HTMLElement
-        );
-        await waitFor(async () => {
-          const options = Array.from(
-            methodInputContainer.querySelectorAll('.aiv__option')
-          );
-          expect(options.length).toEqual(2);
-          const targetOption = options.find((opt) => opt.textContent === 'GET');
-          console.log(targetOption?.textContent);
-          userEvent.click(targetOption as HTMLElement);
-        });
-
-        await screen.findByText(/^URL Parameter Type$/i);
-        await screen.findByText(/^Parameter Name$/i);
-        const addUrlParamBtn = await screen.findByTestId('addUrlParamBtn');
-
-        await userEvent.type(
-          container.querySelector(
-            'input[name="modelAPI.url"]'
-          ) as HTMLInputElement,
-          'https://localhost:5000/predict/tc011'
-        );
-
-        await userEvent.click(
-          container.querySelector(
-            'input[name="modelAPI.parameters.queries.isArray"]'
-          ) as HTMLInputElement
-        );
-
-        await screen.findByText(/^Array Variable Name$/i);
-
-        const variableNameInput = container.querySelector(
-          'input[name="modelAPI.parameters.queries.name"]'
-        ) as HTMLInputElement;
-        const maxItemsNameInput = container.querySelector(
-          'input[name="modelAPI.parameters.queries.maxItems"]'
-        ) as HTMLInputElement;
-
-        expect(variableNameInput).toHaveValue('data');
-        await userEvent.clear(variableNameInput);
-        await userEvent.type(variableNameInput, 'foo');
-
-        expect(maxItemsNameInput).toHaveValue('100');
-        await userEvent.clear(maxItemsNameInput);
-        await userEvent.type(maxItemsNameInput, '50');
-
-        await userEvent.type(
-          container.querySelector(
-            'input[name="urlParamName"]'
-          ) as HTMLInputElement,
-          'age'
-        );
-        await userEvent.click(addUrlParamBtn);
-        await userEvent.type(
-          container.querySelector(
-            'input[name="urlParamName"]'
-          ) as HTMLInputElement,
-          'gender'
-        );
-        await userEvent.click(addUrlParamBtn);
-        await userEvent.type(
-          container.querySelector(
-            'input[name="urlParamName"]'
-          ) as HTMLInputElement,
-          'race'
-        );
-        await userEvent.click(addUrlParamBtn);
-        await userEvent.type(
-          container.querySelector(
-            'input[name="urlParamName"]'
-          ) as HTMLInputElement,
-          'income'
-        );
-        await userEvent.click(addUrlParamBtn);
-        await userEvent.type(
-          container.querySelector(
-            'input[name="urlParamName"]'
-          ) as HTMLInputElement,
-          'employment'
-        );
-        await userEvent.click(addUrlParamBtn);
-        await userEvent.type(
-          container.querySelector(
-            'input[name="urlParamName"]'
-          ) as HTMLInputElement,
-          'employment_length'
-        );
-        await userEvent.click(addUrlParamBtn);
-        await userEvent.type(
-          container.querySelector(
-            'input[name="urlParamName"]'
-          ) as HTMLInputElement,
-          'total_donated'
-        );
-        await userEvent.click(addUrlParamBtn);
-        await userEvent.type(
-          container.querySelector(
-            'input[name="urlParamName"]'
-          ) as HTMLInputElement,
-          'num_donation'
-        );
-        await userEvent.click(addUrlParamBtn);
-        await waitFor(async () => {
-          const addedParams = await screen.findAllByTestId('urlParamInputRow');
-          expect(addedParams.length).toEqual(9);
-        });
-
-        userEvent.click(saveBtn);
-        expect(
-          await screen.findByText(/^New API Configuration created$/i)
-        ).toBeInTheDocument();
-        expect(
-          await screen.findByText(/^64d5a78656d3605a78346770$/i)
-        ).toBeInTheDocument();
-      },
-      testTimeout
-    );
-    //tc012
-    it(
-      'should create the correct payload with GET path parameters array support(tc012)',
-      async () => {
-        const mocks_tc012 = [
-          {
-            request: {
-              query: GQL_CREATE_MODELAPI,
-              variables: { model: saveConfigVariables_tc012 },
-            },
-            result: {
-              data: saveConfigVariables_result,
-            },
-          },
-        ];
-
-        const { container } = render(
-          <MockProviders apolloMocks={mocks_tc012}>
-            <div id="aivModal"></div>
-            <NewModelApiConfigModule />
-          </MockProviders>
-        );
-
-        await screen.findByText(/^Create API Configuration$/i);
-        const editNameBtn = await screen.findByTestId('editConfigIconBtn');
-        const saveBtn = await screen.findByText(/^SAVE$/i);
-        userEvent.click(editNameBtn);
-        await screen.findByText(/^OK$/i);
-        await userEvent.type(
-          container.querySelector('input[name="name"]') as HTMLInputElement,
-          'My test API'
-        );
-        await userEvent.type(
-          container.querySelector(
-            'textarea[name="description"]'
-          ) as HTMLTextAreaElement,
-          'My test API description'
-        );
-        const modelTypeInputContainer = container.querySelector(
-          'label[for="modelType"]'
-        ) as HTMLElement;
-        userEvent.click(
-          modelTypeInputContainer.querySelector(
-            '.aiv__dropdown-indicator'
-          ) as HTMLElement
-        );
-        await waitFor(async () => {
-          const options = Array.from(
-            modelTypeInputContainer.querySelectorAll('.aiv__option')
-          );
-          expect(options.length).not.toBe(0);
-          const targetOption = options.find(
-            (opt) => opt.textContent === 'Regression'
-          );
-          userEvent.click(targetOption as HTMLElement);
-        });
-
-        const methodInputContainer = container.querySelector(
-          'label[for="modelAPI.method"]'
-        ) as HTMLElement;
-        userEvent.click(
-          methodInputContainer.querySelector(
-            '.aiv__dropdown-indicator'
-          ) as HTMLElement
-        );
-        await waitFor(async () => {
-          const options = Array.from(
-            methodInputContainer.querySelectorAll('.aiv__option')
-          );
-          expect(options.length).toEqual(2);
-          const targetOption = options.find((opt) => opt.textContent === 'GET');
-          userEvent.click(targetOption as HTMLElement);
-        });
-
-        await screen.findByText(/^URL Parameter Type$/i);
-        await screen.findByText(/^Parameter Name$/i);
-
-        const paramTypeInputContainer = container.querySelector(
-          'label[for="modelAPI.parameters.paramType"]'
-        ) as HTMLElement;
-        userEvent.click(
-          paramTypeInputContainer.querySelector(
-            '.aiv__dropdown-indicator'
-          ) as HTMLElement
-        );
-        await waitFor(async () => {
-          const options = Array.from(
-            paramTypeInputContainer.querySelectorAll('.aiv__option')
-          );
-          expect(options.length).toEqual(2);
-          const targetOption = options.find(
-            (opt) => opt.textContent === 'Path'
-          );
-          userEvent.click(targetOption as HTMLElement);
-        });
-
-        const addUrlParamBtn = await screen.findByTestId('addUrlParamBtn');
-
-        await userEvent.type(
-          container.querySelector(
-            'input[name="modelAPI.url"]'
-          ) as HTMLInputElement,
-          'https://localhost:5000/predict/tc012'
-        );
-
-        await userEvent.click(
-          container.querySelector(
-            'input[name="modelAPI.parameters.paths.isArray"]'
-          ) as HTMLInputElement
-        );
-
-        await screen.findByText(/^Array Variable Name$/i);
-
-        const variableNameInput = container.querySelector(
-          'input[name="modelAPI.parameters.paths.name"]'
-        ) as HTMLInputElement;
-        const maxItemsNameInput = container.querySelector(
-          'input[name="modelAPI.parameters.paths.maxItems"]'
-        ) as HTMLInputElement;
-
-        expect(variableNameInput).toHaveValue('data');
-        await userEvent.clear(variableNameInput);
-        await userEvent.type(variableNameInput, 'foo');
-
-        expect(maxItemsNameInput).toHaveValue('100');
-        await userEvent.clear(maxItemsNameInput);
-        await userEvent.type(maxItemsNameInput, '50');
-
-        await userEvent.type(
-          container.querySelector(
-            'input[name="urlParamName"]'
-          ) as HTMLInputElement,
-          'age'
-        );
-        await userEvent.click(addUrlParamBtn);
-        await userEvent.type(
-          container.querySelector(
-            'input[name="urlParamName"]'
-          ) as HTMLInputElement,
-          'gender'
-        );
-        await userEvent.click(addUrlParamBtn);
-        await userEvent.type(
-          container.querySelector(
-            'input[name="urlParamName"]'
-          ) as HTMLInputElement,
-          'race'
-        );
-        await userEvent.click(addUrlParamBtn);
-        await userEvent.type(
-          container.querySelector(
-            'input[name="urlParamName"]'
-          ) as HTMLInputElement,
-          'income'
-        );
-        await userEvent.click(addUrlParamBtn);
-        await userEvent.type(
-          container.querySelector(
-            'input[name="urlParamName"]'
-          ) as HTMLInputElement,
-          'employment'
-        );
-        await userEvent.click(addUrlParamBtn);
-        await userEvent.type(
-          container.querySelector(
-            'input[name="urlParamName"]'
-          ) as HTMLInputElement,
-          'employment_length'
-        );
-        await userEvent.click(addUrlParamBtn);
-        await userEvent.type(
-          container.querySelector(
-            'input[name="urlParamName"]'
-          ) as HTMLInputElement,
-          'total_donated'
-        );
-        await userEvent.click(addUrlParamBtn);
-        await userEvent.type(
-          container.querySelector(
-            'input[name="urlParamName"]'
-          ) as HTMLInputElement,
-          'num_donation'
-        );
-        await userEvent.click(addUrlParamBtn);
-        await waitFor(async () => {
-          const addedParams = await screen.findAllByTestId('urlParamInputRow');
-          expect(addedParams.length).toEqual(9);
-        });
-
-        userEvent.click(saveBtn);
-        expect(
-          await screen.findByText(/^New API Configuration created$/i)
-        ).toBeInTheDocument();
-        expect(
-          await screen.findByText(/^64d5a78656d3605a78346770$/i)
-        ).toBeInTheDocument();
-      },
-      testTimeout
-    );
-
+    //tc0013
     it(
       'should create the correct payload with POST, application/json response media type and array of integers response schema (tc013)',
       async () => {
@@ -2343,6 +1764,13 @@ describe('New Model API Config', () => {
           userEvent.click(targetOption as HTMLElement);
         });
 
+        await userEvent.type(
+          container.querySelector(
+            'input[name="modelAPI.url"]'
+          ) as HTMLInputElement,
+          'https://localhost:5000/predict/tc013'
+        );
+
         const requestMediaTypeInputContainer = container.querySelector(
           'label[for="modelAPI.requestBody.mediaType"]'
         ) as HTMLElement;
@@ -2351,29 +1779,47 @@ describe('New Model API Config', () => {
             '.aiv__dropdown-indicator'
           ) as HTMLElement
         );
+
+        const batchStrategyContainer = container.querySelector(
+          'label[for="modelAPI.requestConfig.batchStrategy"]'
+        ) as HTMLElement;
+        userEvent.click(
+          batchStrategyContainer.querySelector(
+            '.aiv__dropdown-indicator'
+          ) as HTMLElement
+        );
+
+        const batchLimitInput = container.querySelector(
+          'input[name="modelAPI.requestConfig.batchLimit"]'
+        ) as HTMLInputElement;
+        expect(batchLimitInput.getAttribute('disabled')).toBe('');
+
         await waitFor(async () => {
           const options = Array.from(
-            requestMediaTypeInputContainer.querySelectorAll('.aiv__option')
+            batchStrategyContainer.querySelectorAll('.aiv__option')
           );
-          expect(options.length).toEqual(3);
+          expect(options.length).toBe(2);
           const targetOption = options.find(
-            (opt) => opt.textContent === 'application/json'
+            (opt) => opt.textContent === 'enabled'
           );
-          userEvent.click(targetOption as HTMLElement);
+          await userEvent.click(targetOption as HTMLElement);
+          await waitFor(() => {
+            expect(
+              (
+                requestMediaTypeInputContainer.querySelector(
+                  '.aiv__single-value '
+                ) as HTMLElement
+              ).textContent
+            ).toBe(MediaType.APP_JSON);
+          });
         });
 
-        await userEvent.type(
-          container.querySelector(
-            'input[name="modelAPI.url"]'
-          ) as HTMLInputElement,
-          'https://localhost:5000/predict/tc013'
+        await waitFor(async () =>
+          expect(batchLimitInput.getAttribute('disabled')).not.toBe('')
         );
-        await userEvent.click(
-          container.querySelector(
-            'input[name="modelAPI.requestBody.isArray"]'
-          ) as HTMLInputElement
-        );
-        await screen.findByText(/^Max Items$/i);
+        await userEvent.clear(batchLimitInput);
+        await userEvent.type(batchLimitInput, '100');
+
         await userEvent.type(
           container.querySelector(
             'input[name="reqBodyParamName"]'
@@ -2437,7 +1883,7 @@ describe('New Model API Config', () => {
         });
 
         userEvent.click(await screen.findByText(/^Response Properties$/i));
-        await screen.findByText(/^Status Code$/i);
+        await screen.findByText(/^Success Status Code$/i);
         expect(screen.queryByText(/^Field Name$/i)).toBeNull();
 
         const responseMediaTypeInputContainer = container.querySelector(
@@ -2480,7 +1926,7 @@ describe('New Model API Config', () => {
 
         await screen.findByText(/^Array Items Data Type$/i);
 
-        userEvent.click(saveBtn);
+        await userEvent.click(saveBtn);
         expect(
           await screen.findByText(/^New API Configuration created$/i)
         ).toBeInTheDocument();
@@ -2490,7 +1936,7 @@ describe('New Model API Config', () => {
       },
       testTimeout
     );
-
+    //tc0014
     it(
       'should create the correct payload with POST, application/json response media type and array of objects response schema (tc014)',
       async () => {
@@ -2575,12 +2021,26 @@ describe('New Model API Config', () => {
           ) as HTMLInputElement,
           'https://localhost:5000/predict/tc014'
         );
-        await userEvent.click(
-          container.querySelector(
-            'input[name="modelAPI.requestBody.isArray"]'
-          ) as HTMLInputElement
+
+        const batchStrategyContainer = container.querySelector(
+          'label[for="modelAPI.requestConfig.batchStrategy"]'
+        ) as HTMLElement;
+        userEvent.click(
+          batchStrategyContainer.querySelector(
+            '.aiv__dropdown-indicator'
+          ) as HTMLElement
         );
-        await screen.findByText(/^Max Items$/i);
+        await waitFor(async () => {
+          const options = Array.from(
+            batchStrategyContainer.querySelectorAll('.aiv__option')
+          );
+          expect(options.length).not.toBe(0);
+          const targetOption = options.find(
+            (opt) => opt.textContent === 'enabled'
+          );
+          userEvent.click(targetOption as HTMLElement);
+        });
+
         await userEvent.type(
           container.querySelector(
             'input[name="reqBodyParamName"]'
@@ -2644,7 +2104,7 @@ describe('New Model API Config', () => {
         });
 
         userEvent.click(await screen.findByText(/^Response Properties$/i));
-        await screen.findByText(/^Status Code$/i);
+        await screen.findByText(/^Success Status Code$/i);
         expect(screen.queryByText(/^Field Name$/i)).toBeNull();
 
         const responseMediaTypeInputContainer = container.querySelector(
@@ -2718,7 +2178,7 @@ describe('New Model API Config', () => {
       },
       testTimeout
     );
-
+    //tc0015
     it(
       'should create the correct payload with POST, application/json response media type and object of array response schema (tc015)',
       async () => {
@@ -2803,12 +2263,26 @@ describe('New Model API Config', () => {
           ) as HTMLInputElement,
           'https://localhost:5000/predict/tc015'
         );
-        await userEvent.click(
-          container.querySelector(
-            'input[name="modelAPI.requestBody.isArray"]'
-          ) as HTMLInputElement
+
+        const batchStrategyContainer = container.querySelector(
+          'label[for="modelAPI.requestConfig.batchStrategy"]'
+        ) as HTMLElement;
+        userEvent.click(
+          batchStrategyContainer.querySelector(
+            '.aiv__dropdown-indicator'
+          ) as HTMLElement
         );
-        await screen.findByText(/^Max Items$/i);
+        await waitFor(async () => {
+          const options = Array.from(
+            batchStrategyContainer.querySelectorAll('.aiv__option')
+          );
+          expect(options.length).not.toBe(0);
+          const targetOption = options.find(
+            (opt) => opt.textContent === 'enabled'
+          );
+          userEvent.click(targetOption as HTMLElement);
+        });
+
         await userEvent.type(
           container.querySelector(
             'input[name="reqBodyParamName"]'
@@ -2872,7 +2346,7 @@ describe('New Model API Config', () => {
         });
 
         userEvent.click(await screen.findByText(/^Response Properties$/i));
-        await screen.findByText(/^Status Code$/i);
+        await screen.findByText(/^Success Status Code$/i);
         expect(screen.queryByText(/^Field Name$/i)).toBeNull();
 
         const responseMediaTypeInputContainer = container.querySelector(
@@ -2964,8 +2438,37 @@ describe('New Model API Config', () => {
       await screen.findByText(/^Field-level errors$/i);
       await screen.findByText(/^Config Name$/i);
       expect((await screen.findAllByText(/^Required$/i)).length).toBe(3);
+
+      const batchStrategyContainer = container.querySelector(
+        'label[for="modelAPI.requestConfig.batchStrategy"]'
+      ) as HTMLElement;
+      user.click(
+        batchStrategyContainer.querySelector(
+          '.aiv__dropdown-indicator'
+        ) as HTMLElement
+      );
+      await waitFor(async () => {
+        const options = Array.from(
+          batchStrategyContainer.querySelectorAll('.aiv__option')
+        );
+        expect(options.length).not.toBe(0);
+        const targetOption = options.find(
+          (opt) => opt.textContent === 'enabled'
+        );
+        user.click(targetOption as HTMLElement);
+      });
+
+      const batchLimitInput = container.querySelector(
+        'input[name="modelAPI.requestConfig.batchLimit"]'
+      ) as HTMLInputElement;
+      await waitFor(async () =>
+        expect(batchLimitInput.getAttribute('disabled')).toBeNull()
+      );
+      await user.clear(batchLimitInput);
+      expect((await screen.findAllByText(/^Required$/i)).length).toBe(4);
+
       user.click(await screen.findByText(/^Response Properties$/i));
-      await screen.findByText(/^Status Code$/i);
+      await screen.findByText(/^Success Status Code$/i);
       const statusCodeInput = container.querySelector(
         'input[name="modelAPI.response.statusCode"]'
       ) as HTMLInputElement;
@@ -3029,34 +2532,6 @@ describe('New Model API Config', () => {
         expect((await screen.findAllByText(/^Required$/i)).length).toBe(6);
       });
 
-      const batchStrategyContainer = container.querySelector(
-        'label[for="modelAPI.requestConfig.batchStrategy"]'
-      ) as HTMLElement;
-      user.click(
-        batchStrategyContainer.querySelector(
-          '.aiv__dropdown-indicator'
-        ) as HTMLElement
-      );
-      await waitFor(async () => {
-        const options = Array.from(
-          batchStrategyContainer.querySelectorAll('.aiv__option')
-        );
-        expect(options.length).not.toBe(0);
-        const targetOption = options.find(
-          (opt) => opt.textContent === 'multipart'
-        );
-        user.click(targetOption as HTMLElement);
-      });
-
-      const batchLimitInput = container.querySelector(
-        'input[name="modelAPI.requestConfig.batchLimit"]'
-      ) as HTMLInputElement;
-      await waitFor(async () =>
-        expect(batchLimitInput.getAttribute('disabled')).toBeNull()
-      );
-      await user.clear(batchLimitInput);
-      expect((await screen.findAllByText(/^Required$/i)).length).toBe(7);
-
       await user.type(
         container.querySelector(
           'textArea[name="description"]'
@@ -3064,7 +2539,7 @@ describe('New Model API Config', () => {
         'test'
       );
       await screen.findByText(/^Min 20 characters$/i);
-      expect((await screen.findAllByText(/^Required$/i)).length).toBe(6);
+      expect((await screen.findAllByText(/^Required$/i)).length).toBe(5);
     });
   });
 });

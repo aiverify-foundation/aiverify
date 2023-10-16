@@ -48,8 +48,8 @@ export const optionsOpenApiDataTypes = [
 ];
 
 export const optionsBatchStrategies = [
-  { value: BatchStrategy.none, label: BatchStrategy.none },
-  { value: BatchStrategy.multipart, label: BatchStrategy.multipart },
+  { value: BatchStrategy.none, label: 'disabled' },
+  { value: BatchStrategy.multipart, label: 'enabled' },
 ];
 
 export const presetOptions: PresetOption[] = [

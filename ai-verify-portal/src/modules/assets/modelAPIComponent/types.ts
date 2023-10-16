@@ -75,11 +75,14 @@ export type BodyParam = {
   type: OpenApiDataTypes;
 };
 
+/*
+ * RequestBody
+ * - isArray and maxItems are not read at all by backend(test-engine) openapi schema translater.
+ * - leaving them as is on the frontend in case backend wants to support array in request, in the future.
+ */
 export type RequestBody = {
   mediaType: MediaType;
   isArray: boolean;
-  name?: string;
-  maxItems?: string;
   properties: BodyParam[];
 };
 

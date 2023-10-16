@@ -89,7 +89,6 @@ export const ModelAPIFormValidationSchema = object({
         .typeError('Must be a number'),
       connectionTimeout: number()
         .min(unlimited, 'Invalid. Enter -1 for no timeout')
-        .max(5, 'Must be less than 6')
         .required('Required')
         .typeError('Must be a number'),
       sslVerify: boolean().required('Required'),
@@ -157,7 +156,7 @@ export const ModelAPIFormValidationSchema = object({
       then: () =>
         object({
           mediaType: string().required('Required'),
-          isArray: bool(),
+          isArray: bool(), // isArray under requestBody is not read by backend test-engine openapi translator. Leaving it here in case backend wants to support in future
           properties: array()
             .of(
               object({

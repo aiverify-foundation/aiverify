@@ -214,25 +214,6 @@ export function transformFormValuesToGraphModel(
           type: prop.type,
         })),
       };
-
-      if (requestBody.isArray === true) {
-        if (requestBody.mediaType === MediaType.FORM_URLENCODED) {
-          formToModelApiGqlPayload.modelAPI.requestBody.name = requestBody.name;
-          if (!formToModelApiGqlPayload.modelAPI.requestBody.name) {
-            console.error(
-              'POST:app-json:isArray - requestbody.name is required'
-            );
-          }
-        } else {
-          delete requestBody.name;
-        }
-
-        if (requestBody.maxItems != undefined) {
-          formToModelApiGqlPayload.modelAPI.requestBody.maxItems = parseInt(
-            requestBody.maxItems
-          );
-        }
-      }
     }
   }
 
@@ -330,6 +311,17 @@ export function replaceDynamicFieldnameWith_AIVDATA(
       };
 
       return [outputSchema, objectPropertyNames[0], schema.items.type];
+    }
+
+    if (schema.items.type !== OpenApiDataTypes.OBJECT) {
+      outputSchema = {
+        type: schema.type,
+        items: {
+          type: schema.items.type,
+        },
+      };
+
+      return outputSchema;
     }
   }
 

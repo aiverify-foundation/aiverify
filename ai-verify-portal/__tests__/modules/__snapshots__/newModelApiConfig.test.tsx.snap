@@ -445,15 +445,15 @@ exports[`New Model API Config Initial Render should render with the correct defa
                         </div>
                         <div
                           class="tabBtn"
-                          id="tab1"
-                        >
-                          Additional Request Headers
-                        </div>
-                        <div
-                          class="tabBtn"
                           id="tab4"
                         >
                           Response Properties
+                        </div>
+                        <div
+                          class="tabBtn"
+                          id="tab1"
+                        >
+                          Additional Request Headers
                         </div>
                         <div
                           class="tabBtn"
@@ -475,125 +475,290 @@ exports[`New Model API Config Initial Render should render with the correct defa
                         class="tabContent"
                       >
                         <div
-                          style="display: flex; flex-direction: column;"
+                          style="display: flex; flex-direction: column; margin-bottom: 15px;"
                         >
                           <div
-                            class="selectInput"
-                            style="width: 240px;"
+                            style="display: flex; gap: 10px; justify-content: space-between; margin-bottom: 15px; width: 825px;"
                           >
-                            <label
-                              for="modelAPI.requestBody.mediaType"
+                            <div
+                              class="selectInput"
+                              style="width: 240px;"
                             >
-                              <div
-                                class="label"
+                              <label
+                                for="modelAPI.requestBody.mediaType"
                               >
-                                <div>
-                                  Media Type
-                                </div>
-                              </div>
-                              <div
-                                class=" css-fyq6mk-container"
-                              >
-                                <span
-                                  class="css-1f43avz-a11yText-A11yText"
-                                  id="react-select-4-live-region"
-                                />
-                                <span
-                                  aria-atomic="false"
-                                  aria-live="polite"
-                                  aria-relevant="additions text"
-                                  class="css-1f43avz-a11yText-A11yText"
-                                />
                                 <div
-                                  class="aiv__control css-l8cqhx-control"
+                                  class="label"
                                 >
+                                  <div>
+                                    Media Type
+                                  </div>
+                                </div>
+                                <div
+                                  class=" css-fyq6mk-container"
+                                >
+                                  <span
+                                    class="css-1f43avz-a11yText-A11yText"
+                                    id="react-select-4-live-region"
+                                  />
+                                  <span
+                                    aria-atomic="false"
+                                    aria-live="polite"
+                                    aria-relevant="additions text"
+                                    class="css-1f43avz-a11yText-A11yText"
+                                  />
                                   <div
-                                    class="aiv__value-container aiv__value-container--has-value css-1tkr00k-ValueContainer"
+                                    class="aiv__control css-l8cqhx-control"
                                   >
                                     <div
-                                      class="aiv__single-value css-1dimb5e-singleValue"
+                                      class="aiv__value-container aiv__value-container--has-value css-1tkr00k-ValueContainer"
                                     >
-                                      application/x-www-form-urlencoded
+                                      <div
+                                        class="aiv__single-value css-1dimb5e-singleValue"
+                                      >
+                                        application/x-www-form-urlencoded
+                                      </div>
+                                      <div
+                                        class="aiv__input-container css-12a5c88-Input"
+                                        data-value=""
+                                      >
+                                        <input
+                                          aria-autocomplete="list"
+                                          aria-expanded="false"
+                                          aria-haspopup="true"
+                                          autocapitalize="none"
+                                          autocomplete="off"
+                                          autocorrect="off"
+                                          class="aiv__input"
+                                          id="react-select-4-input"
+                                          role="combobox"
+                                          spellcheck="false"
+                                          style="opacity: 1; width: 100%; grid-area: 1 / 2; min-width: 2px; border: 0px; margin: 0px; outline: 0; padding: 0px;"
+                                          tabindex="0"
+                                          type="text"
+                                          value=""
+                                        />
+                                      </div>
                                     </div>
                                     <div
-                                      class="aiv__input-container css-12a5c88-Input"
-                                      data-value=""
+                                      class="aiv__indicators css-1hb7zxy-IndicatorsContainer"
                                     >
-                                      <input
-                                        aria-autocomplete="list"
-                                        aria-expanded="false"
-                                        aria-haspopup="true"
-                                        autocapitalize="none"
-                                        autocomplete="off"
-                                        autocorrect="off"
-                                        class="aiv__input"
-                                        id="react-select-4-input"
-                                        role="combobox"
-                                        spellcheck="false"
-                                        style="opacity: 1; width: 100%; grid-area: 1 / 2; min-width: 2px; border: 0px; margin: 0px; outline: 0; padding: 0px;"
-                                        tabindex="0"
-                                        type="text"
-                                        value=""
+                                      <span
+                                        class="aiv__indicator-separator css-1j9nsr8-indicatorSeparator"
                                       />
+                                      <div
+                                        aria-hidden="true"
+                                        class="aiv__indicator aiv__dropdown-indicator css-ogl6pu-indicatorContainer"
+                                      >
+                                        <svg
+                                          aria-hidden="true"
+                                          class="css-tj5bde-Svg"
+                                          focusable="false"
+                                          height="20"
+                                          viewBox="0 0 20 20"
+                                          width="20"
+                                        >
+                                          <path
+                                            d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"
+                                          />
+                                        </svg>
+                                      </div>
                                     </div>
                                   </div>
+                                  <input
+                                    name="modelAPI.requestBody.mediaType"
+                                    type="hidden"
+                                    value="application/x-www-form-urlencoded"
+                                  />
+                                </div>
+                              </label>
+                            </div>
+                            <div
+                              style="display: flex; gap: 10px;"
+                            >
+                              <div
+                                class="selectInput"
+                                style="width: 100%; margin-bottom: 0px;"
+                              >
+                                <label
+                                  for="modelAPI.requestConfig.batchStrategy"
+                                >
                                   <div
-                                    class="aiv__indicators css-1hb7zxy-IndicatorsContainer"
+                                    class="label"
                                   >
-                                    <span
-                                      class="aiv__indicator-separator css-1j9nsr8-indicatorSeparator"
-                                    />
+                                    <div>
+                                      Batch Requests
+                                    </div>
                                     <div
-                                      aria-hidden="true"
-                                      class="aiv__indicator aiv__dropdown-indicator css-ogl6pu-indicatorContainer"
+                                      class="tooltip"
+                                      style="top: -9999px; left: -9999px; opacity: 0; background-color: rgb(103, 103, 103); color: rgb(255, 255, 255);"
+                                    >
+                                      <div
+                                        class="pointer pos__right"
+                                        style="border-color: transparent transparent #676767 #676767;"
+                                      />
+                                      <div
+                                        class="content"
+                                        style="background-color: rgb(103, 103, 103);"
+                                      >
+                                        <div
+                                          style="margin-bottom: 5px;"
+                                        >
+                                          Request batching might improve the time for the test to run. Batching can only be done with application/json media type. Enabling this config will change the media/type to application/json
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div
+                                      class="childWrapper"
                                     >
                                       <svg
                                         aria-hidden="true"
-                                        class="css-tj5bde-Svg"
+                                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                                        data-testid="InfoIcon"
                                         focusable="false"
-                                        height="20"
-                                        viewBox="0 0 20 20"
-                                        width="20"
+                                        style="font-size: 18px; color: rgb(183, 183, 183);"
+                                        viewBox="0 0 24 24"
                                       >
                                         <path
-                                          d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"
+                                          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"
                                         />
                                       </svg>
                                     </div>
                                   </div>
-                                </div>
-                                <input
-                                  name="modelAPI.requestBody.mediaType"
-                                  type="hidden"
-                                  value="application/x-www-form-urlencoded"
-                                />
+                                  <div
+                                    class=" css-fyq6mk-container"
+                                  >
+                                    <span
+                                      class="css-1f43avz-a11yText-A11yText"
+                                      id="react-select-5-live-region"
+                                    />
+                                    <span
+                                      aria-atomic="false"
+                                      aria-live="polite"
+                                      aria-relevant="additions text"
+                                      class="css-1f43avz-a11yText-A11yText"
+                                    />
+                                    <div
+                                      class="aiv__control css-l8cqhx-control"
+                                    >
+                                      <div
+                                        class="aiv__value-container aiv__value-container--has-value css-1tkr00k-ValueContainer"
+                                      >
+                                        <div
+                                          class="aiv__single-value css-1dimb5e-singleValue"
+                                        >
+                                          disabled
+                                        </div>
+                                        <div
+                                          class="aiv__input-container css-12a5c88-Input"
+                                          data-value=""
+                                        >
+                                          <input
+                                            aria-autocomplete="list"
+                                            aria-expanded="false"
+                                            aria-haspopup="true"
+                                            autocapitalize="none"
+                                            autocomplete="off"
+                                            autocorrect="off"
+                                            class="aiv__input"
+                                            id="react-select-5-input"
+                                            role="combobox"
+                                            spellcheck="false"
+                                            style="opacity: 1; width: 100%; grid-area: 1 / 2; min-width: 2px; border: 0px; margin: 0px; outline: 0; padding: 0px;"
+                                            tabindex="0"
+                                            type="text"
+                                            value=""
+                                          />
+                                        </div>
+                                      </div>
+                                      <div
+                                        class="aiv__indicators css-1hb7zxy-IndicatorsContainer"
+                                      >
+                                        <span
+                                          class="aiv__indicator-separator css-1j9nsr8-indicatorSeparator"
+                                        />
+                                        <div
+                                          aria-hidden="true"
+                                          class="aiv__indicator aiv__dropdown-indicator css-ogl6pu-indicatorContainer"
+                                        >
+                                          <svg
+                                            aria-hidden="true"
+                                            class="css-tj5bde-Svg"
+                                            focusable="false"
+                                            height="20"
+                                            viewBox="0 0 20 20"
+                                            width="20"
+                                          >
+                                            <path
+                                              d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"
+                                            />
+                                          </svg>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <input
+                                      name="modelAPI.requestConfig.batchStrategy"
+                                      type="hidden"
+                                      value="none"
+                                    />
+                                  </div>
+                                </label>
                               </div>
-                            </label>
-                          </div>
-                          <div
-                            style="display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 15px;"
-                          >
-                            <div
-                              class="checkbox"
-                              style="margin-bottom: 15px;"
-                            >
-                              <label
-                                class="control"
-                                style="height: 20px; font-size: 20px;"
-                              >
-                                <input
-                                  class="input"
-                                  name="modelAPI.requestBody.isArray"
-                                  type="checkbox"
-                                  value=""
-                                />
-                              </label>
                               <div
-                                class="labelText"
+                                class="textInput"
+                                style="margin-bottom: 0px; width: 100%;"
                               >
-                                <div>
-                                  Format as array
-                                </div>
+                                <label>
+                                  <div
+                                    class="label"
+                                  >
+                                    <div>
+                                      Batch Limit
+                                    </div>
+                                    <div
+                                      class="tooltip"
+                                      style="top: -9999px; left: -9999px; opacity: 0; background-color: rgb(103, 103, 103); color: rgb(255, 255, 255);"
+                                    >
+                                      <div
+                                        class="pointer pos__right"
+                                        style="border-color: transparent transparent #676767 #676767;"
+                                      />
+                                      <div
+                                        class="content"
+                                        style="background-color: rgb(103, 103, 103);"
+                                      >
+                                        <div
+                                          style="margin-bottom: 5px;"
+                                        >
+                                          Defaults to -1, which means there is no limit.
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div
+                                      class="childWrapper"
+                                    >
+                                      <svg
+                                        aria-hidden="true"
+                                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                                        data-testid="InfoIcon"
+                                        focusable="false"
+                                        style="font-size: 18px; color: rgb(183, 183, 183);"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"
+                                        />
+                                      </svg>
+                                    </div>
+                                  </div>
+                                  <input
+                                    disabled=""
+                                    maxlength="128"
+                                    name="modelAPI.requestConfig.batchLimit"
+                                    type="text"
+                                    value="-1"
+                                  />
+                                </label>
                               </div>
                             </div>
                           </div>
@@ -677,7 +842,7 @@ exports[`New Model API Config Initial Render should render with the correct defa
                                       >
                                         <span
                                           class="css-1f43avz-a11yText-A11yText"
-                                          id="react-select-5-live-region"
+                                          id="react-select-6-live-region"
                                         />
                                         <span
                                           aria-atomic="false"
@@ -708,7 +873,7 @@ exports[`New Model API Config Initial Render should render with the correct defa
                                                 autocomplete="off"
                                                 autocorrect="off"
                                                 class="aiv__input"
-                                                id="react-select-5-input"
+                                                id="react-select-6-input"
                                                 role="combobox"
                                                 spellcheck="false"
                                                 style="opacity: 1; width: 100%; grid-area: 1 / 2; min-width: 2px; border: 0px; margin: 0px; outline: 0; padding: 0px;"
