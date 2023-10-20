@@ -1326,6 +1326,116 @@ describe('New Model API Config', () => {
         await screen.findByText(/^Field Name$/i);
         await screen.findByText(/^Field Data Type$/i);
 
+        const dataStructureDisplay = container.querySelector(
+          '#dataStructurePreview'
+        );
+        expect(dataStructureDisplay).toMatchInlineSnapshot(`
+          <div
+            id="dataStructurePreview"
+          >
+            <div
+              style="color: rgb(103, 103, 103); font-weight: 600; margin-bottom: 10px; margin-top: 35px; font-size: 14px;"
+            >
+              Example Response Value
+            </div>
+            <pre>
+              {
+            data: 1
+          }
+            </pre>
+          </div>
+        `);
+
+        const fieldDataTypeInputContainer = container.querySelector(
+          'label[for="modelAPI.response.fieldValueType"]'
+        ) as HTMLElement;
+
+        userEvent.click(
+          fieldDataTypeInputContainer.querySelector(
+            '.aiv__dropdown-indicator'
+          ) as HTMLElement
+        );
+        await waitFor(async () => {
+          const options = Array.from(
+            fieldDataTypeInputContainer.querySelectorAll('.aiv__option')
+          );
+          expect(options.length).toEqual(5);
+          const targetOption = options.find(
+            (opt) => opt.textContent === 'string'
+          );
+          userEvent.click(targetOption as HTMLElement);
+        });
+
+        await screen.findByText(/.*data: 'aa'./);
+        expect(dataStructureDisplay).toMatchInlineSnapshot(`
+          <div
+            id="dataStructurePreview"
+          >
+            <div
+              style="color: rgb(103, 103, 103); font-weight: 600; margin-bottom: 10px; margin-top: 35px; font-size: 14px;"
+            >
+              Example Response Value
+            </div>
+            <pre>
+              {
+            data: 'aa'
+          }
+            </pre>
+          </div>
+        `);
+
+        userEvent.click(
+          fieldDataTypeInputContainer.querySelector(
+            '.aiv__dropdown-indicator'
+          ) as HTMLElement
+        );
+        await waitFor(async () => {
+          const options = Array.from(
+            fieldDataTypeInputContainer.querySelectorAll('.aiv__option')
+          );
+          expect(options.length).toEqual(5);
+          const targetOption = options.find(
+            (opt) => opt.textContent === 'number'
+          );
+          userEvent.click(targetOption as HTMLElement);
+        });
+
+        await screen.findByText(/.*data: 0.1./);
+        expect(dataStructureDisplay).toMatchInlineSnapshot(`
+          <div
+            id="dataStructurePreview"
+          >
+            <div
+              style="color: rgb(103, 103, 103); font-weight: 600; margin-bottom: 10px; margin-top: 35px; font-size: 14px;"
+            >
+              Example Response Value
+            </div>
+            <pre>
+              {
+            data: 0.1
+          }
+            </pre>
+          </div>
+        `);
+
+        userEvent.click(
+          fieldDataTypeInputContainer.querySelector(
+            '.aiv__dropdown-indicator'
+          ) as HTMLElement
+        );
+        await waitFor(async () => {
+          const options = Array.from(
+            fieldDataTypeInputContainer.querySelectorAll('.aiv__option')
+          );
+          expect(options.length).toEqual(5);
+          const targetOption = options.find(
+            (opt) => opt.textContent === 'integer'
+          );
+          userEvent.click(targetOption as HTMLElement);
+        });
+
+        await screen.findByText(/.*data: 1./);
+
         userEvent.click(saveBtn);
         expect(
           await screen.findByText(/^New API Configuration created$/i)
@@ -1923,6 +2033,151 @@ describe('New Model API Config', () => {
 
         await screen.findByText(/^Array Items Data Type$/i);
 
+        const dataStructureDisplay = container.querySelector(
+          '#dataStructurePreview'
+        );
+        expect(dataStructureDisplay).toMatchInlineSnapshot(`
+          <div
+            id="dataStructurePreview"
+          >
+            <div
+              style="color: rgb(103, 103, 103); font-weight: 600; margin-bottom: 10px; margin-top: 35px; font-size: 14px;"
+            >
+              Example Response Value
+            </div>
+            <pre>
+              {
+            [ 1, 4, 7 ]
+          }
+            </pre>
+          </div>
+        `);
+
+        const arrayItemDataTypeInputContainer = container.querySelector(
+          // 'label[for="modelAPI.response.schema.items.properties._AIVDATA_.type"]'
+          'label[for="modelAPI.response.schema.items.type"]'
+        ) as HTMLElement;
+
+        userEvent.click(
+          arrayItemDataTypeInputContainer.querySelector(
+            '.aiv__dropdown-indicator'
+          ) as HTMLElement
+        );
+        await waitFor(async () => {
+          const options = Array.from(
+            arrayItemDataTypeInputContainer.querySelectorAll('.aiv__option')
+          );
+          expect(options.length).toEqual(5);
+          const targetOption = options.find(
+            (opt) => opt.textContent === 'string'
+          );
+          userEvent.click(targetOption as HTMLElement);
+        });
+
+        await screen.findByText(/.*\[ 'aa',./);
+        expect(dataStructureDisplay).toMatchInlineSnapshot(`
+          <div
+            id="dataStructurePreview"
+          >
+            <div
+              style="color: rgb(103, 103, 103); font-weight: 600; margin-bottom: 10px; margin-top: 35px; font-size: 14px;"
+            >
+              Example Response Value
+            </div>
+            <pre>
+              {
+            [ 'aa', 'cc', 'zz' ]
+          }
+            </pre>
+          </div>
+        `);
+
+        userEvent.click(
+          arrayItemDataTypeInputContainer.querySelector(
+            '.aiv__dropdown-indicator'
+          ) as HTMLElement
+        );
+        await waitFor(async () => {
+          const options = Array.from(
+            arrayItemDataTypeInputContainer.querySelectorAll('.aiv__option')
+          );
+          expect(options.length).toEqual(5);
+          const targetOption = options.find(
+            (opt) => opt.textContent === 'number'
+          );
+          userEvent.click(targetOption as HTMLElement);
+        });
+
+        await screen.findByText(/.*\[ 0.1,./);
+        expect(dataStructureDisplay).toMatchInlineSnapshot(`
+          <div
+            id="dataStructurePreview"
+          >
+            <div
+              style="color: rgb(103, 103, 103); font-weight: 600; margin-bottom: 10px; margin-top: 35px; font-size: 14px;"
+            >
+              Example Response Value
+            </div>
+            <pre>
+              {
+            [ 0.1, 0.4, 0.7 ]
+          }
+            </pre>
+          </div>
+        `);
+
+        userEvent.click(
+          arrayItemDataTypeInputContainer.querySelector(
+            '.aiv__dropdown-indicator'
+          ) as HTMLElement
+        );
+        await waitFor(async () => {
+          const options = Array.from(
+            arrayItemDataTypeInputContainer.querySelectorAll('.aiv__option')
+          );
+          expect(options.length).toEqual(5);
+          const targetOption = options.find(
+            (opt) => opt.textContent === 'boolean'
+          );
+          userEvent.click(targetOption as HTMLElement);
+        });
+
+        await screen.findByText(/.*\[ true,./);
+        expect(dataStructureDisplay).toMatchInlineSnapshot(`
+          <div
+            id="dataStructurePreview"
+          >
+            <div
+              style="color: rgb(103, 103, 103); font-weight: 600; margin-bottom: 10px; margin-top: 35px; font-size: 14px;"
+            >
+              Example Response Value
+            </div>
+            <pre>
+              {
+            [ true, true, false ]
+          }
+            </pre>
+          </div>
+        `);
+
+        userEvent.click(
+          arrayItemDataTypeInputContainer.querySelector(
+            '.aiv__dropdown-indicator'
+          ) as HTMLElement
+        );
+        await waitFor(async () => {
+          const options = Array.from(
+            arrayItemDataTypeInputContainer.querySelectorAll('.aiv__option')
+          );
+          expect(options.length).toEqual(5);
+          const targetOption = options.find(
+            (opt) => opt.textContent === 'integer'
+          );
+          userEvent.click(targetOption as HTMLElement);
+        });
+
+        await screen.findByText(/.*\[ 1,./);
+
         await userEvent.click(saveBtn);
         expect(
           await screen.findByText(/^New API Configuration created$/i)
@@ -2161,6 +2416,144 @@ describe('New Model API Config', () => {
         });
 
         await screen.findByText(/^Describe the Array Item Object$/i);
+        const dataStructureDisplay = container.querySelector(
+          '#dataStructurePreview'
+        );
+        expect(dataStructureDisplay).toMatchInlineSnapshot(`
+          <div
+            id="dataStructurePreview"
+          >
+            <div
+              style="color: rgb(103, 103, 103); font-weight: 600; margin-bottom: 10px; margin-top: 35px; font-size: 14px;"
+            >
+              Example Response Value
+            </div>
+            <pre>
+              [
+            { data: 1 }, { data: 4 }, { data: 7 }
+          ]
+            </pre>
+          </div>
+        `);
+
+        const objDataTypeInputContainer = container.querySelector(
+          'label[for="modelAPI.response.schema.items.properties._AIVDATA_.type"]'
+        ) as HTMLElement;
+        userEvent.click(
+          objDataTypeInputContainer.querySelector(
+            '.aiv__dropdown-indicator'
+          ) as HTMLElement
+        );
+        await waitFor(async () => {
+          const options = Array.from(
+            objDataTypeInputContainer.querySelectorAll('.aiv__option')
+          );
+          expect(options.length).toEqual(4);
+          const targetOption = options.find(
+            (opt) => opt.textContent === 'string'
+          );
+          userEvent.click(targetOption as HTMLElement);
+        });
+        await screen.findByText(/.*\{ data: 'aa'./);
+        expect(dataStructureDisplay).toMatchInlineSnapshot(`
+          <div
+            id="dataStructurePreview"
+          >
+            <div
+              style="color: rgb(103, 103, 103); font-weight: 600; margin-bottom: 10px; margin-top: 35px; font-size: 14px;"
+            >
+              Example Response Value
+            </div>
+            <pre>
+              [
+            { data: 'aa' }, { data: 'cc' }, { data: 'zz' }
+          ]
+            </pre>
+          </div>
+        `);
+
+        userEvent.click(
+          objDataTypeInputContainer.querySelector(
+            '.aiv__dropdown-indicator'
+          ) as HTMLElement
+        );
+        await waitFor(async () => {
+          const options = Array.from(
+            objDataTypeInputContainer.querySelectorAll('.aiv__option')
+          );
+          expect(options.length).toEqual(4);
+          const targetOption = options.find(
+            (opt) => opt.textContent === 'number'
+          );
+          userEvent.click(targetOption as HTMLElement);
+        });
+        await screen.findByText(/.*\{ data: 0.1./);
+        expect(dataStructureDisplay).toMatchInlineSnapshot(`
+          <div
+            id="dataStructurePreview"
+          >
+            <div
+              style="color: rgb(103, 103, 103); font-weight: 600; margin-bottom: 10px; margin-top: 35px; font-size: 14px;"
+            >
+              Example Response Value
+            </div>
+            <pre>
+              [
+            { data: 0.1 }, { data: 0.4 }, { data: 0.7 }
+          ]
+            </pre>
+          </div>
+        `);
+
+        userEvent.click(
+          objDataTypeInputContainer.querySelector(
+            '.aiv__dropdown-indicator'
+          ) as HTMLElement
+        );
+        await waitFor(async () => {
+          const options = Array.from(
+            objDataTypeInputContainer.querySelectorAll('.aiv__option')
+          );
+          expect(options.length).toEqual(4);
+          const targetOption = options.find(
+            (opt) => opt.textContent === 'boolean'
+          );
+          userEvent.click(targetOption as HTMLElement);
+        });
+        await screen.findByText(/.*\{ data: true./);
+        expect(dataStructureDisplay).toMatchInlineSnapshot(`
+          <div
+            id="dataStructurePreview"
+          >
+            <div
+              style="color: rgb(103, 103, 103); font-weight: 600; margin-bottom: 10px; margin-top: 35px; font-size: 14px;"
+            >
+              Example Response Value
+            </div>
+            <pre>
+              [
+            { data: true }, { data: true }, { data: false }
+          ]
+            </pre>
+          </div>
+        `);
+
+        userEvent.click(
+          objDataTypeInputContainer.querySelector(
+            '.aiv__dropdown-indicator'
+          ) as HTMLElement
+        );
+        await waitFor(async () => {
+          const options = Array.from(
+            objDataTypeInputContainer.querySelectorAll('.aiv__option')
+          );
+          expect(options.length).toEqual(4);
+          const targetOption = options.find(
+            (opt) => opt.textContent === 'integer'
+          );
+          userEvent.click(targetOption as HTMLElement);
+        });
+        await screen.findByText(/.*\{ data: 1./);
 
         userEvent.click(saveBtn);
         expect(
@@ -2401,6 +2794,162 @@ describe('New Model API Config', () => {
         });
 
         await screen.findByText(/^Describe the Field Array Item$/i);
+
+        const dataStructureDisplay = container.querySelector(
+          '#dataStructurePreview'
+        );
+        expect(dataStructureDisplay).toMatchInlineSnapshot(`
+          <div
+            id="dataStructurePreview"
+          >
+            <div
+              style="color: rgb(103, 103, 103); font-weight: 600; margin-bottom: 10px; margin-top: 35px; font-size: 14px;"
+            >
+              Example Response Value
+            </div>
+            <pre>
+              {
+            data: [ 1, 4, 7 ]
+          }
+            </pre>
+          </div>
+        `);
+
+        const arrItemDataTypeInputContainer = container.querySelector(
+          'label[for="modelAPI.response.schema.properties._AIVDATA_.items.type"]'
+        ) as HTMLElement;
+
+        userEvent.click(
+          arrItemDataTypeInputContainer.querySelector(
+            '.aiv__dropdown-indicator'
+          ) as HTMLElement
+        );
+        await waitFor(async () => {
+          const options = Array.from(
+            arrItemDataTypeInputContainer.querySelectorAll('.aiv__option')
+          );
+          expect(options.length).toEqual(4);
+          const targetOption = options.find(
+            (opt) => opt.textContent === 'string'
+          );
+          userEvent.click(targetOption as HTMLElement);
+        });
+        await screen.findByText(/.* data: \[ 'aa',./);
+        expect(dataStructureDisplay).toMatchInlineSnapshot(`
+          <div
+            id="dataStructurePreview"
+          >
+            <div
+              style="color: rgb(103, 103, 103); font-weight: 600; margin-bottom: 10px; margin-top: 35px; font-size: 14px;"
+            >
+              Example Response Value
+            </div>
+            <pre>
+              {
+            data: [ 'aa', 'cc', 'zz' ]
+          }
+            </pre>
+          </div>
+        `);
+
+        userEvent.click(
+          arrItemDataTypeInputContainer.querySelector(
+            '.aiv__dropdown-indicator'
+          ) as HTMLElement
+        );
+        await waitFor(async () => {
+          const options = Array.from(
+            arrItemDataTypeInputContainer.querySelectorAll('.aiv__option')
+          );
+          expect(options.length).toEqual(4);
+          const targetOption = options.find(
+            (opt) => opt.textContent === 'number'
+          );
+          userEvent.click(targetOption as HTMLElement);
+        });
+        await screen.findByText(/.* data: \[ 0.1,./);
+        expect(dataStructureDisplay).toMatchInlineSnapshot(`
+          <div
+            id="dataStructurePreview"
+          >
+            <div
+              style="color: rgb(103, 103, 103); font-weight: 600; margin-bottom: 10px; margin-top: 35px; font-size: 14px;"
+            >
+              Example Response Value
+            </div>
+            <pre>
+              {
+            data: [ 0.1, 0.4, 0.7 ]
+          }
+            </pre>
+          </div>
+        `);
+
+        userEvent.click(
+          arrItemDataTypeInputContainer.querySelector(
+            '.aiv__dropdown-indicator'
+          ) as HTMLElement
+        );
+        await waitFor(async () => {
+          const options = Array.from(
+            arrItemDataTypeInputContainer.querySelectorAll('.aiv__option')
+          );
+          expect(options.length).toEqual(4);
+          const targetOption = options.find(
+            (opt) => opt.textContent === 'boolean'
+          );
+          userEvent.click(targetOption as HTMLElement);
+        });
+        await screen.findByText(/.* data: \[ true,./);
+        expect(dataStructureDisplay).toMatchInlineSnapshot(`
+          <div
+            id="dataStructurePreview"
+          >
+            <div
+              style="color: rgb(103, 103, 103); font-weight: 600; margin-bottom: 10px; margin-top: 35px; font-size: 14px;"
+            >
+              Example Response Value
+            </div>
+            <pre>
+              {
+            data: [ true, true, false ]
+          }
+            </pre>
+          </div>
+        `);
+
+        userEvent.click(
+          arrItemDataTypeInputContainer.querySelector(
+            '.aiv__dropdown-indicator'
+          ) as HTMLElement
+        );
+        await waitFor(async () => {
+          const options = Array.from(
+            arrItemDataTypeInputContainer.querySelectorAll('.aiv__option')
+          );
+          expect(options.length).toEqual(4);
+          const targetOption = options.find(
+            (opt) => opt.textContent === 'integer'
+          );
+          userEvent.click(targetOption as HTMLElement);
+        });
+        await screen.findByText(/.* data: \[ 1,./);
+        expect(dataStructureDisplay).toMatchInlineSnapshot(`
+          <div
+            id="dataStructurePreview"
+          >
+            <div
+              style="color: rgb(103, 103, 103); font-weight: 600; margin-bottom: 10px; margin-top: 35px; font-size: 14px;"
+            >
+              Example Response Value
+            </div>
+            <pre>
+              {
+            data: [ 1, 4, 7 ]
+          }
+            </pre>
+          </div>
+        `);
 
         userEvent.click(saveBtn);
         expect(

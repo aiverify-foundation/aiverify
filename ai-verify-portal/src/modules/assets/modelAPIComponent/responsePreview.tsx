@@ -17,6 +17,8 @@ function ResponsePreview(props: ReponsePreviewProps) {
         let val = '1';
         if (responseType.fieldValueType === OpenApiDataTypes.STRING) {
           val = "'aa'";
+        } else if (responseType.fieldValueType === OpenApiDataTypes.NUMBER) {
+          val = '0.1';
         } else if (responseType.fieldValueType === OpenApiDataTypes.BOOLEAN) {
           val = 'true';
         }
@@ -30,6 +32,11 @@ function ResponsePreview(props: ReponsePreviewProps) {
           OpenApiDataTypes.INTEGER
         ) {
           val = '1, 4, 7';
+        } else if (
+          responseType.schema.properties?._AIVDATA_.items?.type ===
+          OpenApiDataTypes.NUMBER
+        ) {
+          val = '0.1, 0.4, 0.7';
         } else if (
           responseType.schema.properties?._AIVDATA_.items?.type ===
           OpenApiDataTypes.STRING
@@ -51,6 +58,10 @@ function ResponsePreview(props: ReponsePreviewProps) {
         if (responseType.schema.items?.type === OpenApiDataTypes.STRING) {
           val = "'aa', 'cc', 'zz'";
         } else if (
+          responseType.schema.items?.type === OpenApiDataTypes.NUMBER
+        ) {
+          val = '0.1, 0.4, 0.7';
+        } else if (
           responseType.schema.items?.type === OpenApiDataTypes.BOOLEAN
         ) {
           val = 'true, true, false';
@@ -65,6 +76,11 @@ function ResponsePreview(props: ReponsePreviewProps) {
           OpenApiDataTypes.INTEGER
         ) {
           val = `{ ${responseType.field}: 1 }, { ${responseType.field}: 4 }, { ${responseType.field}: 7 }`;
+        } else if (
+          responseType.schema.items.properties?._AIVDATA_.type ===
+          OpenApiDataTypes.NUMBER
+        ) {
+          val = `{ ${responseType.field}: 0.1 }, { ${responseType.field}: 0.4 }, { ${responseType.field}: 0.7 }`;
         } else if (
           responseType.schema.items.properties?._AIVDATA_.type ===
           OpenApiDataTypes.STRING
@@ -84,7 +100,7 @@ function ResponsePreview(props: ReponsePreviewProps) {
   }
 
   return (
-    <div>
+    <div id="dataStructurePreview">
       <div
         style={{
           color: ColorPalette.gray,
