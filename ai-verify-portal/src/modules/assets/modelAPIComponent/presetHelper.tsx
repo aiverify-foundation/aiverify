@@ -30,6 +30,18 @@ function PresetHelper(props: PresetHelperProps) {
   } = usePresetHelper();
   const [showToggleTabsBtn, setShowToggleTabsBtn] = useState(false);
   const guideSteps = Object.keys(guideStepToFieldMap);
+  let orderedGuideSteps = [
+    PresetGuideSteps.MODEL_URL,
+    PresetGuideSteps.URL_PARAMS,
+    PresetGuideSteps.REQUESTBODY_PARAMS,
+    PresetGuideSteps.BEARER_TOKEN,
+    PresetGuideSteps.USER_PASSWORD,
+    PresetGuideSteps.RESPONSE_SETTINGS,
+  ];
+  orderedGuideSteps = orderedGuideSteps.filter(
+    (step) => guideSteps.findIndex((val) => val === step) !== -1
+  );
+  console.log(orderedGuideSteps);
 
   function handleToggleAllTabsClick() {
     setShowAllTabs((prev) => !prev);
@@ -112,6 +124,15 @@ function PresetHelper(props: PresetHelperProps) {
       enableInputField('modelAPI.parameters.paramType');
     }
 
+    if (types.indexOf(PresetHelpItem.RESPONSE)) {
+      addGuideStep(PresetGuideSteps.RESPONSE_SETTINGS, [
+        {
+          fieldName: 'modelAPI.response.mediaType',
+          tabName: Tab.AUTHENTICATION,
+        },
+      ]);
+    }
+
     if (onSelect) onSelect(types);
   }
 
@@ -145,6 +166,13 @@ function PresetHelper(props: PresetHelperProps) {
         highlightInputFields(['modelAPI.authTypeConfig.token']);
         selectTab(Tab.AUTHENTICATION);
       }
+      if (stepName === PresetGuideSteps.RESPONSE_SETTINGS) {
+        highlightInputFields([
+          'modelAPI.response.mediaType',
+          'modelAPI.response.schema.type',
+        ]);
+        selectTab(Tab.RESPONSE);
+      }
     };
   }
 
@@ -172,7 +200,7 @@ function PresetHelper(props: PresetHelperProps) {
               options={presetOptions}
               onChange={handleGuideSelect}
             />
-            {guideSteps.length ? (
+            {orderedGuideSteps.length ? (
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <div
                   style={{
@@ -191,7 +219,7 @@ function PresetHelper(props: PresetHelperProps) {
                     height: 20,
                     display: 'flex',
                   }}>
-                  {guideSteps.map((stepName) => (
+                  {orderedGuideSteps.map((stepName) => (
                     <li
                       key={stepName.split(' ').join('-')}
                       style={{ paddingRight: 25, marginRight: 20 }}>

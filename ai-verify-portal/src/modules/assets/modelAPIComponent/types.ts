@@ -322,6 +322,7 @@ export enum PresetHelpItem {
   AUTH_TOKEN,
   NO_AUTH,
   HEADERS,
+  RESPONSE,
 }
 
 export type PresetOption = {
@@ -335,4 +336,5 @@ export enum PresetGuideSteps {
   REQUESTBODY_PARAMS = 'Parameters in request data',
   BEARER_TOKEN = 'Bearer Token',
   USER_PASSWORD = 'Username/Password',
+  RESPONSE_SETTINGS = 'Response Settings',
 }

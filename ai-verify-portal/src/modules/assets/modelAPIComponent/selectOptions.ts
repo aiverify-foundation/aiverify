@@ -55,19 +55,36 @@ export const optionsBatchStrategies = [
 
 export const presetOptions: PresetOption[] = [
   {
-    value: [PresetHelpItem.POST, PresetHelpItem.NO_AUTH],
+    value: [
+      PresetHelpItem.POST,
+      PresetHelpItem.NO_AUTH,
+      PresetHelpItem.RESPONSE,
+    ],
     label: 'POST request, no authentication',
   },
   {
-    value: [PresetHelpItem.POST, PresetHelpItem.BASIC_AUTH],
+    value: [
+      PresetHelpItem.POST,
+      PresetHelpItem.BASIC_AUTH,
+      PresetHelpItem.RESPONSE,
+    ],
     label: 'POST request with Username/Password authentication',
   },
   {
-    value: [PresetHelpItem.POST, PresetHelpItem.AUTH_TOKEN],
+    value: [
+      PresetHelpItem.POST,
+      PresetHelpItem.AUTH_TOKEN,
+      PresetHelpItem.RESPONSE,
+    ],
     label: 'POST request with Authentication Bearer Token',
   },
   {
-    value: [PresetHelpItem.GET, PresetHelpItem.QUERY, PresetHelpItem.NO_AUTH],
+    value: [
+      PresetHelpItem.GET,
+      PresetHelpItem.QUERY,
+      PresetHelpItem.NO_AUTH,
+      PresetHelpItem.RESPONSE,
+    ],
     label: 'URL Query parameters, no authentication',
   },
   {
@@ -75,6 +92,7 @@ export const presetOptions: PresetOption[] = [
       PresetHelpItem.GET,
       PresetHelpItem.QUERY,
       PresetHelpItem.BASIC_AUTH,
+      PresetHelpItem.RESPONSE,
     ],
     label: 'URL Query parameters with Password authentication',
   },
@@ -83,19 +101,35 @@ export const presetOptions: PresetOption[] = [
       PresetHelpItem.GET,
       PresetHelpItem.QUERY,
       PresetHelpItem.AUTH_TOKEN,
+      PresetHelpItem.RESPONSE,
     ],
     label: 'URL Query parameters with Authentication Bearer Token',
   },
   {
-    value: [PresetHelpItem.GET, PresetHelpItem.PATH, PresetHelpItem.NO_AUTH],
+    value: [
+      PresetHelpItem.GET,
+      PresetHelpItem.PATH,
+      PresetHelpItem.NO_AUTH,
+      PresetHelpItem.RESPONSE,
+    ],
     label: 'URL Path parameters, no authentication',
   },
   {
-    value: [PresetHelpItem.GET, PresetHelpItem.PATH, PresetHelpItem.BASIC_AUTH],
+    value: [
+      PresetHelpItem.GET,
+      PresetHelpItem.PATH,
+      PresetHelpItem.BASIC_AUTH,
+      PresetHelpItem.RESPONSE,
+    ],
     label: 'URL Path parameters with Password authentication',
   },
   {
-    value: [PresetHelpItem.GET, PresetHelpItem.PATH, PresetHelpItem.AUTH_TOKEN],
+    value: [
+      PresetHelpItem.GET,
+      PresetHelpItem.PATH,
+      PresetHelpItem.AUTH_TOKEN,
+      PresetHelpItem.RESPONSE,
+    ],
     label: 'URL Path parameters with Authentication Bearer Token',
   },
 ];

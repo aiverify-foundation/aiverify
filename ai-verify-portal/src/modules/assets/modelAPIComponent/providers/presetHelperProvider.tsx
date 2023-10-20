@@ -22,7 +22,7 @@ const PresetHelpContext = createContext<
       highlightInputFields: (names: string[]) => void;
       highlightedFields: Record<string, true>;
       clearHighlightedFields: () => void;
-      selectTab: (tab: Tab) => void;
+      selectTab: (tab: Tab | undefined) => void;
       clearSelectedTab: () => void;
       highlightedTab: Tab | undefined;
       reset: () => void;
@@ -89,7 +89,7 @@ function PresetHelperProvider({ children }: FormGuideProviderProps) {
     setHighlightedFields({});
   }
 
-  function selectTab(tab: Tab) {
+  function selectTab(tab: Tab | undefined) {
     setHighlightedTab(tab);
   }
 

@@ -13,6 +13,8 @@ import { FormikContextType } from 'formik';
 import { ColorPalette } from 'src/components/colorPalette';
 import { useEffect } from 'react';
 import { ResponsePreview } from './responsePreview';
+import { usePresetHelper } from './providers/presetHelperProvider';
+import { Tooltip, TooltipPosition } from 'src/components/tooltip';
 
 const responseFieldName = 'modelAPI.response';
 
@@ -67,6 +69,7 @@ function ResponsePropertyInput(props: ResponsePropertyInputProps) {
   const { disabled, formikContext } = props;
   const { values, errors, touched, handleChange, setFieldValue } =
     formikContext;
+  const { highlightedFields } = usePresetHelper();
   const fieldErrors = errors.modelAPI?.response;
   const touchedFields = touched.modelAPI?.response;
   const mediaTypeOptions = [optionsMediaTypes[3], optionsMediaTypes[4]];
@@ -148,18 +151,43 @@ function ResponsePropertyInput(props: ResponsePropertyInputProps) {
           />
         </div>
         <div className={styles.keyValCol}>
-          <SelectInput<MediaType>
-            disabled={
-              disabled ||
-              (requestConfigBatchStrat === BatchStrategy.multipart &&
-                requestMethod === RequestMethod.POST)
+          <Tooltip
+            defaultShow={highlightedFields[`${responseFieldName}.mediaType`]}
+            disabled
+            backgroundColor={ColorPalette.gray}
+            fontColor={ColorPalette.white}
+            content={
+              <div style={{ marginBottom: 5, textAlign: 'left' }}>
+                Describe the media type and data structure of the response that
+                the API returns
+              </div>
             }
-            name={`${responseFieldName}.mediaType`}
-            options={mediaTypeOptions}
-            value={values.modelAPI.response.mediaType}
-            onSyntheticChange={handleChange}
-            style={{ marginBottom: 0 }}
-          />
+            position={TooltipPosition.bottom}
+            offsetTop={12}
+            offsetLeft={80}>
+            <div style={{ width: '100%' }}>
+              <SelectInput<MediaType>
+                disabled={
+                  disabled ||
+                  (requestConfigBatchStrat === BatchStrategy.multipart &&
+                    requestMethod === RequestMethod.POST)
+                }
+                name={`${responseFieldName}.mediaType`}
+                options={mediaTypeOptions}
+                value={values.modelAPI.response.mediaType}
+                onSyntheticChange={handleChange}
+                style={{ marginBottom: 0 }}
+                inputStyle={
+                  highlightedFields[`${responseFieldName}.mediaType`]
+                    ? {
+                        border: `1px solid ${ColorPalette.gray}`,
+                        backgroundColor: ColorPalette.softPurpleTint,
+                      }
+                    : undefined
+                }
+              />
+            </div>
+          </Tooltip>
         </div>
         <div className={styles.keyValCol}>
           <SelectInput<OpenApiDataTypes>
@@ -169,6 +197,14 @@ function ResponsePropertyInput(props: ResponsePropertyInputProps) {
             value={values.modelAPI.response.schema.type}
             onSyntheticChange={handleChange}
             style={{ marginBottom: 0 }}
+            inputStyle={
+              highlightedFields[`${responseFieldName}.schema.type`]
+                ? {
+                    border: `1px solid ${ColorPalette.gray}`,
+                    backgroundColor: ColorPalette.softPurpleTint,
+                  }
+                : undefined
+            }
           />
         </div>
         {values.modelAPI.response.mediaType === MediaType.APP_JSON &&

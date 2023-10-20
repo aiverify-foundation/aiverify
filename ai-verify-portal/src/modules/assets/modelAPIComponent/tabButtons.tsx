@@ -23,14 +23,17 @@ type TabButtonsGroupProps = {
 function TabButtonsGroup(props: TabButtonsGroupProps) {
   const { visibleTabs, activeTab, onTabClick } = props;
   const { values } = useFormikContext<ModelApiFormModel>();
-  const { highlightedTab } = usePresetHelper();
+  const { highlightedTab, selectTab } = usePresetHelper();
 
   function isTabVisible(tab: Tab) {
     return visibleTabs.indexOf(tab) > -1;
   }
 
   function handleTabClick(tab: Tab) {
-    return () => onTabClick(tab);
+    return () => {
+      onTabClick(tab);
+      selectTab(undefined);
+    };
   }
 
   useEffect(() => {
