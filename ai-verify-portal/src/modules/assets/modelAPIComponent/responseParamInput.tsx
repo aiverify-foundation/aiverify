@@ -25,9 +25,10 @@ const arrayItemsDataOptions = optionsOpenApiDataTypes.filter(
 );
 
 const arrItemObjDataTypeOptions = [
-  optionsOpenApiDataTypes[0],
-  optionsOpenApiDataTypes[1],
-  optionsOpenApiDataTypes[2],
+  { value: OpenApiDataTypes.STRING, label: OpenApiDataTypes.STRING },
+  { value: OpenApiDataTypes.NUMBER, label: OpenApiDataTypes.NUMBER },
+  { value: OpenApiDataTypes.INTEGER, label: OpenApiDataTypes.INTEGER },
+  { value: OpenApiDataTypes.BOOLEAN, label: OpenApiDataTypes.BOOLEAN },
 ];
 
 function ResponseInputHeading(props: ResponseInputHeadingProps) {
@@ -78,19 +79,24 @@ function ResponsePropertyInput(props: ResponsePropertyInputProps) {
   }[] = optionsOpenApiDataTypes;
   if (values.modelAPI.response.mediaType === MediaType.TEXT_PLAIN) {
     dataTypeOptions = [
-      optionsOpenApiDataTypes[0],
-      optionsOpenApiDataTypes[1],
-      optionsOpenApiDataTypes[2],
+      { value: OpenApiDataTypes.STRING, label: OpenApiDataTypes.STRING },
+      { value: OpenApiDataTypes.NUMBER, label: OpenApiDataTypes.NUMBER },
+      { value: OpenApiDataTypes.INTEGER, label: OpenApiDataTypes.INTEGER },
+      { value: OpenApiDataTypes.BOOLEAN, label: OpenApiDataTypes.BOOLEAN },
     ];
   } else if (values.modelAPI.response.mediaType === MediaType.APP_JSON) {
-    dataTypeOptions = [optionsOpenApiDataTypes[3], optionsOpenApiDataTypes[4]];
+    dataTypeOptions = [
+      { value: OpenApiDataTypes.ARRAY, label: OpenApiDataTypes.ARRAY },
+      { value: OpenApiDataTypes.OBJECT, label: OpenApiDataTypes.OBJECT },
+    ];
   }
 
   const fieldDataTypeOptions = [
-    optionsOpenApiDataTypes[0],
-    optionsOpenApiDataTypes[1],
-    optionsOpenApiDataTypes[2],
-    optionsOpenApiDataTypes[3],
+    { value: OpenApiDataTypes.STRING, label: OpenApiDataTypes.STRING },
+    { value: OpenApiDataTypes.NUMBER, label: OpenApiDataTypes.NUMBER },
+    { value: OpenApiDataTypes.INTEGER, label: OpenApiDataTypes.INTEGER },
+    { value: OpenApiDataTypes.BOOLEAN, label: OpenApiDataTypes.BOOLEAN },
+    { value: OpenApiDataTypes.ARRAY, label: OpenApiDataTypes.ARRAY },
   ];
 
   useEffect(() => {

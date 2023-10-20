@@ -41,6 +41,7 @@ export const optionsMediaTypes = [
 
 export const optionsOpenApiDataTypes = [
   { value: OpenApiDataTypes.STRING, label: OpenApiDataTypes.STRING },
+  { value: OpenApiDataTypes.NUMBER, label: OpenApiDataTypes.NUMBER },
   { value: OpenApiDataTypes.INTEGER, label: OpenApiDataTypes.INTEGER },
   { value: OpenApiDataTypes.BOOLEAN, label: OpenApiDataTypes.BOOLEAN },
   { value: OpenApiDataTypes.ARRAY, label: OpenApiDataTypes.ARRAY },

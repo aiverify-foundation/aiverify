@@ -2153,7 +2153,7 @@ describe('New Model API Config', () => {
           const options = Array.from(
             arrItemsInputContainer.querySelectorAll('.aiv__option')
           );
-          expect(options.length).toEqual(4);
+          expect(options.length).toEqual(5);
           const targetOption = options.find(
             (opt) => opt.textContent === 'object'
           );
@@ -2393,7 +2393,7 @@ describe('New Model API Config', () => {
           const options = Array.from(
             arrItemsInputContainer.querySelectorAll('.aiv__option')
           );
-          expect(options.length).toEqual(4);
+          expect(options.length).toEqual(5);
           const targetOption = options.find(
             (opt) => opt.textContent === 'array'
           );
