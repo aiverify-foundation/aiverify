@@ -1889,21 +1889,18 @@ describe('New Model API Config', () => {
         const responseMediaTypeInputContainer = container.querySelector(
           'label[for="modelAPI.response.mediaType"]'
         ) as HTMLElement;
-        userEvent.click(
-          responseMediaTypeInputContainer.querySelector(
-            '.aiv__dropdown-indicator'
-          ) as HTMLElement
-        );
-        await waitFor(async () => {
-          const options = Array.from(
-            responseMediaTypeInputContainer.querySelectorAll('.aiv__option')
-          );
-          expect(options.length).toEqual(2);
-          const targetOption = options.find(
-            (opt) => opt.textContent === 'application/json'
-          );
-          userEvent.click(targetOption as HTMLElement);
+        await waitFor(() => {
+          expect(
+            (
+              responseMediaTypeInputContainer.querySelector(
+                '.aiv__single-value '
+              ) as HTMLElement
+            ).textContent
+          ).toBe(MediaType.APP_JSON);
         });
+        expect(
+          responseMediaTypeInputContainer.querySelector('.aiv--is-disabled')
+        ).not.toBeNull();
 
         const dataTypeInputContainer = container.querySelector(
           'label[for="modelAPI.response.schema.type"]'
@@ -2110,21 +2107,18 @@ describe('New Model API Config', () => {
         const responseMediaTypeInputContainer = container.querySelector(
           'label[for="modelAPI.response.mediaType"]'
         ) as HTMLElement;
-        userEvent.click(
-          responseMediaTypeInputContainer.querySelector(
-            '.aiv__dropdown-indicator'
-          ) as HTMLElement
-        );
-        await waitFor(async () => {
-          const options = Array.from(
-            responseMediaTypeInputContainer.querySelectorAll('.aiv__option')
-          );
-          expect(options.length).toEqual(2);
-          const targetOption = options.find(
-            (opt) => opt.textContent === 'application/json'
-          );
-          userEvent.click(targetOption as HTMLElement);
+        await waitFor(() => {
+          expect(
+            (
+              requestMediaTypeInputContainer.querySelector(
+                '.aiv__single-value '
+              ) as HTMLElement
+            ).textContent
+          ).toBe(MediaType.APP_JSON);
         });
+        expect(
+          responseMediaTypeInputContainer.querySelector('.aiv--is-disabled')
+        ).not.toBeNull();
 
         const dataTypeInputContainer = container.querySelector(
           'label[for="modelAPI.response.schema.type"]'
@@ -2352,21 +2346,18 @@ describe('New Model API Config', () => {
         const responseMediaTypeInputContainer = container.querySelector(
           'label[for="modelAPI.response.mediaType"]'
         ) as HTMLElement;
-        userEvent.click(
-          responseMediaTypeInputContainer.querySelector(
-            '.aiv__dropdown-indicator'
-          ) as HTMLElement
-        );
-        await waitFor(async () => {
-          const options = Array.from(
-            responseMediaTypeInputContainer.querySelectorAll('.aiv__option')
-          );
-          expect(options.length).toEqual(2);
-          const targetOption = options.find(
-            (opt) => opt.textContent === 'application/json'
-          );
-          userEvent.click(targetOption as HTMLElement);
+        await waitFor(() => {
+          expect(
+            (
+              requestMediaTypeInputContainer.querySelector(
+                '.aiv__single-value '
+              ) as HTMLElement
+            ).textContent
+          ).toBe(MediaType.APP_JSON);
         });
+        expect(
+          responseMediaTypeInputContainer.querySelector('.aiv--is-disabled')
+        ).not.toBeNull();
 
         const dataTypeInputContainer = container.querySelector(
           'label[for="modelAPI.response.schema.type"]'
