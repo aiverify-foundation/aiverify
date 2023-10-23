@@ -491,6 +491,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
 
                                     {activeTab === Tab.RESPONSE ? (
                                       <TabContentResponse
+                                        id={id}
                                         disabled={isDisabled}
                                       />
                                     ) : null}

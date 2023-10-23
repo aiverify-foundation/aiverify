@@ -63,10 +63,11 @@ function ResponseInputHeading(props: ResponseInputHeadingProps) {
 type ResponsePropertyInputProps = {
   disabled: boolean;
   formikContext: FormikContextType<ModelApiFormModel>;
+  isNewModel: boolean;
 };
 
 function ResponsePropertyInput(props: ResponsePropertyInputProps) {
-  const { disabled, formikContext } = props;
+  const { disabled, formikContext, isNewModel } = props;
   const { values, errors, touched, handleChange, setFieldValue } =
     formikContext;
   const { highlightedFields } = usePresetHelper();
@@ -128,9 +129,14 @@ function ResponsePropertyInput(props: ResponsePropertyInputProps) {
         OpenApiDataTypes.INTEGER
       );
     } else if (mediaType === MediaType.APP_JSON) {
-      setFieldValue(`${responseFieldName}.schema.type`, OpenApiDataTypes.ARRAY);
+      setFieldValue(
+        `${responseFieldName}.schema.type`,
+        isNewModel
+          ? OpenApiDataTypes.ARRAY
+          : values.modelAPI.response.schema.type
+      );
     }
-  }, [values.modelAPI.response.mediaType]);
+  }, [values.modelAPI.response.mediaType, isNewModel]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
