@@ -14,7 +14,9 @@ import { TextInput } from 'src/components/textInput';
 type RequestParamsMapModalProps = {
   initialMap?: Record<string, string>;
   datasetColumns: DatasetColumn[];
-  requestParams: BodyParam[] | UrlParam[];
+  requestParams:
+    | Omit<BodyParam, 'reactPropId'>[]
+    | Omit<UrlParam, 'reactPropId'>[];
   onCloseClick: () => void;
   onOkClick: (paramsColumnsMap: Record<string, string>) => void;
 };

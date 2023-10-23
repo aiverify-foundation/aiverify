@@ -45,7 +45,9 @@ export default function SelectDatasetAndModelSection({
   let groundTruthColumns: DatasetColumn[] = [];
   let groundTruthColVal = '';
   let paramsColumnsMap: Record<string, string> | undefined = undefined;
-  let requestParams: BodyParam[] | UrlParam[] = [];
+  let requestParams:
+    | Omit<BodyParam, 'reactPropId'>[]
+    | Omit<UrlParam, 'reactPropId'>[] = [];
 
   const {
     model,
