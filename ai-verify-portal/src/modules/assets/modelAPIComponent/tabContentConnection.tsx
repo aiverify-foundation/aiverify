@@ -1,9 +1,7 @@
 import { useFormikContext } from 'formik';
-import { BatchStrategy, ModelApiFormModel } from './types';
+import { ModelApiFormModel } from './types';
 import { TextInput } from 'src/components/textInput';
 import styles from './styles/newModelApiConfig.module.css';
-import { SelectInput } from 'src/components/selectInput';
-import { optionsBatchStrategies } from './selectOptions';
 import { Tooltip, TooltipPosition } from 'src/components/tooltip';
 import InfoIcon from '@mui/icons-material/Info';
 import { ColorPalette } from 'src/components/colorPalette';

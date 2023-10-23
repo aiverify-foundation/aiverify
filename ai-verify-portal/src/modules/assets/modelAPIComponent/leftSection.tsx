@@ -11,7 +11,15 @@ import { SelectInput } from 'src/components/selectInput';
 const defaultConfigNameDisplay = 'Configuration Name';
 const defaultConfigDescDisplay = 'Description';
 
-function ModelApiLeftSection({ disabled = false }: { disabled: boolean }) {
+type SectionProps = {
+  disabled: boolean;
+  hasDuplicateNameError: boolean;
+};
+
+function ModelApiLeftSection({
+  disabled = false,
+  hasDuplicateNameError = false,
+}: SectionProps) {
   const [isEdit, setIsEdit] = useState(false);
   const [nameDescHasErrors, setNameDescHasErrors] = useState(false);
   const { values, errors, touched, handleChange } =
@@ -28,6 +36,10 @@ function ModelApiLeftSection({ disabled = false }: { disabled: boolean }) {
       setNameDescHasErrors(false);
     }
   }, [errors.name, errors.description]);
+
+  useEffect(() => {
+    if (hasDuplicateNameError) setIsEdit(true);
+  }, [hasDuplicateNameError]);
 
   return (
     <div>
@@ -57,6 +69,7 @@ function ModelApiLeftSection({ disabled = false }: { disabled: boolean }) {
         <ApiConfigNameDescForm
           onOKClick={() => setIsEdit(false)}
           disabledOkBtn={nameDescHasErrors}
+          hasDuplicateNameError={hasDuplicateNameError}
         />
       )}
       <div style={{ marginTop: 25 }}>

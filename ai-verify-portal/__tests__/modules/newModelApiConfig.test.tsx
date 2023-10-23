@@ -33,7 +33,7 @@ describe('New Model API Config', () => {
     it('should render with the correct defaults', async () => {
       const { container } = render(
         <MockProviders>
-          <NewModelApiConfigModule />
+          <NewModelApiConfigModule allConfigNames={[]} />
         </MockProviders>
       );
 
@@ -67,7 +67,7 @@ describe('New Model API Config', () => {
         const { container } = render(
           <MockProviders apolloMocks={mocks_tc000}>
             <div id="aivModal"></div>
-            <NewModelApiConfigModule />
+            <NewModelApiConfigModule allConfigNames={[]} />
           </MockProviders>
         );
 
@@ -205,7 +205,7 @@ describe('New Model API Config', () => {
         const { container } = render(
           <MockProviders apolloMocks={mocks_tc001}>
             <div id="aivModal"></div>
-            <NewModelApiConfigModule />
+            <NewModelApiConfigModule allConfigNames={[]} />
           </MockProviders>
         );
 
@@ -372,7 +372,7 @@ describe('New Model API Config', () => {
         const { container } = render(
           <MockProviders apolloMocks={mocks_tc002}>
             <div id="aivModal"></div>
-            <NewModelApiConfigModule />
+            <NewModelApiConfigModule allConfigNames={[]} />
           </MockProviders>
         );
 
@@ -545,7 +545,7 @@ describe('New Model API Config', () => {
         const { container } = render(
           <MockProviders apolloMocks={mocks_tc003}>
             <div id="aivModal"></div>
-            <NewModelApiConfigModule />
+            <NewModelApiConfigModule allConfigNames={[]} />
           </MockProviders>
         );
 
@@ -683,7 +683,7 @@ describe('New Model API Config', () => {
         const { container } = render(
           <MockProviders apolloMocks={mocks_tc004}>
             <div id="aivModal"></div>
-            <NewModelApiConfigModule />
+            <NewModelApiConfigModule allConfigNames={[]} />
           </MockProviders>
         );
 
@@ -840,7 +840,7 @@ describe('New Model API Config', () => {
         const { container } = render(
           <MockProviders apolloMocks={mocks_tc005}>
             <div id="aivModal"></div>
-            <NewModelApiConfigModule />
+            <NewModelApiConfigModule allConfigNames={[]} />
           </MockProviders>
         );
 
@@ -996,7 +996,7 @@ describe('New Model API Config', () => {
         const { container } = render(
           <MockProviders apolloMocks={mocks_tc006}>
             <div id="aivModal"></div>
-            <NewModelApiConfigModule />
+            <NewModelApiConfigModule allConfigNames={[]} />
           </MockProviders>
         );
 
@@ -1172,7 +1172,7 @@ describe('New Model API Config', () => {
         const { container } = render(
           <MockProviders apolloMocks={mocks_tc007}>
             <div id="aivModal"></div>
-            <NewModelApiConfigModule />
+            <NewModelApiConfigModule allConfigNames={[]} />
           </MockProviders>
         );
 
@@ -1465,7 +1465,7 @@ describe('New Model API Config', () => {
         const { container } = render(
           <MockProviders apolloMocks={mocks_tc008}>
             <div id="aivModal"></div>
-            <NewModelApiConfigModule />
+            <NewModelApiConfigModule allConfigNames={[]} />
           </MockProviders>
         );
 
@@ -1647,7 +1647,7 @@ describe('New Model API Config', () => {
         const { container } = render(
           <MockProviders apolloMocks={mocks_tc009}>
             <div id="aivModal"></div>
-            <NewModelApiConfigModule />
+            <NewModelApiConfigModule allConfigNames={[]} />
           </MockProviders>
         );
 
@@ -1833,7 +1833,7 @@ describe('New Model API Config', () => {
         const { container } = render(
           <MockProviders apolloMocks={mocks_tc013}>
             <div id="aivModal"></div>
-            <NewModelApiConfigModule />
+            <NewModelApiConfigModule allConfigNames={[]} />
           </MockProviders>
         );
 
@@ -2207,7 +2207,7 @@ describe('New Model API Config', () => {
         const { container } = render(
           <MockProviders apolloMocks={mocks_tc014}>
             <div id="aivModal"></div>
-            <NewModelApiConfigModule />
+            <NewModelApiConfigModule allConfigNames={[]} />
           </MockProviders>
         );
 
@@ -2584,7 +2584,7 @@ describe('New Model API Config', () => {
         const { container } = render(
           <MockProviders apolloMocks={mocks_tc015}>
             <div id="aivModal"></div>
-            <NewModelApiConfigModule />
+            <NewModelApiConfigModule allConfigNames={[]} />
           </MockProviders>
         );
 
@@ -2968,7 +2968,7 @@ describe('New Model API Config', () => {
       const { container } = render(
         <MockProviders>
           <div id="aivModal"></div>
-          <NewModelApiConfigModule />
+          <NewModelApiConfigModule allConfigNames={[]} />
         </MockProviders>
       );
       const user = userEvent.setup();

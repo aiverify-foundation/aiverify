@@ -64,6 +64,15 @@ export async function listModels(): Promise<ModelFile[]> {
   return modelFiles;
 }
 
+const GQL_GET_ALL_MODEL_NAMES = gql`
+  query Query {
+    modelFiles {
+      name
+      type
+    }
+  }
+`;
+
 const GQL_GET_MODELAPI = gql`
   query ModelFiles($modelFileID: ObjectID) {
     modelFiles(modelFileID: $modelFileID) {
@@ -155,4 +164,27 @@ export async function getModelAPIConfig(
     return undefined;
   }
   return undefined;
+}
+
+export async function getAllModelNames(): Promise<string[]> {
+  const client = graphqlClient(true);
+  try {
+    const { data } = await client.query<{
+      modelFiles: { name: string; type: string }[];
+    }>({
+      query: GQL_GET_ALL_MODEL_NAMES,
+    });
+    if (data.modelFiles && data.modelFiles.length === 0) {
+      return [];
+    }
+    const apiConfigNames = data.modelFiles.reduce<string[]>(
+      (prev, file) =>
+        file.type.toUpperCase() === 'API' ? [...prev, file.name] : prev,
+      []
+    );
+    return apiConfigNames;
+  } catch (err) {
+    console.log(toErrorWithMessage(err));
+    return [];
+  }
 }

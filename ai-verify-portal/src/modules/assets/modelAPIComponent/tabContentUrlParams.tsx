@@ -5,6 +5,7 @@ import {
   MediaType,
   ModelApiFormModel,
   OpenApiDataTypes,
+  Parameters,
   URLParamType,
   UrlParam,
 } from './types';
@@ -31,8 +32,6 @@ import {
   useState,
 } from 'react';
 import { getInputReactKeyId } from '.';
-import { CheckBox } from 'src/components/checkbox';
-import { TextInput } from 'src/components/textInput';
 import { usePresetHelper } from './providers/presetHelperProvider';
 import { ColorPalette } from 'src/components/colorPalette';
 
@@ -71,13 +70,6 @@ const TabContentURLParams = forwardRef<
   const parameters = values.modelAPI.parameters;
   useImperativeHandle(ref, () => formArrayHelpersRef.current, []);
   const paramType = parameters && parameters.paramType;
-  const queryIsArrayInputChecked =
-    paramType === URLParamType.QUERY &&
-    parameters &&
-    parameters.queries &&
-    parameters.queries.isArray != undefined
-      ? parameters.queries.isArray
-      : false;
   const pathIsArrayInputChecked: boolean =
     paramType === URLParamType.PATH &&
     parameters &&
@@ -97,38 +89,45 @@ const TabContentURLParams = forwardRef<
     urlParamsStr =
       parameters && parameters.paths ? `/{${parameters.paths.name}}` || '' : '';
   }
-  let paramErrors: FormikErrors<UrlParam>[] | string | undefined;
+  const formikQueryParamErrors = errors.modelAPI?.parameters as FormikErrors<
+    Parameters & { queries: { queryParams: UrlParam[] } }
+  >;
+  const formikPathParamErrors = errors.modelAPI?.parameters as FormikErrors<
+    Parameters & { paths: { pathParams: UrlParam[] } }
+  >;
+  const formikQueryParamTouched = touched.modelAPI?.parameters as FormikTouched<
+    Parameters & { queries: { queryParams: UrlParam[] } }
+  >;
+  const formikPathParamTouched = touched.modelAPI?.parameters as FormikTouched<
+    Parameters & { paths: { pathParams: UrlParam[] } }
+  >;
+  let paramErrors:
+    | FormikErrors<UrlParam>[]
+    | FormikErrors<Parameters>
+    | string
+    | undefined;
   let touchedParamFields: FormikTouched<UrlParam>[] | undefined;
   if (errors.modelAPI && errors.modelAPI.parameters) {
-    if (
-      paramType === URLParamType.QUERY &&
-      errors.modelAPI.parameters.queries
-    ) {
-      paramErrors = errors.modelAPI.parameters.queries.queryParams as
+    if (paramType === URLParamType.QUERY && formikQueryParamErrors.queries) {
+      paramErrors = formikQueryParamErrors.queries.queryParams as
         | FormikErrors<UrlParam>[]
         | string
         | undefined;
-    } else if (
-      paramType === URLParamType.PATH &&
-      errors.modelAPI.parameters.paths
-    ) {
-      paramErrors = errors.modelAPI.parameters.paths.pathParams as
+    } else if (paramType === URLParamType.PATH && formikPathParamErrors.paths) {
+      paramErrors = formikPathParamErrors.paths.pathParams as
         | FormikErrors<UrlParam>[]
         | string
         | undefined;
     }
   }
   if (touched.modelAPI && touched.modelAPI.parameters) {
-    if (
-      paramType === URLParamType.QUERY &&
-      touched.modelAPI.parameters.queries
-    ) {
-      touchedParamFields = touched.modelAPI.parameters.queries.queryParams;
+    if (paramType === URLParamType.QUERY && formikQueryParamTouched.queries) {
+      touchedParamFields = formikQueryParamTouched.queries.queryParams;
     } else if (
       paramType === URLParamType.PATH &&
-      touched.modelAPI.parameters.paths
+      formikPathParamTouched.paths
     ) {
-      touchedParamFields = touched.modelAPI.parameters.paths.pathParams;
+      touchedParamFields = formikPathParamTouched.paths.pathParams;
     }
   }
 
@@ -398,11 +397,13 @@ const TabContentURLParams = forwardRef<
                                   Boolean(
                                     paramErrors &&
                                       typeof paramErrors === 'object' &&
+                                      //@ts-ignore
                                       paramErrors[index]?.name &&
                                       touchedParamFields &&
                                       touchedParamFields[index]
                                   )
-                                    ? paramErrors && paramErrors[index].name
+                                    ? //@ts-ignore
+                                      paramErrors && paramErrors[index].name
                                     : undefined
                                 }
                               />

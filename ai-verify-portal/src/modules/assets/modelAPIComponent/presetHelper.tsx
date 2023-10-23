@@ -41,7 +41,6 @@ function PresetHelper(props: PresetHelperProps) {
   orderedGuideSteps = orderedGuideSteps.filter(
     (step) => guideSteps.findIndex((val) => val === step) !== -1
   );
-  console.log(orderedGuideSteps);
 
   function handleToggleAllTabsClick() {
     setShowAllTabs((prev) => !prev);

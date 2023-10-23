@@ -1,5 +1,20 @@
-import { NewModelApiConfigModule } from 'src/modules/assets/modelAPIComponent';
+import { getAllModelNames } from 'server/lib/assetServiceBackend';
+import {
+  NewModelApiConfigModule,
+  NewModelApiConfigModuleProps,
+} from 'src/modules/assets/modelAPIComponent';
 
-export default function NewModelApiConfigPage() {
-  return <NewModelApiConfigModule />;
+export async function getServerSideProps() {
+  const allConfigNames = await getAllModelNames();
+  return {
+    props: {
+      allConfigNames,
+    },
+  };
+}
+
+export default function NewModelApiConfigPage({
+  allConfigNames,
+}: NewModelApiConfigModuleProps) {
+  return <NewModelApiConfigModule allConfigNames={allConfigNames} />;
 }

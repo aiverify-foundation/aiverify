@@ -1,5 +1,8 @@
 import { GetServerSideProps } from 'next';
-import { getModelAPIConfig } from 'server/lib/assetServiceBackend';
+import {
+  getAllModelNames,
+  getModelAPIConfig,
+} from 'server/lib/assetServiceBackend';
 import {
   NewModelApiConfigModule,
   NewModelApiConfigModuleProps,
@@ -38,6 +41,7 @@ export const getServerSideProps: GetServerSideProps<{
   const from = query.from as string;
   const projectId = query.projectId as string;
   const result = await getModelAPIConfig(id);
+  const allConfigNames = await getAllModelNames();
   if (!result) {
     return { notFound: true };
   }
@@ -127,11 +131,7 @@ export const getServerSideProps: GetServerSideProps<{
   ) {
     formValues.modelAPI.requestBody = {
       ...(() => {
-        const {
-          __typename,
-          maxItems: _ignoreMaxItems,
-          ...rest
-        } = result.modelAPI.requestBody;
+        const { __typename, ...rest } = result.modelAPI.requestBody;
         return rest;
       })(),
       // add reactPropId
@@ -141,11 +141,6 @@ export const getServerSideProps: GetServerSideProps<{
         reactPropId: getInputReactKeyId(),
       })),
     };
-    // cast maxItems to string
-    if (result.modelAPI.requestBody.maxItems) {
-      formValues.modelAPI.requestBody.maxItems =
-        result.modelAPI.requestBody.maxItems.toString();
-    }
   } else if (
     result.modelAPI.method === RequestMethod.GET &&
     result.modelAPI.parameters
@@ -257,6 +252,7 @@ export const getServerSideProps: GetServerSideProps<{
     disabled: true,
     id: result.id,
     formValues,
+    allConfigNames,
   };
 
   if (from) {
@@ -278,6 +274,7 @@ export default function ModelAPIConfigPage({
   formValues,
   entryPoint,
   currentProjectId,
+  allConfigNames,
 }: NewModelApiConfigModuleProps) {
   return (
     <NewModelApiConfigModule
@@ -286,6 +283,7 @@ export default function ModelAPIConfigPage({
       disabled={entryPoint === 'selectModel' ? false : disabled}
       entryPoint={entryPoint}
       currentProjectId={currentProjectId}
+      allConfigNames={allConfigNames}
     />
   );
 }

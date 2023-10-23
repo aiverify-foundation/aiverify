@@ -5,6 +5,7 @@ import {
   MediaType,
   ModelApiFormModel,
   OpenApiDataTypes,
+  RequestBody,
 } from './types';
 import {
   FieldArray,
@@ -47,11 +48,17 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
   const requestConfig = values.modelAPI.requestConfig;
   const reqConfFieldErrors = errors.modelAPI?.requestConfig;
   const reqConfTouchedFields = touched.modelAPI?.requestConfig;
-  const fieldErrors = errors.modelAPI?.requestBody?.properties as
+  const requestBodyErrors = errors.modelAPI?.requestBody as
+    | FormikErrors<RequestBody>
+    | undefined;
+  const fieldErrors = requestBodyErrors?.properties as
     | FormikErrors<BodyParam>[]
     | string
     | undefined;
-  const touchedFields = touched.modelAPI?.requestBody?.properties as
+  const touchedRequestBody = touched.modelAPI?.requestBody as
+    | FormikTouched<RequestBody>
+    | undefined;
+  const touchedFields = touchedRequestBody?.properties as
     | FormikTouched<BodyParam>[]
     | undefined;
   const mediaTypeOptions = [
@@ -233,7 +240,9 @@ function TabContentRequestBody({ disabled = false }: { disabled: boolean }) {
                             touchedFields &&
                             touchedFields[index]?.field
                         )
-                          ? fieldErrors && fieldErrors[index]?.field
+                          ? fieldErrors &&
+                            (fieldErrors[index] as FormikErrors<BodyParam>)
+                              ?.field
                           : undefined
                       }
                     />

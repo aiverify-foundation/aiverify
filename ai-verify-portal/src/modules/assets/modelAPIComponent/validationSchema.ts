@@ -26,13 +26,15 @@ const urlPattern = new RegExp(
   'i'
 );
 
+// Weirdly, add method context binding needs to use 'this' binding. Arrow function doesn't work
 addMethod(object, 'uniqueProperty', function (propertyName, message) {
   return this.test('unique', message, function (value: { [x: string]: any }) {
     if (!value || !value[propertyName]) {
       return true;
     }
-
+    //@ts-ignore
     const { path } = this;
+    //@ts-ignore
     const options = [...this.parent];
     const currentIndex = options.indexOf(value);
 
@@ -41,6 +43,7 @@ addMethod(object, 'uniqueProperty', function (propertyName, message) {
     if (
       subOptions.some((option) => option[propertyName] === value[propertyName])
     ) {
+      //@ts-ignore
       throw this.createError({
         path: `${path}.${propertyName}`,
         message,

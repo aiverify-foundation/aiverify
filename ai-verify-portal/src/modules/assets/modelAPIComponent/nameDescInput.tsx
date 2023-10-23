@@ -6,13 +6,26 @@ import { ModelApiFormModel } from './types';
 type ApiConfigNameDescFormProps = {
   onOKClick: () => void;
   disabledOkBtn?: boolean;
+  hasDuplicateNameError: boolean;
 };
 
 function ApiConfigNameDescForm(props: ApiConfigNameDescFormProps) {
-  const { onOKClick, disabledOkBtn = false } = props;
+  const {
+    onOKClick,
+    disabledOkBtn = false,
+    hasDuplicateNameError = false,
+  } = props;
 
   const { values, errors, touched, handleChange } =
     useFormikContext<ModelApiFormModel>();
+
+  let nameError;
+  if (Boolean(errors.name && touched.name)) {
+    nameError = errors.name;
+  } else if (hasDuplicateNameError) {
+    nameError = 'Name already exists';
+  }
+
   return (
     <div
       style={{
@@ -26,7 +39,7 @@ function ApiConfigNameDescForm(props: ApiConfigNameDescFormProps) {
         maxLength={255}
         style={{ marginBottom: 10 }}
         onChange={handleChange}
-        error={Boolean(errors.name && touched.name) ? errors.name : undefined}
+        error={nameError}
       />
       <TextArea
         label="Description"

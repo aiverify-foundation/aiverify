@@ -65,6 +65,7 @@ export type NewModelApiConfigModuleProps = {
   formValues?: ModelApiFormModel;
   entryPoint?: string;
   currentProjectId?: string;
+  allConfigNames: string[];
 };
 
 function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
@@ -74,6 +75,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
     disabled = false,
     entryPoint,
     currentProjectId,
+    allConfigNames,
   } = props;
   const [activeTab, setActiveTab] = useState<Tab>(() => {
     if (formValues) {
@@ -84,6 +86,7 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
     return Tab.REQUEST_BODY;
   });
   const [showPageLevelAlert, setShowPageLevelAlert] = useState(false);
+  const [showDuplicateNameError, setShowDuplicateNameError] = useState(false);
   const [showPresetHelper, setShowPresetHelper] = useState(false);
   const [showHelperBtn, setShowHelperBtn] = useState(() => id == undefined);
   const [PresetHelpItems, setPresetHelpItems] = useState<PresetHelpItem[]>([]);
@@ -101,6 +104,10 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
     useMutation<GqlDeleteModelAPIConfigResult>(GQL_DELETE_MODELAPI);
   const router = useRouter();
   const initialFormValues = formValues || defaultFormValues;
+  const disallowedConfigNames =
+    id !== undefined && formValues !== undefined
+      ? allConfigNames.filter((name) => formValues.name !== name)
+      : allConfigNames;
   let visibleTabs: Tab[] = [Tab.RESPONSE];
 
   if (PresetHelpItems.indexOf(PresetHelpItem.GET) > -1) {
@@ -222,7 +229,20 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
     deleteApiConfig(id);
   }
 
+  function isDuplicateConfigName(configName: string) {
+    const existingNames = disallowedConfigNames.map((name) =>
+      name.toUpperCase()
+    );
+    return (
+      existingNames.findIndex((name) => name === configName.toUpperCase()) > -1
+    );
+  }
+
   function handleFormSubmit(values: ModelApiFormModel) {
+    if (isDuplicateConfigName(values.name)) {
+      setShowDuplicateNameError(true);
+      return;
+    }
     setSaveInProgress(true);
     setIsDisabled(true);
     if (id != undefined) {
@@ -249,6 +269,10 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
 
   function handleCloseAlertClick() {
     setShowPageLevelAlert(false);
+  }
+
+  function handleCloseDuplicateNameAlertClick() {
+    setShowDuplicateNameError(false);
   }
 
   function handleTabClick(tab: Tab) {
@@ -326,6 +350,8 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
   }
 
   function handleNeedHelpClick() {
+    setShowPageLevelAlert(false);
+    setShowDuplicateNameError(false);
     setShowPresetHelper(true);
     setShowHelperBtn(false);
   }
@@ -383,6 +409,15 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                                   disableCloseIcon={false}
                                   onCloseIconClick={handleCloseAlertClick}
                                 />
+                              ) : showDuplicateNameError ? (
+                                <PageLevelErrorAlert
+                                  headingText="The Configuration Name already exists"
+                                  content="Please use a different name for your configuration"
+                                  disableCloseIcon={false}
+                                  onCloseIconClick={
+                                    handleCloseDuplicateNameAlertClick
+                                  }
+                                />
                               ) : null}
                               {showPresetHelper && !showPageLevelAlert ? (
                                 <PresetHelper
@@ -409,7 +444,10 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
                             ) : null}
                             <div className={styles.apiConfigForm}>
                               <div className={styles.leftSection}>
-                                <ModelApiLeftSection disabled={isDisabled} />
+                                <ModelApiLeftSection
+                                  disabled={isDisabled}
+                                  hasDuplicateNameError={showDuplicateNameError}
+                                />
                               </div>
                               <div className={styles.vDivider} />
                               <div className={styles.rightSection}>
