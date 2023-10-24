@@ -151,7 +151,7 @@ function NewModelOptions({
             label="Connect to AI Model API"
             tip="if the AI model file is not available for upload"
             testid="new-model-api-config"
-            icon={<FolderIcon/>}>
+            icon={<FolderIcon />}>
             <b>Supports</b>
             <div>
               Any AI Framework. <br />
@@ -202,13 +202,13 @@ function NewModelOptions({
       }
       return;
     }
-    
+
     if (mode == ModelAccess.MODEL_UPLOAD) {
       return router.push('/assets/newModelUpload');
     } else if (mode == ModelAccess.PIPELINE_UPLOAD) {
       return router.push('/assets/newPipelineUpload');
-    } else if ( mode == "api") {
-      return router.push('/assets/newModelApiConfig')
+    } else if (mode == 'api') {
+      return router.push('/assets/newModelApiConfig');
     }
   }
 

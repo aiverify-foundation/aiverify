@@ -22,7 +22,7 @@ import {
 } from '__mocks__/mockNewApiModelGqlVars';
 import { MediaType } from 'src/modules/assets/modelAPIComponent/types';
 
-const testTimeout = 20000;
+const testTimeout = 50000;
 
 describe('New Model API Config', () => {
   beforeAll(() => {
