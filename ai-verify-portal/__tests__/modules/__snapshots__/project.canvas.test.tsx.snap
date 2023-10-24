@@ -2603,7 +2603,9 @@ exports[`Project Flow Report Designer Screen should render Report Designer scree
                                 <div
                                   class="gVarsCol"
                                 >
-                                  Test Project
+                                  <div>
+                                    Test Project
+                                  </div>
                                 </div>
                                 <div
                                   class="gVarsDelCol"
@@ -2621,7 +2623,9 @@ exports[`Project Flow Report Designer Screen should render Report Designer scree
                                 <div
                                   class="gVarsCol"
                                 >
-                                  Test Description
+                                  <div>
+                                    Test Description
+                                  </div>
                                 </div>
                                 <div
                                   class="gVarsDelCol"
@@ -2639,7 +2643,9 @@ exports[`Project Flow Report Designer Screen should render Report Designer scree
                                 <div
                                   class="gVarsCol"
                                 >
-                                  Test Report Name
+                                  <div>
+                                    Test Report Name
+                                  </div>
                                 </div>
                                 <div
                                   class="gVarsDelCol"
@@ -2657,7 +2663,9 @@ exports[`Project Flow Report Designer Screen should render Report Designer scree
                                 <div
                                   class="gVarsCol"
                                 >
-                                  Test Company Pte Ltd
+                                  <div>
+                                    Test Company Pte Ltd
+                                  </div>
                                 </div>
                                 <div
                                   class="gVarsDelCol"
