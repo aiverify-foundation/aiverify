@@ -243,24 +243,24 @@ casual.define("modelFile", function () {
  */
 casual.define("modelAPI", function (encoding, isArray) {
   let modelAPI = {
-    method: (encoding==="requestBody")?"POST":"GET",
+    method: encoding === "requestBody" ? "POST" : "GET",
     url: casual.url.toLowerCase(),
     response: {
       statusCode: 200,
       mediaType: "text/plain",
       schema: {
-        "type": "integer"
-      }
+        type: "integer",
+      },
     },
     requestConfig: {
-      "sslVerify": false,
-      "connectionTimeout": -1,
-      "rateLimit": -1,
-      "rateLimitTimeout": -1,
-      "batchLimit": -1,
-      "connectionRetries": 3,
-      "maxConnections": -1,
-      "batchStrategy": "none"
+      sslVerify: false,
+      connectionTimeout: -1,
+      rateLimit: -1,
+      rateLimitTimeout: -1,
+      batchLimit: -1,
+      connectionRetries: 3,
+      maxConnections: -1,
+      batchStrategy: "none",
     },
   };
 
@@ -314,12 +314,12 @@ casual.define("modelAPI", function (encoding, isArray) {
       },
     };
     if (isArray) {
-      modelAPI.urlParams = "/{data}"
+      modelAPI.urlParams = "/{data}";
     } else {
       modelAPI.urlParams = pathParams.reduce((acc, param) => {
         acc += `/{${param.name}}`;
         return acc;
-      }, "");  
+      }, "");
     }
   } else if (encoding === "query") {
     modelAPI.parameters = {
@@ -331,8 +331,6 @@ casual.define("modelAPI", function (encoding, isArray) {
       },
     };
   }
-
-  console.debug("modelAPI", JSON.stringify(modelAPI, null, 2));
 
   return {
     name: casual.word,
@@ -417,18 +415,17 @@ casual.define("modelAndDatasets", function (modelType) {
     groundTruthColumn: "donation",
     testDataset,
     groundTruthDataset: testDataset,
-  }
-  if (modelType === 'File') {
+  };
+  if (modelType === "File") {
     modelAndDatasets.model = casual.modelFile;
   } else {
-    const model = casual.modelAPI("requestBody",false);
-    model.type = 'API';
-    model.status = 'Valid';
+    const model = casual.modelAPI("requestBody", false);
+    model.type = "API";
+    model.status = "Valid";
     modelAndDatasets.model = model;
     modelAndDatasets.apiConfig = {
-      requestBody: { 
-      }
-    }
+      requestBody: {},
+    };
   }
   return modelAndDatasets;
 });
