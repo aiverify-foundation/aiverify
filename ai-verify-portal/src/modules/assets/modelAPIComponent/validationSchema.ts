@@ -18,7 +18,7 @@ declare module 'yup' {
 const urlPattern = new RegExp(
   '^([a-zA-Z]+:\\/\\/)?' + // protocol
     'localhost|' + // localhost
-    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // OR domain name
+    '(([a-z]+.)?[a-z\\d\\- ]+(\\.([a-z]{2,10})){1,2}|' + // OR domain name //([a-z]+.)?[a-z\d\- ]+(\.([a-z]{2,10})){1,2}|     || (([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}
     '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR IP (v4) address
     '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
     '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
