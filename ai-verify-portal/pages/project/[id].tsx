@@ -1,6 +1,9 @@
 import { GetServerSideProps } from 'next';
 import ProjectModule from 'src/modules/project';
-import Project, { ModelAndDatasets } from 'src/types/project.interface';
+import Project, {
+  APIConfig,
+  ModelAndDatasets,
+} from 'src/types/project.interface';
 import PluginManagerType from 'src/types/pluginManager.interface';
 import { getPlugins } from 'server/pluginManager';
 
@@ -32,7 +35,8 @@ export const getServerSideProps: GetServerSideProps = async ({
       __typename: string | undefined;
     };
   if (modelAndDatasets) {
-    const { groundTruthDataset, model, testDataset } = modelAndDatasets;
+    const { groundTruthDataset, model, testDataset, apiConfig } =
+      modelAndDatasets;
     if (groundTruthDataset) {
       const { __typename, ...rest } = groundTruthDataset as Dataset & {
         __typename: string;
@@ -50,6 +54,13 @@ export const getServerSideProps: GetServerSideProps = async ({
         __typename: string;
       };
       modelAndDatasets.testDataset = rest;
+    }
+
+    if (apiConfig) {
+      const { __typename, ...rest } = apiConfig as APIConfig & {
+        __typename: string;
+      };
+      modelAndDatasets.apiConfig = rest;
     }
   }
 
