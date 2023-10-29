@@ -1,4 +1,5 @@
 absl-py==1.4.0 ; python_version >= "3.10" and python_version < "3.12"
+aiometer
 aiopenapi3 @ git+https://github.com/commonism/aiopenapi3.git@8e9591162d1cef8cfc8e7840f34eb20c84af8c24 ; python_version >= "3.10" and python_version < "3.12"
 anyio==3.7.1 ; python_version >= "3.10" and python_version < "3.12"
 astunparse==1.6.3 ; python_version >= "3.10" and python_version < "3.12"
