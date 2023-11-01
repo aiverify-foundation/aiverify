@@ -75,9 +75,11 @@ function OptionCard(props: OptionCardProps) {
 
 function NewModelOptions({
   projectFlow = false,
+  currentProjectId,
   onBackIconClick,
 }: {
   projectFlow?: boolean;
+  currentProjectId?: string;
   onBackIconClick?: () => void;
 }) {
   const router = useRouter();
@@ -199,6 +201,14 @@ function NewModelOptions({
         setShowNewModelUpload(true);
       } else if (mode === ModelAccess.PIPELINE_UPLOAD) {
         setShowNewPipelineUpload(true);
+      } else if (mode === ModelAccess.API) {
+        router.push({
+          pathname: '/assets/newModelApiConfig',
+          query: {
+            from: 'selectModel',
+            projectId: currentProjectId,
+          },
+        });
       }
       return;
     }
@@ -277,9 +287,13 @@ function NewModelOptions({
 }
 
 export default function NewModelModule({
+  isProjectFlow = false,
   withoutLayoutContainer = false,
+  currentProjectId,
   onBackIconClick,
 }: {
+  isProjectFlow?: boolean;
+  currentProjectId?: string;
   withoutLayoutContainer?: boolean;
   onBackIconClick?: () => void;
 }) {
@@ -296,6 +310,7 @@ export default function NewModelModule({
     return (
       <NewModelOptions
         projectFlow={true}
+        currentProjectId={currentProjectId}
         onBackIconClick={handleBackIconClick}></NewModelOptions>
     );
   }
@@ -333,7 +348,7 @@ export default function NewModelModule({
                   </Typography>
                 </Box>
               </Box>
-              <NewModelOptions projectFlow={false}></NewModelOptions>
+              <NewModelOptions projectFlow={isProjectFlow}></NewModelOptions>
             </Paper>
           </Container>
         </Container>

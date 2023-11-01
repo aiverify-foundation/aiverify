@@ -47,6 +47,8 @@ import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
 import ConfirmationDialog from 'src/components/confirmationDialog';
 
 type Props = {
+  isProjectFlow?: boolean;
+  currentProjectId?: string;
   showSelectModelBtn?: boolean;
   onModelSelected?: (model: ModelFile) => void;
   containerStyles?: React.CSSProperties | SxProps<Theme>;
@@ -149,6 +151,8 @@ export const GET_MODELS = gql`
 `;
 
 export default function ModelListComponent({
+  isProjectFlow = false,
+  currentProjectId,
   showSelectModelBtn,
   onModelSelected,
   containerStyles,
@@ -714,7 +718,17 @@ export default function ModelListComponent({
                   style={{ width: 210, marginTop: 20 }}
                   className="aivBase-button aivBase-button--outlined aivBase-button--small"
                   onClick={() => {
-                    router.push(`/assets/modelApiConfig/${focus.id}`);
+                    if (isProjectFlow) {
+                      router.push({
+                        pathname: `/assets/modelApiConfig/${focus.id}`,
+                        query: {
+                          from: 'selectModel',
+                          projectId: currentProjectId,
+                        },
+                      });
+                    } else {
+                      router.push(`/assets/modelApiConfig/${focus.id}`);
+                    }
                   }}>
                   View / Edit Configuration
                 </button>

@@ -280,6 +280,10 @@ function NewModelApiConfigModule(props: NewModelApiConfigModuleProps) {
   }
 
   function handleCloseResultClick() {
+    if (entryPoint === 'selectModel') {
+      setSaveResult(undefined);
+      return;
+    }
     if (saveResult && 'id' in saveResult) {
       if (saveResult.mode === 'new') {
         router.push(`/assets/modelApiConfig/${saveResult.id}`);
