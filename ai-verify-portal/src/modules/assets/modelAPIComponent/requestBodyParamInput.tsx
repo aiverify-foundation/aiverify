@@ -79,8 +79,9 @@ function RequestBodyParameterInput(props: RequestBodyParameterInputProps) {
           fontColor={ColorPalette.white}
           content={
             <div style={{ marginBottom: 5, textAlign: 'left' }}>
-              Add all data keynames that are required by the API to do the
-              prediction.
+              Add all property names that will be added to request body data.
+              Mapping of these properties to dataset columns will be done before
+              generating report
             </div>
           }
           position={TooltipPosition.left}

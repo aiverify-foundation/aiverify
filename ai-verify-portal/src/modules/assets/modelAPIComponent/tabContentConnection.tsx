@@ -23,7 +23,8 @@ function TabContentConnection({ disabled = false }: { disabled?: boolean }) {
         flexDirection: 'column',
         alignItems: 'flex-start',
       }}>
-      <div style={{ display: 'flex' }}>
+      {/* hiding ssl verify because it is not yet supported */}
+      <div style={{ display: 'flex', visibility: 'hidden', height: 0 }}>
         <CheckBox
           label="SSL Verify"
           disabled={disabled}

@@ -803,7 +803,7 @@ exports[`New Model API Config Initial Render should render with the correct defa
                                       <div
                                         style="margin-bottom: 5px; text-align: left;"
                                       >
-                                        Add all data keynames that are required by the API to do the prediction.
+                                        Add all property names that will be added to request body data. Mapping of these properties to dataset columns will be done before generating report
                                       </div>
                                     </div>
                                   </div>

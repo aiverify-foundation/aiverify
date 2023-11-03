@@ -88,10 +88,12 @@ function UrlParamCaptureInput(props: UrlParameterInputProps) {
             <div style={{ marginBottom: 5, textAlign: 'left' }}>
               {values.modelAPI.parameters?.paramType === URLParamType.QUERY
                 ? `
-              Add the URL parameter names and corresponding data types. URL query parameters or
+              Add the URL parameter names and corresponding data types. Mapping of these parameters to dataset columns will
+              be done before generating report. URL query parameters or
               query strings are the part of a URL that typically comes after a
               question mark (?) and are used to pass data along with the URL.`
-                : `Add the URL parameter names and corresponding data types.
+                : `Add the URL parameter names and corresponding data types.  Mapping of these parameters to dataset columns will
+                be done before generating report.
               Path parameters are variable parts of a URL path. Order of the parameters matter.`}
             </div>
           }
