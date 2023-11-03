@@ -47,7 +47,7 @@ Provide API and Connection Information under the tabs in the right section. Also
 | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Media Type**     | Format of HTTP request body data                                                                                                                                                           |
 | **Batch Requests** | If enabled, multiple records of data from the dateset will be batched in every request instead of sending 1 record per request. Media Type will automatically be set to 'application/json' |
-| **Batch Limit**    | Sets the size of a batch request (number of records)                                                                                                                                       |
+| **Batch Limit**    | Sets the size of a batch request (number of records). Defaults to -1 which means there is not limit                                                                                        |
 | **Property Name**  | The identifier which a value from a record will be mapped to in the request body data (Mapping will done after selecting the dataset and model in the report generation flow )             |
 | **Data Type**      | The data type of the corresponding property value                                                                                                                                          |
 
@@ -86,12 +86,13 @@ Provide API and Connection Information under the tabs in the right section. Also
 
 **Connection Settings**
 
-| Field                  | Description                                                                                  |
-| ---------------------- | -------------------------------------------------------------------------------------------- |
-| **Connection Timeout** | The connection timeout when connecting to the server (in seconds)                            |
-| **Connection Retries** | The number of retries for connecting to server                                               |
-| **Max Connections**    | The maximum number of concurrent connection(s) that can be made to the server                |
-| **Rate Limit**         | The connection timeout when connecting to the server(in seconds) when there is rate limiting |
+| Field                  | Description                                                                                                                                                       |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Connection Timeout** | The connection timeout when connecting to the server (in seconds). Defaults to -1 which means timeout is set to http's default timeout                            |
+| **Connection Retries** | The number of retries for connecting to server                                                                                                                    |
+| **Max Connections**    | The maximum number of concurrent connection(s) that can be made to the server. Defaults to -1 which means there is no maximum number or connections               |
+| **Rate Limit**         | The maximum number of request(s) allowed to be made to the server per second. Defaults to -1, which means there is no limit                                       |
+| **Rate Limit Timeout** | The connection timeout when connecting to the server(in seconds) when there is rate limiting. Defaults to -1 which means timeout is set to http's default timeout |
 
 ### Choose Existing API Configuration to test
 
