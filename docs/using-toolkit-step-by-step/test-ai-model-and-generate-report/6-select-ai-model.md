@@ -1,18 +1,18 @@
-Click on **‘Choose Model’**. 
+Click on **‘Choose Model’**.
 
 If you have previously uploaded the AI Model to be tested, click on the **row of the AI Model**. Note that AI Models marked ‘Invalid’ have invalid properties and cannot be used. Click on **‘Use Model’** and [Skip to Step 7](../7-provide-test-args)
 
-To upload new AI Models, click on **‘New Model +’**.
+To upload new AI Models or connect to AI Model API, click on **‘New Model +’**.
 
 ![upload-model](../../res/test-ai-model-generate-report/model-1.png)
 
-Select the type of AI Model to upload (AI Model / Pipeline) and click **‘Next’**. For this tutorial, we will be uploading an AI Model.
+Select the type of AI Model to upload (AI Model / Pipeline) or connect to AI Model API and click **‘Next’**. For this tutorial, we will be uploading an AI Model.
 
 ![model-option](../../res/test-ai-model-generate-report/model-0.png)
 
 **Drag and drop** the AI Model file(s) onto the drop box or click to select files. A maximum of 10 files can be uploaded at once. For TensorFlow models, click on ‘Upload Folder’ to select the folder to be uploaded. For more information on model preparation, ([See Getting Started > Preparation of Input Files](../../getting-started/preparation-of-input-files.md)).
 
-Click on the **dropdown** beside each file picked to indicate its model type. In this tutorial, we will use *Classification*.
+Click on the **dropdown** beside each file picked to indicate its model type. In this tutorial, we will use _Classification_.
 
 Click **‘Upload Selected Files >’**.
 
