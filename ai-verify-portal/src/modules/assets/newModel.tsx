@@ -114,7 +114,7 @@ function NewModelOptions({
             icon={<FolderIcon></FolderIcon>}
             testid="new-model-option">
             <b>Supported frameworks</b>
-            <div>LightGBM, Scikit-learn, TensorFlow, XGBoost</div>
+            <div>LightGBM, Scikit-learn, TensorFlow, XGBoost, R</div>
             <br />
             <div>
               *Compatible with <b>tabular datasets only</b>

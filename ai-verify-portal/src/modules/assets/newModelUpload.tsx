@@ -400,9 +400,9 @@ function ModelsPicking({
             }}>
             <Typography sx={{ pl: 2, fontSize: 14 }}>
               <b>File Size:</b> Less than 4GB <br />
-              <b>Model Format:</b> LightGBM, Scikit-learn, TensorFlow, XGBoost{' '}
+              <b>Model Format:</b> LightGBM, Scikit-learn, TensorFlow, XGBoost, R{' '}
               <br />
-              <b>Serialiser Type:</b> Pickle or Joblib <br />* If your model
+              <b>Serialiser Type:</b> Pickle, Joblib, or RDS <br />* If your model
               includes data preprocessing, upload the pipeline{' '}
               <a
                 onClick={() => {
