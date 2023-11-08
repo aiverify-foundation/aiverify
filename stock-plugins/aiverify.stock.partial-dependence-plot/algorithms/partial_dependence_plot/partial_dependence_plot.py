@@ -440,7 +440,7 @@ class Plugin(IAlgorithm):
         for i, y in enumerate(grid_values):
             data_copy[:, idx] = y
             baselines.append(
-                self._model_instance.predict_proba([data_copy], data_labels)
+                self._model_instance.predict([data_copy], data_labels)
             )
 
         baselines = np.swapaxes(np.array(baselines), 0, 1)

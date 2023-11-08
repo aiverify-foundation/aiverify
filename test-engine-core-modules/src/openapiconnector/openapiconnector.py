@@ -423,8 +423,10 @@ class Plugin(IModel):
             )
 
             # if type is numpy float32, convert to numpy float64 as numpy float32 is non-JSON serializable
-            if type(data_row_list[index]) == np.float32:
-                return_list[key] = np.float64(data_row_list[index])
+            if isinstance(data_row_list[index], np.floating):
+                return_list[key] = float(data_row_list[index])
+            elif isinstance(data_row_list[index], np.integer):
+                return_list[key] = int(data_row_list[index])
             else:
                 return_list[key] = data_row_list[index]
 
