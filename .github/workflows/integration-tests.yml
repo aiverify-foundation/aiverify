@@ -175,6 +175,13 @@ jobs:
           cd ../ai-verify-portal
           npm run start &> portal.log &
 
+      - name: Checkout API Mock Server
+        run: |
+          echo pwd
+          git clone https://oauth2:${{ secrets.CHECKOUT_TOKEN_GITLAB }}@gitlab.com/$MODEL_SERVER
+          cd api-model-server
+          echo pwd
+        
       - name: Checkout smoke tests
         uses: actions/checkout@v3
         with:
