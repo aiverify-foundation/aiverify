@@ -178,7 +178,7 @@ jobs:
       - name: Checkout API Mock Server
         run: |
           echo pwd
-          git clone https://oauth2:${{ secrets.CHECKOUT_TOKEN_GITLAB }}@gitlab.com/${{ env.MODEL_SERVER }}
+          git clone https://oauth2:${{ secrets.CHECKOUT_TOKEN_GITLAB }}@gitlab.com/imda_dsl/t2po/a9459/api-model-server.git
           cd api-model-server
           echo pwd
         
