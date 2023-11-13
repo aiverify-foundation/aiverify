@@ -224,7 +224,7 @@ jobs:
           cd qa-test/smoke-testing
           npm install
           npx playwright install
-          npx playwright test
+          ENVIRONMENT_URL=$ENVIRONMENT_URL_DEV npx playwright test
 
       - name: Run frontend tests
         if: ${{ ! cancelled() }}
