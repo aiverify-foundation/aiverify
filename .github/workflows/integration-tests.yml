@@ -216,7 +216,7 @@ jobs:
           python3 -m venv venv
           source venv/bin/activate
           pip3 install -r requirements.txt
-          bash regression_run_https.sh
+          bash regression_run_https.sh &
 
       - name: Run smoke tests
         if: ${{ ! cancelled() }}
