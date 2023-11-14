@@ -212,6 +212,7 @@ jobs:
       - name: Run API Mock Server
         if: ${{ ! cancelled() }}
         run: |
+          echo $ENVIRONMENT_URL_DEV
           cd qa-test/api-model-server
           python3 -m venv venv
           source venv/bin/activate
