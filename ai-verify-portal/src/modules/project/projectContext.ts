@@ -178,6 +178,7 @@ export function useProjectStore(
           ? state.groundTruthDataset.id
           : undefined,
         groundTruthColumn: state.groundTruthColumn,
+        apiConfig: state.apiConfig,
       };
       return updateProjectFn(id, { modelAndDatasets })
         .then(() => {

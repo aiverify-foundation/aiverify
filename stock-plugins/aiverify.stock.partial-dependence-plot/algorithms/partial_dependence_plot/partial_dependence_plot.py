@@ -329,7 +329,6 @@ class Plugin(IAlgorithm):
         """
         # Retrieve data information
         self._data = self._data_instance.get_data()
-
         # Perform pdp explanation
         try:
             self._explain_pdp()
@@ -374,19 +373,28 @@ class Plugin(IAlgorithm):
                 data_no_ground_truth_np, data_features, percentiles, grid_resolution
             )
 
+            dict_items_labels = self._data_instance.read_labels().items()
             # Update the progress total value
             self._progress_inst.add_total(len(grid_values))
             for index, value in grid_values.items():
                 mean_pdp = self._compute_pdp(
-                    data_no_ground_truth_np, index, data_features, value
+                    data_no_ground_truth_np, index, dict_items_labels, value
                 )
                 feature = data_features[index]
-
                 # Convert results based on target classes.
                 output_results[feature] = dict()
                 target_index = 0
+
+                if mean_pdp.ndim == 1:
+                    two_dim_mean_pdp = np.expand_dims(mean_pdp, axis=0)
+                else:
+                    two_dim_mean_pdp = mean_pdp
+
                 for target in targets:
-                    output_results[feature][target] = (value, mean_pdp[:, target_index])
+                    output_results[feature][target] = (
+                        value,
+                        two_dim_mean_pdp[:, target_index],
+                    )
                     target_index += 1
 
                 # Update the progress
@@ -431,7 +439,9 @@ class Plugin(IAlgorithm):
 
         for i, y in enumerate(grid_values):
             data_copy[:, idx] = y
-            baselines.append(self._model_instance.predict_proba(data_copy, data_labels))
+            baselines.append(
+                self._model_instance.predict([data_copy], data_labels)
+            )
 
         baselines = np.swapaxes(np.array(baselines), 0, 1)
         mean_value = np.mean(baselines, axis=0)

@@ -6,6 +6,8 @@ describe("Test module testEngineQueue.mjs", () => {
   let testEngineQueue;
   let worker;
   let report;
+  let projectData;
+  let models;
   let onCall = jest.fn();
 
   let reportData;
@@ -33,12 +35,12 @@ describe("Test module testEngineQueue.mjs", () => {
     });
     report = await import("#lib/report.mjs");
 
-    const models = await import("#models");
+    models = await import("#models");
     ReportModel = models.ReportModel;
     const ProjectModel = models.ProjectModel;
     let projectMock = casual.project;
     const projectDoc = new ProjectModel(projectMock);
-    const projectData = await projectDoc.save();
+    projectData = await projectDoc.save();
     const doc = new ReportModel(casual.report(projectData, "RunningTests"));
     reportData = await doc.save();
     
@@ -50,11 +52,42 @@ describe("Test module testEngineQueue.mjs", () => {
   })
 
 
-  it("should queue tests", async() => {
+  it("should queue tests with model file", async() => {
     redis.hSet.mockResolvedValue();
     redis.xAdd.mockResolvedValue();
-    const modelAndDataset = casual.modelAndDataset;
-    await testEngineQueue.queueTests(reportData, modelAndDataset)
+    const modelAndDatasets = casual.modelAndDatasets('File');
+    await testEngineQueue.queueTests(reportData, modelAndDatasets)
+    expect(redis.hSet).toHaveBeenCalled();
+    expect(redis.xAdd).toHaveBeenCalled();
+    const xAddLastCall = redis.xAdd.mock.lastCall;
+    expect(xAddLastCall[0]).toBe('TestEngineTask');
+    expect(xAddLastCall[1]).toBe('*');
+    expect(xAddLastCall[2]).toHaveProperty('task');
+    redis.hSet.mockClear();
+    redis.xAdd.mockClear();
+  })
+
+  it("should queue tests with model api", async() => {
+    redis.hSet.mockResolvedValue();
+    redis.xAdd.mockResolvedValue();
+    const mockData = casual.modelAndDatasets('API');
+    let modelDoc = new models.ModelFileModel(mockData.model);
+    modelDoc = await modelDoc.save();
+    let testDataDoc = new models.DatasetModel(mockData.testDataset);
+    testDataDoc = await testDataDoc.save();
+
+    projectData.modelAndDatasets = {
+      apiConfig: mockData.apiConfig,
+      model: modelDoc._id,
+      testDataset: testDataDoc._id,
+      groundTruthDataset: testDataDoc._id,
+    }
+    projectData = await projectData.save();
+    await projectData.populate("modelAndDatasets.model");
+    await projectData.populate("modelAndDatasets.testDataset");
+    await projectData.populate("modelAndDatasets.groundTruthDataset");
+
+    await testEngineQueue.queueTests(reportData, projectData.modelAndDatasets)
     expect(redis.hSet).toHaveBeenCalled();
     expect(redis.xAdd).toHaveBeenCalled();
     const xAddLastCall = redis.xAdd.mock.lastCall;

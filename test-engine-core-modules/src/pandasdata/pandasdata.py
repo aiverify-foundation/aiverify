@@ -57,7 +57,8 @@ class Plugin(IData, IConverter):
         """
         return Plugin._data_plugin_type
 
-    def __init__(self, data: DataFrame = None) -> None:
+    def __init__(self, **kwargs) -> None:
+        data = kwargs.get("data", None)
         if isinstance(data, DataFrame) and not data.empty:
             self._data = data
 

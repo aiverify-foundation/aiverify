@@ -165,6 +165,24 @@ h4 {
   cursor: default;
 }
 
+.aivBase-button--link {
+  background-color: transparent;
+  color: #991e66;
+  border: none;
+  box-shadow: none;
+}
+
+.aivBase-button--link:hover {
+  color: #c03988;
+  text-decoration: underline;
+}
+
+.aivBase-button--link:disabled {
+  pointer-events: none;
+  cursor: default;
+  opacity: 0.6;
+}
+
 .aivBase-button--large {
   height: 50px;
   font-size: 16px;

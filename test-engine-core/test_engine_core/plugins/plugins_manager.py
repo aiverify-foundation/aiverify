@@ -46,6 +46,7 @@ class PluginManager:
         ModelPluginType.XGBOOST,
         ModelPluginType.SKLEARN,
         ModelPluginType.TENSORFLOW,
+        ModelPluginType.API,
     ]
     _serializer_priority_list: List = [
         SerializerPluginType.PICKLE,
@@ -282,7 +283,25 @@ class PluginManager:
 
         # Process differently if it is API, or UPLOAD.
         if model_mode is ModelModeType.API:
-            raise RuntimeError("There was an error loading model(api)")
+            api_schema = arguments.get("api_schema", dict())
+            api_config = arguments.get("api_config", dict())
+            (
+                is_success,
+                model_instance,
+                serializer_instance,
+                error_message,
+            ) = ModelManager.read_api(
+                api_schema,
+                api_config,
+                PluginManager._get_plugins_by_type(PluginType.MODEL),
+            )
+
+            if is_success:
+                return model_instance, serializer_instance, error_message
+            else:
+                raise RuntimeError(
+                    f"There was an error loading model(api): {api_schema} | {api_config} ({error_message})"
+                )
 
         else:
             filename = arguments.get("filename", "")

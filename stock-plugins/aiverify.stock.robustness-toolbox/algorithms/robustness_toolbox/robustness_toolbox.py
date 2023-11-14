@@ -23,6 +23,7 @@ from test_engine_core.plugins.metadata.plugin_metadata import PluginMetadata
 from test_engine_core.utils.json_utils import load_schema_file, validate_json
 from test_engine_core.utils.simple_progress import SimpleProgress
 
+
 # =====================================================================================
 # NOTE:
 # 1. Check that you have installed the test_engine_core latest package.
@@ -349,6 +350,9 @@ class Plugin(IAlgorithm):
                 self._data_labels = list(
                     self._initial_data_instance.read_labels().keys()
                 )
+                self._data_labels_items = list(
+                    self._initial_data_instance.read_labels().items()
+                )
                 annotated_ground_truth_path = self._input_arguments.get(
                     "annotated_ground_truth_path", ""
                 )
@@ -368,6 +372,7 @@ class Plugin(IAlgorithm):
                 self._model = self._model_instance
                 self._data = self._data_instance
                 self._data_labels = list(self._data_instance.read_labels().keys())
+                self._data_labels_items = self._data_instance.read_labels().items()
                 self._ordered_ground_truth = self._ground_truth_instance.get_data()
 
             # Perform boundary attack
@@ -740,8 +745,8 @@ class Plugin(IAlgorithm):
                                         potential_adversarials,
                                         columns=self._data_labels,
                                     )
-                                    potential_adversarials_prediction = self._model.predict(
-                                        df, self._data_labels
+                                    potential_adversarials_prediction = (
+                                        self._model.predict(df, self._data_labels)
                                     )
                             else:
                                 potential_adversarials_prediction = self._model.predict(
@@ -977,7 +982,7 @@ class Plugin(IAlgorithm):
             perturb = flatten_perturb.reshape(original.shape[0])
 
             # Compute the perturbation for this orthogonal move
-            hypotenuse = np.sqrt(1 + delta ** 2)
+            hypotenuse = np.sqrt(1 + delta**2)
             perturb = ((1 - hypotenuse) * (current - original) + perturb) / hypotenuse
 
         else:

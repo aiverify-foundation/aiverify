@@ -1,0 +1,89 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "API-Based Testing",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://localhost:5000"
+    }
+  ],
+  "paths": {
+    "/predict/tc008": {
+      "post": {
+        "parameters": [
+          {
+            "in": "header",
+            "name": "foo",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "bar"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "age",
+                  "gender",
+                  "race",
+                  "income",
+                  "employment",
+                  "employment_length",
+                  "total_donated",
+                  "num_donation"
+                ],
+                "properties": {
+                  "age": {
+                    "type": "integer"
+                  },
+                  "gender": {
+                    "type": "integer"
+                  },
+                  "race": {
+                    "type": "integer"
+                  },
+                  "income": {
+                    "type": "integer"
+                  },
+                  "employment": {
+                    "type": "integer"
+                  },
+                  "employment_length": {
+                    "type": "integer"
+                  },
+                  "total_donated": {
+                    "type": "integer"
+                  },
+                  "num_donation": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

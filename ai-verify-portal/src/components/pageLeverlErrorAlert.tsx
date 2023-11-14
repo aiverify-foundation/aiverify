@@ -1,13 +1,21 @@
 import { AlertType, StandardAlert } from 'src/components/standardAlerts';
 
 type PageLevelErrorAlertProps = {
-  error: Error;
+  error?: Error;
   headingText: string;
   content: string;
+  disableCloseIcon?: boolean;
+  onCloseIconClick?: () => void;
 };
 
 function PageLevelErrorAlert(props: PageLevelErrorAlertProps) {
-  const { error, headingText, content } = props;
+  const {
+    error,
+    headingText,
+    content,
+    disableCloseIcon = true,
+    onCloseIconClick,
+  } = props;
   return (
     <div
       style={{
@@ -18,8 +26,9 @@ function PageLevelErrorAlert(props: PageLevelErrorAlertProps) {
       <StandardAlert
         alertType={AlertType.ERROR}
         headingText={headingText}
-        disableCloseIcon>
-        <div>
+        disableCloseIcon={disableCloseIcon}
+        onCloseIconClick={onCloseIconClick}>
+        <div style={{ fontSize: 15 }}>
           <div>{content}</div>
           {error ? (
             <div style={{ color: '#f73939', marginLeft: '5px' }}>
