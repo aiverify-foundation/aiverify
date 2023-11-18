@@ -212,7 +212,6 @@ jobs:
       - name: Run API Mock Server
         if: ${{ ! cancelled() }}
         run: |
-          echo $ENVIRONMENT_URL_DEV
           cd qa-test/api-model-server
           python3 -m venv venv
           source venv/bin/activate
@@ -222,6 +221,7 @@ jobs:
       - name: Run smoke tests
         if: ${{ ! cancelled() }}
         run: |
+          curl -k https://127.0.0.1:5000
           cd qa-test/smoke-testing
           npm install
           npx playwright install
