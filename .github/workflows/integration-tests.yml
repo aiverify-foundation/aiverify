@@ -221,11 +221,10 @@ jobs:
       - name: Run smoke tests
         if: ${{ ! cancelled() }}
         run: |
-          curl -k https://127.0.0.1:5000
           cd qa-test/smoke-testing
           npm install
           npx playwright install
-          ENVIRONMENT_URL=$ENVIRONMENT_URL_DEV npx playwright test
+          npx playwright test
 
       - name: Run frontend tests
         if: ${{ ! cancelled() }}
