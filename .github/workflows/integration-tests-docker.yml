@@ -28,6 +28,8 @@ concurrency:
 jobs:
 
   integration-tests-docker:
+    #  Run only when PR is approved
+    # if: (github.event_name == 'pull_request_review' && github.event.review.state == 'approved') || github.event_name == 'workflow_dispatch'
 
     runs-on: ubuntu-latest
     timeout-minutes: 40
@@ -69,6 +71,14 @@ jobs:
             bash docker-start.sh -d
           fi
 
+      - name: Checkout API Mock Server
+        uses: actions/checkout@v3
+        with:
+          repository: IMDA-BTG/api-model-server
+          token: ${{ secrets.CHECKOUT_TOKEN }}
+          ref: main
+          path: qa-test/api-model-server
+          
       - name: Checkout smoke tests
         uses: actions/checkout@v3
         with:
@@ -93,7 +103,16 @@ jobs:
           ref: main
           path: qa-test/backend-testing
           submodules: recursive
-
+          
+      - name: Run API Mock Server
+        if: ${{ ! cancelled() }}
+        run: |
+          cd qa-test/api-model-server
+          python3 -m venv venv
+          source venv/bin/activate
+          pip3 install -r requirements.txt
+          bash regression_run_https.sh &
+          
       - name: Run smoke tests
         if: ${{ ! cancelled() }}
         run: |
