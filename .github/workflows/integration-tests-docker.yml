@@ -120,15 +120,15 @@ jobs:
           cd qa-test/smoke-testing
           npm install
           npx playwright install
-          npx playwright test
+          ENVIRONMENT_URL=https://192.168.0.105:5000 npx playwright test
+      
+      - name: Run frontend tests
+        if: ${{ ! cancelled() }}
+        run: |
+         cd qa-test/frontend-testing
+         npm install
+         npx playwright test
 
-#      - name: Run frontend tests
-#        if: ${{ ! cancelled() }}
-#        run: |
-#          cd qa-test/frontend-testing
-#          npm install
-#          npx playwright test
-#
 #      - name: Run backend tests
 #        if: ${{ ! cancelled() }}
 #        run: |
