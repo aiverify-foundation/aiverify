@@ -607,9 +607,16 @@ class Plugin(IAlgorithm):
                     )
 
                 else:
+                    if (
+                        self._serializer_instance.get_serializer_plugin_type()
+                        is SerializerPluginType.IMAGE
+                    ):
+                        processed_pertubed_input = [perturbed_input]
+                    else:
+                        processed_pertubed_input = [[perturbed_input]]
                     adversarial_prediction = self._model.predict(
                         self._transform_to_df(
-                            [perturbed_input], image_shapes, subfolder_name="adv_pred"
+                            processed_pertubed_input, image_shapes, subfolder_name="adv_pred"
                         ),
                         self._data_labels,
                     )
@@ -840,6 +847,12 @@ class Plugin(IAlgorithm):
             final_adversarial_samples_to_predict = self._transform_to_df(
                 final_adversarial_samples, image_shapes, subfolder_name="adv_prediction"
             )
+        if (
+            self._serializer_instance.get_serializer_plugin_type()
+            is not SerializerPluginType.IMAGE
+        ):
+            final_adversarial_samples_to_predict = [final_adversarial_samples_to_predict]
+                    
         adversarial_prediction = self._model.predict(
             final_adversarial_samples_to_predict, self._data_labels
         )
