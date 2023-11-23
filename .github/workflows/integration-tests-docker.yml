@@ -116,15 +116,13 @@ jobs:
           bash regression_run_https.sh &
           
       - name: Run smoke tests
-        env: 
-          HOSTNAME: ${{ github.GITHUB_SERVER_URL }}
         if: ${{ ! cancelled() }}
         run: |
           echo ${{ github.GITHUB_SERVER_URL }}
           cd qa-test/smoke-testing
           npm install
           npx playwright install
-          ENVIRONMENT_URL=$HOSTNAME npx playwright test
+          ENVIRONMENT_URL=${{ github.GITHUB_SERVER_URL }} npx playwright test
       
       - name: Run frontend tests
         if: ${{ ! cancelled() }}
