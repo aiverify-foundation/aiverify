@@ -117,9 +117,10 @@ jobs:
           
       - name: Run smoke tests
         env: 
-          HOSTNAME: bash hostname -I
+          HOSTNAME: ${{ github.GITHUB_SERVER_URL }}
         if: ${{ ! cancelled() }}
         run: |
+          echo ${{ github.GITHUB_SERVER_URL }}
           cd qa-test/smoke-testing
           npm install
           npx playwright install
