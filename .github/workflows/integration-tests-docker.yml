@@ -118,7 +118,7 @@ jobs:
       - name: Run smoke tests
         if: ${{ ! cancelled() }}
         run: |
-          echo $GITHUB_SERVER_URL
+          echo "$GITHUB_SERVER_URL"
           cd qa-test/smoke-testing
           npm install
           npx playwright install
