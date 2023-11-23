@@ -3,6 +3,9 @@
 
 name: Integration Tests for aiverify-user (Docker)
 
+env:
+  HOSTNAME: ""
+
 on:
 #  # Runs when a pull request review is being submitted
 #  pull_request_review:
@@ -52,6 +55,8 @@ jobs:
       - name: Run aiverify containers
         working-directory: ${{ github.workspace }}/setup-aiverify
         run: |
+          $HOSTNAME = hostname -I
+          echo $HOSTNAME
           cd aiverify-user
           
           mkdir -m 777 -p ../../uploads/data
