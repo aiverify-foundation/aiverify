@@ -366,16 +366,20 @@ class Plugin(IAlgorithm):
 
         z_lower = data.copy()
         z_higher = data.copy()
+        dict_items_labels = self._data_instance.read_labels().items()
 
         # ALE computes the difference in the predictions of the lower interval and upper interval
         # left is the lower interval, Right is the upper interval
         z_lower[feature_name] = [bins[i] for i in feat_bins.cat.codes]
         z_higher[feature_name] = [bins[i + 1] for i in feat_bins.cat.codes]
-
+        
         # with the data points replaced with the intervals
         # now we can run the predictions for both intervals
-        prediction_lower_bound = self._model_instance.predict(z_lower, data_features)
-        prediction_higher_bound = self._model_instance.predict(z_higher, data_features)
+        prediction_lower_bound = self._model_instance.predict([z_lower], dict_items_labels)
+        prediction_higher_bound = self._model_instance.predict([z_higher], dict_items_labels)
+
+        prediction_lower_bound = np.array([eval(str(i)) for i in prediction_lower_bound])
+        prediction_higher_bound = np.array([eval(str(i)) for i in prediction_higher_bound])
 
         # collect the unique bin values, so we can do a mean prediction later within the intervals
         results[feature_name] = [bins[b + 1] for b in feat_bins.cat.codes]
@@ -494,14 +498,20 @@ class Plugin(IAlgorithm):
             feature_codes[data_remove_first_group] - 1
         ]
 
+        dict_items_labels = self._data_instance.read_labels().items()
+
         # runs prediction on both replaced dataset
         z_upper_prediction = self._model_instance.predict(
-            z_upper[data_remove_last_group], data_features
+            [z_upper[data_remove_last_group]], dict_items_labels
         )
         z_lower_prediction = self._model_instance.predict(
-            z_lower[data_remove_first_group], data_features
+            [z_lower[data_remove_first_group]], dict_items_labels
         )
-        z = self._model_instance.predict(data, data_features)
+        z = self._model_instance.predict([data], dict_items_labels)
+
+        z_upper_prediction = np.array([eval(str(i)) for i in z_upper_prediction])
+        z_lower_prediction = np.array([eval(str(i)) for i in z_lower_prediction])    
+        z = np.array([eval(str(i)) for i in z])  
 
         # calculate the mean prediction difference
         upper_diff = z_upper_prediction - z[data_remove_last_group]

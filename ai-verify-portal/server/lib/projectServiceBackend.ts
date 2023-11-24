@@ -33,9 +33,14 @@ export const GET_PROJECTS = gql`
         }
       }
       modelAndDatasets {
+        apiConfig {
+          parameters
+          requestBody
+        }
         groundTruthColumn
         model {
           id
+          type
           filename
           filePath
           modelType
@@ -110,15 +115,78 @@ export const GET_PROJECT = gql`
         }
       }
       modelAndDatasets {
+        apiConfig {
+          parameters
+          requestBody
+        }
         groundTruthColumn
         model {
           id
           filename
           filePath
+          type
           modelType
           name
           status
           ctime
+          modelAPI {
+            method
+            url
+            urlParams
+            authType
+            authTypeConfig
+            additionalHeaders {
+              name
+              type
+              value
+            }
+            parameters {
+              paths {
+                mediaType
+                isArray
+                maxItems
+                pathParams {
+                  name
+                  type
+                }
+              }
+              queries {
+                mediaType
+                name
+                isArray
+                maxItems
+                queryParams {
+                  name
+                  type
+                }
+              }
+            }
+            requestBody {
+              mediaType
+              isArray
+              name
+              maxItems
+              properties {
+                field
+                type
+              }
+            }
+            response {
+              statusCode
+              mediaType
+              schema
+            }
+            requestConfig {
+              sslVerify
+              connectionTimeout
+              rateLimit
+              rateLimitTimeout
+              batchLimit
+              connectionRetries
+              maxConnections
+              batchStrategy
+            }
+          }
         }
         testDataset {
           id
@@ -217,6 +285,10 @@ export const GET_REPORT = gql`
           testArguments
         }
         modelAndDatasets {
+          apiConfig {
+            parameters
+            requestBody
+          }
           testDataset {
             filename
             name

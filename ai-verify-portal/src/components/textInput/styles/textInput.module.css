@@ -5,8 +5,7 @@
   font-size: 14px;
 }
 
-.textInput input,
-.textInput textarea {
+.textInput input {
   border-radius: 4px;
   border: 1px solid var(--color-light-gray);
   font-size: 16px;
@@ -23,29 +22,36 @@
   font-family: inherit;
 }
 
-.textInput input::placeholder,
-.textInput textarea::placeholder {
+.textInput input::placeholder {
   color: var(--color-light-gray);
 }
 
-.textInput input:focus,
-.textInput textarea:focus {
+.textInput input:focus {
   outline: none;
 }
 
-.textInput.inputError input,
-.textInput.inputError textarea {
+.textInput.inputError input {
   border-color: var(--color-alert-red);
+}
+
+.textInput input:disabled {
+  color: #999999;
+  background-color: #f5f5f5;
 }
 
 .label {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   color: var(--color-gray);
   font-weight: 600;
   margin-bottom: 4px;
 }
 
 .inputError {
+  border-color: var(--color-alert-red);
+}
+
+.errorText {
   color: var(--color-alert-red);
 }

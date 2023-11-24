@@ -2,12 +2,12 @@ enum ModelAccessType {
   File
   Folder
   Pipeline
-  # API
+  API
 }
 
 enum ModelType {
-    Classification
-    Regression
+  Classification
+  Regression
 }
 
 enum ModelFileStatusType {
@@ -19,43 +19,48 @@ enum ModelFileStatusType {
 }
 
 type ModelFile {
-    id: ObjectID!
-    filename: String!
-    name: String!
-    filePath: String!
-    ctime: DateTime
-    description: String
-    status: ModelFileStatusType
-    size: String
-    modelType: ModelType
-    serializer: String
-    modelFormat: String
-    errorMessages: String
-    type: ModelAccessType!
+  id: ObjectID!
+  name: String!
+  type: ModelAccessType!
+  filename: String # if type is not API
+  filePath: String # if type is not API
+  modelAPI: ModelAPIType # if type is API
+  ctime: DateTime
+  description: String
+  status: ModelFileStatusType
+  size: String
+  modelType: ModelType
+  serializer: String
+  modelFormat: String
+  errorMessages: String
+  createdAt: DateTime
+  updatedAt: DateTime
 }
 
 input ModelFileInput {
-    # id: ObjectID
-    # filename: String
-    name: String @constraint(minLength: 0, maxLength: 128)
-    # filePath: String
-    # ctime: DateTime
-    description: String @constraint(minLength: 0, maxLength: 256)
-    status: ModelFileStatusType
-    # size: String
-    modelType: ModelType
-    # serializer: String
-    # modelFormat: String
-    # errorMessages: String
-    # type: String
+  name: String @constraint(minLength: 0, maxLength: 128)
+  description: String @constraint(minLength: 0, maxLength: 256)
+  modelType: ModelType
+}
+
+input ModelAPIInput {
+  name: String @constraint(minLength: 0, maxLength: 128)
+  description: String @constraint(minLength: 0, maxLength: 256)
+  modelType: ModelType
+  modelAPI: OpenAPIInput # for model API inputs
 }
 
 type Query {
   # return list of modelfiles
-  modelFiles: [ModelFile]
+  modelFiles(modelFileID: ObjectID): [ModelFile]
+  # retrieve the openapi specs for API model
+  getOpenAPISpecFromModel(modelFileID: ObjectID!): JSON
 }
 
 type Mutation {
+  # create model api
+  createModelAPI(model: ModelAPIInput!): ModelFile
+  updateModelAPI(modelFileID: ObjectID!, model: ModelAPIInput!): ModelFile
   # delete files
   deleteModelFile(id: ObjectID!): ObjectID
   updateModel(modelFileID: ObjectID!, modelFile: ModelFileInput): ModelFile
@@ -71,5 +76,5 @@ type ModelFileStatusUpdate {
 }
 
 type Subscription {
-	validateModelStatusUpdated: ModelFileStatusUpdate 
+  validateModelStatusUpdated: ModelFileStatusUpdate
 }

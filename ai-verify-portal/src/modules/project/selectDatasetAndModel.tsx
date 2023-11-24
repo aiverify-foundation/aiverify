@@ -6,7 +6,20 @@ import { FileSelectMode } from './datasetModelFilePicker';
 import { MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { DatasetColumn } from 'src/types/dataset.interface';
 import FilePresentIcon from '@mui/icons-material/FilePresent';
+import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
+import EditIcon from '@mui/icons-material/Edit';
 import styles from './styles/inputs.module.css';
+import { useState } from 'react';
+import { RequestParamsMapModal } from './requestParamsMapModal';
+
+import {
+  BodyParam,
+  RequestMethod,
+  UrlParam,
+} from '../assets/modelAPIComponent/types';
+import { useRouter } from 'next/router';
+import { IconButton } from 'src/components/iconButton';
+import { Tooltip, TooltipPosition } from 'src/components/tooltip';
 
 type Props = {
   showGroundTruth: boolean;
@@ -23,28 +36,55 @@ export default function SelectDatasetAndModelSection({
   onSelectModel,
   projectStore,
 }: Props) {
-  let selectedDatasetFilename: string | undefined;
-  let selectedTruthDatasetFilename: string | undefined;
-  let selectedModelFilename: string | undefined;
+  const [showParamsMapping, setShowParamsMapping] = useState(false);
+  const router = useRouter();
 
+  let selectedDatasetFilename = '';
+  let selectedTruthDatasetFilename = '';
+  let selectedModelFilename = '';
   let groundTruthColumns: DatasetColumn[] = [];
   let groundTruthColVal = '';
+  let paramsColumnsMap: Record<string, string> | undefined = undefined;
+  let requestParams:
+    | Omit<BodyParam, 'reactPropId'>[]
+    | Omit<UrlParam, 'reactPropId'>[] = [];
 
-  if (projectStore.modelAndDatasets) {
-    const { model, testDataset, groundTruthDataset, groundTruthColumn } =
-      projectStore.modelAndDatasets;
-    selectedDatasetFilename = testDataset
-      ? testDataset.name
-      : selectedDatasetFilename;
-    selectedModelFilename = model ? model.name : selectedModelFilename;
-    selectedTruthDatasetFilename = groundTruthDataset
-      ? groundTruthDataset.name
-      : selectedTruthDatasetFilename;
-    if (groundTruthDataset && groundTruthDataset.dataColumns) {
-      groundTruthColumns = groundTruthDataset.dataColumns;
-    }
-    if (groundTruthColumn) {
-      groundTruthColVal = groundTruthColumn;
+  const {
+    model,
+    apiConfig,
+    testDataset,
+    groundTruthDataset,
+    groundTruthColumn,
+  } = projectStore.modelAndDatasets;
+  selectedDatasetFilename = testDataset
+    ? testDataset.name
+    : selectedDatasetFilename;
+  selectedModelFilename = model ? model.name : selectedModelFilename;
+  selectedTruthDatasetFilename = groundTruthDataset
+    ? groundTruthDataset.name
+    : selectedTruthDatasetFilename;
+  if (groundTruthDataset && groundTruthDataset.dataColumns) {
+    groundTruthColumns = groundTruthDataset.dataColumns;
+  }
+  if (groundTruthColumn) {
+    groundTruthColVal = groundTruthColumn;
+  }
+
+  if (model && model.type === 'API' && model.modelAPI) {
+    if (model.modelAPI.parameters) {
+      if (model.modelAPI.parameters.paths) {
+        requestParams = [...model.modelAPI.parameters.paths.pathParams];
+      } else if (model.modelAPI.parameters.queries) {
+        requestParams = [...model.modelAPI.parameters.queries.queryParams];
+      }
+      if (apiConfig && apiConfig.parameters) {
+        paramsColumnsMap = apiConfig.parameters;
+      }
+    } else if (model.modelAPI.requestBody) {
+      requestParams = [...model.modelAPI.requestBody.properties];
+      if (apiConfig && apiConfig.requestBody) {
+        paramsColumnsMap = apiConfig.requestBody;
+      }
     }
   }
 
@@ -71,6 +111,45 @@ export default function SelectDatasetAndModelSection({
       type: UpdateActionTypes.UPDATE,
       payload,
     });
+  }
+
+  function handleReqParamsBtnClick() {
+    setShowParamsMapping(true);
+  }
+
+  function handleParamsModalCloseClick() {
+    setShowParamsMapping(false);
+  }
+
+  function handleParamsModalOkClick(paramsColumnsMap: Record<string, string>) {
+    const payload: Partial<ModelAndDatasets> = {};
+    const apiDetails = model ? model.modelAPI : undefined;
+    if (
+      apiDetails &&
+      apiDetails.method === RequestMethod.GET &&
+      apiDetails.parameters
+    ) {
+      payload.apiConfig = {
+        parameters: paramsColumnsMap,
+      };
+      projectStore.dispatchModelAndDatasets({
+        type: UpdateActionTypes.UPDATE,
+        payload,
+      });
+    } else if (
+      apiDetails &&
+      apiDetails.method === RequestMethod.POST &&
+      apiDetails.requestBody
+    ) {
+      payload.apiConfig = {
+        requestBody: paramsColumnsMap,
+      };
+      projectStore.dispatchModelAndDatasets({
+        type: UpdateActionTypes.UPDATE,
+        payload,
+      });
+    }
+    setShowParamsMapping(false);
   }
 
   return (
@@ -210,26 +289,76 @@ export default function SelectDatasetAndModelSection({
         <div className={styles.divider} />
         <div className={styles.inputMain}>
           {selectedModelFilename ? (
-            <div
-              style={{
-                display: 'flex',
-                border: '1px solid #cfcfcf',
-                padding: '10px',
-                justifyContent: 'space-between',
-                minWidth: 345,
-              }}>
-              <div style={{ display: 'flex' }}>
-                <FilePresentIcon
-                  style={{ marginRight: '10px', fontSize: '25px' }}
-                />
-                <div style={{ marginRight: '15px' }}>
-                  {selectedModelFilename}
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  border: '1px solid #cfcfcf',
+                  padding: '10px',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  minWidth: 345,
+                }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  {model && model.type === 'API' ? (
+                    <SettingsApplicationsIcon
+                      style={{ marginRight: '10px', fontSize: '27px' }}
+                    />
+                  ) : (
+                    <FilePresentIcon
+                      style={{ marginRight: '10px', fontSize: '25px' }}
+                    />
+                  )}
+                  <div
+                    style={{
+                      marginRight: '15px',
+                    }}>
+                    {selectedModelFilename}
+                  </div>
+                </div>
+                <div style={{ display: 'flex' }}>
+                  {model && model.type === 'API' ? (
+                    <div>
+                      <Tooltip
+                        backgroundColor="#676767"
+                        fontColor="#FFFFFF"
+                        content="Edit Configuration"
+                        position={TooltipPosition.right}
+                        offsetLeft={10}>
+                        <IconButton
+                          iconComponent={EditIcon}
+                          style={{ fontSize: 11, padding: 2 }}
+                          onClick={() => {
+                            model !== undefined
+                              ? router.push({
+                                  pathname: `/assets/modelApiConfig/${model.id}`,
+                                  query: {
+                                    from: 'selectModel',
+                                    projectId: projectStore.id,
+                                  },
+                                })
+                              : undefined;
+                          }}
+                        />
+                      </Tooltip>
+                    </div>
+                  ) : null}
+                  <CloseIcon
+                    style={{ marginLeft: '10px', cursor: 'pointer' }}
+                    onClick={() => removeFileHandler(FileSelectMode.MODEL)}
+                  />
                 </div>
               </div>
-              <CloseIcon
-                style={{ marginLeft: '10px', cursor: 'pointer' }}
-                onClick={() => removeFileHandler(FileSelectMode.MODEL)}
-              />
+              {model && model.type === 'API' ? (
+                <div>
+                  <button
+                    style={{ marginTop: 15 }}
+                    className="aivBase-button aivBase-button--outlined aivBase-button--small"
+                    onClick={handleReqParamsBtnClick}>
+                    Map API Request Parameters
+                  </button>
+                </div>
+              ) : null}
             </div>
           ) : (
             <button
@@ -240,6 +369,15 @@ export default function SelectDatasetAndModelSection({
           )}
         </div>
       </div>
+      {showParamsMapping && testDataset ? (
+        <RequestParamsMapModal
+          initialMap={paramsColumnsMap}
+          datasetColumns={testDataset.dataColumns}
+          requestParams={requestParams}
+          onCloseClick={handleParamsModalCloseClick}
+          onOkClick={handleParamsModalOkClick}
+        />
+      ) : null}
     </div>
   );
 }

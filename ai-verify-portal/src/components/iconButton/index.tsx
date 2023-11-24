@@ -9,6 +9,7 @@ type IconProps = {
 };
 
 type IconButtonProps = {
+  id?: string;
   iconComponent?: FC<IconProps>;
   rounded?: boolean;
   iconComponentStyle?: React.CSSProperties;
@@ -17,10 +18,12 @@ type IconButtonProps = {
   disabled?: boolean;
   style?: React.CSSProperties;
   onClick?: () => void;
+  testId?: string;
 };
 
 function IconButton(props: PropsWithChildren<IconButtonProps>) {
   const {
+    id,
     iconComponent: IconComponent,
     rounded = false,
     iconComponentStyle,
@@ -28,6 +31,7 @@ function IconButton(props: PropsWithChildren<IconButtonProps>) {
     disabled = false,
     noOutline = false,
     style,
+    testId,
     children,
     onClick,
   } = props;
@@ -40,6 +44,8 @@ function IconButton(props: PropsWithChildren<IconButtonProps>) {
 
   return (
     <button
+      id={id}
+      type="button"
       className={clsx(
         styles.iconBtn,
         rounded ? styles.iconBtn__rounded : null,
@@ -48,7 +54,8 @@ function IconButton(props: PropsWithChildren<IconButtonProps>) {
         'aiv_iconbtn'
       )}
       style={style}
-      onClick={handleClick}>
+      onClick={handleClick}
+      data-testid={testId || id}>
       <div className={styles.btnContent}>
         {IconComponent ? (
           <IconComponent
@@ -59,7 +66,7 @@ function IconButton(props: PropsWithChildren<IconButtonProps>) {
             }}
           />
         ) : null}
-        <div>{children}</div>
+        <div style={{ display: 'flex', alignItems: 'center' }}>{children}</div>
       </div>
     </button>
   );

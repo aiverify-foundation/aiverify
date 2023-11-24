@@ -47,5 +47,9 @@
 }
 
 .inputError {
+  border-color: var(--color-alert-red);
+}
+
+.errorText {
   color: var(--color-alert-red);
 }

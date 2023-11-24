@@ -1,5 +1,6 @@
 import React, { ChangeEventHandler } from 'react';
 import styles from './styles/textArea.module.css';
+import clsx from 'clsx';
 
 type TextInputProps = {
   name: string;
@@ -25,7 +26,11 @@ function TextArea(props: TextInputProps) {
   } = props;
 
   return (
-    <div className={styles.textInput}>
+    <div
+      className={clsx(
+        styles.textInput,
+        error !== undefined ? styles.inputError : null
+      )}>
       <label>
         <div className={styles.label}>
           <div>{label}</div>
@@ -39,7 +44,7 @@ function TextArea(props: TextInputProps) {
           onChange={onChange}
         />
         {Boolean(error) ? (
-          <div className={styles.inputError}>{error}</div>
+          <div className={styles.errorText}>{error}</div>
         ) : null}
       </label>
     </div>

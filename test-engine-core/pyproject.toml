@@ -10,7 +10,7 @@ packages = [{include = "test_engine_core"}]
 python = ">=3.10,<3.12"
 redis = "4.5.5"
 numpy = "1.23.5"
-jsonschema = "4.18.3"
+jsonschema = "4.18.4"
 
 
 [tool.poetry.group.dev.dependencies]

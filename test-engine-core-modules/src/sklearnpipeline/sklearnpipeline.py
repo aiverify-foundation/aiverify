@@ -56,7 +56,8 @@ class Plugin(IPipeline):
         """
         return Plugin._pipeline_plugin_type
 
-    def __init__(self, pipeline: Any) -> None:
+    def __init__(self, **kwargs) -> None:
+        pipeline = kwargs.get("pipeline", None)
         if pipeline:
             self._pipeline = pipeline
 
@@ -139,7 +140,11 @@ class Plugin(IPipeline):
             Any: predicted result
         """
         try:
-            return self._pipeline.predict(data)
+            if isinstance(data, list):
+                for item in data:
+                    return self._pipeline.predict(item)
+            else:
+                return self._pipeline.predict(data)
         except Exception:
             raise
 
@@ -154,7 +159,11 @@ class Plugin(IPipeline):
             Any: predicted result
         """
         try:
-            return self._pipeline.predict_proba(data)
+            if isinstance(data, list):
+                for item in data:
+                    return self._pipeline.predict_proba(item)
+            else:
+                return self._pipeline.predict_proba(data)
         except Exception:
             raise
 
