@@ -29,6 +29,12 @@ type OptionCardProps = {
   children: JSX.Element[];
 };
 
+enum ModelAccess {
+  MODEL_UPLOAD = 'model-upload',
+  PIPELINE_UPLOAD = 'pipeline-upload',
+  API = 'api',
+}
+
 function OptionCard(props: OptionCardProps) {
   const { highlighted, onClick, testid, name, label, icon, children } = props;
   return (
@@ -60,7 +66,6 @@ function OptionCard(props: OptionCardProps) {
             <div className={styles.optionIcon}>{icon}</div>
             {label}
           </label>
-          {/* <div className={styles.tip}>{tip}</div> */}
         </div>
       </div>
       <div className={styles.optionCardContent}>{children}</div>
@@ -70,13 +75,15 @@ function OptionCard(props: OptionCardProps) {
 
 function NewModelOptions({
   projectFlow = false,
+  currentProjectId,
   onBackIconClick,
 }: {
   projectFlow?: boolean;
+  currentProjectId?: string;
   onBackIconClick?: () => void;
 }) {
   const router = useRouter();
-  const [mode, setMode] = React.useState<string | null>(null);
+  const [mode, setMode] = React.useState<ModelAccess>();
   const [showNewModelUpload, setShowNewModelUpload] = useState(false);
   const [showNewPipelineUpload, setShowNewPipelineUpload] = useState(false);
 
@@ -99,8 +106,8 @@ function NewModelOptions({
             alignItems: 'center',
           }}>
           <OptionCard
-            highlighted={mode === 'model-upload'}
-            onClick={handleCardClick('model-upload')}
+            highlighted={mode === ModelAccess.MODEL_UPLOAD}
+            onClick={handleCardClick(ModelAccess.MODEL_UPLOAD)}
             name="model-upload"
             label="Upload AI Model"
             tip="for simple prediction models"
@@ -120,8 +127,8 @@ function NewModelOptions({
             </div>
           </OptionCard>
           <OptionCard
-            highlighted={mode === 'pipeline-upload'}
-            onClick={handleCardClick('pipeline-upload')}
+            highlighted={mode === ModelAccess.PIPELINE_UPLOAD}
+            onClick={handleCardClick(ModelAccess.PIPELINE_UPLOAD)}
             name="pipeline-upload"
             label="Upload Pipeline"
             tip="for multi-model AI/ data preprocessing"
@@ -139,18 +146,27 @@ function NewModelOptions({
               and pipeline.
             </div>
           </OptionCard>
-          {/* <OptionCard
-                                    highlighted={mode === "api"}
-                                    onClick={handleCardClick("api")}
-                                    name='api'
-                                    label='Connect to AI Model API'
-                                    tip='if the AI model file is not available for upload'
-                                >
-                                    <b>Supports</b> 
-                                    <div>Any AI Framework. <br/>See: Supported API Configurations<br/><br/></div>
-                                    <b>How It Works </b>
-                                    <div>AI Verify will call the model API to generate predictions for the testing dataset.</div>
-                                </OptionCard> */}
+          <OptionCard
+            highlighted={mode === ModelAccess.API}
+            onClick={handleCardClick(ModelAccess.API)}
+            name="api"
+            label="Connect to AI Model API"
+            tip="if the AI model file is not available for upload"
+            testid="new-model-api-config"
+            icon={<FolderIcon />}>
+            <b>Supports</b>
+            <div>
+              Any AI Framework. <br />
+              See: Supported API Configurations
+              <br />
+              <br />
+            </div>
+            <b>How It Works </b>
+            <div>
+              AI Verify will call the model API to generate predictions for the
+              testing dataset.
+            </div>
+          </OptionCard>
         </div>
         <div
           style={{
@@ -173,29 +189,36 @@ function NewModelOptions({
     );
   }
 
-  function handleCardClick(mode: string) {
+  function handleCardClick(mode: ModelAccess) {
     return () => {
       setMode(mode);
-      // console.log("mode is set to: ", mode)
     };
   }
 
   function handleNextClick() {
     if (projectFlow) {
-      if (mode === 'model-upload') {
+      if (mode === ModelAccess.MODEL_UPLOAD) {
         setShowNewModelUpload(true);
-      } else if (mode === 'pipeline-upload') {
+      } else if (mode === ModelAccess.PIPELINE_UPLOAD) {
         setShowNewPipelineUpload(true);
+      } else if (mode === ModelAccess.API) {
+        router.push({
+          pathname: '/assets/newModelApiConfig',
+          query: {
+            from: 'selectModel',
+            projectId: currentProjectId,
+          },
+        });
       }
-    } else {
-      if (mode == 'model-upload') {
-        return router.push('/assets/newModelUpload');
-      } else if (mode == 'pipeline-upload') {
-        return router.push('/assets/newPipelineUpload');
-      }
-      // } else if ( mode == "api") {
-      //     return router.push('/assets/newModelUpload')
-      // }
+      return;
+    }
+
+    if (mode == ModelAccess.MODEL_UPLOAD) {
+      return router.push('/assets/newModelUpload');
+    } else if (mode == ModelAccess.PIPELINE_UPLOAD) {
+      return router.push('/assets/newPipelineUpload');
+    } else if (mode == 'api') {
+      return router.push('/assets/newModelApiConfig');
     }
   }
 
@@ -264,9 +287,13 @@ function NewModelOptions({
 }
 
 export default function NewModelModule({
+  isProjectFlow = false,
   withoutLayoutContainer = false,
+  currentProjectId,
   onBackIconClick,
 }: {
+  isProjectFlow?: boolean;
+  currentProjectId?: string;
   withoutLayoutContainer?: boolean;
   onBackIconClick?: () => void;
 }) {
@@ -283,6 +310,7 @@ export default function NewModelModule({
     return (
       <NewModelOptions
         projectFlow={true}
+        currentProjectId={currentProjectId}
         onBackIconClick={handleBackIconClick}></NewModelOptions>
     );
   }
@@ -320,7 +348,7 @@ export default function NewModelModule({
                   </Typography>
                 </Box>
               </Box>
-              <NewModelOptions projectFlow={false}></NewModelOptions>
+              <NewModelOptions projectFlow={isProjectFlow}></NewModelOptions>
             </Paper>
           </Container>
         </Container>

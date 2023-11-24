@@ -1,0 +1,191 @@
+enum OpenAPIPrimitiveTypes {
+  string
+  number
+  integer
+  boolean
+}
+
+enum OpenAPIAllTypes {
+  string
+  number
+  integer
+  boolean
+  array
+  object
+}
+
+enum OpenAPIMethod {
+  POST
+  GET
+}
+
+type OpenAPIAdditionalHeadersType {
+  name: String! @constraint(minLength: 1, maxLength: 128)
+  type: OpenAPIPrimitiveTypes!
+  value: JSON!
+}
+
+type OpenAPIPathParamsType {
+  name: String! @constraint(minLength: 1, maxLength: 128)
+  type: OpenAPIPrimitiveTypes!
+}
+
+type QueryAPIParamsType {
+  name: String! @constraint(minLength: 1, maxLength: 128)
+  type: OpenAPIPrimitiveTypes!
+}
+
+type OpenAPIParametersPathType {
+  mediaType: OpenAPIMediaType! # default none
+  isArray: Boolean! # indicate if is array, default false, note that cannot be array if mediaType == 'none' 
+  maxItems: Int @constraint(min: 1) # max array items if array
+  pathParams: [OpenAPIPathParamsType]
+}
+
+type OpenAPIParametersQueryType {
+  mediaType: OpenAPIMediaType! # default none
+  name: String @constraint(minLength: 1, maxLength: 128) # name of query if mediaType !== 'none'
+  isArray: Boolean! # indicate if is array, default false, note that cannot be array if mediaType == 'none' 
+  maxItems: Int @constraint(min: 1) # max array items if array
+  queryParams: [QueryAPIParamsType]
+}
+
+type OpenAPIParametersType {
+  paths: OpenAPIParametersPathType
+  queries: OpenAPIParametersQueryType
+}
+
+type OpenAPIRequestBodyPropertyType {
+  field: String! @constraint(minLength: 1, maxLength: 128)
+  type: OpenAPIPrimitiveTypes!
+}
+
+type OpenAPIRequestBodyType {
+  mediaType: OpenAPIMediaType!
+  isArray: Boolean! # indicate if is array, default false
+  name: String @constraint(minLength: 1, maxLength: 128) # name of payload property when array
+  maxItems: Int @constraint(min: 1) # max array items if array
+  properties: [OpenAPIRequestBodyPropertyType]!
+}
+
+type OpenAPIResponseType {
+  statusCode: Int! @constraint(min: 200, max: 299)
+  mediaType: OpenAPIMediaType!
+  schema: JSON!
+  # type: OpenAPIAllTypes
+  # field: String @constraint(minLength: 1, maxLength: 128) # for object, define the prediction field use dot, e.g. xxx.yyy, to denote nested field
+  # objectType: OpenAPIAllTypes
+  # arrayType: OpenAPIAllTypes
+}
+
+enum ModelAPIRequestConfigBatchStrategy {
+  none
+  multipart
+}
+
+type ModelAPIRequestConfigType {
+  sslVerify: Boolean! # determine if there is a need to verify the SSL cert when connecting to the server
+  connectionTimeout: Int! @constraint(min: -1) # connection timeout when connecting to the server (in seconds)
+  rateLimit: Int! @constraint(min: -1) # maximum number of request(s) allowed to be made to the server per second
+  rateLimitTimeout: Int! @constraint(min: -1) # connection timeout when connecting to the server(in seconds) when there is rate limiting
+  batchLimit: Int @constraint(min: -1) # maximum number of batched request(s) that can be sent in a multipart request
+  connectionRetries: Int @constraint(min: -1) # number of retries for connecting to a server
+  maxConnections: Int! @constraint(min: -1) # maximum number of concurrent connection(s) that can be made to the server
+  batchStrategy: ModelAPIRequestConfigBatchStrategy!
+}
+
+type ModelAPIType {
+  method: OpenAPIMethod!
+  url: URL!
+  urlParams: String
+  authType: OpenAPIAuthType!
+  authTypeConfig: JSON
+  additionalHeaders: [OpenAPIAdditionalHeadersType]
+  parameters: OpenAPIParametersType
+  requestBody: OpenAPIRequestBodyType
+  response: OpenAPIResponseType!
+  requestConfig: ModelAPIRequestConfigType!
+}
+
+input OpenAPIAdditionalHeadersInput {
+  name: String! @constraint(minLength: 1, maxLength: 128)
+  type: OpenAPIPrimitiveTypes!
+  value: JSON!
+}
+
+input OpenAPIPathParamsInput {
+  name: String! @constraint(minLength: 1, maxLength: 128)
+  type: OpenAPIPrimitiveTypes!
+}
+
+input OpenAPIQueryParamsInput {
+  name: String! @constraint(minLength: 1, maxLength: 128)
+  type: OpenAPIPrimitiveTypes!
+}
+
+input OpenAPIParametersPathInput {
+  mediaType: OpenAPIMediaType! # default none
+  isArray: Boolean! # indicate if is array, default false, note that cannot be array if mediaType == 'none' 
+  maxItems: Int @constraint(min: 1) # max array items if array
+  pathParams: [OpenAPIPathParamsInput]
+}
+
+input OpenAPIParametersQueryInput {
+  mediaType: OpenAPIMediaType! # default none
+  name: String @constraint(minLength: 1, maxLength: 128) # name of query if mediaType !== 'none'
+  isArray: Boolean! # indicate if is array, default false, note that cannot be array if mediaType == 'none' 
+  maxItems: Int @constraint(min: 1) # max array items if array
+  queryParams: [OpenAPIQueryParamsInput]
+}
+
+input OpenAPIParametersInput {
+  paths: OpenAPIParametersPathInput
+  queries: OpenAPIParametersQueryInput
+}
+
+input OpenAPIRequestBodyPropertyInput {
+  field: String! @constraint(minLength: 1, maxLength: 128)
+  type: OpenAPIPrimitiveTypes!
+}
+
+input OpenAPIRequestBodyInput {
+  mediaType: OpenAPIMediaType!
+  name: String @constraint(minLength: 1, maxLength: 128) # name of payload property when array
+  isArray: Boolean! # indicate if is array, default false
+  maxItems: Int @constraint(min: 1) # max array items if array
+  properties: [OpenAPIRequestBodyPropertyInput]
+}
+
+input OpenAPIResponseInput {
+  statusCode: Int! @constraint(min: 200, max: 299)
+  mediaType: OpenAPIMediaType!
+  schema: JSON!
+  # type: OpenAPIAllTypes!
+  # field: String @constraint(minLength: 1, maxLength: 128) # for object, define the prediction field use dot, e.g. xxx.yyy, to denote nested field
+  # objectType: OpenAPIAllTypes
+  # arrayType: OpenAPIAllTypes
+}
+
+input OpenAPIRequestConfigInput {
+  sslVerify: Boolean! # determine if there is a need to verify the SSL cert when connecting to the server
+  connectionTimeout: Int! @constraint(min: -1) # connection timeout when connecting to the server (in seconds)
+  rateLimit: Int! @constraint(min: -1) # maximum number of request(s) allowed to be made to the server per second
+  rateLimitTimeout: Int! @constraint(min: -1) # connection timeout when connecting to the server(in seconds) when there is rate limiting
+  batchLimit: Int @constraint(min: -1) # maximum number of batched request(s) that can be sent in a multipart request
+  connectionRetries: Int @constraint(min: -1) # number of retries for connecting to a server
+  maxConnections: Int! @constraint(min: -1) # maximum number of concurrent connection(s) that can be made to the server
+  batchStrategy: ModelAPIRequestConfigBatchStrategy!
+}
+
+input OpenAPIInput {
+  method: OpenAPIMethod
+  url: URL
+  urlParams: String @constraint(maxLength: 2048)
+  authType: OpenAPIAuthType
+  authTypeConfig: JSON
+  additionalHeaders: [OpenAPIAdditionalHeadersInput]
+  parameters: OpenAPIParametersInput
+  requestBody: OpenAPIRequestBodyInput
+  response: OpenAPIResponseInput
+  requestConfig: OpenAPIRequestConfigInput
+}

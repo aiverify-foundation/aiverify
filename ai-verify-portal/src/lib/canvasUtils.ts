@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
   GlobalVariable,
   LayoutItemProperties,
@@ -65,22 +65,13 @@ export type WidgetPropertiesProp = {
 };
 
 export function useWidgetProperties({
-  projectInfo,
   globalVars,
 }: WidgetPropertiesProp): WidgetProperties {
-  const combinedGlobalVars = useMemo(() => {
-    return [
-      ...Object.entries(projectInfo)
-        .filter((item) => item[0] !== '__typename')
-        .map((item) => ({ key: item[0], value: item[1] })),
-      ...globalVars,
-    ] as GlobalVariable[];
-  }, [projectInfo, globalVars]);
-
+  const combinedGlobalVars = globalVars;
   const getProperty = (prop: string) => {
     const match = prop.match(/^\{(.+)\}$/);
     if (match) {
-      const found = combinedGlobalVars.find((e) => e.key === match[1]);
+      const found = globalVars.find((e) => e.key === match[1]);
       if (found) return found.value;
       else return prop;
     } else {
