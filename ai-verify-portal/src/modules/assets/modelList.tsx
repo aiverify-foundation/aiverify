@@ -38,16 +38,17 @@ import type {} from '@mui/x-data-grid/themeAugmentation';
 import FormControl from '@mui/material/FormControl';
 import MyTextField from 'src/components/myTextField';
 import MySelect from 'src/components/mySelect';
-import {
-  AlertBox,
-  AlertBoxFixedPositions,
-  AlertBoxSize,
-} from 'src/components/alertBox';
+import { AlertBoxSize } from 'src/components/alertBox';
 import { AlertType, StandardAlert } from 'src/components/standardAlerts';
 import ModelFile, { ModelType } from 'src/types/model.interface';
 import { useUpdateModel, useDeleteModelFile } from 'src/lib/assetService';
+import { useRouter } from 'next/router';
+import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
+import ConfirmationDialog from 'src/components/confirmationDialog';
 
 type Props = {
+  isProjectFlow?: boolean;
+  currentProjectId?: string;
   showSelectModelBtn?: boolean;
   onModelSelected?: (model: ModelFile) => void;
   containerStyles?: React.CSSProperties | SxProps<Theme>;
@@ -77,6 +78,64 @@ export const GET_MODELS = gql`
       name
       filename
       filePath
+      modelAPI {
+        method
+        url
+        urlParams
+        authType
+        authTypeConfig
+        additionalHeaders {
+          name
+          type
+          value
+        }
+        parameters {
+          paths {
+            mediaType
+            isArray
+            maxItems
+            pathParams {
+              name
+              type
+            }
+          }
+          queries {
+            mediaType
+            name
+            isArray
+            maxItems
+            queryParams {
+              name
+              type
+            }
+          }
+        }
+        requestBody {
+          mediaType
+          isArray
+          name
+          maxItems
+          properties {
+            field
+            type
+          }
+        }
+        response {
+          statusCode
+          mediaType
+          schema
+        }
+        requestConfig {
+          sslVerify
+          connectionTimeout
+          rateLimit
+          rateLimitTimeout
+          batchLimit
+          connectionRetries
+          maxConnections
+          batchStrategy
+        }
+      }
       ctime
       size
       status
@@ -86,11 +145,14 @@ export const GET_MODELS = gql`
       modelType
       errorMessages
       type
+      createdAt
     }
   }
 `;
 
 export default function ModelListComponent({
+  isProjectFlow = false,
+  currentProjectId,
   showSelectModelBtn,
   onModelSelected,
   containerStyles,
@@ -109,6 +171,7 @@ export default function ModelListComponent({
     useState<boolean>(false);
   const [alertTitle, setAlertTitle] = useState<string | null>(null);
   const [alertMessages, setAlertMessages] = useState<string[]>([]);
+  const router = useRouter();
 
   const updateModelFn = useUpdateModel();
 
@@ -172,14 +235,10 @@ export default function ModelListComponent({
     const newSelected = [...selectedIds];
     const messages: string[] = [];
     for (const id of selectedIds) {
-      // console.log("Deleting modelFile: ", id)
       const idx = data?.modelFiles.findIndex((e: ModelFile) => e.id === id);
-
       if (idx < 0) return;
-
       const ar = [...data?.modelFiles];
       ar.splice(idx, 1);
-
       const response = await deleteModelFileFn(id);
       if (response != id) {
         setAlertTitle('File deletion error');
@@ -195,6 +254,7 @@ export default function ModelListComponent({
 
   function handleModelBtnClick() {
     if (onModelSelected) {
+      console.log(focus);
       onModelSelected(focus as ModelFile);
     }
   }
@@ -285,26 +345,33 @@ export default function ModelListComponent({
       headerName: 'Type',
       flex: 0.1,
       renderCell: (params: GridRenderCellParams) => {
-        if (params.value.toString() === 'Folder') {
-          return (
-            <Tooltip title="Folder">
-              <FolderIcon></FolderIcon>
-            </Tooltip>
-          );
-        } else if (params.value.toString() === 'Pipeline') {
-          return (
-            <div>
-              <Tooltip title="Pipeline">
-                <Icon name={IconName.PIPELINE} size={24} color="#676767" />
+        switch (params.value) {
+          case 'Folder':
+            return (
+              <Tooltip title="Folder">
+                <FolderIcon />
               </Tooltip>
-            </div>
-          );
-        } else {
-          return (
-            <Tooltip title="File">
-              <InsertDriveFileIcon></InsertDriveFileIcon>
-            </Tooltip>
-          );
+            );
+          case 'Pipeline':
+            return (
+              <div>
+                <Tooltip title="Pipeline">
+                  <Icon name={IconName.PIPELINE} size={24} color="#676767" />
+                </Tooltip>
+              </div>
+            );
+          case 'API':
+            return (
+              <Tooltip title="Api">
+                <SettingsApplicationsIcon />
+              </Tooltip>
+            );
+          default:
+            return (
+              <Tooltip title="File">
+                <InsertDriveFileIcon />
+              </Tooltip>
+            );
         }
       },
     },
@@ -360,6 +427,13 @@ export default function ModelListComponent({
     },
     {
       field: 'ctime',
+      valueGetter: (params: GridRenderCellParams) => {
+        if (params.row.type && params.row.type.toUpperCase() === 'API') {
+          return params.row.createdAt;
+        } else {
+          return params.row.ctime;
+        }
+      },
       hideable: false,
       headerName: 'Date',
       flex: 0.5,
@@ -479,6 +553,14 @@ export default function ModelListComponent({
     );
   }
 
+  function handleDeleteConfirmation(confirmDelete: boolean) {
+    if (confirmDelete) {
+      onDeleteModelFile(selectionModel);
+    } else {
+      setShowDeleteConfirmationDialog(false);
+    }
+  }
+
   return (
     <React.Fragment>
       {alertTitle && (
@@ -497,48 +579,13 @@ export default function ModelListComponent({
         </Container>
       )}
       {showDeleteConfirmationDialog ? (
-        <AlertBox
-          size={AlertBoxSize.MEDIUM}
-          fixedPosition={AlertBoxFixedPositions.CENTER}
-          onCloseIconClick={() => {
-            setShowDeleteConfirmationDialog(false);
-          }}>
-          <AlertBox.Header
-            heading="Confirm File Deletion"
-            isDragHandle></AlertBox.Header>
-          <AlertBox.Body hasFooter>
-            <div>
-              Are you sure you want to delete these file(s) from AI Verify?
-            </div>
-          </AlertBox.Body>
-          <AlertBox.Footer>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                width: '600px',
-              }}>
-              <Button
-                variant="outlined"
-                component="label"
-                sx={{ m: 2 }}
-                onClick={() => {
-                  setShowDeleteConfirmationDialog(false);
-                }}>
-                Cancel
-              </Button>
-              <Button
-                variant="contained"
-                component="label"
-                sx={{ m: 2 }}
-                onClick={() => {
-                  onDeleteModelFile(selectionModel);
-                }}>
-                Delete Files
-              </Button>
-            </div>
-          </AlertBox.Footer>
-        </AlertBox>
+        <ConfirmationDialog
+          renderInPortal
+          size={AlertBoxSize.SMALL}
+          title="Confirm Model Deletion"
+          message="Are you sure you want to delete these model(s) from AI Verify?"
+          onClose={handleDeleteConfirmation}
+        />
       ) : null}
       <Box
         justifyContent="center"
@@ -601,63 +648,127 @@ export default function ModelListComponent({
               m: 1,
               display: 'flex',
               flexDirection: 'column',
+              justifyContent: 'space-between',
               flex: 1,
               border: '1px solid #C8C8C8',
               borderRadius: 3,
             }}>
-            {focus && focus.status == FocusStatus.VALID && (
-              <Button
-                color="secondary"
-                sx={{ mr: 1, alignSelf: 'flex-end' }}
-                onClick={showDialog}>
-                Edit
-              </Button>
-            )}
-            <Typography sx={{ mb: 2, fontWeight: 'bold', size: '14px' }}>
-              {focus.name}
-            </Typography>
-            <Typography sx={{ fontSize: 14 }}>
-              <b>Status:</b> {focus.status} <br />
-              <b>Type:</b> {focus.type} <br />
-              <b>Date Uploaded:</b> {new Date(focus.ctime).toLocaleString()}{' '}
-              <br />
-              <b>Size:</b> {focus.size ? focus.size : '-'} <br />
-            </Typography>
-
-            {focus.status == FocusStatus.VALID ? (
-              <Typography sx={{ fontSize: 14 }}>
-                <b>Serializer:</b> {focus.serializer} <br />
-                <b>Model Format:</b> {focus.modelFormat} <br />
-                <b>Description:</b> {focus.description}
-                <br />
-                <b>Model Type:</b> {focus.modelType} <br />
-              </Typography>
-            ) : (
-              ''
-            )}
-
-            {focus.errorMessages && (
-              <Box
+            <div>
+              <Typography
                 sx={{
-                  width: '90%',
-                  backgroundColor: '#FADFDF',
-                  borderRadius: 3,
-                  p: 3,
-                  m: 2,
-                  overflowWrap: 'anywhere',
+                  mb: 2,
+                  fontWeight: 'bold',
+                  size: '14px',
+                  wordWrap: 'break-word',
                 }}>
+                {focus.name}
+              </Typography>
+              <Typography sx={{ fontSize: 14 }}>
+                {focus.type !== 'API' ? (
+                  <>
+                    <b>Status:</b> {focus.status} <br />
+                  </>
+                ) : null}
+                <b>Type:</b> {focus.type} <br />
+                {focus.type == 'API' && focus.modelAPI ? (
+                  <>
+                    <b>Url:</b> {focus.modelAPI.url} <br />
+                  </>
+                ) : null}
+                {focus.type == 'API' && focus.modelAPI ? (
+                  <>
+                    <b>Http Method</b> {focus.modelAPI.method} <br />
+                  </>
+                ) : null}
+                {focus.type !== 'API' ? (
+                  <>
+                    <b>Date Uploaded:</b>{' '}
+                    {new Date(focus.ctime).toLocaleString()} <br />
+                  </>
+                ) : (
+                  <>
+                    <b>Date Created:</b>{' '}
+                    {new Date(focus.createdAt).toLocaleString()} <br />
+                  </>
+                )}
+                {focus.type !== 'API' ? (
+                  <>
+                    <b>Size:</b> {focus.size ? focus.size : '-'} <br />
+                  </>
+                ) : null}
+              </Typography>
+
+              {focus.status == FocusStatus.VALID ? (
                 <Typography sx={{ fontSize: 14 }}>
-                  {focus.errorMessages}
+                  {focus.type !== 'API' ? (
+                    <>
+                      <b>Serializer:</b> {focus.serializer} <br />
+                      <b>Model Format:</b> {focus.modelFormat} <br />
+                    </>
+                  ) : null}
+                  <b>Description:</b> {focus.description}
+                  <br />
+                  <b>Model Type:</b> {focus.modelType} <br />
                 </Typography>
-              </Box>
-            )}
+              ) : (
+                ''
+              )}
+              {focus && focus.type === 'API' && focus.id ? (
+                <button
+                  style={{ width: 210, marginTop: 20 }}
+                  className="aivBase-button aivBase-button--outlined aivBase-button--small"
+                  onClick={() => {
+                    if (isProjectFlow) {
+                      router.push({
+                        pathname: `/assets/modelApiConfig/${focus.id}`,
+                        query: {
+                          from: 'selectModel',
+                          projectId: currentProjectId,
+                        },
+                      });
+                    } else {
+                      router.push(`/assets/modelApiConfig/${focus.id}`);
+                    }
+                  }}>
+                  View / Edit Configuration
+                </button>
+              ) : null}
+              {focus &&
+              focus.status == FocusStatus.VALID &&
+              focus.type !== 'API' ? (
+                <button
+                  style={{ width: 210, marginTop: 20 }}
+                  className="aivBase-button aivBase-button--outlined aivBase-button--small"
+                  onClick={showDialog}>
+                  Edit
+                </button>
+              ) : null}
+
+              {focus.errorMessages && (
+                <Box
+                  sx={{
+                    width: '90%',
+                    backgroundColor: '#FADFDF',
+                    borderRadius: 3,
+                    p: 3,
+                    m: 2,
+                    overflowWrap: 'anywhere',
+                  }}>
+                  <Typography sx={{ fontSize: 14 }}>
+                    {focus.errorMessages}
+                  </Typography>
+                </Box>
+              )}
+            </div>
             {showSelectModelBtn && focus.status == FocusStatus.VALID && (
-              <Button
-                onClick={handleModelBtnClick}
-                variant="contained"
-                style={{ margin: 10 }}>
-                Use Model
-              </Button>
+              <div>
+                <button
+                  style={{ width: '100%', marginTop: 20 }}
+                  className="aivBase-button aivBase-button--primary aivBase-button--medium"
+                  onClick={handleModelBtnClick}>
+                  Use Model
+                </button>
+              </div>
             )}
           </Box>
         )}

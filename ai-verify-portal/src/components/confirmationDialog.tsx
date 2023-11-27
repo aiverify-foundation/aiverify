@@ -2,8 +2,10 @@ import { AlertBox, AlertBoxFixedPositions, AlertBoxSize } from './alertBox';
 
 type CustomDialogProps = {
   size?: AlertBoxSize;
+  renderInPortal?: boolean;
   primaryBtnText?: string;
   showOKBtn?: boolean;
+  disablePrimaryBtn?: boolean;
   title: string;
   message?: string;
   children?: React.ReactElement;
@@ -13,8 +15,10 @@ type CustomDialogProps = {
 function ConfirmationDialog(props: CustomDialogProps) {
   const {
     size = AlertBoxSize.SMALL,
+    renderInPortal = false,
     primaryBtnText = 'Proceed',
     showOKBtn = false,
+    disablePrimaryBtn = false,
     title,
     children,
     message,
@@ -31,6 +35,7 @@ function ConfirmationDialog(props: CustomDialogProps) {
 
   return (
     <AlertBox
+      renderInPortal={renderInPortal}
       enableModalOverlay
       size={size}
       fixedPosition={AlertBoxFixedPositions.CENTER}
@@ -49,6 +54,7 @@ function ConfirmationDialog(props: CustomDialogProps) {
           }}>
           {showOKBtn ? (
             <button
+              disabled={disablePrimaryBtn}
               className="aivBase-button aivBase-button--primary aivBase-button--small"
               onClick={handleCancel}>
               OK
@@ -61,6 +67,7 @@ function ConfirmationDialog(props: CustomDialogProps) {
                 Cancel
               </button>
               <button
+                disabled={disablePrimaryBtn}
                 className="aivBase-button aivBase-button--primary aivBase-button--small"
                 onClick={handleConfirm}>
                 {primaryBtnText}

@@ -1,0 +1,24 @@
+{
+  "description": "list test",
+  "rule": "list",
+  "violations": [
+    ["#divul"],
+    ["#mixedul"],
+    ["#divol"],
+    ["#mixedol"],
+    ["#ulrolledallli"],
+    ["#olrolledallli"],
+    ["#ulrolledli"],
+    ["#olrolledli"]
+  ],
+  "passes": [
+    ["#emptyul"],
+    ["#scriptemptyul"],
+    ["#properul"],
+    ["#scriptproperul"],
+    ["#emptyol"],
+    ["#scriptemptyol"],
+    ["#properol"],
+    ["#scriptproperol"]
+  ]
+}

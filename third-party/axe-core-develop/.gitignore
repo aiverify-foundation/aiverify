@@ -1,0 +1,31 @@
+# defaults
+node_modules
+npm-shrinkwrap.json
+doc/examples/*/package-lock.json
+.DS_Store
+.idea
+
+# tmp - `dev` time generated assets
+tmp
+
+# test - runner generated assets
+test/*/index.html
+test/integration/*/index.html
+!test/integration/virtual-rules/index.html
+
+# dist
+axe.js
+axe.*.js
+
+# generated src file
+lib/core/base/metadata-function-map.js
+
+# generated jsdoc api docs
+doc/api/*
+
+# ts generated file
+typings/axe-core/axe-core-tests.js
+
+# doc
+doc/rule-descriptions.*.md
+

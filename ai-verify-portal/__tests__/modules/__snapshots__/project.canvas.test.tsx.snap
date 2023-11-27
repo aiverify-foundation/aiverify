@@ -157,6 +157,7 @@ exports[`Project Flow Project Information Capture and Select Template screens sh
             >
               <button
                 class="iconBtn iconBtn__noOutline aiv_iconbtn"
+                type="button"
               >
                 <div
                   class="btnContent"
@@ -173,7 +174,9 @@ exports[`Project Flow Project Information Capture and Select Template screens sh
                       d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"
                     />
                   </svg>
-                  <div />
+                  <div
+                    style="display: flex; align-items: center;"
+                  />
                 </div>
               </button>
             </div>
@@ -499,6 +502,7 @@ exports[`Project Flow Report Designer Screen should place widget on canvas, high
           <button
             class="iconBtn aiv_iconbtn"
             style="margin-right: 5px;"
+            type="button"
           >
             <div
               class="btnContent"
@@ -515,12 +519,15 @@ exports[`Project Flow Report Designer Screen should place widget on canvas, high
                   d="M15 15H3v2h12v-2zm0-8H3v2h12V7zM3 13h18v-2H3v2zm0 8h18v-2H3v2zM3 3v2h18V3H3z"
                 />
               </svg>
-              <div />
+              <div
+                style="display: flex; align-items: center;"
+              />
             </div>
           </button>
           <button
             class="iconBtn aiv_iconbtn"
             style="margin-right: 5px;"
+            type="button"
           >
             <div
               class="btnContent"
@@ -537,11 +544,14 @@ exports[`Project Flow Report Designer Screen should place widget on canvas, high
                   d="M7 15v2h10v-2H7zm-4 6h18v-2H3v2zm0-8h18v-2H3v2zm4-6v2h10V7H7zM3 3v2h18V3H3z"
                 />
               </svg>
-              <div />
+              <div
+                style="display: flex; align-items: center;"
+              />
             </div>
           </button>
           <button
             class="iconBtn aiv_iconbtn"
+            type="button"
           >
             <div
               class="btnContent"
@@ -558,7 +568,9 @@ exports[`Project Flow Report Designer Screen should place widget on canvas, high
                   d="M3 21h18v-2H3v2zm6-4h12v-2H9v2zm-6-4h18v-2H3v2zm6-4h12V7H9v2zM3 3v2h18V3H3z"
                 />
               </svg>
-              <div />
+              <div
+                style="display: flex; align-items: center;"
+              />
             </div>
           </button>
         </div>
@@ -566,6 +578,7 @@ exports[`Project Flow Report Designer Screen should place widget on canvas, high
           <button
             class="iconBtn aiv_iconbtn"
             style="margin-right: 5px;"
+            type="button"
           >
             <div
               class="btnContent"
@@ -582,12 +595,15 @@ exports[`Project Flow Report Designer Screen should place widget on canvas, high
                   d="M22 2v2H2V2h20zM7 22h3V6H7v16zm7-6h3V6h-3v10z"
                 />
               </svg>
-              <div />
+              <div
+                style="display: flex; align-items: center;"
+              />
             </div>
           </button>
           <button
             class="iconBtn aiv_iconbtn"
             style="margin-right: 5px;"
+            type="button"
           >
             <div
               class="btnContent"
@@ -604,11 +620,14 @@ exports[`Project Flow Report Designer Screen should place widget on canvas, high
                   d="M22 11h-5V6h-3v5h-4V3H7v8H1.84v2H7v8h3v-8h4v5h3v-5h5z"
                 />
               </svg>
-              <div />
+              <div
+                style="display: flex; align-items: center;"
+              />
             </div>
           </button>
           <button
             class="iconBtn aiv_iconbtn"
+            type="button"
           >
             <div
               class="btnContent"
@@ -625,7 +644,9 @@ exports[`Project Flow Report Designer Screen should place widget on canvas, high
                   d="M22 22H2v-2h20v2zM10 2H7v16h3V2zm7 6h-3v10h3V8z"
                 />
               </svg>
-              <div />
+              <div
+                style="display: flex; align-items: center;"
+              />
             </div>
           </button>
         </div>
@@ -1942,6 +1963,7 @@ exports[`Project Flow Report Designer Screen should render Report Designer scree
             >
               <button
                 class="iconBtn iconBtn__noOutline aiv_iconbtn"
+                type="button"
               >
                 <div
                   class="btnContent"
@@ -1958,11 +1980,14 @@ exports[`Project Flow Report Designer Screen should render Report Designer scree
                       d="M20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM8 20H4v-4h4v4zm0-6H4v-4h4v4zm0-6H4V4h4v4zm6 12h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4V4h4v4zm6 12h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4V4h4v4z"
                     />
                   </svg>
-                  <div />
+                  <div
+                    style="display: flex; align-items: center;"
+                  />
                 </div>
               </button>
               <button
                 class="iconBtn iconBtn__noOutline aiv_iconbtn"
+                type="button"
               >
                 <div
                   class="btnContent"
@@ -1979,11 +2004,14 @@ exports[`Project Flow Report Designer Screen should render Report Designer scree
                       d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
                     />
                   </svg>
-                  <div />
+                  <div
+                    style="display: flex; align-items: center;"
+                  />
                 </div>
               </button>
               <button
                 class="iconBtn iconBtn__noOutline aiv_iconbtn"
+                type="button"
               >
                 <div
                   class="btnContent"
@@ -2000,11 +2028,14 @@ exports[`Project Flow Report Designer Screen should render Report Designer scree
                       d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"
                     />
                   </svg>
-                  <div />
+                  <div
+                    style="display: flex; align-items: center;"
+                  />
                 </div>
               </button>
               <button
                 class="iconBtn iconBtn__noOutline aiv_iconbtn"
+                type="button"
               >
                 <div
                   class="btnContent"
@@ -2021,7 +2052,9 @@ exports[`Project Flow Report Designer Screen should render Report Designer scree
                       d="M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z"
                     />
                   </svg>
-                  <div />
+                  <div
+                    style="display: flex; align-items: center;"
+                  />
                 </div>
               </button>
             </div>
@@ -2259,6 +2292,7 @@ exports[`Project Flow Report Designer Screen should render Report Designer scree
                     <button
                       class="iconBtn aiv_iconbtn"
                       style="margin-right: 5px;"
+                      type="button"
                     >
                       <div
                         class="btnContent"
@@ -2275,12 +2309,15 @@ exports[`Project Flow Report Designer Screen should render Report Designer scree
                             d="M15 15H3v2h12v-2zm0-8H3v2h12V7zM3 13h18v-2H3v2zm0 8h18v-2H3v2zM3 3v2h18V3H3z"
                           />
                         </svg>
-                        <div />
+                        <div
+                          style="display: flex; align-items: center;"
+                        />
                       </div>
                     </button>
                     <button
                       class="iconBtn aiv_iconbtn"
                       style="margin-right: 5px;"
+                      type="button"
                     >
                       <div
                         class="btnContent"
@@ -2297,11 +2334,14 @@ exports[`Project Flow Report Designer Screen should render Report Designer scree
                             d="M7 15v2h10v-2H7zm-4 6h18v-2H3v2zm0-8h18v-2H3v2zm4-6v2h10V7H7zM3 3v2h18V3H3z"
                           />
                         </svg>
-                        <div />
+                        <div
+                          style="display: flex; align-items: center;"
+                        />
                       </div>
                     </button>
                     <button
                       class="iconBtn aiv_iconbtn"
+                      type="button"
                     >
                       <div
                         class="btnContent"
@@ -2318,7 +2358,9 @@ exports[`Project Flow Report Designer Screen should render Report Designer scree
                             d="M3 21h18v-2H3v2zm6-4h12v-2H9v2zm-6-4h18v-2H3v2zm6-4h12V7H9v2zM3 3v2h18V3H3z"
                           />
                         </svg>
-                        <div />
+                        <div
+                          style="display: flex; align-items: center;"
+                        />
                       </div>
                     </button>
                   </div>
@@ -2326,6 +2368,7 @@ exports[`Project Flow Report Designer Screen should render Report Designer scree
                     <button
                       class="iconBtn aiv_iconbtn"
                       style="margin-right: 5px;"
+                      type="button"
                     >
                       <div
                         class="btnContent"
@@ -2342,12 +2385,15 @@ exports[`Project Flow Report Designer Screen should render Report Designer scree
                             d="M22 2v2H2V2h20zM7 22h3V6H7v16zm7-6h3V6h-3v10z"
                           />
                         </svg>
-                        <div />
+                        <div
+                          style="display: flex; align-items: center;"
+                        />
                       </div>
                     </button>
                     <button
                       class="iconBtn aiv_iconbtn"
                       style="margin-right: 5px;"
+                      type="button"
                     >
                       <div
                         class="btnContent"
@@ -2364,11 +2410,14 @@ exports[`Project Flow Report Designer Screen should render Report Designer scree
                             d="M22 11h-5V6h-3v5h-4V3H7v8H1.84v2H7v8h3v-8h4v5h3v-5h5z"
                           />
                         </svg>
-                        <div />
+                        <div
+                          style="display: flex; align-items: center;"
+                        />
                       </div>
                     </button>
                     <button
                       class="iconBtn aiv_iconbtn"
+                      type="button"
                     >
                       <div
                         class="btnContent"
@@ -2385,7 +2434,9 @@ exports[`Project Flow Report Designer Screen should render Report Designer scree
                             d="M22 22H2v-2h20v2zM10 2H7v16h3V2zm7 6h-3v10h3V8z"
                           />
                         </svg>
-                        <div />
+                        <div
+                          style="display: flex; align-items: center;"
+                        />
                       </div>
                     </button>
                   </div>
@@ -2552,7 +2603,9 @@ exports[`Project Flow Report Designer Screen should render Report Designer scree
                                 <div
                                   class="gVarsCol"
                                 >
-                                  Test Project
+                                  <div>
+                                    Test Project
+                                  </div>
                                 </div>
                                 <div
                                   class="gVarsDelCol"
@@ -2570,7 +2623,9 @@ exports[`Project Flow Report Designer Screen should render Report Designer scree
                                 <div
                                   class="gVarsCol"
                                 >
-                                  Test Description
+                                  <div>
+                                    Test Description
+                                  </div>
                                 </div>
                                 <div
                                   class="gVarsDelCol"
@@ -2588,7 +2643,9 @@ exports[`Project Flow Report Designer Screen should render Report Designer scree
                                 <div
                                   class="gVarsCol"
                                 >
-                                  Test Report Name
+                                  <div>
+                                    Test Report Name
+                                  </div>
                                 </div>
                                 <div
                                   class="gVarsDelCol"
@@ -2606,7 +2663,9 @@ exports[`Project Flow Report Designer Screen should render Report Designer scree
                                 <div
                                   class="gVarsCol"
                                 >
-                                  Test Company Pte Ltd
+                                  <div>
+                                    Test Company Pte Ltd
+                                  </div>
                                 </div>
                                 <div
                                   class="gVarsDelCol"
