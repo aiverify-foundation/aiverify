@@ -1,0 +1,34 @@
+{
+  "id": "label",
+  "impact": "critical",
+  "selector": "input, textarea",
+  "matches": "label-matches",
+  "tags": [
+    "cat.forms",
+    "wcag2a",
+    "wcag412",
+    "section508",
+    "section508.22.n",
+    "TTv5",
+    "TT5.c",
+    "EN-301-549",
+    "EN-9.4.1.2",
+    "ACT"
+  ],
+  "actIds": ["e086e5"],
+  "metadata": {
+    "description": "Ensures every form element has a label",
+    "help": "Form elements must have labels"
+  },
+  "all": [],
+  "any": [
+    "implicit-label",
+    "explicit-label",
+    "aria-label",
+    "aria-labelledby",
+    "non-empty-title",
+    "non-empty-placeholder",
+    "presentational-role"
+  ],
+  "none": ["hidden-explicit-label"]
+}
