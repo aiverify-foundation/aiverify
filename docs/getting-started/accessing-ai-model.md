@@ -1,9 +1,10 @@
 The AI Verify Toolkit supports two modes of accessing the AI models to be tested.
 
-| Mode of Access  | Framework Libraries Supported               | Dataset Type   |
-| --------------- | ------------------------------------------- | -------------- |
-| Upload AI Model | LightGBM, Scikit-learn, Tensorflow, XGBoost | Tabular Only   |
-| Upload Pipline  | Scikit-learn pipeline                       | Tabular, image |
+| Mode of Access          | Framework Libraries Supported               | Dataset Type   |
+| ----------------------- | ------------------------------------------- | -------------- |
+| Upload AI Model         | LightGBM, Scikit-learn, Tensorflow, XGBoost | Tabular Only   |
+| Upload Pipline          | Scikit-learn pipeline                       | Tabular, image |
+| Connect to AI Model API | Any AI Framework                            | Tabular Only   |
 
 The list of datatype formats supported are as follows:
 
@@ -23,3 +24,7 @@ If your dataset requires pre-processing before being fed into the prediction mod
 ![Upload Pipeline](../../res/getting-started/pipeline.png)
 
 Currently, the toolkit supports a limited set of models. Check out the[ full list of framework and algorithm types supported.](../../others/compatibility/)
+
+## Connect to AI Model API
+
+![Connect to AI Model API](../../res/getting-started/api-connector.png)
