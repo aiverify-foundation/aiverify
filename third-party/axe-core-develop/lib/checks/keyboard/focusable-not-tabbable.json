@@ -1,0 +1,12 @@
+{
+  "id": "focusable-not-tabbable",
+  "evaluate": "focusable-not-tabbable-evaluate",
+  "metadata": {
+    "impact": "serious",
+    "messages": {
+      "pass": "No focusable elements contained within element",
+      "incomplete": "Check if the focusable elements immediately move the focus indicator",
+      "fail": "Focusable content should have tabindex=\"-1\" or be removed from the DOM"
+    }
+  }
+}

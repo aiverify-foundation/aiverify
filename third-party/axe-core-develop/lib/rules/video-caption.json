@@ -1,0 +1,24 @@
+{
+  "id": "video-caption",
+  "impact": "critical",
+  "selector": "video",
+  "tags": [
+    "cat.text-alternatives",
+    "wcag2a",
+    "wcag122",
+    "section508",
+    "section508.22.a",
+    "TTv5",
+    "TT17.a",
+    "EN-301-549",
+    "EN-9.1.2.2"
+  ],
+  "actIds": ["eac66b"],
+  "metadata": {
+    "description": "Ensures <video> elements have captions",
+    "help": "<video> elements must have captions"
+  },
+  "all": [],
+  "any": [],
+  "none": ["caption"]
+}
