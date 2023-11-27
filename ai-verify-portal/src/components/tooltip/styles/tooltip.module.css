@@ -26,6 +26,10 @@
   border-radius: 4px;
 }
 
+.childWrapper {
+  display: flex;
+}
+
 .pointer {
   content: ' ';
   position: absolute;

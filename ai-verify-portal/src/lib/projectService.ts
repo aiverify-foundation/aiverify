@@ -4,31 +4,6 @@ import ProjectTemplate, {
   ProjectInformation,
 } from 'src/types/projectTemplate.interface';
 
-export const SEARCH_PROJECTS_BY_WORDS_IN_NAME = gql`
-  query Query($text: String) {
-    projectsByTextSearch(text: $text) {
-      id
-      template {
-        id
-        projectInfo {
-          name
-          description
-          company
-        }
-      }
-      createdAt
-      updatedAt
-      projectInfo {
-        name
-        description
-      }
-      report {
-        status
-      }
-    }
-  }
-`;
-
 export const CREATE_PROJECT = gql`
   mutation Mutation($project: ProjectInput!) {
     createProject(project: $project) {
@@ -186,7 +161,10 @@ export const UPDATE_PROJECT = gql`
         }
       }
       modelAndDatasets {
-        # 👈TODO - this could be slim
+        apiConfig {
+          parameters
+          requestBody
+        }
         groundTruthColumn
         model {
           id

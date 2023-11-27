@@ -21,20 +21,17 @@ export interface Report {
   tests?: TestEngineTask[]; // tests that are run for this report
 }
 
-export interface ModelAndDatasets {
-  model: ModelFile;
-  testDataset: Dataset;
-  groundTruthDataset: Dataset;
-  groundTruthColumn: string;
-}
-
-export type ModelAndDatesetsFileNames = {
-  model: string;
-  testDataset: string;
-  groundTruthDataset: string;
-  modelType: string;
-  groundTruthColumn: string;
+export type APIConfig = {
+  requestBody?: Record<string, string>;
+  parameters?: Record<string, string>;
 };
+export interface ModelAndDatasets {
+  model?: ModelFile;
+  apiConfig?: APIConfig;
+  testDataset?: Dataset;
+  groundTruthDataset?: Dataset;
+  groundTruthColumn?: string;
+}
 
 /**
  * Project is template with data

@@ -2,15 +2,14 @@ import json
 from pathlib import Path
 from typing import Dict, Tuple, Union
 
+from test_engine_app.processing.algorithm_info import AlgorithmInfo
+from test_engine_app.processing.plugin_controller import PluginController
+from test_engine_app.processing.stream_validation import StreamValidation
 from test_engine_core.plugins.enums.model_mode_type import ModelModeType
 from test_engine_core.plugins.enums.model_type import ModelType
 from test_engine_core.plugins.enums.plugin_type import PluginType
 from test_engine_core.utils.json_utils import load_schema_file, validate_json
 from test_engine_core.utils.validate_checks import is_empty_string
-
-from test_engine_app.processing.algorithm_info import AlgorithmInfo
-from test_engine_app.processing.plugin_controller import PluginController
-from test_engine_app.processing.stream_validation import StreamValidation
 
 
 class TaskArgument:
@@ -158,21 +157,37 @@ class TaskArgument:
 
         # Perform Validation
         if self.mode is ModelModeType.API:
-            raise RuntimeError("The task is currently unable to process API model type")
+            validation_methods = [
+                (StreamValidation.validate_data, [self.data]),
+                (
+                    StreamValidation.validate_model_api,
+                    [self.api_schema, self.api_config],
+                ),
+                (
+                    StreamValidation.validate_algorithm,
+                    [
+                        self.algorithm_plugin_information,
+                        self.algorithm_arguments,
+                        self.ground_truth_dataset,
+                        self.ground_truth,
+                    ],
+                ),
+            ]
 
-        validation_methods = [
-            (StreamValidation.validate_data, [self.data]),
-            (StreamValidation.validate_model_upload, [self.model]),
-            (
-                StreamValidation.validate_algorithm,
-                [
-                    self.algorithm_plugin_information,
-                    self.algorithm_arguments,
-                    self.ground_truth_dataset,
-                    self.ground_truth,
-                ],
-            ),
-        ]
+        else:
+            validation_methods = [
+                (StreamValidation.validate_data, [self.data]),
+                (StreamValidation.validate_model_upload, [self.model]),
+                (
+                    StreamValidation.validate_algorithm,
+                    [
+                        self.algorithm_plugin_information,
+                        self.algorithm_arguments,
+                        self.ground_truth_dataset,
+                        self.ground_truth,
+                    ],
+                ),
+            ]
 
         for method, method_args in validation_methods:
             tmp_count, tmp_error_msg = method(*method_args)

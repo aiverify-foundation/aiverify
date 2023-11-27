@@ -1,4 +1,4 @@
 #!/bin/bash
 
-docker build ${@:1} -t aiverify:0.9 .
+docker build ${@:1} -t aiverify:0.10 .
 

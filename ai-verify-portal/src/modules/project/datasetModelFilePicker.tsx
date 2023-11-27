@@ -158,6 +158,7 @@ function DatasetModelFilePicker(props: DatasetModelFileSelectorProps) {
       return (
         <NewModelModule
           withoutLayoutContainer
+          currentProjectId={projectStore.id}
           onBackIconClick={handleNewModelBackIconClick}
         />
       );
@@ -197,6 +198,8 @@ function DatasetModelFilePicker(props: DatasetModelFileSelectorProps) {
               }}
               showSelectModelBtn
               onModelSelected={fileSelectedHandler}
+              isProjectFlow
+              currentProjectId={projectStore.id}
             />
           </div>
         </div>

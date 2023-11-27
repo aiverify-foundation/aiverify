@@ -175,6 +175,14 @@ jobs:
           cd ../ai-verify-portal
           npm run start &> portal.log &
 
+      - name: Checkout API Mock Server
+        uses: actions/checkout@v3
+        with:
+          repository: IMDA-BTG/api-model-server
+          token: ${{ secrets.CHECKOUT_TOKEN }}
+          ref: main
+          path: qa-test/api-model-server
+          
       - name: Checkout smoke tests
         uses: actions/checkout@v3
         with:
@@ -201,13 +209,22 @@ jobs:
           path: qa-test/backend-testing
           submodules: recursive
 
+      - name: Run API Mock Server
+        if: ${{ ! cancelled() }}
+        run: |
+          cd qa-test/api-model-server
+          python3 -m venv venv
+          source venv/bin/activate
+          pip3 install -r requirements.txt
+          bash regression_run_https.sh &
+
       - name: Run smoke tests
         if: ${{ ! cancelled() }}
         run: |
           cd qa-test/smoke-testing
           npm install
           npx playwright install
-          npx playwright test
+          ENVIRONMENT_URL=https://127.0.0.1:5000 npx playwright test
 
       - name: Run frontend tests
         if: ${{ ! cancelled() }}

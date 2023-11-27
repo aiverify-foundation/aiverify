@@ -30,7 +30,7 @@ services:
 
   # backend - test-engine
   test-engine:
-    image: aiverify:0.9
+    image: aiverify:0.10
     restart: always
     depends_on:
       - redis
@@ -46,7 +46,7 @@ services:
 
   # frontend - portal & apigw
   portal:
-    image: aiverify:0.9
+    image: aiverify:0.10
     ports:
       - "3000:3000"
       - "4000:4000"
