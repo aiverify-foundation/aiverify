@@ -1,0 +1,32 @@
+{
+  "id": "button-name",
+  "impact": "critical",
+  "selector": "button",
+  "matches": "no-explicit-name-required-matches",
+  "tags": [
+    "cat.name-role-value",
+    "wcag2a",
+    "wcag412",
+    "section508",
+    "section508.22.a",
+    "TTv5",
+    "TT6.a",
+    "EN-301-549",
+    "EN-9.4.1.2",
+    "ACT"
+  ],
+  "actIds": ["97a4e1", "m6b1q3"],
+  "metadata": {
+    "description": "Ensures buttons have discernible text",
+    "help": "Buttons must have discernible text"
+  },
+  "all": [],
+  "any": [
+    "button-has-visible-text",
+    "aria-label",
+    "aria-labelledby",
+    "non-empty-title",
+    "presentational-role"
+  ],
+  "none": []
+}

@@ -19,8 +19,7 @@ import clsx from 'clsx';
 type WidgetPopulateDataDialogProps = {
   defaultPosition: DraggableAbsolutionPositon;
   reportWidget: ReportWidgetItem;
-  combinedGlobalVars: GlobalVariable[];
-  getPropertyValueFn: (prop: string) => string;
+  globalVars: GlobalVariable[];
   onClose: () => void;
   onChangeProperty?: (prop: UserDefinedProperty, value: string) => void;
 };
@@ -63,9 +62,8 @@ export default function WidgetDataPopulationDialog(
 ) {
   const {
     reportWidget,
-    combinedGlobalVars,
+    globalVars,
     defaultPosition,
-    getPropertyValueFn,
     onClose,
     onChangeProperty,
   } = props;
@@ -160,10 +158,9 @@ export default function WidgetDataPopulationDialog(
               let variable = '';
               let value = filledProperties && filledProperties[prop.key];
               if (value && value.startsWith('{') && value.endsWith('}')) {
-                variable = value;
-                value = getPropertyValueFn
-                  ? getPropertyValueFn(variable)
-                  : value;
+                variable = value.substring(1, value.length - 1);
+                const gVar = globalVars.find((gvar) => gvar.key === variable);
+                value = gVar != undefined ? gVar.value : value;
               }
               const isPropertyFocused = selectedProperty
                 ? selectedProperty.key
@@ -240,7 +237,7 @@ export default function WidgetDataPopulationDialog(
             Global Variables
           </div>
           <ListMenu>
-            {combinedGlobalVars.map((globalVar) => (
+            {globalVars.map((globalVar) => (
               <ListMenuItem
                 key={`gvar-${globalVar.key}`}
                 id="explortAsPlugin"

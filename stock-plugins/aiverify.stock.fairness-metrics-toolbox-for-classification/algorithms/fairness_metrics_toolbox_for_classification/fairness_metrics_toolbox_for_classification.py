@@ -373,6 +373,7 @@ class Plugin(IAlgorithm):
 
             # Compute score for features
             self._compute_score_for_features()
+
         except Exception:
             import traceback
 
@@ -478,13 +479,13 @@ class Plugin(IAlgorithm):
             np.ndarray: The predicted data in a numpy array
         """
 
-        # Predict data from data instance and return predicted_data
+        # list of tuple of labels to be passed into predict()
+        dict_items_labels = self._data_instance.read_labels().items()
         predicted_data = self._model.predict(
-            self._data,
-            self._data_labels,
+            [self._data], dict_items_labels
         )
-        return predicted_data
-
+        return [eval(str(i)) for i in predicted_data]
+    
     def _compute_between_group(
         self,
         data_ground_truth_np: np.ndarray,

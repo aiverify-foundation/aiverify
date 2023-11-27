@@ -1,0 +1,16 @@
+{
+  "requestBody": {
+    "age": "age",
+    "gender": "gender",
+    "race": "race",
+    "income": "income",
+    "employment": "employment",
+    "employment_length": "employment_length",
+    "total_donated": "total_donated_amount",
+    "num_donation": "number_of_donation"
+  },
+  "responseBody": {
+    "field": "data",
+    "type": "integer"
+  }
+}

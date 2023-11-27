@@ -1,7 +1,7 @@
 import {jest} from '@jest/globals'
 import mongoose from 'mongoose';
 import casual from '#testutil/mockData.mjs';
-import { mockModel, mockTestDataset } from '../../testutil/mockData.mjs';
+// import { mockModel, mockTestDataset } from '../../testutil/mockData.mjs';
 
 
 describe("Test Project GraphQL queries", () => {
@@ -37,15 +37,15 @@ describe("Test Project GraphQL queries", () => {
     ModelFileModel = models.ModelFileModel;
     DatasetFileModel = models.DatasetModel;
     // create some initial data
-    const model = new ModelFileModel(mockModel);
-    const dataset = new DatasetFileModel(mockTestDataset);
+    const model = new ModelFileModel(casual.modelFile);
+    const dataset = new DatasetFileModel(casual.testDataset);
     const savedModel = await model.save();
     const savedDataset = await dataset.save();
     const docs = casual.multipleProjects(2);
     for (const doc of docs) { 
       doc.__t = 'ProjectModel';
       doc.modelAndDatasets = {
-        groundTruthColumn: 'two_year_recid',
+        groundTruthColumn: 'donation',
         model: savedModel._id,
         testDataset: savedDataset._id,
         groundTruthDataset: savedDataset._id,

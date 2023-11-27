@@ -16,7 +16,7 @@ class IPipeline(IPlugin):
         pass
 
     @abstractmethod
-    def __init__(self, pipeline: Any) -> None:
+    def __init__(self, **kwargs) -> None:
         pass
 
     @abstractmethod

@@ -1,194 +1,210 @@
 type LayoutItemProperties {
-	justifyContent: String
-	alignItems: String
-	textAlign: String
-	color: String
-	bgcolor: String
+  justifyContent: String
+  alignItems: String
+  textAlign: String
+  color: String
+  bgcolor: String
 }
 
 type ReportWidgetItem {
-	widgetGID: String!
-	key: String!
-	layoutItemProperties: LayoutItemProperties
-	properties: JSON
+  widgetGID: String!
+  key: String!
+  layoutItemProperties: LayoutItemProperties
+  properties: JSON
 }
 
 enum WidgetLayoutResizeHandleType {
-	s,
-	w,
-	e,
-	n,
-	sw,
-	nw,
-	se,
-	ne
+  s
+  w
+  e
+  n
+  sw
+  nw
+  se
+  ne
 }
 
 type WidgetLayout {
-	i: String!
-	x: Int!
-	y: Int!
-	w: Int!
-	h: Int!
-	maxW: Int
-	maxH: Int
-	minW: Int
-	minH: Int
-	static: Boolean
-	isDraggable: Boolean
-	isResizable: Boolean
-	resizeHandles: [WidgetLayoutResizeHandleType]
-	isBounded: Boolean
+  i: String!
+  x: Int!
+  y: Int!
+  w: Int!
+  h: Int!
+  maxW: Int
+  maxH: Int
+  minW: Int
+  minH: Int
+  static: Boolean
+  isDraggable: Boolean
+  isResizable: Boolean
+  resizeHandles: [WidgetLayoutResizeHandleType]
+  isBounded: Boolean
 }
 
 type Page {
-	layouts: [WidgetLayout]!
-	reportWidgets: [ReportWidgetItem]!
+  layouts: [WidgetLayout]!
+  reportWidgets: [ReportWidgetItem]!
 }
 
-
 type ProjectInformation {
-	name: String!
-	description: String
-	reportTitle: String
-	company: String
+  name: String!
+  description: String
+  reportTitle: String
+  company: String
 }
 
 type GlobalVariable {
-	key: String!
-	value: String!
+  key: String!
+  value: String!
 }
 
 enum ProjectReportStatus {
-	NoReport
-	RunningTests
-	GeneratingReport
-	ReportGenerated
-	ReportError
+  NoReport
+  RunningTests
+  GeneratingReport
+  ReportGenerated
+  ReportError
 }
 
 type Report {
-	projectID: ObjectID! # id of project
-	projectSnapshot: Project # snapshot of project at time creation
-	status: ProjectReportStatus! # report status
-	timeStart: DateTime
-	timeTaken: Int
-	totalTestTimeTaken: Int
-	inputBlockData: JSON # snapshot of input block data
-	tests: [TestEngineTask] # tests that are run for this report
+  projectID: ObjectID! # id of project
+  projectSnapshot: Project # snapshot of project at time creation
+  status: ProjectReportStatus! # report status
+  timeStart: DateTime
+  timeTaken: Int
+  totalTestTimeTaken: Int
+  inputBlockData: JSON # snapshot of input block data
+  tests: [TestEngineTask] # tests that are run for this report
 }
 
 type ModelAndDatasets {
-	model: ModelFile,
-	testDataset: Dataset,
-	groundTruthDataset: Dataset,
-	groundTruthColumn: String,
+  model: ModelFile
+  apiConfig: APIConfigType
+  testDataset: Dataset
+  groundTruthDataset: Dataset
+  groundTruthColumn: String
+}
+
+type APIConfigType {
+  requestBody: JSON
+  parameters: JSON
 }
 
 type Project {
-	id: ObjectID!
-	template: ProjectTemplate
-	projectInfo: ProjectInformation!
-	globalVars: [GlobalVariable]
-	pages: [Page]
-	inputBlockData: JSON
-	testInformationData: [TestInformation]
-	report: Report
-	createdAt: DateTime
-	updatedAt: DateTime
-	modelAndDatasets: ModelAndDatasets
+  id: ObjectID!
+  template: ProjectTemplate
+  projectInfo: ProjectInformation!
+  globalVars: [GlobalVariable]
+  pages: [Page]
+  inputBlockData: JSON
+  testInformationData: [TestInformation]
+  report: Report
+  createdAt: DateTime
+  updatedAt: DateTime
+  modelAndDatasets: ModelAndDatasets
 }
 
 input LayoutItemPropertiesInput {
-	justifyContent: String @constraint(maxLength: 128)
-	alignItems: String @constraint(maxLength: 128)
-	textAlign: String @constraint(maxLength: 128)
-	color: String @constraint(maxLength: 128)
-	bgcolor: String @constraint(maxLength: 128)
+  justifyContent: String @constraint(maxLength: 128)
+  alignItems: String @constraint(maxLength: 128)
+  textAlign: String @constraint(maxLength: 128)
+  color: String @constraint(maxLength: 128)
+  bgcolor: String @constraint(maxLength: 128)
 }
 
 input ReportWidgetItemInput {
-	widgetGID: String! @constraint(minLength: 1, maxLength: 128) # ref id of widget
-	key: String @constraint(minLength: 1, maxLength: 128)
-	layoutItemProperties: LayoutItemPropertiesInput
-	properties: JSON
+  widgetGID: String! @constraint(minLength: 1, maxLength: 128) # ref id of widget
+  key: String @constraint(minLength: 1, maxLength: 128)
+  layoutItemProperties: LayoutItemPropertiesInput
+  properties: JSON
 }
 
 input WidgetLayoutInput {
-	i: String! @constraint(minLength: 1, maxLength: 128) # ref id of widget
-	x: Int! @constraint(min: 0, max:12)
-	y: Int! @constraint(min: 0, max:36)
-	w: Int! @constraint(min: 0, max:12)
-	h: Int! @constraint(min: 0, max:36)
-	maxW: Int @constraint(min: 0, max:12)
-	maxH: Int @constraint(min: 0, max:36)
-	minW: Int @constraint(min: 0, max:12)
-	minH: Int @constraint(min: 0, max:36)
-	static: Boolean
-	isDraggable: Boolean
-	isResizable: Boolean
-	resizeHandles: [WidgetLayoutResizeHandleType]
-	isBounded: Boolean
+  i: String! @constraint(minLength: 1, maxLength: 128) # ref id of widget
+  x: Int! @constraint(min: 0, max: 12)
+  y: Int! @constraint(min: 0, max: 36)
+  w: Int! @constraint(min: 0, max: 12)
+  h: Int! @constraint(min: 0, max: 36)
+  maxW: Int @constraint(min: 0, max: 12)
+  maxH: Int @constraint(min: 0, max: 36)
+  minW: Int @constraint(min: 0, max: 12)
+  minH: Int @constraint(min: 0, max: 36)
+  static: Boolean
+  isDraggable: Boolean
+  isResizable: Boolean
+  resizeHandles: [WidgetLayoutResizeHandleType]
+  isBounded: Boolean
 }
 
 input PageInput {
-	layouts: [WidgetLayoutInput]
-	reportWidgets: [ReportWidgetItemInput]
+  layouts: [WidgetLayoutInput]
+  reportWidgets: [ReportWidgetItemInput]
 }
 
-
 input ProjectInformationInput {
-	name: String @constraint(minLength: 1, maxLength: 128)
-	description: String @constraint(maxLength: 256)
-	reportTitle: String @constraint(maxLength: 128)
-	company: String @constraint(maxLength: 128)
+  name: String @constraint(minLength: 1, maxLength: 128)
+  description: String @constraint(maxLength: 256)
+  reportTitle: String @constraint(maxLength: 128)
+  company: String @constraint(maxLength: 128)
 }
 
 input GlobalVariableInput {
-	key: String! @constraint(minLength: 1, maxLength: 128)
-	value: String! @constraint(minLength: 1, maxLength: 128)
+  key: String! @constraint(minLength: 1, maxLength: 128)
+  value: String! @constraint(minLength: 1, maxLength: 128)
+}
+
+input APIConfigInput {
+  requestBody: JSON
+  parameters: JSON
 }
 
 input ModelAndDatasetsInput {
-	modelId: ObjectID
-	testDatasetId: ObjectID
-	groundTruthDatasetId: ObjectID
-	groundTruthColumn: String @constraint(minLength: 1, maxLength: 128)
+  modelId: ObjectID
+  apiConfig: APIConfigInput
+  testDatasetId: ObjectID
+  groundTruthDatasetId: ObjectID
+  groundTruthColumn: String @constraint(minLength: 1, maxLength: 128)
 }
 
 input ProjectInput {
   projectInfo: ProjectInformationInput
-	globalVars: [GlobalVariableInput]
-	pages: [PageInput]
-	inputBlockData: JSON
-	modelAndDatasets: ModelAndDatasetsInput
-	testInformationData: [TestInformationInput]
-	# inputBlockGIDs: [String]
+  globalVars: [GlobalVariableInput]
+  pages: [PageInput]
+  inputBlockData: JSON
+  modelAndDatasets: ModelAndDatasetsInput
+  testInformationData: [TestInformationInput]
+  # inputBlockGIDs: [String]
 }
 
 type Query {
   projects: [Project]
-	projectsByTextSearch(text: String): [Project!]!
-	project(id: ObjectID!): Project
-	# get report of project
-	report(projectID: ObjectID!): Report
+  projectsByTextSearch(text: String): [Project!]!
+  project(id: ObjectID!): Project
+  # get report of project
+  report(projectID: ObjectID!): Report
 }
 
 type Mutation {
-	createProject(project: ProjectInput!): Project
-	createProjectFromTemplate(project: ProjectInput!, templateId: String!): Project
-	deleteProject(id: ObjectID!): ObjectID
-	updateProject(id: ObjectID!, project: ProjectInput!): Project
-	cloneProject(id: ObjectID!): Project
-	saveProjectAsTemplate(projectId: ObjectID!, templateInfo: ProjectInformationInput!): ProjectTemplate
-	# Generate report and run the algorithms specified. Return ID of report
-	generateReport(projectID: ObjectID!, algorithms: [String]!): Report
-	cancelTestRuns(projectID: ObjectID!, algorithms: [String]!): Report
+  createProject(project: ProjectInput!): Project
+  createProjectFromTemplate(
+    project: ProjectInput!
+    templateId: String!
+  ): Project
+  deleteProject(id: ObjectID!): ObjectID
+  updateProject(id: ObjectID!, project: ProjectInput!): Project
+  cloneProject(id: ObjectID!): Project
+  saveProjectAsTemplate(
+    projectId: ObjectID!
+    templateInfo: ProjectInformationInput!
+  ): ProjectTemplate
+  # Generate report and run the algorithms specified. Return ID of report
+  generateReport(projectID: ObjectID!, algorithms: [String]!): Report
+  cancelTestRuns(projectID: ObjectID!, algorithms: [String]!): Report
 }
 
 type Subscription {
-	testTaskUpdatedNoFilter: TestEngineTask
-	testTaskUpdated(projectID: ObjectID!): TestEngineTask 
-	reportStatusUpdatedNoFilter: Report
-  	reportStatusUpdated(projectID: ObjectID!): Report
+  testTaskUpdatedNoFilter: TestEngineTask
+  testTaskUpdated(projectID: ObjectID!): TestEngineTask
+  reportStatusUpdatedNoFilter: Report
+  reportStatusUpdated(projectID: ObjectID!): Report
 }

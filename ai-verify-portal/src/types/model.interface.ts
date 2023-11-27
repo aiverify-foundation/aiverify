@@ -1,3 +1,5 @@
+import { GqlModelApi } from 'src/modules/assets/modelAPIComponent/types';
+
 export enum ModelMode {
   API,
   Upload,
@@ -23,6 +25,7 @@ export default interface ModelFile {
   name: string; // defaults to filename when upload
   filePath: string; // should be stored relative to data upload folder
   ctime: string; // file create time
+  createdAt: string;
   description?: string;
   status: string;
   size: string;
@@ -31,18 +34,5 @@ export default interface ModelFile {
   modelFormat: string;
   errorMessages: string;
   type: string;
+  modelAPI?: GqlModelApi;
 }
-
-/**
- * Represents the AI Model
- */
-// export interface Model {
-//     id?: string, // unique ID
-//     name: string,
-//     description: string,
-//     mode: ModelMode,
-//     algorithmType?: AlgorithmType,
-//     modelType?: ModelType,
-// }
-
-//ModelApi interface?

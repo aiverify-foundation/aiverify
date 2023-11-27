@@ -1,0 +1,17 @@
+{
+  "id": "duplicate-id",
+  "impact": "minor",
+  "selector": "[id]",
+  "matches": "duplicate-id-misc-matches",
+  "excludeHidden": false,
+  "tags": ["cat.parsing", "wcag2a-obsolete", "wcag411", "deprecated"],
+  "enabled": false,
+  "actIds": ["3ea0c8"],
+  "metadata": {
+    "description": "Ensures every id attribute value is unique",
+    "help": "id attribute value must be unique"
+  },
+  "all": [],
+  "any": ["duplicate-id"],
+  "none": []
+}

@@ -49,6 +49,7 @@ export enum ARUActionTypes {
   ADD = 'ADD',
   REMOVE = 'REMOVE',
   UPDATE = 'UPDATE',
+  UPDATE_MUTATE = 'UPDATE_MUTATE', //👈 TODO - this is strictly used in 1 function only (canvas.tsx - handleLayoutChange function)
   REPLACE = 'REPLACE',
   INSERT = 'INSERT',
   MOVE = 'MOVE',
@@ -204,6 +205,22 @@ export function useProjectTemplateStore(
         if (action.updateFn) action.updateFn(id, newState2 as Type[]);
         return newState2;
       case ARUActionTypes.UPDATE:
+        if (_.isNil(action.index) || !action.payload)
+          throw new Error('Missing index or payload');
+        if (action.index < 0 || action.index >= state.length) return state;
+        const draftState = [...state];
+        draftState[action.index] = {
+          ...draftState[action.index],
+          ...action.payload,
+        };
+        if (action.updateFn) action.updateFn(id, draftState as Type[]);
+        return draftState;
+      case ARUActionTypes.UPDATE_MUTATE: //👈 TODO - this is strictly 1 function only (canvas.tsx - handleLayoutChange function)
+        /*
+         * We are mutating state in this one, which is anti-pattern. This is only for usage in canvas.tsx - handleLayoutChange function
+         * where if ARUActionTypes.UPDATE is used instead, gridlayout dropping element just won't work.
+         * TODO: figure out why and fix this anti pattern
+         */
         if (_.isNil(action.index) || !action.payload)
           throw new Error('Missing index or payload');
         if (action.index < 0 || action.index >= state.length) return state;

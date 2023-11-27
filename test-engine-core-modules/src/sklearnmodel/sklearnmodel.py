@@ -69,7 +69,8 @@ class Plugin(IModel):
         """
         return Plugin._model_plugin_type
 
-    def __init__(self, model: Any) -> None:
+    def __init__(self, **kwargs) -> None:
+        model = kwargs.get("model", None)
         if model:
             self._model = model
 
@@ -144,7 +145,11 @@ class Plugin(IModel):
             Any: predicted result
         """
         try:
-            return self._model.predict(data)
+            if isinstance(data, list):
+                for item in data:
+                    return self._model.predict(item)
+            else:
+                return self._model.predict(data)
         except Exception:
             raise
 
@@ -159,7 +164,11 @@ class Plugin(IModel):
             Any: predicted result
         """
         try:
-            return self._model.predict_proba(data)
+            if isinstance(data, list):
+                for item in data:
+                    return self._model.predict_proba(item)
+            else:
+                return self._model.predict_proba(data)
         except Exception:
             raise
 

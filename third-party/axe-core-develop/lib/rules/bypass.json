@@ -1,0 +1,27 @@
+{
+  "id": "bypass",
+  "impact": "serious",
+  "selector": "html",
+  "pageLevel": true,
+  "matches": "bypass-matches",
+  "reviewOnFail": true,
+  "tags": [
+    "cat.keyboard",
+    "wcag2a",
+    "wcag241",
+    "section508",
+    "section508.22.o",
+    "TTv5",
+    "TT9.a",
+    "EN-301-549",
+    "EN-9.2.4.1"
+  ],
+  "actIds": ["cf77f2", "047fe0", "b40fd1", "3e12e1", "ye5d6e"],
+  "metadata": {
+    "description": "Ensures each page has at least one mechanism for a user to bypass navigation and jump straight to the content",
+    "help": "Page must have means to bypass repeated blocks"
+  },
+  "all": [],
+  "any": ["internal-link-present", "header-present", "landmark"],
+  "none": []
+}
