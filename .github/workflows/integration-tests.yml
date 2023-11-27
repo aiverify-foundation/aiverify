@@ -184,7 +184,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: IMDA-BTG/api-model-server
-          token: ${{ env.CHECKOUT_TOKEN }}
+          token: ${{ secrets.CHECKOUT_TOKEN }}
           ref: main
           path: qa-test/api-model-server
           
