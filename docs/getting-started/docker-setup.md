@@ -8,6 +8,8 @@ To run AI Verify, these are the recommended requirements to run AI Verify on a l
 | Disk Space           | At least 10GB (excluding Docker Desktop)                                                                                |
 | Memory           | At least 4GB                                                                                |
 
+**For running the API Connector feature on Docker, we recommend using Ubuntu Virtual Machine.
+
 ### Software Required
 - [Docker Desktop](https://docs.docker.com/get-docker/)  
 
