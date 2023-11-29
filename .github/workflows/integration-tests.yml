@@ -32,7 +32,6 @@ jobs:
     if: (github.event_name == 'pull_request_review' && github.event.review.state == 'approved') || github.event_name == 'workflow_dispatch'
 
     runs-on: ubuntu-latest
-    environment: deployment-environment
     timeout-minutes: 40
 
     steps:
