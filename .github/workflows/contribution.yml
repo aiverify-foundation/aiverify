@@ -1,0 +1,250 @@
+# Integration Tests for Contributor Flow
+# Build aiverify and run QA test suites
+
+name: Contributor Flow
+
+on:
+  # Runs when a pull request review from forked repository is being submitted
+  pull_request_target:
+    branches:
+      - 'main'
+
+  # Run this workflow manually from Actions tab
+  workflow_dispatch:
+    inputs:
+      branch_to_test:
+        description: 'Branch or tag to run test'
+        required: true
+        default: 'main'
+        type: string
+
+# Allow one concurrent deployment
+concurrency:
+  group: ${{ github.repository }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+
+  integration-tests:
+    #  Run only when PR is approved
+    if: (github.event_name == 'pull_request_review' && github.event.review.state == 'approved') || github.event_name == 'workflow_dispatch'
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    steps:
+
+      - name: Install redis
+        run: |
+          sudo apt update
+          sudo apt install redis-server
+          pattern='notify-keyspace-events ""'
+          replacement='notify-keyspace-events Kh'
+          sudo sed -i 's/'"$pattern"'/'"$replacement"'/g' "/etc/redis/redis.conf"
+          sudo systemctl restart redis-server
+
+      - name: Install mongod
+        run: |
+          wget -nc https://www.mongodb.org/static/pgp/server-6.0.asc
+          cat server-6.0.asc | gpg --dearmor | sudo tee /etc/apt/keyrings/mongodb.gpg >/dev/null
+          sudo sh -c 'echo "deb [ arch=amd64,arm64 signed-by=/etc/apt/keyrings/mongodb.gpg] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" >> /etc/apt/sources.list.d/mongo.list'
+          sudo apt update
+          sudo apt install -y mongodb-org
+
+          sudo systemctl start mongod
+          sleep 2
+          mongosh << EOF
+          admin = db.getSiblingDB('admin')
+          admin.createUser({
+            user: 'mongodb',
+            pwd: 'mongodb',
+            roles: [{ role: 'root', db: 'admin' }],
+          });
+
+          aiverify = db.getSiblingDB('aiverify')
+          aiverify.createUser({
+            user: 'aiverify',
+            pwd: 'aiverify',
+            roles: [{ role: 'readWrite', db: 'aiverify' }],
+          });
+
+          aiverify.createCollection('test-collection');
+          EOF
+
+      - name: Install libraries
+        run: |
+          sudo apt-get update
+          
+          # amd64, install libs needed by puppeteer/chromium
+          sudo apt-get install -y libx11-xcb1 libxcomposite1 libxcursor1 libxdamage1 \
+            libxi-dev libxtst-dev libnss3 libcups2 libxss1 libxrandr2 \
+            libasound2 libatk1.0-0 libatk-bridge2.0-0 libpangocairo-1.0-0 \
+            libgtk-3-0 libgbm1
+          
+          # For shap-toolbox plugin
+          sudo apt-get install -y gcc g++ python3-dev
+          
+          sudo apt-get install unzip
+
+      - name: Checkout code (workflow_dispatch)
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.branch_to_test }}
+
+      - name: Checkout code (pull_request_review)
+        if: github.event_name == 'pull_request_review'
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+
+      - name: Setup npm cache/install
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install node dependencies
+        run: |
+          cd ai-verify-shared-library
+          npm install
+          npm run build
+          
+          cd ../ai-verify-apigw
+          #cp .env.development .env
+          npm install
+          
+          cd ../ai-verify-portal
+          npm install
+          npm link ../ai-verify-shared-library
+          echo "NEXT_PUBLIC_SERVER_URL=http://127.0.0.1:3000
+          NEXT_PUBLIC_WEBSOCKET_URL=ws://127.0.0.1:4000/graphql
+          SERVER_URL=http://127.0.0.1:3000
+          WEBSOCKET_URL=ws://127.0.0.1:4000/graphql
+          APIGW_URL=http://127.0.0.1:4000
+          MONGODB_URI=mongodb://aiverify:aiverify@127.0.0.1:27017/aiverify
+          REDIS_URI=redis://127.0.0.1:6379
+          TEST_ENGINE_URL=http://127.0.0.1:8080" > .env.local
+          #cp .env.development .env.local
+          npm run build
+
+      - name: Setup pip cache/install
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install python dependencies
+        run: |
+          pip install test-engine-core/dist/test_engine_core-*.tar.gz
+          find ./ -type f -name 'requirements.txt' -exec pip install -r "{}" \;
+
+      - name: Install stock plugins
+        run: |
+          mkdir -p ai-verify-portal/plugins
+          cd stock-plugins
+          for plugin_dir in *; do
+            echo "Unzipping plugin $plugin_dir";
+            unzip $plugin_dir/dist/*.zip -d ../ai-verify-portal/plugins/$plugin_dir;
+          done
+
+      - name: Run aiverify services
+        run: |
+          sudo systemctl restart mongod
+          sudo systemctl restart redis-server
+          wdir=$(pwd)
+          cd test-engine-app
+          echo "CORE_MODULES_FOLDER=\"$wdir/test-engine-core-modules\"
+          VALIDATION_SCHEMAS_FOLDER=\"$wdir/test-engine-app/test_engine_app/validation_schemas/\"
+          REDIS_CONSUMER_GROUP=\"MyGroup\"
+          REDIS_SERVER_HOSTNAME=\"127.0.0.1\"
+          REDIS_SERVER_PORT=6379
+          API_SERVER_PORT=8080" > .env
+          python3 -m test_engine_app &>engine.log &
+          
+          cd ../ai-verify-apigw
+          echo "MONGODB_URI=\"mongodb://aiverify:aiverify@127.0.0.1:27017/aiverify\"
+          DB_URI=\"mongodb://aiverify:aiverify@127.0.0.1:27017/aiverify\"
+          WEB_REPORT_URL=\"http://127.0.0.1:3000/reportStatus/printview\"
+          REDIS_HOST=\"localhost\"
+          REDIS_PORT=6379" > .env
+          node app.mjs &> apigw.log &
+          
+          cd ../ai-verify-portal
+          npm run start &> portal.log &
+
+      - name: Checkout API Mock Server
+        uses: actions/checkout@v3
+        with:
+          repository: IMDA-BTG/api-model-server
+          token: ${{ secrets.CHECKOUT_TOKEN }}
+          ref: main
+          path: qa-test/api-model-server
+          
+      - name: Checkout smoke tests
+        uses: actions/checkout@v3
+        with:
+          repository: IMDA-BTG/smoke-testing
+          token: ${{ secrets.CHECKOUT_TOKEN }}
+          ref: main
+          path: qa-test/smoke-testing
+          submodules: recursive
+
+      - name: Checkout frontend tests
+        uses: actions/checkout@v3
+        with:
+          repository: IMDA-BTG/frontend-testing
+          token: ${{ secrets.CHECKOUT_TOKEN }}
+          ref: main
+          path: qa-test/frontend-testing
+
+      - name: Checkout backend tests
+        uses: actions/checkout@v3
+        with:
+          repository: IMDA-BTG/backend-testing
+          token: ${{ secrets.CHECKOUT_TOKEN }}
+          ref: main
+          path: qa-test/backend-testing
+          submodules: recursive
+
+      - name: Run API Mock Server
+        if: ${{ ! cancelled() }}
+        run: |
+          cd qa-test/api-model-server
+          python3 -m venv venv
+          source venv/bin/activate
+          pip3 install -r requirements.txt
+          bash regression_run_https.sh &
+
+      - name: Run smoke tests
+        if: ${{ ! cancelled() }}
+        run: |
+          cd qa-test/smoke-testing
+          npm install
+          npx playwright install
+          ENVIRONMENT_URL=https://127.0.0.1:5000 npx playwright test
+
+      - name: Run frontend tests
+        if: ${{ ! cancelled() }}
+        run: |
+          cd qa-test/frontend-testing
+          npm install
+          npx playwright test
+
+      - name: Run backend tests
+        if: ${{ ! cancelled() }}
+        run: |
+          cd qa-test/backend-testing
+          npm install
+          BASEDIR=${{ github.workspace }} npx playwright test
+
+      - name: Show logs
+        if: ${{ ! cancelled() }}
+        run: |
+          echo "================= Start of test-engine log ================="
+          cat test-engine-app/engine.log
+          echo "================= Start of apigw log ================="
+          cat ai-verify-apigw/apigw.log
+          echo "================= Start of portal log ================="
+          cat ai-verify-portal/portal.log
+
