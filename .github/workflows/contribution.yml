@@ -19,13 +19,13 @@ on:
         type: string
 
 # Allow one concurrent deployment
-concurrency:
-  group: ${{ github.repository }}-${{ github.workflow }}
-  cancel-in-progress: true
+# concurrency:
+#   group: ${{ github.repository }}-${{ github.workflow }}
+#   cancel-in-progress: true
 
 jobs:
 
-  integration-tests:
+  contributor-flow:
     #  Run only when PR is approved
     if: (github.event_name == 'pull_request_review' && github.event.review.state == 'approved') || github.event_name == 'workflow_dispatch'
 
