@@ -6,6 +6,8 @@ name: Contributor Flow
 on:
   # Runs when a pull request review from forked repository is being submitted
   pull_request_target:
+    types:
+      - opened
     branches:
       - 'main'
 
