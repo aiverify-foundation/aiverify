@@ -5,11 +5,11 @@ name: Contributor Flow
 
 on:
   # Runs when a pull request review from forked repository is being submitted
-  pull_request_target:
-    types:
-      - opened
-    branches:
-      - 'main'
+  # pull_request_target:
+  #   types:
+  #     - opened
+  #   branches:
+  #     - 'main'
 
   # Run this workflow manually from Actions tab
   workflow_dispatch:
@@ -29,7 +29,7 @@ jobs:
 
   contributor-flow:
     #  Run only when PR is approved
-    if: (github.event_name == 'pull_request_target' || github.event_name == 'workflow_dispatch'
+    # if: (github.event_name == 'pull_request_target' || github.event_name == 'workflow_dispatch'
 
     runs-on: ubuntu-latest
     timeout-minutes: 40
