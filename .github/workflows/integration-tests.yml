@@ -23,7 +23,7 @@ on:
 # Allow one concurrent deployment
 concurrency:
   group: ${{ github.repository }}-${{ github.workflow }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
 
