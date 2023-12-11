@@ -13,7 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@apollo/server": "^4.3.0",
+    "@apollo/server": "4.9.3",
     "@graphql-tools/load-files": "^6.6.1",
     "@graphql-tools/merge": "^8.3.14",
     "@graphql-tools/schema": "^9.0.12",
@@ -23,7 +23,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "graphql": "^16.6.0",
+    "graphql": "16.8.1",
     "graphql-constraint-directive": "^5.0.0",
     "graphql-redis-subscriptions": "^2.6.0",
     "graphql-scalars": "^1.20.1",
