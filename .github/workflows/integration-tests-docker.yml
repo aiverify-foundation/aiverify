@@ -102,12 +102,12 @@ jobs:
       #     npx playwright install
       #     npx playwright test
 
-     - name: Run frontend tests
-       if: ${{ ! cancelled() }}
-       run: |
-         cd qa-test/frontend-testing
-         npm install
-         npx playwright test
+      - name: Run frontend tests
+        if: ${{ ! cancelled() }}
+        run: |
+          cd qa-test/frontend-testing
+          npm install
+          npx playwright test
 #
 #      - name: Run backend tests
 #        if: ${{ ! cancelled() }}
