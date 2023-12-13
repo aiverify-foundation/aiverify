@@ -94,20 +94,20 @@ jobs:
           path: qa-test/backend-testing
           submodules: recursive
 
-      - name: Run smoke tests
-        if: ${{ ! cancelled() }}
-        run: |
-          cd qa-test/smoke-testing
-          npm install
-          npx playwright install
-          npx playwright test
+      # - name: Run smoke tests
+      #   if: ${{ ! cancelled() }}
+      #   run: |
+      #     cd qa-test/smoke-testing
+      #     npm install
+      #     npx playwright install
+      #     npx playwright test
 
-#      - name: Run frontend tests
-#        if: ${{ ! cancelled() }}
-#        run: |
-#          cd qa-test/frontend-testing
-#          npm install
-#          npx playwright test
+     - name: Run frontend tests
+       if: ${{ ! cancelled() }}
+       run: |
+         cd qa-test/frontend-testing
+         npm install
+         npx playwright test
 #
 #      - name: Run backend tests
 #        if: ${{ ! cancelled() }}
