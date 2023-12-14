@@ -19,7 +19,7 @@ export default function graphqlClient(ssrMode = false) {
     // only connect to graphql subscription for client
     // if env WEBSOCKET_URL not defined, assume api-gw always hosted on the same host
     const wsprot = window.location.protocol === 'http:'?'ws':'wss';
-    const wsuri = process.env.WEBSOCKET_URL || `${wsprot}://${window.location.hostname || 'localhost'}:4000/graphql`;
+    const wsuri = process.env.NEXT_PUBLIC_WEBSOCKET_URL || `${wsprot}://${window.location.hostname}:${window.location.port}/api/graphql`;
     // console.log("wsuri:", wsuri);
     wsLink = new GraphQLWsLink(
       createClient({
