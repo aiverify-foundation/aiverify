@@ -10,6 +10,7 @@ type TextInputProps = {
   error?: string;
   value?: string;
   maxLength?: number;
+  autoComplete?: 'on' | 'off';
   labelSibling?: React.ReactElement;
   style?: React.CSSProperties;
   inputStyle?: React.CSSProperties;
@@ -26,6 +27,7 @@ function TextInput(props: TextInputProps) {
     error,
     maxLength,
     value,
+    autoComplete = 'on',
     labelSibling,
     style,
     inputStyle,
@@ -57,6 +59,7 @@ function TextInput(props: TextInputProps) {
           onChange={onChange}
           onBlur={onBlur}
           style={inputStyle}
+          autoComplete={autoComplete}
         />
         {Boolean(error) ? (
           <div className={styles.errorText}>{error}</div>
