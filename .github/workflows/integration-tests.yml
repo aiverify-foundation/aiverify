@@ -119,11 +119,7 @@ jobs:
           cd ../ai-verify-portal
           npm install
           npm link ../ai-verify-shared-library
-          echo "NEXT_PUBLIC_SERVER_URL=http://127.0.0.1:3000
-          NEXT_PUBLIC_WEBSOCKET_URL=ws://127.0.0.1:4000/graphql
-          SERVER_URL=http://127.0.0.1:3000
-          WEBSOCKET_URL=ws://127.0.0.1:4000/graphql
-          APIGW_URL=http://127.0.0.1:4000
+          echo "APIGW_URL=http://127.0.0.1:4000
           MONGODB_URI=mongodb://aiverify:aiverify@127.0.0.1:27017/aiverify
           REDIS_URI=redis://127.0.0.1:6379
           TEST_ENGINE_URL=http://127.0.0.1:8080" > .env.local
