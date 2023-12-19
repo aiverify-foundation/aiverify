@@ -48,8 +48,8 @@ services:
   portal:
     image: aiverify:0.10
     ports:
-      - "3000:3000"
-      - "4000:4000"
+      - "127.0.0.1:3000:3000"
+      - "127.0.0.1:4000:4000"
     depends_on:
       - redis
       - db
