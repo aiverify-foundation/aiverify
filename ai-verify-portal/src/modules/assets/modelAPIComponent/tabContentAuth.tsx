@@ -62,6 +62,7 @@ function TabContentAuth({ disabled = false }: { disabled?: boolean }) {
             offsetTop={25}>
             <div>
               <TextInput
+                autoComplete='off'
                 disabled={disabled}
                 label="Token"
                 name={`${authTypeConfigFieldName}.token`}
@@ -107,6 +108,7 @@ function TabContentAuth({ disabled = false }: { disabled?: boolean }) {
             offsetTop={25}>
             <div>
               <TextInput
+                autoComplete='off'
                 disabled={disabled}
                 label="Username"
                 name={`${authTypeConfigFieldName}.username`}
@@ -133,6 +135,7 @@ function TabContentAuth({ disabled = false }: { disabled?: boolean }) {
             </div>
           </Tooltip>
           <TextInput
+            autoComplete='off'
             disabled={disabled}
             label="Password"
             name={`${authTypeConfigFieldName}.password`}
