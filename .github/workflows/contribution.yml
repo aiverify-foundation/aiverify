@@ -7,7 +7,7 @@ name: Contributor Flow
 on: pull_request_target
 
 jobs:
-  authorize:
+  Authorize:
     environment:
       ${{ github.event_name == 'pull_request_target' &&
       github.event.pull_request.head.repo.full_name != github.repository &&
@@ -16,8 +16,8 @@ jobs:
     steps:
       - run: true
 
-  test:
-    needs: authorize
+  Integration-Test:
+    needs: Authorize
     runs-on: ubuntu-latest
     steps:
     
