@@ -46,10 +46,6 @@ app.use(
   uploadRouter
 );
 
-app.post("/testing", (req, res) => {
-  console.log('Request body received at /testing is: ', req.body)
-})
-
 /* setup the routes */
 import reportRouter from './routes/report.mjs';
 app.use("/report", reportRouter);
