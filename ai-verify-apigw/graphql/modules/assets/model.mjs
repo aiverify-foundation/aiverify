@@ -18,7 +18,12 @@ const resolvers = {
               resolve([doc]);
             })
             .catch((err) => {
-              reject(err);
+              console.log(err);
+              let errorrMsg;
+              if (err.message) {
+                  errorrMsg = err.message
+              }
+              reject('An error occured while fetching the model file - ' + errorrMsg);
             });
         } else {
           ModelFileModel.find()
@@ -26,7 +31,12 @@ const resolvers = {
               resolve(docs);
             })
             .catch((err) => {
-              reject(err);
+              console.log(err);
+              let errorrMsg;
+              if (err.message) {
+                  errorrMsg = err.message
+              }
+              reject('An error occured while fetching model files - ' + errorrMsg);
             });
         }
       });
@@ -38,11 +48,15 @@ const resolvers = {
           if (doc.type !== "API") return reject("Model is not of type API");
           try {
             const spec = await doc.exportModelAPI();
-            // console.log("spec", spec);
             if (!spec) return reject("Unable to generate spec");
             resolve(spec);
           } catch (err) {
-            reject(err);
+            console.log(err);
+            let errorrMsg;
+            if (err.message) {
+                errorrMsg = err.message
+            }
+            reject('An error occured while fetching the model API Spec - ' + errorrMsg);
           }
         });
       });
@@ -50,7 +64,6 @@ const resolvers = {
   },
   Mutation: {
     createModelAPI: (parent, { model }) => {
-      // console.log("createModelAPI", model);
       if (
         !model.name ||
         !model.modelType ||
@@ -59,7 +72,6 @@ const resolvers = {
       ) {
         return Promise.reject("Missing variable");
       }
-      // project.status = "NoReport";
       return new Promise((resolve, reject) => {
         const doc = {
           ...model,
@@ -68,17 +80,19 @@ const resolvers = {
         };
         ModelFileModel.create(doc)
           .then((doc) => {
-            // console.debug("doc", doc);
-            // doc.save().then(())
             resolve(doc);
           })
           .catch((err) => {
-            reject(err);
+            console.log(err);
+            let errorrMsg;
+            if (err.message) {
+                errorrMsg = err.message
+            }
+            reject('An error occured while creating the model API - ' + errorrMsg);
           });
       });
     },
     updateModelAPI: (parent, { modelFileID, model }) => {
-      console.log("updateModelAPI", modelFileID, model);
       return new Promise(async (resolve, reject) => {
         try {
           const newdoc = await ModelFileModel.findOneAndUpdate(
@@ -88,12 +102,16 @@ const resolvers = {
           );
           resolve(newdoc);
         } catch (err) {
-          reject(err);
+          console.log(err);
+          let errorrMsg;
+          if (err.message) {
+              errorrMsg = err.message
+          }
+          reject('An error occured while updating the model API - ' + errorrMsg);
         }
       });
     },
     deleteModelFile: (parent, { id }) => {
-      console.debug("deleteModelFile", id);
       return new Promise((resolve, reject) => {
         ModelFileModel.findById(id)
           .then((result) => {
@@ -152,7 +170,12 @@ const resolvers = {
             });
           })
           .catch((err) => {
-            reject(err);
+            console.log(err);
+            let errorrMsg;
+            if (err.message) {
+                errorrMsg = err.message
+            }
+            reject('An error occured while deleting the model file - ' + errorrMsg);
           });
       });
     },

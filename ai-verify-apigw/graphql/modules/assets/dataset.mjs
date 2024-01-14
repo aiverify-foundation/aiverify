@@ -17,7 +17,12 @@ const resolvers = {
                 DatasetModel.find().then(docs => {
                     resolve(docs)
                 }).catch(err => {
-                    reject(err);
+                    console.log(err);
+                    let errorrMsg;
+                    if (err.message) {
+                        errorrMsg = err.message
+                    }
+                    reject('An error occured while fetching datasets - ' + errorMsg);
                 })
             })
         },
@@ -84,7 +89,12 @@ const resolvers = {
                         resolve(id);
                     })
                 }).catch(err => {
-                    reject(err);
+                    console.log(err);
+                    let errorrMsg;
+                    if (err.message) {
+                        errorrMsg = err.message
+                    }
+                    reject('An error occured while deleting the dataset - ' + errorrMsg);
                 })
             });
         },
