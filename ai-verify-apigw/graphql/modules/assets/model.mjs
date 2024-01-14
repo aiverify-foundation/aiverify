@@ -3,6 +3,7 @@ import { GraphQLError } from "graphql";
 import fs from "node:fs";
 import fsPromises from "node:fs/promises";
 import pubsub from "#lib/apolloPubSub.mjs";
+import { graphqlErrorHandler } from "../errorHandler.mjs";
 
 const resolvers = {
   Query: {
@@ -17,27 +18,13 @@ const resolvers = {
             .then((doc) => {
               resolve([doc]);
             })
-            .catch((err) => {
-              console.log(err);
-              let errorrMsg;
-              if (err.message) {
-                  errorrMsg = err.message
-              }
-              reject('An error occured while fetching the model file - ' + errorrMsg);
-            });
+            .catch((err) => graphqlErrorHandler(err, 'An error occured while fetching the model file', reject))
         } else {
           ModelFileModel.find()
             .then((docs) => {
               resolve(docs);
             })
-            .catch((err) => {
-              console.log(err);
-              let errorrMsg;
-              if (err.message) {
-                  errorrMsg = err.message
-              }
-              reject('An error occured while fetching model files - ' + errorrMsg);
-            });
+            .catch((err) => graphqlErrorHandler(err, 'An error occured while fetching the model files', reject))
         }
       });
     },
@@ -51,12 +38,7 @@ const resolvers = {
             if (!spec) return reject("Unable to generate spec");
             resolve(spec);
           } catch (err) {
-            console.log(err);
-            let errorrMsg;
-            if (err.message) {
-                errorrMsg = err.message
-            }
-            reject('An error occured while fetching the model API Spec - ' + errorrMsg);
+            graphqlErrorHandler(err, 'An error occured while fetching the model API Spec', reject)
           }
         });
       });
@@ -82,14 +64,7 @@ const resolvers = {
           .then((doc) => {
             resolve(doc);
           })
-          .catch((err) => {
-            console.log(err);
-            let errorrMsg;
-            if (err.message) {
-                errorrMsg = err.message
-            }
-            reject('An error occured while creating the model API - ' + errorrMsg);
-          });
+          .catch((err) => graphqlErrorHandler(err, 'An error occured while creating the model API', reject))
       });
     },
     updateModelAPI: (parent, { modelFileID, model }) => {
@@ -102,12 +77,7 @@ const resolvers = {
           );
           resolve(newdoc);
         } catch (err) {
-          console.log(err);
-          let errorrMsg;
-          if (err.message) {
-              errorrMsg = err.message
-          }
-          reject('An error occured while updating the model API - ' + errorrMsg);
+          graphqlErrorHandler(err, 'An error occured while updating the model API', reject)
         }
       });
     },
@@ -169,14 +139,7 @@ const resolvers = {
               resolve(id);
             });
           })
-          .catch((err) => {
-            console.log(err);
-            let errorrMsg;
-            if (err.message) {
-                errorrMsg = err.message
-            }
-            reject('An error occured while deleting the model file - ' + errorrMsg);
-          });
+          .catch((err) => graphqlErrorHandler(err, 'An error occured while deleting the model file', reject));
       });
     },
     updateModel: (parent, { modelFileID, modelFile }) => {
@@ -220,7 +183,8 @@ const resolvers = {
             reject(`Invalid id ${modelFileID}`);
           }
         });
-      });
+      })
+      .catch((err) => graphqlErrorHandler(err, 'An error occured while updating the model file', reject));
     },
   },
   Subscription: {

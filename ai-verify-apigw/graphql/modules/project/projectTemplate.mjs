@@ -2,6 +2,7 @@
 
 import mongoose from "mongoose";
 import { ProjectTemplateModel } from "#models";
+import { graphqlErrorHandler } from "../errorHandler.mjs";
 
 const resolvers = {
   Query: {
@@ -15,17 +16,7 @@ const resolvers = {
           .then((docs) => {
             resolve(docs);
           })
-          .catch((err) => {
-            console.log(err);
-            let errorrMsg;
-            if (err.message) {
-              errorrMsg = err.message;
-            }
-            reject(
-              "An error occured while fetching the projectTemplate - " +
-                errorMsg
-            );
-          });
+          .catch((err) => graphqlErrorHandler(err, 'An error occured while fetching projectTemplates', reject));
       });
     }, // projectTemplates
     /**
@@ -40,17 +31,7 @@ const resolvers = {
             if (!doc) return reject("Invalid ID");
             resolve(doc);
           })
-          .catch((err) => {
-            console.log(err);
-            let errorrMsg;
-            if (err.message) {
-              errorrMsg = err.message;
-            }
-            reject(
-              "An error occured while fetching the projectTemplate - " +
-                errorMsg
-            );
-          });
+          .catch((err) => graphqlErrorHandler(err, 'An error occured while fetching the projectTemplate', reject));
       });
     }, // projectTemplate
   }, // Query
@@ -71,16 +52,7 @@ const resolvers = {
           .then((doc) => {
             resolve(doc);
           })
-          .catch((err) => {
-            console.log(err);
-            let errorrMsg;
-            if (err.message) {
-              errorrMsg = err.message;
-            }
-            reject(
-              "An error occured while creating projectTemplate - " + errorMsg
-            );
-          });
+          .catch((err) => graphqlErrorHandler(err, 'An error occured while creating projectTemplate', reject));
       });
     }, // createProjectTemplate
     /**
@@ -96,14 +68,7 @@ const resolvers = {
             if (!result) return reject("Invalid ID");
             resolve(id);
           })
-          .catch((err) => {
-            console.log(err);
-          let errorrMsg;
-          if (err.message) {
-            errorrMsg = err.message
-          }
-          reject('An error occured while deleting the projectTemplate - ' + errorMsg);
-          });
+          .catch((err) => graphqlErrorHandler(err, 'An error occured while deleting projectTemplate', reject))
       });
     }, // deleteProjectTemplate
     /**
@@ -122,14 +87,7 @@ const resolvers = {
             doc = await doc.save();
             resolve(doc);
           })
-          .catch((err) => {
-            console.log(err);
-          let errorrMsg;
-          if (err.message) {
-            errorrMsg = err.message
-          }
-          reject('An error occured while updating the projectTemplate - ' + errorMsg);
-          });
+          .catch((err) => graphqlErrorHandler(err, 'An error occured while updating the projectTemplate', reject))
       });
     }, // updateProjectTemplate
     /**
@@ -146,20 +104,12 @@ const resolvers = {
             newdoc._id = mongoose.Types.ObjectId();
             newdoc.fromPlugin = false;
             newdoc.projectInfo.name = `Copy of ${doc.projectInfo.name}`;
-            // newdoc.inputBlockData = {};
             newdoc.isNew = true;
             newdoc.save().then((doc) => {
               resolve(doc);
             });
           })
-          .catch((err) => {
-            console.log(err);
-          let errorrMsg;
-          if (err.message) {
-            errorrMsg = err.message
-          }
-          reject('An error occured while copying the projectTemplate - ' + errorMsg);
-          });
+          .catch((err) => graphqlErrorHandler(err, 'An error occured while copying the projectTemplate', reject));
       });
     }, // cloneProjectTemplate
   }, // Mutation

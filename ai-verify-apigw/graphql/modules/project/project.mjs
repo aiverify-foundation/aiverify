@@ -12,6 +12,7 @@ import { queueTests, cancelTestRun } from "#lib/testEngineQueue.mjs";
 import pubsub from "#lib/apolloPubSub.mjs";
 import { generateReport } from "#lib/report.mjs";
 import { GraphQLError } from "graphql";
+import { graphqlErrorHandler } from "../errorHandler.mjs";
 
 const resolvers = {
   Query: {
@@ -31,14 +32,7 @@ const resolvers = {
             });
             resolve(results);
           })
-          .catch((err) => {
-            console.log(err);
-            let errorrMsg;
-            if (err.message) {
-                errorrMsg = err.message
-            }
-            reject('An error occured while fetching projects - ' + errorrMsg);
-          });
+          .catch((err) => graphqlErrorHandler(err, 'An error occured while fetching projects', reject));
       });
     }, // projects
     projectsByTextSearch: async (parent, { text }) => {
@@ -53,7 +47,7 @@ const resolvers = {
         });
         return result;
       } catch (err) {
-        return err;
+        graphqlErrorHandler(err, 'An error occured while searching projects', reject);
       }
     },
     /**
@@ -73,14 +67,7 @@ const resolvers = {
             }
             resolve(doc);
           })
-          .catch((err) => {
-            console.log(err);
-            let errorrMsg;
-            if (err.message) {
-                errorrMsg = err.message
-            }
-            reject('An error occured while fetching the project - ' + errorrMsg);
-          });
+          .catch((err) => graphqlErrorHandler(err, 'An error occured while fetching the project', reject));
       });
     }, // project
     /**
@@ -131,14 +118,7 @@ const resolvers = {
           .then((doc) => {
             resolve(doc);
           })
-          .catch((err) => {
-            console.log(err);
-            let errorrMsg;
-            if (err.message) {
-                errorrMsg = err.message
-            }
-            reject('An error occured while creating the project - ' + errorrMsg);
-          });
+          .catch((err) => graphqlErrorHandler(err, 'An error occured while creating the project', reject));
       });
     }, // createProject
     /**
@@ -161,14 +141,7 @@ const resolvers = {
               .then((doc) => {
                 resolve(doc);
               })
-              .catch((err) => {
-                console.log(err);
-                let errorrMsg;
-                if (err.message) {
-                    errorrMsg = err.message
-                }
-                reject('An error occured while creating the project from template - ' + errorrMsg);
-              });
+              .catch((err) => graphqlErrorHandler(err, 'An error occured while creating the project from template', reject));
           })
           .catch((e) => {
             reject("Invalid project template id");
@@ -188,14 +161,7 @@ const resolvers = {
             if (!result) return reject("Invalid ID");
             resolve(id);
           })
-          .catch((err) => {
-            console.log(err);
-            let errorrMsg;
-            if (err.message) {
-                errorrMsg = err.message
-            }
-            reject('An error occured while deleting the project - ' + errorrMsg);
-          });
+          .catch((err) => graphqlErrorHandler(err, 'An error occured while deleting the project', reject))
       });
     }, // deleteProject
     /**
@@ -238,12 +204,7 @@ const resolvers = {
           await doc.populate("modelAndDatasets.groundTruthDataset");
           resolve(doc);
         } catch (err) {
-          console.log(err);
-          let errorrMsg;
-          if (err.message) {
-              errorrMsg = err.message
-          }
-          reject('An error occured while updating the project - ' + errorrMsg);
+          graphqlErrorHandler(err, 'An error occured while updating the project', reject);
         }
       });
     }, // updateProject
@@ -267,14 +228,7 @@ const resolvers = {
               resolve(doc);
             });
           })
-          .catch((err) => {
-            console.log(err);
-            let errorrMsg;
-            if (err.message) {
-                errorrMsg = err.message
-            }
-            reject('An error occured while cloning the project - ' + errorrMsg);
-          });
+          .catch((err) => graphqlErrorHandler(err, 'An error occured while cloning the project', reject));
       });
     }, // cloneProject
     /**
@@ -303,14 +257,7 @@ const resolvers = {
               .then((doc) => {
                 resolve(doc);
               })
-              .catch((err) => {
-                console.log(err);
-                let errorrMsg;
-                if (err.message) {
-                    errorrMsg = err.message
-                }
-                reject('An error occured while cloning the project - ' + errorrMsg);
-              });
+              .catch((err) => graphqlErrorHandler(err, 'An error occured while saving project as template', reject))
           })
           .catch((err) => {
             reject(err);
