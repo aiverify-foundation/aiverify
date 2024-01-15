@@ -1,4 +1,5 @@
 #!/bin/bash
+source ./db-creds.sh
 
 # Script to setup the aiverify developer environment
 
@@ -105,16 +106,16 @@ else
   mongosh << EOF
   admin = db.getSiblingDB('admin')
   admin.createUser({
-    user: 'mongodb',
-    pwd: 'mongodb',
+    user: '$DB_ADMIN_USER',
+    pwd: '$DB_ADMIN_PASSWORD',
     roles: [{ role: 'root', db: 'admin' }],
   });
 
   aiverify = db.getSiblingDB('aiverify')
 
   aiverify.createUser({
-    user: 'aiverify',
-    pwd: 'aiverify',
+    user: '$DB_USERNAME',
+    pwd: '$DB_PASSWORD',
     roles: [{ role: 'readWrite', db: 'aiverify' }],
   });
 
@@ -159,6 +160,8 @@ cd ..
 # Install dependencies - portal
 cd ai-verify-portal
 cp .env.development .env.local
+echo "DB_USERNAME=$DB_USERNAME" >> .env.local
+echo "DB_PASSWORD=$DB_PASSWORD" >> .env.local
 npm install
 sudo npm link ../ai-verify-shared-library
 npm run build
