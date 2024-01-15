@@ -14,15 +14,7 @@ on:
         type: string
 
 jobs:
-  Authorize:
-    environment:
-      ${{ github.event_name == 'pull_request_target' }}
-    runs-on: ubuntu-latest
-    steps:
-      - run: true
-
   Integration-Test:
-    needs: Authorize
     runs-on: ubuntu-latest
     steps:
     
