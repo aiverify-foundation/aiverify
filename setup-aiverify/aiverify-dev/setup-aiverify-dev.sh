@@ -149,6 +149,8 @@ cd ..
 # Install dependencies - apigw
 cd ai-verify-apigw
 cp .env.development .env
+echo "DB_USERNAME=$DB_USERNAME" >> .env
+echo "DB_PASSWORD=$DB_PASSWORD" >> .env
 if [[ "$machine_arch" == "aarch64" ]]; then
   # Skip chrome install, which is only available for amd64
   PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=1 npm install
@@ -160,8 +162,6 @@ cd ..
 # Install dependencies - portal
 cd ai-verify-portal
 cp .env.development .env.local
-echo "DB_USERNAME=$DB_USERNAME" >> .env.local
-echo "DB_PASSWORD=$DB_PASSWORD" >> .env.local
 npm install
 sudo npm link ../ai-verify-shared-library
 npm run build
