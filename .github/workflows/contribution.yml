@@ -4,7 +4,14 @@
 name: Contributor Flow
 
 # Run this on Forked PR
-on: pull_request_target
+on: 
+  workflow_dispatch:
+    inputs:
+      branch_to_test:
+        description: 'Branch or tag to run test'
+        required: true
+        default: 'main'
+        type: string
 
 jobs:
   Authorize:
