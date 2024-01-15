@@ -117,7 +117,7 @@ jobs:
           npm install
           touch .env
           echo 'MONGODB_URI=mongodb://aiverify:aiverify@127.0.0.1:27017/aiverify' >> .env
-          echo 'ALLOWED_ORIGINS=http://127.0.0.1:3000,http://127.0.0.1:3001' >> .env
+          echo 'ALLOWED_ORIGINS=http://127.0.0.1:3000,http://127.0.0.1:3001,http://127.0.0.1:4000' >> .env
           
           cd ../ai-verify-portal
           npm install
