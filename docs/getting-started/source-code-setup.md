@@ -115,6 +115,10 @@ python3 -m test_engine_app
 ```bash
 # Open a new terminal window #
 cd aiverify/ai-verify-apigw
+cp .env.development .env
+# Change the values of DB_USERNAME and DB_PASSWORD to the username and password you have set #
+echo "DB_USERNAME=aiverify" >> .env
+echo "DB_PASSWORD=aiverify" >> .env
 node app.mjs
 ```
 
