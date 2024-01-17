@@ -11,7 +11,7 @@ import uploadRouter from './routes/upload.mjs';
 import { createApolloServer } from './graphql/server.mjs';
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS !== undefined ?
-  process.env.ALLOWED_ORIGINS.split(',') : ['http://localhost:3000', 'http://localhost:3001'];
+  process.env.ALLOWED_ORIGINS.split(',') : ['http://localhost:3000','http://localhost:4000'];
 const app = express();
 
 // CORS options
