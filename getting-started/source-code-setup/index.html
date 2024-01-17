@@ -1613,13 +1613,18 @@ Execute the following code to check that the services are running.</p>
 <h3 id="ai-verify-apigw">ai-verify-apigw</h3>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># Open a new terminal window #</span>
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nb">cd</span><span class="w"> </span>aiverify/ai-verify-apigw
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>node<span class="w"> </span>app.mjs
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>cp<span class="w"> </span>.env.development<span class="w"> </span>.env
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>node<span class="w"> </span>app.mjs
 </span></code></pre></div>
 <h3 id="ai-verify-portal">ai-verify-portal</h3>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Open a new terminal window #</span>
 </span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nb">cd</span><span class="w"> </span>aiverify/ai-verify-portal
 </span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>npm<span class="w"> </span>run<span class="w"> </span>start
 </span></code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>By default, ai-verify-portal listens on port 3000. If you have changed the port or if you set up a different hostname other than 'localhost' for the app, update the value of <code>ALLOWED_ORIGINS</code> in <code>aiverify/ai-verify-apigw/.env</code> and restart ai-verify-apigw.</p>
+</div>
 <h2 id="running-ai-verify">Running AI Verify</h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
