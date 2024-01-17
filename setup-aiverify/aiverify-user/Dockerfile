@@ -107,11 +107,18 @@ RUN npm run build
 
 # Create env file for apigw
 WORKDIR /app/aiverify/ai-verify-apigw
-RUN echo 'MONGODB_URI=mongodb://aiverify:aiverify@db:27017/aiverify\n\
-DB_URI=mongodb://aiverify:aiverify@db:27017/aiverify\n\
-REDIS_HOST=redis\n\
+
+# Ensure values of mongo username and password below matches what is going to be set in mongo-init.sh
+ARG MONGO_AIVERIFY_USERNAME=aiverify
+ARG MONGO_AIVERIFY_PASSWORD=aiverify
+RUN echo "DB_USERNAME=$MONGO_AIVERIFY_USERNAME DB_PASSWORD=$MONGO_AIVERIFY_PASSWORD"
+RUN echo "REDIS_HOST=redis\n\
 REDIS_PORT=6379\n\
-WEB_REPORT_URL=http://localhost:3000/reportStatus/printview' | tee .env
+DB_HOST=db\n\
+DB_PORT=27017\n\
+DB_USERNAME=${MONGO_AIVERIFY_USERNAME}\n\
+DB_PASSWORD=${MONGO_AIVERIFY_PASSWORD}\n\
+WEB_REPORT_URL=http://localhost:3000/reportStatus/printview" | tee .env
 
 # Install dependencies for apigw
 # Skip Chrome/chromium install during puppeteer install, since chromium
