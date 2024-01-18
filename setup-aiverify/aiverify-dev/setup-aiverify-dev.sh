@@ -1,5 +1,4 @@
 #!/bin/bash
-source ./db-creds.sh
 
 # Script to setup the aiverify developer environment
 
@@ -87,7 +86,10 @@ if mongod --version &>/dev/null; then
       echo
       read -p "Mongodb detected, have you created the db and user required by aiverify? [y/n] " yn
       case $yn in
-          [Yy]* ) break;;
+          [Yy]* ) read -p "Enter DB AIVerify Username: " DB_USERNAME
+                  read -p "Enter DB AIVerify Password: " DB_PASSWORD
+                  echo
+                  break;;
           [Nn]* ) echo "aiverify developer setup aborted, please create the required db and user as instructed in the developer guide";
                   exit;;
           * ) echo "Please answer yes or no.";;
@@ -100,22 +102,29 @@ else
   sudo sh -c 'echo "deb [ arch=amd64,arm64 signed-by=/etc/apt/keyrings/mongodb.gpg] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" >> /etc/apt/sources.list.d/mongo.list'
   sudo apt update
   sudo apt install -y mongodb-org
+  source ./db-creds.sh
 
   sudo systemctl start mongod
   sleep 2
+  read -p "Enter new DB Admin User: " DB_ADMIN_USER
+  read -p "Enter new DB Admin Password: " DB_ADMIN_PASSWORD
+  echo
+  read -p "Enter new DB AIVerify Username: " DB_USERNAME
+  read -p "Enter new DB AIVerify Password: " DB_PASSWORD
+  echo
   mongosh << EOF
   admin = db.getSiblingDB('admin')
   admin.createUser({
-    user: '$DB_ADMIN_USER',
-    pwd: '$DB_ADMIN_PASSWORD',
+    user: DB_ADMIN_USER,
+    pwd: DB_ADMIN_PASSWORD,
     roles: [{ role: 'root', db: 'admin' }],
   });
 
   aiverify = db.getSiblingDB('aiverify')
 
   aiverify.createUser({
-    user: '$DB_USERNAME',
-    pwd: '$DB_PASSWORD',
+    user: DB_USERNAME,
+    pwd: DB_PASSWORD,
     roles: [{ role: 'readWrite', db: 'aiverify' }],
   });
 
@@ -149,8 +158,8 @@ cd ..
 # Install dependencies - apigw
 cd ai-verify-apigw
 cp .env.development .env
-echo "DB_USERNAME=$DB_USERNAME" >> .env
-echo "DB_PASSWORD=$DB_PASSWORD" >> .env
+echo "DB_USERNAME=${DB_USERNAME}" >> .env
+echo "DB_PASSWORD=${DB_PASSWORD}" >> .env
 if [[ "$machine_arch" == "aarch64" ]]; then
   # Skip chrome install, which is only available for amd64
   PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=1 npm install
