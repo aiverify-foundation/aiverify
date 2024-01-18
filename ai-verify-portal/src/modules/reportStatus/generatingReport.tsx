@@ -287,7 +287,7 @@ export default function GeneratingReportComponent({ report }: Props) {
   }
 
   useEffect(() => {
-    if (!tests || !updatedTest || updatedTest.testTaskUpdated) return;
+    if (!tests || !updatedTest || !updatedTest.testTaskUpdated) return;
 
     try {
       const data = (updatedTest as testTaskEventData).testTaskUpdated;
