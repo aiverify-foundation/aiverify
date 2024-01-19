@@ -37,7 +37,7 @@ export async function generateReport(reportId) {
   // const pdf_name =  `report_${report.project.toString()}.pdf`;
   const pdf_name =  getReportFilename(report.project.toString());
   const pdf_path = path.join(REPORT_DIRNAME, pdf_name);
-  await page.goto(url, { waitUntil: 'networkidle0' });
+  await page.goto(url, { waitUntil: 'networkidle0', timeout: 60000 });
   const pdf = await page.pdf({
     path: pdf_path,
     printBackground: true,

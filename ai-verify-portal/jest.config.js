@@ -36,6 +36,10 @@ const customJestConfig = {
     '<rootDir>/test-report.html',
     '<rootDir>/test-results.json',
   ],
+  transformIgnorePatterns: [
+    "/node_modules/(?!uuid)",
+    "/node_modules/(?!(@rjsf/core|nanoid)).+\\.js$"
+  ],
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
