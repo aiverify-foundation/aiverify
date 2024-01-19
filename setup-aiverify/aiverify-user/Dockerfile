@@ -106,12 +106,19 @@ RUN npm link ../ai-verify-shared-library
 RUN npm run build
 
 # Create env file for apigw
+# Change value of ALLOWED_ORIGINS (via --build-arg) to hostname of
+# the machine running aiverify if you want to access from a remote browser (different host name than 'localhost'), 
+# or if aiverify is setup to listen on different port other than 3000
 WORKDIR /app/aiverify/ai-verify-apigw
-RUN echo 'MONGODB_URI=mongodb://aiverify:aiverify@db:27017/aiverify\n\
+
+ARG ALLOWED_ORIGINS=http://localhost:3000,http://localhost:4000
+RUN echo "ALLOWED_ORIGINS=${ALLOWED_ORIGINS}"
+RUN echo "MONGODB_URI=mongodb://aiverify:aiverify@db:27017/aiverify\n\
 DB_URI=mongodb://aiverify:aiverify@db:27017/aiverify\n\
 REDIS_HOST=redis\n\
 REDIS_PORT=6379\n\
-WEB_REPORT_URL=http://localhost:3000/reportStatus/printview' | tee .env
+ALLOWED_ORIGINS=${ALLOWED_ORIGINS}\n\
+WEB_REPORT_URL=http://localhost:3000/reportStatus/printview" | tee .env
 
 # Install dependencies for apigw
 # Skip Chrome/chromium install during puppeteer install, since chromium
