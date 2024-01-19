@@ -8,20 +8,20 @@ ENV TZ=Asia/Singapore
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Install node v18.x
-#RUN apt-get update && apt-get install -y curl
-#RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
-#RUN apt-get update && apt-get install -y nodejs
+RUN apt-get update && apt-get install -y curl
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
+RUN apt-get update && apt-get install -y nodejs
 
-# Install node v18.x
-RUN apt-get update
-RUN apt-get install -y ca-certificates curl gnupg wget unzip
-RUN mkdir -p /etc/apt/keyrings
-RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
-ARG NODE_MAJOR=18
-RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
-RUN apt-get update
-RUN apt-get install nodejs -y
-RUN node --version
+## Install node v18.x
+#RUN apt-get update
+#RUN apt-get install -y ca-certificates curl gnupg wget unzip
+#RUN mkdir -p /etc/apt/keyrings
+#RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+#ARG NODE_MAJOR=18
+#RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
+#RUN apt-get update
+#RUN apt-get install nodejs -y
+#RUN node --version
 
 # Install python 3.11, virtualenv
 RUN apt-get update
@@ -110,7 +110,6 @@ ARG MONGO_USER
 ARG MONGO_PASSWORD
 
 RUN echo "APIGW_URL=http://localhost:4000\n\
-MONGODB_URI=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@db:27017/aiverify\n\
 REDIS_URI=redis://redis:6379\n\
 TEST_ENGINE_URL=http://test-engine:8080" | tee .env.local
 RUN rm .env.development
@@ -122,8 +121,10 @@ RUN npm run build
 
 # Create env file for apigw
 WORKDIR /app/aiverify/ai-verify-apigw
-RUN echo "MONGODB_URI=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@db:27017/aiverify\n\
-DB_URI=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@db:27017/aiverify\n\
+RUN echo "DB_HOST=localhost\n\
+DB_PORT=27017\n\
+DB_USERNAME=${MONGO_USER}\n\
+DB_PASSWORD=${MONGO_PASSWORD}\n\
 REDIS_HOST=redis\n\
 REDIS_PORT=6379\n\
 WEB_REPORT_URL=http://localhost:3000/reportStatus/printview" | tee .env
