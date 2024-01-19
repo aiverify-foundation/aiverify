@@ -5,6 +5,7 @@ import { DatasetModel, ProjectModel } from '#models';
 import pubsub from '#lib/apolloPubSub.mjs';
 import fs from 'node:fs';
 import fsPromises from 'node:fs/promises';
+import { graphqlErrorHandler } from '../errorHandler.mjs';
 
 const resolvers = {
     Query: {
@@ -16,10 +17,8 @@ const resolvers = {
             return new Promise((resolve, reject) => {
                 DatasetModel.find().then(docs => {
                     resolve(docs)
-                }).catch(err => {
-                    reject(err);
-                })
-            })
+                }).catch(err => graphqlErrorHandler(err, 'An error occured while fetching datasets', reject));
+            });
         },
     },
     Mutation: {
@@ -65,12 +64,12 @@ const resolvers = {
                             try {
                                 console.log("Removing dir %s", filePath)
                                 fs.rmSync(filePath, {
-                                  recursive: true,
-                                  force: true
-                                })
-                              } catch (err) {
+                                    recursive: true,
+                                    force: true
+                                });
+                            } catch (err) {
                                 console.log("rm dir error", err);
-                              }
+                            }
                         } else {
                             console.log("Removing file %s", filePath)
                             fsPromises.unlink(filePath);
@@ -83,9 +82,7 @@ const resolvers = {
                             return reject("Invalid Dataset ID")
                         resolve(id);
                     })
-                }).catch(err => {
-                    reject(err);
-                })
+                }).catch(err => graphqlErrorHandler(err, 'An error occured while deleting the dataset', reject));
             });
         },
         updateDataset: (parent, {datasetID, dataset}) => {
