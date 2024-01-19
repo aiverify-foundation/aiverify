@@ -168,8 +168,8 @@ jobs:
           REDIS_PORT=6379
           DB_HOST=127.0.0.1
           DB_PORT=27017
-          DB_USERNAME=mongodb
-          DB_PASSWORD=mongodb
+          DB_USERNAME=aiverify
+          DB_PASSWORD=aiverify
           ALLOWED_ORIGINS=http://127.0.0.1:3000,http://127.0.0.1:3001,http://127.0.0.1:4000" > .env
 
           node app.mjs &> apigw.log &
