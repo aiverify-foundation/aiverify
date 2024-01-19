@@ -10,9 +10,21 @@ import uploadRouter from './routes/upload.mjs';
 
 import { createApolloServer } from './graphql/server.mjs';
 
+const allowedOrigins = process.env.ALLOWED_ORIGINS !== undefined ?
+  process.env.ALLOWED_ORIGINS.split(',') : ['http://localhost:3000','http://localhost:4000'];
 const app = express();
 
-app.use(cors());
+// CORS options
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('The origin of the request is not permitted by the server\'s CORS policy.'));
+    }
+  }
+};
+app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: true }));
 
 const httpServer = http.createServer(app);
@@ -25,20 +37,14 @@ await server.start();
 
 app.use(
   '/graphql',
-  // cors(),
   bodyParser.json(),
   expressMiddleware(server),
 );
 app.use(
   "/upload", 
-  cors(),
   bodyParser.json(), 
   uploadRouter
 );
-
-// app.post("/testing", (req, res) => {
-//   console.log('Request body received at /testing is: ', req.body)
-// })
 
 /* setup the routes */
 import reportRouter from './routes/report.mjs';
