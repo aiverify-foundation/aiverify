@@ -165,7 +165,11 @@ jobs:
           DB_URI=\"mongodb://aiverify:aiverify@127.0.0.1:27017/aiverify\"
           WEB_REPORT_URL=\"http://127.0.0.1:3000/reportStatus/printview\"
           REDIS_HOST=\"localhost\"
-          REDIS_PORT=6379" > .env
+          REDIS_PORT=6379
+          DB_HOST=localhost
+          DB_PORT=27017
+          DB_USERNAME=test
+          DB_PASSWORD=test" > .env
           node app.mjs &> apigw.log &
           
           cd ../ai-verify-portal
