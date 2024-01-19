@@ -158,6 +158,7 @@ cd ..
 # Install dependencies - apigw
 cd ai-verify-apigw
 cp .env.development .env
+echo "" >> .env
 echo "DB_USERNAME=${DB_USERNAME}" >> .env
 echo "DB_PASSWORD=${DB_PASSWORD}" >> .env
 if [[ "$machine_arch" == "aarch64" ]]; then
