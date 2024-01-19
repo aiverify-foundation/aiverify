@@ -34,8 +34,15 @@ export function createApolloServer(httpServer) {
 
   // Set up Apollo Server
   const server = new ApolloServer({
-    // typeDefs,
-    // resolvers,
+    formatError: (error) => {
+      const nodeEnv = process.env.NODE_ENV !== undefined ? process.env.NODE_ENV.toUpperCase() : undefined;
+      if (nodeEnv === undefined || nodeEnv === 'PRODUCTION' || nodeEnv === 'PROD') {
+        if (error.extensions.stacktrace) {
+          delete error.extensions.stacktrace;
+        }
+      }
+      return error;
+    },
     schema,
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
