@@ -14,7 +14,7 @@ sed -i '' "s/export DB_AIVERIFY_USER.*/export DB_AIVERIFY_USER=\"$db_aiverify_us
 sed -i '' "s/export DB_AIVERIFY_PASSWORD.*/export DB_AIVERIFY_PASSWORD=\"$db_aiverify_password\"/" "$file_path"
 sed -i '' "s/export MONGO_ROOT_PASSWORD.*/export MONGO_ROOT_PASSWORD=\"$mongo_root_password\"/" "$file_path"
 
-docker build --build-arg MONGO_USER=${db_aiverify_user} \
-             --build-arg MONGO_PASSWORD=${db_aiverify_password} \
+docker build --build-arg MONGO_AIVERIFY_USERNAME=${db_aiverify_user} \
+             --build-arg MONGO_AIVERIFY_PASSWORD=${db_aiverify_password} \
              ${@:1} -t aiverify:0.10 .
 
