@@ -65,8 +65,11 @@ jobs:
 
           cat docker-compose.yml
           
-          if ! bash docker-start.sh -d ; then
-            bash docker-start.sh -d
+          mkdir -m 777 -p ~/data/db
+          mkdir -m 777 -p ~/logs/db
+  
+          if ! docker-compose up -d ; then
+            docker-compose up -d
           fi
 
       - name: Checkout smoke tests
