@@ -11,6 +11,8 @@ import { getAlgorithm, getAlgorithmInputSchema } from "#lib/plugin.mjs";
 import { queueTests, cancelTestRun } from "#lib/testEngineQueue.mjs";
 import pubsub from "#lib/apolloPubSub.mjs";
 import { generateReport } from "#lib/report.mjs";
+import { GraphQLError } from "graphql";
+import { graphqlErrorHandler } from "../errorHandler.mjs";
 
 const resolvers = {
   Query: {
@@ -19,22 +21,18 @@ const resolvers = {
      * @returns Promise with Project[]
      */
     projects: (parent) => {
-      // console.debug("projects")
       return new Promise((resolve, reject) => {
         ProjectModel.find({ __t: "ProjectModel" })
           .populate("report")
           .populate("template")
           .then((docs) => {
-            // console.debug("docs", docs);
             const results = docs.map((doc) => {
               if (doc.report) doc.report.projectID = doc._id;
               return doc;
             });
             resolve(results);
           })
-          .catch((err) => {
-            reject(err);
-          });
+          .catch((err) => graphqlErrorHandler(err, 'An error occured while fetching projects', reject));
       });
     }, // projects
     projectsByTextSearch: async (parent, { text }) => {
@@ -49,7 +47,7 @@ const resolvers = {
         });
         return result;
       } catch (err) {
-        return err;
+        graphqlErrorHandler(err, 'An error occured while searching projects', reject);
       }
     },
     /**
@@ -69,9 +67,7 @@ const resolvers = {
             }
             resolve(doc);
           })
-          .catch((err) => {
-            reject(err);
-          });
+          .catch((err) => graphqlErrorHandler(err, 'An error occured while fetching the project', reject));
       });
     }, // project
     /**
@@ -94,11 +90,9 @@ const resolvers = {
           if (report.tests) {
             for (let test of report.tests) {
               const algo = await getAlgorithm(test.algorithmGID);
-              // console.log("algo", algo)
               if (!algo || !algo.gid) {
                 return reject("Invalid algo");
               }
-              // const algo = getByGID(test.algorithmGID);
               test.algorithm = algo;
             }
           }
@@ -119,17 +113,12 @@ const resolvers = {
       if (!project.projectInfo.name) {
         return Promise.reject("Missing variable");
       }
-      // project.status = "NoReport";
       return new Promise((resolve, reject) => {
         ProjectModel.create(project)
           .then((doc) => {
-            // console.debug("doc", doc);
-            // doc.save().then(())
             resolve(doc);
           })
-          .catch((err) => {
-            reject(err);
-          });
+          .catch((err) => graphqlErrorHandler(err, 'An error occured while creating the project', reject));
       });
     }, // createProject
     /**
@@ -139,27 +128,20 @@ const resolvers = {
      * @returns Promise with new Project data, including project ID
      */
     createProjectFromTemplate: (parent, { project, templateId }) => {
-      // console.debug("createProjectFromTemplate", templateId, project);
       return new Promise(async (resolve, reject) => {
         ProjectTemplateModel.findById(templateId)
           .then((template) => {
-            // console.log("template", template)
             const newProject = {
               ...template.toObject(),
               _id: mongoose.Types.ObjectId(),
               template: template._id,
               projectInfo: project.projectInfo,
             };
-            // console.log("newProject", newProject)
             ProjectModel.create(newProject)
               .then((doc) => {
-                // console.debug("doc", doc);
-                // doc.save().then(())
                 resolve(doc);
               })
-              .catch((err) => {
-                reject(err);
-              });
+              .catch((err) => graphqlErrorHandler(err, 'An error occured while creating the project from template', reject));
           })
           .catch((e) => {
             reject("Invalid project template id");
@@ -179,9 +161,7 @@ const resolvers = {
             if (!result) return reject("Invalid ID");
             resolve(id);
           })
-          .catch((err) => {
-            reject(err);
-          });
+          .catch((err) => graphqlErrorHandler(err, 'An error occured while deleting the project', reject))
       });
     }, // deleteProject
     /**
@@ -191,7 +171,6 @@ const resolvers = {
      * @returns Promise of updated Project
      */
     updateProject: (parent, { id, project }) => {
-      // console.log("updateProject", id, project)
       return new Promise(async (resolve, reject) => {
         try {
           const modelAndDatasets = project.modelAndDatasets;
@@ -225,7 +204,7 @@ const resolvers = {
           await doc.populate("modelAndDatasets.groundTruthDataset");
           resolve(doc);
         } catch (err) {
-          reject(err);
+          graphqlErrorHandler(err, 'An error occured while updating the project', reject);
         }
       });
     }, // updateProject
@@ -243,16 +222,13 @@ const resolvers = {
             newdoc._id = mongoose.Types.ObjectId();
             newdoc.fromPlugin = false;
             newdoc.projectInfo.name = `Copy of ${doc.projectInfo.name}`;
-            // newdoc.inputBlockData = {};
             newdoc.report = null;
             newdoc.isNew = true;
             newdoc.save().then((doc) => {
               resolve(doc);
             });
           })
-          .catch((err) => {
-            reject(err);
-          });
+          .catch((err) => graphqlErrorHandler(err, 'An error occured while cloning the project', reject));
       });
     }, // cloneProject
     /**
@@ -265,14 +241,12 @@ const resolvers = {
         ProjectModel.findById(projectId)
           .then((doc) => {
             if (!doc) return reject("Invalid ID");
-            // let newdoc = new ProjectTemplateModel(doc);
             let newdoc = {
               ...doc.toObject(),
               _id: mongoose.Types.ObjectId(),
               projectInfo: templateInfo,
               fromPlugin: false,
             };
-            // newdoc.inputBlockData = {};
             delete newdoc.template;
             delete newdoc.report;
             delete newdoc.inputBlockData;
@@ -281,13 +255,9 @@ const resolvers = {
             newdoc.isNew = true;
             ProjectTemplateModel.create(newdoc)
               .then((doc) => {
-                // console.debug("doc", doc);
-                // doc.save().then(())
                 resolve(doc);
               })
-              .catch((err) => {
-                reject(err);
-              });
+              .catch((err) => graphqlErrorHandler(err, 'An error occured while saving project as template', reject))
           })
           .catch((err) => {
             reject(err);
@@ -305,18 +275,15 @@ const resolvers = {
       return new Promise(async (resolve, reject) => {
         let proj = await ProjectModel.findById(projectID).populate("report");
         if (!proj) return reject("Invalid project ID");
-        // console.log("proj", proj)
         if (
           proj.report &&
           (proj.report.status === "GeneratingReport" ||
             proj.report.status === "RunningTests")
         )
           return reject("Previous report generation still running");
-        // const needToRunTests = algorithms && algorithms.length > 0 && proj.testInformationData;
         let reportObj = {
           project: proj._id,
           projectSnapshot: proj,
-          // status: needToRunTests?"RunningTests":"GeneratingReport",
           timeStart: moment().toDate(),
           timeTaken: 0,
           totalTestTimeTaken: 0,
@@ -324,12 +291,10 @@ const resolvers = {
         };
 
         if (algorithms && algorithms.length > 0 && proj.testInformationData) {
-          // TODO: run tasks
           let tests = [];
           for (const gid of algorithms) {
             const inputSchema = await getAlgorithmInputSchema(gid);
             if (Object.keys(inputSchema) === 0) {
-              // make sure gid exists
               console.log("Invalid GID");
               continue;
             }
@@ -337,13 +302,9 @@ const resolvers = {
               (e) => e.algorithmGID === gid
             );
             if (!test) {
-              // continue;
-              // assume that no arguments input and check validity
-              // const res = validator.validate({}, inputSchema);
               test = {
                 algorithmGID: gid,
                 testArguments: {},
-                // isTestArgumentsValid: true,
               };
               if (!ProjectModel.isTestArgumentsValid(test)) {
                 console.log("Invalid arguments for algo", gid);
@@ -357,14 +318,6 @@ const resolvers = {
                 continue;
               }
             }
-            // if (!test.isTestArgumentsValid)
-            //     continue;
-            // validate input
-            // const res = validator.validate(test.testArguments, inputSchema);
-            // if (!res.valid) {
-            //     console.warn("Invalid arguments", test.testArguments);
-            //     continue;
-            // }
             let obj = {
               algorithmGID: gid,
               testArguments: test.testArguments,

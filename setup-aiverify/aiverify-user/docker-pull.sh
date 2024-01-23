@@ -5,5 +5,5 @@ docker pull ghcr.io/imda-btg/aiverify:0.9
 if [[ ! $(docker images -q aiverify:0.9) = "" ]]; then
   docker rmi aiverify:0.9
 fi
-docker tag ghcr.io/imda-btg/aiverify:0.9 aiverify:0.9
-docker rmi ghcr.io/imda-btg/aiverify:0.9
+docker tag ghcr.io/imda-btg/aiverify:0.10 aiverify:0.10
+docker rmi ghcr.io/imda-btg/aiverify:0.10

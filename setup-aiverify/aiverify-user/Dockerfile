@@ -65,7 +65,7 @@ RUN useradd -u 10000 -g 10000 -ms /bin/bash $USER
 
 ###################  Clone aiverify repo ######################
 
-ARG BRANCH_TAG=v0.9.x
+ARG BRANCH_TAG=v0.10.x
 RUN echo "BRANCH_TAG=$BRANCH_TAG"
 WORKDIR /app
 RUN git clone https://github.com/imda-btg/aiverify.git --branch=$BRANCH_TAG aiverify
@@ -94,11 +94,7 @@ WORKDIR /app/aiverify/ai-verify-portal
 ARG PORTAL_URL=http://localhost
 ARG WS_URL=ws://localhost
 RUN echo "PORTAL_URL=$PORTAL_URL WS_URL=$WS_URL"
-RUN echo "NEXT_PUBLIC_SERVER_URL=${PORTAL_URL}:3000\n\
-NEXT_PUBLIC_WEBSOCKET_URL=${WS_URL}:4000/graphql\n\
-SERVER_URL=http://localhost:3000\n\
-WEBSOCKET_URL=ws://localhost:4000/graphql\n\
-APIGW_URL=http://localhost:4000\n\
+RUN echo "APIGW_URL=http://localhost:4000\n\
 MONGODB_URI=mongodb://aiverify:aiverify@db:27017/aiverify\n\
 REDIS_URI=redis://redis:6379\n\
 TEST_ENGINE_URL=http://test-engine:8080" | tee .env.local
@@ -111,11 +107,21 @@ RUN npm run build
 
 # Create env file for apigw
 WORKDIR /app/aiverify/ai-verify-apigw
-RUN echo 'MONGODB_URI=mongodb://aiverify:aiverify@db:27017/aiverify\n\
-DB_URI=mongodb://aiverify:aiverify@db:27017/aiverify\n\
-REDIS_HOST=redis\n\
+
+# Ensure values of mongo username and password below matches what is going to be set in mongo-init.sh
+ARG MONGO_AIVERIFY_USERNAME=aiverify
+ARG MONGO_AIVERIFY_PASSWORD=aiverify
+ARG ALLOWED_ORIGINS=http://localhost:3000,http://localhost:4000
+RUN echo "DB_USERNAME=$MONGO_AIVERIFY_USERNAME DB_PASSWORD=$MONGO_AIVERIFY_PASSWORD"
+RUN echo "ALLOWED_ORIGINS=${ALLOWED_ORIGINS}"
+RUN echo "REDIS_HOST=redis\n\
 REDIS_PORT=6379\n\
-WEB_REPORT_URL=http://localhost:3000/reportStatus/printview' | tee .env
+DB_HOST=db\n\
+DB_PORT=27017\n\
+DB_USERNAME=${MONGO_AIVERIFY_USERNAME}\n\
+DB_PASSWORD=${MONGO_AIVERIFY_PASSWORD}\n\
+ALLOWED_ORIGINS=${ALLOWED_ORIGINS}\n\
+WEB_REPORT_URL=http://localhost:3000/reportStatus/printview" | tee .env
 
 # Install dependencies for apigw
 # Skip Chrome/chromium install during puppeteer install, since chromium

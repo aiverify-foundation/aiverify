@@ -1,5 +1,23 @@
-# README.md
+
 [![Integration Tests](https://github.com/IMDA-BTG/aiverify/actions/workflows/integration-tests.yml/badge.svg)](https://github.com/IMDA-BTG/aiverify/actions/workflows/integration-tests.yml)
+
+## ✨New API Connector Feature!
+
+We're excited to introduce a powerful enhancement to AI Verify – the API Connector feature! 
+Now, instead of uploading your AI Model file onto AI Verify, you can seamlessly configure an API Connection to your model server. 
+Learn more about the modes of accessing AI models [here](https://imda-btg.github.io/aiverify/getting-started/accessing-ai-model/)
+
+### Key Advantages:
+- Bypass Size Limitations: Say goodbye to the constraints imposed by browser upload size limits.
+- Test previously unsupported AI frameworks: The API Connector empowers you to work with models of any framework, such as PyTorch. Learn more about compatibility of model uploads [here](https://imda-btg.github.io/aiverify/others/compatibility/).
+- Connection Settings for Batch Requests: Optimise your test runs by configuring connection timeouts, connection retries, max connections, rate limit and rate limit timeouts.
+* Important Note: This feature currently supports tabular data only.
+
+### Getting Started:
+To take advantage of this feature, refer to our [How-To Guide](https://imda-btg.github.io/aiverify/how-to/connect-to-ai-model-api/). This guide provides step-by-step instructions on setting up the API Connector for seamless integration with your model server.
+
+We are excited to have you try it out and hear what you think about this feature!
+[Discussion Board](https://github.com/IMDA-BTG/aiverify/discussions)
 
 ## Introduction
 

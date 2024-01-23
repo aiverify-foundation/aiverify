@@ -23,7 +23,7 @@ on:
 # Allow one concurrent deployment
 concurrency:
   group: ${{ github.repository }}-${{ github.workflow }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
 
@@ -119,11 +119,7 @@ jobs:
           cd ../ai-verify-portal
           npm install
           npm link ../ai-verify-shared-library
-          echo "NEXT_PUBLIC_SERVER_URL=http://127.0.0.1:3000
-          NEXT_PUBLIC_WEBSOCKET_URL=ws://127.0.0.1:4000/graphql
-          SERVER_URL=http://127.0.0.1:3000
-          WEBSOCKET_URL=ws://127.0.0.1:4000/graphql
-          APIGW_URL=http://127.0.0.1:4000
+          echo "APIGW_URL=http://127.0.0.1:4000
           MONGODB_URI=mongodb://aiverify:aiverify@127.0.0.1:27017/aiverify
           REDIS_URI=redis://127.0.0.1:6379
           TEST_ENGINE_URL=http://127.0.0.1:8080" > .env.local
@@ -169,12 +165,26 @@ jobs:
           DB_URI=\"mongodb://aiverify:aiverify@127.0.0.1:27017/aiverify\"
           WEB_REPORT_URL=\"http://127.0.0.1:3000/reportStatus/printview\"
           REDIS_HOST=\"localhost\"
-          REDIS_PORT=6379" > .env
+          REDIS_PORT=6379
+          DB_HOST=127.0.0.1
+          DB_PORT=27017
+          DB_USERNAME=aiverify
+          DB_PASSWORD=aiverify
+          ALLOWED_ORIGINS=http://127.0.0.1:3000,http://127.0.0.1:3001,http://127.0.0.1:4000" > .env
+
           node app.mjs &> apigw.log &
           
           cd ../ai-verify-portal
           npm run start &> portal.log &
 
+      - name: Checkout API Mock Server
+        uses: actions/checkout@v3
+        with:
+          repository: IMDA-BTG/api-model-server
+          token: ${{ secrets.CHECKOUT_TOKEN }}
+          ref: main
+          path: qa-test/api-model-server
+          
       - name: Checkout smoke tests
         uses: actions/checkout@v3
         with:
@@ -201,13 +211,22 @@ jobs:
           path: qa-test/backend-testing
           submodules: recursive
 
+      - name: Run API Mock Server
+        if: ${{ ! cancelled() }}
+        run: |
+          cd qa-test/api-model-server
+          python3 -m venv venv
+          source venv/bin/activate
+          pip3 install -r requirements.txt
+          bash regression_run_https.sh &
+
       - name: Run smoke tests
         if: ${{ ! cancelled() }}
         run: |
           cd qa-test/smoke-testing
           npm install
           npx playwright install
-          npx playwright test
+          ENVIRONMENT_URL=https://127.0.0.1:5000 npx playwright test
 
       - name: Run frontend tests
         if: ${{ ! cancelled() }}

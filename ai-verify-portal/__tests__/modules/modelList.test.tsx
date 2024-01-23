@@ -39,7 +39,7 @@ const mocks = [
             name: 'tensorflow_tabular_compas_sequential.sav',
             filename: 'tensorflow_tabular_compas_sequential.sav',
             filePath:
-              '/home/user/aiverify/uploads/model/tensorflow_tabular_compas_sequential.sav',
+              '../aiverify/uploads/model/tensorflow_tabular_compas_sequential.sav',
             ctime: '2023-03-30T02:28:33.890Z',
             size: null,
             status: 'Valid',
@@ -56,7 +56,7 @@ const mocks = [
             name: 'joblib_scikit_ada_compas.sav',
             filename: 'joblib_scikit_ada_compas.sav',
             filePath:
-              '/home/user/aiverify/uploads/model/joblib_scikit_ada_compas.sav',
+              '../aiverify/uploads/model/joblib_scikit_ada_compas.sav',
             ctime: '2023-04-03T04:30:02.414Z',
             size: '561.89 KB',
             status: 'Valid',
