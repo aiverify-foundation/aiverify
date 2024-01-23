@@ -11,7 +11,7 @@ read -p "Enter user name: " DB_AIVERIFY_USERNAME
 read -s -p "Enter password: " DB_AIVERIFY_PASSWORD
 echo
 
-# Check if username and password are provided
+# Check if username and password are not provided
 if [ -z "$DB_AIVERIFY_USERNAME" ] || [ -z "$DB_AIVERIFY_PASSWORD" ]; then
     echo "User name and password are required. Aborting aiverify containers start-up..."
     exit 1
