@@ -98,7 +98,6 @@ ARG PORTAL_URL=http://localhost
 ARG WS_URL=ws://localhost
 RUN echo "PORTAL_URL=$PORTAL_URL WS_URL=$WS_URL"
 RUN echo "APIGW_URL=http://localhost:4000\n\
-MONGODB_URI=mongodb://aiverify:aiverify@db:27017/aiverify\n\
 REDIS_URI=redis://redis:6379\n\
 TEST_ENGINE_URL=http://test-engine:8080" | tee .env.local
 RUN rm .env.development
