@@ -102,7 +102,6 @@ else
   sudo sh -c 'echo "deb [ arch=amd64,arm64 signed-by=/etc/apt/keyrings/mongodb.gpg] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" >> /etc/apt/sources.list.d/mongo.list'
   sudo apt update
   sudo apt install -y mongodb-org
-  source ./db-creds.sh
 
   sudo systemctl start mongod
   sleep 2
@@ -115,16 +114,16 @@ else
   mongosh << EOF
   admin = db.getSiblingDB('admin')
   admin.createUser({
-    user: DB_ADMIN_USER,
-    pwd: DB_ADMIN_PASSWORD,
+    user: '$DB_ADMIN_USER',
+    pwd: '$DB_ADMIN_PASSWORD',
     roles: [{ role: 'root', db: 'admin' }],
   });
 
   aiverify = db.getSiblingDB('aiverify')
 
   aiverify.createUser({
-    user: DB_USERNAME,
-    pwd: DB_PASSWORD,
+    user: '$DB_USERNAME',
+    pwd: '$DB_PASSWORD',
     roles: [{ role: 'readWrite', db: 'aiverify' }],
   });
 
