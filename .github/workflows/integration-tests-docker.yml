@@ -45,7 +45,7 @@ jobs:
         working-directory: ${{ github.workspace }}/setup-aiverify
         run: |
           cd aiverify-user
-          bash docker-build.sh --build-arg BRANCH_TAG=${{ inputs.branch_to_test }}
+          bash docker-build.sh --build-arg BRANCH_TAG=${{ inputs.branch_to_test }} --build-arg ALLOWED_ORIGINS="http://127.0.0.1:3000,http://127.0.0.1:4000,http://127.0.0.1:27017"
 
       - name: Run aiverify containers
         working-directory: ${{ github.workspace }}/setup-aiverify
@@ -65,8 +65,11 @@ jobs:
 
           cat docker-compose.yml
           
-          if ! bash docker-start.sh -d ; then
-            bash docker-start.sh -d
+          mkdir -m 777 -p ~/data/db
+          mkdir -m 777 -p ~/logs/db
+  
+          if ! docker-compose up -d ; then
+            docker-compose up -d
           fi
 
       - name: Checkout smoke tests

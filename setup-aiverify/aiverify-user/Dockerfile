@@ -111,18 +111,16 @@ RUN npm run build
 # Create env file for apigw
 WORKDIR /app/aiverify/ai-verify-apigw
 
-# Ensure values of mongo username and password below matches what is going to be set in mongo-init.sh
-ARG MONGO_AIVERIFY_USERNAME=aiverify
-ARG MONGO_AIVERIFY_PASSWORD=aiverify
+# User entered username and password (in docker-start.sh) override these env values.
+ENV DB_USERNAME="aiverify"
+ENV DB_PASSWORD="aiverify"
+
 ARG ALLOWED_ORIGINS=http://localhost:3000,http://localhost:4000
-RUN echo "DB_USERNAME=$MONGO_AIVERIFY_USERNAME DB_PASSWORD=$MONGO_AIVERIFY_PASSWORD"
 RUN echo "ALLOWED_ORIGINS=${ALLOWED_ORIGINS}"
 RUN echo "REDIS_HOST=redis\n\
 REDIS_PORT=6379\n\
 DB_HOST=db\n\
 DB_PORT=27017\n\
-DB_USERNAME=${MONGO_AIVERIFY_USERNAME}\n\
-DB_PASSWORD=${MONGO_AIVERIFY_PASSWORD}\n\
 ALLOWED_ORIGINS=${ALLOWED_ORIGINS}\n\
 WEB_REPORT_URL=http://localhost:3000/reportStatus/printview" | tee .env
 
