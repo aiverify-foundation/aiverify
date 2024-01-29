@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "test-engine-app"
-version = "0.9.0"
+version = "0.10.0"
 description = "This application project will support critical functionalities to provide backend tests for AI Verify."
 authors = ["AI Verify"]
 readme = "README.md"
@@ -8,21 +8,23 @@ packages = [{include = "test_engine_app"}]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.12"
-redis = "4.5.5"
-numpy = "1.23.5"
-pathos = "0.3.0"
+redis = "5.0.1"
+numpy = "1.24.3"
+pathos = "0.3.2"
 semantic-version = "2.10.0"
-aiohttp = "3.8.4"
-python-dotenv = "1.0.0"
-yarl = "1.8.1"
+aiohttp = "3.9.2"
+python-dotenv = "1.0.1"
+yarl = "1.9.4"
 
 
 [tool.poetry.group.dev.dependencies]
-black = "23.1.0"
-pytest = "7.2.2"
-coverage = "7.2.2"
-pytest-mock = "3.10.0"
-pre-commit = "3.0.4"
+black = "^23.10.1"
+isort = "^5.12.0"
+pre-commit = "^3.5.0"
+pytest = "^7.4.3"
+coverage = "^7.3.2"
+pytest-mock = "^3.12.0"
+flake8 = "^6.1.0"
 
 [build-system]
 requires = ["poetry-core"]
