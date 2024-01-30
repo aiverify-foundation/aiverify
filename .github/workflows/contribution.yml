@@ -4,20 +4,17 @@
 name: Contributor Flow
 
 # Run this on Forked PR
-on: pull_request_target
+on: 
+  workflow_dispatch:
+    inputs:
+      branch_to_test:
+        description: 'Branch or tag to run test'
+        required: true
+        default: 'main'
+        type: string
 
 jobs:
-  Authorize:
-    environment:
-      ${{ github.event_name == 'pull_request_target' &&
-      github.event.pull_request.head.repo.full_name != github.repository &&
-      'external' || 'internal' }}
-    runs-on: ubuntu-latest
-    steps:
-      - run: true
-
   Integration-Test:
-    needs: Authorize
     runs-on: ubuntu-latest
     steps:
     
@@ -143,7 +140,8 @@ jobs:
           DB_URI=\"mongodb://aiverify:aiverify@127.0.0.1:27017/aiverify\"
           WEB_REPORT_URL=\"http://127.0.0.1:3000/reportStatus/printview\"
           REDIS_HOST=\"localhost\"
-          REDIS_PORT=6379" > .env
+          REDIS_PORT=6379
+          ALLOWED_ORIGINS=http://127.0.0.1:3000,http://127.0.0.1:3001,http://127.0.0.1:4000" > .env
           node app.mjs &> apigw.log &
           
           cd ../ai-verify-portal

@@ -19,6 +19,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: '${MONGO_ROOT_USER:-mongodb}'
       MONGO_INITDB_ROOT_PASSWORD: '${MONGO_ROOT_PASSWORD:-mongodb}'
       MONGO_INITDB_DATABASE: admin
+      MONGO_AIVERIFY_USER: '${DB_AIVERIFY_USER:-aiverify}'
       MONGO_AIVERIFY_PASSWORD: '${DB_AIVERIFY_PASSWORD:-aiverify}'
     user: '${CUR_UID}:${CUR_GID}'
     volumes:
@@ -47,6 +48,9 @@ services:
   # frontend - portal & apigw
   portal:
     image: aiverify:0.10
+    environment:
+      DB_USERNAME: '${DB_AIVERIFY_USER:-aiverify}'
+      DB_PASSWORD: '${DB_AIVERIFY_PASSWORD:-aiverify}'
     ports:
       - "3000:3000"
       - "4000:4000"
