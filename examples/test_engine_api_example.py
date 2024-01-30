@@ -2,11 +2,11 @@ import json
 import warnings
 from pathlib import Path
 
-from test_engine_core import version_msg as core_version_msg
+from test_engine_api import version_msg as core_version_msg
 from test_engine_core.utils.validate_checks import is_empty_string
-from test_engine_pypi import version_msg as pypi_version_msg
-from test_engine_pypi.algorithm_info import AlgorithmInfo
-from test_engine_pypi.api import (
+from test_engine_api import version_msg as api_version_msg
+from test_engine_api.algorithm_info import AlgorithmInfo
+from test_engine_api.api import (
     delete_algorithm_plugin,
     discover_algorithm_plugins,
     discover_core_plugins,
@@ -14,7 +14,7 @@ from test_engine_pypi.api import (
     print_discovered_plugins,
     run_test,
 )
-from test_engine_pypi.test_argument import TestArgument
+from test_engine_api.test_argument import TestArgument
 
 
 def update_task_progress(completion_progress: int) -> None:
@@ -47,15 +47,25 @@ def run_example_test() -> None:
     # Settings the warnings to be ignored
     warnings.filterwarnings("ignore")
 
-    # Define test_output_file
+    # Define example variables
+    my_test_arguments = {
+        "testDataset": "examples/data/sample_bc_credit_data.sav",
+        "modelFile": "examples/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav",
+        "groundTruthDataset": "examples/data/sample_bc_credit_data.sav",
+        "groundTruth": "default",
+        "algorithm_id": "algo:aiverify.stock.partial_dependence_plot:partial_dependence_plot",
+        "algorithm_arguments": {},
+        "mode": "upload",
+        "modelType": "classification",
+    }
+    # Define core modules and algorithm folders
+    core_plugins_path = "../test-engine-core-modules"
+    algorithms_plugins_path = "../stock-plugins"
+    # Define output filename
     result_output_file = "principles_test_results.json"
 
-    # Define core modules and algorithm folders
-    core_plugins_path = "/Users/lionelteo/Documents/aiverify/test-engine-core-modules"
-    algorithms_plugins_path = "/Users/lionelteo/Documents/aiverify/stock-plugins"
-
     # Print AI Verify package versions
-    print(pypi_version_msg())
+    print(api_version_msg())
     print(core_version_msg())
 
     # Validate core plugins folder
@@ -121,18 +131,6 @@ def run_example_test() -> None:
 
     # Run principles test
     print("Running principles test...")
-
-    # Define test arguments
-    my_test_arguments = {
-        "testDataset": "sample/sample_bc_credit_data.sav",
-        "modelFile": "sample/sample_bc_credit_sklearn_linear.LogisticRegression.sav",
-        "groundTruthDataset": "sample/sample_bc_credit_data.sav",
-        "groundTruth": "default",
-        "algorithm_id": "algo:aiverify.stock.partial_dependence_plot:partial_dependence_plot",
-        "algorithm_arguments": {},
-        "mode": "upload",
-        "modelType": "classification",
-    }
     my_algorithm_info = AlgorithmInfo(
         my_test_arguments["algorithm_id"],
         discovered_algorithms[my_test_arguments["algorithm_id"]],

@@ -1,5 +1,5 @@
 """
-Main package for Test Engine App.
+Main package for Test Engine Api.
 """
 __version__ = "0.10.0"
 

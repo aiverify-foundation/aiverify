@@ -12,7 +12,8 @@ from test_engine_core.plugins.enums.model_type import ModelType
 from test_engine_core.plugins.enums.plugin_type import PluginType
 from test_engine_core.plugins.plugins_manager import PluginManager
 from test_engine_core.utils.json_utils import validate_json
-from test_engine_pypi.test_argument import TestArgument
+
+from test_engine_api.test_argument import TestArgument
 
 
 class TestProcessing:

@@ -6,9 +6,10 @@ from typing import Callable
 from test_engine_core.plugins.enums.plugin_type import PluginType
 from test_engine_core.plugins.plugins_manager import PluginManager
 from test_engine_core.utils.json_utils import remove_numpy_formats
-from test_engine_pypi.algorithm_info import AlgorithmInfo
-from test_engine_pypi.test_argument import TestArgument
-from test_engine_pypi.test_processing import TestProcessing
+
+from test_engine_api.algorithm_info import AlgorithmInfo
+from test_engine_api.test_argument import TestArgument
+from test_engine_api.test_processing import TestProcessing
 
 
 def discover_core_plugins(core_plugins_folder: str) -> None:

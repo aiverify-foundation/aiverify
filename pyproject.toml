@@ -1,0 +1,63 @@
+[project]
+name = "test-engine-pypi"
+version = "0.10.0"
+authors = [
+    { name="AI Verify" }
+]
+description = "This core project will support critical functionalities to support plugins and apps."
+dependencies = [
+    "async-timeout==4.0.3",
+    "attrs==23.2.0",
+    "jsonschema-specifications==2023.12.1",
+    "jsonschema==4.21.1",
+    "numpy==1.24.3",
+    "redis==5.0.1",
+    "referencing==0.33.0",
+    "rpds-py==0.17.1",
+    "joblib==1.3.2",
+    "libclang==16.0.6",
+    "scikit-learn==1.4.0",
+    "setuptools==69.0.3",
+    "lightgbm==4.3.0",
+    "xgboost==2.0.3",
+    "tensorflow==2.13.0",
+    "pandas==2.0.3",
+    "scipy==1.12.0",
+    "httpx==0.26.0",
+    "openapi-schema-validator==0.6.2",
+    "aiopenapi3==0.5.0",
+    "aiometer==0.5.0",
+    "python-dotenv==1.0.1",
+]
+readme = "README.md"
+requires-python = ">=3.10,<3.12"
+license = { text = "Apache Software License 2.0" }
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: Apache Software License"
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "test-engine-api/test_engine_api/",
+  "test-engine-core/test_engine_core/",
+  "test-engine-core-modules/",
+  "pyproject.toml",
+  "NOTICE.md",
+  "LICENSE",
+  "README.md",
+  "SECURITY.md",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["test-engine-api/test_engine_api/", "test-engine-core/test_engine_core/", "test-engine-core-modules/"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
