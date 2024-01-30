@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fairness-metrics-toolbox-for-classification"
-version = "0.9.0"
+version = "0.10.0"
 description = ""
 authors = ["AI Verify"]
 readme = "README.md"
@@ -8,14 +8,11 @@ packages = [{include = "fairness_metrics_toolbox_for_classification"}]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.12"
-numpy = "1.23.5"
-scikit-learn = "1.2.2"
-joblib = "1.2.0"
-scipy = "1.11.1"
+numpy = "1.24.3"
+scikit-learn = "1.4.0"
+joblib = "1.3.2"
+scipy = "1.12.0"
 
-
-[tool.poetry.group.dev.dependencies]
-pre-commit = "3.0.4"
 
 [build-system]
 requires = ["poetry-core"]
