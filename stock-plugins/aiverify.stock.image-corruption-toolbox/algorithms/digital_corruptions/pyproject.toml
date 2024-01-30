@@ -8,7 +8,7 @@ packages = [{include = "digital_corruptions"}]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.12"
-pandas = "2.2.0"
+pandas = "2.0.3"
 numpy = "1.24.3"
 pillow = "10.2.0"
 scikit-learn = "1.4.0"
