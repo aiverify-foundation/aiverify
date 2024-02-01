@@ -1,3 +1,7 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "test-engine-pypi"
 version = "0.10.0"
@@ -30,8 +34,8 @@ dependencies = [
     "python-dotenv==1.0.1",
 ]
 readme = "README.md"
-requires-python = ">=3.10,<3.12"
 license = { text = "Apache Software License 2.0" }
+requires-python = ">=3.10,<3.12"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3",
@@ -44,20 +48,23 @@ classifiers = [
 allow-direct-references = true
 
 [tool.hatch.build.targets.sdist]
-include = [
+only-include = [
   "test-engine-api/test_engine_api/",
   "test-engine-core/test_engine_core/",
   "test-engine-core-modules/",
-  "pyproject.toml",
   "NOTICE.md",
   "LICENSE",
-  "README.md",
   "SECURITY.md",
 ]
 
+[project.urls]
+Homepage = "https://aiverifyfoundation.sg/"
+Documentation = "imda-btg.github.io/aiverify/"
+Repository = "https://github.com/IMDA-BTG/aiverify"
+Issues = "https://github.com/IMDA-BTG/aiverify/issues"
+Changelog = "https://github.com/IMDA-BTG/aiverify/releases"
+
+
+
 [tool.hatch.build.targets.wheel]
 packages = ["test-engine-api/test_engine_api/", "test-engine-core/test_engine_core/", "test-engine-core-modules/"]
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"

@@ -59,10 +59,11 @@ def run_example_test() -> None:
         "modelType": "classification",
     }
     # Define core modules and algorithm folders
-    core_plugins_path = "../test-engine-core-modules"
-    algorithms_plugins_path = "../stock-plugins"
+    core_plugins_path = "test-engine-core-modules"
+    algorithms_plugins_path = "stock-plugins"
+
     # Define output filename
-    result_output_file = "principles_test_results.json"
+    result_output_file = "output_test_results.json"
 
     # Print AI Verify package versions
     print(api_version_msg())
