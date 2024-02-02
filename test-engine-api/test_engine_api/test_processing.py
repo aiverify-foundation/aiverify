@@ -1,6 +1,7 @@
 import copy
 from typing import Callable, Union
 
+from test_engine_api.test_argument import TestArgument
 from test_engine_core.interfaces.ialgorithm import IAlgorithm
 from test_engine_core.interfaces.idata import IData
 from test_engine_core.interfaces.imodel import IModel
@@ -12,8 +13,6 @@ from test_engine_core.plugins.enums.model_type import ModelType
 from test_engine_core.plugins.enums.plugin_type import PluginType
 from test_engine_core.plugins.plugins_manager import PluginManager
 from test_engine_core.utils.json_utils import validate_json
-
-from test_engine_api.test_argument import TestArgument
 
 
 class TestProcessing:
@@ -310,8 +309,8 @@ class TestProcessing:
                 algorithm_serializer_instance,
                 load_algorithm_error_message,
             ) = self.load_algorithm(
-                self._task_argument.algorithm_plugin_information.id,
-                self._task_argument.algorithm_plugin_information.algorithm_dict,
+                self._task_argument.algorithm_id,
+                self._task_argument.algorithm_arguments,
                 data_serializer_instance,
                 ground_truth_serializer_instance,
                 self._task_argument.ground_truth,

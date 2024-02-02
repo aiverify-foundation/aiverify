@@ -1,10 +1,9 @@
 from typing import Union
 
-from test_engine_core.plugins.enums.model_mode_type import ModelModeType
-from test_engine_core.plugins.enums.model_type import ModelType
-
 from test_engine_api.algorithm_info import AlgorithmInfo
 from test_engine_api.test_validation import TestValidation
+from test_engine_core.plugins.enums.model_mode_type import ModelModeType
+from test_engine_core.plugins.enums.model_type import ModelType
 
 
 class TestArgument:
