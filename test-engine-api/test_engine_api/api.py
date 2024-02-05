@@ -1,5 +1,6 @@
 import glob
 import json
+from datetime import datetime
 from pathlib import Path
 from typing import Callable
 
@@ -182,6 +183,7 @@ def run_test(
     is_success: bool = False
     model_instance = None
     error_messages: str = ""
+    test_start_time: datetime = datetime.now()
     test_results: dict = {}
 
     try:
@@ -238,12 +240,16 @@ def run_test(
         error_messages = str(exception)
 
     finally:
+        test_end_time = datetime.now()
         if is_success:
             # Format result to json
             test_results = {
                 "gid": test_argument.algorithm_plugin_information.data["pluginGID"],
                 "version": test_argument.algorithm_plugin_information.data["version"],
                 "cid": test_argument.algorithm_plugin_information.data["cid"],
+                "start_time": test_start_time.isoformat(),
+                "time_taken": int((test_end_time - test_start_time).total_seconds()),
+                "test_arguments": test_argument.test_arguments,
                 "output": test_results,
             }
             print("Task completed successfully")

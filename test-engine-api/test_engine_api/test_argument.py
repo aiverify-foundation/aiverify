@@ -1,3 +1,4 @@
+import copy
 from typing import Union
 
 from test_engine_api.algorithm_info import AlgorithmInfo
@@ -31,6 +32,11 @@ class TestArgument:
     algorithm_arguments: Union[dict, None]
 
     def __init__(self, algorithm_information: AlgorithmInfo, test_arguments: dict):
+        # Retrieve the algorithm plugin information
+        # Store original task arguments
+        self.test_arguments = copy.deepcopy(test_arguments)
+        self.algorithm_plugin_information = algorithm_information
+
         # Required fields
         self.data = test_arguments.get("testDataset")
         self.algorithm_id = test_arguments.get("algorithmId")
@@ -56,9 +62,6 @@ class TestArgument:
         # GroundTruth (Optional)
         self.ground_truth_dataset = test_arguments.get("groundTruthDataset")
         self.ground_truth = test_arguments.get("groundTruth")
-
-        # Retrieve the algorithm plugin information
-        self.algorithm_plugin_information = algorithm_information
 
     def validate(self) -> tuple[int, str]:
         """
