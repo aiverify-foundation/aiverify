@@ -55,11 +55,8 @@ class Plugin(ISerializer):
             Any: deserialized data
         """
         try:
-            lc_all = os.environ["LC_ALL"]
-            os.environ["LC_ALL"] = "en_US.UTF-8"
             from rpy2 import robjects
-            model =  robjects.r['readRDS'](data_path)
-            os.environ["LC_ALL"] = lc_all
+            model = robjects.r['readRDS'](data_path)
             return model
         except Exception:
             raise

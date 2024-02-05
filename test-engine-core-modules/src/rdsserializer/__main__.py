@@ -4,7 +4,9 @@ from module_tests.plugin_test import PluginTest
 
 if __name__ == "__main__":
     discover_path = Path.cwd().parent
-    file_path = ""
+    file_path = str(
+        discover_path / "rdsserializer/user_defined_files/teststring.rds"
+    )
 
     # =================================================================================
     # NOTE: Do not modify the code below
