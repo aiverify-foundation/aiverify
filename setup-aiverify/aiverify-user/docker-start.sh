@@ -25,4 +25,4 @@ export MONGO_ROOT_PASSWORD="$DB_AIVERIFY_PASSWORD"
 [ ! -d "~/logs/db" ] && mkdir -p ~/logs/db
 
 echo "Starting up aiverify containers..."
-docker-compose up ${@:1}
+docker compose up ${@:1}
