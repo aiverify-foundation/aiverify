@@ -54,6 +54,7 @@ class PluginManager:
         SerializerPluginType.TENSORFLOW,
         SerializerPluginType.IMAGE,
         SerializerPluginType.DELIMITER,
+        SerializerPluginType.RDS,
     ]
     _pipeline_priority_list: List = [PipelinePluginType.SKLEARN]
     _plugins: Dict = {plugin_type.name: dict() for plugin_type in PluginType}
@@ -441,29 +442,23 @@ class PluginManager:
         plugin_type = plugin_tuple[1].Plugin.get_plugin_type()
 
         if plugin_type is PluginType.DATA:
-            return PluginManager._data_priority_list.index(
-                plugin_tuple[1].Plugin.get_data_plugin_type()
-            )
-
+            prio_type = plugin_tuple[1].Plugin.get_data_plugin_type()
+            priority = PluginManager._data_priority_list
         elif plugin_type is PluginType.MODEL:
-            return PluginManager._model_priority_list.index(
-                plugin_tuple[1].Plugin.get_model_plugin_type()
-            )
-
+            prio_type = plugin_tuple[1].Plugin.get_model_plugin_type()
+            priority = PluginManager._model_priority_list
         elif plugin_type is PluginType.PIPELINE:
-            return PluginManager._pipeline_priority_list.index(
-                plugin_tuple[1].Plugin.get_pipeline_plugin_type()
-            )
-
+            prio_type = plugin_tuple[1].Plugin.get_pipeline_plugin_type()
+            priority = PluginManager._pipeline_priority_list
         elif plugin_type is PluginType.SERIALIZER:
-            return PluginManager._serializer_priority_list.index(
-                plugin_tuple[1].Plugin.get_serializer_plugin_type()
-            )
-
+            prio_type = plugin_tuple[1].Plugin.get_serializer_plugin_type()
+            priority = PluginManager._serializer_priority_list
         else:
-            return list(
-                PluginManager._plugins[PluginType.ALGORITHM.name].values()
-            ).index(plugin_tuple[1])
+            prio_type = plugin_tuple[1]
+            priority = PluginManager._plugins[PluginType.ALGORITHM.name].values()
+
+        return priority.index(prio_type) if prio_type in priority else len(priority)
+
 
     @staticmethod
     def _update_plugins_by_type(plugin_type: PluginType, plugin_dict: Dict) -> None:
