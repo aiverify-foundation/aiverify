@@ -148,6 +148,8 @@ RUN for plugin_dir in *; do \
 
 RUN chown -R 10000:10000 /app/aiverify/ai-verify-portal/plugins
 
+RUN apt-get install -y r-base r-base-dev
+
 ############### Python #################
 
 # Install dependencies into virtualenv
