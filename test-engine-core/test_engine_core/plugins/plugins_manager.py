@@ -47,6 +47,7 @@ class PluginManager:
         ModelPluginType.SKLEARN,
         ModelPluginType.TENSORFLOW,
         ModelPluginType.API,
+        ModelPluginType.R,
     ]
     _serializer_priority_list: List = [
         SerializerPluginType.PICKLE,
