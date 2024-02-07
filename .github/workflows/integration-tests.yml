@@ -227,7 +227,7 @@ jobs:
           cd qa-test/smoke-testing
           npm install
           npx playwright install
-          ENVIRONMENT_URL=https://127.0.0.1 npx playwright test
+          ENVIRONMENT_URL=https://127.0.0.1 npx playwright test tests/smoke.spec.js
 
       - name: Run frontend tests
         if: ${{ ! cancelled() }}
