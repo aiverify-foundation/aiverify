@@ -4,12 +4,12 @@
 name: Integration Tests for aiverify-user (Docker)
 
 on:
-#  # Runs when a pull request review is being submitted
-#  pull_request_review:
-#    types: [submitted]
-#    branches:
-#      - 'main'
-#      - 'v0.*'
+ # Runs when a pull request review is being submitted
+  pull_request_review:
+   types: [submitted]
+   branches:
+     - 'main'
+     - 'v0.*'
 
   # Run this workflow manually from Actions tab
   workflow_dispatch:
@@ -69,24 +69,24 @@ jobs:
           mkdir -m 777 -p ~/logs/db
   
           if ! docker-compose up -d ; then
-            ./docker-start.sh
+            docker-compose up -d
           fi
 
-      - name: Checkout API Mock Server
-        uses: actions/checkout@v3
-        with:
-          repository: IMDA-BTG/api-model-server
-          token: ${{ secrets.CHECKOUT_TOKEN }}
-          ref: main
-          path: qa-test/api-model-server
+      # - name: Checkout API Mock Server
+      #   uses: actions/checkout@v3
+      #   with:
+      #     repository: IMDA-BTG/api-model-server
+      #     token: ${{ secrets.CHECKOUT_TOKEN }}
+      #     ref: main
+      #     path: qa-test/api-model-server
 
-      - name: Checkout smoke tests
-        uses: actions/checkout@v3
-        with:
-          repository: IMDA-BTG/smoke-testing
-          token: ${{ secrets.CHECKOUT_TOKEN }}
-          ref: main
-          path: qa-test/smoke-testing
+      # - name: Checkout smoke tests
+      #   uses: actions/checkout@v3
+      #   with:
+      #     repository: IMDA-BTG/smoke-testing
+      #     token: ${{ secrets.CHECKOUT_TOKEN }}
+      #     ref: main
+      #     path: qa-test/smoke-testing
 
       - name: Checkout frontend tests
         uses: actions/checkout@v3
@@ -96,32 +96,32 @@ jobs:
           ref: main
           path: qa-test/frontend-testing
 
-      - name: Checkout backend tests
-        uses: actions/checkout@v3
-        with:
-          repository: IMDA-BTG/backend-testing
-          token: ${{ secrets.CHECKOUT_TOKEN }}
-          ref: main
-          path: qa-test/backend-testing
-          submodules: recursive
+      # - name: Checkout backend tests
+      #   uses: actions/checkout@v3
+      #   with:
+      #     repository: IMDA-BTG/backend-testing
+      #     token: ${{ secrets.CHECKOUT_TOKEN }}
+      #     ref: main
+      #     path: qa-test/backend-testing
+      #     submodules: recursive
 
-      - name: Run API Mock Server
-        if: ${{ ! cancelled() }}
-        run: |
-          cd qa-test/api-model-server
-          python3 -m venv venv
-          source venv/bin/activate
-          pip3 install -r requirements.txt
-          bash regression_run_https.sh && fg &
-          bash classification_run_https.sh &
+      # - name: Run API Mock Server
+      #   if: ${{ ! cancelled() }}
+      #   run: |
+      #     cd qa-test/api-model-server
+      #     python3 -m venv venv
+      #     source venv/bin/activate
+      #     pip3 install -r requirements.txt
+      #     bash regression_run_https.sh && fg &
+      #     bash classification_run_https.sh &
 
-      - name: Run smoke tests
-        if: ${{ ! cancelled() }}
-        run: |
-          cd qa-test/smoke-testing
-          npm install
-          npx playwright install
-          ENVIRONMENT_URL=$ENVIRONMENT_URL npx playwright test
+      # - name: Run smoke tests
+      #   if: ${{ ! cancelled() }}
+      #   run: |
+      #     cd qa-test/smoke-testing
+      #     npm install
+      #     npx playwright install
+      #     ENVIRONMENT_URL=$ENVIRONMENT_URL npx playwright test
 
       - name: Run frontend tests
         if: ${{ ! cancelled() }}
@@ -129,13 +129,13 @@ jobs:
           cd qa-test/frontend-testing
           npm install
           npx playwright test
-#
-#      - name: Run backend tests
-#        if: ${{ ! cancelled() }}
-#        run: |
-#          cd qa-test/backend-testing
-#          npm install
-#          BASEDIR=${{ github.workspace }} npx playwright test
+
+      # - name: Run backend tests
+      #   if: ${{ ! cancelled() }}
+      #   run: |
+      #     cd qa-test/backend-testing
+      #     npm install
+      #     BASEDIR=${{ github.workspace }} npx playwright test
 
       - name: Show logs
         if: ${{ ! cancelled() }}
