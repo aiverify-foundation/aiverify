@@ -117,19 +117,16 @@ export const queueTests = async (report, modelAndDatasets) => {
       const apiConfig = {
         ...modelAndDatasets.apiConfig.toObject(),
         requestConfig: modelAPI.requestConfig,
-        // responseBody: {
-        //   field: modelAPI.response.field,
-        //   type: modelAPI.response.type,
-        //   objectType: modelAPI.response.objectType,
-        //   arrayType: modelAPI.response.arrayType,
-        // },
         responseBody: modelAPI.response,
       };
       delete apiConfig._id; // remove this field not required
       if (modelAPI.authType !== "No Auth") {
         apiConfig["authentication"] = modelAPI.authTypeConfig;
       }
-      // console.log("apiConfig", apiConfig)
+      // fix for parameters populated as null for a POST config.
+      if (apiConfig.parameters === null) {
+        delete modelAPI.parameters;
+      }
       task.apiConfig = apiConfig;
       task.apiSchema = await modelAndDatasets.model.exportModelAPI();
     } else {
