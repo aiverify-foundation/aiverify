@@ -8,12 +8,12 @@ ENV TZ=Asia/Singapore
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Install node v18.x
-RUN apt-get update && apt-get install -y curl ca-certificates curl gnupg
+RUN apt-get update && apt-get install -y curl ca-certificates gnupg
 RUN mkdir -p /etc/apt/keyrings
 RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
 ENV NODE_MAJOR=18
 RUN "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
-RUN apt-get update && apt-get install -y nodejs npm
+RUN apt-get update && apt-get install -y nodejs
 
 # Install python 3.11, virtualenv
 RUN apt-get update
@@ -52,6 +52,9 @@ RUN apt-get install chromium -y
 
 RUN ln -s /usr/bin/chromium /usr/bin/chromium-browser
 
+# Install NPM
+RUN apt-get install npm -y
+
 # For shap-toolbox stock plugin
 RUN apt-get install -y gcc g++ python3.11-dev
 
@@ -68,7 +71,7 @@ RUN useradd -u 10000 -g 10000 -ms /bin/bash $USER
 
 ###################  Clone aiverify repo ######################
 
-ARG BRANCH_TAG=v0.10.x
+ARG BRANCH_TAG=main
 RUN echo "BRANCH_TAG=$BRANCH_TAG"
 WORKDIR /app
 RUN git clone https://github.com/imda-btg/aiverify.git --branch=$BRANCH_TAG aiverify
