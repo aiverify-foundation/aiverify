@@ -518,7 +518,12 @@ class Plugin(IAlgorithm):
             Any: predicted value
         """
         dict_item_labels = self._data_instance.read_labels().items()
-        return self._model_instance.predict([data.tolist()], dict_item_labels)
+        predicted_results = self._model_instance.predict(
+            [data.tolist()], dict_item_labels
+        )
+        if isinstance(predicted_results, list):
+            predicted_results = np.array(list(predicted_results), dtype="float32")
+        return predicted_results
 
     def _get_explainer(self) -> Union[shap.TreeExplainer, shap.KernelExplainer]:
         """
@@ -654,7 +659,7 @@ class Plugin(IAlgorithm):
         output_results.update({"num_local_classes": len(results["single_shap_value"])})
 
         # Set single explainer values and single shap values
-        if type(results["explainer"]) == list:
+        if isinstance(results["explainer"], list):
             temp_value_ndarray = np.array(results["explainer"][0], ndmin=1)
         else:
             temp_value_ndarray = np.array(results["explainer"].expected_value, ndmin=1)
