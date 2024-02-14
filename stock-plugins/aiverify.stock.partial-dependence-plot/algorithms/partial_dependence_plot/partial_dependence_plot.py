@@ -439,9 +439,7 @@ class Plugin(IAlgorithm):
 
         for i, y in enumerate(grid_values):
             data_copy[:, idx] = y
-            baselines.append(
-                self._model_instance.predict([data_copy], data_labels)
-            )
+            baselines.append(self._model_instance.predict([data_copy], data_labels))
 
         baselines = np.swapaxes(np.array(baselines), 0, 1)
         mean_value = np.mean(baselines, axis=0)
