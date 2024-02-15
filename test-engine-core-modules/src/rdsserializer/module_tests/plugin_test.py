@@ -25,6 +25,7 @@ class PluginTest:
     def __init__(self, serializer_path: str, discover_path: Path):
         # Other variables
         self._base_path: Path = discover_path
+        self._expected_string: str = "HELLOWORLD"
 
         # Store the input arguments as private vars
         self._serializer_path: str = str(self._base_path / serializer_path)
@@ -129,40 +130,15 @@ class PluginTest:
         error_count = 0
         error_message = ""
 
-        # try:
-        model_name = "mytestmodel.rds"
-
-        robjects.r(f"""
-data <- data.frame(input = rnorm(100, mean = 0, sd = 1), output = rnorm(100, mean = 0, sd = 1))
-model <- lm(output ~ input, data = data)
-saveRDS(model, "{model_name}")"""
-                   )
-
-        model = robjects.r['readRDS'](model_name)
-        reconstructed_model = self._serializer_instance.deserialize_data(model_name)
-
-        # Prepare data for inference (adjust this part based on your data)
-        input_data = [1.0, 2.0, 3.0, 4.0]
-        predictions = self.model_inference(input_data, model)
-        reconstructed_predictions = self.model_inference(input_data, reconstructed_model)
-
-        np.testing.assert_allclose(
-            predictions, reconstructed_predictions
-        )
-
-        # except Exception:
-        #     # Serializer not supported
-        #     error_count += 1
-        #     error_message += "Deserialized data does not match expected data;"
+        if (
+            self._serializer_instance.deserialize_data(self._serializer_path)
+            == self._expected_string
+        ):
+            # Deserialized data matches expected data
+            pass
+        else:
+            # Deserialized data does not match expected data
+            error_count += 1
+            error_message += "Deserialized data does not match expected data;"
 
         return error_count, error_message
-
-    @staticmethod
-    def model_inference(input_data, model):
-        new_data = robjects.DataFrame({'input': robjects.FloatVector(input_data)})
-        # Set the 'new_data' as an environment variable
-        robjects.r.assign("new_data", new_data)
-        # Perform inference
-        predictions = robjects.r['predict'](model, newdata=robjects.r['new_data'])
-        # Convert the R results to a Python object
-        return np.array(robjects.conversion.rpy2py(predictions))

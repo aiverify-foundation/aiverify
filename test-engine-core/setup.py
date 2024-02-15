@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name="test_engine_core",
-    version="0.9.0",
+    version="0.10.0",
     packages=[
         "test_engine_core",
         "test_engine_core.utils",
