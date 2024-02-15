@@ -51,44 +51,43 @@ jobs:
       - name: Run aiverify containers
         working-directory: ${{ github.workspace }}/setup-aiverify
         run: |
-          
           cd aiverify-user
           
-          mkdir -m 777 -p ../../uploads/data
-          mkdir -m 777 -p ../../uploads/model
+          # mkdir -m 777 -p ../../uploads/data
+          # mkdir -m 777 -p ../../uploads/model
 
-          # Modify docker-compose.yml to support integration-tests (frontend, backend)
-          sed -i -e 's/redis:6.2-alpine/redis:6.2-alpine\n    ports:\n      - "6379:6379"/g' docker-compose.yml
-          sed -i -e 's/mongo:6.0.4/mongo:6.0.4\n    ports:\n      - "27017:27017"/g' docker-compose.yml
-          sed -i -e 's/- uploads-data-volume:/- \.\.\/\.\.\/uploads\/data:/g' docker-compose.yml
-          sed -i -e 's/- uploads-model-volume:/- \.\.\/\.\.\/uploads\/model:/g' docker-compose.yml
-          sed -i -e 's/  uploads-data-volume://g' docker-compose.yml
-          sed -i -e 's/  uploads-model-volume://g' docker-compose.yml
+          # # Modify docker-compose.yml to support integration-tests (frontend, backend)
+          # sed -i -e 's/redis:6.2-alpine/redis:6.2-alpine\n    ports:\n      - "6379:6379"/g' docker-compose.yml
+          # sed -i -e 's/mongo:6.0.4/mongo:6.0.4\n    ports:\n      - "27017:27017"/g' docker-compose.yml
+          # sed -i -e 's/- uploads-data-volume:/- \.\.\/\.\.\/uploads\/data:/g' docker-compose.yml
+          # sed -i -e 's/- uploads-model-volume:/- \.\.\/\.\.\/uploads\/model:/g' docker-compose.yml
+          # sed -i -e 's/  uploads-data-volume://g' docker-compose.yml
+          # sed -i -e 's/  uploads-model-volume://g' docker-compose.yml
 
-          cat docker-compose.yml
+          # cat docker-compose.yml
           
-          mkdir -m 777 -p ~/data/db
-          mkdir -m 777 -p ~/logs/db
+          # mkdir -m 777 -p ~/data/db
+          # mkdir -m 777 -p ~/logs/db
   
           if ! docker-compose up -d ; then
-            docker-compose up -d
+            bash docker.start.sh
           fi
           
-      # - name: Checkout API Mock Server
-      #   uses: actions/checkout@v3
-      #   with:
-      #     repository: IMDA-BTG/api-model-server
-      #     token: ${{ secrets.CHECKOUT_TOKEN }}
-      #     ref: main
-      #     path: qa-test/api-model-server
+      - name: Checkout API Mock Server
+        uses: actions/checkout@v3
+        with:
+          repository: IMDA-BTG/api-model-server
+          token: ${{ secrets.CHECKOUT_TOKEN }}
+          ref: main
+          path: qa-test/api-model-server
 
-      # - name: Checkout smoke tests
-      #   uses: actions/checkout@v3
-      #   with:
-      #     repository: IMDA-BTG/smoke-testing
-      #     token: ${{ secrets.CHECKOUT_TOKEN }}
-      #     ref: main
-      #     path: qa-test/smoke-testing
+      - name: Checkout smoke tests
+        uses: actions/checkout@v3
+        with:
+          repository: IMDA-BTG/smoke-testing
+          token: ${{ secrets.CHECKOUT_TOKEN }}
+          ref: main
+          path: qa-test/smoke-testing
 
       - name: Checkout frontend tests
         uses: actions/checkout@v3
@@ -107,24 +106,24 @@ jobs:
       #     path: qa-test/backend-testing
       #     submodules: recursive
 
-      # - name: Run API Mock Server
-      #   if: ${{ ! cancelled() }}
-      #   run: |
-      #     cd qa-test/api-model-server
-      #     python3 -m venv venv
-      #     source venv/bin/activate
-      #     pip3 install -r requirements.txt
-      #     bash regression_run_https.sh && fg &
-      #     bash classification_run_https.sh &
+      - name: Run API Mock Server
+        if: ${{ ! cancelled() }}
+        run: |
+          cd qa-test/api-model-server
+          python3 -m venv venv
+          source venv/bin/activate
+          pip3 install -r requirements.txt
+          bash regression_run_https.sh && fg &
+          bash classification_run_https.sh &
 
-      # - name: Run smoke tests
-      #   if: ${{ ! cancelled() }}
-      #   run: |
-      #     echo "$GITHUB_SERVER_URL"
-      #     cd qa-test/smoke-testing
-      #     npm install
-      #     npx playwright install
-      #     ENVIRONMENT_URL=$ENVIRONMENT_URL npx playwright test
+      - name: Run smoke tests
+        if: ${{ ! cancelled() }}
+        run: |
+          echo "$GITHUB_SERVER_URL"
+          cd qa-test/smoke-testing
+          npm install
+          npx playwright install
+          ENVIRONMENT_URL=$ENVIRONMENT_URL npx playwright test
 
       - name: Run frontend tests
         if: ${{ ! cancelled() }}
