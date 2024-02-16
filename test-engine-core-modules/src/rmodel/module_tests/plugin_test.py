@@ -2,6 +2,8 @@ import sys
 from pathlib import Path
 from typing import Tuple, Union
 
+import numpy as np
+from rpy2 import robjects
 from test_engine_core.interfaces.imodel import IModel
 from test_engine_core.interfaces.iserializer import ISerializer
 from test_engine_core.plugins.enums.model_plugin_type import ModelPluginType
@@ -29,7 +31,7 @@ class PluginTest:
         self._model_instance: Union[None, IModel] = None
         self._model_serializer_instance: Union[None, ISerializer] = None
 
-        self._expected_model_algorithm = "rpy2.robjects.vectors.DataFrame"  # "rpy2.robjects.vectors.ListVector"
+        self._expected_model_algorithm = "rpy2.robjects.vectors.ListVector"  # "rpy2.robjects.vectors.DataFrame"
         self._expected_model_plugin_type = ModelPluginType.R
 
     @time_class_method
@@ -65,6 +67,7 @@ class PluginTest:
                 self._validate_metadata,
                 self._validate_plugin_type,
                 self._validate_model_supported,
+                self._
             ]
 
             for method in test_methods:
@@ -151,6 +154,7 @@ class PluginTest:
             error_message += "Incorrect model algorithm;"
 
         return error_count, error_message
+
 
     def _validate_model_supported(self) -> Tuple[int, str]:
         """

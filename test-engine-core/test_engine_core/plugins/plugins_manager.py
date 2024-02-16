@@ -46,8 +46,8 @@ class PluginManager:
         ModelPluginType.XGBOOST,
         ModelPluginType.SKLEARN,
         ModelPluginType.TENSORFLOW,
-        ModelPluginType.API,
         ModelPluginType.R,
+        ModelPluginType.API,
     ]
     _serializer_priority_list: List = [
         SerializerPluginType.PICKLE,

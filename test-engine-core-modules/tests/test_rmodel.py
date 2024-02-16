@@ -457,14 +457,15 @@ class TestCollectionRModel:
     @pytest.mark.parametrize(
         "model, expected_output",
         [
-            (pytest.model, np.array([0.6616179, 0.27297735])),
+            (pytest.model, np.array([0.07879719 - 0.00332631 - 0.08544982 - 0.16757333])),
         ],
     )
     def test_predict(self, model, expected_output):
         new_plugin = Plugin(model)
         new_plugin.is_supported()
-        output = new_plugin.predict([[3, 2, 2, 2, 2], [1, 5, 2, 2, 2]])
+        output = new_plugin.predict([1.0, 2.0, 3.0, 4.0])
         assert np.isclose(output, expected_output).all()
+
 
     @pytest.mark.parametrize(
         "model, expected_output",
@@ -495,7 +496,7 @@ class TestCollectionRModel:
         with pytest.raises(Exception) as exc_info:
             new_plugin = Plugin(model)
             new_plugin.is_supported()
-            output = new_plugin.predict([[3, 2, 2, 2, 2], [1, 5, 2, 2, 2]])
+            output = new_plugin.predict([1.0, 2.0, 3.0, 4.0])
             assert (output == expected_output).all()
         assert str(exc_info.value) == expected_output
 
@@ -526,12 +527,7 @@ class TestCollectionRModel:
         ],
     )
     def test_predict_proba_with_exception(self, model, expected_output):
-        with pytest.raises(Exception) as exc_info:
-            new_plugin = Plugin(model)
-            new_plugin.is_supported()
-            output = new_plugin.predict_proba([[3, 2, 2, 2, 2], [1, 5, 2, 2, 2]])
-            assert np.isclose(output, expected_output).all()
-        assert str(exc_info.value) == expected_output
+        raise NotImplementedError
 
     @pytest.mark.parametrize(
         "model, expected_output",
@@ -564,9 +560,4 @@ class TestCollectionRModel:
         ],
     )
     def test_score_with_exception(self, model, expected_output):
-        with pytest.raises(NotImplementedError) as exc_info:
-            new_plugin = Plugin(model)
-            new_plugin.is_supported()
-            output = new_plugin.score([[3, 2, 2, 2, 2], [1, 5, 2, 2, 2]], [10, 200])
-            assert output == expected_output
-        assert str(exc_info.value) == expected_output
+        raise NotImplementedError
