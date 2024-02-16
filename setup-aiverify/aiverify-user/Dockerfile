@@ -1,6 +1,6 @@
 # Build the aiverify docker image
 
-FROM ubuntu:22.04
+FROM debian:12
 
 ###################  Install libraries ######################
 
@@ -17,40 +17,11 @@ RUN apt-get update && apt-get install -y nodejs
 
 # Install python 3.11, virtualenv
 RUN apt-get update
-RUN apt install software-properties-common -y
-RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt-get install -y python3.11 python3.11-venv
 
 ###################  Install chromium ######################
 
-# Install Chromium (for puppeteer) separately to cater for arm64 and amd64,
-# as puppeteer installs Chrome/Chromium for amd64 only
-RUN apt-get install debian-archive-keyring
-
-RUN umask 22
-
-RUN echo 'deb [signed-by=/usr/share/keyrings/debian-archive-keyring.gpg] http://deb.debian.org/debian stable main\n \
-deb-src [signed-by=/usr/share/keyrings/debian-archive-keyring.gpg] http://deb.debian.org/debian stable main\n \
-\n \
-deb [signed-by=/usr/share/keyrings/debian-archive-keyring.gpg] http://deb.debian.org/debian-security/ stable-security main\n \
-deb-src [signed-by=/usr/share/keyrings/debian-archive-keyring.gpg] http://deb.debian.org/debian-security/ stable-security main\n \
-\n \
-deb [signed-by=/usr/share/keyrings/debian-archive-keyring.gpg] http://deb.debian.org/debian stable-updates main\n \
-deb-src [signed-by=/usr/share/keyrings/debian-archive-keyring.gpg] http://deb.debian.org/debian stable-updates main' | tee /etc/apt/sources.list.d/debian-stable.list
-
-RUN echo 'Package: chromium*\n \
-Pin: origin *.debian.org\n \
-Pin-Priority: 100\n \
-\n \
-Package: *\n \
-Pin: origin *.debian.org\n \
-Pin-Priority: 1' | tee /etc/apt/preferences.d/debian-chromium
-
-RUN apt-get update
-
-RUN apt-get install chromium -y
-
-RUN ln -s /usr/bin/chromium /usr/bin/chromium-browser
+RUN apt-get install chromium -y && ln -s /usr/bin/chromium /usr/bin/chromium-browser
 
 # Install NPM
 RUN apt-get install npm -y
