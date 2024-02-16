@@ -48,6 +48,9 @@ services:
   # frontend - portal & apigw
   portal:
     image: aiverify:0.10
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
       DB_USERNAME: '${DB_AIVERIFY_USER:-aiverify}'
       DB_PASSWORD: '${DB_AIVERIFY_PASSWORD:-aiverify}'
