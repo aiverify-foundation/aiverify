@@ -5,3 +5,7 @@ coverage
 **/*.log
 .tox
 **/mytestmodel*
+
+.DS_Store
+.idea
+.vscode
