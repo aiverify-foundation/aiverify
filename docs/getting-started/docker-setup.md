@@ -16,7 +16,7 @@ To run AI Verify, these are the recommended requirements to run AI Verify on a l
 ## Download and Run AI Verify
 
 !!! Note
-    If you have installed AI Verify before, it is recommended to start the container with a clean state. Run the following commands to clean up existing data and files: 
+    If you have installed AI Verify before, it is recommended to start the container in a clean state. Run the following commands to clean up existing data and files: 
       ```bash
       bash docker-start.sh --reset
       ```
@@ -50,8 +50,15 @@ cd aiverify-user
 ```bash
 bash docker-build.sh
 ```
+By default, ai-verify-portal listens on port 3000. If you have changed the port or if you set up a different hostname other than 'localhost' for the app, update the value of `ALLOWED_ORIGINS` by adding the build arguments behind the `docker-build.sh`. The command below is an example of how to do it:
+```bash
+bash docker-build.sh --build-arg=ALLOWED_ORIGINS="http://localhost:3000,http://localhost:4000,http://<hostname>:<port>"
+```
+Replace `<hostname>` with your actual hostname and `<port>` with your actual port number. Ensure no spaces between commas.
 
-7. Click on the "Images" tab in Docker Desktop, you should see `ai-verify` running in Docker: 
+7. Wait for the setup to finish. Do observe the logs for errors.
+
+8. Click on the "Images" tab in Docker Desktop, you should see `ai-verify` image in the list of Docker Images: 
 ![docker-image](../../res/getting-started/docker-image-example.png)
 
 !!! Warning
