@@ -63,7 +63,9 @@ These are the recommended requirements to run AI Verify.
    cd aiverify-dev #navigate to the folder created
    bash setup-aiverify-dev.sh
    ```
-6. Wait for the set up to finish, do observe the logs for errors.
+6. If MongoDB is not installed on your system, you will be prompted to enter a new `DB Admin User` and `DB Admin Password` for MongoDB. You will also be prompted to create `DB AIVerify Username` and `DB AIVerify Password`. Once done, skip step 7 and proceed with the rest of the installation.
+7. If MongoDB is already installed on your system, you will be prompted with the following: `Mongodb detected, have you created the db and user required by aiverify?`. If yes, input `y` and proceed to input `DB AIVerify Username` and `DB AIVerify Password`. If no, input `n` and proceed to the `Warning` step above to create the AI Verify Username and AI Verify Password in MongoDB.
+8. Wait for the setup to finish. Do observe the logs for errors.
 
 ## Start AI Verify
 
