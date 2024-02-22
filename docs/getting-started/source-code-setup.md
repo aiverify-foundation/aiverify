@@ -117,11 +117,6 @@ python3 -m test_engine_app
 ```bash
 # Open a new terminal window #
 cd aiverify/ai-verify-apigw
-cp .env.development .env
-
-# Change the values of DB_USERNAME and DB_PASSWORD to the username and password you have set #
-echo "DB_USERNAME=aiverify" >> .env
-echo "DB_PASSWORD=aiverify" >> .env
 node app.mjs
 ```
 
@@ -134,8 +129,7 @@ npm run start
 ```
 
 !!! Warning
-      By default, ai-verify-portal listens on port 3000. If you have changed the port or if you set up a different hostname other than 'localhost' for the app, update the value of `ALLOWED_ORIGINS` in `aiverify/ai-verify-apigw/.env` and restart ai-verify-apigw.
-
+      By default, ai-verify-portal listens on port 3000. If you have changed the port or if you set up a different hostname other than 'localhost' for the app, update the value of `ALLOWED_ORIGINS` in `aiverify/ai-verify-apigw/.env` and restart ai-verify-apigw. To add a hostname, add behind the existing hostname like this: `ALLOWED_ORIGINS:http://localhost:3000,http://localhost:4000,http(s):<your hostname>:3000,http(s):<your hostname>:4000`. Replace `<your hostname>` with your actual hostname and ensure no spaces between commas.
       
       
 ## Running AI Verify
