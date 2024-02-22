@@ -63,7 +63,9 @@ These are the recommended requirements to run AI Verify.
    cd aiverify-dev #navigate to the folder created
    bash setup-aiverify-dev.sh
    ```
-6. Wait for the set up to finish, do observe the logs for errors.
+6. If MongoDB is not installed on your system, you will be prompted to enter a new `DB Admin User` and `DB Admin Password` for MongoDB. You will also be prompted to create `DB AIVerify Username` and `DB AIVerify Password`. Once done, skip step 7 and proceed with the rest of the installation.
+7. If MongoDB is already installed on your system, you will be prompted with the following: `Mongodb detected, have you created the db and user required by aiverify?`. If yes, input `y` and proceed to input `DB AIVerify Username` and `DB AIVerify Password`. If no, input `n` and proceed to the `Warning` step above to create the AI Verify Username and AI Verify Password in MongoDB.
+8. Wait for the setup to finish. Do observe the logs for errors.
 
 ## Start AI Verify
 
@@ -115,11 +117,6 @@ python3 -m test_engine_app
 ```bash
 # Open a new terminal window #
 cd aiverify/ai-verify-apigw
-cp .env.development .env
-
-# Change the values of DB_USERNAME and DB_PASSWORD to the username and password you have set #
-echo "DB_USERNAME=aiverify" >> .env
-echo "DB_PASSWORD=aiverify" >> .env
 node app.mjs
 ```
 
@@ -132,9 +129,7 @@ npm run start
 ```
 
 !!! Warning
-      By default, ai-verify-portal listens on port 3000. If you have changed the port or if you set up a different hostname other than 'localhost' for the app, update the value of `ALLOWED_ORIGINS` in `aiverify/ai-verify-apigw/.env` and restart ai-verify-apigw.
-
-      
+      By default, ai-verify-portal listens on port 3000. If you have changed the port or if you set up a different hostname other than 'localhost' for the app, update the value of `ALLOWED_ORIGINS` in `aiverify/ai-verify-apigw/.env` and restart ai-verify-apigw. To add a hostname, add behind the existing hostname like this: `ALLOWED_ORIGINS:http://localhost:3000,http://localhost:4000,http(s):<your hostname>:<port>`. Replace `<hostname>` with your actual hostname and `<port>` with your actual port number. Ensure no spaces between commas. 
       
 ## Running AI Verify
 
