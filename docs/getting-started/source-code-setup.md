@@ -129,8 +129,7 @@ npm run start
 ```
 
 !!! Warning
-      By default, ai-verify-portal listens on port 3000. If you have changed the port or if you set up a different hostname other than 'localhost' for the app, update the value of `ALLOWED_ORIGINS` in `aiverify/ai-verify-apigw/.env` and restart ai-verify-apigw. To add a hostname, add behind the existing hostname like this: `ALLOWED_ORIGINS:http://localhost:3000,http://localhost:4000,http(s):<your hostname>:3000,http(s):<your hostname>:4000`. Replace `<your hostname>` with your actual hostname and ensure no spaces between commas.
-      
+      By default, ai-verify-portal listens on port 3000. If you have changed the port or if you set up a different hostname other than 'localhost' for the app, update the value of `ALLOWED_ORIGINS` in `aiverify/ai-verify-apigw/.env` and restart ai-verify-apigw. To add a hostname, add behind the existing hostname like this: `ALLOWED_ORIGINS:http://localhost:3000,http://localhost:4000,http(s):<your hostname>:<port>`. Replace `<hostname>` with your actual hostname and `<port>` with your actual port number. Ensure no spaces between commas. 
       
 ## Running AI Verify
 
