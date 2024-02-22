@@ -17,7 +17,7 @@ To run AI Verify, these are the recommended requirements to run AI Verify on a l
 
 !!! Note
     If you have installed AI Verify before, it is recommended to start the container in a clean state. Run the following commands to clean up existing data and files: 
-      ```bash
+      ```
       bash docker-start.sh --reset
       ```
 
@@ -71,9 +71,9 @@ Replace `<hostname>` with your actual hostname and `<port>` with your actual por
 ```bash
 bash docker-start.sh
 ```
-
-2. Type [http://localhost:3000](http://localhost:3000) into your browser's address bar. 
+2. You will be prompted to enter `Username` and `Password`. !!! Warning If this is the first time running AI Verify on Docker after a new installation, the Username and Password will be set in MongoDB. Please remember them as you will be prompted to enter them whenever you run AI Verify on Docker.
+3. Type [http://localhost:3000](http://localhost:3000) into your browser's address bar. 
 !!! Warning
-      Upon initial start-up of the toolkit, pages might take sometime to load.
+      Upon initial start-up of the toolkit, pages might take some time to load.
 
    ![aiverify-home](../../res/getting-started/ai-verify-example.png)
