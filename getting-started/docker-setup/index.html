@@ -1400,8 +1400,8 @@
 <h2 id="download-and-run-ai-verify">Download and Run AI Verify</h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>If you have installed AI Verify before, it is recommended to start the container with a clean state. Run the following commands to clean up existing data and files: 
-  <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>bash<span class="w"> </span>docker-start.sh<span class="w"> </span>--reset
+<p>If you have installed AI Verify before, it is recommended to start the container in a clean state. Run the following commands to clean up existing data and files: 
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>bash docker-start.sh --reset
 </span></code></pre></div></p>
 </div>
 <ol>
@@ -1436,10 +1436,17 @@
 <li>
 <p>Execute the following command to build AI Verify.
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>bash<span class="w"> </span>docker-build.sh
-</span></code></pre></div></p>
+</span></code></pre></div>
+By default, ai-verify-portal listens on port 3000. If you have changed the port or if you set up a different hostname other than 'localhost' for the app, update the value of <code>ALLOWED_ORIGINS</code> by adding the build arguments behind the <code>docker-build.sh</code>. The command below is an example of how to do it:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>bash<span class="w"> </span>docker-build.sh<span class="w"> </span>--build-arg<span class="o">=</span><span class="nv">ALLOWED_ORIGINS</span><span class="o">=</span><span class="s2">&quot;http://localhost:3000,http://localhost:4000,http://&lt;hostname&gt;:&lt;port&gt;&quot;</span>
+</span></code></pre></div>
+Replace <code>&lt;hostname&gt;</code> with your actual hostname and <code>&lt;port&gt;</code> with your actual port number. Ensure no spaces between commas.</p>
 </li>
 <li>
-<p>Click on the "Images" tab in Docker Desktop, you should see <code>ai-verify</code> running in Docker: 
+<p>Wait for the setup to finish. Do observe the logs for errors.</p>
+</li>
+<li>
+<p>Click on the "Images" tab in Docker Desktop, you should see <code>ai-verify</code> image in the list of Docker Images: 
 <img alt="docker-image" src="../../res/getting-started/docker-image-example.png" /></p>
 </li>
 </ol>
@@ -1449,19 +1456,16 @@
 </div>
 <h2 id="run-ai-verify">Run AI Verify</h2>
 <ol>
-<li>
-<p>Start AI Verify using our start script. There might be a possibility that you might encounter this error if you are running this for the first time. If you do, execute the command again.
+<li>Start AI Verify using our start script. There might be a possibility that you might encounter this error if you are running this for the first time. If you do, execute the command again.
 <code>Error response from daemon: failed to mkdir /var/lib/docker/volumes/aiverify-user_plugins-volume/_data/accumulated-local-effect/widgets: mkdir /var/lib/docker/volumes/aiverify-user_plugins-volume/_data/accumulated-local-effect/widgets: file exists</code>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>bash<span class="w"> </span>docker-start.sh
-</span></code></pre></div></p>
-</li>
-<li>
-<p>Type <a href="http://localhost:3000">http://localhost:3000</a> into your browser's address bar. </p>
-</li>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>bash<span class="w"> </span>docker-start.sh
+</span></code></pre></div></li>
+<li>You will be prompted to enter <code>Username</code> and <code>Password</code>. !!! Warning If this is the first time running AI Verify on Docker after a new installation or if you did <code>bash docker-reset.sh</code> prior to <code>bash docker-start.sh</code>, the Username and Password will be set in MongoDB. Please remember them as you will be prompted to enter them whenever you run AI Verify on Docker.</li>
+<li>Type <a href="http://localhost:3000">http://localhost:3000</a> into your browser's address bar. </li>
 </ol>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Upon initial start-up of the toolkit, pages might take sometime to load.</p>
+<p>Upon initial start-up of the toolkit, pages might take some time to load.</p>
 </div>
 <p><img alt="aiverify-home" src="../../res/getting-started/ai-verify-example.png" /></p>
 

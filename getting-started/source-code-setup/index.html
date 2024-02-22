@@ -1578,7 +1578,9 @@
    <div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nb">cd</span><span class="w"> </span>aiverify-dev<span class="w"> </span><span class="c1">#navigate to the folder created</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>bash<span class="w"> </span>setup-aiverify-dev.sh
 </span></code></pre></div></li>
-<li>Wait for the set up to finish, do observe the logs for errors.</li>
+<li>If MongoDB is not installed on your system, you will be prompted to enter a new <code>DB Admin User</code> and <code>DB Admin Password</code> for MongoDB. You will also be prompted to create <code>DB AIVerify Username</code> and <code>DB AIVerify Password</code>. Once done, skip step 7 and proceed with the rest of the installation.</li>
+<li>If MongoDB is already installed on your system, you will be prompted with the following: <code>Mongodb detected, have you created the db and user required by aiverify?</code>. If yes, input <code>y</code> and proceed to input <code>DB AIVerify Username</code> and <code>DB AIVerify Password</code>. If no, input <code>n</code> and proceed to the <code>Warning</code> step above to create the AI Verify Username and AI Verify Password in MongoDB.</li>
+<li>Wait for the setup to finish. Do observe the logs for errors.</li>
 </ol>
 <h2 id="start-ai-verify">Start AI Verify</h2>
 <h3 id="redis-and-mongodb">Redis and MongoDB</h3>
@@ -1613,12 +1615,7 @@ Execute the following code to check that the services are running.</p>
 <h3 id="ai-verify-apigw">ai-verify-apigw</h3>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># Open a new terminal window #</span>
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nb">cd</span><span class="w"> </span>aiverify/ai-verify-apigw
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>cp<span class="w"> </span>.env.development<span class="w"> </span>.env
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>
-</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="c1"># Change the values of DB_USERNAME and DB_PASSWORD to the username and password you have set #</span>
-</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;DB_USERNAME=aiverify&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>.env
-</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;DB_PASSWORD=aiverify&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>.env
-</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>node<span class="w"> </span>app.mjs
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>node<span class="w"> </span>app.mjs
 </span></code></pre></div>
 <h3 id="ai-verify-portal">ai-verify-portal</h3>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Open a new terminal window #</span>
@@ -1627,7 +1624,7 @@ Execute the following code to check that the services are running.</p>
 </span></code></pre></div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>By default, ai-verify-portal listens on port 3000. If you have changed the port or if you set up a different hostname other than 'localhost' for the app, update the value of <code>ALLOWED_ORIGINS</code> in <code>aiverify/ai-verify-apigw/.env</code> and restart ai-verify-apigw.</p>
+<p>By default, ai-verify-portal listens on port 3000. If you have changed the port or if you set up a different hostname other than 'localhost' for the app, update the value of <code>ALLOWED_ORIGINS</code> in <code>aiverify/ai-verify-apigw/.env</code> and restart ai-verify-apigw. To add a hostname, add behind the existing hostname like this: <code>ALLOWED_ORIGINS:http://localhost:3000,http://localhost:4000,http(s):&lt;your hostname&gt;:&lt;port&gt;</code>. Replace <code>&lt;hostname&gt;</code> with your actual hostname and <code>&lt;port&gt;</code> with your actual port number. Ensure no spaces between commas. </p>
 </div>
 <h2 id="running-ai-verify">Running AI Verify</h2>
 <div class="admonition warning">
