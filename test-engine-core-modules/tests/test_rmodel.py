@@ -527,7 +527,12 @@ class TestCollectionRModel:
         ],
     )
     def test_predict_proba_with_exception(self, model, expected_output):
-        raise NotImplementedError
+        with (pytest.raises(NotImplementedError) as exc_info):
+            new_plugin = Plugin(model)
+            new_plugin.is_supported()
+            output = new_plugin.predict_proba([1.0, 2.0, 3.0, 4.0])
+            assert output == expected_output
+        assert str(exc_info.value) == expected_output
 
     @pytest.mark.parametrize(
         "model, expected_output",
@@ -560,4 +565,9 @@ class TestCollectionRModel:
         ],
     )
     def test_score_with_exception(self, model, expected_output):
-        raise NotImplementedError
+        with pytest.raises(NotImplementedError) as exc_info:
+            new_plugin = Plugin(model)
+            new_plugin.is_supported()
+            output = new_plugin.score([1.0, 2.0, 3.0, 4.0], [0, 0, 1, 1])
+            assert output == expected_output
+        assert str(exc_info.value) == expected_output
