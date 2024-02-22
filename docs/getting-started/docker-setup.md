@@ -71,7 +71,7 @@ Replace `<hostname>` with your actual hostname and `<port>` with your actual por
 ```bash
 bash docker-start.sh
 ```
-2. You will be prompted to enter `Username` and `Password`. !!! Warning If this is the first time running AI Verify on Docker after a new installation, the Username and Password will be set in MongoDB. Please remember them as you will be prompted to enter them whenever you run AI Verify on Docker.
+2. You will be prompted to enter `Username` and `Password`. !!! Warning If this is the first time running AI Verify on Docker after a new installation or if you did `bash docker-reset.sh` prior to `bash docker-start.sh`, the Username and Password will be set in MongoDB. Please remember them as you will be prompted to enter them whenever you run AI Verify on Docker.
 3. Type [http://localhost:3000](http://localhost:3000) into your browser's address bar. 
 !!! Warning
       Upon initial start-up of the toolkit, pages might take some time to load.
