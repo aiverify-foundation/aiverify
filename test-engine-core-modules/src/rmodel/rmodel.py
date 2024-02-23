@@ -1,15 +1,16 @@
 from __future__ import annotations
-import os
 
+import os
 from typing import Any, List, Tuple
 
 import numpy as np
-
+import pandas as pd
+import rpy2.robjects as ro
+from rpy2.robjects import pandas2ri
 from test_engine_core.interfaces.imodel import IModel
 from test_engine_core.plugins.enums.model_plugin_type import ModelPluginType
 from test_engine_core.plugins.enums.plugin_type import PluginType
 from test_engine_core.plugins.metadata.plugin_metadata import PluginMetadata
-
 
 
 # NOTE: Do not change the class name, else the plugin cannot be read by the system
@@ -138,13 +139,17 @@ class Plugin(IModel):
         try:
             lc_all = os.environ["LC_ALL"]
             os.environ["LC_ALL"] = "en_US.UTF-8"
-            from rpy2 import robjects
-            new_data = robjects.DataFrame({'input': robjects.FloatVector(data)})
-            robjects.r.assign("data", new_data)
-            predictions = robjects.r['predict'](self._model, newdata=robjects.r['data'])
-            predictions = np.array(robjects.conversion.rpy2py(predictions))
-            os.environ["LC_ALL"] = lc_all
-            return predictions
+            if isinstance(data, list):
+                for item in data:
+                    if isinstance(item, pd.DataFrame):
+                        with (ro.default_converter + pandas2ri.converter).context():
+                            new_data = ro.conversion.get_conversion().py2rpy(item)
+                        predictions = ro.r['predict'](object=self._model, newdata=new_data)
+                        predictions = np.array(ro.conversion.rpy2py(predictions))
+                        os.environ["LC_ALL"] = lc_all
+                        return predictions
+            else:
+                raise NotImplementedError
         except Exception:
             raise
 
