@@ -129,7 +129,7 @@ WEB_REPORT_URL=http://localhost:3000/reportStatus/printview" | tee .env
 # Install dependencies for apigw
 # Skip Chrome/chromium install during puppeteer install, since chromium
 # already installed above
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD 1
+ENV PUPPETEER_SKIP_DOWNLOAD 1
 RUN npm install
 ENV PUPPETEER_EXECUTABLE_PATH /usr/bin/chromium
 
