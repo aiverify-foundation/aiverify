@@ -31,7 +31,7 @@ services:
 
   # backend - test-engine
   test-engine:
-    image: aiverify:0.10
+    image: aiverify:0.10.1
     restart: always
     depends_on:
       - redis
@@ -47,7 +47,7 @@ services:
 
   # frontend - portal & apigw
   portal:
-    image: aiverify:0.10
+    image: aiverify:0.10.1
     environment:
       DB_USERNAME: '${DB_AIVERIFY_USER:-aiverify}'
       DB_PASSWORD: '${DB_AIVERIFY_PASSWORD:-aiverify}'
