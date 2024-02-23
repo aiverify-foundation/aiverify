@@ -1,17 +1,10 @@
-# Integration Tests
+# Integration Tests for Contributor Flow
 # Build aiverify and run QA test suites
 
-name: Integration Tests
+name: Contributor Flow
 
-on:
-  # Runs when a pull request review is being submitted
-  pull_request_review:
-    types: [submitted]
-    branches:
-      - 'main'
-      - 'v0.*'
-
-  # Run this workflow manually from Actions tab
+# Run this on Forked PR
+on: 
   workflow_dispatch:
     inputs:
       branch_to_test:
@@ -20,24 +13,13 @@ on:
         default: 'main'
         type: string
 
-# Allow one concurrent deployment
-concurrency:
-  group: ${{ github.repository }}-${{ github.workflow }}
-  cancel-in-progress: false
-
 jobs:
-
-  integration-tests:
-    #  Run only when PR is approved
-    if: (github.event_name == 'pull_request_review' && github.event.review.state == 'approved') || github.event_name == 'workflow_dispatch'
-
+  Integration-Test:
     runs-on: ubuntu-latest
-    timeout-minutes: 100
-
     steps:
-
-      - name: Install redis
-        run: |
+    
+     - name: Install redis
+       run: |
           sudo apt update
           sudo apt install redis-server
           pattern='notify-keyspace-events ""'
@@ -45,8 +27,8 @@ jobs:
           sudo sed -i 's/'"$pattern"'/'"$replacement"'/g' "/etc/redis/redis.conf"
           sudo systemctl restart redis-server
 
-      - name: Install mongod
-        run: |
+     - name: Install mongod
+       run: |
           wget -nc https://www.mongodb.org/static/pgp/server-6.0.asc
           cat server-6.0.asc | gpg --dearmor | sudo tee /etc/apt/keyrings/mongodb.gpg >/dev/null
           sudo sh -c 'echo "deb [ arch=amd64,arm64 signed-by=/etc/apt/keyrings/mongodb.gpg] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" >> /etc/apt/sources.list.d/mongo.list'
@@ -73,8 +55,8 @@ jobs:
           aiverify.createCollection('test-collection');
           EOF
 
-      - name: Install libraries
-        run: |
+     - name: Install libraries
+       run: |
           sudo apt-get update
           
           # amd64, install libs needed by puppeteer/chromium
@@ -88,26 +70,19 @@ jobs:
           
           sudo apt-get install unzip
 
-      - name: Checkout code (workflow_dispatch)
-        if: github.event_name == 'workflow_dispatch'
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ inputs.branch_to_test }}
+     - name: Checkout code (pull_request_review)
+       if: github.event_name == 'pull_request_target'
+       uses: actions/checkout@v3
+       with:
+            ref: ${{ github.event.pull_request.head.sha || github.ref }}
 
-      - name: Checkout code (pull_request_review)
-        if: github.event_name == 'pull_request_review'
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-
-      - name: Setup npm cache/install
-        uses: actions/setup-node@v3
-        with:
+     - name: Setup npm cache/install
+       uses: actions/setup-node@v3
+       with:
           node-version: 18
 
-      - name: Install node dependencies
-        run: |
+     - name: Install node dependencies
+       run: |
           cd ai-verify-shared-library
           npm install
           npm run build
@@ -126,19 +101,19 @@ jobs:
           #cp .env.development .env.local
           npm run build
 
-      - name: Setup pip cache/install
-        uses: actions/setup-python@v4
-        with:
+     - name: Setup pip cache/install
+       uses: actions/setup-python@v4
+       with:
           python-version: '3.10'
           cache: 'pip'
 
-      - name: Install python dependencies
-        run: |
+     - name: Install python dependencies
+       run: |
           pip install test-engine-core/dist/test_engine_core-*.tar.gz
           find ./ -type f -name 'requirements.txt' -exec pip install -r "{}" \;
 
-      - name: Install stock plugins
-        run: |
+     - name: Install stock plugins
+       run: |
           mkdir -p ai-verify-portal/plugins
           cd stock-plugins
           for plugin_dir in *; do
@@ -146,8 +121,8 @@ jobs:
             unzip $plugin_dir/dist/*.zip -d ../ai-verify-portal/plugins/$plugin_dir;
           done
 
-      - name: Run aiverify services
-        run: |
+     - name: Run aiverify services
+       run: |
           sudo systemctl restart mongod
           sudo systemctl restart redis-server
           wdir=$(pwd)
@@ -166,86 +141,80 @@ jobs:
           WEB_REPORT_URL=\"http://127.0.0.1:3000/reportStatus/printview\"
           REDIS_HOST=\"localhost\"
           REDIS_PORT=6379
-          DB_HOST=127.0.0.1
-          DB_PORT=27017
-          DB_USERNAME=aiverify
-          DB_PASSWORD=aiverify
           ALLOWED_ORIGINS=http://127.0.0.1:3000,http://127.0.0.1:3001,http://127.0.0.1:4000" > .env
-
           node app.mjs &> apigw.log &
           
           cd ../ai-verify-portal
           npm run start &> portal.log &
 
-      - name: Checkout API Mock Server
-        uses: actions/checkout@v3
-        with:
+     - name: Checkout API Mock Server
+       uses: actions/checkout@v3
+       with:
           repository: IMDA-BTG/api-model-server
           token: ${{ secrets.CHECKOUT_TOKEN }}
           ref: main
           path: qa-test/api-model-server
           
-      - name: Checkout smoke tests
-        uses: actions/checkout@v3
-        with:
+     - name: Checkout smoke tests
+       uses: actions/checkout@v3
+       with:
           repository: IMDA-BTG/smoke-testing
           token: ${{ secrets.CHECKOUT_TOKEN }}
           ref: main
           path: qa-test/smoke-testing
           submodules: recursive
 
-      - name: Checkout frontend tests
-        uses: actions/checkout@v3
-        with:
+     - name: Checkout frontend tests
+       uses: actions/checkout@v3
+       with:
           repository: IMDA-BTG/frontend-testing
           token: ${{ secrets.CHECKOUT_TOKEN }}
           ref: main
           path: qa-test/frontend-testing
 
-      - name: Checkout backend tests
-        uses: actions/checkout@v3
-        with:
+     - name: Checkout backend tests
+       uses: actions/checkout@v3
+       with:
           repository: IMDA-BTG/backend-testing
           token: ${{ secrets.CHECKOUT_TOKEN }}
           ref: main
           path: qa-test/backend-testing
           submodules: recursive
 
-      - name: Run API Mock Server
-        if: ${{ ! cancelled() }}
-        run: |
+     - name: Run API Mock Server
+       if: ${{ ! cancelled() }}
+       run: |
           cd qa-test/api-model-server
           python3 -m venv venv
           source venv/bin/activate
           pip3 install -r requirements.txt
-          bash regression_run_https.sh && fg &
-          bash classification_run_https.sh &
+          bash regression_run_https.sh &
 
-      - name: Run smoke tests
-        if: ${{ ! cancelled() }}
-        run: |
+     - name: Run smoke tests
+       if: ${{ ! cancelled() }}
+       run: |
           cd qa-test/smoke-testing
           npm install
           npx playwright install
-          ENVIRONMENT_URL=https://127.0.0.1 npx playwright test
+          ENVIRONMENT_URL=https://127.0.0.1:5000 npx playwright test
 
-      - name: Run frontend tests
-        if: ${{ ! cancelled() }}
-        run: |
+     - name: Run frontend tests
+       if: ${{ ! cancelled() }}
+       run: |
           cd qa-test/frontend-testing
           npm install
           npx playwright test
 
-      - name: Run backend tests
-        if: ${{ ! cancelled() }}
-        run: |
+     - name: Run backend tests
+       if: ${{ ! cancelled() }}
+       run: |
           cd qa-test/backend-testing
           npm install
           BASEDIR=${{ github.workspace }} npx playwright test
 
-      - name: Show logs
-        if: ${{ ! cancelled() }}
-        run: |
+     - name: Show logs
+       if: ${{ ! cancelled() }}
+       run: |
           echo "================= Start of test-engine log ================="
           cat test-engine-app/engine.log
           echo "================= Start of apigw log ================="

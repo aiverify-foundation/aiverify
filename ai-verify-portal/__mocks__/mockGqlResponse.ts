@@ -82,7 +82,7 @@ export const mockGqlDataE2E = [
             name: 'pickle_pandas_tabular_compas_testing.sav',
             filename: 'pickle_pandas_tabular_compas_testing.sav',
             filePath:
-              '/home/aiverify/uploads/data/pickle_pandas_tabular_compas_testing.sav',
+              '/uploads/data/pickle_pandas_tabular_compas_testing.sav',
             ctime: '2023-06-05T07:17:06.360Z',
             size: '68.33 KB',
             status: 'Valid',
@@ -143,7 +143,7 @@ export const mockGqlDataE2E = [
             id: '64cb013aad81d1d5d0227bf5',
             name: 'image-test.png',
             filename: 'aiv-homescreen-v1.png',
-            filePath: '/home/aiverify/uploads/data/image-test.png',
+            filePath: '../aiverify/uploads/data/image-test.png',
             ctime: '2023-08-03T01:22:02.814Z',
             size: '71.09 KB',
             status: 'Invalid',
@@ -154,7 +154,7 @@ export const mockGqlDataE2E = [
             serializer: '',
             dataFormat: '',
             errorMessages:
-              'The dataset /home/amdlahir/aiverify/uploads/data/aiv-homescreen-v1.png is not supported. Please upload a supported dataset: Unable to get data instance: ',
+              'The dataset ../aiverify/uploads/data/aiv-homescreen-v1.png is not supported. Please upload a supported dataset: Unable to get data instance: ',
             type: 'File',
           },
         ],
@@ -174,7 +174,7 @@ export const mockGqlDataE2E = [
             name: 'pickle_scikit_bc_compas.sav',
             filename: 'pickle_scikit_bc_compas.sav',
             filePath:
-              '/home/amdlahir/aiverify/uploads/model/pickle_scikit_bc_compas.sav',
+              '../aiverify/uploads/model/pickle_scikit_bc_compas.sav',
             ctime: '2023-06-05T07:17:25.132Z',
             size: '502.71 KB',
             status: 'Valid',

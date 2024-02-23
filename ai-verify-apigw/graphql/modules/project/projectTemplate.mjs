@@ -1,8 +1,8 @@
-"use strict"
+"use strict";
 
-import mongoose from 'mongoose';
-import { ProjectTemplateModel } from '#models';
-
+import mongoose from "mongoose";
+import { ProjectTemplateModel } from "#models";
+import { graphqlErrorHandler } from "../errorHandler.mjs";
 
 const resolvers = {
   Query: {
@@ -12,12 +12,12 @@ const resolvers = {
      */
     projectTemplates: (parent) => {
       return new Promise((resolve, reject) => {
-        ProjectTemplateModel.find({ __t: null }).then(docs => {
-          resolve(docs)
-        }).catch(err => {
-          reject(err);
-        })
-      })
+        ProjectTemplateModel.find({ __t: null })
+          .then((docs) => {
+            resolve(docs);
+          })
+          .catch((err) => graphqlErrorHandler(err, 'An error occured while fetching projectTemplates', reject));
+      });
     }, // projectTemplates
     /**
      * Return one projectTemplate
@@ -26,14 +26,13 @@ const resolvers = {
      */
     projectTemplate: (parent, { id }) => {
       return new Promise((resolve, reject) => {
-        ProjectTemplateModel.findById(id).then(doc => {
-          if (!doc)
-            return reject("Invalid ID");
-          resolve(doc);
-        }).catch(err => {
-          reject(err);
-        })
-      })
+        ProjectTemplateModel.findById(id)
+          .then((doc) => {
+            if (!doc) return reject("Invalid ID");
+            resolve(doc);
+          })
+          .catch((err) => graphqlErrorHandler(err, 'An error occured while fetching the projectTemplate', reject));
+      });
     }, // projectTemplate
   }, // Query
   Mutation: {
@@ -46,17 +45,15 @@ const resolvers = {
     createProjectTemplate: (parent, { projectTemplate }) => {
       console.debug("createProjectTemplate", projectTemplate);
       if (!projectTemplate.projectInfo.name) {
-        return Promise.reject("Missing variable")
+        return Promise.reject("Missing variable");
       }
       return new Promise((resolve, reject) => {
-        ProjectTemplateModel.create(projectTemplate).then((doc) => {
-          // console.debug("doc", doc);
-          // doc.save().then(())
-          resolve(doc);
-        }).catch(err => {
-          reject(err)
-        })
-      })
+        ProjectTemplateModel.create(projectTemplate)
+          .then((doc) => {
+            resolve(doc);
+          })
+          .catch((err) => graphqlErrorHandler(err, 'An error occured while creating projectTemplate', reject));
+      });
     }, // createProjectTemplate
     /**
      * Delete projectTemplate.
@@ -66,14 +63,13 @@ const resolvers = {
     deleteProjectTemplate: (parent, { id }) => {
       console.debug("deleteProjectTemplate", id);
       return new Promise((resolve, reject) => {
-        ProjectTemplateModel.findByIdAndDelete(id).then(result => {
-          if (!result)
-            return reject("Invalid ID")
-          resolve(id);
-        }).catch(err => {
-          reject(err);
-        })
-      })
+        ProjectTemplateModel.findByIdAndDelete(id)
+          .then((result) => {
+            if (!result) return reject("Invalid ID");
+            resolve(id);
+          })
+          .catch((err) => graphqlErrorHandler(err, 'An error occured while deleting projectTemplate', reject))
+      });
     }, // deleteProjectTemplate
     /**
      * Update projectTemplate
@@ -82,26 +78,17 @@ const resolvers = {
      * @returns Promise of updated Project
      */
     updateProjectTemplate: (parent, { id, projectTemplate }) => {
-      // console.debug("updateProjectTemplate", id, JSON.stringify(projectTemplate,null,2));
       return new Promise((resolve, reject) => {
-        // ProjectTemplateModel.findByIdAndUpdate(id, projectTemplate, { new: true }).then(doc => {
-        //   if (!doc)
-        //     return reject("Invalid ID")
-        //   if (doc.fromPlugin)
-        //     return reject("Template edit is not allowed")
-        ProjectTemplateModel.findById(id).then(async doc => {
-          if (!doc)
-            return reject("Invalid ID")
-          if (doc.fromPlugin)
-            return reject("Template edit is not allowed")
-          // console.log("projectTemplate updated doc", doc)
-          doc = Object.assign(doc, projectTemplate);
-          doc = await doc.save();
-          resolve(doc);
-        }).catch(err => {
-          reject(err);
-        })
-      })
+        ProjectTemplateModel.findById(id)
+          .then(async (doc) => {
+            if (!doc) return reject("Invalid ID");
+            if (doc.fromPlugin) return reject("Template edit is not allowed");
+            doc = Object.assign(doc, projectTemplate);
+            doc = await doc.save();
+            resolve(doc);
+          })
+          .catch((err) => graphqlErrorHandler(err, 'An error occured while updating the projectTemplate', reject))
+      });
     }, // updateProjectTemplate
     /**
      * Make a copy of the projectTemplate
@@ -110,24 +97,22 @@ const resolvers = {
      */
     cloneProjectTemplate: (parent, { id }) => {
       return new Promise((resolve, reject) => {
-        ProjectTemplateModel.findById(id).then(doc => {
-          if (!doc)
-            return reject("Invalid ID")
-          let newdoc = new ProjectTemplateModel(doc);
-          newdoc._id = mongoose.Types.ObjectId();
-          newdoc.fromPlugin = false;
-          newdoc.projectInfo.name = `Copy of ${doc.projectInfo.name}`;
-          // newdoc.inputBlockData = {};
-          newdoc.isNew = true;
-          newdoc.save().then(doc => {
-            resolve(doc);
-          });
-        }).catch(err => {
-          reject(err);
-        })
-      })
+        ProjectTemplateModel.findById(id)
+          .then((doc) => {
+            if (!doc) return reject("Invalid ID");
+            let newdoc = new ProjectTemplateModel(doc);
+            newdoc._id = mongoose.Types.ObjectId();
+            newdoc.fromPlugin = false;
+            newdoc.projectInfo.name = `Copy of ${doc.projectInfo.name}`;
+            newdoc.isNew = true;
+            newdoc.save().then((doc) => {
+              resolve(doc);
+            });
+          })
+          .catch((err) => graphqlErrorHandler(err, 'An error occured while copying the projectTemplate', reject));
+      });
     }, // cloneProjectTemplate
   }, // Mutation
-}
+};
 
 export default resolvers;

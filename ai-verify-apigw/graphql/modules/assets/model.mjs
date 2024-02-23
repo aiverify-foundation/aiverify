@@ -3,6 +3,7 @@ import { GraphQLError } from "graphql";
 import fs from "node:fs";
 import fsPromises from "node:fs/promises";
 import pubsub from "#lib/apolloPubSub.mjs";
+import { graphqlErrorHandler } from "../errorHandler.mjs";
 
 const resolvers = {
   Query: {
@@ -17,17 +18,13 @@ const resolvers = {
             .then((doc) => {
               resolve([doc]);
             })
-            .catch((err) => {
-              reject(err);
-            });
+            .catch((err) => graphqlErrorHandler(err, 'An error occured while fetching the model file', reject))
         } else {
           ModelFileModel.find()
             .then((docs) => {
               resolve(docs);
             })
-            .catch((err) => {
-              reject(err);
-            });
+            .catch((err) => graphqlErrorHandler(err, 'An error occured while fetching the model files', reject))
         }
       });
     },
@@ -38,11 +35,10 @@ const resolvers = {
           if (doc.type !== "API") return reject("Model is not of type API");
           try {
             const spec = await doc.exportModelAPI();
-            // console.log("spec", spec);
             if (!spec) return reject("Unable to generate spec");
             resolve(spec);
           } catch (err) {
-            reject(err);
+            graphqlErrorHandler(err, 'An error occured while fetching the model API Spec', reject)
           }
         });
       });
@@ -50,7 +46,6 @@ const resolvers = {
   },
   Mutation: {
     createModelAPI: (parent, { model }) => {
-      // console.log("createModelAPI", model);
       if (
         !model.name ||
         !model.modelType ||
@@ -59,7 +54,6 @@ const resolvers = {
       ) {
         return Promise.reject("Missing variable");
       }
-      // project.status = "NoReport";
       return new Promise((resolve, reject) => {
         const doc = {
           ...model,
@@ -68,17 +62,12 @@ const resolvers = {
         };
         ModelFileModel.create(doc)
           .then((doc) => {
-            // console.debug("doc", doc);
-            // doc.save().then(())
             resolve(doc);
           })
-          .catch((err) => {
-            reject(err);
-          });
+          .catch((err) => graphqlErrorHandler(err, 'An error occured while creating the model API', reject))
       });
     },
     updateModelAPI: (parent, { modelFileID, model }) => {
-      console.log("updateModelAPI", modelFileID, model);
       return new Promise(async (resolve, reject) => {
         try {
           const newdoc = await ModelFileModel.findOneAndUpdate(
@@ -88,12 +77,11 @@ const resolvers = {
           );
           resolve(newdoc);
         } catch (err) {
-          reject(err);
+          graphqlErrorHandler(err, 'An error occured while updating the model API', reject)
         }
       });
     },
     deleteModelFile: (parent, { id }) => {
-      console.debug("deleteModelFile", id);
       return new Promise((resolve, reject) => {
         ModelFileModel.findById(id)
           .then((result) => {
@@ -151,9 +139,7 @@ const resolvers = {
               resolve(id);
             });
           })
-          .catch((err) => {
-            reject(err);
-          });
+          .catch((err) => graphqlErrorHandler(err, 'An error occured while deleting the model file', reject));
       });
     },
     updateModel: (parent, { modelFileID, modelFile }) => {
@@ -197,7 +183,8 @@ const resolvers = {
             reject(`Invalid id ${modelFileID}`);
           }
         });
-      });
+      })
+      .catch((err) => graphqlErrorHandler(err, 'An error occured while updating the model file', reject));
     },
   },
   Subscription: {
