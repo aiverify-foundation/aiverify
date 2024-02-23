@@ -418,8 +418,10 @@ class Plugin(IAlgorithm):
                 data_to_predict = self._transform_to_df(
                     data_in_numpy, raw_shapes, subfolder_name="pred_init"
                 )
-            predictions = self._model.predict(data_to_predict, self._data_labels)
 
+            predictions = self._model.predict(
+                [data_to_predict], self._data_labels_items
+            )
             # Update the progress total value (initial adversarial + final adversarial samples)
             self._progress_inst.add_total(2 * len(data_in_numpy))
 
@@ -586,7 +588,6 @@ class Plugin(IAlgorithm):
                         break
 
                 perturbed_input = self._salt_and_pepper(original, 2)
-
                 # if model is XGBoost, cast perturbed_input into a 2D np array to pass into XGBoost's predict
                 # this is required to fit into the model's expected fields
                 if self._check_for_xgb_model_type():
@@ -597,13 +598,14 @@ class Plugin(IAlgorithm):
                         )
                     else:
                         transformed_pertubed_input = np.array([perturbed_input])
+                    transformed_pertubed_input_df = self._transform_to_df(
+                        transformed_pertubed_input,
+                        image_shapes,
+                        subfolder_name="adv_pred",
+                    )
                     adversarial_prediction = self._model.predict(
-                        self._transform_to_df(
-                            transformed_pertubed_input,
-                            image_shapes,
-                            subfolder_name="adv_pred",
-                        ),
-                        self._data_labels,
+                        transformed_pertubed_input_df,
+                        self._data_labels_items,
                     )
 
                 else:
@@ -614,11 +616,14 @@ class Plugin(IAlgorithm):
                         processed_pertubed_input = [perturbed_input]
                     else:
                         processed_pertubed_input = [[perturbed_input]]
+                    processed_pertubed_input_df = self._transform_to_df(
+                        processed_pertubed_input,
+                        image_shapes,
+                        subfolder_name="adv_pred",
+                    )
                     adversarial_prediction = self._model.predict(
-                        self._transform_to_df(
-                            processed_pertubed_input, image_shapes, subfolder_name="adv_pred"
-                        ),
-                        self._data_labels,
+                        processed_pertubed_input_df,
+                        self._data_labels_items,
                     )
 
             # Update the progress
@@ -712,7 +717,7 @@ class Plugin(IAlgorithm):
 
                             # Check predictions for adversarial
                             potential_adversarials_prediction = self._model.predict(
-                                adversarial_list_to_predict, self._data_labels
+                                [adversarial_list_to_predict], self._data_labels_items
                             )
                             satisfied = (
                                 potential_adversarials_prediction
@@ -743,6 +748,7 @@ class Plugin(IAlgorithm):
                                 min_feature_value,
                                 max_feature_value,
                             )
+
                             if self._check_for_xgb_model_type():
                                 if (
                                     self._model_instance._model_algorithm
@@ -753,18 +759,19 @@ class Plugin(IAlgorithm):
                                         columns=self._data_labels,
                                     )
                                     potential_adversarials_prediction = (
-                                        self._model.predict(df, self._data_labels)
+                                        self._model.predict(df, self._data_labels_items)
                                     )
                             else:
+                                potential_adv_pred_transformed = self._transform_to_df(
+                                    np.array(potential_adversarials),
+                                    image_shapes,
+                                    subfolder_name="potential_adv_pred"
+                                    + str(iteration)
+                                    + str(count_test),
+                                )
                                 potential_adversarials_prediction = self._model.predict(
-                                    self._transform_to_df(
-                                        np.array(potential_adversarials),
-                                        image_shapes,
-                                        subfolder_name="potential_adv_pred"
-                                        + str(iteration)
-                                        + str(count_test),
-                                    ),
-                                    self._data_labels,
+                                    [potential_adv_pred_transformed],
+                                    self._data_labels_items,
                                 )
                             satisfied = (
                                 potential_adversarials_prediction
@@ -851,10 +858,12 @@ class Plugin(IAlgorithm):
             self._serializer_instance.get_serializer_plugin_type()
             is not SerializerPluginType.IMAGE
         ):
-            final_adversarial_samples_to_predict = [final_adversarial_samples_to_predict]
-                    
+            final_adversarial_samples_to_predict = [
+                final_adversarial_samples_to_predict
+            ]
+
         adversarial_prediction = self._model.predict(
-            final_adversarial_samples_to_predict, self._data_labels
+            final_adversarial_samples_to_predict, self._data_labels_items
         )
 
         # get the sample predictions to use for the sample section later

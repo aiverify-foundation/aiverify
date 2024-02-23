@@ -94,7 +94,7 @@ const uploadResponse = [
     filename: 'file1.png',
     name: 'file1.png',
     type: 'File',
-    filePath: '/home/uploads/file1.png',
+    filePath: '../uploads/file1.png',
     ctime: '2023-05-24T05:56:20.830Z',
     description: '',
     status: 'Pending',

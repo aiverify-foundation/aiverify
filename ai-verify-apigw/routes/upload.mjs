@@ -24,6 +24,36 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage })
 
+function validateAndSanitize(userInput) {
+  // Allow only alphanumeric characters and underscores
+  const allowedCharactersRegex = /^[a-zA-Z0-9_]+$/;
+  // Example maximum length constraint
+  const maxLength = 50;
+  if (typeof userInput !== 'string') {
+    throw new Error('Invalid input type. Input must be a string.');
+  }
+  // Trim leading and trailing whitespaces
+  userInput = userInput.trim();
+  // Check if the input length is within acceptable limits
+  if (userInput.length > maxLength) {
+    throw new Error(`Input exceeds maximum length of ${maxLength} characters.`);
+  }
+  // Check if the input contains only allowed characters
+  if (!allowedCharactersRegex.test(userInput)) {
+    throw new Error('Invalid characters in the input. Only alphanumeric characters and underscores are allowed.');
+  }
+  return userInput;
+};
+
+function validateFileSize(file) {
+  const maxFileSizeInGB = 4;
+  const maxAllowedFileSize = Math.pow(1024, 3) * maxFileSizeInGB;
+  if (file.size === undefined) throw new Error('Invalid file size');
+  if (file.size > maxAllowedFileSize) throw new Error(`File size is larger than the maximum allowed size of ${maxFileSizeInGB} GB`);
+  return true;
+}
+
+
 function formatBytes(bytes, decimals = 2) {
   if (!+bytes) return '0 Bytes'
 
@@ -111,6 +141,14 @@ router.post('/data', upload.array('myFiles'), async function (req, res, next) {
       const myFolders = req.body.myFolders;
       const myFolder = req.body.myFolder;
 
+      if (myFolder) {
+        try {
+          validateAndSanitize(myFolder);
+        } catch (err) {
+          return res.sendStatus(500).json({ err });
+        }
+      }
+
       if (!files) {
         return res.sendStatus(400).json({ err: "No files to be uploaded"});
       }
@@ -126,6 +164,11 @@ router.post('/data', upload.array('myFiles'), async function (req, res, next) {
 
       let promises = files.map((file,index) => {
         return new Promise(async (resolve, reject) => {
+          try {
+            validateFileSize(file);
+          } catch(err) {
+            reject(err);
+          }
           const dataFolder = '../uploads/data/';
           //create /data folder if it doesnt exist
           if (!fs.existsSync('../uploads/data')) {
@@ -175,7 +218,7 @@ router.post('/data', upload.array('myFiles'), async function (req, res, next) {
             const joinedPath = path.join(baseFolder, newSubfolder);
             folder = `${joinedPath}`;
             var newFileName = file.filename;
-            let uploadFolder = path.join("../uploads", baseFolder, newFolderName);
+            let uploadFolder = path.join("../uploads", baseFolder, newFolderName); // newFolderName is generated based on already sanitized myFolder
             let folderPath = path.resolve(uploadFolder);
             if (!fs.existsSync(uploadFolder)) { // only add folderCreated once per folder upload
               fs.mkdirSync(uploadFolder, {recursive: true});
@@ -194,15 +237,6 @@ router.post('/data', upload.array('myFiles'), async function (req, res, next) {
 
           if (!fs.existsSync(uploadSubfolder)) {
             fs.mkdirSync(uploadSubfolder, {recursive: true});
-            // let folderPath = path.resolve(uploadSubfolder);
-            // if (subfolder && subfolder.length > 0) {
-            //   folderCreated = {
-            //     subFolderOf: path.basename( path.dirname(folderPath)),
-            //     folderName: newFolderName,
-            //     filePath: folderPath,
-            //     stat: fs.statSync(uploadSubfolder),
-            //   };
-            // }
           }
           
           let uploadPath = path.resolve(uploadSubfolder, newFileName);
@@ -219,28 +253,26 @@ router.post('/data', upload.array('myFiles'), async function (req, res, next) {
         let numSuccess = 0;
         // console.log("Results is:", results);
         for (let result of results) {
+          if (result.status === 'rejected') {
+            console.log(result.reason);
+            continue;
+          }
           let value = result.value;
-          // console.log("Result value is:", result.value);
-          
           if (value.folderCreated) {
-            // if (value.folderCreated.subFolderOf == 'data') {
-              // only create folder object and send folder for validation
-              const newFolderObj = new DatasetModel({       
-                name: value.folderCreated.folderName,
-                filename: value.folderCreated.folderName,
-                filePath: value.folderCreated.filePath,
-                status: "Pending",
-                type: "Folder",
-                ctime: value.folderCreated.stat.ctime,
-              });
-              await newFolderObj.save(function (err, product, numAffected) {
-                console.log("Folder saved: ", product);
-              });
-              // console.log("newObj is: ", newObj);
-              queueDataset(newFolderObj)
-              data.push(newFolderObj)
-              numSuccess++;
-            // }
+            const newFolderObj = new DatasetModel({       
+              name: value.folderCreated.folderName,
+              filename: value.folderCreated.folderName,
+              filePath: value.folderCreated.filePath,
+              status: "Pending",
+              type: "Folder",
+              ctime: value.folderCreated.stat.ctime,
+            });
+            await newFolderObj.save(function (err, product, numAffected) {
+              console.log("Folder saved: ", product);
+            });
+            queueDataset(newFolderObj)
+            data.push(newFolderObj)
+            numSuccess++;
           } else {
             if ((value.subfolder == '') || (value.subfolder == null)){
               //create file objects and send files for validation
@@ -260,10 +292,7 @@ router.post('/data', upload.array('myFiles'), async function (req, res, next) {
               });
               await newObj.save(function (err, product, numAffected) {
                 console.log("Saved: ", product);
-                // console.log("Save error: ", err);
               });
-    
-              // console.log("newObj is: ", newObj);
     
               queueDataset(newObj)
               data.push(newObj)
@@ -301,9 +330,15 @@ router.post('/model', upload.array('myModelFiles'), async function (req, res, ne
         const myFolder = req.body.myModelFolder;
         const myModelTypes = req.body.myModelType;
         const myFolderModelType = req.body.myFolderModelType;
-        // console.log("myModelFolders is: ", myFolders);
-        // console.log("myModelFolder is: ", myFolder);
-  
+        
+        if (myFolder) {
+          try {
+            validateAndSanitize(myFolder);
+          } catch (err) {
+            return res.sendStatus(500).json({ err });
+          }
+        }
+
         if (!files) {
           return res.sendStatus(400).json({ err: "No files to be uploaded"});
         }
@@ -319,6 +354,11 @@ router.post('/model', upload.array('myModelFiles'), async function (req, res, ne
 
         let promises = files.map((file,index) => {
           return new Promise(async (resolve, reject) => {
+            try {
+              validateFileSize(file);
+            } catch(err) {
+              reject(err);
+            }
             const dataFolder = '../uploads/model/';
             //create /model folder if it doesnt exist
             if (!fs.existsSync('../uploads/model')) {
@@ -368,10 +408,8 @@ router.post('/model', upload.array('myModelFiles'), async function (req, res, ne
               const joinedPath = path.join(baseFolder, newSubfolder);
               folder = `${joinedPath}`;
               var newFileName = file.filename;
-              let uploadFolder = path.join("../uploads", baseFolder, newFolderName);
+              let uploadFolder = path.join("../uploads", baseFolder, newFolderName); // newFolderName is generated based on already sanitized myFolder
               let folderPath = path.resolve(uploadFolder);
-              // console.log("uploadFolder is: ", uploadFolder);
-              // console.log("folderPath is: ", folderPath);
               if (!fs.existsSync(uploadFolder)) { // only add folderCreated once per folder upload
                 fs.mkdirSync(uploadFolder, {recursive: true});
                 folderCreated = {
@@ -390,16 +428,6 @@ router.post('/model', upload.array('myModelFiles'), async function (req, res, ne
           
             if (!fs.existsSync(uploadSubfolder)) {
               fs.mkdirSync(uploadSubfolder, {recursive: true});
-              // let folderPath = path.resolve(uploadSubfolder);
-              // if (subfolder && subfolder.length > 0) { // only add folderCreated for subfolder creation
-              //     folderCreated = {
-              //     subFolderOf: path.basename( path.dirname(folderPath)),
-              //     folderName: newFolderName,
-              //     filePath: folderPath,
-              //     stat: fs.statSync(uploadSubfolder),
-              //     myFolderModelType: myFolderModelType,
-              //   };
-              // }
             } 
             
             let uploadPath = path.resolve(uploadSubfolder, newFileName);
@@ -422,70 +450,54 @@ router.post('/model', upload.array('myModelFiles'), async function (req, res, ne
           let numSuccess = 0;
 
           for (let result of results) {
+            if (result.status === 'rejected') {
+              console.log(result.reason);
+              continue;
+            }
             let value = result.value;
-            // console.log("Result value is:", result.value);
-            // console.log("value.stat is:", result.value.stat);
-            // console.log("value.uploadPath is:", result.value.uploadPath);
-
-              if (value.folderCreated) {
-                //if (value.folderCreated.subFolderOf == 'model') {
-                  // console.log("folderCreated is: ", value.folderCreated)
-                  // only create folder object and send folder for validation
-                  const newFolderObj = new ModelFileModel({
-                    name: value.folderCreated.folderName,
-                    filename: value.folderCreated.folderName,
-                    filePath: value.folderCreated.filePath,
-                    // subFolder: value.folderCreated.subFolderOf,
-                    status: "Pending",
-                    modelType: value.folderCreated.myFolderModelType,
-                    type: (req.body.type == "pipeline")?"Pipeline":"Folder",
-                    ctime: value.folderCreated.stat.ctime,
-                  });
-                  
-                  await newFolderObj.save(function (err, product, numAffected) {
-                    console.log("Folder saved: ", product);
-                  })
-                  // .catch(err => {
-                  //   res.status(400).json({ err: "Error saving folder to db:", err});
-                  // });
-                  queueModel(newFolderObj) ;
-                  data.push(newFolderObj);
-                  numSuccess++; 
-                //}
-              } else {
-                if((value.subfolder == '') || (value.subfolder == null)) {
-                  //create file objects and send files for validation
-                  const fileSize = formatBytes(value.file.size)
-                  const newObj = new ModelFileModel({       
-                    name: value.newFileName,
-                    filename: value.newFileName,
-                    filePath: value.uploadPath,
-                    // subFolder: value.subfolder,
-                    description: "",
-                    status: "Pending",
-                    size: fileSize,
-                    ctime: value.stat.ctime,
-                    serializer: "",
-                    modelType: value.myModelType,
-                    modelFormat: "",
-                    errorMessages: "",
-                    type: "File",
-                  });
-                  // console.log("newObj is: ", newObj)
-                  await newObj.save(function (err, product, numAffected) {
-                    // console.log("save err is: ", err);
-                    console.log("Saved: ", product);
-                    // console.log("save numaffected is: ", numAffected);
-                  })
-                  // .catch(err => {
-                  //   res.status(400).json({ err: "Error saving file to db:", err});
-                  // });
-                  queueModel(newObj)
-                  data.push(newObj)
-                  numSuccess++;
-                }
+            if (value.folderCreated) {
+                const newFolderObj = new ModelFileModel({
+                  name: value.folderCreated.folderName,
+                  filename: value.folderCreated.folderName,
+                  filePath: value.folderCreated.filePath,
+                  status: "Pending",
+                  modelType: value.folderCreated.myFolderModelType,
+                  type: (req.body.type == "pipeline")?"Pipeline":"Folder",
+                  ctime: value.folderCreated.stat.ctime,
+                });
+                
+                await newFolderObj.save(function (err, product, numAffected) {
+                  console.log("Folder saved: ", product);
+                })
+                queueModel(newFolderObj) ;
+                data.push(newFolderObj);
+                numSuccess++; 
+            } else {
+              if((value.subfolder == '') || (value.subfolder == null)) {
+                //create file objects and send files for validation
+                const fileSize = formatBytes(value.file.size)
+                const newObj = new ModelFileModel({       
+                  name: value.newFileName,
+                  filename: value.newFileName,
+                  filePath: value.uploadPath,
+                  description: "",
+                  status: "Pending",
+                  size: fileSize,
+                  ctime: value.stat.ctime,
+                  serializer: "",
+                  modelType: value.myModelType,
+                  modelFormat: "",
+                  errorMessages: "",
+                  type: "File",
+                });
+                await newObj.save(function (err, product, numAffected) {
+                  console.log("Saved: ", product);
+                })
+                queueModel(newObj)
+                data.push(newObj)
+                numSuccess++;
               }
-  
+            }
           }
   
           if (numSuccess > 0){

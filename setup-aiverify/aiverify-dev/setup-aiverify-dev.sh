@@ -86,7 +86,10 @@ if mongod --version &>/dev/null; then
       echo
       read -p "Mongodb detected, have you created the db and user required by aiverify? [y/n] " yn
       case $yn in
-          [Yy]* ) break;;
+          [Yy]* ) read -p "Enter DB AIVerify Username: " DB_USERNAME
+                  read -p "Enter DB AIVerify Password: " DB_PASSWORD
+                  echo
+                  break;;
           [Nn]* ) echo "aiverify developer setup aborted, please create the required db and user as instructed in the developer guide";
                   exit;;
           * ) echo "Please answer yes or no.";;
@@ -102,19 +105,25 @@ else
 
   sudo systemctl start mongod
   sleep 2
+  read -p "Enter new DB Admin User: " DB_ADMIN_USER
+  read -p "Enter new DB Admin Password: " DB_ADMIN_PASSWORD
+  echo
+  read -p "Enter new DB AIVerify Username: " DB_USERNAME
+  read -p "Enter new DB AIVerify Password: " DB_PASSWORD
+  echo
   mongosh << EOF
   admin = db.getSiblingDB('admin')
   admin.createUser({
-    user: 'mongodb',
-    pwd: 'mongodb',
+    user: '$DB_ADMIN_USER',
+    pwd: '$DB_ADMIN_PASSWORD',
     roles: [{ role: 'root', db: 'admin' }],
   });
 
   aiverify = db.getSiblingDB('aiverify')
 
   aiverify.createUser({
-    user: 'aiverify',
-    pwd: 'aiverify',
+    user: '$DB_USERNAME',
+    pwd: '$DB_PASSWORD',
     roles: [{ role: 'readWrite', db: 'aiverify' }],
   });
 
@@ -132,7 +141,7 @@ sudo apt install unzip
 
 sudo apt install -y python3.11-venv
 
-git clone https://github.com/imda-btg/aiverify.git --branch=v0.10.x
+git clone https://github.com/imda-btg/aiverify.git --branch=main
 cd aiverify
 
 ############ Node ############
@@ -148,6 +157,9 @@ cd ..
 # Install dependencies - apigw
 cd ai-verify-apigw
 cp .env.development .env
+echo "" >> .env
+echo "DB_USERNAME=${DB_USERNAME}" >> .env
+echo "DB_PASSWORD=${DB_PASSWORD}" >> .env
 if [[ "$machine_arch" == "aarch64" ]]; then
   # Skip chrome install, which is only available for amd64
   PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=1 npm install

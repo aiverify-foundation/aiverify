@@ -8,7 +8,7 @@ mongosh <<EOF
   aiverify = db.getSiblingDB('aiverify')
 
   aiverify.createUser({
-    user: 'aiverify',
+    user: '$MONGO_AIVERIFY_USER',
     pwd: '$MONGO_AIVERIFY_PASSWORD',
     roles: [{ role: 'readWrite', db: 'aiverify' }],
   });
