@@ -6,7 +6,7 @@ if __name__ == "__main__":
     discover_path = Path.cwd().parent
     file_path = str(
         discover_path
-        / "rmodel/user_defined_files/20220929_finale_model.rds"
+        / "rmodel/user_defined_files/testmodel.rds"
     )
 
     # =================================================================================
