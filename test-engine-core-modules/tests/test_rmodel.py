@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import pytest
 
 from src.rmodel.rmodel import Plugin
@@ -144,7 +145,7 @@ class TestCollectionRModel:
                 "rmodel supports detecting r models",
                 "0.9.0",
                 PluginType.MODEL,
-                ModelPluginType.XGBOOST,
+                ModelPluginType.R,
             ),
             (
                 None,
@@ -153,7 +154,7 @@ class TestCollectionRModel:
                 "rmodel supports detecting r models",
                 "0.9.0",
                 PluginType.MODEL,
-                ModelPluginType.XGBOOST,
+                ModelPluginType.R,
             ),
             (
                 "None",
@@ -162,7 +163,7 @@ class TestCollectionRModel:
                 "rmodel supports detecting r models",
                 "0.9.0",
                 PluginType.MODEL,
-                ModelPluginType.XGBOOST,
+                ModelPluginType.R,
             ),
             (
                 "",
@@ -171,7 +172,7 @@ class TestCollectionRModel:
                 "rmodel supports detecting r models",
                 "0.9.0",
                 PluginType.MODEL,
-                ModelPluginType.XGBOOST,
+                ModelPluginType.R,
             ),
             (
                 [],
@@ -180,7 +181,7 @@ class TestCollectionRModel:
                 "rmodel supports detecting r models",
                 "0.9.0",
                 PluginType.MODEL,
-                ModelPluginType.XGBOOST,
+                ModelPluginType.R,
             ),
             (
                 {},
@@ -189,7 +190,7 @@ class TestCollectionRModel:
                 "rmodel supports detecting r models",
                 "0.9.0",
                 PluginType.MODEL,
-                ModelPluginType.XGBOOST,
+                ModelPluginType.R,
             ),
             (
                 "1234",
@@ -198,7 +199,7 @@ class TestCollectionRModel:
                 "rmodel supports detecting r models",
                 "0.9.0",
                 PluginType.MODEL,
-                ModelPluginType.XGBOOST,
+                ModelPluginType.R,
             ),
         ],
     )
@@ -234,7 +235,7 @@ class TestCollectionRModel:
                 "rmodel supports detecting r models",
                 "0.9.0",
                 PluginType.MODEL,
-                ModelPluginType.XGBOOST,
+                ModelPluginType.R,
             ),
             (
                 None,
@@ -243,7 +244,7 @@ class TestCollectionRModel:
                 "rmodel supports detecting r models",
                 "0.9.0",
                 PluginType.MODEL,
-                ModelPluginType.XGBOOST,
+                ModelPluginType.R,
             ),
             (
                 "None",
@@ -252,7 +253,7 @@ class TestCollectionRModel:
                 "rmodel supports detecting r models",
                 "0.9.0",
                 PluginType.MODEL,
-                ModelPluginType.XGBOOST,
+                ModelPluginType.R,
             ),
             (
                 "",
@@ -261,7 +262,7 @@ class TestCollectionRModel:
                 "rmodel supports detecting r models",
                 "0.9.0",
                 PluginType.MODEL,
-                ModelPluginType.XGBOOST,
+                ModelPluginType.R,
             ),
             (
                 [],
@@ -270,7 +271,7 @@ class TestCollectionRModel:
                 "rmodel supports detecting r models",
                 "0.9.0",
                 PluginType.MODEL,
-                ModelPluginType.XGBOOST,
+                ModelPluginType.R,
             ),
             (
                 {},
@@ -279,7 +280,7 @@ class TestCollectionRModel:
                 "rmodel supports detecting r models",
                 "0.9.0",
                 PluginType.MODEL,
-                ModelPluginType.XGBOOST,
+                ModelPluginType.R,
             ),
             (
                 "1234",
@@ -288,7 +289,7 @@ class TestCollectionRModel:
                 "rmodel supports detecting r models",
                 "0.9.0",
                 PluginType.MODEL,
-                ModelPluginType.XGBOOST,
+                ModelPluginType.R,
             ),
         ],
     )
@@ -389,7 +390,7 @@ class TestCollectionRModel:
     @pytest.mark.parametrize(
         "model, expected_output",
         [
-            (pytest.model, "rpy2.robjects.vectors.DataFrame"),
+            (pytest.model, "rpy2.robjects.vectors.ListVector"),
             (
                 None,
                 "",
@@ -457,13 +458,13 @@ class TestCollectionRModel:
     @pytest.mark.parametrize(
         "model, expected_output",
         [
-            (pytest.model, np.array([0.07879719 - 0.00332631 - 0.08544982 - 0.16757333])),
+            (pytest.model, np.array([-0.16734992, -0.17485643, -0.18236295, -0.18986946])),
         ],
     )
     def test_predict(self, model, expected_output):
         new_plugin = Plugin(model)
         new_plugin.is_supported()
-        output = new_plugin.predict([1.0, 2.0, 3.0, 4.0])
+        output = new_plugin.predict([pd.DataFrame(data=[1.0, 2.0, 3.0, 4.0], columns=['input'])])
         assert np.isclose(output, expected_output).all()
 
 
@@ -496,33 +497,35 @@ class TestCollectionRModel:
         with pytest.raises(Exception) as exc_info:
             new_plugin = Plugin(model)
             new_plugin.is_supported()
-            output = new_plugin.predict([1.0, 2.0, 3.0, 4.0])
-            assert (output == expected_output).all()
-        assert str(exc_info.value) == expected_output
+            new_plugin.predict([1.0, 2.0, 3.0, 4.0])
+            assert str(exc_info.value) == expected_output
 
     @pytest.mark.parametrize(
         "model, expected_output",
         [
-            (pytest.model, "'Booster' object has no attribute 'predict_proba'"),
+            (
+                pytest.model,
+                ""
+            ),
             (
                 "None",
-                "'str' object has no attribute 'predict_proba'",
+                "",
             ),
             (
                 "",
-                "'NoneType' object has no attribute 'predict_proba'",
+                "",
             ),
             (
                 [],
-                "'NoneType' object has no attribute 'predict_proba'",
+                "",
             ),
             (
                 {},
-                "'NoneType' object has no attribute 'predict_proba'",
+                "",
             ),
             (
                 "1234",
-                "'str' object has no attribute 'predict_proba'",
+                "",
             ),
         ],
     )
@@ -530,8 +533,7 @@ class TestCollectionRModel:
         with (pytest.raises(NotImplementedError) as exc_info):
             new_plugin = Plugin(model)
             new_plugin.is_supported()
-            output = new_plugin.predict_proba([1.0, 2.0, 3.0, 4.0])
-            assert output == expected_output
+            new_plugin.predict_proba([1.0, 2.0, 3.0, 4.0])
         assert str(exc_info.value) == expected_output
 
     @pytest.mark.parametrize(

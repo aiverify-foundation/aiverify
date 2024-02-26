@@ -467,7 +467,6 @@ class PluginManager:
                 PluginManager._plugins[PluginType.ALGORITHM.name].values()
             ).index(plugin_tuple[1])
 
-
     @staticmethod
     def _update_plugins_by_type(plugin_type: PluginType, plugin_dict: Dict) -> None:
         """

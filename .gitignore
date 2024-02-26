@@ -4,7 +4,6 @@ coverage
 /package-lock.json
 **/*.log
 .tox
-**/mytestmodel*
 
 .DS_Store
 .idea

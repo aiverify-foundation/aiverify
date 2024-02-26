@@ -8,7 +8,7 @@ ENV TZ=Asia/Singapore
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Install node v18.x
-RUN apt-get update && apt-get install -y curl ca-certificates gnupg
+RUN apt-get update && apt-get install -y curl ca-certificates curl gnupg
 RUN mkdir -p /etc/apt/keyrings
 RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
 ENV NODE_MAJOR=18
@@ -62,6 +62,9 @@ RUN apt-get install -y gcc g++ python3.11-dev
 RUN apt-get install -y git
 
 RUN apt-get install unzip
+
+# Install R
+RUN apt-get install -y r-base r-base-dev
 
 ################### Create aiverify user ######################
 
@@ -143,8 +146,6 @@ RUN for plugin_dir in *; do \
     done
 
 RUN chown -R 10000:10000 /app/aiverify/ai-verify-portal/plugins
-
-RUN apt-get install -y r-base r-base-dev
 
 ############### Python #################
 
