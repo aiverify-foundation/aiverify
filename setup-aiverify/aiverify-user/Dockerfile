@@ -67,6 +67,9 @@ RUN apt-get install -y git
 # Install Unzip
 RUN apt-get install unzip
 
+# Install R
+RUN apt-get install -y r-base r-base-dev
+
 ################### Create aiverify user ######################
 
 ARG USER=aiverify
@@ -147,8 +150,6 @@ RUN for plugin_dir in *; do \
     done
 
 RUN chown -R 10000:10000 /app/aiverify/ai-verify-portal/plugins
-
-RUN apt-get install -y r-base r-base-dev
 
 ############### Python #################
 
