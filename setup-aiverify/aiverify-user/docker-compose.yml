@@ -32,6 +32,9 @@ services:
   # backend - test-engine
   test-engine:
     image: aiverify:0.10
+    build:
+      context: .
+      dockerfile: Dockerfile
     restart: always
     depends_on:
       - redis
