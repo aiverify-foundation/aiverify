@@ -36,9 +36,3 @@ find $PROJECT_DIR/stock-plugins/ -mindepth 1 -maxdepth 1 -type d | xargs -I{} ba
 
 # install plugins dependencies
 find $PROJECT_DIR/stock-plugins/ -type f -name 'requirements.txt' -exec pip install -r "{}" \;
-
-
-
-
-
-
