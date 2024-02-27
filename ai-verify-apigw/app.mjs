@@ -11,7 +11,7 @@ import uploadRouter from './routes/upload.mjs';
 import { createApolloServer } from './graphql/server.mjs';
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS !== undefined ?
-  process.env.ALLOWED_ORIGINS.split(',') : ['http://localhost:3000','http://localhost:4000'];
+  process.env.ALLOWED_ORIGINS.split(',') : ['http://localhost:3000','http://localhost:4000','http://127.0.0.1:3000','http://127.0.0.1:4000'];
 const app = express();
 
 // enable trust proxy, see https://expressjs.com/en/guide/behind-proxies.html
