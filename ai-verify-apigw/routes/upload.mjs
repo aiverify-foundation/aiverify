@@ -149,6 +149,20 @@ router.post('/data', upload.array('myFiles'), async function (req, res, next) {
         }
       }
 
+      if (myFolders) {
+        try {
+          if (_.isArray(myFolders)) {
+            for (const folderName in myFolders) {
+              validateAndSanitize(folderName)
+            }
+          } else {
+            validateAndSanitize(myFolders)
+          }  
+        } catch (err) {
+          return res.sendStatus(500).json({ err });
+        }
+      }
+
       if (!files) {
         return res.sendStatus(400).json({ err: "No files to be uploaded"});
       }
@@ -339,6 +353,20 @@ router.post('/model', upload.array('myModelFiles'), async function (req, res, ne
           }
         }
 
+        if (myFolders) {
+          try {
+            if (_.isArray(myFolders)) {
+              for (const folderName in myFolders) {
+                validateAndSanitize(folderName)
+              }
+            } else {
+              validateAndSanitize(myFolders)
+            }  
+          } catch (err) {
+            return res.sendStatus(500).json({ err });
+          }
+        }
+    
         if (!files) {
           return res.sendStatus(400).json({ err: "No files to be uploaded"});
         }
