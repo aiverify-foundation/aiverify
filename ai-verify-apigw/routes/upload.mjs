@@ -1,36 +1,35 @@
-import _ from 'lodash';
-import path from 'path';
-import fs from 'fs';
+import _ from "lodash";
+import path from "path";
+import fs from "fs";
 
-import express from 'express';
-import { ModelFileModel, DatasetModel } from '#models';
-import { queueDataset, queueModel } from '#lib/testEngineQueue.mjs';
-import multer from 'multer';
-import moment from 'moment';
+import express from "express";
+import { ModelFileModel, DatasetModel } from "#models";
+import { queueDataset, queueModel } from "#lib/testEngineQueue.mjs";
+import multer from "multer";
+import moment from "moment";
 
 const router = express.Router();
 
-
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "/tmp")
+    cb(null, "/tmp");
   },
   filename: function (req, file, cb) {
     // keep original filename
-    cb(null, file.originalname)
-  }
-})
+    cb(null, file.originalname);
+  },
+});
 // const upload = multer({ dest: 'uploads/' })
 
-const upload = multer({ storage: storage })
+const upload = multer({ storage: storage });
 
 function validateAndSanitize(userInput) {
   // Allow only alphanumeric characters and underscores
   const allowedCharactersRegex = /^[a-zA-Z0-9_]+$/;
   // Example maximum length constraint
   const maxLength = 50;
-  if (typeof userInput !== 'string') {
-    throw new Error('Invalid input type. Input must be a string.');
+  if (typeof userInput !== "string") {
+    throw new Error("Invalid input type. Input must be a string.");
   }
   // Trim leading and trailing whitespaces
   userInput = userInput.trim();
@@ -40,32 +39,35 @@ function validateAndSanitize(userInput) {
   }
   // Check if the input contains only allowed characters
   if (!allowedCharactersRegex.test(userInput)) {
-    throw new Error('Invalid characters in the input. Only alphanumeric characters and underscores are allowed.');
+    throw new Error(
+      "Invalid characters in the input. Only alphanumeric characters and underscores are allowed."
+    );
   }
   return userInput;
-};
+}
 
 function validateFileSize(file) {
   const maxFileSizeInGB = 4;
   const maxAllowedFileSize = Math.pow(1024, 3) * maxFileSizeInGB;
-  if (file.size === undefined) throw new Error('Invalid file size');
-  if (file.size > maxAllowedFileSize) throw new Error(`File size is larger than the maximum allowed size of ${maxFileSizeInGB} GB`);
+  if (file.size === undefined) throw new Error("Invalid file size");
+  if (file.size > maxAllowedFileSize)
+    throw new Error(
+      `File size is larger than the maximum allowed size of ${maxFileSizeInGB} GB`
+    );
   return true;
 }
 
-
 function formatBytes(bytes, decimals = 2) {
-  if (!+bytes) return '0 Bytes'
+  if (!+bytes) return "0 Bytes";
 
-  const k = 1024
-  const dm = decimals < 0 ? 0 : decimals
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 }
-
 
 /**
  * @openapi
@@ -98,7 +100,7 @@ function formatBytes(bytes, decimals = 2) {
  *         description: Response
  *     security:
  *       - bearerAuth: []
- * 
+ *
  * /api/upload/model:
  *   post:
  *     summary: Upload model file. All files uploaded will be saved under the "uploads" directory.
@@ -127,171 +129,427 @@ function formatBytes(bytes, decimals = 2) {
  *       '200':
  *         description: Response
  *     security:
- *       - bearerAuth: []  
- * 
+ *       - bearerAuth: []
+ *
  */
-
 
 /**
  * Route /api/upload/data
  */
-router.post('/data', upload.array('myFiles'), async function (req, res, next) {
-  
-      const files = req.files
-      const myFolders = req.body.myFolders;
-      const myFolder = req.body.myFolder;
+router.post("/data", upload.array("myFiles"), async function (req, res, next) {
+  const files = req.files;
+  const myFolders = req.body.myFolders;
+  const myFolder = req.body.myFolder;
+
+  if (myFolder) {
+    if (!myFolders) {
+      return res.status(500).json({ err: "Invalid folder name" });
+    }
+
+    try {
+      if (_.isArray(myFolders)) {
+        for (const folderName of myFolders) {
+          validateAndSanitize(folderName);
+        }
+      } else {
+        validateAndSanitize(myFolders);
+      }
+
+      validateAndSanitize(myFolder);
+    } catch (err) {
+      return res.status(500).json({ err });
+    }
+  }
+
+  if (!files) {
+    return res.status(400).json({ err: "No files to be uploaded" });
+  }
+
+  //create /uploads folder if it doesnt exist
+  if (!fs.existsSync("../uploads")) {
+    fs.mkdirSync("../uploads", { recursive: true });
+  }
+
+  let baseFolder = `/data`;
+
+  const data = [];
+
+  let promises = files.map((file, index) => {
+    return new Promise(async (resolve, reject) => {
+      if (file.mimetype !== 'application/octet-stream' && !file.mimetype.startsWith('image/')) {
+        return reject("Invalid mimetype: " + file.mimetype) 
+      }
+      try {
+        validateFileSize(file);
+      } catch (err) {
+        reject(err);
+      }
+      const dataFolder = "../uploads/data/";
+      //create /data folder if it doesnt exist
+      if (!fs.existsSync("../uploads/data")) {
+        fs.mkdirSync("../uploads/data", { recursive: true });
+      }
+      const filenames = fs.readdirSync(dataFolder);
+
+      const getNewName = async (name) => {
+        var tempName = name;
+        for (
+          let count = 1;
+          (await getDbCount(tempName)) || getFsCount(tempName) != 0;
+          count++
+        ) {
+          if (name.split(".")[1]) {
+            tempName = `${name.split(".")[0]}_${count}.${name.split(".")[1]}`;
+          } else {
+            tempName = `${name.split(".")[0]}_${count}`;
+          }
+        }
+        return await tempName;
+      };
+
+      const getDbCount = (tempName) => {
+        return new Promise((resolve, reject) => {
+          DatasetModel.findOne({ name: tempName }, function (err, result) {
+            if (err) {
+              reject(err);
+            }
+            if (!result) {
+              resolve(false);
+            } else {
+              resolve(true);
+            }
+          });
+        });
+      };
+
+      const getFsCount = (tempName) => {
+        return filenames.filter((f) => f === tempName).length;
+      };
+
+      let folder = baseFolder;
+      let subfolder = myFolders
+        ? _.isArray(myFolders)
+          ? myFolders[index]
+          : myFolders
+        : null;
+      let folderCreated = null;
 
       if (myFolder) {
-        try {
-          validateAndSanitize(myFolder);
-        } catch (err) {
-          return res.sendStatus(500).json({ err });
+        // check if folder with same name alreay exists, rename folder and its file/ subfolder paths
+        var newFolderName = await getNewName(myFolder);
+        let newSubfolder = subfolder.replace(myFolder, newFolderName);
+        const joinedPath = path.join(baseFolder, newSubfolder);
+        folder = `${joinedPath}`;
+        var newFileName = file.filename;
+        let uploadFolder = path.join("../uploads", baseFolder, newFolderName); // newFolderName is generated based on already sanitized myFolder
+        let folderPath = path.resolve(uploadFolder);
+        if (!fs.existsSync(uploadFolder)) {
+          // only add folderCreated once per folder upload
+          fs.mkdirSync(uploadFolder, { recursive: true });
+          folderCreated = {
+            // subFolderOf: path.basename( path.dirname(folderPath)),
+            folderName: newFolderName,
+            filePath: folderPath,
+            stat: fs.statSync(uploadFolder),
+          };
+        }
+      } else {
+        // check for individual duplicated file names
+        var newFileName = await getNewName(file.filename);
+      }
+      let uploadSubfolder = path.join("../uploads", folder);
+
+      if (!fs.existsSync(uploadSubfolder)) {
+        fs.mkdirSync(uploadSubfolder, { recursive: true });
+      }
+
+      let uploadPath = path.resolve(uploadSubfolder, newFileName);
+
+      const relativePath = path.relative(uploadSubfolder, uploadPath);
+      if (relativePath.startsWith(".")) {
+        return reject("Invalid file path");
+      }
+
+      // changed rename to copyFile as src and dst reside in different filesystems in docker env.
+      fs.copyFileSync(file.path, uploadPath);
+      fs.unlinkSync(file.path);
+      let stat = fs.statSync(uploadPath);
+
+      resolve({
+        file,
+        subfolder,
+        stat,
+        uploadPath,
+        folderCreated,
+        newFileName,
+      });
+    });
+  });
+
+  Promise.allSettled(promises)
+    .then(async (results) => {
+      let numSuccess = 0;
+      // console.log("Results is:", results);
+      for (let result of results) {
+        if (result.status === "rejected") {
+          console.log(result.reason);
+          continue;
+        }
+        let value = result.value;
+        if (value.folderCreated) {
+          const newFolderObj = new DatasetModel({
+            name: value.folderCreated.folderName,
+            filename: value.folderCreated.folderName,
+            filePath: value.folderCreated.filePath,
+            status: "Pending",
+            type: "Folder",
+            ctime: value.folderCreated.stat.ctime,
+          });
+          await newFolderObj.save(function (err, product, numAffected) {
+            // console.log("Folder saved: ", product);
+          });
+          // Send validation request to backend
+          queueDataset(newFolderObj);
+          data.push(newFolderObj);
+          numSuccess++;
+        } else {
+          if (value.subfolder == "" || value.subfolder == null) {
+            //create file objects and send files for validation
+            const fileSize = formatBytes(value.file.size);
+            const newObj = new DatasetModel({
+              name: value.newFileName,
+              filename: value.newFileName,
+              filePath: value.uploadPath,
+              description: "",
+              status: "Pending",
+              size: fileSize,
+              ctime: value.stat.ctime,
+              serializer: "",
+              dataFormat: "",
+              errorMessages: "",
+              type: "File",
+            });
+            await newObj.save(function (err, product, numAffected) {
+              // console.log("Saved: ", product);
+            });
+
+            queueDataset(newObj);
+            data.push(newObj);
+            numSuccess++;
+          }
         }
       }
 
-      if (myFolders) {
+      if (numSuccess > 0) {
+        // console.log("numsuccess is: ", numSuccess);
+        res.status(201).json(data);
+      } else {
+        // console.log("numsuccess is: ", numSuccess);
+        res.status(400).json({ err: "All uploads failed" });
+      }
+    })
+    .catch((err) => {
+      res.status(400).json({ err: "File Upload Error:", err });
+    });
+});
+
+/**
+ * Route /api/upload/model
+ */
+router.post(
+  "/model",
+  upload.array("myModelFiles"),
+  async function (req, res, next) {
+    const files = req.files;
+    const myFolders = req.body.myModelFolders;
+    const myFolder = req.body.myModelFolder;
+    const myModelTypes = req.body.myModelType;
+    const myFolderModelType = req.body.myFolderModelType;
+
+    if (myFolder) {
+      if (!myFolders) {
+        return res.status(500).json({ err: "Invalid folder name" });
+      }
+
+      try {
+        validateAndSanitize(myFolder);
+        if (_.isArray(myFolders)) {
+          for (const folderName of myFolders) {
+            validateAndSanitize(folderName);
+          }
+        } else {
+          validateAndSanitize(myFolders);
+        }
+      } catch (err) {
+        return res.status(500).json({ err });
+      }
+    }
+
+    if (!files) {
+      return res.status(400).json({ err: "No files to be uploaded" });
+    }
+
+    //create /uploads folder if it doesnt exist
+    if (!fs.existsSync("../uploads")) {
+      fs.mkdirSync("../uploads", { recursive: true });
+    }
+
+    let baseFolder = `/model`;
+
+    const data = [];
+
+    let promises = files.map((file, index) => {
+      return new Promise(async (resolve, reject) => {
+        if (file.mimetype !== 'application/octet-stream') {
+          return reject("Invalid mimetype: " + file.mimetype) 
+        }
         try {
-          if (_.isArray(myFolders)) {
-            for (const folderName in myFolders) {
-              validateAndSanitize(folderName)
+          validateFileSize(file);
+        } catch (err) {
+          reject(err);
+        }
+        const dataFolder = "../uploads/model/";
+        //create /model folder if it doesnt exist
+        if (!fs.existsSync("../uploads/model")) {
+          fs.mkdirSync("../uploads/model", { recursive: true });
+        }
+        const filenames = fs.readdirSync(dataFolder);
+
+        const getNewName = async (name) => {
+          var tempName = name;
+          for (
+            let count = 1;
+            (await getDbCount(tempName)) || getFsCount(tempName) != 0;
+            count++
+          ) {
+            if (name.split(".")[1]) {
+              tempName = `${name.split(".")[0]}_${count}.${name.split(".")[1]}`;
+            } else {
+              tempName = `${name.split(".")[0]}_${count}`;
             }
-          } else {
-            validateAndSanitize(myFolders)
-          }  
-        } catch (err) {
-          return res.sendStatus(500).json({ err });
-        }
-      }
-
-      if (!files) {
-        return res.sendStatus(400).json({ err: "No files to be uploaded"});
-      }
-
-      //create /uploads folder if it doesnt exist
-      if (!fs.existsSync('../uploads')) {
-        fs.mkdirSync('../uploads', { recursive: true });
-      }
-    
-      let baseFolder = `/data`;
-      
-      const data = [];
-
-      let promises = files.map((file,index) => {
-        return new Promise(async (resolve, reject) => {
-          try {
-            validateFileSize(file);
-          } catch(err) {
-            reject(err);
           }
-          const dataFolder = '../uploads/data/';
-          //create /data folder if it doesnt exist
-          if (!fs.existsSync('../uploads/data')) {
-            fs.mkdirSync('../uploads/data', { recursive: true });
-          }
-          const filenames = fs.readdirSync(dataFolder);
+          return await tempName;
+        };
 
-          const getNewName = async (name) => {
-            var tempName = name
-            for (let count = 1; ( await getDbCount(tempName) || getFsCount(tempName)!=0 ); count++) {
-              if (name.split('.')[1]) {
-                tempName = `${name.split('.')[0]}_${count}.${name.split('.')[1]}`;
-              } else {
-                tempName = `${name.split('.')[0]}_${count}`;
+        const getDbCount = (tempName) => {
+          return new Promise((resolve, reject) => {
+            ModelFileModel.findOne({ name: tempName }, function (err, result) {
+              if (err) {
+                reject(err);
               }
-            }
-            return await tempName
-          }
-  
-          const getDbCount = (tempName) => {
-            return new Promise((resolve, reject) => {
-              DatasetModel.findOne({name: tempName}, function (err, result) {
-                if (err) {
-                  reject(err);
-                }
-                if (!result) {
-                  resolve(false);
-                } else {
-                  resolve(true);
-                }
-              })
-            })
-          }
-  
-          const getFsCount = (tempName) => {
-            return filenames.filter(f => f === tempName).length;
-          }
-  
-          let folder = baseFolder
-          let subfolder = myFolders?_.isArray(myFolders)?myFolders[index]:myFolders:null;
-          let folderCreated = null;
+              if (!result) {
+                resolve(false);
+              } else {
+                resolve(true);
+              }
+            });
+          });
+        };
 
-          if (myFolder) {
-            // check if folder with same name alreay exists, rename folder and its file/ subfolder paths
-            var newFolderName = await getNewName(myFolder);
-            let newSubfolder = subfolder.replace(myFolder, newFolderName)
-            const joinedPath = path.join(baseFolder, newSubfolder);
-            folder = `${joinedPath}`;
-            var newFileName = file.filename;
-            let uploadFolder = path.join("../uploads", baseFolder, newFolderName); // newFolderName is generated based on already sanitized myFolder
-            let folderPath = path.resolve(uploadFolder);
-            if (!fs.existsSync(uploadFolder)) { // only add folderCreated once per folder upload
-              fs.mkdirSync(uploadFolder, {recursive: true});
-              folderCreated = {
-                // subFolderOf: path.basename( path.dirname(folderPath)),
-                folderName: newFolderName,
-                filePath: folderPath,
-                stat: fs.statSync(uploadFolder),
-              };
-            }
-          } else {
-            // check for individual duplicated file names
-            var newFileName = await getNewName(file.filename);
-          }
-          let uploadSubfolder = path.join("../uploads", folder);
+        const getFsCount = (tempName) => {
+          return filenames.filter((f) => f === tempName).length;
+        };
 
-          if (!fs.existsSync(uploadSubfolder)) {
-            fs.mkdirSync(uploadSubfolder, {recursive: true});
-          }
-          
-          let uploadPath = path.resolve(uploadSubfolder, newFileName);
-          // changed rename to copyFile as src and dst reside in different filesystems in docker env.
-          fs.copyFileSync(file.path, uploadPath);
-          fs.unlinkSync(file.path);
-          let stat = fs.statSync(uploadPath);
-  
-          resolve({file, subfolder, stat, uploadPath, folderCreated, newFileName});
-        })
-      })
+        let folder = baseFolder;
+        let subfolder = myFolders
+          ? _.isArray(myFolders)
+            ? myFolders[index]
+            : myFolders
+          : null;
+        let folderCreated = null;
 
-      Promise.allSettled(promises).then(async results => {
+        if (myFolder) {
+          // check if folder with same name alreay exists, rename folder and its file/ subfolder paths
+          var newFolderName = await getNewName(myFolder);
+          let newSubfolder = subfolder.replace(myFolder, newFolderName);
+          const joinedPath = path.join(baseFolder, newSubfolder);
+          folder = `${joinedPath}`;
+          var newFileName = file.filename;
+          let uploadFolder = path.join("../uploads", baseFolder, newFolderName); // newFolderName is generated based on already sanitized myFolder
+          let folderPath = path.resolve(uploadFolder);
+          if (!fs.existsSync(uploadFolder)) {
+            // only add folderCreated once per folder upload
+            fs.mkdirSync(uploadFolder, { recursive: true });
+            folderCreated = {
+              // subFolderOf: path.basename( path.dirname(folderPath)),
+              folderName: newFolderName,
+              filePath: folderPath,
+              stat: fs.statSync(uploadFolder),
+              myFolderModelType: myFolderModelType,
+            };
+          }
+        } else {
+          // check for individual duplicated file names
+          var newFileName = await getNewName(file.filename);
+        }
+        let uploadSubfolder = path.join("../uploads", folder);
+
+        if (!fs.existsSync(uploadSubfolder)) {
+          fs.mkdirSync(uploadSubfolder, { recursive: true });
+        }
+
+        let uploadPath = path.resolve(uploadSubfolder, newFileName);
+
+        const relativePath = path.relative(uploadSubfolder, uploadPath);
+        if (relativePath.startsWith(".")) {
+          return reject("Invalid file path");
+        }
+
+        // using copyFile instead of rename as src and dest folder reside in different filesystem in docker env.
+        fs.copyFileSync(file.path, uploadPath);
+        fs.unlinkSync(file.path);
+        let stat = fs.statSync(uploadPath);
+
+        if (Array.isArray(myModelTypes)) {
+          var myModelType = myModelTypes[index];
+        } else {
+          var myModelType = myModelTypes;
+        }
+
+        resolve({
+          file,
+          subfolder,
+          stat,
+          uploadPath,
+          folderCreated,
+          newFileName,
+          myModelType,
+        });
+      });
+    });
+
+    Promise.allSettled(promises)
+      .then(async (results) => {
         let numSuccess = 0;
-        // console.log("Results is:", results);
+
         for (let result of results) {
-          if (result.status === 'rejected') {
+          if (result.status === "rejected") {
             console.log(result.reason);
             continue;
           }
           let value = result.value;
           if (value.folderCreated) {
-            const newFolderObj = new DatasetModel({       
+            const newFolderObj = new ModelFileModel({
               name: value.folderCreated.folderName,
               filename: value.folderCreated.folderName,
               filePath: value.folderCreated.filePath,
               status: "Pending",
-              type: "Folder",
+              modelType: value.folderCreated.myFolderModelType,
+              type: req.body.type == "pipeline" ? "Pipeline" : "Folder",
               ctime: value.folderCreated.stat.ctime,
             });
+
             await newFolderObj.save(function (err, product, numAffected) {
-              console.log("Folder saved: ", product);
+              // console.log("Folder saved: ", product);
             });
-            queueDataset(newFolderObj)
-            data.push(newFolderObj)
+            queueModel(newFolderObj);
+            data.push(newFolderObj);
             numSuccess++;
           } else {
-            if ((value.subfolder == '') || (value.subfolder == null)){
+            if (value.subfolder == "" || value.subfolder == null) {
               //create file objects and send files for validation
-              const fileSize = formatBytes(value.file.size)
-              const newObj = new DatasetModel({       
+              const fileSize = formatBytes(value.file.size);
+              const newObj = new ModelFileModel({
                 name: value.newFileName,
                 filename: value.newFileName,
                 filePath: value.uploadPath,
@@ -300,247 +558,34 @@ router.post('/data', upload.array('myFiles'), async function (req, res, next) {
                 size: fileSize,
                 ctime: value.stat.ctime,
                 serializer: "",
-                dataFormat: "",
+                modelType: value.myModelType,
+                modelFormat: "",
                 errorMessages: "",
                 type: "File",
               });
               await newObj.save(function (err, product, numAffected) {
-                console.log("Saved: ", product);
+                // console.log("Saved: ", product);
               });
-    
-              queueDataset(newObj)
-              data.push(newObj)
+              // Send validation request to backend
+              queueModel(newObj);
+              data.push(newObj);
               numSuccess++;
             }
           }
-          
         }
 
-        if (numSuccess > 0){
-          console.log("numsuccess is: ", numSuccess);
+        if (numSuccess > 0) {
+          // console.log("numsuccess is: ", numSuccess);
           res.status(201).json(data);
-        }
-        else {
-          console.log("numsuccess is: ", numSuccess);
+        } else {
+          // console.log("numsuccess is: ", numSuccess);
           res.status(400).json({ err: "All uploads failed" });
         }
-
-      }).catch(err => {
-        res.status(400).json({ err: "File Upload Error:", err});
       })
+      .catch((err) => {
+        res.status(400).json({ err: "File Upload Error:", err });
+      });
+  }
+);
 
-});
-
-
-
-
-/**
- * Route /api/upload/model
- */
-router.post('/model', upload.array('myModelFiles'), async function (req, res, next) {
-
-        const files = req.files
-        const myFolders = req.body.myModelFolders;
-        const myFolder = req.body.myModelFolder;
-        const myModelTypes = req.body.myModelType;
-        const myFolderModelType = req.body.myFolderModelType;
-        
-        if (myFolder) {
-          try {
-            validateAndSanitize(myFolder);
-          } catch (err) {
-            return res.sendStatus(500).json({ err });
-          }
-        }
-
-        if (myFolders) {
-          try {
-            if (_.isArray(myFolders)) {
-              for (const folderName in myFolders) {
-                validateAndSanitize(folderName)
-              }
-            } else {
-              validateAndSanitize(myFolders)
-            }  
-          } catch (err) {
-            return res.sendStatus(500).json({ err });
-          }
-        }
-    
-        if (!files) {
-          return res.sendStatus(400).json({ err: "No files to be uploaded"});
-        }
-
-        //create /uploads folder if it doesnt exist
-        if (!fs.existsSync('../uploads')) {
-          fs.mkdirSync('../uploads', { recursive: true });
-        }
-      
-        let baseFolder = `/model`;
-
-        const data = [];
-
-        let promises = files.map((file,index) => {
-          return new Promise(async (resolve, reject) => {
-            try {
-              validateFileSize(file);
-            } catch(err) {
-              reject(err);
-            }
-            const dataFolder = '../uploads/model/';
-            //create /model folder if it doesnt exist
-            if (!fs.existsSync('../uploads/model')) {
-              fs.mkdirSync('../uploads/model', { recursive: true });
-            }
-            const filenames = fs.readdirSync(dataFolder);
-
-            const getNewName = async (name) => {
-              var tempName = name
-              for (let count = 1; ( await getDbCount(tempName) || getFsCount(tempName)!=0 ); count++) {
-                if (name.split('.')[1]) {
-                  tempName = `${name.split('.')[0]}_${count}.${name.split('.')[1]}`;
-                } else {
-                  tempName = `${name.split('.')[0]}_${count}`;
-                }
-              }
-              return await tempName
-            }
-    
-            const getDbCount = (tempName) => {
-              return new Promise((resolve, reject) => {
-                ModelFileModel.findOne({name: tempName}, function (err, result) {
-                  if (err) {
-                    reject(err);
-                  }
-                  if (!result) {
-                    resolve(false);
-                  } else {
-                    resolve(true);
-                  }
-                })
-              })
-            }
-    
-            const getFsCount = (tempName) => {
-              return filenames.filter(f => f === tempName).length;
-            }
-
-            let folder = baseFolder
-            let subfolder = myFolders?_.isArray(myFolders)?myFolders[index]:myFolders:null;
-            let folderCreated = null;
-          
-            if (myFolder) {
-              // check if folder with same name alreay exists, rename folder and its file/ subfolder paths
-              var newFolderName = await getNewName(myFolder);
-              let newSubfolder = subfolder.replace(myFolder, newFolderName)
-              const joinedPath = path.join(baseFolder, newSubfolder);
-              folder = `${joinedPath}`;
-              var newFileName = file.filename;
-              let uploadFolder = path.join("../uploads", baseFolder, newFolderName); // newFolderName is generated based on already sanitized myFolder
-              let folderPath = path.resolve(uploadFolder);
-              if (!fs.existsSync(uploadFolder)) { // only add folderCreated once per folder upload
-                fs.mkdirSync(uploadFolder, {recursive: true});
-                folderCreated = {
-                  // subFolderOf: path.basename( path.dirname(folderPath)),
-                  folderName: newFolderName,
-                  filePath: folderPath,
-                  stat: fs.statSync(uploadFolder),
-                  myFolderModelType: myFolderModelType,
-                };
-              }
-            } else {
-              // check for individual duplicated file names
-              var newFileName = await getNewName(file.filename);
-            }
-            let uploadSubfolder = path.join("../uploads", folder);
-          
-            if (!fs.existsSync(uploadSubfolder)) {
-              fs.mkdirSync(uploadSubfolder, {recursive: true});
-            } 
-            
-            let uploadPath = path.resolve(uploadSubfolder, newFileName);
-            // using copyFile instead of rename as src and dest folder reside in different filesystem in docker env.
-            fs.copyFileSync(file.path, uploadPath);
-            fs.unlinkSync(file.path);
-            let stat = fs.statSync(uploadPath);
-
-            if ( Array.isArray(myModelTypes) ) {
-              var myModelType = myModelTypes[index]
-            } else {
-              var myModelType = myModelTypes
-            }
-
-            resolve({file, subfolder, stat, uploadPath, folderCreated, newFileName, myModelType});
-          })
-        })
-  
-        Promise.allSettled(promises).then(async results => {
-          let numSuccess = 0;
-
-          for (let result of results) {
-            if (result.status === 'rejected') {
-              console.log(result.reason);
-              continue;
-            }
-            let value = result.value;
-            if (value.folderCreated) {
-                const newFolderObj = new ModelFileModel({
-                  name: value.folderCreated.folderName,
-                  filename: value.folderCreated.folderName,
-                  filePath: value.folderCreated.filePath,
-                  status: "Pending",
-                  modelType: value.folderCreated.myFolderModelType,
-                  type: (req.body.type == "pipeline")?"Pipeline":"Folder",
-                  ctime: value.folderCreated.stat.ctime,
-                });
-                
-                await newFolderObj.save(function (err, product, numAffected) {
-                  console.log("Folder saved: ", product);
-                })
-                queueModel(newFolderObj) ;
-                data.push(newFolderObj);
-                numSuccess++; 
-            } else {
-              if((value.subfolder == '') || (value.subfolder == null)) {
-                //create file objects and send files for validation
-                const fileSize = formatBytes(value.file.size)
-                const newObj = new ModelFileModel({       
-                  name: value.newFileName,
-                  filename: value.newFileName,
-                  filePath: value.uploadPath,
-                  description: "",
-                  status: "Pending",
-                  size: fileSize,
-                  ctime: value.stat.ctime,
-                  serializer: "",
-                  modelType: value.myModelType,
-                  modelFormat: "",
-                  errorMessages: "",
-                  type: "File",
-                });
-                await newObj.save(function (err, product, numAffected) {
-                  console.log("Saved: ", product);
-                })
-                queueModel(newObj)
-                data.push(newObj)
-                numSuccess++;
-              }
-            }
-          }
-  
-          if (numSuccess > 0){
-            console.log("numsuccess is: ", numSuccess);
-            res.status(201).json(data);
-          } else {
-            console.log("numsuccess is: ", numSuccess);
-            res.status(400).json({ err: "All uploads failed" });
-          }
-  
-        }).catch(err => {
-          res.status(400).json({ err: "File Upload Error:", err});
-        })
-
-  });
-  
-
-  export default router;
+export default router;
