@@ -53,7 +53,7 @@
     "@rjsf/utils": "^5.0.0-beta.14",
     "@rjsf/validator-ajv8": "^5.0.0-beta.14",
     "adm-zip": "^0.5.10",
-    "axios": "1.6.2",
+    "axios": "^1.6.7",
     "clsx": "^1.2.1",
     "esbuild": "^0.14.54",
     "formidable": "^2.1.1",
