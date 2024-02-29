@@ -1,12 +1,6 @@
-import os
 import sys
 from pathlib import Path
 from typing import Tuple, Union
-
-import numpy as np
-
-os.environ["LC_ALL"] = "en_US.UTF-8"
-from rpy2 import robjects
 
 from test_engine_core.interfaces.iserializer import ISerializer
 from test_engine_core.plugins.enums.plugin_type import PluginType

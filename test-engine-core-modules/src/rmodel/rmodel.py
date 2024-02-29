@@ -137,8 +137,6 @@ class Plugin(IModel):
         """
 
         try:
-            lc_all = os.environ["LC_ALL"]
-            os.environ["LC_ALL"] = "en_US.UTF-8"
             if isinstance(data, list):
                 for item in data:
                     if isinstance(item, pd.DataFrame):
@@ -146,7 +144,6 @@ class Plugin(IModel):
                             new_data = ro.conversion.get_conversion().py2rpy(item)
                         predictions = ro.r['predict'](object=self._model, newdata=new_data)
                         predictions = np.array(ro.conversion.rpy2py(predictions))
-                        os.environ["LC_ALL"] = lc_all
                         return predictions
             else:
                 raise NotImplementedError
