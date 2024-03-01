@@ -85,10 +85,11 @@ sudo systemctl restart redis-server.service
 echo "========================= Installing mongodb ============================"
 
 if mongod --version &>/dev/null; then
+  echo "mongodb detected, skipping mongodb installation"
   if [ -z "$DB_USERNAME" ] && [ -z "$DB_PASSWORD" ]; then
     while true; do
         echo
-        read -p "Mongodb detected, have you created the db and user required by aiverify? [y/n] " yn
+        read -p "Have you created the db and user required by aiverify? [y/n] " yn
         case $yn in
             [Yy]* ) read -p "Enter aiverify DB username: " DB_USERNAME
                     read -p "Enter aiverify DB password: " DB_PASSWORD
