@@ -17,10 +17,10 @@ services:
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: '${MONGO_ROOT_USER:-mongodb}'
-      MONGO_INITDB_ROOT_PASSWORD: '${MONGO_ROOT_PASSWORD:-mongodb}'
+      MONGO_INITDB_ROOT_PASSWORD: '${MONGO_ROOT_PASSWORD:-7Tb_vPcDJ8s2quLSq}'
       MONGO_INITDB_DATABASE: admin
       MONGO_AIVERIFY_USER: '${DB_AIVERIFY_USER:-aiverify}'
-      MONGO_AIVERIFY_PASSWORD: '${DB_AIVERIFY_PASSWORD:-aiverify}'
+      MONGO_AIVERIFY_PASSWORD: '${DB_AIVERIFY_PASSWORD:-t1oj5L_xQI8dTrVuZ}'
     user: '${CUR_UID}:${CUR_GID}'
     volumes:
       - ~/data/db:/data/db
@@ -50,10 +50,11 @@ services:
     image: aiverify:0.10
     environment:
       DB_USERNAME: '${DB_AIVERIFY_USER:-aiverify}'
-      DB_PASSWORD: '${DB_AIVERIFY_PASSWORD:-aiverify}'
+      DB_PASSWORD: '${DB_AIVERIFY_PASSWORD:-t1oj5L_xQI8dTrVuZ}'
     ports:
       - "3000:3000"
-      - "4000:4000"
+    expose:
+      - "4000"
     depends_on:
       - redis
       - db

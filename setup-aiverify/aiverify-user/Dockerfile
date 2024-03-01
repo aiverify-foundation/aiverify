@@ -119,9 +119,9 @@ WORKDIR /app/aiverify/ai-verify-apigw
 
 # User entered username and password (in docker-start.sh) override these env values.
 ENV DB_USERNAME="aiverify"
-ENV DB_PASSWORD="aiverify"
+ENV DB_PASSWORD="t1oj5L_xQI8dTrVuZ"
 
-ARG ALLOWED_ORIGINS=http://localhost:3000,http://localhost:4000
+ENV ALLOWED_ORIGINS=http://localhost:3000,http://localhost:4000
 RUN echo "ALLOWED_ORIGINS=${ALLOWED_ORIGINS}"
 RUN echo "REDIS_HOST=redis\n\
 REDIS_PORT=6379\n\
