@@ -169,7 +169,7 @@ jobs:
           DB_HOST=127.0.0.1
           DB_PORT=27017
           DB_USERNAME=aiverify
-          DB_PASSWORD=aiverify
+          DB_PASSWORD=t1oj5L_xQI8dTrVuZ"
           ALLOWED_ORIGINS=http://127.0.0.1:3000,http://127.0.0.1:3001,http://127.0.0.1:4000" > .env
 
           node app.mjs &> apigw.log &
