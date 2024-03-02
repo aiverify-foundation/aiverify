@@ -51,8 +51,8 @@ jobs:
         working-directory: ${{ github.workspace }}/setup-aiverify
         run: |
           cd aiverify-user
-          echo ${{ github.ref_name }}
-          bash docker-build.sh --build-arg=BRANCH_TAG=${{ github.ref_name }} --build-arg=ALLOWED_ORIGINS="http://localhost:3000,http://localhost:4000,http://127.0.0.1:3000,http://127.0.0.1:4000,http://127.0.0.1:27017"
+          echo ${{ github.head_ref }}
+          bash docker-build.sh --build-arg=BRANCH_TAG=${{ github.head_ref }} --build-arg=ALLOWED_ORIGINS="http://localhost:3000,http://localhost:4000,http://127.0.0.1:3000,http://127.0.0.1:4000,http://127.0.0.1:27017"
 
       - name: Run aiverify containers
         working-directory: ${{ github.workspace }}/setup-aiverify
