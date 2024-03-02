@@ -58,9 +58,13 @@ RUN apt-get install npm -y
 # For shap-toolbox stock plugin
 RUN apt-get install -y gcc g++ python3.11-dev
 
+# Install libmagicwand for Environment Corruption
+RUN apt-get install libmagickwand-dev -y
+
 # Install Git
 RUN apt-get install -y git
 
+# Install Unzip
 RUN apt-get install unzip
 
 ################### Create aiverify user ######################

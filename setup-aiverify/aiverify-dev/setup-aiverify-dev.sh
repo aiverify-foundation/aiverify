@@ -44,6 +44,9 @@ machine_arch=$(uname -m)
 
 sudo apt update
 
+# Install libmagicwand for Environment Corruption
+sudo apt-get install libmagickwand-dev -y
+
 ########### Chromium #############
 
 if [[ "$machine_arch" == "aarch64" ]]; then
