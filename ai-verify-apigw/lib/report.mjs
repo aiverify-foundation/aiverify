@@ -22,52 +22,71 @@ export function getReportFilename(projectId) {
 
 export async function generateReport(reportId) {
   let report = await ReportModel.findById(reportId);
+  if (!report) {
+    console.error(`Report ${reportId} not found`);
+    return;
+  }
 
-  report.status = "GeneratingReport";
-  report = await report.save();
-  pubsub.publish("REPORT_STATUS_UPDATED", {
-    reportStatusUpdated: report.toObject()
-  })
+  try {
+    report.status = "GeneratingReport";
+    report = await report.save();
+    pubsub.publish("REPORT_STATUS_UPDATED", {
+      reportStatusUpdated: report.toObject()
+    })
+  
+    // generate report
+    // added --no-sandbox param to make it work in containerized env.
+    const browser = await puppeteer.launch({args: ['--no-sandbox'], headless:'new'});
+    const page = await browser.newPage();
+    const url = `${WEB_REPORT_URL}/${report.project.toString()}`;
+    // const pdf_name =  `report_${report.project.toString()}.pdf`;
+    const pdf_name =  getReportFilename(report.project.toString());
+    const pdf_path = path.join(REPORT_DIRNAME, pdf_name);
+    await page.goto(url, { waitUntil: 'networkidle0', timeout: 60000 });
+    const pdf = await page.pdf({
+      path: pdf_path,
+      printBackground: true,
+      format: 'A4',
+      margin: {
+        top: 10,
+        bottom: 33,
+      },
+      displayHeaderFooter: true,
+      footerTemplate: `
+        <style>#header, #footer { padding: 0 !important; }</style>
+        <div style="font-size: 9px; padding: 5px 0px 5px 0px; margin: 0px 15px 0px 0px; text-align: right; width: 100%;">
+          Page <span class="pageNumber"></span> of <span class="totalPages"></span>
+        </div>
+      `
+    });
+  
+    // update report status
+    report.status = "ReportGenerated";
+    const updatedReport = await report.save();
+    // const report = await ReportModel.findOneAndUpdate(
+    //   { _id: msg.reportId },
+    //   {
+    //     "$set": {
+    //       status: "ReportGenerated",
+    //     }
+    //   },
+    //   { new: true }
+    // )
+    pubsub.publish("REPORT_STATUS_UPDATED", {
+      reportStatusUpdated: updatedReport.toObject()
+    })
+  } catch (e) {
+    console.error("Error generating report");
+    console.error(e)
+    try {
+      report.status = "ReportError";
+      report = await report.save();
+      pubsub.publish("REPORT_STATUS_UPDATED", {
+        reportStatusUpdated: report.toObject()
+      })  
+    } catch (e2) {
 
-  // generate report
-  // added --no-sandbox param to make it work in containerized env.
-  const browser = await puppeteer.launch({args: ['--no-sandbox'], headless:'new'});
-  const page = await browser.newPage();
-  const url = `${WEB_REPORT_URL}/${report.project.toString()}`;
-  // const pdf_name =  `report_${report.project.toString()}.pdf`;
-  const pdf_name =  getReportFilename(report.project.toString());
-  const pdf_path = path.join(REPORT_DIRNAME, pdf_name);
-  await page.goto(url, { waitUntil: 'networkidle0', timeout: 60000 });
-  const pdf = await page.pdf({
-    path: pdf_path,
-    printBackground: true,
-    format: 'A4',
-    margin: {
-      top: 10,
-      bottom: 33,
-    },
-    displayHeaderFooter: true,
-    footerTemplate: `
-      <style>#header, #footer { padding: 0 !important; }</style>
-      <div style="font-size: 9px; padding: 5px 0px 5px 0px; margin: 0px 15px 0px 0px; text-align: right; width: 100%;">
-        Page <span class="pageNumber"></span> of <span class="totalPages"></span>
-      </div>
-    `
-  });
+    }
+  }
 
-  // update report status
-  report.status = "ReportGenerated";
-  const updatedReport = await report.save();
-  // const report = await ReportModel.findOneAndUpdate(
-  //   { _id: msg.reportId },
-  //   {
-  //     "$set": {
-  //       status: "ReportGenerated",
-  //     }
-  //   },
-  //   { new: true }
-  // )
-  pubsub.publish("REPORT_STATUS_UPDATED", {
-    reportStatusUpdated: updatedReport.toObject()
-  })
 }
