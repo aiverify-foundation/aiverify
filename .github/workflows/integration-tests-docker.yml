@@ -149,12 +149,12 @@ jobs:
           npm install
           npx playwright test
 
-      # - name: Run backend tests
-      #   if: ${{ ! cancelled() }}
-      #   run: |
-      #     cd qa-test/backend-testing
-      #     npm install
-      #     BASEDIR=${{ github.workspace }} npx playwright test
+      - name: Run backend tests
+        if: ${{ ! cancelled() }}
+        run: |
+          cd qa-test/backend-testing
+          npm install
+          BASEDIR=${{ github.workspace }} npx playwright test
 
       - name: Show logs
         if: ${{ ! cancelled() }}
