@@ -128,7 +128,7 @@ describe("Test Dataset GraphQL queries and mutations", () => {
     const response2 = await server.executeOperation({
         query,
         variables: {
-          datasetID: mongoose.Types.ObjectId(),
+          datasetID: new mongoose.Types.ObjectId(),
           dataset: {
               description: 'Mock Description2',
               name: 'New File Name2.png',
@@ -141,7 +141,7 @@ describe("Test Dataset GraphQL queries and mutations", () => {
       expect(response2.body.singleResult.errors).toBeDefined();
 
     // check not updated into db
-    const doc = await DatasetModel.findOne({ _id: mongoose.Types.ObjectId(id) });
+    const doc = await DatasetModel.findOne({ _id: new mongoose.Types.ObjectId(id) });
     expect(doc.name).toEqual(data[dataLen-1].name);
     expect(doc.status).toEqual(data[dataLen-1].status);
 
@@ -177,7 +177,7 @@ describe("Test Dataset GraphQL queries and mutations", () => {
     expect(response.body.singleResult.errors).toBeUndefined();
 
     // check updated into db
-    const doc = await DatasetModel.findOne({ _id: mongoose.Types.ObjectId(id) });
+    const doc = await DatasetModel.findOne({ _id: new mongoose.Types.ObjectId(id) });
     expect(doc.name).toEqual('New File Name.png');
     expect(doc.status).toEqual('Cancelled');
     expect(doc.description).toEqual('Mock Description');
@@ -284,7 +284,7 @@ describe("Test Dataset GraphQL queries and mutations", () => {
     response = await server.executeOperation({
       query,
       variables: {
-        id: mongoose.Types.ObjectId()
+        id: new mongoose.Types.ObjectId()
       }
     })
     // check response

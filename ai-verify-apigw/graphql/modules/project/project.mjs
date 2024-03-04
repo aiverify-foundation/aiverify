@@ -133,7 +133,7 @@ const resolvers = {
           .then((template) => {
             const newProject = {
               ...template.toObject(),
-              _id: mongoose.Types.ObjectId(),
+              _id: new mongoose.Types.ObjectId(),
               template: template._id,
               projectInfo: project.projectInfo,
             };
@@ -176,19 +176,19 @@ const resolvers = {
           const modelAndDatasets = project.modelAndDatasets;
           if (modelAndDatasets) {
             if (modelAndDatasets.modelId) {
-              modelAndDatasets.model = mongoose.Types.ObjectId(
+              modelAndDatasets.model = new mongoose.Types.ObjectId(
                 modelAndDatasets.modelId
               );
               delete modelAndDatasets.modelId;
             }
             if (modelAndDatasets.testDatasetId) {
-              modelAndDatasets.testDataset = mongoose.Types.ObjectId(
+              modelAndDatasets.testDataset = new mongoose.Types.ObjectId(
                 modelAndDatasets.testDatasetId
               );
               delete modelAndDatasets.testDatasetId;
             }
             if (modelAndDatasets.groundTruthDatasetId) {
-              modelAndDatasets.groundTruthDataset = mongoose.Types.ObjectId(
+              modelAndDatasets.groundTruthDataset = new mongoose.Types.ObjectId(
                 modelAndDatasets.groundTruthDatasetId
               );
               delete modelAndDatasets.groundTruthDatasetId;
@@ -219,7 +219,7 @@ const resolvers = {
           .then((doc) => {
             if (!doc) return reject("Invalid ID");
             let newdoc = new ProjectModel(doc);
-            newdoc._id = mongoose.Types.ObjectId();
+            newdoc._id = new mongoose.Types.ObjectId();
             newdoc.fromPlugin = false;
             newdoc.projectInfo.name = `Copy of ${doc.projectInfo.name}`;
             newdoc.report = null;
@@ -243,7 +243,7 @@ const resolvers = {
             if (!doc) return reject("Invalid ID");
             let newdoc = {
               ...doc.toObject(),
-              _id: mongoose.Types.ObjectId(),
+              _id: new mongoose.Types.ObjectId(),
               projectInfo: templateInfo,
               fromPlugin: false,
             };
