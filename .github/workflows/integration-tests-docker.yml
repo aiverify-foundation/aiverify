@@ -39,6 +39,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: ${{ inputs.branch_to_test }}
+          submodules: recursive
 
       - name: Checkout Code (pull_request_review)
         if: github.event_name == 'pull_request_review'
@@ -46,6 +47,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
+          submodules: recursive
 
       - name: Build aiverify docker image
         working-directory: ${{ github.workspace }}/setup-aiverify
