@@ -57,7 +57,7 @@ jobs:
           bash docker-build.sh --build-arg=BRANCH_TAG=${{ inputs.branch_to_test }} --build-arg=ALLOWED_ORIGINS="http://localhost:3000,http://localhost:4000,http://127.0.0.1:3000,http://127.0.0.1:4000"
 
       - name: Build AI Verify Docker Image (Pull_Request_Review)
-        if: github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'pull_request_review'
         working-directory: ${{ github.workspace }}/setup-aiverify
         run: |
           cd aiverify-user
