@@ -190,15 +190,14 @@ router.post('/data', upload.array('myFiles'), async function (req, res, next) {
   
           const getDbCount = (tempName) => {
             return new Promise((resolve, reject) => {
-              DatasetModel.findOne({name: tempName}, function (err, result) {
-                if (err) {
-                  reject(err);
-                }
+              DatasetModel.exists({name: tempName}).then(result => {
                 if (!result) {
                   resolve(false);
                 } else {
                   resolve(true);
                 }
+              }).catch(err => {
+                reject(err)
               })
             })
           }
@@ -267,9 +266,7 @@ router.post('/data', upload.array('myFiles'), async function (req, res, next) {
               type: "Folder",
               ctime: value.folderCreated.stat.ctime,
             });
-            await newFolderObj.save(function (err, product, numAffected) {
-              console.log("Folder saved: ", product);
-            });
+            await newFolderObj.save();
             queueDataset(newFolderObj)
             data.push(newFolderObj)
             numSuccess++;
@@ -290,14 +287,13 @@ router.post('/data', upload.array('myFiles'), async function (req, res, next) {
                 errorMessages: "",
                 type: "File",
               });
-              await newObj.save(function (err, product, numAffected) {
-                console.log("Saved: ", product);
-              });
+              await newObj.save()
     
               queueDataset(newObj)
               data.push(newObj)
               numSuccess++;
             }
+
           }
           
         }
@@ -380,16 +376,15 @@ router.post('/model', upload.array('myModelFiles'), async function (req, res, ne
     
             const getDbCount = (tempName) => {
               return new Promise((resolve, reject) => {
-                ModelFileModel.findOne({name: tempName}, function (err, result) {
-                  if (err) {
-                    reject(err);
-                  }
+                ModelFileModel.exists({name: tempName}).then(result => {
                   if (!result) {
                     resolve(false);
                   } else {
                     resolve(true);
                   }
-                })
+                }).catch(err => {
+                  reject(err);
+                })                  
               })
             }
     
@@ -466,9 +461,7 @@ router.post('/model', upload.array('myModelFiles'), async function (req, res, ne
                   ctime: value.folderCreated.stat.ctime,
                 });
                 
-                await newFolderObj.save(function (err, product, numAffected) {
-                  console.log("Folder saved: ", product);
-                })
+                await newFolderObj.save();
                 queueModel(newFolderObj) ;
                 data.push(newFolderObj);
                 numSuccess++; 
@@ -490,9 +483,7 @@ router.post('/model', upload.array('myModelFiles'), async function (req, res, ne
                   errorMessages: "",
                   type: "File",
                 });
-                await newObj.save(function (err, product, numAffected) {
-                  console.log("Saved: ", product);
-                })
+                await newObj.save();
                 queueModel(newObj)
                 data.push(newObj)
                 numSuccess++;

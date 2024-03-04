@@ -17,7 +17,7 @@ describe("Test /report route", () => {
   let fs;
   let server;
   let request;
-  const projectId = mongoose.Types.ObjectId();
+  const projectId = new mongoose.Types.ObjectId();
   const pdf_path = path.join(srcDir, "./mock_report.pdf");
 
   beforeAll(async() => {

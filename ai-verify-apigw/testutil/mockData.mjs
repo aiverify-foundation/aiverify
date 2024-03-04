@@ -3,7 +3,7 @@ import casual from "casual";
 import mongoose from "mongoose";
 
 casual.define("ObjectId", function () {
-  return mongoose.Types.ObjectId().toString();
+  return new mongoose.Types.ObjectId().toString();
 });
 
 casual.define("randomString", function (len) {
