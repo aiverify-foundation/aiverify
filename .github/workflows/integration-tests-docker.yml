@@ -76,7 +76,7 @@ jobs:
           mkdir -m 777 -p ~/logs/db
   
           if ! docker-compose up -d ; then
-            docker-compose up -d
+            bash ./docker-start.sh
           fi
 
       # - name: Checkout API Mock Server
