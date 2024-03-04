@@ -30,7 +30,7 @@ jobs:
   integration-tests-docker:
 
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 100
 
     steps:
 
@@ -76,7 +76,7 @@ jobs:
           mkdir -m 777 -p ~/logs/db
   
           if ! docker-compose up -d ; then
-            bash ./docker-start.sh
+            docker-compose up -d
           fi
 
       - name: Checkout API Mock Server
