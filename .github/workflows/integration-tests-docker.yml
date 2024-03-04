@@ -128,7 +128,7 @@ jobs:
           cd qa-test/smoke-testing
           npm install
           npx playwright install
-          ENVIRONMENT_URL=$ENVIRONMENT_URL npx playwright test
+          ENVIRONMENT_URL=https://host.docker.internal npx playwright test
 
       - name: Run frontend tests
         if: ${{ ! cancelled() }}
