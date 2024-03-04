@@ -59,7 +59,7 @@ jobs:
           admin = db.getSiblingDB('admin')
           admin.createUser({
             user: 'mongodb',
-            pwd: 'mongodb',
+            pwd: 't1oj5L_xQI8dTrVuZ',
             roles: [{ role: 'root', db: 'admin' }],
           });
 
