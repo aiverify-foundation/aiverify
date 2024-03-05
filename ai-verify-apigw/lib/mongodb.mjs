@@ -15,7 +15,7 @@ if (!process.env.DB_HOST || !process.env.DB_PORT) {
 const DB_URI = `mongodb://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/aiverify`;
 
 console.debug(`Connecting to ${DB_URI}`);
-mongoose.connect(DB_URI, {useNewUrlParser: true});
+mongoose.connect(DB_URI, {});
 var db = mongoose.connection;
 
 db.on('error', err => {
