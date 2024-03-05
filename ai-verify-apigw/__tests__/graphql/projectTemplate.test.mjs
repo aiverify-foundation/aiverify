@@ -260,7 +260,7 @@ mutation($id: ObjectID!, $projectTemplate: ProjectTemplateInput!) {
     expect(response.body.singleResult.errors).toBeUndefined();
 
     // check updated into db
-    const doc = await ProjectTemplateModel.findOne({ _id: mongoose.Types.ObjectId(id) });
+    const doc = await ProjectTemplateModel.findOne({ _id: new mongoose.Types.ObjectId(id) });
     expect(doc.projectInfo).toEqual(projectTemplate.projectInfo);
   })
 
@@ -292,7 +292,7 @@ mutation($id: ObjectID!, $projectTemplate: ProjectTemplateInput!) {
     const response2 = await server.executeOperation({
       query,
       variables: {
-        id: mongoose.Types.ObjectId().toString(),
+        id: new mongoose.Types.ObjectId().toString(),
         projectTemplate: {
           projectInfo: projectTemplate.projectInfo,
         }
@@ -328,7 +328,7 @@ mutation($id: ObjectID!) {
 
     // check updated into db
     // const docs = await ProjectTemplateModel.find({ __t: null }).sort({ _id: -1 }).limit(1);
-    const doc = await ProjectTemplateModel.findOne({ _id: mongoose.Types.ObjectId(obj.id) });
+    const doc = await ProjectTemplateModel.findOne({ _id: new mongoose.Types.ObjectId(obj.id) });
     expect(doc).toBeDefined();
     expect(doc.projectInfo.name).toBe(`Copy of ${origDoc.projectInfo.name}`);
   })
@@ -353,7 +353,7 @@ mutation($id: ObjectID!) {
     response = await server.executeOperation({
       query,
       variables: {
-        id: mongoose.Types.ObjectId().toString(),
+        id: new mongoose.Types.ObjectId().toString(),
       }
     })
     // check response
@@ -408,7 +408,7 @@ mutation($id: ObjectID!) {
     response = await server.executeOperation({
       query,
       variables: {
-        id: mongoose.Types.ObjectId()
+        id: new mongoose.Types.ObjectId()
       }
     })
     // check response

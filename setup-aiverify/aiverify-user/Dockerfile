@@ -58,9 +58,13 @@ RUN apt-get install npm -y
 # For shap-toolbox stock plugin
 RUN apt-get install -y gcc g++ python3.11-dev
 
+# Install libmagicwand for Environment Corruption
+RUN apt-get install libmagickwand-dev -y
+
 # Install Git
 RUN apt-get install -y git
 
+# Install Unzip
 RUN apt-get install unzip
 
 ################### Create aiverify user ######################
@@ -129,7 +133,7 @@ WEB_REPORT_URL=http://localhost:3000/reportStatus/printview" | tee .env
 # Install dependencies for apigw
 # Skip Chrome/chromium install during puppeteer install, since chromium
 # already installed above
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD 1
+ENV PUPPETEER_SKIP_DOWNLOAD 1
 RUN npm install
 ENV PUPPETEER_EXECUTABLE_PATH /usr/bin/chromium
 

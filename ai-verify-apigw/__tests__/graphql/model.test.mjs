@@ -164,7 +164,7 @@ describe("Test Model GraphQL queries and mutations", () => {
     const response2 = await server.executeOperation({
       query,
       variables: {
-        modelFileID: mongoose.Types.ObjectId(),
+        modelFileID: new mongoose.Types.ObjectId(),
         modelFile: {
           description: "Mock Description1",
           modelType: "Regression",
@@ -179,7 +179,7 @@ describe("Test Model GraphQL queries and mutations", () => {
 
     // check not updated into db
     const doc = await ModelFileModel.findOne({
-      _id: mongoose.Types.ObjectId(id),
+      _id: new mongoose.Types.ObjectId(id),
     });
     expect(doc.name).toEqual(data[dataLen - 1].name);
     expect(doc.status).toEqual(data[dataLen - 1].status);
@@ -214,7 +214,7 @@ describe("Test Model GraphQL queries and mutations", () => {
 
     // check updated into db
     const doc = await ModelFileModel.findOne({
-      _id: mongoose.Types.ObjectId(id),
+      _id: new mongoose.Types.ObjectId(id),
     });
     expect(doc.name).toEqual("New File Name1.png");
     expect(doc.modelType).toEqual("Regression");
@@ -302,7 +302,7 @@ describe("Test Model GraphQL queries and mutations", () => {
     response = await server.executeOperation({
       query,
       variables: {
-        id: mongoose.Types.ObjectId(),
+        id: new mongoose.Types.ObjectId(),
       },
     });
     // check response
@@ -346,7 +346,7 @@ mutation($model: ModelAPIInput!) {
 
       // check updated into db
       const doc = await ModelFileModel.findOne({
-        _id: mongoose.Types.ObjectId(id),
+        _id: new mongoose.Types.ObjectId(id),
       });
       expect(doc).toBeDefined();
       expect(doc.name).toEqual(model.name);
@@ -570,7 +570,7 @@ mutation($id: ObjectID!) {
 `;
     for (let model of modelAPIData) {
       const count = await ModelFileModel.countDocuments({
-        _id: mongoose.Types.ObjectId(model.id),
+        _id: new mongoose.Types.ObjectId(model.id),
       });
       expect(count).toBe(1);
 
@@ -587,7 +587,7 @@ mutation($id: ObjectID!) {
 
       // verify delete from db
       const count2 = await ModelFileModel.countDocuments({
-        _id: mongoose.Types.ObjectId(model.id),
+        _id: new mongoose.Types.ObjectId(model.id),
       });
       expect(count2).toBe(0);
     }
