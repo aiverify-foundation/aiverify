@@ -622,12 +622,8 @@ class Plugin(IAlgorithm):
                         subfolder_name="adv_pred",
                     )
                     adversarial_prediction = self._model.predict(
-                        self._transform_to_df(
-                            processed_pertubed_input,
-                            image_shapes,
-                            subfolder_name="adv_pred",
-                        ),
-                        self._data_labels,
+                        processed_pertubed_input_df,
+                        self._data_labels_items,
                     )
 
             # Update the progress
@@ -865,6 +861,7 @@ class Plugin(IAlgorithm):
             final_adversarial_samples_to_predict = [
                 final_adversarial_samples_to_predict
             ]
+
         adversarial_prediction = self._model.predict(
             final_adversarial_samples_to_predict, self._data_labels_items
         )
