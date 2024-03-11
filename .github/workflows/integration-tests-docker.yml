@@ -84,6 +84,8 @@ jobs:
           
           mkdir -m 777 -p ~/data/db
           mkdir -m 777 -p ~/logs/db
+
+          rm -r -f  mkdir /var/lib/docker/volumes/aiverify-user_plugins-volume/_data/aiverify.stock.accumulated-local-effect
   
           if ! docker-compose up -d ; then
             docker-compose up -d
