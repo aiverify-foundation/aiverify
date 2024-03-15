@@ -21,7 +21,6 @@ services:
       MONGO_INITDB_DATABASE: admin
       MONGO_AIVERIFY_USER: '${DB_AIVERIFY_USER:-aiverify}'
       MONGO_AIVERIFY_PASSWORD: '${DB_AIVERIFY_PASSWORD:-t1oj5L_xQI8dTrVuZ}'
-      ALLOWED_ORIGINS: http://localhost:3000,http://localhost:4000,http://127.0.0.1:3000,http://127.0.0.1:4000
     user: '${CUR_UID}:${CUR_GID}'
     volumes:
       - ~/data/db:/data/db
@@ -56,6 +55,7 @@ services:
     environment:
       DB_USERNAME: '${DB_AIVERIFY_USER:-aiverify}'
       DB_PASSWORD: '${DB_AIVERIFY_PASSWORD:-t1oj5L_xQI8dTrVuZ}'
+      ALLOWED_ORIGINS: http://localhost:3000,http://localhost:4000,http://127.0.0.1:3000,http://127.0.0.1:4000
     ports:
       - "3000:3000"
     expose:
