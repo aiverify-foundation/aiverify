@@ -20,7 +20,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: '${MONGO_ROOT_PASSWORD:-mongodb}'
       MONGO_INITDB_DATABASE: admin
       MONGO_AIVERIFY_USER: '${DB_AIVERIFY_USER:-aiverify}'
-      MONGO_AIVERIFY_PASSWORD: '${DB_AIVERIFY_PASSWORD:-aiverify}'
+      MONGO_AIVERIFY_PASSWORD: '${DB_AIVERIFY_PASSWORD:-t1oj5L_xQI8dTrVuZ}'
     user: '${CUR_UID}:${CUR_GID}'
     volumes:
       - ~/data/db:/data/db
@@ -32,6 +32,8 @@ services:
   # backend - test-engine
   test-engine:
     image: aiverify:0.10
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     restart: always
     depends_on:
       - redis
@@ -48,12 +50,16 @@ services:
   # frontend - portal & apigw
   portal:
     image: aiverify:0.10
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       DB_USERNAME: '${DB_AIVERIFY_USER:-aiverify}'
-      DB_PASSWORD: '${DB_AIVERIFY_PASSWORD:-aiverify}'
+      DB_PASSWORD: '${DB_AIVERIFY_PASSWORD:-t1oj5L_xQI8dTrVuZ}'
+      ALLOWED_ORIGINS: http://localhost:3000,http://localhost:4000,http://127.0.0.1:3000,http://127.0.0.1:4000
     ports:
       - "3000:3000"
-      - "4000:4000"
+    expose:
+      - "4000"
     depends_on:
       - redis
       - db
