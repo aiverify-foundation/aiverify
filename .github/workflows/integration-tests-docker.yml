@@ -147,7 +147,7 @@ jobs:
         run: |
           cd qa-test/frontend-testing
           npm install
-          npx playwright test
+          ENVIRONMENT_URL=https://host.docker.internal npx playwright test
 
       # - name: Run backend tests
       #   if: ${{ ! cancelled() }}

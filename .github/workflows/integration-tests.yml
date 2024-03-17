@@ -234,7 +234,7 @@ jobs:
         run: |
           cd qa-test/frontend-testing
           npm install
-          npx playwright test
+          ENVIRONMENT_URL=https://127.0.0.1 npx playwright test
 
       - name: Run backend tests
         if: ${{ ! cancelled() }}
