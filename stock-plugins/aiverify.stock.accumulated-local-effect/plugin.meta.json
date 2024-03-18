@@ -1,6 +1,6 @@
 {
     "gid": "aiverify.stock.accumulated_local_effect",
-    "version": "0.9.0",
+    "version": "0.10.0",
     "name": "Accumulated Local Effect",
     "author": "AI Verify",
     "description": "This plugin explains how each feature and its feature value contribute to the predictions."
