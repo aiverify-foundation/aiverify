@@ -1,6 +1,6 @@
 {
     "gid": "aiverify.algorithms.digital_corruptions",
-    "version": "0.9.0",
+    "version": "0.10.0",
     "name": "Digital Corruptions",
     "author": "AI Verify",
     "description": "Robustness plugin for digital corruptions"
