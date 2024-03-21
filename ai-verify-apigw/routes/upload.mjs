@@ -7,6 +7,13 @@ import { ModelFileModel, DatasetModel } from "#models";
 import { queueDataset, queueModel } from "#lib/testEngineQueue.mjs";
 import multer from "multer";
 
+const VALID_MIME_TYPES = [
+  "application/octet-stream",
+  "application/x-spss-sav",
+  "text/csv",
+  "text/tsv",
+];
+
 const router = express.Router();
 
 const storage = multer.diskStorage({
@@ -176,7 +183,7 @@ router.post("/data", upload.array("myFiles"), async function (req, res, next) {
   let promises = files.map((file, index) => {
     return new Promise(async (resolve, reject) => {
       if (
-        file.mimetype !== "application/octet-stream" &&
+        !VALID_MIME_TYPES.includes(file.mimetype) &&
         !file.mimetype.startsWith("image/")
       ) {
         return reject("Invalid mimetype: " + file.mimetype);
@@ -399,7 +406,7 @@ router.post(
 
     let promises = files.map((file, index) => {
       return new Promise(async (resolve, reject) => {
-        if (file.mimetype !== "application/octet-stream") {
+        if (!VALID_MIME_TYPES.includes(file.mimetype)) {
           return reject("Invalid mimetype: " + file.mimetype);
         }
         try {
