@@ -1,0 +1,86 @@
+# SCA Scan
+
+name: Software Composition Analysis
+
+on:
+# Run this workflow manually from Actions tab
+  workflow_dispatch:
+    inputs:
+      branch_to_test:
+        description: 'Branch or tag to run test'
+        required: true
+        default: 'main'
+        type: string
+  schedule:
+    - cron: "0 1 * * 4"
+
+# Allow one concurrent deployment
+concurrency:
+  group: ${{ github.repository }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+
+  software-composition-analysis:
+
+  runs-on: ubuntu-latest
+  timeout-minutes: 10
+
+  steps:
+
+  - name: Install & Scan APIGW
+        run: |
+          cd ai-verify-apigw
+          npm install
+          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=ai-verify-apigw --detect.project.version.name=$(date +"%d-%m-%Y") --detect.source.path=. --detect.code.location.name="ai-verify-apigw_$(date +"%d-%m-%Y")" --detect.excluded.directories=/tests --blackduck.trust.cert=true
+          cd ../
+
+  - name: Install & Scan PORTAL
+        run: |
+          cd ai-verify-portal
+          npm install
+          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=ai-verify-portal --detect.project.version.name=$(date +"%d-%m-%Y") --detect.source.path=. --detect.code.location.name="ai-verify-portal_$(date +"%d-%m-%Y")" --detect.excluded.directories=/tests --blackduck.trust.cert=true
+          cd ../
+
+  - name: Install & Scan SHARED LIBRARY
+        run: |
+          cd ai-verify-shared-library
+          npm install
+          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=ai-verify-shared-library --detect.project.version.name=$(date +"%d-%m-%Y") --detect.source.path=. --detect.code.location.name="ai-verify-shared-library_$(date +"%d-%m-%Y")" --detect.excluded.directories=/tests --blackduck.trust.cert=true
+          cd ../
+
+  - name: Install & Scan TEST ENGINE APP
+        run: |
+          cd test-engine-app
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=test-engine-app --detect.project.version.name=$(date +"%d-%m-%Y") --detect.source.path=. --detect.code.location.name="test-engine-app_$(date +"%d-%m-%Y")" --detect.excluded.directories=/tests --blackduck.trust.cert=true
+          cd ../
+
+  - name: Install & Scan TEST ENGINE CORE
+        run: |
+          cd test-engine-core
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=test-engine-core --detect.project.version.name=$(date +"%d-%m-%Y") --detect.source.path=. --detect.code.location.name="test-engine-core_$(date +"%d-%m-%Y")" --detect.excluded.directories=/tests --blackduck.trust.cert=true
+          cd ../
+
+  - name: Install & Scan TEST ENGINE CORE MODULES
+        run: |
+          cd test-engine-core-modules
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=test-engine-core-modules --detect.project.version.name=$(date +"%d-%m-%Y") --detect.source.path=. --detect.code.location.name="test-engine-core-modules_$(date +"%d-%m-%Y")" --detect.excluded.directories=/tests --blackduck.trust.cert=true
+          cd ../
+
+  - name: Install & Scan STOCK PLUGINS
+        run: |
+          cd stock-plugins
+          python3 -m venv venv
+          source venv/bin/activate
+          find ./ -type f -name 'requirements.txt' -exec pip install -r "{}" \;
+          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=test-engine-core --detect.project.version.name=$(date +"%d-%m-%Y") --detect.source.path=. --detect.code.location.name="stock-plugins_$(date +"%d-%m-%Y")" --detect.excluded.directories=/tests --blackduck.trust.cert=true
+          cd ../
