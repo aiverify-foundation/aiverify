@@ -11,8 +11,8 @@ on:
         required: true
         default: 'main'
         type: string
-  schedule:
-    - cron: "0 1 * * 4"
+  # schedule:
+  #   - cron: "0 1 * * 4"
 
 # Allow one concurrent deployment
 concurrency:
