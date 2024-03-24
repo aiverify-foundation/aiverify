@@ -20,37 +20,36 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-
   software-composition-analysis:
 
-  runs-on: ubuntu-latest
-  timeout-minutes: 10
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
 
-  steps:
+    steps:
 
-  - name: Install & Scan APIGW
-    run: |
+    - name: Install & Scan APIGW
+      run: |
           cd ai-verify-apigw
           npm install
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=ai-verify-apigw --detect.project.version.name=$(date +"%d-%m-%Y") --detect.source.path=. --detect.code.location.name="ai-verify-apigw_$(date +"%d-%m-%Y")" --detect.excluded.directories=/tests --blackduck.trust.cert=true
           cd ../
-
-  - name: Install & Scan PORTAL
-    run: |
+          
+    - name: Install & Scan PORTAL
+      run: |
           cd ai-verify-portal
           npm install
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=ai-verify-portal --detect.project.version.name=$(date +"%d-%m-%Y") --detect.source.path=. --detect.code.location.name="ai-verify-portal_$(date +"%d-%m-%Y")" --detect.excluded.directories=/tests --blackduck.trust.cert=true
           cd ../
 
-  - name: Install & Scan SHARED LIBRARY
-    run: |
+    - name: Install & Scan SHARED LIBRARY
+      run: |
           cd ai-verify-shared-library
           npm install
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=ai-verify-shared-library --detect.project.version.name=$(date +"%d-%m-%Y") --detect.source.path=. --detect.code.location.name="ai-verify-shared-library_$(date +"%d-%m-%Y")" --detect.excluded.directories=/tests --blackduck.trust.cert=true
           cd ../
 
-  - name: Install & Scan TEST ENGINE APP
-    run: |
+    - name: Install & Scan TEST ENGINE APP
+      run: |
           cd test-engine-app
           python3 -m venv venv
           source venv/bin/activate
@@ -58,8 +57,8 @@ jobs:
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=test-engine-app --detect.project.version.name=$(date +"%d-%m-%Y") --detect.source.path=. --detect.code.location.name="test-engine-app_$(date +"%d-%m-%Y")" --detect.excluded.directories=/tests --blackduck.trust.cert=true
           cd ../
 
-  - name: Install & Scan TEST ENGINE CORE
-    run: |
+    - name: Install & Scan TEST ENGINE CORE
+      run: |
           cd test-engine-core
           python3 -m venv venv
           source venv/bin/activate
@@ -67,8 +66,8 @@ jobs:
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=test-engine-core --detect.project.version.name=$(date +"%d-%m-%Y") --detect.source.path=. --detect.code.location.name="test-engine-core_$(date +"%d-%m-%Y")" --detect.excluded.directories=/tests --blackduck.trust.cert=true
           cd ../
 
-  - name: Install & Scan TEST ENGINE CORE MODULES
-    run: |
+    - name: Install & Scan TEST ENGINE CORE MODULES
+      run: |
           cd test-engine-core-modules
           python3 -m venv venv
           source venv/bin/activate
@@ -76,8 +75,8 @@ jobs:
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=test-engine-core-modules --detect.project.version.name=$(date +"%d-%m-%Y") --detect.source.path=. --detect.code.location.name="test-engine-core-modules_$(date +"%d-%m-%Y")" --detect.excluded.directories=/tests --blackduck.trust.cert=true
           cd ../
 
-  - name: Install & Scan STOCK PLUGINS
-    run: |
+    - name: Install & Scan STOCK PLUGINS
+      run: |
           cd stock-plugins
           python3 -m venv venv
           source venv/bin/activate
