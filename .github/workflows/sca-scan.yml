@@ -29,28 +29,28 @@ jobs:
   steps:
 
   - name: Install & Scan APIGW
-        run: |
+    run: |
           cd ai-verify-apigw
           npm install
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=ai-verify-apigw --detect.project.version.name=$(date +"%d-%m-%Y") --detect.source.path=. --detect.code.location.name="ai-verify-apigw_$(date +"%d-%m-%Y")" --detect.excluded.directories=/tests --blackduck.trust.cert=true
           cd ../
 
   - name: Install & Scan PORTAL
-        run: |
+    run: |
           cd ai-verify-portal
           npm install
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=ai-verify-portal --detect.project.version.name=$(date +"%d-%m-%Y") --detect.source.path=. --detect.code.location.name="ai-verify-portal_$(date +"%d-%m-%Y")" --detect.excluded.directories=/tests --blackduck.trust.cert=true
           cd ../
 
   - name: Install & Scan SHARED LIBRARY
-        run: |
+    run: |
           cd ai-verify-shared-library
           npm install
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=ai-verify-shared-library --detect.project.version.name=$(date +"%d-%m-%Y") --detect.source.path=. --detect.code.location.name="ai-verify-shared-library_$(date +"%d-%m-%Y")" --detect.excluded.directories=/tests --blackduck.trust.cert=true
           cd ../
 
   - name: Install & Scan TEST ENGINE APP
-        run: |
+    run: |
           cd test-engine-app
           python3 -m venv venv
           source venv/bin/activate
@@ -59,7 +59,7 @@ jobs:
           cd ../
 
   - name: Install & Scan TEST ENGINE CORE
-        run: |
+    run: |
           cd test-engine-core
           python3 -m venv venv
           source venv/bin/activate
@@ -68,7 +68,7 @@ jobs:
           cd ../
 
   - name: Install & Scan TEST ENGINE CORE MODULES
-        run: |
+    run: |
           cd test-engine-core-modules
           python3 -m venv venv
           source venv/bin/activate
@@ -77,7 +77,7 @@ jobs:
           cd ../
 
   - name: Install & Scan STOCK PLUGINS
-        run: |
+    run: |
           cd stock-plugins
           python3 -m venv venv
           source venv/bin/activate
