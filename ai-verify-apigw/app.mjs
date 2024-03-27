@@ -3,7 +3,6 @@ import express from 'express';
 import http from 'http';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import { rateLimit } from 'express-rate-limit'
 
 import "dotenv/config.js";
 
@@ -14,6 +13,9 @@ import { createApolloServer } from './graphql/server.mjs';
 const allowedOrigins = process.env.ALLOWED_ORIGINS !== undefined ?
   process.env.ALLOWED_ORIGINS.split(',') : ['http://localhost:3000','http://localhost:4000'];
 const app = express();
+
+// enable trust proxy, see https://expressjs.com/en/guide/behind-proxies.html
+app.set('trust proxy', 1)
 
 // CORS options
 const corsOptions = {
@@ -27,18 +29,6 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: true }));
-
-// create rate limiter
-const limiter = rateLimit({
-	windowMs: 15 * 60 * 1000, // 15 minutes
-	limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
-	standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
-	legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
-	// store: ... , // Redis, Memcached, etc. See below.
-})
-
-// Apply the rate limiting middleware to all requests.
-app.use(limiter)
 
 const httpServer = http.createServer(app);
 
