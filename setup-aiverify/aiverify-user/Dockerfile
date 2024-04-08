@@ -68,7 +68,7 @@ RUN apt-get install -y git
 RUN apt-get install unzip
 
 # Install R
-RUN apt-get install -y r-base r-base-dev
+RUN apt-get install r-base r-cran-caret r-cran-gbm -y
 
 ################### Create aiverify user ######################
 
@@ -174,7 +174,6 @@ RUN pip install ./test-engine-core/dist/test_engine_core-*.tar.gz
 WORKDIR /app/aiverify/test-engine-app
 RUN echo 'CORE_MODULES_FOLDER="../test-engine-core-modules"\n\
 VALIDATION_SCHEMAS_FOLDER="./test_engine_app/validation_schemas/"\n\
-REDIS_CONSUMER_GROUP="MyGroup"\n\
 REDIS_SERVER_HOSTNAME="redis"\n\
 REDIS_SERVER_PORT=6379\n\
 API_SERVER_PORT=8080' | tee .env

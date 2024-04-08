@@ -143,7 +143,7 @@ class Plugin(IModel):
                         with (ro.default_converter + pandas2ri.converter).context():
                             new_data = ro.conversion.get_conversion().py2rpy(item)
                         predictions = ro.r['predict'](object=self._model, newdata=new_data)
-                        predictions = np.array(ro.conversion.rpy2py(predictions))
+                        predictions = np.array(ro.conversion.rpy2py(predictions)).flatten()
                         return predictions
             else:
                 raise NotImplementedError
