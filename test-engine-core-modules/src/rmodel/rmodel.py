@@ -25,7 +25,7 @@ class Plugin(IModel):
     _model_algorithm: str = ""
     _supported_algorithms: List = ["rpy2.robjects.vectors.ListVector", "rpy2.robjects.vectors.DataFrame"]
     _name: str = "rmodel"
-    _description: str = "rmodel supports detecting r models"
+    _description: str = "rmodel supports detecting R models"
     _version: str = "0.9.0"
     _metadata: PluginMetadata = PluginMetadata(_name, _description, _version)
     _plugin_type: PluginType = PluginType.MODEL
@@ -161,7 +161,6 @@ class Plugin(IModel):
             Any: predicted result
         """
         raise NotImplementedError
-
 
     def score(self, data: Any, y_true: Any) -> Any:
         """

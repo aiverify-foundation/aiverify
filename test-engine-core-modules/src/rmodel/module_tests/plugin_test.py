@@ -64,8 +64,7 @@ class PluginTest:
             test_methods = [
                 self._validate_metadata,
                 self._validate_plugin_type,
-                self._validate_model_supported,
-                self._
+                self._validate_model_supported
             ]
 
             for method in test_methods:
