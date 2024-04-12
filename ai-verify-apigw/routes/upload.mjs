@@ -190,7 +190,8 @@ router.post(
       return new Promise(async (resolve, reject) => {
         if (
           !VALID_MIME_TYPES.includes(file.mimetype) &&
-          !file.mimetype.startsWith("image/")
+          !file.mimetype.startsWith("image/") &&
+          !file.mimetype.startsWith("text/x-python")
         ) {
           return reject("Invalid mimetype: " + file.mimetype);
         }
@@ -414,7 +415,7 @@ router.post(
 
     let promises = files.map((file, index) => {
       return new Promise(async (resolve, reject) => {
-        if (!VALID_MIME_TYPES.includes(file.mimetype)) {
+        if (!VALID_MIME_TYPES.includes(file.mimetype) && !file.mimetype.startsWith("text/x-python")) {
           return reject("Invalid mimetype: " + file.mimetype);
         }
         try {
