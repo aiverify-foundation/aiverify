@@ -185,14 +185,14 @@ jobs:
           ref: main
           path: qa-test/api-model-server
           
-      - name: Checkout smoke tests
-        uses: actions/checkout@v3
-        with:
-          repository: IMDA-BTG/smoke-testing
-          token: ${{ secrets.CHECKOUT_TOKEN }}
-          ref: main
-          path: qa-test/smoke-testing
-          submodules: recursive
+      # - name: Checkout smoke tests
+      #   uses: actions/checkout@v3
+      #   with:
+      #     repository: IMDA-BTG/smoke-testing
+      #     token: ${{ secrets.CHECKOUT_TOKEN }}
+      #     ref: main
+      #     path: qa-test/smoke-testing
+      #     submodules: recursive
 
       - name: Checkout frontend tests
         uses: actions/checkout@v3
