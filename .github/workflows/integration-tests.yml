@@ -181,7 +181,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: IMDA-BTG/api-model-server
-          token: ${{ secrets.CHECKOUT_TOKEN }}
           ref: main
           path: qa-test/api-model-server
           
@@ -198,7 +197,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: IMDA-BTG/frontend-testing
-          token: ${{ secrets.CHECKOUT_TOKEN }}
           ref: main
           path: qa-test/frontend-testing
 
@@ -206,7 +204,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: IMDA-BTG/backend-testing
-          token: ${{ secrets.CHECKOUT_TOKEN }}
           ref: main
           path: qa-test/backend-testing
           submodules: recursive
