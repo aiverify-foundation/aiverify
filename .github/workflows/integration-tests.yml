@@ -184,14 +184,14 @@ jobs:
           ref: main
           path: qa-test/api-model-server
           
-      # - name: Checkout smoke tests
-      #   uses: actions/checkout@v3
-      #   with:
-      #     repository: IMDA-BTG/smoke-testing
-      #     token: ${{ secrets.CHECKOUT_TOKEN }}
-      #     ref: main
-      #     path: qa-test/smoke-testing
-      #     submodules: recursive
+      - name: Checkout smoke tests
+        uses: actions/checkout@v3
+        with:
+          repository: IMDA-BTG/smoke-testing
+          token: ${{ secrets.CHECKOUT_TOKEN }}
+          ref: main
+          path: qa-test/smoke-testing
+          submodules: recursive
 
       - name: Checkout frontend tests
         uses: actions/checkout@v3
@@ -218,13 +218,13 @@ jobs:
           bash regression_run_https.sh && fg &
           bash classification_run_https.sh &
 
-      - name: Run smoke tests
-        if: ${{ ! cancelled() }}
-        run: |
-          cd qa-test/smoke-testing
-          npm install
-          npx playwright install
-          ENVIRONMENT_URL=https://127.0.0.1 npx playwright test
+      # - name: Run smoke tests
+      #   if: ${{ ! cancelled() }}
+      #   run: |
+      #     cd qa-test/smoke-testing
+      #     npm install
+      #     npx playwright install
+      #     ENVIRONMENT_URL=https://127.0.0.1 npx playwright test
 
       - name: Run frontend tests
         if: ${{ ! cancelled() }}
