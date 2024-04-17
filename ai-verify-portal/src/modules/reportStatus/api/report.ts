@@ -32,7 +32,7 @@ const GET_REPORT = gql`
   }
 `;
 export async function getReport(projectID: string): Promise<Report> {
-  const client = graphqlClient(true);
+  const client = graphqlClient();
   const { data } = await client.query({
     query: GET_REPORT,
     variables: {

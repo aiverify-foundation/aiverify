@@ -14,6 +14,9 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS !== undefined ?
   process.env.ALLOWED_ORIGINS.split(',') : ['http://localhost:3000','http://localhost:4000'];
 const app = express();
 
+// enable trust proxy, see https://expressjs.com/en/guide/behind-proxies.html
+app.set('trust proxy', 1)
+
 // CORS options
 const corsOptions = {
   origin: function (origin, callback) {

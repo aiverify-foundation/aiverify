@@ -481,11 +481,9 @@ class Plugin(IAlgorithm):
 
         # list of tuple of labels to be passed into predict()
         dict_items_labels = self._data_instance.read_labels().items()
-        predicted_data = self._model.predict(
-            [self._data], dict_items_labels
-        )
+        predicted_data = self._model.predict([self._data], dict_items_labels)
         return [eval(str(i)) for i in predicted_data]
-    
+
     def _compute_between_group(
         self,
         data_ground_truth_np: np.ndarray,

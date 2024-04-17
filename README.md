@@ -1,5 +1,5 @@
 
-[![Integration Tests](https://github.com/IMDA-BTG/aiverify/actions/workflows/integration-tests.yml/badge.svg)](https://github.com/IMDA-BTG/aiverify/actions/workflows/integration-tests.yml)
+[![Integration Tests](https://github.com/IMDA-BTG/aiverify/actions/workflows/integration-tests.yml/badge.svg)](https://github.com/IMDA-BTG/aiverify/actions/workflows/integration-tests.yml)  [![Integration Tests for aiverify-user (Docker)](https://github.com/IMDA-BTG/aiverify/actions/workflows/integration-tests-docker.yml/badge.svg)](https://github.com/IMDA-BTG/aiverify/actions/workflows/integration-tests-docker.yml)
 
 ## ✨New API Connector Feature!
 
@@ -67,7 +67,7 @@ Thank you for your interest in AI Verify, and we look forward to your contributi
 
 ```
 AI Verify
-Copyright 2023 AI Verify Foundation
+Copyright 2024 AI Verify Foundation
 
 This product includes software developed under the AI Verify Foundation.
 

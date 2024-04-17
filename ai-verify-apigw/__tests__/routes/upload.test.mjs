@@ -45,96 +45,251 @@ describe("Test /upload route", () => {
 
     jest.unstable_mockModule("multer", () => {
       const multer = jest.createMockFromModule("multer");
-      // console.log("multer", multer)
 
-      // const multer = () => ({
-      //   array: jest
-      //     .fn()
-      //     .mockImplementationOnce(() => {
-      //       return (req, res, next) => {
-      //         req.files = [
-      //           {
-      //             fieldname: "myFiles",
-      //             originalname: "mockdata.sav",
-      //             encoding: "7bit",
-      //             mimetype: "application/octet-stream",
-      //             destination: "/tmp",
-      //             filename: "mockdata.sav",
-      //             path: "/tmp/mockdata.sav",
-      //             size: 2195,
-      //           },
-      //         ];
-      //         return next();
-      //       };
-      //     })
-      //     .mockImplementationOnce(() => {
-      //       return (req, res, next) => {
-      //         req.files = [
-      //           {
-      //             fieldname: "myModelFiles",
-      //             originalname: "mockmodel.sav",
-      //             encoding: "7bit",
-      //             mimetype: "application/octet-stream",
-      //             destination: "/tmp",
-      //             filename: "mockmodel.sav",
-      //             path: "/tmp/mockmodel.sav",
-      //             size: 132878,
-      //           },
-      //         ];
-      //         req.body = {
-      //           myModelFolders: "",
-      //           myModelType: "Classification",
-      //         };
-      //         return next();
-      //       };
-      //     }),
-      // });
-      // multer.diskStorage = () => jest.fn();
-      // multer.memoryStorage = () => jest.fn();
-      const array = jest.fn()
-        .mockReturnValueOnce((req, res, next) => {
-          req.files = [
-            {
-              fieldname: "myFiles",
-              originalname: "mockdata.sav",
-              encoding: "7bit",
-              mimetype: "application/octet-stream",
-              destination: "/tmp",
-              filename: "mockdata.sav",
-              path: "/tmp/mockdata.sav",
-              size: 2195,
-            },
-          ];
-          return next();
-        })
-        .mockReturnValueOnce((req, res, next) => {
-          req.files = [
-            {
-              fieldname: "myModelFiles",
-              originalname: "mockmodel.sav",
-              encoding: "7bit",
-              mimetype: "application/octet-stream",
-              destination: "/tmp",
-              filename: "mockmodel.sav",
-              path: "/tmp/mockmodel.sav",
-              size: 132878,
-            },
-          ];
-          req.body = {
-            myModelFolders: "",
-            myModelType: "Classification",
-          };
-          return next();
-        })
-      multer.mockReturnValue({
-        array
+    const array = jest.fn()
+    
+    array.mockImplementationOnce(() => jest.fn()
+      // mocks for data files upload
+      .mockImplementationOnce((req, res, next) => {
+        req.files = [
+          {
+            fieldname: "myFiles",
+            originalname: "mockdata.sav",
+            encoding: "7bit",
+            mimetype: "application/octet-stream",
+            destination: "/tmp",
+            filename: "mockdata.sav",
+            path: "/tmp/mockdata.sav",
+            size: 2195,
+          },
+        ];
+        return next();
       })
-      return {
+      .mockImplementationOnce((req, res, next) => {
+        req.files = [
+          {
+            fieldname: "myFiles",
+            originalname: "../mockdata.sav",
+            encoding: "7bit",
+            mimetype: "application/octet-stream",
+            destination: "/tmp",
+            filename: "../mockdata.sav",
+            path: "/tmp/mockdata.sav",
+            size: 2195,
+          },
+        ];
+        return next();
+      })
+      .mockImplementationOnce((req, res, next) => {
+        req.files = [
+          {
+            fieldname: "myFiles",
+            originalname: "mockdata2.sav",
+            encoding: "7bit",
+            mimetype: "application/octet-stream",
+            destination: "/tmp",
+            filename: "mockdata2.sav",
+            path: "/tmp/mockdata2.sav",
+            size: 2195,
+          },
+        ];
+        req.body = {
+          myFolder: "mock_folder",
+          myFolders: [
+            "../mock_folder"
+          ]
+        }
+        return next();
+      })
+    ) // mocks for model files upload
+    .mockImplementationOnce(() => jest.fn()
+      .mockImplementationOnce((req, res, next) => {
+        req.files = [
+          {
+            fieldname: "myModelFiles",
+            originalname: "mockmodel.sav",
+            encoding: "7bit",
+            mimetype: "application/octet-stream",
+            destination: "/tmp",
+            filename: "mockmodel.sav",
+            path: "/tmp/mockmodel.sav",
+            size: 132878,
+          },
+        ];
+        req.body = {
+          myModelType: "Classification",
+        };
+        return next();
+      })
+      .mockImplementationOnce((req, res, next) => {
+        req.files = [
+          {
+            fieldname: "myModelFiles",
+            originalname: "../mockmodel.sav",
+            encoding: "7bit",
+            mimetype: "application/octet-stream",
+            destination: "/tmp",
+            filename: "../mockmodel.sav",
+            path: "/tmp/mockmodel.sav",
+            size: 132878,
+          },
+        ];
+        req.body = {
+          myModelType: "Classification",
+        };
+        return next();
+      })
+      .mockImplementationOnce((req, res, next) => {
+        req.files = [
+          {
+            fieldname: "myModelFiles",
+            originalname: "mockmodel2.sav",
+            encoding: "7bit",
+            mimetype: "application/octet-stream",
+            destination: "/tmp",
+            filename: "mockmodel2.sav",
+            path: "/tmp/mockmodel2.sav",
+            size: 132878,
+          },
+        ];
+        req.body = {
+          myModelFolder: "mock_folder",
+          myModelFolders: [
+            "../mock_folder2"
+          ],
+          myModelType: "Classification",
+        };
+        return next();
+      })
+    )
+
+
+    /*
+     const array = jest.fn(() => jest.fn()
+      .mockImplementationOnce((req, res, next) => {
+        req.files = [
+          {
+            fieldname: "myFiles",
+            originalname: "mockdata.sav",
+            encoding: "7bit",
+            mimetype: "application/octet-stream",
+            destination: "/tmp",
+            filename: "mockdata.sav",
+            path: "/tmp/mockdata.sav",
+            size: 2195,
+          },
+        ];
+        return next();
+      })
+      .mockImplementationOnce((req, res, next) => {
+        req.files = [
+          {
+            fieldname: "myFiles",
+            originalname: "../mockdata.sav",
+            encoding: "7bit",
+            mimetype: "application/octet-stream",
+            destination: "/tmp",
+            filename: "../mockdata.sav",
+            path: "/tmp/mockdata.sav",
+            size: 2195,
+          },
+        ];
+        return next();
+      })
+      .mockImplementationOnce((req, res, next) => {
+        req.files = [
+          {
+            fieldname: "myFiles",
+            originalname: "mockdata2.sav",
+            encoding: "7bit",
+            mimetype: "application/octet-stream",
+            destination: "/tmp",
+            filename: "mockdata2.sav",
+            path: "/tmp/mockdata2.sav",
+            size: 2195,
+          },
+        ];
+        req.body = {
+          myFolder: "mock_folder",
+          myFolders: [
+            "../mock_folder"
+          ]
+        }
+        return next();
+      })
+      .mockImplementationOnce((req, res, next) => {
+        req.files = [
+          {
+            fieldname: "myModelFiles",
+            originalname: "mockmodel.sav",
+            encoding: "7bit",
+            mimetype: "application/octet-stream",
+            destination: "/tmp",
+            filename: "mockmodel.sav",
+            path: "/tmp/mockmodel.sav",
+            size: 132878,
+          },
+        ];
+        req.body = {
+          myModelType: "Classification",
+        };
+        return next();
+      })
+      .mockImplementationOnce((req, res, next) => {
+        req.files = [
+          {
+            fieldname: "myModelFiles",
+            originalname: "../mockmodel.sav",
+            encoding: "7bit",
+            mimetype: "application/octet-stream",
+            destination: "/tmp",
+            filename: "../mockmodel.sav",
+            path: "/tmp/mockmodel.sav",
+            size: 132878,
+          },
+        ];
+        req.body = {
+          myModelFolders: "",
+          myModelType: "Classification",
+        };
+        return next();
+      })
+      .mockImplementationOnce((req, res, next) => {
+        req.files = [
+          {
+            fieldname: "myModelFiles",
+            originalname: "mockmodel2.sav",
+            encoding: "7bit",
+            mimetype: "application/octet-stream",
+            destination: "/tmp",
+            filename: "mockmodel2.sav",
+            path: "/tmp/mockmodel2.sav",
+            size: 132878,
+          },
+        ];
+        req.body = {
+          myModelFolder: "mock_folder",
+          myModelFolders: [
+            "../mock_folder2"
+          ],
+          myModelType: "Classification",
+        };
+        return next();
+      })
+    )
+    */
+
+    multer.mockReturnValue({
+      array
+    })
+
+    return {
         __esModule: true,
         default: multer,
         diskStorage: multer.diskStorage,
         memoryStorage: multer.memoryStorage,
-        array: jest.fn(),
+        // array: jest.fn(),
+        // array,
       };
     });
     multer = await import("multer");
@@ -156,6 +311,10 @@ describe("Test /upload route", () => {
     jest.clearAllMocks();
   });
 
+  /**
+   * Data upload tests
+   */
+
   it("/upload/data should upload dataset file", async () => {
     fs.existsSync.mockReturnValue(true);
     fs.statSync.mockReturnValue({});
@@ -165,6 +324,28 @@ describe("Test /upload route", () => {
     expect(response.status).toBe(201)
   });
 
+  it("/upload/data should not upload invalid data file", async () => {
+    fs.existsSync.mockReturnValue(true);
+    fs.statSync.mockReturnValue({});
+    fs.readdirSync.mockReturnValue([]);
+
+    const response = await request.post("/upload/data");
+    expect(response.status).toBe(400)
+  });
+
+  it("/upload/data should not upload invalid dataset folder", async () => {
+    fs.existsSync.mockReturnValue(true);
+    fs.statSync.mockReturnValue({});
+    fs.readdirSync.mockReturnValue([]);
+
+    const response = await request.post("/upload/data");
+    expect(response.status).toBe(500)
+  });
+
+  /**
+   * Model upload tests
+   */
+
   it("/upload/model should upload model file", async () => {
     fs.existsSync.mockReturnValue(true);
     fs.statSync.mockReturnValue({});
@@ -173,4 +354,23 @@ describe("Test /upload route", () => {
     const response = await request.post("/upload/model");
     expect(response.status).toBe(201)
   });
+
+  it("/upload/model should not upload invalid model file", async () => {
+    fs.existsSync.mockReturnValue(true);
+    fs.statSync.mockReturnValue({});
+    fs.readdirSync.mockReturnValue([]);
+
+    const response = await request.post("/upload/model");
+    expect(response.status).toBe(400)
+  });
+
+  it("/upload/model should not upload invalid model file folder", async () => {
+    fs.existsSync.mockReturnValue(true);
+    fs.statSync.mockReturnValue({});
+    fs.readdirSync.mockReturnValue([]);
+
+    const response = await request.post("/upload/model");
+    expect(response.status).toBe(500)
+  });
+
 });

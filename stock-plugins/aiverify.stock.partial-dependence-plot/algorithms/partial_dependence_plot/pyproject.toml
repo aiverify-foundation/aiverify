@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "partial-dependence-plot"
-version = "0.9.0"
+version = "0.10.0"
 description = ""
 authors = ["AI Verify"]
 readme = "README.md"
@@ -8,8 +8,8 @@ packages = [{include = "partial_dependence_plot"}]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.12"
-numpy = "1.23.5"
-scipy = "1.11.1"
+numpy = "1.24.3"
+scipy = "1.12.0"
 
 
 [build-system]

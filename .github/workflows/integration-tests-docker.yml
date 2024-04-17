@@ -30,22 +30,39 @@ jobs:
   integration-tests-docker:
 
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 100
 
     steps:
 
-      - name: Checkout code
+      - name: Checkout Code (Workflow_Dispatch)
+        if: github.event_name == 'workflow_dispatch'
         uses: actions/checkout@v3
         with:
           ref: ${{ inputs.branch_to_test }}
-          sparse-checkout: |
-            setup-aiverify
 
-      - name: Build aiverify docker image
+      - name: Checkout Code (Pull_Request_Review)
+        if: github.event_name == 'pull_request_review'
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          submodules: recursive
+
+      - name: Build AI Verify Docker Image (Workflow_Dispatch)
+        if: github.event_name == 'workflow_dispatch'
         working-directory: ${{ github.workspace }}/setup-aiverify
         run: |
           cd aiverify-user
-          bash docker-build.sh --build-arg=BRANCH_TAG=${{ inputs.branch_to_test }} --build-arg=ALLOWED_ORIGINS="http://localhost:3000,http://localhost:4000,http://127.0.0.1:3000,http://127.0.0.1:4000,http://127.0.0.1:27017"
+          echo ${{ inputs.branch_to_test }}
+          bash docker-build.sh --build-arg=BRANCH_TAG=${{ inputs.branch_to_test }}
+
+      - name: Build AI Verify Docker Image (Pull_Request_Review)
+        if: github.event_name == 'pull_request_review'
+        working-directory: ${{ github.workspace }}/setup-aiverify
+        run: |
+          cd aiverify-user
+          echo ${{ inputs.branch_to_test }}
+          bash docker-build.sh --build-arg=BRANCH_TAG=${{ github.event.pull_request.head.ref }}
 
       - name: Run aiverify containers
         working-directory: ${{ github.workspace }}/setup-aiverify
@@ -72,63 +89,61 @@ jobs:
             docker-compose up -d
           fi
 
-      # - name: Checkout API Mock Server
-      #   uses: actions/checkout@v3
-      #   with:
-      #     repository: IMDA-BTG/api-model-server
-      #     token: ${{ secrets.CHECKOUT_TOKEN }}
-      #     ref: main
-      #     path: qa-test/api-model-server
+      - name: Checkout API Mock Server
+        uses: actions/checkout@v3
+        with:
+          repository: IMDA-BTG/api-model-server
+          ref: main
+          path: qa-test/api-model-server
 
-      # - name: Checkout smoke tests
-      #   uses: actions/checkout@v3
-      #   with:
-      #     repository: IMDA-BTG/smoke-testing
-      #     token: ${{ secrets.CHECKOUT_TOKEN }}
-      #     ref: main
-      #     path: qa-test/smoke-testing
+      - name: Checkout smoke tests
+        uses: actions/checkout@v3
+        with:
+          repository: IMDA-BTG/smoke-testing
+          ref: main
+          path: qa-test/smoke-testing
+          submodules: recursive
 
       - name: Checkout frontend tests
         uses: actions/checkout@v3
         with:
           repository: IMDA-BTG/frontend-testing
-          token: ${{ secrets.CHECKOUT_TOKEN }}
           ref: main
           path: qa-test/frontend-testing
+          submodules: recursive
 
-      # - name: Checkout backend tests
-      #   uses: actions/checkout@v3
-      #   with:
-      #     repository: IMDA-BTG/backend-testing
-      #     token: ${{ secrets.CHECKOUT_TOKEN }}
-      #     ref: main
-      #     path: qa-test/backend-testing
-      #     submodules: recursive
+      - name: Checkout backend tests
+        uses: actions/checkout@v3
+        with:
+          repository: IMDA-BTG/backend-testing
+          ref: main
+          path: qa-test/backend-testing
+          submodules: recursive
 
-      # - name: Run API Mock Server
-      #   if: ${{ ! cancelled() }}
-      #   run: |
-      #     cd qa-test/api-model-server
-      #     python3 -m venv venv
-      #     source venv/bin/activate
-      #     pip3 install -r requirements.txt
-      #     bash regression_run_https.sh && fg &
-      #     bash classification_run_https.sh &
+      - name: Run API Mock Server
+        if: ${{ ! cancelled() }}
+        run: |
+          cd qa-test/api-model-server
+          python3 -m venv venv
+          source venv/bin/activate
+          pip3 install -r requirements.txt
+          bash regression_run_https.sh && fg &
+          bash classification_run_https.sh &
 
-      # - name: Run smoke tests
-      #   if: ${{ ! cancelled() }}
-      #   run: |
-      #     cd qa-test/smoke-testing
-      #     npm install
-      #     npx playwright install
-      #     ENVIRONMENT_URL=$ENVIRONMENT_URL npx playwright test
+      - name: Run smoke tests
+        if: ${{ ! cancelled() }}
+        run: |
+          cd qa-test/smoke-testing
+          npm install
+          npx playwright install
+          ENVIRONMENT_URL=https://host.docker.internal npx playwright test
 
       - name: Run frontend tests
         if: ${{ ! cancelled() }}
         run: |
           cd qa-test/frontend-testing
           npm install
-          npx playwright test
+          ENVIRONMENT_URL=https://host.docker.internal npx playwright test
 
       # - name: Run backend tests
       #   if: ${{ ! cancelled() }}

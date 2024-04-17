@@ -115,7 +115,7 @@ def snow(img: np.ndarray, severity: int = 1) -> np.float32:
     radius = severity_constant[4]
     sigma = severity_constant[5]
     add_const = severity_constant[6]
-    
+
     image = img.copy()
     image = np.array(image, dtype=np.float32)
 
@@ -145,7 +145,8 @@ def snow(img: np.ndarray, severity: int = 1) -> np.float32:
     snow_layer = snow_layer[..., np.newaxis]
 
     image = add_const * image + (1 - add_const) * np.maximum(
-        image, cv2.cvtColor(image, cv2.COLOR_RGB2GRAY).reshape(width, height, 1) * 1.5 + 0.5
+        image,
+        cv2.cvtColor(image, cv2.COLOR_RGB2GRAY).reshape(width, height, 1) * 1.5 + 0.5,
     )
     return (np.clip(image + snow_layer + np.rot90(snow_layer, k=2), 0, 1)).astype(
         np.float32
