@@ -62,7 +62,7 @@ jobs:
         run: |
           cd aiverify-user
           echo ${{ inputs.branch_to_test }}
-          bash docker-build.sh --build-arg=BRANCH_TAG=${{ github.event.pull_request.head.ref }}
+          bash docker-build.sh --build-arg=BRANCH_TAG=${{ github.event.pull_request.head.ref }} --build-arg=REPO=${{ github.event.pull_request.head.repo.full_name }}
 
       - name: Run aiverify containers
         working-directory: ${{ github.workspace }}/setup-aiverify
