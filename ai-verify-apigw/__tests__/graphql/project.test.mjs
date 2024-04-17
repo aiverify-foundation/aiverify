@@ -256,7 +256,7 @@ mutation($project: ProjectInput!) {
     const obj = response.body.singleResult.data.createProject;
 
     // check inserted into db
-    const doc = await ProjectModel.findOne({ _id: mongoose.Types.ObjectId(obj.id) });
+    const doc = await ProjectModel.findOne({ _id: new mongoose.Types.ObjectId(obj.id) });
     let len = data.length;
     expect(doc.name).toBe(project.name);
     data.push(doc.toObject())
@@ -317,7 +317,7 @@ mutation($id: ObjectID!, $project: ProjectInput!) {
     expect(response.body.singleResult.errors).toBeUndefined();
 
     // check updated into db
-    const doc = await ProjectModel.findOne({ _id: mongoose.Types.ObjectId(id) });
+    const doc = await ProjectModel.findOne({ _id: new mongoose.Types.ObjectId(id) });
     expect(doc.projectInfo).toEqual(project.projectInfo);
   })
 
@@ -349,7 +349,7 @@ mutation($id: ObjectID!, $project: ProjectInput!) {
     const response2 = await server.executeOperation({
       query,
       variables: {
-        id: mongoose.Types.ObjectId().toString(),
+        id: new mongoose.Types.ObjectId().toString(),
         project: {
           projectInfo: project.projectInfo,
         }
@@ -385,7 +385,7 @@ mutation($id: ObjectID!) {
     const obj = response.body.singleResult.data.cloneProject;
 
     // check updated into db
-    const doc = await ProjectModel.findOne({ _id: mongoose.Types.ObjectId(obj.id) });
+    const doc = await ProjectModel.findOne({ _id: new mongoose.Types.ObjectId(obj.id) });
     expect(doc.projectInfo.name).toBe(`Copy of ${origDoc.projectInfo.name}`);
   })
 
@@ -409,7 +409,7 @@ mutation($id: ObjectID!) {
     response = await server.executeOperation({
       query,
       variables: {
-        id: mongoose.Types.ObjectId().toString(),
+        id: new mongoose.Types.ObjectId().toString(),
       }
     })
     // check response
@@ -710,7 +710,7 @@ mutation($id: ObjectID!) {
     response = await server.executeOperation({
       query,
       variables: {
-        id: mongoose.Types.ObjectId()
+        id: new mongoose.Types.ObjectId()
       }
     })
     // check response

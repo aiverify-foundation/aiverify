@@ -58,9 +58,13 @@ RUN apt-get install npm -y
 # For shap-toolbox stock plugin
 RUN apt-get install -y gcc g++ python3.11-dev
 
+# Install libmagicwand for Environment Corruption
+RUN apt-get install libmagickwand-dev -y
+
 # Install Git
 RUN apt-get install -y git
 
+# Install Unzip
 RUN apt-get install unzip
 
 ################### Create aiverify user ######################
@@ -71,7 +75,7 @@ RUN useradd -u 10000 -g 10000 -ms /bin/bash $USER
 
 ###################  Clone aiverify repo ######################
 
-ARG BRANCH_TAG=v0.10.x
+ARG BRANCH_TAG=main
 RUN echo "BRANCH_TAG=$BRANCH_TAG"
 WORKDIR /app
 RUN git clone https://github.com/imda-btg/aiverify.git --branch=$BRANCH_TAG aiverify
@@ -115,9 +119,9 @@ WORKDIR /app/aiverify/ai-verify-apigw
 
 # User entered username and password (in docker-start.sh) override these env values.
 ENV DB_USERNAME="aiverify"
-ENV DB_PASSWORD="aiverify"
+ENV DB_PASSWORD="t1oj5L_xQI8dTrVuZ"
 
-ARG ALLOWED_ORIGINS=http://localhost:3000,http://localhost:4000
+ENV ALLOWED_ORIGINS=http://localhost:3000,http://localhost:4000
 RUN echo "ALLOWED_ORIGINS=${ALLOWED_ORIGINS}"
 RUN echo "REDIS_HOST=redis\n\
 REDIS_PORT=6379\n\

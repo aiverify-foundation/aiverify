@@ -101,7 +101,7 @@ const resolvers = {
           .then((doc) => {
             if (!doc) return reject("Invalid ID");
             let newdoc = new ProjectTemplateModel(doc);
-            newdoc._id = mongoose.Types.ObjectId();
+            newdoc._id = new mongoose.Types.ObjectId();
             newdoc.fromPlugin = false;
             newdoc.projectInfo.name = `Copy of ${doc.projectInfo.name}`;
             newdoc.isNew = true;

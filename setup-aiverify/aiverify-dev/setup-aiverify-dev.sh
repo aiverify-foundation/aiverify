@@ -44,6 +44,9 @@ machine_arch=$(uname -m)
 
 sudo apt update
 
+# Install libmagicwand for Environment Corruption
+sudo apt-get install libmagickwand-dev -y
+
 ########### Chromium #############
 
 if [[ "$machine_arch" == "aarch64" ]]; then
@@ -82,19 +85,22 @@ sudo systemctl restart redis-server.service
 echo "========================= Installing mongodb ============================"
 
 if mongod --version &>/dev/null; then
- while true; do
-      echo
-      read -p "Mongodb detected, have you created the db and user required by aiverify? [y/n] " yn
-      case $yn in
-          [Yy]* ) read -p "Enter DB AIVerify Username: " DB_USERNAME
-                  read -p "Enter DB AIVerify Password: " DB_PASSWORD
-                  echo
-                  break;;
-          [Nn]* ) echo "aiverify developer setup aborted, please create the required db and user as instructed in the developer guide";
-                  exit;;
-          * ) echo "Please answer yes or no.";;
-      esac
-  done
+  echo "mongodb detected, skipping mongodb installation"
+  if [ -z "$DB_USERNAME" ] && [ -z "$DB_PASSWORD" ]; then
+    while true; do
+        echo
+        read -p "Have you created the db and user required by aiverify? [y/n] " yn
+        case $yn in
+            [Yy]* ) read -p "Enter aiverify DB username: " DB_USERNAME
+                    read -p "Enter aiverify DB password: " DB_PASSWORD
+                    echo
+                    break;;
+            [Nn]* ) echo "aiverify developer setup aborted, please create the required db and user as instructed in the developer guide";
+                    exit;;
+            * ) echo "Please answer yes or no.";;
+        esac
+    done
+  fi
 else
   echo "Installing mongodb..."
   wget -nc https://www.mongodb.org/static/pgp/server-6.0.asc
@@ -102,15 +108,18 @@ else
   sudo sh -c 'echo "deb [ arch=amd64,arm64 signed-by=/etc/apt/keyrings/mongodb.gpg] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" >> /etc/apt/sources.list.d/mongo.list'
   sudo apt update
   sudo apt install -y mongodb-org
-
   sudo systemctl start mongod
   sleep 2
-  read -p "Enter new DB Admin User: " DB_ADMIN_USER
-  read -p "Enter new DB Admin Password: " DB_ADMIN_PASSWORD
-  echo
-  read -p "Enter new DB AIVerify Username: " DB_USERNAME
-  read -p "Enter new DB AIVerify Password: " DB_PASSWORD
-  echo
+
+  if [ -z "$DB_ADMIN_PASSWORD" ] && [ -z "$DB_PASSWORD" ]; then
+    read -p "Enter new admin DB user: " DB_ADMIN_USER
+    read -p "Enter new admin DB password: " DB_ADMIN_PASSWORD
+    echo
+    read -p "Enter new aiverify DB username: " DB_USERNAME
+    read -p "Enter new aiverify DB password: " DB_PASSWORD
+    echo
+  fi
+
   mongosh << EOF
   admin = db.getSiblingDB('admin')
   admin.createUser({
@@ -141,7 +150,7 @@ sudo apt install unzip
 
 sudo apt install -y python3.11-venv
 
-git clone https://github.com/imda-btg/aiverify.git --branch=v0.10.x
+git clone https://github.com/imda-btg/aiverify.git --branch=main
 cd aiverify
 
 ############ Node ############
