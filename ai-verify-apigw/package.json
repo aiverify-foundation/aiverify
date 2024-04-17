@@ -22,6 +22,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "express-rate-limit": "^7.2.0",
     "graphql": "16.8.1",
     "graphql-constraint-directive": "^5.0.0",
     "graphql-redis-subscriptions": "^2.6.0",
