@@ -46,14 +46,14 @@ jobs:
           ### SCANNING: Required Fields
           blackduck_url: https://blackduck.aipo-imda.net/
           blackduck_token: ${{ secrets.BLACKDUCK_TOKEN }}
-          blackduck_project_name: ai-verify-apigw
-          blackduck_project_version_name: $(date +"%d-%m-%Y")
-          blackduck_detector_search_depth: 10 
-          blackduck_source_path: .
-          blackduck_code_location_name: ai-verify-apigw_$(date + "%d-%m-%Y")
-          blackduck_excluded_directories: /tests 
-          blackduck.trust.cert: true
-          blackduck_policy_check_fail_on_severities: CRITICAL
+          blackduck_detect_project_name: ai-verify-apigw
+          blackduck_detect_project_version_name: $(date +"%d-%m-%Y")
+          blackduck_detect_detector_search_depth: 10 
+          blackduck_detect_source_path: .
+          blackduck_detect_code_location_name: ai-verify-apigw_$(date + "%d-%m-%Y")
+          blackduck_detect_excluded_directories: /tests 
+          blackduck.detect_trust.cert: true
+          blackduck_detect_policy_check_fail_on_severities: ALL
 
     # - name: Install & Scan APIGW
     #   run: |
