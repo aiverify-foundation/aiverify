@@ -55,11 +55,6 @@ jobs:
           blackduck.trust.cert: true
           blackduck_policy_check_fail_on_severities: CRITICAL
 
-          ### SARIF report generation and upload to GitHub Adavanced Security: Uncomment below to enable
-          blackduck_reports_sarif_create: true # Create Black Duck SARIF report and upload it as artifact
-          blackduck_upload_sarif_report: true  # Upload Black Duck SARIF report in GitHub Advanced Security tab
-          github_token: ${{ secrets.GITHUB_TOKEN }} # Required when blackduck_upload_sarif_report is set as true
-
     # - name: Install & Scan APIGW
     #   run: |
     #       cd ai-verify-apigw
