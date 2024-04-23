@@ -1,0 +1,43 @@
+{
+  "name": "aiverify",
+
+  "dockerComposeFile": "compose.yaml",
+
+  "service": "aiverify",
+
+  "shutdownAction": "stopCompose",
+
+  "workspaceFolder": "/app/aiverify",
+
+  "forwardPorts": [3000, 4000],
+
+  //"postStartCommand": "/docker-entrypoint/devcontainer-post-start.sh",
+  "postCreateCommand": "/docker-entrypoint/devcontainer-post-create.sh",
+
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "v18.19.0"
+    },
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11.7",
+      "toolsToInstall": "flake8,black,mypy,virtualenv,pytest,pylint"
+    },
+    "ghcr.io/devcontainers-contrib/features/pre-commit:2": {}
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.flake8",
+        "ms-python.python",
+        "streetsidesoftware.code-spell-checker",
+        "ms-python.isort",
+        "davidanson.vscode-markdownlint",
+        "redhat.vscode-yaml",
+        "editorconfig.editorconfig",
+        "ms-python.black-formatter"
+      ]
+    }
+  }
+}
