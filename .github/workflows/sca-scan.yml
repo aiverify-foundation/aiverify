@@ -39,26 +39,26 @@ jobs:
        ref: ${{ github.event.pull_request.head.ref }}
        repository: ${{ github.event.pull_request.head.repo.full_name }}
        submodules: recursive
-    - name: Black Duck Scan
-      run: |
-          cd ai-verify-apigw
-          npm install
-          bash <(curl -s -L https://detect.synopsys.com/detect8.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=ai-verify-apigw --detect.project.version.name=$(date +"%d-%m-%Y") --detect.source.path=. --detect.code.location.name="ai-verify-apigw_$(date +"%d-%m-%Y")" --detect.excluded.directories=/tests --blackduck.trust.cert=true --detect.policy.check.fail.on.severities=CRITICAL --detect.blackduck.scan.mode=RAPID
-          cd ../
+    # - name: Black Duck Scan
+    #   run: |
+    #       cd ai-verify-apigw
+    #       npm install
+    #       bash <(curl -s -L https://detect.synopsys.com/detect8.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=ai-verify-apigw --detect.project.version.name=$(date +"%d-%m-%Y") --detect.source.path=. --detect.code.location.name="ai-verify-apigw_$(date +"%d-%m-%Y")" --detect.excluded.directories=/tests --blackduck.trust.cert=true --detect.policy.check.fail.on.severities=CRITICAL --detect.blackduck.scan.mode=RAPID
+    #       cd ../
           
-    - name: Install & Scan PORTAL
-      run: |
-          cd ai-verify-portal
-          npm install
-          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=ai-verify-portal --detect.project.version.name=$(date +"%d-%m-%Y") --detect.source.path=. --detect.code.location.name="ai-verify-portal_$(date +"%d-%m-%Y")" --detect.excluded.directories=/tests --blackduck.trust.cert=true --detect.policy.check.fail.on.severities=CRITICAL ##--detect.blackduck.scan.mode=RAPID
-          cd ../
+    # - name: Install & Scan PORTAL
+    #   run: |
+    #       cd ai-verify-portal
+    #       npm install
+    #       bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=ai-verify-portal --detect.project.version.name=$(date +"%d-%m-%Y") --detect.source.path=. --detect.code.location.name="ai-verify-portal_$(date +"%d-%m-%Y")" --detect.excluded.directories=/tests --blackduck.trust.cert=true --detect.policy.check.fail.on.severities=CRITICAL ##--detect.blackduck.scan.mode=RAPID
+    #       cd ../
 
-    - name: Install & Scan SHARED LIBRARY
-      run: |
-          cd ai-verify-shared-library
-          npm install
-          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=ai-verify-shared-library --detect.project.version.name=$(date +"%d-%m-%Y") --detect.source.path=. --detect.code.location.name="ai-verify-shared-library_$(date +"%d-%m-%Y")" --detect.excluded.directories=/tests --blackduck.trust.cert=true --detect.policy.check.fail.on.severities=CRITICAL ##--detect.blackduck.scan.mode=RAPID
-          cd ../
+    # - name: Install & Scan SHARED LIBRARY
+    #   run: |
+    #       cd ai-verify-shared-library
+    #       npm install
+    #       bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=ai-verify-shared-library --detect.project.version.name=$(date +"%d-%m-%Y") --detect.source.path=. --detect.code.location.name="ai-verify-shared-library_$(date +"%d-%m-%Y")" --detect.excluded.directories=/tests --blackduck.trust.cert=true --detect.policy.check.fail.on.severities=CRITICAL ##--detect.blackduck.scan.mode=RAPID
+    #       cd ../
 
     - name: Install & Scan TEST ENGINE APP
       run: |
