@@ -66,7 +66,7 @@ jobs:
           python3 -m venv venv
           source venv/bin/activate
           pip install -r requirements.txt
-          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=test-engine-app --detect.project.version.name=$(date +"%d-%m-%Y") --detect.source.path=. --detect.code.location.name="test-engine-app_$(date +"%d-%m-%Y")" --detect.excluded.directories=/tests --blackduck.trust.cert=true --detect.policy.check.fail.on.severities=CRITICAL ##--detect.blackduck.scan.mode=RAPID
+          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=test-engine-app --detect.project.version.name=$(date +"%d-%m-%Y") --detect.source.path=. --detect.code.location.name="test-engine-app_$(date +"%d-%m-%Y")" --detect.excluded.directories=/tests --blackduck.trust.cert=true --detect.policy.check.fail.on.severities=CRITICAL --detect.blackduck.scan.mode=RAPID
           cd ../
 
     - name: Install & Scan TEST ENGINE CORE
