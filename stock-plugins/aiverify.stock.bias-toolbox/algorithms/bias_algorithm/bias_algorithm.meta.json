@@ -1,0 +1,29 @@
+{
+  "cid": "bias_algorithm",
+  "name": "Bias Algorithm",
+  "modelType": [
+    "classification",
+    "regression"
+  ],
+  "version": "0.1.0",
+  "author": "Dell Technologies",
+  "description": "Calculation for bias in dataset",
+  "tags": [
+    "Bias Algorithm",
+    "classification",
+    "regression"
+  ],
+  "requireGroundTruth": false,
+  "requiredFiles": [
+    "AUTHORS.rst",
+    "CHANGELOG.md",
+    "input.schema.json",
+    "LICENSE",
+    "output.schema.json",
+    "bias_algorithm.meta.json",
+    "bias_algorithm.py",
+    "README.md",
+    "requirements.txt",
+    "syntax_checker.py"
+  ]
+}
