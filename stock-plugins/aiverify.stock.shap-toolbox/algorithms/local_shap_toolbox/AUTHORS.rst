@@ -1,0 +1,7 @@
+=======
+Credits
+=======
+
+Developers
+----------------
+* Example Author
