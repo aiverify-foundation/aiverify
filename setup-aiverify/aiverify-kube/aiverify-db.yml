@@ -1,0 +1,148 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-data-pvc
+  namespace: dev
+spec:
+  storageClassName: ebs-gp3
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-logs-pvc
+  namespace: dev
+spec:
+  storageClassName: ebs-gp3
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongo-scripts
+  namespace: dev
+data:
+  init-script.sh: |
+    #!/bin/bash
+    
+    if [ -f /data/db/.mongodb_initialized ]; then
+      echo "Database already initialized. Skipping initialization."
+      exit 0
+    else
+      echo "Executing initialization script..."
+    
+    # Read username and password from environment variables
+    MONGO_USERNAME=$MONGO_INITDB_ROOT_USERNAME
+    MONGO_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD
+    
+    if [ -z "$MONGO_USERNAME" ] || [ -z "$MONGO_PASSWORD" ]; then
+      echo "Error: Username or password environment variables not set."
+      exit 1
+    fi
+
+    # Create database at first startup
+    mongosh --host localhost --eval "db.getSiblingDB('aiverify').createUser({user: '$MONGO_USERNAME', pwd: '$MONGO_PASSWORD', roles: ['readWrite']})"
+      touch /data/db/.mongodb_initialized
+    fi
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-secret
+  namespace: dev
+type: Opaque
+data:
+  username: YWl2ZXJpZnk=  # base64 encoded 'aiverify'
+  password: YWl2ZXJpZnk=  # base64 encoded 'aiverify'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aiverify-db-service
+  namespace: dev
+spec:
+  ports:
+    - name: tcp-mongodb
+      port: 27017
+      protocol: TCP
+      targetPort: 27017
+  selector:
+    app.kubernetes.io/name: aiverify-db
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aiverify-db-deployment
+  namespace: dev
+  labels:
+    app.kubernetes.io/name: aiverify-db
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: aiverify-db
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: aiverify-db
+    spec:
+      serviceAccountName: default
+      securityContext:
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: mongodb
+          #image: 052567997892.dkr.ecr.ap-southeast-1.amazonaws.com/ecr-aiss-mongo:6.0.4
+          image: public.ecr.aws/docker/library/mongo:6.0.4
+          ports:
+            - containerPort: 27017
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: username
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: password
+            - name: MONGO_INITDB_DATABASE
+              value: "admin"
+          volumeMounts:
+            - name: mongodb-data
+              mountPath: /data/db
+            - name: mongodb-logs
+              mountPath: /var/log/mongodb
+            - name: mongo-scripts
+              mountPath: /docker-entrypoint-initdb.d
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                ["ALL"]
+      volumes:
+        - name: mongodb-data
+          persistentVolumeClaim:
+            claimName: mongodb-data-pvc
+        - name: mongodb-logs
+          persistentVolumeClaim:
+            claimName: mongodb-logs-pvc
+        - name: mongo-scripts
+          configMap:
+            name: mongo-scripts

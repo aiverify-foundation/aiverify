@@ -1,0 +1,123 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-data-pvc
+  namespace: dev
+spec:
+  storageClassName: ebs-gp3
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-logs-pvc
+  namespace: dev
+spec:
+  storageClassName: ebs-gp3
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+  namespace: dev
+data:
+  redis.conf: |-
+    # Close the connection after a client is idle for N seconds (0 to disable)
+    timeout 0
+
+    tcp-keepalive 300
+
+    # Write logs to stdout
+    logfile ""
+
+    databases 16
+
+    # Enable notification for HSET
+    notify-keyspace-events Kh
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aiverify-redis-service
+  namespace: dev
+spec:
+  ports:
+    - name: tcp-redis
+      port: 6379
+      protocol: TCP
+      targetPort: 6379
+  selector:
+    app.kubernetes.io/name: aiverify-redis
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aiverify-redis-deployment
+  namespace: dev
+  labels:
+    app.kubernetes.io/name: aiverify-redis
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: aiverify-redis
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: aiverify-redis  
+    spec:
+      serviceAccountName: default
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 2000
+        fsGroup: 2000
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: aiverify-redis
+          image: public.ecr.aws/docker/library/redis:6.2-alpine
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+                drop:
+                  ["ALL"]
+          imagePullPolicy: IfNotPresent
+          command:
+            - "redis-server"
+            - "--save"
+            - "20 1"
+            - "--loglevel"
+            - "warning"
+            - "--include"
+            - "/etc/redis/config"
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+            - name: redis-logs
+              mountPath: /var/log/redis
+            - name: redis-config
+              mountPath: /etc/redis/config
+              subPath: redis.conf
+      volumes:
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: redis-data-pvc
+        - name: redis-logs
+          persistentVolumeClaim:
+            claimName: redis-logs-pvc
+        - name: redis-config
+          configMap:
+            name: redis-config

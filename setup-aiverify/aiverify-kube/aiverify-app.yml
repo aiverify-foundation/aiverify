@@ -1,0 +1,203 @@
+#apiVersion: v1
+#kind: PersistentVolumeClaim
+#metadata:
+#  name: portal-plugins-pvc
+#  namespace: dev
+#  labels:
+#    app.kubernetes.io/name: portal-plugins-pvc
+#spec:
+#  accessModes:
+#    - ReadWriteMany
+#  resources:
+#    requests:
+#      storage: 1Gi
+#  storageClassName: efs-fs
+#---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: portal-data-pvc
+  namespace: dev
+  labels:
+    app.kubernetes.io/name: portal-data-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: efs-fs
+#---
+#apiVersion: v1
+#kind: PersistentVolumeClaim
+#metadata:
+#  name: portal-model-pvc
+#spec:
+#  accessModes:
+#    - ReadWriteOnce
+#  resources:
+#    requests:
+#      storage: 2Gi
+#  storageClassName: ebs-gp2
+#---
+#apiVersion: v1
+#kind: PersistentVolumeClaim
+#metadata:
+#  name: portal-logs-pvc
+#spec:
+#  accessModes:
+#    - ReadWriteOnce
+#  resources:
+#    requests:
+#      storage: 1Gi
+#  storageClassName: ebs-gp2
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aiverify-config
+  namespace: dev
+data:
+  # portal env
+  DB_HOST: aiverify-db-service.dev.svc.cluster.local
+  DB_PORT: '27017'
+  REDIS_URI: redis://aiverify-redis-service.dev.svc.cluster.local
+  # api-gw env
+  REDIS_HOST: aiverify-redis-service.dev.svc.cluster.local
+  REDIS_PORT: '6379'
+  TEST_ENGINE_URL: http://localhost:8080
+  ALLOWED_ORIGINS: https://aiverify.eks-dev.aipo-imda.net
+  # test-engine env
+  # CORE_MODULES_FOLDER: ../test-engine-core-modules
+  # VALIDATION_SCHEMAS_FOLDER: ./test_engine_app/validation_schemas/
+  # REDIS_SERVER_HOSTNAME: aiverify-redis-service.dev.svc.cluster.local
+  # ARG WS_URL: ws://localhost
+  #{SVC_NAME}.{NAMESPACE}.svc.cluster.local
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-engine-env
+  namespace: dev
+data:
+  .env: |
+    CORE_MODULES_FOLDER="../test-engine-core-modules"
+    VALIDATION_SCHEMAS_FOLDER="./test_engine_app/validation_schemas/"
+    REDIS_CONSUMER_GROUP="MyGroup"
+    REDIS_SERVER_HOSTNAME="aiverify-redis-service.dev.svc.cluster.local"
+    REDIS_SERVER_PORT=6379
+    API_SERVER_PORT=8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aiverify-app-service
+  namespace: dev
+spec:
+  ports:
+    - name: http-portal
+      port: 80
+      protocol: TCP
+      targetPort: 3000
+  selector:
+    app.kubernetes.io/name: aiverify-app
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aiverify-app-deployment
+  namespace: dev
+  labels:
+    app.kubernetes.io/name: aiverify-app
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: aiverify-app
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: aiverify-app
+    spec:
+      serviceAccountName: default
+      securityContext:
+        runAsUser: 10000
+        runAsGroup: 10000
+        fsGroup: 10000
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+#      initContainers:
+#        - name: init-plugins-dir
+#          image: public.ecr.aws/docker/library/busybox:latest  # Use an image with basic tools like 'cp'
+#          command: [ 'sh', '-c', 'cp -r /app/aiverify/ai-verify-portal/plugins/* /target/' ]
+#          volumeMounts:
+#            - name: shared-plugins
+#              mountPath: /target
+      containers:
+        - name: aiverify-app
+          image: 052567997892.dkr.ecr.ap-southeast-1.amazonaws.com/ecr-aiss-aiverify:cs.23
+          args:
+            - "bash"
+            - "-c"
+            - "cd aiverify/test-engine-app && python3 -m test_engine_app & cd aiverify/ai-verify-apigw && node app.mjs & cd aiverify/ai-verify-portal && npm run start"
+          env:
+          - name: MONGO_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: db-secret
+                key: username
+          - name: MONGO_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: db-secret
+                key: password
+          envFrom:
+          - configMapRef:
+              name: aiverify-config
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 2048Mi
+            requests:
+              cpu: 500m
+              memory: 1024Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+                drop:
+                  ["ALL"]
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+#            - name: shared-plugins
+#              mountPath: /app/aiverify/ai-verify-portal/plugins
+            - name: shared-data
+              mountPath: /app/aiverify/uploads/data
+              subPath: data
+            - name: shared-data
+              mountPath: /app/aiverify/uploads/model
+              subPath: model
+#            - name: shared-logs
+#              mountPath: /app/aiverify/test-engine-app/logs
+            - name: test-engine-env
+              mountPath: /app/aiverify/test-engine-app/.env
+              subPath: .env
+      volumes:
+#        - name: shared-plugins
+#          persistentVolumeClaim:
+#            claimName: portal-plugins-pvc
+        - name: shared-data
+          persistentVolumeClaim:
+            claimName: portal-data-pvc
+#        - name: shared-model
+#          persistentVolumeClaim:
+#            claimName: portal-model-pvc
+#        - name: shared-logs
+#          persistentVolumeClaim:
+#            claimName: portal-logs-pvc
+        - name: test-engine-env
+          configMap:
+            name: test-engine-env
