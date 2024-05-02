@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: aiverify-shared-pvc
+  namespace: dev
+  labels:
+    app.kubernetes.io/name: aiverify-shared-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: efs-fs
+---

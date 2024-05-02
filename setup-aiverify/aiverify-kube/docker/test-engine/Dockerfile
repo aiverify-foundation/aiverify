@@ -105,6 +105,7 @@ RUN apt-get remove git unzip -y
 
 # Create plugins folder
 RUN mkdir -p ./ai-verify-portal/plugins
+RUN cp -a ./stock-plugins/. ./ai-verify-portal/plugins
 RUN chown -R 1000:1000 ./ai-verify-portal
 
 # Run containers with non-root user

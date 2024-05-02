@@ -51,7 +51,7 @@ metadata:
   namespace: dev
 spec:
   ports:
-    - name: tcp-redis
+    - name: redis-tcp
       port: 6379
       protocol: TCP
       targetPort: 6379
@@ -121,3 +121,4 @@ spec:
         - name: redis-config
           configMap:
             name: redis-config
+---

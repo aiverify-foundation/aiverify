@@ -107,7 +107,6 @@ spec:
           type: RuntimeDefault
       containers:
         - name: mongodb
-          #image: 052567997892.dkr.ecr.ap-southeast-1.amazonaws.com/ecr-aiss-mongo:6.0.4
           image: public.ecr.aws/docker/library/mongo:6.0.4
           ports:
             - containerPort: 27017
@@ -146,3 +145,4 @@ spec:
         - name: mongo-scripts
           configMap:
             name: mongo-scripts
+---
