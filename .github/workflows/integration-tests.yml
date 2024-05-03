@@ -114,10 +114,10 @@ jobs:
           
           cd ../ai-verify-apigw
           #cp .env.development .env
-          npm install
+          npm install --omit=dev
           
           cd ../ai-verify-portal
-          npm install
+          npm install --omit=dev
           npm link ../ai-verify-shared-library
           echo "APIGW_URL=http://127.0.0.1:4000
           MONGODB_URI=mongodb://aiverify:aiverify@127.0.0.1:27017/aiverify
