@@ -1,30 +1,4 @@
 apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: mongodb-data-pvc
-  namespace: dev
-spec:
-  storageClassName: ebs-gp3
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: mongodb-logs-pvc
-  namespace: dev
-spec:
-  storageClassName: ebs-gp3
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
----
-apiVersion: v1
 kind: ConfigMap
 metadata:
   name: mongo-scripts
@@ -79,16 +53,15 @@ spec:
   type: ClusterIP
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: aiverify-db-deployment
+  name: aiverify-db-statefulset
   namespace: dev
   labels:
     app.kubernetes.io/name: aiverify-db
 spec:
   replicas: 1
-  strategy:
-    type: Recreate
+  serviceName: aiverify-db-service
   selector:
     matchLabels:
       app.kubernetes.io/name: aiverify-db
@@ -136,13 +109,28 @@ spec:
               drop:
                 ["ALL"]
       volumes:
-        - name: mongodb-data
-          persistentVolumeClaim:
-            claimName: mongodb-data-pvc
-        - name: mongodb-logs
-          persistentVolumeClaim:
-            claimName: mongodb-logs-pvc
         - name: mongo-scripts
           configMap:
             name: mongo-scripts
+  volumeClaimTemplates:
+    - metadata:
+        name: mongodb-data
+        namespace: dev
+      spec:
+        storageClassName: ebs-gp3
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+    - metadata:
+        name: mongodb-logs
+        namespace: dev
+      spec:
+        storageClassName: ebs-gp3
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
 ---

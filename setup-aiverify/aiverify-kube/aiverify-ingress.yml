@@ -19,6 +19,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: aiverify-app-service
+                name: aiverify-portal-service
                 port:
-                  name: http-portal
+                  name: http
+---

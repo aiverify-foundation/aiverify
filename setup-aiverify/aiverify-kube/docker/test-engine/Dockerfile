@@ -98,6 +98,7 @@ REDIS_SERVER_HOSTNAME="redis"\n\
 REDIS_SERVER_PORT=6379\n\
 API_SERVER_PORT=8080' | tee .env
 
+# Clean up
 WORKDIR /app/aiverify
 RUN rm -rf ai-verify-portal && rm -rf ai-verify-apigw && rm -rf ai-verify-shared-library
 RUN rm -rf third-party && rm -rf setup-aiverify && rm -rf examples && rm -rf scripts && rm -rf deploy-scripts
@@ -105,7 +106,6 @@ RUN apt-get remove git unzip -y
 
 # Create plugins folder
 RUN mkdir -p ./ai-verify-portal/plugins
-RUN cp -a ./stock-plugins/. ./ai-verify-portal/plugins
 RUN chown -R 1000:1000 ./ai-verify-portal
 
 # Run containers with non-root user

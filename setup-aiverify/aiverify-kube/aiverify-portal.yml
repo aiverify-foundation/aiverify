@@ -21,7 +21,7 @@ metadata:
   namespace: dev
 spec:
   ports:
-    - name: aiverify-portal-http
+    - name: http
       port: 80
       protocol: TCP
       targetPort: 3000
@@ -58,18 +58,18 @@ spec:
           type: RuntimeDefault
       containers:
         - name: aiverify-portal
-          image: 052567997892.dkr.ecr.ap-southeast-1.amazonaws.com/ecr-aiss-aiverify-portal:0.10
+          image: 052567997892.dkr.ecr.ap-southeast-1.amazonaws.com/aiverify-portal:0.10
           args:
             - "bash"
             - "-c"
-            - "cd aiverify/ai-verify-apigw; node app.mjs &; cd aiverify/ai-verify-portal; npm run start"
+            - "cd aiverify/ai-verify-apigw; node app.mjs & cd ../ai-verify-portal; npm run start"
           env:
-          - name: MONGO_USERNAME
+          - name: DB_USERNAME
             valueFrom:
               secretKeyRef:
                 name: db-secret
                 key: username
-          - name: MONGO_PASSWORD
+          - name: DB_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: db-secret
