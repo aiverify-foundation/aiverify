@@ -44,7 +44,7 @@ metadata:
   namespace: dev
 spec:
   ports:
-    - name: tcp-mongodb
+    - name: tcp
       port: 27017
       protocol: TCP
       targetPort: 27017

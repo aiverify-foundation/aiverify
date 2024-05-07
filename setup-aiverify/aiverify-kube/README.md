@@ -14,7 +14,6 @@ These are the components to be deployed to the Kubernetes cluster
 - A Kubernetes cluster. This guide is based on AWS EKS.
 - Persistent storage for the mongodb database, this guide is based on AWS EBS CSI.
 - Persistent storage for file sharing between portal and test-engine. This guide is based on AWS EFS CSI.
-- CoreDNS for assigning predictable DNS names to the components deployed.
 #### Optional
 - External DNS add-on. We use External DNS to automatically create an A record linked to our public ALB
 for the aiverify portal Ingress object, enabling the portal to be accessed from the Internet.
@@ -27,20 +26,21 @@ For Linux, install docker.io, e.g. `sudo apt install docker.io` (add your userid
 to use sudo when calling the docker commands).  
 
 
-2. Run the following scripts provided in the docker folder to build the images. We use docker buildx so you
+2. Run the following scripts provided in the docker sub-folder to build the images. We use docker buildx so you
 can choose to build images based on your runtime platform (amd64 for x64, arm64 for ARM and Apple Silicon), e.g.
   - `bash docker-build-amd64-portal.sh`   -- builds the portal image in x64
   - `bash docker-build-amd64-test-engine.sh`   -- builds the test-engine image in x64
 
-3. Tag the images so you can push the images to your container registry,
+#### Push the images to container registry
+1. Tag the images so you can push the images to your container registry,
 - `docker tag aiverify-portal:0.10-amd64 <container-registry-url>/aiverify-portal:0.10`
 - `docker tag aiverify-test-engine:0.10-amd64 <container-registry-url>/aiverify-test-engine:0.10`
 
-4. Push the images to your container registry
+2. Push the images to your container registry
 - `docker push <container-registry-url>/aiverify-portal:0.10`
 - `docker push <container-registry-url>/aiverify-test-engine:0.10`
 
-Replace <container-registry-url> with the actual url of your container registry.
+&nbsp;&nbsp;&nbsp;Replace <container-registry-url> with the actual url of your container registry.
 
 >As an example, the following steps let you push the images to AWS Elastic Container Registry (ECR).
 > 
@@ -67,7 +67,18 @@ this: 111122223333.dkr.ecr.ap-southeast-1.amazonaws.com
 >`docker push 111122223333.dkr.ecr.ap-southeast-1.amazonaws.com/aiverify-test-engine:0.10`
 
 ### Deploy the components
-
+A bunch of Kubernetes manifest templates (.tmpl) are provided in this folder which you can customize by running the
+customize-manifest.sh:
+1. Set the variables in the customize-manifest.sh script with values specific to your cluster.
+2. Run the customize-manifest.sh as follows. The script uses the values you have set above to generate a set of 
+Kubernetes manifest files (*.yml) from the templates.
+   * `bash customize-manifest.sh`
+3. Run kubectl apply on the generated manifest files to create and deploy the aiverify components.
+   * `kubectl apply -f aiverify-db.yml`
+   * `kubectl apply -f aiverify-redis.yml`
+   * `kubectl apply -f aiverify-test-engine.yml`
+   * `kubectl apply -f aiverify-portal.yml`
+   * `kubectl apply -f aiverify-ingres.yml`
 
 
 
