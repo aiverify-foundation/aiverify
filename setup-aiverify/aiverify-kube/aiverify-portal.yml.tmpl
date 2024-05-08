@@ -12,7 +12,7 @@ data:
   REDIS_HOST: aiverify-redis-service.<NAMESPACE>.svc.cluster.local
   REDIS_PORT: '6379'
   TEST_ENGINE_URL: http://aiverify-test-engine-service.<NAMESPACE>.svc.cluster.local:8080
-  ALLOWED_ORIGINS: https://aiverify.eks-<NAMESPACE>.aipo-imda.net
+  ALLOWED_ORIGINS: https://<INGRESS_HOST>
 ---
 apiVersion: v1
 kind: Service
