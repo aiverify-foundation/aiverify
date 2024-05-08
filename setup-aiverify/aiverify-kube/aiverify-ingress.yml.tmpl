@@ -1,18 +1,18 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: aiverify-web
-  namespace: dev
+  name: aiverify-portal-ingress
+  namespace: <NAMESPACE>
   annotations:
     alb.ingress.kubernetes.io/scheme: internal
     alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/group.name: ingress-grp-1
-    alb.ingress.kubernetes.io/load-balancer-name: alb-aiss-plfm-dev-eks-cluster
-    external-dns.alpha.kubernetes.io/target: alb-aiss-plfm-dev-wb-alb-1159675129.ap-southeast-1.elb.amazonaws.com
+    alb.ingress.kubernetes.io/group.name: <INGRESS_GRP_NAME>
+    alb.ingress.kubernetes.io/load-balancer-name: <INGRESS_ALB_NAME>
+    external-dns.alpha.kubernetes.io/target: <EXT_DNS_PUB_ALB>
 spec:
   ingressClassName: alb
   rules:
-    - host: aiverify.eks-dev.aipo-imda.net
+    - host: <INGRESS_HOST>
       http:
         paths:
           - path: /

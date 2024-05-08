@@ -2,7 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: aiverify-shared-pvc
-  namespace: dev
+  namespace: <NAMESPACE>
   labels:
     app.kubernetes.io/name: aiverify-shared-pvc
 spec:
@@ -11,5 +11,5 @@ spec:
   resources:
     requests:
       storage: 2Gi
-  storageClassName: efs-fs
+  storageClassName: <EFS_STGCLASS_NAME>
 ---

@@ -1,8 +1,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: mongo-scripts
-  namespace: dev
+  name: aiverify-db-scripts
+  namespace: <NAMESPACE>
 data:
   init-script.sh: |
     #!/bin/bash
@@ -30,8 +30,8 @@ data:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: db-secret
-  namespace: dev
+  name: aiverify-db-secret
+  namespace: <NAMESPACE>
 type: Opaque
 data:
   username: YWl2ZXJpZnk=  # base64 encoded 'aiverify'
@@ -41,7 +41,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: aiverify-db-service
-  namespace: dev
+  namespace: <NAMESPACE>
 spec:
   ports:
     - name: tcp
@@ -56,7 +56,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: aiverify-db-statefulset
-  namespace: dev
+  namespace: <NAMESPACE>
   labels:
     app.kubernetes.io/name: aiverify-db
 spec:
@@ -79,29 +79,29 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       containers:
-        - name: mongodb
-          image: public.ecr.aws/docker/library/mongo:6.0.4
+        - name: aiverify-db
+          image: <MONGODB_IMG_URL>
           ports:
             - containerPort: 27017
           env:
             - name: MONGO_INITDB_ROOT_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: db-secret
+                  name: aiverify-db-secret
                   key: username
             - name: MONGO_INITDB_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: db-secret
+                  name: aiverify-db-secret
                   key: password
             - name: MONGO_INITDB_DATABASE
               value: "admin"
           volumeMounts:
-            - name: mongodb-data
+            - name: aiverify-db-data
               mountPath: /data/db
-            - name: mongodb-logs
+            - name: aiverify-db-logs
               mountPath: /var/log/mongodb
-            - name: mongo-scripts
+            - name: aiverify-db-scripts
               mountPath: /docker-entrypoint-initdb.d
           securityContext:
             allowPrivilegeEscalation: false
@@ -109,25 +109,25 @@ spec:
               drop:
                 ["ALL"]
       volumes:
-        - name: mongo-scripts
+        - name: aiverify-db-scripts
           configMap:
-            name: mongo-scripts
+            name: aiverify-db-scripts
   volumeClaimTemplates:
     - metadata:
-        name: mongodb-data
-        namespace: dev
+        name: aiverify-db-data
+        namespace: <NAMESPACE>
       spec:
-        storageClassName: ebs-gp3
+        storageClassName: <EBS_STGCLASS_NAME>
         accessModes:
           - ReadWriteOnce
         resources:
           requests:
             storage: 1Gi
     - metadata:
-        name: mongodb-logs
-        namespace: dev
+        name: aiverify-db-logs
+        namespace: <NAMESPACE>
       spec:
-        storageClassName: ebs-gp3
+        storageClassName: <EBS_STGCLASS_NAME>
         accessModes:
           - ReadWriteOnce
         resources:

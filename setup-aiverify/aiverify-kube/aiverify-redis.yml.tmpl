@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: redis-data-pvc
-  namespace: dev
+  name: aiverify-redis-data-pvc
+  namespace: <NAMESPACE>
 spec:
-  storageClassName: ebs-gp3
+  storageClassName: <EBS_STGCLASS_NAME>
   accessModes:
     - ReadWriteOnce
   resources:
@@ -14,10 +14,10 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: redis-logs-pvc
-  namespace: dev
+  name: aiverify-redis-logs-pvc
+  namespace: <NAMESPACE>
 spec:
-  storageClassName: ebs-gp3
+  storageClassName: <EBS_STGCLASS_NAME>
   accessModes:
     - ReadWriteOnce
   resources:
@@ -27,8 +27,8 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: redis-config
-  namespace: dev
+  name: aiverify-redis-config
+  namespace: <NAMESPACE>
 data:
   redis.conf: |-
     # Close the connection after a client is idle for N seconds (0 to disable)
@@ -48,7 +48,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: aiverify-redis-service
-  namespace: dev
+  namespace: <NAMESPACE>
 spec:
   ports:
     - name: redis-tcp
@@ -63,7 +63,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: aiverify-redis-deployment
-  namespace: dev
+  namespace: <NAMESPACE>
   labels:
     app.kubernetes.io/name: aiverify-redis
 spec:
@@ -88,7 +88,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: aiverify-redis
-          image: public.ecr.aws/docker/library/redis:6.2-alpine
+          image: <REDIS_IMG_URL>
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -104,21 +104,21 @@ spec:
             - "--include"
             - "/etc/redis/config"
           volumeMounts:
-            - name: redis-data
+            - name: aiverify-redis-data
               mountPath: /data
-            - name: redis-logs
+            - name: aiverify-redis-logs
               mountPath: /var/log/redis
-            - name: redis-config
+            - name: aiverify-redis-config
               mountPath: /etc/redis/config
               subPath: redis.conf
       volumes:
-        - name: redis-data
+        - name: aiverify-redis-data
           persistentVolumeClaim:
-            claimName: redis-data-pvc
-        - name: redis-logs
+            claimName: aiverify-redis-data-pvc
+        - name: aiverify-redis-logs
           persistentVolumeClaim:
-            claimName: redis-logs-pvc
-        - name: redis-config
+            claimName: aiverify-redis-logs-pvc
+        - name: aiverify-redis-config
           configMap:
-            name: redis-config
+            name: aiverify-redis-config
 ---

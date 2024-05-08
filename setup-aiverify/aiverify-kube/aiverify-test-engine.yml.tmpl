@@ -1,52 +1,50 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: aiverify-portal-config
-  namespace: dev
+  name: aiverify-test-engine-config
+  namespace: <NAMESPACE>
 data:
-  # portal env
-  DB_HOST: aiverify-db-service.dev.svc.cluster.local
-  DB_PORT: '27017'
-  REDIS_URI: redis://aiverify-redis-service.dev.svc.cluster.local
-  # api-gw env
-  REDIS_HOST: aiverify-redis-service.dev.svc.cluster.local
-  REDIS_PORT: '6379'
-  TEST_ENGINE_URL: http://aiverify-test-engine-service.dev.svc.cluster.local:8080
-  ALLOWED_ORIGINS: https://aiverify.eks-dev.aipo-imda.net
+   # test-engine env
+   CORE_MODULES_FOLDER: ../test-engine-core-modules
+   VALIDATION_SCHEMAS_FOLDER: ./test_engine_app/validation_schemas/
+   REDIS_CONSUMER_GROUP: MyGroup
+   REDIS_SERVER_HOSTNAME: aiverify-redis-service.<NAMESPACE>.svc.cluster.local
+   REDIS_SERVER_PORT: '6379'
+   API_SERVER_PORT: '8080'
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: aiverify-portal-service
-  namespace: dev
+  name: aiverify-test-engine-service
+  namespace: <NAMESPACE>
 spec:
   ports:
     - name: http
-      port: 80
+      port: 8080
       protocol: TCP
-      targetPort: 3000
+      targetPort: 8080
   selector:
-    app.kubernetes.io/name: aiverify-portal
+    app.kubernetes.io/name: aiverify-test-engine
   type: ClusterIP
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: aiverify-portal-deployment
-  namespace: dev
+  name: aiverify-test-engine-deployment
+  namespace: <NAMESPACE>
   labels:
-    app.kubernetes.io/name: aiverify-portal
+    app.kubernetes.io/name: aiverify-test-engine
 spec:
   replicas: 1
   strategy:
     type: Recreate
   selector:
     matchLabels:
-      app.kubernetes.io/name: aiverify-portal
+      app.kubernetes.io/name: aiverify-test-engine
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: aiverify-portal
+        app.kubernetes.io/name: aiverify-test-engine
     spec:
       serviceAccountName: default
       securityContext:
@@ -57,26 +55,15 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       containers:
-        - name: aiverify-portal
-          image: 052567997892.dkr.ecr.ap-southeast-1.amazonaws.com/aiverify-portal:0.10
+        - name: aiverify-test-engine
+          image: <TESTENGINE_IMG_URL>
           args:
             - "bash"
             - "-c"
-            - "cd aiverify/ai-verify-apigw; node app.mjs & cd ../ai-verify-portal; npm run start"
-          env:
-          - name: DB_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: db-secret
-                key: username
-          - name: DB_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: db-secret
-                key: password
+            - "cp -a aiverify/stock-plugins/* aiverify/ai-verify-portal/plugins; cd aiverify/test-engine-app; python3 -m test_engine_app"
           envFrom:
           - configMapRef:
-              name: aiverify-portal-config
+              name: aiverify-test-engine-config
           resources:
             limits:
               cpu: 1000m
