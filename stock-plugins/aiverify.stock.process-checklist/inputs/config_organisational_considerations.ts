@@ -9,15 +9,15 @@ export const config = {
       checklist: [
         {
           testableCriteria:
-            "Mechanisms are in place to inventory AI systems and are resourced according to organizational risk priorities",
+            "Mechanisms are in place to inventory AI systems including ensuring that they are properly resourced in areas such as (a) data; (b) tooling; (c) system & computing; and (d) in human resources, according to organisational risk priorities",
           processes: [
             {
               pid: "12.1.1",
               process:
-                "Put in place guided flow for documenting (i) the inventory of AI systems and necessary resources and (ii) risk priorities",
+                "Put in place guided flow for documenting (i) the inventory of AI systems and necessary resources (e.g., data, tooling, system & computing and human resources) and (ii) risk priorities",
               metric: "Internal documentation (e.g., procedure manual)",
               processChecks:
-                "Documentary evidence of considerations of resources and risk priorities",
+                "Documentary evidence of considerations of resources (e.g., data, tooling, system & computing and human resources) and risk priorities",
             },
           ],
         },
@@ -89,10 +89,23 @@ export const config = {
             },
           ],
         },
+        {
+          testableCriteria:
+            "Organisation has in place an AI policy for the development or use of AI systems that is aligned with other organisational policies",
+          processes: [
+            {
+              pid: "12.7.1",
+              process:
+                "Put in place documentation on the overall AI policy of the organisation, e.g., principles that guide AI-related activities, processes for handling deviations and exceptions to policy.<br/><br/>AI policy reviewed regularly to ensure its continued suitability, adequacy and effectiveness",
+              metric: "Internal documentation",
+              processChecks: "Documentary evidence of overall AI policy of the organisation, e.g., principles that guide AI-related activities, processes for handling deviations and exceptions to policy.<br/><br/>Documentary evidence of the regular review of the AI policy",
+            },
+          ],
+        },
       ],
     },
   ],
   "summaryYes": "Company has considered the broader implications when deciding AI deployment such as whether to use AI system versus non-AI options, as well as having sufficient resources to manage the deployment of AI.",
-  "summaryNotYes": "Company has not implemented all the broader considerations when deciding AI deployment such as whether to use AI system versus non-AI options, as well as having sufficient resources to manage the deployment of AI.",
+  "summaryNotYes": "Company has not implemented all the broader considerations when deciding AI deployment such as having an AI policy, whether to use AI system versus non-AI options, as well as having sufficient resources to manage the deployment of AI.",
   "recommendation": "Company should periodically review the reasons for not having fully implemented these broader considerations as this may have implications for all AI deployments by the Company."
 };
