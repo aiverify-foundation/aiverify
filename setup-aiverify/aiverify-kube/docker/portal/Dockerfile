@@ -126,6 +126,9 @@ RUN apt-get remove git -y
 RUN mkdir -p ./test-engine-app/logs
 RUN chown -R 1000:1000 ./test-engine-app
 
+# Nextjs cache.
+RUN chown 1000:1000 ./ai-verify-portal/.next/cache
+
 # Run containers with non-root user
 USER $USER
 
