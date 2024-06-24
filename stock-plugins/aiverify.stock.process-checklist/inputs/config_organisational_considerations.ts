@@ -96,7 +96,7 @@ export const config = {
             {
               pid: "12.7.1",
               process:
-                "Put in place documentation on the overall AI policy of the organisation, e.g., principles that guide AI-related activities, processes for handling deviations and exceptions to policy.<br/><br/>AI policy reviewed regularly to ensure its continued suitability, adequacy and effectiveness",
+                "Put in place documentation on the overall AI policy of the organisation, e.g., principles that guide AI-related activities, processes for handling deviations and exceptions to policy. AI policy reviewed regularly to ensure its continued suitability, adequacy and effectiveness",
               metric: "Internal documentation",
               processChecks: "Documentary evidence of overall AI policy of the organisation, e.g., principles that guide AI-related activities, processes for handling deviations and exceptions to policy.<br/><br/>Documentary evidence of the regular review of the AI policy",
             },

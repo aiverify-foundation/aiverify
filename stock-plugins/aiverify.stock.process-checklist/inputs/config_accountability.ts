@@ -91,7 +91,7 @@ export const config = {
           ]
         },
         {
-          "testableCriteria": "Establish a process to ensure that suppliers provide their services, products or materials in support of the responsible development and use of the AI system",
+          "testableCriteria": "Establish processes to ensure that its usage of services, products or materials are in support of the responsible development and use of the AI system",
           "processes": [
             {
               "pid": "9.7.1",
