@@ -96,7 +96,7 @@ export const config = {
             {
               "pid": "9.7.1",
               "process": "Select AI system suppliers which align with organisation’s approach.<br/><br/>When AI system suppliers do not perform as intended, there are processes for suppliers to take remedial actions.",
-              "metric": "Internal documentation<br/>External correspondence",
+              "metric": "External correspondence",
               "processChecks": "Documentary evidence of processes to select suppliers which align with the organisation’s approach.<br/><br/>Documentary evidence of correspondence with suppliers to take corrective action."
             }
           ]
