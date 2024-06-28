@@ -1,7 +1,8 @@
+import os
 from pathlib import Path
 from typing import Tuple
 
-from dotenv import dotenv_values
+from dotenv import load_dotenv
 from test_engine_core.utils.validate_checks import is_empty_string
 
 
@@ -10,7 +11,6 @@ class EnvironmentVariables:
     EnvironmentVariables class focuses on getting external environment variables that may affect how the program runs.
     """
 
-    _default_env_file: str = ".env"
     _core_modules_folder: str = "../test-engine-core-modules"
     _validation_schemas_folder: str = "./test_engine_app/validation_schemas/"
     _redis_consumer_group: str = "MyGroup"
@@ -20,46 +20,43 @@ class EnvironmentVariables:
 
     def __init__(self):
         try:
-            # Check if the '.env' file exists
-            if Path.exists(Path(self._default_env_file)):
-                # Read the environment variable file and load the variables
-                env_config = dotenv_values(self._default_env_file)
+            load_dotenv()
 
-                # Save the values obtained from the file, else we use default values
-                core_modules_folder = env_config.get(
-                    "CORE_MODULES_FOLDER",
-                    str(Path().resolve().parent / "test-engine-core-modules"),
-                )
-                validation_schemas_folder = env_config.get(
-                    "VALIDATION_SCHEMAS_FOLDER",
-                    str(Path().resolve() / "test_engine_app/validation_schemas"),
-                )
-                consumer_group = env_config.get("REDIS_CONSUMER_GROUP", "MyGroup")
-                hostname = env_config.get("REDIS_SERVER_HOSTNAME", "localhost")
-                server_port = int(env_config.get("REDIS_SERVER_PORT", 6379))
-                api_server_port = int(env_config.get("API_SERVER_PORT", 8080))
+            # Save the values obtained from the file, else we use default values
+            core_modules_folder = os.getenv(
+                "CORE_MODULES_FOLDER",
+                str(Path().resolve().parent / "test-engine-core-modules"),
+            )
+            validation_schemas_folder = os.getenv(
+                "VALIDATION_SCHEMAS_FOLDER",
+                str(Path().resolve() / "test_engine_app/validation_schemas"),
+            )
+            consumer_group = os.getenv("REDIS_CONSUMER_GROUP", "MyGroup")
+            hostname = os.getenv("REDIS_SERVER_HOSTNAME", "localhost")
+            server_port = int(os.getenv("REDIS_SERVER_PORT", 6379))
+            api_server_port = int(os.getenv("API_SERVER_PORT", 8080))
 
-                error_count, _ = EnvironmentVariables._validate_data(
-                    core_modules_folder,
-                    validation_schemas_folder,
-                    consumer_group,
-                    hostname,
-                    server_port,
-                    api_server_port,
-                )
+            error_count, _ = EnvironmentVariables._validate_data(
+                core_modules_folder,
+                validation_schemas_folder,
+                consumer_group,
+                hostname,
+                server_port,
+                api_server_port,
+            )
 
-                if error_count == 0:
-                    EnvironmentVariables._core_modules_folder = core_modules_folder
-                    EnvironmentVariables._validation_schemas_folder = (
-                        validation_schemas_folder
-                    )
-                    EnvironmentVariables._redis_consumer_group = consumer_group
-                    EnvironmentVariables._redis_server_hostname = hostname
-                    EnvironmentVariables._redis_server_port = server_port
-                    EnvironmentVariables._api_server_port = api_server_port
-                else:
-                    # Validation failed. Use defaults.
-                    pass
+            if error_count == 0:
+                EnvironmentVariables._core_modules_folder = core_modules_folder
+                EnvironmentVariables._validation_schemas_folder = (
+                    validation_schemas_folder
+                )
+                EnvironmentVariables._redis_consumer_group = consumer_group
+                EnvironmentVariables._redis_server_hostname = hostname
+                EnvironmentVariables._redis_server_port = server_port
+                EnvironmentVariables._api_server_port = api_server_port
+            else:
+                # Validation failed. Use defaults.
+                pass
 
         except ValueError:
             # ValueError exception. Use defaults.
