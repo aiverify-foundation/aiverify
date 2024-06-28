@@ -3,7 +3,6 @@ import shutil
 from pathlib import Path
 
 import pytest
-
 from test_engine_app.config.environment_variables import EnvironmentVariables
 
 
@@ -790,14 +789,14 @@ class TestCollectionEnvironmentVariables:
             (
                 {
                     "core_modules_folder": str(Path().resolve().parent / "test-engine-core-modules"),
-                    "validation_folder": str(Path().resolve() / "validation_schemas"),
+                    "validation_folder": str(Path().resolve() / "test_engine_app/validation_schemas"),
                     "consumer_group": "MyGroup",
                     "hostname": "localhost",
                     "server_port": 6379,
                     "api_server_port": 8080
                 },
                 f'\nEnvironment Variables:\nCORE_MODULES_FOLDER: {str(Path().resolve().parent / "test-engine-core-modules")}\n'
-                f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "validation_schemas")}\n'
+                f'VALIDATION_SCHEMAS_FOLDER: {str(Path().resolve() / "test_engine_app/validation_schemas")}\n'
                 f'REDIS_CONSUMER_GROUP: MyGroup\n'
                 f'REDIS_SERVER_HOSTNAME: localhost\n'
                 f'REDIS_SERVER_PORT: 6379\n'
