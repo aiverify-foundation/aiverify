@@ -150,7 +150,7 @@ sudo apt install unzip
 
 sudo apt install -y python3.11-venv
 
-git clone https://github.com/aiverify-foundation/aiverify.git --branch=main
+git clone https://github.com/aiverify-foundation/aiverify.git --branch=v0.10.x
 cd aiverify
 
 ############ Node ############
