@@ -37,7 +37,7 @@
     "openapi-enforcer": "^1.22.3",
     "puppeteer": "^22.3.0",
     "redis": "^4.5.1",
-    "ws": "^8.11.0"
+    "ws": "^8.17.1"
   },
   "imports": {
     "#models": "./models/index.mjs",
