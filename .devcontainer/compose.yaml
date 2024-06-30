@@ -1,0 +1,60 @@
+version: "3"
+
+services:
+  aiverify:
+    image: aiverify/all:devcontainer
+    build:
+      dockerfile: ./.devcontainer/Dockerfile
+      context: ../
+    depends_on:
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    environment:
+      REDIS_SERVER_HOSTNAME: "redis"
+      REDIS_URI: redis://redis:6379
+      DB_HOST: db
+      DB_PORT: 27017
+      DB_USERNAME: "${DB_AIVERIFY_USER:-aiverify}"
+      DB_PASSWORD: "${DB_AIVERIFY_PASSWORD:-aiverify}"
+      REDIS_HOST: redis
+    volumes:
+      - ../:/app/aiverify/:cached
+    networks:
+      - app-network
+
+  redis:
+    image: redis:7.2.4-alpine
+    restart: unless-stopped
+    command: redis-server --save 20 1 --loglevel warning --include /etc/redis/redis.conf
+    volumes:
+      - ../scripts/redis-init/redis.conf:/etc/redis/redis.conf
+      - redis-volume:/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+
+  db:
+    image: mongo:7.0.5
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: aiverify
+      MONGO_INITDB_ROOT_PASSWORD: aiverify
+      MONGO_INITDB_DATABASE: admin
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+    volumes:
+      - mongo-volume:/data/db
+      - ../scripts/mongo-init/:/docker-entrypoint-initdb.d/
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongo-volume:
+  redis-volume:

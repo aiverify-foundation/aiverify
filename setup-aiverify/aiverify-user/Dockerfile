@@ -76,7 +76,7 @@ RUN useradd -u 10000 -g 10000 -ms /bin/bash $USER
 ###################  Clone aiverify repo ######################
 
 ARG BRANCH_TAG=main
-ARG REPO=imda-btg/aiverify
+ARG REPO=aiverify-foundation/aiverify
 RUN echo "BRANCH_TAG=$BRANCH_TAG"
 WORKDIR /app
 RUN git clone https://github.com/$REPO --branch=$BRANCH_TAG aiverify
@@ -111,7 +111,7 @@ TEST_ENGINE_URL=http://test-engine:8080" | tee .env.local
 RUN rm .env.development
 
 # Install dependencies for portal, and build portal (nextjs build)
-RUN npm install
+RUN npm install --omit=dev
 RUN npm link ../ai-verify-shared-library
 RUN npm run build
 
@@ -135,7 +135,7 @@ WEB_REPORT_URL=http://localhost:3000/reportStatus/printview" | tee .env
 # Skip Chrome/chromium install during puppeteer install, since chromium
 # already installed above
 ENV PUPPETEER_SKIP_DOWNLOAD 1
-RUN npm install
+RUN npm install --omit=dev
 ENV PUPPETEER_EXECUTABLE_PATH /usr/bin/chromium
 
 ############## Stock plugins #################

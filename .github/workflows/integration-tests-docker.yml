@@ -92,14 +92,14 @@ jobs:
       - name: Checkout API Mock Server
         uses: actions/checkout@v3
         with:
-          repository: IMDA-BTG/api-model-server
+          repository: aiverify-foundation/api-model-server
           ref: main
           path: qa-test/api-model-server
 
       - name: Checkout smoke tests
         uses: actions/checkout@v3
         with:
-          repository: IMDA-BTG/smoke-testing
+          repository: aiverify-foundation/smoke-testing
           ref: main
           path: qa-test/smoke-testing
           submodules: recursive
@@ -107,7 +107,7 @@ jobs:
       - name: Checkout frontend tests
         uses: actions/checkout@v3
         with:
-          repository: IMDA-BTG/frontend-testing
+          repository: aiverify-foundation/frontend-testing
           ref: main
           path: qa-test/frontend-testing
           submodules: recursive
@@ -115,7 +115,7 @@ jobs:
       - name: Checkout backend tests
         uses: actions/checkout@v3
         with:
-          repository: IMDA-BTG/backend-testing
+          repository: aiverify-foundation/backend-testing
           ref: main
           path: qa-test/backend-testing
           submodules: recursive
