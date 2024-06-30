@@ -35,20 +35,26 @@ jobs:
     - name: Checkout Code (Pull_Request_Review)
       if: github.event_name == 'pull_request_review'
       uses: actions/checkout@v3
-      run: |
-          echo "BRANCH=branch" >> "$GITHUB_ENV"
       with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           submodules: recursive
 
-    - name: Checkout code (workflow_dispatch)
-        if: github.event_name == 'workflow_dispatch'
-        uses: actions/checkout@v3
-        run: |
-            echo "BRANCH=main" >> "$GITHUB_ENV"
-        with:
+    - name: Checkout Code (Workflow_Dispatch)
+      if: github.event_name == 'workflow_dispatch'
+      uses: actions/checkout@v3
+      with:
           ref: ${{ inputs.branch_to_test }}
+
+    - name: Set Branch Variable (Pull_Request_Review)
+      if: github.event_name == 'pull_request_review'
+      run: |
+          echo "BRANCH=branch" >> "$GITHUB_ENV"
+
+    - name: Set Branch Variable (Workflow_Dispatch)
+      if: github.event_name == 'workflow_dispatch'
+      run: |
+          echo "BRANCH=main" >> "$GITHUB_ENV"
 
     - name: Install & Scan APIGW
       run: |
