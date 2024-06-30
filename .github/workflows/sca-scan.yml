@@ -54,7 +54,7 @@ jobs:
     - name: Set Branch Variable (Workflow_Dispatch)
       if: github.event_name == 'workflow_dispatch'
       run: |
-          echo "BRANCH=main" >> "$GITHUB_ENV"
+          echo "BRANCH=${{ inputs.branch_to_test }}" >> "$GITHUB_ENV"
 
     - name: Install & Scan APIGW
       run: |
