@@ -75,7 +75,7 @@ RUN useradd -u 10000 -g 10000 -ms /bin/bash $USER
 
 ###################  Clone aiverify repo ######################
 
-ARG BRANCH_TAG=main
+ARG BRANCH_TAG=v0.10.x
 ARG REPO=aiverify-foundation/aiverify
 RUN echo "BRANCH_TAG=$BRANCH_TAG"
 WORKDIR /app
