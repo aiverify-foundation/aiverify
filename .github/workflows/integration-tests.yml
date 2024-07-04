@@ -32,7 +32,7 @@ jobs:
     if: (github.event_name == 'pull_request_review' && github.event.review.state == 'approved') || github.event_name == 'workflow_dispatch'
 
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 100
 
     steps:
 
@@ -59,14 +59,14 @@ jobs:
           admin = db.getSiblingDB('admin')
           admin.createUser({
             user: 'mongodb',
-            pwd: 'mongodb',
+            pwd: 't1oj5L_xQI8dTrVuZ',
             roles: [{ role: 'root', db: 'admin' }],
           });
 
           aiverify = db.getSiblingDB('aiverify')
           aiverify.createUser({
             user: 'aiverify',
-            pwd: 'aiverify',
+            pwd: 't1oj5L_xQI8dTrVuZ',
             roles: [{ role: 'readWrite', db: 'aiverify' }],
           });
 
@@ -114,10 +114,10 @@ jobs:
           
           cd ../ai-verify-apigw
           #cp .env.development .env
-          npm install
+          npm install --omit=dev
           
           cd ../ai-verify-portal
-          npm install
+          npm install --omit=dev
           npm link ../ai-verify-shared-library
           echo "APIGW_URL=http://127.0.0.1:4000
           MONGODB_URI=mongodb://aiverify:aiverify@127.0.0.1:27017/aiverify
@@ -169,7 +169,7 @@ jobs:
           DB_HOST=127.0.0.1
           DB_PORT=27017
           DB_USERNAME=aiverify
-          DB_PASSWORD=aiverify
+          DB_PASSWORD=t1oj5L_xQI8dTrVuZ
           ALLOWED_ORIGINS=http://127.0.0.1:3000,http://127.0.0.1:3001,http://127.0.0.1:4000" > .env
 
           node app.mjs &> apigw.log &
@@ -180,16 +180,14 @@ jobs:
       - name: Checkout API Mock Server
         uses: actions/checkout@v3
         with:
-          repository: IMDA-BTG/api-model-server
-          token: ${{ secrets.CHECKOUT_TOKEN }}
+          repository: aiverify-foundation/api-model-server
           ref: main
           path: qa-test/api-model-server
           
       - name: Checkout smoke tests
         uses: actions/checkout@v3
         with:
-          repository: IMDA-BTG/smoke-testing
-          token: ${{ secrets.CHECKOUT_TOKEN }}
+          repository: aiverify-foundation/smoke-testing
           ref: main
           path: qa-test/smoke-testing
           submodules: recursive
@@ -197,16 +195,14 @@ jobs:
       - name: Checkout frontend tests
         uses: actions/checkout@v3
         with:
-          repository: IMDA-BTG/frontend-testing
-          token: ${{ secrets.CHECKOUT_TOKEN }}
+          repository: aiverify-foundation/frontend-testing
           ref: main
           path: qa-test/frontend-testing
 
       - name: Checkout backend tests
         uses: actions/checkout@v3
         with:
-          repository: IMDA-BTG/backend-testing
-          token: ${{ secrets.CHECKOUT_TOKEN }}
+          repository: aiverify-foundation/backend-testing
           ref: main
           path: qa-test/backend-testing
           submodules: recursive
@@ -218,7 +214,8 @@ jobs:
           python3 -m venv venv
           source venv/bin/activate
           pip3 install -r requirements.txt
-          bash regression_run_https.sh &
+          bash regression_run_https.sh && fg &
+          bash classification_run_https.sh &
 
       - name: Run smoke tests
         if: ${{ ! cancelled() }}
@@ -226,14 +223,14 @@ jobs:
           cd qa-test/smoke-testing
           npm install
           npx playwright install
-          ENVIRONMENT_URL=https://127.0.0.1:5000 npx playwright test
+          ENVIRONMENT_URL=https://127.0.0.1 npx playwright test
 
       - name: Run frontend tests
         if: ${{ ! cancelled() }}
         run: |
           cd qa-test/frontend-testing
           npm install
-          npx playwright test
+          ENVIRONMENT_URL=https://127.0.0.1 npx playwright test
 
       - name: Run backend tests
         if: ${{ ! cancelled() }}

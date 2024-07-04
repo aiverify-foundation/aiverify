@@ -78,11 +78,44 @@ export const config = {
               "processChecks": "Documentary evidence of effort undertaken to understand how the third-party models were built, which includes:<br/><br/>- what data was used to train the models;<br/>- how the models are assessed for effectiveness and explainability; and<br/>- under what circumstances does the AI system perform poorly"
             }
           ]
-        }
-      ]
+        },
+        {
+          "testableCriteria": "Establish clear responsibilities between different parties within the broader supply chain – partners, suppliers, customers, third parties",
+          "processes": [
+            {
+              "pid": "9.6.1",
+              "process": "Responsibilities and obligations are clearly communicated to all parties related to the AI system",
+              "metric": "External / internal correspondence",
+              "processChecks": "Documentary evidence of communication with relevant parties on responsibilities and obligations relating to the AI system"
+            }
+          ]
+        },
+        {
+          "testableCriteria": "Establish processes to ensure that its usage of services, products or materials are in support of the responsible development and use of the AI system",
+          "processes": [
+            {
+              "pid": "9.7.1",
+              "process": "Select AI system suppliers which align with organisation’s approach.<br/><br/>When AI system suppliers do not perform as intended, there are processes for suppliers to take remedial actions.",
+              "metric": "External correspondence",
+              "processChecks": "Documentary evidence of processes to select suppliers which align with the organisation’s approach.<br/><br/>Documentary evidence of correspondence with suppliers to take corrective action."
+            }
+          ]
+        },
+        {
+          "testableCriteria": "Incorporate end users’ expectations/needs in the responsible development and use of the AI system",
+          "processes": [
+            {
+              "pid": "9.8.1",
+              "process": "Process to engage end users on their expectations and needs (e.g. providing general usage agreements that scope its use)",
+              "metric": "External / internal correspondence",
+              "processChecks": "Documentary evidence of attempts to understand end users needs and mitigate risks related to its misuse"
+            }
+          ]
+        },
+     ]
     }
   ],
   "summaryYes": "Company has put in place an organisational structure and internal governance mechanism to ensure clear roles and responsibilities for the use of AI. This allows the Company to quickly establish accountability when something goes wrong, identify the problem, and address it in a timely manner.",
-  "summaryNotYes": "The current organisational structure and internal governance mechanism may not provide sufficient accountability and oversight of the AI system. This may have negative impact on the identification and mitigation of risks associated with this AI system.",
-  "recommendation": "Company should review the current organizational structure and internal governance mechanism to ensure clear accountability for those involved in Company’s AI development and deployment."
+  "summaryNotYes": "The current organisational structure, internal governance mechanism or relationship with wider supply chain may not provide sufficient accountability and oversight of the AI system. This may have negative impact on the identification and mitigation of risks associated with this AI system.",
+  "recommendation": "Company should review the current organizational structure, internal governance mechanism or relationship with wider supply chain to ensure clear accountability for those involved in Company’s AI development and deployment."
 }

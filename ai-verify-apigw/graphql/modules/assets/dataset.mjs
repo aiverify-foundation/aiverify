@@ -53,7 +53,7 @@ const resolvers = {
                     }
 
                 }).then(dataset => {
-                    if (dataset.filePath) {
+                    if (dataset && dataset.filePath) {
                         var filePath = dataset.filePath;
                     } else {
                         return reject("dataset.filePath is empty")

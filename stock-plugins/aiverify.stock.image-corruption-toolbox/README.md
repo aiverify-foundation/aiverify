@@ -40,8 +40,8 @@ The toolbox generates corrupted images based on the uploaded test data at 5 diff
 
 ## Using the Plugin in AI Verify
 ### Data Preparation
-- Image dataset ([Tutorial for Preparation](https://imda-btg.github.io/aiverify/getting-started/prepare-image/#1-dataset-preparation))
-- Annotated Ground Truth Dataset ([Tutorial for Preparation](https://imda-btg.github.io/aiverify/getting-started/prepare-image/#2-annotated-ground-truth-dataset))
+- Image dataset ([Tutorial for Preparation](https://aiverify-foundation.github.io/aiverify/getting-started/prepare-image/#1-dataset-preparation))
+- Annotated Ground Truth Dataset ([Tutorial for Preparation](https://aiverify-foundation.github.io/aiverify/getting-started/prepare-image/#2-annotated-ground-truth-dataset))
 
 ### Additional Requirements
 ImageMagick (Details for installation can be found [here](https://docs.wand-py.org/en/0.6.11/guide/install.html#))

@@ -1,23 +1,23 @@
 
-[![Integration Tests](https://github.com/IMDA-BTG/aiverify/actions/workflows/integration-tests.yml/badge.svg)](https://github.com/IMDA-BTG/aiverify/actions/workflows/integration-tests.yml)
+[![Integration Tests](https://github.com/aiverify-foundation/aiverify/actions/workflows/integration-tests.yml/badge.svg)](https://github.com/aiverify-foundation/aiverify/actions/workflows/integration-tests.yml)  [![Integration Tests for aiverify-user (Docker)](https://github.com/aiverify-foundation/aiverify/actions/workflows/integration-tests-docker.yml/badge.svg)](https://github.com/aiverify-foundation/aiverify/actions/workflows/integration-tests-docker.yml)
 
 ## ✨New API Connector Feature!
 
 We're excited to introduce a powerful enhancement to AI Verify – the API Connector feature! 
 Now, instead of uploading your AI Model file onto AI Verify, you can seamlessly configure an API Connection to your model server. 
-Learn more about the modes of accessing AI models [here](https://imda-btg.github.io/aiverify/getting-started/accessing-ai-model/)
+Learn more about the modes of accessing AI models [here](https://aiverify-foundation.github.io/aiverify/getting-started/accessing-ai-model/)
 
 ### Key Advantages:
 - Bypass Size Limitations: Say goodbye to the constraints imposed by browser upload size limits.
-- Test previously unsupported AI frameworks: The API Connector empowers you to work with models of any framework, such as PyTorch. Learn more about compatibility of model uploads [here](https://imda-btg.github.io/aiverify/others/compatibility/).
+- Test previously unsupported AI frameworks: The API Connector empowers you to work with models of any framework, such as PyTorch. Learn more about compatibility of model uploads [here](https://aiverify-foundation.github.io/aiverify/others/compatibility/).
 - Connection Settings for Batch Requests: Optimise your test runs by configuring connection timeouts, connection retries, max connections, rate limit and rate limit timeouts.
 * Important Note: This feature currently supports tabular data only.
 
 ### Getting Started:
-To take advantage of this feature, refer to our [How-To Guide](https://imda-btg.github.io/aiverify/how-to/connect-to-ai-model-api/). This guide provides step-by-step instructions on setting up the API Connector for seamless integration with your model server.
+To take advantage of this feature, refer to our [How-To Guide](https://aiverify-foundation.github.io/aiverify/how-to/connect-to-ai-model-api/). This guide provides step-by-step instructions on setting up the API Connector for seamless integration with your model server.
 
 We are excited to have you try it out and hear what you think about this feature!
-[Discussion Board](https://github.com/IMDA-BTG/aiverify/discussions)
+[Discussion Board](https://github.com/aiverify-foundation/aiverify/discussions)
 
 ## Introduction
 
@@ -31,19 +31,19 @@ This document provides important notices and information about the project that 
 
 ## Installing AI Verify
 
-New to AI Verify? Generally, you should install AI Verify by building and running the [Dockerfile](https://imda-btg.github.io/aiverify/getting-started/docker-setup/), which contains all the dependencies you need. This should get you ready to use AI Verify! See the installation guide for building and running from [source code](https://imda-btg.github.io/aiverify/getting-started/source-code-setup/) if you wish to deal with dependencies on your own. 
+New to AI Verify? Generally, you should install AI Verify by building and running the [Dockerfile](https://aiverify-foundation.github.io/aiverify/getting-started/docker-setup/), which contains all the dependencies you need. This should get you ready to use AI Verify! See the installation guide for building and running from [source code](https://aiverify-foundation.github.io/aiverify/getting-started/source-code-setup/) if you wish to deal with dependencies on your own. 
 
 ## User Guide
 
-Learn how you may utilise AI Verify effectively [here](https://imda-btg.github.io/aiverify).
+Learn how you may utilise AI Verify effectively [here](https://aiverify-foundation.github.io/aiverify).
 
 ## Developer Guide
 
-Learn how you can utilise the developer tools effectively to contribute to the project [here](https://imda-btg.github.io/aiverify-developer-tools/getting_started/start_here/).
+Learn how you can utilise the developer tools effectively to contribute to the project [here](https://aiverify-foundation.github.io/aiverify-developer-tools/getting_started/start_here/).
 
 ## Contributing Guidelines
 
-We encourage contributions from the community to help improve this project. Before contributing, please read our [Contributing Guidelines](https://github.com/IMDA-BTG/aiverify-developer-tools/blob/main/CONTRIBUTING.md) to understand the process and expectations.
+We encourage contributions from the community to help improve this project. Before contributing, please read our [Contributing Guidelines](https://github.com/aiverify-foundation/aiverify-developer-tools/blob/main/CONTRIBUTING.md) to understand the process and expectations.
 
 ## Issue Tracker
 
@@ -67,7 +67,7 @@ Thank you for your interest in AI Verify, and we look forward to your contributi
 
 ```
 AI Verify
-Copyright 2023 AI Verify Foundation
+Copyright 2024 AI Verify Foundation
 
 This product includes software developed under the AI Verify Foundation.
 

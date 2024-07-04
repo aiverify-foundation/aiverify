@@ -62,7 +62,7 @@ jobs:
         working-directory: ${{ github.workspace }}/stock-plugins/aiverify.stock.accumulated-local-effect
         run: |
           cd algorithms/*/
-          curl -H 'Authorization: token ${{ secrets.CHECKOUT_TOKEN }}' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/IMDA-BTG/aiverify/contents/test-engine-core/dist/test_engine_core-0.9.0.tar.gz
+          curl -H 'Authorization: token ${{ secrets.CHECKOUT_TOKEN }}' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/aiverify-foundation/aiverify/contents/test-engine-core/dist/test_engine_core-0.9.0.tar.gz
           pip install -r requirements.txt
           pip install test_engine_core-0.9.0.tar.gz
           pip install pytest pytest-mock pytest-html pytest-json pytest-cov coverage
@@ -111,7 +111,7 @@ jobs:
         if: ${{ github.event.pull_request.head.repo.full_name == github.repository && always() }}
         uses: actions/checkout@v3
         with:
-          repository: IMDA-BTG/ci-dashboard
+          repository: aiverify-foundation/ci-dashboard
           token: ${{ secrets.CHECKOUT_TOKEN }}
           ref: main
           path: check-results
@@ -132,8 +132,8 @@ jobs:
           mv ../stock-plugins/aiverify.stock.accumulated-local-effect/algorithms/*/*.md docs/pre-merge/plugin-ale/
           mv ../stock-plugins/aiverify.stock.accumulated-local-effect/algorithms/*/*.txt docs/pre-merge/plugin-ale/
           git add docs/pre-merge/plugin-ale
-          git config user.name "imda-btg"
-          git config user.email "idma-btg@imda.gov.sg"
+          git config user.name "aiverify"
+          git config user.email "aiverify@imda.gov.sg"
           git commit -m "feat(portal) actions publish plugin-ale reports to dashboard"
           git push
           set -e          

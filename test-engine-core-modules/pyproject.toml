@@ -52,7 +52,7 @@ pandas = "2.0.3"
 scipy = "1.12.0"
 httpx = "0.26.0"
 openapi-schema-validator = "0.6.2"
-aiopenapi3 = "0.5.0"
+aiopenapi3 = {git = "https://github.com/commonism/aiopenapi3.git", rev = "8e9591162d1cef8cfc8e7840f34eb20c84af8c24"}
 aiometer = "0.5.0"
 
 

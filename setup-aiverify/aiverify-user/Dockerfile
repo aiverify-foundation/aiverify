@@ -8,8 +8,11 @@ ENV TZ=Asia/Singapore
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Install node v18.x
-RUN apt-get update && apt-get install -y curl
-RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
+RUN apt-get update && apt-get install -y curl ca-certificates gnupg
+RUN mkdir -p /etc/apt/keyrings
+RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+ENV NODE_MAJOR=18
+RUN "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
 RUN apt-get update && apt-get install -y nodejs
 
 # Install python 3.11, virtualenv
@@ -49,12 +52,19 @@ RUN apt-get install chromium -y
 
 RUN ln -s /usr/bin/chromium /usr/bin/chromium-browser
 
+# Install NPM
+RUN apt-get install npm -y
+
 # For shap-toolbox stock plugin
 RUN apt-get install -y gcc g++ python3.11-dev
+
+# Install libmagicwand for Environment Corruption
+RUN apt-get install libmagickwand-dev -y
 
 # Install Git
 RUN apt-get install -y git
 
+# Install Unzip
 RUN apt-get install unzip
 
 ################### Create aiverify user ######################
@@ -65,10 +75,11 @@ RUN useradd -u 10000 -g 10000 -ms /bin/bash $USER
 
 ###################  Clone aiverify repo ######################
 
-ARG BRANCH_TAG=v0.10.x
+ARG BRANCH_TAG=main
+ARG REPO=aiverify-foundation/aiverify
 RUN echo "BRANCH_TAG=$BRANCH_TAG"
 WORKDIR /app
-RUN git clone https://github.com/imda-btg/aiverify.git --branch=$BRANCH_TAG aiverify
+RUN git clone https://github.com/$REPO --branch=$BRANCH_TAG aiverify
 
 WORKDIR /app/aiverify
 
@@ -100,7 +111,7 @@ TEST_ENGINE_URL=http://test-engine:8080" | tee .env.local
 RUN rm .env.development
 
 # Install dependencies for portal, and build portal (nextjs build)
-RUN npm install
+RUN npm install --omit=dev
 RUN npm link ../ai-verify-shared-library
 RUN npm run build
 
@@ -109,9 +120,9 @@ WORKDIR /app/aiverify/ai-verify-apigw
 
 # User entered username and password (in docker-start.sh) override these env values.
 ENV DB_USERNAME="aiverify"
-ENV DB_PASSWORD="aiverify"
+ENV DB_PASSWORD="t1oj5L_xQI8dTrVuZ"
 
-ARG ALLOWED_ORIGINS=http://localhost:3000,http://localhost:4000
+ENV ALLOWED_ORIGINS=http://localhost:3000,http://localhost:4000
 RUN echo "ALLOWED_ORIGINS=${ALLOWED_ORIGINS}"
 RUN echo "REDIS_HOST=redis\n\
 REDIS_PORT=6379\n\
@@ -123,8 +134,8 @@ WEB_REPORT_URL=http://localhost:3000/reportStatus/printview" | tee .env
 # Install dependencies for apigw
 # Skip Chrome/chromium install during puppeteer install, since chromium
 # already installed above
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD 1
-RUN npm install
+ENV PUPPETEER_SKIP_DOWNLOAD 1
+RUN npm install --omit=dev
 ENV PUPPETEER_EXECUTABLE_PATH /usr/bin/chromium
 
 ############## Stock plugins #################
