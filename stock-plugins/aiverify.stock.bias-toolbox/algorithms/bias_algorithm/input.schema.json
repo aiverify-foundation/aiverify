@@ -1,0 +1,38 @@
+{
+    "title": "Algorithm Plugin Input Arguments",
+    "description": "A schema for algorithm plugin input arguments",
+    "type": "object",
+    "required": [
+        "data_path",
+        "test_variable",
+        "target_variable"
+    ],
+    "properties": {
+        "data_path": {
+            "title": "Path of dataset",
+            "description": "Data path",
+            "type": "string",
+            "ui:widget": "selectDataset"
+        },
+        "test_variable": {
+            "title": "Test Variable",
+            "description": "Variable to test for bias",
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "minItems": 1
+        },
+        "target_variable": {
+            "title": "Target Variable",
+            "description": "Target variable of the report",
+            "type": "string"
+        },
+        "p_value": {
+            "title": "p-value threshold",
+            "description": "threshold to reject null hypothesis (0.00 - 1.00)",
+            "type": "number",
+            "default": 0.05
+        }
+    }
+}
