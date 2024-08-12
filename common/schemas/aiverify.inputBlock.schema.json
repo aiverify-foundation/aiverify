@@ -1,0 +1,75 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "/ai-verify.inputBlock.schema.json",
+	"title": "Input Block Metadata Schema",
+	"description": "AI Verify Input Block metadata schema",
+	"type": "object",
+	"properties": {
+		"cid": {
+			"description": "Unique identifier for the input block within the plugin",
+			"type": "string",
+			"pattern": "^[a-zA-Z0-9][a-zA-Z0-9-._]*$",
+			"minLength": 1,
+			"maxLength": 128
+		},
+		"name": {
+			"description": "Input Block name",
+			"type": "string",
+			"minLength": 1,
+			"maxLength": 128
+		},
+		"version": {
+			"description": "Version of the input block, default to plugin version if not specificed",
+			"type": "string",
+			"minLength": 1,
+			"maxLength": 256
+		},
+		"author": {
+			"description": "Input block author",
+			"type": "string",
+			"minLength": 1,
+			"maxLength": 128
+		},
+		"tags": {
+			"description": "Input block tags, used for searching",
+			"type": "array",
+			"maxItems": 128,
+			"items": {
+				"type": "string",
+				"minLength": 1,
+				"maxLength": 128
+			}
+		},
+		"description": {
+			"description": "Input Block description",
+			"type": "string",
+			"maxLength": 256
+		},
+		"group": {
+			"description": "Input Block group",
+			"type": "string",
+			"minLength": 1,
+			"maxLength": 128
+		},
+		"width": {
+			"description": "Width of Input Block dialog",
+			"type": "string",
+			"enum": [
+				"xs",
+				"sm",
+				"md",
+				"lg",
+				"xl"
+			],
+			"default": "md"
+		},
+		"fullScreen": {
+			"description": "Width of Input Block dialog",
+			"type": "boolean"
+		}
+	},
+	"required": [
+		"cid",
+		"name"
+	]
+}

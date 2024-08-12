@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "/ai-verify.widget.schema.json",
+  "title": "Widget Metadata Schema",
+  "description": "AI Verify Widget metadata schema",
+  "type": "object",
+  "properties": {
+    "cid": {
+      "description": "Unique identifier for the widget within the plugin",
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9-._]*$",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "name": {
+      "description": "Widget name",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "version": {
+      "description": "Version of the widget, default to plugin version if not specificed",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "author": {
+      "description": "Widget author",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "description": {
+      "description": "Widget description",
+      "type": "string",
+      "maxLength": 256
+    },
+    "widgetSize": {
+      "description": "Describe the widget size in terms of canvas grid units",
+      "type": "object",
+      "properties": {
+        "minW": {
+          "description": "Minimum widget width",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12
+        },
+        "minH": {
+          "description": "Minimum widget height",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 36
+        },
+        "maxW": {
+          "description": "Maximum widget width",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12
+        },
+        "maxH": {
+          "description": "Maximum widget height",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 36
+        }
+      },
+      "required": [
+        "minW",
+        "minH",
+        "maxW",
+        "maxH"
+      ]
+    },
+    "properties": {
+      "description": "List of widget properties",
+      "type": "array",
+      "maxItems": 256,
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "description": "Property key",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "helper": {
+            "description": "Helper text for the property",
+            "type": "string",
+            "maxLength": 128
+          },
+          "default": {
+            "description": "Property default value",
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "key",
+          "helper"
+        ]
+      }
+    },
+    "tags": {
+      "description": "Widget tags, used for searching",
+      "type": "array",
+      "maxItems": 128,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      }
+    },
+    "dependencies": {
+      "description": "Widget dependencies",
+      "type": "array",
+      "maxItems": 256,
+      "items": {
+        "type": "object",
+        "properties": {
+          "gid": {
+            "description": "GID of the dependency component plugin. If empty, assume component within same plugin.",
+            "type": "string",
+            "maxLength": 128
+          },
+          "cid": {
+            "description": "CID of the dependency component",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "version": {
+            "description": "Version of the component dependency required",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "cid"
+        ]
+      }
+    },
+    "mockdata": {
+      "description": "Sample data to be fed into the widget in canvas mode",
+      "type": "array",
+      "maxItems": 256,
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Type of sample data",
+            "type": "string",
+            "enum": [
+              "Algorithm",
+              "InputBlock"
+            ]
+          },
+          "gid": {
+            "description": "GID of sample data for component dependency. If empty, assume GID of same plugin",
+            "type": "string",
+            "maxLength": 128
+          },
+          "cid": {
+            "description": "CID of sample data for component dependency",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "datapath": {
+            "description": "Path to the file containing sample data",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "type",
+          "cid",
+          "datapath"
+        ]
+      }
+    },
+    "dynamicHeight": {
+      "description": "Whether this widget has dynamic height",
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "cid",
+    "name",
+    "widgetSize"
+  ]
+}
