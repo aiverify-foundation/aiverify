@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "aiverify-apigw"
+version = "0.1.0"
+description = ""
+authors = ["Peck Yoke <leong_peck_yoke@imda.gov.sg>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = {extras = ["standard"], version = "^0.112.0"}
+python-dotenv = "^1.0.1"
+sqlalchemy = "^2.0.32"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
