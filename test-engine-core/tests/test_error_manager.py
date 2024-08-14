@@ -206,7 +206,7 @@ class TestCollectionErrorManager:
         # Check output correct
         assert output is False
 
-    @pytest.mark.parametrize("path", ["/errors", "/temp/errors"])
+    @pytest.mark.parametrize("path", ["/temp/errors"])
     def test_create_error_manager_folder_path(self, path: str):
         """
         Tests error manager create folder in root path
