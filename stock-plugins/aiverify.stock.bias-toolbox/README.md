@@ -34,7 +34,7 @@ To use the Statistical Tests Plugin, prepare your dataset as follows:
 ## Sample Widget Display
 Below is an example of how the statistical tests' results might be displayed:
 
-![Bias Report Sample](images/bias_report_sample.png)
+![Bias Report Sample](330267335-aa0add1b-e47c-45dd-98e5-c05ebe154910.png)
 
 ### Detailed Explanation of Metrics
 - **Statistic**: A value used to summarize the data concerning the null hypothesis.
