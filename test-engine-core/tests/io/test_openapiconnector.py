@@ -16,70 +16,74 @@ def plugin_test_data(request):
     test_dir = Path(request.module.__file__).parent
     discover_path = test_dir.parent.parent / "test_engine_core/io"
     # api_schema_path = str(
-    #     discover_path / "user_defined_files/test_api_schema.json"
+    #     discover_path / "user_defined_files/api_config_files/test_api_schema.json"
     # )
     # api_config_path = str(
-    #     discover_path / "user_defined_files/test_api_config.json"
+    #     discover_path / "user_defined_files/api_config_files/test_api_config.json"
     # )
 
     # Test Schema 1
-    api_schema_path = str(test_dir / "user_defined_files/test_schema1.json")
-    api_config_path = str(test_dir / "user_defined_files/test_config1.json")
+    api_schema_path = str(
+        test_dir / "user_defined_files/api_config_files/test_schema1.json"
+    )
+    api_config_path = str(
+        test_dir / "user_defined_files/api_config_files/test_config1.json"
+    )
     # # Test Schema 2
     # api_schema_path = str(
-    #     discover_path / "user_defined_files/test_schema2.json"
+    #     discover_path / "user_defined_files/api_config_files/test_schema2.json"
     # )
     # api_config_path = str(
-    #     discover_path / "user_defined_files/test_config2.json"
+    #     discover_path / "user_defined_files/api_config_files/test_config2.json"
     # )
     # # Test Schema 3
     # api_schema_path = str(
-    #     discover_path / "user_defined_files/test_schema3.json"
+    #     discover_path / "user_defined_files/api_config_files/test_schema3.json"
     # )
     # api_config_path = str(
-    #     discover_path / "user_defined_files/test_config3.json"
+    #     discover_path / "user_defined_files/api_config_files/test_config3.json"
     # )
     # # Test Schema 4
     # api_schema_path = str(
-    #     discover_path / "user_defined_files/test_schema4.json"
+    #     discover_path / "user_defined_files/api_config_files/test_schema4.json"
     # )
     # api_config_path = str(
-    #     discover_path / "user_defined_files/test_config4.json"
+    #     discover_path / "user_defined_files/api_config_files/test_config4.json"
     # )
     # # Test Schema 5
     # api_schema_path = str(
-    #     discover_path / "user_defined_files/test_schema5.json"
+    #     discover_path / "user_defined_files/api_config_files/test_schema5.json"
     # )
     # api_config_path = str(
-    #     discover_path / "user_defined_files/test_config5.json"
+    #     discover_path / "user_defined_files/api_config_files/test_config5.json"
     # )
     # # Test Schema 6
     # api_schema_path = str(
-    #     discover_path / "user_defined_files/test_schema6.json"
+    #     discover_path / "user_defined_files/api_config_files/test_schema6.json"
     # )
     # api_config_path = str(
-    #     discover_path / "user_defined_files/test_config6.json"
+    #     discover_path / "user_defined_files/api_config_files/test_config6.json"
     # )
     # # Test Schema 7
     # api_schema_path = str(
-    #     discover_path / "user_defined_files/test_schema7.json"
+    #     discover_path / "user_defined_files/api_config_files/test_schema7.json"
     # )
     # api_config_path = str(
-    #     discover_path / "user_defined_files/test_config7.json"
+    #     discover_path / "user_defined_files/api_config_files/test_config7.json"
     # )
     # # Test Schema 8
     # api_schema_path = str(
-    #     discover_path / "user_defined_files/test_schema8.json"
+    #     discover_path / "user_defined_files/api_config_files/test_schema8.json"
     # )
     # api_config_path = str(
-    #     discover_path / "user_defined_files/test_config8.json"
+    #     discover_path / "user_defined_files/api_config_files/test_config8.json"
     # )
     # # Test Schema 9
     # api_schema_path = str(
-    #     discover_path / "user_defined_files/test_schema9.json"
+    #     discover_path / "user_defined_files/api_config_files/test_schema9.json"
     # )
     # api_config_path = str(
-    #     discover_path / "user_defined_files/test_config9.json"
+    #     discover_path / "user_defined_files/api_config_files/test_config9.json"
     # )
 
     expected_model_algorithm = "OpenAPIConnector"

@@ -11,7 +11,7 @@ from test_engine_core.plugins.plugins_manager import PluginManager
 def pipeline_test_data(request):
     test_dir = Path(request.module.__file__).parent
     discover_path = test_dir.parent.parent / "test_engine_core/io"
-    file_path = str(test_dir / "user_defined_files/")
+    file_path = str(test_dir / "user_defined_files/sklearn_pipeline_files/")
     expected_pipeline_algorithm = "sklearn.pipeline.Pipeline"
     expected_pipeline_plugin_type = PipelinePluginType.SKLEARN
 
