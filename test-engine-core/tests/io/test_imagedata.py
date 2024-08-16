@@ -1,6 +1,5 @@
 import pytest
 import copy
-import sys
 from pathlib import Path
 from typing import Tuple
 from test_engine_core.interfaces.idata import IData

@@ -1,8 +1,6 @@
 import pytest
 from pathlib import Path
-from typing import Tuple, Union
-from test_engine_core.interfaces.imodel import IModel
-from test_engine_core.interfaces.iserializer import ISerializer
+from typing import Tuple
 from test_engine_core.plugins.enums.model_plugin_type import ModelPluginType
 from test_engine_core.plugins.enums.plugin_type import PluginType
 from test_engine_core.plugins.plugins_manager import PluginManager

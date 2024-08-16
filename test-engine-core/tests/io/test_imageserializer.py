@@ -1,9 +1,7 @@
 import pytest
-import sys
 from pathlib import Path
-from typing import Tuple, Union
+from typing import Tuple
 
-from test_engine_core.interfaces.iserializer import ISerializer
 from test_engine_core.plugins.enums.image_type import ImageType
 from test_engine_core.plugins.enums.plugin_type import PluginType
 from test_engine_core.plugins.metadata.image_metadata import ImageMetadata

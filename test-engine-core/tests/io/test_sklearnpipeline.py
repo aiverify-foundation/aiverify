@@ -1,5 +1,4 @@
 import pytest
-import sys
 from pathlib import Path
 from typing import Tuple
 from test_engine_core.plugins.enums.pipeline_plugin_type import PipelinePluginType
