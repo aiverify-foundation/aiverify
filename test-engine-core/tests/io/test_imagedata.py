@@ -8,30 +8,21 @@ from test_engine_core.plugins.enums.data_plugin_type import DataPluginType
 from test_engine_core.plugins.enums.plugin_type import PluginType
 from test_engine_core.plugins.plugins_manager import PluginManager
 
-pytest.skip("skipping imagedata; known error from v1", allow_module_level=True)
 
-
-# Fixture to provide test data
 @pytest.fixture
 def plugin_test_data(request):
     test_dir = Path(request.module.__file__).parent
     discover_path = test_dir.parent.parent / "test_engine_core/io"
-    data_path = str(test_dir / "user_defined_files/data.csv")
-    ground_truth_value = "Interest_Rate"
+    data_path = str(test_dir / "user_defined_files/0.png")
     expected_data_plugin_type = DataPluginType.PANDAS
-    return data_path, discover_path, ground_truth_value, expected_data_plugin_type
+    return data_path, discover_path, expected_data_plugin_type
 
 
-# Test class for the plugin
-class TestPlugin:
+class PluginTest:
     def test_plugin(self, plugin_test_data):
-        # Unpack test data
-        data_path, discover_path, ground_truth_value, expected_data_plugin_type = (
-            plugin_test_data
-        )
+        data_path, discover_path, expected_data_plugin_type = plugin_test_data
         self._base_path = discover_path
         self._data_path = data_path
-        self._ground_truth_value = ground_truth_value
         self._expected_data_plugin_type = expected_data_plugin_type
 
         try:
@@ -130,10 +121,6 @@ class TestPlugin:
         return error_count, error_message
 
 
-# The actual test execution
 def test_end_to_end_plugin_test(plugin_test_data):
-    # Create an instance of the test class
-    plugin_test = TestPlugin()
-
-    # Run the main test method
+    plugin_test = PluginTest()
     plugin_test.test_plugin(plugin_test_data)
