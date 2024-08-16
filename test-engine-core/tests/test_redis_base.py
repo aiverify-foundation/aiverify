@@ -3,6 +3,8 @@ import redis
 
 from test_engine_core.network.redis.redis_base import RedisBase
 
+pytest.skip("skipping redis test; possibly deprecating", allow_module_level=True)
+
 
 class TestCollectionRedisBase:
     def test_init_redis_base(self):

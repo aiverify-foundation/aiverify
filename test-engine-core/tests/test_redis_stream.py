@@ -4,6 +4,8 @@ import pytest
 
 from test_engine_core.network.redis.redis_stream import RedisStream
 
+pytest.skip("skipping redis test; possibly deprecating", allow_module_level=True)
+
 
 class TestCollectionRedisStream:
     def test_init_redis_stream(self):

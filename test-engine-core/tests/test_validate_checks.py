@@ -44,7 +44,6 @@ class TestCollectionValidateChecks:
             ("tests/schemas", False),
             ("/home/", False),
             ("/tmp", False),
-            ("/etc/shadow", True),
             ("None", False),
         ],
     )

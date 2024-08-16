@@ -1,6 +1,5 @@
 venv
 .venv
-coverage
 /uploads/
 /package-lock.json
 **/*.log
@@ -12,3 +11,10 @@ coverage
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# Test related
+coverage
+mytestmodel
+
+# OS generated files
+.DS_Store
