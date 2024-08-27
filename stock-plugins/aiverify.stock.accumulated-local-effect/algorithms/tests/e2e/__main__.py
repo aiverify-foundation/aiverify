@@ -1,9 +1,6 @@
+from pathlib import Path
 from test_engine_core.plugins.enums.model_type import ModelType
 from accumulated_local_effect.algo_init import AlgoInit
-from pathlib import Path
-# cd /Users/sureshjain/projects/aiverify/stock-plugins/aiverify.stock.accumulated-local-effect/algorithms/tests/e2e
-# python -m tests.e2e
-
 
 def run():
     test_accumulated_local_effect_plugin()

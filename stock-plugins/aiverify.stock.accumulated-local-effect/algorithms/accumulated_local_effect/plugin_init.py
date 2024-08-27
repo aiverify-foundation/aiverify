@@ -1,8 +1,7 @@
-from test_engine_core.plugins.enums.model_type import ModelType
-from accumulated_local_effect.algo_init import AlgoInit
 import sys
 import argparse
-
+from test_engine_core.plugins.enums.model_type import ModelType
+from accumulated_local_effect.algo_init import AlgoInit
 
 # Global variables
 data_path = ''

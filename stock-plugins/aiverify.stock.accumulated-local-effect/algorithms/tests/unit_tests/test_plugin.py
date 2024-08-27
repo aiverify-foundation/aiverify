@@ -15,20 +15,10 @@ from test_engine_core.plugins.plugins_manager import PluginManager
 from test_engine_core.utils.json_utils import remove_numpy_formats
 from test_engine_core.utils.simple_progress import SimpleProgress
 
-# PYTHONPATH="/Users/sureshjain/projects/aiverify/stock-plugins/aiverify.stock.accumulated-local-effect/algorithms" pytest .
-
-
 def test_discover_plugin():
     PluginManager.discover(
-        # str(Path().absolute() / "../../../../test-engine-core")
         str(Path().absolute() / os.path.dirname(importlib.util.find_spec('test_engine_core').origin))
     )
-
-
-# Variables for testing
-# valid_data_path = "tests/user_defined_files/data/sample_bc_credit_data.sav"
-# valid_model_path = "tests/user_defined_files/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav"
-# valid_ground_truth_path = "tests/user_defined_files/data/sample_bc_credit_data.sav"
 
 valid_data_path = str( Path().absolute() / "../../test-assets/data/sample_bc_credit_data.sav")
 valid_model_path = str(Path().absolute() / "../../test-assets/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav")
