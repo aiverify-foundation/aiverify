@@ -4,8 +4,10 @@ import logging
 import sys
 from pathlib import Path
 from typing import Dict, Tuple, Union
+import importlib.util
+import os
 
-from accumulated_local_effect import Plugin
+from accumulated_local_effect.algo import Plugin
 from test_engine_core.interfaces.idata import IData
 from test_engine_core.interfaces.imodel import IModel
 from test_engine_core.interfaces.ipipeline import IPipeline
@@ -24,9 +26,9 @@ from test_engine_core.utils.time import time_class_method
 # =====================================================================================
 # NOTE: Do not modify this file unless you know what you are doing.
 # =====================================================================================
-class PluginTest:
+class AlgoInit:
     """
-    The PluginTest class specifies methods in supporting testing for the plugin.
+    The AlgoInit class specifies methods in supporting testing for the plugin.
     """
 
     @staticmethod
@@ -37,7 +39,7 @@ class PluginTest:
         Args:
             completion_value (int): Current progress completion
         """
-        print(f"[PluginTest] Progress Update: {completion_value}")
+        print(f"[AlgoInit] Progress Update: {completion_value}")
 
     def __init__(
         self,
@@ -55,8 +57,9 @@ class PluginTest:
         self._run_as_pipeline: bool = run_as_pipeline
 
         # Store the input arguments as private vars
-        if core_modules_path == "":
-            core_modules_path = "../../../../test-engine-core-modules"
+        # since test_engine_core is a dependency, even while development, will refer to the package itself
+        core_modules_path: str = os.path.dirname(importlib.util.find_spec('test_engine_core').origin)
+
         self._core_modules_path: str = core_modules_path
         self._data_path: str = str(self._base_path / data_path)
         self._model_path: str = str(self._base_path / model_path)
@@ -99,7 +102,7 @@ class PluginTest:
             print(f"[DETECTED_PLUGINS]: {PluginManager.get_printable_plugins()}")
 
             # Create logger
-            self._logger_instance = logging.getLogger("PluginTestLogger")
+            self._logger_instance = logging.getLogger("AlgoInitLogger")
             self._logger_instance.setLevel(logging.DEBUG)
             log_format = logging.Formatter(
                 fmt="%(levelname)s %(asctime)s \t %(pathname)s %(funcName)s L%(lineno)s - %(message)s",
@@ -231,9 +234,9 @@ class PluginTest:
                 self._input_arguments["logger"] = self._logger_instance
                 self._input_arguments[
                     "progress_callback"
-                ] = PluginTest.progress_callback
+                ] = AlgoInit.progress_callback
                 self._input_arguments["project_base_path"] = self._base_path
-
+               
                 # Run the plugin with the arguments and instances
                 print("Creating an instance of the Plugin...")
                 plugin = Plugin(
@@ -256,7 +259,17 @@ class PluginTest:
                 is_success, error_messages = self._verify_task_results(results)
                 if is_success:
                     # Print the output results
-                    print(json.dumps(results))
+                    output_folder = Path.cwd() / "output"
+                    output_folder.mkdir(parents=True, exist_ok=True)
+                    
+                    json_file_path = output_folder /"results.json"
+
+                    # Write the data to the JSON file
+                    with open(json_file_path, "w") as json_file:
+                        json.dump(results, json_file, indent=4)
+                    print("*"*20)
+                    print(f'check the results here : {json_file_path}')
+                    print("*"*20)
 
                     # Exit successfully
                     sys.exit(0)
@@ -294,9 +307,13 @@ class PluginTest:
         else:
             # Validate the json result with the relevant schema.
             # Check that it meets the required format before sending out to the UI for display
+         
             if not validate_json(
                 task_result,
-                load_schema_file(str(self._base_path / "output.schema.json")),
+                load_schema_file(
+                   str(Path(__file__).parent/ 'output.schema.json')
+                )
+                
             ):
                 is_success = False
                 error_message = "Failed schema validation"
