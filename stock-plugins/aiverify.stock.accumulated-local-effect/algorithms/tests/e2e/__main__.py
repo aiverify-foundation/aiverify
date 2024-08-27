@@ -36,7 +36,6 @@ def test_accumulated_local_effect_plugin():
 
 
     # # Multiclass Classification Pipeline
-
     # data_path = str( Path().absolute() / "../../test-assets/data/sample_mc_pipeline_toxic_data.sav")
     # model_path = str(Path().absolute() / "../../test-assets/pipeline/mc_tabular_toxic")
     # ground_truth_path = str( Path().absolute() / "../../test-assets/data/sample_mc_pipeline_toxic_ytest_data.sav")

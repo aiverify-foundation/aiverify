@@ -47,7 +47,6 @@ test_none = None
 
 class TestObject:
     def __init__(self):
-        print('123valid_data_path '+ valid_data_path)
         test_discover_plugin()
         (
             data_instance,
