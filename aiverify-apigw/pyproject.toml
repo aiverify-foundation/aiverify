@@ -10,6 +10,8 @@ python = "^3.11"
 fastapi = {extras = ["standard"], version = "^0.112.0"}
 python-dotenv = "^1.0.1"
 sqlalchemy = "^2.0.32"
+boto3 = "^1.35.6"
+jsonschema = "^4.23.0"
 
 
 [build-system]
