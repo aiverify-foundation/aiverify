@@ -27,15 +27,15 @@ class TestResultModel(BaseORMModel):
     model_id: Mapped[int] = mapped_column(ForeignKey("test_model.id"))
     model: Mapped["TestModelModel"] = relationship()
     test_dataset_id: Mapped[int] = mapped_column(ForeignKey("test_dataset.id"))
-    test_dataset: Mapped["TestDatasetModel"] = relationship()
+    test_dataset: Mapped["TestDatasetModel"] = relationship(foreign_keys=[test_dataset_id])
     ground_truth_dataset_id: Mapped[int] = mapped_column(ForeignKey("test_dataset.id"))
-    ground_truth_dataset: Mapped["TestDatasetModel"] = relationship()
+    ground_truth_dataset: Mapped["TestDatasetModel"] = relationship(foreign_keys=[ground_truth_dataset_id])
     ground_truth: Mapped[str] # only if has ground truth dataset
     start_time: Mapped[datetime]
     time_taken: Mapped[float]  # time taken in seconds
     algo_arguments: Mapped[bytes]  # serialized json, arguments pass as input to algo
     output: Mapped[bytes]  # serialized json, output from algos
-    artifacts: Mapped[List["TestArtifactModel"]] = relationship("TestArtifactModel", cascade="all, delete-orphan")
+    artifacts: Mapped[List["TestArtifactModel"]] = relationship("TestArtifactModel", cascade="save-update")
 
     @validates("gid", "cid")
     def my_validate_gid_cid(self, key, value):

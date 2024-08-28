@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column, validates, relationship
-from sqlalchemy import String, Boolean, ForeignKey, Table, Column
+from sqlalchemy import Nullable, String, Boolean, ForeignKey, Table, Column
 from sqlalchemy.ext.hybrid import hybrid_property
 from typing import Optional, List
 
@@ -12,22 +12,22 @@ from ..lib.constants import ModelType, InputBlockSize
 class PluginModel(BaseORMModel):
     __tablename__ = 'plugin'
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    gid: Mapped[str] = mapped_column(
-        String(128), index=True, unique=True, nullable=False)
-    version: Mapped[str] = mapped_column(String(256), nullable=False)
-    name: Mapped[str] = mapped_column(String(128), nullable=False)
-    author: Mapped[str] = mapped_column(String(128))
-    description: Mapped[str]
-    url: Mapped[str]
+    # id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    gid: Mapped[str] = mapped_column(String(128), primary_key=True, nullable=False)
+    version: Mapped[str]
+    name: Mapped[str]
+    author: Mapped[Optional[str]]
+    description: Mapped[Optional[str]]
+    url: Mapped[Optional[str]]
     algorithms: Mapped[List["AlgorithmModel"]] = relationship(
-        back_populates="plugin", cascade="all, delete-orphan")
+        back_populates="plugin", cascade="all, delete")
     widgets: Mapped[List["WidgetModel"]] = relationship(
-        back_populates="plugin", cascade="all, delete-orphan")
+        back_populates="plugin", cascade="all, delete")
     inputblocks: Mapped[List["InputBlockModel"]] = relationship(
-        back_populates="plugin", cascade="all, delete-orphan")
+        back_populates="plugin", cascade="all, delete")
     templates: Mapped[List["TemplateModel"]] = relationship(
-        back_populates="plugin", cascade="all, delete-orphan")
+        back_populates="plugin", cascade="all, delete")
+    meta: Mapped[bytes]  # schema serialized
 
     @validates("gid")
     def my_validate_gid_cid(self, key, value):
@@ -36,7 +36,7 @@ class PluginModel(BaseORMModel):
         return value
 
     def __repr__(self) -> str:
-        return (f"PluginModel(id={self.id}, gid={self.gid}, version={self.version}, name={self.name}, "
+        return (f"PluginModel(gid={self.gid}, version={self.version}, name={self.name}, "
                 f"author={self.author}, description={self.description}, url={self.url})")
 
 
@@ -51,30 +51,35 @@ association_table = Table(
 class PluginComponentModel(BaseORMModel):
     __tablename__ = 'plugin_component'
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    cid: Mapped[str] = mapped_column(
-        String(128), index=True, unique=True, nullable=False)
+    # id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    id: Mapped[str] = mapped_column(primary_key=True)
+    cid: Mapped[str] = mapped_column(String(128), index=True, nullable=False)
     name: Mapped[str] = mapped_column(String(128), nullable=False)
     type: Mapped[str]
     version: Mapped[Optional[str]]
     author: Mapped[Optional[str]]
     description: Mapped[Optional[str]]
-    tags: Mapped[List["ComponentTagModel"]] = relationship(
-        secondary=association_table, back_populates="components")
-    gid: Mapped[str] = mapped_column(ForeignKey("plugin.gid"))
-    schema: Mapped[bytes]  # schema serialized
+    tags: Mapped[List["ComponentTagModel"]] = relationship(secondary=association_table, back_populates="components")
+    gid: Mapped[str]
+    meta: Mapped[bytes]  # schema serialized
 
     __mapper_args__ = {
         "polymorphic_identity": "employee",
         "polymorphic_on": "type",
     }
 
+    def __repr__(self) -> str:
+        return (f"id={self.id}, cid={self.cid}, name={self.name}, "
+                f"type={self.type}, version={self.version}, author={self.author}, "
+                f"description={self.description}, gid={self.gid}")
+
 
 class ComponentTagModel(BaseORMModel):
     __tablename__ = 'component_tag'
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(String(128), index=True, unique=True)
+    # id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    id: Mapped[str] = mapped_column(primary_key=True)
+    name: Mapped["ComponentTagModel"] = mapped_column(String(128), index=True, unique=True)
     components: Mapped[List["PluginComponentModel"]] = relationship(
         secondary=association_table, back_populates="tags")
 
@@ -87,8 +92,7 @@ class ComponentTagModel(BaseORMModel):
 
 class AlgorithmModel(PluginComponentModel):
     __tablename__ = "algorithm"
-    id: Mapped[int] = mapped_column(ForeignKey(
-        "plugin_component.id"), primary_key=True)
+    id: Mapped[str] = mapped_column(ForeignKey("plugin_component.id"), primary_key=True)
 
     __mapper_args__ = {
         "polymorphic_identity": "algorithm",
@@ -97,21 +101,28 @@ class AlgorithmModel(PluginComponentModel):
     model_type: Mapped[str] = mapped_column(String, nullable=False)
     require_ground_truth: Mapped[bool] = mapped_column(Boolean, default=True)
 
-    plugin_id: Mapped[int] = mapped_column(ForeignKey('plugin.id'))
+    input_schema = Mapped[bytes]  # schema serialized
+    output_schema = Mapped[bytes]  # schema serialized
+
+    plugin_id: Mapped[int] = mapped_column(ForeignKey('plugin.gid'))
     plugin: Mapped["PluginModel"] = relationship(back_populates="algorithms")
 
     @hybrid_property
     def algorithm_id(self):
-        return f"{self.gid}:{self.cid}"
+        return f"{self.id}"
 
     @validates("model_type")
     def validates_model_type(self, key, value):
         try:
-            model_types = [
-                ModelType(v.strip().lower()).value for v in value.split(",")]
+            model_types = [ModelType(v.strip().lower()).value for v in value.split(",")]
             return ",".join(model_types)
         except:
             ValueError(f"invalid model type defined {value}")
+
+    def __repr__(self) -> str:
+        parent_repr = super().__repr__()
+        return (f"AlgorithmModel({parent_repr}, id={self.id}, model_type={self.model_type}, "
+                f"require_ground_truth={self.require_ground_truth}, plugin_id={self.plugin_id})")
 
 
 class InputBlockModel(PluginComponentModel):
@@ -121,20 +132,19 @@ class InputBlockModel(PluginComponentModel):
         "polymorphic_identity": "inputblock",
     }
 
-    id: Mapped[int] = mapped_column(ForeignKey(
-        "plugin_component.id"), primary_key=True)
+    id: Mapped[str] = mapped_column(ForeignKey("plugin_component.id"), primary_key=True)
 
     group: Mapped[str]
     width: Mapped[InputBlockSize] = mapped_column(
         String, default=InputBlockSize.md)
     fullscreen: Mapped[bool]
 
-    plugin_id: Mapped[int] = mapped_column(ForeignKey('plugin.id'))
+    plugin_id: Mapped[int] = mapped_column(ForeignKey('plugin.gid'))
     plugin: Mapped["PluginModel"] = relationship(back_populates="inputblocks")
 
     @hybrid_property
     def inputblock_id(self):
-        return f"{self.gid}:{self.cid}"
+        return f"{self.id}"
 
 
 algo_association_table = Table(
@@ -159,8 +169,7 @@ class WidgetModel(PluginComponentModel):
         "polymorphic_identity": "widget",
     }
 
-    id: Mapped[int] = mapped_column(ForeignKey(
-        "plugin_component.id"), primary_key=True)
+    id: Mapped[str] = mapped_column(ForeignKey("plugin_component.id"), primary_key=True)
 
     widget_size: Mapped[bytes]  # serialized json for widgetSize
     properties: Mapped[Optional[bytes]]  # seralized json of widget properties
@@ -173,12 +182,12 @@ class WidgetModel(PluginComponentModel):
     inputblocks: Mapped[List["InputBlockModel"]] = relationship(
         secondary=ib_association_table)
 
-    plugin_id: Mapped[int] = mapped_column(ForeignKey('plugin.id'))
+    plugin_id: Mapped[int] = mapped_column(ForeignKey('plugin.gid'))
     plugin: Mapped["PluginModel"] = relationship(back_populates="widgets")
 
     @hybrid_property
     def widget_id(self):
-        return f"{self.gid}:{self.cid}"
+        return f"{self.id}"
 
 
 class TemplateModel(PluginComponentModel):
@@ -188,13 +197,12 @@ class TemplateModel(PluginComponentModel):
         "polymorphic_identity": "template",
     }
 
-    id: Mapped[int] = mapped_column(ForeignKey(
-        "plugin_component.id"), primary_key=True)
+    id: Mapped[str] = mapped_column(ForeignKey("plugin_component.id"), primary_key=True)
     template: Mapped[bytes]
 
-    plugin_id: Mapped[int] = mapped_column(ForeignKey('plugin.id'))
+    plugin_id: Mapped[int] = mapped_column(ForeignKey('plugin.gid'))
     plugin: Mapped["PluginModel"] = relationship(back_populates="templates")
 
     @hybrid_property
     def template_id(self):
-        return f"{self.gid}:{self.cid}"
+        return f"{self.id}"

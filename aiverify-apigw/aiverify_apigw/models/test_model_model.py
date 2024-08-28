@@ -26,7 +26,7 @@ class TestModelModel(BaseORMModel):
     model_format: Mapped[Optional[str]]  # only if mode == upload
     # relative to datepath. if not uploaded, leave as null
     datapath_id: Mapped[Optional[int]] = mapped_column(ForeignKey("uploaded_file.id"))
-    datapath: Mapped[Optional["UploadedFileModel"]] = relationship("UploadedFileModel", cascade="all, delete-orphan") # relative to datepath. if not uploaded, leave as null
+    datapath: Mapped[Optional["UploadedFileModel"]] = relationship("UploadedFileModel", cascade="save-update") # relative to datepath. if not uploaded, leave as null
     filepath: Mapped[Optional[str]] = mapped_column(
         String(2048))  # only if mode == upload
     filename: Mapped[Optional[str]] = mapped_column(
