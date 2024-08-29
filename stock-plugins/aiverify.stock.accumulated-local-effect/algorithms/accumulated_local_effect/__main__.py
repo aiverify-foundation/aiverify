@@ -15,7 +15,6 @@ def main() -> None:
     print("*" * 20)
     print(version_msg())
     print("*" * 20)
-
     # invoke algorithm
     run()
 
