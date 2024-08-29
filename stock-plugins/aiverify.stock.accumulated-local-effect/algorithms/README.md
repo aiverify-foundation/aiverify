@@ -10,32 +10,23 @@
 * AI Verify
 
 ## Run Plugin in local
-#### Execute the below bash script
+#### Execute the below bash script in the project root
 ```
 #!/bin/bash
 
 # setup virtual environment
+cd aiverify/stock-plugins/
 rm -rf .venv
 python3 -m venv .venv
 source .venv/bin/activate
 
-# install test-engine-core package
-cd aiverify/test-engine-core
-hatch build
-cd ..
-pip install test-engine-core/dist/test_engine_core-0.11.0.tar.gz
-
-# install development dependencies
-cd aiverify
-pip install -r dev-requirements.txt
-
-# install plugin dependencies
-cd aiverify/stock-plugins/aiverify.stock.accumulated-local-effect/algorithms/accumulated_local_effect
-pip install -r requirements.txt
-
 # execute plugin
+
 cd aiverify/stock-plugins/aiverify.stock.accumulated-local-effect/algorithms
-python -m accumulated_local_effect “<data_path>,/<model_path>,<ground_truth_path>,<ground_truth>,<run_as_pipeline>,<model_type>”
+# install test-engine-core 
+pip install -e .'[dev]'
+
+python -m accumulated_local_effect --data_path  <data_path> --model_path <model_path> --ground_truth_path <ground_truth_path> --ground_truth <str> --model_type CLASSIFICATION --run_pipeline
 
 ```
 --  Note : replace assets path with the actual absolute path
@@ -43,16 +34,12 @@ python -m accumulated_local_effect “<data_path>,/<model_path>,<ground_truth_pa
 ## Build Plugin
 ```
 cd aiverify/stock-plugins/aiverify.stock.accumulated-local-effect/algorithms
-poetry build
+hatch build
 ```
 ## Tests
-### Unit Tests
+### Pytest is used as the testing framework.
+Execute the below steps to execute unit and integration tests inside tests/ folder
 ```
 cd aiverify/stock-plugins/aiverify.stock.accumulated-local-effect/algorithms
 pytest .
-```
-### e2e Tests : Run plugin algo with mock data
-```
-cd aiverify/stock-plugins/aiverify.stock.accumulated-local-effect/algorithms
-python -m tests.e2e
 ```

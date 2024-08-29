@@ -1,8 +1,7 @@
+import importlib.util
 import json
 import logging
-from pathlib import Path, PurePath
-import os
-import importlib.util
+from pathlib import Path
 
 import pytest
 from accumulated_local_effect.algo import Plugin
@@ -15,14 +14,23 @@ from test_engine_core.plugins.plugins_manager import PluginManager
 from test_engine_core.utils.json_utils import remove_numpy_formats
 from test_engine_core.utils.simple_progress import SimpleProgress
 
+
 def test_discover_plugin():
     PluginManager.discover(
-        str(Path().absolute() / os.path.dirname(importlib.util.find_spec('test_engine_core').origin))
+        str(Path(importlib.util.find_spec("test_engine_core").origin).parent.resolve())
     )
 
-valid_data_path = str( Path().absolute() / "../../test-assets/data/sample_bc_credit_data.sav")
-valid_model_path = str(Path().absolute() / "../../test-assets/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav")
-valid_ground_truth_path = str(Path().absolute() / "../../test-assets/data/sample_bc_credit_data.sav")
+
+valid_data_path = str(
+    Path().absolute() / "../../test-assets/data/sample_bc_credit_data.sav"
+)
+valid_model_path = str(
+    Path().absolute()
+    / "../../test-assets/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav"
+)
+valid_ground_truth_path = str(
+    Path().absolute() / "../../test-assets/data/sample_bc_credit_data.sav"
+)
 
 
 test_string = "data_str"
@@ -464,7 +472,7 @@ def test_plugin_valid_get_plugin_type():
         test_object._model_instance_and_serializer[0],
         **test_object._input_args,
     )
-    
+
     assert isinstance(test_plugin.get_plugin_type(), PluginType)
 
 
@@ -490,7 +498,7 @@ def test_valid_run(get_data_instance_and_serializer_without_ground_truth):
     results = remove_numpy_formats(test_plugin.get_results())
 
     # Load sample JSON file to assert results
-    f = open(str(Path(__file__).parent/ "sample_output.json" ))
+    f = open(str(Path(__file__).parent / "sample_output.json"))
     sample_data = json.load(f)
     f.close()
 

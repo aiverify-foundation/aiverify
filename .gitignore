@@ -18,6 +18,3 @@ mytestmodel
 
 # OS generated files
 .DS_Store
-
-.venv
-**/**/dist/
