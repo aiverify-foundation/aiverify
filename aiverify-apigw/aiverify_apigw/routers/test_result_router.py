@@ -1,8 +1,5 @@
-from datetime import date, datetime
-from fileinput import filename
-from click import DateTime
-from fastapi import APIRouter, HTTPException, UploadFile
-from fastapi.responses import JSONResponse
+from datetime import datetime
+from fastapi import APIRouter, HTTPException, UploadFile, File, Form
 from typing import Optional, List
 import json
 from sqlalchemy import select
@@ -11,6 +8,8 @@ from pathlib import PurePath
 from ..lib.logging import logger
 from ..lib.database import SessionLocal
 from ..lib.constants import TestDatasetFileType, TestDatasetStatus, TestModelMode, TestModelStatus
+from ..lib.filestore import save_artifact, get_suffix
+from ..lib.utils import guess_mimetype_from_filename
 from ..schemas import TestResult
 from ..models import PluginModel, AlgorithmModel, TestModelModel, TestResultModel, TestDatasetModel, TestArtifactModel
 
@@ -27,11 +26,13 @@ async def read_test_results():
 
 @router.post("/upload")
 async def upload_test_result(
-    test_result: TestResult,
-    artifacts: Optional[List[UploadFile]] = None
+    test_result: TestResult = Form(...),
+    artifacts: Optional[List[UploadFile]] = File(None)
 ):
-    try:
-        with SessionLocal() as session:
+    logger.debug(f"upload_test_result: {test_result}")
+    with SessionLocal() as session:
+        session.begin()
+        try:
             # find algorithm
             stmt = (
                 select(AlgorithmModel)
@@ -42,76 +43,77 @@ async def upload_test_result(
             algorithm = session.scalar(stmt)
             if algorithm is None:
                 return HTTPException(status_code=400, detail=f"Algorithm {test_result.gid} not found")
-            
+
             # find model
-            test_argument = test_result.test_arguments
+            test_arguments = test_result.test_arguments
             # todo: to support api in future
-            if test_argument.mode == "api":
+            if test_arguments.mode == "api":
                 return HTTPException(status_code=400, detail=f"Algorithm {test_result.gid} not found")
             else:
-                if test_argument.modelFile is None:
+                if test_arguments.modelFile is None:
                     return HTTPException(status_code=400, detail="modelFile not specified")
-                model_file = PurePath(test_argument.modelFile)
+                model_file = PurePath(test_arguments.modelFile)
                 stmt = select(TestModelModel).filter_by(filename=model_file.name)
                 test_model = session.scalar(stmt)
                 if test_model is None:
                     now = datetime.now()
                     test_model = TestModelModel(
-                        name = model_file.name,
-                        mode = TestModelMode.Upload,
-                        status = TestModelStatus.Valid,
-                        filepath = test_argument.modelFile,
-                        filename = model_file.name,
-                        created_at = now,
-                        updated_at = now,
+                        name=model_file.name,
+                        mode=TestModelMode.Upload,
+                        status=TestModelStatus.Valid,
+                        filepath=test_arguments.modelFile,
+                        filename=model_file.name,
+                        created_at=now,
+                        updated_at=now,
                     )
-                    session.add(test_model)
-                    session.commit()
+                    # session.add(test_model)
+                    # session.flush()
                     logger.info(f"Insert new model in db: {test_model}")
 
             # find dataset
-            test_dataset_file = PurePath(test_argument.testDataset)
+            test_dataset_file = PurePath(test_arguments.testDataset)
             stmt = select(TestDatasetModel).filter_by(filename=test_dataset_file.name)
             test_dataset = session.scalar(stmt)
             if test_dataset is None:
                 now = datetime.now()
                 test_dataset = TestDatasetModel(
-                    name = test_dataset_file.name,
-                    status = TestDatasetStatus.Valid,
-                    filepath = test_argument.testDataset,
-                    filename = test_dataset_file.name,
-                    file_type = TestDatasetFileType.Folder if test_argument.testDataset.endswith("/") else TestDatasetFileType.Folder,
+                    name=test_dataset_file.name,
+                    status=TestDatasetStatus.Valid,
+                    filepath=test_arguments.testDataset,
+                    filename=test_dataset_file.name,
+                    file_type=TestDatasetFileType.Folder if test_arguments.testDataset.endswith(
+                        "/") else TestDatasetFileType.Folder,
                 )
-                session.add(test_dataset)
-                session.commit()
+                # session.add(test_dataset)
+                # session.flush()
                 logger.info(f"Insert new test dataaset in db: {test_dataset}")
 
             # find ground truth
             ground_truth_dataset = None
-            if test_argument.groundTruthDataset:
-                if test_argument.groundTruth is None:
+            if test_arguments.groundTruthDataset:
+                if test_arguments.groundTruth is None:
                     return HTTPException(status_code=400, detail="Missing groundTruth")
-                ground_truth_file = PurePath(test_argument.testDataset)
+                ground_truth_file = PurePath(test_arguments.testDataset)
                 stmt = select(TestDatasetModel).filter_by(filename=ground_truth_file.name)
                 ground_truth_dataset = session.scalar(stmt)
                 if ground_truth_dataset is None:
                     now = datetime.now()
                     ground_truth_dataset = TestDatasetModel(
-                        name = ground_truth_file.name,
-                        status = TestDatasetStatus.Valid,
-                        filepath = test_argument.groundTruthDataset,
-                        filename = ground_truth_file.name,
-                        file_type = TestDatasetFileType.File
+                        name=ground_truth_file.name,
+                        status=TestDatasetStatus.Valid,
+                        filepath=test_arguments.groundTruthDataset,
+                        filename=ground_truth_file.name,
+                        file_type=TestDatasetFileType.File
                     )
-                    session.add(ground_truth_dataset)
-                    session.commit()
+                    # session.add(ground_truth_dataset)
+                    # session.flush()
                     logger.info(f"Insert new test dataaset in db: {ground_truth_dataset}")
 
             # todo: validate test_arguments and output
 
-
             # Create a new TestResultModel instance
             test_result_model = TestResultModel(
+                # id=1,
                 gid=test_result.gid,
                 cid=test_result.cid,
                 algorithm=algorithm,
@@ -120,29 +122,44 @@ async def upload_test_result(
                 model=test_model,
                 test_dataset=test_dataset,
                 ground_truth_dataset=ground_truth_dataset,
-                ground_truth=test_argument.groundTruth,
+                ground_truth=test_arguments.groundTruth,
                 start_time=test_result.start_time,
                 time_taken=test_result.time_taken,
-                algo_arguments=json.dumps(test_result.test_arguments.algorithmArgs).encode('utf-8'),
+                algo_arguments=json.dumps(test_arguments.algorithmArgs).encode('utf-8'),
                 output=json.dumps(test_result.output).encode('utf-8'),
-                # artifacts=artifact_paths
             )
+            session.add(test_result_model)
+            session.flush()
+            test_result_id = str(test_result_model.id)
+            # test_result_id = "1"
+            logger.debug(f"test_result_id: {test_result_id}")
 
             # Process uploaded files
-            artifact_paths = []
             if artifacts:
-                for artifact in artifacts:
-                    file_location = f"some/directory/{artifact.filename}"
-                    with open(file_location, "wb") as file:
-                        file.write(artifact.file.read())
-                    artifact_paths.append(file_location)
+                for artifact_file in artifacts:
+                    if artifact_file.filename is None:
+                        logger.warning(f"artifact filename not found, skipping")
+                        continue
+                    filename = artifact_file.filename
+                    data = artifact_file.file.read()
+                    save_artifact(test_result_id, filename, data)
+                    artifact = TestArtifactModel(
+                        filename=filename,
+                        suffix=get_suffix(filename),
+                        mimetype=artifact_file.content_type if artifact_file.content_type else guess_mimetype_from_filename(
+                            filename),
+                    )
+                    # session.add(artifact)
+                    # session.flush()
+                    test_result_model.artifacts.append(artifact)
 
+            # commit to DB
+            # session.add(test_result_model)
+            session.commit()
 
-        # Here you would typically add the test_result_model to the database
-        # For example: db_session.add(test_result_model)
-        # db_session.commit()
-
-        return JSONResponse(content={"message": "Test result uploaded successfully", "test_result_id": test_result_model.id})
-    except Exception as e:
-        logger.warning(f"Test result upload error: {e}")
-        return HTTPException(status_code=400, detail="Test result upload error")
+            logger.info(f"Test result uploaded: {test_result_model}")
+            return test_result_id
+        except Exception as e:
+            logger.warning(f"Test result upload error: {e}")
+            session.rollback()
+            return HTTPException(status_code=400, detail="Test result upload error")
