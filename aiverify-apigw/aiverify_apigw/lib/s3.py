@@ -25,7 +25,7 @@ class MyS3:
             base_prefix = base_prefix + "/"
         self.base_prefix = base_prefix
         # do a check to make sure has access
-        resp = self.list_object_keys(self.base_prefix, 1)
+        self.list_object_keys(self.base_prefix, 1)
 
     def check_s3_object_exists(self, object_key):
         """Check if an S3 object exists.
@@ -39,7 +39,7 @@ class MyS3:
         try:
             self.client.head_object(Bucket=self.bucket_name, Key=object_key)
             return True  # The object does exist
-        except Exception as e:
+        except:
             return False
 
     def check_s3_prefix_exists(self, prefix: str):
