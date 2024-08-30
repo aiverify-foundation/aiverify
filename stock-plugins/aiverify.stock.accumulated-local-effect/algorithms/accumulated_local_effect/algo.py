@@ -2,8 +2,6 @@ import logging
 from collections import OrderedDict
 from pathlib import Path, PurePath
 from typing import Dict, List, Tuple, Union
-import importlib.util
-import os
 
 import numpy as np
 import pandas as pd
@@ -144,11 +142,11 @@ class Plugin(IAlgorithm):
         # Algorithm input schema defined in input.schema.json
         # By defining the input schema, it allows the front-end to know what algorithm input params is
         # required by this plugin. This allows this algorithm plug-in to receive the arguments values it requires.
-       
+
         current_file_dir = Path(__file__).parent
 
         self._input_schema = load_schema_file(
-            str(Path(__file__).parent/ "input.schema.json" )
+            str(Path(__file__).parent / "input.schema.json")
         )
 
         # Algorithm output schema defined in output.schema.json
@@ -156,7 +154,7 @@ class Plugin(IAlgorithm):
         # This allows the result to be validated against the schema before passing it to the front-end for display.
 
         self._output_schema = load_schema_file(
-           str(current_file_dir/ 'output.schema.json')
+            str(current_file_dir / "output.schema.json")
         )
 
         # Retrieve the input parameters defined in the input schema and store them

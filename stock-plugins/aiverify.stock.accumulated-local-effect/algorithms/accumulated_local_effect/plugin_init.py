@@ -1,86 +1,97 @@
-import sys
 import argparse
-from test_engine_core.plugins.enums.model_type import ModelType
-from accumulated_local_effect.algo_init import AlgoInit
 
-# Global variables
-data_path = ''
-model_path = ''
-ground_truth_path = ''
-ground_truth = ''
-run_pipeline : bool = True
-model_type = ''
-core_modules_path = ''
+from accumulated_local_effect.algo_init import AlgoInit
+from test_engine_core.plugins.enums.model_type import ModelType
+
+parser = argparse.ArgumentParser(
+    description="Run the plugin test with specified parameters."
+)
+
 
 def run():
     parse_input_args()
-    print_user_input()
     invoke_accumulated_local_effect_plugin()
 
+
 def parse_input_args():
+    global parser
 
-    global data_path, model_path, ground_truth, ground_truth_path, run_pipeline, model_type
+    parser.add_argument("--data_path", required=True, help="Path to the data file.")
+    parser.add_argument("--model_path", required=True, help="Path to the model file.")
+    parser.add_argument(
+        "--ground_truth_path", required=True, help="Path to the ground truth data file."
+    )
+    parser.add_argument(
+        "--ground_truth",
+        required=True,
+        help="The ground truth column name in the data.",
+    )
+    parser.add_argument(
+        "--run_pipeline",
+        action=argparse.BooleanOptionalAction,
+        help="Whether to run the test as a pipeline (default: False).",
+    )
+    parser.add_argument(
+        "--model_type",
+        required=True,
+        choices=["CLASSIFICATION", "REGRESSION"],
+        help="The type of model (CLASSIFICATION or REGRESSION).",
+    )
+    parser.add_argument(
+        "--core_modules_path",
+        default="",
+        help="Path to the core modules (default: empty).",
+    )
 
-    parser = argparse.ArgumentParser(description='Process comma-separated arguments.')
-    
-    # Add a command-line argument that accepts a comma-separated string
-    parser.add_argument('input', type=str, help='Comma-separated values')
-    
-    # Parse the arguments
-    args = parser.parse_args()
-    
-    # Split the comma-separated string into a list
-    args_list = args.input.split(',')
-    
-
-    data_path = args_list[0].strip()
-    model_path = args_list[1].strip()
-    ground_truth_path = args_list[2].strip()
-    ground_truth = args_list[3].strip()
-
-    if args_list[4].strip().lower() in ['true', '1', 'yes', 'y']:
-        run_pipeline = True
-    else:
-        run_pipeline = False    
-
-    try:
-        model_type = ModelType[args_list[5].strip().upper()]
-    except (ValueError, KeyError):
-        print("Invalid selection. Please try again. ")
-        exit
-   
-def print_user_input() :
-    print("=" * 20)
-    print('User Input ->')
-    print(f"data_path: {data_path}")
-    print(f"model_path: {model_path}")
-    print(f"ground_truth_path: {ground_truth_path}")
-    print(f"ground_truth: {ground_truth}")
-    print(f"run_pipeline: {run_pipeline}")
-    print(f"model_type: {model_type.name if model_type else 'Not selected'} \n")
-    print("=" * 20)
 
 def invoke_accumulated_local_effect_plugin():
-    
     # =====================================================================================
     # NOTE: Do not modify the code below
     # =====================================================================================
     # Perform Plugin Testing
+
+    # Parse the arguments
+    args = parser.parse_args()
+
+    # Determine the value of run_pipeline
+    if args.run_pipeline is None:
+        run_pipeline = False  # Default to False if not provided
+    else:
+        run_pipeline = args.run_pipeline
+
+    # Map string argument to ModelType enum
+    model_type = ModelType[args.model_type]
+
+    print("*" * 20)
+    # Debugging prints
+    print(
+        f"Running with the following arguments:\n"
+        f"Data Path: {args.data_path}\n"
+        f"Model Path: {args.model_path}\n"
+        f"Ground Truth Path: {args.ground_truth_path}\n"
+        f"Ground Truth: {args.ground_truth}\n"
+        f"Run Pipeline: {run_pipeline}\n"
+        f"Model Type: {model_type}\n"
+        f"Core Modules Path: {args.core_modules_path}"
+    )
+    print("*" * 20)
+
     try:
-        # Create an instance of PluginInit with defined paths and arguments and Run.
+        # Create an instance of AlgoInit with defined paths and arguments and Run.
         plugin_test = AlgoInit(
             run_pipeline,
-            core_modules_path,
-            data_path,
-            model_path,
-            ground_truth_path,
-            ground_truth,
+            args.core_modules_path,
+            args.data_path,
+            args.model_path,
+            args.ground_truth_path,
+            args.ground_truth,
             model_type,
         )
         plugin_test.run()
 
     except Exception as exception:
         print(f"Exception caught while running the plugin test: {str(exception)}")
+
 
 if __name__ == "__main__":
     run()
