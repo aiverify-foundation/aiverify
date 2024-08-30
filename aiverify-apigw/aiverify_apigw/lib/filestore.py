@@ -1,12 +1,9 @@
-from hmac import digest
-from math import e
 import os
 import io
 import hashlib
 import shutil
 from pathlib import Path, PurePath
 from urllib.parse import urljoin
-
 
 from .s3 import MyS3
 from .logging import logger
@@ -47,7 +44,7 @@ def get_base_data_dir() -> Path | str:
             mydir.joinpath("asset").mkdir(parents=True, exist_ok=True)
         return mydir
     except Exception as e:
-        logger.error("Unable to access data directory")
+        logger.error(f"Unable to access data directory: {e}")
         s3 = None
         raise InvalidFileStore
 
@@ -55,6 +52,8 @@ def get_base_data_dir() -> Path | str:
 base_data_dir = get_base_data_dir()
 base_plugin_dir = base_data_dir.joinpath("plugin") if isinstance(
     base_data_dir, Path) else urljoin(base_data_dir, "plugin/")
+base_artifacts_dir = base_data_dir.joinpath("artifacts") if isinstance(
+    base_data_dir, Path) else urljoin(base_data_dir, "artifacts/")
 
 
 def is_s3(path: Path | str) -> bool:
@@ -131,6 +130,7 @@ def get_plugin_component_folder(gid: str, component_type: str) -> Path | str:
 
 def save_plugin(gid: str, source_dir: Path):
     folder = get_plugin_folder(gid)
+    logger.debug(f"Copy plugin folder from {source_dir} to {folder}")
     if isinstance(folder, Path):
         if folder.exists():
             shutil.rmtree(folder)
@@ -175,59 +175,24 @@ def delete_all_plugins():
         logger.warn(f"Unable to delete folder {base_plugin_dir}: {e}")
 
 
-# def save_plugin(contents: io.BytesIO, asset_id: str, filename: str, overwrite: bool = False):
-#     """Compute file hash and use as filename
-
-#     Args:
-#         contents (io.BytesIO): file contents
-#         asset_id (str): asset_id
-#         filename (str): filename
-#         overwrite (bool, optional): set True to overwrite existing file. Defaults to False.
-
-#     Raises:
-#         InvalidFileStore
-
-#     Returns:
-#         UploadResponse
-
-#     """
-#     contents.seek(0)
-#     asset_path = get_asset_path(asset_id, filename)
-
-#     if isinstance(asset_path, Path):
-#         if not overwrite and asset_path.exists():
-#             # raise FileStoreError(f"Local file already exists")
-#             return UploadResponse(asset_path=asset_path, asset_id=asset_id, is_duplicate=True)
-#         with open(asset_path, 'wb') as f:
-#             f.write(contents.getbuffer())
-#     elif s3 is not None:
-#         if not overwrite and s3.check_s3_object_exists(asset_path):
-#             raise FileStoreError("S3 object already exists")
-#         s3.put_object(key=asset_path, body=contents)
-#     else:
-#         raise InvalidFileStore
-
-#     return UploadResponse(asset_path=asset_path, asset_id=asset_id, is_duplicate=False)
+def get_artifacts_folder(test_result_id: str):
+    if isinstance(base_artifacts_dir, Path):
+        return base_artifacts_dir.joinpath(test_result_id)
+    else:
+        return urljoin(base_artifacts_dir, f"{test_result_id}/")
 
 
-# def delete_asset(asset_id: str):
-#     folder = get_plugin_folder(asset_id)
-
-#     try:
-#         if isinstance(folder, Path):
-#             if not folder.exists() or not folder.is_dir():
-#                 logger.warn(
-#                     f"Asset {asset_id} path not found or not directory")
-#                 return
-#             shutil.rmtree(folder, ignore_errors=True)
-#         elif s3 is not None:
-#             # List objects within the specified prefix
-#             obj_keys = s3.list_object_keys(folder)
-#             for key in obj_keys:
-#                 s3.delete_object(key)
-
-#     except Exception as e:
-#         logger.warn(f"Unable to delete folder {folder}: {e}")
+def save_artifact(test_result_id: str, filename: str, data: bytes):
+    folder = get_artifacts_folder(test_result_id)
+    if isinstance(folder, Path):
+        filepath = folder.joinpath(filename)
+        with open(filepath, "wb") as fp:
+            fp.write(data)
+        return folder
+    elif s3 is not None:
+        key = urljoin(folder, filename)
+        s3.put_object(key, data)
+        return key
 
 
 # def get_asset(asset_id: str, filename: str):
