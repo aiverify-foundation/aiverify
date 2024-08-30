@@ -5,6 +5,7 @@ from jsonschema import validate
 
 base_schema_dir = Path(__file__).parent.parent.parent.parent.joinpath("common/schemas")
 
+
 def load_schema(schema_filename: str):
     path = base_schema_dir.joinpath(schema_filename)
     with open(path, "r") as fp:
