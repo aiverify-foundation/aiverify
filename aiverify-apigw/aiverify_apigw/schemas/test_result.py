@@ -1,6 +1,8 @@
-from pydantic import BaseModel, Field, Json, model_validator
+from pydantic import BaseModel, Field, model_validator
 from typing import List, Optional, Literal, Any, Self
 from datetime import datetime
+import json
+from .load_examples import test_result_examples
 
 
 class TestArguments(BaseModel):
@@ -21,7 +23,7 @@ class TestArguments(BaseModel):
         default=None,
         description="Ground truth column name"
     )
-    algorithmArgs: Json[Any] = Field(
+    algorithmArgs: str = Field(
         description="Argument provided to the algorithm for running the tests. Test arguments should be defined in input.schema.json under each algorithm"
     )
     modelFile: Optional[str] = Field(
@@ -50,6 +52,7 @@ class TestResult(BaseModel):
         pattern=r'^[a-zA-Z0-9][a-zA-Z0-9-._]*$'
     )
     version: Optional[str] = Field(
+        default=None,
         description="Algorithm version"
     )
     start_time: datetime = Field(
@@ -61,9 +64,28 @@ class TestResult(BaseModel):
     test_arguments: TestArguments = Field(
         description="Test arguments"
     )
-    output: Json[Any] = Field(
+    output: str = Field(
         description="Output from algorithm running. Test output schema should be defined in output.schema.json under each algorithm"
     )
     artifacts: Optional[List[str]] = Field(
+        default=None,
         description="List the test artifacts (e.g. images) produced by the algorithm, to be uploaded to API-GW"
     )
+
+    @model_validator(mode='before')
+    @classmethod
+    def validate_to_json(cls, value: Any) -> Any:
+        if isinstance(value, str):
+            obj = json.loads(value)
+            if "output" in obj:
+                obj["output"] = json.dumps(obj["output"])
+            if "test_arguments" in obj and "algorithmArgs" in obj["test_arguments"]:
+                obj["test_arguments"]["algorithmArgs"] = json.dumps(obj["test_arguments"]["algorithmArgs"])
+            return cls(**obj)
+        return value
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": test_result_examples,
+        }
+    }
