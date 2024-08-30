@@ -1,9 +1,8 @@
 from sqlalchemy.orm import Mapped, mapped_column, validates, relationship
-from sqlalchemy import Nullable, String, Boolean, ForeignKey, Table, Column
+from sqlalchemy import String, Boolean, ForeignKey, Table, Column
 from sqlalchemy.ext.hybrid import hybrid_property
 from typing import Optional, List
 
-from yaml import full_load
 from .base_model import BaseORMModel
 from ..lib.validators import validate_gid_cid
 from ..lib.constants import ModelType, InputBlockSize

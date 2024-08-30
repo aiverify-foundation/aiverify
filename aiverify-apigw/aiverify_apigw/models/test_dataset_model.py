@@ -1,4 +1,3 @@
-from ast import Str
 from sqlalchemy import Enum, String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
@@ -17,7 +16,8 @@ class TestDatasetModel(BaseORMModel):
     status: Mapped[TestDatasetStatus] = mapped_column(
         Enum(TestDatasetStatus), nullable=False)
     datapath_id: Mapped[Optional[int]] = mapped_column(ForeignKey("uploaded_file.id"))
-    datapath: Mapped[Optional["UploadedFileModel"]] = relationship("UploadedFileModel", cascade="save-update") # relative to datepath. if not uploaded, leave as null
+    datapath: Mapped[Optional["UploadedFileModel"]] = relationship(
+        "UploadedFileModel", cascade="save-update")  # relative to datepath. if not uploaded, leave as null
     filepath: Mapped[str] = mapped_column(String(2048), nullable=False)
     filename: Mapped[str] = mapped_column(String(2048), nullable=False, index=True)
     file_type: Mapped[TestDatasetFileType] = mapped_column(

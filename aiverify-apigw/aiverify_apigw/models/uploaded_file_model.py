@@ -1,8 +1,8 @@
-from sqlalchemy import String, DateTime, Boolean, null
 from sqlalchemy.orm import Mapped, mapped_column
 from datetime import datetime
 from typing import Optional
 from .base_model import BaseORMModel
+
 
 class UploadedFileModel(BaseORMModel):
     __tablename__ = "uploaded_file"
@@ -13,7 +13,6 @@ class UploadedFileModel(BaseORMModel):
     suffix: Mapped[str]
     mimetype: Mapped[Optional[str]]
     upload_at: Mapped[Optional[datetime]]
-
 
     def __repr__(self) -> str:
         return (f"UploadedFileModel(id={self.id}, filepath={self.filepath}, filename={self.filename}, "
