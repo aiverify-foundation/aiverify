@@ -8,6 +8,7 @@ from ..models import PluginModel, AlgorithmModel
 from ..lib.database import SessionLocal
 from ..lib.synax_checker import validate_python_script
 from ..lib.logging import logger
+from ..lib.filestore import delete_all_plugins, save_plugin
 from sqlalchemy import select, delete, func
 
 
@@ -30,7 +31,7 @@ class PluginStore:
         with SessionLocal() as session:
             delete(PluginModel)  # by right should do a cascade delete of all child components
             session.commit()
-        
+        delete_all_plugins()
 
     @classmethod
     def scan_stock_plugins(cls):
@@ -171,8 +172,8 @@ class PluginStore:
                             gid=plugin_meta.gid,
                             model_type=model_type,
                             require_ground_truth=meta.requireGroundTruth,
-                            input_schema=input_schema.encode("utf-8"),
-                            output_schema=output_schema.encode("utf-8"),
+                            input_schema=json.dumps(input_schema).encode("utf-8"),
+                            output_schema=json.dumps(output_schema).encode("utf-8"),
                         )
 
                         logger.debug(f"New algorithm {algorithm}")
@@ -186,6 +187,8 @@ class PluginStore:
             # commit to DB
             session.add(plugin)
             session.commit()
+
+            save_plugin(plugin_meta.gid, folder)
 
     @classmethod
     def validate_plugin_directory(cls, folder: Path) -> PluginMeta:
