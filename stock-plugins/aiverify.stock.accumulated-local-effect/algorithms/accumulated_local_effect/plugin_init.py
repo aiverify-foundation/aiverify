@@ -49,12 +49,16 @@ def invoke_accumulated_local_effect_plugin():
     # NOTE: Do not modify the code below
     # =====================================================================================
     # Perform Plugin Testing
-    # Parse the arguments
 
     # Parse the arguments
     args = parser.parse_args()
 
-    run_pipeline = False if args.run_pipeline is None else True
+    # Determine the value of run_pipeline
+    if args.run_pipeline is None:
+        run_pipeline = False  # Default to False if not provided
+    else:
+        run_pipeline = args.run_pipeline
+
     # Map string argument to ModelType enum
     model_type = ModelType[args.model_type]
 

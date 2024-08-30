@@ -5,7 +5,7 @@ import sys
 from importlib.metadata import version
 from pathlib import Path
 
-from .plugin_init import run
+from accumulated_local_effect.plugin_init import run
 
 
 def main() -> None:
