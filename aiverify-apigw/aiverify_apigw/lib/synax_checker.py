@@ -9,12 +9,11 @@ def validate_python_script(script_path: Path) -> bool:
     Args:
         scriptPath (Path): path to the script to validate
     """
-    valid: int = 0
     try:
         with open(script_path, "r") as f:
             source_code = f.read()
             ast.parse(source_code)
         return True
     except Exception as e:
-        logger.debug(f"Invalid script {script_path}.")
+        logger.debug(f"Invalid script {script_path}: {e}.")
         return False
