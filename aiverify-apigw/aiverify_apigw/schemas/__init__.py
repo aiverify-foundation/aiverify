@@ -1,3 +1,4 @@
+# flake8: noqa
 from .plugin import *
 from .algorithm import *
 from .widget import *
