@@ -1,6 +1,5 @@
 from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from typing import List
 from .base_model import BaseORMModel
 from .user_group_model import UserGroupModel
 
