@@ -38,7 +38,7 @@ class AlgoInit:
         Args:
             completion_value (int): Current progress completion
         """
-        print(f"[AlgoInit] Progress Update: {completion_value}")
+        print(f"[Accumulate Local Effect Test] Progress Update: {completion_value}")
 
     def __init__(
         self,

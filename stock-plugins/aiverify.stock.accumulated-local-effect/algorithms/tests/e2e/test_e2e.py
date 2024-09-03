@@ -6,14 +6,14 @@ from test_engine_core.plugins.enums.model_type import ModelType
 
 binary_classification = {
     "data_path": str(
-        Path().absolute() / "../../test-assets/data/sample_bc_credit_data.sav"
+        Path().absolute() / "../../user_defined_files/data/sample_bc_credit_data.sav"
     ),
     "model_path": str(
         Path().absolute()
-        / "../../test-assets/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav"
+        / "../../user_defined_files/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav"
     ),
     "ground_truth_path": str(
-        Path().absolute() / "../../test-assets/data/sample_bc_credit_data.sav"
+        Path().absolute() / "../../user_defined_files/data/sample_bc_credit_data.sav"
     ),
     "run_pipeline": False,
     "model_type": ModelType.CLASSIFICATION,
@@ -22,14 +22,14 @@ binary_classification = {
 
 multiclass = {
     "data_path": str(
-        Path().absolute() / "../../test-assets/data/sample_mc_toxic_data.sav"
+        Path().absolute() / "../../user_defined_files/data/sample_mc_toxic_data.sav"
     ),
     "model_path": str(
         Path().absolute()
-        / "../../test-assets/model/sample_mc_toxic_sklearn_linear.LogisticRegression.sav"
+        / "../../user_defined_files/model/sample_mc_toxic_sklearn_linear.LogisticRegression.sav"
     ),
     "ground_truth_path": str(
-        Path().absolute() / "../../test-assets/data/sample_mc_toxic_data.sav"
+        Path().absolute() / "../../user_defined_files/data/sample_mc_toxic_data.sav"
     ),
     "run_pipeline": False,
     "model_type": ModelType.CLASSIFICATION,
@@ -38,14 +38,15 @@ multiclass = {
 
 tabular_binary_pipeline = {
     "data_path": str(
-        Path().absolute() / "../../test-assets/data/sample_bc_pipeline_credit_data.sav"
+        Path().absolute()
+        / "../../user_defined_files/data/sample_bc_pipeline_credit_data.sav"
     ),
     "model_path": str(
-        Path().absolute() / "../../test-assets/pipeline/bc_tabular_credit"
+        Path().absolute() / "../../user_defined_files/pipeline/bc_tabular_credit"
     ),
     "ground_truth_path": str(
         Path().absolute()
-        / "../../test-assets/data/sample_bc_pipeline_credit_ytest_data.sav"
+        / "../../user_defined_files/data/sample_bc_pipeline_credit_ytest_data.sav"
     ),
     "run_pipeline": True,
     "model_type": ModelType.CLASSIFICATION,
@@ -54,14 +55,15 @@ tabular_binary_pipeline = {
 
 multiclass_pipeline = {
     "data_path": str(
-        Path().absolute() / "../../test-assets/data/sample_mc_pipeline_toxic_data.sav"
+        Path().absolute()
+        / "../../user_defined_files/data/sample_mc_pipeline_toxic_data.sav"
     ),
     "model_path": str(
-        Path().absolute() / "../../test-assets/pipeline/mc_tabular_toxic"
+        Path().absolute() / "../../user_defined_files/pipeline/mc_tabular_toxic"
     ),
     "ground_truth_path": str(
         Path().absolute()
-        / "../../test-assets/data/sample_mc_pipeline_toxic_ytest_data.sav"
+        / "../../user_defined_files/data/sample_mc_pipeline_toxic_ytest_data.sav"
     ),
     "run_pipeline": True,
     "model_type": ModelType.CLASSIFICATION,
