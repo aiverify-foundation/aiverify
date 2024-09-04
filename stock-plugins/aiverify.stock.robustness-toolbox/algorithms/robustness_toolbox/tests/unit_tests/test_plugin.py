@@ -1,8 +1,9 @@
+import importlib
 import logging
 from pathlib import Path
 
 import pytest
-from robustness_toolbox import Plugin
+from robustness_toolbox.algo import Plugin
 from test_engine_core.interfaces.idata import IData
 from test_engine_core.interfaces.ipipeline import IPipeline
 from test_engine_core.plugins.enums.model_type import ModelType
@@ -19,18 +20,22 @@ from test_engine_core.utils.simple_progress import SimpleProgress
 
 def test_discover_plugin():
     PluginManager.discover(
-        str(Path().absolute() / "../../../../test-engine-core-modules")
+        str(Path(importlib.util.find_spec("test_engine_core").origin).parent.resolve())
     )
 
 
-# Variables for testing
-valid_data_path = "tests/user_defined_files/data/raw_fashion_image_10"
-valid_model_path = (
-    "tests/user_defined_files/pipeline/multiclass_classification_image_mnist_fashion"
+valid_data_path = str(
+    Path().absolute() / "../../../user_defined_files/data/raw_fashion_image_10/0.png"
 )
-valid_ground_truth_path = (
-    "tests/user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
+valid_model_path = str(
+    Path().absolute()
+    / "../../../user_defined_files/pipeline/multiclass_classification_image_mnist_fashion"
 )
+valid_ground_truth_path = str(
+    Path().absolute()
+    / "../../../user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
+)
+
 
 test_string = "data_str"
 test_int = 1
@@ -71,7 +76,8 @@ class TestObject:
         model_type = ModelType.CLASSIFICATION
         input_args = {
             "annotated_ground_truth_path": (
-                "tests/user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
+                # "tests/user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
+                "../../../user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
             ),
             "file_name_label": ("file_name"),
         }
@@ -505,7 +511,13 @@ def test_valid_run(get_data_instance_and_serializer_without_ground_truth):
     results = remove_numpy_formats(test_plugin.get_results())
     validate_status = validate_json(
         results,
-        load_schema_file(str(Path().absolute() / "output.schema.json")),
+        load_schema_file(
+            str(
+                Path(
+                    Path().absolute() / "robustness_toolbox/output.schema.json"
+                ).resolve()
+            )
+        ),
     )
 
-    assert validate_status == True
+    assert validate_status
