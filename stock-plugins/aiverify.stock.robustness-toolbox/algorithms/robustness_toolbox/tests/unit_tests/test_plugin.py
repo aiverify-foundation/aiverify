@@ -1,8 +1,8 @@
 import importlib
 import logging
 from pathlib import Path
-
 import pytest
+
 from robustness_toolbox.algo import Plugin
 from test_engine_core.interfaces.idata import IData
 from test_engine_core.interfaces.ipipeline import IPipeline
@@ -17,7 +17,6 @@ from test_engine_core.utils.json_utils import (
 )
 from test_engine_core.utils.simple_progress import SimpleProgress
 
-
 def test_discover_plugin():
     PluginManager.discover(
         str(Path(importlib.util.find_spec("test_engine_core").origin).parent.resolve())
@@ -28,12 +27,10 @@ valid_data_path = str(
     Path().absolute() / "../../../user_defined_files/data/raw_fashion_image_10/0.png"
 )
 valid_model_path = str(
-    Path().absolute()
-    / "../../../user_defined_files/pipeline/multiclass_classification_image_mnist_fashion"
+    Path().absolute() / "../../../user_defined_files/pipeline/multiclass_classification_image_mnist_fashion"
 )
 valid_ground_truth_path = str(
-    Path().absolute()
-    / "../../../user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
+    Path().absolute() / "../../../user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
 )
 
 
@@ -45,7 +42,6 @@ test_list = ["data_str"]
 test_dict = {"data_str": "data_str"}
 test_tuple = ("data_str", "data_str")
 test_none = None
-
 
 class TestObject:
     def __init__(self):
