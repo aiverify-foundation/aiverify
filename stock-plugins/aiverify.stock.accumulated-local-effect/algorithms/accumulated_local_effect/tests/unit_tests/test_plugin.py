@@ -22,14 +22,13 @@ def test_discover_plugin():
 
 
 valid_data_path = str(
-    Path().absolute() / "../../user_defined_files/data/sample_bc_credit_data.sav"
+    "../../../user_defined_files/data/sample_bc_credit_data.sav"
 )
 valid_model_path = str(
-    Path().absolute()
-    / "../../user_defined_files/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav"
+    "../../../user_defined_files/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav"
 )
 valid_ground_truth_path = str(
-    Path().absolute() / "../../user_defined_files/data/sample_bc_credit_data.sav"
+    "../../../user_defined_files/data/sample_bc_credit_data.sav"
 )
 
 
