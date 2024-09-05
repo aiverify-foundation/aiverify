@@ -1,9 +1,10 @@
+import importlib
 import json
 import logging
 from pathlib import Path
 
 import pytest
-from fairness_metrics_toolbox_for_classification import Plugin
+from aiverify_fairness_metrics_toolbox_for_classification.algo import Plugin
 from test_engine_core.interfaces.idata import IData
 from test_engine_core.interfaces.imodel import IModel
 from test_engine_core.plugins.enums.model_type import ModelType
@@ -16,14 +17,18 @@ from test_engine_core.utils.simple_progress import SimpleProgress
 
 def test_discover_plugin():
     PluginManager.discover(
-        str(Path().absolute() / "../../../../test-engine-core-modules")
+        str(Path(importlib.util.find_spec("test_engine_core").origin).parent.resolve())
     )
 
 
 # Variables for testing
-valid_data_path = "tests/user_defined_files/data/sample_bc_credit_data.sav"
-valid_model_path = "tests/user_defined_files/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav"
-valid_ground_truth_path = "tests/user_defined_files/data/sample_bc_credit_data.sav"
+valid_data_path = str("../../../user_defined_files/data/sample_bc_credit_data.sav")
+valid_model_path = str(
+    "../../../user_defined_files/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav"
+)
+valid_ground_truth_path = str(
+    "../../../user_defined_files//data/sample_bc_credit_data.sav"
+)
 
 test_string = "data_str"
 test_int = 1
@@ -494,7 +499,7 @@ def test_valid_run(get_data_instance_and_serializer_without_ground_truth):
     results = remove_numpy_formats(test_plugin.get_results())
 
     # Load sample JSON file to assert results
-    f = open("tests/user_defined_files/unit_tests/sample_output.json")
+    f = open(str(Path(__file__).parent / "sample_output.json"))
     sample_data = json.load(f)
     f.close()
 
