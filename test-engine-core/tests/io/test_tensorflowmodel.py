@@ -1,14 +1,12 @@
 import pytest
 from pathlib import Path
-from typing import Tuple, Union
-from test_engine_core.interfaces.imodel import IModel
-from test_engine_core.interfaces.iserializer import ISerializer
+from typing import Tuple
 from test_engine_core.plugins.enums.model_plugin_type import ModelPluginType
 from test_engine_core.plugins.enums.plugin_type import PluginType
 from test_engine_core.plugins.plugins_manager import PluginManager
 
 
-pytest.skip("skipping tensorflowmode; same error as v1", allow_module_level=True)
+# pytest.skip("skipping tensorflowmode; same error as v1", allow_module_level=True)
 
 
 @pytest.fixture
@@ -16,7 +14,7 @@ def plugin_test_data(request):
     test_dir = Path(request.module.__file__).parent
     discover_path = test_dir.parent.parent / "test_engine_core/io"
     file_path = str(test_dir / "user_defined_files/tensorflow_tabular_sequential.sav")
-    expected_model_algorithm = "keras.engine.sequential.Sequential"
+    expected_model_algorithm = "keras.src.engine.sequential.Sequential"
     expected_model_plugin_type = ModelPluginType.TENSORFLOW
     return (
         file_path,

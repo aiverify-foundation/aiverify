@@ -18,7 +18,7 @@ class Plugin(IModel):
     # Some information on plugin
     _model: Any = None
     _model_algorithm: str = ""
-    _supported_algorithms: List = ["keras.engine.sequential.Sequential"]
+    _supported_algorithms: List = ["keras.src.engine.sequential.Sequential"]
     _name: str = "tensorflowmodel"
     _description: str = "tensorflowmodel supports detecting tensorflow models"
     _version: str = "0.9.0"

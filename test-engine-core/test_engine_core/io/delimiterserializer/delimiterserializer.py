@@ -83,6 +83,7 @@ class Plugin(ISerializer):
                     )
                     return delimiter_instance
                 else:
+                    text_file.seek(0)
                     dialect = csv.Sniffer().sniff(text_file.read(4096))
                     detected_delimiter_tuple = None
                     for count, item in enumerate(supported_separated_values_list):
