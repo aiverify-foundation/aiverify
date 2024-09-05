@@ -1,24 +1,10 @@
-import pytest
 from pathlib import Path
 from typing import Tuple
+
+import pytest
 from test_engine_core.plugins.enums.model_plugin_type import ModelPluginType
 from test_engine_core.plugins.enums.plugin_type import PluginType
 from test_engine_core.plugins.plugins_manager import PluginManager
-
-
-@pytest.fixture
-def plugin_test_data(request):
-    test_dir = Path(request.module.__file__).parent
-    discover_path = test_dir.parent.parent / "test_engine_core/io"
-    file_path = str(test_dir / "user_defined_files/pickle_scikit_lr.sav")
-    expected_model_algorithm = "sklearn.linear_model._logistic.LogisticRegression"
-    expected_model_plugin_type = ModelPluginType.SKLEARN
-    return (
-        file_path,
-        discover_path,
-        expected_model_algorithm,
-        expected_model_plugin_type,
-    )
 
 
 class PluginTest:
@@ -140,6 +126,25 @@ class PluginTest:
         return error_count, error_message
 
 
-def test_end_to_end_plugin_model(plugin_test_data):
+@pytest.mark.parametrize(
+    "file_path",
+    [
+        str(Path(__file__).parent / "user_defined_files/pickle_scikit_lr.sav"),
+        "https://github.com/aiverify-foundation/aiverify/raw/ba4e488a20fa5b06143c61d12b0e9b8c36c4a672/test-engine-core/tests/io/user_defined_files/pickle_scikit_lr.sav",  # noqa: E501
+    ],
+)
+def test_end_to_end_plugin_model(file_path, request):
+    test_dir = Path(request.module.__file__).parent
+    discover_path = test_dir.parent.parent / "test_engine_core/io"
+    expected_model_algorithm = "sklearn.linear_model._logistic.LogisticRegression"
+    expected_model_plugin_type = ModelPluginType.SKLEARN
+
+    plugin_test_data = (
+        file_path,
+        discover_path,
+        expected_model_algorithm,
+        expected_model_plugin_type,
+    )
+
     plugin_test = PluginTest()
     plugin_test.test_plugin_model(plugin_test_data)
