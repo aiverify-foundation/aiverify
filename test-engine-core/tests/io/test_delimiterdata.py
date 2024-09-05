@@ -9,30 +9,7 @@ from test_engine_core.plugins.enums.plugin_type import PluginType
 from test_engine_core.plugins.plugins_manager import PluginManager
 
 
-@pytest.fixture
-def plugin_test_data(request):
-    test_dir = Path(request.module.__file__).parent
-    discover_path = test_dir.parent.parent / "test_engine_core/io"
-    data_path = str(test_dir / "user_defined_files/sv_comma.txt")
-    ground_truth_value = "Gender"
-    expected_data_labels = {
-        "Name": "object",
-        "Age": "int64",
-        "Gender": "object",
-    }
-    expected_data_plugin_type = DataPluginType.PANDAS
-
-    return (
-        data_path,
-        discover_path,
-        ground_truth_value,
-        expected_data_labels,
-        expected_data_plugin_type,
-    )
-
-
 class PluginTest:
-
     def test_plugin(self, plugin_test_data):
         (
             self._data_path,
@@ -52,7 +29,7 @@ class PluginTest:
 
         # Ensure valid instances
         if not self._data_instance or not self._serializer_instance:
-            raise RuntimeError(f"Invalid data or serializer instance")
+            raise RuntimeError("Invalid data or serializer instance")
 
         # Create a separate instance for ground truth data
         self._ground_truth_instance = copy.copy(self._data_instance)
@@ -183,6 +160,31 @@ class PluginTest:
         return error_count, error_message
 
 
-def test_end_to_end_data_plugin_test(plugin_test_data):
+@pytest.mark.parametrize(
+    "data_path",
+    [
+        str(Path(__file__).parent / "user_defined_files/sv_comma.txt"),
+        "https://raw.githubusercontent.com/aiverify-foundation/aiverify/ba4e488a20fa5b06143c61d12b0e9b8c36c4a672/test-engine-core/tests/io/user_defined_files/sv_comma.txt",  # noqa: E501
+    ],
+)
+def test_end_to_end_data_plugin_test(data_path, request):
+    test_dir = Path(request.module.__file__).parent
+    discover_path = test_dir.parent.parent / "test_engine_core/io"
+    ground_truth_value = "Gender"
+    expected_data_labels = {
+        "Name": "object",
+        "Age": "int64",
+        "Gender": "object",
+    }
+    expected_data_plugin_type = DataPluginType.PANDAS
+
+    plugin_test_data = (
+        data_path,
+        discover_path,
+        ground_truth_value,
+        expected_data_labels,
+        expected_data_plugin_type,
+    )
+
     plugin_test = PluginTest()
     plugin_test.test_plugin(plugin_test_data)

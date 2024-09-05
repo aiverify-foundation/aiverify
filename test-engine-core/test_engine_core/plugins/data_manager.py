@@ -8,6 +8,7 @@ from test_engine_core.interfaces.idata import IData
 from test_engine_core.interfaces.iserializer import ISerializer
 from test_engine_core.plugins.enums.data_plugin_type import DataPluginType
 from test_engine_core.utils.log_utils import log_message
+from test_engine_core.utils.url_utils import download_from_url, is_url
 
 
 class DataManager:
@@ -36,20 +37,20 @@ class DataManager:
         data_path: str, data_plugins: Dict, serializer_plugins: Dict
     ) -> Tuple[bool, Union[IData, None], Union[ISerializer, None], str]:
         """
-        A method to read the data file/folder path and return a list of tuple consisting of
+        A method to read the data file/folder path or URL and return a list of tuple consisting of
         data instance and serializer instance
         It is usually serialize by some program such as (pickle, joblib)
 
         Args:
-            data_path (str): The data file/folder path
+            data_path (str): The data file/folder path or URL
             data_plugins (Dict): A dictionary of supported data plugins
             serializer_plugins (Dict): A dictionary of supported serializer plugins
 
         Returns:
             Tuple[bool, Union[IData, None], Union[ISerializer, None], str]:
-            Returns a tuple consisting of bool that indicates if it succeeds,
-            If it succeeds, it will contain an object of IData, and an object of ISerializer and returns an empty string
-            If it fails to deserialize/identify, it will contain None objects and returns the error message
+            Returns a tuple consisting of a bool that indicates if it succeeds.
+            If it succeeds, it will contain an object of IData, an object of ISerializer, and an empty string.
+            If it fails to deserialize/identify, it will contain None objects and return the error message.
         """
         return_data_instance = None
         return_data_serializer_instance = None
@@ -80,11 +81,30 @@ class DataManager:
         else:
             log_message(DataManager._logger, logging.INFO, "Data validation successful")
 
-        # Perform deserialization and identification for each found paths
+        if is_url(data_path):
+            log_message(
+                DataManager._logger,
+                logging.INFO,
+                f"Downloading data from URL: {data_path}",
+            )
+            try:
+                data_path = download_from_url(data_path)
+            except Exception as e:
+                error_message = f"Failed to download the file from URL: {data_path}. Error: {str(e)}"
+                log_message(DataManager._logger, logging.ERROR, error_message)
+                return (
+                    False,
+                    return_data_instance,
+                    return_data_serializer_instance,
+                    error_message,
+                )
+
+        # Perform deserialization and identification for each found path
         data_serializer_instances = list()
         found_paths = DataManager._get_file_paths(data_path)
         current_data_plugin_type = None
         has_mixed_data_type = False
+
         for path in found_paths:
             log_message(
                 DataManager._logger,
