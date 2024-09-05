@@ -19,8 +19,8 @@
         "input.schema.json",
         "LICENSE",
         "output.schema.json",
-        "fairness_metrics_toolbox_for_regression.meta.json",
-        "fairness_metrics_toolbox_for_regression.py",
+        "algo.meta.json",
+        "algo.py",
         "README.md",
         "requirements.txt",
         "syntax_checker.py"
