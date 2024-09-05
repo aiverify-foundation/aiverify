@@ -22,10 +22,6 @@ def test_discover_plugin():
 
 
 # Variables for testing
-# valid_data_path = "tests/user_defined_files/data/sample_reg_donation_data.sav"
-# valid_model_path = "tests/user_defined_files/model/sample_reg_donation_sklearn_linear.LogisticRegression.sav"
-# valid_ground_truth_path = "tests/user_defined_files/data/sample_reg_donation_data.sav"
-
 valid_data_path = str("../../../user_defined_files/data/sample_reg_donation_data.sav")
 valid_model_path = str(
     "../../../user_defined_files/model/sample_reg_donation_sklearn_linear.LogisticRegression.sav"
