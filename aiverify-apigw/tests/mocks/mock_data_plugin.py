@@ -1,6 +1,4 @@
 # mock_data_plugin.py
-from operator import methodcaller
-from sys import version
 from faker import Faker
 from typing import List
 import json

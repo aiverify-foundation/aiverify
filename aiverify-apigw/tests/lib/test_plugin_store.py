@@ -6,9 +6,10 @@ from unittest.mock import MagicMock, patch, mock_open
 from aiverify_apigw.lib.plugin_store import PluginStore, PluginStoreException
 from aiverify_apigw.models import PluginModel, AlgorithmModel, PluginComponentModel
 
-# patch SessionLocal with my test SessionLocal
+
 @pytest.fixture(scope="module", autouse=True)
 def session_local(SessionLocal):
+    """patch SessionLocal with my test SessionLocal"""
     with patch("aiverify_apigw.lib.plugin_store.SessionLocal", SessionLocal) as session:
         yield session
 
@@ -124,7 +125,7 @@ class TestPluginStoreScanPluginDirectory:
         from ..mocks.mock_plugin_path import create_mock_plugin_path
         folder = create_mock_plugin_path()
         return folder
-    
+
     @patch("aiverify_apigw.lib.plugin_store.read_and_validate")
     @patch("aiverify_apigw.lib.plugin_store.fs_save_plugin")
     def test_scan_plugin_directory_valid(self, mock_save_plugin, mock_read_and_validate, mock_plugin_path):
