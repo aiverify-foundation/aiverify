@@ -1,4 +1,4 @@
-# Algorithm - Robustness Toolbox
+# Algorithm - Fairness Metrics Toolbox for Regression
 
 ## License
 * Licensed under Apache Software License 2.0
@@ -18,8 +18,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 
 # execute plugin
-
-cd aiverify/stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-regression/algorithms/fairness_metrics_toolbox_for_regression
+cd aiverify/stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-regression/algorithms/fairness_metrics_toolbox_for_regression/
 # install test-engine-core 
 pip install -e .'[dev]'
 
