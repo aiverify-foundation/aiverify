@@ -1,15 +1,14 @@
 from pathlib import Path
 import json
 
-
 from .schemas_utils import read_and_validate, plugin_schema, algorithm_schema
 from ..schemas import PluginMeta, AlgorithmMeta
-from ..models import PluginModel, AlgorithmModel
-from ..lib.database import SessionLocal
-from ..lib.synax_checker import validate_python_script
-from ..lib.logging import logger
-from ..lib.filestore import delete_all_plugins, save_plugin
-from sqlalchemy import select, delete, func
+from ..models import PluginModel, AlgorithmModel, WidgetModel, InputBlockModel, TemplateModel, PluginComponentModel
+from .database import SessionLocal
+from .syntax_checker import validate_python_script
+from .logging import logger
+from .filestore import delete_all_plugins as fs_delete_all_plugins, delete_plugin as fs_delete_plugin, save_plugin as fs_save_plugin
+from sqlalchemy import select, func
 
 
 class PluginStoreException(Exception):
@@ -29,9 +28,34 @@ class PluginStore:
     def delete_all_plugins(cls):
         logger.info("Removing all plugins")
         with SessionLocal() as session:
-            delete(PluginModel)  # by right should do a cascade delete of all child components
+            # stmp = delete(PluginModel)
+            session.query(PluginModel).delete()
+            session.query(AlgorithmModel).delete()
+            session.query(WidgetModel).delete()
+            session.query(InputBlockModel).delete()
+            session.query(TemplateModel).delete()
+            session.query(PluginComponentModel).delete()
             session.commit()
-        delete_all_plugins()
+        try:
+            fs_delete_all_plugins()
+        except:  # ignore fs related errors
+            pass
+
+    @classmethod
+    def delete_plugin(cls, gid: str):
+        logger.info(f"Remove plugin {gid}")
+        with SessionLocal() as session:
+            stmt = select(PluginModel).filter_by(gid=gid)
+            plugin = session.scalar(stmt)
+            if plugin is not None:
+                session.delete(plugin)
+                session.commit()
+                try:
+                    fs_delete_plugin(gid)
+                except:  # ignore fs related errors
+                    pass
+            else:
+                logger.info(f"Plugin {gid} not found")
 
     @classmethod
     def scan_stock_plugins(cls):
@@ -140,7 +164,7 @@ class PluginStore:
 
                         # validate script
                         script_path = algopath.joinpath(f"{meta.cid}.py")
-                        if not validate_python_script(script_path):
+                        if script_path.exists() and not validate_python_script(script_path):
                             logger.warning(f"algorithm {cid} script is not valid")
                             continue
 
@@ -188,7 +212,7 @@ class PluginStore:
             session.add(plugin)
             session.commit()
 
-            save_plugin(plugin_meta.gid, folder)
+            fs_save_plugin(plugin_meta.gid, folder)
 
     @classmethod
     def validate_plugin_directory(cls, folder: Path) -> PluginMeta:
