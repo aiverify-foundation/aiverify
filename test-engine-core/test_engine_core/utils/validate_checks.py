@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 
@@ -42,3 +43,31 @@ def is_empty_string(argument: str) -> bool:
 
     else:
         return len(argument.strip()) <= 0
+
+
+def is_excluded(filename):
+    """
+    A function to check if a file is excluded
+
+    Args:
+        filename (str): name of the file
+
+    Returns:
+        bool: True if file is excluded
+    """
+    exclude_patterns = [
+        r"\.DS_Store$",  # Exact match for .DS_Store
+        r"__MACOSX",  # Contains __MACOSX
+        r"Thumbs\.db$",  # Exact match for Thumbs.db
+        r"Desktop\.ini$",  # Exact match for Desktop.ini
+        r"\._.*",  # Starts with ._
+        r"\.directory$",  # Exact match for .directory
+        r"\.git/",  # Contains .git/
+        r"\.svn/",  # Contains .svn/
+        r"\.hg/",  # Contains .hg/
+    ]
+
+    for pattern in exclude_patterns:
+        if re.search(pattern, filename):
+            return True
+    return False
