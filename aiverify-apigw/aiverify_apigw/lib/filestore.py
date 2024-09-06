@@ -177,7 +177,10 @@ def delete_all_plugins():
 
 def get_artifacts_folder(test_result_id: str):
     if isinstance(base_artifacts_dir, Path):
-        return base_artifacts_dir.joinpath(test_result_id)
+        folder = base_artifacts_dir.joinpath(test_result_id)
+        if not folder.exists():
+            folder.mkdir(parents=True, exist_ok=True)
+        return folder
     else:
         return urljoin(base_artifacts_dir, f"{test_result_id}/")
 
