@@ -18,6 +18,7 @@ jsonschema = "^4.23.0"
 pytest = "^8.3.2"
 pytest-mock = "^3.14.0"
 coverage = "^7.6.1"
+faker = "^28.1.0"
 
 [build-system]
 requires = ["poetry-core"]
