@@ -19,7 +19,7 @@ class PluginModel(BaseORMModel):
     description: Mapped[Optional[str]]
     url: Mapped[Optional[str]]
     algorithms: Mapped[List["AlgorithmModel"]] = relationship(
-        back_populates="plugin", cascade="all, delete")
+        back_populates="plugin", cascade="all, delete-orphan")
     widgets: Mapped[List["WidgetModel"]] = relationship(
         back_populates="plugin", cascade="all, delete")
     inputblocks: Mapped[List["InputBlockModel"]] = relationship(
