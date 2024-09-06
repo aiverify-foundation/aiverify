@@ -1,6 +1,5 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from ..models.base_model import BaseORMModel
 
 
 def init_db():

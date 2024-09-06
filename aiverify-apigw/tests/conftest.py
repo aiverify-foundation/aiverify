@@ -2,7 +2,6 @@ import os
 os.environ["APIGW_DB_URI"] = "sqlite://"
 
 import pytest
-from unittest.mock import MagicMock, patch
 
 # from aiverify_apigw.lib.database import engine
 from sqlalchemy import create_engine
@@ -11,10 +10,11 @@ from sqlalchemy.orm import sessionmaker
 
 engine = create_engine(
     "sqlite://",
-    echo=False, 
+    echo=False,
     connect_args={"check_same_thread": False},
     poolclass=StaticPool,
 )
+
 
 @pytest.fixture(scope="session", autouse=True)
 def SessionLocal():
@@ -53,7 +53,7 @@ def test_client(SessionLocal):
     def override_get_db():
         db = None
         try:
-            db =  SessionLocal()
+            db = SessionLocal()
             yield db
         finally:
             if db:
@@ -64,7 +64,9 @@ def test_client(SessionLocal):
     with TestClient(app) as test_client:
         yield test_client
 
-## Mock data fictures
+# Mock data fictures
+
+
 @pytest.fixture(scope="function")
 def mock_plugins(db_session):
     from .mocks.mock_data_plugin import create_mock_plugins
