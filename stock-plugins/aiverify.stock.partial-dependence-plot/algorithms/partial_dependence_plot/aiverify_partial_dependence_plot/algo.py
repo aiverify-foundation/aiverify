@@ -148,15 +148,16 @@ class Plugin(IAlgorithm):
         # Algorithm input schema defined in input.schema.json
         # By defining the input schema, it allows the front-end to know what algorithm input params is
         # required by this plugin. This allows this algorithm plug-in to receive the arguments values it requires.
+        current_file_dir = Path(__file__).parent
         self._input_schema = load_schema_file(
-            str(self._base_path / "input.schema.json")
+            str(current_file_dir / "input.schema.json")
         )
 
         # Algorithm output schema defined in output.schema.json
         # By defining the output schema, this plug-in validates the result with the output schema.
         # This allows the result to be validated against the schema before passing it to the front-end for display.
         self._output_schema = load_schema_file(
-            str(self._base_path / "output.schema.json")
+            str(current_file_dir / "output.schema.json")
         )
 
         # Retrieve the input parameters defined in the input schema and store them

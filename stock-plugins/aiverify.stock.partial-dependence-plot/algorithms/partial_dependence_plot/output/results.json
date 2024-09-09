@@ -1,0 +1,130 @@
+{
+    "feature_names": [
+        "age",
+        "gender",
+        "income",
+        "race",
+        "home_ownership",
+        "prior_count",
+        "loan_amount",
+        "loan_interests"
+    ],
+    "output_classes": [
+        "0",
+        "1"
+    ],
+    "results": [
+        [
+            [
+                {
+                    "feature_value": 18.0,
+                    "pdp_value": 0.056
+                }
+            ],
+            [
+                {
+                    "feature_value": 18.0,
+                    "pdp_value": 0.056
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "feature_value": 0.0,
+                    "pdp_value": 0.056
+                }
+            ],
+            [
+                {
+                    "feature_value": 0.0,
+                    "pdp_value": 0.056
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "feature_value": 2488.946,
+                    "pdp_value": 0.844
+                }
+            ],
+            [
+                {
+                    "feature_value": 2488.946,
+                    "pdp_value": 0.62
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "feature_value": 0.0,
+                    "pdp_value": 0.056
+                }
+            ],
+            [
+                {
+                    "feature_value": 0.0,
+                    "pdp_value": 0.056
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "feature_value": 0.0,
+                    "pdp_value": 0.056
+                }
+            ],
+            [
+                {
+                    "feature_value": 0.0,
+                    "pdp_value": 0.056
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "feature_value": 0.9020000000000001,
+                    "pdp_value": 0.056
+                }
+            ],
+            [
+                {
+                    "feature_value": 0.9020000000000001,
+                    "pdp_value": 0.056
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "feature_value": 30482.832000000002,
+                    "pdp_value": 0.0
+                }
+            ],
+            [
+                {
+                    "feature_value": 30482.832000000002,
+                    "pdp_value": 0.0
+                }
+            ]
+        ],
+        [
+            [
+                {
+                    "feature_value": 0.015558699745032751,
+                    "pdp_value": 0.056
+                }
+            ],
+            [
+                {
+                    "feature_value": 0.015558699745032751,
+                    "pdp_value": 0.056
+                }
+            ]
+        ]
+    ]
+}
