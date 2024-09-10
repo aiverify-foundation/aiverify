@@ -1,0 +1,58 @@
+from pathlib import Path
+
+import pytest
+from aiverify_blur_corruptions.algo_init import AlgoInit
+from test_engine_core.plugins.enums.model_type import ModelType
+
+image_pipeline = {
+    "data_path": str("../../../user_defined_files/data/raw_fashion_image_10"),
+    "model_path": str(
+        "../../../user_defined_files/pipeline/multiclass_classification_image_mnist_fashion"
+    ),
+    "ground_truth_path": str(
+        "../../../user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
+    ),
+    "run_pipeline": True,
+    "model_type": ModelType.CLASSIFICATION,
+    "ground_truth": "label",
+    "sensitive_feature": ["gender"],
+    "annotated_labels_path": "",
+    "file_name_label": "",
+}
+
+
+@pytest.mark.parametrize(
+    "data_set",
+    [
+        image_pipeline,
+    ],
+)
+def test_fairness_metrics_toolbox_for_classification_plugin(data_set):
+    try:
+        # Create an instance of PluginTest with defined paths and arguments and Run.
+        core_modules_path = ""
+        plugin_argument_values = {
+            "annotated_ground_truth_path": (
+                "../../../user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
+            ),
+            "file_name_label": "file_name",
+            "set_seed": 10,
+        }
+
+        plugin_test = AlgoInit(
+            data_set["run_pipeline"],
+            core_modules_path,
+            data_set["data_path"],
+            data_set["model_path"],
+            data_set["ground_truth_path"],
+            data_set["ground_truth"],
+            data_set["model_type"],
+            plugin_argument_values,
+        )
+        plugin_test.run()
+
+        json_file_path = Path.cwd() / "output" / "results.json"
+        assert json_file_path.exists(), f"File not found: {json_file_path}"
+
+    except Exception as exception:
+        print(f"Exception caught while running the plugin test: {str(exception)}")

@@ -1,23 +1,23 @@
-[tool.poetry]
-name = "blur-corruptions"
+[project]
+name = "aiverify_blur_corruptions"
 version = "0.10.0"
 description = ""
-authors = ["AI Verify"]
+authors = [{ name = "AI Verify" }]
 readme = "README.md"
-packages = [{include = "blur_corruptions"}]
+dependencies = ["numpy==1.24.3", "pandas==2.0.3", "pillow==10.2.0", "joblib==1.3.2", "scikit-learn==1.4.0", "scipy==1.12.0", "opencv-python==4.9.0.80", "scikit-image==0.22.0"]
+requires-python = ">=3.10,<3.12"
 
-[tool.poetry.dependencies]
-python = ">=3.10,<3.12"
-pandas = "2.0.3"
-numpy = "1.24.3"
-pillow = "10.2.0"
-scikit-learn = "1.4.0"
-joblib = "1.3.2"
-scikit-image = "0.22.0"
-opencv-python = "4.9.0.80"
-scipy = "1.12.0"
+[project.optional-dependencies]
+dev = [
+    "test-engine-core @ {root:parent:parent:parent:parent:uri}/test-engine-core"
+]
 
+[project.scripts]
+aiverify_blur_corruptions = "aiverify_blur_corruptions.__main__:main"
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"

@@ -507,4 +507,4 @@ def test_valid_run(get_data_instance_and_serializer_without_ground_truth):
         load_schema_file(str(Path().absolute() / "output.schema.json")),
     )
 
-    assert validate_status == True
+    assert validate_status

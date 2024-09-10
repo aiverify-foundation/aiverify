@@ -1,8 +1,9 @@
+import importlib
 import logging
 from pathlib import Path
 
 import pytest
-from blur_corruptions import Plugin
+from aiverify_blur_corruptions.algo import Plugin
 from test_engine_core.interfaces.idata import IData
 from test_engine_core.interfaces.ipipeline import IPipeline
 from test_engine_core.plugins.enums.model_type import ModelType
@@ -19,17 +20,25 @@ from test_engine_core.utils.simple_progress import SimpleProgress
 
 def test_discover_plugin():
     PluginManager.discover(
-        str(Path().absolute() / "../../../../test-engine-core-modules")
+        str(Path(importlib.util.find_spec("test_engine_core").origin).parent.resolve())
     )
 
 
 # Variables for testing
-valid_data_path = "tests/user_defined_files/data/raw_fashion_image_10"
-valid_model_path = (
-    "tests/user_defined_files/pipeline/multiclass_classification_image_mnist_fashion"
+# valid_data_path = "tests/user_defined_files/data/raw_fashion_image_10"
+# valid_model_path = (
+#     "tests/user_defined_files/pipeline/multiclass_classification_image_mnist_fashion"
+# )
+# valid_ground_truth_path = (
+#     "tests/user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
+# )
+
+valid_data_path = str("../../../user_defined_files/data/raw_fashion_image_10")
+valid_model_path = str(
+    "../../../user_defined_files/pipeline/multiclass_classification_image_mnist_fashion"
 )
-valid_ground_truth_path = (
-    "tests/user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
+valid_ground_truth_path = str(
+    "../../../user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
 )
 
 test_string = "data_str"
@@ -505,7 +514,7 @@ def test_valid_run(get_data_instance_and_serializer_without_ground_truth):
 
     validate_status = validate_json(
         results,
-        load_schema_file(str(Path().absolute() / "output.schema.json")),
+        load_schema_file(str(Path(__file__).parent / "output.schema.json")),
     )
 
-    assert validate_status == True
+    assert validate_status

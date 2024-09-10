@@ -154,7 +154,7 @@ def horizontal_motion_blur(img: np.ndarray, severity: int = 1) -> np.ndarray:
     output = cv2.filter2D(img, -1, kernel_motion_blur)
     output = cv2.cvtColor(output.astype(np.uint8), cv2.COLOR_BGR2RGB)
     if two:
-        test = np.squeeze(output, axis=2)
+        np.squeeze(output, axis=2)
 
     return output / 255.0
 
