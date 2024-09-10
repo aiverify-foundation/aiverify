@@ -25,14 +25,6 @@ def test_discover_plugin():
 
 
 # Variables for testing
-# valid_data_path = "tests/user_defined_files/data/raw_fashion_image_10"
-# valid_model_path = (
-#     "tests/user_defined_files/pipeline/multiclass_classification_image_mnist_fashion"
-# )
-# valid_ground_truth_path = (
-#     "tests/user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
-# )
-
 valid_data_path = str("../../../user_defined_files/data/raw_fashion_image_10")
 valid_model_path = str(
     "../../../user_defined_files/pipeline/multiclass_classification_image_mnist_fashion"
@@ -80,7 +72,7 @@ class TestObject:
         model_type = ModelType.CLASSIFICATION
         input_args = {
             "annotated_ground_truth_path": (
-                "tests/user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
+                "../../../user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
             ),
             "file_name_label": "file_name",
             "set_seed": 10,
@@ -514,7 +506,13 @@ def test_valid_run(get_data_instance_and_serializer_without_ground_truth):
 
     validate_status = validate_json(
         results,
-        load_schema_file(str(Path(__file__).parent / "output.schema.json")),
+        load_schema_file(
+            str(
+                Path(__file__).parent.parent.parent
+                / "aiverify_blur_corruptions"
+                / "output.schema.json"
+            )
+        ),
     )
 
     assert validate_status

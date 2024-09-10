@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import pytest
-from aiverify_blur_corruptions.algo_init import AlgoInit
+from aiverify_digital_corruptions.algo_init import AlgoInit
 from test_engine_core.plugins.enums.model_type import ModelType
 
 image_pipeline = {

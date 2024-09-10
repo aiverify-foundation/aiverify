@@ -7,6 +7,7 @@ from typing import Dict, List, Tuple, Union
 
 import numpy as np
 import pandas as pd
+from aiverify_digital_corruptions.utils import digital
 from PIL import Image
 from sklearn.metrics import accuracy_score
 from test_engine_core.interfaces.ialgorithm import IAlgorithm
@@ -19,7 +20,6 @@ from test_engine_core.plugins.enums.plugin_type import PluginType
 from test_engine_core.plugins.metadata.plugin_metadata import PluginMetadata
 from test_engine_core.utils.json_utils import load_schema_file, validate_json
 from test_engine_core.utils.simple_progress import SimpleProgress
-from utils import digital
 
 
 # =====================================================================================
@@ -141,20 +141,21 @@ class Plugin(IAlgorithm):
         self._results = {"results": [0]}
         self._ordered_ground_truth = None
         self._tmp_path = self._base_path / "temp"
-        self._save_path = self._base_path.parents[1] / "widgets" / "digital_images"
+        self._save_path = self._base_path / "widgets" / "digital_images"
 
         # Algorithm input schema defined in input.schema.json
         # By defining the input schema, it allows the front-end to know what algorithm input params is
         # required by this plugin. This allows this algorithm plug-in to receive the arguments values it requires.
+        current_file_dir = Path(__file__).parent
         self._input_schema = load_schema_file(
-            str(self._base_path / "input.schema.json")
+            str(current_file_dir / "input.schema.json")
         )
 
         # Algorithm output schema defined in output.schema.json
         # By defining the output schema, this plug-in validates the result with the output schema.
         # This allows the result to be validated against the schema before passing it to the front-end for display.
         self._output_schema = load_schema_file(
-            str(self._base_path / "output.schema.json")
+            str(current_file_dir / "output.schema.json")
         )
 
         # Retrieve the input parameters defined in the input schema and store them
