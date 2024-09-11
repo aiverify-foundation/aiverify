@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import pytest
-from aiverify_digital_corruptions.algo_init import AlgoInit
+from aiverify_environment_corruptions.algo_init import AlgoInit
 from test_engine_core.plugins.enums.model_type import ModelType
 
 image_pipeline = {
@@ -24,7 +24,7 @@ image_pipeline = {
         image_pipeline,
     ],
 )
-def test_aiverify_digital_corruptions_plugin(data_set):
+def test_aiverify_environment_corruptions_plugin(data_set):
     try:
         # Create an instance of PluginTest with defined paths and arguments and Run.
         core_modules_path = ""

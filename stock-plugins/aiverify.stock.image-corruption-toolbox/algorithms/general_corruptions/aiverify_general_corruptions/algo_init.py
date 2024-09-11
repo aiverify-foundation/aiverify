@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 from typing import Dict, Tuple, Union
 
-from aiverify_blur_corruptions.algo import Plugin
+from aiverify_general_corruptions.algo import Plugin
 from test_engine_core.interfaces.idata import IData
 from test_engine_core.interfaces.imodel import IModel
 from test_engine_core.interfaces.ipipeline import IPipeline

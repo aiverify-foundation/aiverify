@@ -6,7 +6,7 @@
 ## Developers:
 * AI Verify
 
-## Run Plugin in local
+## Develop plugin locally
 #### Execute the below bash script in the project root
 ```
 #!/bin/bash
@@ -26,7 +26,8 @@ pip install -e '.[dev]'
 python -m aiverify_blur_corruptions --data_path  <data_path> --model_path <model_path> --ground_truth_path <ground_truth_path> --ground_truth <str> --model_type CLASSIFICATION --run_pipeline --set_seed <int> --annotated_ground_truth_path <annotated_file_path> --file_name_label <str>
 
 ```
---  Note : replace assets path with the actual absolute path
+#### Example : 
+python -m aiverify_blur_corruptions --data_path  <PATH_TO_FOLDER>/user_defined_files/data/raw_fashion_image_10  --model_path <PATH_TO_FOLDER>/user_defined_files/pipeline/multiclass_classification_image_mnist_fashion --ground_truth_path <PATH_TO_FOLDER>/user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav --ground_truth label --model_type CLASSIFICATION --run_pipeline --annotated_ground_truth_path <PATH_TO_FOLDER>/user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav --set_seed 10 --file_name_label file_name
 
 ## Build Plugin
 ```
