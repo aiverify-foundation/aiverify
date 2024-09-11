@@ -1,4 +1,5 @@
-import tempfile
+import hashlib
+from pathlib import Path
 from urllib.parse import urlparse
 
 import requests
@@ -21,21 +22,38 @@ def is_url(data_path: str) -> bool:
         return False
 
 
-def download_from_url(url: str) -> str:
+def download_from_url(url: str, cache_dir: str = ".cache/aiverify/") -> str:
     """
-    Download a file from the given URL and save it to a temporary location.
+    Download a file from the given URL and save it to a cache directory,
+    using the original filename and appending a content hash for caching purposes.
 
     Args:
         url (str): The URL of the file to download.
+        cache_dir (str): Directory to cache the downloaded files. Defaults to ".cache/aiverify/".
 
     Returns:
         str: The path to the downloaded file.
     """
+    cache_dir_path = Path(cache_dir)
+    cache_dir_path.mkdir(parents=True, exist_ok=True)
+
+    # Extract the original file name and extension from the URL
+    parsed_url = urlparse(url)
+    original_filename = Path(parsed_url.path).name
+    name, ext = Path(original_filename).stem, Path(original_filename).suffix
+
+    # Download the file content
     response = requests.get(url)
-    if response.status_code == 200:
-        temp_file = tempfile.NamedTemporaryFile(delete=False)
-        temp_file.write(response.content)
-        temp_file.close()
-        return temp_file.name
-    else:
+    if response.status_code != 200:
         raise Exception(f"Failed to download file: HTTP {response.status_code}")
+
+    # Create the cache filename with the format "name.contenthash.ext"
+    content_hash = hashlib.md5(response.content).hexdigest()
+    cached_file_name = f"{name}.{content_hash}{ext}"
+    cached_file_path = cache_dir_path / cached_file_name
+
+    # Save the file if not already cached
+    if not cached_file_path.exists():
+        cached_file_path.write_bytes(response.content)
+
+    return str(cached_file_path)
