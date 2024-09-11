@@ -2,6 +2,7 @@ from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 from .base_model import BaseORMModel
 
+
 class UserGroupModel(BaseORMModel):
     __tablename__ = "user_group"
 
