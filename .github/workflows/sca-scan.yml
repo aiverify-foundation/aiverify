@@ -33,23 +33,30 @@ jobs:
 
     steps:
 
-    - name: Checkout Code (Pull_Request_Review)
+    - name: Checkout Code (Pull Request Review)
       if: github.event_name == 'pull_request_review'
-      uses: actions/checkout@v3
+      uses: actions/checkout@v5
       with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           submodules: recursive
 
-    - name: Set Branch Variable (Pull Request Into Main)
-      if: github.event.pull_request.base.ref == 'main' 
-      run: |
-          echo "BRANCH=v1.0" >> "$GITHUB_ENV"
+    - name: Checkout Code (Workflow Dispatch)
+      if: github.event_name == 'workflow_dispatch'
+      uses: actions/checkout@v5
+      with:
+        ref: ${{ github.event.pull_request.head.ref }}
+        repository: ${{ inputs.branch_to_test }}
 
     - name: Set Branch Variable (Pull Request Into v2.x)
-      if: github.event.pull_request.base.ref == 'v2.x' 
+      if: github.event_name == 'pull_request_review'
       run: |
           echo "BRANCH=v2.x" >> "$GITHUB_ENV" 
+
+    - name: Set Branch Variable (Workflow Dispatch)
+      if: github.event_name == 'workflow_dispatch'
+      run: |
+          echo "BRANCH=v1.0" >> "$GITHUB_ENV"
 
     - name: Install & Scan APIGW
       run: |
@@ -91,7 +98,7 @@ jobs:
           cd ../
 
     - name: Install & Scan TEST ENGINE CORE MODULES
-      if: github.event.pull_request.base.ref == 'main'
+      if: github.event_name == 'workflow_dispatch'
       run: |
           cd test-engine-core-modules
           python3 -m venv venv
