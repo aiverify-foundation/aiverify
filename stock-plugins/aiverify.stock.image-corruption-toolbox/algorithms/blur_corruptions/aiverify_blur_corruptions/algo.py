@@ -140,8 +140,11 @@ class Plugin(IAlgorithm):
         self._data = None
         self._results = {"results": [0]}
         self._ordered_ground_truth = None
-        self._tmp_path = self._base_path / "temp"
-        self._save_path = self._base_path / "widgets" / "blur_images"
+        # write all output to the output folder
+        output_folder = Path.cwd() / "output"
+        output_folder.mkdir(parents=True, exist_ok=True)
+        self._tmp_path = output_folder / "temp"
+        self._save_path = output_folder / "widgets" / "blur_images"
 
         # Algorithm input schema defined in input.schema.json
         # By defining the input schema, it allows the front-end to know what algorithm input params is

@@ -12,9 +12,7 @@
 #!/bin/bash
 
 # setup virtual environment
-cd aiverify/stock-plugins/
-rm -rf .venv
-python3 -m venv .venv
+python -m venv .venv
 source .venv/bin/activate
 
 # execute plugin
@@ -27,7 +25,22 @@ python -m aiverify_blur_corruptions --data_path  <data_path> --model_path <model
 
 ```
 #### Example : 
-python -m aiverify_blur_corruptions --data_path  <PATH_TO_FOLDER>/user_defined_files/data/raw_fashion_image_10  --model_path <PATH_TO_FOLDER>/user_defined_files/pipeline/multiclass_classification_image_mnist_fashion --ground_truth_path <PATH_TO_FOLDER>/user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav --ground_truth label --model_type CLASSIFICATION --run_pipeline --annotated_ground_truth_path <PATH_TO_FOLDER>/user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav --set_seed 10 --file_name_label file_name
+```
+#!/bin/bash
+
+root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files"
+
+python -m aiverify_blur_corruptions \
+  --data_path $root_path/data/raw_fashion_image_10 \
+  --model_path $root_path/pipeline/multiclass_classification_image_mnist_fashion \
+  --ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
+  --ground_truth label \
+  --model_type CLASSIFICATION \
+  --run_pipeline \
+  --annotated_ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
+  --set_seed 10 \
+  --file_name_label file_name
+```
 
 ## Build Plugin
 ```

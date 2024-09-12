@@ -12,9 +12,7 @@
 #!/bin/bash
 
 # setup virtual environment
-cd aiverify/stock-plugins/
-rm -rf .venv
-python3 -m venv .venv
+python -m venv .venv
 source .venv/bin/activate
 
 # execute plugin
