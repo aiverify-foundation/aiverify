@@ -54,9 +54,7 @@ def parse_input_args():
         default="",
         help="Path to the annotated labels file.",
     )
-    parser.add_argument(
-        "--file_name_label", default="", help="The label of the file name."
-    )
+    parser.add_argument("--file_name_label", default="", help="The label value.")
 
 
 def invoke_fairness_metrics_toolbox_for_classification_plugin():
