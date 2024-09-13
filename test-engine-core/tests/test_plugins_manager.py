@@ -395,7 +395,11 @@ class TestCollectionPluginsManager:
                     "mode": ModelModeType.API,
                     "filename": "tests/other_import_modules/example_model.py",
                 },
-                (None, None, "There was an error loading model(api)"),
+                (
+                    None,
+                    None,
+                    "There was an error loading model(api): {} | {} (There was an error getting model format with api schema (unsupported))",  # noqa: E501
+                ),
             ),
         ],
     )

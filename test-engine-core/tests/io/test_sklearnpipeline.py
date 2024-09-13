@@ -1,25 +1,10 @@
-import pytest
 from pathlib import Path
 from typing import Tuple
+
+import pytest
 from test_engine_core.plugins.enums.pipeline_plugin_type import PipelinePluginType
 from test_engine_core.plugins.enums.plugin_type import PluginType
 from test_engine_core.plugins.plugins_manager import PluginManager
-
-
-@pytest.fixture
-def pipeline_test_data(request):
-    test_dir = Path(request.module.__file__).parent
-    discover_path = test_dir.parent.parent / "test_engine_core/io"
-    file_path = str(test_dir / "user_defined_files/sklearn_pipeline_files/")
-    expected_pipeline_algorithm = "sklearn.pipeline.Pipeline"
-    expected_pipeline_plugin_type = PipelinePluginType.SKLEARN
-
-    return (
-        file_path,
-        discover_path,
-        expected_pipeline_algorithm,
-        expected_pipeline_plugin_type,
-    )
 
 
 class PluginTest:
@@ -133,6 +118,26 @@ class PluginTest:
         return error_count, error_message
 
 
-def test_end_to_end_pipeline_plugin(pipeline_test_data):
+@pytest.mark.parametrize(
+    "file_path",
+    [
+        str(Path(__file__).parent / "user_defined_files/sklearn_pipeline_files/"),
+        str(Path(__file__).parent / "user_defined_files/sklearn_pipeline_files.zip"),
+        "https://aiverify-test-public.s3.ap-northeast-1.amazonaws.com/sklearn_pipeline_files.zip",
+    ],
+)
+def test_end_to_end_pipeline_plugin(file_path, request):
+    test_dir = Path(request.module.__file__).parent
+    discover_path = test_dir.parent.parent / "test_engine_core/io"
+    expected_pipeline_algorithm = "sklearn.pipeline.Pipeline"
+    expected_pipeline_plugin_type = PipelinePluginType.SKLEARN
+
+    pipeline_test_data = (
+        file_path,
+        discover_path,
+        expected_pipeline_algorithm,
+        expected_pipeline_plugin_type,
+    )
+
     plugin_test = PluginTest()
     plugin_test.test_pipeline_plugin(pipeline_test_data)
