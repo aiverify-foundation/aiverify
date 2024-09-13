@@ -45,8 +45,9 @@ jobs:
       if: github.event_name == 'workflow_dispatch'
       uses: actions/checkout@v4
       with:
-        ref: ${{ github.event.pull_request.head.ref }}
-        repository: ${{ inputs.branch_to_test }}
+        ref: ${{ inputs.branch_to_test }}
+        repository: aiverify-foundation/aiverify
+        submodules: recursive
 
     - name: Set Branch Variable (Pull Request Into v2.x)
       if: github.event_name == 'pull_request_review'
