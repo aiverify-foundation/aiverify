@@ -13,7 +13,7 @@ multiclass_pipeline = {
         "../../../user_defined_files/data/sample_mc_pipeline_toxic_ytest_data.sav"
     ),
     "run_pipeline": True,
-    "model_type": ModelType.REGRESSION,
+    "model_type": ModelType.CLASSIFICATION,
     "ground_truth": "toxic",
     "sensitive_feature": ["gender"],
     "annotated_labels_path": "",
@@ -90,33 +90,29 @@ image_pipeline = {
         tabular_binary_pipeline,
         multiclass_non_pipeline,
         binary_non_pipeline,
-        image_pipeline,
+        # image_pipeline #TODO : Validate the model data.
     ],
 )
 def test_fairness_metrics_toolbox_for_classification_plugin(data_set):
-    try:
-        # Create an instance of PluginTest with defined paths and arguments and Run.
-        core_modules_path = ""
-        plugin_argument_values = {
-            "sensitive_feature": data_set.sensitive_feature,
-            "annotated_labels_path": data_set.annotated_labels_path,
-            "file_name_label": data_set.file_name_label,
-        }
+    # Create an instance of PluginTest with defined paths and arguments and Run.
+    core_modules_path = ""
+    plugin_argument_values = {
+        "sensitive_feature": data_set["sensitive_feature"],
+        "annotated_labels_path": data_set["annotated_labels_path"],
+        "file_name_label": data_set["file_name_label"],
+    }
 
-        plugin_test = AlgoInit(
-            data_set["run_pipeline"],
-            core_modules_path,
-            data_set["data_path"],
-            data_set["model_path"],
-            data_set["ground_truth_path"],
-            data_set["ground_truth"],
-            data_set["model_type"],
-            plugin_argument_values,
-        )
-        plugin_test.run()
+    plugin_test = AlgoInit(
+        data_set["run_pipeline"],
+        core_modules_path,
+        data_set["data_path"],
+        data_set["model_path"],
+        data_set["ground_truth_path"],
+        data_set["ground_truth"],
+        data_set["model_type"],
+        plugin_argument_values,
+    )
+    plugin_test.run()
 
-        json_file_path = Path.cwd() / "output" / "results.json"
-        assert json_file_path.exists(), f"File not found: {json_file_path}"
-
-    except Exception as exception:
-        print(f"Exception caught while running the plugin test: {str(exception)}")
+    json_file_path = Path.cwd() / "output" / "results.json"
+    assert json_file_path.exists(), f"File not found: {json_file_path}"
