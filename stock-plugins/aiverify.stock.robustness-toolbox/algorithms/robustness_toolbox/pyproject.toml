@@ -1,21 +1,23 @@
-[tool.poetry]
-name = "robustness-toolbox"
+[project]
+name = "aiverify_robustness_toolbox"
 version = "0.10.0"
 description = ""
-authors = ["AI Verify"]
+authors = [{ name = "AI Verify" }]
 readme = "README.md"
-packages = [{include = "robustness_toolbox"}]
+dependencies = ["numpy==1.24.3", "pandas==2.0.3", "joblib==1.3.2", "scikit-learn==1.4.0", "pillow===10.2.0"]
+requires-python = ">=3.10,<3.12"
 
-[tool.poetry.dependencies]
-python = ">=3.10,<3.12"
-joblib = "1.3.2"
-numpy = "1.24.3"
-scikit-learn = "1.4.0"
-pandas = "2.0.3"
-pillow = "10.2.0"
-scipy = "1.12.0"
+[project.optional-dependencies]
+dev = [
+    "test-engine-core @ {root:parent:parent:parent:parent:uri}/test-engine-core",
+]
 
+[project.scripts]
+aiverify_robustness_toolbox = "aiverify_robustness_toolbox.__main__:main"
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"

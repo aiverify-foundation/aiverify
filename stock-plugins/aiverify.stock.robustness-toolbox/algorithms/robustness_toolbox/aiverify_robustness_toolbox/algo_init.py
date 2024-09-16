@@ -1,10 +1,12 @@
 import copy
+import importlib
 import json
 import logging
 import sys
 from pathlib import Path
 from typing import Dict, Tuple, Union
 
+from aiverify_robustness_toolbox.algo import Plugin
 from test_engine_core.interfaces.idata import IData
 from test_engine_core.interfaces.imodel import IModel
 from test_engine_core.interfaces.ipipeline import IPipeline
@@ -18,15 +20,14 @@ from test_engine_core.utils.json_utils import (
     validate_json,
 )
 from test_engine_core.utils.time import time_class_method
-from robustness_toolbox import Plugin
 
 
 # =====================================================================================
 # NOTE: Do not modify this file unless you know what you are doing.
 # =====================================================================================
-class PluginTest:
+class AlgoInit:
     """
-    The PluginTest class specifies methods in supporting testing for the plugin.
+    The AlgoInit class specifies methods in supporting testing for the plugin.
     """
 
     @staticmethod
@@ -37,7 +38,7 @@ class PluginTest:
         Args:
             completion_value (int): Current progress completion
         """
-        print(f"[PluginTest] Progress Update: {completion_value}")
+        print(f"[Robustness toolbox Test] Progress Update: {completion_value}")
 
     def __init__(
         self,
@@ -57,7 +58,10 @@ class PluginTest:
 
         # Store the input arguments as private vars
         if core_modules_path == "":
-            core_modules_path = "../../../../test-engine-core-modules"
+            core_modules_path = Path(
+                importlib.util.find_spec("test_engine_core").origin
+            ).parent
+
         self._core_modules_path: str = core_modules_path
         self._data_path: str = str(self._base_path / data_path)
         self._model_path: str = str(self._base_path / model_path)
@@ -100,7 +104,7 @@ class PluginTest:
             print(f"[DETECTED_PLUGINS]: {PluginManager.get_printable_plugins()}")
 
             # Create logger
-            self._logger_instance = logging.getLogger("PluginTestLogger")
+            self._logger_instance = logging.getLogger("AlgoInitLogger")
             self._logger_instance.setLevel(logging.DEBUG)
             log_format = logging.Formatter(
                 fmt="%(levelname)s %(asctime)s \t %(pathname)s %(funcName)s L%(lineno)s - %(message)s",
@@ -139,7 +143,9 @@ class PluginTest:
                 current_dataset = self._data_instance.get_data()
                 current_pipeline = self._model_instance.get_pipeline()
                 data_transformation_stages = current_pipeline[:-1]
-                transformed_dataset = data_transformation_stages.transform(current_dataset)
+                transformed_dataset = data_transformation_stages.transform(
+                    current_dataset
+                )
                 transformed_pipeline = current_pipeline[-1]
                 # Set new transformed pipeline and dataset
                 self._data_instance.set_data(transformed_dataset)
@@ -188,7 +194,6 @@ class PluginTest:
                     )
                     print(f"[GROUND_TRUTH]: {self._ground_truth}")
                     print(f"[MODEL_TYPE]: {self._model_type}")
-                    print(f"[DATA FEATURES]: {self._data_instance.read_labels()}")
                     print(
                         f"[GROUND_TRUTH FEATURES]: {self._ground_truth_instance.read_labels()}"
                     )
@@ -214,7 +219,6 @@ class PluginTest:
                             "truth feature exists in the data specified in ground truth path file.)"
                         )
 
-                    print(f"[DATA FEATURES]: {self._data_instance.read_labels()}")
                     print(
                         f"[GROUND_TRUTH FEATURES]: {self._ground_truth_instance.read_labels()}"
                     )
@@ -228,9 +232,7 @@ class PluginTest:
                 self._input_arguments["ground_truth"] = self._ground_truth
                 self._input_arguments["model_type"] = self._model_type
                 self._input_arguments["logger"] = self._logger_instance
-                self._input_arguments[
-                    "progress_callback"
-                ] = PluginTest.progress_callback
+                self._input_arguments["progress_callback"] = AlgoInit.progress_callback
                 self._input_arguments["project_base_path"] = self._base_path
 
                 # Run the plugin with the arguments and instances
@@ -244,7 +246,6 @@ class PluginTest:
                     **self._input_arguments,
                 )
 
-        
                 # Generate the results using this plugin
                 print("Generating the results with the plugin...")
                 plugin.generate()
@@ -257,11 +258,17 @@ class PluginTest:
                 print(self._data_serializer_instance)
                 is_success, error_messages = self._verify_task_results(results)
                 if is_success:
-                    # Print the output results
-                    print(json.dumps(results))
+                    output_folder = Path.cwd() / "output"
+                    output_folder.mkdir(parents=True, exist_ok=True)
 
-                    # Exit successfully
-                    sys.exit(0)
+                    json_file_path = output_folder / "results.json"
+
+                    # Write the data to the JSON file
+                    with open(json_file_path, "w") as json_file:
+                        json.dump(results, json_file, indent=4)
+                    print("*" * 20)
+                    print(f"check the results here : {json_file_path}")
+                    print("*" * 20)
                 else:
                     raise RuntimeError(error_messages)
             else:
@@ -298,7 +305,7 @@ class PluginTest:
             # Check that it meets the required format before sending out to the UI for display
             if not validate_json(
                 task_result,
-                load_schema_file(str(self._base_path / "output.schema.json")),
+                load_schema_file(str(Path(__file__).parent / "output.schema.json")),
             ):
                 is_success = False
                 error_message = "Failed schema validation"
