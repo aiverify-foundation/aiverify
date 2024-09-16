@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 from typing import Dict, Tuple, Union
 
-from accumulated_local_effect.algo import Plugin
+from aiverify_accumulated_local_effect.algo import Plugin
 from test_engine_core.interfaces.idata import IData
 from test_engine_core.interfaces.imodel import IModel
 from test_engine_core.interfaces.ipipeline import IPipeline
@@ -193,7 +193,6 @@ class AlgoInit:
                     )
                     print(f"[GROUND_TRUTH]: {self._ground_truth}")
                     print(f"[MODEL_TYPE]: {self._model_type}")
-                    print(f"[DATA FEATURES]: {self._data_instance.read_labels()}")
                     print(
                         f"[GROUND_TRUTH FEATURES]: {self._ground_truth_instance.read_labels()}"
                     )
@@ -219,7 +218,6 @@ class AlgoInit:
                             "truth feature exists in the data specified in ground truth path file.)"
                         )
 
-                    print(f"[DATA FEATURES]: {self._data_instance.read_labels()}")
                     print(
                         f"[GROUND_TRUTH FEATURES]: {self._ground_truth_instance.read_labels()}"
                     )

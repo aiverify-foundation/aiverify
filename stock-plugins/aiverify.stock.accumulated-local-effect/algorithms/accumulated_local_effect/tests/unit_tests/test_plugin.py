@@ -4,7 +4,7 @@ import logging
 from pathlib import Path
 
 import pytest
-from accumulated_local_effect.algo import Plugin
+from aiverify_accumulated_local_effect.algo import Plugin
 from test_engine_core.interfaces.idata import IData
 from test_engine_core.interfaces.imodel import IModel
 from test_engine_core.plugins.enums.model_type import ModelType
@@ -21,9 +21,7 @@ def test_discover_plugin():
     )
 
 
-valid_data_path = str(
-    "../../../user_defined_files/data/sample_bc_credit_data.sav"
-)
+valid_data_path = str("../../../user_defined_files/data/sample_bc_credit_data.sav")
 valid_model_path = str(
     "../../../user_defined_files/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav"
 )

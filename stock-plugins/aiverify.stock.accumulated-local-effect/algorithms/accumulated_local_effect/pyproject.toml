@@ -1,5 +1,5 @@
 [project]
-name = "accumulated-local-effect"
+name = "aiverify_accumulated_local_effect"
 version = "0.10.0"
 description = ""
 authors = [{ name = "AI Verify" }]
@@ -13,7 +13,7 @@ dev = [
 ]
 
 [project.scripts]
-accumulated_local_effect = "accumulated_local_effect.__main__:main"
+aiverify_accumulated_local_effect = "aiverify_accumulated_local_effect.__main__:main"
 
 [tool.hatch.metadata]
 allow-direct-references = true

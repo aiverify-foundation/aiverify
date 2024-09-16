@@ -1,6 +1,6 @@
 import argparse
 
-from accumulated_local_effect.algo_init import AlgoInit
+from aiverify_accumulated_local_effect.algo_init import AlgoInit
 from test_engine_core.plugins.enums.model_type import ModelType
 
 parser = argparse.ArgumentParser(
