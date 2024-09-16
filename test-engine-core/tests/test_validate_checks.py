@@ -1,8 +1,12 @@
 import subprocess
 
 import pytest
-
-from test_engine_core.utils.validate_checks import is_empty_string, is_file, is_folder
+from test_engine_core.utils.validate_checks import (
+    is_empty_string,
+    is_excluded,
+    is_file,
+    is_folder,
+)
 
 
 class TestCollectionValidateChecks:
@@ -84,3 +88,26 @@ class TestCollectionValidateChecks:
         Tests whether it can detect empty string
         """
         assert is_empty_string(string_value) is expected_result
+
+    @pytest.mark.parametrize(
+        "filename, expected_output",
+        [
+            (".DS_Store", True),
+            ("file.__MACOSX", True),
+            ("path/to/Thumbs.db", True),
+            ("Desktop.ini", True),
+            ("path/to/._hidden", True),
+            ("path/.directory", True),
+            ("project/.git/file.txt", True),
+            ("repo/.svn/config", True),
+            ("project/.hg/changeset", True),
+            ("file.txt", False),
+            ("document.pdf", False),
+            ("folder", False),
+        ],
+    )
+    def test_is_excluded(self, filename, expected_output):
+        """
+        Test if the filename matches an exclusion pattern.
+        """
+        assert is_excluded(filename) == expected_output

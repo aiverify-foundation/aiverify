@@ -17,8 +17,7 @@ class TestModelModel(BaseORMModel):
         Enum(TestModelMode), nullable=False)
     file_type: Mapped[Optional[TestModelFileType]] = mapped_column(
         Enum(TestModelFileType))  # only if mode == upload
-    model_type: Mapped[ModelType] = mapped_column(
-        Enum(ModelType), nullable=False)
+    model_type: Mapped[Optional[ModelType]] = mapped_column(Enum(ModelType), nullable=True)
     status: Mapped[TestModelStatus] = mapped_column(
         Enum(TestModelStatus), nullable=False)
     size: Mapped[Optional[float]]
@@ -26,7 +25,7 @@ class TestModelModel(BaseORMModel):
     model_format: Mapped[Optional[str]]  # only if mode == upload
     # relative to datepath. if not uploaded, leave as null
     datapath_id: Mapped[Optional[int]] = mapped_column(ForeignKey("uploaded_file.id"))
-    datapath: Mapped[Optional["UploadedFileModel"]] = relationship("UploadedFileModel", cascade="all, delete-orphan") # relative to datepath. if not uploaded, leave as null
+    datapath: Mapped[Optional["UploadedFileModel"]] = relationship("UploadedFileModel", cascade="save-update") # relative to datepath. if not uploaded, leave as null
     filepath: Mapped[Optional[str]] = mapped_column(
         String(2048))  # only if mode == upload
     filename: Mapped[Optional[str]] = mapped_column(
