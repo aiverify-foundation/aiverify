@@ -10,7 +10,7 @@ parser = argparse.ArgumentParser(
 
 def run():
     parse_input_args()
-    invoke_fairness_metrics_toolbox_for_classification_plugin()
+    invoke_pdp_plugin()
 
 
 def parse_input_args():
@@ -44,7 +44,7 @@ def parse_input_args():
     )
 
 
-def invoke_fairness_metrics_toolbox_for_classification_plugin():
+def invoke_pdp_plugin():
     # =====================================================================================
     # NOTE: Do not modify the code below
     # =====================================================================================

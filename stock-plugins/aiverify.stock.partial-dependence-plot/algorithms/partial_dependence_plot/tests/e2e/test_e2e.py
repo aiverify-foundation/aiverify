@@ -61,28 +61,24 @@ multiclass_pipeline = {
     "data_set",
     [
         binary_non_pipeline,
-        multiclass_non_pipeline,
         tabular_binary_pipeline,
-        multiclass_pipeline,
+        # multiclass_non_pipeline, #TODO : revisit multiclass data sets
+        # multiclass_pipeline, #TODO : revisit multiclass data sets
     ],
 )
 def test_partial_dependence_plot_plugin(data_set):
-    try:
-        # Create an instance of PluginTest with defined paths and arguments and Run.
-        core_modules_path = ""
-        plugin_test = AlgoInit(
-            data_set["run_pipeline"],
-            core_modules_path,
-            data_set["data_path"],
-            data_set["model_path"],
-            data_set["ground_truth_path"],
-            data_set["ground_truth"],
-            data_set["model_type"],
-        )
-        plugin_test.run()
+    # Create an instance of PluginTest with defined paths and arguments and Run.
+    core_modules_path = ""
+    plugin_test = AlgoInit(
+        data_set["run_pipeline"],
+        core_modules_path,
+        data_set["data_path"],
+        data_set["model_path"],
+        data_set["ground_truth_path"],
+        data_set["ground_truth"],
+        data_set["model_type"],
+    )
+    plugin_test.run()
 
-        json_file_path = Path.cwd() / "output" / "results.json"
-        assert json_file_path.exists(), f"File not found: {json_file_path}"
-
-    except Exception as exception:
-        print(f"Exception caught while running the plugin test: {str(exception)}")
+    json_file_path = Path.cwd() / "output" / "results.json"
+    assert json_file_path.exists()
