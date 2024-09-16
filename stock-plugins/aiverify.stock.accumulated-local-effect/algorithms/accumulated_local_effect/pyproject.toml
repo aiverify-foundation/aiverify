@@ -1,17 +1,23 @@
-[tool.poetry]
-name = "accumulated-local-effect"
+[project]
+name = "aiverify_accumulated_local_effect"
 version = "0.10.0"
 description = ""
-authors = ["AI Verify"]
+authors = [{ name = "AI Verify" }]
 readme = "README.md"
-packages = [{include = "accumulated_local_effect"}]
+dependencies = ["numpy==1.24.3", "pandas==2.0.3"]
+requires-python = ">=3.10,<3.12"
 
-[tool.poetry.dependencies]
-python = ">=3.10,<3.12"
-numpy = "1.24.3"
-pandas = "2.0.3"
+[project.optional-dependencies]
+dev = [
+    "test-engine-core @ {root:parent:parent:parent:parent:uri}/test-engine-core",
+]
 
+[project.scripts]
+aiverify_accumulated_local_effect = "aiverify_accumulated_local_effect.__main__:main"
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
