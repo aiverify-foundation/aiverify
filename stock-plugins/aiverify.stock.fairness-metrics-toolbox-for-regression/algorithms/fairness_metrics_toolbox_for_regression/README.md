@@ -6,14 +6,12 @@
 ## Developers:
 * AI Verify
 
-## Run Plugin in local
+## Develop plugin locally
 #### Execute the below bash script in the project root
 ```
 #!/bin/bash
 
 # setup virtual environment
-cd aiverify/stock-plugins/
-rm -rf .venv
 python3 -m venv .venv
 source .venv/bin/activate
 
@@ -25,7 +23,20 @@ pip install -e .'[dev]'
 python -m aiverify_fairness_metrics_toolbox_for_regression --data_path  <data_path> --model_path <model_path> --ground_truth_path <ground_truth_path> --ground_truth <str> --model_type CLASSIFICATION --run_pipeline --sensitive_features_list <list[str]>
 
 ```
---  Note : replace assets path with the actual absolute path
+#### Example : 
+```
+#!/bin/bash
+
+root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files"
+python -m aiverify_fairness_metrics_toolbox_for_regression \
+  --data_path $root_path/data/sample_reg_pipeline_data.sav \
+  --model_path $root_path/pipeline \
+  --ground_truth_path $root_path/data/sample_reg_pipeline_ytest_data.sav \
+  --ground_truth donation \
+  --model_type REGRESSION \
+  --run_pipeline \
+  --sensitive_features_list gender
+```
 
 ## Build Plugin
 ```
