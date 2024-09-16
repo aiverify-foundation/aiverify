@@ -21,7 +21,7 @@ cd aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/gen
 # install test-engine-core 
 pip install -e '.[dev]'
 
-python -m aiverify_dgeneral_corruptions --data_path  <data_path> --model_path <model_path> --ground_truth_path <ground_truth_path> --ground_truth <str> --model_type CLASSIFICATION --run_pipeline --set_seed <int> --annotated_ground_truth_path <annotated_file_path> --file_name_label <str>
+python -m aiverify_general_corruptions --data_path  <data_path> --model_path <model_path> --ground_truth_path <ground_truth_path> --ground_truth <str> --model_type CLASSIFICATION --run_pipeline --set_seed <int> --annotated_ground_truth_path <annotated_file_path> --file_name_label <str>
 
 ```
 #### Example : 

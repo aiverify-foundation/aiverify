@@ -25,31 +25,27 @@ image_pipeline = {
     ],
 )
 def test_aiverify_blur_corruptions_plugin(data_set):
-    try:
-        # Create an instance of PluginTest with defined paths and arguments and Run.
-        core_modules_path = ""
-        plugin_argument_values = {
-            "annotated_ground_truth_path": (
-                "../../../user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
-            ),
-            "file_name_label": "file_name",
-            "set_seed": 10,
-        }
+    # Create an instance of PluginTest with defined paths and arguments and Run.
+    core_modules_path = ""
+    plugin_argument_values = {
+        "annotated_ground_truth_path": (
+            "../../../user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
+        ),
+        "file_name_label": "file_name",
+        "set_seed": 10,
+    }
 
-        plugin_test = AlgoInit(
-            data_set["run_pipeline"],
-            core_modules_path,
-            data_set["data_path"],
-            data_set["model_path"],
-            data_set["ground_truth_path"],
-            data_set["ground_truth"],
-            data_set["model_type"],
-            plugin_argument_values,
-        )
-        plugin_test.run()
+    plugin_test = AlgoInit(
+        data_set["run_pipeline"],
+        core_modules_path,
+        data_set["data_path"],
+        data_set["model_path"],
+        data_set["ground_truth_path"],
+        data_set["ground_truth"],
+        data_set["model_type"],
+        plugin_argument_values,
+    )
+    plugin_test.run()
 
-        json_file_path = Path.cwd() / "output" / "results.json"
-        assert json_file_path.exists(), f"File not found: {json_file_path}"
-
-    except Exception as exception:
-        print(f"Exception caught while running the plugin test: {str(exception)}")
+    json_file_path = Path.cwd() / "output" / "results.json"
+    assert json_file_path.exists()

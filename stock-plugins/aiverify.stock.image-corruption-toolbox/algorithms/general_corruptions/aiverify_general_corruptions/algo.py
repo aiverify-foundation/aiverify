@@ -140,8 +140,11 @@ class Plugin(IAlgorithm):
         self._data = None
         self._results = {"results": [0]}
         self._ordered_ground_truth = None
-        self._tmp_path = self._base_path / "temp"
-        self._save_path = self._base_path / "widgets" / "general_images"
+        # write all output to the output folder
+        output_folder = Path.cwd() / "output"
+        output_folder.mkdir(parents=True, exist_ok=True)
+        self._tmp_path = output_folder / "temp"
+        self._save_path = output_folder / "widgets" / "general_images"
 
         # Algorithm input schema defined in input.schema.json
         # By defining the input schema, it allows the front-end to know what algorithm input params is
@@ -488,9 +491,7 @@ class Plugin(IAlgorithm):
 
         image_name = str(severity) + ".png"
         image_path = images["image_directory"].iloc[index]
-        image_relative_path = str(
-            Path(image_path).relative_to(Path(self._base_path.parents[1]))
-        )
+        image_relative_path = str(Path(image_path).relative_to(Path().absolute()))
 
         Path(self._save_path / corruption).mkdir(parents=True, exist_ok=True)
         shutil.copy(
