@@ -20,8 +20,8 @@
         "input.schema.json",
         "LICENSE",
         "output.schema.json",
-        "accumulated_local_effect.meta.json",
-        "accumulated_local_effect.py",
+        "algo.meta.json",
+        "algo.py",
         "README.md",
         "requirements.txt",
         "syntax_checker.py"

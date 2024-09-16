@@ -2,3 +2,4 @@ node_modules
 build
 temp
 __pycache__
+.pytest_cache
