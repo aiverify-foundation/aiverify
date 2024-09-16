@@ -1,5 +1,4 @@
 import argparse
-import json
 
 from aiverify_robustness_toolbox.algo_init import AlgoInit
 from test_engine_core.plugins.enums.model_type import ModelType
@@ -49,14 +48,6 @@ def parse_input_args():
         help="Path to the annotated labels file.",
     )
     parser.add_argument("--file_name_label", default="", help="The label value.")
-
-
-def parse_plugin_argument_values(arg):
-    # Convert the JSON-like string to a dictionary
-    try:
-        return json.loads(arg)
-    except json.JSONDecodeError as e:
-        raise argparse.ArgumentTypeError(f"Invalid dictionary format: {e}")
 
 
 def invoke_robustness_toolbox_plugin():
