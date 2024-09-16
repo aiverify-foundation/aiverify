@@ -14,7 +14,10 @@ venv
 
 # Test related
 coverage
+coverage.json
 mytestmodel
+test-report.html
+test-report.json
 
 # OS generated files
 .DS_Store

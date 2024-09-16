@@ -1,4 +1,6 @@
 import logging
+import shutil
+import zipfile
 from typing import Any, Dict, Tuple, Union
 
 from test_engine_core.interfaces.ipipeline import IPipeline
@@ -8,6 +10,8 @@ from test_engine_core.utils.import_modules import (
     import_python_modules,
 )
 from test_engine_core.utils.log_utils import log_message
+from test_engine_core.utils.url_utils import download_from_url, is_url
+from test_engine_core.utils.zipfile_utils import extract_zipfile
 
 
 class PipelineManager:
@@ -30,16 +34,15 @@ class PipelineManager:
         if isinstance(logger, logging.Logger):
             PipelineManager._logger = logger
 
-    @staticmethod
     def read_pipeline_path(
         pipeline_path: str, pipeline_plugins: Dict, serializer_plugins: Dict
     ) -> Tuple[bool, Union[IPipeline, None], Union[ISerializer, None], str]:
         """
         A method to read the pipeline path and return the pipeline instance and serializer instance
-        It is usually serialize by some program such as (pickle, joblib)
+        It is usually serialized by some program such as (pickle, joblib)
 
         Args:
-            pipeline_path (str): The pipeline path
+            pipeline_path (str): The pipeline path (can be a folder path, ZIP archive or URL)
             pipeline_plugins (Dict): A dictionary of supported pipeline plugins
             serializer_plugins (Dict): A dictionary of supported serializer plugins
 
@@ -67,7 +70,7 @@ class PipelineManager:
             or serializer_plugins is None
             or not isinstance(serializer_plugins, dict)
         ):
-            # Failed to deserialize pipeline path and Perform logging
+            # Failed to deserialize pipeline path and perform logging
             error_message = (
                 f"There was an error validating the input parameters: {pipeline_path}, "
                 f"{pipeline_plugins}, {serializer_plugins}"
@@ -84,6 +87,47 @@ class PipelineManager:
                 PipelineManager._logger, logging.INFO, "Pipeline validation successful"
             )
 
+        if is_url(pipeline_path):
+            log_message(
+                PipelineManager._logger,
+                logging.INFO,
+                f"Downloading pipeline from URL: {pipeline_path}",
+            )
+            try:
+                pipeline_path = download_from_url(pipeline_path)
+            except Exception as e:
+                error_message = f"Failed to download the pipeline from URL: {pipeline_path}. Error: {str(e)}"
+                log_message(PipelineManager._logger, logging.ERROR, error_message)
+                return (
+                    False,
+                    return_pipeline_instance,
+                    return_pipeline_serializer_instance,
+                    error_message,
+                )
+
+        # Check if the pipeline_path is a compressed file (e.g., zip)
+        temp_dir = None
+        if zipfile.is_zipfile(pipeline_path):
+            log_message(
+                PipelineManager._logger,
+                logging.INFO,
+                f"Detected a ZIP archive: {pipeline_path}",
+            )
+
+            success, extracted_path, error_message, temp_dir = extract_zipfile(
+                pipeline_path
+            )
+            if not success:
+                log_message(PipelineManager._logger, logging.ERROR, error_message)
+                return (
+                    False,
+                    return_pipeline_instance,
+                    return_pipeline_serializer_instance,
+                    error_message,
+                )
+
+            pipeline_path = extracted_path
+
         # Pipeline needs to import accompanying class and load it up.
         # Pipeline path will be in folder, and we will need to import the python modules first,
         # then find out which is the pipeline file to be deserialized and used.
@@ -93,7 +137,7 @@ class PipelineManager:
             log_message(
                 PipelineManager._logger,
                 logging.INFO,
-                f"Found these non python files: {non_python_files}",
+                f"Found these non-python files: {non_python_files}",
             )
             pipeline_file = list(non_python_files.values())[0]
         else:
@@ -107,7 +151,6 @@ class PipelineManager:
             )
 
         # Attempt to deserialize the pipeline with the supported serializer.
-        # If pipeline is not able to deserialize by any of the supported tool, it will return False
         log_message(
             PipelineManager._logger,
             logging.INFO,
@@ -120,6 +163,10 @@ class PipelineManager:
         ) = PipelineManager._try_to_deserialize_pipeline(
             pipeline_file, serializer_plugins
         )
+
+        if temp_dir:
+            shutil.rmtree(temp_dir)
+
         if not is_success:
             # Failed to deserialize pipeline file
             error_message = (
@@ -134,7 +181,6 @@ class PipelineManager:
             )
 
         # Attempt to identify the pipeline format with the supported list.
-        # If pipeline is not in the supported list, it will return False
         log_message(
             PipelineManager._logger,
             logging.INFO,
