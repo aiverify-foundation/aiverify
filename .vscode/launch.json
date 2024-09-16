@@ -5,11 +5,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "ai-verify-apigw",
-      "type": "node-terminal",
+      "name": "aiverify-apigw",
+      "type": "debugpy",
       "request": "launch",
-      "command": "npm run dev",
-      "cwd": "${workspaceFolder}/ai-verify-apigw"
+      "cwd": "${workspaceFolder}/aiverify-apigw",
+      "module": "aiverify_apigw"
     },
     {
       "name": "ai-verify-portal",

@@ -4,6 +4,7 @@ from typing import Any, Dict, Tuple, Union
 from test_engine_core.interfaces.imodel import IModel
 from test_engine_core.interfaces.iserializer import ISerializer
 from test_engine_core.utils.log_utils import log_message
+from test_engine_core.utils.url_utils import download_from_url, is_url
 
 
 class ModelManager:
@@ -116,11 +117,11 @@ class ModelManager:
         model_file: str, model_plugins: Dict, serializer_plugins: Dict
     ) -> Tuple[bool, Union[IModel, None], Union[ISerializer, None], str]:
         """
-        A method to read the model file path and return the model instance and serializer instance
+        A method to read the model file path or URL and return the model instance and serializer instance
         It is usually serialize by some program such as (pickle, joblib)
 
         Args:
-            model_file (str): The model file path
+            model_file (str): The model file path or URL
             model_plugins (Dict): A dictionary of supported model plugins
             serializer_plugins (Dict): A dictionary of supported serializer plugins
 
@@ -163,6 +164,24 @@ class ModelManager:
             log_message(
                 ModelManager._logger, logging.INFO, "Model validation successful"
             )
+
+        if is_url(model_file):
+            log_message(
+                ModelManager._logger,
+                logging.INFO,
+                f"Downloading model from URL: {model_file}",
+            )
+            try:
+                model_file = download_from_url(model_file)
+            except Exception as e:
+                error_message = f"Failed to download the model file from URL: {model_file}. Error: {str(e)}"
+                log_message(ModelManager._logger, logging.ERROR, error_message)
+                return (
+                    False,
+                    return_model_instance,
+                    return_model_serializer_instance,
+                    error_message,
+                )
 
         # Attempt to deserialize the model with the supported serializer.
         # If model is not able to deserialized by any of the supported tool, it will return False
