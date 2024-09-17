@@ -21,8 +21,8 @@
         "input.schema.json",
         "LICENSE",
         "output.schema.json",
-        "fairness_metrics_toolbox_for_classification.meta.json",
-        "fairness_metrics_toolbox_for_classification.py",
+        "algo.meta.json",
+        "algo.py",
         "README.md",
         "requirements.txt",
         "syntax_checker.py"
