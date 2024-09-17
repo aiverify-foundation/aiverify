@@ -1,5 +1,5 @@
 from datetime import datetime
-from fastapi import APIRouter, HTTPException, UploadFile, Form, Depends
+from fastapi import APIRouter, HTTPException, UploadFile, Form, Depends, Response
 from typing import List
 import json
 from sqlalchemy import select
@@ -9,7 +9,7 @@ from pathlib import PurePath
 from ..lib.logging import logger
 from ..lib.database import get_db_session
 from ..lib.constants import TestDatasetFileType, TestDatasetStatus, TestModelMode, TestModelStatus
-from ..lib.filestore import save_artifact, get_suffix
+from ..lib.filestore import save_artifact, get_artifact, get_suffix
 from ..lib.utils import guess_mimetype_from_filename
 from ..schemas import TestResult
 from ..models import AlgorithmModel, TestModelModel, TestResultModel, TestDatasetModel, TestArtifactModel
@@ -31,6 +31,7 @@ async def upload_test_result(
     test_result: TestResult = Form(...),
     artifacts: List[UploadFile] = []
 ):
+    """Endpoint to upload test result"""
     logger.debug(f"upload_test_result: {test_result}")
     if artifacts:
         logger.debug(f"Number of artifacts: {len(artifacts)}")
@@ -170,3 +171,43 @@ async def upload_test_result(
         logger.warning(f"Test result upload error: {e}")
         session.rollback()
         raise HTTPException(status_code=400, detail=f"Test result upload error: {e}")
+
+
+@router.get("/{test_result_id}/artifacts/{filename}")
+async def get_test_result_artifact(
+    test_result_id: str,
+    filename: str,
+    session: Session = Depends(get_db_session),
+):
+    """
+    Endpoint to retrieve an artifact file by test_result_id and filename.
+    """
+    try:
+        stmt = (
+            select(TestArtifactModel)
+            .where(TestArtifactModel.test_result_id == test_result_id)
+            .where(TestArtifactModel.filename == filename)
+        )
+        artifact = session.scalar(stmt)
+        if artifact is None:
+            raise HTTPException(status_code=400, detail=f"Test artifact {
+                                filename} not found in test result {test_result_id}")
+
+        try:
+            data = get_artifact(test_result_id, filename)
+        except Exception as e:
+            logger.warning(f"Unable to read artifact file {filename} for test result {test_result_id}: {e}")
+            raise HTTPException(status_code=500, detail="Unable to retrieve artifact file")
+
+        headers = {
+            "Content-Disposition": f"inline; filename=\"{filename}\""
+        }
+        # use application/octet-stream for unknown content type
+        # media_type = mimetypes.types_map[artifact.suffix] if artifact.suffix in mimetypes.types_map else "application/octet-stream"
+        return Response(content=data, media_type=artifact.mimetype, headers=headers)
+
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logger.error(f"Error retrieving artifact: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
