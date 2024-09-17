@@ -1,25 +1,44 @@
-[tool.poetry]
-name = "aiverify-apigw"
-version = "0.1.0"
-description = ""
-authors = ["Peck Yoke <leong_peck_yoke@imda.gov.sg>"]
-readme = "README.md"
-
-[tool.poetry.dependencies]
-python = "^3.11"
-fastapi = {extras = ["standard"], version = "^0.112.0"}
-python-dotenv = "^1.0.1"
-sqlalchemy = "^2.0.32"
-boto3 = "^1.35.6"
-jsonschema = "^4.23.0"
-
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.3.2"
-pytest-mock = "^3.14.0"
-coverage = "^7.6.1"
-faker = "^28.1.0"
-
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.urls]
+Documentation = "https://github.com/aiverify-foundation/aiverify/tree/v2.x#readme"
+Issues = "https://github.com/aiverify-foundation/aiverify/issues"
+Source = "https://github.com/aiverify-foundation/aiverify/tree/v2.x"
+
+[project]
+name = "aiverify-apigw"
+version = "0.2.0"
+description = 'The apigw provides middleware functionality for the aiverify portal'
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "Peck Yoke", email = "leong_peck_yoke@imda.gov.sg" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+
+dependencies = [
+  "fastapi[standard]>=0.112.0",
+  "python-dotenv>=1.0.1",
+  "sqlalchemy>=2.0.32",
+  "boto3>=1.35.6",
+  "jsonschema>=4.23.0"
+]
+
+[tool.hatch.envs.default.scripts]
+dev = "python -m aiverify_apigw"
+
+[tool.hatch.envs.hatch-test]
+extra-dependencies = [
+    "faker>=28.1.0"
+]
