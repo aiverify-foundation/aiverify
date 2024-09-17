@@ -1,8 +1,11 @@
+from click import Option
 from pydantic import BaseModel, Field, model_validator
 from typing import List, Optional, Literal, Any, Self
 from datetime import datetime
 import json
 from .load_examples import test_result_examples
+from ..models import TestResultModel
+from ..lib.constants import ModelType, TestModelMode
 
 
 class TestArguments(BaseModel):
@@ -89,3 +92,37 @@ class TestResult(BaseModel):
             "examples": test_result_examples,
         }
     }
+
+
+class TestResultOutput(TestResult):
+    id: int  # test_result_id
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+    @classmethod
+    def from_model(cls, result: TestResultModel) -> "TestResultOutput":
+        modelType = "regression" if result.model.model_type == ModelType.Regression else "classification"
+        mode = "api" if result.model.mode == TestModelMode.API else "upload"
+        test_argument = TestArguments(
+            testDataset=result.test_dataset.filepath,
+            mode=mode,
+            modelType=modelType,
+            groundTruthDataset=result.ground_truth_dataset.filepath,
+            groundTruth=result.ground_truth,
+            algorithmArgs=result.algo_arguments.decode("utf-8"),
+            modelFile=result.model.filepath
+        )
+        obj = TestResultOutput(
+            id=result.id,
+            created_at=result.created_at,
+            updated_at=result.updated_at,
+            gid=result.gid,
+            cid=result.cid,
+            version=result.version,
+            start_time=result.start_time,
+            time_taken=result.time_taken,
+            test_arguments=test_argument,
+            output=result.output.decode("utf-8"),
+            artifacts=[artifact.filename for artifact in result.artifacts]
+        )
+        return obj
