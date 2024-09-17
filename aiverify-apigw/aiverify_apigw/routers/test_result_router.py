@@ -11,7 +11,7 @@ from ..lib.database import get_db_session
 from ..lib.constants import TestDatasetFileType, TestDatasetStatus, TestModelMode, TestModelStatus, ModelType
 from ..lib.filestore import save_artifact, get_artifact, get_suffix
 from ..lib.utils import guess_mimetype_from_filename
-from ..schemas import TestResult, TestArguments
+from ..schemas import TestResult, TestResultOutput
 from ..models import AlgorithmModel, TestModelModel, TestResultModel, TestDatasetModel, TestArtifactModel
 
 router = APIRouter(
@@ -48,6 +48,8 @@ async def upload_test_result(
         algorithm = session.scalar(stmt)
         if algorithm is None:
             raise HTTPException(status_code=400, detail=f"Algorithm {test_result.gid} not found")
+        
+        now = datetime.now()
 
         # find model
         test_arguments = test_result.test_arguments
@@ -61,7 +63,6 @@ async def upload_test_result(
             stmt = select(TestModelModel).filter_by(filename=model_file.name)
             test_model = session.scalar(stmt)
             if test_model is None:
-                now = datetime.now()
                 test_model = TestModelModel(
                     name=model_file.name,
                     mode=TestModelMode.Upload,
@@ -81,7 +82,6 @@ async def upload_test_result(
         stmt = select(TestDatasetModel).filter_by(filename=test_dataset_file.name)
         test_dataset = session.scalar(stmt)
         if test_dataset is None:
-            now = datetime.now()
             test_dataset = TestDatasetModel(
                 name=test_dataset_file.name,
                 status=TestDatasetStatus.Valid,
@@ -103,7 +103,6 @@ async def upload_test_result(
             stmt = select(TestDatasetModel).filter_by(filename=ground_truth_file.name)
             ground_truth_dataset = session.scalar(stmt)
             if ground_truth_dataset is None:
-                now = datetime.now()
                 ground_truth_dataset = TestDatasetModel(
                     name=ground_truth_file.name,
                     status=TestDatasetStatus.Valid,
@@ -134,6 +133,8 @@ async def upload_test_result(
             time_taken=test_result.time_taken,
             algo_arguments=json.dumps(test_arguments.algorithmArgs).encode('utf-8'),
             output=json.dumps(test_result.output).encode('utf-8'),
+            created_at=now,
+            updated_at=now,
         )
         session.add(test_result_model)
         session.flush()
@@ -169,7 +170,7 @@ async def upload_test_result(
         session.commit()
 
         logger.info(f"Test result uploaded: {test_result_model}")
-        urls = [f"/test_result/{test_result_id}/{artifact.filename}" for artifact in test_result_model.artifacts]
+        urls = [f"/test_result/{test_result_id}/artifacts/{artifact.filename}" for artifact in test_result_model.artifacts]
         return [f"/test_result/{test_result_id}"] + urls
     except HTTPException as e:
         raise e
@@ -219,8 +220,8 @@ async def get_test_result_artifact(
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.get("/", response_model=List[TestResult])
-async def read_test_results(session: Session = Depends(get_db_session)) -> List[TestResult]:
+@router.get("/", response_model=List[TestResultOutput])
+async def read_test_results(session: Session = Depends(get_db_session)) -> List[TestResultOutput]:
     """
     Endpoint to retrieve all test results.
     """
@@ -229,27 +230,7 @@ async def read_test_results(session: Session = Depends(get_db_session)) -> List[
         test_results = session.scalars(stmt).all()
         ar = []
         for result in test_results:
-            modelType="regression" if result.model.model_type==ModelType.Regression else "classification"
-            mode = "api" if result.model.mode==TestModelMode.API else "upload"
-            test_argument = TestArguments(
-                testDataset=result.test_dataset.filepath,
-                mode=mode,
-                modelType=modelType,
-                groundTruthDataset=result.ground_truth_dataset.filepath,
-                groundTruth=result.ground_truth,
-                algorithmArgs=result.algo_arguments.decode("utf-8"),
-                modelFile=result.model.filepath
-            )
-            obj = TestResult(
-                gid=result.gid,
-                cid=result.cid,
-                version=result.version,
-                start_time=result.start_time,
-                time_taken=result.time_taken,
-                test_arguments=test_argument,
-                output=result.output.decode("utf-8"),
-                artifacts=[artifact.filename for artifact in result.artifacts]
-            )
+            obj = TestResultOutput.from_model(result)
             ar.append(obj)
         return ar
     except Exception as e:
