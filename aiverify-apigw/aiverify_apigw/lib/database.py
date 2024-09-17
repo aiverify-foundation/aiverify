@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 def init_db():
     import os
     db_uri = os.getenv("APIGW_DB_URI", "sqlite://")
-    engine = create_engine(db_uri, echo=True, connect_args={"check_same_thread": False})
+    engine = create_engine(db_uri, echo=False, connect_args={"check_same_thread": False})
     return engine
 
 
