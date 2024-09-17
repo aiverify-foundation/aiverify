@@ -17,7 +17,7 @@ class TestModelModel(BaseORMModel):
         Enum(TestModelMode), nullable=False)
     file_type: Mapped[Optional[TestModelFileType]] = mapped_column(
         Enum(TestModelFileType))  # only if mode == upload
-    model_type: Mapped[Optional[ModelType]] = mapped_column(Enum(ModelType), nullable=True)
+    model_type: Mapped[ModelType] = mapped_column(Enum(ModelType), nullable=False)
     status: Mapped[TestModelStatus] = mapped_column(
         Enum(TestModelStatus), nullable=False)
     size: Mapped[Optional[float]]
