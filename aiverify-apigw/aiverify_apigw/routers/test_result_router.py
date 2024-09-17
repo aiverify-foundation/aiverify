@@ -8,10 +8,10 @@ from pathlib import PurePath
 
 from ..lib.logging import logger
 from ..lib.database import get_db_session
-from ..lib.constants import TestDatasetFileType, TestDatasetStatus, TestModelMode, TestModelStatus
+from ..lib.constants import TestDatasetFileType, TestDatasetStatus, TestModelMode, TestModelStatus, ModelType
 from ..lib.filestore import save_artifact, get_artifact, get_suffix
 from ..lib.utils import guess_mimetype_from_filename
-from ..schemas import TestResult
+from ..schemas import TestResult, TestArguments
 from ..models import AlgorithmModel, TestModelModel, TestResultModel, TestDatasetModel, TestArtifactModel
 
 router = APIRouter(
@@ -30,11 +30,11 @@ async def upload_test_result(
     session: Session = Depends(get_db_session),
     test_result: TestResult = Form(...),
     artifacts: List[UploadFile] = []
-):
+) -> List[str]:
     """Endpoint to upload test result"""
     logger.debug(f"upload_test_result: {test_result}")
     if artifacts:
-        logger.debug(f"Number of artifacts: {len(artifacts)}")
+        logger.debug(f"Number of artifacts files: {len(artifacts)}")
     else:
         logger.debug("No artifacts")
     try:
@@ -65,6 +65,7 @@ async def upload_test_result(
                 test_model = TestModelModel(
                     name=model_file.name,
                     mode=TestModelMode.Upload,
+                    model_type=test_arguments.modelType,
                     status=TestModelStatus.Valid,
                     filepath=test_arguments.modelFile,
                     filename=model_file.name,
@@ -97,7 +98,7 @@ async def upload_test_result(
         ground_truth_dataset = None
         if test_arguments.groundTruthDataset:
             if test_arguments.groundTruth is None:
-                return HTTPException(status_code=400, detail="Missing groundTruth")
+                raise HTTPException(status_code=400, detail="Missing groundTruth")
             ground_truth_file = PurePath(test_arguments.testDataset)
             stmt = select(TestDatasetModel).filter_by(filename=ground_truth_file.name)
             ground_truth_dataset = session.scalar(stmt)
@@ -141,12 +142,15 @@ async def upload_test_result(
         logger.debug(f"test_result_id: {test_result_id}")
 
         # Process uploaded files
-        if artifacts and len(artifacts) > 0:
+        if test_result.artifacts and artifacts and len(artifacts) > 0:
             for artifact_file in artifacts:
                 if artifact_file.filename is None:
                     logger.warning(f"artifact filename not found, skipping")
                     continue
                 filename = artifact_file.filename
+                if filename not in test_result.artifacts:
+                    logger.debug(f"Skipping unlisted artifact {filename}")
+                    continue
                 data = artifact_file.file.read()
                 save_artifact(test_result_id, filename, data)
                 artifact = TestArtifactModel(
@@ -161,10 +165,12 @@ async def upload_test_result(
 
         # commit to DB
         # session.add(test_result_model)
+        logger.debug(f"Number of saved artifacts: {len(test_result_model.artifacts)}")
         session.commit()
 
         logger.info(f"Test result uploaded: {test_result_model}")
-        return test_result_id
+        urls = [f"/test_result/{test_result_id}/{artifact.filename}" for artifact in test_result_model.artifacts]
+        return [f"/test_result/{test_result_id}"] + urls
     except HTTPException as e:
         raise e
     except Exception as e:
@@ -210,4 +216,42 @@ async def get_test_result_artifact(
         raise e
     except Exception as e:
         logger.error(f"Error retrieving artifact: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router.get("/", response_model=List[TestResult])
+async def read_test_results(session: Session = Depends(get_db_session)) -> List[TestResult]:
+    """
+    Endpoint to retrieve all test results.
+    """
+    try:
+        stmt = select(TestResultModel)
+        test_results = session.scalars(stmt).all()
+        ar = []
+        for result in test_results:
+            modelType="regression" if result.model.model_type==ModelType.Regression else "classification"
+            mode = "api" if result.model.mode==TestModelMode.API else "upload"
+            test_argument = TestArguments(
+                testDataset=result.test_dataset.filepath,
+                mode=mode,
+                modelType=modelType,
+                groundTruthDataset=result.ground_truth_dataset.filepath,
+                groundTruth=result.ground_truth,
+                algorithmArgs=result.algo_arguments.decode("utf-8"),
+                modelFile=result.model.filepath
+            )
+            obj = TestResult(
+                gid=result.gid,
+                cid=result.cid,
+                version=result.version,
+                start_time=result.start_time,
+                time_taken=result.time_taken,
+                test_arguments=test_argument,
+                output=result.output.decode("utf-8"),
+                artifacts=[artifact.filename for artifact in result.artifacts]
+            )
+            ar.append(obj)
+        return ar
+    except Exception as e:
+        logger.error(f"Error retrieving test results: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
