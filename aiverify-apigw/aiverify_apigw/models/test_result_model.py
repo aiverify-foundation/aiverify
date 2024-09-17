@@ -37,6 +37,8 @@ class TestResultModel(BaseORMModel):
     algo_arguments: Mapped[bytes]  # serialized json, arguments pass as input to algo
     output: Mapped[bytes]  # serialized json, output from algos
     artifacts: Mapped[List["TestArtifactModel"]] = relationship("TestArtifactModel", cascade="all, delete")
+    created_at: Mapped[Optional[datetime]]
+    updated_at: Mapped[Optional[datetime]]
 
     @validates("gid", "cid")
     def my_validate_gid_cid(self, key, value):
