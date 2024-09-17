@@ -28,7 +28,7 @@ class TestGuessMimetypeFromFilename:
     @pytest.mark.parametrize("filename, expected_mimetype", [
         ("readme.md", mimetypes.types_map.get(".md", None)),  # Depending on system configuration
         ("styles.css", "text/css"),
-        ("script.js", "application/javascript"),
+        ("script.js", "text/javascript"),
     ])
     def test_edge_cases(self, filename, expected_mimetype):
         """Test edge cases and less common file extensions."""
