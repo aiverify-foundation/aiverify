@@ -26,7 +26,8 @@ def version_msg():
     python_version = sys.version
     location = Path(__file__).resolve().parent.parent
 
-    return f"Robustness Toolbox - {version} from {location} (Python {python_version})"
+    return f"Robustness Toolbox - {version('aiverify_robustness_toolbox')} from {location} \
+        (Python {python_version})"
 
 
 if __name__ == "__main__":
