@@ -27,9 +27,8 @@ def version_msg():
     python_version = sys.version
     location = Path(__file__).resolve().parent.parent
 
-    return (
-        f"Partial dependence plot - {version} from {location} (Python {python_version})"
-    )
+    return f"Partial dependence plot - {version('aiverify_partial_dependence_plot')} from {location} \
+            (Python {python_version})"
 
 
 if __name__ == "__main__":
