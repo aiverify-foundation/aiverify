@@ -27,7 +27,8 @@ def version_msg():
     python_version = sys.version
     location = Path(__file__).resolve().parent.parent
 
-    return f"Aiverify Environment Corruptions - {version} from {location} (Python {python_version})"
+    return f"Aiverify Environment Corruptions - {version('aiverify_environment_corruptions')} from {location} \
+        (Python {python_version})"
 
 
 if __name__ == "__main__":
