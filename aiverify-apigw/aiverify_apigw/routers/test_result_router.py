@@ -8,10 +8,10 @@ from pathlib import PurePath
 
 from ..lib.logging import logger
 from ..lib.database import get_db_session
-from ..lib.constants import TestDatasetFileType, TestDatasetStatus, TestModelMode, TestModelStatus, ModelType
+from ..lib.constants import TestDatasetFileType, TestDatasetStatus, TestModelMode, TestModelStatus
 from ..lib.filestore import save_artifact, get_artifact, get_suffix
 from ..lib.utils import guess_mimetype_from_filename
-from ..schemas import TestResult, TestResultOutput
+from ..schemas import TestResult, TestResultOutput, TestResultUpdate
 from ..models import AlgorithmModel, TestModelModel, TestResultModel, TestDatasetModel, TestArtifactModel
 
 router = APIRouter(
@@ -119,7 +119,7 @@ async def upload_test_result(
         # Create a new TestResultModel instance
         test_result_model = TestResultModel(
             # id=1,
-            name=f"Test for {test_result.cid}",
+            name=f"Result for {test_result.cid}",
             gid=test_result.gid,
             cid=test_result.cid,
             algorithm=algorithm,
@@ -233,6 +233,70 @@ async def read_test_results(session: Session = Depends(get_db_session)) -> List[
             obj = TestResultOutput.from_model(result)
             ar.append(obj)
         return ar
+    except HTTPException as e:
+        raise e
     except Exception as e:
         logger.error(f"Error retrieving test results: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router.get("/{test_result_id}", response_model=TestResultOutput)
+async def read_test_result(test_result_id: int, session: Session = Depends(get_db_session)) -> TestResultOutput:
+    """
+    Endpoint to retrieve a test result by its ID.
+    """
+    try:
+        stmt = select(TestResultModel).where(TestResultModel.id == test_result_id)
+        result = session.scalar(stmt)
+        if result is None:
+            raise HTTPException(status_code=404, detail=f"Test result not found")
+        return TestResultOutput.from_model(result)
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logger.error(f"Error retrieving test result with ID {test_result_id}: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router.put("/{test_result_id}", response_model=TestResultOutput)
+async def update_test_result(test_result_id: int, update_data: TestResultUpdate, session: Session = Depends(get_db_session)) -> TestResultOutput:
+    """
+    Endpoint to update a test result's name by its ID.
+    """
+    try:
+        session.begin()
+        stmt = select(TestResultModel).where(TestResultModel.id == test_result_id)
+        result = session.scalar(stmt)
+        if result is None:
+            raise HTTPException(status_code=404, detail=f"Test result not found")
+
+        result.name = update_data.name
+        session.commit()
+        session.refresh(result)
+        return TestResultOutput.from_model(result)
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logger.error(f"Error updating test result with ID {test_result_id}: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@router.delete("/{test_result_id}")
+async def delete_test_result(test_result_id: int, session: Session = Depends(get_db_session)):
+    """
+    Endpoint to delete a test result by its ID.
+    """
+    try:
+        session.begin()
+        stmt = select(TestResultModel).where(TestResultModel.id == test_result_id)
+        result = session.scalar(stmt)
+        if result is None:
+            raise HTTPException(status_code=404, detail=f"Test result not found")
+
+        session.delete(result)
+        session.commit()
+        return Response(status_code=200)
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logger.error(f"Error deleting test result with ID {test_result_id}: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")

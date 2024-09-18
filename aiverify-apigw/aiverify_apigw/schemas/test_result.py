@@ -1,4 +1,3 @@
-from click import Option
 from pydantic import BaseModel, Field, model_validator
 from typing import List, Optional, Literal, Any, Self
 from datetime import datetime
@@ -96,6 +95,7 @@ class TestResult(BaseModel):
 
 class TestResultOutput(TestResult):
     id: int  # test_result_id
+    name: str # name
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
@@ -114,6 +114,7 @@ class TestResultOutput(TestResult):
         )
         obj = TestResultOutput(
             id=result.id,
+            name=result.name,
             created_at=result.created_at,
             updated_at=result.updated_at,
             gid=result.gid,
@@ -126,3 +127,7 @@ class TestResultOutput(TestResult):
             artifacts=[artifact.filename for artifact in result.artifacts]
         )
         return obj
+    
+class TestResultUpdate(BaseModel):
+    name: str
+
