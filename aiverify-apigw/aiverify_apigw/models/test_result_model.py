@@ -17,7 +17,7 @@ class TestResultModel(BaseORMModel):
     __tablename__ = "test_result"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(String(256), nullable=False)
+    name: Mapped[str] = mapped_column(String(256), nullable=False, index=True)
     gid: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
     cid: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
     algorithm_id: Mapped[int] = mapped_column(ForeignKey("algorithm.id"))
