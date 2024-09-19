@@ -78,9 +78,9 @@ class TestResult(BaseModel):
     @classmethod
     def validate_to_json(cls, value: Any) -> Any:
         def _update_obj(obj):
-            if "output" in obj and isinstance(obj["output"],dict):
+            if "output" in obj and isinstance(obj["output"], dict):
                 obj["output"] = json.dumps(obj["output"])
-            if "test_arguments" in obj and "algorithmArgs" in obj["test_arguments"] and isinstance(obj["test_arguments"]["algorithmArgs"],dict):
+            if "test_arguments" in obj and "algorithmArgs" in obj["test_arguments"] and isinstance(obj["test_arguments"]["algorithmArgs"], dict):
                 obj["test_arguments"]["algorithmArgs"] = json.dumps(obj["test_arguments"]["algorithmArgs"])
             return obj
         if isinstance(value, str):
@@ -132,6 +132,7 @@ class TestResultOutput(TestResult):
             artifacts=[artifact.filename for artifact in result.artifacts]
         )
         return obj
+    
     
 class TestResultUpdate(BaseModel):
     name: str

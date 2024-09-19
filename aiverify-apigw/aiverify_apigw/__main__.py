@@ -1,5 +1,4 @@
 import os
-from typing import final
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -7,7 +6,7 @@ host = os.getenv("APIGW_HOST_ADDRESS", "127.0.0.1")
 port = int(os.getenv("APIGW_PORT", 4000))
 
 import uvicorn
-from fastapi import FastAPI, openapi
+from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 from .lib.logging import logger
 from .routers import test_result_router
@@ -23,7 +22,6 @@ app = FastAPI()
 
 # include routers
 app.include_router(test_result_router.router)
-
 
 
 # modify the openai schema 
@@ -54,8 +52,8 @@ def custom_openapi():
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
-app.openapi = custom_openapi
 
+app.openapi = custom_openapi
 
 
 if __name__ == "__main__":
