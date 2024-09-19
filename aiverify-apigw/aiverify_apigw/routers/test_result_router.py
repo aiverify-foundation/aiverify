@@ -1,11 +1,11 @@
 from datetime import datetime
 from fastapi import APIRouter, HTTPException, UploadFile, Form, Depends, Response
-from typing import List, Optional, Annotated, Any
+from typing import List, Annotated, Any
 import json
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from pathlib import PurePath
-from pydantic import Json
+from jsonschema import validate
 
 from ..lib.logging import logger
 from ..lib.database import get_db_session
@@ -38,9 +38,22 @@ async def _save_test_result(session:Session, test_result: TestResult, artifact_s
         raise HTTPException(status_code=400, detail=f"Algorithm {test_result.gid} not found")
     
     now = datetime.now()
-
-    # find model
     test_arguments = test_result.test_arguments
+
+    # validate output
+    output_schema = json.loads(algorithm.output_schema.decode("utf-8"))
+    output = json.loads(test_result.output)
+    # logger.debug("Output schema:")
+    # logger.debug(json.dumps(output_schema,indent=2))
+    # logger.debug("Output:")
+    # logger.debug(json.dumps(output, indent=2))
+    try:
+        validate(output, output_schema)
+    except:
+        logger.warn(f"Test result output for algorithm {algorithm.cid} is invalid")
+        raise HTTPException(status_code=422, detail="Test result output is invalid")
+    
+    # find model    
     # todo: to support api in future
     if test_arguments.mode == "api":
         raise HTTPException(status_code=400, detail=f"Algorithm {test_result.gid} not found")
@@ -101,8 +114,6 @@ async def _save_test_result(session:Session, test_result: TestResult, artifact_s
             # session.add(ground_truth_dataset)
             # session.flush()
             logger.info(f"Insert new test dataaset in db: {ground_truth_dataset}")
-
-    # todo: validate test_arguments and output
 
     # Create a new TestResultModel instance
     test_result_model = TestResultModel(

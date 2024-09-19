@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column, validates, relationship
-from sqlalchemy import String, Boolean, ForeignKey, Table, Column
+from sqlalchemy import String, Boolean, ForeignKey, Table, Column, LargeBinary
 from sqlalchemy.ext.hybrid import hybrid_property
 from typing import Optional, List
 
@@ -100,8 +100,8 @@ class AlgorithmModel(PluginComponentModel):
     model_type: Mapped[str] = mapped_column(String, nullable=False)
     require_ground_truth: Mapped[bool] = mapped_column(Boolean, default=True)
 
-    input_schema = Mapped[bytes]  # schema serialized
-    output_schema = Mapped[bytes]  # schema serialized
+    input_schema: Mapped[bytes]
+    output_schema: Mapped[bytes]
 
     plugin_id: Mapped[int] = mapped_column(ForeignKey('plugin.gid'))
     plugin: Mapped["PluginModel"] = relationship(back_populates="algorithms")
