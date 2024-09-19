@@ -195,7 +195,7 @@ class PluginStore:
                         with open(algopath.joinpath("input.schema.json"), "r") as fp:
                             input_schema = json.load(fp)
 
-                        with open(algopath.joinpath("input.schema.json"), "r") as fp:
+                        with open(algopath.joinpath("output.schema.json"), "r") as fp:
                             output_schema = json.load(fp)
 
                         model_type = ",".join(meta.modelType)
