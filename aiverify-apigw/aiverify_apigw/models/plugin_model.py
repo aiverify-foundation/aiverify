@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column, validates, relationship
-from sqlalchemy import String, Boolean, ForeignKey, Table, Column, LargeBinary
+from sqlalchemy import String, Boolean, ForeignKey, Table, Column
 from sqlalchemy.ext.hybrid import hybrid_property
 from typing import Optional, List
 
