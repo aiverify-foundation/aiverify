@@ -77,13 +77,18 @@ class TestResult(BaseModel):
     @model_validator(mode='before')
     @classmethod
     def validate_to_json(cls, value: Any) -> Any:
-        if isinstance(value, str):
-            obj = json.loads(value)
-            if "output" in obj:
+        def _update_obj(obj):
+            if "output" in obj and isinstance(obj["output"],dict):
                 obj["output"] = json.dumps(obj["output"])
-            if "test_arguments" in obj and "algorithmArgs" in obj["test_arguments"]:
+            if "test_arguments" in obj and "algorithmArgs" in obj["test_arguments"] and isinstance(obj["test_arguments"]["algorithmArgs"],dict):
                 obj["test_arguments"]["algorithmArgs"] = json.dumps(obj["test_arguments"]["algorithmArgs"])
-            return cls(**obj)
+            return obj
+        if isinstance(value, str):
+            mydict = json.loads(value)
+            _update_obj(mydict)
+            return cls(**mydict)
+        elif isinstance(value, dict):
+            return _update_obj(value)
         return value
 
     model_config = {
