@@ -1,0 +1,28 @@
+{
+    "cid": "digital_corruptions",
+    "name": "Digital Corruptions",
+    "modelType": [
+        "classification"
+    ],
+    "version": "0.10.0",
+    "author": "AI Verify",
+    "description": "Algorithm that adds digital corruptions (brightness up and down, contrast up and down, compression, tilt, saturate)",
+    "tags": [
+        "Digital Corruptions",
+        "classification"
+    ],
+    "requireGroundTruth": true,
+    "requiredFiles": [
+        "AUTHORS.rst",
+        "CHANGELOG.md",
+        "input.schema.json",
+        "LICENSE",
+        "output.schema.json",
+        "algo.meta.json",
+        "algo.py",
+        "README.md",
+        "requirements.txt",
+        "syntax_checker.py",
+        "utils"
+    ]
+}
