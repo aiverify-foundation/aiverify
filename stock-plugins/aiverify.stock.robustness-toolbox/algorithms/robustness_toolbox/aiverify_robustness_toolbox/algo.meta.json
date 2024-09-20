@@ -20,10 +20,9 @@
         "input.schema.json",
         "LICENSE",
         "output.schema.json",
-        "robustness_toolbox.meta.json",
-        "robustness_toolbox.py",
+        "algo.meta.json",
+        "algo.py",
         "README.md",
-        "requirements.txt",
         "syntax_checker.py"
     ]
 }

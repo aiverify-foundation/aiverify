@@ -1,8 +1,9 @@
+import importlib
 import logging
 from pathlib import Path
 
 import pytest
-from robustness_toolbox import Plugin
+from aiverify_robustness_toolbox.algo import Plugin
 from test_engine_core.interfaces.idata import IData
 from test_engine_core.interfaces.ipipeline import IPipeline
 from test_engine_core.plugins.enums.model_type import ModelType
@@ -19,18 +20,22 @@ from test_engine_core.utils.simple_progress import SimpleProgress
 
 def test_discover_plugin():
     PluginManager.discover(
-        str(Path().absolute() / "../../../../test-engine-core-modules")
+        str(Path(importlib.util.find_spec("test_engine_core").origin).parent.resolve())
     )
 
 
-# Variables for testing
-valid_data_path = "tests/user_defined_files/data/raw_fashion_image_10"
-valid_model_path = (
-    "tests/user_defined_files/pipeline/multiclass_classification_image_mnist_fashion"
+valid_data_path = str(
+    Path().absolute() / "../../../user_defined_files/data/raw_fashion_image_10/0.png"
 )
-valid_ground_truth_path = (
-    "tests/user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
+valid_model_path = str(
+    Path().absolute()
+    / "../../../user_defined_files/pipeline/multiclass_classification_image_mnist_fashion"
 )
+valid_ground_truth_path = str(
+    Path().absolute()
+    / "../../../user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
+)
+
 
 test_string = "data_str"
 test_int = 1
@@ -42,7 +47,7 @@ test_tuple = ("data_str", "data_str")
 test_none = None
 
 
-class TestObject:
+class ObjectTest:
     def __init__(self):
         test_discover_plugin()
         (
@@ -71,7 +76,8 @@ class TestObject:
         model_type = ModelType.CLASSIFICATION
         input_args = {
             "annotated_ground_truth_path": (
-                "tests/user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
+                # "tests/user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
+                "../../../user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
             ),
             "file_name_label": ("file_name"),
         }
@@ -129,7 +135,7 @@ def get_data_instance_and_serializer_without_ground_truth(request):
         data_serializer_instance,
         data_error_message,
     ) = PluginManager.get_instance(PluginType.DATA, **{"filename": request.param})
-    test_object = TestObject()
+    test_object = ObjectTest()
     data_instance.remove_ground_truth(test_object._ground_truth)
     yield (data_instance, data_serializer_instance)
 
@@ -185,7 +191,7 @@ def get_ground_truth_instance_and_serializer(request):
 
 
 def test_create_plugin_instance_with_all_valid_input():
-    test_object = TestObject()
+    test_object = ObjectTest()
     test_plugin = Plugin(
         test_object._data_instance_and_serializer,
         test_object._model_instance_and_serializer,
@@ -209,7 +215,7 @@ def test_create_plugin_instance_with_all_valid_input():
 def test_init_plugin_instance_with_invalid_data_instance_type(
     invalid_data_instance_type,
 ):
-    test_object = TestObject()
+    test_object = ObjectTest()
     expected_exception_msg = "The algorithm has failed data validation"
     with pytest.raises(test_object._expected_exception) as excinfo:
         Plugin(
@@ -231,7 +237,7 @@ def test_init_plugin_instance_with_invalid_data_instance_type(
 def test_init_plugin_instance_with_invalid_model_instance_type(
     invalid_model_instance_type,
 ):
-    test_object = TestObject()
+    test_object = ObjectTest()
     expected_exception_msg = "The algorithm has failed model validation"
     with pytest.raises(test_object._expected_exception) as excinfo:
         Plugin(
@@ -256,7 +262,7 @@ def test_init_plugin_instance_with_invalid_model_instance_type(
 def test_init_plugin_instance_with_invalid_ground_truth_instance_type(
     invalid_ground_truth_instance_type,
 ):
-    test_object = TestObject()
+    test_object = ObjectTest()
     expected_exception_msg = "The algorithm has failed ground truth data validation"
     with pytest.raises(test_object._expected_exception) as excinfo:
         Plugin(
@@ -278,7 +284,7 @@ def test_init_plugin_instance_with_invalid_ground_truth_instance_type(
     "ground_truth", [test_int, test_float, test_list, test_dict, test_tuple]
 )
 def test_init_plugin_instance_with_invalid_ground_truth_type(ground_truth):
-    test_object = TestObject()
+    test_object = ObjectTest()
     test_object._input_args["ground_truth"] = ground_truth
     expected_exception_msg = "The algorithm has failed ground truth header validation."
     with pytest.raises(test_object._expected_exception) as excinfo:
@@ -296,7 +302,7 @@ def test_init_plugin_instance_with_invalid_ground_truth_type(ground_truth):
 
 @pytest.mark.parametrize("ground_truth", [test_none])
 def test_init_plugin_instance_with_none_ground_truth_type(ground_truth):
-    test_object = TestObject()
+    test_object = ObjectTest()
     test_object._input_args["ground_truth"] = ground_truth
     expected_exception_msg = "The algorithm has failed ground truth header validation."
     with pytest.raises(test_object._expected_exception) as excinfo:
@@ -366,7 +372,7 @@ def test_init_plugin_instance_with_missing_ground_truth(
     ],
 )
 def test_setup_plugin_instance_with_invalid_model_type(invalid_model_type):
-    test_object = TestObject()
+    test_object = ObjectTest()
     test_object._input_args["model_type"] = invalid_model_type
     expected_exception_msg = "The algorithm has failed validation for model type"
     with pytest.raises(test_object._expected_exception) as excinfo:
@@ -387,7 +393,7 @@ def test_setup_plugin_instance_with_invalid_model_type(invalid_model_type):
     [test_string, test_int, test_float, test_list, test_dict, test_tuple],
 )
 def test_setup_plugin_instance_with_invalid_logger_type(invalid_logger_type):
-    test_object = TestObject()
+    test_object = ObjectTest()
     test_object._input_args["logger"] = invalid_logger_type
     expected_exception_msg = (
         "The algorithm has failed to set up logger. The logger type is invalid"
@@ -420,7 +426,7 @@ def test_setup_plugin_instance_with_invalid_logger_type(invalid_logger_type):
     ],
 )
 def test_setup_plugin_instance_with_invalid_log_level_and_message(log_info):
-    test_object = TestObject()
+    test_object = ObjectTest()
     expected_exception_msg = "The algorithm has invalid log level or message."
     test_plugin = Plugin(
         test_object._data_instance_and_serializer,
@@ -441,7 +447,7 @@ def test_setup_plugin_instance_with_invalid_log_level_and_message(log_info):
     [test_string, test_int, test_float, test_list, test_dict, test_tuple],
 )
 def test_init_plugin_instance_with_invalid_project_base_path(invalid_project_base_path):
-    test_object = TestObject()
+    test_object = ObjectTest()
     test_object._input_args["project_base_path"] = invalid_project_base_path
     expected_exception_msg = "The algorithm has failed validation for the project path."
     with pytest.raises(test_object._expected_exception) as excinfo:
@@ -458,7 +464,7 @@ def test_init_plugin_instance_with_invalid_project_base_path(invalid_project_bas
 
 
 def test_plugin_valid_get_metadata():
-    test_object = TestObject()
+    test_object = ObjectTest()
     test_plugin = Plugin(
         test_object._data_instance_and_serializer,
         test_object._model_instance_and_serializer,
@@ -471,7 +477,7 @@ def test_plugin_valid_get_metadata():
 
 
 def test_plugin_valid_get_plugin_type():
-    test_object = TestObject()
+    test_object = ObjectTest()
     test_plugin = Plugin(
         test_object._data_instance_and_serializer,
         test_object._model_instance_and_serializer,
@@ -489,7 +495,7 @@ def test_plugin_valid_get_plugin_type():
     indirect=["get_data_instance_and_serializer_without_ground_truth"],
 )
 def test_valid_run(get_data_instance_and_serializer_without_ground_truth):
-    test_object = TestObject()
+    test_object = ObjectTest()
     test_object._ground_truth_instance_and_serializer[0].keep_ground_truth(
         test_object._ground_truth
     )
@@ -505,7 +511,13 @@ def test_valid_run(get_data_instance_and_serializer_without_ground_truth):
     results = remove_numpy_formats(test_plugin.get_results())
     validate_status = validate_json(
         results,
-        load_schema_file(str(Path().absolute() / "output.schema.json")),
+        load_schema_file(
+            str(
+                Path(
+                    Path().absolute() / "aiverify_robustness_toolbox/output.schema.json"
+                ).resolve()
+            )
+        ),
     )
 
-    assert validate_status == True
+    assert validate_status
