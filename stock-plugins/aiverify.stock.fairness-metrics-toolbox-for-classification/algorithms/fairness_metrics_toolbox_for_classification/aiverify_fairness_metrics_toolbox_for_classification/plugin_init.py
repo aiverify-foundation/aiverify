@@ -1,120 +1,99 @@
-import argparse
+import os
+import sys
 
 from aiverify_fairness_metrics_toolbox_for_classification.algo_init import AlgoInit
 from test_engine_core.plugins.enums.model_type import ModelType
 
-parser = argparse.ArgumentParser(
-    description="Run the plugin test with specified parameters."
-)
+class PluginInit:
+    def __init__(self):
+        #need help info
+        self.data_path = self.get_env_variable("DATA_PATH")
+        self.model_path = self.get_env_variable("MODEL_PATH")
+        self.ground_truth_path = self.get_env_variable("GROUND_TRUTH_PATH")
+        self.ground_truth = self.get_env_variable("GROUND_TRUTH")
+        self.run_pipeline = os.getenv("RUN_PIPELINE", "").lower() == "true"
+        self.model_type = self.get_model_type("MODEL_TYPE") 
+        self.core_modules_path = os.getenv("CORE_MODULES_PATH", "")
+        self.sensitive_features_list = os.getenv("SENSITIVE_FEATURES_LIST", "").split("+")
+        self.annotated_labels_path = os.getenv("ANNOTATED_LABELS_PATH", "")  
+        self.file_name_label = os.getenv("FILE_NAME_LABEL", "")
+        
+    def invoke_fairness_metrics_toolbox_for_classification_plugin(self):
+        # =====================================================================================
+        # NOTE: Do not modify the code below
+        # =====================================================================================
+        # Perform Plugin Testing
 
+        # Determine the value of run_pipeline
+        if self.run_pipeline is None:
+            self.run_pipeline = False  # Default to False if not provided
+        else:
+            self.run_pipeline = self.run_pipeline
 
-def run():
-    parse_input_args()
-    invoke_fairness_metrics_toolbox_for_classification_plugin()
+        # Map string argument to ModelType enum
+        # try:
+        #     self.model_type = ModelType[self.model_type]
+        # except KeyError:
+        #     raise ValueError(f"Invalid model type: '{self.model_type}'. Expected one of: {list(ModelType.keys())}")
 
+        plugin_argument_values = {
+            "sensitive_feature": self.sensitive_features_list,
+            "annotated_labels_path": self.annotated_labels_path,
+            "file_name_label": self.file_name_label,
+        }
 
-def parse_input_args():
-    global parser
-
-    parser.add_argument("--data_path", required=True, help="Path to the data file.")
-    parser.add_argument("--model_path", required=True, help="Path to the model file.")
-    parser.add_argument(
-        "--ground_truth_path", required=True, help="Path to the ground truth data file."
-    )
-    parser.add_argument(
-        "--ground_truth",
-        required=True,
-        help="The ground truth column name in the data.",
-    )
-    parser.add_argument(
-        "--run_pipeline",
-        action=argparse.BooleanOptionalAction,
-        help="Whether to run the test as a pipeline (default: False).",
-    )
-    parser.add_argument(
-        "--model_type",
-        required=True,
-        choices=["CLASSIFICATION", "REGRESSION"],
-        help="The type of model (CLASSIFICATION or REGRESSION).",
-    )
-    parser.add_argument(
-        "--core_modules_path",
-        default="",
-        help="Path to the core modules (default: empty).",
-    )
-    parser.add_argument(
-        "--sensitive_features_list",
-        default="",
-        nargs="+",  # '+' - one or more arguments are expected
-        type=str,
-        help="A list of sensitive features.",
-    )
-    parser.add_argument(
-        "--annotated_labels_path",
-        default="",
-        help="Path to the annotated labels file.",
-    )
-    parser.add_argument("--file_name_label", default="", help="The label value.")
-
-
-def invoke_fairness_metrics_toolbox_for_classification_plugin():
-    # =====================================================================================
-    # NOTE: Do not modify the code below
-    # =====================================================================================
-    # Perform Plugin Testing
-
-    # Parse the arguments
-    args = parser.parse_args()
-
-    # Determine the value of run_pipeline
-    if args.run_pipeline is None:
-        run_pipeline = False  # Default to False if not provided
-    else:
-        run_pipeline = args.run_pipeline
-
-    # Map string argument to ModelType enum
-    model_type = ModelType[args.model_type]
-
-    plugin_argument_values = {
-        "sensitive_feature": args.sensitive_features_list,
-        "annotated_labels_path": args.annotated_labels_path,
-        "file_name_label": args.file_name_label,
-    }
-
-    print("*" * 20)
-    # Debugging prints
-    print(
-        f"Running with the following arguments:\n"
-        f"Data Path: {args.data_path}\n"
-        f"Model Path: {args.model_path}\n"
-        f"Ground Truth Path: {args.ground_truth_path}\n"
-        f"Ground Truth: {args.ground_truth}\n"
-        f"Run Pipeline: {run_pipeline}\n"
-        f"Model Type: {model_type}\n"
-        f"Core Modules Path: {args.core_modules_path}\n"
-        f"Sensitive Features list: {args.sensitive_features_list}\n"
-        f"Annotated Labels Path: {args.annotated_labels_path}\n"
-        f"File Name Label: {args.file_name_label}"
-    )
-    print("*" * 20)
-
-    try:
-        # Create an instance of AlgoInit with defined paths and arguments and Run.
-        plugin_test = AlgoInit(
-            run_pipeline,
-            args.core_modules_path,
-            args.data_path,
-            args.model_path,
-            args.ground_truth_path,
-            args.ground_truth,
-            model_type,
-            plugin_argument_values,
+        print("*" * 20)
+        # Debugging prints
+        print(
+            f"Running with the following arguments:\n"
+            f"Data Path: {self.data_path}\n"
+            f"Model Path: {self.model_path}\n"
+            f"Ground Truth Path: {self.ground_truth_path}\n"
+            f"Ground Truth: {self.ground_truth}\n"
+            f"Run Pipeline: {self.run_pipeline}\n"
+            f"Model Type: {self.model_type}\n"
+            f"Core Modules Path: {self.core_modules_path}\n"
+            f"Sensitive Features list: {self.sensitive_features_list}\n"
+            f"Annotated Labels Path: {self.annotated_labels_path}\n"
+            f"File Name Label: {self.file_name_label}"
         )
-        plugin_test.run()
+        print("*" * 20)
 
-    except Exception as exception:
-        print(f"Exception caught while running the plugin test: {str(exception)}")
+        try:
+            # Create an instance of AlgoInit with defined paths and arguments and Run.
+            plugin_test = AlgoInit(
+                self.run_pipeline,
+                self.core_modules_path,
+                self.data_path,
+                self.model_path,
+                self.ground_truth_path,
+                self.ground_truth,
+                self.model_type,
+                plugin_argument_values,
+            )
+            plugin_test.run()
 
+        except Exception as exception:
+            print(f"Exception caught while running the plugin test: {str(exception)}")
 
-if __name__ == "__main__":
-    run()
+    def get_env_variable(self, name):
+        value = os.getenv(name)
+        if value is None:
+            print(f"Error: The environment variable '{name}' is required but not set.")
+            sys.exit(1)
+        return value
+    
+    def get_model_type(self, type):
+        try:
+            model_type = os.getenv(type)
+            model_type = ModelType[model_type]
+        except KeyError:
+            print(f"Invalid model type: '{model_type}'. Expected one of: {list([model.name for model in ModelType])}")
+            sys.exit(1)
+        return model_type
+    
+    def run(self):
+        self.invoke_fairness_metrics_toolbox_for_classification_plugin()
+
+# if __name__ == "__main__":
+#     run()
