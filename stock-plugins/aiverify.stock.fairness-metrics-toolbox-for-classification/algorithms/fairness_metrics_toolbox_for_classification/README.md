@@ -53,3 +53,20 @@ Execute the below steps to execute unit and integration tests inside tests/ fold
 cd aiverify/stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification/
 pytest .
 ```
+## Run algorithm using docker
+### Build algorithm docker image in this folder
+```
+docker build -t aiverify-fairness-metrics-toolbox-for-classification:v1 .
+```
+In docker_algo.sh, 
+1. Edit the environment variables to point to your files 
+2. Edit the volume mount to change your local mounted folder to view the output
+   
+### Run the algorithm
+```
+bash docker_algo.sh
+```
+### Run algorithm's unit and e2e tests
+```
+docker run aiverify-fairness-metrics-toolbox-for-classification:v1 python3 -m pytest .
+```
