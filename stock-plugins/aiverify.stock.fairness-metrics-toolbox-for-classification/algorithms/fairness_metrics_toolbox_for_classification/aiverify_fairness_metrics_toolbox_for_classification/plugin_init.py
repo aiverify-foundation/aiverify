@@ -30,12 +30,6 @@ class PluginInit:
         else:
             self.run_pipeline = self.run_pipeline
 
-        # Map string argument to ModelType enum
-        # try:
-        #     self.model_type = ModelType[self.model_type]
-        # except KeyError:
-        #     raise ValueError(f"Invalid model type: '{self.model_type}'. Expected one of: {list(ModelType.keys())}")
-
         plugin_argument_values = {
             "sensitive_feature": self.sensitive_features_list,
             "annotated_labels_path": self.annotated_labels_path,
