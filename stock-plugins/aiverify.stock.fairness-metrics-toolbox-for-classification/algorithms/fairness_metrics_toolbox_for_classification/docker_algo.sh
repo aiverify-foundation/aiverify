@@ -10,7 +10,7 @@ docker run \
 -e MODEL_TYPE="CLASSIFICATION" \
 -e SENSITIVE_FEATURES_LIST="gender+race" \
 -v ./output/:/app/aiverify/stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification/output \
-fairness:v0
+aiverify-fairness-metrics-toolbox-for-classification:v1
 
 #binary non-pipeline
 # docker run \
@@ -22,4 +22,4 @@ fairness:v0
 # -e MODEL_TYPE="CLASSIFICATION" \
 # -e SENSITIVE_FEATURES_LIST="gender" \
 # -v ./output/:/app/aiverify/stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification/output \
-# fairness:v0
+# aiverify-fairness-metrics-toolbox-for-classification:v1
