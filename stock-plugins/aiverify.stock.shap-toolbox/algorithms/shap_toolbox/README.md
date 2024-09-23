@@ -46,13 +46,13 @@ python -m aiverify_shap_toolbox \
 ```
 ## Build Plugin
 ```
-cd cd aiverify/stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox/
+cd aiverify/stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox/
 hatch build
 ```
 ## Tests
 ### Pytest is used as the testing framework.
 Execute the below steps to execute unit and integration tests inside tests/ folder
 ```
-cd cd aiverify/stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox/
+cd aiverify/stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox/
 pytest .
 ```
