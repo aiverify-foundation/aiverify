@@ -59,7 +59,6 @@ def test_client(SessionLocal):
             if db:
                 db.close()
 
-    print(app.dependency_overrides)
     app.dependency_overrides[get_db_session] = override_get_db
     with TestClient(app) as test_client:
         yield test_client
@@ -72,6 +71,7 @@ def mock_plugins(db_session):
     from .mocks.mock_data_plugin import create_mock_plugins
     from aiverify_apigw.models import PluginModel, AlgorithmModel, WidgetModel, InputBlockModel, TemplateModel, PluginComponentModel
     plugins = create_mock_plugins(db_session)
+    db_session.commit()
     yield plugins
     db_session.query(PluginModel).delete()
     db_session.query(AlgorithmModel).delete()
@@ -79,4 +79,18 @@ def mock_plugins(db_session):
     db_session.query(InputBlockModel).delete()
     db_session.query(TemplateModel).delete()
     db_session.query(PluginComponentModel).delete()
+    db_session.commit()
+
+
+@pytest.fixture(scope="function")
+def mock_test_results(db_session, mock_plugins):
+    from .mocks.mock_test_result import create_mock_test_results
+    from aiverify_apigw.models import TestResultModel, TestModelModel, TestDatasetModel, TestArtifactModel
+    results = create_mock_test_results(db_session, mock_plugins)
+    db_session.commit()
+    yield results
+    db_session.query(TestResultModel).delete()
+    db_session.query(TestModelModel).delete()
+    db_session.query(TestDatasetModel).delete()
+    db_session.query(TestArtifactModel).delete()
     db_session.commit()

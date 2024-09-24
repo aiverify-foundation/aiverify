@@ -7,9 +7,8 @@ import json
 
 client = TestClient(app)
 
+
 # Test Class for POST /test_result/upload
-
-
 class TestUploadTestResult:
 
     @pytest.fixture
@@ -161,3 +160,212 @@ class TestUploadTestResult:
         assert db_session.query(TestResultModel).count() == 4
         assert db_session.query(TestModelModel).count() == 1
         assert db_session.query(TestDatasetModel).count() == 2
+
+
+# Test class for GET /{test_result_id}/artifacts/{filename}
+class TestGetTestResultArtifact:
+
+    @pytest.fixture
+    def mock_artifact(self):
+        """Fixture to return a mock TestArtifactModel."""
+        artifact = MagicMock(spec=TestArtifactModel)
+        artifact.filename = "test_file.txt"
+        artifact.mimetype = "text/plain"
+        artifact.suffix = ".txt"
+        return artifact
+
+    @patch("aiverify_apigw.routers.test_result_router.get_artifact")
+    def test_get_test_result_artifact_success(
+        self, mock_get_artifact, mock_test_results, test_client
+    ):
+        """Test successfully retrieving an artifact."""
+        test_result = mock_test_results[1]
+        test_artifact = test_result.artifacts[0]
+
+        # Mock the get_artifact function to return the mock artifact data
+        mock_artifact_data = b"Mock file content"
+        mock_get_artifact.return_value = mock_artifact_data
+
+        # Perform the GET request
+        test_result_id = test_result.id
+        filename = test_artifact.filename
+        response = test_client.get(f"/test_result/{test_result_id}/artifacts/{filename}")
+
+        # Assertions
+        assert response.status_code == 200
+        assert response.content == mock_artifact_data
+        assert response.headers["Content-Disposition"] == f"inline; filename=\"{filename}\""
+
+    @patch("aiverify_apigw.routers.test_result_router.get_artifact")
+    def test_get_test_result_artifact_not_found(
+        self, mock_get_artifact, mock_test_results, test_client
+    ):
+        """Test retrieving an artifact that does not exist in the database."""
+
+        # Perform the GET request with valid test_result_id and invalid filename
+        test_result_id = mock_test_results[0].id
+        filename = "non_existent_file.txt"
+        response = test_client.get(f"/test_result/{test_result_id}/artifacts/{filename}")
+
+        # Assertions
+        assert response.status_code == 400
+        assert response.json()["detail"] == f"Test artifact {filename} not found in test result {test_result_id}"
+
+        # Perform the GET request with invalid test_result_id and invalid filename
+        test_result_id = "101010"
+        response = test_client.get(f"/test_result/{test_result_id}/artifacts/{filename}")
+
+        # Assertions
+        assert response.status_code == 400
+        assert response.json()["detail"] == f"Test artifact {filename} not found in test result {test_result_id}"
+
+    @patch("aiverify_apigw.routers.test_result_router.get_artifact")
+    def test_get_test_result_artifact_read_failure(
+        self, mock_get_artifact, mock_test_results, test_client
+    ):
+        """Test error when retrieving the artifact file from storage."""
+        test_result = mock_test_results[1]
+        test_artifact = test_result.artifacts[0]
+
+        # Mock the get_artifact function to raise an exception (simulating a file read failure)
+        mock_get_artifact.side_effect = Exception("File read error")
+
+        # Perform the GET request
+        test_result_id = test_result.id
+        filename = test_artifact.filename
+        response = test_client.get(f"/test_result/{test_result_id}/artifacts/{filename}")
+
+        # Assertions
+        assert response.status_code == 500
+        assert response.json()["detail"] == "Unable to retrieve artifact file"
+
+
+# Test class for GET /test_result/
+class TestReadTestResults:
+
+    def test_read_test_results_success(self, mock_test_results, test_client):
+        """Test successfully retrieving a list of test results."""
+
+        # Perform the GET request
+        response = test_client.get("/test_result/")
+
+        # Assertions
+        assert response.status_code == 200
+        json_response = response.json()
+
+        # Verify the response contains the correct test results
+        assert len(json_response) == len(mock_test_results)
+        for i in range(len(json_response)):
+            assert json_response[i]["id"] == mock_test_results[i].id
+            assert json_response[i]["name"] == mock_test_results[i].name
+            assert json_response[i]["gid"] == mock_test_results[i].gid
+            assert json_response[i]["cid"] == mock_test_results[i].cid
+            assert json_response[i]["version"] == mock_test_results[i].version
+
+
+# Test class for GET /test_result/{test_result_id}
+class TestReadTestResult:
+
+    def test_read_test_result_success(self, mock_test_results, test_client):
+        """Test successfully retrieving a test result by ID."""
+        test_result = mock_test_results[0]
+
+        # Perform the GET request for test_result_id = 1
+        test_result_id = test_result.id
+        response = test_client.get(f"/test_result/{test_result_id}")
+
+        # Assertions
+        assert response.status_code == 200
+        json_response = response.json()
+
+        # Verify the response contains the correct test result data
+        assert json_response["id"] == test_result_id
+        assert json_response["name"] == test_result.name
+        assert json_response["gid"] == test_result.gid
+        assert json_response["cid"] == test_result.cid
+        assert json_response["version"] == test_result.version
+        assert json_response["time_taken"] == test_result.time_taken
+
+    def test_read_test_result_not_found(self, test_client):
+        """Test retrieving a test result that does not exist (404)."""
+
+        # Perform the GET request for a non-existent test_result_id
+        test_result_id = 999
+        response = test_client.get(f"/test_result/{test_result_id}")
+
+        # Assertions
+        assert response.status_code == 404
+        assert response.json()["detail"] == "Test result not found"
+
+
+# Test class for PUT /test_result/{test_result_id}
+class TestUpdateTestResult:
+
+    @pytest.fixture
+    def update_data(self):
+        """Fixture to provide data for updating the test result."""
+        return {"name": "Updated Test Result"}
+
+    def test_update_test_result_success(self, mock_test_results, test_client, db_session, update_data):
+        """Test successfully updating a test result by ID."""
+        test_result = mock_test_results[0]
+
+        # Perform the PUT request
+        test_result_id = test_result.id
+        response = test_client.put(f"/test_result/{test_result_id}", json=update_data)
+        db_session.commit()
+
+        # Assertions
+        assert response.status_code == 200
+        json_response = response.json()
+
+        # Verify that the result was updated
+        assert json_response["id"] == test_result_id
+        assert json_response["name"] == update_data["name"]
+
+        # Ensure the update took place
+        updated_result = db_session.query(TestResultModel).get(test_result_id)
+        assert updated_result.name == update_data["name"]
+
+    def test_update_test_result_not_found(self, test_client, update_data):
+        """Test updating a test result that does not exist (404)."""
+
+        # Perform the PUT request for a non-existent test_result_id
+        test_result_id = 999
+        response = test_client.put(f"/test_result/{test_result_id}", json=update_data)
+
+        # Assertions
+        assert response.status_code == 404
+        assert response.json()["detail"] == "Test result not found"
+
+
+# Test class for DELETE /test_result/{test_result_id}
+class TestDeleteTestResult:
+
+    def test_delete_test_result_success(self, mock_test_results, test_client, db_session):
+        """Test successfully deleting a test result by ID."""
+        test_result = mock_test_results[0]
+
+        # Perform the DELETE request
+        test_result_id = test_result.id
+        response = test_client.delete(f"/test_result/{test_result_id}")
+        db_session.commit()
+
+        # Assertions
+        assert response.status_code == 200
+
+        # Ensure the delete and commit took place
+        assert db_session.query(TestResultModel).count() == len(mock_test_results) - 1
+        updated_result = db_session.query(TestResultModel).get(test_result_id)
+        assert updated_result == None
+
+    def test_delete_test_result_not_found(self, test_client):
+        """Test deleting a test result that does not exist (404)."""
+
+        # Perform the DELETE request for a non-existent test_result_id
+        test_result_id = 999
+        response = test_client.delete(f"/test_result/{test_result_id}")
+
+        # Assertions
+        assert response.status_code == 404
+        assert response.json()["detail"] == "Test result not found"
