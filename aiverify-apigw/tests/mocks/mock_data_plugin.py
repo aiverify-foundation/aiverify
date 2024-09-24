@@ -79,5 +79,5 @@ def create_mock_plugins(session, num_plugins=2):
         plugin = _create_mock_plugin()
         plugins.append(plugin)
     session.add_all(plugins)
-    session.commit()
+    session.flush()
     return plugins
