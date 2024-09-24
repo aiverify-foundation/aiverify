@@ -103,6 +103,11 @@ class AlgorithmModel(PluginComponentModel):
     input_schema: Mapped[bytes]
     output_schema: Mapped[bytes]
 
+    algo_dir: Mapped[str] = mapped_column(String, nullable=False, default=None)
+    language: Mapped[Optional[str]]
+    script: Mapped[Optional[str]]
+    module_name: Mapped[Optional[str]]
+
     plugin_id: Mapped[int] = mapped_column(ForeignKey('plugin.gid'))
     plugin: Mapped["PluginModel"] = relationship(back_populates="algorithms")
 
@@ -121,6 +126,7 @@ class AlgorithmModel(PluginComponentModel):
     def __repr__(self) -> str:
         parent_repr = super().__repr__()
         return (f"AlgorithmModel({parent_repr}, id={self.id}, model_type={self.model_type}, "
+                f"algo_dir={self.algo_dir}, language={self.language}, script={self.script}, module_name={self.module_name} "
                 f"require_ground_truth={self.require_ground_truth}, plugin_id={self.plugin_id})")
 
 

@@ -1,8 +1,10 @@
+from os import name
 from pathlib import Path
 import json
 import tomllib
 
 from .schemas_utils import read_and_validate, plugin_schema, algorithm_schema
+from ..lib.syntax_checker import validate_python_script
 from ..schemas import PluginMeta, AlgorithmMeta
 from ..models import PluginModel, AlgorithmModel, WidgetModel, InputBlockModel, TemplateModel, PluginComponentModel
 from .database import SessionLocal
@@ -154,6 +156,7 @@ class PluginStore:
                     try:
                         cid = algopath.name
                         meta_path = algopath.joinpath(f"{cid}.meta.json")
+                        module_name = None
                         if not meta_path.exists():
                             pyproject_file = algopath.joinpath("pyproject.toml")
                             if not pyproject_file.exists():
@@ -167,6 +170,7 @@ class PluginStore:
                                 continue
                             project_name = pyproject_data["project"]["name"]
                             sub_path = algopath.joinpath(project_name)
+                            module_name = project_name
                             meta_path = sub_path.joinpath("algo.meta.json")
                             if not meta_path.exists():
                                 logger.debug(f"Algorithm folder {algopath.name} does not contain meta file, skipping")
@@ -179,10 +183,13 @@ class PluginStore:
                         meta = AlgorithmMeta.model_validate_json(json.dumps(algo_meta_json))
 
                         # validate script
-                        # script_path = algopath.joinpath(f"{meta.cid}.py")
-                        # if script_path.exists() and not validate_python_script(script_path):
-                        #     logger.warning(f"algorithm {cid} script is not valid")
-                        #     continue
+                        script_path = algopath.joinpath(f"{meta.cid}.py")
+                        if not script_path.exists():
+                            script_path = algopath.joinpath(f"algo.py")
+                        if script_path.exists(): # if script exists
+                            if not validate_python_script(script_path):
+                                logger.warning(f"algorithm {cid} script is not valid")
+                                continue
 
                         # validate requirements.txt
                         # requirements = cls.read_requirements(algopath.joinpath("requirements.txt"))
@@ -214,6 +221,10 @@ class PluginStore:
                             require_ground_truth=meta.requireGroundTruth,
                             input_schema=json.dumps(input_schema).encode("utf-8"),
                             output_schema=json.dumps(output_schema).encode("utf-8"),
+                            algo_dir=algopath.relative_to(folder).as_posix(),
+                            language="python", # fixed to python first. To support other languages in future
+                            script=script_path.name,
+                            module_name=module_name,
                         )
 
                         logger.debug(f"New algorithm {algorithm}")

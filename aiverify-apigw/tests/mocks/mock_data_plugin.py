@@ -38,7 +38,11 @@ def _create_mock_algorithm(gid: str):
             },
             "required": [ "result" ]
         }""",
-        plugin_id=gid
+        plugin_id=gid,
+        algo_dir=f"algorithms/{faker.name()}/{faker.name()}",
+        language="python",
+        script="algo.py",
+        module_name=faker.name(),
     )
 
 
