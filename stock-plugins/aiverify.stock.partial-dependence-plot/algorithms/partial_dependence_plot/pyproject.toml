@@ -4,12 +4,12 @@ version = "0.10.0"
 description = ""
 authors = [{ name = "AI Verify" }]
 readme = "README.md"
-dependencies = ["numpy==1.24.3", "scipy==1.12.0"]
+dependencies = ["numpy==1.26.4", "scipy==1.14.1"]
 requires-python = ">=3.10,<3.12"
 
 [project.optional-dependencies]
 dev = [
-    "test-engine-core @ {root:parent:parent:parent:parent:uri}/test-engine-core",
+    "test-engine-core[dev] @ {root:parent:parent:parent:parent:uri}/test-engine-core",
 ]
 
 [project.scripts]

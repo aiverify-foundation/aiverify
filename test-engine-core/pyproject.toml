@@ -4,7 +4,8 @@ version = "0.10.0"
 authors = [{ name = "AI Verify" }]
 description = "This core project will support critical functionalities to support plugins and apps."
 dependencies = [
-    "joblib==1.3.2",
+    "joblib==1.4.2",
+    "pillow==10.4.0",
     "libclang==16.0.6",
     "numpy==1.26.4",
     "scikit-learn==1.5.2",

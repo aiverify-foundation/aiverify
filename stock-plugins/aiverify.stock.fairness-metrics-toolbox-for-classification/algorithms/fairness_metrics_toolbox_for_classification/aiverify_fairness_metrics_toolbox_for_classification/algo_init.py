@@ -193,11 +193,9 @@ class AlgoInit:
                     )
                     print(f"[GROUND_TRUTH]: {self._ground_truth}")
                     print(f"[MODEL_TYPE]: {self._model_type}")
-                    print(f"[DATA FEATURES]: {self._data_instance.read_labels()}")
                     print(
                         f"[GROUND_TRUTH FEATURES]: {self._ground_truth_instance.read_labels()}"
                     )
-                    print(self._ground_truth_instance.get_data())
 
                     print(
                         "Removing ground truth from data and keep only ground truth in ground truth data..."
@@ -219,7 +217,6 @@ class AlgoInit:
                             "truth feature exists in the data specified in ground truth path file.)"
                         )
 
-                    print(f"[DATA FEATURES]: {self._data_instance.read_labels()}")
                     print(
                         f"[GROUND_TRUTH FEATURES]: {self._ground_truth_instance.read_labels()}"
                     )

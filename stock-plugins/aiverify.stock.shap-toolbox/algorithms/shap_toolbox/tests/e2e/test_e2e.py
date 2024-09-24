@@ -69,7 +69,7 @@ multiclass_pipeline = {
 regression_non_pipeline = {
     "data_path": str("../../../user_defined_files/data/sample_reg_donation_data.sav"),
     "model_path": str(
-        "../../../user_defined_files/model/sample_reg_donation_sklearn_linear.LogisticRegression.sav"
+        "../../../user_defined_files/model/sample_reg_donation_sklearn_linear.LinearRegression.sav"
     ),
     "ground_truth_path": str(
         "../../../user_defined_files/data/sample_reg_donation_data.sav"
