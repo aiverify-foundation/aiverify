@@ -53,3 +53,28 @@ Execute the below steps to execute unit and integration tests inside tests/ fold
 cd aiverify/stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification/
 pytest .
 ```
+## Run algorithm using docker
+### Build algorithm docker image in this folder
+```
+docker build -t aiverify-fairness-metrics-toolbox-for-classification:v1 .
+```
+### Run the algorithm with a volume mount to see the output of results.json locally
+```
+#!/bin/bash
+
+root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files"
+docker run \
+  -v ./output/:/app/aiverify/stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification/output \
+  aiverify-fairness-metrics-toolbox-for-classification:v1 \
+  --data_path $root_path/data/sample_mc_pipeline_toxic_data.sav \
+  --model_path $root_path/pipeline/mc_tabular_toxic \
+  --ground_truth_path $root_path/data/sample_mc_pipeline_toxic_ytest_data.sav \
+  --ground_truth toxic \
+  --model_type CLASSIFICATION \
+  --run_pipeline \
+  --sensitive_features_list gender
+```
+### Run algorithm's unit and e2e tests
+```
+docker run --entrypoint python3 aiverify-fairness-metrics-toolbox-for-classification:v1 -m pytest .
+```
