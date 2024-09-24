@@ -100,20 +100,23 @@ async def _save_test_result(session: Session, test_result: TestResult, artifact_
     if test_arguments.groundTruthDataset:
         if test_arguments.groundTruth is None:
             raise HTTPException(status_code=400, detail="Missing groundTruth")
-        ground_truth_file = PurePath(test_arguments.testDataset)
-        stmt = select(TestDatasetModel).filter_by(filename=ground_truth_file.name)
-        ground_truth_dataset = session.scalar(stmt)
-        if ground_truth_dataset is None:
-            ground_truth_dataset = TestDatasetModel(
-                name=ground_truth_file.name,
-                status=TestDatasetStatus.Valid,
-                filepath=test_arguments.groundTruthDataset,
-                filename=ground_truth_file.name,
-                file_type=TestDatasetFileType.File
-            )
-            # session.add(ground_truth_dataset)
-            # session.flush()
-            logger.info(f"Insert new test dataaset in db: {ground_truth_dataset}")
+        if test_arguments.groundTruthDataset != test_arguments.testDataset:
+            ground_truth_file = PurePath(test_arguments.groundTruthDataset)
+            stmt = select(TestDatasetModel).filter_by(filename=ground_truth_file.name)
+            ground_truth_dataset = session.scalar(stmt)
+            if ground_truth_dataset is None:
+                ground_truth_dataset = TestDatasetModel(
+                    name=ground_truth_file.name,
+                    status=TestDatasetStatus.Valid,
+                    filepath=test_arguments.groundTruthDataset,
+                    filename=ground_truth_file.name,
+                    file_type=TestDatasetFileType.File
+                )
+                # session.add(ground_truth_dataset)
+                # session.flush()
+                logger.info(f"Insert new test dataaset in db: {ground_truth_dataset}")
+        else:
+            ground_truth_dataset = test_dataset
 
     # Create a new TestResultModel instance
     test_result_model = TestResultModel(
