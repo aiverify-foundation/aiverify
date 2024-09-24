@@ -38,6 +38,9 @@ dependencies = [
 [tool.hatch.envs.default.scripts]
 dev = "python -m aiverify_apigw"
 
+[[tool.hatch.envs.hatch-test.matrix]]
+python = ["3.11"]
+
 [tool.hatch.envs.hatch-test]
 extra-dependencies = [
     "faker>=28.1.0"
