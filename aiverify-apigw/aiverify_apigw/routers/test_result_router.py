@@ -26,7 +26,7 @@ router = APIRouter(
 # async def read_test_results():
 #     return {"message": "List of test results"}
 
-async def _save_test_result(session:Session, test_result: TestResult, artifact_set: dict[str,UploadFile]):
+async def _save_test_result(session: Session, test_result: TestResult, artifact_set: dict[str, UploadFile]):
     # find algorithm
     stmt = (
         select(AlgorithmModel)
@@ -36,7 +36,7 @@ async def _save_test_result(session:Session, test_result: TestResult, artifact_s
     algorithm = session.scalar(stmt)
     if algorithm is None:
         raise HTTPException(status_code=400, detail=f"Algorithm {test_result.gid} not found")
-    
+
     now = datetime.now()
     test_arguments = test_result.test_arguments
 
@@ -52,8 +52,8 @@ async def _save_test_result(session:Session, test_result: TestResult, artifact_s
     except:
         logger.warn(f"Test result output for algorithm {algorithm.cid} is invalid")
         raise HTTPException(status_code=422, detail="Test result output is invalid")
-    
-    # find model    
+
+    # find model
     # todo: to support api in future
     if test_arguments.mode == "api":
         raise HTTPException(status_code=400, detail=f"Algorithm {test_result.gid} not found")
@@ -163,6 +163,7 @@ async def _save_test_result(session:Session, test_result: TestResult, artifact_s
     urls = [f"/test_result/{test_result_id}/artifacts/{artifact.filename}" for artifact in test_result_model.artifacts]
     return [f"/test_result/{test_result_id}"] + urls
 
+
 @router.post("/upload")
 async def upload_test_result(
     test_result: Annotated[Any, Form(examples=test_result_examples)],
@@ -188,7 +189,7 @@ async def upload_test_result(
     except Exception as e:
         print("Exception: ", e)
         raise HTTPException(status_code=422)
-    artifact_set = dict[str,UploadFile]()
+    artifact_set = dict[str, UploadFile]()
     if artifacts and len(artifacts) > 0:
         for artifact in artifacts:
             if artifact.filename:
@@ -209,6 +210,7 @@ async def upload_test_result(
             raise HTTPException(status_code=400, detail=f"Test result upload error: {e}")
     return all_urls
 
+
 @router.get("/{test_result_id}/artifacts/{filename}")
 async def get_test_result_artifact(
     test_result_id: str,
@@ -226,8 +228,8 @@ async def get_test_result_artifact(
         )
         artifact = session.scalar(stmt)
         if artifact is None:
-            raise HTTPException(status_code=400, detail=f"Test artifact {
-                                filename} not found in test result {test_result_id}")
+            raise HTTPException(
+                status_code=400, detail=f"Test artifact {filename} not found in test result {test_result_id}")
 
         try:
             data = get_artifact(test_result_id, filename)
@@ -308,6 +310,7 @@ async def update_test_result(test_result_id: int, update_data: TestResultUpdate,
     except Exception as e:
         logger.error(f"Error updating test result with ID {test_result_id}: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
+
 
 @router.delete("/{test_result_id}")
 async def delete_test_result(test_result_id: int, session: Session = Depends(get_db_session)):
