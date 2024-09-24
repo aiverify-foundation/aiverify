@@ -6,7 +6,8 @@ import sys
 from importlib.metadata import version
 from pathlib import Path
 
-from aiverify_fairness_metrics_toolbox_for_classification.plugin_init import PluginInit
+from aiverify_fairness_metrics_toolbox_for_classification.plugin_init import run
+
 
 def main() -> None:
     """
@@ -16,8 +17,7 @@ def main() -> None:
     print(version_msg())
     print("*" * 20)
     # invoke algorithm
-    plugininit = PluginInit()
-    plugininit.run()
+    run()
 
 
 def version_msg():
