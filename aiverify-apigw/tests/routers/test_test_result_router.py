@@ -76,6 +76,7 @@ class TestUploadTestResult:
 
         mock_test_result_data["gid"] = plugin.gid
         mock_test_result_data["cid"] = algo.cid
+        mock_test_result_data["artifacts"] = [mock_upload_file.filename]
         files = {'artifacts': (mock_upload_file.filename, mock_upload_file.file.read(), mock_upload_file.content_type)}
         form_data = {
             "test_result": json.dumps(mock_test_result_data)
