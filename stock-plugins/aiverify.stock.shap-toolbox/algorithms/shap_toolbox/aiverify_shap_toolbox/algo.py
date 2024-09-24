@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Tuple, Union
 import numpy as np
 import shap
 import xgboost
-from src.explain_types import ExplainType
+from aiverify_shap_toolbox.utils.explain_types import ExplainType
 from test_engine_core.interfaces.ialgorithm import IAlgorithm
 from test_engine_core.interfaces.idata import IData
 from test_engine_core.interfaces.imodel import IModel
@@ -19,6 +19,7 @@ from test_engine_core.plugins.metadata.plugin_metadata import PluginMetadata
 from test_engine_core.plugins.plugins_manager import PluginManager
 from test_engine_core.utils.json_utils import load_schema_file, validate_json
 from test_engine_core.utils.simple_progress import SimpleProgress
+from test_engine_core.utils.url_utils import is_url
 
 
 # =====================================================================================
@@ -158,15 +159,16 @@ class Plugin(IAlgorithm):
         # Algorithm input schema defined in input.schema.json
         # By defining the input schema, it allows the front-end to know what algorithm input params is
         # required by this plugin. This allows this algorithm plug-in to receive the arguments values it requires.
+        current_file_dir = Path(__file__).parent
         self._input_schema = load_schema_file(
-            str(self._base_path / "input.schema.json")
+            str(current_file_dir / "input.schema.json")
         )
 
         # Algorithm output schema defined in output.schema.json
         # By defining the output schema, this plug-in validates the result with the output schema.
         # This allows the result to be validated against the schema before passing it to the front-end for display.
         self._output_schema = load_schema_file(
-            str(self._base_path / "output.schema.json")
+            str(current_file_dir / "output.schema.json")
         )
 
         # Retrieve the input parameters defined in the input schema and store them
@@ -174,6 +176,7 @@ class Plugin(IAlgorithm):
         for key in self._input_schema.get("properties").keys():
             self._input_arguments.update({key: kwargs.get(key)})
 
+        print(f"_input_arguments :  {self._input_arguments}")
         # Perform validation on input argument schema
         if not validate_json(self._input_arguments, self._input_schema):
             self.add_to_log(
@@ -595,7 +598,10 @@ class Plugin(IAlgorithm):
             explain_type.name.lower() for explain_type in ExplainType
         ]
 
-        if input_background_path == "" or not self._is_file(input_background_path):
+        if input_background_path == "" or (
+            not self._is_file(input_background_path)
+            and not is_url(input_background_path)
+        ):
             error_count += 1
             error_message += "The background path is invalid;"
 
