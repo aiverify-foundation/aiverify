@@ -158,8 +158,7 @@ class PluginStore:
                         if not meta_path.exists():
                             pyproject_file = algopath.joinpath("pyproject.toml")
                             if not pyproject_file.exists():
-                                logger.debug(f"Algorithm folder {
-                                             algopath.name} does not contain meta file nor pyproject.toml, skipping")
+                                logger.debug(f"Algorithm folder {algopath.name} does not contain meta file nor pyproject.toml, skipping")
                                 continue
                             with open(pyproject_file, "rb") as fp:
                                 pyproject_data = tomllib.load(fp)
@@ -271,8 +270,7 @@ class PluginStore:
                 if not meta_path.exists():
                     pyproject_file = algopath.joinpath("pyproject.toml")
                     if not pyproject_file.exists():
-                        logger.debug(f"Algorithm folder {
-                                     algopath.name} does not contain meta file nor pyproject.toml, skipping")
+                        logger.debug(f"Algorithm folder {algopath.name} does not contain meta file nor pyproject.toml, skipping")
                         continue
                     with open(pyproject_file, "rb") as fp:
                         pyproject_data = tomllib.load(fp)
