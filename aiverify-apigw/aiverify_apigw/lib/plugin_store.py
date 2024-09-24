@@ -1,4 +1,3 @@
-from os import name
 from pathlib import Path
 import json
 import tomllib
