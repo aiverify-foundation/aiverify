@@ -1,13 +1,14 @@
 FROM python:3.11-slim
 
-ENV TZ=Asia/Singapore
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y git gcc
 
+# Install HDF5 using apt
+RUN apt-get update && apt-get install -y libhdf5-dev pkg-config
+
 RUN pip install --upgrade pip
+RUN pip install --no-binary h5py h5py
 
 # Copy test engine core folder to install requirements; in future we can install the test-engine-core pypi package
 # Copy algorithm folder as well as sample data
