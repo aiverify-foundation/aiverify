@@ -6,10 +6,9 @@ from .schemas_utils import read_and_validate, plugin_schema, algorithm_schema
 from ..schemas import PluginMeta, AlgorithmMeta
 from ..models import PluginModel, AlgorithmModel, WidgetModel, InputBlockModel, TemplateModel, PluginComponentModel
 from .database import SessionLocal
-from .syntax_checker import validate_python_script
 from .logging import logger
 from .filestore import delete_all_plugins as fs_delete_all_plugins, delete_plugin as fs_delete_plugin, save_plugin as fs_save_plugin
-from sqlalchemy import exists, select, func
+from sqlalchemy import select, func
 
 
 class PluginStoreException(Exception):
@@ -158,7 +157,8 @@ class PluginStore:
                         if not meta_path.exists():
                             pyproject_file = algopath.joinpath("pyproject.toml")
                             if not pyproject_file.exists():
-                                logger.debug(f"Algorithm folder {algopath.name} does not contain meta file nor pyproject.toml, skipping")
+                                logger.debug(
+                                    f"Algorithm folder {algopath.name} does not contain meta file nor pyproject.toml, skipping")
                                 continue
                             with open(pyproject_file, "rb") as fp:
                                 pyproject_data = tomllib.load(fp)
@@ -270,7 +270,8 @@ class PluginStore:
                 if not meta_path.exists():
                     pyproject_file = algopath.joinpath("pyproject.toml")
                     if not pyproject_file.exists():
-                        logger.debug(f"Algorithm folder {algopath.name} does not contain meta file nor pyproject.toml, skipping")
+                        logger.debug(
+                            f"Algorithm folder {algopath.name} does not contain meta file nor pyproject.toml, skipping")
                         continue
                     with open(pyproject_file, "rb") as fp:
                         pyproject_data = tomllib.load(fp)
@@ -288,7 +289,7 @@ class PluginStore:
                 # print(algo_meta_json)
                 if algo_meta_json is None:
                     raise PluginStoreException(f"Algorithm folder {folder.name}: invalid {cid}.meta.json")
-                algorithm = AlgorithmMeta.model_validate_json(json.dumps(algo_meta_json))
+                AlgorithmMeta.model_validate_json(json.dumps(algo_meta_json))
 
                 # validate script
                 # script_path = algopath.joinpath(f"{algorithm.cid}.py")
