@@ -24,8 +24,20 @@ def _create_mock_algorithm(gid: str):
         meta=b'{"key1":"value1"}',
         model_type=model_type,
         require_ground_truth=faker.boolean(),
-        input_schema=b'{"input": "schema"}',
-        output_schema=b'{"output": "schema"}',
+        input_schema=b"""{
+            "type": "object",
+            "properties": {
+                "arg1": { "type": "string" }
+            }
+        }
+        """,
+        output_schema=b"""{
+            "type": "object",
+            "properties": {
+                "result": { "type": "number" }
+            },
+            "required": [ "result" ]
+        }""",
         plugin_id=gid
     )
 
