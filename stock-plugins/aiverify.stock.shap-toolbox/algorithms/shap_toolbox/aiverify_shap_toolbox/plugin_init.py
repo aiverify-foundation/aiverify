@@ -51,7 +51,7 @@ def parse_input_args():
         "--explain_type",
         required=True,
         choices=["global", "local"],
-        help="Type of Explainability.(global or local)",
+        help="Type of Explainability (global or local)",
     )
     parser.add_argument(
         "--background_samples",
