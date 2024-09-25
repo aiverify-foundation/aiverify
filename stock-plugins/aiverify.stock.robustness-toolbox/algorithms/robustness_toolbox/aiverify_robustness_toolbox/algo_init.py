@@ -63,13 +63,13 @@ class AlgoInit:
             ).parent
 
         self._core_modules_path: str = core_modules_path
-        self._data_path: str = str(self._base_path / data_path)
-        self._model_path: str = str(self._base_path / model_path)
+        self._data_path: str = str(data_path)
+        self._model_path: str = str(model_path)
         self._input_arguments: Dict = input_arguments
         self._model_type: ModelType = model_type
 
         if self._requires_ground_truth:
-            self._ground_truth_path: str = str(self._base_path / ground_truth_path)
+            self._ground_truth_path: str = str(ground_truth_path)
             self._ground_truth: str = ground_truth
         else:
             self._ground_truth_path: str = ""
@@ -100,7 +100,7 @@ class AlgoInit:
             print("=" * 20)
 
             # Discover available core plugins
-            PluginManager.discover(str(self._base_path / self._core_modules_path))
+            PluginManager.discover(str(self._core_modules_path))
             print(f"[DETECTED_PLUGINS]: {PluginManager.get_printable_plugins()}")
 
             # Create logger
