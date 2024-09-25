@@ -2,6 +2,8 @@ from datetime import datetime
 from fastapi import APIRouter, HTTPException, UploadFile, Form, Depends, Response
 from typing import List, Annotated, Any
 import json
+import zipfile
+import io
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from pathlib import PurePath
@@ -192,6 +194,7 @@ async def upload_test_result(
     except Exception as e:
         print("Exception: ", e)
         raise HTTPException(status_code=422)
+
     artifact_set = dict[str, UploadFile]()
     if artifacts and len(artifacts) > 0:
         for artifact in artifacts:
@@ -212,6 +215,100 @@ async def upload_test_result(
             session.rollback()
             raise HTTPException(status_code=400, detail=f"Test result upload error: {e}")
     return all_urls
+
+
+@router.post("/upload_zip")
+async def upload_zip_file(
+    file: UploadFile,
+    session: Session = Depends(get_db_session)
+) -> List[str]:
+    """Endpoint to upload a zip file containing test results and artifacts"""
+    if not file.filename or not file.filename.endswith(".zip"):
+        raise HTTPException(status_code=400, detail="Only zip files are allowed")
+
+    RESULT_FILENAME = "results.json"
+    try:
+        # Read the zip file
+        zip_bytes = await file.read()
+        with zipfile.ZipFile(io.BytesIO(zip_bytes), 'r') as zip_ref:
+            # Check if results.json exists in the zip
+            if RESULT_FILENAME in zip_ref.namelist():
+                result_filenames = [RESULT_FILENAME]
+            else:
+                result_filenames = list(filter(
+                    lambda name: name.endswith(RESULT_FILENAME) and len(PurePath(name).parts) == 2,
+                    zip_ref.namelist()
+                ))
+
+            if len(result_filenames) == 0:
+                raise HTTPException(
+                    status_code=400, detail="results.json not found in the root folder or any first level folder of the zip file")
+
+            logger.debug(f"result_filenames: {result_filenames}")
+            all_urls = []
+            for result_filename in result_filenames:
+                p = PurePath(result_filename)
+                if len(p.parts) == 1:
+                    foldername = ""
+                    zip_infos = zip_ref.infolist()
+                else:
+                    foldername = f"{p.parts[0]}/"
+                    zip_infos = list(filter(
+                        lambda x: x.filename.startswith(foldername),
+                        zip_ref.infolist()
+                    ))
+
+                artifact_set = {}
+                for zip_info in zip_infos:
+                    # Read results.json
+                    try:
+                        with zip_ref.open(result_filename) as results_file:
+                            results_data = json.load(results_file)
+                    except:
+                        raise HTTPException(status_code=400, detail=f"Unable to load {result_filename}")
+
+                    # Extract artifacts
+                    for zip_info in zip_infos:
+                        if zip_info.filename != result_filename and zip_info.filename != foldername:
+                            with zip_ref.open(zip_info) as artifact_file:
+                                filename = zip_info.filename[len(foldername):] # remove foldername
+                                artifact_set[filename] = UploadFile(
+                                    filename=filename,
+                                    file=io.BytesIO(artifact_file.read())
+                            )
+                                
+                logger.debug(f"artifact_set: {artifact_set}")
+
+                if isinstance(results_data, dict):
+                    result_dicts = [results_data]
+                elif isinstance(results_data, list):
+                    result_dicts = results_data
+                else:
+                    raise HTTPException(status_code=422, detail="Invalid format in results.json")
+
+                # Parse the results and save them
+                results = [TestResult(**result) for result in result_dicts]
+                for result in results:
+                    try:
+                        session.begin()
+                        urls = await _save_test_result(session=session, test_result=result, artifact_set=artifact_set)
+                        all_urls.extend(urls)
+                        session.commit()
+                    except HTTPException as e:
+                        raise e
+                    except Exception as e:
+                        logger.warning(f"Test result upload error: {e}")
+                        session.rollback()
+                        raise HTTPException(status_code=400, detail=f"Test result upload error: {e}")
+
+        return all_urls
+    except HTTPException as e:
+        raise e
+    except zipfile.BadZipFile:
+        raise HTTPException(status_code=400, detail="Invalid zip file")
+    except Exception as e:
+        logger.error(f"Error processing zip file: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.get("/{test_result_id}/artifacts/{filename}")
