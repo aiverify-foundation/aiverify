@@ -74,12 +74,14 @@ image_pipeline = {
     "ground_truth_path": str(
         "../../../user_defined_files/data/pickle_pandas_annotated_labels_50.sav"
     ),
-    "run_pipeline": False,
+    "run_pipeline": True,
     "model_type": ModelType.CLASSIFICATION,
     "ground_truth": "race",
     "sensitive_feature": ["gender"],
-    "annotated_labels_path": "",
-    "file_name_label": "",
+    "annotated_labels_path": str(
+        "../../../user_defined_files/data/pickle_pandas_annotated_labels_50.sav"
+    ),
+    "file_name_label": "image_directory",
 }
 
 
@@ -90,7 +92,7 @@ image_pipeline = {
         tabular_binary_pipeline,
         multiclass_non_pipeline,
         binary_non_pipeline,
-        # image_pipeline #TODO : Validate the model data.
+        image_pipeline,
     ],
 )
 def test_fairness_metrics_toolbox_for_classification_plugin(data_set):

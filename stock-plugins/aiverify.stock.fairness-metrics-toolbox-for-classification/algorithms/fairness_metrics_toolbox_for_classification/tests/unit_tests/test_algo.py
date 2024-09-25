@@ -40,7 +40,7 @@ test_tuple = ("data_str", "data_str")
 test_none = None
 
 
-class TestObject:
+class ObjectTest:
     def __init__(self):
         test_discover_plugin()
         (
@@ -126,7 +126,7 @@ def get_data_instance_and_serializer_without_ground_truth(request):
         data_serializer_instance,
         data_error_message,
     ) = PluginManager.get_instance(PluginType.DATA, **{"filename": request.param})
-    test_object = TestObject()
+    test_object = ObjectTest()
     data_instance.remove_ground_truth(test_object._ground_truth)
     yield (data_instance, data_serializer_instance)
 
@@ -178,7 +178,7 @@ def get_ground_truth_instance_and_serializer(request):
 
 
 def test_create_plugin_instance_with_all_valid_input():
-    test_object = TestObject()
+    test_object = ObjectTest()
     test_plugin = Plugin(
         test_object._data_instance_and_serializer,
         test_object._model_instance_and_serializer,
@@ -202,7 +202,7 @@ def test_create_plugin_instance_with_all_valid_input():
 def test_init_plugin_instance_with_invalid_data_instance_type(
     invalid_data_instance_type,
 ):
-    test_object = TestObject()
+    test_object = ObjectTest()
     expected_exception_msg = "The algorithm has failed data validation"
     with pytest.raises(test_object._expected_exception) as excinfo:
         Plugin(
@@ -224,7 +224,7 @@ def test_init_plugin_instance_with_invalid_data_instance_type(
 def test_init_plugin_instance_with_invalid_model_instance_type(
     invalid_model_instance_type,
 ):
-    test_object = TestObject()
+    test_object = ObjectTest()
     expected_exception_msg = "The algorithm has failed model validation"
     with pytest.raises(test_object._expected_exception) as excinfo:
         Plugin(
@@ -249,7 +249,7 @@ def test_init_plugin_instance_with_invalid_model_instance_type(
 def test_init_plugin_instance_with_invalid_ground_truth_instance_type(
     invalid_ground_truth_instance_type,
 ):
-    test_object = TestObject()
+    test_object = ObjectTest()
     expected_exception_msg = "The algorithm has failed ground truth data validation"
     with pytest.raises(test_object._expected_exception) as excinfo:
         Plugin(
@@ -271,7 +271,7 @@ def test_init_plugin_instance_with_invalid_ground_truth_instance_type(
     "ground_truth", [test_int, test_float, test_list, test_dict, test_tuple]
 )
 def test_init_plugin_instance_with_invalid_ground_truth_type(ground_truth):
-    test_object = TestObject()
+    test_object = ObjectTest()
     test_object._input_args["ground_truth"] = ground_truth
     expected_exception_msg = "The algorithm has failed ground truth header validation."
     with pytest.raises(test_object._expected_exception) as excinfo:
@@ -289,7 +289,7 @@ def test_init_plugin_instance_with_invalid_ground_truth_type(ground_truth):
 
 @pytest.mark.parametrize("ground_truth", [test_none])
 def test_init_plugin_instance_with_none_ground_truth_type(ground_truth):
-    test_object = TestObject()
+    test_object = ObjectTest()
     test_object._input_args["ground_truth"] = ground_truth
     expected_exception_msg = "The algorithm has failed ground truth header validation."
     with pytest.raises(test_object._expected_exception) as excinfo:
@@ -359,7 +359,7 @@ def test_init_plugin_instance_with_missing_ground_truth(
     ],
 )
 def test_setup_plugin_instance_with_invalid_model_type(invalid_model_type):
-    test_object = TestObject()
+    test_object = ObjectTest()
     test_object._input_args["model_type"] = invalid_model_type
     expected_exception_msg = "The algorithm has failed validation for model type"
     with pytest.raises(test_object._expected_exception) as excinfo:
@@ -380,7 +380,7 @@ def test_setup_plugin_instance_with_invalid_model_type(invalid_model_type):
     [test_string, test_int, test_float, test_list, test_dict, test_tuple],
 )
 def test_setup_plugin_instance_with_invalid_logger_type(invalid_logger_type):
-    test_object = TestObject()
+    test_object = ObjectTest()
     test_object._input_args["logger"] = invalid_logger_type
     expected_exception_msg = (
         "The algorithm has failed to set up logger. The logger type is invalid"
@@ -413,7 +413,7 @@ def test_setup_plugin_instance_with_invalid_logger_type(invalid_logger_type):
     ],
 )
 def test_setup_plugin_instance_with_invalid_log_level_and_message(log_info):
-    test_object = TestObject()
+    test_object = ObjectTest()
     expected_exception_msg = "invalid log level or message"
     test_plugin = Plugin(
         test_object._data_instance_and_serializer,
@@ -434,7 +434,7 @@ def test_setup_plugin_instance_with_invalid_log_level_and_message(log_info):
     [test_string, test_int, test_float, test_list, test_dict, test_tuple],
 )
 def test_init_plugin_instance_with_invalid_project_base_path(invalid_project_base_path):
-    test_object = TestObject()
+    test_object = ObjectTest()
     test_object._input_args["project_base_path"] = invalid_project_base_path
     expected_exception_msg = "The algorithm has failed validation for the project path."
     with pytest.raises(test_object._expected_exception) as excinfo:
@@ -451,7 +451,7 @@ def test_init_plugin_instance_with_invalid_project_base_path(invalid_project_bas
 
 
 def test_plugin_valid_get_metadata():
-    test_object = TestObject()
+    test_object = ObjectTest()
     test_plugin = Plugin(
         test_object._data_instance_and_serializer,
         test_object._model_instance_and_serializer,
@@ -464,7 +464,7 @@ def test_plugin_valid_get_metadata():
 
 
 def test_plugin_valid_get_plugin_type():
-    test_object = TestObject()
+    test_object = ObjectTest()
     test_plugin = Plugin(
         test_object._data_instance_and_serializer,
         test_object._model_instance_and_serializer,
@@ -482,7 +482,7 @@ def test_plugin_valid_get_plugin_type():
     indirect=["get_data_instance_and_serializer_without_ground_truth"],
 )
 def test_valid_run(get_data_instance_and_serializer_without_ground_truth):
-    test_object = TestObject()
+    test_object = ObjectTest()
     test_object._ground_truth_instance_and_serializer[0].keep_ground_truth(
         test_object._ground_truth
     )

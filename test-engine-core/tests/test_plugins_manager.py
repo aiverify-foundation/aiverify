@@ -186,15 +186,15 @@ class TestCollectionPluginsManager:
     def test_get_instance_data_with_valid_response(
         self, mocker, plugin_type, kwargs, expected_result
     ):
-        with mocker.patch.object(
+        mocker.patch.object(
             DataManager,
             "read_data",
             return_value=(True, pytest.random_data, pytest.serializer, ""),
-        ):
-            PluginManager.discover("tests/other_import_modules/")
+        )
+        PluginManager.discover("tests/other_import_modules/")
 
-            output = PluginManager.get_instance(plugin_type, **kwargs)
-            assert output == expected_result
+        output = PluginManager.get_instance(plugin_type, **kwargs)
+        assert output == expected_result
 
     @pytest.mark.parametrize(
         "plugin_type, kwargs, expected_result",
@@ -214,14 +214,12 @@ class TestCollectionPluginsManager:
     def test_get_instance_data_with_invalid_response(
         self, mocker, plugin_type, kwargs, expected_result
     ):
-        with (
-            mocker.patch.object(
-                DataManager,
-                "read_data",
-                return_value=(False, None, None, "MockResponse"),
-            ),
-            pytest.raises(RuntimeError) as exc_info,
-        ):
+        mocker.patch.object(
+            DataManager,
+            "read_data",
+            return_value=(False, None, None, "MockResponse"),
+        )
+        with pytest.raises(RuntimeError) as exc_info:
             PluginManager.discover("tests/other_import_modules/")
             PluginManager.get_instance(plugin_type, **kwargs)
         assert str(exc_info.value) == expected_result[2]
@@ -279,13 +277,13 @@ class TestCollectionPluginsManager:
     def test_get_instance_data_with_invalid_response_1(
         self, mocker, plugin_type, kwargs, expected_result
     ):
-        with mocker.patch.object(
+        mocker.patch.object(
             DataManager, "read_data", return_value=(False, None, None, "MockResponse")
-        ):
-            PluginManager.discover("tests/other_import_modules/")
+        )
+        PluginManager.discover("tests/other_import_modules/")
 
-            output = PluginManager.get_instance(plugin_type, **kwargs)
-            assert output == expected_result
+        output = PluginManager.get_instance(plugin_type, **kwargs)
+        assert output == expected_result
 
     @pytest.mark.parametrize(
         "plugin_type, kwargs, expected_result",
@@ -363,15 +361,15 @@ class TestCollectionPluginsManager:
     def test_get_instance_model_with_valid_response(
         self, mocker, plugin_type, kwargs, expected_result
     ):
-        with mocker.patch.object(
+        mocker.patch.object(
             ModelManager,
             "read_model_file",
             return_value=(True, pytest.random_data, pytest.serializer, ""),
-        ):
-            PluginManager.discover("tests/other_import_modules/")
+        )
+        PluginManager.discover("tests/other_import_modules/")
 
-            output = PluginManager.get_instance(plugin_type, **kwargs)
-            assert output == expected_result
+        output = PluginManager.get_instance(plugin_type, **kwargs)
+        assert output == expected_result
 
     @pytest.mark.parametrize(
         "plugin_type, kwargs, expected_result",
@@ -406,14 +404,12 @@ class TestCollectionPluginsManager:
     def test_get_instance_model_with_invalid_response(
         self, mocker, plugin_type, kwargs, expected_result
     ):
-        with (
-            mocker.patch.object(
-                ModelManager,
-                "read_model_file",
-                return_value=(False, None, None, "MockResponse"),
-            ),
-            pytest.raises(RuntimeError) as exc_info,
-        ):
+        mocker.patch.object(
+            ModelManager,
+            "read_model_file",
+            return_value=(False, None, None, "MockResponse"),
+        )
+        with pytest.raises(RuntimeError) as exc_info:
             PluginManager.discover("tests/other_import_modules/")
             PluginManager.get_instance(plugin_type, **kwargs)
         assert str(exc_info.value) == expected_result[2]
@@ -486,15 +482,15 @@ class TestCollectionPluginsManager:
     def test_get_instance_model_with_invalid_response_1(
         self, mocker, plugin_type, kwargs, expected_result
     ):
-        with mocker.patch.object(
+        mocker.patch.object(
             ModelManager,
             "read_model_file",
             return_value=(False, None, None, "MockResponse"),
-        ):
-            PluginManager.discover("tests/other_import_modules/")
+        )
+        PluginManager.discover("tests/other_import_modules/")
 
-            output = PluginManager.get_instance(plugin_type, **kwargs)
-            assert output == expected_result
+        output = PluginManager.get_instance(plugin_type, **kwargs)
+        assert output == expected_result
 
     @pytest.mark.parametrize(
         "plugin_type, kwargs, expected_result",
@@ -554,15 +550,15 @@ class TestCollectionPluginsManager:
     def test_get_instance_pipeline_with_valid_response(
         self, mocker, plugin_type, kwargs, expected_result
     ):
-        with mocker.patch.object(
+        mocker.patch.object(
             PipelineManager,
             "read_pipeline_path",
             return_value=(True, pytest.random_data, pytest.serializer, ""),
-        ):
-            PluginManager.discover("tests/other_import_modules/")
+        )
+        PluginManager.discover("tests/other_import_modules/")
 
-            output = PluginManager.get_instance(plugin_type, **kwargs)
-            assert output == expected_result
+        output = PluginManager.get_instance(plugin_type, **kwargs)
+        assert output == expected_result
 
     @pytest.mark.parametrize(
         "plugin_type, kwargs, expected_result",
@@ -582,14 +578,12 @@ class TestCollectionPluginsManager:
     def test_get_instance_pipeline_with_invalid_response(
         self, mocker, plugin_type, kwargs, expected_result
     ):
-        with (
-            mocker.patch.object(
-                PipelineManager,
-                "read_pipeline_path",
-                return_value=(False, None, None, "MockResponse"),
-            ),
-            pytest.raises(RuntimeError) as exc_info,
-        ):
+        mocker.patch.object(
+            PipelineManager,
+            "read_pipeline_path",
+            return_value=(False, None, None, "MockResponse"),
+        )
+        with pytest.raises(RuntimeError) as exc_info:
             PluginManager.discover("tests/other_import_modules/")
             PluginManager.get_instance(plugin_type, **kwargs)
         assert str(exc_info.value) == expected_result[2]
@@ -647,15 +641,15 @@ class TestCollectionPluginsManager:
     def test_get_instance_pipeline_with_invalid_response_1(
         self, mocker, plugin_type, kwargs, expected_result
     ):
-        with mocker.patch.object(
+        mocker.patch.object(
             PipelineManager,
             "read_pipeline_path",
             return_value=(False, None, None, "MockResponse"),
-        ):
-            PluginManager.discover("tests/other_import_modules/")
+        )
+        PluginManager.discover("tests/other_import_modules/")
 
-            output = PluginManager.get_instance(plugin_type, **kwargs)
-            assert output == expected_result
+        output = PluginManager.get_instance(plugin_type, **kwargs)
+        assert output == expected_result
 
     @pytest.mark.parametrize(
         "plugin_type, kwargs, expected_result",
@@ -715,15 +709,15 @@ class TestCollectionPluginsManager:
     def test_get_instance_algorithm_with_valid_response(
         self, mocker, plugin_type, kwargs, expected_result
     ):
-        with mocker.patch.object(
+        mocker.patch.object(
             AlgorithmManager,
             "get_algorithm",
             return_value=(True, pytest.random_data, ""),
-        ):
-            PluginManager.discover("tests/other_import_modules/")
+        )
+        PluginManager.discover("tests/other_import_modules/")
 
-            output = PluginManager.get_instance(plugin_type, **kwargs)
-            assert output == expected_result
+        output = PluginManager.get_instance(plugin_type, **kwargs)
+        assert output == expected_result
 
     @pytest.mark.parametrize(
         "plugin_type, kwargs, expected_result",
@@ -742,14 +736,12 @@ class TestCollectionPluginsManager:
     def test_get_instance_algorithm_with_invalid_response(
         self, mocker, plugin_type, kwargs, expected_result
     ):
-        with (
-            mocker.patch.object(
-                AlgorithmManager,
-                "get_algorithm",
-                return_value=(False, None, "MockResponse"),
-            ),
-            pytest.raises(RuntimeError) as exc_info,
-        ):
+        mocker.patch.object(
+            AlgorithmManager,
+            "get_algorithm",
+            return_value=(False, None, "MockResponse"),
+        )
+        with pytest.raises(RuntimeError) as exc_info:
             PluginManager.discover("tests/other_import_modules/")
             PluginManager.get_instance(plugin_type, **kwargs)
         assert str(exc_info.value) == expected_result[2]
@@ -807,15 +799,15 @@ class TestCollectionPluginsManager:
     def test_get_instance_algorithm_with_invalid_response_1(
         self, mocker, plugin_type, kwargs, expected_result
     ):
-        with mocker.patch.object(
+        mocker.patch.object(
             AlgorithmManager,
             "get_algorithm",
             return_value=(False, None, None, "MockResponse"),
-        ):
-            PluginManager.discover("tests/other_import_modules/")
+        )
+        PluginManager.discover("tests/other_import_modules/")
 
-            output = PluginManager.get_instance(plugin_type, **kwargs)
-            assert output == expected_result
+        output = PluginManager.get_instance(plugin_type, **kwargs)
+        assert output == expected_result
 
     def test_get_printable_plugins_with_no_plugins(self):
         """

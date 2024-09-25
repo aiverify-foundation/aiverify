@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import Any, Dict, Tuple
 
 import pytest
-
 from test_engine_core.interfaces.idata import IData
 from test_engine_core.plugins.data_manager import DataManager
 from test_engine_core.plugins.enums.data_plugin_type import DataPluginType
@@ -681,15 +680,13 @@ class TestCollectionDataManager:
         """
         Tests reading data file with no logger
         """
-        with mocker.patch.object(
+        mocker.patch.object(
             DataManager,
             "_get_file_paths",
             return_value=data_mock_response,
-        ):
-            response = DataManager.read_data(
-                data_file, data_plugins, serializer_plugins
-            )
-            assert response == expected_output
+        )
+        response = DataManager.read_data(data_file, data_plugins, serializer_plugins)
+        assert response == expected_output
 
     @pytest.mark.parametrize(
         "data_file, data_plugins, serializer_plugins, expected_output",
@@ -1088,13 +1085,11 @@ class TestCollectionDataManager:
         """
         Tests reading data file with logger
         """
-        with mocker.patch.object(
+        mocker.patch.object(
             DataManager,
             "_get_file_paths",
             return_value=data_mock_response,
-        ):
-            DataManager.set_logger(pytest.my_logger)
-            response = DataManager.read_data(
-                data_file, data_plugins, serializer_plugins
-            )
-            assert response == expected_output
+        )
+        DataManager.set_logger(pytest.my_logger)
+        response = DataManager.read_data(data_file, data_plugins, serializer_plugins)
+        assert response == expected_output

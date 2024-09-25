@@ -407,6 +407,7 @@ class Plugin(IAlgorithm):
                 self._compute_error_by_group,
                 ground_truth=ground_truth,
                 pred_name=pred_name,
+                include_groups=False,
             )
             .reset_index()
         )

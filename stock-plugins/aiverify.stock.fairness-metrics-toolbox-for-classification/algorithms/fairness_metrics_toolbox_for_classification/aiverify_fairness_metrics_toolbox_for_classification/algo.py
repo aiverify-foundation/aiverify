@@ -509,7 +509,7 @@ class Plugin(IAlgorithm):
         TP = np.diag(cm)  # diagonals
         TN = cm[:].sum() - (FP + FN + TP)  # all the others
 
-        unique_groups = np.vstack({tuple(e) for e in sensitive_feature_np})
+        unique_groups = np.unique(sensitive_feature_np, axis=0)
         results = dict()
         # initiate a second dictionary for intermediate results necessary for computation of disparate impact and
         # equal parity
