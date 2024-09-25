@@ -1,49 +1,71 @@
+import zipfile
 import pytest
+import io
 from fastapi.testclient import TestClient
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, ANY
 from aiverify_apigw.__main__ import app
+from aiverify_apigw.schemas import TestResult
 from aiverify_apigw.models import TestResultModel, TestArtifactModel, TestDatasetModel, TestModelModel
 import json
 
 client = TestClient(app)
 
 
+@pytest.fixture
+def mock_test_result_data():
+    return {
+        "gid": "aiverify.stock.fairness_metrics_toolbox_for_classification",
+        "version": "0.9.0",
+        "cid": "fairness_metrics_toolbox_for_classification",
+        "start_time": "2024-07-24T09:20:24.822881",
+        "time_taken": 0,
+        "test_arguments": {
+            "testDataset": "file:///examples/data/sample_bc_credit_data.sav",
+            "modelFile": "file:///examples/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav",
+            "groundTruthDataset": "file:///examples/data/sample_bc_credit_data.sav",
+            "groundTruth": "default",
+            "algorithmArgs": {
+                "arg1": [
+                    "gender"
+                ]
+            },
+            "mode": "upload",
+            "modelType": "classification"
+        },
+        "output": {
+            "result": 100
+        }
+    }
+
+
+@pytest.fixture
+def mock_upload_file():
+    mock_file = MagicMock()
+    mock_file.filename = "test_file.txt"
+    mock_file.content_type = "text/plain"
+    mock_file.file.read.return_value = b"Hello World"
+    yield mock_file
+
+
+# Mocked valid zip file with a results.json
+def create_mock_zip_file(result_filename="results.json", artifacts=None):
+    import zipfile
+    import io
+    # file_list = file_list or [result_filename]
+    zip_buffer = io.BytesIO()
+
+    with zipfile.ZipFile("zip_buffer", 'w', zipfile.ZIP_DEFLATED, False) as zip_file:
+        zip_file.writestr(result_filename, "{}")
+        # for file_name in file_list:
+        #     if file_name != result_filename:
+        #         zip_file.writestr(file_name, "artifact content")
+
+    # zip_buffer.seek(0)
+    return zip_buffer
+
+
 # Test Class for POST /test_result/upload
 class TestUploadTestResult:
-
-    @pytest.fixture
-    def mock_test_result_data(self):
-        return {
-            "gid": "aiverify.stock.fairness_metrics_toolbox_for_classification",
-            "version": "0.9.0",
-            "cid": "fairness_metrics_toolbox_for_classification",
-            "start_time": "2024-07-24T09:20:24.822881",
-            "time_taken": 0,
-            "test_arguments": {
-                "testDataset": "file:///examples/data/sample_bc_credit_data.sav",
-                "modelFile": "file:///examples/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav",
-                "groundTruthDataset": "file:///examples/data/sample_bc_credit_data.sav",
-                "groundTruth": "default",
-                "algorithmArgs": {
-                    "arg1": [
-                        "gender"
-                    ]
-                },
-                "mode": "upload",
-                "modelType": "classification"
-            },
-            "output": {
-                "result": 100
-            }
-        }
-
-    @pytest.fixture
-    def mock_upload_file(self):
-        mock_file = MagicMock()
-        mock_file.filename = "test_file.txt"
-        mock_file.content_type = "text/plain"
-        mock_file.file.read.return_value = b"Hello World"
-        yield mock_file
 
     def test_upload_test_result_algorithm_not_found(self, mock_test_result_data, test_client):
         """Test POST /test_result/upload when the algorithm is not found."""
@@ -162,7 +184,98 @@ class TestUploadTestResult:
         assert db_session.query(TestDatasetModel).count() == 2
 
 
+# Test class for POST /test_result/upload_zip
+class TestUploadZipFile:
+    @pytest.fixture
+    def mock_upload_zipfile(self, mock_test_result_data):
+        """Fixture to return a mocked UploadFile for a valid zip."""
+        # file_list = file_list or [result_filename]
+        zip_buffer = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED, False) as zip_file:
+            zip_file.writestr("results.json", json.dumps(mock_test_result_data))
+            zip_file.writestr("image.png", b"artifact content")
+        return (zip_buffer, mock_test_result_data)
+
+    @pytest.fixture
+    def mock_invalid_upload_zipfile(self):
+        """Fixture to return a mocked UploadFile for a valid zip."""
+        # file_list = file_list or [result_filename]
+        zip_buffer = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED, False) as zip_file:
+            zip_file.writestr("image.png", b"artifact content")
+        return zip_buffer
+
+    @patch("aiverify_apigw.routers.test_result_router._save_test_result")
+    def test_upload_zip_file_success(self, mock_save_test_result, test_client, mock_upload_zipfile):
+        """Test successfully uploading a valid zip file."""
+        urls = [
+            "/test_result/1"
+        ]
+        # Mock the result of _save_test_result to return URLs
+        mock_save_test_result.return_value = urls
+
+        # Perform the POST request with the mocked zip file
+        mock_upload_zipfile[0].seek(0)
+        files = {'file': ("test.zip", mock_upload_zipfile[0].read(), "application/zip")}
+        response = test_client.post("/test_result/upload_zip", files=files)
+
+        # Assertions
+        assert response.status_code == 200
+        assert response.json() == urls
+        mock_test_result_data = mock_upload_zipfile[1]
+        result = TestResult(**mock_test_result_data)
+        mock_save_test_result.assert_called_once_with(test_result=result, session=ANY, artifact_set=ANY)
+
+    def test_upload_zip_file_invalid_format(self, test_client):
+        """Test uploading a file that is not a zip."""
+
+        # Perform the POST request with non-zip file
+        files = {'file': ("test.img", b"fake file", "application/zip")}
+        response = test_client.post("/test_result/upload_zip", files=files)
+
+        # Assertions
+        assert response.status_code == 400
+        assert response.json()["detail"] == "Only zip files are allowed"
+
+        # Perform the POST request with invalid zip file
+        files = {'file': ("test.zip", b"fake file", "application/zip")}
+        response = test_client.post("/test_result/upload_zip", files=files)
+
+        # Assertions
+        assert response.status_code == 400
+        assert response.json()["detail"] == "Invalid zip file"
+
+    def test_upload_zip_file_missing_results_json(self, test_client, mock_invalid_upload_zipfile):
+        """Test uploading a zip file without a results.json file."""
+
+        # Perform the POST request with the mocked zip file
+        mock_invalid_upload_zipfile.seek(0)
+        files = {'file': ("test.zip", mock_invalid_upload_zipfile.read(), "application/zip")}
+        response = test_client.post("/test_result/upload_zip", files=files)
+
+        # Assertions
+        assert response.status_code == 400
+        assert response.json()[
+            "detail"] == "results.json not found in the root folder or any first level folder of the zip file"
+
+    # @patch("your_module_name.router._save_test_result", autospec=True)
+    @patch("aiverify_apigw.routers.test_result_router._save_test_result")
+    def test_upload_zip_file_internal_error(self, mock_save_test_result, test_client, mock_upload_zipfile):
+        """Test internal server error when saving the test results."""
+        # Simulate an internal error in the _save_test_result function
+        mock_save_test_result.side_effect = Exception("Internal server error")
+
+        # Perform the POST request with the mocked zip file
+        mock_upload_zipfile[0].seek(0)
+        files = {'file': ("test.zip", mock_upload_zipfile[0].read(), "application/zip")}
+        response = test_client.post("/test_result/upload_zip", files=files)
+
+        # Assertions
+        assert response.status_code != 200
+
 # Test class for GET /{test_result_id}/artifacts/{filename}
+
+
 class TestGetTestResultArtifact:
 
     @pytest.fixture
