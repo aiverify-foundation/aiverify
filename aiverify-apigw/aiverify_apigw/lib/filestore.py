@@ -1,5 +1,6 @@
 import os
 import io
+import re
 import hashlib
 import shutil
 from pathlib import Path, PurePath
@@ -20,6 +21,20 @@ class InvalidFileStore(Exception):
 class FileStoreError(Exception):
     """Raised on general file path error"""
     pass
+
+
+class InvalidFilename(Exception):
+    """Raised when the filename is invalid"""
+    pass
+
+
+def sanitize_filename(filename: str) -> str:
+    if not filename[0].isalnum():
+        raise InvalidFilename("The first character of the filename must be alphanumeric.")
+
+    # Use regex to replace invalid characters
+    sanitized = re.sub(r'[^a-zA-Z0-9.]', '', filename)
+    return sanitized
 
 
 def get_base_data_dir() -> Path | str:
@@ -186,6 +201,7 @@ def get_artifacts_folder(test_result_id: str):
 
 
 def save_artifact(test_result_id: str, filename: str, data: bytes):
+    filename = sanitize_filename(filename)
     folder = get_artifacts_folder(test_result_id)
     if isinstance(folder, Path):
         filepath = folder.joinpath(filename)
@@ -199,6 +215,7 @@ def save_artifact(test_result_id: str, filename: str, data: bytes):
 
 
 def get_artifact(test_result_id: str, filename: str):
+    filename = sanitize_filename(filename)
     folder = get_artifacts_folder(test_result_id)
     if isinstance(folder, Path):
         filepath = folder.joinpath(filename)
