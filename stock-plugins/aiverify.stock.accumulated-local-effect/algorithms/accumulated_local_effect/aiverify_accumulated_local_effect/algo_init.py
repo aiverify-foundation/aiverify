@@ -233,6 +233,10 @@ class AlgoInit:
                 self._input_arguments["logger"] = self._logger_instance
                 self._input_arguments["progress_callback"] = AlgoInit.progress_callback
                 self._input_arguments["project_base_path"] = self._base_path
+                self._input_arguments["data_path"] = self._data_path
+                self._input_arguments["model_path"] = self._model_path
+                self._input_arguments["ground_truth_path"] = self._ground_truth_path
+                self._input_arguments["run_pipeline"] = self._run_as_pipeline
 
                 # Run the plugin with the arguments and instances
                 print("Creating an instance of the Plugin...")
@@ -251,7 +255,6 @@ class AlgoInit:
                 # Get the task results and convert to json friendly and validate against the output schema
                 print("Converting numpy formats if exists...")
                 results = remove_numpy_formats(plugin.get_results())
-
                 print("Verifying results with output schema...")
                 is_success, error_messages = self._verify_task_results(results)
                 if is_success:
