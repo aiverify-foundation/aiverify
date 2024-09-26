@@ -1,6 +1,8 @@
+import json
 import logging
 import pickle
 from pathlib import Path, PurePath
+import time
 from typing import Dict, List, Tuple, Union
 
 import numpy as np
@@ -810,4 +812,6 @@ class Plugin(IAlgorithm):
             "output_classes": list_output_classes,
             "results": output_class_data_list,
         }
+
+        self._time_taken = time.time() - self._start_time
         return output_dict

@@ -655,7 +655,6 @@ class Plugin(IAlgorithm):
                 # Update the progress
                 self._progress_inst.update(1)
 
-            self._time_taken = time.time() - self._start_time
             # Format the output results
             output_results = self._format_result(output_results)
             # Assign the output results
@@ -709,6 +708,7 @@ class Plugin(IAlgorithm):
             output_dict["feature_names"].append(results_dataframe.index.name)
             output_dict["results"].append(feature_dict)
 
+            self._time_taken = time.time() - self._start_time
             # read attrs from algo.meta.json file
             f = open(str(Path(__file__).parent / "algo.meta.json"))
             meta_file = json.load(f)

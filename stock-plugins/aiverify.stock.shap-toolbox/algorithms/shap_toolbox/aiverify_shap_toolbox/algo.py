@@ -1,4 +1,7 @@
+import json
 import logging
+import time
+from importlib.metadata import version
 from pathlib import Path, PurePath
 from typing import Any, Dict, List, Tuple, Union
 
@@ -44,7 +47,7 @@ class Plugin(IAlgorithm):
         "local explanations using the classic Shapley values from game theory and their related "
         "extensions (see papers for details and citations)."
     )
-    _version: str = "0.9.0"
+    _version: str = version("aiverify_shap_toolbox")
     _metadata: PluginMetadata = PluginMetadata(_name, _description, _version)
     _plugin_type: PluginType = PluginType.ALGORITHM
     _requires_ground_truth: bool = True
@@ -90,6 +93,10 @@ class Plugin(IAlgorithm):
         self._progress_inst = SimpleProgress(
             1, 0, kwargs.get("progress_callback", None)
         )
+
+        self._start_time = None
+        self._time_taken = None
+        self._input_args = kwargs
 
         # Check if data and model are tuples and if the tuples contain 2 items
         if (
@@ -345,6 +352,8 @@ class Plugin(IAlgorithm):
         """
         # Perform SHAP
         try:
+            # log start time
+            self._start_time = time.time()
             self._explain_shap()
         except Exception:
             import traceback
@@ -635,7 +644,7 @@ class Plugin(IAlgorithm):
             dict: Formatted results in dict
         """
         output_dict = dict({"feature_names": list(), "results": dict()})
-
+        self._time_taken = time.time() - self._start_time
         # Populate results dictionary
         output_results = dict(
             {
@@ -711,5 +720,30 @@ class Plugin(IAlgorithm):
         # Populate feature names
         output_dict["feature_names"] = self._data.columns.tolist()
         output_dict["results"] = output_results
+
+        # read attrs from algo.meta.json file
+        f = open(str(Path(__file__).parent / "algo.meta.json"))
+        meta_file = json.load(f)
+        output_dict["cid"] = meta_file["cid"]
+        output_dict["gid"] = meta_file["gid"]
+
+        # Format it as an ISO 8601 string
+        iso_time = (
+            time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime(self._start_time)) + "Z"
+        )
+        output_dict["start_time"] = iso_time
+        output_dict["time_taken"] = f"{self._time_taken:.4f}"
+
+        output_dict["test_arguments"] = {
+            "ground_truth": self._input_args.get("ground_truth"),
+            "model_type": self._model_type.name,
+            "data_path": self._input_args.get("data_path"),
+            "model_path": self._input_args.get("model_path"),
+            "ground_truth_path": self._input_args.get("ground_truth_path"),
+            "run_pipeline": self._input_args.get("run_pipeline"),
+            "explain_type": self._input_args.get("explain_type"),
+            "background_samples": self._input_args.get("background_samples"),
+            "data_samples": self._input_args.get("data_samples"),
+        }
 
         return output_dict

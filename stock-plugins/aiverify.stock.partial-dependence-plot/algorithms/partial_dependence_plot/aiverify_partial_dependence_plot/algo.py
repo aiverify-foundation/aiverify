@@ -1,4 +1,7 @@
+import json
 import logging
+import time
+from importlib.metadata import version
 from pathlib import Path, PurePath
 from typing import Dict, List, Tuple, Union
 
@@ -41,7 +44,7 @@ class Plugin(IAlgorithm):
         "A Partial Dependence Plot (PDP) explains how each feature and its feature value contribute "
         "to the predictions."
     )
-    _version: str = "0.9.0"
+    _version: str = version("aiverify_partial_dependence_plot")
     _metadata: PluginMetadata = PluginMetadata(_name, _description, _version)
     _plugin_type: PluginType = PluginType.ALGORITHM
     _requires_ground_truth: bool = True
@@ -87,6 +90,10 @@ class Plugin(IAlgorithm):
         self._progress_inst = SimpleProgress(
             1, 0, kwargs.get("progress_callback", None)
         )
+
+        self._start_time = None
+        self._time_taken = None
+        self._input_args = kwargs
 
         # Check if data and model are tuples and if the tuples contain 2 items
         if (
@@ -328,6 +335,8 @@ class Plugin(IAlgorithm):
         """
         A method to generate the algorithm results with the provided data, model, ground truth information.
         """
+        # log start time
+        self._start_time = time.time()
         # Retrieve data information
         self._data = self._data_instance.get_data()
         # Perform pdp explanation
@@ -570,4 +579,27 @@ class Plugin(IAlgorithm):
 
         # Update output dictionary
         output_dict.update({"results": results_array})
+        self._time_taken = time.time() - self._start_time
+
+        # read attrs from algo.meta.json file
+        f = open(str(Path(__file__).parent / "algo.meta.json"))
+        meta_file = json.load(f)
+        output_dict["cid"] = meta_file["cid"]
+        output_dict["gid"] = meta_file["gid"]
+
+        # Format it as an ISO 8601 string
+        iso_time = (
+            time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime(self._start_time)) + "Z"
+        )
+        output_dict["start_time"] = iso_time
+        output_dict["time_taken"] = f"{self._time_taken:.4f}"
+        output_dict["test_arguments"] = {
+            "ground_truth": self._input_args.get("ground_truth"),
+            "model_type": self._model_type.name,
+            "data_path": self._input_args.get("data_path"),
+            "model_path": self._input_args.get("model_path"),
+            "ground_truth_path": self._input_args.get("ground_truth_path"),
+            "run_pipeline": self._input_args.get("run_pipeline"),
+        }
+
         return output_dict

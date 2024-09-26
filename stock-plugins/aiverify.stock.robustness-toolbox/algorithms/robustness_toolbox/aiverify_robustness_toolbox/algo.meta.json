@@ -1,5 +1,6 @@
 {
-    "cid": "robustness_toolbox",
+    "cid": "aiverify_robustness_toolbox",
+    "gid": "aiverify.stock.robustness_toolbox",
     "name": "Robustness Toolbox",
     "modelType": [
         "classification",
