@@ -65,7 +65,7 @@ docker build -t aiverify-fairness-metrics-toolbox-for-classification:v1 .
 root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files"
 docker run \
   -v $root_path:/user_defined_files \
-  -v ./output/:/app/aiverify/stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification/output \
+  -v ./output:/app/aiverify/stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification/output \
   aiverify-fairness-metrics-toolbox-for-classification:v1 \
   --data_path /user_defined_files/data/sample_mc_pipeline_toxic_data.sav \
   --model_path /user_defined_files/pipeline/mc_tabular_toxic \
