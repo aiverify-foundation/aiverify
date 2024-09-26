@@ -24,9 +24,25 @@ def _create_mock_algorithm(gid: str):
         meta=b'{"key1":"value1"}',
         model_type=model_type,
         require_ground_truth=faker.boolean(),
-        input_schema=b'{"input": "schema"}',
-        output_schema=b'{"output": "schema"}',
-        plugin_id=gid
+        input_schema=b"""{
+            "type": "object",
+            "properties": {
+                "arg1": { "type": "string" }
+            }
+        }
+        """,
+        output_schema=b"""{
+            "type": "object",
+            "properties": {
+                "result": { "type": "number" }
+            },
+            "required": [ "result" ]
+        }""",
+        plugin_id=gid,
+        algo_dir=f"algorithms/{faker.name()}/{faker.name()}",
+        language="python",
+        script="algo.py",
+        module_name=faker.name(),
     )
 
 
@@ -63,5 +79,5 @@ def create_mock_plugins(session, num_plugins=2):
         plugin = _create_mock_plugin()
         plugins.append(plugin)
     session.add_all(plugins)
-    session.commit()
+    session.flush()
     return plugins
