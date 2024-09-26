@@ -302,10 +302,10 @@ class AlgoInit:
             time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime(self._start_time)) + "Z"
         )
         output_dict["start_time"] = iso_time
-        output_dict["time_taken"] = f"{self._time_taken:.4f}"
+        output_dict["time_taken"] = round(self._time_taken, 4)
         output_dict["test_arguments"] = {
             "ground_truth": self._ground_truth,
-            "model_type": self._model_type.name,
+            "modelType": self._model_type.name.lower(),
             "data_path": self._data_path,
             "model_path": self._model_path,
             "ground_truth_path": self._ground_truth_path,

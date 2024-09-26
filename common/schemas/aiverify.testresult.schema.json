@@ -89,8 +89,6 @@
         "$comment": "TODO: Add reference to model api configuration specs"
       },
       "required": [
-        "testDataset",
-        "mode",
         "modelType"
       ],
       "dependentRequired": {
