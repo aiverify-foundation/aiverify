@@ -62,13 +62,13 @@ class AlgoInit:
                 importlib.util.find_spec("test_engine_core").origin
             ).parent
         self._core_modules_path: str = core_modules_path
-        self._data_path: str = str(self._base_path / data_path)
-        self._model_path: str = str(self._base_path / model_path)
+        self._data_path: str = str(data_path)
+        self._model_path: str = str(model_path)
         self._input_arguments: Dict = input_arguments
         self._model_type: ModelType = model_type
 
         if self._requires_ground_truth:
-            self._ground_truth_path: str = str(self._base_path / ground_truth_path)
+            self._ground_truth_path: str = str(ground_truth_path)
             self._ground_truth: str = ground_truth
         else:
             self._ground_truth_path: str = ""
@@ -99,7 +99,7 @@ class AlgoInit:
             print("=" * 20)
 
             # Discover available core plugins
-            PluginManager.discover(str(self._base_path / self._core_modules_path))
+            PluginManager.discover(str(self._core_modules_path))
             print(f"[DETECTED_PLUGINS]: {PluginManager.get_printable_plugins()}")
 
             # Create logger
@@ -193,11 +193,9 @@ class AlgoInit:
                     )
                     print(f"[GROUND_TRUTH]: {self._ground_truth}")
                     print(f"[MODEL_TYPE]: {self._model_type}")
-                    print(f"[DATA FEATURES]: {self._data_instance.read_labels()}")
                     print(
                         f"[GROUND_TRUTH FEATURES]: {self._ground_truth_instance.read_labels()}"
                     )
-                    print(self._ground_truth_instance.get_data())
 
                     print(
                         "Removing ground truth from data and keep only ground truth in ground truth data..."
@@ -219,7 +217,6 @@ class AlgoInit:
                             "truth feature exists in the data specified in ground truth path file.)"
                         )
 
-                    print(f"[DATA FEATURES]: {self._data_instance.read_labels()}")
                     print(
                         f"[GROUND_TRUTH FEATURES]: {self._ground_truth_instance.read_labels()}"
                     )

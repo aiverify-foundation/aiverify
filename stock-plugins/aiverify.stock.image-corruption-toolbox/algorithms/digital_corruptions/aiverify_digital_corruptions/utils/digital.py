@@ -128,7 +128,7 @@ def find_coeffs(pa, pb):
         matrix.append([p1[0], p1[1], 1, 0, 0, 0, -p2[0] * p1[0], -p2[0] * p1[1]])
         matrix.append([0, 0, 0, p1[0], p1[1], 1, -p2[1] * p1[0], -p2[1] * p1[1]])
 
-    A = np.matrix(matrix, dtype=np.float64)
+    A = np.array(matrix, dtype=np.float64)
     B = np.array(pb).reshape(8)
 
     res = np.dot(np.linalg.inv(A.T * A) * A.T, B)

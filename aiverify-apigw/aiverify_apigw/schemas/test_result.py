@@ -3,6 +3,8 @@ from typing import List, Optional, Literal, Any, Self
 from datetime import datetime
 import json
 from .load_examples import test_result_examples
+from ..models import TestResultModel
+from ..lib.constants import ModelType, TestModelMode
 
 
 class TestArguments(BaseModel):
@@ -75,13 +77,18 @@ class TestResult(BaseModel):
     @model_validator(mode='before')
     @classmethod
     def validate_to_json(cls, value: Any) -> Any:
-        if isinstance(value, str):
-            obj = json.loads(value)
-            if "output" in obj:
+        def _update_obj(obj):
+            if "output" in obj and isinstance(obj["output"], dict):
                 obj["output"] = json.dumps(obj["output"])
-            if "test_arguments" in obj and "algorithmArgs" in obj["test_arguments"]:
+            if "test_arguments" in obj and "algorithmArgs" in obj["test_arguments"] and isinstance(obj["test_arguments"]["algorithmArgs"], dict):
                 obj["test_arguments"]["algorithmArgs"] = json.dumps(obj["test_arguments"]["algorithmArgs"])
-            return cls(**obj)
+            return obj
+        if isinstance(value, str):
+            mydict = json.loads(value)
+            _update_obj(mydict)
+            return cls(**mydict)
+        elif isinstance(value, dict):
+            return _update_obj(value)
         return value
 
     model_config = {
@@ -89,3 +96,44 @@ class TestResult(BaseModel):
             "examples": test_result_examples,
         }
     }
+
+
+class TestResultOutput(TestResult):
+    id: int  # test_result_id
+    name: str # name
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+    @classmethod
+    def from_model(cls, result: TestResultModel) -> "TestResultOutput":
+        modelType = "regression" if result.model.model_type == ModelType.Regression else "classification"
+        mode = "api" if result.model.mode == TestModelMode.API else "upload"
+        test_argument = TestArguments(
+            testDataset=result.test_dataset.filepath,
+            mode=mode,
+            modelType=modelType,
+            groundTruthDataset=result.ground_truth_dataset.filepath,
+            groundTruth=result.ground_truth,
+            algorithmArgs=result.algo_arguments.decode("utf-8"),
+            modelFile=result.model.filepath
+        )
+        obj = TestResultOutput(
+            id=result.id,
+            name=result.name,
+            created_at=result.created_at,
+            updated_at=result.updated_at,
+            gid=result.gid,
+            cid=result.cid,
+            version=result.version,
+            start_time=result.start_time,
+            time_taken=result.time_taken,
+            test_arguments=test_argument,
+            output=result.output.decode("utf-8"),
+            artifacts=[artifact.filename for artifact in result.artifacts]
+        )
+        return obj
+    
+    
+class TestResultUpdate(BaseModel):
+    name: str
+

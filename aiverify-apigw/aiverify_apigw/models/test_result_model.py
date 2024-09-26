@@ -17,7 +17,7 @@ class TestResultModel(BaseORMModel):
     __tablename__ = "test_result"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(String(256), nullable=False)
+    name: Mapped[str] = mapped_column(String(256), nullable=False, index=True)
     gid: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
     cid: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
     algorithm_id: Mapped[int] = mapped_column(ForeignKey("algorithm.id"))
@@ -37,6 +37,8 @@ class TestResultModel(BaseORMModel):
     algo_arguments: Mapped[bytes]  # serialized json, arguments pass as input to algo
     output: Mapped[bytes]  # serialized json, output from algos
     artifacts: Mapped[List["TestArtifactModel"]] = relationship("TestArtifactModel", cascade="all, delete")
+    created_at: Mapped[Optional[datetime]]
+    updated_at: Mapped[Optional[datetime]]
 
     @validates("gid", "cid")
     def my_validate_gid_cid(self, key, value):

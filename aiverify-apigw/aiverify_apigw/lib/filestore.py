@@ -1,5 +1,6 @@
 import os
 import io
+import re
 import hashlib
 import shutil
 from pathlib import Path, PurePath
@@ -20,6 +21,20 @@ class InvalidFileStore(Exception):
 class FileStoreError(Exception):
     """Raised on general file path error"""
     pass
+
+
+class InvalidFilename(Exception):
+    """Raised when the filename is invalid"""
+    pass
+
+
+def sanitize_filename(filename: str) -> str:
+    if not filename[0].isalnum():
+        raise InvalidFilename("The first character of the filename must be alphanumeric.")
+
+    # Use regex to replace invalid characters
+    sanitized = re.sub(r'[^a-zA-Z0-9.]', '', filename)
+    return sanitized
 
 
 def get_base_data_dir() -> Path | str:
@@ -186,40 +201,28 @@ def get_artifacts_folder(test_result_id: str):
 
 
 def save_artifact(test_result_id: str, filename: str, data: bytes):
+    filename = sanitize_filename(filename)
     folder = get_artifacts_folder(test_result_id)
     if isinstance(folder, Path):
         filepath = folder.joinpath(filename)
         with open(filepath, "wb") as fp:
             fp.write(data)
-        return folder
+        return filepath
     elif s3 is not None:
         key = urljoin(folder, filename)
         s3.put_object(key, data)
         return key
 
 
-# def get_asset(asset_id: str, filename: str):
-#     """Get asset
-
-#     Args:
-#         asset_id (str): asset ID
-#         filename (str): filename of asset
-
-#     Raises:
-#         InvalidFileStore
-
-#     Returns:
-#         asset content or None
-#     """
-#     file_path = get_asset_path(asset_id, filename)
-#     try:
-#         if isinstance(file_path, Path):
-#             with open(file_path, "rb") as file:
-#                 content = file.read()
-#                 return content
-#         elif s3 is not None:
-#             return s3.get_object(key=file_path)
-#         else:
-#             raise InvalidFileStore
-#     except:
-#         return None
+def get_artifact(test_result_id: str, filename: str):
+    filename = sanitize_filename(filename)
+    folder = get_artifacts_folder(test_result_id)
+    if isinstance(folder, Path):
+        filepath = folder.joinpath(filename)
+        with open(filepath, "rb") as fp:
+            data = fp.read()
+        return data
+    elif s3 is not None:
+        key = urljoin(folder, filename)
+        data = s3.get_object(key)
+        return data

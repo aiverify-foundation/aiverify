@@ -130,7 +130,7 @@ class PluginTest:
     "file_path",
     [
         str(Path(__file__).parent / "user_defined_files/pickle_scikit_lr.sav"),
-        "https://github.com/aiverify-foundation/aiverify/raw/ba4e488a20fa5b06143c61d12b0e9b8c36c4a672/test-engine-core/tests/io/user_defined_files/pickle_scikit_lr.sav",  # noqa: E501
+        "https://aiverify-test-public.s3.ap-northeast-1.amazonaws.com/pickle_scikit_lr.sav",  # noqa: E501
     ],
 )
 def test_end_to_end_plugin_model(file_path, request):

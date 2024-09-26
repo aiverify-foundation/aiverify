@@ -138,7 +138,7 @@ def snow(img: np.ndarray, severity: int = 1) -> np.float32:
 
     snow_layer = (
         cv2.imdecode(
-            np.fromstring(snow_layer.make_blob(), np.uint8), cv2.IMREAD_UNCHANGED
+            np.frombuffer(snow_layer.make_blob(), np.uint8), cv2.IMREAD_UNCHANGED
         )
         / 255.0
     )
