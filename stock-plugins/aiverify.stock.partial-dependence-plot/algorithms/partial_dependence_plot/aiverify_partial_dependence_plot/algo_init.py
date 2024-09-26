@@ -3,6 +3,7 @@ import importlib
 import json
 import logging
 import sys
+import time
 from pathlib import Path
 from typing import Dict, Tuple, Union
 
@@ -54,6 +55,8 @@ class AlgoInit:
         self._base_path: Path = Path().absolute()
         self._requires_ground_truth: bool = True
         self._run_as_pipeline: bool = run_as_pipeline
+        self._start_time = None
+        self._time_taken = None
 
         # Store the input arguments as private vars
         if core_modules_path == "":
@@ -232,7 +235,7 @@ class AlgoInit:
                 self._input_arguments["logger"] = self._logger_instance
                 self._input_arguments["progress_callback"] = AlgoInit.progress_callback
                 self._input_arguments["project_base_path"] = self._base_path
-
+                self._start_time = time.time()
                 # Run the plugin with the arguments and instances
                 print("Creating an instance of the Plugin...")
                 plugin = Plugin(
@@ -254,15 +257,18 @@ class AlgoInit:
 
                 print("Verifying results with output schema...")
                 is_success, error_messages = self._verify_task_results(results)
+                self._time_taken = time.time() - self._start_time
+
                 if is_success:
                     # Print the output results
                     output_folder = Path.cwd() / "output"
                     output_folder.mkdir(parents=True, exist_ok=True)
                     json_file_path = output_folder / "results.json"
 
+                    generatedResult = self._generatOutputFile(results)
                     # Write the data to the JSON file
                     with open(json_file_path, "w") as json_file:
-                        json.dump(results, json_file, indent=4)
+                        json.dump(generatedResult, json_file, indent=4)
                     print("*" * 20)
                     print(f"check the results here : {json_file_path}")
                     print("*" * 20)
@@ -277,6 +283,35 @@ class AlgoInit:
 
             # Exit with error
             sys.exit(-1)
+
+    def _generatOutputFile(self, results):
+        # Generate the output file
+        output_dict = dict()
+
+        # read attrs from algo.meta.json file
+        f = open(str(Path(__file__).parent / "algo.meta.json"))
+        meta_file = json.load(f)
+        output_dict["cid"] = meta_file["cid"]
+        output_dict["gid"] = meta_file["gid"]
+        output_dict["version"] = meta_file["version"]
+        # Format it as an ISO 8601 string
+        iso_time = (
+            time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime(self._start_time)) + "Z"
+        )
+        output_dict["start_time"] = iso_time
+        output_dict["time_taken"] = round(self._time_taken, 4)
+        output_dict["test_arguments"] = {
+            "ground_truth": self._ground_truth,
+            "modelType": self._model_type.name.lower(),
+            "data_path": self._data_path,
+            "model_path": self._model_path,
+            "ground_truth_path": self._ground_truth_path,
+            "run_pipeline": self._run_as_pipeline,
+            "core_modules_path": str(self._core_modules_path),
+        }
+        output_dict["output"] = results
+
+        return output_dict
 
     def _verify_task_results(self, task_result: Dict) -> Tuple[bool, str]:
         """

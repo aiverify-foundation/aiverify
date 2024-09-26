@@ -1,5 +1,6 @@
 {
     "cid": "fairness_metrics_toolbox_for_regression",
+    "gid": "aiverify.stock.fairness_metrics_toolbox_for_regression",
     "name": "Fairness Metrics Toolbox for Regression",
     "modelType": [
         "regression"
@@ -22,7 +23,6 @@
         "algo.meta.json",
         "algo.py",
         "README.md",
-        "requirements.txt",
         "syntax_checker.py"
     ]
 }

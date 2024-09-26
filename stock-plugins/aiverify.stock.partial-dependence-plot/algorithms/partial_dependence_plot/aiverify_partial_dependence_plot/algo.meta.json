@@ -1,5 +1,6 @@
 {
-    "cid": "partial_dependence_plot",
+    "cid": "aiverify_partial_dependence_plot",
+    "gid": "aiverify.stock.partial_dependence_plot",
     "name": "Partial Dependence Plot",
     "modelType": [
         "classification",
@@ -23,7 +24,6 @@
         "partial_dependence_plot.meta.json",
         "partial_dependence_plot.py",
         "README.md",
-        "requirements.txt",
         "syntax_checker.py"
     ]
 }
