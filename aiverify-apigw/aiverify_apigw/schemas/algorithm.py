@@ -45,3 +45,16 @@ class AlgorithmMeta(BaseModel):
         default=True,
         description="Does this algorithm requires ground truth?"
     )
+
+
+class AlgorithmOutput(AlgorithmMeta):
+    language: Optional[str] = Field(
+        description="Algorithm language"
+    )
+    language: Optional[str] = Field(
+        description="Algorithm language"
+    )
+    language: Optional[str] = Field(
+        description="Algorithm language"
+    )
+    

@@ -1,5 +1,8 @@
-from pydantic import BaseModel, Field, HttpUrl
+from uu import decode
+from pydantic import BaseModel, Field, HttpUrl, TypeAdapter, AnyHttpUrl
 from typing import Optional
+
+from ..models import PluginModel
 
 
 class PluginMeta(BaseModel):
@@ -34,3 +37,23 @@ class PluginMeta(BaseModel):
         description="URL of project page",
         max_length=2048,
     )
+
+
+class PluginOutput(PluginMeta):
+    meta: str = Field(
+        description="Content from the plugin meta file"
+    )
+
+    @classmethod
+    def from_model(cls, result: PluginModel) -> "PluginOutput":
+        url = TypeAdapter(AnyHttpUrl).validate_python(result.url) if result.url else None
+        obj = PluginOutput(
+            gid = result.gid,
+            version=result.version,
+            name=result.name,
+            author=result.author,
+            description=result.description,
+            url=url,
+            meta=result.meta.decode("utf-8")
+        )
+        return obj
