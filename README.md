@@ -1,23 +1,25 @@
 
 [![Integration Tests](https://github.com/aiverify-foundation/aiverify/actions/workflows/integration-tests.yml/badge.svg)](https://github.com/aiverify-foundation/aiverify/actions/workflows/integration-tests.yml)  [![Integration Tests for aiverify-user (Docker)](https://github.com/aiverify-foundation/aiverify/actions/workflows/integration-tests-docker.yml/badge.svg)](https://github.com/aiverify-foundation/aiverify/actions/workflows/integration-tests-docker.yml)
 
-## ✨New API Connector Feature!
+## AI Verify 2.0 Is Comming!
 
-We're excited to introduce a powerful enhancement to AI Verify – the API Connector feature! 
-Now, instead of uploading your AI Model file onto AI Verify, you can seamlessly configure an API Connection to your model server. 
-Learn more about the modes of accessing AI models [here](https://aiverify-foundation.github.io/aiverify/getting-started/accessing-ai-model/)
+## Announcing AI Verify 2.x – A New Era of AI Governance!
 
-### Key Advantages:
-- Bypass Size Limitations: Say goodbye to the constraints imposed by browser upload size limits.
-- Test previously unsupported AI frameworks: The API Connector empowers you to work with models of any framework, such as PyTorch. Learn more about compatibility of model uploads [here](https://aiverify-foundation.github.io/aiverify/others/compatibility/).
-- Connection Settings for Batch Requests: Optimise your test runs by configuring connection timeouts, connection retries, max connections, rate limit and rate limit timeouts.
-* Important Note: This feature currently supports tabular data only.
+We are thrilled to announce the upcoming release of AI Verify 2.x, a groundbreaking update that will revolutionize the way you validate and govern AI systems. This new version is packed with major enhancements designed to provide more flexibility, efficiency, and scalability.
 
-### Getting Started:
-To take advantage of this feature, refer to our [How-To Guide](https://aiverify-foundation.github.io/aiverify/how-to/connect-to-ai-model-api/). This guide provides step-by-step instructions on setting up the API Connector for seamless integration with your model server.
+### What's New in AI Verify 2.x?
 
-We are excited to have you try it out and hear what you think about this feature!
-[Discussion Board](https://github.com/aiverify-foundation/aiverify/discussions)
+- **Modular Architecture**: The toolkit has been re-architected to be more modular, allowing for easier integration and customization.
+- **Independent Test Algorithms**: Each test algorithm can now be run as a separate Python module, giving you the freedom to use and develop algorithms independently.
+- **Redesigned Backend Test Engine Worker**: The backend test engine worker has been completely redesigned for improved performance and reliability.
+- **New Frontend Workflows**: Experience a more intuitive and streamlined user interface with our newly designed frontend workflows.
+<p align="center">
+<img src="https://github.com/user-attachments/assets/967b4122-ae88-4cf3-ba76-56562ea7cdc9" width="80%">
+</p>
+
+The new version is targeted for completion by March 2025. For more details on the technical design, refer to our [wiki](https://github.com/aiverify-foundation/aiverify/wiki/AI-Verify-2.0-Architecture).
+
+Stay tuned for more updates as we get closer to the release date. We can't wait for you to experience the new and improved AI Verify 2.x!
 
 ## Introduction
 
