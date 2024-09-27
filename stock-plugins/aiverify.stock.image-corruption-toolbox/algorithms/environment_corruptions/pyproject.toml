@@ -1,6 +1,5 @@
 [project]
 name = "aiverify_environment_corruptions"
-version = "0.10.0"
 description = ""
 authors = [{ name = "AI Verify" }]
 readme = "README.md"
@@ -16,6 +15,7 @@ dependencies = [
     "wand==0.6.13",
 ]
 requires-python = ">=3.10,<3.12"
+dynamic = ["version"]
 
 [project.optional-dependencies]
 dev = [
@@ -24,6 +24,10 @@ dev = [
 
 [project.scripts]
 aiverify_environment_corruptions = "aiverify_environment_corruptions.__main__:main"
+
+[tool.hatch.version]
+path = "aiverify_environment_corruptions/algo.meta.json"
+pattern = '"version":\s*"(?P<version>[^"]+)"'
 
 [tool.hatch.metadata]
 allow-direct-references = true

@@ -4,7 +4,7 @@
     "modelType": [
         "classification"
     ],
-    "version": "0.10.0",
+    "version": "2.0.0a1",
     "author": "AI Verify",
     "description": "Algorithm that adds general corruptions (gaussian, poisson and salt and pepper noise)",
     "tags": [
