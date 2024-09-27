@@ -3,6 +3,7 @@ import importlib
 import json
 import logging
 import sys
+import time
 from pathlib import Path
 from typing import Dict, Tuple, Union
 
@@ -20,6 +21,7 @@ from test_engine_core.utils.json_utils import (
     validate_json,
 )
 from test_engine_core.utils.time import time_class_method
+from test_engine_core.utils.url_utils import is_url
 
 
 # =====================================================================================
@@ -55,6 +57,8 @@ class AlgoInit:
         self._base_path: Path = Path().absolute()
         self._requires_ground_truth: bool = True
         self._run_as_pipeline: bool = run_as_pipeline
+        self._start_time = None
+        self._time_taken = None
 
         # Store the input arguments as private vars
         if core_modules_path == "":
@@ -236,6 +240,7 @@ class AlgoInit:
 
                 # Run the plugin with the arguments and instances
                 print("Creating an instance of the Plugin...")
+                self._start_time = time.time()
                 plugin = Plugin(
                     (self._data_instance, self._data_serializer_instance),
                     (self._model_instance, self._model_serializer_instance),
@@ -255,15 +260,18 @@ class AlgoInit:
 
                 print("Verifying results with output schema...")
                 is_success, error_messages = self._verify_task_results(results)
+                self._time_taken = time.time() - self._start_time
+
                 if is_success:
                     # Save the output results
                     output_folder = Path.cwd() / "output"
                     output_folder.mkdir(parents=True, exist_ok=True)
                     json_file_path = output_folder / "results.json"
 
+                    generated_result = self._generate_output_file(results)
                     # Write the data to the JSON file
                     with open(json_file_path, "w") as json_file:
-                        json.dump(results, json_file, indent=4)
+                        json.dump(generated_result, json_file, indent=4)
                     print("*" * 20)
                     print(f"check the results here : {json_file_path}")
                     print("*" * 20)
@@ -278,6 +286,65 @@ class AlgoInit:
 
             # Exit with error
             sys.exit(-1)
+
+    def _generate_output_file(self, results):
+        # Generate the output file
+        output_dict = dict()
+
+        # read attrs from algo.meta.json file
+        f = open(str(Path(__file__).parent / "algo.meta.json"))
+        meta_file = json.load(f)
+        output_dict["cid"] = meta_file["cid"]
+        output_dict["gid"] = meta_file["gid"]
+        output_dict["version"] = meta_file["version"]
+        output_dict["startTime"] = time.strftime(
+            "%Y-%m-%dT%H:%M:%SZ", time.gmtime(self._start_time)
+        )
+        output_dict["timeTaken"] = round(self._time_taken, 4)
+        algorithmArgs = {
+            "run_pipeline": self._run_as_pipeline,
+            "set_seed": self._input_arguments["set_seed"],
+            "annotated_ground_truth_path": self._input_arguments[
+                "annotated_ground_truth_path"
+            ]
+            if is_url(self._input_arguments["annotated_ground_truth_path"])
+            else Path(self._input_arguments["annotated_ground_truth_path"])
+            .resolve()
+            .as_uri(),
+            "file_name_label": self._input_arguments["file_name_label"],
+        }
+        output_dict["testArguments"] = {
+            "groundTruth": self._ground_truth,
+            "modelType": self._model_type.name.lower(),
+            "testDataset": self._data_path
+            if is_url(self._data_path)
+            else Path(self._data_path).resolve().as_uri(),
+            "modelFile": self._model_path
+            if is_url(self._model_path)
+            else Path(self._model_path).resolve().as_uri(),
+            "groundTruthDataset": self._ground_truth_path
+            if is_url(self._ground_truth_path)
+            else Path(self._ground_truth_path).resolve().as_uri(),
+            "algorithmArgs": algorithmArgs,
+            "mode": "upload",
+        }
+        output_dict["output"] = results
+
+        output_dict["artifacts"] = self._populate_all_image_urls(results)
+
+        return output_dict
+
+    def _populate_all_image_urls(self, data):
+        image_urls = []
+
+        for result in data["results"]:
+            display_info = result.get("display_info", {})
+            for severity, info in display_info.items():
+                for item in info:
+                    if ".png" in item:
+                        image_urls.append(item)
+
+        return image_urls
 
     def _verify_task_results(self, task_result: Dict) -> Tuple[bool, str]:
         """

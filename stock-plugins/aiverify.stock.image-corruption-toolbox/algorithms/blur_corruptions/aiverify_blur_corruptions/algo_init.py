@@ -334,10 +334,6 @@ class AlgoInit:
 
         return output_dict
 
-    # Function to check if a string looks like a URL/path
-    def _is_url_like(item):
-        return isinstance(item, str) and (".png" in item)
-
     def _populate_all_image_urls(self, data):
         image_urls = []
 
