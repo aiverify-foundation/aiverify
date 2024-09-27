@@ -19,7 +19,7 @@ The toolbox generates corrupted images based on the uploaded test data at 5 diff
 |    Blur Corruptions     |     Algorithm that adds blur corruptions (defocus, gaussian, glass, horizontal motion, vertical motion and zoom Blur) to images at 5 severity levels, and calculates the accuracy of the model      |
 |   Digital Corruptions   | Algorithm that adds digital corruptions (brightness up and down, contrast up and down, compression, random tilt, saturate) to images at 5 severity levels, and calculates the accuracy of the model |
 | Environment Corruptions |                             Algorithm that adds environmental corruptions (rain, fog and snow) to images at 5 severity levels, and calculates the accuracy of the model                             |
-|   General Corruptions   |                Algorithm that adds environmental corruptions (gaussian, poisson and salt and pepper noise) to images at 5 severity levels, and calculates the accuracy of the model                 |
+|   General Corruptions   |                Algorithm that adds general corruptions (gaussian, poisson and salt and pepper noise) to images at 5 severity levels, and calculates the accuracy of the model                 |
 
 
 - Widgets
