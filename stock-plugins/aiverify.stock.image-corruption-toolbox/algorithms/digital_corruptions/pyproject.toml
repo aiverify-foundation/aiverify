@@ -1,7 +1,6 @@
 [project]
 name = "aiverify_digital_corruptions"
-version = "0.10.0"
-description = ""
+description = "Part of AI Verify image corruption toolbox. This package includes algorithms that add digital corruptions (brightness up and down, contrast up and down, compression, random tilt, saturate) to images at 5 severity levels, to test the robustness of machine learning models."
 authors = [{ name = "AI Verify" }]
 readme = "README.md"
 dependencies = [
@@ -14,6 +13,7 @@ dependencies = [
     "scikit-image==0.24.0",
 ]
 requires-python = ">=3.10,<3.12"
+dynamic = ["version"]
 
 [project.optional-dependencies]
 dev = [
@@ -22,6 +22,10 @@ dev = [
 
 [project.scripts]
 aiverify_digital_corruptions = "aiverify_digital_corruptions.__main__:main"
+
+[tool.hatch.version]
+path = "aiverify_digital_corruptions/algo.meta.json"
+pattern = '"version":\s*"(?P<version>[^"]+)"'
 
 [tool.hatch.metadata]
 allow-direct-references = true

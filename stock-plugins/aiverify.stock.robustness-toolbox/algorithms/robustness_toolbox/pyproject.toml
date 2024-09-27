@@ -1,7 +1,6 @@
 [project]
 name = "aiverify_robustness_toolbox"
-version = "0.10.0"
-description = ""
+description = "AI Verify Robustness Toolbox generates a perturbed dataset using boundary attack algorithm on the test dataset."
 authors = [{ name = "AI Verify" }]
 readme = "README.md"
 dependencies = [
@@ -12,6 +11,7 @@ dependencies = [
     "pillow===10.4.0",
 ]
 requires-python = ">=3.10,<3.12"
+dynamic = ["version"]
 
 [project.optional-dependencies]
 dev = [
@@ -20,6 +20,10 @@ dev = [
 
 [project.scripts]
 aiverify_robustness_toolbox = "aiverify_robustness_toolbox.__main__:main"
+
+[tool.hatch.version]
+path = "aiverify_robustness_toolbox/algo.meta.json"
+pattern = '"version":\s*"(?P<version>[^"]+)"'
 
 [tool.hatch.metadata]
 allow-direct-references = true
