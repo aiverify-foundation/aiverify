@@ -266,10 +266,10 @@ class AlgoInit:
                     output_folder.mkdir(parents=True, exist_ok=True)
                     json_file_path = output_folder / "results.json"
 
-                    generatedResult = self._generatOutputFile(results)
+                    generated_result = self._generate_output_file(results)
                     # Write the data to the JSON file
                     with open(json_file_path, "w") as json_file:
-                        json.dump(generatedResult, json_file, indent=4)
+                        json.dump(generated_result, json_file, indent=4)
                     print("*" * 20)
                     print(f"check the results here : {json_file_path}")
                     print("*" * 20)
@@ -285,7 +285,7 @@ class AlgoInit:
             # Exit with error
             sys.exit(-1)
 
-    def _generatOutputFile(self, results):
+    def _generate_output_file(self, results):
         # Generate the output file
         output_dict = dict()
 
