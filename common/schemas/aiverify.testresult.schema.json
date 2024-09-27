@@ -23,16 +23,16 @@
       "description": "Algoritm version",
       "type": "string"
     },
-    "start_time": {
+    "startTime": {
       "description": "Start date time of test",
       "type": "string",
       "format": "date-time"
     },
-    "time_taken": {
+    "timeTaken": {
       "description": "Time take to complete running the test in seconds.",
       "type": "number"
     },
-    "test_arguments": {
+    "testArguments": {
       "description": "Test arguments",
       "type": "object",
       "properties": {
@@ -115,9 +115,9 @@
   "required": [
     "gid",
     "cid",
-    "start_time",
-    "time_taken",
-    "test_arguments",
+    "startTime",
+    "timeTaken",
+    "testArguments",
     "output"
   ]
 }
