@@ -3,22 +3,22 @@ from pathlib import Path, PurePath
 from typing import Dict, List, Tuple, Union
 
 import numpy as np
-from scipy.stats.mstats import mquantiles
-from test_engine_core.interfaces.ialgorithm import IAlgorithm
-from test_engine_core.interfaces.idata import IData
-from test_engine_core.interfaces.imodel import IModel
-from test_engine_core.interfaces.ipipeline import IPipeline
-from test_engine_core.interfaces.iserializer import ISerializer
-from test_engine_core.plugins.enums.data_plugin_type import DataPluginType
-from test_engine_core.plugins.enums.model_type import ModelType
-from test_engine_core.plugins.enums.plugin_type import PluginType
-from test_engine_core.plugins.metadata.plugin_metadata import PluginMetadata
-from test_engine_core.utils.json_utils import (
+from aiverify_test_engine.interfaces.ialgorithm import IAlgorithm
+from aiverify_test_engine.interfaces.idata import IData
+from aiverify_test_engine.interfaces.imodel import IModel
+from aiverify_test_engine.interfaces.ipipeline import IPipeline
+from aiverify_test_engine.interfaces.iserializer import ISerializer
+from aiverify_test_engine.plugins.enums.data_plugin_type import DataPluginType
+from aiverify_test_engine.plugins.enums.model_type import ModelType
+from aiverify_test_engine.plugins.enums.plugin_type import PluginType
+from aiverify_test_engine.plugins.metadata.plugin_metadata import PluginMetadata
+from aiverify_test_engine.utils.json_utils import (
     load_schema_file,
     remove_numpy_formats,
     validate_json,
 )
-from test_engine_core.utils.simple_progress import SimpleProgress
+from aiverify_test_engine.utils.simple_progress import SimpleProgress
+from scipy.stats.mstats import mquantiles
 
 
 # =====================================================================================

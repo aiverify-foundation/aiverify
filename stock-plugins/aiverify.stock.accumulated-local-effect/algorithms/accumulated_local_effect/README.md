@@ -20,7 +20,7 @@ source .venv/bin/activate
 
 # execute plugin
 cd aiverify/stock-plugins/aiverify.stock.accumulated-local-effect/algorithms/accumulated_local_effect/
-# install test-engine-core 
+# install aiverify-test-engine 
 pip install -e '.[dev]'
 
 python -m aiverify_accumulated_local_effect --data_path  <data_path> --model_path <model_path> --ground_truth_path <ground_truth_path> --ground_truth <str> --model_type CLASSIFICATION --run_pipeline

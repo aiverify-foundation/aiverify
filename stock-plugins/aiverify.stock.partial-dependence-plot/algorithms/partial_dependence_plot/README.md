@@ -21,7 +21,7 @@ source .venv/bin/activate
 
 # execute plugin
 cd aiverify/stock-plugins/aiverify.stock.partial-dependence-plot/algorithms/partial_dependence_plot/
-# install test-engine-core 
+# install aiverify-test-engine 
 pip install -e '.[dev]'
 
 python -m aiverify_partial_dependence_plot --data_path  <data_path> --model_path <model_path> --ground_truth_path <ground_truth_path> --ground_truth <str> --model_type CLASSIFICATION --run_pipeline

@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 from aiverify_fairness_metrics_toolbox_for_classification.algo_init import AlgoInit
-from test_engine_core.plugins.enums.model_type import ModelType
+from aiverify_test_engine.plugins.enums.model_type import ModelType
 
 multiclass_pipeline = {
     "data_path": str(

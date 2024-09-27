@@ -20,7 +20,7 @@ source .venv/bin/activate
 
 # execute plugin
 cd aiverify/stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox/
-# install test-engine-core 
+# install aiverify-test-engine 
 pip install -e '.[dev]'
 
 python -m aiverify_shap_toolbox --data_path  <data_path> --model_path <model_path> --ground_truth_path <ground_truth_path> --ground_truth <str> --model_type CLASSIFICATION --run_pipeline --background_path <background_path> --background_samples <number> --data_samples <number> --explain_type <str>

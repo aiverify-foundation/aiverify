@@ -1,0 +1,76 @@
+[project]
+name = "aiverify-test-engine"
+version = "0.10.0"
+authors = [{ name = "AI Verify" }]
+description = "This core project will support critical functionalities to support plugins and apps."
+dependencies = [
+    "joblib==1.4.2",
+    "pillow==10.4.0",
+    "libclang==16.0.6",
+    "numpy==1.26.4",
+    "scikit-learn==1.5.2",
+    "pandas==2.2.2",
+    "scipy==1.14.1",
+    "httpx==0.26.0",
+    "openapi-schema-validator==0.6.2",
+    "aiopenapi3 @ git+https://github.com/commonism/aiopenapi3.git@8e9591162d1cef8cfc8e7840f34eb20c84af8c24",
+    "aiometer==0.5.0",
+    "async-timeout==4.0.3",
+    "attrs==23.2.0",
+    "jsonschema-specifications==2023.12.1",
+    "jsonschema==4.21.1",
+    "redis==5.0.1",
+    "referencing==0.33.0",
+    "rpds-py==0.17.1",
+]
+readme = "README.md"
+requires-python = ">=3.10,<3.12"
+license = { text = "Apache Software License 2.0" }
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: Apache Software License",
+]
+
+[project.optional-dependencies]
+tensorflow = ["tensorflow==2.14.0"]
+
+gbm = ["lightgbm==4.5.0", "xgboost==2.1.1"]
+
+all = ["aiverify-test-engine[tensorflow]", "aiverify-test-engine[gbm]"]
+
+dev = [
+    "aiverify-test-engine[all]",
+    "black==23.10.1",
+    "isort==5.12.0",
+    "pre-commit==3.5.0",
+    "pytest==7.4.3",
+    "coverage==7.3.2",
+    "pytest-mock==3.12.0",
+    "pytest-cov==5.0.0",
+    "pytest-json-report==1.5.0",
+    "pytest-json==0.4.0",
+    "pytest-html==4.1.1",
+    "flake8==6.1.0",
+    "hatch==1.12.0",
+    "anybadge==1.14.0",
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "aiverify_test_engine/",
+    "tests/",
+    "AUTHORS.rst",
+    "LICENSE",
+    "pyproject.toml",
+    "README.md",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

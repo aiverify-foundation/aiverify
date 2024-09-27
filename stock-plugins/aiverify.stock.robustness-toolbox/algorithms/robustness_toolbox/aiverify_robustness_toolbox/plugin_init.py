@@ -1,7 +1,7 @@
 import argparse
 
 from aiverify_robustness_toolbox.algo_init import AlgoInit
-from test_engine_core.plugins.enums.model_type import ModelType
+from aiverify_test_engine.plugins.enums.model_type import ModelType
 
 parser = argparse.ArgumentParser(
     description="Run the plugin with specified parameters."

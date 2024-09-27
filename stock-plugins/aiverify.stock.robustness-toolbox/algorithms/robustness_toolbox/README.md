@@ -18,7 +18,7 @@ source .venv/bin/activate
 # execute plugin
 
 cd aiverify/stock-plugins/aiverify.stock.robustness-toolbox/algorithms/robustness_toolbox
-# install test-engine-core 
+# install aiverify-test-engine 
 pip install -e .'[dev]'
 
 python -m aiverify_robustness_toolbox --data_path  <data_path> --model_path <model_path> --ground_truth_path <ground_truth_path> --ground_truth <str> --model_type CLASSIFICATION --run_pipeline --annotated_ground_truth_path <str> --file_name_label <str>
