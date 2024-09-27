@@ -1,11 +1,11 @@
 [project]
 name = "aiverify_accumulated_local_effect"
-version = "0.10.0"
-description = ""
+description = "AI Verify implementation of the Accumulated Local Effect algorithm. The algorithm provides black box explainations of how features and their corresponding values influence the prediction of a model."
 authors = [{ name = "AI Verify" }]
 readme = "README.md"
 dependencies = ["numpy==1.26.4", "pandas==2.2.2"]
 requires-python = ">=3.10,<3.12"
+dynamic = ["version"]
 
 [project.optional-dependencies]
 dev = [
@@ -17,6 +17,10 @@ aiverify_accumulated_local_effect = "aiverify_accumulated_local_effect.__main__:
 
 [tool.hatch.metadata]
 allow-direct-references = true
+
+[tool.hatch.version]
+path = "aiverify_accumulated_local_effect/algo.meta.json"
+pattern = '"version":\s*"(?P<version>[^"]+)"'
 
 [build-system]
 requires = ["hatchling"]

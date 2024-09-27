@@ -1,6 +1,6 @@
 {
     "gid": "aiverify.stock.fairness_metrics_toolbox_for_regression",
-    "version": "0.10.0",
+    "version": "2.0.0a1",
     "name": "Fairness for Regression",
     "author": "AI Verify",
     "description": "This plugin computes and displays a list of fairness metrics to measure how correctly your regression model predicts among the given set of sensitive features.",

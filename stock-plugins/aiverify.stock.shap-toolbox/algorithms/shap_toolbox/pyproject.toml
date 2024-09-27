@@ -1,7 +1,6 @@
 [project]
 name = "aiverify_shap_toolbox"
-version = "0.10.0"
-description = ""
+description = "AI Verify SHAP Toolbox provides SHAP (SHapley Additive exPlanations) methods to explain the output of machine learning models."
 authors = [{ name = "AI Verify" }]
 readme = "README.md"
 dependencies = [
@@ -14,6 +13,7 @@ dependencies = [
     "shap==0.46.0",
 ]
 requires-python = ">=3.10,<3.12"
+dynamic = ["version"]
 
 [project.optional-dependencies]
 dev = [
@@ -22,6 +22,10 @@ dev = [
 
 [project.scripts]
 aiverify_shap_toolbox = "aiverify_shap_toolbox.__main__:main"
+
+[tool.hatch.version]
+path = "aiverify_shap_toolbox/algo.meta.json"
+pattern = '"version":\s*"(?P<version>[^"]+)"'
 
 [tool.hatch.metadata]
 allow-direct-references = true
