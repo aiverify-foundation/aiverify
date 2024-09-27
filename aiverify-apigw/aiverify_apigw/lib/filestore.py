@@ -1,9 +1,9 @@
 import os
-import io
-import re
-import hashlib
 import shutil
-from pathlib import Path, PurePath
+from pathlib import Path
+import urllib.parse
+urllib.parse.uses_relative.append("s3")
+urllib.parse.uses_netloc.append("s3")
 from urllib.parse import urljoin
 
 from .s3 import MyS3
@@ -23,18 +23,13 @@ class FileStoreError(Exception):
     pass
 
 
-class InvalidFilename(Exception):
-    """Raised when the filename is invalid"""
-    pass
-
-
-def sanitize_filename(filename: str) -> str:
-    if not filename[0].isalnum():
-        raise InvalidFilename("The first character of the filename must be alphanumeric.")
-
-    # Use regex to replace invalid characters
-    sanitized = re.sub(r'[^a-zA-Z0-9.]', '', filename)
-    return sanitized
+def check_relative_to_base(base_path: Path | str, filepath: str) -> bool:
+    logger.debug(f"check_relative_to_base: {base_path} -> {filepath}")
+    if isinstance(base_path, Path):
+        return base_path.joinpath(filepath).resolve().is_relative_to(base_path)
+    else:
+        # for s3 must be full url
+        return urljoin(base_path, filepath).startswith(base_path)
 
 
 def get_base_data_dir() -> Path | str:
@@ -79,27 +74,6 @@ def is_s3(path: Path | str) -> bool:
     else:
         raise InvalidFileStore(f"Invalid path: {path}")
 
-
-def check_valid_filename(filename: str):
-    return PurePath(filename).stem.isalnum
-
-
-def append_filename(filename: str, append_name: str) -> str:
-    fpath = PurePath(filename)
-    return fpath.stem + append_name + fpath.suffix
-
-
-def get_suffix(filename: str) -> str:
-    return PurePath(filename).suffix.lower()
-
-
-def get_stem(filename: str) -> str:
-    return PurePath(filename).stem
-
-
-def get_file_digest(contents: io.BytesIO):
-    contents.seek(0)
-    return hashlib.file_digest(contents, "sha256").digest()
 
 # def absolute_plugin_base_path(source: str) -> Path | str:
 #     if isinstance(base_plugin_dir, Path):
@@ -201,10 +175,17 @@ def get_artifacts_folder(test_result_id: str):
 
 
 def save_artifact(test_result_id: str, filename: str, data: bytes):
-    filename = sanitize_filename(filename)
+    # validate input
+    if not test_result_id.isalnum():
+        raise FileStoreError(f"Invalid test result id {test_result_id}")
     folder = get_artifacts_folder(test_result_id)
+    if not check_relative_to_base(folder, filename):
+        raise FileStoreError(f"Invalid filename {filename}")
     if isinstance(folder, Path):
         filepath = folder.joinpath(filename)
+        # check for nest dir
+        if not filepath.parent.exists():
+            filepath.parent.mkdir(parents=True, exist_ok=True)
         with open(filepath, "wb") as fp:
             fp.write(data)
         return filepath
@@ -215,10 +196,13 @@ def save_artifact(test_result_id: str, filename: str, data: bytes):
 
 
 def get_artifact(test_result_id: str, filename: str):
-    filename = sanitize_filename(filename)
+    if not test_result_id.isalnum():
+        raise FileStoreError(f"Invalid test result id {test_result_id}")
     folder = get_artifacts_folder(test_result_id)
+    if not check_relative_to_base(folder, filename):
+        raise FileStoreError(f"Invalid filename {filename}")
     if isinstance(folder, Path):
-        filepath = folder.joinpath(filename)
+        filepath = folder.joinpath(filename).resolve()
         with open(filepath, "rb") as fp:
             data = fp.read()
         return data
