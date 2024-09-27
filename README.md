@@ -31,10 +31,6 @@ It is a single integrated toolkit that operates within an enterprise environment
 
 This document provides important notices and information about the project that contributors and users should be aware of. Please take the time to read through this document thoroughly. 
 
-## Installing AI Verify
-
-New to AI Verify? Generally, you should install AI Verify by building and running the [Dockerfile](https://aiverify-foundation.github.io/aiverify/getting-started/docker-setup/), which contains all the dependencies you need. This should get you ready to use AI Verify! See the installation guide for building and running from [source code](https://aiverify-foundation.github.io/aiverify/getting-started/source-code-setup/) if you wish to deal with dependencies on your own. 
-
 ## User Guide
 
 Learn how you may utilise AI Verify effectively [here](https://aiverify-foundation.github.io/aiverify).
