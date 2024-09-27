@@ -57,13 +57,13 @@ class TestResult(BaseModel):
         default=None,
         description="Algorithm version"
     )
-    start_time: datetime = Field(
+    startTime: datetime = Field(
         description="Start date time of test"
     )
-    time_taken: float = Field(
+    timeTaken: float = Field(
         description="Time taken to complete running the test in seconds."
     )
-    test_arguments: TestArguments = Field(
+    testArguments: TestArguments = Field(
         description="Test arguments"
     )
     output: str = Field(
@@ -80,8 +80,8 @@ class TestResult(BaseModel):
         def _update_obj(obj):
             if "output" in obj and isinstance(obj["output"], dict):
                 obj["output"] = json.dumps(obj["output"])
-            if "test_arguments" in obj and "algorithmArgs" in obj["test_arguments"] and isinstance(obj["test_arguments"]["algorithmArgs"], dict):
-                obj["test_arguments"]["algorithmArgs"] = json.dumps(obj["test_arguments"]["algorithmArgs"])
+            if "testArguments" in obj and "algorithmArgs" in obj["testArguments"] and isinstance(obj["testArguments"]["algorithmArgs"], dict):
+                obj["testArguments"]["algorithmArgs"] = json.dumps(obj["testArguments"]["algorithmArgs"])
             return obj
         if isinstance(value, str):
             mydict = json.loads(value)
@@ -125,9 +125,9 @@ class TestResultOutput(TestResult):
             gid=result.gid,
             cid=result.cid,
             version=result.version,
-            start_time=result.start_time,
-            time_taken=result.time_taken,
-            test_arguments=test_argument,
+            startTime=result.start_time,
+            timeTaken=result.time_taken,
+            testArguments=test_argument,
             output=result.output.decode("utf-8"),
             artifacts=[artifact.filename for artifact in result.artifacts]
         )
