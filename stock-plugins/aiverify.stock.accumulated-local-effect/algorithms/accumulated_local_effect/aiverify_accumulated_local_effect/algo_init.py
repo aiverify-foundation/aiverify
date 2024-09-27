@@ -21,6 +21,7 @@ from test_engine_core.utils.json_utils import (
     validate_json,
 )
 from test_engine_core.utils.time import time_class_method
+from test_engine_core.utils.url_utils import is_url
 
 
 # =====================================================================================
@@ -297,19 +298,27 @@ class AlgoInit:
         output_dict["cid"] = meta_file["cid"]
         output_dict["gid"] = meta_file["gid"]
         output_dict["version"] = meta_file["version"]
-        # Format it as an ISO 8601 string
-        iso_time = (
-            time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime(self._start_time)) + "Z"
+        output_dict["startTime"] = time.strftime(
+            "%Y-%m-%dT%H:%M:%SZ", time.gmtime(self._start_time)
         )
-        output_dict["start_time"] = iso_time
-        output_dict["time_taken"] = round(self._time_taken, 4)
-        output_dict["test_arguments"] = {
-            "ground_truth": self._ground_truth,
+        output_dict["timeTaken"] = round(self._time_taken, 4)
+        algorithmArgs = {
+            "runPipeline": self._run_as_pipeline,
+        }
+        output_dict["testArguments"] = {
+            "groundTruth": self._ground_truth,
             "modelType": self._model_type.name.lower(),
-            "data_path": self._data_path,
-            "model_path": self._model_path,
-            "ground_truth_path": self._ground_truth_path,
-            "run_pipeline": self._run_as_pipeline,
+            "testDataset": self._data_path
+            if is_url(self._data_path)
+            else Path(self._data_path).resolve().as_uri(),
+            "modelFile": self._model_path
+            if is_url(self._model_path)
+            else Path(self._model_path).resolve().as_uri(),
+            "groundTruthDataset": self._ground_truth_path
+            if is_url(self._ground_truth_path)
+            else Path(self._ground_truth_path).resolve().as_uri(),
+            "algorithmArgs": algorithmArgs,
+            "mode": "upload",
         }
         output_dict["output"] = results
 
