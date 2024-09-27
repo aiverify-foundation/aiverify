@@ -1,5 +1,5 @@
 {
-    "cid": "shap_toolbox",
+    "cid": "aiverify_shap_toolbox",
     "gid": "aiverify.stock.shap_toolbox",
     "name": "SHAP Toolbox",
     "modelType": [
