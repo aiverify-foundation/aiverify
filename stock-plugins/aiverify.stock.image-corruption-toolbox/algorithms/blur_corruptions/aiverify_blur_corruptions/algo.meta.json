@@ -1,5 +1,6 @@
 {
-    "cid": "blur_corruptions",
+    "cid": "aiverify_blur_corruptions",
+    "gid": "aiverify.stock.image_corruption_toolbox",
     "name": "Blur Corruptions",
     "modelType": [
         "classification"
@@ -21,7 +22,6 @@
         "algo.meta.json",
         "algo.py",
         "README.md",
-        "requirements.txt",
         "syntax_checker.py",
         "utils"
     ]
