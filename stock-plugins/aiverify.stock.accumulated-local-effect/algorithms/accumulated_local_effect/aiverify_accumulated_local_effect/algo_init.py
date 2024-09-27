@@ -7,19 +7,19 @@ from pathlib import Path
 from typing import Dict, Tuple, Union
 
 from aiverify_accumulated_local_effect.algo import Plugin
-from test_engine_core.interfaces.idata import IData
-from test_engine_core.interfaces.imodel import IModel
-from test_engine_core.interfaces.ipipeline import IPipeline
-from test_engine_core.interfaces.iserializer import ISerializer
-from test_engine_core.plugins.enums.model_type import ModelType
-from test_engine_core.plugins.enums.plugin_type import PluginType
-from test_engine_core.plugins.plugins_manager import PluginManager
-from test_engine_core.utils.json_utils import (
+from aiverify_test_engine.interfaces.idata import IData
+from aiverify_test_engine.interfaces.imodel import IModel
+from aiverify_test_engine.interfaces.ipipeline import IPipeline
+from aiverify_test_engine.interfaces.iserializer import ISerializer
+from aiverify_test_engine.plugins.enums.model_type import ModelType
+from aiverify_test_engine.plugins.enums.plugin_type import PluginType
+from aiverify_test_engine.plugins.plugins_manager import PluginManager
+from aiverify_test_engine.utils.json_utils import (
     load_schema_file,
     remove_numpy_formats,
     validate_json,
 )
-from test_engine_core.utils.time import time_class_method
+from aiverify_test_engine.utils.time import time_class_method
 
 
 # =====================================================================================
@@ -56,9 +56,9 @@ class AlgoInit:
         self._run_as_pipeline: bool = run_as_pipeline
 
         # Store the input arguments as private vars
-        # since test_engine_core is a dependency, even while development, will refer to the package itself
+        # since aiverify_test_engine is a dependency, even while development, will refer to the package itself
         core_modules_path: str = Path(
-            importlib.util.find_spec("test_engine_core").origin
+            importlib.util.find_spec("aiverify_test_engine").origin
         ).parent
 
         self._core_modules_path: str = core_modules_path

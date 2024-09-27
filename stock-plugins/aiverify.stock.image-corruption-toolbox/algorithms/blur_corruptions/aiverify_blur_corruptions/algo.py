@@ -8,23 +8,23 @@ from typing import Dict, List, Tuple, Union
 import numpy as np
 import pandas as pd
 from aiverify_blur_corruptions.utils import blur
+from aiverify_test_engine.interfaces.ialgorithm import IAlgorithm
+from aiverify_test_engine.interfaces.idata import IData
+from aiverify_test_engine.interfaces.imodel import IModel
+from aiverify_test_engine.interfaces.ipipeline import IPipeline
+from aiverify_test_engine.interfaces.iserializer import ISerializer
+from aiverify_test_engine.plugins.enums.model_type import ModelType
+from aiverify_test_engine.plugins.enums.plugin_type import PluginType
+from aiverify_test_engine.plugins.metadata.plugin_metadata import PluginMetadata
+from aiverify_test_engine.utils.json_utils import load_schema_file, validate_json
+from aiverify_test_engine.utils.simple_progress import SimpleProgress
 from PIL import Image
 from sklearn.metrics import accuracy_score
-from test_engine_core.interfaces.ialgorithm import IAlgorithm
-from test_engine_core.interfaces.idata import IData
-from test_engine_core.interfaces.imodel import IModel
-from test_engine_core.interfaces.ipipeline import IPipeline
-from test_engine_core.interfaces.iserializer import ISerializer
-from test_engine_core.plugins.enums.model_type import ModelType
-from test_engine_core.plugins.enums.plugin_type import PluginType
-from test_engine_core.plugins.metadata.plugin_metadata import PluginMetadata
-from test_engine_core.utils.json_utils import load_schema_file, validate_json
-from test_engine_core.utils.simple_progress import SimpleProgress
 
 
 # =====================================================================================
 # NOTE:
-# 1. Check that you have installed the test_engine_core latest package.
+# 1. Check that you have installed the aiverify_test_engine latest package.
 # 2. Check that you have run tests/install_core_plugins_requirements.sh to install all the
 #    requirements required by the core plugins (serializers, data, models).
 #    Alternatively, you may install the plugins that you require by installing the

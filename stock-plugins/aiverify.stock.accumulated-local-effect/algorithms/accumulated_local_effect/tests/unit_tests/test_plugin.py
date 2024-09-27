@@ -5,19 +5,23 @@ from pathlib import Path
 
 import pytest
 from aiverify_accumulated_local_effect.algo import Plugin
-from test_engine_core.interfaces.idata import IData
-from test_engine_core.interfaces.imodel import IModel
-from test_engine_core.plugins.enums.model_type import ModelType
-from test_engine_core.plugins.enums.plugin_type import PluginType
-from test_engine_core.plugins.metadata.plugin_metadata import PluginMetadata
-from test_engine_core.plugins.plugins_manager import PluginManager
-from test_engine_core.utils.json_utils import remove_numpy_formats
-from test_engine_core.utils.simple_progress import SimpleProgress
+from aiverify_test_engine.interfaces.idata import IData
+from aiverify_test_engine.interfaces.imodel import IModel
+from aiverify_test_engine.plugins.enums.model_type import ModelType
+from aiverify_test_engine.plugins.enums.plugin_type import PluginType
+from aiverify_test_engine.plugins.metadata.plugin_metadata import PluginMetadata
+from aiverify_test_engine.plugins.plugins_manager import PluginManager
+from aiverify_test_engine.utils.json_utils import remove_numpy_formats
+from aiverify_test_engine.utils.simple_progress import SimpleProgress
 
 
 def test_discover_plugin():
     PluginManager.discover(
-        str(Path(importlib.util.find_spec("test_engine_core").origin).parent.resolve())
+        str(
+            Path(
+                importlib.util.find_spec("aiverify_test_engine").origin
+            ).parent.resolve()
+        )
     )
 
 

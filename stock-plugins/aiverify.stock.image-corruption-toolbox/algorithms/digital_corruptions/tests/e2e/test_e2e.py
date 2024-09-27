@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 from aiverify_digital_corruptions.algo_init import AlgoInit
-from test_engine_core.plugins.enums.model_type import ModelType
+from aiverify_test_engine.plugins.enums.model_type import ModelType
 
 image_pipeline = {
     "data_path": str("../../../user_defined_files/data/raw_fashion_image_10"),

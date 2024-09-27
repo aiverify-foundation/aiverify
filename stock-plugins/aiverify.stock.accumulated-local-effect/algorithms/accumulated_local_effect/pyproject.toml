@@ -9,7 +9,7 @@ requires-python = ">=3.10,<3.12"
 
 [project.optional-dependencies]
 dev = [
-    "test-engine-core[dev] @ {root:parent:parent:parent:parent:uri}/test-engine-core",
+    "aiverify-test-engine[dev] @ {root:parent:parent:parent:parent:uri}/aiverify-test-engine",
 ]
 
 [project.scripts]
