@@ -1,7 +1,6 @@
 [project]
 name = "aiverify_fairness_metrics_toolbox_for_regression"
-version = "0.10.0"
-description = ""
+description = "AI Verify Fairness Metrics Toolbox (FMT) for Regression contains a list of fairness metrics used to measure how resources (e.g. opportunities, food, loan, medical help) are allocated among the demographic groups (e.g. married male, married female) given a set of sensitive feature(s) (e.g. gender, marital status). This plugin is developed for regression models."
 authors = [{ name = "AI Verify" }]
 readme = "README.md"
 dependencies = [
@@ -11,6 +10,7 @@ dependencies = [
     "scikit-learn==1.5.2",
 ]
 requires-python = ">=3.10,<3.12"
+dynamic = ["version"]
 
 [project.optional-dependencies]
 dev = [
@@ -19,6 +19,10 @@ dev = [
 
 [project.scripts]
 aiverify_fairness_metrics_toolbox_for_regression = "aiverify_fairness_metrics_toolbox_for_regression.__main__:main"
+
+[tool.hatch.version]
+path = "aiverify_fairness_metrics_toolbox_for_regression/algo.meta.json"
+pattern = '"version":\s*"(?P<version>[^"]+)"'
 
 [tool.hatch.metadata]
 allow-direct-references = true

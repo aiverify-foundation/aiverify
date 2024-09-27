@@ -1,8 +1,8 @@
 [project]
 name = "aiverify-test-engine"
-version = "0.10.0"
+version = "2.0.0a1"
 authors = [{ name = "AI Verify" }]
-description = "This core project will support critical functionalities to support plugins and apps."
+description = "AI Verify Test Engine provides core interfaces, converters, data, model and plugin managers to facilitate the development of tests for AI systems. It is used as a base library for all AI Verify official stock-plugins and can be used to develop custom plugins."
 dependencies = [
     "joblib==1.4.2",
     "pillow==10.4.0",
@@ -22,6 +22,7 @@ dependencies = [
     "redis==5.0.1",
     "referencing==0.33.0",
     "rpds-py==0.17.1",
+    "setuptools==75.1.0",
 ]
 readme = "README.md"
 requires-python = ">=3.10,<3.12"

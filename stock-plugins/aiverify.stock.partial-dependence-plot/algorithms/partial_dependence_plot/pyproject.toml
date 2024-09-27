@@ -1,11 +1,11 @@
 [project]
 name = "aiverify_partial_dependence_plot"
-version = "0.10.0"
-description = ""
+description = "AI Verify implementation of Partial Dependence Plot (PDP) that explains how each feature and its feature value contribute to the predictions."
 authors = [{ name = "AI Verify" }]
 readme = "README.md"
 dependencies = ["numpy==1.26.4", "scipy==1.14.1"]
 requires-python = ">=3.10,<3.12"
+dynamic = ["version"]
 
 [project.optional-dependencies]
 dev = [
@@ -14,6 +14,10 @@ dev = [
 
 [project.scripts]
 aiverify_partial_dependence_plot = "aiverify_partial_dependence_plot.__main__:main"
+
+[tool.hatch.version]
+path = "aiverify_partial_dependence_plot/algo.meta.json"
+pattern = '"version":\s*"(?P<version>[^"]+)"'
 
 [tool.hatch.metadata]
 allow-direct-references = true
