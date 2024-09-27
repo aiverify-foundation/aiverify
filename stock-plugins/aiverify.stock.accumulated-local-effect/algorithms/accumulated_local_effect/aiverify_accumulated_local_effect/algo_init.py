@@ -56,7 +56,7 @@ class AlgoInit:
         self._run_as_pipeline: bool = run_as_pipeline
 
         # Store the input arguments as private vars
-        # since test_engine_core is a dependency, even while development, will refer to the package itself
+        # since aiverify_test_engine is a dependency, even while development, will refer to the package itself
         core_modules_path: str = Path(
             importlib.util.find_spec("aiverify_test_engine").origin
         ).parent

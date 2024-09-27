@@ -24,7 +24,7 @@ from sklearn.metrics import accuracy_score
 
 # =====================================================================================
 # NOTE:
-# 1. Check that you have installed the test_engine_core latest package.
+# 1. Check that you have installed the aiverify_test_engine latest package.
 # 2. Check that you have run tests/install_core_plugins_requirements.sh to install all the
 #    requirements required by the core plugins (serializers, data, models).
 #    Alternatively, you may install the plugins that you require by installing the

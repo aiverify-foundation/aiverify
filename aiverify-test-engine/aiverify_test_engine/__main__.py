@@ -1,7 +1,8 @@
 """
-Allow test engine core to be executable through `python3 -m test_engine_core`.
+Allow test engine core to be executable through `python3 -m aiverify_test_engine`.
 """
-from test_engine_core import version_msg
+
+from aiverify_test_engine import version_msg
 
 
 def main() -> None:
