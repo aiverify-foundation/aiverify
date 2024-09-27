@@ -9,7 +9,7 @@ Source = "https://github.com/aiverify-foundation/aiverify/tree/v2.x"
 
 [project]
 name = "aiverify-apigw"
-version = "2.0.0-alpha"
+version = "2.0.0a1"
 description = 'The apigw provides middleware functionality for the aiverify portal'
 readme = "README.md"
 requires-python = ">=3.11"
