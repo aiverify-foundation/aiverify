@@ -13,6 +13,9 @@ We are thrilled to announce the upcoming release of AI Verify 2.x, a groundbreak
 - **Independent Test Algorithms**: Each test algorithm can now be run as a separate Python module, giving you the freedom to use and develop algorithms independently.
 - **Redesigned Backend Test Engine Worker**: The backend test engine worker has been completely redesigned for improved performance and reliability.
 - **New Frontend Workflows**: Experience a more intuitive and streamlined user interface with our newly designed frontend workflows.
+- **Veritas Integration**: Including Veritas into AI Verify allows financial institutions to meet common safety baseline and financial testing requirements.
+- **Improved support for Computer Vision**: More evaluations to be included to support different types of use cases.
+
 <p align="center">
 <img src="https://github.com/user-attachments/assets/967b4122-ae88-4cf3-ba76-56562ea7cdc9" width="80%">
 </p>
