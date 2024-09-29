@@ -22,6 +22,21 @@ def is_url(data_path: str) -> bool:
         return False
 
 
+def get_absolute_path(data_path: str) -> str:
+    """
+    Get the absolute path of the data_path.
+
+    Args:
+        data_path (str): The data file/folder path or URL.
+
+    Returns:
+        str: The absolute path of the data_path.
+    """
+    if is_url(data_path):
+        return data_path
+    return Path(data_path).resolve().as_uri()
+
+
 def download_from_url(url: str, cache_dir: str = ".cache/aiverify/") -> str:
     """
     Download a file from the given URL and save it to a cache directory,

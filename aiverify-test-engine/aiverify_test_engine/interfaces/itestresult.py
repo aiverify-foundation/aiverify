@@ -1,8 +1,7 @@
 from datetime import datetime
-from pathlib import Path
 from typing import List, Optional
 
-from aiverify_test_engine.utils.url_utils import is_url
+from aiverify_test_engine.utils.url_utils import get_absolute_path
 from pydantic import AnyUrl, BaseModel, Field, FileUrl, validator
 
 
@@ -32,10 +31,7 @@ class ITestArguments(BaseModel):
 
     @validator("testDataset", "groundTruthDataset", "modelFile", pre=True)
     def validate_uri(cls, value):
-        if not is_url(value):
-            value = Path(value).resolve().as_uri()
-            print(value)
-        return value
+        return get_absolute_path(value)
 
 
 class ITestResult(BaseModel):

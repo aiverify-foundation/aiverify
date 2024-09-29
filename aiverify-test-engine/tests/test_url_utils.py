@@ -1,8 +1,13 @@
 import os
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
-from aiverify_test_engine.utils.url_utils import download_from_url, is_url
+from aiverify_test_engine.utils.url_utils import (
+    download_from_url,
+    get_absolute_path,
+    is_url,
+)
 from requests.models import Response
 
 
@@ -66,3 +71,26 @@ class TestUrlUtils:
         # Verify that an exception is raised
         with pytest.raises(Exception, match="Failed to download file: HTTP 404"):
             download_from_url(test_url)
+
+    @pytest.mark.parametrize(
+        "input_path, expected_output",
+        [
+            (
+                "https://example.com/file.zip",
+                "https://example.com/file.zip",
+            ),  # URL should return as is
+            (
+                "/path/to/file.zip",
+                Path("/path/to/file.zip").resolve().as_uri(),
+            ),  # Local path should return absolute URI
+            (
+                "relative/path/to/file.zip",
+                Path("relative/path/to/file.zip").resolve().as_uri(),
+            ),  # Relative path should return absolute URI
+        ],
+    )
+    def test_get_absolute_path(self, input_path, expected_output):
+        """
+        Tests the conversion of a path to its absolute path or URL.
+        """
+        assert get_absolute_path(input_path) == expected_output
