@@ -21,6 +21,7 @@ from aiverify_test_engine.utils.json_utils import (
     load_schema_file,
     remove_numpy_formats,
     validate_json,
+    validate_test_result_schema,
 )
 from aiverify_test_engine.utils.time import time_class_method
 
@@ -299,7 +300,7 @@ class AlgoInit:
             testDataset=self._data_path,
             modelFile=self._model_path,
             groundTruthDataset=self._ground_truth_path,
-            algorithmArgs={"runPipeline": self._run_as_pipeline},
+            algorithmArgs={"run_pipeline": self._run_as_pipeline},
             mode="upload",
         )
 
@@ -313,10 +314,12 @@ class AlgoInit:
             testArguments=test_arguments,
             output=results,
         )
-
-        # Write the data to the JSON file
-        with open(output_path, "w") as json_file:
-            json.dump(output.json(exclude_none=True), json_file, indent=4)
+        output_json = output.json(exclude_none=True, indent=4)
+        if validate_test_result_schema(json.loads(output_json)) is True:
+            with open(output_path, "w") as json_file:
+                json_file.write(output_json)
+        else:
+            raise RuntimeError("Failed test result schema validation")
 
     def _verify_task_results(self, task_result: Dict) -> Tuple[bool, str]:
         """
