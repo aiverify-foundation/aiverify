@@ -8,20 +8,20 @@ from pathlib import Path
 from typing import Dict, Tuple, Union
 
 from aiverify_environment_corruptions.algo import Plugin
-from test_engine_core.interfaces.idata import IData
-from test_engine_core.interfaces.imodel import IModel
-from test_engine_core.interfaces.ipipeline import IPipeline
-from test_engine_core.interfaces.iserializer import ISerializer
-from test_engine_core.plugins.enums.model_type import ModelType
-from test_engine_core.plugins.enums.plugin_type import PluginType
-from test_engine_core.plugins.plugins_manager import PluginManager
-from test_engine_core.utils.json_utils import (
+from aiverify_test_engine.interfaces.idata import IData
+from aiverify_test_engine.interfaces.imodel import IModel
+from aiverify_test_engine.interfaces.ipipeline import IPipeline
+from aiverify_test_engine.interfaces.iserializer import ISerializer
+from aiverify_test_engine.plugins.enums.model_type import ModelType
+from aiverify_test_engine.plugins.enums.plugin_type import PluginType
+from aiverify_test_engine.plugins.plugins_manager import PluginManager
+from aiverify_test_engine.utils.json_utils import (
     load_schema_file,
     remove_numpy_formats,
     validate_json,
 )
-from test_engine_core.utils.time import time_class_method
-from test_engine_core.utils.url_utils import is_url
+from aiverify_test_engine.utils.time import time_class_method
+from aiverify_test_engine.utils.url_utils import is_url
 
 
 # =====================================================================================
@@ -63,7 +63,7 @@ class AlgoInit:
         # Store the input arguments as private vars
         if core_modules_path == "":
             core_modules_path = Path(
-                importlib.util.find_spec("test_engine_core").origin
+                importlib.util.find_spec("aiverify_test_engine").origin
             ).parent
         self._core_modules_path: str = core_modules_path
         self._data_path: str = str(data_path)
@@ -304,27 +304,33 @@ class AlgoInit:
         algorithmArgs = {
             "run_pipeline": self._run_as_pipeline,
             "set_seed": self._input_arguments["set_seed"],
-            "annotated_ground_truth_path": self._input_arguments[
-                "annotated_ground_truth_path"
-            ]
-            if is_url(self._input_arguments["annotated_ground_truth_path"])
-            else Path(self._input_arguments["annotated_ground_truth_path"])
-            .resolve()
-            .as_uri(),
+            "annotated_ground_truth_path": (
+                self._input_arguments["annotated_ground_truth_path"]
+                if is_url(self._input_arguments["annotated_ground_truth_path"])
+                else Path(self._input_arguments["annotated_ground_truth_path"])
+                .resolve()
+                .as_uri()
+            ),
             "file_name_label": self._input_arguments["file_name_label"],
         }
         output_dict["testArguments"] = {
             "groundTruth": self._ground_truth,
             "modelType": self._model_type.name.lower(),
-            "testDataset": self._data_path
-            if is_url(self._data_path)
-            else Path(self._data_path).resolve().as_uri(),
-            "modelFile": self._model_path
-            if is_url(self._model_path)
-            else Path(self._model_path).resolve().as_uri(),
-            "groundTruthDataset": self._ground_truth_path
-            if is_url(self._ground_truth_path)
-            else Path(self._ground_truth_path).resolve().as_uri(),
+            "testDataset": (
+                self._data_path
+                if is_url(self._data_path)
+                else Path(self._data_path).resolve().as_uri()
+            ),
+            "modelFile": (
+                self._model_path
+                if is_url(self._model_path)
+                else Path(self._model_path).resolve().as_uri()
+            ),
+            "groundTruthDataset": (
+                self._ground_truth_path
+                if is_url(self._ground_truth_path)
+                else Path(self._ground_truth_path).resolve().as_uri()
+            ),
             "algorithmArgs": algorithmArgs,
             "mode": "upload",
         }

@@ -20,7 +20,7 @@ source .venv/bin/activate
 
 # execute plugin
 cd aiverify/stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-regression/algorithms/fairness_metrics_toolbox_for_regression/
-# install test-engine-core 
+# install aiverify-test-engine 
 pip install -e .'[dev]'
 
 python -m aiverify_fairness_metrics_toolbox_for_regression --data_path  <data_path> --model_path <model_path> --ground_truth_path <ground_truth_path> --ground_truth <str> --model_type CLASSIFICATION --run_pipeline --sensitive_features_list <list[str]>

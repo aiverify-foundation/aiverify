@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 from aiverify_fairness_metrics_toolbox_for_regression.algo_init import AlgoInit
-from test_engine_core.plugins.enums.model_type import ModelType
+from aiverify_test_engine.plugins.enums.model_type import ModelType
 
 regression_non_pipeline = {
     "data_path": str("../../../user_defined_files/data/sample_reg_donation_data.sav"),
