@@ -6,26 +6,19 @@
 ## Developers:
 * AI Verify
 
-## Develop plugin locally
-#### Execute the below bash script in the project root
+## Installation
+
+Each test algorithm can now be installed via pip and run individually.
+
+```sh
+pip install aiverify-robustness-toolbox==2.0.0a1
 ```
-#!/bin/bash
 
-# setup virtual environment
-python3 -m venv .venv
-source .venv/bin/activate
+## Example Usage:
 
-# execute plugin
+Run the following bash script to execute the plugin
 
-cd aiverify/stock-plugins/aiverify.stock.robustness-toolbox/algorithms/robustness_toolbox
-# install aiverify-test-engine 
-pip install -e .'[dev]'
-
-python -m aiverify_robustness_toolbox --data_path  <data_path> --model_path <model_path> --ground_truth_path <ground_truth_path> --ground_truth <str> --model_type CLASSIFICATION --run_pipeline --annotated_ground_truth_path <str> --file_name_label <str>
-
-```
-#### Example : 
-```
+```sh
 #!/bin/bash
 
 root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files"
@@ -40,15 +33,39 @@ python -m aiverify_robustness_toolbox \
   --file_name_label file_name
 ```
 
-## Build Plugin
+If the algorithm runs successfully, the results of the test will be saved in an `output` folder.
+
+## Develop plugin locally
+
+Execute the bash script below in the project root
+
+```sh
+#!/bin/bash
+
+# setup virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+
+# execute plugin
+
+cd aiverify/stock-plugins/aiverify.stock.robustness-toolbox/algorithms/robustness_toolbox
+# install aiverify-test-engine 
+pip install -e .'[dev]'
+
+python -m aiverify_robustness_toolbox --data_path  <data_path> --model_path <model_path> --ground_truth_path <ground_truth_path> --ground_truth <str> --model_type CLASSIFICATION --run_pipeline --annotated_ground_truth_path <str> --file_name_label <str>
 ```
+
+## Build Plugin
+```sh
 cd aiverify/stock-plugins/aiverify.stock.robustness-toolbox/algorithms/robustness_toolbox
 hatch build
 ```
+
 ## Tests
 ### Pytest is used as the testing framework.
-Execute the below steps to execute unit and integration tests inside tests/ folder
-```
+Run the following steps to execute the unit and integration tests inside the `tests/` folder
+
+```sh
 cd aiverify/stock-plugins/aiverify.stock.robustness-toolbox/algorithms/robustness_toolbox
 pytest .
 ```

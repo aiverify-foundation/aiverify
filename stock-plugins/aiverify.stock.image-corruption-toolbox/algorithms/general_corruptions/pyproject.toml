@@ -1,5 +1,5 @@
 [project]
-name = "aiverify_general_corruptions"
+name = "aiverify-general-corruptions"
 description = "Part of AI Verify image corruption toolbox. This package includes algorithms that add general corruptions (gaussian, poisson and salt and pepper noise) to images at 5 severity levels, to test the robustness of machine learning models."
 authors = [{ name = "AI Verify" }]
 readme = "README.md"

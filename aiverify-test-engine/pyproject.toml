@@ -23,6 +23,7 @@ dependencies = [
     "referencing==0.33.0",
     "rpds-py==0.17.1",
     "setuptools==75.1.0",
+    "requests==2.32.3",
 ]
 readme = "README.md"
 requires-python = ">=3.10,<3.12"

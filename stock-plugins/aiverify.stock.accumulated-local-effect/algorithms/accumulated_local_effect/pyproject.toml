@@ -1,5 +1,5 @@
 [project]
-name = "aiverify_accumulated_local_effect"
+name = "aiverify-accumulated-local-effect"
 description = "AI Verify implementation of the Accumulated Local Effect algorithm. The algorithm provides black box explainations of how features and their corresponding values influence the prediction of a model."
 authors = [{ name = "AI Verify" }]
 readme = "README.md"
