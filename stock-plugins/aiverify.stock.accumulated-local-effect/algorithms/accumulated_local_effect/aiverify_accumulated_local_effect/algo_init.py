@@ -4,6 +4,7 @@ import json
 import logging
 import sys
 import time
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, Tuple, Union
 
@@ -12,6 +13,7 @@ from aiverify_test_engine.interfaces.idata import IData
 from aiverify_test_engine.interfaces.imodel import IModel
 from aiverify_test_engine.interfaces.ipipeline import IPipeline
 from aiverify_test_engine.interfaces.iserializer import ISerializer
+from aiverify_test_engine.interfaces.itestresult import ITestArguments, ITestResult
 from aiverify_test_engine.plugins.enums.model_type import ModelType
 from aiverify_test_engine.plugins.enums.plugin_type import PluginType
 from aiverify_test_engine.plugins.plugins_manager import PluginManager
@@ -21,7 +23,6 @@ from aiverify_test_engine.utils.json_utils import (
     validate_json,
 )
 from aiverify_test_engine.utils.time import time_class_method
-from aiverify_test_engine.utils.url_utils import is_url
 
 
 # =====================================================================================
@@ -267,11 +268,7 @@ class AlgoInit:
                     output_folder.mkdir(parents=True, exist_ok=True)
 
                     json_file_path = output_folder / "results.json"
-                    generated_result = self._generate_output_file(results)
-
-                    # Write the data to the JSON file
-                    with open(json_file_path, "w") as json_file:
-                        json.dump(generated_result, json_file, indent=4)
+                    self._generate_output_file(results, json_file_path)
                     print("*" * 20)
                     print(f"check the results here : {json_file_path}")
                     print("*" * 20)
@@ -288,47 +285,38 @@ class AlgoInit:
             # Exit with error
             sys.exit(-1)
 
-    def _generate_output_file(self, results):
-        # Generate the output file
-        output_dict = dict()
-
-        # read attrs from algo.meta.json file
+    def _generate_output_file(self, results, output_path: Path) -> None:
+        """
+        Format the output results into the AI Verify Test Result and write to a JSON file
+        """
         f = open(str(Path(__file__).parent / "algo.meta.json"))
         meta_file = json.load(f)
-        output_dict["cid"] = meta_file["cid"]
-        output_dict["gid"] = meta_file["gid"]
-        output_dict["version"] = meta_file["version"]
-        output_dict["startTime"] = time.strftime(
-            "%Y-%m-%dT%H:%M:%SZ", time.gmtime(self._start_time)
-        )
-        output_dict["timeTaken"] = round(self._time_taken, 4)
-        algorithmArgs = {
-            "runPipeline": self._run_as_pipeline,
-        }
-        output_dict["testArguments"] = {
-            "groundTruth": self._ground_truth,
-            "modelType": self._model_type.name.lower(),
-            "testDataset": (
-                self._data_path
-                if is_url(self._data_path)
-                else Path(self._data_path).resolve().as_uri()
-            ),
-            "modelFile": (
-                self._model_path
-                if is_url(self._model_path)
-                else Path(self._model_path).resolve().as_uri()
-            ),
-            "groundTruthDataset": (
-                self._ground_truth_path
-                if is_url(self._ground_truth_path)
-                else Path(self._ground_truth_path).resolve().as_uri()
-            ),
-            "algorithmArgs": algorithmArgs,
-            "mode": "upload",
-        }
-        output_dict["output"] = results
 
-        return output_dict
+        # Prepare test arguments
+        test_arguments = ITestArguments(
+            groundTruth=self._ground_truth,
+            modelType=self._model_type.name,
+            testDataset=self._data_path,
+            modelFile=self._model_path,
+            groundTruthDataset=self._ground_truth_path,
+            algorithmArgs={"runPipeline": self._run_as_pipeline},
+            mode="upload",
+        )
+
+        # Create the output result
+        output = ITestResult(
+            gid=meta_file["gid"],
+            cid=meta_file["cid"],
+            version=meta_file.get("version"),
+            startTime=datetime.fromtimestamp(self._start_time),
+            timeTaken=round(self._time_taken, 4),
+            testArguments=test_arguments,
+            output=results,
+        )
+
+        # Write the data to the JSON file
+        with open(output_path, "w") as json_file:
+            json.dump(output.json(exclude_none=True), json_file, indent=4)
 
     def _verify_task_results(self, task_result: Dict) -> Tuple[bool, str]:
         """

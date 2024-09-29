@@ -6,7 +6,7 @@
   "type": "object",
   "properties": {
     "gid": {
-      "description": "Unique global identififer for the plugin",
+      "description": "Unique global identifier for the plugin",
       "type": "string",
       "pattern": "^[a-zA-Z0-9][a-zA-Z0-9-._]*$",
       "minLength": 1,
