@@ -117,6 +117,20 @@ def get_plugin_component_folder(gid: str, component_type: str) -> Path | str:
         return urljoin(plugin_path, f"{component_type}/")
 
 
+plugin_ignore_patten = shutil.ignore_patterns(
+    ".venv",
+    "venv",
+    "output",
+    "node_modules",
+    "build",
+    "temp",
+    "__pycache__",
+    ".pytest_cache",
+    ".cache"
+    "*.pyc",
+)
+
+
 def save_plugin(gid: str, source_dir: Path):
     folder = get_plugin_folder(gid)
     logger.debug(f"Copy plugin folder from {source_dir} to {folder}")
@@ -124,7 +138,7 @@ def save_plugin(gid: str, source_dir: Path):
         if folder.exists():
             shutil.rmtree(folder)
         folder.mkdir(parents=True, exist_ok=True)
-        shutil.copytree(source_dir, folder, dirs_exist_ok=True)
+        shutil.copytree(source_dir, folder, dirs_exist_ok=True, ignore=plugin_ignore_patten)
     elif s3 is not None:
         # folder is s3 prefix
         if s3.check_s3_prefix_exists(folder):
