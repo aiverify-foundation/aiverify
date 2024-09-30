@@ -38,7 +38,7 @@ async def _save_test_result(session: Session, test_result: TestResult, artifact_
     )
     algorithm = session.scalar(stmt)
     if algorithm is None:
-        raise HTTPException(status_code=400, detail=f"Algorithm {test_result.gid} not found")
+        raise HTTPException(status_code=400, detail=f"Algorithm not found: gid: {test_result.gid}, cid: {test_result.cid}")
 
     now = datetime.now()
     test_arguments = test_result.testArguments
