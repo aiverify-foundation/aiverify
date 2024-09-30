@@ -12,6 +12,13 @@
 			"minLength": 1,
 			"maxLength": 128
 		},
+		"gid": {
+			"description": "Unique global identififer for the plugin",
+			"type": "string",
+			"pattern": "^[a-zA-Z0-9][a-zA-Z0-9-._]*$",
+			"minLength": 1,
+      "maxLength": 128
+		},
 		"name": {
 			"description": "Algorithm name",
 			"type": "string",
@@ -66,6 +73,7 @@
 	},
 	"required": [
 		"cid",
+		"gid",
 		"name",
 		"modelType"
 	]
