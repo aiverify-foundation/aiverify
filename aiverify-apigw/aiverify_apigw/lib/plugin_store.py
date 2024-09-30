@@ -167,7 +167,8 @@ class PluginStore:
                             if "project" not in pyproject_data or "name" not in pyproject_data["project"]:
                                 logger.debug(f"Algorithm folder {algopath.name} has invalid pyproject.toml")
                                 continue
-                            project_name = pyproject_data["project"]["name"]
+                            # TODO: is this the best way to get algorithm folder? 
+                            project_name = pyproject_data["project"]["name"].replace("-", "_")
                             sub_path = algopath.joinpath(project_name)
                             module_name = project_name
                             meta_path = sub_path.joinpath("algo.meta.json")
@@ -187,7 +188,7 @@ class PluginStore:
                             script_path = algopath.joinpath(f"algo.py")
                         if script_path.exists(): # if script exists
                             if not validate_python_script(script_path):
-                                logger.warning(f"algorithm {cid} script is not valid")
+                                logger.warning(f"algorithm {meta.cid} script is not valid")
                                 continue
 
                         # validate requirements.txt
