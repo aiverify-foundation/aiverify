@@ -1,6 +1,7 @@
 from pathlib import Path
 import json
 import tomllib
+from typing import List
 
 from .schemas_utils import read_and_validate, plugin_schema, algorithm_schema
 from ..lib.syntax_checker import validate_python_script
@@ -62,8 +63,9 @@ class PluginStore:
     def scan_stock_plugins(cls):
         logger.info(f"Scanning stock plugins in folder {str(cls.stock_plugin_folder)}..")
         cls.delete_all_plugins()  # remove all current plugins first
+        plugins: List[PluginModel] = []
         for plugin_dir in cls.stock_plugin_folder.iterdir():
-            if not plugin_dir.is_dir():
+            if not plugin_dir.is_dir() or not plugin_dir.name[0].isalnum() or plugin_dir.name == "user_defined_files":
                 continue
             logger.debug(f"Scanning directory {plugin_dir.name}")
             try:
@@ -72,13 +74,23 @@ class PluginStore:
                 logger.debug(f"Invalid plugin: {e}")
                 continue
             try:
-                cls.scan_plugin_directory(plugin_dir)
+                plugin = cls.scan_plugin_directory(plugin_dir)
+                if plugin:
+                    plugins.append(plugin)
             except Exception as e:
                 logger.warning(f"Error saving plugin in directory {plugin_dir.name}: {e}")
         with SessionLocal() as session:
-            stmt = select(func.count("*")).select_from(PluginModel)
-            count = session.scalar(stmt)
-            logger.info(f"Finished scanning stock plugins. {count} plugins found")
+            # stmt = select(func.count("*")).select_from(PluginModel)
+            # count = session.scalar(stmt)
+            stmt = select(PluginModel)
+            my_plugins = list(session.scalars(stmt))
+            logger.info(f"Finished scanning stock plugins. {len(my_plugins)} plugins found")
+            for plugin in my_plugins:
+                logger.info(f"Stock plugin: gid {plugin.gid}, version {plugin.version}, name {plugin.name}")
+                if plugin.algorithms and len(plugin.algorithms) > 0:
+                    logger.info(f"  Number of algoritms: {len(plugin.algorithms)}")
+                    for algo in plugin.algorithms:
+                        logger.info(f"  Algorithm: cid {algo.cid}, version {algo.version}, name {algo.name}")
 
     @classmethod
     def check_plugin_registry(cls):
@@ -167,7 +179,8 @@ class PluginStore:
                             if "project" not in pyproject_data or "name" not in pyproject_data["project"]:
                                 logger.debug(f"Algorithm folder {algopath.name} has invalid pyproject.toml")
                                 continue
-                            project_name = pyproject_data["project"]["name"]
+                            # TODO: is this the best way to get algorithm folder?
+                            project_name = pyproject_data["project"]["name"].replace("-", "_")
                             sub_path = algopath.joinpath(project_name)
                             module_name = project_name
                             meta_path = sub_path.joinpath("algo.meta.json")
@@ -185,9 +198,9 @@ class PluginStore:
                         script_path = algopath.joinpath(f"{meta.cid}.py")
                         if not script_path.exists():
                             script_path = algopath.joinpath(f"algo.py")
-                        if script_path.exists(): # if script exists
+                        if script_path.exists():  # if script exists
                             if not validate_python_script(script_path):
-                                logger.warning(f"algorithm {cid} script is not valid")
+                                logger.warning(f"algorithm {meta.cid} script is not valid")
                                 continue
 
                         # validate requirements.txt
@@ -221,7 +234,7 @@ class PluginStore:
                             input_schema=json.dumps(input_schema).encode("utf-8"),
                             output_schema=json.dumps(output_schema).encode("utf-8"),
                             algo_dir=algopath.relative_to(folder).as_posix(),
-                            language="python", # fixed to python first. To support other languages in future
+                            language="python",  # fixed to python first. To support other languages in future
                             script=script_path.name,
                             module_name=module_name,
                         )
@@ -239,6 +252,7 @@ class PluginStore:
             session.commit()
 
             fs_save_plugin(plugin_meta.gid, folder)
+            return plugin
 
     @classmethod
     def validate_plugin_directory(cls, folder: Path) -> PluginMeta:
@@ -288,7 +302,8 @@ class PluginStore:
                     if "project" not in pyproject_data or "name" not in pyproject_data["project"]:
                         logger.debug(f"Algorithm folder {algopath.name} has invalid pyproject.toml")
                         continue
-                    project_name = pyproject_data["project"]["name"]
+                    # TODO: is this the best way to get algorithm folder?
+                    project_name = pyproject_data["project"]["name"].replace("-", "_")
                     sub_path = algopath.joinpath(project_name)
                     meta_path = sub_path.joinpath("algo.meta.json")
                     if not meta_path.exists():
