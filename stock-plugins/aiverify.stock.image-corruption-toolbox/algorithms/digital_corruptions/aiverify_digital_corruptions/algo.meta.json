@@ -1,6 +1,6 @@
 {
     "cid": "aiverify_digital_corruptions",
-    "gid": "aiverify.algorithms.digital_corruptions",
+    "gid": "aiverify.stock.image_corruption_toolbox",
     "name": "Digital Corruptions",
     "modelType": [
         "classification"

@@ -1,7 +1,0 @@
-{
-    "gid": "aiverify.algorithms.general_corruptions",
-    "version": "2.0.0a1",
-    "name": "General Corruptions",
-    "author": "AI Verify",
-    "description": "Robustness with general corruptions"
-}

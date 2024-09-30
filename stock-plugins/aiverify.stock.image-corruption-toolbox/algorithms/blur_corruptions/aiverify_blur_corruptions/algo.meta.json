@@ -1,6 +1,6 @@
 {
     "cid": "aiverify_blur_corruptions",
-    "gid": "aiverify.algorithms.blur_corruptions",
+    "gid": "aiverify.stock.image_corruption_toolbox",
     "name": "Blur Corruptions",
     "modelType": [
         "classification"
