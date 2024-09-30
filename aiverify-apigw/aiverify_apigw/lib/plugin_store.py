@@ -63,7 +63,7 @@ class PluginStore:
         logger.info(f"Scanning stock plugins in folder {str(cls.stock_plugin_folder)}..")
         cls.delete_all_plugins()  # remove all current plugins first
         for plugin_dir in cls.stock_plugin_folder.iterdir():
-            if not plugin_dir.is_dir():
+            if not plugin_dir.is_dir() or not plugin_dir.name[0].isalnum():
                 continue
             logger.debug(f"Scanning directory {plugin_dir.name}")
             try:
@@ -289,7 +289,8 @@ class PluginStore:
                     if "project" not in pyproject_data or "name" not in pyproject_data["project"]:
                         logger.debug(f"Algorithm folder {algopath.name} has invalid pyproject.toml")
                         continue
-                    project_name = pyproject_data["project"]["name"]
+                    # TODO: is this the best way to get algorithm folder? 
+                    project_name = pyproject_data["project"]["name"].replace("-", "_")
                     sub_path = algopath.joinpath(project_name)
                     meta_path = sub_path.joinpath("algo.meta.json")
                     if not meta_path.exists():
