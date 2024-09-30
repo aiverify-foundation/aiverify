@@ -1,5 +1,5 @@
 [project]
-name = "aiverify_robustness_toolbox"
+name = "aiverify-robustness-toolbox"
 description = "AI Verify Robustness Toolbox generates a perturbed dataset using boundary attack algorithm on the test dataset."
 authors = [{ name = "AI Verify" }]
 readme = "README.md"

@@ -22,6 +22,8 @@ We are thrilled to announce the upcoming release of AI Verify 2.x, a groundbreak
 
 The new version is targeted for completion by March 2025. For more details on the technical design, refer to our [wiki](https://github.com/aiverify-foundation/aiverify/wiki/AI-Verify-2.0-Architecture).
 
+In the meantime, we have released an alpha version of the new AI Verify 2.x with the modular architecture and independent test algorithms that can be easily installed via pip. Refer to the [aiverify-test-engine directory](./aiverify-test-engine/README.md) for installation instructions or check out the individual plugins of interest in the `stock-plugins` directory.
+
 Stay tuned for more updates as we get closer to the release date. We can't wait for you to experience the new and improved AI Verify 2.x!
 
 ## Introduction

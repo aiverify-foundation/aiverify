@@ -7,6 +7,7 @@ from aiverify_test_engine.utils.json_utils import (
     remove_numpy_formats,
     scan_for_single_quotes,
     validate_json,
+    validate_test_result_schema,
 )
 
 
@@ -475,3 +476,72 @@ class TestCollectionJsonUtils:
         # Modify the permission back to before
         subprocess.call(["chmod", "755", "tests/schemas"])
         assert str(error.value) == expected_results
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    [
+        (
+            {
+                "gid": "plugin-1234",
+                "cid": "algorithm-5678",
+                "version": "1.0.0",
+                "startTime": "2024-09-29T12:00:00Z",
+                "timeTaken": 120.5,
+                "testArguments": {
+                    "testDataset": "http://example.com/test-dataset",
+                    "mode": "upload",
+                    "modelType": "classification",
+                    "groundTruthDataset": "http://example.com/ground-truth-dataset",
+                    "groundTruth": "label",
+                    "algorithmArgs": {},
+                },
+                "output": {},
+                "artifacts": ["artifact1.png", "artifact2.png"],
+            },
+            True,
+        ),
+        (
+            {
+                "gid": "invalid_gid!!",  # Invalid gid pattern
+                "cid": "algorithm-5678",
+                "version": "1.0.0",
+                "startTime": "2024-09-29T12:00:00Z",
+                "timeTaken": 120.5,
+                "testArguments": {
+                    "testDataset": "file://example.com/test-dataset",
+                    "mode": "upload",
+                    "modelType": "classification",
+                    "groundTruthDataset": "http://example.com/ground-truth-dataset",
+                    "groundTruth": "label",
+                    "algorithmArgs": {},
+                },
+                "output": {},
+                "artifacts": ["artifact1.png", "artifact2.png"],
+            },
+            False,
+        ),
+        (
+            {
+                "gid": "plugin-1234",
+                "cid": "algorithm-5678",
+                "version": "1.0.0",
+                "startTime": "2024-09-29T12:00:00Z",
+                "timeTaken": 120.5,
+                "testArguments": {
+                    "testDataset": "file://example.com/test-dataset",
+                    "mode": "upload2",  # Invalid mode
+                    "modelType": "classification",
+                    "groundTruthDataset": "http://example.com/ground-truth-dataset",
+                    "groundTruth": "label",
+                    "algorithmArgs": {},
+                },
+                "output": {},
+                "artifacts": ["artifact1.png", "artifact2.png"],
+            },
+            False,  # Expected to be invalid due to missing field
+        ),
+    ],
+)
+def test_validate_test_result_schema(test_input, expected):
+    assert validate_test_result_schema(test_input) == expected

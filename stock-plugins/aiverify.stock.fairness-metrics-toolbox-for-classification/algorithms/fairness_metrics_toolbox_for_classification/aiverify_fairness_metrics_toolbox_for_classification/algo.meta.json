@@ -1,5 +1,6 @@
 {
     "cid": "fairness_metrics_toolbox_for_classification",
+    "gid": "aiverify.stock.fairness_metrics_toolbox_for_classification",
     "name": "Fairness Metrics Toolbox for Classification",
     "modelType": [
         "classification"
@@ -24,7 +25,6 @@
         "algo.meta.json",
         "algo.py",
         "README.md",
-        "requirements.txt",
         "syntax_checker.py"
     ]
 }

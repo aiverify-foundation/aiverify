@@ -20,7 +20,7 @@
       "maxLength": 128
     },
     "version": {
-      "description": "Algoritm version",
+      "description": "Algorithm version",
       "type": "string"
     },
     "startTime": {
@@ -67,7 +67,7 @@
           "type": "string"
         },
         "algorithmArgs": {
-          "description": "Arugment provided to the algorithm for running the tests. Test arguments should be defined in input.schema.json under each algorithm",
+          "description": "Argument provided to the algorithm for running the tests. Test arguments should be defined in input.schema.json under each algorithm",
           "$comment": "Algorithm implementation should validate the algorithmArgs according to input.schema.json"
         }
       },

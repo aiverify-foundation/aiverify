@@ -1,5 +1,5 @@
 [project]
-name = "aiverify_shap_toolbox"
+name = "aiverify-shap-toolbox"
 description = "AI Verify SHAP Toolbox provides SHAP (SHapley Additive exPlanations) methods to explain the output of machine learning models."
 authors = [{ name = "AI Verify" }]
 readme = "README.md"

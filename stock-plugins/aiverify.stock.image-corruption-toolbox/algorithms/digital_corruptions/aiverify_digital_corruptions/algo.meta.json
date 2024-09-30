@@ -1,5 +1,6 @@
 {
-    "cid": "digital_corruptions",
+    "cid": "aiverify_digital_corruptions",
+    "gid": "aiverify.stock.image_corruption_toolbox",
     "name": "Digital Corruptions",
     "modelType": [
         "classification"
@@ -21,7 +22,6 @@
         "algo.meta.json",
         "algo.py",
         "README.md",
-        "requirements.txt",
         "syntax_checker.py",
         "utils"
     ]

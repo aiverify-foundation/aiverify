@@ -492,6 +492,7 @@ class Plugin(IAlgorithm):
         image_name = str(severity) + ".png"
         image_path = images["image_directory"].iloc[index]
         image_relative_path = str(Path(image_path).relative_to(Path().absolute()))
+        image_relative_path = image_relative_path.replace("output/", "", 1)
 
         Path(self._save_path / corruption).mkdir(parents=True, exist_ok=True)
         shutil.copy(

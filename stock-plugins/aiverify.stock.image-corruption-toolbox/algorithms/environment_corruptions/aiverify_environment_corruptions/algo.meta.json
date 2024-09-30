@@ -1,5 +1,6 @@
 {
-    "cid": "environment_corruptions",
+    "cid": "aiverify_environment_corruptions",
+    "gid": "aiverify.stock.image_corruption_toolbox",
     "name": "Environment Corruptions",
     "modelType": [
         "classification"
@@ -21,7 +22,6 @@
         "environment_corruptions.meta.json",
         "environment_corruptions.py",
         "README.md",
-        "requirements.txt",
         "syntax_checker.py",
         "utils"
     ]
