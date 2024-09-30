@@ -17,9 +17,9 @@ def mock_test_result_data():
         "gid": "aiverify.stock.fairness_metrics_toolbox_for_classification",
         "version": "0.9.0",
         "cid": "fairness_metrics_toolbox_for_classification",
-        "start_time": "2024-07-24T09:20:24.822881",
-        "time_taken": 0,
-        "test_arguments": {
+        "startTime": "2024-07-24T09:20:24.822881",
+        "timeTaken": 1,
+        "testArguments": {
             "testDataset": "file:///examples/data/sample_bc_credit_data.sav",
             "modelFile": "file:///examples/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav",
             "groundTruthDataset": "file:///examples/data/sample_bc_credit_data.sav",
@@ -172,7 +172,7 @@ class TestUploadTestResult:
 
         mock_test_result_data["gid"] = plugin.gid
         mock_test_result_data["cid"] = algo.cid
-        mock_test_result_data["test_arguments"]["groundTruthDataset"] = "file:///examples/data/sample_ground_truth.sav"
+        mock_test_result_data["testArguments"]["groundTruthDataset"] = "file:///examples/data/sample_ground_truth.sav"
         form_data = {
             "test_result": json.dumps(mock_test_result_data)
         }
@@ -397,7 +397,7 @@ class TestReadTestResult:
         assert json_response["gid"] == test_result.gid
         assert json_response["cid"] == test_result.cid
         assert json_response["version"] == test_result.version
-        assert json_response["time_taken"] == test_result.time_taken
+        assert json_response["timeTaken"] == test_result.time_taken
 
     def test_read_test_result_not_found(self, test_client):
         """Test retrieving a test result that does not exist (404)."""
