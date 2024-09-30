@@ -1,7 +1,0 @@
-{
-    "gid": "aiverify.algorithms.blur_corruptions",
-    "version": "2.0.0a1",
-    "name": "Blur Corruptions",
-    "author": "AI Verify",
-    "description": "Robustness plugin with blur corruptions"
-}

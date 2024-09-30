@@ -1,5 +1,5 @@
 [project]
-name = "aiverify_partial_dependence_plot"
+name = "aiverify-partial-dependence-plot"
 description = "AI Verify implementation of Partial Dependence Plot (PDP) that explains how each feature and its feature value contribute to the predictions."
 authors = [{ name = "AI Verify" }]
 readme = "README.md"

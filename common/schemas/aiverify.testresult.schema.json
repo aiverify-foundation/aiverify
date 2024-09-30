@@ -20,19 +20,19 @@
       "maxLength": 128
     },
     "version": {
-      "description": "Algoritm version",
+      "description": "Algorithm version",
       "type": "string"
     },
-    "start_time": {
+    "startTime": {
       "description": "Start date time of test",
       "type": "string",
       "format": "date-time"
     },
-    "time_taken": {
+    "timeTaken": {
       "description": "Time take to complete running the test in seconds.",
       "type": "number"
     },
-    "test_arguments": {
+    "testArguments": {
       "description": "Test arguments",
       "type": "object",
       "properties": {
@@ -67,7 +67,7 @@
           "type": "string"
         },
         "algorithmArgs": {
-          "description": "Arugment provided to the algorithm for running the tests. Test arguments should be defined in input.schema.json under each algorithm",
+          "description": "Argument provided to the algorithm for running the tests. Test arguments should be defined in input.schema.json under each algorithm",
           "$comment": "Algorithm implementation should validate the algorithmArgs according to input.schema.json"
         }
       },
@@ -115,9 +115,9 @@
   "required": [
     "gid",
     "cid",
-    "start_time",
-    "time_taken",
-    "test_arguments",
+    "startTime",
+    "timeTaken",
+    "testArguments",
     "output"
   ]
 }

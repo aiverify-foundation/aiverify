@@ -3,6 +3,8 @@ import importlib
 import json
 import logging
 import sys
+import time
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, Tuple, Union
 
@@ -11,6 +13,7 @@ from aiverify_test_engine.interfaces.idata import IData
 from aiverify_test_engine.interfaces.imodel import IModel
 from aiverify_test_engine.interfaces.ipipeline import IPipeline
 from aiverify_test_engine.interfaces.iserializer import ISerializer
+from aiverify_test_engine.interfaces.itestresult import ITestArguments, ITestResult
 from aiverify_test_engine.plugins.enums.model_type import ModelType
 from aiverify_test_engine.plugins.enums.plugin_type import PluginType
 from aiverify_test_engine.plugins.plugins_manager import PluginManager
@@ -18,8 +21,10 @@ from aiverify_test_engine.utils.json_utils import (
     load_schema_file,
     remove_numpy_formats,
     validate_json,
+    validate_test_result_schema,
 )
 from aiverify_test_engine.utils.time import time_class_method
+from aiverify_test_engine.utils.url_utils import get_absolute_path
 
 
 # =====================================================================================
@@ -55,6 +60,8 @@ class AlgoInit:
         self._base_path: Path = Path().absolute()
         self._requires_ground_truth: bool = True
         self._run_as_pipeline: bool = run_as_pipeline
+        self._start_time = None
+        self._time_taken = None
 
         # Store the input arguments as private vars
         if core_modules_path == "":
@@ -236,6 +243,7 @@ class AlgoInit:
 
                 # Run the plugin with the arguments and instances
                 print("Creating an instance of the Plugin...")
+                self._start_time = time.time()
                 plugin = Plugin(
                     (self._data_instance, self._data_serializer_instance),
                     (self._model_instance, self._model_serializer_instance),
@@ -255,15 +263,15 @@ class AlgoInit:
 
                 print("Verifying results with output schema...")
                 is_success, error_messages = self._verify_task_results(results)
+                self._time_taken = time.time() - self._start_time
+
                 if is_success:
                     # save the output results
                     output_folder = Path.cwd() / "output"
                     output_folder.mkdir(parents=True, exist_ok=True)
-                    json_file_path = output_folder / "results.json"
 
-                    # Write the data to the JSON file
-                    with open(json_file_path, "w") as json_file:
-                        json.dump(results, json_file, indent=4)
+                    json_file_path = output_folder / "results.json"
+                    self._generate_output_file(results, json_file_path)
                     print("*" * 20)
                     print(f"check the results here : {json_file_path}")
                     print("*" * 20)
@@ -278,6 +286,68 @@ class AlgoInit:
 
             # Exit with error
             sys.exit(-1)
+
+    def _generate_output_file(self, results, output_path: Path) -> None:
+        """
+        Format the output results into the AI Verify Test Result and write to a JSON file
+        """
+        f = open(str(Path(__file__).parent / "algo.meta.json"))
+        meta_file = json.load(f)
+        annotated_ground_truth_path = self._input_arguments.get(
+            "annotated_ground_truth_path", None
+        )
+        annotated_ground_truth_path = (
+            get_absolute_path(annotated_ground_truth_path)
+            if annotated_ground_truth_path
+            else None
+        )
+
+        # Prepare test arguments
+        test_arguments = ITestArguments(
+            groundTruth=self._ground_truth,
+            modelType=self._model_type.name,
+            testDataset=self._data_path,
+            modelFile=self._model_path,
+            groundTruthDataset=self._ground_truth_path,
+            algorithmArgs={
+                "run_pipeline": self._run_as_pipeline,
+                "set_seed": self._input_arguments["set_seed"],
+                "annotated_ground_truth_path": annotated_ground_truth_path,
+                "file_name_label": self._input_arguments.get("file_name_label", None),
+            },
+            mode="upload",
+        )
+
+        # Create the output result
+        output = ITestResult(
+            gid=meta_file["gid"],
+            cid=meta_file["cid"],
+            version=meta_file.get("version"),
+            startTime=datetime.fromtimestamp(self._start_time),
+            timeTaken=round(self._time_taken, 4),
+            testArguments=test_arguments,
+            output=results,
+            artifacts=self._populate_all_image_urls(results),
+        )
+
+        output_json = output.json(exclude_none=True, indent=4)
+        if validate_test_result_schema(json.loads(output_json)) is True:
+            with open(output_path, "w") as json_file:
+                json_file.write(output_json)
+        else:
+            raise RuntimeError("Failed test result schema validation")
+
+    def _populate_all_image_urls(self, data):
+        image_urls = []
+
+        for result in data["results"]:
+            display_info = result.get("display_info", {})
+            for severity, info in display_info.items():
+                for item in info:
+                    if ".png" in item:
+                        image_urls.append(item)
+
+        return image_urls
 
     def _verify_task_results(self, task_result: Dict) -> Tuple[bool, str]:
         """

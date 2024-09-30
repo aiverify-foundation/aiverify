@@ -1,5 +1,6 @@
 {
-    "cid": "shap_toolbox",
+    "cid": "aiverify_shap_toolbox",
+    "gid": "aiverify.stock.shap_toolbox",
     "name": "SHAP Toolbox",
     "modelType": [
         "classification",
@@ -23,7 +24,6 @@
         "algo.meta.json",
         "algo.py",
         "README.md",
-        "requirements.txt",
         "syntax_checker.py",
         "src"
     ]

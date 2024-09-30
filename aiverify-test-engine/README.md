@@ -6,6 +6,9 @@ AI Verify Test Engine provides core interfaces, converters, data, model and plug
 
 ## Installation
 
+> [!IMPORTANT]  
+> Currently, aiverify-test-engine is in alpha release. To install the package, you should specify the version i.e. `pip install aiverify-test-engine==2.0.0a1`.
+
 Install `aiverify-test-engine` via pip. The following table list the available install options and the optional dependencies along with the additional functionality that is supported.
 
 | Installation Command | Description |

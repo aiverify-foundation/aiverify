@@ -1,5 +1,6 @@
 {
-    "cid": "general_corruptions",
+    "cid": "aiverify_general_corruptions",
+    "gid": "aiverify.stock.image_corruption_toolbox",
     "name": "General Corruptions",
     "modelType": [
         "classification"
@@ -21,7 +22,6 @@
         "algo.meta.json",
         "algo.py",
         "README.md",
-        "requirements.txt",
         "syntax_checker.py"
     ]
 }

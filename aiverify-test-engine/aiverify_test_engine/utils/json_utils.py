@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 from typing import Any, Dict
 
 import jsonschema
@@ -129,3 +130,21 @@ def load_schema_file(schema_path: str) -> Dict:
 
     except FileNotFoundError as error:
         raise RuntimeError(f"There was an error due to file not found: {str(error)}")
+
+
+def validate_test_result_schema(result: dict) -> bool:
+    """
+    A function to validate the test result schema
+
+    Args:
+        result (dict): input data dictionary
+
+    Returns:
+        bool: True if validation is successful
+    """
+    return validate_json(
+        result,
+        load_schema_file(
+            str(Path(__file__).parent / "aiverify.testresult.schema.json")
+        ),
+    )

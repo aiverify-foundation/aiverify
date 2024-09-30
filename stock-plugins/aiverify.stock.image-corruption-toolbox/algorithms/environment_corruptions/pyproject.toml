@@ -1,5 +1,5 @@
 [project]
-name = "aiverify_environment_corruptions"
+name = "aiverify-environment-corruptions"
 description = "Part of AI Verify image corruption toolbox. This package includes algorithms that add environmental corruptions (rain, fog and snow) to images at 5 severity levels, to test the robustness of machine learning models."
 authors = [{ name = "AI Verify" }]
 readme = "README.md"
