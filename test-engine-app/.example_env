@@ -1,6 +1,0 @@
-CORE_MODULES_FOLDER="../test-engine-core-modules/src"
-VALIDATION_SCHEMAS_FOLDER="test_engine_app/validation_schemas/"
-REDIS_CONSUMER_GROUP="MyGroup"
-REDIS_SERVER_HOSTNAME="localhost"
-REDIS_SERVER_PORT=6379
-API_SERVER_PORT=8080

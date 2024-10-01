@@ -1,10 +1,11 @@
 {
-    "cid": "digital_corruptions",
+    "cid": "aiverify_digital_corruptions",
+    "gid": "aiverify.stock.image_corruption_toolbox",
     "name": "Digital Corruptions",
     "modelType": [
         "classification"
     ],
-    "version": "0.10.0",
+    "version": "2.0.0a1",
     "author": "AI Verify",
     "description": "Algorithm that adds digital corruptions (brightness up and down, contrast up and down, compression, tilt, saturate)",
     "tags": [
@@ -21,7 +22,6 @@
         "algo.meta.json",
         "algo.py",
         "README.md",
-        "requirements.txt",
         "syntax_checker.py",
         "utils"
     ]

@@ -12,8 +12,9 @@ from jsonschema import validate
 from ..lib.logging import logger
 from ..lib.database import get_db_session
 from ..lib.constants import TestDatasetFileType, TestDatasetStatus, TestModelMode, TestModelStatus
-from ..lib.filestore import save_artifact, get_artifact, get_suffix
+from ..lib.filestore import save_artifact, get_artifact
 from ..lib.utils import guess_mimetype_from_filename
+from ..lib.file_utils import get_suffix, check_valid_filename
 from ..schemas import TestResult, TestResultOutput, TestResultUpdate
 from ..schemas.load_examples import test_result_examples
 from ..models import AlgorithmModel, TestModelModel, TestResultModel, TestDatasetModel, TestArtifactModel
@@ -37,10 +38,10 @@ async def _save_test_result(session: Session, test_result: TestResult, artifact_
     )
     algorithm = session.scalar(stmt)
     if algorithm is None:
-        raise HTTPException(status_code=400, detail=f"Algorithm {test_result.gid} not found")
+        raise HTTPException(status_code=400, detail=f"Algorithm not found: gid: {test_result.gid}, cid: {test_result.cid}")
 
     now = datetime.now()
-    test_arguments = test_result.test_arguments
+    test_arguments = test_result.testArguments
 
     # validate output
     output_schema = json.loads(algorithm.output_schema.decode("utf-8"))
@@ -133,8 +134,8 @@ async def _save_test_result(session: Session, test_result: TestResult, artifact_
         test_dataset=test_dataset,
         ground_truth_dataset=ground_truth_dataset,
         ground_truth=test_arguments.groundTruth,
-        start_time=test_result.start_time,
-        time_taken=test_result.time_taken,
+        start_time=test_result.startTime,
+        time_taken=test_result.timeTaken,
         algo_arguments=json.dumps(test_arguments.algorithmArgs).encode('utf-8'),
         output=json.dumps(test_result.output).encode('utf-8'),
         created_at=now,
@@ -152,6 +153,9 @@ async def _save_test_result(session: Session, test_result: TestResult, artifact_
             if filename not in artifact_set:
                 logger.warn(f"Unable to find artifact filename {filename} in uploaded files, skipping")
                 continue
+            if not check_valid_filename(filename):
+                logger.warn(f"Invalid artifact filename {filename}, skipping")
+                raise HTTPException(status_code=400, detail=f"Invalid artifact filename in result output: {filename}")
             artifact_file = artifact_set[filename]
             data = artifact_file.file.read()
             save_artifact(test_result_id, filename, data)
@@ -271,12 +275,12 @@ async def upload_zip_file(
                     for zip_info in zip_infos:
                         if zip_info.filename != result_filename and zip_info.filename != foldername:
                             with zip_ref.open(zip_info) as artifact_file:
-                                filename = zip_info.filename[len(foldername):] # remove foldername
+                                filename = zip_info.filename[len(foldername):]  # remove foldername
                                 artifact_set[filename] = UploadFile(
                                     filename=filename,
                                     file=io.BytesIO(artifact_file.read())
-                            )
-                                
+                                )
+
                 logger.debug(f"artifact_set: {artifact_set}")
 
                 if isinstance(results_data, dict):
@@ -311,7 +315,7 @@ async def upload_zip_file(
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.get("/{test_result_id}/artifacts/{filename}")
+@router.get("/{test_result_id}/artifacts/{filename:path}")
 async def get_test_result_artifact(
     test_result_id: str,
     filename: str,
@@ -320,6 +324,7 @@ async def get_test_result_artifact(
     """
     Endpoint to retrieve an artifact file by test_result_id and filename.
     """
+    logger.debug(f"get_test_result_artifact: {test_result_id}, {filename}")
     try:
         stmt = (
             select(TestArtifactModel)

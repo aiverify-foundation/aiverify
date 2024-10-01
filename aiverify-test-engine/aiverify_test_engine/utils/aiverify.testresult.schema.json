@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "/aiverify.algorithm.testresult.schema.json",
+  "title": "Algorithm Output Schema",
+  "description": "AI Verify algorithm output schema",
+  "type": "object",
+  "properties": {
+    "gid": {
+      "description": "Unique global identifier for the plugin",
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9-._]*$",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "cid": {
+      "description": "Unique identifier for the algorithm within the plugin",
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9-._]*$",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "version": {
+      "description": "Algorithm version",
+      "type": "string"
+    },
+    "startTime": {
+      "description": "Start date time of test",
+      "type": "string",
+      "format": "date-time"
+    },
+    "timeTaken": {
+      "description": "Time take to complete running the test in seconds.",
+      "type": "number"
+    },
+    "testArguments": {
+      "description": "Test arguments",
+      "type": "object",
+      "properties": {
+        "testDataset": {
+          "description": "URI of test dataset",
+          "type": "string",
+          "format": "uri"
+        },
+        "mode": {
+          "description": "Mode of model used, upload for model file and api for model api",
+          "type": "string",
+          "enum": [
+            "upload",
+            "api"
+          ]
+        },
+        "modelType": {
+          "description": "AI model type",
+          "type": "string",
+          "enum": [
+            "classification",
+            "regression"
+          ]
+        },
+        "groundTruthDataset": {
+          "description": "URI of test dataset",
+          "type": "string",
+          "format": "uri"
+        },
+        "groundTruth": {
+          "description": "Ground truth column name",
+          "type": "string"
+        },
+        "algorithmArgs": {
+          "description": "Argument provided to the algorithm for running the tests. Test arguments should be defined in input.schema.json under each algorithm",
+          "$comment": "Algorithm implementation should validate the algorithmArgs according to input.schema.json"
+        }
+      },
+      "if": {
+        "properties": {
+          "mode": {
+            "const": "upload"
+          }
+        }
+      },
+      "then": {
+        "modelFile": {
+          "description": "URI of model file",
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "else": {
+        "$comment": "TODO: Add reference to model api configuration specs"
+      },
+      "required": [
+        "testDataset",
+        "mode",
+        "modelType"
+      ],
+      "dependentRequired": {
+        "groundTruthDataset": [
+          "groundTruth"
+        ]
+      }
+    },
+    "output": {
+      "description": "Output from algorithm running. Test output schema should be defined in output.schema.json under each algorithm",
+      "$comment": "AI Verify API-GW and any module that reads the output should validate the output according to output.schema.json"
+    },
+    "artifacts": {
+      "description": "List the test artifacts (e.g. images) produced by the algorithm, to be upload to API-GW",
+      "type": "array",
+      "items": {
+        "description": "filenames of the artifacts",
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "gid",
+    "cid",
+    "startTime",
+    "timeTaken",
+    "testArguments",
+    "output"
+  ]
+}

@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 from aiverify_accumulated_local_effect.algo_init import AlgoInit
-from test_engine_core.plugins.enums.model_type import ModelType
+from aiverify_test_engine.plugins.enums.model_type import ModelType
 
 binary_classification = {
     "data_path": str("../../../user_defined_files/data/sample_bc_credit_data.sav"),

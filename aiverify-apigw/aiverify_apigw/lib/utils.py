@@ -1,5 +1,5 @@
 import mimetypes
-from .filestore import get_suffix
+from .file_utils import get_suffix
 
 
 def guess_mimetype_from_filename(filename: str):

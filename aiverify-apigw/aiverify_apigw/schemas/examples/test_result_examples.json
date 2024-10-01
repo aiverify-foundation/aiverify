@@ -3,9 +3,9 @@
     "gid": "aiverify.stock.fairness_metrics_toolbox_for_classification",
     "version": "0.9.0",
     "cid": "fairness_metrics_toolbox_for_classification",
-    "start_time": "2024-07-24T09:20:24.822881",
-    "time_taken": 0,
-    "test_arguments": {
+    "startTime": "2024-07-24T09:20:24.822881",
+    "timeTaken": 0,
+    "testArguments": {
       "testDataset": "file:///examples/data/sample_bc_credit_data.sav",
       "modelFile": "file:///examples/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav",
       "groundTruthDataset": "file:///examples/data/sample_bc_credit_data.sav",

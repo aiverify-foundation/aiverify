@@ -1,11 +1,12 @@
 {
-    "cid": "accumulated_local_effect",
+    "cid": "aiverfy_accumulated_local_effect",
+    "gid": "aiverify.stock.accumulated_local_effect",
     "name": "Accumulated Local Effect",
     "modelType": [
         "classification",
         "regression"
     ],
-    "version": "0.10.0",
+    "version": "2.0.0a1",
     "author": "AI Verify",
     "description": "This algorithm explains how each feature and its feature value contribute to the predictions.",
     "tags": [
@@ -23,7 +24,6 @@
         "algo.meta.json",
         "algo.py",
         "README.md",
-        "requirements.txt",
         "syntax_checker.py"
     ]
 }
