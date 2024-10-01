@@ -15,7 +15,7 @@ RUN pip install --no-binary h5py h5py
 WORKDIR /app
 RUN git clone --filter=blob:none --sparse https://github.com/aiverify-foundation/aiverify.git --branch=v2.x aiverify
 WORKDIR /app/aiverify
-RUN git sparse-checkout set test-engine-core stock-plugins/user_defined_files stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms
+RUN git sparse-checkout set aiverify-test-engine stock-plugins/user_defined_files stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification
 
 # Install algorithm requirements
 WORKDIR /app/aiverify/stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification
