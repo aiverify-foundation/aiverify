@@ -70,7 +70,7 @@ pytest .
 ## Run algorithm using docker
 ### Build algorithm docker image in this folder
 ```
-docker build -t aiverify-fairness-metrics-toolbox-for-classification:v1 .
+docker build -t aiverify-fairness-metrics-toolbox-for-classification:v2.0.0a1 .
 ```
 ### Run the algorithm with a volume mount to see the output of results.json locally
 ```
@@ -80,7 +80,7 @@ root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files"
 docker run \
   -v $root_path:/user_defined_files \
   -v ./output:/app/aiverify/stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification/output \
-  aiverify-fairness-metrics-toolbox-for-classification:v1 \
+  aiverify-fairness-metrics-toolbox-for-classification:v2.0.0a1 \
   --data_path /user_defined_files/data/sample_mc_pipeline_toxic_data.sav \
   --model_path /user_defined_files/pipeline/mc_tabular_toxic \
   --ground_truth_path /user_defined_files/data/sample_mc_pipeline_toxic_ytest_data.sav \
@@ -91,5 +91,5 @@ docker run \
 ```
 ### Run algorithm's unit and e2e tests
 ```
-docker run --entrypoint python3 aiverify-fairness-metrics-toolbox-for-classification:v1 -m pytest .
+docker run --entrypoint python3 aiverify-fairness-metrics-toolbox-for-classification:v2.0.0a1 -m pytest .
 ```
