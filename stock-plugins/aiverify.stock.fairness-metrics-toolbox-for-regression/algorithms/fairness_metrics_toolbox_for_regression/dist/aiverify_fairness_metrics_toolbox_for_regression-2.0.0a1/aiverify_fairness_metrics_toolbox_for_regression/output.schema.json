@@ -1,0 +1,42 @@
+{
+    "title": "Algorithm Plugin Output Arguments",
+    "description": "A schema for algorithm plugin output arguments",
+    "type": "object",
+    "required": ["results"],
+    "minProperties": 1,
+    "properties": {
+        "results": {
+            "type": "array",
+            "minItems": 1,
+            "title": "The results Schema",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "mae": {
+                        "type": "number"
+                    },
+                    "r2": {
+                        "type": [
+                            "number",
+                            "null"
+                        ]
+                    },
+                    "mse": {
+                        "type": "number"
+                    },
+                    "subgroup": {
+                        "type": "string"
+                    }
+                }
+            }
+        }, 
+        "sensitive_feature":{
+            "description":"Array of sensitive feature names",
+            "type":"array",
+            "minItems":1,
+            "items":{
+                "type":"string"
+            }
+        }
+    }
+}

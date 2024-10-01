@@ -1,19 +1,33 @@
 [project]
-name = "aiverify_environment_corruptions"
-version = "0.10.0"
-description = ""
+name = "aiverify-environment-corruptions"
+description = "Part of AI Verify image corruption toolbox. This package includes algorithms that add environmental corruptions (rain, fog and snow) to images at 5 severity levels, to test the robustness of machine learning models."
 authors = [{ name = "AI Verify" }]
 readme = "README.md"
-dependencies = ["numpy==1.24.3", "pandas==2.0.3", "pillow==10.2.0", "joblib==1.3.2", "scikit-learn==1.4.0", "scipy==1.12.0", "opencv-python==4.9.0.80", "scikit-image==0.22.0", "wand==0.6.13"]
+dependencies = [
+    "numpy==1.26.4",
+    "pandas==2.2.2",
+    "pillow==10.4.0",
+    "joblib==1.4.2",
+    "scikit-learn==1.5.2",
+    "scipy==1.14.1",
+    "opencv-python==4.10.0.84",
+    "scikit-image==0.24.0",
+    "wand==0.6.13",
+]
 requires-python = ">=3.10,<3.12"
+dynamic = ["version"]
 
 [project.optional-dependencies]
 dev = [
-    "test-engine-core @ {root:parent:parent:parent:parent:uri}/test-engine-core"
+    "aiverify-test-engine[dev] @ {root:parent:parent:parent:parent:uri}/aiverify-test-engine",
 ]
 
 [project.scripts]
 aiverify_environment_corruptions = "aiverify_environment_corruptions.__main__:main"
+
+[tool.hatch.version]
+path = "aiverify_environment_corruptions/algo.meta.json"
+pattern = '"version":\s*"(?P<version>[^"]+)"'
 
 [tool.hatch.metadata]
 allow-direct-references = true

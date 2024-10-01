@@ -1,8 +1,9 @@
 import os
-import io
-import hashlib
 import shutil
-from pathlib import Path, PurePath
+from pathlib import Path
+import urllib.parse
+urllib.parse.uses_relative.append("s3")
+urllib.parse.uses_netloc.append("s3")
 from urllib.parse import urljoin
 
 from .s3 import MyS3
@@ -20,6 +21,15 @@ class InvalidFileStore(Exception):
 class FileStoreError(Exception):
     """Raised on general file path error"""
     pass
+
+
+def check_relative_to_base(base_path: Path | str, filepath: str) -> bool:
+    logger.debug(f"check_relative_to_base: {base_path} -> {filepath}")
+    if isinstance(base_path, Path):
+        return base_path.joinpath(filepath).resolve().is_relative_to(base_path)
+    else:
+        # for s3 must be full url
+        return urljoin(base_path, filepath).startswith(base_path)
 
 
 def get_base_data_dir() -> Path | str:
@@ -65,27 +75,6 @@ def is_s3(path: Path | str) -> bool:
         raise InvalidFileStore(f"Invalid path: {path}")
 
 
-def check_valid_filename(filename: str):
-    return PurePath(filename).stem.isalnum
-
-
-def append_filename(filename: str, append_name: str) -> str:
-    fpath = PurePath(filename)
-    return fpath.stem + append_name + fpath.suffix
-
-
-def get_suffix(filename: str) -> str:
-    return PurePath(filename).suffix.lower()
-
-
-def get_stem(filename: str) -> str:
-    return PurePath(filename).stem
-
-
-def get_file_digest(contents: io.BytesIO):
-    contents.seek(0)
-    return hashlib.file_digest(contents, "sha256").digest()
-
 # def absolute_plugin_base_path(source: str) -> Path | str:
 #     if isinstance(base_plugin_dir, Path):
 #         return base_plugin_dir.joinpath(source).resolve()
@@ -128,6 +117,20 @@ def get_plugin_component_folder(gid: str, component_type: str) -> Path | str:
         return urljoin(plugin_path, f"{component_type}/")
 
 
+plugin_ignore_patten = shutil.ignore_patterns(
+    ".venv",
+    "venv",
+    "output",
+    "node_modules",
+    "build",
+    "temp",
+    "__pycache__",
+    ".pytest_cache",
+    ".cache"
+    "*.pyc",
+)
+
+
 def save_plugin(gid: str, source_dir: Path):
     folder = get_plugin_folder(gid)
     logger.debug(f"Copy plugin folder from {source_dir} to {folder}")
@@ -135,7 +138,7 @@ def save_plugin(gid: str, source_dir: Path):
         if folder.exists():
             shutil.rmtree(folder)
         folder.mkdir(parents=True, exist_ok=True)
-        shutil.copytree(source_dir, folder, dirs_exist_ok=True)
+        shutil.copytree(source_dir, folder, dirs_exist_ok=True, ignore=plugin_ignore_patten)
     elif s3 is not None:
         # folder is s3 prefix
         if s3.check_s3_prefix_exists(folder):
@@ -186,40 +189,38 @@ def get_artifacts_folder(test_result_id: str):
 
 
 def save_artifact(test_result_id: str, filename: str, data: bytes):
+    # validate input
+    if not test_result_id.isalnum():
+        raise FileStoreError(f"Invalid test result id {test_result_id}")
     folder = get_artifacts_folder(test_result_id)
+    if not check_relative_to_base(folder, filename):
+        raise FileStoreError(f"Invalid filename {filename}")
     if isinstance(folder, Path):
         filepath = folder.joinpath(filename)
+        # check for nest dir
+        if not filepath.parent.exists():
+            filepath.parent.mkdir(parents=True, exist_ok=True)
         with open(filepath, "wb") as fp:
             fp.write(data)
-        return folder
+        return filepath
     elif s3 is not None:
         key = urljoin(folder, filename)
         s3.put_object(key, data)
         return key
 
 
-# def get_asset(asset_id: str, filename: str):
-#     """Get asset
-
-#     Args:
-#         asset_id (str): asset ID
-#         filename (str): filename of asset
-
-#     Raises:
-#         InvalidFileStore
-
-#     Returns:
-#         asset content or None
-#     """
-#     file_path = get_asset_path(asset_id, filename)
-#     try:
-#         if isinstance(file_path, Path):
-#             with open(file_path, "rb") as file:
-#                 content = file.read()
-#                 return content
-#         elif s3 is not None:
-#             return s3.get_object(key=file_path)
-#         else:
-#             raise InvalidFileStore
-#     except:
-#         return None
+def get_artifact(test_result_id: str, filename: str):
+    if not test_result_id.isalnum():
+        raise FileStoreError(f"Invalid test result id {test_result_id}")
+    folder = get_artifacts_folder(test_result_id)
+    if not check_relative_to_base(folder, filename):
+        raise FileStoreError(f"Invalid filename {filename}")
+    if isinstance(folder, Path):
+        filepath = folder.joinpath(filename).resolve()
+        with open(filepath, "rb") as fp:
+            data = fp.read()
+        return data
+    elif s3 is not None:
+        key = urljoin(folder, filename)
+        data = s3.get_object(key)
+        return data

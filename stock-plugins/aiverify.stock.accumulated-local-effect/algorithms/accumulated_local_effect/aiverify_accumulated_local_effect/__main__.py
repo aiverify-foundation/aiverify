@@ -1,5 +1,5 @@
 """
-Allow accumulated_local_effect to be executable through `python3 -m accumulated_local_effect`.
+Allow accumulated_local_effect to be executable through `python3 -m aiverify_accumulated_local_effect`.
 """
 import sys
 from importlib.metadata import version
@@ -26,7 +26,8 @@ def version_msg():
     python_version = sys.version
     location = Path(__file__).resolve().parent.parent
 
-    return f"Accumulated Local Effect - {version} from {location} (Python {python_version})"
+    return f"Accumulated Local Effect - {version('aiverify_accumulated_local_effect')} from \
+        {location} (Python {python_version})"
 
 
 if __name__ == "__main__":

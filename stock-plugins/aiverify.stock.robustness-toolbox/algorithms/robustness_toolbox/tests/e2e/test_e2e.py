@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 from aiverify_robustness_toolbox.algo_init import AlgoInit
-from test_engine_core.plugins.enums.model_type import ModelType
+from aiverify_test_engine.plugins.enums.model_type import ModelType
 
 binary_classification = {
     "data_path": str(
@@ -20,7 +20,7 @@ binary_classification = {
 regression_non_pipeline = {
     "data_path": str("../../../user_defined_files/data/sample_reg_donation_data.sav"),
     "model_path": str(
-        "../../../user_defined_files/model/sample_reg_donation_sklearn_linear.LogisticRegression.sav"
+        "../../../user_defined_files/model/sample_reg_donation_sklearn_linear.LinearRegression.sav"
     ),
     "ground_truth_path": str(
         "../../../user_defined_files/data/sample_reg_donation_data.sav"

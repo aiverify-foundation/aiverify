@@ -27,7 +27,9 @@ def version_msg():
     python_version = sys.version
     location = Path(__file__).resolve().parent.parent
 
-    return f"Fairness toolbox metrics for classification - {version} from {location} (Python {python_version})"
+    return f"Fairness toolbox metrics for classification - \
+        {version('aiverify_fairness_metrics_toolbox_for_classification')} \
+            from {location} (Python {python_version})"
 
 
 if __name__ == "__main__":

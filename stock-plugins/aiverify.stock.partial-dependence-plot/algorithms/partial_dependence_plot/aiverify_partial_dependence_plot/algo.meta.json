@@ -1,11 +1,12 @@
 {
-    "cid": "partial_dependence_plot",
+    "cid": "aiverify_partial_dependence_plot",
+    "gid": "aiverify.stock.partial_dependence_plot",
     "name": "Partial Dependence Plot",
     "modelType": [
         "classification",
         "regression"
     ],
-    "version": "0.10.0",
+    "version": "2.0.0a1",
     "author": "AI Verify",
     "description": "A Partial Dependence Plot (PDP) explains how each feature and its feature value contribute to the predictions.",
     "tags": [
@@ -23,7 +24,6 @@
         "partial_dependence_plot.meta.json",
         "partial_dependence_plot.py",
         "README.md",
-        "requirements.txt",
         "syntax_checker.py"
     ]
 }

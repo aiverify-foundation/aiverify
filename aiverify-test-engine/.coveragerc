@@ -1,0 +1,10 @@
+# .coveragerc to control coverage.py
+[run]
+branch = True
+cover_pylib = False
+
+[report]
+omit = /usr/*, aiverify_test_engine/__*.py, aiverify_test_engine/tests/*, aiverify_test_engine/interfaces/*
+exclude_lines =
+    @abstractmethod
+    @abc.abstractmethod

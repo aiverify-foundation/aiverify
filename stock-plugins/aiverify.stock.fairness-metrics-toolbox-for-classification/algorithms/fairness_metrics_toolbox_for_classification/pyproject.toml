@@ -1,19 +1,28 @@
 [project]
-name = "aiverify_fairness_metrics_toolbox_for_classification"
-version = "0.10.0"
-description = ""
+name = "aiverify-fairness-metrics-toolbox-for-classification"
+description = "AI Verify Fairness Metrics Toolbox (FMT) for Classification contains a list of fairness metrics to measure how resources (e.g. opportunities, food, loan, medical help) are allocated among the demographic groups (e.g. married male, married female) given a set of sensitive feature(s) (e.g. gender, marital status). This plugin is developed for classification models."
 authors = [{ name = "AI Verify" }]
 readme = "README.md"
-dependencies = ["numpy==1.24.3", "joblib==1.3.2", "scikit-learn==1.4.0", "scipy==1.12.0"]
+dependencies = [
+    "numpy==1.26.4",
+    "joblib==1.4.2",
+    "scikit-learn==1.5.2",
+    "scipy==1.14.1",
+]
 requires-python = ">=3.10,<3.12"
+dynamic = ["version"]
 
 [project.optional-dependencies]
 dev = [
-    "test-engine-core @ {root:parent:parent:parent:parent:uri}/test-engine-core",
+    "aiverify-test-engine[dev] @ {root:parent:parent:parent:parent:uri}/aiverify-test-engine",
 ]
 
 [project.scripts]
 aiverify_fairness_metrics_toolbox_for_classification = "aiverify_fairness_metrics_toolbox_for_classification.__main__:main"
+
+[tool.hatch.version]
+path = "aiverify_fairness_metrics_toolbox_for_classification/algo.meta.json"
+pattern = '"version":\s*"(?P<version>[^"]+)"'
 
 [tool.hatch.metadata]
 allow-direct-references = true
