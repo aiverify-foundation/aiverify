@@ -1,9 +1,9 @@
 
 [![Integration Tests](https://github.com/aiverify-foundation/aiverify/actions/workflows/integration-tests.yml/badge.svg)](https://github.com/aiverify-foundation/aiverify/actions/workflows/integration-tests.yml)  [![Integration Tests for aiverify-user (Docker)](https://github.com/aiverify-foundation/aiverify/actions/workflows/integration-tests-docker.yml/badge.svg)](https://github.com/aiverify-foundation/aiverify/actions/workflows/integration-tests-docker.yml)
 
-## AI Verify 2.0 Is Comming!
+## AI Verify 2.0 Is Coming!
 
-## Announcing AI Verify 2.x – A New Era of AI Governance!
+## Announcing AI Verify 2.x!
 
 We are thrilled to announce the upcoming release of AI Verify 2.x, a groundbreaking update that will revolutionize the way you validate and govern AI systems. This new version is packed with major enhancements designed to provide more flexibility, efficiency, and scalability.
 
