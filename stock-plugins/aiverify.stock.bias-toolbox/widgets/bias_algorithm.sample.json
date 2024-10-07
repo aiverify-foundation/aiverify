@@ -1,0 +1,8 @@
+{
+    "feature_names": ["race", "gender", "loan_amount"],
+    "statistic": [4.51309177596141, 2.061984645953651, -0.014337298676594811],
+    "pvalue": [0.47813371663075355, 0.0410133744546465, 0.47365597475145793],
+    "test_name": ["kruskal", "kruskal", "spearmanr"],
+    "test_description": "The Kruskal-Wallis H-test tests the null hypothesis that the population median of all of the groups are equal. It is a non-parametric method for testing whether samples originate from the same distribution.\n\nThe Spearman rank-order correlation coefficient is a nonparametric measure of the monotonicity of the relationship between two datasets. The p-value roughly indicates the probability of an uncorrelated system producing datasets that have a Spearman correlation at least as extreme as the one computed from these datasets.\n\n",
+    "pvalue_threshold": 0.05
+}

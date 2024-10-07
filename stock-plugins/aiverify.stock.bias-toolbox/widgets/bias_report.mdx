@@ -1,0 +1,114 @@
+import React, { useEffect, useState } from 'react';
+import { BarChart } from 'ai-verify-shared-library/charts'
+
+export const algo_cid = "bias_algorithm"
+
+export const MyChart = ({ featureNames, statistic, testType, testDescription, pValue, pValueThreshold, properties }) => {
+
+  const [ data, setData ] = useState([]);
+
+  const styles = {
+    table: {
+      borderCollapse: 'collapse',
+      borderColor: "black",
+      borderWidth: "0.5px 0 0 0.5px",
+      borderStyle: "solid",
+      padding: 0,
+      margin: 0,
+      breakInside: 'avoid',
+      width: '100%',
+      // tableLayout: 'fixed',
+    },
+    cell: {
+      borderRight: "0.5px solid",
+      width:"50%",  
+      padding:"10px",
+      overflow:"hidden",
+      wordWrap: "break-word"
+    },
+    psBox: {
+      textAlign: 'left',
+      maxHeight: 500,
+      overflow: "hidden",
+      borderBottom: "0.5px solid",
+      display: "flex",
+      fontSize: '14px',
+      lineHeight: '1.3',
+    }
+  }
+
+  useEffect(() => {
+
+    const data = featureNames.map((name, index) => {
+      let obj = {
+        name,
+      }
+
+      obj["testType"] = testType[index];
+      obj["statistic"] = statistic[index];
+      obj["pValue"] = pValue[index];
+      
+      return obj;
+    })
+
+    data.sort((a, b) => {
+      return a.pValue - b.pValue;
+    })
+
+
+    setData(data);
+  }, [featureNames])
+
+  return (
+    <>
+      <div style={{ height:"40%", width:'100%', textAlign: 'center', overflowY: "scroll"}}>
+
+        <b>P-Value Threshold: {pValueThreshold}</b>
+
+        <div style={{ marginTop: "5px", maxHeight: "400px", width:'100%', overflowY: "scroll" }}>
+          <table key="table-data" style={styles.table}>
+            <tbody>
+              <tr style={styles.psBox}>
+                <th style={styles.cell}>Feature Name</th>
+                <th style={styles.cell}>Test Performed</th>
+                <th style={styles.cell}>Statistic</th>
+                <th style={styles.cell}>P-Value</th>
+              </tr>
+
+              {data.map((d) => (
+                <tr style={styles.psBox}>
+                <td style={styles.cell}>{d.name}</td>
+                <td style={styles.cell}>{d.testType}</td>
+                <td style={styles.cell}>{d.statistic.toFixed(2)}</td>
+                <td style={styles.cell}>{d.pValue.toFixed(3)} {(d.pValue < pValueThreshold) ? "(*)" : ""}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div style={{marginTop: "20px", textAlign: "left"}}>
+          <text style={{whiteSpace: "pre-wrap"}}>
+          {testDescription}
+          </text>
+        </div>
+      </div>
+    </>
+  )
+}
+
+{props.getResults(algo_cid)?(
+  <>
+    <div style={{ width:props.container.width, height:"100%" }}>
+      <MyChart featureNames={props.getResults(algo_cid).feature_names}
+                statistic={props.getResults(algo_cid).statistic}
+                testType={props.getResults(algo_cid).test_name}
+                testDescription={props.getResults(algo_cid).test_description}
+                pValue={props.getResults(algo_cid).pvalue} 
+                pValueThreshold={props.getResults(algo_cid).pvalue_threshold}
+                properties={props.properties} />
+    </div>
+  </>
+):(
+  <div>No data</div>
+)}

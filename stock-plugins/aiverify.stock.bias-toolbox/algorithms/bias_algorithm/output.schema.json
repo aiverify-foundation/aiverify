@@ -1,0 +1,41 @@
+{
+    "title": "Algorithm Plugin Output Arguments",
+    "description": "A schema for algorithm plugin output arguments",
+    "type": "object",
+    "required": [
+        "pvalue",
+        "statistic",
+        "test_name",
+        "test_description",
+        "pvalue_threshold"
+    ],
+    "minProperties": 1,
+    "properties": {
+        "pvalue": {
+            "description": "Bias P-Value",
+            "type": "array",
+            "minItems": 1,
+            "items": {"type": "number"}
+        },
+        "statistic": {
+            "description": "Bias Statistic",
+            "type": "array",
+            "minItems": 1,
+            "items": {"type": "number"}
+        },
+        "test_name": {
+            "description": "Test Conducted",
+            "type": "array",
+            "minItems": 1,
+            "items": {"type": "string"}
+        },
+        "test_description": {
+            "description": "Description of tests",
+            "type": "string"
+        },
+        "pvalue_threshold": {
+            "description": "threshold to reject null hypothesis",
+            "type": "number"
+        }
+    }
+}

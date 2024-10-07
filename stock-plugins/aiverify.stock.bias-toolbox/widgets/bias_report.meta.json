@@ -1,0 +1,24 @@
+{
+  "cid": "bias_report",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 1,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Bias Report",
+  "description": "Generate report on bias in dataset",
+  "dynamicHeight": true,
+  "dependencies": [
+    {
+      "cid": "bias_algorithm"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "Algorithm",
+      "cid": "bias_algorithm",
+      "datapath": "bias_algorithm.sample.json"
+    }
+  ]
+}
