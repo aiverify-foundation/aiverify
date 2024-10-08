@@ -27,7 +27,7 @@ Run the following bash script to execute the plugin
 root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files"
 python -m aiverify_fairness_metrics_toolbox_for_regression \
   --data_path $root_path/data/sample_reg_pipeline_data.sav \
-  --model_path $root_path/pipeline \
+  --model_path $root_path/pipeline/regression_tabular_donation \
   --ground_truth_path $root_path/data/sample_reg_pipeline_ytest_data.sav \
   --ground_truth donation \
   --model_type REGRESSION \
@@ -53,7 +53,7 @@ cd aiverify/stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-regression
 # install aiverify-test-engine 
 pip install -e .'[dev]'
 
-python -m aiverify_fairness_metrics_toolbox_for_regression --data_path  <data_path> --model_path <model_path> --ground_truth_path <ground_truth_path> --ground_truth <str> --model_type CLASSIFICATION --run_pipeline --sensitive_features_list <list[str]>
+python -m aiverify_fairness_metrics_toolbox_for_regression --data_path  <data_path> --model_path <model_path> --ground_truth_path <ground_truth_path> --ground_truth <str> --model_type REGRESSION --run_pipeline --sensitive_features_list <list[str]>
 ```
 
 ## Build Plugin
@@ -68,4 +68,41 @@ Run the following steps to execute the unit and integration tests inside the `te
 ```sh
 cd aiverify/stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-regression/algorithms/fairness_metrics_toolbox_for_regression/
 pytest .
+```
+
+## Run using Docker
+In the aiverify root directory, run the below command to build the docker image
+```sh
+docker build -t aiverify-fairness-metrics-toolbox-for-regression:v2.0.0a1 -f stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-regression/algorithms/fairness_metrics_toolbox_for_regression/Dockerfile .
+```
+
+Switch to the algorithm directory
+```sh
+cd stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-regression/algorithms/fairness_metrics_toolbox_for_regression/
+```
+
+Run the below bash script to run the algorithm
+```sh
+#!/bin/bash
+
+root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files"
+docker run \
+  -v $root_path:/user_defined_files \
+  -v ./output:/app/aiverify/stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-regression/algorithms/fairness_metrics_toolbox_for_regression/output \
+  aiverify-fairness-metrics-toolbox-for-regression:v2.0.0a1 \
+  --data_path /user_defined_files/data/sample_reg_pipeline_data.sav \
+  --model_path /user_defined_files/pipeline/regression_tabular_donation \
+  --ground_truth_path /user_defined_files/data/sample_reg_pipeline_ytest_data.sav \
+  --ground_truth donation \
+  --model_type REGRESSION \
+  --run_pipeline \
+  --sensitive_features_list gender
+```
+If the algorithm runs successfully, the results of the test will be saved in an `output` folder in the algorithm directory.
+
+## Tests
+### Pytest is used as the testing framework.
+Run the following steps to execute the unit and integration tests inside the `tests/` folder
+```sh
+docker run --entrypoint python3 aiverify-fairness-metrics-toolbox-for-regression:v2.0.0a1 -m pytest .
 ```
