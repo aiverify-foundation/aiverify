@@ -73,3 +73,43 @@ Run the following steps to execute the unit and integration tests inside the `te
 cd aiverify/stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox/
 pytest .
 ```
+
+## Run using Docker
+In the aiverify root directory, run the below command to build the docker image
+```sh
+docker build -t aiverify-shap-toolbox:v2.0.0a1 -f stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox/Dockerfile .
+```
+
+Switch to the algorithm directory
+```sh
+cd stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox/
+```
+
+Run the below bash script to run the algorithm
+```sh
+#!/bin/bash
+
+root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files"
+docker run \
+  -v $root_path:/user_defined_files \
+  -v ./output:/app/aiverify/stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox/output \
+  aiverify-shap-toolbox:v2.0.0a1 \
+  --data_path /user_defined_files/data/sample_bc_credit_data.sav \
+  --model_path /user_defined_files/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav \
+  --ground_truth_path /user_defined_files/data/sample_bc_credit_data.sav \
+  --ground_truth default \
+  --model_type CLASSIFICATION \
+  --no-run_pipeline \
+  --background_path /user_defined_files/data/sample_bc_credit_data.sav \
+  --background_samples 25 \
+  --data_samples 25 \
+  --explain_type global
+```
+If the algorithm runs successfully, the results of the test will be saved in an `output` folder in the algorithm directory.
+
+## Tests
+### Pytest is used as the testing framework.
+Run the following steps to execute the unit and integration tests inside the `tests/` folder
+```sh
+docker run --entrypoint python3 aiverify-shap-toolbox:v2.0.0a1 -m pytest .
+```
