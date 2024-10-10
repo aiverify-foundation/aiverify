@@ -1,0 +1,25 @@
+.selectInput {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.label {
+  display: flex;
+  justify-content: space-between;
+  color: #FFFFFF;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.description {
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: #cfbfbf;
+}
+
+.inputError {
+  color: #f73939;
+}

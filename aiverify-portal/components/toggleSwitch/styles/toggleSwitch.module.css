@@ -1,0 +1,45 @@
+.toggleSwitch {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+}
+
+.toggleSwitchContainer {
+  position: relative;
+}
+
+.toggleSwitchBackground {
+  height: 1.5rem;
+  width: 2.5rem;
+  border-radius: 9999px;
+  background-color: var(--color-secondary-100);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease-in-out;
+}
+
+.toggleSwitchBackgroundChecked {
+  background-color: var(--color-primary-600);
+}
+
+.toggleSwitchKnob {
+  position: absolute;
+  top: 0.25rem;
+  left: 0.25rem;
+  height: 1rem;
+  width: 1rem;
+  border-radius: 9999px;
+  background-color: var(--color-white);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease-in-out;
+}
+
+.toggleSwitchKnobChecked {
+  transform: translateX(1rem);
+}
+
+
+.toggleSwitchLabel {
+  margin-left: 0.75rem;
+  font-weight: 500;
+  color: var(--color-gray-700);
+}

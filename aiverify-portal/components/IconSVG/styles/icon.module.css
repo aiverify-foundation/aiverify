@@ -1,0 +1,26 @@
+.icon_wrapper {
+  line-height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+
+.pointer_effect {
+  cursor: pointer;
+}
+
+.pointer_effect:hover {
+  opacity: 0.5;
+
+}
+
+.pointer_effect:active {
+  opacity: 0.25;
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.2;
+}
+

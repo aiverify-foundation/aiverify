@@ -1,0 +1,48 @@
+.card {
+  background-color: #000000;
+  border-radius: 1rem;
+  display: flex;
+  position: relative;
+  flex-flow: column nowrap;
+  align-items: flex-start;
+  gap: 1.5rem;
+  cursor: pointer;
+  box-shadow: 2px 4px 6px -1px rgb(0 0 0 / 0.4);
+  padding: 10%;
+  height: 400px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border: 1px solid transparent;
+  transition: border-color 0.3s ease;
+}
+
+.card:hover {
+  border-color: #FFFFFF;
+}
+
+.card:active {
+  transform: scale(0.98);
+}
+
+
+
+.card h2 {
+  font-size: 1.6rem;
+  line-height: 1.8rem;
+}
+
+.card p {
+  font-size: 1rem;
+  margin: 0;
+  padding: 0;
+}
+
+.card figcaption {
+  align-self: flex-end;
+  display: flex;
+  gap: 0.5rem;
+  position: absolute;
+  bottom: 0%;
+  padding: 2rem 0;
+}
+
