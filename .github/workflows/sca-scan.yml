@@ -34,12 +34,12 @@ jobs:
 
     steps:
 
-    - name: Setup poetry
-      run: |
-        export POETRY_HOME=/opt/poetry
-        python3 -m venv $POETRY_HOME
-        $POETRY_HOME/bin/pip install poetry==1.2.0
-        $POETRY_HOME/bin/poetry --version
+    # - name: Setup poetry
+    #   run: |
+    #     export POETRY_HOME=/opt/poetry
+    #     python3 -m venv $POETRY_HOME
+    #     $POETRY_HOME/bin/pip install poetry==1.2.0
+    #     $POETRY_HOME/bin/poetry --version
 
     - name: Checkout Code (Pull Request Review)
       # if: github.event_name == 'pull_request_review'
@@ -71,6 +71,7 @@ jobs:
       run: |
           python3 -m venv venv
           source venv/bin/activate
+          pip install poetry==1.2.0
           cd aiverify-apigw
           poetry install
           pwd
