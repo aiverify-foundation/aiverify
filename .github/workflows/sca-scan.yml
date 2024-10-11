@@ -41,7 +41,7 @@ jobs:
         $POETRY_HOME/bin/poetry --version
 
     - name: Checkout Code (Pull Request Review)
-      if: github.event_name == 'pull_request_review'
+      # if: github.event_name == 'pull_request_review'
       uses: actions/checkout@v4
       with:
           ref: ${{ github.event.pull_request.head.ref }}
@@ -57,7 +57,7 @@ jobs:
         submodules: recursive
 
     - name: Set Branch Variable (Pull Request Into v2.x)
-      if: github.event_name == 'pull_request_review'
+      # if: github.event_name == 'pull_request_review'
       run: |
           echo "BRANCH=v2.x" >> "$GITHUB_ENV" 
 
