@@ -95,7 +95,7 @@ docker run \
   --model_path /user_defined_files/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav \
   --ground_truth_path /user_defined_files/data/sample_bc_credit_data.sav \
   --ground_truth default \
-  --model_type   --model_type REGRESSION \
+  --model_type REGRESSION \
   --no-run_pipeline
 ```
 If the algorithm runs successfully, the results of the test will be saved in an `output` folder in the algorithm directory.
