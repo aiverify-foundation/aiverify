@@ -63,7 +63,7 @@ jobs:
     - name: Install & Scan APIGW
       run: |
           cd aiverify-apigw
-          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=aiverify-apigw --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="aiverify-apigw_$BRANCH" --detect.excluded.directories=tests --detect.diagnostic=true --blackduck.trust.cert=true
+          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=aiverify-apigw --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="aiverify-apigw_$BRANCH" --detect.excluded.directories=tests --detect.diagnostic=true --detect.blackduck.signature.scanner.individual.file.matching=ALL --detect.blackduck.signature.scanner.snippet.matching=SNIPPET_MATCHING --blackduck.trust.cert=true
           cd ../
           
     # - name: Install & Scan PORTAL
