@@ -20,7 +20,7 @@ regression_non_pipeline = {
 
 binary_pipeline = {
     "data_path": str("../../../user_defined_files/data/sample_reg_pipeline_data.sav"),
-    "model_path": str("../../../user_defined_files/pipeline"),
+    "model_path": str("../../../user_defined_files/pipeline/regression_tabular_donation"),
     "ground_truth_path": str(
         "../../../user_defined_files/data/sample_reg_pipeline_ytest_data.sav"
     ),
