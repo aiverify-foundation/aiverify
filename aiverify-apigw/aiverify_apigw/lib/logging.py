@@ -1,7 +1,8 @@
 import os
 import logging
 
-LOG_FORMAT = "[%(asctime)s] | [%(levelname)s]: %(message)s"
+# LOG_FORMAT = "[%(asctime)s] | [%(levelname)s]: %(message)s"
+LOG_FORMAT = "%(asctime)s,%(msecs)03d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s"
 
 logger = logging.getLogger("aiverify_apigw")
 if "APIGW_LOG_LEVEL" in os.environ:

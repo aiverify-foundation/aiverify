@@ -27,6 +27,7 @@ class PluginModel(BaseORMModel):
     templates: Mapped[List["TemplateModel"]] = relationship(
         back_populates="plugin", cascade="all, delete")
     meta: Mapped[bytes]  # schema serialized
+    is_stock: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
     @validates("gid")
     def my_validate_gid_cid(self, key, value):
@@ -35,8 +36,9 @@ class PluginModel(BaseORMModel):
         return value
 
     def __repr__(self) -> str:
-        return (f"PluginModel(gid={self.gid}, version={self.version}, name={self.name}, "
-                f"author={self.author}, description={self.description}, url={self.url})")
+        return (f"PluginModel(gid={self.gid}, version={self.version}, name={self.name}, is_stock={self.is_stock}"
+                f"author={self.author}, description={self.description}, url={self.url}), "
+                f"algorithms={self.algorithms}, widgets={self.widgets}, inputblocks={self.inputblocks}, templates={self.templates}")
 
 
 association_table = Table(
@@ -70,7 +72,7 @@ class PluginComponentModel(BaseORMModel):
     def __repr__(self) -> str:
         return (f"id={self.id}, cid={self.cid}, name={self.name}, "
                 f"type={self.type}, version={self.version}, author={self.author}, "
-                f"description={self.description}, gid={self.gid}")
+                f"description={self.description}, gid={self.gid}, tags={self.tags}")
 
 
 class ComponentTagModel(BaseORMModel):
@@ -87,6 +89,9 @@ class ComponentTagModel(BaseORMModel):
         if not value.isalnum():
             raise ValueError("Tag name must be alphanumeric")
         return value.lower()
+
+    def __repr__(self) -> str:
+        return str(self.name)
 
 
 class AlgorithmModel(PluginComponentModel):

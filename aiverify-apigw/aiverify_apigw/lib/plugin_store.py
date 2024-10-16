@@ -74,7 +74,7 @@ class PluginStore:
                 logger.debug(f"Invalid plugin: {e}")
                 continue
             try:
-                plugin = cls.scan_plugin_directory(plugin_dir)
+                plugin = cls.scan_plugin_directory(plugin_dir, is_stock=True)
                 if plugin:
                     plugins.append(plugin)
             except Exception as e:
@@ -115,7 +115,7 @@ class PluginStore:
             return None
 
     @classmethod
-    def scan_plugin_directory(cls, folder: Path):
+    def scan_plugin_directory(cls, folder: Path, is_stock=False):
         """Scan the plugin directory and save the plugin information to DB.
         Assume that the directory has been validated using validate_plugin_directory.
 
@@ -146,6 +146,7 @@ class PluginStore:
                 gid=plugin_meta.gid,
                 version=plugin_meta.version,
                 name=plugin_meta.name,
+                is_stock=is_stock,
                 author=plugin_meta.author,
                 description=plugin_meta.description,
                 url=plugin_meta.url,
@@ -202,6 +203,9 @@ class PluginStore:
                             if not validate_python_script(script_path):
                                 logger.warning(f"algorithm {meta.cid} script is not valid")
                                 continue
+                            script = script_path.name
+                        else:
+                            script = None
 
                         # validate requirements.txt
                         # requirements = cls.read_requirements(algopath.joinpath("requirements.txt"))
@@ -235,7 +239,7 @@ class PluginStore:
                             output_schema=json.dumps(output_schema).encode("utf-8"),
                             algo_dir=algopath.relative_to(folder).as_posix(),
                             language="python",  # fixed to python first. To support other languages in future
-                            script=script_path.name,
+                            script=script,
                             module_name=module_name,
                         )
 
@@ -252,6 +256,7 @@ class PluginStore:
             session.commit()
 
             fs_save_plugin(plugin_meta.gid, folder)
+            session.expunge(plugin)
             return plugin
 
     @classmethod

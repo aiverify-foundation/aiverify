@@ -5,6 +5,7 @@ import urllib.parse
 urllib.parse.uses_relative.append("s3")
 urllib.parse.uses_netloc.append("s3")
 from urllib.parse import urljoin
+import io
 
 from .s3 import MyS3
 from .logging import logger
@@ -144,6 +145,54 @@ def save_plugin(gid: str, source_dir: Path):
         if s3.check_s3_prefix_exists(folder):
             s3.delete_objects_under_prefix(folder)  # if prefix exists, delete
         s3.upload_directory_to_s3(source_dir, folder)
+
+
+def backup_plugin(gid: str, target_dir: Path):
+    folder = get_plugin_folder(gid)
+    logger.debug(f"Backup plugin folder from {folder} to {target_dir}")
+    if target_dir.exists():
+        shutil.rmtree(target_dir)
+    if isinstance(folder, Path):
+        target_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(folder, target_dir, dirs_exist_ok=True, ignore=plugin_ignore_patten)
+    elif s3 is not None:
+        # folder is s3 prefix
+        s3.download_directory_from_s3(prefix=folder, target_directory=target_dir)
+
+
+def zip_plugin(gid: str) -> io.BytesIO:
+    """
+    Generate a zip file for the plugin identified by gid.
+
+    Args:
+        gid (str): The plugin identifier.
+
+    Returns:
+        BytesIO: zipfile binary stream
+    """
+    import tempfile
+    from zipfile import ZipFile
+
+
+    folder = get_plugin_folder(gid)
+    logger.debug(f"zip plugin folder from {folder}")
+    zip_content = io.BytesIO()
+    if isinstance(folder, Path):
+        if not folder.exists() or not folder.is_dir():
+            raise FileStoreError(f"Invalid plugin directory for gid {gid}")
+
+        with ZipFile(zip_content, 'w') as zipf:
+            for file_path in folder.rglob('**/*'):
+                if file_path.is_file():
+                    zipf.write(file_path, file_path.relative_to(folder))
+                elif file_path.is_dir():
+                    zipf.mkdir(file_path.relative_to(folder).as_posix())
+    else:
+        pass
+
+    zip_content.seek(0)
+    return zip_content
+
 
 
 def delete_plugin(gid: str):

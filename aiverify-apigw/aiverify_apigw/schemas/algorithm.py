@@ -1,10 +1,22 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional, Literal, Annotated
+from ..models import AlgorithmModel
+from enum import StrEnum
 
 
 class AlgorithmMeta(BaseModel):
+    class ModelTypeEnum(StrEnum):
+        CLASSIFICATION = "classification"
+        REGRESSION = "regression"
+
     cid: str = Field(
         description="Unique identifier for the algorithm within the plugin",
+        min_length=1,
+        max_length=128,
+        pattern=r'^[a-zA-Z0-9][a-zA-Z0-9-._]*$'
+    )
+    gid: Optional[str] = Field(
+        description="Unique global identifier for the plugin",
         min_length=1,
         max_length=128,
         pattern=r'^[a-zA-Z0-9][a-zA-Z0-9-._]*$'
@@ -14,7 +26,7 @@ class AlgorithmMeta(BaseModel):
         min_length=1,
         max_length=128
     )
-    modelType: List[Literal['classification', 'regression']] = Field(
+    modelType: List[ModelTypeEnum] = Field(
         description="AI model type",
         min_length=1,
         max_length=2
@@ -49,12 +61,29 @@ class AlgorithmMeta(BaseModel):
 
 class AlgorithmOutput(AlgorithmMeta):
     language: Optional[str] = Field(
-        description="Algorithm language"
+        description="Algorithm language", default=None
     )
-    language: Optional[str] = Field(
-        description="Algorithm language"
+    script: Optional[str] = Field(
+        description="Algorithm language", default=None
     )
-    language: Optional[str] = Field(
-        description="Algorithm language"
+    module_name: Optional[str] = Field(
+        description="Algorithm language", default=None
     )
-    
+
+    @classmethod
+    def from_model(cls, result: AlgorithmModel) -> "AlgorithmOutput":
+        obj = AlgorithmOutput(
+            cid=result.cid,
+            gid=result.gid,
+            name=result.name,
+            modelType=[cls.ModelTypeEnum(mtype) for mtype in result.model_type.split(",")],
+            version=result.version,
+            author=result.author,
+            description=result.description,
+            tags=[str(tag.name) for tag in result.tags],
+            requireGroundTruth=result.require_ground_truth,
+            language=result.language,
+            script=result.script,
+            module_name=result.module_name
+        )
+        return obj

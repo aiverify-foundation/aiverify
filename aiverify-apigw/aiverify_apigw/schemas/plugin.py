@@ -1,8 +1,8 @@
-from uu import decode
 from pydantic import BaseModel, Field, HttpUrl, TypeAdapter, AnyHttpUrl
-from typing import Optional
+from typing import Optional, List
 
-from ..models import PluginModel
+from ..models import PluginModel, AlgorithmModel
+from .algorithm import AlgorithmOutput
 
 
 class PluginMeta(BaseModel):
@@ -43,17 +43,27 @@ class PluginOutput(PluginMeta):
     meta: str = Field(
         description="Content from the plugin meta file"
     )
+    is_stock: bool = Field(
+        description="Whether this is a stock plugin",
+        default=False
+    )
+    algorithms: List[AlgorithmOutput] = Field(
+        description="List of algorithms",
+        default=[]
+    )
 
     @classmethod
     def from_model(cls, result: PluginModel) -> "PluginOutput":
         url = TypeAdapter(AnyHttpUrl).validate_python(result.url) if result.url else None
         obj = PluginOutput(
-            gid = result.gid,
+            gid=result.gid,
             version=result.version,
             name=result.name,
+            is_stock=result.is_stock,
             author=result.author,
             description=result.description,
             url=url,
-            meta=result.meta.decode("utf-8")
+            meta=result.meta.decode("utf-8"),
+            algorithms=[AlgorithmOutput.from_model(algo) for algo in result.algorithms]
         )
         return obj

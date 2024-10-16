@@ -173,6 +173,35 @@ class MyS3:
                 s3_key = PurePath(prefix).joinpath(relative_path)
                 self.upload_file(str(file_path), str(s3_key))
 
+    def download_directory_from_s3(self, prefix: str, target_directory: Path):
+        """Download all files under S3 prefix to local target directory
+
+        Args:
+            prefix (str): S3 prefix to download
+            target_directory (Path): Local directory to save files
+        """
+        target_directory.mkdir(parents=True, exist_ok=True)
+
+        response = self.client.list_objects_v2(Bucket=self.bucket_name, Prefix=prefix)
+
+        while response.get('KeyCount', 0) > 0:
+            for obj in response.get('Contents', []):
+                s3_key = obj['Key']
+                relative_path = PurePath(s3_key).relative_to(prefix)
+                local_file_path = target_directory.joinpath(relative_path)
+
+                local_file_path.parent.mkdir(parents=True, exist_ok=True)
+
+                self.client.download_file(self.bucket_name, s3_key, str(local_file_path))
+                logger.debug(f"Downloaded {s3_key} to {local_file_path}")
+
+            if response.get('IsTruncated'):
+                continuation_token = response['NextContinuationToken']
+                response = self.client.list_objects_v2(
+                    Bucket=self.bucket_name, Prefix=prefix, ContinuationToken=continuation_token)
+            else:
+                break
+
     def delete_objects_under_prefix(self, prefix: str):
         # List all objects under the specified prefix
         response = self.client.list_objects_v2(Bucket=self.bucket_name, Prefix=prefix)
