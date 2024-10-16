@@ -25,7 +25,7 @@ app.include_router(test_result_router.router)
 app.include_router(plugin_router.router)
 
 
-# modify the openai schema 
+# modify the openai schema
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema

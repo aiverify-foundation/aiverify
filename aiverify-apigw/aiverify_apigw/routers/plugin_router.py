@@ -11,10 +11,7 @@ from ..lib.file_utils import sanitize_filename
 from ..schemas import PluginOutput
 from ..models import PluginModel
 
-router = APIRouter(
-    prefix="/plugin",
-    tags=["plugin"]
-)
+router = APIRouter(prefix="/plugin", tags=["plugin"])
 
 
 @router.get("/", response_model=List[PluginOutput])
@@ -22,7 +19,6 @@ async def read_test_results(session: Session = Depends(get_db_session)) -> List[
     """
     Endpoint to retrieve all test results.
     """
-    import json
     try:
         stmt = select(PluginModel)
         test_results = session.scalars(stmt).all()
@@ -160,8 +156,8 @@ async def upload_plugin(file: UploadFile = File(), session: Session = Depends(ge
         logger.error(f"Error uploading plugin: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
     # finally:
-        # if plugin_folder.exists() and plugin_folder.is_dir():
-        #     shutil.rmtree(plugin_folder)
+    # if plugin_folder.exists() and plugin_folder.is_dir():
+    #     shutil.rmtree(plugin_folder)
 
 
 @router.get("/download/{gid}", response_model=dict)
@@ -169,11 +165,6 @@ async def download_plugin(gid: str, session: Session = Depends(get_db_session)) 
     """
     Endpoint to download a plugin as a zip file.
     """
-    from pathlib import Path
-    from fastapi.responses import StreamingResponse
-    import tempfile
-    import shutil
-
     try:
         stmt = select(PluginModel).filter_by(gid=gid)
         plugin = session.scalar(stmt)
@@ -181,16 +172,11 @@ async def download_plugin(gid: str, session: Session = Depends(get_db_session)) 
         if not plugin:
             raise HTTPException(status_code=404, detail="Plugin not found")
 
-        with tempfile.TemporaryDirectory() as temp_dirname:
-            temp_dir = Path(temp_dirname)
+        # Call the zip_plugin method from filestore to create the zip file
+        zip_buffer = zip_plugin(gid)
 
-            # Call the zip_plugin method from filestore to create the zip file
-            zip_buffer = zip_plugin(gid)
-
-            headers = {
-                "Content-Disposition": f"attachment; filename=\"{sanitize_filename(plugin.name)}.zip\""
-            }
-            return Response(content=zip_buffer.read(), media_type="application/zip", headers=headers)
+        headers = {"Content-Disposition": f'attachment; filename="{sanitize_filename(plugin.name)}.zip"'}
+        return Response(content=zip_buffer.read(), media_type="application/zip", headers=headers)
 
     except PluginStoreException as e:
         logger.error(f"Plugin exception: {e}")

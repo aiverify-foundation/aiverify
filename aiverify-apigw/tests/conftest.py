@@ -1,4 +1,5 @@
 import os
+
 os.environ["APIGW_DB_URI"] = "sqlite://"
 
 import pytest
@@ -26,6 +27,7 @@ def SessionLocal():
 def setup_database():
     """Setup the database at the start of the session and teardown at the end."""
     from aiverify_apigw.models import BaseORMModel
+
     BaseORMModel.metadata.create_all(bind=engine)
     yield
     # Drop all tables at the end of the test session
@@ -63,13 +65,22 @@ def test_client(SessionLocal):
     with TestClient(app) as test_client:
         yield test_client
 
+
 # Mock data fictures
 
 
 @pytest.fixture(scope="function")
 def mock_plugins(db_session):
     from .mocks.mock_data_plugin import create_mock_plugins
-    from aiverify_apigw.models import PluginModel, AlgorithmModel, WidgetModel, InputBlockModel, TemplateModel, PluginComponentModel
+    from aiverify_apigw.models import (
+        PluginModel,
+        AlgorithmModel,
+        WidgetModel,
+        InputBlockModel,
+        TemplateModel,
+        PluginComponentModel,
+    )
+
     plugins = create_mock_plugins(db_session)
     db_session.commit()
     yield plugins
@@ -86,6 +97,7 @@ def mock_plugins(db_session):
 def mock_test_results(db_session, mock_plugins):
     from .mocks.mock_test_result import create_mock_test_results
     from aiverify_apigw.models import TestResultModel, TestModelModel, TestDatasetModel, TestArtifactModel
+
     results = create_mock_test_results(db_session, mock_plugins)
     db_session.commit()
     yield results

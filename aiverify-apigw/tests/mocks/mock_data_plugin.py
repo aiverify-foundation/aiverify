@@ -7,7 +7,7 @@ from aiverify_apigw.models import PluginModel, AlgorithmModel
 faker = Faker()
 
 
-model_types = ['classification', 'regression']
+model_types = ["classification", "regression"]
 
 
 def _create_mock_algorithm(gid: str):
@@ -17,7 +17,7 @@ def _create_mock_algorithm(gid: str):
         id=f"{gid}:{cid}",
         cid=cid,
         name=faker.name(),
-        version=faker.numerify('%!!.%!!.%!!'),
+        version=faker.numerify("%!!.%!!.%!!"),
         author=faker.name(),
         description=faker.text(max_nb_chars=256),
         gid=gid,
@@ -53,7 +53,7 @@ def _create_mock_plugin(num_algo: int | None = None):
     algorithms = [_create_mock_algorithm(gid) for i in range(num_algo)]
     meta = {
         "gid": gid,
-        "version": faker.numerify('%!!.%!!.%!!'),  # Generates a semantic version string
+        "version": faker.numerify("%!!.%!!.%!!"),  # Generates a semantic version string
         "name": faker.company(),  # Generates a fake company name
         "author": faker.name(),  # Generates a fake author name
         "description": faker.text(max_nb_chars=256),  # Generates a fake description text
@@ -66,8 +66,8 @@ def _create_mock_plugin(num_algo: int | None = None):
         author=meta["author"],
         description=meta["description"],
         # url=meta["url"],
-        meta=json.dumps(meta).encode('utf-8'),
-        algorithms=algorithms
+        meta=json.dumps(meta).encode("utf-8"),
+        algorithms=algorithms,
     )
 
 

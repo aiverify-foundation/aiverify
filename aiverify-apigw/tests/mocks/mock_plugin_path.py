@@ -28,11 +28,11 @@ def _create_mock_algorithm_path(algo: AlgorithmModel):
             return _create_mock_file(meta_filename)
 
         match other:
-            case 'input.schema.json':
+            case "input.schema.json":
                 return _create_mock_file(other)
-            case 'output.schema.json':
+            case "output.schema.json":
                 return _create_mock_file(other)
-            case 'requirements.txt':
+            case "requirements.txt":
                 return _create_mock_file(other)
             case _:
                 mock_file = MagicMock(spec=Path)
@@ -59,7 +59,7 @@ def create_mock_plugin_path(path: str | None = None):
     def joinpath_side_effect(other: str):
         """Simulate joinpath method to return another instance."""
         match other:
-            case 'plugin.meta.json':
+            case "plugin.meta.json":
                 return _create_mock_file(other)
             # case 'algorithms':
             #     # mock algorithm dir

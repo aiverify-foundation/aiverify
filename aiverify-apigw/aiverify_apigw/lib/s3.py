@@ -10,13 +10,13 @@ from .logging import logger
 # Note: boto3 will check env for credentials
 # access_key = os.environ['AWS_ACCESS_KEY_ID'] if "AWS_ACCESS_KEY_ID" in os.environ else ""
 # secret_key = os.environ['AWS_SECRET_ACCESS_KEY'] if "AWS_SECRET_ACCESS_KEY" in os.environ else ""
-region_name = os.environ['AWS_REGION_NAME'] if "AWS_REGION_NAME" in os.environ else "ap-southeast-1"
+region_name = os.environ["AWS_REGION_NAME"] if "AWS_REGION_NAME" in os.environ else "ap-southeast-1"
 
 
 class MyS3:
     def __init__(self, s3_uri) -> None:
         self.session = boto3.Session(region_name=region_name)
-        self.client = self.session.client('s3')
+        self.client = self.session.client("s3")
         self.s3_uri = s3_uri
         parsed = urlparse(s3_uri)
         self.bucket_name = parsed.netloc
@@ -44,12 +44,12 @@ class MyS3:
 
     def check_s3_prefix_exists(self, prefix: str):
         # Ensure the folder prefix ends with a slash
-        if not prefix.endswith('/'):
-            prefix += '/'
+        if not prefix.endswith("/"):
+            prefix += "/"
 
         response = self.client.list_objects_v2(Bucket=self.bucket_name, Prefix=prefix, MaxKeys=1)
         # Check if there are any contents in the response
-        if 'Contents' in response:
+        if "Contents" in response:
             return True
         else:
             return False
@@ -64,15 +64,11 @@ class MyS3:
         Returns:
             List[str]: List of object keys
         """
-        response = self.client.list_objects_v2(
-            Bucket=self.bucket_name,
-            MaxKeys=maxKey,
-            Prefix=prefix
-        )
+        response = self.client.list_objects_v2(Bucket=self.bucket_name, MaxKeys=maxKey, Prefix=prefix)
         if "Contents" not in response:
             return []
         else:
-            return [obj['Key'] for obj in response["Contents"]]
+            return [obj["Key"] for obj in response["Contents"]]
 
     def upload_file(self, filepath: str, key: str):
         """Upload a file to an S3 object.
@@ -81,8 +77,7 @@ class MyS3:
             filepath (str): the path to the file to upload
             key (str): the name of the key to upload to
         """
-        self.client.upload_file(
-            Filename=filepath, Bucket=self.bucket_name, Key=key)
+        self.client.upload_file(Filename=filepath, Bucket=self.bucket_name, Key=key)
         logger.debug(f"Uploading file {filepath} to key {key}")
 
     def download_file(self, filepath: str, key: str):
@@ -92,8 +87,7 @@ class MyS3:
             filepath (str): the path to the file to upload
             key (str): the name of the key to upload to
         """
-        self.client.download_file(
-            Bucket=self.bucket_name, Key=key, Filename=filepath)
+        self.client.download_file(Bucket=self.bucket_name, Key=key, Filename=filepath)
 
     def put_object(self, key: str, body: bytes | str | io.BytesIO):
         """Adds an object to a bucket.
@@ -106,11 +100,7 @@ class MyS3:
             body = body.encode("utf-8")
         elif isinstance(body, io.BytesIO):
             body.seek(0)
-        self.client.put_object(
-            Body=body,
-            Bucket=self.bucket_name,
-            Key=key
-        )
+        self.client.put_object(Body=body, Bucket=self.bucket_name, Key=key)
 
     def get_object(self, key: str) -> bytes:
         """Retrieves an object from S3.
@@ -118,11 +108,8 @@ class MyS3:
         Args:
             key (str): Key of the object to get
         """
-        resp = self.client.get_object(
-            Bucket=self.bucket_name,
-            Key=key
-        )
-        return resp['Body'].read()
+        resp = self.client.get_object(Bucket=self.bucket_name, Key=key)
+        return resp["Body"].read()
 
     def copy_object(self, sourceKey: str, targetKey: str):
         """Copy object from source to target
@@ -154,10 +141,7 @@ class MyS3:
         Args:
             key (str): Key of the object to get
         """
-        resp = self.client.delete_object(
-            Bucket=self.bucket_name,
-            Key=key
-        )
+        resp = self.client.delete_object(Bucket=self.bucket_name, Key=key)
         return resp
 
     def upload_directory_to_s3(self, source_directory: Path, prefix: str):
@@ -167,7 +151,7 @@ class MyS3:
             source_directory (Path): Path to directory to upload
             prefix (str): target S3 prefix
         """
-        for file_path in source_directory.rglob('**/*'):  # Recursively go through all files
+        for file_path in source_directory.rglob("**/*"):  # Recursively go through all files
             if file_path.is_file():  # Only process files
                 relative_path = file_path.relative_to(source_directory)
                 s3_key = PurePath(prefix).joinpath(relative_path)
@@ -184,9 +168,9 @@ class MyS3:
 
         response = self.client.list_objects_v2(Bucket=self.bucket_name, Prefix=prefix)
 
-        while response.get('KeyCount', 0) > 0:
-            for obj in response.get('Contents', []):
-                s3_key = obj['Key']
+        while response.get("KeyCount", 0) > 0:
+            for obj in response.get("Contents", []):
+                s3_key = obj["Key"]
                 relative_path = PurePath(s3_key).relative_to(prefix)
                 local_file_path = target_directory.joinpath(relative_path)
 
@@ -195,10 +179,11 @@ class MyS3:
                 self.client.download_file(self.bucket_name, s3_key, str(local_file_path))
                 logger.debug(f"Downloaded {s3_key} to {local_file_path}")
 
-            if response.get('IsTruncated'):
-                continuation_token = response['NextContinuationToken']
+            if response.get("IsTruncated"):
+                continuation_token = response["NextContinuationToken"]
                 response = self.client.list_objects_v2(
-                    Bucket=self.bucket_name, Prefix=prefix, ContinuationToken=continuation_token)
+                    Bucket=self.bucket_name, Prefix=prefix, ContinuationToken=continuation_token
+                )
             else:
                 break
 
@@ -207,25 +192,23 @@ class MyS3:
         response = self.client.list_objects_v2(Bucket=self.bucket_name, Prefix=prefix)
 
         # Check if the response contains objects
-        if 'Contents' in response:
-            while response['KeyCount'] > 0:
+        if "Contents" in response:
+            while response["KeyCount"] > 0:
                 # List of object keys to delete
-                objects_to_delete = [{'Key': obj['Key']} for obj in response['Contents']]
+                objects_to_delete = [{"Key": obj["Key"]} for obj in response["Contents"]]
 
                 # Delete the objects
                 delete_response = self.client.delete_objects(
-                    Bucket=self.bucket_name,
-                    Delete={
-                        'Objects': objects_to_delete
-                    }
+                    Bucket=self.bucket_name, Delete={"Objects": objects_to_delete}
                 )
 
                 logger.debug(f"Deleted {len(delete_response.get('Deleted', []))} objects.")
 
                 # Check for more objects in the next batch
-                if response.get('IsTruncated'):
-                    continuation_token = response['NextContinuationToken']
+                if response.get("IsTruncated"):
+                    continuation_token = response["NextContinuationToken"]
                     response = self.client.list_objects_v2(
-                        Bucket=self.bucket_name, Prefix=prefix, ContinuationToken=continuation_token)
+                        Bucket=self.bucket_name, Prefix=prefix, ContinuationToken=continuation_token
+                    )
                 else:
                     break

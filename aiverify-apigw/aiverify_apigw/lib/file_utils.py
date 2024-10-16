@@ -6,6 +6,7 @@ import hashlib
 
 class InvalidFilename(Exception):
     """Raised when the filename is invalid"""
+
     pass
 
 
@@ -16,7 +17,7 @@ def check_valid_filename(filename: str):
     # filename must be alphanumeric plus charters ./
     # sanitized = re.fullmatch(r'[a-zA-Z0-9_./]*', filename)
     # return sanitized is not None
-    return re.search(r'\.\.', filename) is None
+    return re.search(r"\.\.", filename) is None
 
 
 def append_filename(filename: str, append_name: str) -> str:
@@ -42,5 +43,5 @@ def sanitize_filename(filename: str) -> str:
         raise InvalidFilename("The first character of the filename must be alphanumeric.")
 
     # Use regex to replace invalid characters
-    sanitized = re.sub(r'[^a-zA-Z0-9./]', '', filename)
+    sanitized = re.sub(r"[^a-zA-Z0-9./]", "", filename)
     return sanitized

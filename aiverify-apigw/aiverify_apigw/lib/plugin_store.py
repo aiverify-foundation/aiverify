@@ -9,7 +9,11 @@ from ..schemas import PluginMeta, AlgorithmMeta
 from ..models import PluginModel, AlgorithmModel, WidgetModel, InputBlockModel, TemplateModel, PluginComponentModel
 from .database import SessionLocal
 from .logging import logger
-from .filestore import delete_all_plugins as fs_delete_all_plugins, delete_plugin as fs_delete_plugin, save_plugin as fs_save_plugin
+from .filestore import (
+    delete_all_plugins as fs_delete_all_plugins,
+    delete_plugin as fs_delete_plugin,
+    save_plugin as fs_save_plugin,
+)
 from sqlalchemy import select, func
 
 
@@ -18,7 +22,6 @@ class PluginStoreException(Exception):
 
 
 class PluginStore:
-
     stock_plugin_folder = Path(__file__).parent.parent.parent.parent.joinpath("stock-plugins")
     plugin_meta_filename = "plugin.meta.json"
 
@@ -150,7 +153,7 @@ class PluginStore:
                 author=plugin_meta.author,
                 description=plugin_meta.description,
                 url=plugin_meta.url,
-                meta=json.dumps(plugin_meta_json).encode("utf-8")
+                meta=json.dumps(plugin_meta_json).encode("utf-8"),
             )
             logger.debug(f"New plugin: {plugin}")
             # session.flush()
@@ -173,7 +176,8 @@ class PluginStore:
                             pyproject_file = algopath.joinpath("pyproject.toml")
                             if not pyproject_file.exists():
                                 logger.debug(
-                                    f"Algorithm folder {algopath.name} does not contain meta file nor pyproject.toml, skipping")
+                                    f"Algorithm folder {algopath.name} does not contain meta file nor pyproject.toml, skipping"
+                                )
                                 continue
                             with open(pyproject_file, "rb") as fp:
                                 pyproject_data = tomllib.load(fp)
@@ -300,7 +304,8 @@ class PluginStore:
                     pyproject_file = algopath.joinpath("pyproject.toml")
                     if not pyproject_file.exists():
                         logger.debug(
-                            f"Algorithm folder {algopath.name} does not contain meta file nor pyproject.toml, skipping")
+                            f"Algorithm folder {algopath.name} does not contain meta file nor pyproject.toml, skipping"
+                        )
                         continue
                     with open(pyproject_file, "rb") as fp:
                         pyproject_data = tomllib.load(fp)

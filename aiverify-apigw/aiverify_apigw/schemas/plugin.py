@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, HttpUrl, TypeAdapter, AnyHttpUrl
 from typing import Optional, List
 
-from ..models import PluginModel, AlgorithmModel
+from ..models import PluginModel
 from .algorithm import AlgorithmOutput
 
 
@@ -10,28 +10,12 @@ class PluginMeta(BaseModel):
         description="Unique global identifier for the plugin",
         min_length=1,
         max_length=128,
-        pattern=r'^[a-zA-Z0-9][a-zA-Z0-9-._]*$'
+        pattern=r"^[a-zA-Z0-9][a-zA-Z0-9-._]*$",
     )
-    version: str = Field(
-        description="Version of the plugin",
-        min_length=1,
-        max_length=256
-    )
-    name: str = Field(
-        description="Plugin name",
-        min_length=1,
-        max_length=128
-    )
-    author: Optional[str] = Field(
-        default=None,
-        description="Plugin author",
-        max_length=128
-    )
-    description: Optional[str] = Field(
-        default=None,
-        description="Plugin description",
-        max_length=256
-    )
+    version: str = Field(description="Version of the plugin", min_length=1, max_length=256)
+    name: str = Field(description="Plugin name", min_length=1, max_length=128)
+    author: Optional[str] = Field(default=None, description="Plugin author", max_length=128)
+    description: Optional[str] = Field(default=None, description="Plugin description", max_length=256)
     url: Optional[HttpUrl] = Field(
         default=None,
         description="URL of project page",
@@ -40,17 +24,9 @@ class PluginMeta(BaseModel):
 
 
 class PluginOutput(PluginMeta):
-    meta: str = Field(
-        description="Content from the plugin meta file"
-    )
-    is_stock: bool = Field(
-        description="Whether this is a stock plugin",
-        default=False
-    )
-    algorithms: List[AlgorithmOutput] = Field(
-        description="List of algorithms",
-        default=[]
-    )
+    meta: str = Field(description="Content from the plugin meta file")
+    is_stock: bool = Field(description="Whether this is a stock plugin", default=False)
+    algorithms: List[AlgorithmOutput] = Field(description="List of algorithms", default=[])
 
     @classmethod
     def from_model(cls, result: PluginModel) -> "PluginOutput":
@@ -64,6 +40,6 @@ class PluginOutput(PluginMeta):
             description=result.description,
             url=url,
             meta=result.meta.decode("utf-8"),
-            algorithms=[AlgorithmOutput.from_model(algo) for algo in result.algorithms]
+            algorithms=[AlgorithmOutput.from_model(algo) for algo in result.algorithms],
         )
         return obj
