@@ -72,6 +72,7 @@ jobs:
           source venv/bin/activate
           pip install -e .
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=aiverify-apigw --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="aiverify-apigw_$BRANCH" --detect.excluded.directories=tests --blackduck.trust.cert=true
+          deactivate
           cd ../
           
     # - name: Install & Scan PORTAL
@@ -95,6 +96,7 @@ jobs:
           source venv/bin/activate
           pip install aiverify-test-engine[all]
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=aiverify-test-engine --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="aiverify-test-engine_$BRANCH" --detect.excluded.directories=tests --blackduck.trust.cert=true
+          deactivate
           cd ../
 
     # - name: Install & Scan TEST ENGINE CORE
