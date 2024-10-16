@@ -273,7 +273,7 @@ async def upload_zip_file(file: UploadFile, session: Session = Depends(get_db_se
                     for zip_info in zip_infos:
                         if zip_info.filename != result_filename and zip_info.filename != foldername:
                             with zip_ref.open(zip_info) as artifact_file:
-                                filename = zip_info.filename[len(foldername) :]  # remove foldername
+                                filename = zip_info.filename[len(foldername):]  # remove foldername
                                 artifact_set[filename] = UploadFile(
                                     filename=filename, file=io.BytesIO(artifact_file.read())
                                 )
