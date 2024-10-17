@@ -9,14 +9,10 @@ dependencies = [
     "joblib==1.4.2",
     "scikit-learn==1.5.2",
     "pillow===10.4.0",
+    "aiverify-test-engine==2.0.0a1",
 ]
 requires-python = ">=3.10,<3.12"
 dynamic = ["version"]
-
-[project.optional-dependencies]
-dev = [
-    "aiverify-test-engine[dev] @ {root:parent:parent:parent:parent:uri}/aiverify-test-engine",
-]
 
 [project.scripts]
 aiverify_robustness_toolbox = "aiverify_robustness_toolbox.__main__:main"

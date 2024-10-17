@@ -1,7 +1,0 @@
-=======
-Credits
-=======
-
-Developers
-----------------
-* AI Verify
