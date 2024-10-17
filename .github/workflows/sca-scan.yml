@@ -125,4 +125,5 @@ jobs:
     #       source venv/bin/activate
     #       find ./ -type f -name 'requirements.txt' -exec pip install -r "{}" \;
     #       bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=test-engine-core --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="stock-plugins_$BRANCH" --detect.excluded.directories=/tests --blackduck.trust.cert=true
+    #       deactivate
     #       cd ../
