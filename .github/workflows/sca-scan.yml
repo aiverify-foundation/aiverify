@@ -68,9 +68,17 @@ jobs:
     - name: Install & Scan APIGW
       run: |
           cd aiverify-apigw
+
           python3 -m venv venv
           source venv/bin/activate
           pip install -e .
+          pip freeze > requirements.txt
+          deactivate
+          rm -rf venv
+
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install requirements.txt
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=aiverify-apigw --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="aiverify-apigw_$BRANCH" --detect.excluded.directories=tests --blackduck.trust.cert=true
           deactivate
           cd ../
