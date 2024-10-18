@@ -137,10 +137,6 @@ jobs:
     - name: Install & Scan STOCK PLUGINS
       run: |
           cd stock-plugins
-          python3 -m venv venv
-          source venv/bin/activate
-          cd aiverify.stock.robustness-toolbox/algorithms/robustness_toolbox
-          pip install -e .
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=stock-plugins --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="stock-plugins_$BRANCH" --detect.excluded.directories=venv --blackduck.trust.cert=true
           deactivate
           cd ../
