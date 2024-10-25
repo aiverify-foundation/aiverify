@@ -100,13 +100,14 @@ jobs:
           cd ../
 
     - name: Install & Scan SHARED LIBRARY (Workflow Dispatch)
+      if: github.event_name == 'workflow_dispatch'
       run: |
           cd ai-verify-shared-library
           npm install
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=ai-verify-shared-library --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="ai-verify-shared-library_$BRANCH" --detect.excluded.directories=tests --blackduck.trust.cert=true
           cd ../
 
-    - name: Install & Scan TEST ENGINE
+    - name: Install & Scan TEST ENGINE (Pull Request Into v2.x)
       if: github.event_name == 'pull_request'
       run: |
           cd aiverify-test-engine
