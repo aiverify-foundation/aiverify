@@ -5,12 +5,11 @@ name: Software Composition Analysis
 on:
  # Runs when a pull request review is being submitted
   pull_request:
-  # pull_request_review:
-  #  types: [submitted]
-  #  branches:
-  #    - 'main'
-  #    - 'v0.*'
-  #    - 'v2.x'
+   types: [assigned,synchronize]
+   branches:
+     - 'main'
+     - 'v0.*'
+     - 'v2.x'
 
   # Run this workflow manually from Actions tab
   workflow_dispatch:
@@ -34,8 +33,8 @@ jobs:
 
     steps:
 
-    - name: Checkout Code (Pull Request Review)
-      # if: github.event_name == 'pull_request_review'
+    - name: Checkout Code (Pull Request Into v2.x)
+      if: github.event_name == 'pull_request'
       uses: actions/checkout@v4
       with:
           ref: ${{ github.event.pull_request.head.ref }}
@@ -51,7 +50,7 @@ jobs:
         submodules: recursive
 
     - name: Set Branch Variable (Pull Request Into v2.x)
-      # if: github.event_name == 'pull_request_review'
+      if: github.event_name == 'pull_request'
       run: |
           echo "BRANCH=v2.x" >> "$GITHUB_ENV" 
 
@@ -65,7 +64,8 @@ jobs:
       with:
         python-version: "3.11"
 
-    - name: Install & Scan APIGW
+    - name: Install & Scan APIGW (Pull Request Into v2.x)
+      if: github.event_name == 'pull_request'
       run: |
           cd aiverify-apigw
 
@@ -79,25 +79,35 @@ jobs:
           python3 -m venv venv
           source venv/bin/activate
           pip install -r requirements.txt
-          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=aiverify-apigw --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="aiverify-apigw_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
+          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=aiverify-apigw --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="aiverify-apigw_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
           deactivate
           cd ../
-          
-    # - name: Install & Scan PORTAL
-    #   run: |
-    #       cd ai-verify-portal
-    #       npm install
-    #       bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=ai-verify-portal --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="ai-verify-portal_$BRANCH" --detect.excluded.directories=/tests --blackduck.trust.cert=true
-    #       cd ../
 
-    # - name: Install & Scan SHARED LIBRARY
-    #   run: |
-    #       cd ai-verify-shared-library
-    #       npm install
-    #       bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=ai-verify-shared-library --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="ai-verify-shared-library_$BRANCH" --detect.excluded.directories=/tests --blackduck.trust.cert=true
-    #       cd ../
+    - name: Install & Scan APIGW (Workflow Dispatch)
+      if: github.event_name == 'workflow_dispatch'
+      run: |
+          cd ai-verify-apigw
+          npm install
+          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=ai-verify-apigw --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="ai-verify-apigw_$BRANCH" --detect.excluded.directories=tests --blackduck.trust.cert=true
+          cd ../
+
+    - name: Install & Scan PORTAL (Workflow Dispatch)
+      if: github.event_name == 'workflow_dispatch'
+      run: |
+          cd ai-verify-portal
+          npm install
+          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=ai-verify-portal --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="ai-verify-portal_$BRANCH" --detect.excluded.directories=tests --blackduck.trust.cert=true
+          cd ../
+
+    - name: Install & Scan SHARED LIBRARY (Workflow Dispatch)
+      run: |
+          cd ai-verify-shared-library
+          npm install
+          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=ai-verify-shared-library --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="ai-verify-shared-library_$BRANCH" --detect.excluded.directories=tests --blackduck.trust.cert=true
+          cd ../
 
     - name: Install & Scan TEST ENGINE
+      if: github.event_name == 'pull_request'
       run: |
           cd aiverify-test-engine
 
@@ -111,30 +121,45 @@ jobs:
           python3 -m venv venv
           source venv/bin/activate
           pip install -r requirements.txt
-          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=aiverify-test-engine --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="aiverify-test-engine_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
+          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=aiverify-test-engine --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="aiverify-test-engine_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
           deactivate
           cd ../
 
-    # - name: Install & Scan TEST ENGINE CORE
-    #   run: |
-    #       cd test-engine-core
-    #       python3 -m venv venv
-    #       source venv/bin/activate
-    #       pip install -r requirements.txt
-    #       bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=test-engine-core --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="test-engine-core_$BRANCH" --detect.excluded.directories=/tests --blackduck.trust.cert=true
-    #       cd ../
+    - name: Install & Scan TEST ENGINE (Workflow Dispatch)
+      if: github.event_name == 'workflow_dispatch'
+      run: |
+          cd test-engine-app
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=test-engine-app --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="test-engine-app_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
+          deactivate
+          cd ../
 
-    # - name: Install & Scan TEST ENGINE CORE MODULES
-    #   if: github.event_name == 'workflow_dispatch'
-    #   run: |
-    #       cd test-engine-core-modules
-    #       python3 -m venv venv
-    #       source venv/bin/activate
-    #       pip install -r requirements.txt
-    #       bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=test-engine-core-modules --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="test-engine-core-modules_$BRANCH" --detect.excluded.directories=/tests --blackduck.trust.cert=true
-    #       cd ../
+    - name: Install & Scan TEST ENGINE CORE (Workflow Dispatch)
+      if: github.event_name == 'workflow_dispatch'
+      run: |
+          cd test-engine-core
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=test-engine-core --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="test-engine-core_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
+          deactivate
+          cd ../
 
-    - name: Install & Scan STOCK PLUGINS
+    - name: Install & Scan TEST ENGINE CORE MODULES (Workflow Dispatch)
+      if: github.event_name == 'workflow_dispatch'
+      run: |
+          cd test-engine-core-modules
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=test-engine-core-modules --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="test-engine-core-modules_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
+          deactivate
+          cd ../
+
+    - name: Install & Scan STOCK PLUGINS (Pull Request Into v2.x)
+      if: github.event_name == 'pull_request'
       run: |
           cd stock-plugins
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=stock-plugins --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="stock-plugins_$BRANCH" --detect.excluded.directories=venv --blackduck.trust.cert=true
