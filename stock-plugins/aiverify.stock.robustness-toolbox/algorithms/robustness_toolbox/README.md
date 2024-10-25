@@ -69,3 +69,41 @@ Run the following steps to execute the unit and integration tests inside the `te
 cd aiverify/stock-plugins/aiverify.stock.robustness-toolbox/algorithms/robustness_toolbox
 pytest .
 ```
+
+## Run using Docker
+In the aiverify root directory, run the below command to build the docker image
+```sh
+docker build -t aiverify-robustness-toolbox:v2.0.0a1 -f stock-plugins/aiverify.stock.robustness-toolbox/algorithms/robustness_toolbox/Dockerfile .
+```
+
+Switch to the algorithm directory
+```sh
+cd stock-plugins/aiverify.stock.robustness-toolbox/algorithms/robustness_toolbox/
+```
+
+Run the below bash script to run the algorithm
+```sh
+#!/bin/bash
+
+root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files"
+docker run \
+  -v $root_path:/user_defined_files \
+  -v ./output:/app/aiverify/stock-plugins/aiverify.stock.robustness-toolbox/algorithms/robustness_toolbox/output \
+  aiverify-robustness-toolbox:v2.0.0a1 \
+  --data_path /user_defined_files/data/raw_fashion_image_10 \
+  --model_path /user_defined_files/pipeline/multiclass_classification_image_mnist_fashion \
+  --ground_truth_path /user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
+  --ground_truth label \
+  --model_type CLASSIFICATION \
+  --run_pipeline \
+  --annotated_ground_truth_path /user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
+  --file_name_label file_name
+```
+If the algorithm runs successfully, the results of the test will be saved in an `output` folder in the algorithm directory.
+
+## Tests
+### Pytest is used as the testing framework.
+Run the following steps to execute the unit and integration tests inside the `tests/` folder
+```sh
+docker run --entrypoint python3 aiverify-robustness-toolbox:v2.0.0a1 -m pytest .
+```

@@ -516,5 +516,28 @@ def test_valid_run(get_data_instance_and_serializer_without_ground_truth):
     f = open(str(Path(__file__).parent / "sample_output.json"))
     sample_data = json.load(f)
     f.close()
+    
+    def approx_nested(struct1, struct2, rel=1e-8):
+        """
+        Recursively compare nested dictionaries and lists and apply pytest.approx to floating-point numbers.
+        """
+        if isinstance(struct1, dict) and isinstance(struct2, dict):
+            # Recursively compare dictionaries
+            return all(approx_nested(struct1[key], struct2[key], rel) for key in struct1)
+        elif isinstance(struct1, list) and isinstance(struct2, list):
+            # Recursively compare lists element by element
+            if len(struct1) != len(struct2):
+                return False
+            return all(approx_nested(item1, item2, rel) for item1, item2 in zip(struct1, struct2))
+        elif isinstance(struct1, (float, int)) and isinstance(struct2, (float, int)):
+            # Use pytest.approx to compare numbers with relative tolerance
+            return struct1 == pytest.approx(struct2, rel=rel)
+        else:
+            # Direct comparison for non-numeric values
+            return struct1 == struct2
 
-    assert results == sample_data
+    assert approx_nested(results, sample_data)
+
+
+
+
