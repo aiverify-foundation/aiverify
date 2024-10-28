@@ -15,9 +15,9 @@ router = APIRouter(prefix="/plugin", tags=["plugin"])
 
 
 @router.get("/", response_model=List[PluginOutput])
-async def read_test_results(session: Session = Depends(get_db_session)) -> List[PluginOutput]:
+async def read_plugins(session: Session = Depends(get_db_session)) -> List[PluginOutput]:
     """
-    Endpoint to retrieve all test results.
+    Endpoint to retrieve all plugins.
     """
     try:
         stmt = select(PluginModel)
