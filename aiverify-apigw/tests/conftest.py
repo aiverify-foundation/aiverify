@@ -67,6 +67,12 @@ def test_client(SessionLocal):
 
 
 # Mock data fictures
+@pytest.fixture(scope="function")
+def mock_plugin_meta():
+    from .mocks.mock_plugin_meta import create_mock_plugin_meta
+
+    plugin = create_mock_plugin_meta()
+    yield plugin
 
 
 @pytest.fixture(scope="function")
@@ -81,7 +87,33 @@ def mock_plugins(db_session):
         PluginComponentModel,
     )
 
+    db_session.query(PluginModel).delete()
     plugins = create_mock_plugins(db_session)
+    db_session.commit()
+    yield plugins
+    db_session.query(PluginModel).delete()
+    db_session.query(AlgorithmModel).delete()
+    db_session.query(WidgetModel).delete()
+    db_session.query(InputBlockModel).delete()
+    db_session.query(TemplateModel).delete()
+    db_session.query(PluginComponentModel).delete()
+    db_session.commit()
+
+
+@pytest.fixture(scope="function")
+def mock_non_stock_plugins(db_session):
+    from .mocks.mock_data_plugin import create_mock_plugins
+    from aiverify_apigw.models import (
+        PluginModel,
+        AlgorithmModel,
+        WidgetModel,
+        InputBlockModel,
+        TemplateModel,
+        PluginComponentModel,
+    )
+
+    db_session.query(PluginModel).delete()
+    plugins = create_mock_plugins(db_session, is_stock=False)
     db_session.commit()
     yield plugins
     db_session.query(PluginModel).delete()
