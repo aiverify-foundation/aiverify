@@ -46,7 +46,7 @@ def _create_mock_algorithm(gid: str):
     )
 
 
-def _create_mock_plugin(num_algo: int | None = None):
+def _create_mock_plugin(num_algo: int | None = None, is_stock: bool = True):
     gid = ".".join(faker.words()).lower()
     if num_algo is None:
         num_algo = faker.random_int(min=1, max=3)
@@ -67,16 +67,17 @@ def _create_mock_plugin(num_algo: int | None = None):
         description=meta["description"],
         # url=meta["url"],
         meta=json.dumps(meta).encode("utf-8"),
+        is_stock=is_stock,
         algorithms=algorithms,
     )
 
 
-def create_mock_plugins(session, num_plugins=2):
+def create_mock_plugins(session, num_plugins: int = 2, is_stock: bool = True):
     """Create and save mock PluginModel instances with AlgorithmModel children."""
 
     plugins: List[PluginModel] = []
     for i in range(num_plugins):
-        plugin = _create_mock_plugin()
+        plugin = _create_mock_plugin(num_algo=None, is_stock=is_stock)
         plugins.append(plugin)
     session.add_all(plugins)
     session.flush()
