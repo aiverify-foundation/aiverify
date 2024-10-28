@@ -79,7 +79,7 @@ class TestPluginStoreScanStockPlugins:
 
         mock_delete_all_plugins.assert_called_once()
         mock_validate_plugin_directory.assert_called_once_with(mock_plugin_dir)
-        mock_scan_plugin_directory.assert_called_once_with(mock_plugin_dir)
+        mock_scan_plugin_directory.assert_called_once_with(mock_plugin_dir, is_stock=True)
 
 
 class TestPluginStoreCheckPluginRegistry:
