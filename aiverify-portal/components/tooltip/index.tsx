@@ -1,5 +1,12 @@
 import clsx from 'clsx';
-import React, { PropsWithChildren, ReactElement, useEffect, useRef, useState } from 'react';
+import React, {
+  PropsWithChildren,
+  ReactElement,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import ReactDOM from 'react-dom';
 
 import styles from './styles/tooltip.module.css';
@@ -21,7 +28,7 @@ type TooltipProps = {
   transparent?: boolean;
   fontColor?: string;
   position?: TooltipPosition;
-  content: ReactElement | string;
+  content: React.ReactNode;
   contentMaxWidth?: number;
   contentMinWidth?: number;
   offsetLeft?: number;
@@ -29,6 +36,20 @@ type TooltipProps = {
 };
 
 type TooltipPlacementStyle = Pick<React.CSSProperties, 'top' | 'left' | 'opacity'>;
+
+const result: TooltipPlacementStyle = {
+  top: 0,
+  left: 0,
+  opacity: 1,
+};
+
+const defaultPlacement: TooltipPlacementStyle = {
+  top: -9999,
+  left: -9999,
+  opacity: 0,
+};
+
+const arrowSize = 10;
 
 function calculateTooltipPosition(
   triggerEl: HTMLElement,
@@ -42,12 +63,6 @@ function calculateTooltipPosition(
   let widthDiff = 0;
   let heightDiff = 0;
 
-  const result: TooltipPlacementStyle = {
-    top: 0,
-    left: 0,
-    opacity: 1,
-  };
-
   widthDiff = Math.abs(triggerEl.offsetWidth - tooltipRect.width) / 2;
   heightDiff = Math.abs(triggerEl.offsetHeight - tooltipRect.height) / 2;
 
@@ -57,39 +72,33 @@ function calculateTooltipPosition(
         (triggerEl.offsetWidth > tooltipRect.width
           ? triggerRect.left + widthDiff
           : triggerRect.left - widthDiff) + offsetLeft;
-      result.top = triggerRect.top - tooltipEl.offsetHeight + offsetTop;
+      result.top = triggerRect.top - tooltipEl.offsetHeight - arrowSize + offsetTop;
       break;
     case TooltipPosition.bottom:
       result.left =
         (triggerEl.offsetWidth > tooltipRect.width
           ? triggerRect.left + widthDiff
           : triggerRect.left - widthDiff) + offsetLeft;
-      result.top = triggerRect.bottom + offsetTop;
+      result.top = triggerRect.bottom + arrowSize + offsetTop;
       break;
     case TooltipPosition.left:
       result.top =
         (triggerEl.offsetHeight > tooltipRect.height
           ? triggerRect.top + heightDiff
           : triggerRect.top - 10) + offsetTop;
-      result.left = triggerRect.left - tooltipEl.offsetWidth + offsetLeft;
+      result.left = triggerRect.left - tooltipEl.offsetWidth - arrowSize + offsetLeft;
       break;
     case TooltipPosition.right:
       result.top =
         (triggerEl.offsetHeight > tooltipRect.height
           ? triggerRect.top + heightDiff
           : triggerRect.top - 10) + offsetTop;
-      result.left = triggerRect.right + offsetLeft;
+      result.left = triggerRect.right + arrowSize + offsetLeft;
       break;
   }
 
   return result;
 }
-
-const defaultPlacement: TooltipPlacementStyle = {
-  top: -9999,
-  left: -9999,
-  opacity: 0,
-};
 
 function Tooltip(props: PropsWithChildren<TooltipProps>) {
   const {
@@ -148,8 +157,11 @@ function Tooltip(props: PropsWithChildren<TooltipProps>) {
   }
 
   useEffect(() => {
-    if (defaultShow) handleMouseOver();
-    else if (!isHovering) {
+    if (defaultShow) {
+      setTimeout(() => {
+        handleMouseOver();
+      }, 0);
+    } else if (!isHovering) {
       // Added check for isHovering before hiding the tooltip
       handleMouseOut();
     }
@@ -157,7 +169,9 @@ function Tooltip(props: PropsWithChildren<TooltipProps>) {
 
   useEffect(() => {
     if (flash) {
-      handleMouseOver();
+      setTimeout(() => {
+        handleMouseOver();
+      }, 0);
       setTimeout(() => {
         if (!isHovering) {
           // Check if not hovering over the tooltip before hiding
@@ -165,7 +179,7 @@ function Tooltip(props: PropsWithChildren<TooltipProps>) {
         }
       }, flashDuration);
     }
-  }, [flash, isHovering]);
+  }, [flash]);
 
   useEffect(() => {
     return () => {
@@ -194,7 +208,7 @@ function Tooltip(props: PropsWithChildren<TooltipProps>) {
               color: fontColor,
             }}
             onMouseOver={handleMouseOver}
-            onMouseOut={handleMouseOut}
+            // onMouseOut={handleMouseOut}
           >
             <div
               className={clsx(styles.pointer, styles[positionClassname])}

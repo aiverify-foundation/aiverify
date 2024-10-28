@@ -1,0 +1,42 @@
+import { Meta, Title, Primary, Stories, Controls } from '@storybook/blocks';
+import ButtonStories from './button.stories';
+
+<Title>Button React Component</Title>
+The `Button` component uses the native `<button>` element.  All the styling is handled in the `button.module.css` file. Colors are wired to the primary and secondary Tailwind theme colors.
+If you need to wire up to Tailwind's dark mode, pass your specific colors to the `Button` component via props, on mode change.
+<Meta of={ButtonStories} />
+<Primary />
+<Controls />
+The `Button` component can be customized using various props such as `variant`, `size`, `pill`, `bezel`, `iconName`, and more. 
+Below are some examples of how to use the `Button` component in different scenarios. Other than the props defined below, you can also pass any other props that a native `<button>` can accept.
+
+### Props
+- **variant**: Defines the button style. Options include:
+  - `PRIMARY`
+  - `SECONDARY`
+  - `OUTLINE`
+  - Other custom variants as defined in `ButtonVariant`
+- **size**: Defines the button size. Options include:
+  - `lg` (large)
+  - `md` (medium)
+  - `sm` (small)
+  - `xs` (extra small)
+- **pill**: A boolean prop that, when set to `true`, makes the button pill-shaped.
+- **bezel**: A boolean prop that, when set to `true`, adds a bezel effect to the button.
+- **iconName**: Defines the icon to be used in the button. Options are derived from the `IconName` enumeration.
+- **iconPosition**: Defines the position of the icon within the button. Options include:
+  - `left`
+  - `right`
+- **color**: Custom color for the button background.
+- **hoverColor**: Custom color for the button when hovered.
+- **pressedColor**: Custom color for the button when pressed.
+- **textColor**: Custom color for the button text.
+- **width**: Custom width for the button. (Note: This prop is disabled in the storybook controls)
+Refer to the `button.stories.tsx` file for more detailed configurations and examples.
+
+If your unit tests use `react-testing-library`, the recommended selector is `screen.getByRole('button', { name: /your button/i });` where `your button` is the button text.
+<br/>
+<br/>
+## Variations
+<Stories />
+### Usage

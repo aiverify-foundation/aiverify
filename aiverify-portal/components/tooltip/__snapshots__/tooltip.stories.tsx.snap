@@ -1,0 +1,71 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Components/Tooltip BottomPosition smoke-test 1`] = `
+<div style="position: relative; width: 100%; height: 300px; display: flex; align-items: center; justify-content: center;">
+  <div class="_childWrapper_1fw5j_55">
+    <div style="background-color: skyblue; padding: 10px; border-radius: 4px; border: 1px solid black; cursor: pointer;">
+      Hover over me
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Components/Tooltip ContentWithHTMLElements smoke-test 1`] = `
+<div style="position: relative; width: 100%; height: 300px; display: flex; align-items: center; justify-content: center;">
+  <div class="_childWrapper_1fw5j_55">
+    <div style="background-color: skyblue; padding: 10px; border-radius: 4px; border: 1px solid black; cursor: pointer;">
+      Hover over me
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Components/Tooltip Default smoke-test 1`] = `
+<div style="position: relative; width: 100%; height: 300px; display: flex; align-items: center; justify-content: center;">
+  <div class="_childWrapper_1fw5j_55">
+    <div style="background-color: skyblue; padding: 10px; border-radius: 4px; border: 1px solid black; cursor: pointer;">
+      Hover over me
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Components/Tooltip FlashFor2Seconds smoke-test 1`] = `
+<div style="position: relative; width: 100%; height: 300px; display: flex; align-items: center; justify-content: center;">
+  <div class="_childWrapper_1fw5j_55">
+    <div style="background-color: skyblue; padding: 10px; border-radius: 4px; border: 1px solid black; cursor: pointer;">
+      Hover over me
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Components/Tooltip LeftPosition smoke-test 1`] = `
+<div style="position: relative; width: 100%; height: 300px; display: flex; align-items: center; justify-content: center;">
+  <div class="_childWrapper_1fw5j_55">
+    <div style="background-color: skyblue; padding: 10px; border-radius: 4px; border: 1px solid black; cursor: pointer;">
+      Hover over me
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Components/Tooltip RightPosition smoke-test 1`] = `
+<div style="position: relative; width: 100%; height: 300px; display: flex; align-items: center; justify-content: center;">
+  <div class="_childWrapper_1fw5j_55">
+    <div style="background-color: skyblue; padding: 10px; border-radius: 4px; border: 1px solid black; cursor: pointer;">
+      Hover over me
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Components/Tooltip ShowByDefault smoke-test 1`] = `
+<div style="position: relative; width: 100%; height: 300px; display: flex; align-items: center; justify-content: center;">
+  <div class="_childWrapper_1fw5j_55">
+    <div style="background-color: skyblue; padding: 10px; border-radius: 4px; border: 1px solid black; cursor: pointer;">
+      Hover over me
+    </div>
+  </div>
+</div>
+`;

@@ -39,19 +39,6 @@ export const colors = {
     900: '#343a46',
     950: '#23272e',
   },
-  amin: {
-    50: '#fff4ff',
-    100: '#fde7ff',
-    200: '#fdceff',
-    300: '#ffa8ff',
-    400: '#fd75fb',
-    500: '#f540f3',
-    600: '#e133db',
-    700: '#b417ab',
-    800: '#93158a',
-    900: '#78176f',
-    950: '#51014a',
-  },
 };
 export const danger = 'var(--color-danger)';
 export const white = 'var(--color-white)';

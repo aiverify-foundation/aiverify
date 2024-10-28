@@ -1,0 +1,39 @@
+import { Meta, Title, Primary, Stories, Controls } from '@storybook/blocks';
+import IconSVGStories from './iconSVG.stories';
+import { Icon, IconName } from './index';
+import { lineIcons, fillIcons, colorIcons } from './categories';
+
+
+<Title>SVG Icons React Component</Title>
+<Meta of={IconSVGStories} />
+<Primary />
+<Controls />
+## Icon Names
+
+<div style={{
+  marginTop: '2rem',
+  display: 'grid',
+  gridTemplateColumns: 'repeat(8, 1fr)',
+  width: '100%',
+  rowGap: '2rem',
+}}>
+  {lineIcons.map((iconName) => (
+    <div key={iconName} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <Icon name={iconName} size={50} color="#000000" />
+      <span style={{ fontSize: '0.8rem', textAlign: 'center', marginTop: '0.5rem' }}>{iconName}</span>
+    </div>
+  ))}
+  {fillIcons.map((iconName) => (
+    <div key={iconName} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <Icon name={iconName} size={50} color="#000000" />
+      <span style={{ fontSize: '0.8rem', textAlign: 'center', marginTop: '0.5rem' }}>{iconName}</span>
+    </div>
+  ))}
+  {colorIcons.map((iconName) => (
+    <div key={iconName} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <Icon name={iconName} size={50} color="#000000" />
+      <span style={{ fontSize: '0.8rem', textAlign: 'center', marginTop: '0.5rem' }}>{iconName}</span>
+    </div>
+  ))}
+
+</div>

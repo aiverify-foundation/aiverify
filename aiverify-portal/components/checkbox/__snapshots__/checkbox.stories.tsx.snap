@@ -1,0 +1,56 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Components/Checkbox Default play-test 1`] = `
+<div style="position: relative; width: 100%; height: 300px; display: flex; align-items: center; justify-content: center;">
+  <div class="_wrapper_1ftxw_1">
+    <label class="_label-l_1ftxw_25 text-black dark:text-white">
+      <input name="your-checkbox"
+             aria-label="Your Checkbox"
+             type="checkbox"
+             class="_checkbox_1ftxw_59 border-primary-900 bg-primary-300
+            dark:border-primary-200 dark:bg-primary-400"
+             value
+      >
+      Your Checkbox
+    </label>
+  </div>
+</div>
+`;
+
+exports[`Components/Checkbox DisabledState play-test 1`] = `
+<div style="position: relative; width: 100%; height: 300px; display: flex; align-items: center; justify-content: center;">
+  <div class="_wrapper_1ftxw_1">
+    <label class="_label-l_1ftxw_25 text-black dark:text-white">
+      <input name="your-checkbox"
+             aria-label="Your Checkbox"
+             type="checkbox"
+             class="_checkbox_1ftxw_59 border-primary-900 bg-primary-300
+            dark:border-primary-200 dark:bg-primary-400"
+             disabled
+             value
+      >
+      Your Checkbox
+    </label>
+  </div>
+</div>
+`;
+
+exports[`Components/Checkbox ErrorState play-test 1`] = `
+<div style="position: relative; width: 100%; height: 300px; display: flex; align-items: center; justify-content: center;">
+  <div class="_wrapper_1ftxw_1 _inputError_1ftxw_103">
+    <label class="_label-l_1ftxw_25 text-black dark:text-white">
+      <input name="your-checkbox"
+             aria-label="Your Checkbox"
+             type="checkbox"
+             class="_checkbox_1ftxw_59 border-primary-900 bg-primary-300
+            dark:border-primary-200 dark:bg-primary-400 _inputError_1ftxw_103"
+             value
+      >
+      Your Checkbox
+    </label>
+    <div class="_errorText_1ftxw_13">
+      This is an error message
+    </div>
+  </div>
+</div>
+`;

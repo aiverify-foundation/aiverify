@@ -23,6 +23,7 @@ export default function RootLayout({
       <body
         className={`w-screen h-screen bg-gradient-to-br from-primary-950 to-secondary-700 antialiased`}
       >
+        <h1>This is the main layout</h1>
         {children}
       </body>
     </html>

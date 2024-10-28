@@ -1,0 +1,219 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Components/Modal Default smoke-test 1`] = `
+<div style="position: relative; width: 100%; height: 300px; display: flex; align-items: center; justify-content: center;">
+  <div class="flex h-screen w-screen justify-center">
+    <h1 class="text-black dark:text-white">
+      Modal popup on top of screen overlay
+    </h1>
+    <div class="fixed inset-0 z-[999] flex items-center justify-center bg-black"
+         style="opacity: 0.3;"
+    >
+    </div>
+    <div class="absolute left-1/2 top-1/2 z-[1000] h-[260px] w-[600px]
+        -translate-x-1/2 -translate-y-1/2 transform rounded-[15px] 
+        bg-gradient-to-b from-secondary-600 to-secondary-700 p-6 dark:bg-secondary-700"
+         style="width: 500px; height: 260px; box-shadow: rgba(0, 0, 0, 0.6) 2px 2px 16px;"
+    >
+      <header class="mb-3 flex justify-between">
+        <h1 class="text-[1.4rem] font-normal text-primary-100">
+          Do you want to remove this items?
+        </h1>
+        <div class="_icon_wrapper_1j07s_1 _pointer_effect_1j07s_17"
+             style="width: 25px; height: 25px;"
+        >
+          <svg width="25"
+               height="25"
+               viewbox="0 0 32 32"
+               class="stroke-primary-300 dark:stroke-primary-300"
+               stroke="#000000"
+               fill="none"
+          >
+            <g id="cross">
+              <line stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    x1="7"
+                    x2="25"
+                    y1="7"
+                    y2="25"
+              >
+              </line>
+              <line stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    x1="7"
+                    x2="25"
+                    y1="25"
+                    y2="7"
+              >
+              </line>
+            </g>
+          </svg>
+        </div>
+      </header>
+      <main style="height: calc(100% - 20px);">
+        <ul class="list-disc space-y-2 pl-4 text-primary-100">
+          <li>
+            Item number 1
+          </li>
+          <li>
+            Item number 2
+          </li>
+          <li>
+            Item number 3
+          </li>
+        </ul>
+      </main>
+      <footer class="absolute bottom-0 left-0 mt-4 flex w-full items-center justify-end gap-2 p-4">
+        <button type="button"
+                class="_btn_1vb4e_1 _btn_secondary_1vb4e_61 _btn_sm_1vb4e_219 _bezel_1vb4e_35"
+        >
+          Cancel
+        </button>
+        <button type="button"
+                class="_btn_1vb4e_1 _btn_primary_1vb4e_35 _btn_sm_1vb4e_219 _bezel_1vb4e_35"
+        >
+          Remove
+        </button>
+      </footer>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Components/Modal WithoutActionButtons smoke-test 1`] = `
+<div style="position: relative; width: 100%; height: 300px; display: flex; align-items: center; justify-content: center;">
+  <div class="flex h-screen w-screen justify-center">
+    <h1 class="text-black dark:text-white">
+      Modal popup on top of screen overlay
+    </h1>
+    <div class="fixed inset-0 z-[999] flex items-center justify-center bg-black"
+         style="opacity: 0.3;"
+    >
+    </div>
+    <div class="absolute left-1/2 top-1/2 z-[1000] h-[260px] w-[600px]
+        -translate-x-1/2 -translate-y-1/2 transform rounded-[15px] 
+        bg-gradient-to-b from-secondary-600 to-secondary-700 p-6 dark:bg-secondary-700"
+         style="width: 500px; height: auto; box-shadow: rgba(0, 0, 0, 0.6) 2px 2px 16px;"
+    >
+      <header class="mb-3 flex justify-between">
+        <h1 class="text-[1.4rem] font-normal text-primary-100">
+          Connection with the server lost
+        </h1>
+        <div class="_icon_wrapper_1j07s_1"
+             style="width: 25px; height: 25px;"
+        >
+          <svg width="25"
+               height="25"
+               viewbox="0 0 32 32"
+               class="stroke-primary-300 dark:stroke-primary-300"
+               stroke="#000000"
+               fill="none"
+          >
+            <g id="cross">
+              <line stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    x1="7"
+                    x2="25"
+                    y1="7"
+                    y2="25"
+              >
+              </line>
+              <line stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    x1="7"
+                    x2="25"
+                    y1="25"
+                    y2="7"
+              >
+              </line>
+            </g>
+          </svg>
+        </div>
+      </header>
+      <main style="height: calc(100% - 20px);">
+        <p class="text-primary-100">
+          Please check your internet connection and try again.
+        </p>
+      </main>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Components/Modal WithoutSecondaryBtn smoke-test 1`] = `
+<div style="position: relative; width: 100%; height: 300px; display: flex; align-items: center; justify-content: center;">
+  <div class="flex h-screen w-screen justify-center">
+    <h1 class="text-black dark:text-white">
+      Modal popup on top of screen overlay
+    </h1>
+    <div class="fixed inset-0 z-[999] flex items-center justify-center bg-black"
+         style="opacity: 0.3;"
+    >
+    </div>
+    <div class="absolute left-1/2 top-1/2 z-[1000] h-[260px] w-[600px]
+        -translate-x-1/2 -translate-y-1/2 transform rounded-[15px] 
+        bg-gradient-to-b from-secondary-600 to-secondary-700 p-6 dark:bg-secondary-700"
+         style="width: 500px; height: 260px; box-shadow: rgba(0, 0, 0, 0.6) 2px 2px 16px;"
+    >
+      <header class="mb-3 flex justify-between">
+        <h1 class="text-[1.4rem] font-normal text-primary-100">
+          These items have been removed?
+        </h1>
+        <div class="_icon_wrapper_1j07s_1 _pointer_effect_1j07s_17"
+             style="width: 25px; height: 25px;"
+        >
+          <svg width="25"
+               height="25"
+               viewbox="0 0 32 32"
+               class="stroke-primary-300 dark:stroke-primary-300"
+               stroke="#000000"
+               fill="none"
+          >
+            <g id="cross">
+              <line stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    x1="7"
+                    x2="25"
+                    y1="7"
+                    y2="25"
+              >
+              </line>
+              <line stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    x1="7"
+                    x2="25"
+                    y1="25"
+                    y2="7"
+              >
+              </line>
+            </g>
+          </svg>
+        </div>
+      </header>
+      <main style="height: calc(100% - 20px);">
+        <ul class="list-disc space-y-2 pl-4 text-primary-100">
+          <li>
+            Item number 1
+          </li>
+          <li>
+            Item number 2
+          </li>
+        </ul>
+      </main>
+      <footer class="absolute bottom-0 left-0 mt-4 flex w-full items-center justify-end gap-2 p-4">
+        <button type="button"
+                class="_btn_1vb4e_1 _btn_primary_1vb4e_35 _btn_sm_1vb4e_219 _bezel_1vb4e_35"
+        >
+          Ok
+        </button>
+      </footer>
+    </div>
+  </div>
+</div>
+`;

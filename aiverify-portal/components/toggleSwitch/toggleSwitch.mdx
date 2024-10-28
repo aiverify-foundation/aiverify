@@ -1,0 +1,14 @@
+import { Meta, Story, Canvas, Primary, Controls, Title } from '@storybook/addon-docs';
+import ToggleSwitchStories from './toggleSwitch.stories';
+
+<Title>Toggle Switch React Component</Title>
+<p>Toggle Switch allows the user to toggle between two states. Under the hood, it's just a checkbox. So you can bind to it like a normal checkbox.</p>
+
+<Meta of={ToggleSwitchStories} />
+
+<Primary />
+
+<Controls />
+
+In unit tests with RTL, similar to Checkbox the recommended selector is `screen.getByRole('checkbox', { name: /your toggle/i });`
+where "your toggle" is the value of the `label` prop.

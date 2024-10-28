@@ -1,0 +1,132 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Components/Slider CustomColors smoke-test 1`] = `
+<div style="position: relative; width: 100%; height: 300px; display: flex; align-items: center; justify-content: center;">
+  <div class="_slider_13vdx_1"
+       style="width: 100%;"
+  >
+    <div class="_track_13vdx_11"
+         style="width: 100%; height: 4px;"
+    >
+    </div>
+    <div class="_progressTrack_13vdx_29 bg-primary-100"
+         style="width: calc(100%); height: 4px;"
+    >
+    </div>
+    <div class="_handle_13vdx_47"
+         style="left: 0%;"
+    >
+      <div style="position: absolute; left: 50%; top: -220%; transform: translate(-50%, 0px);">
+        <div class="_value_13vdx_85">
+          0
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Components/Slider CustomDimensions smoke-test 1`] = `
+<div style="position: relative; width: 100%; height: 300px; display: flex; align-items: center; justify-content: center;">
+  <div class="_slider_13vdx_1"
+       style="width: 200px;"
+  >
+    <div class="_track_13vdx_11"
+         style="width: 200px; height: 8px;"
+    >
+    </div>
+    <div class="_progressTrack_13vdx_29 bg-primary-100"
+         style="width: calc(200px); height: 8px;"
+    >
+    </div>
+    <div class="_handle_13vdx_47"
+         style="left: 0%;"
+    >
+      <div style="position: absolute; left: 50%; top: -220%; transform: translate(-50%, 0px);">
+        <div class="_value_13vdx_85">
+          0
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Components/Slider CustomRange smoke-test 1`] = `
+<div style="position: relative; width: 100%; height: 300px; display: flex; align-items: center; justify-content: center;">
+  <div class="_slider_13vdx_1"
+       style="width: 100%;"
+  >
+    <div class="_track_13vdx_11"
+         style="width: 100%; height: 4px;"
+    >
+    </div>
+    <div class="_progressTrack_13vdx_29 bg-primary-100"
+         style="width: calc(50%); height: 4px;"
+    >
+    </div>
+    <div class="_handle_13vdx_47"
+         style="left: 50%;"
+    >
+      <div style="position: absolute; left: 50%; top: -220%; transform: translate(-50%, 0px);">
+        <div class="_value_13vdx_85">
+          0
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Components/Slider Default smoke-test 1`] = `
+<div style="position: relative; width: 100%; height: 300px; display: flex; align-items: center; justify-content: center;">
+  <div class="_slider_13vdx_1 mt-6"
+       style="width: 100%;"
+  >
+    <div class="_track_13vdx_11"
+         style="width: 100%; height: 4px;"
+    >
+    </div>
+    <div class="_progressTrack_13vdx_29 bg-primary-100"
+         style="width: calc(100%); height: 4px;"
+    >
+    </div>
+    <div class="_handle_13vdx_47"
+         style="left: 0%;"
+    >
+      <div style="position: absolute; left: 50%; top: -220%; transform: translate(-50%, 0px);">
+        <div class="_value_13vdx_85">
+          0
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Components/Slider FlexibleValuePosition smoke-test 1`] = `
+<div style="position: relative; width: 100%; height: 300px; display: flex; align-items: center; justify-content: center;">
+  <div class="_slider_13vdx_1"
+       style="width: 100%;"
+  >
+    <div class="_value_13vdx_85">
+      0
+    </div>
+    <div class="_track_13vdx_11"
+         style="background-color: rgb(224, 224, 224); width: 100%; height: 4px;"
+    >
+    </div>
+    <div class="_progressTrack_13vdx_29 bg-primary-100"
+         style="width: calc(100%); height: 4px;"
+    >
+    </div>
+    <div class="_handle_13vdx_47"
+         style="left: 0%; background-color: rgb(63, 81, 181); --color-primary-200: #3f51b533;"
+    >
+    </div>
+    <div class="_value_13vdx_85">
+      0
+    </div>
+  </div>
+</div>
+`;
