@@ -3,6 +3,7 @@ from aiverify_apigw.lib.utils import *
 
 
 class TestGuessMimetypeFromFilename:
+    """Test method guess_mimetype_from_filename"""
     @pytest.mark.parametrize(
         "filename, expected_mimetype",
         [
