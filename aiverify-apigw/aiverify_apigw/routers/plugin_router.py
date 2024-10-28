@@ -181,6 +181,8 @@ async def download_plugin(gid: str, session: Session = Depends(get_db_session)) 
     except PluginStoreException as e:
         logger.error(f"Plugin exception: {e}")
         raise HTTPException(status_code=400, detail=str(e))
+    except HTTPException as e:
+        raise e
     except Exception as e:
         logger.error(f"Error downloading plugin: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
