@@ -40,6 +40,7 @@ export const fillIcons = [
   IconName.Bell,
   IconName.CheckList,
   IconName.DarkMoon,
+  IconName.Database,
   IconName.HistoryClock,
   IconName.LightBulb,
   IconName.Lightning,
@@ -48,9 +49,9 @@ export const fillIcons = [
   IconName.SolidBox,
   IconName.Spacesuit,
   IconName.Tools,
-]
+  IconName.OpenedBook,
+  IconName.OpenedEmptyBook,
+  IconName.Plug,
+];
 
-export const colorIcons = [
-  IconName.Folder,
-  IconName.FolderForChatSessions
-]
+export const colorIcons = [IconName.Folder, IconName.FolderForChatSessions];

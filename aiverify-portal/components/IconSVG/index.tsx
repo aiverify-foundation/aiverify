@@ -48,6 +48,10 @@ import { WarningIcon } from './icons/warning-icon';
 import { WideArrowDownIcon } from './icons/wide-arrow-down';
 import { WideArrowUpIcon } from './icons/wide-arrow-up';
 import clsx from 'clsx';
+import { OpenedBookIcon } from './icons/open-book-icon';
+import { DatabaseIcon } from './icons/database-icon';
+import { OpenedEmptyBookIcon } from './icons/open-book-icon copy';
+import { PlugIcon } from './icons/plug-icon';
 
 enum IconName {
   Alert = 'Alert',
@@ -64,6 +68,7 @@ enum IconName {
   CircleArrowRight = 'CircleArrowRight',
   Close = 'Close',
   DarkMoon = 'DarkMoon',
+  Database = 'Database',
   Document = 'Document',
   File = 'File',
   Folder = 'Folder',
@@ -79,8 +84,11 @@ enum IconName {
   Minimize = 'Minimize',
   MoonAttackStrategy = 'MoonAttackStrategy',
   MoonPromptTemplate = 'MoonPromptTemplate',
+  OpenedBook = 'OpenedBook',
+  OpenedEmptyBook = 'OpenedEmptyBook',
   OutlineBox = 'OutlineBox',
   Pencil = 'Pencil',
+  Plug = 'Plug',
   Plus = 'Plus',
   Reset = 'Reset',
   Ribbon = 'Ribbon',
@@ -115,7 +123,9 @@ type WithColor = BaseIconProps & {
 };
 
 type WithClassName = BaseIconProps & {
-  svgClassName: `stroke-${string} dark:stroke-${string}` | `fill-${string} dark:fill-${string}`;
+  svgClassName:
+    | `stroke-${string} dark:stroke-${string}`
+    | `fill-${string} dark:fill-${string}`;
   color?: never;
 };
 
@@ -140,7 +150,22 @@ function Icon(props: IconProps) {
   switch (name) {
     case IconName.Alert:
       iconToRender = (
-        <AlertIcon width={size} height={size} className={svgClassName} color={color} />
+        <AlertIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
+      );
+      break;
+    case IconName.Database:
+      iconToRender = (
+        <DatabaseIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.Folder:
@@ -168,197 +193,442 @@ function Icon(props: IconProps) {
       break;
     case IconName.ChatBubbles:
       iconToRender = (
-        <ChatBubblesIcon width={size} height={size} className={svgClassName} color={color} />
+        <ChatBubblesIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.RunCookbook:
       iconToRender = (
-        <RunCookbookIcon width={size} height={size} className={svgClassName} color={color} />
+        <RunCookbookIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.BurgerMenu:
       iconToRender = (
-        <BurgerMenuIcon width={size} height={size} className={svgClassName} color={color} />
+        <BurgerMenuIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.DarkMoon:
       iconToRender = (
-        <DarkMoonIcon width={size} height={size} className={svgClassName} color={color} />
+        <DarkMoonIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.LightSun:
       iconToRender = (
-        <LightSunIcon width={size} height={size} className={svgClassName} color={color} />
+        <LightSunIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.Close:
       iconToRender = (
-        <CloseIcon width={size} height={size} className={svgClassName} color={color} />
+        <CloseIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.WideArrowLeft:
       iconToRender = (
-        <WideArrowLeftIcon width={size} height={size} className={svgClassName} color={color} />
+        <WideArrowLeftIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.WideArrowRight:
       iconToRender = (
-        <WideArrowRightIcon width={size} height={size} className={svgClassName} color={color} />
+        <WideArrowRightIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.CircleArrowRight:
       iconToRender = (
-        <CircleArrowRightIcon width={size} height={size} className={svgClassName} color={color} />
+        <CircleArrowRightIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.CircleArrowLeft:
       iconToRender = (
-        <CircleArrowLeftIcon width={size} height={size} className={svgClassName} color={color} />
+        <CircleArrowLeftIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.Maximize:
       iconToRender = (
-        <MaximizeIcon width={size} height={size} className={svgClassName} color={color} />
+        <MaximizeIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.Minimize:
       iconToRender = (
-        <MinimizeIcon width={size} height={size} className={svgClassName} color={color} />
+        <MinimizeIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.LayoutWtf:
       iconToRender = (
-        <LayoutWtfIcon width={size} height={size} className={svgClassName} color={color} />
+        <LayoutWtfIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.LayoutColumns:
       iconToRender = (
-        <LayoutColumnsIcon width={size} height={size} className={svgClassName} color={color} />
+        <LayoutColumnsIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.ChatBubbleWide:
       iconToRender = (
-        <ChatBubbleWideIcon width={size} height={size} className={svgClassName} color={color} />
+        <ChatBubbleWideIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.Reset:
       iconToRender = (
-        <ResetIcon width={size} height={size} className={svgClassName} color={color} />
+        <ResetIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.SolidBox:
       iconToRender = (
-        <SolidBoxIcon width={size} height={size} className={svgClassName} color={color} />
+        <SolidBoxIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
+      );
+      break;
+    case IconName.OpenedEmptyBook:
+      iconToRender = (
+        <OpenedEmptyBookIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
+      );
+      break;
+    case IconName.OpenedBook:
+      iconToRender = (
+        <OpenedBookIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.OutlineBox:
       iconToRender = (
-        <OutlineBoxIcon width={size} height={size} className={svgClassName} color={color} />
+        <OutlineBoxIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
+      );
+      break;
+    case IconName.Plug:
+      iconToRender = (
+        <PlugIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.Plus:
-      iconToRender = <PlusIcon width={size} height={size} className={svgClassName} color={color} />;
+      iconToRender = (
+        <PlusIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
+      );
       break;
     case IconName.Square:
       iconToRender = (
-        <SquareIcon width={size} height={size} className={svgClassName} color={color} />
+        <SquareIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.List:
-      iconToRender = <ListIcon width={size} height={size} className={svgClassName} color={color} />;
+      iconToRender = (
+        <ListIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
+      );
       break;
     case IconName.File:
-      iconToRender = <FileIcon width={size} height={size} className={svgClassName} color={color} />;
+      iconToRender = (
+        <FileIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
+      );
       break;
     case IconName.Book:
-      iconToRender = <BookIcon width={size} height={size} className={svgClassName} color={color} />;
+      iconToRender = (
+        <BookIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
+      );
       break;
     case IconName.ArrowLeft:
       iconToRender = (
-        <ArrowLeftIcon width={size} height={size} className={svgClassName} color={color} />
+        <ArrowLeftIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.ArrowRight:
       iconToRender = (
-        <ArrowRightIcon width={size} height={size} className={svgClassName} color={color} />
+        <ArrowRightIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.Table:
       iconToRender = (
-        <TableIcon width={size} height={size} className={svgClassName} color={color} />
+        <TableIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.Bell:
-      iconToRender = <BellIcon width={size} height={size} className={svgClassName} color={color} />;
+      iconToRender = (
+        <BellIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
+      );
       break;
     case IconName.Asterisk:
       iconToRender = (
-        <AsteriskIcon width={size} height={size} className={svgClassName} color={color} />
+        <AsteriskIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.CheckList:
       iconToRender = (
-        <CheckListIcon width={size} height={size} className={svgClassName} color={color} />
+        <CheckListIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.Spacesuit:
       iconToRender = (
-        <SpacesuitIcon width={size} height={size} className={svgClassName} color={color} />
+        <SpacesuitIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.HistoryClock:
       iconToRender = (
-        <HistoryClockIcon width={size} height={size} className={svgClassName} color={color} />
+        <HistoryClockIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.Tools:
       iconToRender = (
-        <ToolsIcon width={size} height={size} className={svgClassName} color={color} />
+        <ToolsIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.Lightning:
       iconToRender = (
-        <LightningIcon width={size} height={size} className={svgClassName} color={color} />
+        <LightningIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.WideArrowDown:
       iconToRender = (
-        <WideArrowDownIcon width={size} height={size} className={svgClassName} color={color} />
+        <WideArrowDownIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.WideArrowUp:
       iconToRender = (
-        <WideArrowUpIcon width={size} height={size} className={svgClassName} color={color} />
+        <WideArrowUpIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.LightBulb:
       iconToRender = (
-        <LightBulb width={size} height={size} className={svgClassName} color={color} />
+        <LightBulb
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.Ribbon:
       iconToRender = (
-        <RibbonIcon width={size} height={size} className={svgClassName} color={color} />
+        <RibbonIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.TalkBubbles:
       iconToRender = (
-        <TalkBubblesIcon width={size} height={size} className={svgClassName} color={color} />
+        <TalkBubblesIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.Document:
       iconToRender = (
-        <DocumentIcon width={size} height={size} className={svgClassName} color={color} />
+        <DocumentIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.Warning:
       iconToRender = (
-        <WarningIcon width={size} height={size} className={svgClassName} color={color} />
+        <WarningIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.Pencil:
       iconToRender = (
-        <PencilIcon width={size} height={size} className={svgClassName} color={color} />
+        <PencilIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
       );
       break;
     case IconName.MoonPromptTemplate:
@@ -388,7 +658,7 @@ function Icon(props: IconProps) {
   const cssClass = clsx(
     styles.icon_wrapper,
     onClick ? styles.pointer_effect : '',
-    disabled ? styles.disabled : '',
+    disabled ? styles.disabled : ''
   );
 
   return (
@@ -402,8 +672,7 @@ function Icon(props: IconProps) {
         ...style,
       }}
       onClick={disabled ? undefined : onClick}
-      onMouseDown={disabled ? undefined : onMouseDown}
-    >
+      onMouseDown={disabled ? undefined : onMouseDown}>
       {iconToRender}
     </div>
   );
