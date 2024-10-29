@@ -224,6 +224,22 @@ def save_plugin_inputs(gid: str, source_dir: Path):
     return _save_plugin(source_dir, folder, zip_filename, hash_filename)
 
 
+def unzip_plugin(gid: str, target_dir: Path):
+    folder = get_plugin_folder(gid)
+    zip_filename = f"{gid}.zip"
+    if isinstance(folder, Path):
+        zip_path = folder.joinpath(zip_filename)
+        if zip_path.exists() and zip_path.is_file():
+            with ZipFile(zip_path, 'r') as zip_ref:
+                zip_ref.extractall(target_dir)
+        else:
+            raise FileStoreError(f"Zip file {zip_path} does not exist or is not a file")
+    elif s3 is not None:
+        zip_data = s3.get_object(urljoin(folder, zip_filename))
+        with ZipFile(io.BytesIO(zip_data), 'r') as zip_ref:
+            zip_ref.extractall(target_dir)
+
+
 def backup_plugin(gid: str, target_dir: Path):
     folder = get_plugin_folder(gid)
     logger.debug(f"Backup plugin folder from {folder} to {target_dir}")

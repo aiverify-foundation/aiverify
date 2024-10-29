@@ -2,6 +2,8 @@ from pathlib import Path, PurePath
 import json
 import tomllib
 from typing import List
+import tempfile
+import shutil
 
 from .schemas_utils import read_and_validate, plugin_schema, algorithm_schema
 from ..lib.syntax_checker import validate_python_script
@@ -14,6 +16,7 @@ from .filestore import (
     delete_plugin as fs_delete_plugin,
     save_plugin as fs_save_plugin,
     save_plugin_algorithm as fs_save_plugin_algorithm,
+    unzip_plugin
     # save_plugin_widgets as fs_save_plugin_widgets,
     # save_plugin_inputs as fs_save_plugin_inputs,
 )
@@ -121,7 +124,7 @@ class PluginStore:
             return None
 
     @classmethod
-    def scan_algorithm_directory(cls, algosubdir: Path, gid: str | None = None):
+    def read_algorithm_directory(cls, algosubdir: Path, gid: str | None = None):
         # read algo metadata
         algopath = algosubdir
         try:
@@ -215,6 +218,60 @@ class PluginStore:
             logger.warning(f"Error validating algorithm {algopath}: {e}")
 
     @classmethod
+    def scan_algorithm_directory(cls, algo_dir: Path):
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            folder = Path(tmpdirname)
+
+            algo_model = cls.read_algorithm_directory(algo_dir)
+            if not algo_model:
+                raise PluginStoreException("Invalid plugin zip file.")
+
+            with SessionLocal() as session:
+                stmt = select(PluginModel).filter_by(gid=algo_model.gid)
+                plugin = session.scalar(stmt)
+                if plugin is None:
+                    plugin_meta = PluginMeta(
+                        gid=algo_model.gid,
+                        version=algo_model.version if algo_model.version else "",
+                        name=algo_model.name,
+                        author=algo_model.author,
+                        description=algo_model.description,
+                    )
+                    plugin_meta_dict = plugin_meta.model_dump()
+                    plugin = PluginModel(**plugin_meta_dict, is_stock=False,
+                                         meta=plugin_meta.model_dump_json().encode("utf-8"))
+                    session.add(plugin)
+
+                    plugin_meta_file = folder.joinpath(cls.plugin_meta_filename)
+                    with open(plugin_meta_file, "w") as fp:
+                        fp.write(json.dumps(plugin_meta_dict, indent=2))
+                else:
+                    unzip_plugin(plugin.gid, folder)
+
+                algorithms_basedir = folder.joinpath("algorithms")
+                algorithms_basedir.mkdir(exist_ok=True, parents=True)
+                target_algo_dir = algorithms_basedir.joinpath(algo_dir.name)
+                shutil.copytree(algo_dir, target_algo_dir, dirs_exist_ok=True)
+
+                zip_hash = fs_save_plugin(plugin.gid, folder)
+                plugin.zip_hash = zip_hash
+
+                zip_hash = fs_save_plugin_algorithm(plugin.gid, algo_model.cid, target_algo_dir)
+                algo_model.zip_hash = zip_hash
+
+                # Find the first algorithm in plugin.algorithms that matches algo.cid == meta.cid using filter method
+                matching_algos_filter = filter(lambda algo: algo.cid == algo_model.cid, plugin.algorithms)
+                existing_algo = next(matching_algos_filter, None)
+                if existing_algo:
+                    plugin.algorithms.remove(existing_algo)
+                plugin.algorithms.append(algo_model)
+                session.add(algo_model)
+                session.commit()
+
+                session.expunge(plugin)
+                return plugin
+
+    @classmethod
     def scan_plugin_directory(cls, folder: Path, is_stock=False):
         """Scan the plugin directory and save the plugin information to DB.
         Assume that the directory has been validated using validate_plugin_directory.
@@ -263,7 +320,7 @@ class PluginStore:
                     if not algosubdir.is_dir():
                         continue
 
-                    algorithm = cls.scan_algorithm_directory(algosubdir, plugin.gid)
+                    algorithm = cls.read_algorithm_directory(algosubdir, plugin.gid)
                     if algorithm:
                         plugin.algorithms.append(algorithm)
                         session.add(algorithm)
@@ -289,8 +346,8 @@ class PluginStore:
             return plugin
 
     @classmethod
-    def validate_algorithm_directory(cls, algopath: Path, gid: str | None):
-        logger.debug(f"Reading algorithm directory {algopath.name}")
+    def validate_algorithm_directory(cls, algopath: Path, gid: str | None = None):
+        logger.debug(f"Validating algorithm directory {algopath.name}")
         # read algo metadata
         cid = algopath.name
         meta_path = algopath.joinpath(f"{cid}.meta.json")
@@ -300,19 +357,19 @@ class PluginStore:
                 logger.debug(
                     f"Algorithm folder {algopath.name} does not contain meta file nor pyproject.toml, skipping"
                 )
-                return False
+                return None
             with open(pyproject_file, "rb") as fp:
                 pyproject_data = tomllib.load(fp)
             if "project" not in pyproject_data or "name" not in pyproject_data["project"]:
                 logger.debug(f"Algorithm folder {algopath.name} has invalid pyproject.toml")
-                return False
+                return None
             # TODO: is this the best way to get algorithm folder?
             project_name = pyproject_data["project"]["name"].replace("-", "_")
             sub_path = algopath.joinpath(project_name)
             meta_path = sub_path.joinpath("algo.meta.json")
             if not meta_path.exists():
                 logger.debug(f"Algorithm folder {algopath.name} does not contain meta file, skipping")
-                return False
+                return None
             algopath = sub_path
         algo_meta_json = read_and_validate(meta_path, algorithm_schema)
         # print(algo_meta_json)
@@ -346,7 +403,7 @@ class PluginStore:
         except:
             raise PluginStoreException(f"Algorithm folder {algopath}: missing or invaid output.schema.json")
 
-        return True
+        return meta
 
     @classmethod
     def validate_plugin_directory(cls, folder: Path) -> PluginMeta:

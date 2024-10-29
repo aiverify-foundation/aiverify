@@ -94,7 +94,8 @@ async def upload_plugin(file: UploadFile = File(), session: Session = Depends(ge
         zip_contents = await file.read()
         # Save the uploaded file to a temporary location
         with tempfile.TemporaryDirectory() as temp_dirname:
-            temp_dir = Path(temp_dirname)
+            temp_root_dir = Path(temp_dirname)
+            temp_dir = temp_root_dir.joinpath("extracted")
 
             # unzip to temp dir
             # plugin_dir = temp_dir.joinpath(file.filename[:-4])
@@ -110,44 +111,65 @@ async def upload_plugin(file: UploadFile = File(), session: Session = Depends(ge
                             plugin_dir = sub_dir
                             break
                 else:
-                    raise HTTPException(status_code=400, detail="plugin.meta.json not found in the uploaded zip file.")
+                    plugin_dir = None
+                    # raise HTTPException(status_code=400, detail="plugin.meta.json not found in the uploaded zip file.")
 
-            # validate and read
-            meta = PluginStore.validate_plugin_directory(plugin_dir)
-            gid = meta.gid
+            if not plugin_dir:
+                # check whether is algo
+                if temp_dir.joinpath("pyproject.toml").exists():
+                    algo_dir = temp_dir
+                else:
+                    for sub_dir in temp_dir.iterdir():
+                        if sub_dir.is_dir():
+                            if sub_dir.joinpath("pyproject.toml").exists():
+                                algo_dir = sub_dir
+                                break
+                    else:
+                        raise HTTPException(status_code=400, detail="Invalid plugin zip file.")
+                meta = PluginStore.validate_algorithm_directory(algo_dir)
+                if meta is None or meta.gid is None:
+                    raise HTTPException(status_code=400, detail="Invalid plugin zip file.")
 
-            stmt = select(PluginModel).filter_by(gid=gid)
-            existing_plugin = session.scalar(stmt)
-            is_stock = existing_plugin.is_stock if existing_plugin else False
-
-            if existing_plugin:
-                # backup old plugin first
-                backup_dir = temp_dir.joinpath(sanitize_filename(meta.name))
-                backup_plugin(gid, backup_dir)
-                PluginStore.delete_plugin(gid)
-            else:
-                backup_dir = None
-
-            def restore_backup():
-                # restore old plugin on error
-                if backup_dir:
-                    PluginStore.delete_plugin(gid)
-                    PluginStore.scan_plugin_directory(backup_dir, is_stock=is_stock)
-
-            try:
-                plugin = PluginStore.scan_plugin_directory(plugin_dir, is_stock=is_stock)
-                if plugin is None:
-                    logger.error(f"Error scanning plugin directory {plugin_dir}")
-                    restore_backup()
-                    raise PluginStoreException("Unable to scan plugin ")
-                logger.debug(f"New plugin meta: {meta}")
-                # plugin = session.scalar(stmt)
+                plugin = PluginStore.scan_algorithm_directory(algo_dir)
                 session.add(plugin)
                 return PluginOutput.from_model(plugin)
-            except PluginStoreException as e:
-                logger.error(f"Error scanning plugin directory {plugin_dir}: {e}")
-                restore_backup()
-                raise PluginStoreException(f"Plugin scan exception: {e}")
+            else:
+                # validate and read plugin
+                meta = PluginStore.validate_plugin_directory(plugin_dir)
+                gid = meta.gid
+
+                stmt = select(PluginModel).filter_by(gid=gid)
+                existing_plugin = session.scalar(stmt)
+                is_stock = existing_plugin.is_stock if existing_plugin else False
+
+                if existing_plugin:
+                    # backup old plugin first
+                    backup_dir = temp_root_dir.joinpath("backup").joinpath(sanitize_filename(meta.name))
+                    backup_plugin(gid, backup_dir)
+                    PluginStore.delete_plugin(gid)
+                else:
+                    backup_dir = None
+
+                def restore_backup():
+                    # restore old plugin on error
+                    if backup_dir:
+                        PluginStore.delete_plugin(gid)
+                        PluginStore.scan_plugin_directory(backup_dir, is_stock=is_stock)
+
+                try:
+                    plugin = PluginStore.scan_plugin_directory(plugin_dir, is_stock=is_stock)
+                    if plugin is None:
+                        logger.error(f"Error scanning plugin directory {plugin_dir}")
+                        restore_backup()
+                        raise PluginStoreException("Unable to scan plugin ")
+                    logger.debug(f"New plugin meta: {meta}")
+                    # plugin = session.scalar(stmt)
+                    session.add(plugin)
+                    return PluginOutput.from_model(plugin)
+                except PluginStoreException as e:
+                    logger.error(f"Error scanning plugin directory {plugin_dir}: {e}")
+                    restore_backup()
+                    raise PluginStoreException(f"Plugin scan exception: {e}")
 
     except PluginStoreException as e:
         logger.error(f"Plugin exception: {e}")
