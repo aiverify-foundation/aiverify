@@ -26,6 +26,7 @@ class PluginMeta(BaseModel):
 class PluginOutput(PluginMeta):
     meta: str = Field(description="Content from the plugin meta file")
     is_stock: bool = Field(description="Whether this is a stock plugin", default=False)
+    zip_hash: Optional[str] = Field(description="File hash of plugin zip")
     algorithms: List[AlgorithmOutput] = Field(description="List of algorithms", default=[])
 
     @classmethod
@@ -41,5 +42,6 @@ class PluginOutput(PluginMeta):
             url=url,
             meta=result.meta.decode("utf-8"),
             algorithms=[AlgorithmOutput.from_model(algo) for algo in result.algorithms],
+            zip_hash=result.zip_hash,
         )
         return obj

@@ -24,6 +24,7 @@ class PluginModel(BaseORMModel):
     templates: Mapped[List["TemplateModel"]] = relationship(back_populates="plugin", cascade="all, delete")
     meta: Mapped[bytes]  # schema serialized
     is_stock: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    zip_hash: Mapped[Optional[str]]
 
     @validates("gid")
     def my_validate_gid_cid(self, key, value):
@@ -61,6 +62,7 @@ class PluginComponentModel(BaseORMModel):
     tags: Mapped[List["ComponentTagModel"]] = relationship(secondary=association_table, back_populates="components")
     gid: Mapped[str]
     meta: Mapped[bytes]  # schema serialized
+    zip_hash: Mapped[Optional[str]]
 
     __mapper_args__ = {
         "polymorphic_identity": "employee",

@@ -2,6 +2,8 @@ import os
 import shutil
 from pathlib import Path
 import urllib.parse
+import hashlib
+from zipfile import ZipFile
 
 urllib.parse.uses_relative.append("s3")
 urllib.parse.uses_netloc.append("s3")
@@ -135,19 +137,91 @@ plugin_ignore_patten = shutil.ignore_patterns(
 )
 
 
-def save_plugin(gid: str, source_dir: Path):
-    folder = get_plugin_folder(gid)
-    logger.debug(f"Copy plugin folder from {source_dir} to {folder}")
-    if isinstance(folder, Path):
-        if folder.exists():
-            shutil.rmtree(folder)
-        folder.mkdir(parents=True, exist_ok=True)
-        shutil.copytree(source_dir, folder, dirs_exist_ok=True, ignore=plugin_ignore_patten)
+def zip_folder(folder: Path) -> tuple[io.BytesIO, str]:
+    """
+    Generate a zip file for the path specifified.
+
+    Args:
+        folder (Path): The path of the folder to zip
+
+    Returns:
+        str: Filehash of zip file
+    """
+
+    logger.debug(f"ziping folder {folder}")
+
+    zip_content = io.BytesIO()
+    if not folder.exists() or not folder.is_dir():
+        raise FileStoreError(f"Invalid directory for {folder}")
+
+    with ZipFile(zip_content, "w") as zipf:
+        for file_path in folder.rglob("**/*"):
+            if file_path.is_file():
+                zipf.write(file_path, file_path.relative_to(folder))
+            elif file_path.is_dir():
+                zipf.mkdir(file_path.relative_to(folder).as_posix())
+
+    # Compute file hash using zip_content
+    zip_content.seek(0)  # Ensure we're at the start of the BytesIO stream
+    hasher = hashlib.sha256()
+    while chunk := zip_content.read(8192):
+        hasher.update(chunk)
+    file_hash = hasher.hexdigest()
+    logger.debug(f"Computed file hash: {file_hash}")
+
+    zip_content.seek(0)
+    return (zip_content, file_hash)
+
+
+def _save_plugin(source: Path, target: Path | str, zip_filename: str, hash_filename: str) -> str:
+    (zip_content, filehash) = zip_folder(source)
+    if isinstance(target, Path):
+        target.mkdir(parents=True, exist_ok=True)
+        # shutil.copytree(source_dir, folder, dirs_exist_ok=True, ignore=plugin_ignore_patten)
+        with open(target.joinpath(zip_filename), "wb") as fp:
+            fp.write(zip_content.read())
+        with open(target.joinpath(hash_filename), "w") as fp:
+            fp.write(filehash)
     elif s3 is not None:
         # folder is s3 prefix
-        if s3.check_s3_prefix_exists(folder):
-            s3.delete_objects_under_prefix(folder)  # if prefix exists, delete
-        s3.upload_directory_to_s3(source_dir, folder)
+        if s3.check_s3_prefix_exists(target):
+            s3.delete_objects_under_prefix(target)  # if prefix exists, delete
+        # s3.upload_directory_to_s3(source_dir, folder)
+        s3.put_object(urljoin(target, zip_filename), zip_content)
+        s3.put_object(urljoin(target, hash_filename), filehash)
+    return filehash
+
+
+def save_plugin(gid: str, source_dir: Path):
+    folder = get_plugin_folder(gid)
+    logger.debug(f"Save plugin {gid} folder from {source_dir} to {folder}")
+    zip_filename = f"{gid}.zip"
+    hash_filename = f"{gid}.hash"
+    return _save_plugin(source_dir, folder, zip_filename, hash_filename)
+
+
+def save_plugin_algorithm(gid: str, cid: str, source_dir: Path):
+    folder = get_plugin_component_folder(gid, "algorithms")
+    logger.debug(f">>>> Save algorithm {cid} folder from {source_dir} to {folder}")
+    zip_filename = f"{cid}.zip"
+    hash_filename = f"{cid}.hash"
+    return _save_plugin(source_dir, folder, zip_filename, hash_filename)
+
+
+def save_plugin_widgets(gid: str, source_dir: Path):
+    folder = get_plugin_component_folder(gid, "widgets")
+    logger.debug(f"Save widgets folder from {source_dir} to {folder}")
+    zip_filename = "widgets.zip"
+    hash_filename = "widgets.hash"
+    return _save_plugin(source_dir, folder, zip_filename, hash_filename)
+
+
+def save_plugin_inputs(gid: str, source_dir: Path):
+    folder = get_plugin_component_folder(gid, "inputs")
+    logger.debug(f"Save inputs folder from {source_dir} to {folder}")
+    zip_filename = "inputs.zip"
+    hash_filename = "inputs.hash"
+    return _save_plugin(source_dir, folder, zip_filename, hash_filename)
 
 
 def backup_plugin(gid: str, target_dir: Path):
@@ -163,36 +237,27 @@ def backup_plugin(gid: str, target_dir: Path):
         s3.download_directory_from_s3(prefix=folder, target_directory=target_dir)
 
 
-def zip_plugin(gid: str) -> io.BytesIO:
-    """
-    Generate a zip file for the plugin identified by gid.
-
-    Args:
-        gid (str): The plugin identifier.
-
-    Returns:
-        BytesIO: zipfile binary stream
-    """
-    from zipfile import ZipFile
-
-    folder = get_plugin_folder(gid)
-    logger.debug(f"zip plugin folder from {folder}")
-    zip_content = io.BytesIO()
+def _get_zip(folder: Path | str, zip_filename: str) -> bytes:
     if isinstance(folder, Path):
-        if not folder.exists() or not folder.is_dir():
-            raise FileStoreError(f"Invalid plugin directory for gid {gid}")
-
-        with ZipFile(zip_content, "w") as zipf:
-            for file_path in folder.rglob("**/*"):
-                if file_path.is_file():
-                    zipf.write(file_path, file_path.relative_to(folder))
-                elif file_path.is_dir():
-                    zipf.mkdir(file_path.relative_to(folder).as_posix())
+        with open(folder.joinpath(zip_filename), "rb") as fp:
+            return fp.read()
+    elif s3 is not None:
+        data = s3.get_object(urljoin(folder, zip_filename))
+        return data
     else:
-        pass
+        raise FileStoreError("Invalid data path configuration")
 
-    zip_content.seek(0)
-    return zip_content
+
+def get_plugin_zip(gid: str) -> bytes:
+    folder = get_plugin_folder(gid)
+    zip_filename = f"{gid}.zip"
+    return _get_zip(folder, zip_filename)
+
+
+def get_plugin_algorithm_zip(gid: str, cid: str) -> bytes:
+    folder = get_plugin_component_folder(gid, "algorithms")
+    zip_filename = f"{cid}.zip"
+    return _get_zip(folder, zip_filename)
 
 
 def delete_plugin(gid: str):

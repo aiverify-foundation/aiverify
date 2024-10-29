@@ -43,5 +43,5 @@ def sanitize_filename(filename: str) -> str:
         raise InvalidFilename("The first character of the filename must be alphanumeric.")
 
     # Use regex to replace invalid characters
-    sanitized = re.sub(r"[^a-zA-Z0-9./]", "", filename)
+    sanitized = re.sub(r"[^a-zA-Z0-9./_]", "", filename)
     return sanitized

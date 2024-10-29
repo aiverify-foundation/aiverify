@@ -5,11 +5,11 @@ from sqlalchemy.orm import Session
 
 from ..lib.logging import logger
 from ..lib.database import get_db_session
-from ..lib.filestore import zip_plugin, backup_plugin
+from ..lib.filestore import get_plugin_zip, get_plugin_algorithm_zip, backup_plugin
 from ..lib.plugin_store import PluginStore, PluginStoreException
 from ..lib.file_utils import sanitize_filename
 from ..schemas import PluginOutput
-from ..models import PluginModel
+from ..models import PluginModel, AlgorithmModel
 
 router = APIRouter(prefix="/plugin", tags=["plugin"])
 
@@ -172,11 +172,39 @@ async def download_plugin(gid: str, session: Session = Depends(get_db_session)) 
         if not plugin:
             raise HTTPException(status_code=404, detail="Plugin not found")
 
-        # Call the zip_plugin method from filestore to create the zip file
-        zip_buffer = zip_plugin(gid)
+        # Call the get_plugin_zip method from filestore to create the zip file
+        zip_buffer = get_plugin_zip(gid)
 
-        headers = {"Content-Disposition": f'attachment; filename="{sanitize_filename(plugin.name)}.zip"'}
-        return Response(content=zip_buffer.read(), media_type="application/zip", headers=headers)
+        headers = {"Content-Disposition": f'attachment; filename="{sanitize_filename(plugin.gid)}.zip"'}
+        return Response(content=zip_buffer, media_type="application/zip", headers=headers)
+
+    except PluginStoreException as e:
+        logger.error(f"Plugin exception: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logger.error(f"Error downloading plugin: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router.get("/algorithm/{gid}/{cid}", response_model=dict)
+async def download_plugin_algorithm(gid: str, cid: str, session: Session = Depends(get_db_session)) -> Response:
+    """
+    Endpoint to download a plugin as a zip file.
+    """
+    try:
+        stmt = select(AlgorithmModel).filter_by(gid=gid).filter_by(cid=cid)
+        algo = session.scalar(stmt)
+
+        if not algo:
+            raise HTTPException(status_code=404, detail="Algorithm not found")
+
+        # Call the get_plugin_zip method from filestore to create the zip file
+        zip_buffer = get_plugin_algorithm_zip(gid, algo.cid)
+
+        headers = {"Content-Disposition": f'attachment; filename="{sanitize_filename(algo.cid)}.zip"'}
+        return Response(content=zip_buffer, media_type="application/zip", headers=headers)
 
     except PluginStoreException as e:
         logger.error(f"Plugin exception: {e}")

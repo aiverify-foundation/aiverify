@@ -13,8 +13,11 @@ from .filestore import (
     delete_all_plugins as fs_delete_all_plugins,
     delete_plugin as fs_delete_plugin,
     save_plugin as fs_save_plugin,
+    save_plugin_algorithm as fs_save_plugin_algorithm,
+    save_plugin_widgets as fs_save_plugin_widgets,
+    save_plugin_inputs as fs_save_plugin_inputs,
 )
-from sqlalchemy import select, func
+from sqlalchemy import select, update, func
 
 
 class PluginStoreException(Exception):
@@ -163,11 +166,12 @@ class PluginStore:
             # scan for algorithms
             algo_subdir = folder.joinpath("algorithms")
             if algo_subdir.exists() and algo_subdir.is_dir():
-                for algopath in algo_subdir.iterdir():
-                    if not algopath.is_dir():
+                for algosubdir in algo_subdir.iterdir():
+                    if not algosubdir.is_dir():
                         continue
 
                     # read algo metadata
+                    algopath = algosubdir
                     try:
                         cid = algopath.name
                         meta_path = algopath.joinpath(f"{cid}.meta.json")
@@ -241,7 +245,7 @@ class PluginStore:
                             require_ground_truth=meta.requireGroundTruth,
                             input_schema=json.dumps(input_schema).encode("utf-8"),
                             output_schema=json.dumps(output_schema).encode("utf-8"),
-                            algo_dir=algopath.relative_to(folder).as_posix(),
+                            algo_dir=algosubdir.relative_to(folder).as_posix(),
                             language="python",  # fixed to python first. To support other languages in future
                             script=script,
                             module_name=module_name,
@@ -257,9 +261,19 @@ class PluginStore:
 
             # commit to DB
             session.add(plugin)
+            # session.commit()
+
+            # save plugin to plugin data dir
+            zip_hash = fs_save_plugin(plugin_meta.gid, folder)
+            plugin.zip_hash = zip_hash
+
+            for algo in plugin.algorithms:
+                zip_hash = fs_save_plugin_algorithm(plugin_meta.gid, algo.cid, folder.joinpath(algo.algo_dir))
+                algo.zip_hash = zip_hash
+
             session.commit()
 
-            fs_save_plugin(plugin_meta.gid, folder)
+            # detach plugin model from session
             session.expunge(plugin)
             return plugin
 

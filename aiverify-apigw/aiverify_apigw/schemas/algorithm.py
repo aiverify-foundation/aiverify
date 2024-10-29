@@ -41,6 +41,7 @@ class AlgorithmOutput(AlgorithmMeta):
     language: Optional[str] = Field(description="Algorithm language", default=None)
     script: Optional[str] = Field(description="Algorithm language", default=None)
     module_name: Optional[str] = Field(description="Algorithm language", default=None)
+    zip_hash: Optional[str] = Field(description="File hash of algorithm zip")
 
     @classmethod
     def from_model(cls, result: AlgorithmModel) -> "AlgorithmOutput":
@@ -57,5 +58,6 @@ class AlgorithmOutput(AlgorithmMeta):
             language=result.language,
             script=result.script,
             module_name=result.module_name,
+            zip_hash=result.zip_hash,
         )
         return obj
