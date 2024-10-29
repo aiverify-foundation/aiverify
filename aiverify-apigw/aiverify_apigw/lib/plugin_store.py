@@ -1,4 +1,4 @@
-from pathlib import Path
+from pathlib import Path, PurePath
 import json
 import tomllib
 from typing import List
@@ -14,10 +14,10 @@ from .filestore import (
     delete_plugin as fs_delete_plugin,
     save_plugin as fs_save_plugin,
     save_plugin_algorithm as fs_save_plugin_algorithm,
-    save_plugin_widgets as fs_save_plugin_widgets,
-    save_plugin_inputs as fs_save_plugin_inputs,
+    # save_plugin_widgets as fs_save_plugin_widgets,
+    # save_plugin_inputs as fs_save_plugin_inputs,
 )
-from sqlalchemy import select, update, func
+from sqlalchemy import select, func
 
 
 class PluginStoreException(Exception):
@@ -121,6 +121,100 @@ class PluginStore:
             return None
 
     @classmethod
+    def scan_algorithm_directory(cls, algosubdir: Path, gid: str | None = None):
+        # read algo metadata
+        algopath = algosubdir
+        try:
+            cid = algopath.name
+            meta_path = algopath.joinpath(f"{cid}.meta.json")
+            module_name = None
+            if not meta_path.exists():
+                pyproject_file = algopath.joinpath("pyproject.toml")
+                if not pyproject_file.exists():
+                    logger.debug(
+                        f"Algorithm folder {algopath.name} does not contain meta file nor pyproject.toml, skipping"
+                    )
+                    return None
+                with open(pyproject_file, "rb") as fp:
+                    pyproject_data = tomllib.load(fp)
+                if "project" not in pyproject_data or "name" not in pyproject_data["project"]:
+                    logger.debug(f"Algorithm folder {algopath.name} has invalid pyproject.toml")
+                    return None
+                # TODO: is this the best way to get algorithm folder?
+                project_name = pyproject_data["project"]["name"].replace("-", "_")
+                sub_path = algopath.joinpath(project_name)
+                module_name = project_name
+                meta_path = sub_path.joinpath("algo.meta.json")
+                if not meta_path.exists():
+                    logger.debug(f"Algorithm folder {algopath.name} does not contain meta file, skipping")
+                    return None
+                algopath = sub_path
+            algo_meta_json = read_and_validate(meta_path, algorithm_schema)
+            if algo_meta_json is None:
+                logger.warning(f"Algorithm {cid} has invalid meta {cid}.meta.json")
+                return None
+            meta = AlgorithmMeta.model_validate_json(json.dumps(algo_meta_json))
+            if meta.gid:
+                gid = meta.gid
+            if gid is None:
+                logger.error(f"Unable to find gid for algorithm {meta.cid}")
+                return None
+
+            # validate script
+            script_path = algopath.joinpath(f"{meta.cid}.py")
+            if not script_path.exists():
+                script_path = algopath.joinpath(f"algo.py")
+            if script_path.exists():  # if script exists
+                if not validate_python_script(script_path):
+                    logger.warning(f"algorithm {meta.cid} script is not valid")
+                    return None
+                script = script_path.name
+            else:
+                script = None
+
+            # validate requirements.txt
+            # requirements = cls.read_requirements(algopath.joinpath("requirements.txt"))
+            # if requirements is None:
+            #     logger.warning(f"Missing or invalid requirements.txt for algo {cid}")
+            #     continue
+
+            # read input and output schema
+            with open(algopath.joinpath("input.schema.json"), "r") as fp:
+                input_schema = json.load(fp)
+
+            with open(algopath.joinpath("output.schema.json"), "r") as fp:
+                output_schema = json.load(fp)
+
+            model_type = ",".join(meta.modelType)
+
+            algorithm = AlgorithmModel(
+                plugin_id=gid,
+                meta=json.dumps(algo_meta_json).encode("utf-8"),
+                id=f"{gid}:{meta.cid}",
+                cid=meta.cid,
+                name=meta.name,
+                version=meta.version,
+                author=meta.author,
+                description=meta.description,
+                # tags=meta.tags,
+                gid=gid,
+                model_type=model_type,
+                require_ground_truth=meta.requireGroundTruth,
+                input_schema=json.dumps(input_schema).encode("utf-8"),
+                output_schema=json.dumps(output_schema).encode("utf-8"),
+                # algo_dir=algosubdir.relative_to(folder).as_posix(),
+                algo_dir=PurePath("algorithms").joinpath(algosubdir.name).as_posix(),
+                language="python",  # fixed to python first. To support other languages in future
+                script=script,
+                module_name=module_name,
+            )
+
+            logger.debug(f"New algorithm {algorithm}")
+            return algorithm
+        except Exception as e:
+            logger.warning(f"Error validating algorithm {algopath}: {e}")
+
+    @classmethod
     def scan_plugin_directory(cls, folder: Path, is_stock=False):
         """Scan the plugin directory and save the plugin information to DB.
         Assume that the directory has been validated using validate_plugin_directory.
@@ -129,7 +223,6 @@ class PluginStore:
             folder (Path): _description_
 
         Raises:
-            PluginStoreException: _description_
             PluginStoreException: _description_
         """
         plugin_meta_file = folder.joinpath(cls.plugin_meta_filename)
@@ -170,92 +263,10 @@ class PluginStore:
                     if not algosubdir.is_dir():
                         continue
 
-                    # read algo metadata
-                    algopath = algosubdir
-                    try:
-                        cid = algopath.name
-                        meta_path = algopath.joinpath(f"{cid}.meta.json")
-                        module_name = None
-                        if not meta_path.exists():
-                            pyproject_file = algopath.joinpath("pyproject.toml")
-                            if not pyproject_file.exists():
-                                logger.debug(
-                                    f"Algorithm folder {algopath.name} does not contain meta file nor pyproject.toml, skipping"
-                                )
-                                continue
-                            with open(pyproject_file, "rb") as fp:
-                                pyproject_data = tomllib.load(fp)
-                            if "project" not in pyproject_data or "name" not in pyproject_data["project"]:
-                                logger.debug(f"Algorithm folder {algopath.name} has invalid pyproject.toml")
-                                continue
-                            # TODO: is this the best way to get algorithm folder?
-                            project_name = pyproject_data["project"]["name"].replace("-", "_")
-                            sub_path = algopath.joinpath(project_name)
-                            module_name = project_name
-                            meta_path = sub_path.joinpath("algo.meta.json")
-                            if not meta_path.exists():
-                                logger.debug(f"Algorithm folder {algopath.name} does not contain meta file, skipping")
-                                continue
-                            algopath = sub_path
-                        algo_meta_json = read_and_validate(meta_path, algorithm_schema)
-                        if algo_meta_json is None:
-                            logger.warning(f"Algorithm {cid} has invalid meta {cid}.meta.json")
-                            continue
-                        meta = AlgorithmMeta.model_validate_json(json.dumps(algo_meta_json))
-
-                        # validate script
-                        script_path = algopath.joinpath(f"{meta.cid}.py")
-                        if not script_path.exists():
-                            script_path = algopath.joinpath(f"algo.py")
-                        if script_path.exists():  # if script exists
-                            if not validate_python_script(script_path):
-                                logger.warning(f"algorithm {meta.cid} script is not valid")
-                                continue
-                            script = script_path.name
-                        else:
-                            script = None
-
-                        # validate requirements.txt
-                        # requirements = cls.read_requirements(algopath.joinpath("requirements.txt"))
-                        # if requirements is None:
-                        #     logger.warning(f"Missing or invalid requirements.txt for algo {cid}")
-                        #     continue
-
-                        # read input and output schema
-                        with open(algopath.joinpath("input.schema.json"), "r") as fp:
-                            input_schema = json.load(fp)
-
-                        with open(algopath.joinpath("output.schema.json"), "r") as fp:
-                            output_schema = json.load(fp)
-
-                        model_type = ",".join(meta.modelType)
-
-                        algorithm = AlgorithmModel(
-                            plugin_id=plugin.gid,
-                            meta=json.dumps(algo_meta_json).encode("utf-8"),
-                            id=f"{plugin_meta.gid}:{meta.cid}",
-                            cid=meta.cid,
-                            name=meta.name,
-                            version=meta.version,
-                            author=meta.author,
-                            description=meta.description,
-                            # tags=meta.tags,
-                            gid=plugin_meta.gid,
-                            model_type=model_type,
-                            require_ground_truth=meta.requireGroundTruth,
-                            input_schema=json.dumps(input_schema).encode("utf-8"),
-                            output_schema=json.dumps(output_schema).encode("utf-8"),
-                            algo_dir=algosubdir.relative_to(folder).as_posix(),
-                            language="python",  # fixed to python first. To support other languages in future
-                            script=script,
-                            module_name=module_name,
-                        )
-
-                        logger.debug(f"New algorithm {algorithm}")
+                    algorithm = cls.scan_algorithm_directory(algosubdir, plugin.gid)
+                    if algorithm:
                         plugin.algorithms.append(algorithm)
                         session.add(algorithm)
-                    except Exception as e:
-                        logger.warning(f"Error validating algorithm {algopath}: {e}")
 
             # TODO: add for other components
 
@@ -276,6 +287,66 @@ class PluginStore:
             # detach plugin model from session
             session.expunge(plugin)
             return plugin
+
+    @classmethod
+    def validate_algorithm_directory(cls, algopath: Path, gid: str | None):
+        logger.debug(f"Reading algorithm directory {algopath.name}")
+        # read algo metadata
+        cid = algopath.name
+        meta_path = algopath.joinpath(f"{cid}.meta.json")
+        if not meta_path.exists():
+            pyproject_file = algopath.joinpath("pyproject.toml")
+            if not pyproject_file.exists():
+                logger.debug(
+                    f"Algorithm folder {algopath.name} does not contain meta file nor pyproject.toml, skipping"
+                )
+                return False
+            with open(pyproject_file, "rb") as fp:
+                pyproject_data = tomllib.load(fp)
+            if "project" not in pyproject_data or "name" not in pyproject_data["project"]:
+                logger.debug(f"Algorithm folder {algopath.name} has invalid pyproject.toml")
+                return False
+            # TODO: is this the best way to get algorithm folder?
+            project_name = pyproject_data["project"]["name"].replace("-", "_")
+            sub_path = algopath.joinpath(project_name)
+            meta_path = sub_path.joinpath("algo.meta.json")
+            if not meta_path.exists():
+                logger.debug(f"Algorithm folder {algopath.name} does not contain meta file, skipping")
+                return False
+            algopath = sub_path
+        algo_meta_json = read_and_validate(meta_path, algorithm_schema)
+        # print(algo_meta_json)
+        if algo_meta_json is None:
+            raise PluginStoreException(f"Algorithm folder {algopath}: invalid {cid}.meta.json")
+        meta = AlgorithmMeta.model_validate_json(json.dumps(algo_meta_json))
+        if gid and meta.gid and meta.gid != gid:
+            raise PluginStoreException(f"Meta gid {gid} in algorithm {meta.cid} does not match")
+
+        # validate script
+        # script_path = algopath.joinpath(f"{algorithm.cid}.py")
+        # if not validate_python_script(script_path):
+        #     raise PluginStoreException(
+        #         f"Algorithm folder {folder.name}: {algorithm.cid}.py script is not valid")
+
+        # validate requirements.txt
+        # requirements = cls.read_requirements(algopath.joinpath("requirements.txt"))
+        # if requirements is None:
+        #     raise PluginStoreException(f"Algorithm folder {folder.name}: missing or invalid requirements.txt")
+
+        # read input and output schema
+        try:
+            with open(algopath.joinpath("input.schema.json"), "r") as fp:
+                json.load(fp)
+        except:
+            raise PluginStoreException(f"Algorithm folder {algopath}: missing or invalid input.schema.json")
+
+        try:
+            with open(algopath.joinpath("output.schema.json"), "r") as fp:
+                json.load(fp)
+        except:
+            raise PluginStoreException(f"Algorithm folder {algopath}: missing or invaid output.schema.json")
+
+        return True
 
     @classmethod
     def validate_plugin_directory(cls, folder: Path) -> PluginMeta:
@@ -309,60 +380,7 @@ class PluginStore:
             for algopath in algo_subdir.iterdir():
                 if not algopath.is_dir():
                     continue
-
-                logger.debug(f"Reading algorithm directory {algopath.name}")
-                # read algo metadata
-                cid = algopath.name
-                meta_path = algopath.joinpath(f"{cid}.meta.json")
-                if not meta_path.exists():
-                    pyproject_file = algopath.joinpath("pyproject.toml")
-                    if not pyproject_file.exists():
-                        logger.debug(
-                            f"Algorithm folder {algopath.name} does not contain meta file nor pyproject.toml, skipping"
-                        )
-                        continue
-                    with open(pyproject_file, "rb") as fp:
-                        pyproject_data = tomllib.load(fp)
-                    if "project" not in pyproject_data or "name" not in pyproject_data["project"]:
-                        logger.debug(f"Algorithm folder {algopath.name} has invalid pyproject.toml")
-                        continue
-                    # TODO: is this the best way to get algorithm folder?
-                    project_name = pyproject_data["project"]["name"].replace("-", "_")
-                    sub_path = algopath.joinpath(project_name)
-                    meta_path = sub_path.joinpath("algo.meta.json")
-                    if not meta_path.exists():
-                        logger.debug(f"Algorithm folder {algopath.name} does not contain meta file, skipping")
-                        continue
-                    algopath = sub_path
-                algo_meta_json = read_and_validate(meta_path, algorithm_schema)
-                # print(algo_meta_json)
-                if algo_meta_json is None:
-                    raise PluginStoreException(f"Algorithm folder {folder.name}: invalid {cid}.meta.json")
-                AlgorithmMeta.model_validate_json(json.dumps(algo_meta_json))
-
-                # validate script
-                # script_path = algopath.joinpath(f"{algorithm.cid}.py")
-                # if not validate_python_script(script_path):
-                #     raise PluginStoreException(
-                #         f"Algorithm folder {folder.name}: {algorithm.cid}.py script is not valid")
-
-                # validate requirements.txt
-                # requirements = cls.read_requirements(algopath.joinpath("requirements.txt"))
-                # if requirements is None:
-                #     raise PluginStoreException(f"Algorithm folder {folder.name}: missing or invalid requirements.txt")
-
-                # read input and output schema
-                try:
-                    with open(algopath.joinpath("input.schema.json"), "r") as fp:
-                        json.load(fp)
-                except:
-                    raise PluginStoreException(f"Algorithm folder {folder.name}: missing or invalid input.schema.json")
-
-                try:
-                    with open(algopath.joinpath("output.schema.json"), "r") as fp:
-                        json.load(fp)
-                except:
-                    raise PluginStoreException(f"Algorithm folder {folder.name}: missing or invaid output.schema.json")
+                cls.validate_algorithm_directory(algopath, plugin.gid)
 
         # TODO: add for other components
 

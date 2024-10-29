@@ -202,7 +202,7 @@ def save_plugin(gid: str, source_dir: Path):
 
 def save_plugin_algorithm(gid: str, cid: str, source_dir: Path):
     folder = get_plugin_component_folder(gid, "algorithms")
-    logger.debug(f">>>> Save algorithm {cid} folder from {source_dir} to {folder}")
+    logger.debug(f"Save algorithm {cid} folder from {source_dir} to {folder}")
     zip_filename = f"{cid}.zip"
     hash_filename = f"{cid}.hash"
     return _save_plugin(source_dir, folder, zip_filename, hash_filename)
