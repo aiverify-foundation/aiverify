@@ -90,17 +90,35 @@ class TestUploadPlugin:
 
 
 class TestDownloadPlugin:
-    @patch("aiverify_apigw.routers.plugin_router.zip_plugin")
-    def test_download_plugin_success(self, mock_zip_plugin, test_client, mock_plugins):
+    @patch("aiverify_apigw.routers.plugin_router.get_plugin_zip")
+    def test_download_plugin_success(self, mock_zip, test_client, mock_plugins):
         plugin = mock_plugins[0]
-        zip_buffer = MagicMock()
-        zip_buffer.read = MagicMock(return_value=b"Test Plugin")
-        mock_zip_plugin.return_value = zip_buffer
+        # zip_buffer = MagicMock()
+        # zip_buffer.read = MagicMock(return_value=b"Test Plugin")
+        mock_zip.return_value = b"Test Plugin"
         response = test_client.get(f"/plugin/download/{plugin.gid}")
         assert response.status_code == 200
 
-    def test_download_plugin_not_found(self, test_client, db_session):
+    def test_download_plugin_not_found(self, test_client):
         # mock_db_session.scalar.return_value = None
         response = test_client.get("/plugin/download/invalid_gid")
         assert response.status_code == 404
         # assert response.json() == {"detail": "Plugin not found"}
+
+
+class TestDownloadPluginAlgorithm:
+    @patch("aiverify_apigw.routers.plugin_router.get_plugin_algorithm_zip")
+    def test_download_plugin_algorithm_success(self, mock_zip, test_client, mock_plugins):
+        plugin = mock_plugins[0]
+        algo = plugin.algorithms[0]
+        # zip_buffer = MagicMock()
+        # zip_buffer.read = MagicMock(return_value=b"Test Plugin")
+        mock_zip.return_value = b"Test Algorithm"
+        response = test_client.get(f"/plugin/algorithm/{plugin.gid}/{algo.cid}")
+        assert response.status_code == 200
+
+    def test_download_plugin_algorithm_not_found(self, test_client, mock_plugins):
+        plugin = mock_plugins[0]
+        # mock_db_session.scalar.return_value = None
+        response = test_client.get(f"/plugin/algorithm/{plugin.gid}/invalid_algo")
+        assert response.status_code == 404

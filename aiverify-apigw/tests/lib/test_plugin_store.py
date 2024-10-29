@@ -132,7 +132,7 @@ class TestPluginStoreScanPluginDirectory:
         return folder
 
     @patch("aiverify_apigw.lib.plugin_store.read_and_validate")
-    @patch("aiverify_apigw.lib.plugin_store.fs_save_plugin")
+    @patch("aiverify_apigw.lib.plugin_store.fs_save_plugin", return_value="fake_hash")
     def test_scan_plugin_directory_valid(self, mock_save_plugin, mock_read_and_validate, mock_plugin_path):
         """Test scanning a valid plugin directory, should read and validate successfully."""
         # TODO: add tests for algo scans
