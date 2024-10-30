@@ -10,7 +10,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="h-auto w-screen bg-gradient-to-b from-primary-950 to-secondary-700 pb-16 text-white antialiased">
-        <HeaderWithLogo className="fixed left-0 right-0 top-0 z-50 flex h-16 items-center px-6">
+        <HeaderWithLogo className="bg-primary-950/100 fixed left-0 right-0 top-0 z-50 flex h-16 items-center border-b border-primary-700 px-6 backdrop-blur-sm">
           <div className="flex items-center gap-6">
             <Icon
               name={IconName.Bell}

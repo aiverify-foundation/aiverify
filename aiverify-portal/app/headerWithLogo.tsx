@@ -11,7 +11,7 @@ const HeaderWithLogo = ({
 }: PropsWithChildren<HeaderProps>) => {
   return (
     <header className={className}>
-      <div className="flex w-full items-center justify-between">
+      <div className="mx-auto flex w-full items-center justify-between px-4 sm:px-6 lg:max-w-[1520px] lg:px-8 xl:max-w-[1720px] xl:px-12">
         <Image
           src="/aiverify-logo-white.svg"
           alt="AI Verify"
