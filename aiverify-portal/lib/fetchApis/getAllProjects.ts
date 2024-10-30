@@ -15,7 +15,7 @@ export const ProjectSchema = z.object({
 
 export type ProjectSchemaType = z.infer<typeof ProjectSchema>;
 
-export async function fetchEndpoints(): Promise<
+export async function fetchProjects(): Promise<
   ApiResult<Project[]> | ErrorWithMessage
 > {
   const response = await fetch(`http://localhost:3000/api/mock/projects`);
