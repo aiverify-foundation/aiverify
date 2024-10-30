@@ -212,7 +212,7 @@ async def download_plugin(gid: str, session: Session = Depends(get_db_session)) 
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.get("/algorithm/{gid}/{cid}", response_model=dict)
+@router.get("/{gid}/algorithm/{cid}", response_model=dict)
 async def download_plugin_algorithm(gid: str, cid: str, session: Session = Depends(get_db_session)) -> Response:
     """
     Endpoint to download a plugin as a zip file.
