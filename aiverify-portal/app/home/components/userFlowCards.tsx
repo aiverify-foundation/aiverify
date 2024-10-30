@@ -8,7 +8,7 @@ export function UserFlowCards() {
   return (
     <section className="flex w-full justify-center">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        <Link href="/projects">
+        <Link href="/project/new">
           <Card
             size="md"
             enableTiltEffect={true}
@@ -82,7 +82,7 @@ export function UserFlowCards() {
             </Card.Content>
           </Card>
         </Link>
-        <Link href="/report-templates">
+        <Link href="/templates">
           <Card
             size="md"
             enableTiltEffect={true}
