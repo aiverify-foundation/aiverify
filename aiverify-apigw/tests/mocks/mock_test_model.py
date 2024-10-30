@@ -6,11 +6,11 @@ from aiverify_apigw.lib.constants import TestModelMode
 
 faker = Faker()
 
-model_types = ['classification', 'regression']
+model_types = ["classification", "regression"]
 
 
 def _create_mock_test_model():
-    filename = faker.file_name(extension='sav')
+    filename = faker.file_name(extension="sav")
     fake_date = faker.date_object()
     test_model = TestModelModel(
         name=faker.name(),

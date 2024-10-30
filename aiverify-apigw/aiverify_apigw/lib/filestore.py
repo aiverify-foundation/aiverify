@@ -2,9 +2,13 @@ import os
 import shutil
 from pathlib import Path
 import urllib.parse
+import hashlib
+from zipfile import ZipFile
+
 urllib.parse.uses_relative.append("s3")
 urllib.parse.uses_netloc.append("s3")
 from urllib.parse import urljoin
+import io
 
 from .s3 import MyS3
 from .logging import logger
@@ -15,11 +19,13 @@ s3 = None
 
 class InvalidFileStore(Exception):
     """Raised when base file path is invalid or access denied"""
+
     pass
 
 
 class FileStoreError(Exception):
     """Raised on general file path error"""
+
     pass
 
 
@@ -45,8 +51,7 @@ def get_base_data_dir() -> Path | str:
             else:
                 mydir = Path(os.environ["APIGW_DATA_DIR"])
         else:
-            mydir = Path(__file__).parent.parent.parent.joinpath(
-                "data").resolve()
+            mydir = Path(__file__).parent.parent.parent.joinpath("data").resolve()
         # create directories if no exists
         if isinstance(mydir, Path):
             logger.info(f"Using local data path: {mydir}")
@@ -60,10 +65,12 @@ def get_base_data_dir() -> Path | str:
 
 
 base_data_dir = get_base_data_dir()
-base_plugin_dir = base_data_dir.joinpath("plugin") if isinstance(
-    base_data_dir, Path) else urljoin(base_data_dir, "plugin/")
-base_artifacts_dir = base_data_dir.joinpath("artifacts") if isinstance(
-    base_data_dir, Path) else urljoin(base_data_dir, "artifacts/")
+base_plugin_dir = (
+    base_data_dir.joinpath("plugin") if isinstance(base_data_dir, Path) else urljoin(base_data_dir, "plugin/")
+)
+base_artifacts_dir = (
+    base_data_dir.joinpath("artifacts") if isinstance(base_data_dir, Path) else urljoin(base_data_dir, "artifacts/")
+)
 
 
 def is_s3(path: Path | str) -> bool:
@@ -126,24 +133,147 @@ plugin_ignore_patten = shutil.ignore_patterns(
     "temp",
     "__pycache__",
     ".pytest_cache",
-    ".cache"
-    "*.pyc",
+    ".cache" "*.pyc",
 )
+
+
+def zip_folder(folder: Path) -> tuple[io.BytesIO, str]:
+    """
+    Generate a zip file for the path specifified.
+
+    Args:
+        folder (Path): The path of the folder to zip
+
+    Returns:
+        str: Filehash of zip file
+    """
+
+    logger.debug(f"ziping folder {folder}")
+
+    zip_content = io.BytesIO()
+    if not folder.exists() or not folder.is_dir():
+        raise FileStoreError(f"Invalid directory for {folder}")
+
+    with ZipFile(zip_content, "w") as zipf:
+        for file_path in folder.rglob("**/*"):
+            if file_path.is_file():
+                zipf.write(file_path, file_path.relative_to(folder))
+            elif file_path.is_dir():
+                zipf.mkdir(file_path.relative_to(folder).as_posix())
+
+    # Compute file hash using zip_content
+    zip_content.seek(0)  # Ensure we're at the start of the BytesIO stream
+    hasher = hashlib.sha256()
+    while chunk := zip_content.read(8192):
+        hasher.update(chunk)
+    file_hash = hasher.hexdigest()
+    logger.debug(f"Computed file hash: {file_hash}")
+
+    zip_content.seek(0)
+    return (zip_content, file_hash)
+
+
+def _save_plugin(source: Path, target: Path | str, zip_filename: str, hash_filename: str) -> str:
+    (zip_content, filehash) = zip_folder(source)
+    if isinstance(target, Path):
+        target.mkdir(parents=True, exist_ok=True)
+        # shutil.copytree(source_dir, folder, dirs_exist_ok=True, ignore=plugin_ignore_patten)
+        with open(target.joinpath(zip_filename), "wb") as fp:
+            fp.write(zip_content.read())
+        with open(target.joinpath(hash_filename), "w") as fp:
+            fp.write(filehash)
+    elif s3 is not None:
+        # folder is s3 prefix
+        if s3.check_s3_prefix_exists(target):
+            s3.delete_objects_under_prefix(target)  # if prefix exists, delete
+        # s3.upload_directory_to_s3(source_dir, folder)
+        s3.put_object(urljoin(target, zip_filename), zip_content)
+        s3.put_object(urljoin(target, hash_filename), filehash)
+    return filehash
 
 
 def save_plugin(gid: str, source_dir: Path):
     folder = get_plugin_folder(gid)
-    logger.debug(f"Copy plugin folder from {source_dir} to {folder}")
+    logger.debug(f"Save plugin {gid} folder from {source_dir} to {folder}")
+    zip_filename = f"{gid}.zip"
+    hash_filename = f"{gid}.hash"
+    return _save_plugin(source_dir, folder, zip_filename, hash_filename)
+
+
+def save_plugin_algorithm(gid: str, cid: str, source_dir: Path):
+    folder = get_plugin_component_folder(gid, "algorithms")
+    logger.debug(f"Save algorithm {cid} folder from {source_dir} to {folder}")
+    zip_filename = f"{cid}.zip"
+    hash_filename = f"{cid}.hash"
+    return _save_plugin(source_dir, folder, zip_filename, hash_filename)
+
+
+def save_plugin_widgets(gid: str, source_dir: Path):
+    folder = get_plugin_component_folder(gid, "widgets")
+    logger.debug(f"Save widgets folder from {source_dir} to {folder}")
+    zip_filename = "widgets.zip"
+    hash_filename = "widgets.hash"
+    return _save_plugin(source_dir, folder, zip_filename, hash_filename)
+
+
+def save_plugin_inputs(gid: str, source_dir: Path):
+    folder = get_plugin_component_folder(gid, "inputs")
+    logger.debug(f"Save inputs folder from {source_dir} to {folder}")
+    zip_filename = "inputs.zip"
+    hash_filename = "inputs.hash"
+    return _save_plugin(source_dir, folder, zip_filename, hash_filename)
+
+
+def unzip_plugin(gid: str, target_dir: Path):
+    folder = get_plugin_folder(gid)
+    zip_filename = f"{gid}.zip"
     if isinstance(folder, Path):
-        if folder.exists():
-            shutil.rmtree(folder)
-        folder.mkdir(parents=True, exist_ok=True)
-        shutil.copytree(source_dir, folder, dirs_exist_ok=True, ignore=plugin_ignore_patten)
+        zip_path = folder.joinpath(zip_filename)
+        if zip_path.exists() and zip_path.is_file():
+            with ZipFile(zip_path, 'r') as zip_ref:
+                zip_ref.extractall(target_dir)
+        else:
+            raise FileStoreError(f"Zip file {zip_path} does not exist or is not a file")
+    elif s3 is not None:
+        zip_data = s3.get_object(urljoin(folder, zip_filename))
+        with ZipFile(io.BytesIO(zip_data), 'r') as zip_ref:
+            zip_ref.extractall(target_dir)
+
+
+def backup_plugin(gid: str, target_dir: Path):
+    folder = get_plugin_folder(gid)
+    logger.debug(f"Backup plugin folder from {folder} to {target_dir}")
+    if target_dir.exists():
+        shutil.rmtree(target_dir)
+    if isinstance(folder, Path):
+        target_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(folder, target_dir, dirs_exist_ok=True, ignore=plugin_ignore_patten)
     elif s3 is not None:
         # folder is s3 prefix
-        if s3.check_s3_prefix_exists(folder):
-            s3.delete_objects_under_prefix(folder)  # if prefix exists, delete
-        s3.upload_directory_to_s3(source_dir, folder)
+        s3.download_directory_from_s3(prefix=folder, target_directory=target_dir)
+
+
+def _get_zip(folder: Path | str, zip_filename: str) -> bytes:
+    if isinstance(folder, Path):
+        with open(folder.joinpath(zip_filename), "rb") as fp:
+            return fp.read()
+    elif s3 is not None:
+        data = s3.get_object(urljoin(folder, zip_filename))
+        return data
+    else:
+        raise FileStoreError("Invalid data path configuration")
+
+
+def get_plugin_zip(gid: str) -> bytes:
+    folder = get_plugin_folder(gid)
+    zip_filename = f"{gid}.zip"
+    return _get_zip(folder, zip_filename)
+
+
+def get_plugin_algorithm_zip(gid: str, cid: str) -> bytes:
+    folder = get_plugin_component_folder(gid, "algorithms")
+    zip_filename = f"{cid}.zip"
+    return _get_zip(folder, zip_filename)
 
 
 def delete_plugin(gid: str):
@@ -152,8 +282,7 @@ def delete_plugin(gid: str):
     try:
         if isinstance(folder, Path):
             if not folder.exists() or not folder.is_dir():
-                logger.warn(
-                    f"Asset {gid} path not found or not directory")
+                logger.warn(f"Asset {gid} path not found or not directory")
                 return
             shutil.rmtree(folder, ignore_errors=True)
         elif s3 is not None:

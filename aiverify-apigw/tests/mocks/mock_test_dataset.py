@@ -5,11 +5,11 @@ from aiverify_apigw.models import TestDatasetModel, TestDatasetStatus, TestDatas
 
 faker = Faker()
 
-model_types = ['classification', 'regression']
+model_types = ["classification", "regression"]
 
 
 def _create_mock_test_dataset():
-    filename = faker.file_name(extension='sav')
+    filename = faker.file_name(extension="sav")
     test_dataset = TestDatasetModel(
         name=faker.name(),
         status=TestDatasetStatus.Valid,

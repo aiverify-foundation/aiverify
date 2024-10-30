@@ -1,4 +1,5 @@
 import os
+
 os.environ["APIGW_DB_URI"] = "sqlite://"
 
 import pytest
@@ -26,6 +27,7 @@ def SessionLocal():
 def setup_database():
     """Setup the database at the start of the session and teardown at the end."""
     from aiverify_apigw.models import BaseORMModel
+
     BaseORMModel.metadata.create_all(bind=engine)
     yield
     # Drop all tables at the end of the test session
@@ -63,14 +65,55 @@ def test_client(SessionLocal):
     with TestClient(app) as test_client:
         yield test_client
 
+
 # Mock data fictures
+@pytest.fixture(scope="function")
+def mock_plugin_meta():
+    from .mocks.mock_plugin_meta import create_mock_plugin_meta
+
+    plugin = create_mock_plugin_meta()
+    yield plugin
 
 
 @pytest.fixture(scope="function")
 def mock_plugins(db_session):
     from .mocks.mock_data_plugin import create_mock_plugins
-    from aiverify_apigw.models import PluginModel, AlgorithmModel, WidgetModel, InputBlockModel, TemplateModel, PluginComponentModel
+    from aiverify_apigw.models import (
+        PluginModel,
+        AlgorithmModel,
+        WidgetModel,
+        InputBlockModel,
+        TemplateModel,
+        PluginComponentModel,
+    )
+
+    db_session.query(PluginModel).delete()
     plugins = create_mock_plugins(db_session)
+    db_session.commit()
+    yield plugins
+    db_session.query(PluginModel).delete()
+    db_session.query(AlgorithmModel).delete()
+    db_session.query(WidgetModel).delete()
+    db_session.query(InputBlockModel).delete()
+    db_session.query(TemplateModel).delete()
+    db_session.query(PluginComponentModel).delete()
+    db_session.commit()
+
+
+@pytest.fixture(scope="function")
+def mock_non_stock_plugins(db_session):
+    from .mocks.mock_data_plugin import create_mock_plugins
+    from aiverify_apigw.models import (
+        PluginModel,
+        AlgorithmModel,
+        WidgetModel,
+        InputBlockModel,
+        TemplateModel,
+        PluginComponentModel,
+    )
+
+    db_session.query(PluginModel).delete()
+    plugins = create_mock_plugins(db_session, is_stock=False)
     db_session.commit()
     yield plugins
     db_session.query(PluginModel).delete()
@@ -86,6 +129,7 @@ def mock_plugins(db_session):
 def mock_test_results(db_session, mock_plugins):
     from .mocks.mock_test_result import create_mock_test_results
     from aiverify_apigw.models import TestResultModel, TestModelModel, TestDatasetModel, TestArtifactModel
+
     results = create_mock_test_results(db_session, mock_plugins)
     db_session.commit()
     yield results
