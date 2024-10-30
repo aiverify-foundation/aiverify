@@ -1,8 +1,8 @@
 'use client';
 
 import clsx from 'clsx';
-import React, { ComponentProps, useState } from 'react';
-import { Icon, IconName } from '../IconSVG';
+import React, { useState } from 'react';
+import { Icon, IconName } from '@/lib/components/IconSVG';
 import styles from './styles/button.module.css';
 
 type BtnState = 'default' | 'hover' | 'pressed';

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Icon, IconName } from '../IconSVG';
-import { Button, ButtonVariant } from '../button';
+import { Icon, IconName } from '@/lib/components/IconSVG';
+import { Button, ButtonVariant } from '@/lib/components/button';
 
 type ModalProps = {
   top?: React.CSSProperties['top'];
@@ -56,9 +56,7 @@ function Modal(props: ModalProps) {
         />
       )}
       <div
-        className={`absolute left-1/2 top-1/2 z-[1000] h-[260px] w-[600px]
-        -translate-x-1/2 -translate-y-1/2 transform rounded-[5px] 
-        bg-gradient-to-br from-secondary-600 to-secondary-700 p-6 dark:bg-secondary-700 ${className}`}
+        className={`absolute left-1/2 top-1/2 z-[1000] h-[260px] w-[600px] -translate-x-1/2 -translate-y-1/2 transform rounded-[5px] bg-gradient-to-br from-secondary-600 to-secondary-700 p-6 dark:bg-secondary-700 ${className}`}
         style={{
           top,
           left,
@@ -67,10 +65,13 @@ function Modal(props: ModalProps) {
           backgroundColor: bgColor,
           color: textColor,
           boxShadow: '2px 2px 12px rgba(0,0,0,.4)',
-        }}
-      >
-        <header className="mb-3 flex justify-between" style={{ color: headingColor }}>
-          <h1 className="text-[1.4rem] font-normal text-primary-100">{heading}</h1>
+        }}>
+        <header
+          className="mb-3 flex justify-between"
+          style={{ color: headingColor }}>
+          <h1 className="text-[1.4rem] font-normal text-primary-100">
+            {heading}
+          </h1>
           {!hideCloseIcon ? (
             <Icon
               name={IconName.Close}

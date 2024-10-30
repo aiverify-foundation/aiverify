@@ -1,12 +1,5 @@
 import clsx from 'clsx';
-import React, {
-  PropsWithChildren,
-  ReactElement,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 
 import styles from './styles/tooltip.module.css';
@@ -35,7 +28,10 @@ type TooltipProps = {
   offsetTop?: number;
 };
 
-type TooltipPlacementStyle = Pick<React.CSSProperties, 'top' | 'left' | 'opacity'>;
+type TooltipPlacementStyle = Pick<
+  React.CSSProperties,
+  'top' | 'left' | 'opacity'
+>;
 
 const result: TooltipPlacementStyle = {
   top: 0,
@@ -56,7 +52,7 @@ function calculateTooltipPosition(
   tooltipEl: HTMLElement,
   position: TooltipPosition,
   offsetLeft = 0,
-  offsetTop = 0,
+  offsetTop = 0
 ): TooltipPlacementStyle {
   const triggerRect = triggerEl.getBoundingClientRect();
   const tooltipRect = tooltipEl.getBoundingClientRect();
@@ -72,7 +68,8 @@ function calculateTooltipPosition(
         (triggerEl.offsetWidth > tooltipRect.width
           ? triggerRect.left + widthDiff
           : triggerRect.left - widthDiff) + offsetLeft;
-      result.top = triggerRect.top - tooltipEl.offsetHeight - arrowSize + offsetTop;
+      result.top =
+        triggerRect.top - tooltipEl.offsetHeight - arrowSize + offsetTop;
       break;
     case TooltipPosition.bottom:
       result.left =
@@ -86,7 +83,8 @@ function calculateTooltipPosition(
         (triggerEl.offsetHeight > tooltipRect.height
           ? triggerRect.top + heightDiff
           : triggerRect.top - 10) + offsetTop;
-      result.left = triggerRect.left - tooltipEl.offsetWidth - arrowSize + offsetLeft;
+      result.left =
+        triggerRect.left - tooltipEl.offsetWidth - arrowSize + offsetLeft;
       break;
     case TooltipPosition.right:
       result.top =
@@ -118,7 +116,8 @@ function Tooltip(props: PropsWithChildren<TooltipProps>) {
     offsetTop = 0,
     children,
   } = props;
-  const [placement, setPlacement] = useState<TooltipPlacementStyle>(defaultPlacement);
+  const [placement, setPlacement] =
+    useState<TooltipPlacementStyle>(defaultPlacement);
   const [isHovering, setIsHovering] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const tooltipRef = useRef<HTMLDivElement>(null);
@@ -137,7 +136,7 @@ function Tooltip(props: PropsWithChildren<TooltipProps>) {
         tooltipRef.current,
         position,
         offsetLeft,
-        offsetTop,
+        offsetTop
       );
       setPlacement(placementStyle);
     }, delay);
@@ -214,7 +213,9 @@ function Tooltip(props: PropsWithChildren<TooltipProps>) {
               className={clsx(styles.pointer, styles[positionClassname])}
               style={{
                 borderColor: transparent ? 'transparent' : backgroundColor,
-                boxShadow: transparent ? 'none' : '0 2px 8px rgba(0, 0, 0, 0.4)',
+                boxShadow: transparent
+                  ? 'none'
+                  : '0 2px 8px rgba(0, 0, 0, 0.4)',
               }}
             />
             <div
@@ -223,19 +224,17 @@ function Tooltip(props: PropsWithChildren<TooltipProps>) {
                 backgroundColor: transparent ? 'transparent' : backgroundColor,
                 maxWidth: contentMaxWidth,
                 minWidth: contentMinWidth,
-              }}
-            >
+              }}>
               {content}
             </div>
           </div>,
-          document.body, // This is where the portal will render
+          document.body // This is where the portal will render
         )}
       <div
         className={styles.childWrapper}
         ref={triggerRef}
         onMouseOver={!flash ? handleMouseOver : undefined}
-        onMouseOut={!flash ? handleMouseOut : undefined}
-      >
+        onMouseOut={!flash ? handleMouseOut : undefined}>
         {children}
       </div>
     </>

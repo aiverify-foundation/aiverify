@@ -1,6 +1,6 @@
+import { HeaderWithLogo } from '@/app/headerWithLogo';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import './globals.css';
-import { HeaderWithLogo } from '@/app/headerWithLogo';
 
 export default function RootLayout({
   children,

@@ -1,8 +1,8 @@
 'use client';
 
 import { IconName } from '@/lib/components/IconSVG';
-import { Button, ButtonVariant } from '@/lib/components/button';
 import { Icon } from '@/lib/components/IconSVG';
+import { Button, ButtonVariant } from '@/lib/components/button';
 import { TextInput } from '@/lib/components/textInput';
 
 export function ProjectsFilters({ className }: { className?: string }) {

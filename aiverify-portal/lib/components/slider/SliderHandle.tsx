@@ -1,7 +1,7 @@
+import clsx from 'clsx';
 import { useRef, useEffect } from 'react';
 import { useSliderContext } from './SliderContext';
 import styles from './styles/Slider.module.css';
-import clsx from 'clsx';
 
 type SliderHandleProps = {
   children?: React.ReactNode;
@@ -9,7 +9,11 @@ type SliderHandleProps = {
   style?: React.CSSProperties;
 };
 
-export function SliderHandle({ children, className, style }: SliderHandleProps) {
+export function SliderHandle({
+  children,
+  className,
+  style,
+}: SliderHandleProps) {
   const { min, max, step, value, onChange, handleColor } = useSliderContext();
   const handleRef = useRef<HTMLDivElement>(null);
 
@@ -29,7 +33,8 @@ export function SliderHandle({ children, className, style }: SliderHandleProps) 
         }
         const dx = moveEvent.clientX - startX;
         const range = max - min;
-        const newValue = startValue + (dx / handle.parentElement.clientWidth) * range;
+        const newValue =
+          startValue + (dx / handle.parentElement.clientWidth) * range;
         const steppedValue = Math.round((newValue - min) / step) * step + min;
         onChange(Math.min(max, Math.max(min, steppedValue)));
       };
@@ -57,8 +62,7 @@ export function SliderHandle({ children, className, style }: SliderHandleProps) 
         left: `${percentage}%`,
         backgroundColor: handleColor,
         ...style,
-      }}
-    >
+      }}>
       {children}
     </div>
   );

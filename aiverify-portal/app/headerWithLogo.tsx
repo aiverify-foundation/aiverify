@@ -1,5 +1,5 @@
-import { PropsWithChildren } from 'react';
 import Image from 'next/image';
+import { PropsWithChildren } from 'react';
 
 type HeaderProps = {
   className?: string;

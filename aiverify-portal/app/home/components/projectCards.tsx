@@ -1,9 +1,9 @@
 'use client';
-import { IconName } from '@/lib/components/IconSVG';
-import { Card } from '@/lib/components/card/card';
-import { Icon } from '@/lib/components/IconSVG';
-import { Project } from '@/app/types';
 import React from 'react';
+import { Project } from '@/app/types';
+import { IconName } from '@/lib/components/IconSVG';
+import { Icon } from '@/lib/components/IconSVG';
+import { Card } from '@/lib/components/card/card';
 
 type ProjectCardsProps = {
   projects: Project[];

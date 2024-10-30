@@ -1,11 +1,11 @@
+import clsx from 'clsx';
 import React, { useState, useCallback } from 'react';
 import { SliderProvider } from './SliderContext';
-import { SliderTrack } from './SliderTrack';
 import { SliderHandle } from './SliderHandle';
-import { SliderValue } from './SliderValue';
 import { SliderProgressTrack } from './SliderProgressTrack';
+import { SliderTrack } from './SliderTrack';
+import { SliderValue } from './SliderValue';
 import styles from './styles/Slider.module.css';
-import clsx from 'clsx';
 
 export interface SliderProps {
   min?: number;
@@ -43,7 +43,7 @@ export function Slider(props: SliderProps) {
       setValue(Math.min(max, Math.max(min, newValue)));
       onChange?.(newValue);
     },
-    [min, max, onChange],
+    [min, max, onChange]
   );
   const classNames = clsx(styles.slider, className);
   return (
@@ -59,9 +59,10 @@ export function Slider(props: SliderProps) {
         trackWidth,
         trackHeight,
         onChange: handleChange,
-      }}
-    >
-      <div className={classNames} style={{ width: trackWidth }}>
+      }}>
+      <div
+        className={classNames}
+        style={{ width: trackWidth }}>
         {children}
       </div>
     </SliderProvider>

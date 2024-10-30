@@ -1,8 +1,8 @@
 'use client';
 
+import clsx from 'clsx';
 import { ComponentProps } from 'react';
 import styles from './styles/checkbox.module.css';
-import clsx from 'clsx';
 
 export type CheckboxProps = Omit<ComponentProps<'input'>, 'type' | 'size'> & {
   label: string;
@@ -26,11 +26,18 @@ function Checkbox(props: CheckboxProps) {
     error,
   } = props;
   return (
-    <div className={clsx(styles.wrapper, error !== undefined ? styles.inputError : null)}>
+    <div
+      className={clsx(
+        styles.wrapper,
+        error !== undefined ? styles.inputError : null
+      )}>
       <label
         htmlFor={id}
-        className={clsx(styles[`label-${size}`], 'text-black dark:text-white', labelClassName)}
-      >
+        className={clsx(
+          styles[`label-${size}`],
+          'text-black dark:text-white',
+          labelClassName
+        )}>
         <input
           id={id}
           name={name}
@@ -38,9 +45,8 @@ function Checkbox(props: CheckboxProps) {
           type="checkbox"
           className={clsx(
             styles.checkbox,
-            `border-primary-900 bg-primary-300
-            dark:border-primary-200 dark:bg-primary-400`,
-            error && styles.inputError,
+            `border-primary-900 bg-primary-300 dark:border-primary-200 dark:bg-primary-400`,
+            error && styles.inputError
           )}
           checked={checked}
           defaultChecked={defaultChecked}

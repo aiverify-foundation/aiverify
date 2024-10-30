@@ -1,8 +1,7 @@
+import { z } from 'zod';
 import { Project } from '@/app/types';
 import { ErrorWithMessage } from '@/lib/utils/error-utils';
 import { ApiResult, processResponse } from '@/lib/utils/http-requests';
-
-import { z } from 'zod';
 
 export const ProjectSchema = z.object({
   id: z.string(),
@@ -23,7 +22,7 @@ export async function fetchProjects(): Promise<
   if ('message' in result) {
     return result;
   }
-  const projects = result.data.map((project) => ProjectSchema.parse(project));
+  // const projects = result.data.map((project) => ProjectSchema.parse(project));
   // TODO: add zod parse error parse and return
   return result;
 }

@@ -2,10 +2,10 @@
 
 import React, { useRef, useEffect } from 'react';
 import VanillaTilt from 'vanilla-tilt';
-import styles from './styles/card.module.css';
-import { CardSideBar } from './cardSideBar';
 import { CardContent } from './cardContent';
 import { CardProvider } from './cardContext';
+import { CardSideBar } from './cardSideBar';
+import styles from './styles/card.module.css';
 
 type CommonCardProps = {
   size: 'sm' | 'md' | 'lg';

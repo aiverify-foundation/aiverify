@@ -1,8 +1,8 @@
-import { UserFlowCards } from './components/userFlowCards';
-import { ProjectsFilters } from './components/projectFilters';
-import { ProjectCardsContainer } from './components/projectCardsContainer';
 import { Suspense } from 'react';
+import { ProjectCardsContainer } from './components/projectCardsContainer';
 import { ProjectCardsLoading } from './components/projectCardsLoading';
+import { ProjectsFilters } from './components/projectFilters';
+import { UserFlowCards } from './components/userFlowCards';
 
 export default async function HomePage() {
   return (

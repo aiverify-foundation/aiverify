@@ -1,5 +1,5 @@
-import { sleep } from '@/lib/utils/sleep';
 import { Project } from '@/app/types';
+import { sleep } from '@/lib/utils/sleep';
 
 const projects: Project[] = [
   {

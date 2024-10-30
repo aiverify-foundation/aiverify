@@ -1,8 +1,8 @@
 'use client';
 
-import { Card } from '@/lib/components/card/card';
-import { Icon, IconName } from '@/lib/components/IconSVG';
 import Link from 'next/link';
+import { Icon, IconName } from '@/lib/components/IconSVG';
+import { Card } from '@/lib/components/card/card';
 
 export function UserFlowCards() {
   return (
