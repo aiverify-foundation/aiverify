@@ -5,10 +5,9 @@ import {
   black,
   currentColor,
   transparent,
-} from './components/tokens/colors';
+} from './lib/theme/colors';
 
 const config: Config = {
-  important: true,
   darkMode: ['class'],
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -25,9 +24,27 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        sans: ['Roboto', 'sans-serif'],
+        sans: ['Inter', 'sans-serif'],
+      },
+      textShadow: {
+        default: '0 2px 4px black',
+        sm: '0 1px 2px black',
+        lg: '0 8px 16px black',
       },
     },
   },
+  plugins: [
+    require('@tailwindcss/typography'),
+    function ({ matchUtilities, theme }) {
+      matchUtilities(
+        {
+          'text-shadow': (value) => ({
+            textShadow: value,
+          }),
+        },
+        { values: theme('textShadow') }
+      );
+    },
+  ],
 };
 export default config;

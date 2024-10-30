@@ -1,12 +1,11 @@
-@import '@fontsource/roboto/400.css';
-@import '@fontsource/roboto/500.css';
-@import '@fontsource/roboto/700.css';
-@import '@/components/tokens/colors.css';
+@import '@fontsource-variable/inter';
+@import '@/lib/theme/colors.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
+  font-family: 'Inter Variable', sans-serif;
 }
 
 @layer utilities {

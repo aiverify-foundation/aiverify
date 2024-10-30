@@ -1,4 +1,4 @@
-import { IconName } from './';
+import { IconName } from '.';
 
 export const lineIcons = [
   IconName.Alert,

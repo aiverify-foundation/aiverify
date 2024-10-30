@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Button, ButtonVariant } from './';
+import { Button, ButtonVariant } from '.';
 import { IconName } from '../IconSVG';
 
 const meta: Meta<typeof Button> = {

@@ -1,9 +1,6 @@
-import { Homepage } from './homepage';
+import { redirectRoute } from '@/lib/actions/redirectRoute';
 
-export default function Home() {
-  return (
-    <div className="w-full h-screen">
-      <Homepage />
-    </div>
-  );
+export default async function Home() {
+  await redirectRoute('/home');
+  return;
 }
