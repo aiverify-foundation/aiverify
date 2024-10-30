@@ -15,8 +15,8 @@ const HeaderWithLogo = ({
         <Image
           src="/aiverify-logo-white.svg"
           alt="AI Verify"
-          width={345}
-          height={46}
+          width={250}
+          height={40}
         />
         {children}
       </div>
