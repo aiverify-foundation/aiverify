@@ -50,8 +50,9 @@ import { WideArrowUpIcon } from './icons/wide-arrow-up';
 import clsx from 'clsx';
 import { OpenedBookIcon } from './icons/open-book-icon';
 import { DatabaseIcon } from './icons/database-icon';
-import { OpenedEmptyBookIcon } from './icons/open-book-icon copy';
+import { OpenedEmptyBookIcon } from './icons/opened-emptybook-icon';
 import { PlugIcon } from './icons/plug-icon';
+import { MagnifyGlassIcon } from './icons/magnify-glass-icon';
 
 enum IconName {
   Alert = 'Alert',
@@ -80,6 +81,7 @@ enum IconName {
   LightSun = 'LightSun',
   Lightning = 'Lightning',
   List = 'List',
+  MagnifyGlass = 'MagnifyGlass',
   Maximize = 'Maximize',
   Minimize = 'Minimize',
   MoonAttackStrategy = 'MoonAttackStrategy',
@@ -284,6 +286,16 @@ function Icon(props: IconProps) {
     case IconName.CircleArrowLeft:
       iconToRender = (
         <CircleArrowLeftIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
+      );
+      break;
+    case IconName.MagnifyGlass:
+      iconToRender = (
+        <MagnifyGlassIcon
           width={size}
           height={size}
           className={svgClassName}

@@ -4,7 +4,7 @@ import { Card } from '@/lib/components/card/card';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import Link from 'next/link';
 
-export function Cards() {
+export function UserFlowCards() {
   return (
     <section className="flex w-full justify-center">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -120,7 +120,7 @@ export function Cards() {
             <Card.Content className="flex flex-col justify-between p-6">
               <Icon
                 name={IconName.Plug}
-                size={30}
+                size={50}
                 color="white"
               />
               <div>

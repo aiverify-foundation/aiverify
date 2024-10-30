@@ -17,7 +17,8 @@ enum ButtonVariant {
   TEXT = 'text',
 }
 
-type BaseButtonProps = ComponentProps<'button'> & {
+type BaseButtonProps = {
+  type?: 'button' | 'submit' | 'reset';
   variant: ButtonVariant;
   text: string;
   size: BtnSize;
@@ -32,11 +33,17 @@ type BaseButtonProps = ComponentProps<'button'> & {
   width?: React.CSSProperties['width'];
   pill?: boolean;
   bezel?: boolean;
+  disabled?: boolean;
+  onClick?: () => void;
+  className?: string;
 };
 
 type ButtonProps = BaseButtonProps &
   ({ icon?: undefined } | { icon: IconName; iconPosition: IconPosition }) &
-  ({ iconPosition?: undefined } | { icon: IconName; iconPosition: IconPosition });
+  (
+    | { iconPosition?: undefined }
+    | { icon: IconName; iconPosition: IconPosition }
+  );
 
 function Button(props: ButtonProps) {
   const {
@@ -57,6 +64,7 @@ function Button(props: ButtonProps) {
     width,
     bezel = false,
     onClick,
+    className,
   } = props;
   const [btnState, setBtnState] = useState<BtnState>('default');
   const cssClass = clsx(
@@ -65,8 +73,14 @@ function Button(props: ButtonProps) {
     styles[`btn_${size}`],
     pill && styles.pill,
     bezel && variant !== ButtonVariant.OUTLINE ? styles.bezel : styles.flat,
+    className
   );
-  const bgColor = btnState === 'hover' ? hoverColor : btnState === 'pressed' ? pressedColor : color;
+  const bgColor =
+    btnState === 'hover'
+      ? hoverColor
+      : btnState === 'pressed'
+        ? pressedColor
+        : color;
   let defaultIconSize = 16;
   let defaultIconColor = textColor;
 
@@ -125,14 +139,21 @@ function Button(props: ButtonProps) {
       onMouseLeave={() => setBtnState('default')}
       onMouseDown={() => setBtnState('pressed')}
       onMouseUp={() => setBtnState('hover')}
-      onClick={onClick}
-    >
+      onClick={onClick}>
       {icon && iconPosition === 'left' && (
-        <Icon name={icon} size={defaultIconSize} color={defaultIconColor} />
+        <Icon
+          name={icon}
+          size={defaultIconSize}
+          color={defaultIconColor}
+        />
       )}
       {text}
       {icon && iconPosition === 'right' && (
-        <Icon name={icon} size={defaultIconSize} color={defaultIconColor} />
+        <Icon
+          name={icon}
+          size={defaultIconSize}
+          color={defaultIconColor}
+        />
       )}
     </button>
   );
