@@ -29,9 +29,7 @@ def create_badges() -> None:
             color = "orange_2"
         else:
             color = "green"
-        badge = anybadge.Badge(
-            "coverage", str(int(round(covPct))) + "%", default_color=color
-        )
+        badge = anybadge.Badge("coverage", str(int(round(covPct))) + "%", default_color=color)
         if os.path.exists(covBadgeSvg):
             os.remove(covBadgeSvg)
         badge.write_badge(covBadgeSvg)
@@ -109,9 +107,7 @@ def create_badges() -> None:
                     licFound.append(lic)
         numCopyleftLic = len(licFound)
         color = "green" if (numCopyleftLic == 0) else "red"
-        badge = anybadge.Badge(
-            "licenses", str(numCopyleftLic) + " copyleft", default_color=color
-        )
+        badge = anybadge.Badge("licenses", str(numCopyleftLic) + " copyleft", default_color=color)
         if os.path.exists(licBadgeSvg):
             os.remove(licBadgeSvg)
         badge.write_badge(licBadgeSvg)

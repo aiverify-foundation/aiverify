@@ -86,25 +86,17 @@ class Plugin(IAlgorithm):
 
         # Look for kwargs values for log_instance, progress_callback and base path
         self._logger = kwargs.get("logger", None)
-        self._progress_inst = SimpleProgress(
-            1, 0, kwargs.get("progress_callback", None)
-        )
+        self._progress_inst = SimpleProgress(1, 0, kwargs.get("progress_callback", None))
 
         # Check if data and model are tuples and if the tuples contain 2 items
-        if (
-            not isinstance(data_instance_and_serializer, Tuple)
-            or len(data_instance_and_serializer) != 2
-        ):
+        if not isinstance(data_instance_and_serializer, Tuple) or len(data_instance_and_serializer) != 2:
             self.add_to_log(
                 logging.ERROR,
                 f"The algorithm has failed data validation: {data_instance_and_serializer}",
             )
             raise RuntimeError("The algorithm has failed data validation")
 
-        if (
-            not isinstance(model_instance_and_serializer, Tuple)
-            or len(model_instance_and_serializer) != 2
-        ):
+        if not isinstance(model_instance_and_serializer, Tuple) or len(model_instance_and_serializer) != 2:
             self.add_to_log(
                 logging.ERROR,
                 f"The algorithm has failed model validation: {model_instance_and_serializer}",
@@ -127,9 +119,7 @@ class Plugin(IAlgorithm):
                     f"The algorithm has failed ground truth data validation: \
                         {ground_truth_instance_and_serializer}",
                 )
-                raise RuntimeError(
-                    "The algorithm has failed ground truth data validation"
-                )
+                raise RuntimeError("The algorithm has failed ground truth data validation")
             self._requires_ground_truth = True
             self._ground_truth_instance = ground_truth_instance_and_serializer[0]
             self._ground_truth_serializer = ground_truth_instance_and_serializer[1]
@@ -162,16 +152,12 @@ class Plugin(IAlgorithm):
         # By defining the input schema, it allows the front-end to know what algorithm input params is
         # required by this plugin. This allows this algorithm plug-in to receive the arguments values it requires.
         current_file_dir = Path(__file__).parent
-        self._input_schema = load_schema_file(
-            str(current_file_dir / "input.schema.json")
-        )
+        self._input_schema = load_schema_file(str(current_file_dir / "input.schema.json"))
 
         # Algorithm output schema defined in output.schema.json
         # By defining the output schema, this plug-in validates the result with the output schema.
         # This allows the result to be validated against the schema before passing it to the front-end for display.
-        self._output_schema = load_schema_file(
-            str(current_file_dir / "output.schema.json")
-        )
+        self._output_schema = load_schema_file(str(current_file_dir / "output.schema.json"))
 
         # Retrieve the input parameters defined in the input schema and store them
         self._input_arguments = dict()
@@ -227,9 +213,7 @@ class Plugin(IAlgorithm):
         # Perform validation on logger
         if self._logger:
             if not isinstance(self._logger, logging.Logger):
-                raise RuntimeError(
-                    "The algorithm has failed to set up logger. The logger type is invalid"
-                )
+                raise RuntimeError("The algorithm has failed to set up logger. The logger type is invalid")
 
         # Perform validation on model type
         if self._model_type not in Plugin._supported_algorithm_model_type:
@@ -248,9 +232,7 @@ class Plugin(IAlgorithm):
             raise RuntimeError("The algorithm has failed data validation")
 
         # Perform validation on model instance
-        if not isinstance(self._model_instance, IModel) and not isinstance(
-            self._model_instance, IPipeline
-        ):
+        if not isinstance(self._model_instance, IModel) and not isinstance(self._model_instance, IPipeline):
             self.add_to_log(
                 logging.ERROR,
                 f"The algorithm has failed model validation: {self._model_instance}",
@@ -264,9 +246,7 @@ class Plugin(IAlgorithm):
                     logging.ERROR,
                     f"The algorithm has failed ground truth data validation: {self._ground_truth_instance}",
                 )
-                raise RuntimeError(
-                    "The algorithm has failed ground truth data validation"
-                )
+                raise RuntimeError("The algorithm has failed ground truth data validation")
 
             # Perform validation on ground truth header
             if not isinstance(self._ground_truth, str):
@@ -283,9 +263,7 @@ class Plugin(IAlgorithm):
         # Perform validation on progress_inst
         if self._progress_inst:
             if not isinstance(self._progress_inst, SimpleProgress):
-                raise RuntimeError(
-                    "The algorithm has failed validation for the progress bar"
-                )
+                raise RuntimeError("The algorithm has failed validation for the progress bar")
 
         # Perform validation on project_base_path
         if not isinstance(self._base_path, PurePath):
@@ -346,27 +324,16 @@ class Plugin(IAlgorithm):
         """
         # Retrieve data and model information
         try:
-            if (
-                self._serializer_instance.get_serializer_plugin_type()
-                is SerializerPluginType.IMAGE
-            ):
+            if self._serializer_instance.get_serializer_plugin_type() is SerializerPluginType.IMAGE:
                 self._model = self._initial_model_instance
                 self._data = self._initial_data_instance
-                self._data_labels = list(
-                    self._initial_data_instance.read_labels().keys()
+                self._data_labels = list(self._initial_data_instance.read_labels().keys())
+                self._data_labels_items = list(self._initial_data_instance.read_labels().items())
+                annotated_ground_truth_path = self._input_arguments.get("annotated_ground_truth_path", "")
+                annotated_ground_truth = pickle.load(open(annotated_ground_truth_path, "rb")).set_index(
+                    self._input_arguments.get("file_name_label")
                 )
-                self._data_labels_items = list(
-                    self._initial_data_instance.read_labels().items()
-                )
-                annotated_ground_truth_path = self._input_arguments.get(
-                    "annotated_ground_truth_path", ""
-                )
-                annotated_ground_truth = pickle.load(
-                    open(annotated_ground_truth_path, "rb")
-                ).set_index(self._input_arguments.get("file_name_label"))
-                file_names = [
-                    Path(i).name for i in self._data.get_data()["image_directory"]
-                ]
+                file_names = [Path(i).name for i in self._data.get_data()["image_directory"]]
                 self._ordered_ground_truth = annotated_ground_truth.reindex(file_names)
 
                 # initialise the save directory
@@ -414,29 +381,20 @@ class Plugin(IAlgorithm):
             max_feature_value = np.max(data_in_numpy)
 
             # if model is XGB core, pass in dataframe instead of numpy array
-            if (
-                self._check_for_xgb_model_type()
-                and self._model_instance._model_algorithm == "xgboost.core.Booster"
-            ):
+            if self._check_for_xgb_model_type() and self._model_instance._model_algorithm == "xgboost.core.Booster":
                 data_to_predict = self._data.get_data()
             else:
-                data_to_predict = self._transform_to_df(
-                    data_in_numpy, raw_shapes, subfolder_name="pred_init"
-                )
+                data_to_predict = self._transform_to_df(data_in_numpy, raw_shapes, subfolder_name="pred_init")
 
-            predictions = self._model.predict(
-                [data_to_predict], self._data_labels_items
-            )
+            predictions = self._model.predict([data_to_predict], self._data_labels_items)
             # Update the progress total value (initial adversarial + final adversarial samples)
             self._progress_inst.add_total(2 * len(data_in_numpy))
 
             # Get the initial adversarial samples
             (
                 initial_adversarial_samples,
-                initial_adversarial_predictions,
-            ) = self._get_initial_adversarial_samples(
-                data_in_numpy, ground_truth_in_numpy, raw_shapes
-            )
+                _initial_adversarial_predictions,
+            ) = self._get_initial_adversarial_samples(data_in_numpy, ground_truth_in_numpy, raw_shapes)
 
             # Get the final adversarial samples
             (
@@ -477,9 +435,7 @@ class Plugin(IAlgorithm):
                 logging.ERROR,
                 f"Invalid data plugin type - {self._data_instance.get_data_plugin_type()}",
             )
-            raise RuntimeError(
-                f"Invalid data plugin type - {self._data_instance.get_data_plugin_type()}"
-            )
+            raise RuntimeError(f"Invalid data plugin type - {self._data_instance.get_data_plugin_type()}")
 
     def _transform_to_numpy(self, dir_df: pd.DataFrame):
         """
@@ -490,16 +446,11 @@ class Plugin(IAlgorithm):
             Tuple[int, np.float64, np.float64, int, list, list, list, np.ndarray, np.ndarray]
         """
 
-        if (
-            self._serializer_instance.get_serializer_plugin_type()
-            is not SerializerPluginType.IMAGE
-        ):
+        if self._serializer_instance.get_serializer_plugin_type() is not SerializerPluginType.IMAGE:
             return self._data.get_data().to_numpy(), None
         images, image_shapes = [], []
         count = 0
-        for dir in dir_df[
-            "image_directory"
-        ]:  # work directly with the raw image by reading from the directory itself
+        for dir in dir_df["image_directory"]:  # work directly with the raw image by reading from the directory itself
             image_array = np.array(Image.open(dir), dtype=float)
             image_shapes.append(image_array.shape)
             image_array = image_array.reshape(image_array.size)
@@ -518,19 +469,14 @@ class Plugin(IAlgorithm):
             Tuple[int, np.float64, np.float64, int, list, list, list, np.ndarray, np.ndarray]
         """
 
-        if (
-            self._serializer_instance.get_serializer_plugin_type()
-            is not SerializerPluginType.IMAGE
-        ):
+        if self._serializer_instance.get_serializer_plugin_type() is not SerializerPluginType.IMAGE:
             return data_np
         pred_dirs = []
         tmp_path = self._tmp_path
         Path(str(tmp_path / subfolder_name)).mkdir(parents=True, exist_ok=True)
         for index, img_array in enumerate(data_np):
             img_reshaped = img_array.reshape(img_shape[index])
-            Image.fromarray(np.uint8(img_reshaped)).save(
-                str(tmp_path / subfolder_name / (str(index) + ".png"))
-            )
+            Image.fromarray(np.uint8(img_reshaped)).save(str(tmp_path / subfolder_name / (str(index) + ".png")))
         for i in sorted(
             Path.iterdir(Path(str(tmp_path / subfolder_name))),
             key=lambda i: int(i.stem),
@@ -567,17 +513,11 @@ class Plugin(IAlgorithm):
             ground_truth = ground_truth_in_numpy[count][0]
 
             for _ in range(init_size):
-                if (
-                    adversarial_prediction is not None
-                    and adversarial_prediction[0] != ground_truth
-                ):
+                if adversarial_prediction is not None and adversarial_prediction[0] != ground_truth:
                     initial_adversarial_samples[count] = perturbed_input
                     initial_adversarial_predictions[count] = adversarial_prediction[0]
                     break
-                elif (
-                    self._model_type == ModelType.REGRESSION
-                    and adversarial_prediction is not None
-                ):
+                elif self._model_type == ModelType.REGRESSION and adversarial_prediction is not None:
                     diff = ground_truth - adversarial_prediction[0]
                     frac = diff / ground_truth
 
@@ -587,9 +527,7 @@ class Plugin(IAlgorithm):
 
                     if frac > 0.5:
                         initial_adversarial_samples[count] = perturbed_input
-                        initial_adversarial_predictions[count] = adversarial_prediction[
-                            0
-                        ]
+                        initial_adversarial_predictions[count] = adversarial_prediction[0]
                         break
 
                 perturbed_input = self._salt_and_pepper(original, 2)
@@ -598,9 +536,7 @@ class Plugin(IAlgorithm):
                 if self._check_for_xgb_model_type():
                     if self._model_instance._model_algorithm == "xgboost.core.Booster":
                         my_array = np.array([perturbed_input])
-                        transformed_pertubed_input = pd.DataFrame(
-                            my_array, columns=self._data_labels
-                        )
+                        transformed_pertubed_input = pd.DataFrame(my_array, columns=self._data_labels)
                     else:
                         transformed_pertubed_input = np.array([perturbed_input])
                     transformed_pertubed_input_df = self._transform_to_df(
@@ -614,10 +550,7 @@ class Plugin(IAlgorithm):
                     )
 
                 else:
-                    if (
-                        self._serializer_instance.get_serializer_plugin_type()
-                        is SerializerPluginType.IMAGE
-                    ):
+                    if self._serializer_instance.get_serializer_plugin_type() is SerializerPluginType.IMAGE:
                         processed_pertubed_input = [perturbed_input]
                     else:
                         processed_pertubed_input = [[perturbed_input]]
@@ -644,9 +577,7 @@ class Plugin(IAlgorithm):
         max_feature_value: float,
         predictions,
         image_shapes: np.ndarray,
-    ) -> Tuple[
-        int, np.float64, np.float64, int, list, list, list, np.ndarray, np.ndarray
-    ]:
+    ) -> Tuple[int, np.float64, np.float64, int, list, list, list, np.ndarray, np.ndarray]:
         """
         This method generates final adversarial samples for the given data.
 
@@ -690,11 +621,8 @@ class Plugin(IAlgorithm):
                             for count_sample in range(self._max_sample):
                                 # Create max_sample number of adversarial sample using orthogonal steps
                                 # [supposed to get closer to the boundary line]
-                                adversarial_value = (
-                                    x_adversarial
-                                    + self._orthogonal_step(
-                                        current_delta, x_adversarial, original
-                                    )
+                                adversarial_value = x_adversarial + self._orthogonal_step(
+                                    current_delta, x_adversarial, original
                                 )
                                 adversarial_value = np.clip(
                                     adversarial_value,
@@ -706,16 +634,11 @@ class Plugin(IAlgorithm):
                             adversarial_list_to_predict = self._transform_to_df(
                                 np.array(adversarial_list),
                                 image_shapes,
-                                subfolder_name="adv_pred"
-                                + str(iteration)
-                                + str(count_test),
+                                subfolder_name="adv_pred" + str(iteration) + str(count_test),
                             )
 
                             if self._check_for_xgb_model_type():
-                                if (
-                                    self._model_instance._model_algorithm
-                                    == "xgboost.core.Booster"
-                                ):
+                                if self._model_instance._model_algorithm == "xgboost.core.Booster":
                                     adversarial_list_to_predict = pd.DataFrame(
                                         adversarial_list, columns=self._data_labels
                                     )
@@ -724,10 +647,7 @@ class Plugin(IAlgorithm):
                             potential_adversarials_prediction = self._model.predict(
                                 [adversarial_list_to_predict], self._data_labels_items
                             )
-                            satisfied = (
-                                potential_adversarials_prediction
-                                != ground_truth_in_numpy
-                            )
+                            satisfied = potential_adversarials_prediction != ground_truth_in_numpy
                             delta_ratio = np.mean(satisfied)
                             if delta_ratio < delta_ratio_min_threshold:
                                 current_delta *= self._adapt_value
@@ -755,33 +675,23 @@ class Plugin(IAlgorithm):
                             )
 
                             if self._check_for_xgb_model_type():
-                                if (
-                                    self._model_instance._model_algorithm
-                                    == "xgboost.core.Booster"
-                                ):
+                                if self._model_instance._model_algorithm == "xgboost.core.Booster":
                                     df = pd.DataFrame(
                                         potential_adversarials,
                                         columns=self._data_labels,
                                     )
-                                    potential_adversarials_prediction = (
-                                        self._model.predict(df, self._data_labels_items)
-                                    )
+                                    potential_adversarials_prediction = self._model.predict(df, self._data_labels_items)
                             else:
                                 potential_adv_pred_transformed = self._transform_to_df(
                                     np.array(potential_adversarials),
                                     image_shapes,
-                                    subfolder_name="potential_adv_pred"
-                                    + str(iteration)
-                                    + str(count_test),
+                                    subfolder_name="potential_adv_pred" + str(iteration) + str(count_test),
                                 )
                                 potential_adversarials_prediction = self._model.predict(
                                     [potential_adv_pred_transformed],
                                     self._data_labels_items,
                                 )
-                            satisfied = (
-                                potential_adversarials_prediction
-                                != ground_truth_in_numpy
-                            )
+                            satisfied = potential_adversarials_prediction != ground_truth_in_numpy
                             epsilon_ratio = np.mean(satisfied)
                             if epsilon_ratio < epsilon_ratio_min_threshold:
                                 current_epsilon *= self._adapt_value
@@ -789,9 +699,7 @@ class Plugin(IAlgorithm):
                                 current_epsilon /= self._adapt_value
 
                             if epsilon_ratio > epsilon_ratio_zero_threshold:
-                                x_adversarial = self._best_adversarial(
-                                    original, x_adversarial_array
-                                )
+                                x_adversarial = self._best_adversarial(original, x_adversarial_array)
                                 final_adversarial_samples[count] = x_adversarial
                                 break
 
@@ -820,25 +728,15 @@ class Plugin(IAlgorithm):
                 org_samples.append(data_in_numpy[count])
 
         feature_names = []
-        if (
-            self._serializer_instance.get_serializer_plugin_type()
-            is not SerializerPluginType.IMAGE
-        ):
+        if self._serializer_instance.get_serializer_plugin_type() is not SerializerPluginType.IMAGE:
             feature_names = self._data_labels
 
         # Save in the temporary folder
-        adv_samples_df = self._transform_to_df(
-            adv_samples, image_shapes, subfolder_name="adv_samples"
-        )
+        adv_samples_df = self._transform_to_df(adv_samples, image_shapes, subfolder_name="adv_samples")
 
-        org_samples_df = self._transform_to_df(
-            org_samples, image_shapes, subfolder_name="org_samples"
-        )
+        org_samples_df = self._transform_to_df(org_samples, image_shapes, subfolder_name="org_samples")
 
-        if (
-            self._serializer_instance.get_serializer_plugin_type()
-            is SerializerPluginType.IMAGE
-        ):
+        if self._serializer_instance.get_serializer_plugin_type() is SerializerPluginType.IMAGE:
             adv_samples = adv_samples_df["image_directory"].values.tolist()
             org_samples = org_samples_df["image_directory"].values.tolist()
 
@@ -851,25 +749,16 @@ class Plugin(IAlgorithm):
                     final_adversarial_samples, columns=self._data_labels
                 )
             else:
-                final_adversarial_samples_to_predict = np.array(
-                    final_adversarial_samples
-                )
+                final_adversarial_samples_to_predict = np.array(final_adversarial_samples)
         else:
             # Calculate the adversarial predictions and accuracy
             final_adversarial_samples_to_predict = self._transform_to_df(
                 final_adversarial_samples, image_shapes, subfolder_name="adv_prediction"
             )
-        if (
-            self._serializer_instance.get_serializer_plugin_type()
-            is not SerializerPluginType.IMAGE
-        ):
-            final_adversarial_samples_to_predict = [
-                final_adversarial_samples_to_predict
-            ]
+        if self._serializer_instance.get_serializer_plugin_type() is not SerializerPluginType.IMAGE:
+            final_adversarial_samples_to_predict = [final_adversarial_samples_to_predict]
 
-        adversarial_prediction = self._model.predict(
-            final_adversarial_samples_to_predict, self._data_labels_items
-        )
+        adversarial_prediction = self._model.predict(final_adversarial_samples_to_predict, self._data_labels_items)
 
         # get the sample predictions to use for the sample section later
         sample_adv_predictions = adversarial_prediction[:samples_to_show]
@@ -880,16 +769,12 @@ class Plugin(IAlgorithm):
 
         adversarial_prediction_rint = np.rint(adversarial_prediction)
         if self._model_type == ModelType.CLASSIFICATION:
-            adversarial_accuracy = accuracy_score(
-                ground_truth_in_numpy, adversarial_prediction_rint
-            )
+            adversarial_accuracy = accuracy_score(ground_truth_in_numpy, adversarial_prediction_rint)
             predictions_rint = np.rint(predictions)
             org_accuracy = accuracy_score(ground_truth_in_numpy, predictions_rint)
 
         elif self._model_type == ModelType.REGRESSION:
-            adversarial_accuracy = mean_absolute_error(
-                ground_truth_in_numpy, adversarial_prediction
-            )
+            adversarial_accuracy = mean_absolute_error(ground_truth_in_numpy, adversarial_prediction)
 
             org_accuracy = mean_absolute_error(ground_truth_in_numpy, predictions)
 
@@ -935,18 +820,14 @@ class Plugin(IAlgorithm):
         out = copy.deepcopy(image)
         amount = severity_constant
         ratio = 0.5
-        flipped = np.random.choice(
-            [True, False], size=image.shape, p=[amount, 1 - amount]
-        )
+        flipped = np.random.choice([True, False], size=image.shape, p=[amount, 1 - amount])
         salted = np.random.choice([True, False], size=image.shape, p=[ratio, 1 - ratio])
         peppered = ~salted
         out[flipped & salted] = 1
         out[flipped & peppered] = low_clip
         return out.astype(np.float32)
 
-    def _best_adversarial(
-        self, original_sample: np.ndarray, potential_advs: np.ndarray
-    ) -> np.ndarray:
+    def _best_adversarial(self, original_sample: np.ndarray, potential_advs: np.ndarray) -> np.ndarray:
         """
         From the potential adversarial examples, find the one that has the minimum L2 distance from the original sample
 
@@ -961,14 +842,10 @@ class Plugin(IAlgorithm):
             np.ndarray: The adversarial example that has the minimum L2 distance from the original input
         """
         shape = potential_advs.shape
-        min_idx = np.linalg.norm(
-            original_sample.flatten() - potential_advs.reshape(shape[0], -1), axis=1
-        ).argmin()
+        min_idx = np.linalg.norm(original_sample.flatten() - potential_advs.reshape(shape[0], -1), axis=1).argmin()
         return potential_advs[min_idx]
 
-    def _orthogonal_step(
-        self, delta: float, current: np.ndarray, original: np.ndarray
-    ) -> np.ndarray:
+    def _orthogonal_step(self, delta: float, current: np.ndarray, original: np.ndarray) -> np.ndarray:
         """
         This method takes orthogonal step to close up the distance between current and original input.
         Find the least perturbation to cause the change in prediction.
@@ -1003,9 +880,7 @@ class Plugin(IAlgorithm):
             flatten_perturb = random_perturb.flatten()
 
             flatten_direction /= np.linalg.norm(flatten_direction)
-            flatten_perturb -= (
-                np.dot(flatten_perturb, flatten_direction.T) * flatten_direction
-            )
+            flatten_perturb -= np.dot(flatten_perturb, flatten_direction.T) * flatten_direction
             perturb = flatten_perturb.reshape(original.shape[0])
 
             # Compute the perturbation for this orthogonal move

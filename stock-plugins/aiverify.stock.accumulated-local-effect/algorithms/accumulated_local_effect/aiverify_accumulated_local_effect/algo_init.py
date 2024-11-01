@@ -189,7 +189,7 @@ class AlgoInit:
                     (
                         self._ground_truth_instance,
                         self._ground_truth_serializer_instance,
-                        ground_truth_error_message,
+                        _ground_truth_error_message,
                     ) = PluginManager.get_instance(
                         PluginType.DATA, **{"filename": self._ground_truth_path}
                     )

@@ -45,8 +45,7 @@ all = ["aiverify-test-engine[tensorflow]", "aiverify-test-engine[gbm]"]
 
 dev = [
     "aiverify-test-engine[all]",
-    "black==23.10.1",
-    "isort==5.12.0",
+    "ruff==0.7.1",
     "pre-commit==3.5.0",
     "pytest==7.4.3",
     "coverage==7.3.2",
@@ -55,10 +54,13 @@ dev = [
     "pytest-json-report==1.5.0",
     "pytest-json==0.4.0",
     "pytest-html==4.1.1",
-    "flake8==6.1.0",
     "hatch==1.12.0",
     "anybadge==1.14.0",
 ]
+
+[tool.ruff.lint]
+preview = true
+select = ["E20", "E21", "E22", "E23", "E24", "E3", "F401", "F8"]
 
 [tool.hatch.metadata]
 allow-direct-references = true

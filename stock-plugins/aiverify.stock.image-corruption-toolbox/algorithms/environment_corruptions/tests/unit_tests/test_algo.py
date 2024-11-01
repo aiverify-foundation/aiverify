@@ -19,23 +19,13 @@ from aiverify_test_engine.utils.simple_progress import SimpleProgress
 
 
 def test_discover_plugin():
-    PluginManager.discover(
-        str(
-            Path(
-                importlib.util.find_spec("aiverify_test_engine").origin
-            ).parent.resolve()
-        )
-    )
+    PluginManager.discover(str(Path(importlib.util.find_spec("aiverify_test_engine").origin).parent.resolve()))
 
 
 # Variables for testing
 valid_data_path = str("../../../user_defined_files/data/raw_fashion_image_10")
-valid_model_path = str(
-    "../../../user_defined_files/pipeline/multiclass_classification_image_mnist_fashion"
-)
-valid_ground_truth_path = str(
-    "../../../user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
-)
+valid_model_path = str("../../../user_defined_files/pipeline/multiclass_classification_image_mnist_fashion")
+valid_ground_truth_path = str("../../../user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav")
 
 test_string = "data_str"
 test_int = 1
@@ -60,17 +50,13 @@ class ObjectTest:
             model_instance,
             model_serializer_instance,
             model_error_message,
-        ) = PluginManager.get_instance(
-            PluginType.PIPELINE, **{"pipeline_path": valid_model_path}
-        )
+        ) = PluginManager.get_instance(PluginType.PIPELINE, **{"pipeline_path": valid_model_path})
 
         (
             ground_truth_instance,
             ground_truth_serializer_instance,
             data_error_message,
-        ) = PluginManager.get_instance(
-            PluginType.DATA, **{"filename": valid_ground_truth_path}
-        )
+        ) = PluginManager.get_instance(PluginType.DATA, **{"filename": valid_ground_truth_path})
 
         ground_truth = "label"
         model_type = ModelType.CLASSIFICATION
@@ -158,9 +144,7 @@ def get_model_instance_and_serializer(request):
         model_instance,
         model_serializer_instance,
         model_error_message,
-    ) = PluginManager.get_instance(
-        PluginType.PIPELINE, **{"pipeline_path": valid_model_path}
-    )
+    ) = PluginManager.get_instance(PluginType.PIPELINE, **{"pipeline_path": valid_model_path})
     yield (model_instance, model_serializer_instance)
 
 
@@ -277,9 +261,7 @@ def test_init_plugin_instance_with_invalid_ground_truth_instance_type(
     assert expected_exception_msg in str(excinfo)
 
 
-@pytest.mark.parametrize(
-    "ground_truth", [test_int, test_float, test_list, test_dict, test_tuple]
-)
+@pytest.mark.parametrize("ground_truth", [test_int, test_float, test_list, test_dict, test_tuple])
 def test_init_plugin_instance_with_invalid_ground_truth_type(ground_truth):
     test_object = ObjectTest()
     test_object._input_args["ground_truth"] = ground_truth
@@ -392,9 +374,7 @@ def test_setup_plugin_instance_with_invalid_model_type(invalid_model_type):
 def test_setup_plugin_instance_with_invalid_logger_type(invalid_logger_type):
     test_object = ObjectTest()
     test_object._input_args["logger"] = invalid_logger_type
-    expected_exception_msg = (
-        "The algorithm has failed to set up logger. The logger type is invalid"
-    )
+    expected_exception_msg = "The algorithm has failed to set up logger. The logger type is invalid"
     with pytest.raises(test_object._expected_exception) as excinfo:
         Plugin(
             test_object._data_instance_and_serializer,
@@ -493,9 +473,7 @@ def test_plugin_valid_get_plugin_type():
 )
 def test_valid_run(get_data_instance_and_serializer_without_ground_truth):
     test_object = ObjectTest()
-    test_object._ground_truth_instance_and_serializer[0].keep_ground_truth(
-        test_object._ground_truth
-    )
+    test_object._ground_truth_instance_and_serializer[0].keep_ground_truth(test_object._ground_truth)
     test_plugin = Plugin(
         get_data_instance_and_serializer_without_ground_truth,
         test_object._model_instance_and_serializer,
@@ -510,11 +488,7 @@ def test_valid_run(get_data_instance_and_serializer_without_ground_truth):
     validate_status = validate_json(
         results,
         load_schema_file(
-            str(
-                Path(__file__).parent.parent.parent
-                / "aiverify_environment_corruptions"
-                / "output.schema.json"
-            )
+            str(Path(__file__).parent.parent.parent / "aiverify_environment_corruptions" / "output.schema.json")
         ),
     )
 

@@ -2,6 +2,7 @@
 Allow aiverify_general_corruptions to be executable through
 `python3 -m aiverify_general_corruptions`
 """
+
 import sys
 from importlib.metadata import version
 from pathlib import Path

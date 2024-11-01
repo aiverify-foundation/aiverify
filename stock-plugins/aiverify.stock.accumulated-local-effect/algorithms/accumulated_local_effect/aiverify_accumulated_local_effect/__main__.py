@@ -1,6 +1,7 @@
 """
 Allow accumulated_local_effect to be executable through `python3 -m aiverify_accumulated_local_effect`.
 """
+
 import sys
 from importlib.metadata import version
 from pathlib import Path

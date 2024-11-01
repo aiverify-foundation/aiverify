@@ -2,6 +2,7 @@
 Allow aiverify_partial_dependence_plot to be executable through
 `python3 -m aiverify_partial_dependence_plot`
 """
+
 import sys
 from importlib.metadata import version
 from pathlib import Path
