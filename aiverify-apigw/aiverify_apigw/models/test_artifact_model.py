@@ -16,5 +16,7 @@ class TestArtifactModel(BaseORMModel):
     test_result_id: Mapped[int] = mapped_column(ForeignKey("test_result.id"))
 
     def __repr__(self) -> str:
-        return (f"TestArtifactModel(id={self.id}, filename={self.filename}, "
-                f"suffix={self.suffix}, mimetype={self.mimetype}, test_result_id={self.test_result_id})")
+        return (
+            f"TestArtifactModel(id={self.id}, filename={self.filename}, "
+            f"suffix={self.suffix}, mimetype={self.mimetype}, test_result_id={self.test_result_id})"
+        )

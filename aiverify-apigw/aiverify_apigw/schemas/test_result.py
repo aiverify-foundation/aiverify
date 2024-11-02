@@ -8,34 +8,21 @@ from ..lib.constants import ModelType, TestModelMode
 
 
 class TestArguments(BaseModel):
-    testDataset: str = Field(
-        description="URI of test dataset"
-    )
-    mode: Literal['upload', 'api'] = Field(
+    testDataset: str = Field(description="URI of test dataset")
+    mode: Literal["upload", "api"] = Field(
         description="Mode of model used, upload for model file and api for model api"
     )
-    modelType: Literal['classification', 'regression'] = Field(
-        description="AI model type"
-    )
-    groundTruthDataset: Optional[str] = Field(
-        default=None,
-        description="URI of test dataset"
-    )
-    groundTruth: Optional[str] = Field(
-        default=None,
-        description="Ground truth column name"
-    )
+    modelType: Literal["classification", "regression"] = Field(description="AI model type")
+    groundTruthDataset: Optional[str] = Field(default=None, description="URI of test dataset")
+    groundTruth: Optional[str] = Field(default=None, description="Ground truth column name")
     algorithmArgs: str = Field(
         description="Argument provided to the algorithm for running the tests. Test arguments should be defined in input.schema.json under each algorithm"
     )
-    modelFile: Optional[str] = Field(
-        default=None,
-        description="URI of model file"
-    )
+    modelFile: Optional[str] = Field(default=None, description="URI of model file")
 
     @model_validator(mode="after")
     def check_mode(self) -> Self:
-        if self.mode == 'upload':
+        if self.mode == "upload":
             assert self.modelFile is not None
         return self
 
@@ -45,44 +32,40 @@ class TestResult(BaseModel):
         description="Unique global identifier for the plugin",
         min_length=1,
         max_length=128,
-        pattern=r'^[a-zA-Z0-9][a-zA-Z0-9-._]*$'
+        pattern=r"^[a-zA-Z0-9][a-zA-Z0-9-._]*$",
     )
     cid: str = Field(
         description="Unique identifier for the algorithm within the plugin",
         min_length=1,
         max_length=128,
-        pattern=r'^[a-zA-Z0-9][a-zA-Z0-9-._]*$'
+        pattern=r"^[a-zA-Z0-9][a-zA-Z0-9-._]*$",
     )
-    version: Optional[str] = Field(
-        default=None,
-        description="Algorithm version"
-    )
-    startTime: datetime = Field(
-        description="Start date time of test"
-    )
-    timeTaken: float = Field(
-        description="Time taken to complete running the test in seconds."
-    )
-    testArguments: TestArguments = Field(
-        description="Test arguments"
-    )
+    version: Optional[str] = Field(default=None, description="Algorithm version")
+    startTime: datetime = Field(description="Start date time of test")
+    timeTaken: float = Field(description="Time taken to complete running the test in seconds.")
+    testArguments: TestArguments = Field(description="Test arguments")
     output: str = Field(
         description="Output from algorithm running. Test output schema should be defined in output.schema.json under each algorithm"
     )
     artifacts: Optional[List[str]] = Field(
         default=None,
-        description="List the test artifacts (e.g. images) produced by the algorithm, to be uploaded to API-GW"
+        description="List the test artifacts (e.g. images) produced by the algorithm, to be uploaded to API-GW",
     )
 
-    @model_validator(mode='before')
+    @model_validator(mode="before")
     @classmethod
     def validate_to_json(cls, value: Any) -> Any:
         def _update_obj(obj):
             if "output" in obj and isinstance(obj["output"], dict):
                 obj["output"] = json.dumps(obj["output"])
-            if "testArguments" in obj and "algorithmArgs" in obj["testArguments"] and isinstance(obj["testArguments"]["algorithmArgs"], dict):
+            if (
+                "testArguments" in obj
+                and "algorithmArgs" in obj["testArguments"]
+                and isinstance(obj["testArguments"]["algorithmArgs"], dict)
+            ):
                 obj["testArguments"]["algorithmArgs"] = json.dumps(obj["testArguments"]["algorithmArgs"])
             return obj
+
         if isinstance(value, str):
             mydict = json.loads(value)
             _update_obj(mydict)
@@ -100,7 +83,7 @@ class TestResult(BaseModel):
 
 class TestResultOutput(TestResult):
     id: int  # test_result_id
-    name: str # name
+    name: str  # name
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
@@ -115,7 +98,7 @@ class TestResultOutput(TestResult):
             groundTruthDataset=result.ground_truth_dataset.filepath,
             groundTruth=result.ground_truth,
             algorithmArgs=result.algo_arguments.decode("utf-8"),
-            modelFile=result.model.filepath
+            modelFile=result.model.filepath,
         )
         obj = TestResultOutput(
             id=result.id,
@@ -129,11 +112,10 @@ class TestResultOutput(TestResult):
             timeTaken=result.time_taken,
             testArguments=test_argument,
             output=result.output.decode("utf-8"),
-            artifacts=[artifact.filename for artifact in result.artifacts]
+            artifacts=[artifact.filename for artifact in result.artifacts],
         )
         return obj
-    
-    
+
+
 class TestResultUpdate(BaseModel):
     name: str
-

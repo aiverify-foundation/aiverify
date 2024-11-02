@@ -1,0 +1,80 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+
+.errorText {
+  color: var(--color-danger);
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+
+.label-l, .label-s {
+  display: flex;
+  align-items: center;
+  color: var(--color-black);
+}
+
+.label-l {
+  font-size: 1rem;
+  gap: 10px;
+}
+
+.label-s {
+  font-size: 0.9rem;
+  line-height: 0.9rem;
+  gap: 8px;
+}
+
+.label-l .checkbox {
+  width: 25px;
+  height: 25px;
+}
+
+.label-s .checkbox {
+  width: 20px;
+  height: 20px;
+}
+
+.checkbox {
+  flex: 0 0 auto;
+  appearance: none;
+  position: relative;
+  cursor: pointer;
+  border-radius: 2px;
+  background-color: var(--color-primary-300);
+  border: 1px solid var(--color-primary-900);
+  transition: background-color 0.3s ease;
+  box-shadow: inset 1px 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.checkbox.inputError {
+  border-color: var(--color-danger);
+}
+
+.checkbox:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.checkbox:hover {
+  background-color: var(--color-primary-200);
+}
+
+.checkbox:checked {
+  background-color: var(--color-primary-300);
+}
+
+.checkbox:checked::before {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-primary-700);
+  transition: background-color 0.3s ease;
+}
+
+.checkbox::before {
+  content: "";
+  clip-path: polygon(1px 63.19%, 17.56% 44.92%, 40.16% 63.21%, 80.98% 5.92%, 99.51% 22.68%, 45.11% 96.63%)
+}

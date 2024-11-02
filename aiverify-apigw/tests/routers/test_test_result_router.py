@@ -24,17 +24,11 @@ def mock_test_result_data():
             "modelFile": "file:///examples/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav",
             "groundTruthDataset": "file:///examples/data/sample_bc_credit_data.sav",
             "groundTruth": "default",
-            "algorithmArgs": {
-                "arg1": [
-                    "gender"
-                ]
-            },
+            "algorithmArgs": {"arg1": ["gender"]},
             "mode": "upload",
-            "modelType": "classification"
+            "modelType": "classification",
         },
-        "output": {
-            "result": 100
-        }
+        "output": {"result": 100},
     }
 
 
@@ -51,10 +45,11 @@ def mock_upload_file():
 def create_mock_zip_file(result_filename="results.json", artifacts=None):
     import zipfile
     import io
+
     # file_list = file_list or [result_filename]
     zip_buffer = io.BytesIO()
 
-    with zipfile.ZipFile("zip_buffer", 'w', zipfile.ZIP_DEFLATED, False) as zip_file:
+    with zipfile.ZipFile("zip_buffer", "w", zipfile.ZIP_DEFLATED, False) as zip_file:
         zip_file.writestr(result_filename, "{}")
         # for file_name in file_list:
         #     if file_name != result_filename:
@@ -66,16 +61,15 @@ def create_mock_zip_file(result_filename="results.json", artifacts=None):
 
 # Test Class for POST /test_result/upload
 class TestUploadTestResult:
-
     def test_upload_test_result_algorithm_not_found(self, mock_test_result_data, test_client):
         """Test POST /test_result/upload when the algorithm is not found."""
-        form_data = {
-            "test_result": json.dumps(mock_test_result_data)
-        }
+        form_data = {"test_result": json.dumps(mock_test_result_data)}
         response = test_client.post("/test_result/upload", data=form_data)
         assert response.status_code == 400
 
-    def test_upload_test_result_invalid_output_schema(self, mock_test_result_data, test_client, db_session, mock_plugins):
+    def test_upload_test_result_invalid_output_schema(
+        self, mock_test_result_data, test_client, db_session, mock_plugins
+    ):
         """Test the POST /test_result/upload route when test result output schema is invalid."""
 
         # files = {'artifacts': (None, None)}  # No files uploaded
@@ -85,9 +79,7 @@ class TestUploadTestResult:
         mock_test_result_data["gid"] = plugin.gid
         mock_test_result_data["cid"] = algo.cid
         mock_test_result_data["output"] = {"fake": 100}
-        form_data = {
-            "test_result": json.dumps(mock_test_result_data)
-        }
+        form_data = {"test_result": json.dumps(mock_test_result_data)}
         print("form data: ", form_data)
         response = test_client.post("/test_result/upload", data=form_data)
         assert response.status_code == 422
@@ -105,9 +97,7 @@ class TestUploadTestResult:
 
         mock_test_result_data["gid"] = plugin.gid
         mock_test_result_data["cid"] = algo.cid
-        form_data = {
-            "test_result": json.dumps(mock_test_result_data)
-        }
+        form_data = {"test_result": json.dumps(mock_test_result_data)}
         response = test_client.post("/test_result/upload", data=form_data)
         assert response.status_code == 200
 
@@ -116,7 +106,9 @@ class TestUploadTestResult:
         assert db_session.query(TestDatasetModel).count() == 1
 
     @patch("aiverify_apigw.routers.test_result_router.save_artifact")
-    def test_upload_test_result_with_files_success(self, mock_save_artifact, mock_test_result_data, test_client, db_session, mock_plugins, mock_upload_file):
+    def test_upload_test_result_with_files_success(
+        self, mock_save_artifact, mock_test_result_data, test_client, db_session, mock_plugins, mock_upload_file
+    ):
         """Test the POST /test_result/upload route for successful upload with file upload."""
 
         # files = {'artifacts': (None, None)}  # No files uploaded
@@ -126,15 +118,13 @@ class TestUploadTestResult:
         mock_test_result_data["gid"] = plugin.gid
         mock_test_result_data["cid"] = algo.cid
         # mock_test_result_data["artifacts"] = [mock_upload_file.filename]
-        files = {'artifacts': (mock_upload_file.filename, mock_upload_file.file.read(), mock_upload_file.content_type)}
-        form_data = {
-            "test_result": json.dumps(mock_test_result_data)
-        }
+        files = {"artifacts": (mock_upload_file.filename, mock_upload_file.file.read(), mock_upload_file.content_type)}
+        form_data = {"test_result": json.dumps(mock_test_result_data)}
         response = test_client.post(
             "/test_result/upload",
             # headers={"Content-Type": "multipart/form-data"},
             data=form_data,
-            files=files
+            files=files,
         )
 
         assert response.status_code == 200
@@ -146,14 +136,12 @@ class TestUploadTestResult:
 
         # call again with aritifacts set
         mock_test_result_data["artifacts"] = [mock_upload_file.filename]
-        form_data = {
-            "test_result": json.dumps(mock_test_result_data)
-        }
+        form_data = {"test_result": json.dumps(mock_test_result_data)}
         response = test_client.post(
             "/test_result/upload",
             # headers={"Content-Type": "multipart/form-data"},
             data=form_data,
-            files=files
+            files=files,
         )
 
         assert response.status_code == 200
@@ -173,9 +161,7 @@ class TestUploadTestResult:
         mock_test_result_data["gid"] = plugin.gid
         mock_test_result_data["cid"] = algo.cid
         mock_test_result_data["testArguments"]["groundTruthDataset"] = "file:///examples/data/sample_ground_truth.sav"
-        form_data = {
-            "test_result": json.dumps(mock_test_result_data)
-        }
+        form_data = {"test_result": json.dumps(mock_test_result_data)}
         response = test_client.post("/test_result/upload", data=form_data)
         assert response.status_code == 200
 
@@ -191,7 +177,7 @@ class TestUploadZipFile:
         """Fixture to return a mocked UploadFile for a valid zip."""
         # file_list = file_list or [result_filename]
         zip_buffer = io.BytesIO()
-        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED, False) as zip_file:
+        with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED, False) as zip_file:
             zip_file.writestr("results.json", json.dumps(mock_test_result_data))
             zip_file.writestr("image.png", b"artifact content")
         return (zip_buffer, mock_test_result_data)
@@ -201,22 +187,20 @@ class TestUploadZipFile:
         """Fixture to return a mocked UploadFile for a valid zip."""
         # file_list = file_list or [result_filename]
         zip_buffer = io.BytesIO()
-        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED, False) as zip_file:
+        with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED, False) as zip_file:
             zip_file.writestr("image.png", b"artifact content")
         return zip_buffer
 
     @patch("aiverify_apigw.routers.test_result_router._save_test_result")
     def test_upload_zip_file_success(self, mock_save_test_result, test_client, mock_upload_zipfile):
         """Test successfully uploading a valid zip file."""
-        urls = [
-            "/test_result/1"
-        ]
+        urls = ["/test_result/1"]
         # Mock the result of _save_test_result to return URLs
         mock_save_test_result.return_value = urls
 
         # Perform the POST request with the mocked zip file
         mock_upload_zipfile[0].seek(0)
-        files = {'file': ("test.zip", mock_upload_zipfile[0].read(), "application/zip")}
+        files = {"file": ("test.zip", mock_upload_zipfile[0].read(), "application/zip")}
         response = test_client.post("/test_result/upload_zip", files=files)
 
         # Assertions
@@ -230,7 +214,7 @@ class TestUploadZipFile:
         """Test uploading a file that is not a zip."""
 
         # Perform the POST request with non-zip file
-        files = {'file': ("test.img", b"fake file", "application/zip")}
+        files = {"file": ("test.img", b"fake file", "application/zip")}
         response = test_client.post("/test_result/upload_zip", files=files)
 
         # Assertions
@@ -238,7 +222,7 @@ class TestUploadZipFile:
         assert response.json()["detail"] == "Only zip files are allowed"
 
         # Perform the POST request with invalid zip file
-        files = {'file': ("test.zip", b"fake file", "application/zip")}
+        files = {"file": ("test.zip", b"fake file", "application/zip")}
         response = test_client.post("/test_result/upload_zip", files=files)
 
         # Assertions
@@ -250,13 +234,15 @@ class TestUploadZipFile:
 
         # Perform the POST request with the mocked zip file
         mock_invalid_upload_zipfile.seek(0)
-        files = {'file': ("test.zip", mock_invalid_upload_zipfile.read(), "application/zip")}
+        files = {"file": ("test.zip", mock_invalid_upload_zipfile.read(), "application/zip")}
         response = test_client.post("/test_result/upload_zip", files=files)
 
         # Assertions
         assert response.status_code == 400
-        assert response.json()[
-            "detail"] == "results.json not found in the root folder or any first level folder of the zip file"
+        assert (
+            response.json()["detail"]
+            == "results.json not found in the root folder or any first level folder of the zip file"
+        )
 
     # @patch("your_module_name.router._save_test_result", autospec=True)
     @patch("aiverify_apigw.routers.test_result_router._save_test_result")
@@ -267,17 +253,17 @@ class TestUploadZipFile:
 
         # Perform the POST request with the mocked zip file
         mock_upload_zipfile[0].seek(0)
-        files = {'file': ("test.zip", mock_upload_zipfile[0].read(), "application/zip")}
+        files = {"file": ("test.zip", mock_upload_zipfile[0].read(), "application/zip")}
         response = test_client.post("/test_result/upload_zip", files=files)
 
         # Assertions
         assert response.status_code != 200
 
+
 # Test class for GET /{test_result_id}/artifacts/{filename}
 
 
 class TestGetTestResultArtifact:
-
     @pytest.fixture
     def mock_artifact(self):
         """Fixture to return a mock TestArtifactModel."""
@@ -288,9 +274,7 @@ class TestGetTestResultArtifact:
         return artifact
 
     @patch("aiverify_apigw.routers.test_result_router.get_artifact")
-    def test_get_test_result_artifact_success(
-        self, mock_get_artifact, mock_test_results, test_client
-    ):
+    def test_get_test_result_artifact_success(self, mock_get_artifact, mock_test_results, test_client):
         """Test successfully retrieving an artifact."""
         test_result = mock_test_results[1]
         test_artifact = test_result.artifacts[0]
@@ -307,12 +291,10 @@ class TestGetTestResultArtifact:
         # Assertions
         assert response.status_code == 200
         assert response.content == mock_artifact_data
-        assert response.headers["Content-Disposition"] == f"inline; filename=\"{filename}\""
+        assert response.headers["Content-Disposition"] == f'inline; filename="{filename}"'
 
     @patch("aiverify_apigw.routers.test_result_router.get_artifact")
-    def test_get_test_result_artifact_not_found(
-        self, mock_get_artifact, mock_test_results, test_client
-    ):
+    def test_get_test_result_artifact_not_found(self, mock_get_artifact, mock_test_results, test_client):
         """Test retrieving an artifact that does not exist in the database."""
 
         # Perform the GET request with valid test_result_id and invalid filename
@@ -333,9 +315,7 @@ class TestGetTestResultArtifact:
         assert response.json()["detail"] == f"Test artifact {filename} not found in test result {test_result_id}"
 
     @patch("aiverify_apigw.routers.test_result_router.get_artifact")
-    def test_get_test_result_artifact_read_failure(
-        self, mock_get_artifact, mock_test_results, test_client
-    ):
+    def test_get_test_result_artifact_read_failure(self, mock_get_artifact, mock_test_results, test_client):
         """Test error when retrieving the artifact file from storage."""
         test_result = mock_test_results[1]
         test_artifact = test_result.artifacts[0]
@@ -355,7 +335,6 @@ class TestGetTestResultArtifact:
 
 # Test class for GET /test_result/
 class TestReadTestResults:
-
     def test_read_test_results_success(self, mock_test_results, test_client):
         """Test successfully retrieving a list of test results."""
 
@@ -378,7 +357,6 @@ class TestReadTestResults:
 
 # Test class for GET /test_result/{test_result_id}
 class TestReadTestResult:
-
     def test_read_test_result_success(self, mock_test_results, test_client):
         """Test successfully retrieving a test result by ID."""
         test_result = mock_test_results[0]
@@ -413,7 +391,6 @@ class TestReadTestResult:
 
 # Test class for PUT /test_result/{test_result_id}
 class TestUpdateTestResult:
-
     @pytest.fixture
     def update_data(self):
         """Fixture to provide data for updating the test result."""
@@ -454,7 +431,6 @@ class TestUpdateTestResult:
 
 # Test class for DELETE /test_result/{test_result_id}
 class TestDeleteTestResult:
-
     def test_delete_test_result_success(self, mock_test_results, test_client, db_session):
         """Test successfully deleting a test result by ID."""
         test_result = mock_test_results[0]

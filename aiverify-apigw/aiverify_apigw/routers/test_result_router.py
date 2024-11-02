@@ -19,26 +19,24 @@ from ..schemas import TestResult, TestResultOutput, TestResultUpdate
 from ..schemas.load_examples import test_result_examples
 from ..models import AlgorithmModel, TestModelModel, TestResultModel, TestDatasetModel, TestArtifactModel
 
-router = APIRouter(
-    prefix="/test_result",
-    tags=["test_result"]
-)
+router = APIRouter(prefix="/test_result", tags=["test_result"])
 
 
 # @router.get("/")
 # async def read_test_results():
 #     return {"message": "List of test results"}
 
+
 async def _save_test_result(session: Session, test_result: TestResult, artifact_set: dict[str, UploadFile]):
     # find algorithm
     stmt = (
-        select(AlgorithmModel)
-        .where(AlgorithmModel.gid == test_result.gid)
-        .where(AlgorithmModel.cid == test_result.cid)
+        select(AlgorithmModel).where(AlgorithmModel.gid == test_result.gid).where(AlgorithmModel.cid == test_result.cid)
     )
     algorithm = session.scalar(stmt)
     if algorithm is None:
-        raise HTTPException(status_code=400, detail=f"Algorithm not found: gid: {test_result.gid}, cid: {test_result.cid}")
+        raise HTTPException(
+            status_code=400, detail=f"Algorithm not found: gid: {test_result.gid}, cid: {test_result.cid}"
+        )
 
     now = datetime.now()
     test_arguments = test_result.testArguments
@@ -91,8 +89,9 @@ async def _save_test_result(session: Session, test_result: TestResult, artifact_
             status=TestDatasetStatus.Valid,
             filepath=test_arguments.testDataset,
             filename=test_dataset_file.name,
-            file_type=TestDatasetFileType.Folder if test_arguments.testDataset.endswith(
-                "/") else TestDatasetFileType.Folder,
+            file_type=TestDatasetFileType.Folder
+            if test_arguments.testDataset.endswith("/")
+            else TestDatasetFileType.Folder,
         )
         # session.add(test_dataset)
         # session.flush()
@@ -113,7 +112,7 @@ async def _save_test_result(session: Session, test_result: TestResult, artifact_
                     status=TestDatasetStatus.Valid,
                     filepath=test_arguments.groundTruthDataset,
                     filename=ground_truth_file.name,
-                    file_type=TestDatasetFileType.File
+                    file_type=TestDatasetFileType.File,
                 )
                 # session.add(ground_truth_dataset)
                 # session.flush()
@@ -136,8 +135,8 @@ async def _save_test_result(session: Session, test_result: TestResult, artifact_
         ground_truth=test_arguments.groundTruth,
         start_time=test_result.startTime,
         time_taken=test_result.timeTaken,
-        algo_arguments=json.dumps(test_arguments.algorithmArgs).encode('utf-8'),
-        output=json.dumps(test_result.output).encode('utf-8'),
+        algo_arguments=json.dumps(test_arguments.algorithmArgs).encode("utf-8"),
+        output=json.dumps(test_result.output).encode("utf-8"),
         created_at=now,
         updated_at=now,
     )
@@ -162,8 +161,9 @@ async def _save_test_result(session: Session, test_result: TestResult, artifact_
             artifact = TestArtifactModel(
                 filename=filename,
                 suffix=get_suffix(filename),
-                mimetype=artifact_file.content_type if artifact_file.content_type else guess_mimetype_from_filename(
-                    filename),
+                mimetype=artifact_file.content_type
+                if artifact_file.content_type
+                else guess_mimetype_from_filename(filename),
             )
             test_result_model.artifacts.append(artifact)
 
@@ -177,7 +177,7 @@ async def _save_test_result(session: Session, test_result: TestResult, artifact_
 async def upload_test_result(
     test_result: Annotated[Any, Form(examples=test_result_examples)],
     session: Session = Depends(get_db_session),
-    artifacts: List[UploadFile] = []
+    artifacts: List[UploadFile] = [],
 ) -> List[str]:
     """Endpoint to upload test result"""
     logger.debug(f"upload_test_result, test_result {type(test_result)}: {test_result}")
@@ -222,10 +222,7 @@ async def upload_test_result(
 
 
 @router.post("/upload_zip")
-async def upload_zip_file(
-    file: UploadFile,
-    session: Session = Depends(get_db_session)
-) -> List[str]:
+async def upload_zip_file(file: UploadFile, session: Session = Depends(get_db_session)) -> List[str]:
     """Endpoint to upload a zip file containing test results and artifacts"""
     if not file.filename or not file.filename.endswith(".zip"):
         raise HTTPException(status_code=400, detail="Only zip files are allowed")
@@ -234,19 +231,23 @@ async def upload_zip_file(
     try:
         # Read the zip file
         zip_bytes = await file.read()
-        with zipfile.ZipFile(io.BytesIO(zip_bytes), 'r') as zip_ref:
+        with zipfile.ZipFile(io.BytesIO(zip_bytes), "r") as zip_ref:
             # Check if results.json exists in the zip
             if RESULT_FILENAME in zip_ref.namelist():
                 result_filenames = [RESULT_FILENAME]
             else:
-                result_filenames = list(filter(
-                    lambda name: name.endswith(RESULT_FILENAME) and len(PurePath(name).parts) == 2,
-                    zip_ref.namelist()
-                ))
+                result_filenames = list(
+                    filter(
+                        lambda name: name.endswith(RESULT_FILENAME) and len(PurePath(name).parts) == 2,
+                        zip_ref.namelist(),
+                    )
+                )
 
             if len(result_filenames) == 0:
                 raise HTTPException(
-                    status_code=400, detail="results.json not found in the root folder or any first level folder of the zip file")
+                    status_code=400,
+                    detail="results.json not found in the root folder or any first level folder of the zip file",
+                )
 
             logger.debug(f"result_filenames: {result_filenames}")
             all_urls = []
@@ -257,10 +258,7 @@ async def upload_zip_file(
                     zip_infos = zip_ref.infolist()
                 else:
                     foldername = f"{p.parts[0]}/"
-                    zip_infos = list(filter(
-                        lambda x: x.filename.startswith(foldername),
-                        zip_ref.infolist()
-                    ))
+                    zip_infos = list(filter(lambda x: x.filename.startswith(foldername), zip_ref.infolist()))
 
                 artifact_set = {}
                 for zip_info in zip_infos:
@@ -277,8 +275,7 @@ async def upload_zip_file(
                             with zip_ref.open(zip_info) as artifact_file:
                                 filename = zip_info.filename[len(foldername):]  # remove foldername
                                 artifact_set[filename] = UploadFile(
-                                    filename=filename,
-                                    file=io.BytesIO(artifact_file.read())
+                                    filename=filename, file=io.BytesIO(artifact_file.read())
                                 )
 
                 logger.debug(f"artifact_set: {artifact_set}")
@@ -334,7 +331,8 @@ async def get_test_result_artifact(
         artifact = session.scalar(stmt)
         if artifact is None:
             raise HTTPException(
-                status_code=400, detail=f"Test artifact {filename} not found in test result {test_result_id}")
+                status_code=400, detail=f"Test artifact {filename} not found in test result {test_result_id}"
+            )
 
         try:
             data = get_artifact(test_result_id, filename)
@@ -342,9 +340,7 @@ async def get_test_result_artifact(
             logger.warning(f"Unable to read artifact file {filename} for test result {test_result_id}: {e}")
             raise HTTPException(status_code=500, detail="Unable to retrieve artifact file")
 
-        headers = {
-            "Content-Disposition": f"inline; filename=\"{filename}\""
-        }
+        headers = {"Content-Disposition": f'inline; filename="{filename}"'}
         # use application/octet-stream for unknown content type
         # media_type = mimetypes.types_map[artifact.suffix] if artifact.suffix in mimetypes.types_map else "application/octet-stream"
         return Response(content=data, media_type=artifact.mimetype, headers=headers)
@@ -395,7 +391,9 @@ async def read_test_result(test_result_id: int, session: Session = Depends(get_d
 
 
 @router.put("/{test_result_id}", response_model=TestResultOutput)
-async def update_test_result(test_result_id: int, update_data: TestResultUpdate, session: Session = Depends(get_db_session)) -> TestResultOutput:
+async def update_test_result(
+    test_result_id: int, update_data: TestResultUpdate, session: Session = Depends(get_db_session)
+) -> TestResultOutput:
     """
     Endpoint to update a test result's name by its ID.
     """

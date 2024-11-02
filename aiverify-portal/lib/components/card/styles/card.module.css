@@ -1,0 +1,54 @@
+:root {
+  --card-width-sm: 250px;
+  --card-width-md: 380px;
+  --card-width-lg: 600px;
+}
+
+.card {
+  flex-direction: column;
+  box-shadow: 2px 4px 6px -1px rgb(0 0 0 / 0.4);
+  transition: background-color 0.3s ease;
+}
+
+.card_sm {
+  width: var(--card-width-sm);
+  height: calc(var(--card-width-sm) * 0.6);
+  border-radius: 5px;
+  font-size: 0.8rem;
+}
+
+.card_md {
+  width: var(--card-width-md);
+  height: calc(var(--card-width-md) * 0.6);
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.card_lg {
+  width: var(--card-width-lg);
+  height: calc(var(--card-width-lg) * 0.6);
+  border-radius: 10px;
+  font-size: 1.2rem;
+}
+
+.cardFlexbox {
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.cardContent {
+  flex: 1;
+}
+
+.cardSideBar_sm {
+  width: 30px;
+}
+
+.cardSideBar_md {
+  width: 50px;
+}
+
+.cardSideBar_lg {
+  width: 70px;
+}
