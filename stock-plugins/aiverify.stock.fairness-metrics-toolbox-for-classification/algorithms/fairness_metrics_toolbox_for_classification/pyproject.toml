@@ -8,14 +8,10 @@ dependencies = [
     "joblib==1.4.2",
     "scikit-learn==1.5.2",
     "scipy==1.14.1",
+    "aiverify-test-engine==2.0.0a1",
 ]
 requires-python = ">=3.10,<3.12"
 dynamic = ["version"]
-
-[project.optional-dependencies]
-dev = [
-    "aiverify-test-engine[dev] @ {root:parent:parent:parent:parent:uri}/aiverify-test-engine",
-]
 
 [project.scripts]
 aiverify_fairness_metrics_toolbox_for_classification = "aiverify_fairness_metrics_toolbox_for_classification.__main__:main"

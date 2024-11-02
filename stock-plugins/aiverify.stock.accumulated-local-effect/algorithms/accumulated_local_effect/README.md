@@ -75,27 +75,20 @@ In the aiverify root directory, run the below command to build the docker image
 docker build -t aiverify-accumulated-local-effect:v2.0.0a1 -f stock-plugins/aiverify.stock.accumulated-local-effect/algorithms/accumulated_local_effect/Dockerfile .
 ```
 
-Switch to the algorithm directory
-```sh
-cd stock-plugins/aiverify.stock.accumulated-local-effect/algorithms/accumulated_local_effect/
-```
-
 Run the below bash script to run the algorithm
 ```sh
 #!/bin/bash
-
-root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files"
 docker run \
-  -v $root_path:/user_defined_files \
-  -v ./output:/app/aiverify/stock-plugins/aiverify.stock.accumulated-local-effect/algorithms/accumulated_local_effect/output \
-  aiverify-accumulated-local-effect:v2.0.0a1 \
-  --data_path /user_defined_files/data/sample_bc_credit_data.sav \
-  --model_path /user_defined_files/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav \
-  --ground_truth_path /user_defined_files/data/sample_bc_credit_data.sav \
-  --ground_truth default \
-  --model_type CLASSIFICATION 
+    -v $(pwd)/stock-plugins/user_defined_files:/input \
+    -v $(pwd)/output:/app/aiverify/output \
+    aiverify-accumulated-local-effect:v2.0.0a1 \
+    --data_path /input/data/sample_bc_credit_data.sav \
+    --model_path /input/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav \
+    --ground_truth_path /input/data/sample_bc_credit_data.sav \
+    --ground_truth default \
+    --model_type CLASSIFICATION 
 ```
-If the algorithm runs successfully, the results of the test will be saved in an `output` folder in the algorithm directory.
+If the algorithm runs successfully, the results of the test will be saved in an `output` folder in the working directory.
 
 ## Tests
 ### Pytest is used as the testing framework.

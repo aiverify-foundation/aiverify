@@ -80,25 +80,17 @@ class Plugin(IAlgorithm):
 
         # Look for kwargs values for log_instance, progress_callback and base path
         self._logger = kwargs.get("logger", None)
-        self._progress_inst = SimpleProgress(
-            1, 0, kwargs.get("progress_callback", None)
-        )
+        self._progress_inst = SimpleProgress(1, 0, kwargs.get("progress_callback", None))
 
         # Check if data and model are tuples and if the tuples contain 2 items
-        if (
-            not isinstance(data_instance_and_serializer, Tuple)
-            or len(data_instance_and_serializer) != 2
-        ):
+        if not isinstance(data_instance_and_serializer, Tuple) or len(data_instance_and_serializer) != 2:
             self.add_to_log(
                 logging.ERROR,
                 f"The algorithm has failed data validation: {data_instance_and_serializer}",
             )
             raise RuntimeError("The algorithm has failed data validation")
 
-        if (
-            not isinstance(model_instance_and_serializer, Tuple)
-            or len(model_instance_and_serializer) != 2
-        ):
+        if not isinstance(model_instance_and_serializer, Tuple) or len(model_instance_and_serializer) != 2:
             self.add_to_log(
                 logging.ERROR,
                 f"The algorithm has failed model validation: {model_instance_and_serializer}",
@@ -120,9 +112,7 @@ class Plugin(IAlgorithm):
                     f"The algorithm has failed ground truth data validation: \
                         {ground_truth_instance_and_serializer}",
                 )
-                raise RuntimeError(
-                    "The algorithm has failed ground truth data validation"
-                )
+                raise RuntimeError("The algorithm has failed ground truth data validation")
             self._requires_ground_truth = True
             self._ground_truth_instance = ground_truth_instance_and_serializer[0]
             self._ground_truth_serializer = ground_truth_instance_and_serializer[1]
@@ -146,16 +136,12 @@ class Plugin(IAlgorithm):
         # By defining the input schema, it allows the front-end to know what algorithm input params is
         # required by this plugin. This allows this algorithm plug-in to receive the arguments values it requires.
         current_file_dir = Path(__file__).parent
-        self._input_schema = load_schema_file(
-            str(current_file_dir / "input.schema.json")
-        )
+        self._input_schema = load_schema_file(str(current_file_dir / "input.schema.json"))
 
         # Algorithm output schema defined in output.schema.json
         # By defining the output schema, this plug-in validates the result with the output schema.
         # This allows the result to be validated against the schema before passing it to the front-end for display.
-        self._output_schema = load_schema_file(
-            str(current_file_dir / "output.schema.json")
-        )
+        self._output_schema = load_schema_file(str(current_file_dir / "output.schema.json"))
 
         # Retrieve the input parameters defined in the input schema and store them
         self._input_arguments = dict()
@@ -211,9 +197,7 @@ class Plugin(IAlgorithm):
         # Perform validation on logger
         if self._logger:
             if not isinstance(self._logger, logging.Logger):
-                raise RuntimeError(
-                    "The algorithm has failed to set up logger. The logger type is invalid"
-                )
+                raise RuntimeError("The algorithm has failed to set up logger. The logger type is invalid")
 
         # Perform validation on model type
         if self._model_type not in Plugin._supported_algorithm_model_type:
@@ -232,9 +216,7 @@ class Plugin(IAlgorithm):
             raise RuntimeError("The algorithm has failed data validation")
 
         # Perform validation on model instance
-        if not isinstance(self._model_instance, IModel) and not isinstance(
-            self._model_instance, IPipeline
-        ):
+        if not isinstance(self._model_instance, IModel) and not isinstance(self._model_instance, IPipeline):
             self.add_to_log(
                 logging.ERROR,
                 f"The algorithm has failed model validation: {self._model_instance}",
@@ -248,9 +230,7 @@ class Plugin(IAlgorithm):
                     logging.ERROR,
                     f"The algorithm has failed ground truth data validation: {self._ground_truth_instance}",
                 )
-                raise RuntimeError(
-                    "The algorithm has failed ground truth data validation"
-                )
+                raise RuntimeError("The algorithm has failed ground truth data validation")
 
             # Perform validation on ground truth header
             if not isinstance(self._ground_truth, str):
@@ -267,9 +247,7 @@ class Plugin(IAlgorithm):
         # Perform validation on progress_inst
         if self._progress_inst:
             if not isinstance(self._progress_inst, SimpleProgress):
-                raise RuntimeError(
-                    "The algorithm has failed validation for the progress bar"
-                )
+                raise RuntimeError("The algorithm has failed validation for the progress bar")
 
         # Perform validation on project_base_path
         if not isinstance(self._base_path, PurePath):
@@ -348,9 +326,7 @@ class Plugin(IAlgorithm):
 
         # results
         # mae, r2 and mse are the metrics for regression
-        run_test_result = self._run_test(
-            data, self._ground_truth, pred_name, sensitive_features
-        )
+        run_test_result = self._run_test(data, self._ground_truth, pred_name, sensitive_features)
         result = {
             "results": json.loads(run_test_result.to_json(orient="records")),
             "sensitive_feature": sensitive_features,
@@ -360,9 +336,7 @@ class Plugin(IAlgorithm):
         # Update progress (For 100% completion)
         self._progress_inst.update(1)
 
-    def _compute_error_by_group(
-        self, group: pd.DataFrame, ground_truth: str, pred_name: str
-    ) -> pd.Series:
+    def _compute_error_by_group(self, group: pd.DataFrame, ground_truth: str, pred_name: str) -> pd.Series:
         """
         This method computes error rates based on each groups.
 

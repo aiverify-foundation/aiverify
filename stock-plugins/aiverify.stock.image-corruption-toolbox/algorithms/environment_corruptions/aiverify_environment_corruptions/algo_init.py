@@ -65,9 +65,7 @@ class AlgoInit:
 
         # Store the input arguments as private vars
         if core_modules_path == "":
-            core_modules_path = Path(
-                importlib.util.find_spec("aiverify_test_engine").origin
-            ).parent
+            core_modules_path = Path(importlib.util.find_spec("aiverify_test_engine").origin).parent
         self._core_modules_path: str = core_modules_path
         self._data_path: str = str(data_path)
         self._model_path: str = str(model_path)
@@ -127,9 +125,7 @@ class AlgoInit:
                     self._data_instance,
                     self._data_serializer_instance,
                     data_error_message,
-                ) = PluginManager.get_instance(
-                    PluginType.DATA, **{"filename": self._data_path}
-                )
+                ) = PluginManager.get_instance(PluginType.DATA, **{"filename": self._data_path})
 
                 # Identify and load model information
                 (
@@ -149,9 +145,7 @@ class AlgoInit:
                 current_dataset = self._data_instance.get_data()
                 current_pipeline = self._model_instance.get_pipeline()
                 data_transformation_stages = current_pipeline[:-1]
-                transformed_dataset = data_transformation_stages.transform(
-                    current_dataset
-                )
+                transformed_dataset = data_transformation_stages.transform(current_dataset)
                 transformed_pipeline = current_pipeline[-1]
                 # Set new transformed pipeline and dataset
                 self._data_instance.set_data(transformed_dataset)
@@ -163,24 +157,16 @@ class AlgoInit:
                     self._data_instance,
                     self._data_serializer_instance,
                     data_error_message,
-                ) = PluginManager.get_instance(
-                    PluginType.DATA, **{"filename": self._data_path}
-                )
+                ) = PluginManager.get_instance(PluginType.DATA, **{"filename": self._data_path})
                 (
                     self._model_instance,
                     self._model_serializer_instance,
                     model_error_message,
-                ) = PluginManager.get_instance(
-                    PluginType.MODEL, **{"filename": self._model_path}
-                )
+                ) = PluginManager.get_instance(PluginType.MODEL, **{"filename": self._model_path})
 
             # Print the instances we found from the paths and identified from the core plugins
-            print(
-                f"[DATA]: {self._data_instance} - {self._data_serializer_instance} ({data_error_message})"
-            )
-            print(
-                f"[MODEL]: {self._model_instance} - {self._model_serializer_instance} ({model_error_message})"
-            )
+            print(f"[DATA]: {self._data_instance} - {self._data_serializer_instance} ({data_error_message})")
+            print(f"[MODEL]: {self._model_instance} - {self._model_serializer_instance} ({model_error_message})")
             print(f"Requires Ground Truth?: {self._requires_ground_truth}")
 
             if self._data_instance and self._model_instance:
@@ -190,32 +176,20 @@ class AlgoInit:
                     (
                         self._ground_truth_instance,
                         self._ground_truth_serializer_instance,
-                        ground_truth_error_message,
-                    ) = PluginManager.get_instance(
-                        PluginType.DATA, **{"filename": self._ground_truth_path}
-                    )
+                        _ground_truth_error_message,
+                    ) = PluginManager.get_instance(PluginType.DATA, **{"filename": self._ground_truth_path})
 
-                    print(
-                        f"[GROUND_TRUTH]: {self._ground_truth_instance}{self._ground_truth_serializer_instance}"
-                    )
+                    print(f"[GROUND_TRUTH]: {self._ground_truth_instance}{self._ground_truth_serializer_instance}")
                     print(f"[GROUND_TRUTH]: {self._ground_truth}")
                     print(f"[MODEL_TYPE]: {self._model_type}")
-                    print(
-                        f"[GROUND_TRUTH FEATURES]: {self._ground_truth_instance.read_labels()}"
-                    )
+                    print(f"[GROUND_TRUTH FEATURES]: {self._ground_truth_instance.read_labels()}")
                     print(self._ground_truth_instance.get_data())
 
-                    print(
-                        "Removing ground truth from data and keep only ground truth in ground truth data..."
-                    )
+                    print("Removing ground truth from data and keep only ground truth in ground truth data...")
 
                     # Leave only the ground truth feature in self._ground_truth_instance and
                     # Remove ground truth feature from the data instance
-                    is_ground_truth_instance_success = (
-                        self._ground_truth_instance.keep_ground_truth(
-                            self._ground_truth
-                        )
-                    )
+                    is_ground_truth_instance_success = self._ground_truth_instance.keep_ground_truth(self._ground_truth)
                     self._data_instance.remove_ground_truth(self._ground_truth)
                     if not is_ground_truth_instance_success:
                         raise RuntimeError(
@@ -225,9 +199,7 @@ class AlgoInit:
                             "truth feature exists in the data specified in ground truth path file.)"
                         )
 
-                    print(
-                        f"[GROUND_TRUTH FEATURES]: {self._ground_truth_instance.read_labels()}"
-                    )
+                    print(f"[GROUND_TRUTH FEATURES]: {self._ground_truth_instance.read_labels()}")
 
                 else:
                     # Do not require Ground Truth
@@ -293,13 +265,9 @@ class AlgoInit:
         """
         f = open(str(Path(__file__).parent / "algo.meta.json"))
         meta_file = json.load(f)
-        annotated_ground_truth_path = self._input_arguments.get(
-            "annotated_ground_truth_path", None
-        )
+        annotated_ground_truth_path = self._input_arguments.get("annotated_ground_truth_path", None)
         annotated_ground_truth_path = (
-            get_absolute_path(annotated_ground_truth_path)
-            if annotated_ground_truth_path
-            else None
+            get_absolute_path(annotated_ground_truth_path) if annotated_ground_truth_path else None
         )
 
         # Prepare test arguments

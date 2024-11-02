@@ -74,29 +74,22 @@ In the aiverify root directory, run the below command to build the docker image
 docker build -t aiverify-fairness-metrics-toolbox-for-classification:v2.0.0a1 -f stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification/Dockerfile .
 ```
 
-Switch to the algorithm directory
-```sh
-cd stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification/
-```
-
 Run the below bash script to run the algorithm
 ```sh
 #!/bin/bash
-
-root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files"
 docker run \
-  -v $root_path:/user_defined_files \
-  -v ./output:/app/aiverify/stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification/output \
+  -v $(pwd)/stock-plugins/user_defined_files:/input \
+  -v $(pwd)/output:/app/aiverify/output \
   aiverify-fairness-metrics-toolbox-for-classification:v2.0.0a1 \
-  --data_path /user_defined_files/data/sample_mc_pipeline_toxic_data.sav \
-  --model_path /user_defined_files/pipeline/mc_tabular_toxic \
-  --ground_truth_path /user_defined_files/data/sample_mc_pipeline_toxic_ytest_data.sav \
+  --data_path /input/data/sample_mc_pipeline_toxic_data.sav \
+  --model_path /input/pipeline/mc_tabular_toxic \
+  --ground_truth_path /input/data/sample_mc_pipeline_toxic_ytest_data.sav \
   --ground_truth toxic \
   --model_type CLASSIFICATION \
   --run_pipeline \
   --sensitive_features_list gender
 ```
-If the algorithm runs successfully, the results of the test will be saved in an `output` folder in the algorithm directory.
+If the algorithm runs successfully, the results of the test will be saved in an `output` folder in the working directory.
 
 ## Tests
 ### Pytest is used as the testing framework.

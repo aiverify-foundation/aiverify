@@ -6,12 +6,8 @@ from aiverify_test_engine.plugins.enums.model_type import ModelType
 
 image_pipeline = {
     "data_path": str("../../../user_defined_files/data/raw_fashion_image_10"),
-    "model_path": str(
-        "../../../user_defined_files/pipeline/multiclass_classification_image_mnist_fashion"
-    ),
-    "ground_truth_path": str(
-        "../../../user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"
-    ),
+    "model_path": str("../../../user_defined_files/pipeline/multiclass_classification_image_mnist_fashion"),
+    "ground_truth_path": str("../../../user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"),
     "run_pipeline": True,
     "model_type": ModelType.CLASSIFICATION,
     "ground_truth": "label",
