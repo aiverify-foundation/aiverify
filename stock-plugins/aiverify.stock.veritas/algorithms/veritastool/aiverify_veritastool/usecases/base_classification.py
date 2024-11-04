@@ -1,8 +1,3 @@
-import numpy as np
-import pandas as pd
-from sklearn.metrics import confusion_matrix
-
-from ..config.constants import Constants
 from ..metrics.fairness_metrics import FairnessMetrics
 from ..metrics.performance_metrics import PerformanceMetrics
 from ..principles import Fairness, Transparency
@@ -160,10 +155,7 @@ class BaseClassification(Fairness, Transparency):
         self._check_input()
         self._tran_check_input()
 
-        if (
-            not self.multiclass_flag
-            and not self.model_params[0]._model_data_processing_flag
-        ):
+        if not self.multiclass_flag and not self.model_params[0]._model_data_processing_flag:
             self._model_data_processing()
             self.model_params[0]._model_data_processing_flag = True
 
@@ -197,9 +189,7 @@ class BaseClassification(Fairness, Transparency):
 
         # check for model_params
         mp_given = len(self.model_params)
-        mp_expected = self._model_type_to_metric_lookup[
-            self.model_params[0].model_type
-        ][2]
+        mp_expected = self._model_type_to_metric_lookup[self.model_params[0].model_type][2]
         if mp_given != mp_expected:
             self.err.push(
                 "length_error",
@@ -244,8 +234,6 @@ class BaseClassification(Fairness, Transparency):
 
     def tradeoff(self, output=True, n_threads=1, sigma=0):
         if self.multiclass_flag:
-            print(
-                "Skipped: Tradeoff analysis is not supported for multiclass classification."
-            )
+            print("Skipped: Tradeoff analysis is not supported for multiclass classification.")
         else:
             super(BaseClassification, self).tradeoff(output, n_threads, sigma)

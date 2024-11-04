@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-from sklearn.metrics import confusion_matrix
 
 from ..config.constants import Constants
 from ..metrics.fairness_metrics import FairnessMetrics
@@ -259,10 +258,7 @@ class CustomerMarketing(Fairness, Transparency):
         #             err.push('type_error', var_name="y_pred", given= "type None", expected="type [list, np.ndarray, pd.Series]", function_name="_check_input")
 
         # check for y_pred not None if model is uplift, if yes set to None as it is not required
-        if (
-            self.model_params[0].model_type == "uplift"
-            and self.model_params[0].y_pred is not None
-        ):
+        if self.model_params[0].model_type == "uplift" and self.model_params[0].y_pred is not None:
             for i in range(len(self.model_params)):
                 self.model_params[i].y_pred = None
 
@@ -279,10 +275,7 @@ class CustomerMarketing(Fairness, Transparency):
 
         # check for revenue and treatment_cost
         # only for uplift models based on expected profit perf metric
-        if (
-            self.model_params[0].model_type == "uplift"
-            and self.perf_metric_name == "expected_profit"
-        ):
+        if self.model_params[0].model_type == "uplift" and self.perf_metric_name == "expected_profit":
             exp_type = list((int, float))
             spl_range = (0, np.inf)
             # check if spl params are in expected type, otherwise throw exception
@@ -296,14 +289,8 @@ class CustomerMarketing(Fairness, Transparency):
                         function_name="_check_input",
                     )
                 # check if spl params are within expected range, otherwise throw exception
-                if (
-                    type(self.spl_params[i]) != type(None)
-                    and type(self.spl_params[i]) in exp_type
-                ):
-                    if (
-                        self.spl_params[i] < spl_range[0]
-                        or self.spl_params[i] > spl_range[1]
-                    ):
+                if type(self.spl_params[i]) != type(None) and type(self.spl_params[i]) in exp_type:
+                    if self.spl_params[i] < spl_range[0] or self.spl_params[i] > spl_range[1]:
                         err.push(
                             "value_error",
                             var_name=str(i),
@@ -371,13 +358,9 @@ class CustomerMarketing(Fairness, Transparency):
         for p_var_key in mdl[1].p_grp.keys():
             if isinstance(mdl[1].p_grp[p_var_key], str):
                 if mdl[1].p_grp[p_var_key] == "max_bias":
-                    p_grp, up_grp = self.map_policy_to_method[mdl[1].p_grp[p_var_key]](
-                        p_var_key, self.model_params
-                    )
+                    p_grp, up_grp = self.map_policy_to_method[mdl[1].p_grp[p_var_key]](p_var_key, self.model_params)
                 else:
-                    p_grp, up_grp = self.map_policy_to_method[mdl[1].p_grp[p_var_key]](
-                        p_var_key, self.model_params[1]
-                    )
+                    p_grp, up_grp = self.map_policy_to_method[mdl[1].p_grp[p_var_key]](p_var_key, self.model_params[1])
                 mdl[0].p_grp[p_var_key] = p_grp
                 mdl[0].up_grp[p_var_key] = up_grp
                 mdl[1].p_grp[p_var_key] = p_grp
@@ -486,9 +469,7 @@ class CustomerMarketing(Fairness, Transparency):
             p_base = np.array([np.mean(y_train == lab) for lab in classes])
             pC = p_base[2] + p_base[3]
             pT = p_base[0] + p_base[1]
-            e_lift = (y_prob[:, 0] - y_prob[:, 1]) / pT + (
-                y_prob[:, 3] - y_prob[:, 2]
-            ) / pC
+            e_lift = (y_prob[:, 0] - y_prob[:, 1]) / pT + (y_prob[:, 3] - y_prob[:, 2]) / pC
             return e_lift
         else:
             return None
@@ -510,10 +491,7 @@ class CustomerMarketing(Fairness, Transparency):
         # pred_outcome will only run for uplift models
         if self.model_params[0].model_type == "uplift":
             y_prob = [model.y_prob for model in self.model_params]
-            y_train = [
-                model.y_train if model.y_train is not None else model.y_true
-                for model in self.model_params
-            ]
+            y_train = [model.y_train if model.y_train is not None else model.y_true for model in self.model_params]
 
             if "y_pred_new" in kwargs:
                 y_prob = kwargs["y_pred_new"]
@@ -540,9 +518,7 @@ class CustomerMarketing(Fairness, Transparency):
         else:
             return None
 
-    def _check_label(
-        self, y, pos_label, neg_label=None, obj_in=None, y_pred_flag=False
-    ):
+    def _check_label(self, y, pos_label, neg_label=None, obj_in=None, y_pred_flag=False):
         """
         Creates copy of y_true as y_true_bin and convert favourable labels to 1 and unfavourable to 0 for non-uplift models.
         Overwrites y_pred with the conversion, if `y_pred_flag` is set to True.

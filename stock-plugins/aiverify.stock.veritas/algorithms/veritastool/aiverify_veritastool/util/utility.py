@@ -1,15 +1,11 @@
 import math
 import multiprocessing
-from copy import deepcopy
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from sklearn.calibration import calibration_curve
-from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import LabelBinarizer
 
-from ..config.constants import Constants
 from .errors import VeritasError
 
 
@@ -81,11 +77,7 @@ def check_datatype(obj_in):
                                     ]
                                 )
 
-                        if (
-                            (type(i) == list)
-                            and (len(i) > 0)
-                            and not (type(i[0]) == list)
-                        ):
+                        if (type(i) == list) and (len(i) > 0) and not (type(i[0]) == list):
                             err_.append(
                                 [
                                     "type_error",
@@ -98,9 +90,7 @@ def check_datatype(obj_in):
         if var_name in ["pos_label", "neg_label"]:
             if cur_type in exp_type and var is not None:
                 if any(isinstance(i, list) for i in var):
-                    err_.append(
-                        ["type_error", str(var_name), str(type(i)), "no nested list"]
-                    )
+                    err_.append(["type_error", str(var_name), str(type(i)), "no nested list"])
 
     if err_ == []:
         return successMsg
@@ -202,10 +192,7 @@ def check_value(obj_in):
                 )
 
         # eg check y_prob
-        elif (
-            var_value_type in numeric_list_types
-            and var_range_type in numeric_range_types
-        ):
+        elif var_value_type in numeric_list_types and var_range_type in numeric_range_types:
             # need to perfrom check on whether the dimension array
             min_value = var_value.min()
             max_value = var_value.max()
@@ -228,15 +215,11 @@ def check_value(obj_in):
         elif var_value_type == pd.DataFrame and var_range_type in numeric_range_types:
             var_value_types = var_value.dtypes
             if len(var_value_types) != len(var_range):
-                err_.append(
-                    ["length_error", var_name, len(var_value_types), len(var_range)]
-                )
+                err_.append(["length_error", var_name, len(var_value_types), len(var_range)])
             else:
                 for i, tp in zip(range(len(var_value_types)), var_value_types):
                     if tp != var_range[i]:
-                        err_.append(
-                            ["column_value_error", var_name, str(tp), str(var_range[i])]
-                        )
+                        err_.append(["column_value_error", var_name, str(tp), str(var_range[i])])
 
         # eg check p_grp, up_grp
         elif var_value_type == dict and var_range_type == dict:
@@ -269,9 +252,7 @@ def check_value(obj_in):
                 for key in keyset1:
                     i_var = convert_to_set(var_value.get(key))
                     # If a policy is specified, the compare against supported policies
-                    if (var_name in ["p_grp", "up_grp"]) and (
-                        isinstance(var_value.get(key), str)
-                    ):
+                    if (var_name in ["p_grp", "up_grp"]) and (isinstance(var_value.get(key), str)):
                         i_range = convert_to_set(obj_in.policies)
                     elif (var_name == "up_grp") and (var_value.get(key) is None):
                         # When up_grp value is set as None, skip checking value as it's later deduced
@@ -332,11 +313,7 @@ def convert_to_set(var):
         }
     elif type(var) == set:
         result = var
-    elif (
-        (type(var) in [list, tuple])
-        and (len(var) == 1)
-        and (type(var[0]) in [list, tuple])
-    ):
+    elif (type(var) in [list, tuple]) and (len(var) == 1) and (type(var[0]) in [list, tuple]):
         result = set(var[0])
     elif type(var) in [list, tuple]:
         result = set(var)
@@ -418,22 +395,14 @@ def check_data_unassigned(obj_in, y=None, y_pred_negation_flag=False):
     else:
         if len(y_true.shape) == 1 and y_true.dtype.kind in ["i", "O", "U"]:
             y_true = np.delete(y_true, unassigned_y_label[1])
-        if (
-            y_pred is not None
-            and len(y_pred.shape) == 1
-            and y_pred.dtype.kind in ["i", "O", "U"]
-        ):
+        if y_pred is not None and len(y_pred.shape) == 1 and y_pred.dtype.kind in ["i", "O", "U"]:
             y_pred = np.delete(y_pred, unassigned_y_label[1])
         if y_prob is not None and y_prob.dtype.kind == "f":
             y_prob = np.delete(y_prob, unassigned_y_label[1], axis=0)
         if x_test is not None and isinstance(x_test, pd.DataFrame):
             x_test = x_test.drop(unassigned_y_label[1]).reset_index(drop=True)
-        if protected_features_cols is not None and isinstance(
-            protected_features_cols, pd.DataFrame
-        ):
-            protected_features_cols = protected_features_cols.drop(
-                unassigned_y_label[1]
-            ).reset_index(drop=True)
+        if protected_features_cols is not None and isinstance(protected_features_cols, pd.DataFrame):
+            protected_features_cols = protected_features_cols.drop(unassigned_y_label[1]).reset_index(drop=True)
 
         return y_true, y_pred, y_prob, x_test, protected_features_cols
 
@@ -464,9 +433,7 @@ def input_parameter_validation(_input_parameter_lookup):
         # Check mitigate methods for empty list
         if param_name == "method":
             if not param_value:
-                err_.append(
-                    ["value_error", param_name, str(param_value), str(param_range)]
-                )
+                err_.append(["value_error", param_name, str(param_value), str(param_range)])
 
         # Skip validation if param_name is an empty list or is None
         if (isinstance(param_value, list) and param_value == []) or param_value is None:
@@ -474,17 +441,13 @@ def input_parameter_validation(_input_parameter_lookup):
 
         # check data type
         if not isinstance(param_value, exp_type):
-            err_.append(
-                ["type_error", param_name, str(type(param_value)), str(exp_type)]
-            )
+            err_.append(["type_error", param_name, str(type(param_value)), str(exp_type)])
 
         # check value
         if isinstance(param_range, (list, set, np.ndarray)):
             if isinstance(param_value, (list, set, np.ndarray)):
                 if not set(param_value).issubset(set(param_range)):
-                    err_.append(
-                        ["value_error", param_name, str(param_value), str(param_range)]
-                    )
+                    err_.append(["value_error", param_name, str(param_value), str(param_range)])
             # transform_x for mitigate
             elif param_name == "transform_x":
                 if param_value.columns.tolist() != param_range:
@@ -498,16 +461,11 @@ def input_parameter_validation(_input_parameter_lookup):
                     )
             else:
                 if param_value not in param_range:
-                    err_.append(
-                        ["value_error", param_name, str(param_value), str(param_range)]
-                    )
+                    err_.append(["value_error", param_name, str(param_value), str(param_range)])
 
         # cr_beta for mitigate
         elif param_name == "cr_beta":
-            if (
-                param_value.shape[0] != param_range[0]
-                or param_value.shape[1] != param_range[1]
-            ):
+            if param_value.shape[0] != param_range[0] or param_value.shape[1] != param_range[1]:
                 err_.append(
                     [
                         "value_error",
@@ -519,9 +477,7 @@ def input_parameter_validation(_input_parameter_lookup):
 
         elif isinstance(param_range, (tuple)):
             if param_value < param_range[0] or param_value > param_range[1]:
-                err_.append(
-                    ["value_error", param_name, str(param_value), str(param_range)]
-                )
+                err_.append(["value_error", param_name, str(param_value), str(param_range)])
 
     if err_ == []:
         return success_msg
@@ -565,9 +521,7 @@ def input_parameter_filtering(_input_parameter_lookup, obj_in=None):
             filtered_params[param_name] = param_value
             continue
         # If param_value is iterable and param_range is a list, set, or numpy array, check if param_value is in the range
-        if hasattr(param_value, "__iter__") and isinstance(
-            param_range, (list, set, np.ndarray)
-        ):
+        if hasattr(param_value, "__iter__") and isinstance(param_range, (list, set, np.ndarray)):
             filtered_value = [val for val in param_value if val in param_range]
             filtered_params[param_name] = filtered_value
         # If param_range is None, include the value in the filtered_params dictionary
@@ -608,9 +562,7 @@ def input_parameter_filtering(_input_parameter_lookup, obj_in=None):
                 or obj_in.p_grp is None
                 or obj_in.model_object is None
                 or isinstance(obj_in.x_train, str)
-                or not obj_in.x_train.select_dtypes(include=[np.number]).equals(
-                    obj_in.x_train
-                )
+                or not obj_in.x_train.select_dtypes(include=[np.number]).equals(obj_in.x_train)
             ):
                 print(
                     "Skipped: Mitigate {} is skipped due to insufficient data input during ModelContainer() initialization.".format(

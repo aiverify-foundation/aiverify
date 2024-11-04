@@ -84,25 +84,17 @@ class Plugin(IAlgorithm):
 
         # Look for kwargs values for log_instance, progress_callback and base path
         self._logger = kwargs.get("logger", None)
-        self._progress_inst = SimpleProgress(
-            1, 0, kwargs.get("progress_callback", None)
-        )
+        self._progress_inst = SimpleProgress(1, 0, kwargs.get("progress_callback", None))
 
         # Check if data and model are tuples and if the tuples contain 2 items
-        if (
-            not isinstance(data_instance_and_serializer, Tuple)
-            or len(data_instance_and_serializer) != 2
-        ):
+        if not isinstance(data_instance_and_serializer, Tuple) or len(data_instance_and_serializer) != 2:
             self.add_to_log(
                 logging.ERROR,
                 f"The algorithm has failed data validation: {data_instance_and_serializer}",
             )
             raise RuntimeError("The algorithm has failed data validation")
 
-        if (
-            not isinstance(model_instance_and_serializer, Tuple)
-            or len(model_instance_and_serializer) != 2
-        ):
+        if not isinstance(model_instance_and_serializer, Tuple) or len(model_instance_and_serializer) != 2:
             self.add_to_log(
                 logging.ERROR,
                 f"The algorithm has failed model validation: {model_instance_and_serializer}",
@@ -124,9 +116,7 @@ class Plugin(IAlgorithm):
                     f"The algorithm has failed ground truth data validation: \
                         {ground_truth_instance_and_serializer}",
                 )
-                raise RuntimeError(
-                    "The algorithm has failed ground truth data validation"
-                )
+                raise RuntimeError("The algorithm has failed ground truth data validation")
             self._requires_ground_truth = True
             self._ground_truth_instance = ground_truth_instance_and_serializer[0]
             self._ground_truth_serializer = ground_truth_instance_and_serializer[1]
@@ -149,16 +139,12 @@ class Plugin(IAlgorithm):
         # By defining the input schema, it allows the front-end to know what algorithm input params is
         # required by this plugin. This allows this algorithm plug-in to receive the arguments values it requires.
         current_file_dir = Path(__file__).parent
-        self._input_schema = load_schema_file(
-            str(current_file_dir / "input.schema.json")
-        )
+        self._input_schema = load_schema_file(str(current_file_dir / "input.schema.json"))
 
         # Algorithm output schema defined in output.schema.json
         # By defining the output schema, this plug-in validates the result with the output schema.
         # This allows the result to be validated against the schema before passing it to the front-end for display.
-        self._output_schema = load_schema_file(
-            str(current_file_dir / "output.schema.json")
-        )
+        self._output_schema = load_schema_file(str(current_file_dir / "output.schema.json"))
 
         # Retrieve the input parameters defined in the input schema and store them
         self._input_arguments = dict()
@@ -211,9 +197,7 @@ class Plugin(IAlgorithm):
         # Perform validation on logger
         if self._logger:
             if not isinstance(self._logger, logging.Logger):
-                raise RuntimeError(
-                    "The algorithm has failed to set up logger. The logger type is invalid"
-                )
+                raise RuntimeError("The algorithm has failed to set up logger. The logger type is invalid")
 
         # Perform validation on model type
         if self._model_type not in Plugin._supported_algorithm_model_type:
@@ -232,9 +216,7 @@ class Plugin(IAlgorithm):
             raise RuntimeError("The algorithm has failed data validation")
 
         # Perform validation on model instance
-        if not isinstance(self._model_instance, IModel) and not isinstance(
-            self._model_instance, IPipeline
-        ):
+        if not isinstance(self._model_instance, IModel) and not isinstance(self._model_instance, IPipeline):
             self.add_to_log(
                 logging.ERROR,
                 f"The algorithm has failed model validation: {self._model_instance}",
@@ -248,9 +230,7 @@ class Plugin(IAlgorithm):
                     logging.ERROR,
                     f"The algorithm has failed ground truth data validation: {self._ground_truth_instance}",
                 )
-                raise RuntimeError(
-                    "The algorithm has failed ground truth data validation"
-                )
+                raise RuntimeError("The algorithm has failed ground truth data validation")
 
             # Perform validation on ground truth header
             if not isinstance(self._ground_truth, str):
@@ -267,9 +247,7 @@ class Plugin(IAlgorithm):
         # Perform validation on progress_inst
         if self._progress_inst:
             if not isinstance(self._progress_inst, SimpleProgress):
-                raise RuntimeError(
-                    "The algorithm has failed validation for the progress bar"
-                )
+                raise RuntimeError("The algorithm has failed validation for the progress bar")
 
         # Perform validation on project_base_path
         if not isinstance(self._base_path, PurePath):
@@ -355,32 +333,22 @@ class Plugin(IAlgorithm):
             grid_resolution = 25
 
             # Remove ground_truth target value from the data
-            data_no_ground_truth = self._data.drop(
-                [self._ground_truth], axis=1, errors="ignore"
-            ).copy()
+            data_no_ground_truth = self._data.drop([self._ground_truth], axis=1, errors="ignore").copy()
 
             # Get the data, features, and targets
             data_no_ground_truth_np = data_no_ground_truth.to_numpy()
             data_features = list(data_no_ground_truth.columns)
-            data_ground_truth_np = (
-                self._ground_truth_instance.get_data()[self._ground_truth]
-                .transpose()
-                .to_numpy()
-            )
+            data_ground_truth_np = self._ground_truth_instance.get_data()[self._ground_truth].transpose().to_numpy()
             targets = np.unique(data_ground_truth_np)
 
             # Compute pdp grid values
-            grid_values = self._compute_pdp_grid(
-                data_no_ground_truth_np, data_features, percentiles, grid_resolution
-            )
+            grid_values = self._compute_pdp_grid(data_no_ground_truth_np, data_features, percentiles, grid_resolution)
 
             dict_items_labels = self._data_instance.read_labels().items()
             # Update the progress total value
             self._progress_inst.add_total(len(grid_values))
             for index, value in grid_values.items():
-                mean_pdp = self._compute_pdp(
-                    data_no_ground_truth_np, index, dict_items_labels, value
-                )
+                mean_pdp = self._compute_pdp(data_no_ground_truth_np, index, dict_items_labels, value)
                 feature = data_features[index]
                 # Convert results based on target classes.
                 output_results[feature] = dict()
@@ -412,9 +380,7 @@ class Plugin(IAlgorithm):
                 logging.ERROR,
                 f"Invalid data plugin type - {self._data_instance.get_data_plugin_type()}",
             )
-            raise RuntimeError(
-                f"Invalid data plugin type - {self._data_instance.get_data_plugin_type()}"
-            )
+            raise RuntimeError(f"Invalid data plugin type - {self._data_instance.get_data_plugin_type()}")
 
     def _compute_pdp(
         self,
@@ -447,9 +413,7 @@ class Plugin(IAlgorithm):
 
         return mean_value
 
-    def _compute_pdp_grid(
-        self, data: np.ndarray, features: List, percentiles: List, grid_resolution: int
-    ) -> Dict:
+    def _compute_pdp_grid(self, data: np.ndarray, features: List, percentiles: List, grid_resolution: int) -> Dict:
         """
         A helper method to compute pdp grid values
 
@@ -471,9 +435,7 @@ class Plugin(IAlgorithm):
         """
         # Perform conditional checks
         if len(percentiles) != 2:
-            self.add_to_log(
-                logging.ERROR, "'percentiles' must be a sequence of 2 elements."
-            )
+            self.add_to_log(logging.ERROR, "'percentiles' must be a sequence of 2 elements.")
             raise RuntimeError("'percentiles' must be a sequence of 2 elements.")
 
         if not all(0 <= x <= 1 for x in percentiles):
@@ -507,12 +469,10 @@ class Plugin(IAlgorithm):
                 if np.allclose(emp_percentiles[0], emp_percentiles[1]):
                     self.add_to_log(
                         logging.ERROR,
-                        f"Percentiles are too closed: {emp_percentiles}. "
-                        f"Please change percentile value.",
+                        f"Percentiles are too closed: {emp_percentiles}. " f"Please change percentile value.",
                     )
                     raise RuntimeError(
-                        f"Percentiles are too closed: {emp_percentiles}. "
-                        f"Please change percentile value."
+                        f"Percentiles are too closed: {emp_percentiles}. " f"Please change percentile value."
                     )
                 else:
                     tmp_grid_values = np.linspace(
@@ -559,12 +519,8 @@ class Plugin(IAlgorithm):
                 feature_value_list, mean_pdp_value_list = target_value
                 feature_value_list = remove_numpy_formats(feature_value_list)
                 mean_pdp_value_list = remove_numpy_formats(mean_pdp_value_list)
-                for feature_value, mean_pdp_value in zip(
-                    feature_value_list, mean_pdp_value_list
-                ):
-                    target_feature_array.append(
-                        {"feature_value": feature_value, "pdp_value": mean_pdp_value}
-                    )
+                for feature_value, mean_pdp_value in zip(feature_value_list, mean_pdp_value_list):
+                    target_feature_array.append({"feature_value": feature_value, "pdp_value": mean_pdp_value})
                 target_value_array.append(target_feature_array)
             results_array.append(target_value_array)
 

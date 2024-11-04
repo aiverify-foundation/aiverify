@@ -3,9 +3,7 @@ import argparse
 from aiverify_robustness_toolbox.algo_init import AlgoInit
 from aiverify_test_engine.plugins.enums.model_type import ModelType
 
-parser = argparse.ArgumentParser(
-    description="Run the plugin with specified parameters."
-)
+parser = argparse.ArgumentParser(description="Run the plugin with specified parameters.")
 
 
 def run():
@@ -18,9 +16,7 @@ def parse_input_args():
 
     parser.add_argument("--data_path", required=True, help="Path to the data file.")
     parser.add_argument("--model_path", required=True, help="Path to the model file.")
-    parser.add_argument(
-        "--ground_truth_path", required=True, help="Path to the ground truth data file."
-    )
+    parser.add_argument("--ground_truth_path", required=True, help="Path to the ground truth data file.")
     parser.add_argument(
         "--ground_truth",
         required=True,

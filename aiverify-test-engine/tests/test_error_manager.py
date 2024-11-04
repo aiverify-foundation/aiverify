@@ -1135,7 +1135,7 @@ class TestCollectionErrorManager:
         """
         error_manager = ErrorManager()
 
-        is_success, error_message = error_manager.add_error_to_list(
+        is_success, _ = error_manager.add_error_to_list(
             error_list[0],
             error_list[1],
             error_list[2],

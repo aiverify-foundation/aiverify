@@ -25,7 +25,13 @@ def _create_mock_test_artifact():
     return artifact
 
 
-def _create_mock_test_result(plugin: PluginModel, model: TestModelModel, test_dataset: TestDatasetModel, ground_truth_dataset: TestDatasetModel | None, num_artifacts: int):
+def _create_mock_test_result(
+    plugin: PluginModel,
+    model: TestModelModel,
+    test_dataset: TestDatasetModel,
+    ground_truth_dataset: TestDatasetModel | None,
+    num_artifacts: int,
+):
     gid = ".".join(faker.words()).lower()
     cid = ".".join(faker.words()).lower()
     fake_date = faker.date_object()
@@ -48,7 +54,7 @@ def _create_mock_test_result(plugin: PluginModel, model: TestModelModel, test_da
         start_time=fake_date,
         time_taken=faker.random_int(min=1, max=300),
         algo_arguments=faker.json_bytes(),
-        output=json.dumps({"result": 100}).encode('utf-8'),
+        output=json.dumps({"result": 100}).encode("utf-8"),
         created_at=fake_date,
         updated_at=fake_date,
         artifacts=artifacts,
@@ -71,7 +77,8 @@ def create_mock_test_results(session, plugins: List[PluginModel], num_test_resul
             case 2:
                 ground_truth_dataset = create_mock_test_datasets(session=session, num_datasets=1)[0]
         test_result = _create_mock_test_result(
-            plugin, model=model, test_dataset=test_dataset, ground_truth_dataset=ground_truth_dataset, num_artifacts=i)
+            plugin, model=model, test_dataset=test_dataset, ground_truth_dataset=ground_truth_dataset, num_artifacts=i
+        )
         test_results.append(test_result)
     session.add_all(test_results)
     session.flush()

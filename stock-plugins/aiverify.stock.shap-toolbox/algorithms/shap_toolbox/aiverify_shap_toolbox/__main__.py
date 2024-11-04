@@ -2,6 +2,7 @@
 Allow aiverify_shap_toolbox to be executable through
 `python3 -m aiverify_shap_toolbox`
 """
+
 import sys
 from importlib.metadata import version
 from pathlib import Path

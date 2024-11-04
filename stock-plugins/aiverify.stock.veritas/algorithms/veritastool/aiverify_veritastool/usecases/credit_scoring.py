@@ -1,7 +1,5 @@
 import numpy as np
-from sklearn.metrics import confusion_matrix
 
-from ..config.constants import Constants
 from ..metrics.fairness_metrics import FairnessMetrics
 from ..metrics.newmetric import *
 from ..metrics.performance_metrics import PerformanceMetrics
@@ -169,10 +167,7 @@ class CreditScoring(Fairness, Transparency):
             for var in self.model_params[0].p_var:
                 self._rejection_inference_flag[var] = False
 
-            if (
-                self.spl_params["base_default_rate"] is not None
-                and self.spl_params["num_applicants"] is not None
-            ):
+            if self.spl_params["base_default_rate"] is not None and self.spl_params["num_applicants"] is not None:
                 for var in self.model_params[0].p_var:
                     self._rejection_inference_flag[var] = True
 
@@ -213,9 +208,7 @@ class CreditScoring(Fairness, Transparency):
 
         # check for model_params
         mp_given = len(self.model_params)
-        mp_expected = self._model_type_to_metric_lookup[
-            self.model_params[0].model_type
-        ][2]
+        mp_expected = self._model_type_to_metric_lookup[self.model_params[0].model_type][2]
         if mp_given != mp_expected:
             self.err.push(
                 "length_error",
@@ -256,13 +249,9 @@ class CreditScoring(Fairness, Transparency):
         if self.spl_params is not None:
             # check that spl_params if provided contains dictionaries, otherwise throw exception
             for i in self.spl_params.keys():
-                if type(self.spl_params[i]) != dict and type(
-                    self.spl_params[i]
-                ) != type(None):
-                    self._rejection_inference_flag = (
-                        self._rejection_inference_flag.fromkeys(
-                            self._rejection_inference_flag, False
-                        )
+                if type(self.spl_params[i]) != dict and type(self.spl_params[i]) != type(None):
+                    self._rejection_inference_flag = self._rejection_inference_flag.fromkeys(
+                        self._rejection_inference_flag, False
                     )
                     self.err.push(
                         "value_error",
@@ -284,12 +273,8 @@ class CreditScoring(Fairness, Transparency):
                             self.err.push(
                                 "value_error",
                                 var_name="base_default_rate",
-                                given="values for "
-                                + str(
-                                    list(self.spl_params["base_default_rate"].keys())
-                                ),
-                                expected="values for "
-                                + str(self.model_params[0].p_var),
+                                given="values for " + str(list(self.spl_params["base_default_rate"].keys())),
+                                expected="values for " + str(self.model_params[0].p_var),
                                 function_name="_check_special_params",
                             )
 
@@ -302,10 +287,8 @@ class CreditScoring(Fairness, Transparency):
                             self.err.push(
                                 "value_error",
                                 var_name="num_applicants",
-                                given="values for "
-                                + str(list(self.spl_params["num_applicants"].keys())),
-                                expected="values for "
-                                + str(self.model_params[0].p_var),
+                                given="values for " + str(list(self.spl_params["num_applicants"].keys())),
+                                expected="values for " + str(self.model_params[0].p_var),
                                 function_name="_check_special_params",
                             )
             # print any exceptions occured
@@ -322,14 +305,8 @@ class CreditScoring(Fairness, Transparency):
                 for i in self.spl_params["num_applicants"]:
                     if self._rejection_inference_flag[i] is True:
                         for j in range(len(self.spl_params["num_applicants"].get(i))):
-                            if (
-                                type(self.spl_params["num_applicants"].get(i)[j])
-                                in num_applicants_type
-                            ):
-                                if (
-                                    type(self.spl_params["num_applicants"].get(i)[j])
-                                    == float
-                                ):
+                            if type(self.spl_params["num_applicants"].get(i)[j]) in num_applicants_type:
+                                if type(self.spl_params["num_applicants"].get(i)[j]) == float:
                                     self.spl_params["num_applicants"].get(i)[j] = int(
                                         self.spl_params["num_applicants"].get(i)[j]
                                     )
@@ -338,11 +315,7 @@ class CreditScoring(Fairness, Transparency):
                                 self.err.push(
                                     "type_error",
                                     var_name="num_applicants",
-                                    given=str(
-                                        type(
-                                            self.spl_params["num_applicants"].get(i)[j]
-                                        )
-                                    ),
+                                    given=str(type(self.spl_params["num_applicants"].get(i)[j])),
                                     expected=str(num_applicants_type),
                                     function_name="_check_special_params",
                                 )
@@ -351,24 +324,13 @@ class CreditScoring(Fairness, Transparency):
             if self.spl_params["base_default_rate"] is not None:
                 for i in self.spl_params["base_default_rate"]:
                     if self._rejection_inference_flag[i] is True:
-                        for j in range(
-                            len(self.spl_params["base_default_rate"].get(i))
-                        ):
-                            if (
-                                type(self.spl_params["base_default_rate"].get(i)[j])
-                                not in base_default_rate_type
-                            ):
+                        for j in range(len(self.spl_params["base_default_rate"].get(i))):
+                            if type(self.spl_params["base_default_rate"].get(i)[j]) not in base_default_rate_type:
                                 self._rejection_inference_flag[i] = False
                                 self.err.push(
                                     "type_error",
                                     var_name="base_default_rate",
-                                    given=str(
-                                        type(
-                                            self.spl_params["base_default_rate"].get(i)[
-                                                j
-                                            ]
-                                        )
-                                    ),
+                                    given=str(type(self.spl_params["base_default_rate"].get(i)[j])),
                                     expected=str(base_default_rate_type),
                                     function_name="_check_special_params",
                                 )
@@ -396,10 +358,7 @@ class CreditScoring(Fairness, Transparency):
                 for k, l in self.spl_params["base_default_rate"].items():
                     if self._rejection_inference_flag[k] is True:
                         for m in l:
-                            if (
-                                m < base_default_rate_range[0]
-                                or m > base_default_rate_range[1]
-                            ):
+                            if m < base_default_rate_range[0] or m > base_default_rate_range[1]:
                                 self._rejection_inference_flag[k] = False
                                 self.err.push(
                                     "value_error",
@@ -447,10 +406,8 @@ class CreditScoring(Fairness, Transparency):
                 in_value = next(iter(self.spl_params["num_applicants"].items()))
                 try:
                     if sum(in_value[1]) != sum(val):
-                        self._rejection_inference_flag = (
-                            self._rejection_inference_flag.fromkeys(
-                                self._rejection_inference_flag, False
-                            )
+                        self._rejection_inference_flag = self._rejection_inference_flag.fromkeys(
+                            self._rejection_inference_flag, False
                         )
                         self.err.push(
                             "conflict_error",
@@ -464,9 +421,7 @@ class CreditScoring(Fairness, Transparency):
                     pass
 
             # check for common base default rate based in spl params input values. If inconsistent, throw exception
-            rejection_inference_filter = {
-                k: v for k, v in self._rejection_inference_flag.items() if v is True
-            }
+            rejection_inference_filter = {k: v for k, v in self._rejection_inference_flag.items() if v is True}
             if len(rejection_inference_filter) > 0:
                 # Check for common base default rate
                 check_cbdr = {}
@@ -479,17 +434,14 @@ class CreditScoring(Fairness, Transparency):
                                 for k in na_var:
                                     if i == j and i == k:
                                         self.common_base_default_rate = (
-                                            br_var.get(i)[0] * na_var.get(i)[0]
-                                            + br_var.get(i)[1] * na_var.get(i)[1]
+                                            br_var.get(i)[0] * na_var.get(i)[0] + br_var.get(i)[1] * na_var.get(i)[1]
                                         ) / (na_var.get(i)[0] + na_var.get(i)[1])
                                         check_cbdr[i] = self.common_base_default_rate
                     br_value = next(iter(check_cbdr.items()))
                     for val in check_cbdr:
                         if round(br_value[1], 5) != round(check_cbdr[val], 5):
-                            self._rejection_inference_flag = (
-                                self._rejection_inference_flag.fromkeys(
-                                    self._rejection_inference_flag, False
-                                )
+                            self._rejection_inference_flag = self._rejection_inference_flag.fromkeys(
+                                self._rejection_inference_flag, False
                             )
                             self.err.push(
                                 "conflict_error",
@@ -512,12 +464,7 @@ class CreditScoring(Fairness, Transparency):
                         idx = self.feature_mask[i][filtered_indices].astype(bool)
                         filtered_exp_out = exp_out[filtered_indices]
                         pri_grp = self.model_params[0].p_grp.get(i)[0]
-                        features = (
-                            self.model_params[0]
-                            .protected_features_cols[i]
-                            .unique()
-                            .tolist()
-                        )
+                        features = self.model_params[0].protected_features_cols[i].unique().tolist()
                         for j in features:
                             if j != pri_grp:
                                 unpri_grp = j
@@ -540,10 +487,7 @@ class CreditScoring(Fairness, Transparency):
                             )
 
             # check if spl params provided are realistic, otherwise throw exception
-            if (
-                self.model_params[0].y_true is not None
-                and self.model_params[0].y_pred is not None
-            ):
+            if self.model_params[0].y_true is not None and self.model_params[0].y_pred is not None:
                 y_true_reshape = np.array(self.model_params[0].y_true).reshape(1, 1, -1)
                 y_pred_reshape = np.array(self.model_params[0].y_pred).reshape(1, 1, -1)
                 tp, fp, tn, fn = self._get_confusion_matrix_optimized(
@@ -551,10 +495,8 @@ class CreditScoring(Fairness, Transparency):
                 )
                 # check for acceptance cohort rate
                 if fn < 0 or tn < 0:
-                    self._rejection_inference_flag = (
-                        self._rejection_inference_flag.fromkeys(
-                            self._rejection_inference_flag, False
-                        )
+                    self._rejection_inference_flag = self._rejection_inference_flag.fromkeys(
+                        self._rejection_inference_flag, False
                     )
                     self.err.push(
                         "conflict_error",
@@ -585,20 +527,9 @@ class CreditScoring(Fairness, Transparency):
                         )
                         pri_grp = self.model_params[0].p_grp.get(curr_p_var)[0]
                         if self.spl_params["num_applicants"] is not None:
-                            group_default_rate_p = (
-                                fp_p
-                                / self.spl_params["num_applicants"].get(curr_p_var)[0]
-                            )
-                            group_default_rate_u = (
-                                fp_u
-                                / self.spl_params["num_applicants"].get(curr_p_var)[1]
-                            )
-                            if (
-                                group_default_rate_p
-                                > self.spl_params["base_default_rate"].get(curr_p_var)[
-                                    0
-                                ]
-                            ):
+                            group_default_rate_p = fp_p / self.spl_params["num_applicants"].get(curr_p_var)[0]
+                            group_default_rate_u = fp_u / self.spl_params["num_applicants"].get(curr_p_var)[1]
+                            if group_default_rate_p > self.spl_params["base_default_rate"].get(curr_p_var)[0]:
                                 self.err.push(
                                     "conflict_error",
                                     var_name_a="base_default_rate",
@@ -606,12 +537,7 @@ class CreditScoring(Fairness, Transparency):
                                     value="",
                                     function_name="_check_special_params",
                                 )
-                            if (
-                                group_default_rate_u
-                                > self.spl_params["base_default_rate"].get(curr_p_var)[
-                                    1
-                                ]
-                            ):
+                            if group_default_rate_u > self.spl_params["base_default_rate"].get(curr_p_var)[1]:
                                 self.err.push(
                                     "conflict_error",
                                     var_name_a="base_default_rate",

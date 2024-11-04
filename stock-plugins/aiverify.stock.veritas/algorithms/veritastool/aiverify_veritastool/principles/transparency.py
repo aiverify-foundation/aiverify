@@ -6,7 +6,6 @@ import matplotlib.pyplot as pl
 import numpy as np
 import pandas as pd
 import shap
-from IPython.core.display import HTML
 from IPython.display import display_html
 from shap import Explanation
 from sklearn.inspection import PartialDependenceDisplay
@@ -14,7 +13,7 @@ from tqdm.auto import tqdm
 
 from ..config.constants import Constants
 from ..metrics.performance_metrics import PerformanceMetrics
-from ..util.utility import check_data_unassigned, process_y_prob
+from ..util.utility import process_y_prob
 
 
 class Transparency:
@@ -106,9 +105,7 @@ class Transparency:
         self.tran_shap_extra = {}
         self.tran_top_features = {}
         self.tran_pdp_feature_processed = {}
-        self.permutation_importance = pd.DataFrame(
-            columns=["feature", "diff", "neg_flag"]
-        )
+        self.permutation_importance = pd.DataFrame(columns=["feature", "diff", "neg_flag"])
         self.tran_flag = {"data_sampling_flag": False}
         self.tran_results = {
             "permutation": {"title": "", "footnote": "", "score": ""},
@@ -204,8 +201,7 @@ class Transparency:
                         "value_error",
                         var_name="tran_row_num",
                         given=i,
-                        expected="Index within range 1 - "
-                        + str(self.tran_input_features["shape"][0]),
+                        expected="Index within range 1 - " + str(self.tran_input_features["shape"][0]),
                         function_name="_tran_check_input",
                     )
                 if type(i) == float:
@@ -221,9 +217,7 @@ class Transparency:
                     expected="int or float",
                     function_name="_tran_check_input",
                 )
-            elif (type(self.tran_max_sample) == float) and not (
-                0 < self.tran_max_sample < 1
-            ):
+            elif (type(self.tran_max_sample) == float) and not (0 < self.tran_max_sample < 1):
                 self.err.push(
                     "value_error",
                     var_name="tran_max_sample",
@@ -238,8 +232,7 @@ class Transparency:
                     "value_error",
                     var_name="tran_max_sample",
                     given=self.tran_max_sample,
-                    expected="Value between range 1 - "
-                    + str(self.tran_input_features["shape"][0]),
+                    expected="Value between range 1 - " + str(self.tran_input_features["shape"][0]),
                     function_name="_tran_check_input",
                 )
 
@@ -272,13 +265,8 @@ class Transparency:
                     )
 
     def _check_tran_pdp_target(self):
-        if (
-            self.model_params[0].model_type != "regression"
-            and self.model_params[0].model_object is not None
-        ):
-            if (self.tran_pdp_target is not None) and len(
-                self.model_params[0].model_object.classes_
-            ) > 2:
+        if self.model_params[0].model_type != "regression" and self.model_params[0].model_object is not None:
+            if (self.tran_pdp_target is not None) and len(self.model_params[0].model_object.classes_) > 2:
                 if type(self.tran_pdp_target) not in [str, int]:
                     self.err.push(
                         "type_error",
@@ -287,10 +275,7 @@ class Transparency:
                         expected="str/int",
                         function_name="_tran_check_input",
                     )
-                elif (
-                    self.tran_pdp_target
-                    not in self.model_params[0].model_object.classes_
-                ):
+                elif self.tran_pdp_target not in self.model_params[0].model_object.classes_:
                     self.err.push(
                         "value_error",
                         var_name="tran_pdp_target",
@@ -318,14 +303,11 @@ class Transparency:
                 "value_error",
                 var_name="tran_max_display",
                 given=self.tran_max_display,
-                expected="Value between range 2 - "
-                + str(self.tran_input_features["shape"][1]),
+                expected="Value between range 2 - " + str(self.tran_input_features["shape"][1]),
                 function_name="_tran_check_input",
             )
         else:
-            self.tran_max_display = min(
-                self.tran_max_display, self.tran_input_features["shape"][1]
-            )
+            self.tran_max_display = min(self.tran_max_display, self.tran_input_features["shape"][1])
 
     def _check_tran_features(self):
         if type(self.tran_features) != list:
@@ -356,10 +338,7 @@ class Transparency:
                     )
 
     def _check_tran_processed_input(self):
-        if (
-            self.tran_processed_data is not None
-            and self.tran_processed_label is not None
-        ):
+        if self.tran_processed_data is not None and self.tran_processed_label is not None:
             if type(self.tran_processed_data) != pd.DataFrame:
                 self.err.push(
                     "type_error",
@@ -381,8 +360,7 @@ class Transparency:
                     "value_error",
                     var_name="tran_processed_label",
                     given=len(self.tran_processed_label),
-                    expected="length equal to length of model params : "
-                    + str(len(self.model_params)),
+                    expected="length equal to length of model params : " + str(len(self.model_params)),
                     function_name="_tran_check_input",
                 )
             else:
@@ -395,15 +373,12 @@ class Transparency:
                             expected="np.ndarray or pd.Series or list",
                             function_name="_tran_check_input",
                         )
-                    elif type(self.tran_processed_data) == pd.DataFrame and len(
-                        i
-                    ) != len(self.tran_processed_data):
+                    elif type(self.tran_processed_data) == pd.DataFrame and len(i) != len(self.tran_processed_data):
                         self.err.push(
                             "value_error",
                             var_name="tran_processed_label",
                             given=len(i),
-                            expected="length equal to length of processed data : "
-                            + str(len(self.tran_processed_data)),
+                            expected="length equal to length of processed data : " + str(len(self.tran_processed_data)),
                             function_name="_tran_check_input",
                         )
 
@@ -437,9 +412,7 @@ class Transparency:
             base = explanation.base_values
             shap_values = np.moveaxis(explanation.values, -1, 0)
             if shap_values.shape[0] == 2:
-                idx = list(self.model_params[0].model_object.classes_).index(
-                    self.model_params[0].pos_label[0]
-                )
+                idx = list(self.model_params[0].model_object.classes_).index(self.model_params[0].pos_label[0])
                 shap_values = shap_values[idx]
                 base = base[:, idx]
             else:
@@ -457,17 +430,13 @@ class Transparency:
         """
         if self.tran_input_features["check_input_flag"] == 1:
             if 0 < self.tran_max_sample < 1:
-                self.tran_max_sample = round(
-                    self.tran_max_sample * self.model_params[0].x_train.shape[0]
-                )
+                self.tran_max_sample = round(self.tran_max_sample * self.model_params[0].x_train.shape[0])
             elif 1 < self.tran_max_sample <= self.model_params[0].x_train.shape[0]:
                 self.tran_max_sample = round(self.tran_max_sample)
             else:
                 self.tran_max_sample = self.model_params[0].x_train.shape[0]
 
-            self.tran_processed_data = self.model_params[0].x_train.sample(
-                n=self.tran_max_sample, random_state=0
-            )
+            self.tran_processed_data = self.model_params[0].x_train.sample(n=self.tran_max_sample, random_state=0)
 
             if self.model_params[0].model_type != "regression":
                 y_train = pd.Series(self.model_params[0].y_train)
@@ -489,9 +458,7 @@ class Transparency:
                             ]
                         )
 
-        diff = set(x - 1 for x in self.tran_row_num) - set(
-            self.tran_processed_data.index
-        )
+        diff = set(x - 1 for x in self.tran_row_num) - set(self.tran_processed_data.index)
         if diff:
             self.tran_processed_data = pd.concat(
                 [
@@ -514,15 +481,11 @@ class Transparency:
         This function does not return anything. It stores the top features and their shap values in tran_top_features with model number as the key.
         """
         if type(self.tran_shap_values[model_num]) == list:
-            importances = np.sum(
-                np.mean(np.abs(self.tran_shap_values[model_num]), axis=1), axis=0
-            )
+            importances = np.sum(np.mean(np.abs(self.tran_shap_values[model_num]), axis=1), axis=0)
         else:
             importances = np.mean(np.abs(self.tran_shap_values[model_num]), axis=0)
         features = self.tran_processed_data.columns
-        feature_imp = pd.DataFrame(
-            {"Feature_name": features, "mean(|shap|)": importances}
-        )
+        feature_imp = pd.DataFrame({"Feature_name": features, "mean(|shap|)": importances})
         feature_imp.sort_values(by=["mean(|shap|)"], ascending=False, inplace=True)
         self.tran_top_features[model_num] = feature_imp
 
@@ -602,13 +565,9 @@ class Transparency:
 
         else:
             summary = self.tran_top_features[model_num][
-                np.isin(self.tran_top_features[model_num], self.tran_features).any(
-                    axis=1
-                )
+                np.isin(self.tran_top_features[model_num], self.tran_features).any(axis=1)
             ]
-            self.tran_results["model_list"][model_num][
-                "summary_plot_data_table"
-            ] = summary.to_dict(orient="records")
+            self.tran_results["model_list"][model_num]["summary_plot_data_table"] = summary.to_dict(orient="records")
             self.tran_results["model_list"][model_num]["summary_plot"] = None
             self.tran_results["model_list"][model_num]["plot"]["summary"] = ""
 
@@ -631,26 +590,20 @@ class Transparency:
         """
         class_index = "NA"
         ind = []
-        for i in range(
-            len(self.tran_results["model_list"][model_num]["local_interpretability"])
-        ):
-            ind.append(
-                self.tran_results["model_list"][model_num]["local_interpretability"][i][
-                    "id"
-                ]
-            )
+        for i in range(len(self.tran_results["model_list"][model_num]["local_interpretability"])):
+            ind.append(self.tran_results["model_list"][model_num]["local_interpretability"][i]["id"])
         if n not in ind:
             # creating class index and explanation scenarios based on the model type
             if (self.model_params[model_num].model_type) != "regression":
                 if len(self.model_params[model_num].model_object.classes_) > 2:
                     if self.tran_input_features["check_input_flag"] == 1:
-                        class_index = list(
-                            self.model_params[model_num].model_object.classes_
-                        ).index(np.array(self.model_params[model_num].y_train)[n - 1])
+                        class_index = list(self.model_params[model_num].model_object.classes_).index(
+                            np.array(self.model_params[model_num].y_train)[n - 1]
+                        )
                     else:
-                        class_index = list(
-                            self.model_params[model_num].model_object.classes_
-                        ).index(np.array(self.tran_processed_label[model_num])[n - 1])
+                        class_index = list(self.model_params[model_num].model_object.classes_).index(
+                            np.array(self.tran_processed_label[model_num])[n - 1]
+                        )
                     exp = Explanation(
                         self.tran_shap_values[model_num][class_index],
                         base_values=self.tran_shap_extra[model_num][:, class_index],
@@ -689,9 +642,7 @@ class Transparency:
             fx = (exp.base_values[row_index]) + sum(exp[row_index].values)
             if self.tran_features == []:
                 pl.figure(constrained_layout=True)
-                shap.plots.waterfall(
-                    exp[row_index], max_display=self.tran_max_display, show=False
-                )
+                shap.plots.waterfall(exp[row_index], max_display=self.tran_max_display, show=False)
                 fig = pl.gcf()
                 pl.ion()
                 pl.close()
@@ -699,14 +650,9 @@ class Transparency:
 
                 other_features = pd.DataFrame(
                     {
-                        "Feature_name": str(
-                            len(plot_points[self.tran_max_display - 1 :])
-                        )
-                        + " OTHER",
+                        "Feature_name": str(len(plot_points[self.tran_max_display - 1 :])) + " OTHER",
                         "Value": "",
-                        "Shap": plot_points[self.tran_max_display - 1 :][["Shap"]]
-                        .sum()
-                        .values,
+                        "Shap": plot_points[self.tran_max_display - 1 :][["Shap"]].sum().values,
                     }
                 )
                 if plot_points.shape[0] == self.tran_max_display:
@@ -722,39 +668,25 @@ class Transparency:
                     "efx": efx,
                     "fx": fx,
                     "plot_display": True,
-                    "feature_info": feature_list[
-                        ["Feature_name", "Value", "Shap"]
-                    ].to_dict(orient="records"),
+                    "feature_info": feature_list[["Feature_name", "Value", "Shap"]].to_dict(orient="records"),
                 }
                 # generating dictionary of values for the indices passed
-                self.tran_results["model_list"][model_num][
-                    "local_interpretability"
-                ].append(dict_item)
+                self.tran_results["model_list"][model_num]["local_interpretability"].append(dict_item)
                 self.tran_results["model_list"][model_num]["plot"]["local_plot"][n] = im
-                self.tran_results["model_list"][model_num]["plot"]["class_index"][
-                    n
-                ] = class_index
+                self.tran_results["model_list"][model_num]["plot"]["class_index"][n] = class_index
             else:
-                local = plot_points[
-                    np.isin(plot_points, self.tran_features).any(axis=1)
-                ]
+                local = plot_points[np.isin(plot_points, self.tran_features).any(axis=1)]
                 dict_item = {
                     "id": n,
                     "efx": efx,
                     "fx": fx,
                     "plot_display": False,
-                    "feature_info": local[["Feature_name", "Value", "Shap"]].to_dict(
-                        orient="records"
-                    ),
+                    "feature_info": local[["Feature_name", "Value", "Shap"]].to_dict(orient="records"),
                 }
                 # generating dictionary of values for the indices passed
-                self.tran_results["model_list"][model_num][
-                    "local_interpretability"
-                ].append(dict_item)
+                self.tran_results["model_list"][model_num]["local_interpretability"].append(dict_item)
                 self.tran_results["model_list"][model_num]["plot"]["local_plot"][n] = ""
-                self.tran_results["model_list"][model_num]["plot"]["class_index"][
-                    n
-                ] = class_index
+                self.tran_results["model_list"][model_num]["plot"]["class_index"][n] = class_index
 
     def _compute_partial_dependence(self, model_num=0):
         """
@@ -778,14 +710,13 @@ class Transparency:
         self.tran_pdp_feature_processed[model_num] = final_pdp[:2]
 
         if self.model_params[model_num].model_type != "regression":
-            if (self.tran_pdp_target is None) and len(
-                self.model_params[model_num].model_object.classes_
-            ) > 2:
+            if (self.tran_pdp_target is None) and len(self.model_params[model_num].model_object.classes_) > 2:
                 self.tran_pdp_target = self.model_params[model_num].pos_label[0]
 
-        if getattr(
-            self.model_params[model_num].model_object, "_estimator_type", None
-        ) not in ["classifier", "regressor"]:
+        if getattr(self.model_params[model_num].model_object, "_estimator_type", None) not in [
+            "classifier",
+            "regressor",
+        ]:
             if self.model_params[model_num].model_type == "regression":
                 setattr(
                     self.model_params[model_num].model_object,
@@ -819,9 +750,7 @@ class Transparency:
             im, image_base_64 = self._plot_encode(f, plot="pdp_plot")
             pl.close()
             self.tran_results["model_list"][model_num]["plot"]["pdp_plot"][i] = im
-            self.tran_results["model_list"][model_num]["partial_dependence_plot"][
-                i
-            ] = image_base_64
+            self.tran_results["model_list"][model_num]["partial_dependence_plot"][i] = image_base_64
 
         print("{:5s}{:35s}{:<10}".format("", "Partial dependence", "done"))
 
@@ -848,18 +777,12 @@ class Transparency:
             self.perf_metric_obj = PerformanceMetrics(self)
 
         if self.model_params[0].model_type in ["regression", "uplift"]:
-            score_func = self.perf_metric_obj.map_perf_metric_to_method[
-                self.perf_metric_name
-            ]
+            score_func = self.perf_metric_obj.map_perf_metric_to_method[self.perf_metric_name]
         else:
-            score_func = self.perf_metric_obj.map_perf_metric_to_method_optimized[
-                self.perf_metric_name
-            ]
+            score_func = self.perf_metric_obj.map_perf_metric_to_method_optimized[self.perf_metric_name]
 
         if self.evaluate_status == 1:
-            base_score = self.perf_metric_obj.result["perf_metric_values"][
-                self.perf_metric_name
-            ][0]
+            base_score = self.perf_metric_obj.result["perf_metric_values"][self.perf_metric_name][0]
         else:
             if self.model_params[0].model_type == "regression":
                 base_score = score_func(y_pred_new=[self.model_params[0].y_pred])
@@ -880,9 +803,7 @@ class Transparency:
         )
 
         if self.tran_features == []:
-            feature_list = self.tran_top_features[model_num]["Feature_name"].tolist()[
-                :permutation_additional
-            ]
+            feature_list = self.tran_top_features[model_num]["Feature_name"].tolist()[:permutation_additional]
         else:
             feature_list = self.tran_features
 
@@ -897,37 +818,21 @@ class Transparency:
             np.random.shuffle(transformed)
             self.model_params[0].x_test[feature] = transformed
             if self.model_params[0].model_type == "regression":
-                y_pred = self.model_params[0].model_object.predict(
-                    self.model_params[0].x_test
-                )
+                y_pred = self.model_params[0].model_object.predict(self.model_params[0].x_test)
                 base_score_new = score_func(y_pred_new=[y_pred])
             elif self.model_params[0].model_type == "uplift":
-                y_prob1 = self.model_params[0].model_object.predict_proba(
-                    self.model_params[0].x_test
-                )
-                y_prob2 = self.model_params[1].model_object.predict_proba(
-                    self.model_params[0].x_test
-                )
+                y_prob1 = self.model_params[0].model_object.predict_proba(self.model_params[0].x_test)
+                y_prob2 = self.model_params[1].model_object.predict_proba(self.model_params[0].x_test)
                 for i in range(y_prob1.shape[0]):
                     y_prob1[i] = y_prob1[i][::-1]
                     y_prob2[i] = y_prob2[i][::-1]
                 y_prob = [y_prob1, y_prob2]
                 base_score_new = score_func(y_prob_new=y_prob)
             else:
-                y_pred = self.model_params[0].model_object.predict(
-                    self.model_params[0].x_test
-                )
-                y_prob = self.model_params[0].model_object.predict_proba(
-                    self.model_params[0].x_test
-                )
-                if (
-                    y_prob.shape[1] > 2
-                    or self.model_params[0].model_object.classes_[1] != 1
-                ):
-                    if (
-                        hasattr(self, "multiclass_flag")
-                        and not self.model_params[0].multi_class_flag
-                    ):
+                y_pred = self.model_params[0].model_object.predict(self.model_params[0].x_test)
+                y_prob = self.model_params[0].model_object.predict_proba(self.model_params[0].x_test)
+                if y_prob.shape[1] > 2 or self.model_params[0].model_object.classes_[1] != 1:
+                    if hasattr(self, "multiclass_flag") and not self.model_params[0].multi_class_flag:
                         y_pred, pos_label = self._check_label(
                             y_pred,
                             self.model_params[0].pos_label,
@@ -942,9 +847,7 @@ class Transparency:
                             self.model_params[0].neg_label,
                         )
                 else:
-                    y_prob = self.model_params[0].model_object.predict_proba(
-                        self.model_params[0].x_test
-                    )[:, 1]
+                    y_prob = self.model_params[0].model_object.predict_proba(self.model_params[0].x_test)[:, 1]
                 base_score_new = score_func(y_pred_new=[y_pred], y_prob_new=[y_prob])
             self.model_params[0].x_test[feature] = original
             diff.append(abs(base_score - base_score_new))
@@ -961,73 +864,45 @@ class Transparency:
             eval_pbar.update(80 / len(new_list))
 
         # Create a new DataFrame with the computed values
-        new_data = pd.DataFrame(
-            {"feature": new_list, "diff": diff, "neg_flag": neg_flag}
-        )
+        new_data = pd.DataFrame({"feature": new_list, "diff": diff, "neg_flag": neg_flag})
 
         # Remove any columns that are all-NA from both DataFrames
         new_data = new_data.dropna(axis=1, how="all")
-        self.permutation_importance = self.permutation_importance.dropna(
-            axis=1, how="all"
-        )
+        self.permutation_importance = self.permutation_importance.dropna(axis=1, how="all")
 
         # Ensure both DataFrames have the same columns
-        all_columns = list(
-            set(new_data.columns) | set(self.permutation_importance.columns)
-        )
+        all_columns = list(set(new_data.columns) | set(self.permutation_importance.columns))
         new_data = new_data.reindex(columns=all_columns)
-        self.permutation_importance = self.permutation_importance.reindex(
-            columns=all_columns
-        )
+        self.permutation_importance = self.permutation_importance.reindex(columns=all_columns)
 
         # Fill NaN values with appropriate defaults
         new_data = new_data.fillna({"feature": "", "diff": 0, "neg_flag": False})
-        self.permutation_importance = self.permutation_importance.fillna(
-            {"feature": "", "diff": 0, "neg_flag": False}
-        )
+        self.permutation_importance = self.permutation_importance.fillna({"feature": "", "diff": 0, "neg_flag": False})
 
         # Concatenate the DataFrames
-        self.permutation_importance = pd.concat(
-            [self.permutation_importance, new_data], ignore_index=True
-        )
-        self.permutation_importance = self.permutation_importance.sort_values(
-            by="diff", ascending=False
-        )
+        self.permutation_importance = pd.concat([self.permutation_importance, new_data], ignore_index=True)
+        self.permutation_importance = self.permutation_importance.sort_values(by="diff", ascending=False)
         perm_imp = self.permutation_importance.copy()
         perm_imp["score"] = perm_imp["diff"] / perm_imp["diff"].max() * 100
         perm_imp = perm_imp[: self.tran_max_display]
         neg_feature_list = list(perm_imp.loc[perm_imp["neg_flag"] == 1, "feature"])
         perm_imp["feature"] = perm_imp.apply(
-            lambda row: (
-                row["feature"] + "*" if row["neg_flag"] == 1 else row["feature"]
-            ),
+            lambda row: (row["feature"] + "*" if row["neg_flag"] == 1 else row["feature"]),
             axis=1,
         )
-        self.tran_results["permutation"]["score"] = perm_imp[
-            ["feature", "score"]
-        ].to_dict(orient="records")
-        self.tran_results["permutation"][
-            "title"
-        ] = "Permutation Importance Plot based on |Metric_old - Metric_new|"
+        self.tran_results["permutation"]["score"] = perm_imp[["feature", "score"]].to_dict(orient="records")
+        self.tran_results["permutation"]["title"] = "Permutation Importance Plot based on |Metric_old - Metric_new|"
 
         pl.figure(constrained_layout=True)
         pl.barh(y=perm_imp.feature, width=perm_imp.score, height=0.5)
         pl.gca().invert_yaxis()
         if len(neg_feature_list) > 0:
             if self.perf_metric_name in ["log_loss", "rmse", "mape", "wape"]:
-                pl.xlabel(
-                    "* indicates $Metric_{old} > Metric_{new}$", fontsize=8, loc="left"
-                )
-                self.tran_results["permutation"][
-                    "footnote"
-                ] = "* indicates Metric_old > Metric_new"
+                pl.xlabel("* indicates $Metric_{old} > Metric_{new}$", fontsize=8, loc="left")
+                self.tran_results["permutation"]["footnote"] = "* indicates Metric_old > Metric_new"
             else:
-                pl.xlabel(
-                    "* indicates $Metric_{old} < Metric_{new}$", fontsize=8, loc="left"
-                )
-                self.tran_results["permutation"][
-                    "footnote"
-                ] = "* indicates Metric_old < Metric_new"
+                pl.xlabel("* indicates $Metric_{old} < Metric_{new}$", fontsize=8, loc="left")
+                self.tran_results["permutation"]["footnote"] = "* indicates Metric_old < Metric_new"
         else:
             self.tran_results["permutation"]["footnote"] = None
 
@@ -1071,21 +946,15 @@ class Transparency:
         """
         if interpretability_plot_flag is True:
             summary_plot = self.tran_results["model_list"][model_num]["plot"]["summary"]
-            latest_local_key = list(
-                self.tran_results["model_list"][model_num]["plot"]["local_plot"].keys()
-            )[-1]
-            local_plot = self.tran_results["model_list"][model_num]["plot"][
-                "local_plot"
-            ][latest_local_key]
+            latest_local_key = list(self.tran_results["model_list"][model_num]["plot"]["local_plot"].keys())[-1]
+            local_plot = self.tran_results["model_list"][model_num]["plot"]["local_plot"][latest_local_key]
             if type(summary_plot) != str:
                 fig = pl.figure()
                 fig.set_figheight((0.35 * self.tran_max_display) + 1)
                 fig.set_figwidth(12)
                 ax1 = pl.subplot2grid(shape=(1, 2), loc=(0, 0), colspan=1)
                 ax1.imshow(summary_plot, aspect="auto")
-                ax1.set_title(
-                    "Global Interpretability Plot", fontsize=9, fontweight="bold"
-                )
+                ax1.set_title("Global Interpretability Plot", fontsize=9, fontweight="bold")
                 ax1.spines[["top", "right", "bottom", "left"]].set_visible(False)
                 ax1.set_xticks([])
                 ax1.set_yticks([])
@@ -1097,16 +966,9 @@ class Transparency:
                 fig.set_figwidth(12)
                 ax2 = pl.subplot2grid(shape=(1, 2), loc=(0, 0), colspan=1)
                 ax2.imshow(local_plot, aspect="auto")
-                if (
-                    self.tran_results["model_list"][model_num]["plot"]["class_index"][
-                        latest_local_key
-                    ]
-                    != "NA"
-                ):
+                if self.tran_results["model_list"][model_num]["plot"]["class_index"][latest_local_key] != "NA":
                     label = self.model_params[model_num].model_object.classes_[
-                        self.tran_results["model_list"][model_num]["plot"][
-                            "class_index"
-                        ][latest_local_key]
+                        self.tran_results["model_list"][model_num]["plot"]["class_index"][latest_local_key]
                     ]
                     ax2.set_title(
                         "Local Interpretability Plot for index = "
@@ -1118,8 +980,7 @@ class Transparency:
                     )
                 else:
                     ax2.set_title(
-                        "Local Interpretability Plot for index = "
-                        + str(latest_local_key),
+                        "Local Interpretability Plot for index = " + str(latest_local_key),
                         fontsize=9,
                         fontweight="bold",
                     )
@@ -1129,39 +990,24 @@ class Transparency:
                 pl.tight_layout(pad=1.0)
                 pl.show()
             else:
-                summary_plot_datapoints = self.tran_results["model_list"][model_num][
-                    "summary_plot_data_table"
-                ]
+                summary_plot_datapoints = self.tran_results["model_list"][model_num]["summary_plot_data_table"]
                 summary_plot_datapoints = pd.DataFrame(summary_plot_datapoints)
-                local_plot_datapoints = self.tran_results["model_list"][model_num][
-                    "local_interpretability"
-                ][-1]["feature_info"]
+                local_plot_datapoints = self.tran_results["model_list"][model_num]["local_interpretability"][-1][
+                    "feature_info"
+                ]
                 local_plot_datapoints = pd.DataFrame(local_plot_datapoints)
                 efx = round(
-                    self.tran_results["model_list"][model_num][
-                        "local_interpretability"
-                    ][-1]["efx"],
+                    self.tran_results["model_list"][model_num]["local_interpretability"][-1]["efx"],
                     3,
                 )
                 fx = round(
-                    self.tran_results["model_list"][model_num][
-                        "local_interpretability"
-                    ][-1]["fx"],
+                    self.tran_results["model_list"][model_num]["local_interpretability"][-1]["fx"],
                     3,
                 )
-                ids = self.tran_results["model_list"][model_num][
-                    "local_interpretability"
-                ][-1]["id"]
-                if (
-                    self.tran_results["model_list"][model_num]["plot"]["class_index"][
-                        latest_local_key
-                    ]
-                    != "NA"
-                ):
+                ids = self.tran_results["model_list"][model_num]["local_interpretability"][-1]["id"]
+                if self.tran_results["model_list"][model_num]["plot"]["class_index"][latest_local_key] != "NA":
                     label = self.model_params[model_num].model_object.classes_[
-                        self.tran_results["model_list"][model_num]["plot"][
-                            "class_index"
-                        ][latest_local_key]
+                        self.tran_results["model_list"][model_num]["plot"]["class_index"][latest_local_key]
                     ]
                     local_title = (
                         "Local interpretability for index: "
@@ -1175,12 +1021,7 @@ class Transparency:
                     )
                 else:
                     local_title = (
-                        "Local interpretability for index: "
-                        + str(ids)
-                        + "\\nefx: "
-                        + str(efx)
-                        + ", fx: "
-                        + str(fx)
+                        "Local interpretability for index: " + str(ids) + "\\nefx: " + str(efx) + ", fx: " + str(fx)
                     )
                 styles = [
                     dict(
@@ -1194,23 +1035,17 @@ class Transparency:
                     )
                 ]
                 summary_plot_datapoints = (
-                    summary_plot_datapoints.style.set_table_attributes(
-                        "style='display:inline'"
-                    )
+                    summary_plot_datapoints.style.set_table_attributes("style='display:inline'")
                     .set_caption("Global interpretability values")
                     .set_table_styles(styles)
                 )
                 local_plot_datapoints = (
-                    local_plot_datapoints.style.set_table_attributes(
-                        "style='display:inline'"
-                    )
+                    local_plot_datapoints.style.set_table_attributes("style='display:inline'")
                     .set_caption(local_title)
                     .set_table_styles(styles)
                 )
                 display_html(summary_plot_datapoints._repr_html_(), raw=True)
-                display_html(
-                    local_plot_datapoints._repr_html_().replace("\\n", "<br>"), raw=True
-                )
+                display_html(local_plot_datapoints._repr_html_().replace("\\n", "<br>"), raw=True)
 
         if pdp_plot_flag is True:
             pdp_plot1 = self.tran_results["model_list"][model_num]["plot"]["pdp_plot"][
@@ -1249,14 +1084,12 @@ class Transparency:
                 )
             else:
                 ax3.set_title(
-                    "Partial Dependence Plot for "
-                    + str(self.tran_pdp_feature_processed[model_num][0]),
+                    "Partial Dependence Plot for " + str(self.tran_pdp_feature_processed[model_num][0]),
                     fontsize=9,
                     fontweight="bold",
                 )
                 ax4.set_title(
-                    "Partial Dependence Plot for "
-                    + str(self.tran_pdp_feature_processed[model_num][1]),
+                    "Partial Dependence Plot for " + str(self.tran_pdp_feature_processed[model_num][1]),
                     fontsize=9,
                     fontweight="bold",
                 )
@@ -1351,8 +1184,7 @@ class Transparency:
 
         if disable is not None:
             if ("perm_imp" not in disable) and (
-                (self.model_params[0].y_true is None)
-                or (self.model_params[0].x_test is None)
+                (self.model_params[0].y_true is None) or (self.model_params[0].x_test is None)
             ):
                 print(
                     "Skipped: Permutation importance skipped due to insufficient data input during ModelContainer() initialization."
@@ -1409,8 +1241,7 @@ class Transparency:
                 "value_error",
                 var_name="model_num",
                 given=model_num,
-                expected="one of the following integers: "
-                + str(list(range(len(self.model_params) + 1))[1:]),
+                expected="one of the following integers: " + str(list(range(len(self.model_params) + 1))[1:]),
                 function_name="explain",
             )
             self.err.pop()
@@ -1419,16 +1250,12 @@ class Transparency:
 
         if type(local_row_num) in [int, float]:
             local_row_num = int(local_row_num)
-            if (
-                local_row_num < 1
-                or local_row_num > self.tran_input_features["shape"][0]
-            ):
+            if local_row_num < 1 or local_row_num > self.tran_input_features["shape"][0]:
                 self.err.push(
                     "value_error",
                     var_name="local_row_num",
                     given=local_row_num,
-                    expected="An integer value within the index range 1-"
-                    + str(self.tran_input_features["shape"][0]),
+                    expected="An integer value within the index range 1-" + str(self.tran_input_features["shape"][0]),
                     function_name="explain",
                 )
                 self.err.pop()
@@ -1437,8 +1264,7 @@ class Transparency:
                 "type_error",
                 var_name="local_row_num",
                 given=type(local_row_num),
-                expected="An integer value within the index range 1-"
-                + str(self.tran_input_features["shape"][0]),
+                expected="An integer value within the index range 1-" + str(self.tran_input_features["shape"][0]),
                 function_name="explain",
             )
             self.err.pop()
@@ -1458,11 +1284,7 @@ class Transparency:
                     )
                 )
             else:
-                print(
-                    "{:40s}{:<10}".format(
-                        "Running transparency for model " + str(model_num + 1), "done"
-                    )
-                )
+                print("{:40s}{:<10}".format("Running transparency for model " + str(model_num + 1), "done"))
                 if self.tran_flag[model_num]["data_prep_flag"] is False:
                     self._data_prep(model_num=model_num)
                     print("{:5s}{:35s}{:<10}".format("", "Data preparation", "done"))
@@ -1472,9 +1294,7 @@ class Transparency:
                         for idx in self.tran_row_num:
                             self._local(n=idx, model_num=model_num)
                             self.tran_flag[model_num]["interpret"] = True
-                        print(
-                            "{:5s}{:35s}{:<10}".format("", "Interpretability", "done")
-                        )
+                        print("{:5s}{:35s}{:<10}".format("", "Interpretability", "done"))
                 else:
                     print("{:5s}{:35s}{:<10}".format("", "Interpretability", "skipped"))
 
@@ -1483,20 +1303,14 @@ class Transparency:
                         self._compute_partial_dependence(model_num=model_num)
                         self.tran_flag[model_num]["partial_dep"] = True
                 else:
-                    print(
-                        "{:5s}{:35s}{:<10}".format("", "Partial dependence", "skipped")
-                    )
+                    print("{:5s}{:35s}{:<10}".format("", "Partial dependence", "skipped"))
 
                 if disable_flags["perm_imp"] is False:
                     if self.tran_flag[model_num]["perm_imp"] is False:
                         self._compute_permutation_importance(model_num=model_num)
                         self.tran_flag[model_num]["perm_imp"] = True
                 else:
-                    print(
-                        "{:5s}{:35s}{:<10}".format(
-                            "", "Permutation importance", "skipped"
-                        )
-                    )
+                    print("{:5s}{:35s}{:<10}".format("", "Permutation importance", "skipped"))
 
                 if output is True:
                     self._plot(
@@ -1524,25 +1338,16 @@ class Transparency:
                 for idx in self.tran_row_num:
                     self._local(n=idx, model_num=model_num)
                 print("{:5s}{:35s}{:<10}".format("", "Interpretability", "done"))
-                local_plot = self.tran_results["model_list"][model_num]["plot"][
-                    "local_plot"
-                ][local_row_num]
+                local_plot = self.tran_results["model_list"][model_num]["plot"]["local_plot"][local_row_num]
                 if type(local_plot) != str:
                     fig = pl.figure()
                     fig.set_figheight((self.tran_max_display * 0.4) + 1)
                     fig.set_figwidth(12)
                     ax1 = pl.subplot2grid(shape=(1, 2), loc=(0, 0), colspan=1)
                     ax1.imshow(local_plot, aspect="auto")
-                    if (
-                        self.tran_results["model_list"][model_num]["plot"][
-                            "class_index"
-                        ][local_row_num]
-                        != "NA"
-                    ):
+                    if self.tran_results["model_list"][model_num]["plot"]["class_index"][local_row_num] != "NA":
                         label = self.model_params[model_num].model_object.classes_[
-                            self.tran_results["model_list"][model_num]["plot"][
-                                "class_index"
-                            ][local_row_num]
+                            self.tran_results["model_list"][model_num]["plot"]["class_index"][local_row_num]
                         ]
                         ax1.set_title(
                             "Local plot for Model "
@@ -1556,10 +1361,7 @@ class Transparency:
                         )
                     else:
                         ax1.set_title(
-                            "Local plot for Model "
-                            + str(model_num + 1)
-                            + " for index = "
-                            + str(local_row_num),
+                            "Local plot for Model " + str(model_num + 1) + " for index = " + str(local_row_num),
                             fontsize=9,
                             fontweight="bold",
                         )
@@ -1568,35 +1370,22 @@ class Transparency:
                     ax1.set_yticks([])
                     pl.show()
                 else:
-                    local_plot_datapoints = self.tran_results["model_list"][model_num][
-                        "local_interpretability"
-                    ][-1]["feature_info"]
+                    local_plot_datapoints = self.tran_results["model_list"][model_num]["local_interpretability"][-1][
+                        "feature_info"
+                    ]
                     local_plot_datapoints = pd.DataFrame(local_plot_datapoints)
                     efx = round(
-                        self.tran_results["model_list"][model_num][
-                            "local_interpretability"
-                        ][-1]["efx"],
+                        self.tran_results["model_list"][model_num]["local_interpretability"][-1]["efx"],
                         3,
                     )
                     fx = round(
-                        self.tran_results["model_list"][model_num][
-                            "local_interpretability"
-                        ][-1]["fx"],
+                        self.tran_results["model_list"][model_num]["local_interpretability"][-1]["fx"],
                         3,
                     )
-                    ids = self.tran_results["model_list"][model_num][
-                        "local_interpretability"
-                    ][-1]["id"]
-                    if (
-                        self.tran_results["model_list"][model_num]["plot"][
-                            "class_index"
-                        ][local_row_num]
-                        != "NA"
-                    ):
+                    ids = self.tran_results["model_list"][model_num]["local_interpretability"][-1]["id"]
+                    if self.tran_results["model_list"][model_num]["plot"]["class_index"][local_row_num] != "NA":
                         label = self.model_params[model_num].model_object.classes_[
-                            self.tran_results["model_list"][model_num]["plot"][
-                                "class_index"
-                            ][local_row_num]
+                            self.tran_results["model_list"][model_num]["plot"]["class_index"][local_row_num]
                         ]
                         local = (
                             "Local interpretability for index: "
@@ -1631,9 +1420,7 @@ class Transparency:
                         )
                     ]
                     local_plot_datapoints = (
-                        local_plot_datapoints.style.set_table_attributes(
-                            "style='display:inline'"
-                        )
+                        local_plot_datapoints.style.set_table_attributes("style='display:inline'")
                         .set_caption(local)
                         .set_table_styles(styles)
                     )
@@ -1646,25 +1433,16 @@ class Transparency:
             else:
                 if local_row_num - 1 in self.tran_processed_data.index:
                     self._local(n=local_row_num, model_num=model_num)
-                    local_plot = self.tran_results["model_list"][model_num]["plot"][
-                        "local_plot"
-                    ][local_row_num]
+                    local_plot = self.tran_results["model_list"][model_num]["plot"]["local_plot"][local_row_num]
                     if type(local_plot) != str:
                         fig = pl.figure()
                         fig.set_figheight((self.tran_max_display * 0.4) + 1)
                         fig.set_figwidth(12)
                         ax1 = pl.subplot2grid(shape=(1, 2), loc=(0, 0), colspan=1)
                         ax1.imshow(local_plot, aspect="auto")
-                        if (
-                            self.tran_results["model_list"][model_num]["plot"][
-                                "class_index"
-                            ][local_row_num]
-                            != "NA"
-                        ):
+                        if self.tran_results["model_list"][model_num]["plot"]["class_index"][local_row_num] != "NA":
                             label = self.model_params[model_num].model_object.classes_[
-                                self.tran_results["model_list"][model_num]["plot"][
-                                    "class_index"
-                                ][local_row_num]
+                                self.tran_results["model_list"][model_num]["plot"]["class_index"][local_row_num]
                             ]
                             ax1.set_title(
                                 "Local plot for Model "
@@ -1678,49 +1456,31 @@ class Transparency:
                             )
                         else:
                             ax1.set_title(
-                                "Local plot for Model "
-                                + str(model_num + 1)
-                                + " for index = "
-                                + str(local_row_num),
+                                "Local plot for Model " + str(model_num + 1) + " for index = " + str(local_row_num),
                                 fontsize=9,
                                 fontweight="bold",
                             )
-                        ax1.spines[["top", "right", "bottom", "left"]].set_visible(
-                            False
-                        )
+                        ax1.spines[["top", "right", "bottom", "left"]].set_visible(False)
                         ax1.set_xticks([])
                         ax1.set_yticks([])
                         pl.show()
                     else:
-                        local_plot_datapoints = self.tran_results["model_list"][
-                            model_num
-                        ]["local_interpretability"][-1]["feature_info"]
+                        local_plot_datapoints = self.tran_results["model_list"][model_num]["local_interpretability"][
+                            -1
+                        ]["feature_info"]
                         local_plot_datapoints = pd.DataFrame(local_plot_datapoints)
                         efx = round(
-                            self.tran_results["model_list"][model_num][
-                                "local_interpretability"
-                            ][-1]["efx"],
+                            self.tran_results["model_list"][model_num]["local_interpretability"][-1]["efx"],
                             3,
                         )
                         fx = round(
-                            self.tran_results["model_list"][model_num][
-                                "local_interpretability"
-                            ][-1]["fx"],
+                            self.tran_results["model_list"][model_num]["local_interpretability"][-1]["fx"],
                             3,
                         )
-                        ids = self.tran_results["model_list"][model_num][
-                            "local_interpretability"
-                        ][-1]["id"]
-                        if (
-                            self.tran_results["model_list"][model_num]["plot"][
-                                "class_index"
-                            ][local_row_num]
-                            != "NA"
-                        ):
+                        ids = self.tran_results["model_list"][model_num]["local_interpretability"][-1]["id"]
+                        if self.tran_results["model_list"][model_num]["plot"]["class_index"][local_row_num] != "NA":
                             label = self.model_params[model_num].model_object.classes_[
-                                self.tran_results["model_list"][model_num]["plot"][
-                                    "class_index"
-                                ][local_row_num]
+                                self.tran_results["model_list"][model_num]["plot"]["class_index"][local_row_num]
                             ]
                             local = (
                                 "Local interpretability for index: "
@@ -1755,9 +1515,7 @@ class Transparency:
                             )
                         ]
                         local_plot_datapoints = (
-                            local_plot_datapoints.style.set_table_attributes(
-                                "style='display:inline'"
-                            )
+                            local_plot_datapoints.style.set_table_attributes("style='display:inline'")
                             .set_caption(local)
                             .set_table_styles(styles)
                         )
@@ -1786,9 +1544,7 @@ class Transparency:
         This function returns the transparency results to be included in the json file.
         """
 
-        if (self.model_params[0].y_true is None) or (
-            self.model_params[0].x_test is None
-        ):
+        if (self.model_params[0].y_true is None) or (self.model_params[0].x_test is None):
             disable.append("perm_imp")
         if self.model_params[0].model_object is None:
             print("{:40s}{:<10}".format("Transparency analysis ", "skipped"))
@@ -1796,9 +1552,7 @@ class Transparency:
         if self.tran_input_features["check_input_flag"] == 2:
             print("{:40s}{:<10}".format("Transparency analysis ", "skipped"))
             return None
-        if (self.model_params[0].model_type != "regression") and (
-            self.model_params[0].model_object is not None
-        ):
+        if (self.model_params[0].model_type != "regression") and (self.model_params[0].model_object is not None):
             if (
                 (self.tran_pdp_target is None)
                 and len(self.model_params[0].model_object.classes_) > 2

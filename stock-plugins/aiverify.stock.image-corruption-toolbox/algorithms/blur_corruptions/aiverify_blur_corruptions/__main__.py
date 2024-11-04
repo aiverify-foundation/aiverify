@@ -2,6 +2,7 @@
 Allow aiverify_blur_corruptions to be executable through
 `python3 -m aiverify_blur_corruptions`
 """
+
 import sys
 from importlib.metadata import version
 from pathlib import Path

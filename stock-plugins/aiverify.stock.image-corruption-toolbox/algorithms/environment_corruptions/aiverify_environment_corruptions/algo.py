@@ -80,25 +80,17 @@ class Plugin(IAlgorithm):
 
         # Look for kwargs values for log_instance, progress_callback and base path
         self._logger = kwargs.get("logger", None)
-        self._progress_inst = SimpleProgress(
-            1, 0, kwargs.get("progress_callback", None)
-        )
+        self._progress_inst = SimpleProgress(1, 0, kwargs.get("progress_callback", None))
 
         # Check if data and model are tuples and if the tuples contain 2 items
-        if (
-            not isinstance(data_instance_and_serializer, Tuple)
-            or len(data_instance_and_serializer) != 2
-        ):
+        if not isinstance(data_instance_and_serializer, Tuple) or len(data_instance_and_serializer) != 2:
             self.add_to_log(
                 logging.ERROR,
                 f"The algorithm has failed data validation: {data_instance_and_serializer}",
             )
             raise RuntimeError("The algorithm has failed data validation")
 
-        if (
-            not isinstance(model_instance_and_serializer, Tuple)
-            or len(model_instance_and_serializer) != 2
-        ):
+        if not isinstance(model_instance_and_serializer, Tuple) or len(model_instance_and_serializer) != 2:
             self.add_to_log(
                 logging.ERROR,
                 f"The algorithm has failed model validation: {model_instance_and_serializer}",
@@ -120,9 +112,7 @@ class Plugin(IAlgorithm):
                     f"The algorithm has failed ground truth data validation: \
                         {ground_truth_instance_and_serializer}",
                 )
-                raise RuntimeError(
-                    "The algorithm has failed ground truth data validation"
-                )
+                raise RuntimeError("The algorithm has failed ground truth data validation")
             self._requires_ground_truth = True
             self._ground_truth_instance = ground_truth_instance_and_serializer[0]
             self._ground_truth_serializer = ground_truth_instance_and_serializer[1]
@@ -151,16 +141,12 @@ class Plugin(IAlgorithm):
         # By defining the input schema, it allows the front-end to know what algorithm input params is
         # required by this plugin. This allows this algorithm plug-in to receive the arguments values it requires.
         current_file_dir = Path(__file__).parent
-        self._input_schema = load_schema_file(
-            str(current_file_dir / "input.schema.json")
-        )
+        self._input_schema = load_schema_file(str(current_file_dir / "input.schema.json"))
 
         # Algorithm output schema defined in output.schema.json
         # By defining the output schema, this plug-in validates the result with the output schema.
         # This allows the result to be validated against the schema before passing it to the front-end for display.
-        self._output_schema = load_schema_file(
-            str(current_file_dir / "output.schema.json")
-        )
+        self._output_schema = load_schema_file(str(current_file_dir / "output.schema.json"))
 
         # Retrieve the input parameters defined in the input schema and store them
         self._input_arguments = dict()
@@ -216,9 +202,7 @@ class Plugin(IAlgorithm):
         # Perform validation on logger
         if self._logger:
             if not isinstance(self._logger, logging.Logger):
-                raise RuntimeError(
-                    "The algorithm has failed to set up logger. The logger type is invalid"
-                )
+                raise RuntimeError("The algorithm has failed to set up logger. The logger type is invalid")
 
         # Perform validation on model type
         if self._model_type not in Plugin._supported_algorithm_model_type:
@@ -237,9 +221,7 @@ class Plugin(IAlgorithm):
             raise RuntimeError("The algorithm has failed data validation")
 
         # Perform validation on model instance
-        if not isinstance(self._model_instance, IModel) and not isinstance(
-            self._model_instance, IPipeline
-        ):
+        if not isinstance(self._model_instance, IModel) and not isinstance(self._model_instance, IPipeline):
             self.add_to_log(
                 logging.ERROR,
                 f"The algorithm has failed model validation: {self._model_instance}",
@@ -253,9 +235,7 @@ class Plugin(IAlgorithm):
                     logging.ERROR,
                     f"The algorithm has failed ground truth data validation: {self._ground_truth_instance}",
                 )
-                raise RuntimeError(
-                    "The algorithm has failed ground truth data validation"
-                )
+                raise RuntimeError("The algorithm has failed ground truth data validation")
 
             # Perform validation on ground truth header
             if not isinstance(self._ground_truth, str):
@@ -272,9 +252,7 @@ class Plugin(IAlgorithm):
         # Perform validation on progress_inst
         if self._progress_inst:
             if not isinstance(self._progress_inst, SimpleProgress):
-                raise RuntimeError(
-                    "The algorithm has failed validation for the progress bar"
-                )
+                raise RuntimeError("The algorithm has failed validation for the progress bar")
 
         # Perform validation on project_base_path
         if not isinstance(self._base_path, PurePath):
@@ -337,12 +315,10 @@ class Plugin(IAlgorithm):
         self._model = self._initial_model_instance
         self._data = self._initial_data_instance
         self._data_labels = list(self._initial_data_instance.read_labels().keys())
-        annotated_ground_truth_path = self._input_arguments.get(
-            "annotated_ground_truth_path", ""
+        annotated_ground_truth_path = self._input_arguments.get("annotated_ground_truth_path", "")
+        annotated_ground_truth = pickle.load(open(annotated_ground_truth_path, "rb")).set_index(
+            self._input_arguments.get("file_name_label")
         )
-        annotated_ground_truth = pickle.load(
-            open(annotated_ground_truth_path, "rb")
-        ).set_index(self._input_arguments.get("file_name_label"))
         file_names = [Path(i).name for i in self._data.get_data()["image_directory"]]
         self._ordered_ground_truth = annotated_ground_truth.reindex(file_names)
 
@@ -382,7 +358,7 @@ class Plugin(IAlgorithm):
         Returns:
             dict: formatted results
         """
-        image_df, image_shapes = self._transform_to_numpy(self._data.get_data())
+        image_df, _image_shapes = self._transform_to_numpy(self._data.get_data())
         ground_truth = self._ordered_ground_truth
         combined_results = []
         output_results = dict()
@@ -410,20 +386,14 @@ class Plugin(IAlgorithm):
                         image_df, ground_truth, corruption_fn, fn_params, corruption
                     )
                 else:
-                    corrupted_df = self._build_corrupted_dataframe(
-                        image_df, ground_truth, None, fn_params, corruption
-                    )
+                    corrupted_df = self._build_corrupted_dataframe(image_df, ground_truth, None, fn_params, corruption)
                 accuracy = self._get_accuracy(corrupted_df, ground_truth)
                 accuracies.update({"severity" + str(i): accuracy})
 
-                random_display = self._get_rand_display(
-                    corrupted_df, ground_truth, corruption, i, random_index
-                )
+                random_display = self._get_rand_display(corrupted_df, ground_truth, corruption, i, random_index)
                 display_info.update({"severity" + str(i): random_display})
 
-            individual_results.update(
-                {"accuracy": accuracies, "display_info": display_info}
-            )
+            individual_results.update({"accuracy": accuracies, "display_info": display_info})
             combined_results.append(individual_results)
 
             self._progress_inst.update(1)
@@ -444,9 +414,7 @@ class Plugin(IAlgorithm):
             tuple[pd.DataFrame, list]: Dataframe containing the array of all images and list of original image shapes
         """
         images, image_shapes = [], []
-        for dir in dir_df[
-            "image_directory"
-        ]:  # work directly with the raw image by reading from the directory itself
+        for dir in dir_df["image_directory"]:  # work directly with the raw image by reading from the directory itself
             image_array = np.array(Image.open(dir)) / 255.0
             image_shapes.append(image_array.shape)
             images.append((image_array))
@@ -539,18 +507,12 @@ class Plugin(IAlgorithm):
                 corrupted_list.append(corrupted_image)
             else:
                 corrupted_list.append(img)
-        images_df = self._transform_to_dir_df(
-            corrupted_list, Path(corruption).joinpath("severity" + str(severity))
-        )
+        images_df = self._transform_to_dir_df(corrupted_list, Path(corruption).joinpath("severity" + str(severity)))
 
-        corrupted_df = pd.concat(
-            [images_df, labels.reset_index(drop=True, inplace=True)], axis=1
-        )
+        corrupted_df = pd.concat([images_df, labels.reset_index(drop=True, inplace=True)], axis=1)
         return corrupted_df
 
-    def _transform_to_dir_df(
-        self, data_np: np.ndarray, subfolder_name: str
-    ) -> pd.DataFrame:
+    def _transform_to_dir_df(self, data_np: np.ndarray, subfolder_name: str) -> pd.DataFrame:
         """
         A method to convert images in np.array form into saved images in directories for the model pipeline
 
@@ -565,9 +527,7 @@ class Plugin(IAlgorithm):
         tmp_path = self._tmp_path
         Path(str(tmp_path / subfolder_name)).mkdir(parents=True, exist_ok=True)
         for index, img_array in enumerate(data_np):
-            Image.fromarray(np.uint8(img_array * 255.0)).save(
-                str(tmp_path / subfolder_name / (str(index) + ".png"))
-            )
+            Image.fromarray(np.uint8(img_array * 255.0)).save(str(tmp_path / subfolder_name / (str(index) + ".png")))
         for i in sorted(
             Path.iterdir(Path(str(tmp_path / subfolder_name))),
             key=lambda i: int(i.stem),

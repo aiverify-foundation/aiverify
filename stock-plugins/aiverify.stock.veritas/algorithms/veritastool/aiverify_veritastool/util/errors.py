@@ -1,7 +1,5 @@
 import sys
 
-import numpy as np
-
 
 class MyError(Exception):
     """
@@ -11,7 +9,7 @@ class MyError(Exception):
     def __init__(self, *args):
         """
         Instance attributes
-        -----------------------
+        ----------------------Constants
         message : str
                Holds the messages for errors
         """
@@ -92,9 +90,7 @@ class VeritasError:
             expected = kwargs["expected"]
             given = kwargs["given"]
             function_name = kwargs["function_name"]
-            errMsg = "{}: given length {}, expected length {}".format(
-                var_name, given, expected
-            )
+            errMsg = "{}: given length {}, expected length {}".format(var_name, given, expected)
             self.queue.append([error_type, errMsg, function_name])
 
         if error_type == "column_value_error":
@@ -128,7 +124,7 @@ def my_except_hook(exctype, value, traceback):
 
 
 try:
-    obj = get_ipython()
+    obj = get_ipython()  # noqa: F821
     obj._showtraceback = my_except_hook
 except:
     sys.excepthook = my_except_hook

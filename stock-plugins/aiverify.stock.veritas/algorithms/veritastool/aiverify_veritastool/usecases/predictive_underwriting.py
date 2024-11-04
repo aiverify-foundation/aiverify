@@ -1,11 +1,6 @@
-import numpy as np
-from sklearn.metrics import confusion_matrix
-
-from ..config.constants import Constants
 from ..metrics.fairness_metrics import FairnessMetrics
 from ..metrics.performance_metrics import PerformanceMetrics
 from ..principles import Fairness, Transparency
-from ..util.errors import VeritasError
 from ..util.utility import check_datatype, check_value
 
 
@@ -176,9 +171,7 @@ class PredictiveUnderwriting(Fairness, Transparency):
 
         # check for model_params
         mp_given = len(self.model_params)
-        mp_expected = self._model_type_to_metric_lookup[
-            self.model_params[0].model_type
-        ][2]
+        mp_expected = self._model_type_to_metric_lookup[self.model_params[0].model_type][2]
         if mp_given != mp_expected:
             self.err.push(
                 "length_error",

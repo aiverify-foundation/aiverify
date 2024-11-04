@@ -80,31 +80,24 @@ In the aiverify root directory, run the below command to build the docker image
 docker build -t aiverify-general-corruptions:v2.0.0a1 -f stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/general_corruptions/Dockerfile .
 ```
 
-Switch to the algorithm directory
-```sh
-cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/general_corruptions/
-```
-
 Run the below bash script to run the algorithm
 ```sh
 #!/bin/bash
-
-root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files"
 docker run \
-  -v $root_path:/user_defined_files \
-  -v ./output:/app/aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/general_corruptions/output \
+  -v $(pwd)/stock-plugins/user_defined_files:/input \
+  -v $(pwd)/output:/app/aiverify/output \
   aiverify-general-corruptions:v2.0.0a1 \
-  --data_path /user_defined_files/data/raw_fashion_image_10 \
-  --model_path /user_defined_files/pipeline/multiclass_classification_image_mnist_fashion \
-  --ground_truth_path /user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
+  --data_path /input/data/raw_fashion_image_10 \
+  --model_path /input/pipeline/multiclass_classification_image_mnist_fashion \
+  --ground_truth_path /input/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
   --ground_truth label \
   --model_type CLASSIFICATION \
   --run_pipeline \
-  --annotated_ground_truth_path /user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
+  --annotated_ground_truth_path /input/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
   --set_seed 10 \
   --file_name_label file_name
 ```
-If the algorithm runs successfully, the results of the test will be saved in an `output` folder in the algorithm directory.
+If the algorithm runs successfully, the results of the test will be saved in an `output` folder in the working directory.
 
 ## Tests
 ### Pytest is used as the testing framework.

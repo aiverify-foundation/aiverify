@@ -1,0 +1,25 @@
+type CheckListIconProps = {
+  width?: number;
+  height?: number;
+  color?: string;
+  className?: string;
+};
+
+function CheckListIcon(props: CheckListIconProps) {
+  const { color, width, height, className } = props;
+  return (
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 41 50"
+      fill={color}
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <path d="M25.4398 4.89447C25.4398 2.18635 23.2533 0 20.5452 0C17.8366 0 15.6505 2.18635 15.6505 4.89447H9.73868V13.3705H31.3511V4.89447H25.4398Z" />
+      <path d="M33.4346 9.06076V15.4537H7.65538V9.06076H0.15625V50.0001H40.9247V9.06076H33.4346ZM7.85776 44.8848L4.57761 41.6051L6.05048 40.1322L7.85766 41.9388L12.208 37.5881L13.6809 39.061L7.85776 44.8848ZM7.85776 35.6298L4.57761 32.3502L6.05048 30.8772L7.85766 32.6839L12.208 28.3331L13.6809 29.8061L7.85776 35.6298ZM7.85776 26.3748L4.57761 23.0943L6.05048 21.6214L7.85766 23.429L12.208 19.0783L13.6809 20.5512L7.85776 26.3748ZM35.7666 43.1158H16.5537V41.0325H35.7666V43.1158ZM35.7666 33.8609H16.5537V31.7776H35.7666V33.8609ZM35.7666 24.6048H16.5537V22.5215H35.7666V24.6048Z" />
+    </svg>
+  );
+}
+
+export { CheckListIcon };

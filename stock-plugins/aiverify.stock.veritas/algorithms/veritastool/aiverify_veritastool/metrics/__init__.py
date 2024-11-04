@@ -1,1 +1,1 @@
-from .newmetric import NewMetric
+from .newmetric import NewMetric as NewMetric

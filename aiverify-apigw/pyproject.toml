@@ -45,3 +45,22 @@ python = ["3.11"]
 extra-dependencies = [
     "faker>=28.1.0"
 ]
+
+[tool.ruff.lint]
+preview = true
+select = ["E20","E21","E22","E23","E24","E3","F401","F8"]
+
+[tool.coverage.run]
+source_pkgs = ["aiverify_apigw"]
+branch = true
+parallel = true
+
+[tool.coverage.paths]
+aiverify_apigw = ["aiverify_apigw/", "*/aiverify-apigw/aiverify_apigw"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]

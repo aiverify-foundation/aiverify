@@ -1,6 +1,0 @@
-[flake8]
-max-line-length = 120
-extend-ignore = E203
-exclude = *.tox, tests, utils
-per-file-ignores =
-    stock-plugins/aiverify.stock.veritas/algorithms/veritastool/*:E501,F401,E402,F821,F811,F841,E722,E721,F403,F811,E713,W291,W293,W605,F741,E741

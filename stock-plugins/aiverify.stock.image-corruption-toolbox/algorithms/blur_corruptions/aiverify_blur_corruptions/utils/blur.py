@@ -110,9 +110,7 @@ def defocus_blur(img: np.ndarray, severity: int = 1) -> np.ndarray:
     Returns:
         np.ndarray: Numpy ndarray of image with defocus blur corruption
     """
-    severity_constant = [(9, 0.6), (13, 0.4), (18, 0.3), (25, 0.3), (35, 0.3)][
-        severity - 1
-    ]
+    severity_constant = [(9, 0.6), (13, 0.4), (18, 0.3), (25, 0.3), (35, 0.3)][severity - 1]
     radius = severity_constant[0]
     alias_blur = severity_constant[1]
     kernel = disk(radius, alias_blur)

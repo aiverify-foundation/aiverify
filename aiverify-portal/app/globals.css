@@ -1,0 +1,27 @@
+@import '@fontsource-variable/inter';
+@import '@/lib/theme/colors.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Inter Variable', sans-serif;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer base {
+  :root {
+  }
+}
+
+@layer base {
+  * {
+  }
+  body {
+  }
+}

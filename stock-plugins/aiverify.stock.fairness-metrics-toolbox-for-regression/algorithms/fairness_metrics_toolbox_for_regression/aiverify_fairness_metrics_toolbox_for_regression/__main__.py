@@ -2,6 +2,7 @@
 Allow aiverify_fairness_metrics_toolbox_for_regression to be executable through
 `python3 -m aiverify_fairness_metrics_toolbox_for_regression`
 """
+
 import sys
 from importlib.metadata import version
 from pathlib import Path

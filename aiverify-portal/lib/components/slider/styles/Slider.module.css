@@ -1,0 +1,53 @@
+.slider {
+  position: relative;
+  height: 20px;
+}
+
+.track {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 2px;
+  background-color: var(--color-secondary-400);
+}
+
+.progressTrack {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  border-radius: 0 2px 2px 0;
+  background-color: var(--color-secondary-600);
+}
+
+.handle {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 2;
+  background-image: linear-gradient(var(--color-primary-500) 0%, var(--color-primary-800) 100%);
+  box-shadow: 0 0 0 0 var(--color-secondary-400);
+  transition: box-shadow 0.3s ease;
+}
+
+.handle:hover {
+  box-shadow: 0 0 0 4px var(--color-primary-400);
+}
+
+.value {
+  position: absolute;
+  top: 15px;
+  margin-top: 10px;
+  text-align: center;
+  font-size: 14px;
+  background-color: var(--color-primary-400);
+  color: var(--color-primary-950);
+  border-radius: 4px;
+  padding: 2px 4px;
+}

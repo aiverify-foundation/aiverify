@@ -1,13 +1,8 @@
-import numpy as np
 import pandas as pd
-from sklearn.metrics import confusion_matrix
 
-from ..config.constants import Constants
 from ..metrics.fairness_metrics import FairnessMetrics
-from ..metrics.newmetric import NewMetric
 from ..metrics.performance_metrics import PerformanceMetrics
 from ..principles import Fairness, Transparency
-from ..util.errors import VeritasError
 from ..util.utility import check_datatype, check_value
 
 
@@ -175,9 +170,7 @@ class BaseRegression(Fairness, Transparency):
 
         # check for model_params
         mp_given = len(self.model_params)
-        mp_expected = self._model_type_to_metric_lookup[
-            self.model_params[0].model_type
-        ][2]
+        mp_expected = self._model_type_to_metric_lookup[self.model_params[0].model_type][2]
         if mp_given != mp_expected:
             self.err.push(
                 "length_error",
@@ -269,9 +262,7 @@ class BaseRegression(Fairness, Transparency):
         mdl = self.model_params[0]
         for p_var_key in mdl.p_grp.keys():
             if isinstance(mdl.p_grp[p_var_key], str):
-                p_grp, up_grp = self.map_policy_to_method[mdl.p_grp[p_var_key]](
-                    p_var_key, mdl
-                )
+                p_grp, up_grp = self.map_policy_to_method[mdl.p_grp[p_var_key]](p_var_key, mdl)
                 mdl.p_grp[p_var_key] = p_grp
                 mdl.up_grp[p_var_key] = up_grp
 
