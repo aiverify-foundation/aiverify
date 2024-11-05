@@ -232,13 +232,13 @@ jobs:
     - name: Install & Scan Partial Dependence Plot (Pull Request Into v2.x)
       if: github.event_name == 'pull_request'
       run: |
-          cd stock-plugins/aiverify.stock.partial-dependence-plot/algorithms/aiverify_partial_dependence_plot
+          cd stock-plugins/aiverify.stock.partial-dependence-plot/algorithms/partial_dependence_plot
           python3 -m venv venv
           source venv/bin/activate
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=partial-dependence-plot --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="partial-dependence-plot_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
           deactivate
 
-    - name: Install & Scan Robustnesss ToolBox (Pull Request Into v2.x)
+    - name: Install & Scan Robustness ToolBox (Pull Request Into v2.x)
       if: github.event_name == 'pull_request'
       run: |
           cd stock-plugins/aiverify.stock.robustness-toolbox/algorithms/robustness_toolbox
