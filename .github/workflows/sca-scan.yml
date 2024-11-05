@@ -167,7 +167,6 @@ jobs:
           source venv/bin/activate
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=accumulated-local-effect --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="accumulated-local-effect_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
           deactivate
-          cd ../../../
 
     - name: Install & Scan Decorators (Pull Request Into v2.x)
       if: github.event_name == 'pull_request'
@@ -175,7 +174,6 @@ jobs:
           cd stock-plugins/aiverify.stock.decorators
           npm install
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=decorators --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="decorators_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
-          cd ../
 
     - name: Install & Scan Fairness Metric ToolBox For Classification (Pull Request Into v2.x)
       if: github.event_name == 'pull_request'
@@ -185,7 +183,6 @@ jobs:
           source venv/bin/activate
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=fairness-metrics-toolbox-for-classification --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="fairness-metrics-toolbox-for-classification_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
           deactivate
-          cd ../../../
 
     - name: Install & Scan Fairness Metric ToolBox For Regression (Pull Request Into v2.x)
       if: github.event_name == 'pull_request'
@@ -195,9 +192,8 @@ jobs:
           source venv/bin/activate
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=fairness-metrics-toolbox-for-regression --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="fairness-metrics-toolbox-for-regression_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
           deactivate
-          cd ../../../
 
-    - name: Install & Scan Blur Corruption (Pull Request Into v2.x)
+    - name: Install & Scan Blur Corruptions (Pull Request Into v2.x)
       if: github.event_name == 'pull_request'
       run: |
           cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions
@@ -205,4 +201,57 @@ jobs:
           source venv/bin/activate
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=blur-corruptions --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="blur-corruptions_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
           deactivate
-          cd ../../../
+
+    - name: Install & Scan Digital Corruptions (Pull Request Into v2.x)
+      if: github.event_name == 'pull_request'
+      run: |
+          cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions
+          python3 -m venv venv
+          source venv/bin/activate
+          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=digital-corruptions --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="digital-corruptions_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
+          deactivate
+
+    - name: Install & Scan Environment Corruptions (Pull Request Into v2.x)
+      if: github.event_name == 'pull_request'
+      run: |
+          cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/environment_corruptions
+          python3 -m venv venv
+          source venv/bin/activate
+          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=environment-corruptions --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="environment-corruptions_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
+          deactivate
+
+    - name: Install & Scan General Corruptions (Pull Request Into v2.x)
+      if: github.event_name == 'pull_request'
+      run: |
+          cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/general_corruptions
+          python3 -m venv venv
+          source venv/bin/activate
+          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=general-corruptions --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="general-corruptions_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
+          deactivate
+
+    - name: Install & Scan Partial Dependence Plot (Pull Request Into v2.x)
+      if: github.event_name == 'pull_request'
+      run: |
+          cd stock-plugins/aiverify.stock.partial-dependence-plot/algorithms/aiverify_partial_dependence_plot
+          python3 -m venv venv
+          source venv/bin/activate
+          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=partial-dependence-plot --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="partial-dependence-plot_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
+          deactivate
+
+    - name: Install & Scan Robustnesss ToolBox (Pull Request Into v2.x)
+      if: github.event_name == 'pull_request'
+      run: |
+          cd stock-plugins/aiverify.stock.robustness-toolbox/algorithms/robustness_toolbox
+          python3 -m venv venv
+          source venv/bin/activate
+          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=robustness-toolbox --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="robustness-toolbox_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
+          deactivate
+
+    - name: Install & Scan SHAP ToolBox (Pull Request Into v2.x)
+      if: github.event_name == 'pull_request'
+      run: |
+          cd stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox
+          python3 -m venv venv
+          source venv/bin/activate
+          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=shap-toolbox --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="shap-toolbox_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
+          deactivate
