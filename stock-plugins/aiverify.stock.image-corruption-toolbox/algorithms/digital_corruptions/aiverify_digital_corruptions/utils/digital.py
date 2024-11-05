@@ -95,15 +95,11 @@ def saturate(img, severity=1):
     Returns:
         ndarry: the Image perturbed with saturation
     """
-    severity_constant = [(2.2, 0), (3, 0), (3.5, 0.1), (5, 0.1), (30, 0.2)][
-        severity - 1
-    ]
+    severity_constant = [(2.2, 0), (3, 0), (3.5, 0.1), (5, 0.1), (30, 0.2)][severity - 1]
 
     img = np.array(img) * 255.0
     img = sk.color.rgb2hsv(img)
-    img[:, :, 1] = np.clip(
-        img[:, :, 1] * severity_constant[0] + severity_constant[1], a_min=0, a_max=255
-    )
+    img[:, :, 1] = np.clip(img[:, :, 1] * severity_constant[0] + severity_constant[1], a_min=0, a_max=255)
     img = sk.color.hsv2rgb(img)
     return np.clip(img, 0, 255) / 255.0
 

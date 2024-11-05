@@ -17,9 +17,7 @@ def clipped_zoom(img: np.ndarray, zoom_factor: int) -> np.ndarray:
     ch = int(np.ceil(h / zoom_factor))
 
     top = (h - ch) // 2
-    img = scizoom(
-        img[top : top + ch, top : top + ch], (zoom_factor, zoom_factor, 1), order=1
-    )
+    img = scizoom(img[top : top + ch, top : top + ch], (zoom_factor, zoom_factor, 1), order=1)
     # trim off any eimgtra piimgels
     trim_top = (img.shape[0] - h) // 2
     return img[trim_top : trim_top + h, trim_top : trim_top + h]
@@ -47,30 +45,22 @@ def plasma_fractal(mapsize: int = 256, wibbledecay: float = 3) -> np.ndarray:
         cornerref = maparray[0:mapsize:stepsize, 0:mapsize:stepsize]
         squareaccum = cornerref + np.roll(cornerref, shift=-1, axis=0)
         squareaccum += np.roll(squareaccum, shift=-1, axis=1)
-        maparray[
-            stepsize // 2 : mapsize : stepsize, stepsize // 2 : mapsize : stepsize
-        ] = wibbledmean(squareaccum)
+        maparray[stepsize // 2 : mapsize : stepsize, stepsize // 2 : mapsize : stepsize] = wibbledmean(squareaccum)
 
     def filldiamonds():
         """For each diamond of points stepsize apart,
         calculate middle value as mean of points + wibble"""
         mapsize = maparray.shape[0]
-        drgrid = maparray[
-            stepsize // 2 : mapsize : stepsize, stepsize // 2 : mapsize : stepsize
-        ]
+        drgrid = maparray[stepsize // 2 : mapsize : stepsize, stepsize // 2 : mapsize : stepsize]
         ulgrid = maparray[0:mapsize:stepsize, 0:mapsize:stepsize]
         ldrsum = drgrid + np.roll(drgrid, 1, axis=0)
         lulsum = ulgrid + np.roll(ulgrid, -1, axis=1)
         ltsum = ldrsum + lulsum
-        maparray[0:mapsize:stepsize, stepsize // 2 : mapsize : stepsize] = wibbledmean(
-            ltsum
-        )
+        maparray[0:mapsize:stepsize, stepsize // 2 : mapsize : stepsize] = wibbledmean(ltsum)
         tdrsum = drgrid + np.roll(drgrid, 1, axis=1)
         tulsum = ulgrid + np.roll(ulgrid, -1, axis=0)
         ttsum = tdrsum + tulsum
-        maparray[stepsize // 2 : mapsize : stepsize, 0:mapsize:stepsize] = wibbledmean(
-            ttsum
-        )
+        maparray[stepsize // 2 : mapsize : stepsize, 0:mapsize:stepsize] = wibbledmean(ttsum)
 
     while stepsize >= 2:
         fillsquares()
@@ -120,37 +110,26 @@ def snow(img: np.ndarray, severity: int = 1) -> np.float32:
     image = np.array(image, dtype=np.float32)
 
     width, height, channel = img.shape
-    snow_layer = np.random.normal(
-        size=image.shape[:2], loc=loc, scale=scale
-    )  # [:2] for monochrome
+    snow_layer = np.random.normal(size=image.shape[:2], loc=loc, scale=scale)  # [:2] for monochrome
 
     snow_layer = clipped_zoom(snow_layer[..., np.newaxis], zoom_factor)
     snow_layer[snow_layer < severity_constant[3]] = 0
 
-    snow_layer = Image.fromarray(
-        (np.clip(snow_layer.squeeze(), 0, 1) * 255).astype(np.uint8), mode="L"
-    )
+    snow_layer = Image.fromarray((np.clip(snow_layer.squeeze(), 0, 1) * 255).astype(np.uint8), mode="L")
     output = BytesIO()
     snow_layer.save(output, format="PNG")
     snow_layer = MotionImage(blob=output.getvalue())
 
     snow_layer.motion_blur(radius, sigma, angle=np.random.uniform(-135, -45))
 
-    snow_layer = (
-        cv2.imdecode(
-            np.frombuffer(snow_layer.make_blob(), np.uint8), cv2.IMREAD_UNCHANGED
-        )
-        / 255.0
-    )
+    snow_layer = cv2.imdecode(np.frombuffer(snow_layer.make_blob(), np.uint8), cv2.IMREAD_UNCHANGED) / 255.0
     snow_layer = snow_layer[..., np.newaxis]
 
     image = add_const * image + (1 - add_const) * np.maximum(
         image,
         cv2.cvtColor(image, cv2.COLOR_RGB2GRAY).reshape(width, height, 1) * 1.5 + 0.5,
     )
-    return (np.clip(image + snow_layer + np.rot90(snow_layer, k=2), 0, 1)).astype(
-        np.float32
-    )
+    return (np.clip(image + snow_layer + np.rot90(snow_layer, k=2), 0, 1)).astype(np.float32)
 
 
 def fog(img: np.ndarray, severity: int = 1) -> np.ndarray:
@@ -165,21 +144,14 @@ def fog(img: np.ndarray, severity: int = 1) -> np.ndarray:
     Returns:
         ndarray: Numpy array of image with fog environment corruption
     """
-    severity_constant = [(0.8, 3), (1.2, 2.5), (1.6, 2), (2.5, 1.75), (2.8, 1.6)][
-        severity - 1
-    ]
+    severity_constant = [(0.8, 3), (1.2, 2.5), (1.6, 2), (2.5, 1.75), (2.8, 1.6)][severity - 1]
     wibbledecay = severity_constant[1]
     add_const = severity_constant[0]
 
     image = img.copy()
     max_val = image.max()
     shape = img.shape
-    image += (
-        add_const
-        * plasma_fractal(wibbledecay=wibbledecay)[: shape[0], : shape[1]][
-            ..., np.newaxis
-        ]
-    )
+    image += add_const * plasma_fractal(wibbledecay=wibbledecay)[: shape[0], : shape[1]][..., np.newaxis]
     return (np.clip(image * max_val / (max_val + add_const), 0, 1)).astype(np.float32)
 
 
@@ -232,16 +204,12 @@ def rain_process(
     image = cv2.blur(image_t, (3, 3))  # adding blur to the rainy view
     image_rgb = cv2.cvtColor(np.uint8(image), cv2.COLOR_BGR2RGB)
     image_rgb = Image.fromarray(np.array(image))
-    image_brightness_down = ImageEnhance.Brightness(image_rgb).enhance(
-        brightness_coefficient
-    )
+    image_brightness_down = ImageEnhance.Brightness(image_rgb).enhance(brightness_coefficient)
     return image_brightness_down
 
 
 # rain_type='drizzle','heavy','torrential'
-def add_rain(
-    image: np.ndarray, severity: int, drop_color: Tuple[int, int, int] = (200, 200, 200)
-) -> np.ndarray:
+def add_rain(image: np.ndarray, severity: int, drop_color: Tuple[int, int, int] = (200, 200, 200)) -> np.ndarray:
     """
     Adding rain to images
     Modified from : https://github.com/UjjwalSaxena/Automold--Road-Augmentation-Library/blob/master/Automold.py
@@ -261,9 +229,7 @@ def add_rain(
         (8, 90, 100, 0.6),
         (5, 80, 100, 0.5),
         (4, 70, 100, 0.5),
-    ][
-        severity - 1
-    ]  # (drop_length, drop_density, drop_width)
+    ][severity - 1]  # (drop_length, drop_density, drop_width)
     image_255 = np.uint8(image * 255.0)
 
     image_height, image_width, channels = image.shape
@@ -273,9 +239,7 @@ def add_rain(
     brightness = severity_constant[3]
     min_angle, max_angle = -10, 10
     slant = np.random.randint(min_angle, max_angle)  # generate random slant
-    drops, drop_length = generate_random_lines(
-        image_255, slant, drop_length, drop_density
-    )
+    drops, drop_length = generate_random_lines(image_255, slant, drop_length, drop_density)
     output = rain_process(
         image_255,
         slant,

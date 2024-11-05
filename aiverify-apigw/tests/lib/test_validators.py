@@ -5,31 +5,37 @@ import pytest
 class TestValidateGidCid:
     """Test cases for the validate_gid_cid function."""
 
-    @pytest.mark.parametrize("value", [
-        "validGID123",
-        "valid-CID_456",
-        "valid.CID-789",
-        "A1._-b2",
-        "1validGID",
-        "1234",  # Only numbers
-        "ValidOnlyLetters",
-    ])
+    @pytest.mark.parametrize(
+        "value",
+        [
+            "validGID123",
+            "valid-CID_456",
+            "valid.CID-789",
+            "A1._-b2",
+            "1validGID",
+            "1234",  # Only numbers
+            "ValidOnlyLetters",
+        ],
+    )
     def test_valid_gid_cid(self, value):
         """Test with valid GID/CID values that should return True."""
         assert validate_gid_cid(value) is True
 
-    @pytest.mark.parametrize("value", [
-        " invalidGID123",  # Leading space
-        "invalid*GID",  # Special character *
-        "invalidGID!",  # Special character !
-        "invalid GID",  # Space in the middle
-        "-invalidGID",  # Starts with a hyphen
-        ".invalidCID",  # Starts with a dot
-        "_invalidCID",  # Starts with an underscore
-        "",  # Empty string
-        " ",  # Single space
-        "invalid@GID",  # Special character @
-    ])
+    @pytest.mark.parametrize(
+        "value",
+        [
+            " invalidGID123",  # Leading space
+            "invalid*GID",  # Special character *
+            "invalidGID!",  # Special character !
+            "invalid GID",  # Space in the middle
+            "-invalidGID",  # Starts with a hyphen
+            ".invalidCID",  # Starts with a dot
+            "_invalidCID",  # Starts with an underscore
+            "",  # Empty string
+            " ",  # Single space
+            "invalid@GID",  # Special character @
+        ],
+    )
     def test_invalid_gid_cid(self, value):
         """Test with invalid GID/CID values that should return False."""
         assert validate_gid_cid(value) is False

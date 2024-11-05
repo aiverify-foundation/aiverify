@@ -469,14 +469,14 @@ class Plugin(IModel):
 
             # Populate body with payload values
             body = self._api_instance_schema.get_type().construct(**row_data_to_send)
-            headers, data, result = await self._api_instance._.predict_api.request(
+            headers, _, result = await self._api_instance._.predict_api.request(
                 parameters=headers, data=body
             )
         else:
             # GET method. Populate body with payload values
             body = None
             # Perform api request
-            headers, data, result = await self._api_instance._.predict_api.request(
+            headers, _, result = await self._api_instance._.predict_api.request(
                 parameters=row_data_to_send, data=body
             )
         return result
@@ -519,14 +519,14 @@ class Plugin(IModel):
                     if len(parameter.schema_.enum) > 0:
                         headers.update({parameter.name: parameter.schema_.enum[0]})
             # Populate body with payload values
-            headers, data, result = await self._api_instance._.predict_api.request(
+            headers, _, result = await self._api_instance._.predict_api.request(
                 parameters=headers, data=list_of_processed_rows
             )
         else:
             # GET method. Populate body with payload values
             body = None
             # Perform api request
-            headers, data, result = await self._api_instance._.predict_api.request(
+            headers, _, result = await self._api_instance._.predict_api.request(
                 parameters=row_data_to_send, data=body
             )
         return result

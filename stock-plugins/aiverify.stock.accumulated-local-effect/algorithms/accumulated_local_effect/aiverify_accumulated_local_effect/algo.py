@@ -78,25 +78,17 @@ class Plugin(IAlgorithm):
 
         # Look for kwargs values for log_instance, progress_callback and base path
         self._logger = kwargs.get("logger", None)
-        self._progress_inst = SimpleProgress(
-            1, 0, kwargs.get("progress_callback", None)
-        )
+        self._progress_inst = SimpleProgress(1, 0, kwargs.get("progress_callback", None))
 
         # Check if data and model are tuples and if the tuples contain 2 items
-        if (
-            not isinstance(data_instance_and_serializer, Tuple)
-            or len(data_instance_and_serializer) != 2
-        ):
+        if not isinstance(data_instance_and_serializer, Tuple) or len(data_instance_and_serializer) != 2:
             self.add_to_log(
                 logging.ERROR,
                 f"The algorithm has failed data validation: {data_instance_and_serializer}",
             )
             raise RuntimeError("The algorithm has failed data validation")
 
-        if (
-            not isinstance(model_instance_and_serializer, Tuple)
-            or len(model_instance_and_serializer) != 2
-        ):
+        if not isinstance(model_instance_and_serializer, Tuple) or len(model_instance_and_serializer) != 2:
             self.add_to_log(
                 logging.ERROR,
                 f"The algorithm has failed model validation: {model_instance_and_serializer}",
@@ -118,9 +110,7 @@ class Plugin(IAlgorithm):
                     f"The algorithm has failed ground truth data validation: \
                         {ground_truth_instance_and_serializer}",
                 )
-                raise RuntimeError(
-                    "The algorithm has failed ground truth data validation"
-                )
+                raise RuntimeError("The algorithm has failed ground truth data validation")
             self._requires_ground_truth = True
             self._ground_truth_instance = ground_truth_instance_and_serializer[0]
             self._ground_truth_serializer = ground_truth_instance_and_serializer[1]
@@ -145,17 +135,13 @@ class Plugin(IAlgorithm):
 
         current_file_dir = Path(__file__).parent
 
-        self._input_schema = load_schema_file(
-            str(Path(__file__).parent / "input.schema.json")
-        )
+        self._input_schema = load_schema_file(str(Path(__file__).parent / "input.schema.json"))
 
         # Algorithm output schema defined in output.schema.json
         # By defining the output schema, this plug-in validates the result with the output schema.
         # This allows the result to be validated against the schema before passing it to the front-end for display.
 
-        self._output_schema = load_schema_file(
-            str(current_file_dir / "output.schema.json")
-        )
+        self._output_schema = load_schema_file(str(current_file_dir / "output.schema.json"))
 
         # Retrieve the input parameters defined in the input schema and store them
         self._input_arguments = dict()
@@ -211,9 +197,7 @@ class Plugin(IAlgorithm):
         # Perform validation on logger
         if self._logger:
             if not isinstance(self._logger, logging.Logger):
-                raise RuntimeError(
-                    "The algorithm has failed to set up logger. The logger type is invalid"
-                )
+                raise RuntimeError("The algorithm has failed to set up logger. The logger type is invalid")
 
         # Perform validation on model type
         if self._model_type not in Plugin._supported_algorithm_model_type:
@@ -232,9 +216,7 @@ class Plugin(IAlgorithm):
             raise RuntimeError("The algorithm has failed data validation")
 
         # Perform validation on model instance
-        if not isinstance(self._model_instance, IModel) and not isinstance(
-            self._model_instance, IPipeline
-        ):
+        if not isinstance(self._model_instance, IModel) and not isinstance(self._model_instance, IPipeline):
             self.add_to_log(
                 logging.ERROR,
                 f"The algorithm has failed model validation: {self._model_instance}",
@@ -248,9 +230,7 @@ class Plugin(IAlgorithm):
                     logging.ERROR,
                     f"The algorithm has failed ground truth data validation: {self._ground_truth_instance}",
                 )
-                raise RuntimeError(
-                    "The algorithm has failed ground truth data validation"
-                )
+                raise RuntimeError("The algorithm has failed ground truth data validation")
 
             # Perform validation on ground truth header
             if not isinstance(self._ground_truth, str):
@@ -267,9 +247,7 @@ class Plugin(IAlgorithm):
         # Perform validation on progress_inst
         if self._progress_inst:
             if not isinstance(self._progress_inst, SimpleProgress):
-                raise RuntimeError(
-                    "The algorithm has failed validation for the progress bar"
-                )
+                raise RuntimeError("The algorithm has failed validation for the progress bar")
 
         # Perform validation on project_base_path
         if not isinstance(self._base_path, PurePath):
@@ -379,19 +357,11 @@ class Plugin(IAlgorithm):
 
         # with the data points replaced with the intervals
         # now we can run the predictions for both intervals
-        prediction_lower_bound = self._model_instance.predict(
-            [z_lower], dict_items_labels
-        )
-        prediction_higher_bound = self._model_instance.predict(
-            [z_higher], dict_items_labels
-        )
+        prediction_lower_bound = self._model_instance.predict([z_lower], dict_items_labels)
+        prediction_higher_bound = self._model_instance.predict([z_higher], dict_items_labels)
 
-        prediction_lower_bound = np.array(
-            [eval(str(i)) for i in prediction_lower_bound]
-        )
-        prediction_higher_bound = np.array(
-            [eval(str(i)) for i in prediction_higher_bound]
-        )
+        prediction_lower_bound = np.array([eval(str(i)) for i in prediction_lower_bound])
+        prediction_higher_bound = np.array([eval(str(i)) for i in prediction_higher_bound])
 
         # collect the unique bin values, so we can do a mean prediction later within the intervals
         results[feature_name] = [bins[b + 1] for b in feat_bins.cat.codes]
@@ -404,20 +374,14 @@ class Plugin(IAlgorithm):
                 }
             )
             # compute the mean and count the size of each bin
-            results = delta_df.groupby([feature_name])["ale"].agg(
-                [("ale", "mean"), "size"]
-            )
+            results = delta_df.groupby([feature_name])["ale"].agg([("ale", "mean"), "size"])
             results["ale"] = results["ale"].cumsum()
             results.loc[min(bins), :] = 0
 
             mean_moving_average = (
-                (results["ale"] + results["ale"].shift(1, fill_value=0))
-                / 2
-                * results["size"]
+                (results["ale"] + results["ale"].shift(1, fill_value=0)) / 2 * results["size"]
             ).sum() / results["size"].sum()
-            results = results.sort_index().assign(
-                ale=results["ale"] - mean_moving_average
-            )
+            results = results.sort_index().assign(ale=results["ale"] - mean_moving_average)
         else:
             # here's where we can use for multiclass
             target_class = prediction_lower_bound.shape[1]
@@ -425,9 +389,7 @@ class Plugin(IAlgorithm):
             target_class_diff = list()
             for i in range(target_class):
                 target_class_diff.append("ale_{0}".format(i))
-                results["ale_{0}".format(i)] = (
-                    prediction_higher_bound[:, i] - prediction_lower_bound[:, i]
-                )
+                results["ale_{0}".format(i)] = prediction_higher_bound[:, i] - prediction_lower_bound[:, i]
 
             df = pd.DataFrame(results)
             df = df.groupby([feature_name])[target_class_diff].agg(["mean", "size"])
@@ -443,25 +405,18 @@ class Plugin(IAlgorithm):
             # subtract the total average of a moving average of size 2
             for target_class in target_class_diff:
                 mean_moving_average = (
-                    (
-                        df[(target_class, "mean")]
-                        + df[(target_class, "mean")].shift(1, fill_value=0)
-                    )
+                    (df[(target_class, "mean")] + df[(target_class, "mean")].shift(1, fill_value=0))
                     / 2
                     * df[(target_class, "size")]
                 ).sum() / df[(target_class, "size")].sum()
-                df[(target_class, "mean")] = (
-                    df[(target_class, "mean")] - mean_moving_average
-                )
+                df[(target_class, "mean")] = df[(target_class, "mean")] - mean_moving_average
 
             # remove the size
             results = df[[(target_class, "mean") for target_class in target_class_diff]]
 
         return results
 
-    def _compute_ale_discrete(
-        self, data: pd.DataFrame, data_features: List, feature_name: str
-    ) -> pd.DataFrame:
+    def _compute_ale_discrete(self, data: pd.DataFrame, data_features: List, feature_name: str) -> pd.DataFrame:
         """
         A helper method to compute the ALE for numeric discrete feature
 
@@ -486,9 +441,7 @@ class Plugin(IAlgorithm):
         feature_values.sort()
 
         # To replace the values with the feature_code, so it's easier to replace with lower and upper bound later
-        feature_values_codes = {
-            feature_values[x]: x for x in range(len(feature_values))
-        }
+        feature_values_codes = {feature_values[x]: x for x in range(len(feature_values))}
         feature_codes = data[feature_name].replace(feature_values_codes).astype(int)
 
         feature_values_counts = data.groupby(feature_name).size()
@@ -503,22 +456,14 @@ class Plugin(IAlgorithm):
         data_remove_first_group = data[feature_name] != feature_values[0]
 
         # replace X with upper bound
-        z_upper.loc[data_remove_last_group, feature_name] = feature_values[
-            feature_codes[data_remove_last_group] + 1
-        ]
-        z_lower.loc[data_remove_first_group, feature_name] = feature_values[
-            feature_codes[data_remove_first_group] - 1
-        ]
+        z_upper.loc[data_remove_last_group, feature_name] = feature_values[feature_codes[data_remove_last_group] + 1]
+        z_lower.loc[data_remove_first_group, feature_name] = feature_values[feature_codes[data_remove_first_group] - 1]
 
         dict_items_labels = self._data_instance.read_labels().items()
 
         # runs prediction on both replaced dataset
-        z_upper_prediction = self._model_instance.predict(
-            [z_upper[data_remove_last_group]], dict_items_labels
-        )
-        z_lower_prediction = self._model_instance.predict(
-            [z_lower[data_remove_first_group]], dict_items_labels
-        )
+        z_upper_prediction = self._model_instance.predict([z_upper[data_remove_last_group]], dict_items_labels)
+        z_lower_prediction = self._model_instance.predict([z_lower[data_remove_first_group]], dict_items_labels)
         z = self._model_instance.predict([data], dict_items_labels)
 
         z_upper_prediction = np.array([eval(str(i)) for i in z_upper_prediction])
@@ -536,17 +481,13 @@ class Plugin(IAlgorithm):
                     pd.DataFrame(
                         {
                             "ale": upper_diff,
-                            feature_name: feature_values[
-                                feature_codes[data_remove_last_group] + 1
-                            ],
+                            feature_name: feature_values[feature_codes[data_remove_last_group] + 1],
                         }
                     ),
                     pd.DataFrame(
                         {
                             "ale": lower_diff,
-                            feature_name: feature_values[
-                                feature_codes[data_remove_first_group]
-                            ],
+                            feature_name: feature_values[feature_codes[data_remove_first_group]],
                         }
                     ),
                 ]
@@ -560,28 +501,12 @@ class Plugin(IAlgorithm):
             results["size"] = feature_values_counts
         else:
             target_class = upper_diff.shape[1]
-            diff_cols = OrderedDict(
-                {feature_name: z_upper[feature_name][data_remove_last_group].to_numpy()}
-            )
-            diff_cols.update(
-                OrderedDict(
-                    {f"delta_{i}": upper_diff[:, i] for i in range(target_class)}
-                )
-            )
+            diff_cols = OrderedDict({feature_name: z_upper[feature_name][data_remove_last_group].to_numpy()})
+            diff_cols.update(OrderedDict({f"delta_{i}": upper_diff[:, i] for i in range(target_class)}))
             df_a = pd.DataFrame(diff_cols)
 
-            diff_cols = OrderedDict(
-                {
-                    feature_name: z_lower[feature_name][
-                        data_remove_first_group
-                    ].to_numpy()
-                }
-            )
-            diff_cols.update(
-                OrderedDict(
-                    {f"delta_{i}": lower_diff[:, i] for i in range(target_class)}
-                )
-            )
+            diff_cols = OrderedDict({feature_name: z_lower[feature_name][data_remove_first_group].to_numpy()})
+            diff_cols.update(OrderedDict({f"delta_{i}": lower_diff[:, i] for i in range(target_class)}))
             df_b = pd.DataFrame(diff_cols)
 
             results = pd.concat([df_a, df_b])
@@ -622,25 +547,15 @@ class Plugin(IAlgorithm):
 
                 if len(unique_values) < discrete_threshold:
                     # Perform ALE Discrete computation
-                    results = self._compute_ale_discrete(
-                        data_no_ground_truth, data_features, feature
-                    )
+                    results = self._compute_ale_discrete(data_no_ground_truth, data_features, feature)
                 else:
                     # Perform ALE Continuous computation
                     # Generate the percentile based on the grid_resolution given by user
                     percentiles = np.linspace(0, 100, num=grid_resolution)
 
                     # Create bins based on the percentiles
-                    bins = sorted(
-                        set(
-                            np.percentile(
-                                data_no_ground_truth_np[:, index], percentiles
-                            )
-                        )
-                    )
-                    results = self._compute_ale_continuous(
-                        data_no_ground_truth, data_features, feature, bins
-                    )
+                    bins = sorted(set(np.percentile(data_no_ground_truth_np[:, index], percentiles)))
+                    results = self._compute_ale_continuous(data_no_ground_truth, data_features, feature, bins)
 
                 # Add results to list
                 output_results.append(results)
@@ -659,9 +574,7 @@ class Plugin(IAlgorithm):
                 logging.ERROR,
                 f"Invalid data plugin type - {self._data_instance.get_data_plugin_type()}",
             )
-            raise RuntimeError(
-                f"Invalid data plugin type - {self._data_instance.get_data_plugin_type()}"
-            )
+            raise RuntimeError(f"Invalid data plugin type - {self._data_instance.get_data_plugin_type()}")
 
     def _format_result(self, results_list: List) -> Dict:
         """

@@ -14,20 +14,14 @@ class TestReadAndValidate:
         """Fixture for a valid JSON schema."""
         return {
             "type": "object",
-            "properties": {
-                "name": {"type": "string"},
-                "age": {"type": "number"}
-            },
-            "required": ["name", "age"]
+            "properties": {"name": {"type": "string"}, "age": {"type": "number"}},
+            "required": ["name", "age"],
         }
 
     @pytest.fixture
     def valid_json(self):
         """Fixture for a valid JSON object."""
-        return json.dumps({
-            "name": "John Doe",
-            "age": 30
-        })
+        return json.dumps({"name": "John Doe", "age": 30})
 
     @pytest.fixture
     def invalid_json(self):
@@ -37,9 +31,7 @@ class TestReadAndValidate:
     @pytest.fixture
     def schema_mismatch_json(self):
         """Fixture for a valid JSON object that does not match the schema."""
-        return json.dumps({
-            "name": "John Doe"
-        })  # Missing required 'age' property
+        return json.dumps({"name": "John Doe"})  # Missing required 'age' property
 
     def test_read_and_validate_valid(self, valid_json, valid_schema):
         """Test with a valid JSON file and matching schema, should return parsed object."""
@@ -75,9 +67,9 @@ class TestReadAndValidate:
             "type": "object",
             "properties": {
                 "name": {"type": "string"},
-                "age": {"type": "string"}  # Age should be a number, not a string
+                "age": {"type": "string"},  # Age should be a number, not a string
             },
-            "required": ["name", "age"]
+            "required": ["name", "age"],
         }
         mock_path = Path("valid.json")
         with patch("builtins.open", mock_open(read_data=valid_json)):

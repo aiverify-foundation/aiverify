@@ -87,25 +87,17 @@ class Plugin(IAlgorithm):
 
         # Look for kwargs values for log_instance, progress_callback and base path
         self._logger = kwargs.get("logger", None)
-        self._progress_inst = SimpleProgress(
-            1, 0, kwargs.get("progress_callback", None)
-        )
+        self._progress_inst = SimpleProgress(1, 0, kwargs.get("progress_callback", None))
 
         # Check if data and model are tuples and if the tuples contain 2 items
-        if (
-            not isinstance(data_instance_and_serializer, Tuple)
-            or len(data_instance_and_serializer) != 2
-        ):
+        if not isinstance(data_instance_and_serializer, Tuple) or len(data_instance_and_serializer) != 2:
             self.add_to_log(
                 logging.ERROR,
                 f"The algorithm has failed data validation: {data_instance_and_serializer}",
             )
             raise RuntimeError("The algorithm has failed data validation")
 
-        if (
-            not isinstance(model_instance_and_serializer, Tuple)
-            or len(model_instance_and_serializer) != 2
-        ):
+        if not isinstance(model_instance_and_serializer, Tuple) or len(model_instance_and_serializer) != 2:
             self.add_to_log(
                 logging.ERROR,
                 f"The algorithm has failed model validation: {model_instance_and_serializer}",
@@ -127,9 +119,7 @@ class Plugin(IAlgorithm):
                     f"The algorithm has failed ground truth data validation: \
                         {ground_truth_instance_and_serializer}",
                 )
-                raise RuntimeError(
-                    "The algorithm has failed ground truth data validation"
-                )
+                raise RuntimeError("The algorithm has failed ground truth data validation")
             self._requires_ground_truth = True
             self._ground_truth_instance = ground_truth_instance_and_serializer[0]
             self._ground_truth_serializer = ground_truth_instance_and_serializer[1]
@@ -160,16 +150,12 @@ class Plugin(IAlgorithm):
         # By defining the input schema, it allows the front-end to know what algorithm input params is
         # required by this plugin. This allows this algorithm plug-in to receive the arguments values it requires.
         current_file_dir = Path(__file__).parent
-        self._input_schema = load_schema_file(
-            str(current_file_dir / "input.schema.json")
-        )
+        self._input_schema = load_schema_file(str(current_file_dir / "input.schema.json"))
 
         # Algorithm output schema defined in output.schema.json
         # By defining the output schema, this plug-in validates the result with the output schema.
         # This allows the result to be validated against the schema before passing it to the front-end for display.
-        self._output_schema = load_schema_file(
-            str(current_file_dir / "output.schema.json")
-        )
+        self._output_schema = load_schema_file(str(current_file_dir / "output.schema.json"))
 
         # Retrieve the input parameters defined in the input schema and store them
         self._input_arguments = dict()
@@ -226,9 +212,7 @@ class Plugin(IAlgorithm):
         # Perform validation on logger
         if self._logger:
             if not isinstance(self._logger, logging.Logger):
-                raise RuntimeError(
-                    "The algorithm has failed to set up logger. The logger type is invalid"
-                )
+                raise RuntimeError("The algorithm has failed to set up logger. The logger type is invalid")
 
         # Perform validation on model type
         if self._model_type not in Plugin._supported_algorithm_model_type:
@@ -247,9 +231,7 @@ class Plugin(IAlgorithm):
             raise RuntimeError("The algorithm has failed data validation.")
 
         # Perform validation on model instance
-        if not isinstance(self._model_instance, IModel) and not isinstance(
-            self._model_instance, IPipeline
-        ):
+        if not isinstance(self._model_instance, IModel) and not isinstance(self._model_instance, IPipeline):
             self.add_to_log(
                 logging.ERROR,
                 f"The algorithm has failed model validation: {self._model_instance}",
@@ -263,9 +245,7 @@ class Plugin(IAlgorithm):
                     logging.ERROR,
                     f"The algorithm has failed ground truth data validation: {self._ground_truth_instance}",
                 )
-                raise RuntimeError(
-                    "The algorithm has failed ground truth data validation"
-                )
+                raise RuntimeError("The algorithm has failed ground truth data validation")
 
             # Perform validation on ground truth header
             if not isinstance(self._ground_truth, str):
@@ -282,9 +262,7 @@ class Plugin(IAlgorithm):
         # Perform validation on progress_inst
         if self._progress_inst:
             if not isinstance(self._progress_inst, SimpleProgress):
-                raise RuntimeError(
-                    "The algorithm has failed validation for the progress bar"
-                )
+                raise RuntimeError("The algorithm has failed validation for the progress bar")
 
         # Perform validation on project_base_path
         if not isinstance(self._base_path, PurePath):
@@ -376,9 +354,7 @@ class Plugin(IAlgorithm):
                 logging.ERROR,
                 f"The algorithm has failed input arguments validation: {error_message}",
             )
-            raise RuntimeError(
-                f"The algorithm has failed input arguments validation: {error_message}"
-            )
+            raise RuntimeError(f"The algorithm has failed input arguments validation: {error_message}")
         else:
             self.add_to_log(
                 logging.INFO,
@@ -407,9 +383,7 @@ class Plugin(IAlgorithm):
             self._background_instance,
             background_serializer,
             background_error_message,
-        ) = PluginManager.get_instance(
-            PluginType.DATA, **{"filename": self._background_path}
-        )
+        ) = PluginManager.get_instance(PluginType.DATA, **{"filename": self._background_path})
         if not self._background_instance:
             self.add_to_log(
                 logging.ERROR,
@@ -434,9 +408,7 @@ class Plugin(IAlgorithm):
         # Retrieve data information
         # Check if background dataset has ground truth first
         if self._ground_truth in self._background_instance.get_data().columns:
-            self._background = self._background_instance.get_data().drop(
-                self._ground_truth, axis=1
-            )
+            self._background = self._background_instance.get_data().drop(self._ground_truth, axis=1)
         else:
             self._background = self._background_instance.get_data()
 
@@ -447,9 +419,7 @@ class Plugin(IAlgorithm):
         # Perform data_sampling and background_sampling
         if self._data_samples > 0:
             num_of_samples = min(len(self._data), self._data_samples)
-            self._data = self._data.sample(
-                num_of_samples, random_state=self._sample_seed
-            )
+            self._data = self._data.sample(num_of_samples, random_state=self._sample_seed)
 
             self._ground_truth_data = self._ground_truth_instance.get_data().sample(
                 num_of_samples, random_state=self._sample_seed
@@ -457,9 +427,7 @@ class Plugin(IAlgorithm):
 
         if self._background_samples > 0:
             num_of_samples = min(len(self._background), self._background_samples)
-            self._background = self._background.sample(
-                num_of_samples, random_state=self._sample_seed
-            )
+            self._background = self._background.sample(num_of_samples, random_state=self._sample_seed)
 
         # Get explainer function
         explainer = self._get_explainer()
@@ -467,16 +435,13 @@ class Plugin(IAlgorithm):
 
         if self._data_instance.get_data_plugin_type() is DataPluginType.PANDAS:
             # Get single shap value
-            single_shap_value = explainer.shap_values(
-                self._data.sample(1, random_state=self._sample_seed)
-            )
+            single_shap_value = explainer.shap_values(self._data.sample(1, random_state=self._sample_seed))
 
             # Global or Local?
             if self._explain_type is ExplainType.GLOBAL:
                 if (
                     self._model_instance.get_plugin_type() is PluginType.MODEL
-                    and self._model_instance.get_model_plugin_type()
-                    is ModelPluginType.XGBOOST
+                    and self._model_instance.get_model_plugin_type() is ModelPluginType.XGBOOST
                 ):
                     data = xgboost.DMatrix(self._data, self._ground_truth_data)
                     shap_values = explainer.shap_values(data)
@@ -506,9 +471,7 @@ class Plugin(IAlgorithm):
                 logging.ERROR,
                 f"Unsupported data plugin type: {self._data_instance.get_data_plugin_type()}",
             )
-            raise RuntimeError(
-                f"Unsupported data plugin type: {self._data_instance.get_data_plugin_type()}"
-            )
+            raise RuntimeError(f"Unsupported data plugin type: {self._data_instance.get_data_plugin_type()}")
 
     def _get_explainer_predict_helper(self, data: Any) -> Any:
         """
@@ -521,9 +484,7 @@ class Plugin(IAlgorithm):
             Any: predicted value
         """
         dict_item_labels = self._data_instance.read_labels().items()
-        predicted_results = self._model_instance.predict(
-            [data.tolist()], dict_item_labels
-        )
+        predicted_results = self._model_instance.predict([data.tolist()], dict_item_labels)
         if isinstance(predicted_results, list):
             predicted_results = np.array(list(predicted_results), dtype="float32")
         return predicted_results
@@ -548,16 +509,11 @@ class Plugin(IAlgorithm):
             self.add_to_log(logging.DEBUG, "Using KernelExplainer")
             if (
                 self._model_instance.get_plugin_type() is PluginType.MODEL
-                and self._model_instance.get_model_plugin_type()
-                is ModelPluginType.TENSORFLOW
+                and self._model_instance.get_model_plugin_type() is ModelPluginType.TENSORFLOW
             ):
-                explainer = shap.KernelExplainer(
-                    self._model_instance.get_model(), self._background
-                )
+                explainer = shap.KernelExplainer(self._model_instance.get_model(), self._background)
             else:
-                explainer = shap.KernelExplainer(
-                    self._get_explainer_predict_helper, self._background
-                )
+                explainer = shap.KernelExplainer(self._get_explainer_predict_helper, self._background)
 
         return explainer
 
@@ -594,20 +550,15 @@ class Plugin(IAlgorithm):
         error_count = 0
         error_message = ""
 
-        supported_explain_types = [
-            explain_type.name.lower() for explain_type in ExplainType
-        ]
+        supported_explain_types = [explain_type.name.lower() for explain_type in ExplainType]
 
         if input_background_path == "" or (
-            not self._is_file(input_background_path)
-            and not is_url(input_background_path)
+            not self._is_file(input_background_path) and not is_url(input_background_path)
         ):
             error_count += 1
             error_message += "The background path is invalid;"
 
-        if input_background_samples < 0 or not isinstance(
-            input_background_samples, int
-        ):
+        if input_background_samples < 0 or not isinstance(input_background_samples, int):
             error_count += 1
             error_message += "The background samples are invalid;"
 
@@ -615,10 +566,7 @@ class Plugin(IAlgorithm):
             error_count += 1
             error_message += "The samples are invalid;"
 
-        if (
-            input_explain_type == ""
-            or input_explain_type.lower() not in supported_explain_types
-        ):
+        if input_explain_type == "" or input_explain_type.lower() not in supported_explain_types:
             error_count += 1
             error_message += "The explain type is invalid;"
 
@@ -700,9 +648,7 @@ class Plugin(IAlgorithm):
             for class_count in range(num_of_classes):
                 features_average = list()
                 for features_count in range(num_of_features):
-                    temp_data_slice = global_shap_value_ndarray[
-                        class_count, :, features_count
-                    ]
+                    temp_data_slice = global_shap_value_ndarray[class_count, :, features_count]
                     features_average.append(np.abs(temp_data_slice).mean(0))
                 global_avg_shap_values.append(features_average)
             output_results.update({"global": global_avg_shap_values})

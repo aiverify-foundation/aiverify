@@ -1,17 +1,24 @@
 FROM python:3.11-slim
 
-RUN apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y git gcc
+# Combine all apt-get installations into a single layer with cleanup
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y \
+    git \
+    gcc \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libmagickwand-dev \
+    libhdf5-dev \
+    pkg-config && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# Install OpenGL libraries for OpenCV and libmagicwand for Environment Corruption
-RUN apt-get install -y libgl1-mesa-glx libglib2.0-0 libmagickwand-dev 
+ENV PYTHONUNBUFFERED=1
+ENV PIP_NO_CACHE_DIR=1
 
-# Install HDF5 using apt
-RUN apt-get update && apt-get install -y libhdf5-dev pkg-config
-
-RUN pip install --upgrade pip
-RUN pip install --no-binary h5py h5py
+RUN pip install --no-cache-dir --upgrade pip
+RUN pip install --no-cache-dir --no-binary h5py h5py
 
 WORKDIR /app/aiverify
 
@@ -25,9 +32,9 @@ COPY stock-plugins/user_defined_files ./stock-plugins/user_defined_files
 COPY stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/environment_corruptions ./stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/environment_corruptions
 
 # Install algorithm requirements
-WORKDIR /app/aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/environment_corruptions
-RUN pip install pytest
-RUN pip install -e '.[dev]'
+RUN cd aiverify-test-engine && \
+    pip install --no-cache-dir '.[dev]' && \
+    cd ../stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/environment_corruptions && \
+    pip install --no-cache-dir .
 
 ENTRYPOINT ["python3", "-m", "aiverify_environment_corruptions"]
-

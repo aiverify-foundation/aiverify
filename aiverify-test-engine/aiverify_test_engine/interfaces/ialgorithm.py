@@ -21,7 +21,7 @@ class IAlgorithm(IPlugin):
         ground_truth_serializer: Tuple[IData, ISerializer],
         initial_data_instance: Union[IData, None] = None,
         initial_model_instance: Union[IModel, IPipeline, None] = None,
-        **kwargs
+        **kwargs,
     ) -> None:
         pass
 

@@ -65,18 +65,21 @@ class TestPluginStoreScanStockPlugins:
     @patch("aiverify_apigw.lib.plugin_store.PluginStore.validate_plugin_directory")
     @patch("aiverify_apigw.lib.plugin_store.PluginStore.scan_plugin_directory")
     @patch("aiverify_apigw.lib.plugin_store.PluginStore.delete_all_plugins")
-    def test_scan_stock_plugins(self, mock_delete_all_plugins, mock_scan_plugin_directory, mock_validate_plugin_directory):
+    def test_scan_stock_plugins(
+        self, mock_delete_all_plugins, mock_scan_plugin_directory, mock_validate_plugin_directory
+    ):
         """Test scanning stock plugins to ensure plugins are validated and scanned."""
         from pathlib import Path
+
         mock_plugin_dir = MagicMock()
         mock_plugin_dir.is_dir.return_value = True
 
-        with patch.object(Path, 'iterdir', return_value=[mock_plugin_dir]):
+        with patch.object(Path, "iterdir", return_value=[mock_plugin_dir]):
             PluginStore.scan_stock_plugins()
 
         mock_delete_all_plugins.assert_called_once()
         mock_validate_plugin_directory.assert_called_once_with(mock_plugin_dir)
-        mock_scan_plugin_directory.assert_called_once_with(mock_plugin_dir)
+        mock_scan_plugin_directory.assert_called_once_with(mock_plugin_dir, is_stock=True)
 
 
 class TestPluginStoreCheckPluginRegistry:
@@ -110,6 +113,7 @@ class TestPluginStoreReadRequirements:
 
     def test_read_requirements_non_existent_file(self):
         from pathlib import Path
+
         """Test reading a requirements file that does not exist, should return None."""
         mock_path = Path("non_existent.txt")
 
@@ -123,11 +127,12 @@ class TestPluginStoreScanPluginDirectory:
     @pytest.fixture
     def mock_plugin_path(self):
         from ..mocks.mock_plugin_path import create_mock_plugin_path
+
         folder = create_mock_plugin_path()
         return folder
 
     @patch("aiverify_apigw.lib.plugin_store.read_and_validate")
-    @patch("aiverify_apigw.lib.plugin_store.fs_save_plugin")
+    @patch("aiverify_apigw.lib.plugin_store.fs_save_plugin", return_value="fake_hash")
     def test_scan_plugin_directory_valid(self, mock_save_plugin, mock_read_and_validate, mock_plugin_path):
         """Test scanning a valid plugin directory, should read and validate successfully."""
         # TODO: add tests for algo scans
@@ -138,12 +143,12 @@ class TestPluginStoreScanPluginDirectory:
 
         def read_and_validate_side_effect(path: Path, schema: Any):
             match path.name:
-                case 'plugin.meta.json':
-                    return json.loads(mock_plugin_path.mock_data.meta.decode('utf-8'))
-                case 'input.schema.json':
-                    return json.loads(mock_algo.input_schema.decode('utf-8'))
-                case 'output.schema.json':
-                    return json.loads(mock_algo.output_schema.decode('utf-8'))
+                case "plugin.meta.json":
+                    return json.loads(mock_plugin_path.mock_data.meta.decode("utf-8"))
+                case "input.schema.json":
+                    return json.loads(mock_algo.input_schema.decode("utf-8"))
+                case "output.schema.json":
+                    return json.loads(mock_algo.output_schema.decode("utf-8"))
                 case _:
                     return None
 
@@ -166,6 +171,7 @@ class TestPluginStoreValidatePluginDirectory:
     @pytest.fixture
     def mock_plugin_path(self):
         from ..mocks.mock_plugin_path import create_mock_plugin_path
+
         folder = create_mock_plugin_path()
         return folder
 
@@ -178,8 +184,8 @@ class TestPluginStoreValidatePluginDirectory:
 
         def read_and_validate_side_effect(path: Path, schema: Any):
             match path.name:
-                case 'plugin.meta.json':
-                    return json.loads(mock_plugin_path.mock_data.meta.decode('utf-8'))
+                case "plugin.meta.json":
+                    return json.loads(mock_plugin_path.mock_data.meta.decode("utf-8"))
                 case _:
                     return None
 

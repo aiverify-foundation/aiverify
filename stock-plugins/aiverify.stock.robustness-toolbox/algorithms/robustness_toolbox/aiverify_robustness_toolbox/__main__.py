@@ -1,6 +1,7 @@
 """
 Allow robustness_toolbox to be executable through `python3 -m robustness_toolbox`.
 """
+
 import sys
 from importlib.metadata import version
 from pathlib import Path

@@ -83,25 +83,17 @@ class Plugin(IAlgorithm):
 
         # Look for kwargs values for log_instance, progress_callback and base path
         self._logger = kwargs.get("logger", None)
-        self._progress_inst = SimpleProgress(
-            1, 0, kwargs.get("progress_callback", None)
-        )
+        self._progress_inst = SimpleProgress(1, 0, kwargs.get("progress_callback", None))
 
         # Check if data and model are tuples and if the tuples contain 2 items
-        if (
-            not isinstance(data_instance_and_serializer, Tuple)
-            or len(data_instance_and_serializer) != 2
-        ):
+        if not isinstance(data_instance_and_serializer, Tuple) or len(data_instance_and_serializer) != 2:
             self.add_to_log(
                 logging.ERROR,
                 f"The algorithm has failed data validation: {data_instance_and_serializer}",
             )
             raise RuntimeError("The algorithm has failed data validation")
 
-        if (
-            not isinstance(model_instance_and_serializer, Tuple)
-            or len(model_instance_and_serializer) != 2
-        ):
+        if not isinstance(model_instance_and_serializer, Tuple) or len(model_instance_and_serializer) != 2:
             self.add_to_log(
                 logging.ERROR,
                 f"The algorithm has failed model validation: {model_instance_and_serializer}",
@@ -124,9 +116,7 @@ class Plugin(IAlgorithm):
                     f"The algorithm has failed ground truth data validation: \
                         {ground_truth_instance_and_serializer}",
                 )
-                raise RuntimeError(
-                    "The algorithm has failed ground truth data validation"
-                )
+                raise RuntimeError("The algorithm has failed ground truth data validation")
             self._requires_ground_truth = True
             self._ground_truth_instance = ground_truth_instance_and_serializer[0]
             self._ground_truth_serializer = ground_truth_instance_and_serializer[1]
@@ -150,16 +140,12 @@ class Plugin(IAlgorithm):
         # By defining the input schema, it allows the front-end to know what algorithm input params is
         # required by this plugin. This allows this algorithm plug-in to receive the arguments values it requires.
         current_file_dir = Path(__file__).parent
-        self._input_schema = load_schema_file(
-            str(current_file_dir / "input.schema.json")
-        )
+        self._input_schema = load_schema_file(str(current_file_dir / "input.schema.json"))
 
         # Algorithm output schema defined in output.schema.json
         # By defining the output schema, this plug-in validates the result with the output schema.
         # This allows the result to be validated against the schema before passing it to the front-end for display.
-        self._output_schema = load_schema_file(
-            str(current_file_dir / "output.schema.json")
-        )
+        self._output_schema = load_schema_file(str(current_file_dir / "output.schema.json"))
 
         # Retrieve the input parameters defined in the input schema and store them
         self._input_arguments = dict()
@@ -215,9 +201,7 @@ class Plugin(IAlgorithm):
         # Perform validation on logger
         if self._logger:
             if not isinstance(self._logger, logging.Logger):
-                raise RuntimeError(
-                    "The algorithm has failed to set up logger. The logger type is invalid"
-                )
+                raise RuntimeError("The algorithm has failed to set up logger. The logger type is invalid")
 
         # Perform validation on model type
         if self._model_type not in Plugin._supported_algorithm_model_type:
@@ -236,9 +220,7 @@ class Plugin(IAlgorithm):
             raise RuntimeError("The algorithm has failed data validation")
 
         # Perform validation on model instance
-        if not isinstance(self._model_instance, IModel) and not isinstance(
-            self._model_instance, IPipeline
-        ):
+        if not isinstance(self._model_instance, IModel) and not isinstance(self._model_instance, IPipeline):
             self.add_to_log(
                 logging.ERROR,
                 f"The algorithm has failed model validation: {self._model_instance}",
@@ -252,9 +234,7 @@ class Plugin(IAlgorithm):
                     logging.ERROR,
                     f"The algorithm has failed ground truth data validation: {self._ground_truth_instance}",
                 )
-                raise RuntimeError(
-                    "The algorithm has failed ground truth data validation"
-                )
+                raise RuntimeError("The algorithm has failed ground truth data validation")
 
             # Perform validation on ground truth header
             if not isinstance(self._ground_truth, str):
@@ -271,9 +251,7 @@ class Plugin(IAlgorithm):
         # Perform validation on progress_inst
         if self._progress_inst:
             if not isinstance(self._progress_inst, SimpleProgress):
-                raise RuntimeError(
-                    "The algorithm has failed validation for the progress bar"
-                )
+                raise RuntimeError("The algorithm has failed validation for the progress bar")
 
         # Perform validation on project_base_path
         if not isinstance(self._base_path, PurePath):
@@ -335,44 +313,31 @@ class Plugin(IAlgorithm):
 
         try:
             # check if input data type is image
-            if (
-                self._serializer_instance.get_serializer_plugin_type()
-                is SerializerPluginType.IMAGE
-            ):
+            if self._serializer_instance.get_serializer_plugin_type() is SerializerPluginType.IMAGE:
                 self._model = self._initial_model_instance
                 self._data = self._initial_data_instance.get_data()
-                self._data_labels = list(
-                    self._initial_data_instance.read_labels().keys()
-                )
-                annotated_labels_path = self._input_arguments.get(
-                    "annotated_labels_path", ""
-                )
+                self._data_labels = list(self._initial_data_instance.read_labels().keys())
+                annotated_labels_path = self._input_arguments.get("annotated_labels_path", "")
                 # reindex the ground truth using the order that has been read by AI Verify
-                annotated_labels = pickle.load(
-                    open(annotated_labels_path, "rb")
-                ).set_index(self._input_arguments.get("file_name_label"))
+                annotated_labels = pickle.load(open(annotated_labels_path, "rb")).set_index(
+                    self._input_arguments.get("file_name_label")
+                )
                 file_names = [Path(i).name for i in self._data["image_directory"]]
                 self._ordered_annotations = annotated_labels.reindex(file_names)
                 self._y_test = self._ordered_annotations[self._ground_truth]
 
                 # get col(s) of sensitive feature(s)
-                self._data_sensitive_feature_np = self._ordered_annotations[
-                    self._sensitive_feature
-                ].to_numpy()
+                self._data_sensitive_feature_np = self._ordered_annotations[self._sensitive_feature].to_numpy()
 
             else:
                 # for tabular use case
                 self._model = self._model_instance
                 self._data = self._data_instance.get_data()
                 self._data_labels = list(self._data_instance.read_labels().keys())
-                self._y_test = self._ground_truth_instance.get_data()[
-                    self._ground_truth
-                ]
+                self._y_test = self._ground_truth_instance.get_data()[self._ground_truth]
 
                 # get col(s) of sensitive feature(s)
-                self._data_sensitive_feature_np = self._data[
-                    self._sensitive_feature
-                ].to_numpy()
+                self._data_sensitive_feature_np = self._data[self._sensitive_feature].to_numpy()
 
             # Compute score for features
             self._compute_score_for_features()
@@ -433,13 +398,9 @@ class Plugin(IAlgorithm):
 
         # add group and matrix score to list
         if matrix_name not in results[output_class]:
-            results[output_class][matrix_name] = [
-                {"group": list_unique_group, "metric": float(value)}
-            ]
+            results[output_class][matrix_name] = [{"group": list_unique_group, "metric": float(value)}]
         else:
-            results[output_class][matrix_name].append(
-                {"group": list_unique_group, "metric": float(value)}
-            )
+            results[output_class][matrix_name].append({"group": list_unique_group, "metric": float(value)})
         return results
 
     def _compute_score_for_features(self) -> dict:
@@ -458,9 +419,7 @@ class Plugin(IAlgorithm):
             data_predicted = self._predict_data()
 
             # compute scores for all groups
-            results = self._compute_between_group(
-                data_ground_truth_np, data_predicted, self._data_sensitive_feature_np
-            )
+            results = self._compute_between_group(data_ground_truth_np, data_predicted, self._data_sensitive_feature_np)
 
             self._results = results
             return results
@@ -470,9 +429,7 @@ class Plugin(IAlgorithm):
                 logging.ERROR,
                 f"Invalid data plugin type - {self._data_instance.get_data_plugin_type()}",
             )
-            raise RuntimeError(
-                f"Invalid data plugin type - {self._data_instance.get_data_plugin_type()}"
-            )
+            raise RuntimeError(f"Invalid data plugin type - {self._data_instance.get_data_plugin_type()}")
 
     def _predict_data(self) -> np.ndarray:
         """
@@ -556,9 +513,7 @@ class Plugin(IAlgorithm):
             lowest_group_tp_fp, highest_group_tp_fp = 0, 0
 
             for unique_group in unique_groups:
-                self.add_to_log(
-                    logging.INFO, f"Processing for group with value {unique_group}"
-                )
+                self.add_to_log(logging.INFO, f"Processing for group with value {unique_group}")
                 """
                 Identify the datapoints that are relevant in this group [For example, we are finding all the
                 females in the group]
@@ -738,9 +693,7 @@ class Plugin(IAlgorithm):
                 )
 
             # Generate Disparate Impact and Equal Selection Parity for all combinations
-            predicted_positive_all = intermediate_results[output_class][
-                "Predicted Prevalence"
-            ]
+            predicted_positive_all = intermediate_results[output_class]["Predicted Prevalence"]
             true_positive_all = intermediate_results[output_class]["True Positives"]
             false_positive_all = intermediate_results[output_class]["False Positives"]
 
@@ -754,9 +707,7 @@ class Plugin(IAlgorithm):
 
                     group_numerator = np.array(unique_groups[i])
                     group_denominator = np.array(unique_groups[j])
-                    subgroup = np.concatenate(
-                        (group_numerator, group_denominator), axis=None
-                    )
+                    subgroup = np.concatenate((group_numerator, group_denominator), axis=None)
                     self._add_to_results(
                         results,
                         "Disparate Impact",
@@ -765,14 +716,8 @@ class Plugin(IAlgorithm):
                         subgroup,
                     )
                     equal_selection_parity = abs(
-                        (
-                            true_positive_all[i]["metric"]
-                            + false_positive_all[i]["metric"]
-                        )
-                        - (
-                            true_positive_all[j]["metric"]
-                            + false_positive_all[j]["metric"]
-                        )
+                        (true_positive_all[i]["metric"] + false_positive_all[i]["metric"])
+                        - (true_positive_all[j]["metric"] + false_positive_all[j]["metric"])
                     )
                     self._add_to_results(
                         results,

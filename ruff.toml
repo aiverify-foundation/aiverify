@@ -1,0 +1,7 @@
+exclude = ["tests", "utils", "third-party"]
+
+line-length = 120
+
+[lint]
+preview = true
+select = ["E20", "E21", "E22", "E23", "E24", "E3", "F401", "F8"]
