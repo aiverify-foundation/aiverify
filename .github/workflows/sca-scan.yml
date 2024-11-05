@@ -3,17 +3,17 @@
 name: Software Composition Analysis
 
 on:
- # Runs when a pull request review is being submitted
-  # pull_request:
-  #  types: [assigned,synchronize]
-  #  branches:
-  #    - 'main'
-  #    - 'v0.*'
-  #    - 'v2.x'
+#  Runs when a pull request review is being submitted
+  pull_request:
+   types: [assigned,synchronize]
+   branches:
+     - 'main'
+     - 'v0.*'
+     - 'v2.x'
 
   # Runs on a schedule
   schedule:
-    - cron: '05 5 * * TUE'
+    - cron: '00 11 * * FRI'
 
   # Run this workflow manually from Actions tab
   workflow_dispatch:
@@ -45,13 +45,13 @@ jobs:
           repository: aiverify-foundation/aiverify
           submodules: recursive
 
-    # - name: Checkout Code (Pull Request Into v2.x)
-    #   if: github.event_name == 'pull_request'
-    #   uses: actions/checkout@v4
-    #   with:
-    #       ref: ${{ github.event.pull_request.head.ref }}
-    #       repository: ${{ github.event.pull_request.head.repo.full_name }}
-    #       submodules: recursive
+    - name: Checkout Code (Pull Request Into v2.x)
+      if: github.event_name == 'pull_request'
+      uses: actions/checkout@v4
+      with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          submodules: recursive
 
     - name: Checkout Code (Workflow Dispatch)
       if: github.event_name == 'workflow_dispatch'
@@ -61,8 +61,8 @@ jobs:
         repository: aiverify-foundation/aiverify
         submodules: recursive
 
-    - name: Set Branch Variable (Schedule)
-      if: github.event_name == 'schedule'
+    - name: Set Branch Variable (Pull Request Into v2.x)
+      if: github.event_name == 'pull_request'
       run: |
           echo "BRANCH=v2.x" >> "$GITHUB_ENV" 
 
@@ -76,8 +76,8 @@ jobs:
       with:
         python-version: "3.11"
 
-    - name: Install & Scan APIGW (Schedule)
-      if: github.event_name == 'schedule'
+    - name: Install & Scan APIGW (Pull Request Into v2.x)
+      if: github.event_name == 'pull_request'
       run: |
           cd aiverify-apigw
 
@@ -119,8 +119,8 @@ jobs:
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=ai-verify-shared-library --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="ai-verify-shared-library_$BRANCH" --detect.excluded.directories=tests --blackduck.trust.cert=true
           cd ../
 
-    - name: Install & Scan TEST ENGINE (Schedule)
-      if: github.event_name == 'schedule'
+    - name: Install & Scan TEST ENGINE (Pull Request Into v2.x)
+      if: github.event_name == 'pull_request'
       run: |
           cd aiverify-test-engine
 
@@ -171,8 +171,8 @@ jobs:
           deactivate
           cd ../
 
-    - name: Install & Scan Accumulated Local Effects (Schedule)
-      if: github.event_name == 'schedule'
+    - name: Install & Scan Accumulated Local Effects (Pull Request Into v2.x)
+      if: github.event_name == 'pull_request'
       run: |
           cd stock-plugins/aiverify.stock.accumulated-local-effect/algorithms/accumulated_local_effect
           python3 -m venv venv
@@ -180,15 +180,15 @@ jobs:
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=accumulated-local-effect --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="accumulated-local-effect_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
           deactivate
 
-    - name: Install & Scan Decorators (Schedule)
-      if: github.event_name == 'schedule'
+    - name: Install & Scan Decorators (Pull Request Into v2.x)
+      if: github.event_name == 'pull_request'
       run: |
           cd stock-plugins/aiverify.stock.decorators
           npm install
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=decorators --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="decorators_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
 
-    - name: Install & Scan Fairness Metric ToolBox For Classification (Schedule)
-      if: github.event_name == 'schedule'
+    - name: Install & Scan Fairness Metric ToolBox For Classification (Pull Request Into v2.x)
+      if: github.event_name == 'pull_request'
       run: |
           cd stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification
           python3 -m venv venv
@@ -196,8 +196,8 @@ jobs:
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=fairness-metrics-toolbox-for-classification --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="fairness-metrics-toolbox-for-classification_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
           deactivate
 
-    - name: Install & Scan Fairness Metric ToolBox For Regression (Schedule)
-      if: github.event_name == 'schedule'
+    - name: Install & Scan Fairness Metric ToolBox For Regression (Pull Request Into v2.x)
+      if: github.event_name == 'pull_request'
       run: |
           cd stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-regression/algorithms/fairness_metrics_toolbox_for_regression
           python3 -m venv venv
@@ -205,8 +205,8 @@ jobs:
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=fairness-metrics-toolbox-for-regression --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="fairness-metrics-toolbox-for-regression_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
           deactivate
 
-    - name: Install & Scan Blur Corruptions (Schedule)
-      if: github.event_name == 'schedule'
+    - name: Install & Scan Blur Corruptions (Pull Request Into v2.x)
+      if: github.event_name == 'pull_request'
       run: |
           cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions
           python3 -m venv venv
@@ -214,8 +214,8 @@ jobs:
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=blur-corruptions --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="blur-corruptions_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
           deactivate
 
-    - name: Install & Scan Digital Corruptions (Schedule)
-      if: github.event_name == 'schedule'
+    - name: Install & Scan Digital Corruptions (Pull Request Into v2.x)
+      if: github.event_name == 'pull_request'
       run: |
           cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions
           python3 -m venv venv
@@ -223,8 +223,8 @@ jobs:
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=digital-corruptions --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="digital-corruptions_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
           deactivate
 
-    - name: Install & Scan Environment Corruptions (Schedule)
-      if: github.event_name == 'schedule'
+    - name: Install & Scan Environment Corruptions (Pull Request Into v2.x)
+      if: github.event_name == 'pull_request'
       run: |
           cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/environment_corruptions
           python3 -m venv venv
@@ -232,8 +232,8 @@ jobs:
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=environment-corruptions --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="environment-corruptions_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
           deactivate
 
-    - name: Install & Scan General Corruptions (Schedule)
-      if: github.event_name == 'schedule'
+    - name: Install & Scan General Corruptions (Pull Request Into v2.x)
+      if: github.event_name == 'pull_request'
       run: |
           cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/general_corruptions
           python3 -m venv venv
@@ -241,8 +241,8 @@ jobs:
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=general-corruptions --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="general-corruptions_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
           deactivate
 
-    - name: Install & Scan Partial Dependence Plot (Schedule)
-      if: github.event_name == 'schedule'
+    - name: Install & Scan Partial Dependence Plot (Pull Request Into v2.x)
+      if: github.event_name == 'pull_request'
       run: |
           cd stock-plugins/aiverify.stock.partial-dependence-plot/algorithms/partial_dependence_plot
           python3 -m venv venv
@@ -250,8 +250,8 @@ jobs:
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=partial-dependence-plot --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="partial-dependence-plot_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
           deactivate
 
-    - name: Install & Scan Robustness ToolBox (Schedule)
-      if: github.event_name == 'schedule'
+    - name: Install & Scan Robustness ToolBox (Pull Request Into v2.x)
+      if: github.event_name == 'pull_request'
       run: |
           cd stock-plugins/aiverify.stock.robustness-toolbox/algorithms/robustness_toolbox
           python3 -m venv venv
@@ -259,8 +259,8 @@ jobs:
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=robustness-toolbox --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="robustness-toolbox_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
           deactivate
 
-    - name: Install & Scan SHAP ToolBox (Schedule)
-      if: github.event_name == 'schedule'
+    - name: Install & Scan SHAP ToolBox (Pull Request Into v2.x)
+      if: github.event_name == 'pull_request'
       run: |
           cd stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox
           python3 -m venv venv
