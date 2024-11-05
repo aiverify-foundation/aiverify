@@ -13,7 +13,7 @@ on:
 
   # Runs on a schedule
   schedule:
-    - cron: '50 4 * * 2'
+    - cron: '05 5 * * TUE'
 
   # Run this workflow manually from Actions tab
   workflow_dispatch:
