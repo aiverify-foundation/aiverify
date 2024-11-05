@@ -3,14 +3,6 @@
 name: Software Composition Analysis
 
 on:
-#  Runs when a pull request review is being submitted
-  pull_request:
-   types: [assigned,synchronize]
-   branches:
-     - 'main'
-     - 'v0.*'
-     - 'v2.x'
-
   # Runs on a schedule
   schedule:
     - cron: '00 11 * * FRI'
@@ -45,13 +37,13 @@ jobs:
           repository: aiverify-foundation/aiverify
           submodules: recursive
 
-    - name: Checkout Code (Pull Request Into v2.x)
-      if: github.event_name == 'pull_request'
-      uses: actions/checkout@v4
-      with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          submodules: recursive
+    # - name: Checkout Code (Pull Request Into v2.x)
+    #   if: github.event_name == 'pull_request'
+    #   uses: actions/checkout@v4
+    #   with:
+    #       ref: ${{ github.event.pull_request.head.ref }}
+    #       repository: ${{ github.event.pull_request.head.repo.full_name }}
+    #       submodules: recursive
 
     - name: Checkout Code (Workflow Dispatch)
       if: github.event_name == 'workflow_dispatch'
@@ -61,13 +53,13 @@ jobs:
         repository: aiverify-foundation/aiverify
         submodules: recursive
 
-    - name: Set Branch Variable (Pull Request Into v2.x)
-      if: github.event_name == 'pull_request'
+    - name: Set Branch Variable
+      if: ${{ inputs.branch_to_test }} == 'v2.x'
       run: |
           echo "BRANCH=v2.x" >> "$GITHUB_ENV" 
 
     - name: Set Branch Variable (Workflow Dispatch)
-      if: github.event_name == 'workflow_dispatch'
+      if: ${{ inputs.branch_to_test }} == 'main'
       run: |
           echo "BRANCH=v1.0" >> "$GITHUB_ENV"
 
