@@ -80,27 +80,20 @@ In the aiverify root directory, run the below command to build the docker image
 docker build -t aiverify-shap-toolbox:v2.0.0a1 -f stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox/Dockerfile .
 ```
 
-Switch to the algorithm directory
-```sh
-cd stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox/
-```
-
 Run the below bash script to run the algorithm
 ```sh
 #!/bin/bash
-
-root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files"
 docker run \
-  -v $root_path:/user_defined_files \
-  -v ./output:/app/aiverify/stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox/output \
+  -v $(pwd)/stock-plugins/user_defined_files:/input \
+  -v $(pwd)/stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox/output:/app/aiverify/output \
   aiverify-shap-toolbox:v2.0.0a1 \
-  --data_path /user_defined_files/data/sample_bc_credit_data.sav \
-  --model_path /user_defined_files/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav \
-  --ground_truth_path /user_defined_files/data/sample_bc_credit_data.sav \
+  --data_path /input/data/sample_bc_credit_data.sav \
+  --model_path /input/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav \
+  --ground_truth_path /input/data/sample_bc_credit_data.sav \
   --ground_truth default \
   --model_type CLASSIFICATION \
   --no-run_pipeline \
-  --background_path /user_defined_files/data/sample_bc_credit_data.sav \
+  --background_path /input/data/sample_bc_credit_data.sav \
   --background_samples 25 \
   --data_samples 25 \
   --explain_type global

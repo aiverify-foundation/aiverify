@@ -1,14 +1,20 @@
 FROM python:3.11-slim
 
-RUN apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y git gcc
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y \
+    git \
+    gcc \
+    libhdf5-dev \
+    pkg-config && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# Install HDF5 using apt
-RUN apt-get update && apt-get install -y libhdf5-dev pkg-config
+ENV PYTHONUNBUFFERED=1
+ENV PIP_NO_CACHE_DIR=1
 
-RUN pip install --upgrade pip
-RUN pip install --no-binary h5py h5py
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir --no-binary h5py h5py
 
 WORKDIR /app/aiverify
 
@@ -22,9 +28,12 @@ COPY stock-plugins/user_defined_files ./stock-plugins/user_defined_files
 COPY stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox ./stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox
 
 # Install algorithm requirements
-WORKDIR /app/aiverify/stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox
-RUN pip install pytest
-RUN pip install -e '.[dev]'
+RUN cd aiverify-test-engine && \
+    pip install --no-cache-dir '.[dev]' && \
+    cd ../stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox && \
+    pip install --no-cache-dir .
 
 ENTRYPOINT ["python3", "-m", "aiverify_shap_toolbox"]
+
+
 

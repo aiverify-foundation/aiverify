@@ -79,7 +79,7 @@ Run the below bash script to run the algorithm
 #!/bin/bash
 docker run \
   -v $(pwd)/stock-plugins/user_defined_files:/input \
-  -v $(pwd)/output:/app/aiverify/output \
+  -v $(pwd)/stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification/output:/app/aiverify/output \
   aiverify-fairness-metrics-toolbox-for-classification:v2.0.0a1 \
   --data_path /input/data/sample_mc_pipeline_toxic_data.sav \
   --model_path /input/pipeline/mc_tabular_toxic \
@@ -89,7 +89,7 @@ docker run \
   --run_pipeline \
   --sensitive_features_list gender
 ```
-If the algorithm runs successfully, the results of the test will be saved in an `output` folder in the working directory.
+If the algorithm runs successfully, the results of the test will be saved in an `output` folder in the algorithm directory.
 
 ## Tests
 ### Pytest is used as the testing framework.
