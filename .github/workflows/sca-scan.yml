@@ -15,6 +15,9 @@ on:
         required: true
         default: 'main'
         type: string
+        options:
+        - 'main' 
+        - 'v2.x'
 
 # Allow one concurrent deployment
 concurrency:
