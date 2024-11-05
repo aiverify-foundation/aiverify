@@ -82,7 +82,7 @@ Run the below bash script to run the algorithm
 #!/bin/bash
 docker run \
   -v $(pwd)/stock-plugins/user_defined_files:/input \
-  -v $(pwd)/output:/app/aiverify/output \
+  -v $(pwd)/stock-plugins/aiverify.stock.partial-dependence-plot/algorithms/partial_dependence_plot/output:/app/aiverify/output \
   aiverify-partial-dependence-plot:v2.0.0a1 \
   --data_path /input/data/sample_bc_credit_data.sav \
   --model_path /input/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav \
@@ -91,7 +91,7 @@ docker run \
   --model_type REGRESSION \
   --no-run_pipeline
 ```
-If the algorithm runs successfully, the results of the test will be saved in an `output` folder in the working directory.
+If the algorithm runs successfully, the results of the test will be saved in an `output` folder in the algorithm directory.
 
 ## Tests
 ### Pytest is used as the testing framework.
