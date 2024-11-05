@@ -159,9 +159,12 @@ jobs:
           deactivate
           cd ../
 
-    - name: Install & Scan STOCK PLUGINS (Pull Request Into v2.x)
+    - name: Install & Scan Accumulated Local Effects (Pull Request Into v2.x)
       if: github.event_name == 'pull_request'
       run: |
-          cd stock-plugins
-          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=10 --detect.project.name=stock-plugins --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="stock-plugins_$BRANCH" --detect.excluded.directories=venv --blackduck.trust.cert=true
+          cd stock-plugins/algorithms/accumulated-local-effect
+          python3 -m venv venv
+          source venv/bin/activate
+          bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=accumulated_local_effect --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="accumulated_local_effect_$BRANCH" --detect.excluded.directories=venv,tests --blackduck.trust.cert=true
+          deactivate
           cd ../
