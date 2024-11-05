@@ -162,6 +162,7 @@ jobs:
     - name: Install & Scan Accumulated Local Effects (Pull Request Into v2.x)
       if: github.event_name == 'pull_request'
       run: |
+          ls
           cd stock-plugins/aiverify.stock.accumulated-local-effect/algorithms/accumulated-local-effect
           python3 -m venv venv
           source venv/bin/activate
