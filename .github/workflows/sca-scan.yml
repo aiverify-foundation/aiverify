@@ -54,12 +54,12 @@ jobs:
         submodules: recursive
 
     - name: Set Branch Variable
-      if: ${{ inputs.branch_to_test }} == 'v2.x'
+      if: inputs.branch_to_test == 'v2.x'
       run: |
           echo "BRANCH=v2.x" >> "$GITHUB_ENV" 
 
     - name: Set Branch Variable (Workflow Dispatch)
-      if: ${{ inputs.branch_to_test }} == 'main'
+      if: inputs.branch_to_test == 'main'
       run: |
           echo "BRANCH=v1.0" >> "$GITHUB_ENV"
 
