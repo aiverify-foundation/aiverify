@@ -9,7 +9,7 @@ from aiverify_apigw.models.plugin_model import PluginModel
 
 class TestReadTestResults:
     def test_read_plugins(self, test_client, mock_plugins):
-        response = test_client.get("/plugin/")
+        response = test_client.get("/plugins/")
         assert response.status_code == 200
         json_response = response.json()
         assert len(json_response) == len(mock_plugins)
@@ -21,13 +21,13 @@ class TestReadTestResults:
 class TestReadPlugin:
     def test_read_plugin_found(self, test_client, mock_plugins):
         plugin = mock_plugins[0]
-        response = test_client.get(f"/plugin/{plugin.gid}")
+        response = test_client.get(f"/plugins/{plugin.gid}")
         assert response.status_code == 200
         json_response = response.json()
         assert json_response["gid"] == plugin.gid
 
     def test_read_plugin_not_found(self, test_client):
-        response = test_client.get("/plugin/invalid_gid")
+        response = test_client.get("/plugins/invalid_gid")
         assert response.status_code == 404
         assert response.json() == {"detail": "Plugin not found"}
 
@@ -35,19 +35,19 @@ class TestReadPlugin:
 class TestDeletePlugin:
     def test_delete_stock_plugin_error(self, test_client, mock_plugins):
         plugin = mock_plugins[0]
-        response = test_client.delete(f"/plugin/{plugin.gid}")
+        response = test_client.delete(f"/plugins/{plugin.gid}")
         assert response.status_code == 400
 
     @patch("aiverify_apigw.routers.plugin_router.PluginStore.delete_plugin", return_value=None)
     def test_delete_non_stock_plugin_success(self, mock_delete_plugin, test_client, mock_non_stock_plugins):
         plugin = mock_non_stock_plugins[0]
-        response = test_client.delete(f"/plugin/{plugin.gid}")
+        response = test_client.delete(f"/plugins/{plugin.gid}")
         assert response.status_code == 200
         assert response.json() == {"message": "Plugin deleted successfully"}
         mock_delete_plugin.assert_called_with(plugin.gid)
 
     def test_delete_plugin_not_found(self, test_client):
-        response = test_client.delete("/plugin/invalid_gid")
+        response = test_client.delete("/plugins/invalid_gid")
         assert response.status_code == 404
         assert response.json() == {"detail": "Plugin not found"}
 
@@ -77,14 +77,14 @@ class TestUploadPlugin:
 
         mock_upload_zipfile.seek(0)
         file = {"file": ("test.zip", mock_upload_zipfile.read(), "application/zip")}
-        response = test_client.post("/plugin/upload", files=file)
+        response = test_client.post("/plugins/upload", files=file)
 
         assert response.status_code == 200
 
     def test_upload_plugin_invalid_format(self, test_client):
         # content_buffer = io.BytesIO()
         file = {"file": ("test.invalid", b"Test Content", "text/plain")}
-        response = test_client.post("/plugin/upload", files=file)
+        response = test_client.post("/plugins/upload", files=file)
         assert response.status_code == 400
         assert response.json() == {"detail": "Invalid file format. Only .zip files are allowed."}
 
@@ -96,12 +96,12 @@ class TestDownloadPlugin:
         # zip_buffer = MagicMock()
         # zip_buffer.read = MagicMock(return_value=b"Test Plugin")
         mock_zip.return_value = b"Test Plugin"
-        response = test_client.get(f"/plugin/download/{plugin.gid}")
+        response = test_client.get(f"/plugins/download/{plugin.gid}")
         assert response.status_code == 200
 
     def test_download_plugin_not_found(self, test_client):
         # mock_db_session.scalar.return_value = None
-        response = test_client.get("/plugin/download/invalid_gid")
+        response = test_client.get("/plugins/download/invalid_gid")
         assert response.status_code == 404
         # assert response.json() == {"detail": "Plugin not found"}
 
@@ -114,11 +114,11 @@ class TestDownloadPluginAlgorithm:
         # zip_buffer = MagicMock()
         # zip_buffer.read = MagicMock(return_value=b"Test Plugin")
         mock_zip.return_value = b"Test Algorithm"
-        response = test_client.get(f"/plugin/{plugin.gid}/algorithm/{algo.cid}")
+        response = test_client.get(f"/plugins/{plugin.gid}/algorithm/{algo.cid}")
         assert response.status_code == 200
 
     def test_download_plugin_algorithm_not_found(self, test_client, mock_plugins):
         plugin = mock_plugins[0]
         # mock_db_session.scalar.return_value = None
-        response = test_client.get(f"/plugin/algorithm/{plugin.gid}/invalid_algo")
+        response = test_client.get(f"/plugins/algorithm/{plugin.gid}/invalid_algo")
         assert response.status_code == 404
