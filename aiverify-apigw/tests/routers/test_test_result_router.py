@@ -59,18 +59,18 @@ def create_mock_zip_file(result_filename="results.json", artifacts=None):
     return zip_buffer
 
 
-# Test Class for POST /test_result/upload
+# Test Class for POST /test_results/upload
 class TestUploadTestResult:
     def test_upload_test_result_algorithm_not_found(self, mock_test_result_data, test_client):
-        """Test POST /test_result/upload when the algorithm is not found."""
+        """Test POST /test_results/upload when the algorithm is not found."""
         form_data = {"test_result": json.dumps(mock_test_result_data)}
-        response = test_client.post("/test_result/upload", data=form_data)
+        response = test_client.post("/test_results/upload", data=form_data)
         assert response.status_code == 400
 
     def test_upload_test_result_invalid_output_schema(
         self, mock_test_result_data, test_client, db_session, mock_plugins
     ):
-        """Test the POST /test_result/upload route when test result output schema is invalid."""
+        """Test the POST /test_results/upload route when test result output schema is invalid."""
 
         # files = {'artifacts': (None, None)}  # No files uploaded
         plugin = mock_plugins[0]
@@ -81,7 +81,7 @@ class TestUploadTestResult:
         mock_test_result_data["output"] = {"fake": 100}
         form_data = {"test_result": json.dumps(mock_test_result_data)}
         print("form data: ", form_data)
-        response = test_client.post("/test_result/upload", data=form_data)
+        response = test_client.post("/test_results/upload", data=form_data)
         assert response.status_code == 422
 
         assert db_session.query(TestResultModel).count() == 0
@@ -89,7 +89,7 @@ class TestUploadTestResult:
         assert db_session.query(TestDatasetModel).count() == 0
 
     def test_upload_test_result_no_files_success(self, mock_test_result_data, test_client, db_session, mock_plugins):
-        """Test the POST /test_result/upload route for successful upload with no files uploaded."""
+        """Test the POST /test_results/upload route for successful upload with no files uploaded."""
 
         # files = {'artifacts': (None, None)}  # No files uploaded
         plugin = mock_plugins[0]
@@ -98,7 +98,7 @@ class TestUploadTestResult:
         mock_test_result_data["gid"] = plugin.gid
         mock_test_result_data["cid"] = algo.cid
         form_data = {"test_result": json.dumps(mock_test_result_data)}
-        response = test_client.post("/test_result/upload", data=form_data)
+        response = test_client.post("/test_results/upload", data=form_data)
         assert response.status_code == 200
 
         assert db_session.query(TestResultModel).count() == 1
@@ -109,7 +109,7 @@ class TestUploadTestResult:
     def test_upload_test_result_with_files_success(
         self, mock_save_artifact, mock_test_result_data, test_client, db_session, mock_plugins, mock_upload_file
     ):
-        """Test the POST /test_result/upload route for successful upload with file upload."""
+        """Test the POST /test_results/upload route for successful upload with file upload."""
 
         # files = {'artifacts': (None, None)}  # No files uploaded
         plugin = mock_plugins[0]
@@ -121,7 +121,7 @@ class TestUploadTestResult:
         files = {"artifacts": (mock_upload_file.filename, mock_upload_file.file.read(), mock_upload_file.content_type)}
         form_data = {"test_result": json.dumps(mock_test_result_data)}
         response = test_client.post(
-            "/test_result/upload",
+            "/test_results/upload",
             # headers={"Content-Type": "multipart/form-data"},
             data=form_data,
             files=files,
@@ -138,7 +138,7 @@ class TestUploadTestResult:
         mock_test_result_data["artifacts"] = [mock_upload_file.filename]
         form_data = {"test_result": json.dumps(mock_test_result_data)}
         response = test_client.post(
-            "/test_result/upload",
+            "/test_results/upload",
             # headers={"Content-Type": "multipart/form-data"},
             data=form_data,
             files=files,
@@ -152,7 +152,7 @@ class TestUploadTestResult:
         assert db_session.query(TestDatasetModel).count() == 1
 
     def test_upload_test_result_new_ground_truth(self, mock_test_result_data, test_client, db_session, mock_plugins):
-        """Test the POST /test_result/upload route for new ground truth dataset created."""
+        """Test the POST /test_results/upload route for new ground truth dataset created."""
 
         # files = {'artifacts': (None, None)}  # No files uploaded
         plugin = mock_plugins[0]
@@ -162,7 +162,7 @@ class TestUploadTestResult:
         mock_test_result_data["cid"] = algo.cid
         mock_test_result_data["testArguments"]["groundTruthDataset"] = "file:///examples/data/sample_ground_truth.sav"
         form_data = {"test_result": json.dumps(mock_test_result_data)}
-        response = test_client.post("/test_result/upload", data=form_data)
+        response = test_client.post("/test_results/upload", data=form_data)
         assert response.status_code == 200
 
         assert db_session.query(TestResultModel).count() == 4
@@ -170,7 +170,7 @@ class TestUploadTestResult:
         assert db_session.query(TestDatasetModel).count() == 2
 
 
-# Test class for POST /test_result/upload_zip
+# Test class for POST /test_results/upload_zip
 class TestUploadZipFile:
     @pytest.fixture
     def mock_upload_zipfile(self, mock_test_result_data):
@@ -194,14 +194,14 @@ class TestUploadZipFile:
     @patch("aiverify_apigw.routers.test_result_router._save_test_result")
     def test_upload_zip_file_success(self, mock_save_test_result, test_client, mock_upload_zipfile):
         """Test successfully uploading a valid zip file."""
-        urls = ["/test_result/1"]
+        urls = ["/test_results/1"]
         # Mock the result of _save_test_result to return URLs
         mock_save_test_result.return_value = urls
 
         # Perform the POST request with the mocked zip file
         mock_upload_zipfile[0].seek(0)
         files = {"file": ("test.zip", mock_upload_zipfile[0].read(), "application/zip")}
-        response = test_client.post("/test_result/upload_zip", files=files)
+        response = test_client.post("/test_results/upload_zip", files=files)
 
         # Assertions
         assert response.status_code == 200
@@ -215,7 +215,7 @@ class TestUploadZipFile:
 
         # Perform the POST request with non-zip file
         files = {"file": ("test.img", b"fake file", "application/zip")}
-        response = test_client.post("/test_result/upload_zip", files=files)
+        response = test_client.post("/test_results/upload_zip", files=files)
 
         # Assertions
         assert response.status_code == 400
@@ -223,7 +223,7 @@ class TestUploadZipFile:
 
         # Perform the POST request with invalid zip file
         files = {"file": ("test.zip", b"fake file", "application/zip")}
-        response = test_client.post("/test_result/upload_zip", files=files)
+        response = test_client.post("/test_results/upload_zip", files=files)
 
         # Assertions
         assert response.status_code == 400
@@ -235,7 +235,7 @@ class TestUploadZipFile:
         # Perform the POST request with the mocked zip file
         mock_invalid_upload_zipfile.seek(0)
         files = {"file": ("test.zip", mock_invalid_upload_zipfile.read(), "application/zip")}
-        response = test_client.post("/test_result/upload_zip", files=files)
+        response = test_client.post("/test_results/upload_zip", files=files)
 
         # Assertions
         assert response.status_code == 400
@@ -254,7 +254,7 @@ class TestUploadZipFile:
         # Perform the POST request with the mocked zip file
         mock_upload_zipfile[0].seek(0)
         files = {"file": ("test.zip", mock_upload_zipfile[0].read(), "application/zip")}
-        response = test_client.post("/test_result/upload_zip", files=files)
+        response = test_client.post("/test_results/upload_zip", files=files)
 
         # Assertions
         assert response.status_code != 200
@@ -286,7 +286,7 @@ class TestGetTestResultArtifact:
         # Perform the GET request
         test_result_id = test_result.id
         filename = test_artifact.filename
-        response = test_client.get(f"/test_result/{test_result_id}/artifacts/{filename}")
+        response = test_client.get(f"/test_results/{test_result_id}/artifacts/{filename}")
 
         # Assertions
         assert response.status_code == 200
@@ -300,7 +300,7 @@ class TestGetTestResultArtifact:
         # Perform the GET request with valid test_result_id and invalid filename
         test_result_id = mock_test_results[0].id
         filename = "non_existent_file.txt"
-        response = test_client.get(f"/test_result/{test_result_id}/artifacts/{filename}")
+        response = test_client.get(f"/test_results/{test_result_id}/artifacts/{filename}")
 
         # Assertions
         assert response.status_code == 400
@@ -308,7 +308,7 @@ class TestGetTestResultArtifact:
 
         # Perform the GET request with invalid test_result_id and invalid filename
         test_result_id = "101010"
-        response = test_client.get(f"/test_result/{test_result_id}/artifacts/{filename}")
+        response = test_client.get(f"/test_results/{test_result_id}/artifacts/{filename}")
 
         # Assertions
         assert response.status_code == 400
@@ -326,20 +326,20 @@ class TestGetTestResultArtifact:
         # Perform the GET request
         test_result_id = test_result.id
         filename = test_artifact.filename
-        response = test_client.get(f"/test_result/{test_result_id}/artifacts/{filename}")
+        response = test_client.get(f"/test_results/{test_result_id}/artifacts/{filename}")
 
         # Assertions
         assert response.status_code == 500
         assert response.json()["detail"] == "Unable to retrieve artifact file"
 
 
-# Test class for GET /test_result/
+# Test class for GET /test_results/
 class TestReadTestResults:
     def test_read_test_results_success(self, mock_test_results, test_client):
         """Test successfully retrieving a list of test results."""
 
         # Perform the GET request
-        response = test_client.get("/test_result/")
+        response = test_client.get("/test_results/")
 
         # Assertions
         assert response.status_code == 200
@@ -355,7 +355,7 @@ class TestReadTestResults:
             assert json_response[i]["version"] == mock_test_results[i].version
 
 
-# Test class for GET /test_result/{test_result_id}
+# Test class for GET /test_results/{test_result_id}
 class TestReadTestResult:
     def test_read_test_result_success(self, mock_test_results, test_client):
         """Test successfully retrieving a test result by ID."""
@@ -363,7 +363,7 @@ class TestReadTestResult:
 
         # Perform the GET request for test_result_id = 1
         test_result_id = test_result.id
-        response = test_client.get(f"/test_result/{test_result_id}")
+        response = test_client.get(f"/test_results/{test_result_id}")
 
         # Assertions
         assert response.status_code == 200
@@ -382,14 +382,14 @@ class TestReadTestResult:
 
         # Perform the GET request for a non-existent test_result_id
         test_result_id = 999
-        response = test_client.get(f"/test_result/{test_result_id}")
+        response = test_client.get(f"/test_results/{test_result_id}")
 
         # Assertions
         assert response.status_code == 404
         assert response.json()["detail"] == "Test result not found"
 
 
-# Test class for PUT /test_result/{test_result_id}
+# Test class for PUT /test_results/{test_result_id}
 class TestUpdateTestResult:
     @pytest.fixture
     def update_data(self):
@@ -402,7 +402,7 @@ class TestUpdateTestResult:
 
         # Perform the PUT request
         test_result_id = test_result.id
-        response = test_client.put(f"/test_result/{test_result_id}", json=update_data)
+        response = test_client.put(f"/test_results/{test_result_id}", json=update_data)
         db_session.commit()
 
         # Assertions
@@ -422,14 +422,14 @@ class TestUpdateTestResult:
 
         # Perform the PUT request for a non-existent test_result_id
         test_result_id = 999
-        response = test_client.put(f"/test_result/{test_result_id}", json=update_data)
+        response = test_client.put(f"/test_results/{test_result_id}", json=update_data)
 
         # Assertions
         assert response.status_code == 404
         assert response.json()["detail"] == "Test result not found"
 
 
-# Test class for DELETE /test_result/{test_result_id}
+# Test class for DELETE /test_results/{test_result_id}
 class TestDeleteTestResult:
     def test_delete_test_result_success(self, mock_test_results, test_client, db_session):
         """Test successfully deleting a test result by ID."""
@@ -437,7 +437,7 @@ class TestDeleteTestResult:
 
         # Perform the DELETE request
         test_result_id = test_result.id
-        response = test_client.delete(f"/test_result/{test_result_id}")
+        response = test_client.delete(f"/test_results/{test_result_id}")
         db_session.commit()
 
         # Assertions
@@ -453,7 +453,7 @@ class TestDeleteTestResult:
 
         # Perform the DELETE request for a non-existent test_result_id
         test_result_id = 999
-        response = test_client.delete(f"/test_result/{test_result_id}")
+        response = test_client.delete(f"/test_results/{test_result_id}")
 
         # Assertions
         assert response.status_code == 404

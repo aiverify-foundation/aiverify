@@ -19,7 +19,7 @@ from ..schemas import TestResult, TestResultOutput, TestResultUpdate
 from ..schemas.load_examples import test_result_examples
 from ..models import AlgorithmModel, TestModelModel, TestResultModel, TestDatasetModel, TestArtifactModel
 
-router = APIRouter(prefix="/test_result", tags=["test_result"])
+router = APIRouter(prefix="/test_results", tags=["test_result"])
 
 
 # @router.get("/")

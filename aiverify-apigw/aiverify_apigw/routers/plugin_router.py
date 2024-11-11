@@ -11,7 +11,7 @@ from ..lib.file_utils import sanitize_filename
 from ..schemas import PluginOutput
 from ..models import PluginModel, AlgorithmModel
 
-router = APIRouter(prefix="/plugin", tags=["plugin"])
+router = APIRouter(prefix="/plugins", tags=["plugin"])
 
 
 @router.get("/", response_model=List[PluginOutput])
