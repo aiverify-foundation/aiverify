@@ -81,7 +81,7 @@ Run the below bash script to run the algorithm
 #!/bin/bash
 docker run \
   -v $(pwd)/stock-plugins/user_defined_files:/input \
-  -v $(pwd)/output:/app/aiverify/output \
+  -v $(pwd)/stock-plugins/aiverify.stock.robustness-toolbox/algorithms/robustness_toolbox/output:/app/aiverify/output \
   aiverify-robustness-toolbox:v2.0.0a1 \
   --data_path /input/data/raw_fashion_image_10 \
   --model_path /input/pipeline/multiclass_classification_image_mnist_fashion \
@@ -92,7 +92,7 @@ docker run \
   --annotated_ground_truth_path /input/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
   --file_name_label file_name
 ```
-If the algorithm runs successfully, the results of the test will be saved in an `output` folder in the working directory.
+If the algorithm runs successfully, the results of the test will be saved in an `output` folder in the algorithm directory.
 
 ## Tests
 ### Pytest is used as the testing framework.
