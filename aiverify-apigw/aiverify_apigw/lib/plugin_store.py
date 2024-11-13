@@ -1,14 +1,17 @@
 from pathlib import Path, PurePath
 import json
 import tomllib
-from typing import List
+from typing import List, Any
 import tempfile
 import shutil
+import os
+import subprocess
+from datetime import datetime
 
-from .schemas_utils import read_and_validate, plugin_schema, algorithm_schema
+from .schemas_utils import read_and_validate, plugin_schema, algorithm_schema, widget_schema, input_block_schema, template_schema, template_data_schema
 from ..lib.syntax_checker import validate_python_script
-from ..schemas import PluginMeta, AlgorithmMeta
-from ..models import PluginModel, AlgorithmModel, WidgetModel, InputBlockModel, TemplateModel, PluginComponentModel
+from ..schemas import PluginMeta, AlgorithmMeta, WidgetMeta, InputBlockMeta, TemplateMeta, ProjectTemplateMeta
+from ..models import PluginModel, AlgorithmModel, WidgetModel, InputBlockModel, TemplateModel, PluginComponentModel, ProjectTemplateModel
 from .database import SessionLocal
 from .logging import logger
 from .filestore import (
@@ -16,6 +19,9 @@ from .filestore import (
     delete_plugin as fs_delete_plugin,
     save_plugin as fs_save_plugin,
     save_plugin_algorithm as fs_save_plugin_algorithm,
+    save_plugin_widgets as fs_save_plugin_widgets,
+    save_plugin_inputs as fs_save_plugin_inputs,
+    save_mdx_bundles as fs_save_mdx_bundles,
     unzip_plugin
     # save_plugin_widgets as fs_save_plugin_widgets,
     # save_plugin_inputs as fs_save_plugin_inputs,
@@ -28,6 +34,10 @@ class PluginStoreException(Exception):
 
 
 class PluginStore:
+    node_folder = Path(__file__).parent.parent.parent.joinpath("aiverify-apigw-node")
+    validate_script_path = node_folder.joinpath("validateMDX.ts").as_posix()
+    validate_summary_path = node_folder.joinpath("validateSummaryMDX.ts").as_posix()
+    npx = os.getenv("NPX_PATH", "npx")
     stock_plugin_folder = Path(__file__).parent.parent.parent.parent.joinpath("stock-plugins")
     plugin_meta_filename = "plugin.meta.json"
 
@@ -80,12 +90,14 @@ class PluginStore:
             try:
                 cls.validate_plugin_directory(plugin_dir)
             except Exception as e:
-                logger.debug(f"Invalid plugin: {e}")
+                logger.warning(f"Invalid plugin: {e}")
                 continue
             try:
-                plugin = cls.scan_plugin_directory(plugin_dir, is_stock=True)
-                if plugin:
-                    plugins.append(plugin)
+                with tempfile.TemporaryDirectory() as tmpdirname:
+                    temp_dir = Path(tmpdirname)
+                    plugin = cls.scan_plugin_directory(plugin_dir, temp_dir, is_stock=True)
+                    if plugin:
+                        plugins.append(plugin)
             except Exception as e:
                 logger.warning(f"Error saving plugin in directory {plugin_dir.name}: {e}")
         with SessionLocal() as session:
@@ -100,6 +112,18 @@ class PluginStore:
                     logger.info(f"  Number of algoritms: {len(plugin.algorithms)}")
                     for algo in plugin.algorithms:
                         logger.info(f"  Algorithm: cid {algo.cid}, version {algo.version}, name {algo.name}")
+                if plugin.inputblocks and len(plugin.inputblocks) > 0:
+                    logger.info(f"  Number of input blocks: {len(plugin.inputblocks)}")
+                    for ib in plugin.inputblocks:
+                        logger.info(f"  Input Block: cid {ib.cid}, version {ib.version}, name {ib.name}")
+                if plugin.widgets and len(plugin.widgets) > 0:
+                    logger.info(f"  Number of widgets: {len(plugin.widgets)}")
+                    for widget in plugin.widgets:
+                        logger.info(f"  Widget: cid {widget.cid}, version {widget.version}, name {widget.name}")
+                if plugin.templates and len(plugin.templates) > 0:
+                    logger.info(f"  Number of templates: {len(plugin.templates)}")
+                    for template in plugin.templates:
+                        logger.info(f"  Template: cid {template.cid}, version {template.version}, name {template.name}")
 
     @classmethod
     def check_plugin_registry(cls):
@@ -219,6 +243,7 @@ class PluginStore:
 
     @classmethod
     def scan_algorithm_directory(cls, algo_dir: Path):
+        now = datetime.now()
         with tempfile.TemporaryDirectory() as tmpdirname:
             folder = Path(tmpdirname)
 
@@ -238,8 +263,13 @@ class PluginStore:
                         description=algo_model.description,
                     )
                     plugin_meta_dict = plugin_meta.model_dump()
-                    plugin = PluginModel(**plugin_meta_dict, is_stock=False,
-                                         meta=plugin_meta.model_dump_json().encode("utf-8"))
+                    plugin = PluginModel(
+                        **plugin_meta_dict,
+                        is_stock=False,
+                        meta=plugin_meta.model_dump_json().encode("utf-8"),
+                        created_at=now,
+                        updated_at=now,
+                    )
                     session.add(plugin)
 
                     plugin_meta_file = folder.joinpath(cls.plugin_meta_filename)
@@ -272,7 +302,7 @@ class PluginStore:
                 return plugin
 
     @classmethod
-    def scan_plugin_directory(cls, folder: Path, is_stock=False):
+    def scan_plugin_directory(cls, folder: Path, temp_dir: Path, is_stock: bool = False):
         """Scan the plugin directory and save the plugin information to DB.
         Assume that the directory has been validated using validate_plugin_directory.
 
@@ -287,6 +317,8 @@ class PluginStore:
         plugin_meta_json = read_and_validate(plugin_meta_file, plugin_schema)
         if plugin_meta_json is None:
             return
+
+        now = datetime.now()
 
         with SessionLocal() as session:
             plugin_meta = PluginMeta.model_validate_json(json.dumps(plugin_meta_json))
@@ -307,8 +339,10 @@ class PluginStore:
                 description=plugin_meta.description,
                 url=plugin_meta.url,
                 meta=json.dumps(plugin_meta_json).encode("utf-8"),
+                created_at=now,
+                updated_at=now,
             )
-            logger.debug(f"New plugin: {plugin}")
+            logger.info(f"New plugin: {plugin}")
             # session.flush()
 
             # TODO: implement tags
@@ -325,7 +359,109 @@ class PluginStore:
                         plugin.algorithms.append(algorithm)
                         session.add(algorithm)
 
-            # TODO: add for other components
+            # create mdx bundles directory
+            mdx_bundle_folder = temp_dir.joinpath("mdx_bundles")
+            mdx_bundle_folder.mkdir(exist_ok=True)
+
+            # scan for input blocks
+            inputs_subdir = folder.joinpath("inputs")
+            if inputs_subdir.exists() and inputs_subdir.is_dir():
+                meta_files = inputs_subdir.glob("*.meta.json")
+                for meta_file in meta_files:
+                    meta, meta_json = cls.validate_input_block(input_block_path=inputs_subdir,
+                                                               meta_path=meta_file, folder=mdx_bundle_folder)
+                    input_block = InputBlockModel(
+                        plugin_id=plugin_meta.gid,
+                        meta=json.dumps(meta_json).encode('utf-8'),
+                        id=f"{plugin_meta.gid}:{meta.cid}",
+                        cid=meta.cid,
+                        name=meta.name,
+                        version=meta.version,
+                        author=meta.author,
+                        description=meta.description,
+                        # tags=meta.tags,
+                        gid=plugin_meta.gid,
+                        group=meta.group,
+                        width=meta.width,
+                        fullscreen=meta.fullScreen,
+                    )
+                    plugin.inputblocks.append(input_block)
+                    session.add(input_block)
+                filehash = fs_save_plugin_inputs(plugin.gid, inputs_subdir)
+                plugin.inputblocks_zip_hash = filehash
+
+            # scan for widgets
+            widgets_subdir = folder.joinpath("widgets")
+            if widgets_subdir.exists() and widgets_subdir.is_dir():
+                meta_files = widgets_subdir.glob("*.meta.json")
+                for meta_file in meta_files:
+                    meta, meta_json = cls.validate_widget(widget_path=widgets_subdir,
+                                                          meta_path=meta_file, folder=mdx_bundle_folder)
+                    if meta.dependencies:
+                        dependencies = [dep.model_dump_json() for dep in meta.dependencies]
+                        # dependencies = [
+                        #     f"{dep.gid if dep.gid and len(dep.gid) > 0 else plugin_meta.gid}:{dep.cid}:{dep.version if dep.version else ''}" for dep in meta.dependencies]
+                    else:
+                        dependencies = []
+                    widget = WidgetModel(
+                        plugin_id=plugin_meta.gid,
+                        meta=json.dumps(meta_json).encode('utf-8'),
+                        id=f"{plugin_meta.gid}:{meta.cid}",
+                        cid=meta.cid,
+                        name=meta.name,
+                        version=meta.version,
+                        author=meta.author,
+                        description=meta.description,
+                        # tags=meta.tags,
+                        gid=plugin_meta.gid,
+                        widget_size=meta.widgetSize.model_dump_json().encode('utf-8'),
+                        properties=json.dumps([prop.model_dump_json() for prop in meta.properties]
+                                              ).encode("utf-8") if meta.properties else None,
+                        mockdata=json.dumps([md.model_dump_json() for md in meta.mockdata]
+                                            ).encode("utf-8") if meta.mockdata else None,
+                        dynamic_height=meta.dynamicHeight,
+                        dependencies=json.dumps(dependencies).encode('utf-8'),
+                    )
+                    plugin.widgets.append(widget)
+                    session.add(widget)
+                filehash = fs_save_plugin_widgets(plugin.gid, widgets_subdir)
+                plugin.widgets_zip_hash = filehash
+
+            # scan for templates
+            templates_subdir = folder.joinpath("templates")
+            if templates_subdir.exists() and templates_subdir.is_dir():
+                meta_files = templates_subdir.glob("*.meta.json")
+                for meta_file in meta_files:
+                    meta, meta_json, data_meta, data_json = cls.validate_template(
+                        template_path=templates_subdir, meta_path=meta_file)
+                    template = TemplateModel(
+                        plugin_id=plugin_meta.gid,
+                        meta=json.dumps(meta_json).encode('utf-8'),
+                        id=f"{plugin_meta.gid}:{meta.cid}",
+                        cid=meta.cid,
+                        name=meta.name,
+                        version=meta.version,
+                        author=meta.author,
+                        description=meta.description,
+                        # tags=meta.tags,
+                        gid=plugin_meta.gid,
+                        template=json.dumps(meta_json).encode('utf-8'),
+                        project_data=json.dumps(data_json).encode('utf-8')
+                    )
+                    plugin.templates.append(template)
+                    session.add(template)
+
+                    # create new ProjectTemplateModel
+                    project_template = ProjectTemplateModel(
+                        # id=template.id,
+                        name=template.name,
+                        description=template.description,
+                        data=template.project_data,
+                        created_at=now,
+                        updated_at=now,
+                    )
+                    plugin.project_templates.append(project_template)
+                    session.add(project_template)
 
             # commit to DB
             session.add(plugin)
@@ -334,6 +470,9 @@ class PluginStore:
             # save plugin to plugin data dir
             zip_hash = fs_save_plugin(plugin_meta.gid, folder)
             plugin.zip_hash = zip_hash
+
+            # save mdx bundles
+            fs_save_mdx_bundles(plugin_meta.gid, mdx_bundle_folder)
 
             for algo in plugin.algorithms:
                 zip_hash = fs_save_plugin_algorithm(plugin_meta.gid, algo.cid, folder.joinpath(algo.algo_dir))
@@ -406,6 +545,69 @@ class PluginStore:
         return meta
 
     @classmethod
+    def validate_mdx(cls, mdx_script: Path, validate_script: str = validate_script_path, output_file: Path | None = None) -> bool:
+        args = [cls.npx, "tsx", validate_script, mdx_script.resolve().as_posix()]
+        if output_file:
+            args.append(output_file.as_posix())
+        try:
+            proc = subprocess.run(args, capture_output=True, cwd=cls.node_folder)
+            if proc.returncode == 0:
+                # return json.loads(proc.stdout)
+                return True
+            else:
+                logger.warning(f"Invalid script {mdx_script.name}")
+                logger.warning(proc.stderr.decode("utf-8"))
+                return False
+        except Exception as e:
+            logger.error(f"{mdx_script.name} validateMdx exception: {e}")
+            return False
+
+    @classmethod
+    def validate_widget(cls, widget_path: Path, meta_path: Path, folder: Path | None = None) -> tuple[WidgetMeta, Any]:
+        widget_meta_json = read_and_validate(meta_path, widget_schema)
+        if widget_meta_json is None:
+            raise PluginStoreException(f"{meta_path.name} is invalid")
+        meta = WidgetMeta.model_validate(widget_meta_json)
+        script_path = widget_path.joinpath(f"{meta.cid}.mdx")
+        if not script_path.exists():
+            raise PluginStoreException(f"widget {meta.cid} is missing MDX file")
+        output_file = folder.joinpath(f"{meta.cid}.bundle.json") if folder else None
+        if not cls.validate_mdx(script_path, output_file=output_file):
+            raise PluginStoreException(f"Invalid widget {script_path}")
+        return (meta, widget_meta_json)
+
+    @classmethod
+    def validate_input_block(cls, input_block_path: Path, meta_path: Path, folder: Path | None = None) -> tuple[InputBlockMeta, Any]:
+        meta_json = read_and_validate(meta_path, input_block_schema)
+        if meta_json is None:
+            raise PluginStoreException(f"{meta_path.name} is invalid")
+        meta = InputBlockMeta.model_validate(meta_json)
+        script_path = input_block_path.joinpath(f"{meta.cid}.mdx")
+        if not script_path.exists():
+            raise PluginStoreException(f"Input Block {meta.cid} is missing MDX file")
+        output_file = folder.joinpath(f"{meta.cid}.bundle.json") if folder else None
+        if not cls.validate_mdx(script_path, output_file=output_file):
+            raise PluginStoreException(f"Invalid input block {script_path}")
+        summary_path = input_block_path.joinpath(f"{meta.cid}.summary.mdx")
+        if not summary_path.exists():
+            raise PluginStoreException(f"Input Block {meta.cid} is missing summary file")
+        summary_output_file = folder.joinpath(f"{meta.cid}.summary.bundle.json") if folder else None
+        if not cls.validate_mdx(summary_path, validate_script=cls.validate_summary_path, output_file=summary_output_file):
+            raise PluginStoreException(f"Invalid input block summary {summary_path}")
+        return (meta, meta_json)
+
+    @classmethod
+    def validate_template(cls, template_path: Path, meta_path: Path) -> tuple[TemplateMeta, Any, ProjectTemplateMeta, Any]:
+        meta_json = read_and_validate(meta_path, template_schema)
+        meta = TemplateMeta.model_validate(meta_json)
+        data_path = template_path.joinpath(f"{meta.cid}.data.json")
+        if not data_path.exists():
+            raise PluginStoreException(f"Template {meta.cid} is missing data file")
+        data_json = read_and_validate(data_path, template_data_schema)
+        data = ProjectTemplateMeta.model_validate(data_json)
+        return (meta, meta_json, data, data_json)
+
+    @classmethod
     def validate_plugin_directory(cls, folder: Path) -> PluginMeta:
         """Validate plugin files without any DB commit
 
@@ -439,6 +641,25 @@ class PluginStore:
                     continue
                 cls.validate_algorithm_directory(algopath, plugin.gid)
 
-        # TODO: add for other components
+        # scan for widgets
+        widgets_subdir = folder.joinpath("widgets")
+        if widgets_subdir.exists() and widgets_subdir.is_dir():
+            meta_files = widgets_subdir.glob("*.meta.json")
+            for meta_file in meta_files:
+                cls.validate_widget(widget_path=widgets_subdir, meta_path=meta_file)
+
+        # scan for input blocks
+        inputs_subdir = folder.joinpath("inputs")
+        if inputs_subdir.exists() and inputs_subdir.is_dir():
+            meta_files = inputs_subdir.glob("*.meta.json")
+            for meta_file in meta_files:
+                cls.validate_input_block(input_block_path=inputs_subdir, meta_path=meta_file)
+
+        # scan for templates
+        templates_subdir = folder.joinpath("templates")
+        if templates_subdir.exists() and templates_subdir.is_dir():
+            meta_files = templates_subdir.glob("*.meta.json")
+            for meta_file in meta_files:
+                cls.validate_template(template_path=templates_subdir, meta_path=meta_file)
 
         return plugin
