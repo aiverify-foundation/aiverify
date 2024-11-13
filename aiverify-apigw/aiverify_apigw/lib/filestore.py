@@ -116,6 +116,14 @@ def get_plugin_folder(gid: str) -> Path | str:
         return urljoin(base_plugin_dir, f"{gid}/")
 
 
+def get_plugin_mdx_bundles_folder(gid: str) -> Path | str:
+    plugin_path = get_plugin_folder(gid)
+    if isinstance(plugin_path, Path):
+        return plugin_path.joinpath("mdx_bundles")
+    else:
+        return urljoin(plugin_path, "mdx_bundles/")
+
+
 def get_plugin_component_folder(gid: str, component_type: str) -> Path | str:
     plugin_path = get_plugin_folder(gid)
     if isinstance(plugin_path, Path):
@@ -200,6 +208,18 @@ def save_plugin(gid: str, source_dir: Path):
     return _save_plugin(source_dir, folder, zip_filename, hash_filename)
 
 
+def save_mdx_bundles(gid: str, source_dir: Path):
+    # source_bundles_path = source_dir.joinpath("mdx_bundles")
+    bundler_folder = get_plugin_mdx_bundles_folder(gid)
+    if isinstance(bundler_folder, Path):
+        shutil.copytree(source_dir, bundler_folder, dirs_exist_ok=True)
+    elif s3 is not None:
+        if s3.check_s3_prefix_exists(bundler_folder):
+            s3.delete_objects_under_prefix(bundler_folder)  # if prefix exists, delete
+        # s3.upload_directory_to_s3(source_dir, folder)
+        s3.upload_directory_to_s3(source_dir, bundler_folder)
+
+
 def save_plugin_algorithm(gid: str, cid: str, source_dir: Path):
     folder = get_plugin_component_folder(gid, "algorithms")
     logger.debug(f"Save algorithm {cid} folder from {source_dir} to {folder}")
@@ -209,7 +229,8 @@ def save_plugin_algorithm(gid: str, cid: str, source_dir: Path):
 
 
 def save_plugin_widgets(gid: str, source_dir: Path):
-    folder = get_plugin_component_folder(gid, "widgets")
+    # folder = get_plugin_component_folder(gid, "widgets")
+    folder = get_plugin_folder(gid)
     logger.debug(f"Save widgets folder from {source_dir} to {folder}")
     zip_filename = "widgets.zip"
     hash_filename = "widgets.hash"
@@ -217,7 +238,8 @@ def save_plugin_widgets(gid: str, source_dir: Path):
 
 
 def save_plugin_inputs(gid: str, source_dir: Path):
-    folder = get_plugin_component_folder(gid, "inputs")
+    # folder = get_plugin_component_folder(gid, "inputs")
+    folder = get_plugin_folder(gid)
     logger.debug(f"Save inputs folder from {source_dir} to {folder}")
     zip_filename = "inputs.zip"
     hash_filename = "inputs.hash"
