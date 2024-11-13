@@ -154,10 +154,10 @@ async def upload_plugin(file: UploadFile = File(), session: Session = Depends(ge
                     # restore old plugin on error
                     if backup_dir:
                         PluginStore.delete_plugin(gid)
-                        PluginStore.scan_plugin_directory(backup_dir, is_stock=is_stock)
+                        PluginStore.scan_plugin_directory(backup_dir, temp_root_dir, is_stock=is_stock)
 
                 try:
-                    plugin = PluginStore.scan_plugin_directory(plugin_dir, is_stock=is_stock)
+                    plugin = PluginStore.scan_plugin_directory(plugin_dir, temp_root_dir, is_stock=is_stock)
                     if plugin is None:
                         logger.error(f"Error scanning plugin directory {plugin_dir}")
                         restore_backup()
