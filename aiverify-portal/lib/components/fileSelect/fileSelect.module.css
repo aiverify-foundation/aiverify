@@ -1,0 +1,17 @@
+.hiddenInput {
+  display: none;
+}
+
+.dropZone {
+  cursor: pointer;
+  border: 2px dashed #ccc;
+  border-radius: 4px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.dropZone:hover {
+  border-color: #999;
+  background-color: rgba(0, 0, 0, 0.02);
+} 
