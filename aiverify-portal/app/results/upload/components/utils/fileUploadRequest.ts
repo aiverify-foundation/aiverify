@@ -38,3 +38,31 @@ export async function fileUploadRequest({
     xhr.send(formData);
   });
 }
+
+type UploadResponse = {
+  success: boolean;
+  message?: string;
+};
+export async function uploadTestResult(data: {
+  jsonData: object;
+  files: FileUpload[];
+}): Promise<UploadResponse> {
+  const formData = new FormData();
+
+  formData.append('test_result', JSON.stringify(data.jsonData));
+
+  data.files.forEach((fileUpload) => {
+    formData.append('artifacts', fileUpload.file);
+  });
+
+  const response = await fetch('/api/test_result/upload', {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!response.ok) {
+    throw new Error('Upload failed');
+  }
+
+  return response.json();
+}

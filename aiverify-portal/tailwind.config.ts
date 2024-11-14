@@ -1,4 +1,3 @@
-import type { Config } from 'tailwindcss';
 import {
   colors,
   white,
@@ -6,6 +5,7 @@ import {
   currentColor,
   transparent,
 } from './lib/theme/colors';
+import type { Config } from 'tailwindcss';
 
 const config: Config = {
   darkMode: ['class'],

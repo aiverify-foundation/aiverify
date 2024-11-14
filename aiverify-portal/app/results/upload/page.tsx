@@ -1,4 +1,4 @@
-import { Uploads } from './components/uploads';
+import { UploaderContainer } from './components/uploaderContainer';
 
 function UploadResultsPage() {
   return (
@@ -10,7 +10,7 @@ function UploadResultsPage() {
         To add test artifacts, use the &apos;Add Test Artifacts&apos; tool on
         the right.
       </p>
-      <Uploads className="mt-8" />
+      <UploaderContainer className="mt-8" />
     </main>
   );
 }

@@ -17,6 +17,7 @@ type JSONEditorProps = {
 };
 
 export interface JsonEditorHandle {
+  getValue: () => object;
   setValue: (
     key: string,
     value: string | number | boolean | null | (string | number)[]
@@ -26,7 +27,7 @@ export interface JsonEditorHandle {
 export const JsonEditor = forwardRef<JsonEditorHandle, JSONEditorProps>(
   (
     {
-      data = { example: 'Click to edit this JSON' },
+      data,
       onChange,
       options = {},
       showMainMenuBar = false,
@@ -41,7 +42,16 @@ export const JsonEditor = forwardRef<JsonEditorHandle, JSONEditorProps>(
     const editorRef = useRef<JSONEditor | null>(null);
 
     useImperativeHandle(ref, () => ({
-      setValue: (key: string, value: string | number | boolean | null) => {
+      getValue: () => {
+        if (editorRef.current) {
+          return editorRef.current.get();
+        }
+        return null;
+      },
+      setValue: (
+        key: string,
+        value: string | number | boolean | null | (string | number)[]
+      ) => {
         if (editorRef.current) {
           try {
             const currentJson = editorRef.current.get();
