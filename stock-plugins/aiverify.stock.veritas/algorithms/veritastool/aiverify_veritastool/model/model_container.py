@@ -147,12 +147,8 @@ class ModelContainer(object):
         self.y_train = y_train
         if p_grp is not None:
             self.p_var = list(p_grp.keys())
-            self.p_grp = self._nest_pgrp_upgrp_values(
-                p_grp
-            )  # Creates nested list for p_grp values
-            self.up_grp = self._nest_pgrp_upgrp_values(
-                up_grp
-            )  # Creates nested list for up_grp values
+            self.p_grp = self._nest_pgrp_upgrp_values(p_grp)  # Creates nested list for p_grp values
+            self.up_grp = self._nest_pgrp_upgrp_values(up_grp)  # Creates nested list for up_grp values
             self.p_grp_input = p_grp.copy()
         else:
             self.p_var = None
@@ -190,12 +186,8 @@ class ModelContainer(object):
         metric_group = None
         check_model_type = []
         for usecase in Fairness.__subclasses__():
-            model_type_to_metric_lookup = getattr(
-                usecase, "_model_type_to_metric_lookup"
-            )
-            check_model_type = check_model_type + list(
-                model_type_to_metric_lookup.keys()
-            )
+            model_type_to_metric_lookup = getattr(usecase, "_model_type_to_metric_lookup")
+            check_model_type = check_model_type + list(model_type_to_metric_lookup.keys())
             check_model_type = sorted(list(set(check_model_type)))
             if model_type in model_type_to_metric_lookup.keys():
                 metric_group = model_type_to_metric_lookup[model_type][0]
@@ -217,9 +209,7 @@ class ModelContainer(object):
             if protected_features_cols is None and x_test is not None:
                 if type(self.x_test) == pd.DataFrame:
                     p_var_no_intersect = [col for col in self.p_var if "|" not in col]
-                    self.protected_features_cols = self.x_test.loc[
-                        :, p_var_no_intersect
-                    ]
+                    self.protected_features_cols = self.x_test.loc[:, p_var_no_intersect]
                 else:
                     self.err.push(
                         "type_error",
@@ -315,9 +305,7 @@ class ModelContainer(object):
         ):
             self.multi_class_flag = True
             self.neg_label = None
-            self.enc_y_true, self.enc_y_pred = _one_hot_encode_y_true_y_pred(
-                self.y_true, self.y_pred
-            )
+            self.enc_y_true, self.enc_y_pred = _one_hot_encode_y_true_y_pred(self.y_true, self.y_pred)
 
         # if model name is longer than 20 characters, will keep the first 20 only
         self.model_name = self.model_name[0:20]
@@ -372,9 +360,7 @@ class ModelContainer(object):
         if len(self.intersect_p_grp.keys()) > 0:
             for ix, cols in enumerate(self.intersect_p_var_sep):
                 intersect_col = self.x_test[list(cols)].copy()
-                self.protected_features_cols.loc[
-                    :, self.intersect_p_var_names[ix]
-                ] = intersect_col.apply(
+                self.protected_features_cols.loc[:, self.intersect_p_var_names[ix]] = intersect_col.apply(
                     lambda row: "|".join([str(col) for col in row]), axis=1
                 )
 
@@ -420,9 +406,7 @@ class ModelContainer(object):
         self.intersect_p_grp = intersect_p_grp
         self.intersect_p_var_names = intersect_p_var_names
         self.intersect_p_var_sep = intersect_p_var_sep
-        self.non_intersect_pvars = list(
-            set(self.p_grp.keys()) - set(self.intersect_p_grp.keys())
-        )
+        self.non_intersect_pvars = list(set(self.p_grp.keys()) - set(self.intersect_p_grp.keys()))
 
     def _process_up_grp_input(self):
         """
@@ -441,16 +425,10 @@ class ModelContainer(object):
             if (key not in self.up_grp) and (isinstance(self.p_grp[key][0], str)):
                 self.up_grp[key] = []
             # None and not policy
-            elif (self.up_grp[key] is None) and (
-                not isinstance(self.p_grp[key][0], str)
-            ):
-                self.up_grp[key] = [
-                    list(set(self.check_p_grp[key]) - set(self.p_grp[key][0]))
-                ]
+            elif (self.up_grp[key] is None) and (not isinstance(self.p_grp[key][0], str)):
+                self.up_grp[key] = [list(set(self.check_p_grp[key]) - set(self.p_grp[key][0]))]
             # Not None and not policy
-            elif (self.up_grp[key] is not None) and (
-                not isinstance(self.p_grp[key][0], str)
-            ):
+            elif (self.up_grp[key] is not None) and (not isinstance(self.p_grp[key][0], str)):
                 pass
             # Overwrite if p_grp contains policy
             else:
@@ -471,11 +449,7 @@ class ModelContainer(object):
         if type(self.p_var) != list:
             err_.append(["type_error", "p_var", type(self.p_var), list])
 
-        elif (
-            self.p_grp is not None
-            and self.protected_features_cols is None
-            and self.x_test is None
-        ):
+        elif self.p_grp is not None and self.protected_features_cols is None and self.x_test is None:
             err_.append(
                 [
                     "length_error",
@@ -486,9 +460,7 @@ class ModelContainer(object):
             )
 
         elif self.protected_features_cols is not None:
-            if sum(
-                [x in self.p_var for x in self.protected_features_cols.columns]
-            ) != len(self.p_var):
+            if sum([x in self.p_var for x in self.protected_features_cols.columns]) != len(self.p_var):
                 err_.append(
                     [
                         "value_error",
@@ -599,24 +571,16 @@ class ModelContainer(object):
             err_.append(["value_error", "pos_label", "None", "not None for uplift"])
 
         # neg_label cannot be None for uplift model type
-        if (
-            self.neg_label is None
-            and self.pos_label is not None
-            and self.model_type == "uplift"
-        ):
+        if self.neg_label is None and self.pos_label is not None and self.model_type == "uplift":
             err_.append(["value_error", "neg_label", "None", "not None"])
 
         # check pos_label and neg_label for overlap labels
-        if self.neg_label is not None and not set(self.pos_label).isdisjoint(
-            set(self.neg_label)
-        ):
+        if self.neg_label is not None and not set(self.pos_label).isdisjoint(set(self.neg_label)):
             err_.append(
                 [
                     "value_error",
                     "pos_label and neg_label",
-                    "pos_label {} and neg_label {}".format(
-                        self.pos_label, self.neg_label
-                    ),
+                    "pos_label {} and neg_label {}".format(self.pos_label, self.neg_label),
                     "no label overlap",
                 ]
             )
@@ -630,9 +594,7 @@ class ModelContainer(object):
                             [
                                 "value_error",
                                 "p_grp and up_grp",
-                                "p_grp {} and up_grp {}".format(
-                                    self.p_grp[key], self.up_grp[key]
-                                ),
+                                "p_grp {} and up_grp {}".format(self.p_grp[key], self.up_grp[key]),
                                 "no value overlap",
                             ]
                         )
@@ -675,11 +637,7 @@ class ModelContainer(object):
                                 expected_size = self.label_count
 
                         # When labels are binary, y_prob shape can be n,1 or n,2
-                        if (
-                            var_name == "y_prob"
-                            and check_order[i] == "column"
-                            and self.label_count == 2
-                        ):
+                        if var_name == "y_prob" and check_order[i] == "column" and self.label_count == 2:
                             if given_size > expected_size:
                                 err_.append(
                                     [

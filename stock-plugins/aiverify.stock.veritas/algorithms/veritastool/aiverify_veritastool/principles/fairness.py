@@ -951,7 +951,7 @@ class Fairness:
         else:
             self.evaluate_status_indiv_fair = True
 
-    def compile(self, disable=[], n_threads=1):
+    def compile(self, disable=[], n_threads=1, save_artifact=True):
         """
         Runs the evaluation function together with the trade-off, feature importance and transparency explain sections and saves all the results to a JSON file locally.
 
@@ -963,6 +963,9 @@ class Fairness:
 
         n_threads : int, default=1
                 Number of currently active threads of a job
+
+        save_artifact : boolean, default=True
+                If save_artifact = True, the model artifact will be saved locally. If false, the model artifact will be returned as a dictionary.
 
         Returns
         ----------
@@ -1133,7 +1136,7 @@ class Fairness:
             print("{:40s}{:<10}".format("Running transparency", "skipped"))
 
         # run function to generate json model artifact file after all API functions have ran
-        self._generate_model_artifact()
+        return self._generate_model_artifact(save_artifact)
 
     def tradeoff(self, output=True, n_threads=1, sigma=0):
         """
@@ -2835,9 +2838,14 @@ class Fairness:
             plt.show()
         print()
 
-    def _generate_model_artifact(self):
+    def _generate_model_artifact(self, save_artifact=True):
         """
         Generates the JSON file to be saved locally at the end of compile()
+
+        Parameters
+        ----------
+        save_artifact : bool, default=True
+                If True, a JSON file will be saved locally. If False, the dictionary will be returned.
         """
         # aggregate the results into model artifact
         print("{:40s}".format("Generating model artifact"), end="")
@@ -2938,13 +2946,15 @@ class Fairness:
 
         if all(value is None for value in artifact.values()):
             print("skipped")
-        else:
+        elif save_artifact:
             artifactJson = json.dumps(artifact, cls=NpEncoder)
             jsonFile = open(filename, "w")
             jsonFile.write(artifactJson)
             jsonFile.close()
             print("done")
             print("Saved model artifact to " + filename)
+        else:
+            return artifact
 
     def _fairness_widget(self):
         """

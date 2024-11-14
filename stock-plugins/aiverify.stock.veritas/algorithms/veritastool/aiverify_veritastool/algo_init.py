@@ -21,6 +21,7 @@ from aiverify_test_engine.utils.json_utils import (
     remove_numpy_formats,
     validate_test_result_schema,
 )
+from rich import print
 
 
 class AlgoInit:
@@ -105,14 +106,6 @@ class AlgoInit:
                     **{"pipeline_path": self._model_path},
                 )
 
-                # Perform data transformation
-                current_dataset = self._data_instance.get_data()
-                current_pipeline = self._model_instance.get_pipeline()
-                transformed_dataset = current_pipeline[:-1].transform(current_dataset)
-                # Set new transformed pipeline and dataset
-                self._data_instance.set_data(transformed_dataset)
-                self._model_instance.set_pipeline(current_pipeline[-1])
-
             else:
                 # Get the data, model, and ground truth instance
                 (
@@ -185,7 +178,7 @@ class AlgoInit:
 
             # Get predictions
             y_pred = model.predict(test_data)
-            y_prob = model.predict_proba(test_data) if hasattr(model, "predict_proba") else None
+            y_prob = model.predict_proba(test_data)[:, 1] if hasattr(model, "predict_proba") else None
 
             if self._model_type == ModelType.CLASSIFICATION:
                 veritas_model_type = "classification"
@@ -199,34 +192,26 @@ class AlgoInit:
                 if self._input_arguments["protected_features"]
                 else None
             )
-            # Print all variables that are passed to ModelContainer
-            # print(f"[Y_TRUE]: {y_true}")
-            # print(f"[P_GRP]: {self._input_arguments.get('privileged_groups')}")
-            # print(f"[MODEL_TYPE]: {veritas_model_type}")
-            # print(f"[MODEL_NAME]: {self._input_arguments.get('model_name', 'auto')}")
-            # print(f"[Y_PRED]: {y_pred}")
-            # print(f"[Y_PROB]: {y_prob}")
-            # print(f"[PROTECTED_FEATURES_COLS]: {protected_features_cols}")
-            # print(f"[X_TEST]: {test_data}")
-            # print(f"[MODEL_OBJECT]: {model}")
-            # print(f"[POS_LABEL]: {self._input_arguments['positive_label']}")
-            # print(f"[NEG_LABEL]: {self._input_arguments.get('negative_label')}")
-            # print(f"[UP_GRP]: {self._input_arguments.get('unprivileged_groups')}")
+            model_name = self._input_arguments.get("model_name", "auto")
+            p_grp = self._input_arguments.get("privileged_groups")
+            up_grp = self._input_arguments.get("unprivileged_groups")
+            pos_label = self._input_arguments["positive_label"]
+            neg_label = self._input_arguments.get("negative_label")
 
             # Create model container
             container = ModelContainer(
                 y_true=y_true,
-                p_grp=self._input_arguments.get("privileged_groups"),
+                p_grp=p_grp,
                 model_type=veritas_model_type,
-                model_name=self._input_arguments.get("model_name", "auto"),
+                model_name=model_name,
                 y_pred=y_pred,
                 y_prob=y_prob,
                 protected_features_cols=protected_features_cols,
                 x_test=test_data,
                 model_object=model,
-                pos_label=self._input_arguments["positive_label"],
-                neg_label=self._input_arguments.get("negative_label"),
-                up_grp=self._input_arguments.get("unprivileged_groups"),
+                pos_label=pos_label,
+                neg_label=neg_label,
+                up_grp=up_grp,
             )
             return container
         except Exception as e:
@@ -238,19 +223,28 @@ class AlgoInit:
         try:
             container = self._create_veritas_container()
 
+            fair_threshold = self._input_arguments.get("fair_threshold", 80)
+            fair_metric_name = self._input_arguments.get("fair_metric", "auto")
+            fair_concern = self._input_arguments.get("fair_concern", "eligible")
+            perf_metric_name = self._input_arguments.get("performance_metric", "balanced_acc")
+            tran_row_num = self._input_arguments.get("transparency_rows", [1])
+            tran_max_sample = self._input_arguments.get("transparency_max_samples", 1)
+            tran_pdp_feature = self._input_arguments.get("transparency_features", [])
+
             classifier = BaseClassification(
                 model_params=[container],
-                fair_threshold=self._input_arguments.get("fair_threshold", 80),
-                fair_metric_name=self._input_arguments.get("fair_metric", "auto"),
-                fair_concern=self._input_arguments.get("fair_concern", "eligible"),
-                perf_metric_name=self._input_arguments.get("performance_metric", "balanced_acc"),
-                tran_row_num=self._input_arguments.get("transparency_rows", [1]),
-                tran_max_sample=self._input_arguments.get("transparency_max_samples", 1),
-                tran_pdp_feature=self._input_arguments.get("transparency_features", []),
+                fair_threshold=fair_threshold,
+                fair_metric_name=fair_metric_name,
+                fair_concern=fair_concern,
+                perf_metric_name=perf_metric_name,
+                tran_row_num=tran_row_num,
+                tran_max_sample=tran_max_sample,
+                tran_pdp_feature=tran_pdp_feature,
             )
-            print("Running Veritas assessment...")
 
-            return classifier.evaluate()
+            classifier.evaluate()
+            results = classifier.compile(save_artifact=False)
+            return results
 
         except Exception as e:
             print(f"Error running Veritas assessment: {str(e)}")
@@ -290,7 +284,6 @@ class AlgoInit:
             # Process and validate results
             results = remove_numpy_formats(results)
             is_success, error_messages = self._verify_task_results(results)
-
             if is_success:
                 output_folder = Path.cwd() / "output"
                 output_folder.mkdir(parents=True, exist_ok=True)
@@ -309,7 +302,7 @@ class AlgoInit:
         try:
             with open(str(Path(__file__).parent / "algo.meta.json")) as f:
                 meta_file = json.load(f)
-            print(self._input_arguments)
+
             test_arguments = ITestArguments(
                 groundTruth=self._ground_truth,
                 modelType=self._model_type.name,
@@ -344,6 +337,7 @@ class AlgoInit:
                 testArguments=test_arguments,
                 output=results,
             )
+
             output_json = output.json(exclude_none=True, indent=4)
             # TODO: Add validation logic against output.schema.json here
             if validate_test_result_schema(json.loads(output_json)) or True:
