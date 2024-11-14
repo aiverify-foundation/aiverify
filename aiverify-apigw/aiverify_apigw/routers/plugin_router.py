@@ -1,11 +1,12 @@
 from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Response
+from fastapi.responses import JSONResponse
 from typing import List
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..lib.logging import logger
 from ..lib.database import get_db_session
-from ..lib.filestore import get_plugin_zip, get_plugin_algorithm_zip, backup_plugin
+from ..lib.filestore import get_plugin_zip, get_plugin_algorithm_zip, backup_plugin, get_plugin_widgets_zip, get_plugin_inputs_zip, get_plugin_mdx_bundle
 from ..lib.plugin_store import PluginStore, PluginStoreException
 from ..lib.file_utils import sanitize_filename
 from ..schemas import PluginOutput
@@ -54,7 +55,7 @@ async def read_plugin(gid: str, session: Session = Depends(get_db_session)) -> P
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.delete("/{gid}", response_model=dict)
+@router.delete("/{gid}")
 async def delete_plugin(gid: str, session: Session = Depends(get_db_session)) -> dict:
     """
     Endpoint to delete a plugin by gid.
@@ -184,7 +185,7 @@ async def upload_plugin(file: UploadFile = File(), session: Session = Depends(ge
     #     shutil.rmtree(plugin_folder)
 
 
-@router.get("/download/{gid}", response_model=dict)
+@router.get("/download/{gid}")
 async def download_plugin(gid: str, session: Session = Depends(get_db_session)) -> Response:
     """
     Endpoint to download a plugin as a zip file.
@@ -212,7 +213,7 @@ async def download_plugin(gid: str, session: Session = Depends(get_db_session)) 
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.get("/{gid}/algorithm/{cid}", response_model=dict)
+@router.get("/{gid}/algorithms/{cid}")
 async def download_plugin_algorithm(gid: str, cid: str, session: Session = Depends(get_db_session)) -> Response:
     """
     Endpoint to download a plugin as a zip file.
@@ -230,6 +231,126 @@ async def download_plugin_algorithm(gid: str, cid: str, session: Session = Depen
         headers = {"Content-Disposition": f'attachment; filename="{sanitize_filename(algo.cid)}.zip"'}
         return Response(content=zip_buffer, media_type="application/zip", headers=headers)
 
+    except PluginStoreException as e:
+        logger.error(f"Plugin exception: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logger.error(f"Error downloading plugin: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router.get("/{gid}/widgets")
+async def download_plugin_widgets(gid: str, session: Session = Depends(get_db_session)) -> Response:
+    """
+    Endpoint to download a plugin as a zip file.
+    """
+    try:
+        stmt = select(PluginModel).filter_by(gid=gid)
+        plugin = session.scalar(stmt)
+
+        if not plugin:
+            raise HTTPException(status_code=404, detail="Plugin not found")
+
+        if len(plugin.widgets) == 0:
+            raise HTTPException(status_code=404, detail="Plugin does not have any widgets")
+
+        # Call the get_plugin_zip method from filestore to create the zip file
+        zip_buffer = get_plugin_widgets_zip(gid)
+
+        headers = {"Content-Disposition": f'attachment; filename="{sanitize_filename(plugin.gid)}_widgets.zip"'}
+        return Response(content=zip_buffer, media_type="application/zip", headers=headers)
+
+    except PluginStoreException as e:
+        logger.error(f"Plugin exception: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logger.error(f"Error downloading plugin: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router.get("/{gid}/input_blocks")
+async def download_plugin_inputs(gid: str, session: Session = Depends(get_db_session)) -> Response:
+    """
+    Endpoint to download a plugin as a zip file.
+    """
+    try:
+        stmt = select(PluginModel).filter_by(gid=gid)
+        plugin = session.scalar(stmt)
+
+        if not plugin:
+            raise HTTPException(status_code=404, detail="Plugin not found")
+
+        if len(plugin.inputblocks) == 0:
+            raise HTTPException(status_code=404, detail="Plugin does not have any input blocks")
+
+        # Call the get_plugin_zip method from filestore to create the zip file
+        zip_buffer = get_plugin_inputs_zip(gid)
+
+        headers = {"Content-Disposition": f'attachment; filename="{sanitize_filename(plugin.gid)}_input_blocks.zip"'}
+        return Response(content=zip_buffer, media_type="application/zip", headers=headers)
+
+    except PluginStoreException as e:
+        logger.error(f"Plugin exception: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logger.error(f"Error downloading plugin: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router.get("/{gid}/bundle/{cid}")
+async def download_plugin_bundle(gid: str, cid: str, session: Session = Depends(get_db_session)) -> Response:
+    """
+    Endpoint to download a plugin as a zip file.
+    """
+    try:
+        stmt = select(PluginModel).filter_by(gid=gid)
+        plugin = session.scalar(stmt)
+
+        if not plugin:
+            raise HTTPException(status_code=404, detail="Plugin not found")
+
+        # Call the get_plugin_zip method from filestore to create the zip file
+        bundle = get_plugin_mdx_bundle(gid, cid)
+        resp_obj = {key: bundle[key] for key in ['code', 'frontmatter']}
+        return JSONResponse(content=resp_obj)
+
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    except PluginStoreException as e:
+        logger.error(f"Plugin exception: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logger.error(f"Error downloading plugin: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router.get("/{gid}/summary/{cid}")
+async def download_plugin_summary(gid: str, cid: str, session: Session = Depends(get_db_session)) -> Response:
+    """
+    Endpoint to download a plugin as a zip file.
+    """
+    try:
+        stmt = select(PluginModel).filter_by(gid=gid)
+        plugin = session.scalar(stmt)
+
+        if not plugin:
+            raise HTTPException(status_code=404, detail="Plugin not found")
+
+        # Call the get_plugin_zip method from filestore to create the zip file
+        bundle = get_plugin_mdx_bundle(gid, cid, summary=True)
+        resp_obj = {key: bundle[key] for key in ['code', 'frontmatter']}
+        return JSONResponse(content=resp_obj)
+
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Bundle not found")
     except PluginStoreException as e:
         logger.error(f"Plugin exception: {e}")
         raise HTTPException(status_code=400, detail=str(e))
