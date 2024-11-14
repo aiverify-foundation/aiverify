@@ -9,6 +9,8 @@ urllib.parse.uses_relative.append("s3")
 urllib.parse.uses_netloc.append("s3")
 from urllib.parse import urljoin
 import io
+import json
+from typing import Any
 
 from .s3 import MyS3
 from .logging import logger
@@ -295,6 +297,36 @@ def get_plugin_zip(gid: str) -> bytes:
 def get_plugin_algorithm_zip(gid: str, cid: str) -> bytes:
     folder = get_plugin_component_folder(gid, "algorithms")
     zip_filename = f"{cid}.zip"
+    return _get_zip(folder, zip_filename)
+
+
+def get_plugin_widgets_zip(gid: str) -> bytes:
+    folder = get_plugin_folder(gid)
+    zip_filename = "widgets.zip"
+    return _get_zip(folder, zip_filename)
+
+
+def get_plugin_mdx_bundle(gid: str, cid: str, summary: bool = False) -> Any:
+    bundle_folder = get_plugin_mdx_bundles_folder(gid)
+    filename = f"{cid}.summary.bundle.json" if summary else f"{cid}.bundle.json"
+    if isinstance(bundle_folder, Path):
+        bundle_path = bundle_folder.joinpath(filename)
+        if not bundle_path.exists():
+            raise FileNotFoundError("Bundle not found")
+        with open(bundle_path, "rb") as fp:
+            return json.load(fp)
+    elif s3 is not None:
+        bundle_key = urljoin(bundle_folder, filename)
+        if not s3.check_s3_object_exists(bundle_key):
+            raise FileNotFoundError("Bundle not found")
+        # s3.upload_directory_to_s3(source_dir, folder)
+        obj = s3.get_object(bundle_key)
+        return json.loads(obj)
+
+
+def get_plugin_inputs_zip(gid: str) -> bytes:
+    folder = get_plugin_folder(gid)
+    zip_filename = "inputs.zip"
     return _get_zip(folder, zip_filename)
 
 
