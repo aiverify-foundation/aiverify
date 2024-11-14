@@ -169,8 +169,8 @@ async def _save_test_result(session: Session, test_result: TestResult, artifact_
 
     logger.debug(f"Number of saved artifacts: {len(test_result_model.artifacts)}")
     logger.info(f"Test result uploaded: {test_result_model}")
-    urls = [f"/test_result/{test_result_id}/artifacts/{artifact.filename}" for artifact in test_result_model.artifacts]
-    return [f"/test_result/{test_result_id}"] + urls
+    urls = [f"/test_results/{test_result_id}/artifacts/{artifact.filename}" for artifact in test_result_model.artifacts]
+    return [f"/test_results/{test_result_id}"] + urls
 
 
 @router.post("/upload")
