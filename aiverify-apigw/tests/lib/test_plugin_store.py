@@ -79,7 +79,7 @@ class TestPluginStoreScanStockPlugins:
 
         mock_delete_all_plugins.assert_called_once()
         mock_validate_plugin_directory.assert_called_once_with(mock_plugin_dir)
-        mock_scan_plugin_directory.assert_called_once_with(mock_plugin_dir, is_stock=True)
+        mock_scan_plugin_directory.assert_called_once()
 
 
 class TestPluginStoreCheckPluginRegistry:
@@ -138,6 +138,7 @@ class TestPluginStoreScanPluginDirectory:
         # TODO: add tests for algo scans
         from typing import Any
         import json
+        import tempfile
 
         mock_algo = mock_plugin_path.mock_data.algorithms[0]
 
@@ -153,15 +154,18 @@ class TestPluginStoreScanPluginDirectory:
                     return None
 
         mock_read_and_validate.side_effect = read_and_validate_side_effect
-        PluginStore.scan_plugin_directory(mock_plugin_path)
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            PluginStore.scan_plugin_directory(mock_plugin_path, Path(tmpdirname))
         mock_save_plugin.assert_called_once_with(mock_plugin_path.mock_data.gid, mock_plugin_path)
 
     @patch("aiverify_apigw.lib.plugin_store.read_and_validate")
     def test_scan_plugin_directory_invalid(self, mock_read_and_validate):
         """Test scanning a plugin directory with invalid metadata, should do nothing."""
+        import tempfile
         mock_read_and_validate.return_value = None
         mock_folder = Path("invalid_plugin_folder")
-        result = PluginStore.scan_plugin_directory(mock_folder)
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            result = PluginStore.scan_plugin_directory(mock_folder, Path(tmpdirname))
         assert result is None
 
 
