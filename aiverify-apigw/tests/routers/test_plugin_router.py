@@ -114,11 +114,11 @@ class TestDownloadPluginAlgorithm:
         # zip_buffer = MagicMock()
         # zip_buffer.read = MagicMock(return_value=b"Test Plugin")
         mock_zip.return_value = b"Test Algorithm"
-        response = test_client.get(f"/plugins/{plugin.gid}/algorithm/{algo.cid}")
+        response = test_client.get(f"/plugins/{plugin.gid}/algorithms/{algo.cid}")
         assert response.status_code == 200
 
     def test_download_plugin_algorithm_not_found(self, test_client, mock_plugins):
         plugin = mock_plugins[0]
         # mock_db_session.scalar.return_value = None
-        response = test_client.get(f"/plugins/algorithm/{plugin.gid}/invalid_algo")
+        response = test_client.get(f"/plugins/algorithms/{plugin.gid}/invalid_algo")
         assert response.status_code == 404
