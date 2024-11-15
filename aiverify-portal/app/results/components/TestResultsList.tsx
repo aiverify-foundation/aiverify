@@ -16,8 +16,9 @@ export default function TestResultsList({ testResults }: Props) {
   const [activeFilter, setActiveFilter] = useState<string>('');
   const [sortBy, setSortBy] = useState('date');
   const [selectedResult, setSelectedResult] = useState<TestResults | null>(null);
+  const [results, setResults] = useState<TestResults[]>(testResults); // State for the test results
 
-  const filteredResults = testResults
+  const filteredResults = results
     .filter((result) => result.name.toLowerCase().includes(searchQuery.toLowerCase()))
     .filter((result) => {
       if (!activeFilter) return true;
@@ -43,39 +44,42 @@ export default function TestResultsList({ testResults }: Props) {
   const handleSort = (newSortBy: string) => setSortBy(newSortBy);
 
   const handleSelectResult = (result: TestResults) => {
-    // Close or open split pane by checking if the selected result is the same as the clicked result
     if (selectedResult?.id === result.id) {
-      setSelectedResult(null); // Close
+      setSelectedResult(null);
     } else {
-      setSelectedResult(result); // Open
+      setSelectedResult(result);
     }
+  };
+
+  const handleUpdateResult = (updatedResult: TestResults) => {
+    setResults((prevResults) =>
+      prevResults.map((result) =>
+        result.id === updatedResult.id ? { ...result, name: updatedResult.name } : result
+      )
+    );
   };
 
   return selectedResult ? (
     <SplitPane
       leftPane={
         <div className="h-full flex flex-col">
-        {/* Fixed Header */}
-        <div>
           <ResultsFilters
             onSearch={handleSearch}
             onFilter={handleFilter}
             onSort={handleSort}
             activeFilter={activeFilter}
-            isSplitPaneActive={true} // Split pane is active
+            isSplitPaneActive={true}
           />
+          <div className="flex-1 overflow-y-auto mt-2">
+            {sortedResults.map((result) => (
+              <div onClick={() => handleSelectResult(result)} key={result.id}>
+                <TestResultsCard result={result} />
+              </div>
+            ))}
+          </div>
         </div>
-        {/* Scrollable List */}
-        <div className="flex-1 overflow-y-auto mt-2">
-          {sortedResults.map((result) => (
-            <div onClick={() => handleSelectResult(result)} key={result.id}>
-              <TestResultsCard result={result} />
-            </div>
-          ))}
-        </div>
-      </div>
       }
-      rightPane={<TestResultDetail result={selectedResult} />}
+      rightPane={<TestResultDetail result={selectedResult} onUpdateResult={handleUpdateResult} />}
     />
   ) : (
     <div>
@@ -84,7 +88,7 @@ export default function TestResultsList({ testResults }: Props) {
         onFilter={handleFilter}
         onSort={handleSort}
         activeFilter={activeFilter}
-        isSplitPaneActive={false} // Split pane is not active
+        isSplitPaneActive={false}
       />
       <div className="mt-6">
         {sortedResults.map((result) => (
