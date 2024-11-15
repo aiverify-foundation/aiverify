@@ -7,6 +7,32 @@ from aiverify_apigw.models.plugin_model import PluginModel
 # from aiverify_apigw.routers.plugin_router import PluginStore
 
 
+@pytest.fixture(scope="function")
+def mock_plugins_no_widgets_inputblocks(db_session):
+    from ..mocks.mock_data_plugin import _create_mock_plugin
+    from aiverify_apigw.models import (
+        PluginModel,
+        AlgorithmModel,
+        WidgetModel,
+        InputBlockModel,
+        TemplateModel,
+        PluginComponentModel,
+    )
+
+    db_session.query(PluginModel).delete()
+    plugin = _create_mock_plugin(num_algo=None, num_widgets=0, num_input_blocks=0)
+    db_session.add(plugin)
+    db_session.commit()
+    yield plugin
+    db_session.query(PluginModel).delete()
+    db_session.query(AlgorithmModel).delete()
+    db_session.query(WidgetModel).delete()
+    db_session.query(InputBlockModel).delete()
+    db_session.query(TemplateModel).delete()
+    db_session.query(PluginComponentModel).delete()
+    db_session.commit()
+
+
 class TestReadTestResults:
     def test_read_plugins(self, test_client, mock_plugins):
         response = test_client.get("/plugins/")
@@ -122,3 +148,136 @@ class TestDownloadPluginAlgorithm:
         # mock_db_session.scalar.return_value = None
         response = test_client.get(f"/plugins/algorithms/{plugin.gid}/invalid_algo")
         assert response.status_code == 404
+
+
+# Test class for GET /{gid}/widgets
+class TestDownloadPluginWidgets:
+
+    @patch("aiverify_apigw.routers.plugin_router.get_plugin_widgets_zip", autospec=True)
+    @patch("aiverify_apigw.routers.plugin_router.sanitize_filename", autospec=True)
+    def test_download_plugin_widgets_success(self, mock_sanitize_filename, mock_get_plugin_widgets_zip, test_client, mock_plugins):
+        """Test successfully downloading a plugin's widget zip."""
+
+        plugin = mock_plugins[0]
+
+        # Mock sanitize_filename and get_plugin_widgets_zip
+        gid = plugin.gid
+        mock_content = b"Mock zip content"
+        mock_sanitize_filename.return_value = gid
+        mock_get_plugin_widgets_zip.return_value = mock_content
+
+        response = test_client.get(f"/plugins/{gid}/widgets")
+
+        # Assertions
+        assert response.status_code == 200
+        assert response.headers["Content-Disposition"] == f"attachment; filename=\"{gid}_widgets.zip\""
+        assert response.headers["Content-Type"] == "application/zip"
+        assert response.content == mock_content
+
+        # Ensure mocks were called
+        mock_sanitize_filename.assert_called_once_with(gid)
+        mock_get_plugin_widgets_zip.assert_called_once_with(gid)
+
+    def test_download_plugin_widgets_plugin_not_found(self, test_client):
+        """Test when the plugin is not found."""
+
+        # Perform the GET request
+        gid = "nonexistent_plugin"
+        response = test_client.get(f"/plugins/{gid}/widgets")
+
+        # Assertions
+        assert response.status_code == 404
+        assert response.json()["detail"] == "Plugin not found"
+
+    def test_download_plugin_widgets_no_widgets(self, test_client, db_session, mock_plugins_no_widgets_inputblocks):
+        """Test when the plugin has no widgets."""
+
+        plugin = mock_plugins_no_widgets_inputblocks
+        gid = plugin.gid
+
+        response = test_client.get(f"/plugins/{gid}/widgets")
+
+        # Assertions
+        assert response.status_code == 404
+        assert response.json()["detail"] == "Plugin does not have any widgets"
+
+    @patch("aiverify_apigw.routers.plugin_router.get_plugin_widgets_zip", autospec=True)
+    def test_download_plugin_widgets_internal_error(self, mock_get_plugin_widgets_zip, test_client, mock_plugins):
+        """Test internal server error when generating the zip."""
+
+        # Simulate an internal error in get_plugin_widgets_zip
+        exception_error_msg = "Internal server error"
+        mock_get_plugin_widgets_zip.side_effect = Exception(exception_error_msg)
+
+        # Perform the GET request
+        response = test_client.get(f"/plugins/{mock_plugins[0].gid}/widgets")
+
+        # Assertions
+        assert response.status_code == 500
+        assert response.json()["detail"] == exception_error_msg
+
+
+class TestDownloadPluginInputBlocks:
+
+    @patch("aiverify_apigw.routers.plugin_router.get_plugin_inputs_zip", autospec=True)
+    @patch("aiverify_apigw.routers.plugin_router.sanitize_filename", autospec=True)
+    def test_download_plugin_input_blocks_success(self, mock_sanitize_filename, mock_get_plugin_inputs_zip, test_client, mock_plugins):
+        """Test successfully downloading a plugin's widget zip."""
+
+        plugin = mock_plugins[0]
+
+        # Mock sanitize_filename and get_plugin_widgets_zip
+        gid = plugin.gid
+        mock_content = b"Mock zip content"
+        mock_sanitize_filename.return_value = gid
+        mock_get_plugin_inputs_zip.return_value = mock_content
+
+        response = test_client.get(f"/plugins/{gid}/input_blocks")
+
+        # Assertions
+        assert response.status_code == 200
+        assert response.headers["Content-Disposition"] == f"attachment; filename=\"{gid}_input_blocks.zip\""
+        assert response.headers["Content-Type"] == "application/zip"
+        assert response.content == mock_content
+
+        # Ensure mocks were called
+        mock_sanitize_filename.assert_called_once_with(gid)
+        mock_get_plugin_inputs_zip.assert_called_once_with(gid)
+
+    def test_download_plugin_input_blocks_plugin_not_found(self, test_client):
+        """Test when the plugin is not found."""
+
+        # Perform the GET request
+        gid = "nonexistent_plugin"
+        response = test_client.get(f"/plugins/{gid}/input_blocks")
+
+        # Assertions
+        assert response.status_code == 404
+        assert response.json()["detail"] == "Plugin not found"
+
+    def test_download_plugin_input_blocks_empty(self, test_client, db_session, mock_plugins_no_widgets_inputblocks):
+        """Test when the plugin has no widgets."""
+
+        plugin = mock_plugins_no_widgets_inputblocks
+        gid = plugin.gid
+
+        response = test_client.get(f"/plugins/{gid}/input_blocks")
+
+        # Assertions
+        assert response.status_code == 404
+        assert response.json()["detail"] == "Plugin does not have any input blocks"
+
+    @patch("aiverify_apigw.routers.plugin_router.get_plugin_inputs_zip", autospec=True)
+    def test_download_plugin_widgets_internal_error(self, mock_get_plugin_inputs_zip, test_client, mock_plugins):
+        """Test internal server error when generating the zip."""
+
+        # Simulate an internal error in get_plugin_widgets_zip
+        exception_error_msg = "Internal server error"
+        mock_get_plugin_inputs_zip.side_effect = Exception(exception_error_msg)
+
+        # Perform the GET request
+        response = test_client.get(f"/plugins/{mock_plugins[0].gid}/input_blocks")
+
+        # Assertions
+        assert response.status_code == 500
+        assert response.json()["detail"] == exception_error_msg
