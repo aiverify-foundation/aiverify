@@ -54,7 +54,7 @@ export default function ResultsFilters({
     // Vertical layout for split pane active
     <section className="flex flex-col space-y-4">
       {/* Filter and Sort */}
-      <div className="flex items-start space-x-4">
+      <div className="flex items-start space-x-3">
         {/* Filter Dropdown */}
         <div>
           <h4 className="text-left">Filter By</h4>
