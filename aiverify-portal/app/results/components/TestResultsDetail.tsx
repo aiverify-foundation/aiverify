@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { TestResults } from '../../types';
 import { ResultsNameHeader } from './ResultsNameHeader';
 import { updateResultName } from '../../../lib/fetchApis/updateResultName';
+import { deleteResult } from '@/lib/fetchApis/deleteTestResult';
 
 type Props = {
   result: TestResults | null;
@@ -34,6 +35,16 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
       alert('Failed to update the result name. Please try again.');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteResult(id);
+      alert('Result deleted successfully!');
+    } catch (error) {
+      console.error('Failed to delete result:', error);
+      alert('Failed to delete the result.');
     }
   };
 
@@ -74,6 +85,7 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
           name={currentResult.name}
           isSaving={isSaving}
           onSave={handleSaveName}
+          onDelete={handleDelete}
         />
 
         <div className="space-y-1 text-sm">
@@ -181,15 +193,29 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
               </div>
               <div className="rounded text-sm max-h-64 overflow-y-auto">
                 <h3 className="text-lg font-semibold mb-2">Artifacts</h3>
-                <pre className="bg-secondary-800 p-4 whitespace-pre-wrap">
-                  {typeof currentResult.artifacts === 'string'
-                    ? JSON.stringify(
-                        JSON.parse(JSON.parse(currentResult.artifacts)), // Double parse
-                        null,
-                        2
-                      )
-                    : JSON.stringify(currentResult.artifacts, null, 2)}
-                </pre>
+                <div className="bg-secondary-800 p-4 whitespace-pre-wrap">
+                  {Array.isArray(currentResult.artifacts) ? (
+                    <ul className="space-y-1 pl-6 list-disc">
+                      {currentResult.artifacts.map((artifact, index) => (
+                        <li key={index}>
+                          {typeof artifact === 'string' ? (
+                            // If it's a string (e.g., filename), display directly
+                            artifact
+                          ) : (
+                            // Otherwise, display as formatted JSON
+                            JSON.stringify(artifact, null, 2)
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <pre>
+                      {typeof currentResult.artifacts === 'string'
+                        ? currentResult.artifacts // Display as is if it’s a string
+                        : JSON.stringify(currentResult.artifacts, null, 2)}
+                    </pre>
+                  )}
+                </div>
               </div>
             </div>
           )}

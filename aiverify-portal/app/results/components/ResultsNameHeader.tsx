@@ -7,16 +7,17 @@ type EditableHeaderProps = {
   id: number; // ID of the result to update
   name: string; // Current name
   isSaving: boolean; // Save status
-  onSave: (id: number, newName: string) => Promise<void>; // Save function
+  onSave: (id: number, newName: string) => Promise<void>; 
+  onDelete: (id: number) => Promise<void>;
 };
 
-export function ResultsNameHeader({ id, name, isSaving, onSave }: EditableHeaderProps) {
+export function ResultsNameHeader({ id, name, isSaving, onSave, onDelete }: EditableHeaderProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState(name);
 
   const handleSave = async () => {
-    if (!editedName.trim() || editedName === name) {
-      setIsEditing(false); // No changes
+    if (!editedName.trim() || editedName === name) { // if no change
+      setIsEditing(false); 
       return;
     }
 
@@ -24,9 +25,20 @@ export function ResultsNameHeader({ id, name, isSaving, onSave }: EditableHeader
       await onSave(id, editedName.trim());
       setIsEditing(false);
     } catch {
-      // Error handling already done in `onSave`
+      // error handle 
     }
   };
+
+const handleDelete = async () => {
+  if (confirm(`Are you sure you want to delete "${name}"?`)) {
+    try {
+      await onDelete(id);
+    }
+    catch {
+      // error handle
+    }
+  }
+}
 
   return (
     <div className="flex items-center justify-between mb-1">
@@ -68,6 +80,12 @@ export function ResultsNameHeader({ id, name, isSaving, onSave }: EditableHeader
           </>
         )}
       </div>
+      <Icon
+        name={IconName.Delete}
+        size={20}
+        color="var(--color-secondary-500)"
+        onClick={handleDelete}
+      />
     </div>
   );
 }
