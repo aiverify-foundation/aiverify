@@ -26,7 +26,8 @@ from .filestore import (
     # save_plugin_widgets as fs_save_plugin_widgets,
     # save_plugin_inputs as fs_save_plugin_inputs,
 )
-from sqlalchemy import select, func
+from sqlalchemy import select
+from sqlalchemy.sql.expression import func
 
 
 class PluginStoreException(Exception):
@@ -56,6 +57,7 @@ class PluginStore:
             session.query(InputBlockModel).delete()
             session.query(TemplateModel).delete()
             session.query(PluginComponentModel).delete()
+            session.query(ProjectTemplateModel).filter(func.length(ProjectTemplateModel.plugin_id) > 0).delete()
             session.commit()
         try:
             fs_delete_all_plugins()
