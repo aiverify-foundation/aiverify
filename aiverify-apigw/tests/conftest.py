@@ -85,6 +85,7 @@ def mock_plugins(db_session):
         InputBlockModel,
         TemplateModel,
         PluginComponentModel,
+        ProjectTemplateModel
     )
 
     db_session.query(PluginModel).delete()
@@ -97,6 +98,7 @@ def mock_plugins(db_session):
     db_session.query(InputBlockModel).delete()
     db_session.query(TemplateModel).delete()
     db_session.query(PluginComponentModel).delete()
+    db_session.query(ProjectTemplateModel).delete()
     db_session.commit()
 
 
@@ -110,6 +112,7 @@ def mock_non_stock_plugins(db_session):
         InputBlockModel,
         TemplateModel,
         PluginComponentModel,
+        ProjectTemplateModel
     )
 
     db_session.query(PluginModel).delete()
@@ -122,6 +125,7 @@ def mock_non_stock_plugins(db_session):
     db_session.query(InputBlockModel).delete()
     db_session.query(TemplateModel).delete()
     db_session.query(PluginComponentModel).delete()
+    db_session.query(ProjectTemplateModel).delete()
     db_session.commit()
 
 

@@ -2,8 +2,9 @@
 from faker import Faker
 from typing import List
 import json
-from aiverify_apigw.models import PluginModel, AlgorithmModel, WidgetModel, InputBlockModel, TemplateModel
+from aiverify_apigw.models import PluginModel, AlgorithmModel, WidgetModel, InputBlockModel, TemplateModel, ProjectTemplateModel
 from aiverify_apigw.lib.constants import InputBlockSize
+from .mock_project_meta import create_mock_project_template_data_meta
 faker = Faker()
 
 
@@ -100,8 +101,8 @@ def _create_mock_input_block(gid: str):
 def _create_mock_template(gid: str):
     cid = ".".join(faker.words()).lower()
     template = json.dumps({"templateKey": faker.word(), "templateValue": faker.word()}).encode("utf-8")
-    project_data = json.dumps({"projectKey": faker.word(), "projectValue": faker.word()}).encode("utf-8")
-    return TemplateModel(
+    project_data = create_mock_project_template_data_meta().model_dump_json().encode('utf-8')
+    model = TemplateModel(
         id=f"{gid}:{cid}",
         cid=cid,
         name=faker.name(),
@@ -114,6 +115,15 @@ def _create_mock_template(gid: str):
         project_data=project_data,
         plugin_id=gid,
     )
+    project_template = ProjectTemplateModel(
+        name=model.name,
+        description=model.description,
+        data=model.project_data,
+        created_at=faker.date_time_this_year(),
+        updated_at=faker.date_time_this_year(),
+        plugin_id=gid,
+    )
+    return (model, project_template)
 
 
 def _create_mock_plugin(num_algo: int | None = None, num_widgets: int | None = None, num_input_blocks: int | None = None, num_templates: int | None = None, is_stock: bool = True):
@@ -129,7 +139,12 @@ def _create_mock_plugin(num_algo: int | None = None, num_widgets: int | None = N
     inputblocks = [_create_mock_input_block(gid) for i in range(num_input_blocks)]
     if num_templates is None:
         num_templates = faker.random_int(min=1, max=2)
-    templates = [_create_mock_template(gid) for i in range(num_templates)]
+    templates = []
+    project_templates = []
+    for i in range(num_templates):
+        model, project_template = _create_mock_template(gid)
+        templates.append(model)
+        project_templates.append(project_template)
     meta = {
         "gid": gid,
         "version": faker.numerify("%!!.%!!.%!!"),  # Generates a semantic version string
@@ -151,6 +166,7 @@ def _create_mock_plugin(num_algo: int | None = None, num_widgets: int | None = N
         widgets=widgets,
         inputblocks=inputblocks,
         templates=templates,
+        project_templates=project_templates,
     )
 
 

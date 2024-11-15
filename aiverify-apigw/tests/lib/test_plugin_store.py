@@ -4,7 +4,7 @@ import pytest
 from pathlib import Path
 from unittest.mock import MagicMock, patch, mock_open
 from aiverify_apigw.lib.plugin_store import PluginStore, PluginStoreException
-from aiverify_apigw.models import PluginModel, AlgorithmModel, WidgetModel, InputBlockModel, TemplateModel
+from aiverify_apigw.models import PluginModel, AlgorithmModel, WidgetModel, InputBlockModel, TemplateModel, ProjectTemplateModel
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -27,6 +27,7 @@ class TestPluginStoreDeleteAllPlugins:
         assert db_session.query(WidgetModel).count() > 0
         assert db_session.query(InputBlockModel).count() > 0
         assert db_session.query(TemplateModel).count() > 0
+        assert db_session.query(ProjectTemplateModel).count() > 0
 
         PluginStore.delete_plugin(plugin.gid)
 
@@ -37,16 +38,19 @@ class TestPluginStoreDeleteAllPlugins:
         assert db_session.query(WidgetModel).count() == len(mock_plugins[1].widgets)
         assert db_session.query(InputBlockModel).count() == len(mock_plugins[1].inputblocks)
         assert db_session.query(TemplateModel).count() == len(mock_plugins[1].templates)
+        assert db_session.query(ProjectTemplateModel).count() == len(mock_plugins[1].project_templates)
 
     @patch("aiverify_apigw.lib.filestore.delete_all_plugins")
     def test_delete_all_plugins(self, mock_delete_all_plugins, db_session, mock_plugins):
         """Test delete_all_plugins method to ensure it deletes plugins from DB."""
         initial_count = db_session.query(PluginModel).count()
         assert initial_count == len(mock_plugins)
-        initial_count = db_session.query(WidgetModel).count()
-        assert initial_count > 0
-        initial_count = db_session.query(AlgorithmModel).count()
-        assert initial_count > 0
+        assert db_session.query(WidgetModel).count() > 0
+        assert db_session.query(AlgorithmModel).count() > 0
+        assert db_session.query(WidgetModel).count() > 0
+        assert db_session.query(InputBlockModel).count() > 0
+        assert db_session.query(TemplateModel).count() > 0
+        assert db_session.query(ProjectTemplateModel).count() > 0
 
         PluginStore.delete_all_plugins()
 
@@ -55,8 +59,12 @@ class TestPluginStoreDeleteAllPlugins:
         new_count = db_session.query(WidgetModel).count()
         assert new_count == 0
         # make sure algorithms also delete, as part of cascade delete
-        new_count = db_session.query(AlgorithmModel).count()
-        assert new_count == 0
+        assert db_session.query(AlgorithmModel).count() == 0
+        assert db_session.query(WidgetModel).count() == 0
+        assert db_session.query(InputBlockModel).count() == 0
+        assert db_session.query(TemplateModel).count() == 0
+        assert db_session.query(ProjectTemplateModel).count() == 0
+        
 
 
 class TestPluginStoreScanStockPlugins:
