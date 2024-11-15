@@ -25,7 +25,7 @@ class ProjectBaseModel:
 class ProjectTemplateModel(BaseORMModel, ProjectBaseModel):
     __tablename__ = "project_template"
 
-    plugin_id: Mapped[Optional[int]] = mapped_column(ForeignKey("plugin.gid"))
+    plugin_id: Mapped[Optional[str]] = mapped_column(ForeignKey("plugin.gid"))
 
     # plugin = relationship("PluginModel", foreign_keys=[plugin_id])
     # base = relationship("ProjectBaseModel", foreign_keys=[id])
