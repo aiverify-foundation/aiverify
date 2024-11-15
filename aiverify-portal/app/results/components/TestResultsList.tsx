@@ -18,15 +18,29 @@ export default function TestResultsList({ testResults }: Props) {
   const [selectedResult, setSelectedResult] = useState<TestResults | null>(null);
   const [results, setResults] = useState<TestResults[]>(testResults); // State for the test results
 
-  const filteredResults = results
-    .filter((result) => result.name.toLowerCase().includes(searchQuery.toLowerCase()))
-    .filter((result) => {
-      if (!activeFilter) return true;
-      return (
-        result.testArguments.modelType === activeFilter.toLowerCase() ||
-        result.cid === activeFilter.toLowerCase()
-      );
-    });
+  const filteredResults = results.filter((result) => {
+    const searchString = `
+      ${result.name}
+      ${result.cid}
+      ${result.gid}
+      ${result.version}
+      ${result.testArguments.testDataset}
+      ${result.testArguments.modelType}
+      ${result.testArguments.groundTruthDataset}
+      ${result.testArguments.groundTruth}
+      ${result.testArguments.algorithmArgs}
+      ${result.testArguments.modelFile}
+      ${result.output}
+    `.toLowerCase();
+  
+    return searchString.includes(searchQuery.toLowerCase());
+  }).filter((result) => {
+    if (!activeFilter) return true;
+    return (
+      result.testArguments.modelType === activeFilter.toLowerCase() ||
+      result.cid === activeFilter.toLowerCase()
+    );
+  });
 
   const sortedResults = filteredResults.sort((a, b) => {
     if (sortBy === 'date-asc') {
