@@ -3,8 +3,10 @@
 import React, { useState } from 'react';
 import { TestResults } from '../../types';
 import { ResultsNameHeader } from './ResultsNameHeader';
-import { updateResultName } from '../../../lib/fetchApis/updateResultName';
+import { updateResultName } from '@/lib/fetchApis/updateResultName';
 import { deleteResult } from '@/lib/fetchApis/deleteTestResult';
+import { getArtifacts } from '@/lib/fetchApis/getArtifacts';
+import JSZip from 'jszip';
 
 type Props = {
   result: TestResults | null;
@@ -14,7 +16,8 @@ type Props = {
 export default function TestResultDetail({ result, onUpdateResult }: Props) {
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<'testArguments' | 'outputArtifacts'>('testArguments');
-  const [currentResult, setCurrentResult] = useState<TestResults | null>(result); // Local state to store result
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [currentResult, setCurrentResult] = useState<TestResults | null>(result);
 
   const handleSaveName = async (id: number, newName: string) => {
     setIsSaving(true);
@@ -68,7 +71,7 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
-
+  
   if (!currentResult) {
     return (
       <div className="text-white text-center mt-20">
@@ -198,11 +201,9 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
                     <ul className="space-y-1 pl-6 list-disc">
                       {currentResult.artifacts.map((artifact, index) => (
                         <li key={index}>
-                          {typeof artifact === 'string' ? (
-                            // If it's a string (e.g., filename), display directly
+                          {typeof artifact === 'string' ? ( // If it's a string (e.g., filename), display directly
                             artifact
-                          ) : (
-                            // Otherwise, display as formatted JSON
+                          ) : ( // Otherwise, display as formatted JSON
                             JSON.stringify(artifact, null, 2)
                           )}
                         </li>
