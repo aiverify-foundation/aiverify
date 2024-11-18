@@ -4,6 +4,7 @@ import datetime
 import json
 import re
 import sys
+from typing import Optional
 import warnings
 from copy import deepcopy
 from math import floor
@@ -25,6 +26,7 @@ from ..metrics.performance_metrics import PerformanceMetrics
 from ..metrics.tradeoff import TradeoffRate
 from ..config.constants import Constants
 from ..util.errors import VeritasError
+from ..util.schema import ModelArtifact
 from ..util.utility import (
     check_multiprocessing,
     input_parameter_filtering,
@@ -951,7 +953,7 @@ class Fairness:
         else:
             self.evaluate_status_indiv_fair = True
 
-    def compile(self, disable=[], n_threads=1, save_artifact=True):
+    def compile(self, disable=[], n_threads=1, save_artifact=True) -> Optional[ModelArtifact]:
         """
         Runs the evaluation function together with the trade-off, feature importance and transparency explain sections and saves all the results to a JSON file locally.
 
@@ -2838,7 +2840,7 @@ class Fairness:
             plt.show()
         print()
 
-    def _generate_model_artifact(self, save_artifact=True):
+    def _generate_model_artifact(self, save_artifact=True) -> Optional[ModelArtifact]:
         """
         Generates the JSON file to be saved locally at the end of compile()
 
