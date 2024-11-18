@@ -142,3 +142,12 @@ def mock_test_results(db_session, mock_plugins):
     db_session.query(TestDatasetModel).delete()
     db_session.query(TestArtifactModel).delete()
     db_session.commit()
+
+
+@pytest.fixture(scope="function")
+def mock_project_template(db_session):
+    from .mocks.mock_data_project import create_mock_project_templates
+    project_template = create_mock_project_templates(db_session)
+    db_session.commit()
+    yield project_template
+    db_session.delete(project_template)
