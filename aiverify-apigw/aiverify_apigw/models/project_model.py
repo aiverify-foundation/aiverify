@@ -1,6 +1,6 @@
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import ForeignKey
-from typing import Optional, List
+from typing import Optional
 from datetime import datetime
 
 from .base_model import BaseORMModel
