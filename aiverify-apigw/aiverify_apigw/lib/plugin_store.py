@@ -601,11 +601,15 @@ class PluginStore:
     @classmethod
     def validate_template(cls, template_path: Path, meta_path: Path) -> tuple[TemplateMeta, Any, ProjectTemplateMeta, Any]:
         meta_json = read_and_validate(meta_path, template_schema)
+        if meta_json is None:
+            raise PluginStoreException(f"{meta_path.name} is invalid")
         meta = TemplateMeta.model_validate(meta_json)
         data_path = template_path.joinpath(f"{meta.cid}.data.json")
         if not data_path.exists():
             raise PluginStoreException(f"Template {meta.cid} is missing data file")
         data_json = read_and_validate(data_path, template_data_schema)
+        if data_json is None:
+            raise PluginStoreException(f"{data_path.name} is invalid")
         data = ProjectTemplateMeta.model_validate(data_json)
         return (meta, meta_json, data, data_json)
 
