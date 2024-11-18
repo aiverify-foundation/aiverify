@@ -5,10 +5,11 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Tuple, Union, Any
+from typing import Dict, Tuple, Union
 
 from aiverify_veritastool.model.model_container import ModelContainer
 from aiverify_veritastool.usecases.base_classification import BaseClassification
+from aiverify_veritastool.util.schema import ModelArtifact
 from aiverify_test_engine.interfaces.idata import IData
 from aiverify_test_engine.interfaces.imodel import IModel
 from aiverify_test_engine.interfaces.ipipeline import IPipeline
@@ -18,6 +19,8 @@ from aiverify_test_engine.plugins.enums.model_type import ModelType
 from aiverify_test_engine.plugins.enums.plugin_type import PluginType
 from aiverify_test_engine.plugins.plugins_manager import PluginManager
 from aiverify_test_engine.utils.json_utils import (
+    load_schema_file,
+    validate_json,
     remove_numpy_formats,
     validate_test_result_schema,
 )
@@ -218,7 +221,7 @@ class AlgoInit:
             print(f"Error creating Veritas container:: {str(e)}")
             sys.exit(-1)
 
-    def _run_veritas_assessment(self) -> Dict[str, Any]:
+    def _run_veritas_assessment(self) -> ModelArtifact:
         """Run the Veritas fairness assessment"""
         try:
             container = self._create_veritas_container()
@@ -282,6 +285,7 @@ class AlgoInit:
             self._time_taken = time.time() - self._start_time
 
             # Process and validate results
+            results = results.dict()
             results = remove_numpy_formats(results)
             is_success, error_messages = self._verify_task_results(results)
             if is_success:
@@ -339,8 +343,7 @@ class AlgoInit:
             )
 
             output_json = output.json(exclude_none=True, indent=4)
-            # TODO: Add validation logic against output.schema.json here
-            if validate_test_result_schema(json.loads(output_json)) or True:
+            if validate_test_result_schema(json.loads(output_json)) is True:
                 with open(output_path, "w") as f:
                     f.write(output_json)
             else:
@@ -363,21 +366,20 @@ class AlgoInit:
         is_success = True
         error_message = ""
 
-        # TODO: Add validation logic against output.schema.json here
         # Check that results type is dict
-        # if type(task_result) is not dict:
-        #     # Raise error - wrong type
-        #     is_success = False
-        #     error_message = f"Invalid type for results: {type(task_result).__name__}"
+        if type(task_result) is not dict:
+            # Raise error - wrong type
+            is_success = False
+            error_message = f"Invalid type for results: {type(task_result).__name__}"
 
-        # else:
-        #     # Validate the json result with the relevant schema.
-        #     # Check that it meets the required format before sending out to the UI for display
-        #     if not validate_json(
-        #         task_result,
-        #         load_schema_file(str(Path(__file__).parent / "output.schema.json")),
-        #     ):
-        #         is_success = False
-        #         error_message = "Failed schema validation"
+        else:
+            # Validate the json result with the relevant schema.
+            # Check that it meets the required format before sending out to the UI for display
+            if not validate_json(
+                task_result,
+                load_schema_file(str(Path(__file__).parent / "output.schema.json")),
+            ):
+                is_success = False
+                error_message = "Failed schema validation"
 
         return is_success, error_message

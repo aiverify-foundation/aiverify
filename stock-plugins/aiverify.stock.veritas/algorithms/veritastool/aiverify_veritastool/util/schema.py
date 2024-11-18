@@ -1,6 +1,6 @@
 import warnings
 import json
-from typing import Dict, List, Optional, Union, Literal
+from typing import Dict, List, Optional, Tuple, Union, Literal
 from pydantic import BaseModel, Field, ValidationError
 
 
@@ -114,10 +114,10 @@ class ModelArtifact(BaseModel):
     )
 
 
-def validate_model_artifact(data: dict) -> Union[bool, List[str]]:
+def parse_model_artifact(data: dict) -> Tuple[Optional[ModelArtifact], List[str]]:
     """
-    Validates whether a dictionary conforms to the ModelArtifact schema.
-    Returns True if valid, or a list of validation error messages if invalid.
+    Parses and validates a dictionary into a ModelArtifact instance.
+    Returns a tuple of (ModelArtifact instance if valid or None, list of messages)
 
     Parameters
     ----------
@@ -126,11 +126,12 @@ def validate_model_artifact(data: dict) -> Union[bool, List[str]]:
 
     Returns
     -------
-    Union[bool, List[str]]
-        - True if validation passes
-        - List of error messages if validation fails
-
+    Tuple[Optional[ModelArtifact], List[str]]
+        - First element: ModelArtifact instance if validation passes, None if it fails
+        - Second element: List of warning/error messages (empty if no issues)
     """
+    messages = []
+
     # Check for missing or None top-level keys
     top_level_keys = ["fairness", "transparency"]
 
@@ -140,30 +141,28 @@ def validate_model_artifact(data: dict) -> Union[bool, List[str]]:
         elif data[key] is None:
             warnings.warn(f"{key} key is present but value is None")
 
-    # If no keys are present at all, we should probably fail validation
+    # If no keys are present at all, fail validation
     if not any(key in data for key in top_level_keys):
-        return ["At least one of 'fairness' or 'transparency' must be present"]
+        messages.append("Error: At least one of 'fairness' or 'transparency' must be present")
+        return None, messages
 
     try:
-        ModelArtifact.parse_obj(data)
-        return True
+        artifact = ModelArtifact.parse_obj(data)
+        return artifact, messages
 
     except ValidationError as e:
-        # Collect all error messages
-        errors = []
+        # Add validation error messages
         for error in e.errors():
-            # Get field location and error message
             location = " -> ".join(str(loc) for loc in error["loc"])
             message = error["msg"]
-            errors.append(f"{location}: {message}")
+            messages.append(f"Error at {location}: {message}")
 
-        return errors
+        return None, messages
 
 
-def validate_json_artifact(json_path: str) -> Union[bool, List[str]]:
+def parse_model_artifact_json(json_path: str) -> Tuple[Optional[ModelArtifact], List[str]]:
     """
-    Validates whether a JSON file conforms to the ModelArtifact schema.
-    Returns True if valid, or a list of validation error messages if invalid.
+    Parses and validates a JSON file into a ModelArtifact instance.
 
     Parameters
     ----------
@@ -172,15 +171,16 @@ def validate_json_artifact(json_path: str) -> Union[bool, List[str]]:
 
     Returns
     -------
-    Union[bool, List[str]]
-        - True if validation passes
-        - List of error messages if validation fails
-
+    Tuple[Optional[ModelArtifact], List[str]]
+        - First element: ModelArtifact instance if validation passes, None if it fails
+        - Second element: List of warning/error messages (empty if no issues)
     """
     try:
         with open(json_path) as f:
             data = json.load(f)
     except FileNotFoundError:
-        return [f"File not found: {json_path}"]
+        return None, [f"Error: File not found: {json_path}"]
+    except json.JSONDecodeError as e:
+        return None, [f"Error: Invalid JSON file: {str(e)}"]
 
-    return validate_model_artifact(data)
+    return parse_model_artifact(data)

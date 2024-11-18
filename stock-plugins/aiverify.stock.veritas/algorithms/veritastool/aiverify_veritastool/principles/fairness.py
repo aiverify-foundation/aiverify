@@ -26,7 +26,7 @@ from ..metrics.performance_metrics import PerformanceMetrics
 from ..metrics.tradeoff import TradeoffRate
 from ..config.constants import Constants
 from ..util.errors import VeritasError
-from ..util.schema import ModelArtifact
+from ..util.schema import ModelArtifact, parse_model_artifact
 from ..util.utility import (
     check_multiprocessing,
     input_parameter_filtering,
@@ -2944,19 +2944,20 @@ class Fairness:
         filename = "model_artifact_" + model_name + datetime.datetime.today().strftime("%Y%m%d_%H%M") + ".json"
         artifact["fairness"] = artifact_fair
         artifact["transparency"] = self.tran_artifact
-        self.artifact = artifact
+        self.artifact, err = parse_model_artifact(artifact)
 
-        if all(value is None for value in artifact.values()):
+        if not self.artifact:
+            print(err)
+        elif self.artifact.fairness is None and self.artifact.transparency is None:
             print("skipped")
         elif save_artifact:
-            artifactJson = json.dumps(artifact, cls=NpEncoder)
-            jsonFile = open(filename, "w")
-            jsonFile.write(artifactJson)
-            jsonFile.close()
-            print("done")
-            print("Saved model artifact to " + filename)
+            data = self.artifact.dict()
+            with open(filename, "w") as f:
+                f.write(json.dumps(data, cls=NpEncoder))
+                print("done")
+                print("Saved model artifact to " + filename)
         else:
-            return artifact
+            return self.artifact
 
     def _fairness_widget(self):
         """
