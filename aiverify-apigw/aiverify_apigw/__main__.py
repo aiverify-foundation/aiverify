@@ -40,7 +40,7 @@ def custom_openapi():
     try:
         paths = openapi_schema["paths"]
         components = openapi_schema["components"]
-        upload_key = "/test_result/upload"
+        upload_key = "/test_results/upload"
         if upload_key in paths:
             # add type of test_result field to "object". Is there a better way to force the type to object?
             path = paths[upload_key]["post"]

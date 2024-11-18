@@ -9,6 +9,8 @@ urllib.parse.uses_relative.append("s3")
 urllib.parse.uses_netloc.append("s3")
 from urllib.parse import urljoin
 import io
+import json
+from typing import Any
 
 from .s3 import MyS3
 from .logging import logger
@@ -116,6 +118,14 @@ def get_plugin_folder(gid: str) -> Path | str:
         return urljoin(base_plugin_dir, f"{gid}/")
 
 
+def get_plugin_mdx_bundles_folder(gid: str) -> Path | str:
+    plugin_path = get_plugin_folder(gid)
+    if isinstance(plugin_path, Path):
+        return plugin_path.joinpath("mdx_bundles")
+    else:
+        return urljoin(plugin_path, "mdx_bundles/")
+
+
 def get_plugin_component_folder(gid: str, component_type: str) -> Path | str:
     plugin_path = get_plugin_folder(gid)
     if isinstance(plugin_path, Path):
@@ -200,6 +210,18 @@ def save_plugin(gid: str, source_dir: Path):
     return _save_plugin(source_dir, folder, zip_filename, hash_filename)
 
 
+def save_mdx_bundles(gid: str, source_dir: Path):
+    # source_bundles_path = source_dir.joinpath("mdx_bundles")
+    bundler_folder = get_plugin_mdx_bundles_folder(gid)
+    if isinstance(bundler_folder, Path):
+        shutil.copytree(source_dir, bundler_folder, dirs_exist_ok=True)
+    elif s3 is not None:
+        if s3.check_s3_prefix_exists(bundler_folder):
+            s3.delete_objects_under_prefix(bundler_folder)  # if prefix exists, delete
+        # s3.upload_directory_to_s3(source_dir, folder)
+        s3.upload_directory_to_s3(source_dir, bundler_folder)
+
+
 def save_plugin_algorithm(gid: str, cid: str, source_dir: Path):
     folder = get_plugin_component_folder(gid, "algorithms")
     logger.debug(f"Save algorithm {cid} folder from {source_dir} to {folder}")
@@ -209,7 +231,8 @@ def save_plugin_algorithm(gid: str, cid: str, source_dir: Path):
 
 
 def save_plugin_widgets(gid: str, source_dir: Path):
-    folder = get_plugin_component_folder(gid, "widgets")
+    # folder = get_plugin_component_folder(gid, "widgets")
+    folder = get_plugin_folder(gid)
     logger.debug(f"Save widgets folder from {source_dir} to {folder}")
     zip_filename = "widgets.zip"
     hash_filename = "widgets.hash"
@@ -217,7 +240,8 @@ def save_plugin_widgets(gid: str, source_dir: Path):
 
 
 def save_plugin_inputs(gid: str, source_dir: Path):
-    folder = get_plugin_component_folder(gid, "inputs")
+    # folder = get_plugin_component_folder(gid, "inputs")
+    folder = get_plugin_folder(gid)
     logger.debug(f"Save inputs folder from {source_dir} to {folder}")
     zip_filename = "inputs.zip"
     hash_filename = "inputs.hash"
@@ -273,6 +297,36 @@ def get_plugin_zip(gid: str) -> bytes:
 def get_plugin_algorithm_zip(gid: str, cid: str) -> bytes:
     folder = get_plugin_component_folder(gid, "algorithms")
     zip_filename = f"{cid}.zip"
+    return _get_zip(folder, zip_filename)
+
+
+def get_plugin_widgets_zip(gid: str) -> bytes:
+    folder = get_plugin_folder(gid)
+    zip_filename = "widgets.zip"
+    return _get_zip(folder, zip_filename)
+
+
+def get_plugin_mdx_bundle(gid: str, cid: str, summary: bool = False) -> Any:
+    bundle_folder = get_plugin_mdx_bundles_folder(gid)
+    filename = f"{cid}.summary.bundle.json" if summary else f"{cid}.bundle.json"
+    if isinstance(bundle_folder, Path):
+        bundle_path = bundle_folder.joinpath(filename)
+        if not bundle_path.exists():
+            raise FileNotFoundError("Bundle not found")
+        with open(bundle_path, "rb") as fp:
+            return json.load(fp)
+    elif s3 is not None:
+        bundle_key = urljoin(bundle_folder, filename)
+        if not s3.check_s3_object_exists(bundle_key):
+            raise FileNotFoundError("Bundle not found")
+        # s3.upload_directory_to_s3(source_dir, folder)
+        obj = s3.get_object(bundle_key)
+        return json.loads(obj)
+
+
+def get_plugin_inputs_zip(gid: str) -> bytes:
+    folder = get_plugin_folder(gid)
+    zip_filename = "inputs.zip"
     return _get_zip(folder, zip_filename)
 
 

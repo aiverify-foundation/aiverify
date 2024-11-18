@@ -1,8 +1,12 @@
 from pydantic import BaseModel, Field, HttpUrl, TypeAdapter, AnyHttpUrl
 from typing import Optional, List
+from datetime import datetime
 
 from ..models import PluginModel
 from .algorithm import AlgorithmOutput
+from .widget import WidgetOutput
+from .input_block import InputBlockOutput
+from .template import TemplateOutput
 
 
 class PluginMeta(BaseModel):
@@ -28,6 +32,11 @@ class PluginOutput(PluginMeta):
     is_stock: bool = Field(description="Whether this is a stock plugin", default=False)
     zip_hash: Optional[str] = Field(description="File hash of plugin zip")
     algorithms: List[AlgorithmOutput] = Field(description="List of algorithms", default=[])
+    widgets: List[WidgetOutput] = Field(description="List of widgets", default=[])
+    input_blocks: List[InputBlockOutput] = Field(description="List of input blocks", default=[])
+    templates: List[TemplateOutput] = Field(description="List of templates", default=[])
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
     @classmethod
     def from_model(cls, result: PluginModel) -> "PluginOutput":
@@ -42,6 +51,11 @@ class PluginOutput(PluginMeta):
             url=url,
             meta=result.meta.decode("utf-8"),
             algorithms=[AlgorithmOutput.from_model(algo) for algo in result.algorithms],
+            widgets=[WidgetOutput.from_model(widget) for widget in result.widgets],
+            input_blocks=[InputBlockOutput.from_model(ib) for ib in result.inputblocks],
+            templates=[TemplateOutput.from_model(template) for template in result.templates],
             zip_hash=result.zip_hash,
+            created_at=result.created_at,
+            updated_at=result.updated_at,
         )
         return obj

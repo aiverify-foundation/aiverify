@@ -19,7 +19,7 @@ from ..schemas import TestResult, TestResultOutput, TestResultUpdate
 from ..schemas.load_examples import test_result_examples
 from ..models import AlgorithmModel, TestModelModel, TestResultModel, TestDatasetModel, TestArtifactModel
 
-router = APIRouter(prefix="/test_result", tags=["test_result"])
+router = APIRouter(prefix="/test_results", tags=["test_result"])
 
 
 # @router.get("/")
@@ -169,8 +169,8 @@ async def _save_test_result(session: Session, test_result: TestResult, artifact_
 
     logger.debug(f"Number of saved artifacts: {len(test_result_model.artifacts)}")
     logger.info(f"Test result uploaded: {test_result_model}")
-    urls = [f"/test_result/{test_result_id}/artifacts/{artifact.filename}" for artifact in test_result_model.artifacts]
-    return [f"/test_result/{test_result_id}"] + urls
+    urls = [f"/test_results/{test_result_id}/artifacts/{artifact.filename}" for artifact in test_result_model.artifacts]
+    return [f"/test_results/{test_result_id}"] + urls
 
 
 @router.post("/upload")

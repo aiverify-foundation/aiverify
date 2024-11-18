@@ -1,5 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional, Literal, Annotated
+import json
+from ..models import WidgetModel
 
 
 class WidgetMetaSize(BaseModel):
@@ -68,3 +70,33 @@ class WidgetMeta(BaseModel):
         default=None, description="Sample data to be fed into the widget in canvas mode", max_length=256
     )
     dynamicHeight: Optional[bool] = Field(default=False, description="Whether this widget has dynamic height")
+
+
+class WidgetOutput (WidgetMeta):
+    gid: Optional[str] = Field(
+        description="Unique global identifier for the plugin",
+        min_length=1,
+        max_length=128,
+        pattern=r"^[a-zA-Z0-9][a-zA-Z0-9-._]*$",
+    )
+
+    @classmethod
+    def from_model(cls, result: WidgetModel) -> "WidgetOutput":
+        obj = cls(
+            cid=result.cid,
+            gid=result.plugin.gid,
+            name=result.name,
+            version=result.version,
+            author=result.author,
+            description=result.description,
+            widgetSize=WidgetMetaSize.model_validate_json(result.widget_size.decode('utf-8')),
+            properties=[WidgetMetaProperty.model_validate_json(prop) for prop in json.loads(
+                result.properties.decode('utf-8'))] if result.properties else None,
+            # tags=result.tags,
+            dependencies=[WidgetMetaDependency.model_validate_json(dep) for dep in json.loads(
+                result.dependencies.decode('utf-8'))] if result.dependencies else None,
+            mockdata=[WidgetMetaMockData.model_validate_json(mock) for mock in json.loads(
+                result.mockdata.decode('utf-8'))] if result.mockdata else None,
+            dynamicHeight=result.dynamic_height
+        )
+        return obj
