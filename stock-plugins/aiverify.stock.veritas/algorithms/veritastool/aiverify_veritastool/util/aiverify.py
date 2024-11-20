@@ -4,7 +4,7 @@ import re
 import warnings
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 
 from aiverify_test_engine.interfaces.itestresult import ITestArguments, ITestResult
 from aiverify_test_engine.utils.json_utils import load_schema_file, validate_json, validate_test_result_schema
@@ -133,6 +133,100 @@ def is_base64_image(s: str) -> bool:
     return False
 
 
+def infer_model_type(results: dict) -> Literal["classification", "regression"]:
+    """
+    Infer whether the model is classification or regression based on model artifact fields.
+
+    Parameters
+    ----------
+    results : dict
+        The model artifact dictionary
+
+    Notes
+    -----
+    Classification models typically have:
+    - class_distribution field
+    - weighted_confusion_matrix with tp, fp, tn, fn
+    - fairness metrics related to classification (e.g. disparate impact)
+
+    Regression models typically:
+    - Don't have class_distribution
+    - Don't have confusion matrix
+    - Have regression-specific metrics
+    """
+    fairness = results.get("fairness")
+    if fairness is None:
+        raise RuntimeError("Cannot infer model type - fairness data is missing")
+
+    if "class_distribution" in fairness and fairness["class_distribution"]:
+        return "classification"
+
+    wcm = fairness.get("weighted_confusion_matrix")
+    if (
+        wcm
+        and any(metric in wcm for metric in ["tp", "fp", "tn", "fn"])
+        and all(wcm[metric] in wcm for metric in ["tp", "fp", "tn", "fn"])
+    ):
+        return "classification"
+
+    # Check fairness metrics
+    features = fairness.get("features", {})
+    if features:
+        # Get first feature's metrics
+        first_feature = next(iter(features.values()))
+        fair_metrics = first_feature.get("fair_metric_values", {})
+
+        # Classification-specific metrics
+        classification_metrics = {
+            "Demographic Parity",
+            "Equal Opportunity",
+            "False Positive Rate Parity",
+            "True Negative Rate Parity",
+        }
+
+        # Regression-specific metrics
+        regression_metrics = {
+            "Root Mean Squared Error",
+            "Mean Absolute Percentage Error",
+            "Weighted Absolute Percentage Error",
+        }
+
+        metric_names = set(fair_metrics.keys())
+
+        if metric_names & classification_metrics:
+            return "classification"
+        if metric_names & regression_metrics:
+            return "regression"
+
+    # Fallback - look at performance metrics
+    perf_metrics = fairness.get("perf_metric_values", {})
+    if perf_metrics:
+        # Classification-specific metrics
+        if any(
+            metric in perf_metrics.keys()
+            for metric in [
+                "Demographic Parity",
+                "Equal Opportunity",
+                "False Positive Rate Parity",
+                "True Negative Rate Parity",
+            ]
+        ):
+            return "classification"
+
+        # Regression-specific metrics
+        if any(
+            metric in perf_metrics.keys()
+            for metric in [
+                "Root Mean Squared Error",
+                "Mean Absolute Percentage Error",
+                "Weighted Absolute Percentage Error",
+            ]
+        ):
+            return "regression"
+
+    raise RuntimeError("Cannot definitively infer model type from the data")
+
+
 def convert_veritas_artifact_to_aiverify(
     model_artifact_path: Optional[str] = None,
     model_artifact: Optional[ModelArtifact] = None,
@@ -168,8 +262,15 @@ def convert_veritas_artifact_to_aiverify(
     meta_file = json.load(f)
 
     model_type = test_args.get("model_type", "")
+    if not model_type:
+        try:
+            model_type = infer_model_type(results)
+        except RuntimeError as e:
+            raise RuntimeError(f"Could not determine model type: {str(e)}")
+
     if model_type not in ["classification", "regression"]:
-        raise RuntimeError("Invalid model type - model_type in test_args must be either classification or regression")
+        raise RuntimeError("Invalid model type - must be either classification or regression")
+
     model_path = test_args.get("model_path", "")
     ground_truth = get_test_arg_or_warn(test_args, "ground_truth")
     data_path = get_test_arg_or_warn(test_args, "data_path")
