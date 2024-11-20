@@ -7,9 +7,13 @@ from pathlib import Path
 from typing import Any, Literal, Optional
 
 from aiverify_test_engine.interfaces.itestresult import ITestArguments, ITestResult
-from aiverify_test_engine.utils.json_utils import load_schema_file, validate_json, validate_test_result_schema
+from aiverify_test_engine.utils.json_utils import (
+    load_schema_file,
+    remove_numpy_formats,
+    validate_json,
+    validate_test_result_schema,
+)
 from aiverify_veritastool.util.schema import ModelArtifact, parse_model_artifact_json
-from jsonschema.validators import validate
 
 
 def save_base64_image(base64_str: str, output_dir: Path, image_name: str) -> str:
@@ -247,10 +251,8 @@ def convert_veritas_artifact_to_aiverify(
         raise RuntimeError("Model artifact is None")
 
     results = model_artifact.dict()
+    results = remove_numpy_formats(results)
     module_root = Path(__file__).parent.parent
-
-    schema = load_schema_file(str(module_root / "output.schema.json"))
-    validate(instance=results, schema=schema)
 
     if not validate_json(
         results,
