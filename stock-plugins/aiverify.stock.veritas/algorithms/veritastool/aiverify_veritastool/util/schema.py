@@ -77,7 +77,7 @@ class PermutationScore(BaseModel):
 
 class FeatureInfo(BaseModel):
     Feature_name: str
-    Value: float
+    Value: Optional[float] = None
     Shap: float
 
 
@@ -98,7 +98,7 @@ class ModelDetails(BaseModel):
 
 
 class TransparencyResults(BaseModel):
-    permutation: Optional[Dict[str, Union[str, List[PermutationScore]]]] = Field(
+    permutation: Optional[Dict[str, Optional[Union[str, List[PermutationScore]]]]] = Field(
         None, description="Contains permutation importance scores with title, footnote and scores"
     )
     model_list: List[ModelDetails] = Field(description="List of model specific transparency results")

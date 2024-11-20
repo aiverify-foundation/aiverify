@@ -248,13 +248,22 @@
                     ],
                     "properties": {
                         "title": {
-                            "type": "string"
+                            "type": [
+                                "string",
+                                "null"
+                            ]
                         },
                         "footnote": {
-                            "type": "string"
+                            "type": [
+                                "string",
+                                "null"
+                            ]
                         },
                         "scores": {
-                            "type": "array",
+                            "type": [
+                                "array",
+                                "null"
+                            ],
                             "items": {
                                 "type": "object",
                                 "required": [
@@ -329,7 +338,6 @@
                                                 "type": "object",
                                                 "required": [
                                                     "Feature_name",
-                                                    "Value",
                                                     "Shap"
                                                 ],
                                                 "properties": {
@@ -337,7 +345,10 @@
                                                         "type": "string"
                                                     },
                                                     "Value": {
-                                                        "type": "number"
+                                                        "type": [
+                                                            "number",
+                                                            "null"
+                                                        ]
                                                     },
                                                     "Shap": {
                                                         "type": "number"
