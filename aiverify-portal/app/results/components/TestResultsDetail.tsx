@@ -33,7 +33,7 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
   const handleSaveName = async (id: number, newName: string) => {
     setIsSaving(true);
     try {
-      await updateResultName(id, newName); 
+      await updateResultName(id, newName);
       setModalMessage('Name updated successfully!');
       setIsModalVisible(true);
       if (onUpdateResult && currentResult) {
@@ -84,11 +84,11 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
   const handleArtifactClick = async (artifact: { id: number; name: string }) => {
     try {
       console.log("Fetching artifact:", artifact);
-      
+
       // Fetch the artifact data
       const fetchedArtifact = await getArtifacts(artifact.id, artifact.name);
       console.log("Fetched artifact:", fetchedArtifact);
-  
+
       // Set the artifact in modal
       setSelectedArtifact(fetchedArtifact);
       setModalOpen(true);
@@ -97,7 +97,7 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
       alert("Failed to load artifact. Please try again.");
     }
   };
-  
+
   const closeModal = () => {
     setModalOpen(false);
     setSelectedArtifact(null);
@@ -107,7 +107,7 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
     if (selectedArtifact) {
       let blob;
       const fileName = selectedArtifact.name || 'artifact';
-  
+
       // Use the Blob directly if it's an image or any binary file
       if (selectedArtifact.data instanceof Blob) {
         blob = selectedArtifact.data;
@@ -126,7 +126,7 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
         console.error('Unsupported artifact data:', selectedArtifact);
         return;
       }
-  
+
       // Create a downloadable link
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -138,27 +138,27 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
       URL.revokeObjectURL(url);
     }
   };
-  
+
   const handleDownloadAllArtifacts = async () => {
     if (!currentResult || !Array.isArray(currentResult.artifacts) || currentResult.artifacts.length === 0) {
       alert('No artifacts to download.');
       return;
     }
-  
+
     setIsDownloading(true);
     const zip = new JSZip();
-  
+
     try {
       for (const artifactName of currentResult.artifacts) {
         try {
           const fetchedArtifact = await getArtifacts(currentResult.id, artifactName);
-  
+
           // Check if fetchedArtifact and its type are valid
           if (!fetchedArtifact || !fetchedArtifact.data) {
             console.error(`Invalid fetched artifact for ${artifactName}:`, fetchedArtifact);
             continue;
           }
-  
+
           let blob;
           if (fetchedArtifact.data instanceof Blob) {
             blob = fetchedArtifact.data;
@@ -177,17 +177,17 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
             console.error(`Unsupported artifact data type for ${artifactName}:`, fetchedArtifact);
             continue;
           }
-  
+
           zip.file(artifactName, blob);
         } catch (error) {
           console.error(`Failed to fetch artifact ${artifactName}:`, error);
         }
       }
-  
+
       // Generate the ZIP file
       const zipBlob = await zip.generateAsync({ type: 'blob' });
       const url = URL.createObjectURL(zipBlob);
-  
+
       // Create a temporary link element
       const a = document.createElement('a');
       a.href = url;
@@ -195,7 +195,7 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-  
+
       // Revoke the object URL to free up memory
       URL.revokeObjectURL(url);
     } catch (error) {
@@ -205,7 +205,7 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
       setIsDownloading(false);
     }
   };
-  
+
   if (!currentResult) {
     return (
       <div className="text-white text-center mt-20">
@@ -217,8 +217,8 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
   return (
     <div className="bg-secondary-950 h-full text-white rounded-lg shadow-lg p-6 overflow-y-auto">
       {/* popup for name update and deleting */}
-        {isModalVisible && (
-          <div className='fixed inset-0 flex items-center justify-center z-50'>
+      {isModalVisible && (
+        <div className='fixed inset-0 flex items-center justify-center z-50'>
           <Modal
             bgColor="var(--color-primary-500)"
             textColor="white"
@@ -229,8 +229,8 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
           >
             <p>{modalMessage}</p>
           </Modal>
-          </div>
-        )}
+        </div>
+      )}
       <div className="border-b border-gray-700 pb-4 mb-4">
         <ResultsNameHeader
           id={currentResult.id}
@@ -266,17 +266,15 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
       <div>
         <div className="flex justify-start space-x-1 mb-4">
           <button
-            className={`py-2 px-6 rounded-t ${
-              activeTab === 'testArguments' ? 'border-b-4 border-primary-500 bg-secondary-200 text-secondary-950 font-semibold' : 'text-secondary-950 bg-secondary-300'
-            }`}
+            className={`py-2 px-6 rounded-t ${activeTab === 'testArguments' ? 'border-b-4 border-primary-500 bg-secondary-200 text-secondary-950 font-semibold' : 'text-secondary-950 bg-secondary-300'
+              }`}
             onClick={() => setActiveTab('testArguments')}
           >
             Algorithm Arguments
           </button>
           <button
-            className={`py-2 px-6 rounded-t ${
-              activeTab === 'outputArtifacts' ? 'border-b-4 border-primary-500 bg-secondary-200 text-secondary-950 font-semibold' : 'text-secondary-950 bg-secondary-300'
-            }`}
+            className={`py-2 px-6 rounded-t ${activeTab === 'outputArtifacts' ? 'border-b-4 border-primary-500 bg-secondary-200 text-secondary-950 font-semibold' : 'text-secondary-950 bg-secondary-300'
+              }`}
             onClick={() => setActiveTab('outputArtifacts')}
           >
             Output & Artifacts
@@ -291,23 +289,23 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
                 <pre className="bg-secondary-800 p-4 whitespace-pre-wrap">
                   {typeof currentResult.testArguments.algorithmArgs === 'string'
                     ? JSON.stringify(
-                        JSON.parse(JSON.parse(currentResult.testArguments.algorithmArgs)), // Double parse
-                        null,
-                        2
-                      )
+                      JSON.parse(JSON.parse(currentResult.testArguments.algorithmArgs)), // Double parse
+                      null,
+                      2
+                    )
                     : JSON.stringify(currentResult.testArguments.algorithmArgs, null, 2)}
                 </pre>
               </div>
               <div className="flex justify-end mt-4 overflow-y-auto">
                 <Button
-                    pill
-                    textColor="white"
-                    variant={ButtonVariant.PRIMARY}
-                    size="sm"
-                    text="DOWNLOAD"
-                    color='primary-950'
-                    onClick={handleDownloadJson}
-                  />
+                  pill
+                  textColor="white"
+                  variant={ButtonVariant.PRIMARY}
+                  size="sm"
+                  text="DOWNLOAD"
+                  color='primary-950'
+                  onClick={handleDownloadJson}
+                />
               </div>
             </div>
           )}
@@ -319,10 +317,10 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
                   <pre className="bg-secondary-800 p-4 whitespace-pre-wrap">
                     {typeof currentResult.output === 'string'
                       ? JSON.stringify(
-                          JSON.parse(JSON.parse(currentResult.output)), // Double parse
-                          null,
-                          2
-                        )
+                        JSON.parse(JSON.parse(currentResult.output)), // Double parse
+                        null,
+                        2
+                      )
                       : JSON.stringify(currentResult.output, null, 2)}
                   </pre>
                 </div>

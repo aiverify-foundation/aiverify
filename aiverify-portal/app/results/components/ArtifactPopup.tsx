@@ -26,7 +26,6 @@ const ArtifactModal = ({ isOpen, artifact, onClose, onDownload }: ArtifactModalP
           artifact.type === 'application/json'
             ? JSON.stringify(JSON.parse(artifact.data), null, 2) // JSON stringified for readability
             : artifact.data;
-          
 
         return (
           <pre className="bg-secondary-800 max-h-80 text-white p-4 overflow-y-auto whitespace-pre-wrap">

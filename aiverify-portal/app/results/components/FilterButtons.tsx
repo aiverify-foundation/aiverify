@@ -46,7 +46,7 @@ export default function ResultsFilters({
 
   const [searchQuery, setSearchQuery] = useState('');
   const handleSearchChange = (value: string) => {
-    setSearchQuery(value); 
+    setSearchQuery(value);
     onSearch(value);
   };
 

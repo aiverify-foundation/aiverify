@@ -33,7 +33,7 @@ export default function TestResultsList({ testResults }: Props) {
       ${result.testArguments.modelFile}
       ${result.output}
     `.toLowerCase();
-  
+
     return searchString.includes(searchQuery.toLowerCase());
   }).filter((result) => {
     if (!activeFilter) return true;

@@ -10,7 +10,7 @@ const ActionButtons: React.FC = () => (
       size="sm"
       text="RUN NEW TESTS"
     />
-    
+
     <Button
       pill
       textColor="white"

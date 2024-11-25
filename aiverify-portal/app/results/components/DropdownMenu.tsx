@@ -65,7 +65,7 @@ const Dropdown = ({
     if (isOpen && dropdownRef.current) {
       const dropdownRect = dropdownRef.current.getBoundingClientRect();
       const viewportWidth = window.innerWidth;
-      
+
       const needsLeftAlign = dropdownRect.right > viewportWidth;
       const needsBottomAlign = dropdownRect.bottom > window.innerHeight;
 
@@ -86,17 +86,16 @@ const Dropdown = ({
     }
   }, [data]);
 
-  const dropdownClass = `absolute w-full min-w-[400px] overflow-y-auto py-3 rounded shadow-md z-10 border-secondary-300 bg-secondary-950 ${
-    dynamicPosition === 'bottom-right' ? 'top-full right-0 mt-2' :
-    dynamicPosition === 'bottom-left' ? 'top-full left-0 mt-2' :
-    dynamicPosition === 'top-right' ? 'bottom-full right-0 mb-2' :
-    'bottom-full left-0 mb-2'
-  }`;
+  const dropdownClass = `absolute w-full min-w-[400px] overflow-y-auto py-3 rounded shadow-md z-10 border-secondary-300 bg-secondary-950 ${dynamicPosition === 'bottom-right' ? 'top-full right-0 mt-2' :
+      dynamicPosition === 'bottom-left' ? 'top-full left-0 mt-2' :
+        dynamicPosition === 'top-right' ? 'bottom-full right-0 mb-2' :
+          'bottom-full left-0 mb-2'
+    }`;
 
   return (
     <div ref={dropdownRef} className='relative'>
-      <span 
-        ref={measureRef} 
+      <span
+        ref={measureRef}
         style={{
           position: 'absolute',
           visibility: 'hidden',
@@ -110,9 +109,8 @@ const Dropdown = ({
         aria-expanded={isOpen}
         type='button'
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex justify-between items-center gap-2 rounded py-2 px-4 border ${
-          selectedItem ? 'bg-blue-500 text-white' : 'bg-secondary-950 text-gray-700'
-        } ${style}`}
+        className={`flex justify-between items-center gap-2 rounded py-2 px-4 border ${selectedItem ? 'bg-blue-500 text-white' : 'bg-secondary-950 text-gray-700'
+          } ${style}`}
         style={{ minWidth: maxWidth + 40 }}
       >
         <span>{selectedItem?.name || title}</span>
@@ -134,9 +132,8 @@ const Dropdown = ({
               <li
                 key={item.id}
                 onClick={() => handleChange(item)}
-                className={`flex items-center cursor-pointer hover:bg-gray-200 px-3 ${
-                  selectedItem?.id === item.id ? 'bg-secondary-950' : ''
-                }`}
+                className={`flex items-center cursor-pointer hover:bg-gray-200 px-3 ${selectedItem?.id === item.id ? 'bg-secondary-950' : ''
+                  }`}
               >
                 <span>{item.name}</span>
               </li>

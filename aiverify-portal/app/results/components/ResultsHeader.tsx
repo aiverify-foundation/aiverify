@@ -22,33 +22,33 @@ const ResultsHeader = () => {
       {isMenuOpen && (
         <div
           className="absolute left-6 top-20 w-50 bg-secondary-950 text-white p-4 rounded-md shadow-lg z-[100]">
-            <ul>
-                <li className="py-2 border-b border-secondary-300">
-                <Link href="/home" className="block hover:text-secondary-300">
-                    Home
-                </Link>
-                </li>
-                <li className="py-2 border-b border-secondary-300">
-                <Link href="/models" className="block hover:text-secondary-300">
-                    Model
-                </Link>
-                </li>
-                <li className="py-2 border-b border-secondary-300">
-                <Link href="/data" className="block hover:text-secondary-300">
-                    Data
-                </Link>
-                </li>
-                <li className="py-2 border-b border-secondary-300">
-                <Link href="/plugins" className="block hover:text-secondary-300">
-                    Plugins
-                </Link>
-                </li>
-                <li className="py-2">
-                <Link href="/templates" className="block hover:text-secondary-300">
-                    Report Templates
-                </Link>
-                </li>
-            </ul>
+          <ul>
+            <li className="py-2 border-b border-secondary-300">
+              <Link href="/home" className="block hover:text-secondary-300">
+                Home
+              </Link>
+            </li>
+            <li className="py-2 border-b border-secondary-300">
+              <Link href="/models" className="block hover:text-secondary-300">
+                Model
+              </Link>
+            </li>
+            <li className="py-2 border-b border-secondary-300">
+              <Link href="/data" className="block hover:text-secondary-300">
+                Data
+              </Link>
+            </li>
+            <li className="py-2 border-b border-secondary-300">
+              <Link href="/plugins" className="block hover:text-secondary-300">
+                Plugins
+              </Link>
+            </li>
+            <li className="py-2">
+              <Link href="/templates" className="block hover:text-secondary-300">
+                Report Templates
+              </Link>
+            </li>
+          </ul>
         </div>
       )}
 

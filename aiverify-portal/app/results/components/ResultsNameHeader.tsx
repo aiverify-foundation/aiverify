@@ -4,10 +4,10 @@ import React, { useState } from 'react';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 
 type EditableHeaderProps = {
-  id: number; // ID of the result to update
-  name: string; // Current name
-  isSaving: boolean; // Save status
-  onSave: (id: number, newName: string) => Promise<void>; 
+  id: number;
+  name: string; // current name
+  isSaving: boolean; // save status
+  onSave: (id: number, newName: string) => Promise<void>;
   onDelete: (id: number) => Promise<void>;
 };
 
@@ -17,7 +17,7 @@ export function ResultsNameHeader({ id, name, isSaving, onSave, onDelete }: Edit
 
   const handleSave = async () => {
     if (!editedName.trim() || editedName === name) { // if no change
-      setIsEditing(false); 
+      setIsEditing(false);
       return;
     }
 
@@ -25,20 +25,20 @@ export function ResultsNameHeader({ id, name, isSaving, onSave, onDelete }: Edit
       await onSave(id, editedName.trim());
       setIsEditing(false);
     } catch {
-      // error handle 
+      console.log("Failed to update name.")
     }
   };
 
-const handleDelete = async () => {
-  if (confirm(`Are you sure you want to delete "${name}"?`)) {
-    try {
-      await onDelete(id);
-    }
-    catch {
-      // error handle
+  const handleDelete = async () => {
+    if (confirm(`Are you sure you want to delete "${name}"?`)) {
+      try {
+        await onDelete(id);
+      }
+      catch {
+        console.log("Failed to delete test result.")
+      }
     }
   }
-}
 
   return (
     <div className="flex items-center justify-between mb-1">
