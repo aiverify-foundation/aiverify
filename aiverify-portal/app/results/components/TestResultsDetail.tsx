@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TestResults } from '../../types';
 import { ResultsNameHeader } from './ResultsNameHeader';
 import { updateResultName } from '@/lib/fetchApis/updateResultName';
@@ -22,6 +22,10 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
   const [modalOpen, setModalOpen] = useState(false); // State for modal
   const [selectedArtifact, setSelectedArtifact] = useState<any>(null);
   const [isDownloading, setIsDownloading] = useState(false);
+
+  useEffect(() => {
+    setCurrentResult(result);
+  }, [result]);
 
   const handleSaveName = async (id: number, newName: string) => {
     setIsSaving(true);
@@ -201,10 +205,6 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
     }
   };
   
-  
-  
-
-  
   if (!currentResult) {
     return (
       <div className="text-white text-center mt-20">
@@ -270,7 +270,7 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
             }`}
             onClick={() => setActiveTab('testArguments')}
           >
-            Test Arguments
+            Algorithm Arguments
           </button>
           <button
             className={`py-2 px-6 rounded-t ${
@@ -298,28 +298,33 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
                 </pre>
               </div>
               <div className="flex justify-end mt-4 overflow-y-auto">
-                <button
-                  onClick={handleDownloadJson}
-                  className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
-                >
-                  DOWNLOAD
-                </button>
+                <Button
+                    pill
+                    textColor="white"
+                    variant={ButtonVariant.PRIMARY}
+                    size="sm"
+                    text="DOWNLOAD"
+                    color='primary-950'
+                    onClick={handleDownloadJson}
+                  />
               </div>
             </div>
           )}
           {activeTab === 'outputArtifacts' && (
             <div>
-              <div className="rounded text-sm max-h-64 overflow-y-auto mb-4">
+              <div className="rounded text-sm mb-4">
                 <h3 className="text-lg font-semibold mb-2">Outputs</h3>
-                <pre className="bg-secondary-800 p-4 whitespace-pre-wrap">
-                  {typeof currentResult.output === 'string'
-                    ? JSON.stringify(
-                        JSON.parse(JSON.parse(currentResult.output)), // Double parse
-                        null,
-                        2
-                      )
-                    : JSON.stringify(currentResult.output, null, 2)}
-                </pre>
+                <div className='max-h-64 overflow-y-auto'>
+                  <pre className="bg-secondary-800 p-4 whitespace-pre-wrap">
+                    {typeof currentResult.output === 'string'
+                      ? JSON.stringify(
+                          JSON.parse(JSON.parse(currentResult.output)), // Double parse
+                          null,
+                          2
+                        )
+                      : JSON.stringify(currentResult.output, null, 2)}
+                  </pre>
+                </div>
               </div>
               <div className="flex justify-end mt-4">
                 <Button
