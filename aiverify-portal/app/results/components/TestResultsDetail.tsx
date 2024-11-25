@@ -8,6 +8,7 @@ import { deleteResult } from '@/lib/fetchApis/deleteTestResult';
 import { getArtifacts } from '@/lib/fetchApis/getArtifacts';
 import ArtifactModal from './ArtifactPopup';
 import { Button, ButtonVariant } from '@/lib/components/button';
+import { Modal } from '@/lib/components/modal';
 import JSZip from 'jszip';
 
 type Props = {
@@ -22,6 +23,8 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
   const [modalOpen, setModalOpen] = useState(false); // State for modal
   const [selectedArtifact, setSelectedArtifact] = useState<any>(null);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
 
   useEffect(() => {
     setCurrentResult(result);
@@ -30,20 +33,16 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
   const handleSaveName = async (id: number, newName: string) => {
     setIsSaving(true);
     try {
-      const data = await updateResultName(id, newName); // Call the helper function to update the name
-      alert('Name updated successfully!');
-      
-      // Update the result name in local state after the update
-      if (currentResult) {
-        setCurrentResult({ ...currentResult, name: newName });
-      }
-
-      // Optionally notify the parent to update the result (if you have onUpdateResult callback)
+      await updateResultName(id, newName); 
+      setModalMessage('Name updated successfully!');
+      setIsModalVisible(true);
       if (onUpdateResult && currentResult) {
+        setCurrentResult({ ...currentResult, name: newName });
         onUpdateResult({ ...currentResult, name: newName });
       }
     } catch (error) {
-      alert('Failed to update the result name. Please try again.');
+      setModalMessage('Failed to update the result name. Please try again.');
+      setIsModalVisible(true);
     } finally {
       setIsSaving(false);
     }
@@ -52,10 +51,12 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
   const handleDelete = async (id: number) => {
     try {
       await deleteResult(id);
-      alert('Result deleted successfully!');
+      setModalMessage('Result deleted successfully!');
+      setIsModalVisible(true);
     } catch (error) {
       console.error('Failed to delete result:', error);
-      alert('Failed to delete the result.');
+      setModalMessage('Failed to delete the result.');
+      setIsModalVisible(true);
     }
   };
 
@@ -215,6 +216,21 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
 
   return (
     <div className="bg-secondary-950 h-full text-white rounded-lg shadow-lg p-6 overflow-y-auto">
+      {/* popup for name update and deleting */}
+        {isModalVisible && (
+          <div className='fixed inset-0 flex items-center justify-center z-50'>
+          <Modal
+            bgColor="var(--color-primary-500)"
+            textColor="white"
+            onCloseIconClick={() => setIsModalVisible(false)}
+            enableScreenOverlay
+            heading=""
+            height={150}
+          >
+            <p>{modalMessage}</p>
+          </Modal>
+          </div>
+        )}
       <div className="border-b border-gray-700 pb-4 mb-4">
         <ResultsNameHeader
           id={currentResult.id}
@@ -225,14 +241,9 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
         />
 
         <div className="space-y-1 text-sm">
-          <p>
-            <span className="font-semibold">Model File:</span> {currentResult.testArguments.modelFile.split('/').pop()}
-          </p>
-          <p>
-            <span className="font-semibold">Model Type:</span> {currentResult.testArguments.modelType}
-          </p>
-          <p>
-            <span className="font-semibold">Test Date:</span>{' '}
+          <p><span className="font-semibold">Model File:</span> {currentResult.testArguments.modelFile.split('/').pop()}</p>
+          <p><span className="font-semibold">Model Type:</span> {currentResult.testArguments.modelType}</p>
+          <p><span className="font-semibold">Test Date:</span>{' '}
             {new Date(currentResult.created_at).toLocaleString('en-US', {
               month: '2-digit',
               day: '2-digit',
@@ -244,21 +255,11 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
               timeZone: 'Asia/Singapore',
             })}
           </p>
-          <p>
-            <span className="font-semibold">Test Dataset:</span> {currentResult.testArguments.testDataset.split('/').pop()}
-          </p>
-          <p>
-            <span className="font-semibold">Ground Truth Dataset:</span> {currentResult.testArguments.groundTruthDataset.split('/').pop()}
-          </p>
-          <p>
-            <span className="font-semibold">GID:</span> {currentResult.gid}
-          </p>
-          <p>
-            <span className="font-semibold">Version:</span> {currentResult.version}
-          </p>
-          <p>
-            <span className="font-semibold">Duration:</span> {currentResult.timeTaken}
-          </p>
+          <p><span className="font-semibold">Test Dataset:</span> {currentResult.testArguments.testDataset.split('/').pop()}</p>
+          <p><span className="font-semibold">Ground Truth Dataset:</span> {currentResult.testArguments.groundTruthDataset.split('/').pop()}</p>
+          <p><span className="font-semibold">GID:</span> {currentResult.gid}</p>
+          <p><span className="font-semibold">Version:</span> {currentResult.version}</p>
+          <p><span className="font-semibold">Duration:</span> {currentResult.timeTaken}</p>
         </div>
       </div>
 
