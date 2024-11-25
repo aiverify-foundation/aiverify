@@ -3,18 +3,7 @@ import { TestResults } from '../types';
 import TestResultsList from './components/TestResultsList';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import ActionButtons from './components/ActionButton';
-
-async function getTestResults(): Promise<TestResults[]> {
-  const res = await fetch(`http://127.0.0.1:4000/test_result/`, { //extract to /lib/fetchapis/
-    cache: 'no-store', //might no need this
-  });
-
-  if (!res.ok) {
-    throw new Error('Failed to fetch test results');
-  }
-
-  return res.json();
-}
+import { getTestResults } from '@/lib/fetchApis/getAllTestResults';
 
 export default async function ResultsPage() {
   const testResults = await getTestResults();
