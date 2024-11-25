@@ -4,7 +4,7 @@ export async function DELETE(request: Request) {
   const { id, name } = await request.json();
 
   try {
-    const response = await fetch(`http://127.0.0.1:4000/test_result/${id}`, {
+    const response = await fetch(`http://127.0.0.1:4000/test_results/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

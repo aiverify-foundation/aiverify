@@ -10,7 +10,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const response = await fetch(`http://127.0.0.1:4000/test_result/${id}/artifacts/${name}`, {
+    const response = await fetch(`http://127.0.0.1:4000/test_results/${id}/artifacts/${name}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

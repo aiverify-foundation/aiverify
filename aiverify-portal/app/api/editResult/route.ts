@@ -4,7 +4,7 @@ export async function PUT(request: Request) {
   const { id, name } = await request.json(); // Extract data from the request body
 
   try {
-    const response = await fetch(`http://127.0.0.1:4000/test_result/${id}`, {
+    const response = await fetch(`http://127.0.0.1:4000/test_results/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
