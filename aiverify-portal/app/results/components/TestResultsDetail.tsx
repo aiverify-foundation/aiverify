@@ -338,9 +338,9 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
                   onClick={handleDownloadJson}
                 />
               </div>
-              <div className="rounded text-sm max-h-64 overflow-y-auto">
+              <div className="rounded text-sm">
                 <h3 className="text-lg font-semibold mb-2">Artifacts</h3>
-                <div className="bg-secondary-800 p-4 whitespace-pre-wrap">
+                <div className="bg-secondary-800 max-h-64 overflow-y-auto p-4 whitespace-pre-wrap">
                   {Array.isArray(currentResult.artifacts) ? (
                     <ul className="space-y-1 pl-6 list-disc">
                       {currentResult.artifacts.map((artifact, index) => (
