@@ -19,6 +19,7 @@ export default function TestResultsList({ testResults }: Props) {
   const [results, setResults] = useState<TestResults[]>(testResults); // State for the test results
 
   const filteredResults = results.filter((result) => {
+    // refer to AIV1, look for fuse (refer to docs - https://www.fusejs.io)
     const searchString = `
       ${result.name}
       ${result.cid}

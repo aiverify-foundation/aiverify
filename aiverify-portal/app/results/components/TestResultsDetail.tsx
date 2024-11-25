@@ -6,6 +6,8 @@ import { ResultsNameHeader } from './ResultsNameHeader';
 import { updateResultName } from '@/lib/fetchApis/updateResultName';
 import { deleteResult } from '@/lib/fetchApis/deleteTestResult';
 import { getArtifacts } from '@/lib/fetchApis/getArtifacts';
+import ArtifactModal from './ArtifactPopup';
+import { Button, ButtonVariant } from '@/lib/components/button';
 import JSZip from 'jszip';
 
 type Props = {
@@ -16,8 +18,10 @@ type Props = {
 export default function TestResultDetail({ result, onUpdateResult }: Props) {
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<'testArguments' | 'outputArtifacts'>('testArguments');
-  const [isDownloading, setIsDownloading] = useState(false);
   const [currentResult, setCurrentResult] = useState<TestResults | null>(result);
+  const [modalOpen, setModalOpen] = useState(false); // State for modal
+  const [selectedArtifact, setSelectedArtifact] = useState<any>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const handleSaveName = async (id: number, newName: string) => {
     setIsSaving(true);
@@ -71,6 +75,135 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
+
+  const handleArtifactClick = async (artifact: { id: number; name: string }) => {
+    try {
+      console.log("Fetching artifact:", artifact);
+      
+      // Fetch the artifact data
+      const fetchedArtifact = await getArtifacts(artifact.id, artifact.name);
+      console.log("Fetched artifact:", fetchedArtifact);
+  
+      // Set the artifact in modal
+      setSelectedArtifact(fetchedArtifact);
+      setModalOpen(true);
+    } catch (error) {
+      console.error("Failed to fetch artifact:", error);
+      alert("Failed to load artifact. Please try again.");
+    }
+  };
+  
+  const closeModal = () => {
+    setModalOpen(false);
+    setSelectedArtifact(null);
+  };
+
+  const handleDownloadArtifact = () => {
+    if (selectedArtifact) {
+      let blob;
+      const fileName = selectedArtifact.name || 'artifact';
+  
+      // Use the Blob directly if it's an image or any binary file
+      if (selectedArtifact.data instanceof Blob) {
+        blob = selectedArtifact.data;
+      } else if (selectedArtifact.type === 'application/json') {
+        // Handle JSON data
+        const jsonData =
+          typeof selectedArtifact.data === 'string'
+            ? JSON.parse(selectedArtifact.data)
+            : selectedArtifact.data;
+        blob = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
+      } else if (selectedArtifact.type.startsWith('text/')) {
+        // Handle text files
+        blob = new Blob([selectedArtifact.data], { type: 'text/plain' });
+      } else {
+        // Fallback for other data types
+        console.error('Unsupported artifact data:', selectedArtifact);
+        return;
+      }
+  
+      // Create a downloadable link
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName; // Use the artifact's name as the file name
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  };
+  
+  const handleDownloadAllArtifacts = async () => {
+    if (!currentResult || !Array.isArray(currentResult.artifacts) || currentResult.artifacts.length === 0) {
+      alert('No artifacts to download.');
+      return;
+    }
+  
+    setIsDownloading(true);
+    const zip = new JSZip();
+  
+    try {
+      for (const artifactName of currentResult.artifacts) {
+        try {
+          const fetchedArtifact = await getArtifacts(currentResult.id, artifactName);
+  
+          // Check if fetchedArtifact and its type are valid
+          if (!fetchedArtifact || !fetchedArtifact.data) {
+            console.error(`Invalid fetched artifact for ${artifactName}:`, fetchedArtifact);
+            continue;
+          }
+  
+          let blob;
+          if (fetchedArtifact.data instanceof Blob) {
+            blob = fetchedArtifact.data;
+          } else if (fetchedArtifact.type === 'application/json') {
+            // Handle JSON data
+            const jsonData =
+              typeof fetchedArtifact.data === 'string'
+                ? JSON.parse(fetchedArtifact.data)
+                : fetchedArtifact.data;
+            blob = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
+          } else if (fetchedArtifact.type?.startsWith('text/')) {
+            // Handle text files
+            blob = new Blob([fetchedArtifact.data], { type: 'text/plain' });
+          } else {
+            // Fallback for other data types
+            console.error(`Unsupported artifact data type for ${artifactName}:`, fetchedArtifact);
+            continue;
+          }
+  
+          zip.file(artifactName, blob);
+        } catch (error) {
+          console.error(`Failed to fetch artifact ${artifactName}:`, error);
+        }
+      }
+  
+      // Generate the ZIP file
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      const url = URL.createObjectURL(zipBlob);
+  
+      // Create a temporary link element
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${currentResult.name || 'artifacts'}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+  
+      // Revoke the object URL to free up memory
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to generate ZIP file:', error);
+      alert('Failed to download all artifacts. Please try again.');
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+  
+  
+  
+
   
   if (!currentResult) {
     return (
@@ -187,12 +320,15 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
                 </pre>
               </div>
               <div className="flex justify-end mt-4">
-                <button
+                <Button
+                  pill
+                  textColor="white"
+                  variant={ButtonVariant.PRIMARY}
+                  size="sm"
+                  text="DOWNLOAD"
+                  color='primary-950'
                   onClick={handleDownloadJson}
-                  className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
-                >
-                  DOWNLOAD
-                </button>
+                />
               </div>
               <div className="rounded text-sm max-h-64 overflow-y-auto">
                 <h3 className="text-lg font-semibold mb-2">Artifacts</h3>
@@ -201,11 +337,12 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
                     <ul className="space-y-1 pl-6 list-disc">
                       {currentResult.artifacts.map((artifact, index) => (
                         <li key={index}>
-                          {typeof artifact === 'string' ? ( // If it's a string (e.g., filename), display directly
-                            artifact
-                          ) : ( // Otherwise, display as formatted JSON
-                            JSON.stringify(artifact, null, 2)
-                          )}
+                          <button
+                            onClick={() => handleArtifactClick({ id: currentResult.id, name: artifact })}
+                            className="text-primary-500 hover:underline"
+                          >
+                            {typeof artifact === 'string' ? artifact : JSON.stringify(artifact, null, 2)}
+                          </button>
                         </li>
                       ))}
                     </ul>
@@ -217,11 +354,30 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
                     </pre>
                   )}
                 </div>
+                <div className="flex justify-end mt-4">
+                  <Button
+                    pill
+                    textColor="white"
+                    variant={ButtonVariant.PRIMARY}
+                    size="sm"
+                    text="DOWNLOAD"
+                    color='primary-950'
+                    onClick={handleDownloadAllArtifacts}
+                  />
+                </div>
               </div>
             </div>
           )}
         </div>
       </div>
+      {selectedArtifact && modalOpen && (
+        <ArtifactModal
+          isOpen={modalOpen}
+          artifact={selectedArtifact}
+          onClose={closeModal}
+          onDownload={() => handleDownloadArtifact()}
+        />
+      )}
     </div>
   );
 }

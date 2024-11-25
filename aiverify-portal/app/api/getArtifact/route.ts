@@ -17,16 +17,27 @@ export async function GET(request: Request) {
       },
     });
 
-    console.log("response status: ", response.status)
-
-    if (response.status === 200) {
+    if (!response.ok) {
       return NextResponse.json({ error: 'Failed to get artifact' }, { status: response.status });
     }
 
-    const data = await response.json();
-    return NextResponse.json(data, { status: 200 });
+    // Extract headers
+    const contentType = response.headers.get('Content-Type') || '';
+    const contentDisposition = response.headers.get('Content-Disposition') || '';
+    console.log("backend contentype:", contentType)
+    console.log("backend contentdisposition:", contentDisposition)
+
+    // Pass through the response body and headers
+    const blob = await response.blob();
+    return new NextResponse(blob, {
+      status: response.status,
+      headers: {
+        'Content-Type': contentType,
+        'Content-Disposition': contentDisposition,
+      },
+    });
   } catch (error) {
-    console.log("backend status: here")
+    console.error('Error fetching artifact:', error);
     return NextResponse.json({ error: 'Server error while getting artifact' }, { status: 500 });
   }
 }
