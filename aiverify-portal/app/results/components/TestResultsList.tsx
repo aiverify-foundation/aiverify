@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { TestResults } from '../../types';
 import TestResultsCard from './TestResultsCard';
 import ResultsFilters from './FilterButtons';
 import TestResultDetail from './TestResultsDetail';
 import SplitPane from './SplitPane';
+import Fuse from 'fuse.js';
 
 type Props = {
   testResults: TestResults[];
@@ -18,41 +19,52 @@ export default function TestResultsList({ testResults }: Props) {
   const [selectedResult, setSelectedResult] = useState<TestResults | null>(null);
   const [results, setResults] = useState<TestResults[]>(testResults); // State for the test results
 
-  const filteredResults = results.filter((result) => {
-    // refer to AIV1, look for fuse (refer to docs - https://www.fusejs.io)
-    const searchString = `
-      ${result.name}
-      ${result.cid}
-      ${result.gid}
-      ${result.version}
-      ${result.testArguments.testDataset}
-      ${result.testArguments.modelType}
-      ${result.testArguments.groundTruthDataset}
-      ${result.testArguments.groundTruth}
-      ${result.testArguments.algorithmArgs}
-      ${result.testArguments.modelFile}
-      ${result.output}
-    `.toLowerCase();
+  const fuse = useMemo(() => {
+    const options = {
+      keys: [
+        'name',
+        'cid',
+        'gid',
+        'version',
+        'testArguments.testDataset',
+        'testArguments.modelType',
+        'testArguments.groundTruthDataset',
+        'testArguments.groundTruth',
+        'testArguments.algorithmArgs',
+        'testArguments.modelFile',
+        'output'
+      ],
+      includeScore: true,
+      threshold: 0.7, // lower threshold = more accurate
+    };
+    return new Fuse(testResults, options);
+  }, [testResults]);
 
-    return searchString.includes(searchQuery.toLowerCase());
-  }).filter((result) => {
-    if (!activeFilter) return true;
-    return (
-      result.testArguments.modelType === activeFilter.toLowerCase() ||
-      result.cid === activeFilter.toLowerCase()
-    );
-  });
-
-  const sortedResults = filteredResults.sort((a, b) => {
-    if (sortBy === 'date-asc') {
-      return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-    } else if (sortBy === 'date-desc') {
-      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-    } else if (sortBy === 'name') {
-      return a.name.localeCompare(b.name);
+  const filteredResults = useMemo(() => {
+    // no search query, return all the results
+    let searchResults = searchQuery
+      ? fuse.search(searchQuery).map(result => result.item)
+      : results;
+  
+    // if filtering selected
+    if (activeFilter) {
+      searchResults = searchResults.filter(result => 
+        result.testArguments.modelType === activeFilter.toLowerCase() ||
+        result.cid === activeFilter.toLowerCase()
+      );
     }
-    return 0;
-  });
+  
+    // if sorting selected
+    if (sortBy === 'date-asc') {
+      searchResults = searchResults.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+    } else if (sortBy === 'date-desc') {
+      searchResults = searchResults.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    } else if (sortBy === 'name') {
+      searchResults = searchResults.sort((a, b) => a.name.localeCompare(b.name));
+    }
+  
+    return searchResults;
+  }, [searchQuery, activeFilter, sortBy, fuse, results]);  
 
   const handleSearch = (query: string) => setSearchQuery(query);
   const handleFilter = (filter: string) => setActiveFilter(filter);
@@ -86,7 +98,7 @@ export default function TestResultsList({ testResults }: Props) {
             isSplitPaneActive={true}
           />
           <div className="flex-1 overflow-y-auto mt-2">
-            {sortedResults.map((result) => (
+            {filteredResults.map((result) => (
               <div onClick={() => handleSelectResult(result)} key={result.id}>
                 <TestResultsCard result={result} />
               </div>
@@ -106,7 +118,7 @@ export default function TestResultsList({ testResults }: Props) {
         isSplitPaneActive={false}
       />
       <div className="mt-6">
-        {sortedResults.map((result) => (
+        {filteredResults.map((result) => (
           <div onClick={() => handleSelectResult(result)} key={result.id}>
             <TestResultsCard result={result} />
           </div>
