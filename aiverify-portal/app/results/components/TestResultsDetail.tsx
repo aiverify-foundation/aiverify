@@ -284,17 +284,19 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
 
         <div className="rounded-b-lg shadow-inner">
           {activeTab === 'testArguments' && (
-            <div className="rounded text-sm max-h-64 overflow-y-auto">
+            <div className="rounded text-sm">
               <h3 className="text-lg font-semibold mb-2">Algorithm Arguments</h3>
-              <pre className="bg-secondary-800 p-4 whitespace-pre-wrap">
-                {typeof currentResult.testArguments.algorithmArgs === 'string'
-                  ? JSON.stringify(
-                      JSON.parse(JSON.parse(currentResult.testArguments.algorithmArgs)), // Double parse
-                      null,
-                      2
-                    )
-                  : JSON.stringify(currentResult.testArguments.algorithmArgs, null, 2)}
-              </pre>
+              <div className='max-h-64 overflow-y-auto'>
+                <pre className="bg-secondary-800 p-4 whitespace-pre-wrap">
+                  {typeof currentResult.testArguments.algorithmArgs === 'string'
+                    ? JSON.stringify(
+                        JSON.parse(JSON.parse(currentResult.testArguments.algorithmArgs)), // Double parse
+                        null,
+                        2
+                      )
+                    : JSON.stringify(currentResult.testArguments.algorithmArgs, null, 2)}
+                </pre>
+              </div>
               <div className="flex justify-end mt-4 overflow-y-auto">
                 <button
                   onClick={handleDownloadJson}
