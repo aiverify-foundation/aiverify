@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from typing import Tuple, Union
 
@@ -100,19 +101,15 @@ class PluginTest:
                 nn.Softmax(dim=1)  # Softmax for classification probabilities
             )
             # Save the model
-            torch.save(model, "model.pth")
+            torch.save(model, "model.pt")
 
             deserialized_model =  self._serializer_instance.deserialize_data(
-                "model.pth"
+                "model.pt"
             )
 
             model_params = list(model.parameters())
             deserialized_params = list(deserialized_model.parameters())
 
-            
-            # Print state dicts for debugging
-            print("Original Model State Dict:", model)
-            print("Reconstructed Model State Dict:", deserialized_model)
 
             all_equal = True
             for i in range(len(model_params)):
@@ -126,6 +123,9 @@ class PluginTest:
                 print("Models have different parameters!")
 
             assert all_equal==True
+
+            if os.path.exists('model.pt'):
+                os.remove('model.pt')
 
 
         except Exception:

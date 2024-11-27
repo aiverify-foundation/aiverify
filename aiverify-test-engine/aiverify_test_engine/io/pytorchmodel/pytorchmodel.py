@@ -7,8 +7,10 @@ from aiverify_test_engine.plugins.enums.model_plugin_type import ModelPluginType
 from aiverify_test_engine.plugins.enums.plugin_type import PluginType
 from aiverify_test_engine.plugins.metadata.plugin_metadata import PluginMetadata
 import numpy as np
+import pandas as pd
 import torch
 import torch.nn.functional as F
+from torch.utils.data import DataLoader, TensorDataset
 
 
 # NOTE: Do not change the class name, else the plugin cannot be read by the system
@@ -28,6 +30,8 @@ class Plugin(IModel):
     _metadata: PluginMetadata = PluginMetadata(_name, _description, _version)
     _plugin_type: PluginType = PluginType.MODEL
     _model_plugin_type: ModelPluginType = ModelPluginType.PYTORCH
+    _batch_size : int = 1
+    _num_workers : int = 0
 
     @staticmethod
     def get_metadata() -> PluginMetadata:
@@ -63,6 +67,8 @@ class Plugin(IModel):
         model = kwargs.get("model", None)
         if model:
             self._model = model
+            # Set the model to evaluation mode
+            self._model.eval()
 
     def cleanup(self) -> None:
         """
@@ -78,7 +84,6 @@ class Plugin(IModel):
             Tuple[bool, str]: Returns bool to indicate success, str will indicate the
             error message if failed.
         """
-        print("performing setup...")
         is_success = True
         error_messages = ""
         return is_success, error_messages
@@ -127,85 +132,61 @@ class Plugin(IModel):
 
     def predict(self, data: Any, *args) -> Any:
         """
-        A method to perform prediction using the model (classification)
+        A method to perform prediction using the model (classification).
 
         Args:
-            data (Union[pd.DataFrame, list]): data to be predicted by the model
+            data (Union[pd.DataFrame, list, np.ndarray, torch.Tensor]): Data to be predicted by the model.
 
         Returns:
-            Any: predicted result
+            np.ndarray: Predicted results.
         """
-
         try:
+            predictions = []
 
-            if isinstance(data, list):
-                # Convert the list to a NumPy array
-                data_list = np.array(data, dtype=np.float32)
-                print("converting np array to tensor")
-                # Convert the NumPy array to a PyTorch tensor
-                data_tensor = torch.tensor(data_list, dtype=torch.float32).squeeze(0)
-
-            else:
-                raise ValueError("Unsupported data format. Provide a list or pandas DataFrame.")
-
-            self._model.eval()
-            torch.set_num_threads(1)
-            
-            # predictions are made without gradient tracking
+            # Create DataLoader from input data
+            dataloader = self._create_dataloader(data)
             with torch.no_grad():
-                if len(data_tensor.shape) == 1:
-                    # Single item prediction (no batch dimension)
-                    input_tensor = data_tensor.unsqueeze(0)
-                    prediction = self._model(input_tensor).squeeze().numpy()
-                    print("Predicted probabilities:", predictions)
-                    return prediction
-                else:
-                    # Batch prediction
-                    predictions = self._model(data_tensor).numpy()
-                    print("Predicted probabilities  :", predictions)
-                    return predictions
+                for batch in dataloader:
+                    # TensorDataset returns a tuple, get the first element
+                    batch_input = batch[0]
+                    batch_pred = self._model(batch_input)
+                    predictions.append(batch_pred)
+
+            # Concatenate all predictions and return as NumPy array
+            return torch.cat(predictions, dim=0).numpy()
 
         except Exception as e:
             print(f"Error during prediction: {e}")
             raise e
-        
+
     def predict_proba(self, data: Any, *args) -> Any:
         """
-        A method to perform prediction probability using the model.
+        A method to perform prediction probabilities using the model.
 
         Args:
-            data (Any): data to be predicted by the model
+            data (Any): Data to be predicted by the model.
 
         Returns:
-            Any: predicted result probabilities
+            Any: Predicted result probabilities.
         """
         try:
-            # Set the model to evaluation mode
-            self._model.eval()
-            torch.set_num_threads(1)
-            
+            # Create a DataLoader using the provided data
+            dataloader = self._create_dataloader(data)
+
+            probabilities = []  # Store predicted probabilities
             with torch.no_grad():
-                # Check if data is a list
-                if isinstance(data, list):
-                        # Convert the list to a NumPy array
-                        data_list = np.array(data, dtype=np.float32)
-                        # Convert the NumPy array to a PyTorch tensor
-                        data_tensor = torch.tensor(data_list, dtype=torch.float32).squeeze(0)
-                        probabilities = []
-                        for item in data_tensor:
-                            input_tensor = torch.tensor(item).unsqueeze(0)
-                            logits = self._model(input_tensor)
-                            probas = F.softmax(logits, dim=1).squeeze().numpy()
-                            probabilities.append(probas)
-                        return probabilities
-                else:
-                    # For single item prediction
-                    input_tensor = torch.tensor(data).unsqueeze(0)
-                    logits = self._model(input_tensor)
-                    return F.softmax(logits, dim=1).squeeze().numpy()
+                for batch in dataloader:
+                    # Extract input data from the DataLoader batch
+                    batch_input = batch[0]  # TensorDataset returns a tuple
+                    logits = self._model(batch_input)
+                    probas = F.softmax(logits, dim=1)
+                    probabilities.append(probas)
+
+            # Concatenate all probabilities into a single NumPy array
+            return torch.cat(probabilities, dim=0).numpy()
 
         except Exception as e:
-            raise e
+            raise ValueError(f"Error during prediction probability computation: {e}")
 
     def score(self, data: Any, y_true: Any) -> Any:
         """
@@ -220,6 +201,71 @@ class Plugin(IModel):
         """
         raise NotImplementedError
 
+    def _convert_to_tensor(self, data: Any) -> torch.Tensor:
+        """
+        Convert input data to PyTorch tensor.
+        
+        Args:
+            data: Input data in various formats
+            
+        Returns:
+            torch.Tensor: Converted data tensor
+        """
+        try:
+            if isinstance(data, torch.Tensor):
+                tensor = data.float()
+            elif isinstance(data, np.ndarray):
+                tensor = torch.from_numpy(data.astype(np.float32))
+            elif isinstance(data, list):
+                arr = np.array(data, dtype=np.float32)
+                # Convert the NumPy array to a PyTorch tensor
+                tensor = torch.tensor(arr, dtype=torch.float32).squeeze(0)
+            elif isinstance(data, pd.DataFrame):
+                arr = data.values.astype(np.float32)
+                tensor = torch.from_numpy(arr)
+            else:
+                raise ValueError(f"Unsupported data type: {type(data)}")
+
+            # Ensure 2D tensor
+            if tensor.ndim == 1:
+                tensor = tensor.reshape(-1, 1)
+            elif tensor.ndim > 2:
+                tensor = tensor.reshape(tensor.shape[0], -1)
+                
+            return tensor
+            
+        except Exception as e:
+            raise ValueError(f"Failed to convert input to tensor: {str(e)}")
+        
+    def _create_dataloader(self, data: Any) -> DataLoader:
+        """
+        Create a DataLoader using TensorDataset.
+        
+        Args:
+            data: Input data in supported format
+            
+        Returns:
+            DataLoader: PyTorch DataLoader
+        """
+        try:
+            # Convert to tensor
+            tensor_data = self._convert_to_tensor(data)
+            
+            # Create TensorDataset
+            dataset = TensorDataset(tensor_data)
+            
+            # Create DataLoader
+            return DataLoader(
+                dataset,
+                batch_size=self._batch_size,
+                shuffle=False,
+                num_workers=self._num_workers,
+                pin_memory=False,
+                drop_last=False
+            )
+        except Exception as e:
+            raise ValueError(f"Failed to create DataLoader: {str(e)}")
+        
     def _identify_model_algorithm(self, model: Any) -> Tuple[bool, str]:
         """
         A helper method to identify the model algorithm whether it is being supported

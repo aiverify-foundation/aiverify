@@ -11,7 +11,7 @@ from aiverify_test_engine.plugins.plugins_manager import PluginManager
 def plugin_test_data(request):
     test_dir = Path(request.module.__file__).parent
     discover_path = test_dir.parent.parent / "aiverify_test_engine/io"
-    file_path = str(test_dir / "user_defined_files/sample_pytorch_model.pth")
+    file_path = str(test_dir / "user_defined_files/sample_pytorch_model.pt")
     expected_model_algorithm =  "torch.nn.modules.container.Sequential"
    
     expected_model_plugin_type = ModelPluginType.PYTORCH
