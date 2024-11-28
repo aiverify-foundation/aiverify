@@ -23,15 +23,18 @@ class Plugin(IModel):
     # Some information on plugin
     _model: Any = None
     _model_algorithm: str = ""
-    _supported_algorithms: List = ["torch.nn.Sequential", "torch.nn.modules.container.Sequential"]
+    _supported_algorithms: List = [
+        "torch.nn.Sequential",
+        "torch.nn.modules.container.Sequential",
+    ]
     _name: str = "pytorchmodel"
     _description: str = "pytorchmodel supports detecting pytorch models"
     _version: str = "0.9.0"
     _metadata: PluginMetadata = PluginMetadata(_name, _description, _version)
     _plugin_type: PluginType = PluginType.MODEL
     _model_plugin_type: ModelPluginType = ModelPluginType.PYTORCH
-    _batch_size : int = 1
-    _num_workers : int = 0
+    _batch_size: int = 1
+    _num_workers: int = 0
 
     @staticmethod
     def get_metadata() -> PluginMetadata:
@@ -150,7 +153,12 @@ class Plugin(IModel):
                     # TensorDataset returns a tuple, get the first element
                     batch_input = batch[0]
                     batch_pred = self._model(batch_input)
-                    predictions.append(batch_pred)
+                    # Apply argmax to get class labels
+                    batch_classes = torch.argmax(
+                        batch_pred, dim=1
+                    )  # dim=1 assumes class logits are along dimension 1
+                    predictions.append(batch_classes)
+                    # predictions.append(batch_pred)
 
             # Concatenate all predictions and return as NumPy array
             return torch.cat(predictions, dim=0).numpy()
@@ -204,10 +212,10 @@ class Plugin(IModel):
     def _convert_to_tensor(self, data: Any) -> torch.Tensor:
         """
         Convert input data to PyTorch tensor.
-        
+
         Args:
             data: Input data in various formats
-            
+
         Returns:
             torch.Tensor: Converted data tensor
         """
@@ -231,29 +239,29 @@ class Plugin(IModel):
                 tensor = tensor.reshape(-1, 1)
             elif tensor.ndim > 2:
                 tensor = tensor.reshape(tensor.shape[0], -1)
-                
+
             return tensor
-            
+
         except Exception as e:
             raise ValueError(f"Failed to convert input to tensor: {str(e)}")
-        
+
     def _create_dataloader(self, data: Any) -> DataLoader:
         """
         Create a DataLoader using TensorDataset.
-        
+
         Args:
             data: Input data in supported format
-            
+
         Returns:
             DataLoader: PyTorch DataLoader
         """
         try:
             # Convert to tensor
             tensor_data = self._convert_to_tensor(data)
-            
+
             # Create TensorDataset
             dataset = TensorDataset(tensor_data)
-            
+
             # Create DataLoader
             return DataLoader(
                 dataset,
@@ -261,11 +269,11 @@ class Plugin(IModel):
                 shuffle=False,
                 num_workers=self._num_workers,
                 pin_memory=False,
-                drop_last=False
+                drop_last=False,
             )
         except Exception as e:
             raise ValueError(f"Failed to create DataLoader: {str(e)}")
-        
+
     def _identify_model_algorithm(self, model: Any) -> Tuple[bool, str]:
         """
         A helper method to identify the model algorithm whether it is being supported
@@ -281,11 +289,10 @@ class Plugin(IModel):
         is_success = False
 
         module_type_name = f"{type(model).__module__}.{type(model).__name__}"
-        
+
         for supported_algo in self._supported_algorithms:
             if supported_algo == module_type_name:
                 model_algorithm = supported_algo
                 is_success = True
 
         return is_success, model_algorithm
-    

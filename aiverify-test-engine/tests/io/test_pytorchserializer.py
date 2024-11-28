@@ -49,9 +49,7 @@ class PluginTest:
         """
         error_count = 0
         error_message = ""
-        if PluginManager.is_plugin_exists(
-            PluginType.SERIALIZER, "pytorchserializer"
-        ):
+        if PluginManager.is_plugin_exists(PluginType.SERIALIZER, "pytorchserializer"):
             pass
         else:
             error_count += 1
@@ -98,18 +96,15 @@ class PluginTest:
                 nn.Linear(input_size, hidden_size),
                 nn.ReLU(),
                 nn.Linear(hidden_size, output_size),
-                nn.Softmax(dim=1)  # Softmax for classification probabilities
+                nn.Softmax(dim=1),  # Softmax for classification probabilities
             )
             # Save the model
             torch.save(model, "model.pt")
 
-            deserialized_model =  self._serializer_instance.deserialize_data(
-                "model.pt"
-            )
+            deserialized_model = self._serializer_instance.deserialize_data("model.pt")
 
             model_params = list(model.parameters())
             deserialized_params = list(deserialized_model.parameters())
-
 
             all_equal = True
             for i in range(len(model_params)):
@@ -122,11 +117,10 @@ class PluginTest:
             else:
                 print("Models have different parameters!")
 
-            assert all_equal==True
+            assert all_equal == True
 
-            if os.path.exists('model.pt'):
-                os.remove('model.pt')
-
+            if os.path.exists("model.pt"):
+                os.remove("model.pt")
 
         except Exception:
             error_count += 1

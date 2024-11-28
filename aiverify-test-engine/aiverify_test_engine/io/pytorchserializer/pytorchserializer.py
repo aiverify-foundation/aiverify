@@ -57,9 +57,9 @@ class Plugin(ISerializer):
             Any: deserialized data
         """
         try:
-            return torch.load(data_path, weights_only=False)        
-        
-        except Exception as e :
+            return torch.load(data_path, weights_only=False)
+
+        except Exception as e:
             print(f" deserialize error: ${e} ")
             raise
 
