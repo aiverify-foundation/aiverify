@@ -10,6 +10,7 @@ from typing import Dict, Tuple, Union
 from aiverify_veritastool.model.model_container import ModelContainer
 from aiverify_veritastool.usecases.base_classification import BaseClassification
 from aiverify_veritastool.util.schema import ModelArtifact
+from aiverify_veritastool.util.aiverify import process_dict
 from aiverify_test_engine.interfaces.idata import IData
 from aiverify_test_engine.interfaces.imodel import IModel
 from aiverify_test_engine.interfaces.ipipeline import IPipeline
@@ -66,6 +67,8 @@ class AlgoInit:
         self._core_modules_path = core_modules_path
         self._data_path = str(data_path)
         self._model_path = str(model_path)
+        self._training_data_path = input_arguments.get("training_data_path", None)
+        self._training_ground_truth_path = input_arguments.get("training_ground_truth_path", None)
         self._input_arguments = input_arguments
         self._model_type = model_type
 
@@ -73,6 +76,7 @@ class AlgoInit:
         if self._requires_ground_truth:
             self._ground_truth_path = str(ground_truth_path)
             self._ground_truth = ground_truth
+            self._training_ground_truth = input_arguments.get("training_ground_truth", None)
         else:
             self._ground_truth_path = ""
             self._ground_truth = ""
@@ -82,24 +86,31 @@ class AlgoInit:
         self._data_serializer_instance: Union[None, ISerializer] = None
         self._model_instance: Union[None, IModel, IPipeline] = None
         self._model_serializer_instance: Union[None, ISerializer] = None
+        self._training_data_instance: Union[None, IData] = None
+        self._training_data_serializer_instance: Union[None, ISerializer] = None
         self._ground_truth_instance: Union[None, IData] = None
         self._ground_truth_serializer_instance: Union[None, ISerializer] = None
+        self._training_ground_truth_instance: Union[None, IData] = None
+        self._training_ground_truth_serializer_instance: Union[None, ISerializer] = None
         self._results = None
         self._logger_instance: Union[None, logging] = None
 
     def _load_data_and_model(self) -> None:
         """Load data and model instances"""
         try:
-            if self._run_as_pipeline:
-                print("Running as pipeline...")
-                # Identify and load data information
+            (
+                self._data_instance,
+                self._data_serializer_instance,
+                data_error_message,
+            ) = PluginManager.get_instance(PluginType.DATA, **{"filename": self._data_path})
+            if self._training_data_path:
                 (
-                    self._data_instance,
-                    self._data_serializer_instance,
+                    self._training_data_instance,
+                    self._training_data_serializer_instance,
                     data_error_message,
-                ) = PluginManager.get_instance(PluginType.DATA, **{"filename": self._data_path})
+                ) = PluginManager.get_instance(PluginType.DATA, **{"filename": self._training_data_path})
 
-                # Identify and load model information
+            if self._run_as_pipeline:
                 (
                     self._model_instance,
                     self._model_serializer_instance,
@@ -108,14 +119,7 @@ class AlgoInit:
                     PluginType.PIPELINE,
                     **{"pipeline_path": self._model_path},
                 )
-
             else:
-                # Get the data, model, and ground truth instance
-                (
-                    self._data_instance,
-                    self._data_serializer_instance,
-                    data_error_message,
-                ) = PluginManager.get_instance(PluginType.DATA, **{"filename": self._data_path})
                 (
                     self._model_instance,
                     self._model_serializer_instance,
@@ -125,7 +129,6 @@ class AlgoInit:
             # Print the instances we found from the paths and identified from the core plugins
             print(f"[DATA]: {self._data_instance} - {self._data_serializer_instance} ({data_error_message})")
             print(f"[MODEL]: {self._model_instance} - {self._model_serializer_instance} ({model_error_message})")
-            print(f"Requires Ground Truth?: {self._requires_ground_truth}")
 
             if self._data_instance and self._model_instance:
                 # Load ground truth if required
@@ -137,8 +140,21 @@ class AlgoInit:
                         _ground_truth_error_message,
                     ) = PluginManager.get_instance(PluginType.DATA, **{"filename": self._ground_truth_path})
 
+                    print(self._training_ground_truth_path)
+                    print("Loading training ground truth...")
+                    (
+                        self._training_ground_truth_instance,
+                        self._training_ground_truth_serializer_instance,
+                        _training_ground_truth_error_message,
+                    ) = PluginManager.get_instance(
+                        PluginType.DATA,
+                        **{"filename": self._training_ground_truth_path},
+                    )
+                    print(_training_ground_truth_error_message)
                     print(f"[GROUND_TRUTH]: {self._ground_truth_instance}{self._ground_truth_serializer_instance}")
                     print(f"[GROUND_TRUTH]: {self._ground_truth}")
+                    print(f"[TRAINING GROUND_TRUTH]: {self._training_ground_truth_instance}")
+                    print(f"[TRAINING GROUND_TRUTH]: {self._training_ground_truth}")
                     print(f"[MODEL_TYPE]: {self._model_type}")
                     print(f"[GROUND_TRUTH FEATURES]: {self._ground_truth_instance.read_labels()}")
 
@@ -195,6 +211,12 @@ class AlgoInit:
                 if self._input_arguments["protected_features"]
                 else None
             )
+
+            if self._training_data_instance:
+                x_train = self._training_data_instance.get_data()
+            if self._training_ground_truth_instance:
+                y_train = self._training_ground_truth_instance.get_data()[self._training_ground_truth]
+
             model_name = self._input_arguments.get("model_name", "auto")
             p_grp = self._input_arguments.get("privileged_groups")
             up_grp = self._input_arguments.get("unprivileged_groups")
@@ -209,8 +231,10 @@ class AlgoInit:
                 model_name=model_name,
                 y_pred=y_pred,
                 y_prob=y_prob,
+                y_train=y_train,
                 protected_features_cols=protected_features_cols,
                 x_test=test_data,
+                x_train=x_train,
                 model_object=model,
                 pos_label=pos_label,
                 neg_label=neg_label,
@@ -233,19 +257,26 @@ class AlgoInit:
             tran_row_num = self._input_arguments.get("transparency_rows", [1])
             tran_max_sample = self._input_arguments.get("transparency_max_samples", 1)
             tran_pdp_feature = self._input_arguments.get("transparency_features", [])
+            fair_priority = self._input_arguments.get("fair_priority", "benefit")
+            fair_impact = self._input_arguments.get("fair_impact", "normal")
 
             classifier = BaseClassification(
                 model_params=[container],
                 fair_threshold=fair_threshold,
                 fair_metric_name=fair_metric_name,
                 fair_concern=fair_concern,
+                fair_priority=fair_priority,
+                fair_impact=fair_impact,
                 perf_metric_name=perf_metric_name,
                 tran_row_num=tran_row_num,
                 tran_max_sample=tran_max_sample,
                 tran_pdp_feature=tran_pdp_feature,
             )
 
-            classifier.evaluate()
+            classifier.evaluate(visualize=True, output=True)
+            # classifier.tradeoff()
+            # classifier.feature_importance()
+            classifier.explain()
             results = classifier.compile(save_artifact=False)
             return results
 
@@ -292,7 +323,8 @@ class AlgoInit:
                 output_folder = Path.cwd() / "output"
                 output_folder.mkdir(parents=True, exist_ok=True)
                 output_path = output_folder / "results.json"
-                self._generate_output_file(results, output_path)
+                processed_results = process_dict(results, output_folder)
+                self._generate_output_file(processed_results, output_path)
                 print(f"Results saved to: {output_path}")
             else:
                 raise RuntimeError(error_messages)
@@ -341,7 +373,6 @@ class AlgoInit:
                 testArguments=test_arguments,
                 output=results,
             )
-
             output_json = output.json(exclude_none=True, indent=4)
             if validate_test_result_schema(json.loads(output_json)) is True:
                 with open(output_path, "w") as f:

@@ -36,7 +36,8 @@ def parse_input_args():
 
     # Model configuration
     parser.add_argument("--training_data_path", default="", help="Path to training data (optional)")
-    parser.add_argument("--training_labels_path", default="", help="Path to training labels (optional)")
+    parser.add_argument("--training_ground_truth_path", default="", help="Path to training ground truth (optional)")
+    parser.add_argument("--training_ground_truth", default="", help="Training ground truth column name (optional)")
     parser.add_argument("--model_name", default="auto", help="Name for the model artifact")
     parser.add_argument(
         "--probability_threshold", type=float, default=0.5, help="Threshold for converting probabilities to predictions"
@@ -63,6 +64,18 @@ def parse_input_args():
         default="eligible",
         choices=["eligible", "inclusive", "both"],
         help="Fairness concern to apply",
+    )
+    parser.add_argument(
+        "--fair_priority",
+        default="benefit",
+        choices=["benefit", "harm"],
+        help='Used to pick the fairness metric according to the Fairness Tree methodology. Could be "benefit" or "harm"',
+    )
+    parser.add_argument(
+        "--fair_impact",
+        default="normal",
+        choices=["normal", "significant", "selective"],
+        help='Used to pick the fairness metric according to the Fairness Tree methodology. Could be "normal" or "significant" or "selective"',
     )
 
     # Label configuration
@@ -117,12 +130,15 @@ def invoke_veritas_fairness_plugin():
         "fair_threshold": args.fair_threshold,
         "fair_metric": args.fair_metric,
         "fair_concern": args.fair_concern,
+        "fair_priority": args.fair_priority,
+        "fair_impact": args.fair_impact,
         "performance_metric": args.performance_metric,
         "transparency_rows": args.transparency_rows,
         "transparency_max_samples": args.transparency_max_samples,
         "transparency_features": args.transparency_features,
         "training_data_path": args.training_data_path,
-        "training_labels_path": args.training_labels_path,
+        "training_ground_truth_path": args.training_ground_truth_path,
+        "training_ground_truth": args.training_ground_truth,
     }
 
     print("*" * 20)
@@ -137,7 +153,7 @@ def invoke_veritas_fairness_plugin():
         f"Core Modules Path: {args.core_modules_path}\n"
         f"Protected Features: {args.protected_features}\n"
         f"Training Data Path: {args.training_data_path}\n"
-        f"Training Labels Path: {args.training_labels_path}"
+        f"Training Ground Truth Path: {args.training_ground_truth_path}\n"
     )
     print("*" * 20)
 
