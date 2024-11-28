@@ -8,7 +8,13 @@ from pathlib import Path
 from typing import Dict, Tuple, Union
 
 from aiverify_veritastool.model.model_container import ModelContainer
-from aiverify_veritastool.usecases.base_classification import BaseClassification
+from aiverify_veritastool.usecases import (
+    BaseClassification,
+    BaseRegression,
+    CreditScoring,
+    CustomerMarketing,
+    PredictiveUnderwriting,
+)
 from aiverify_veritastool.util.schema import ModelArtifact
 from aiverify_veritastool.util.aiverify import process_dict
 from aiverify_test_engine.interfaces.idata import IData
@@ -26,6 +32,14 @@ from aiverify_test_engine.utils.json_utils import (
     validate_test_result_schema,
 )
 from rich import print
+
+USE_CASE_MAP = {
+    "base_classification": BaseClassification,
+    "base_regression": BaseRegression,
+    "credit_scoring": CreditScoring,
+    "customer_marketing": CustomerMarketing,
+    "predictive_underwriting": PredictiveUnderwriting,
+}
 
 
 class AlgoInit:
@@ -80,6 +94,9 @@ class AlgoInit:
         else:
             self._ground_truth_path = ""
             self._ground_truth = ""
+
+        # Use case
+        self._use_case = input_arguments.get("use_case", "base_classification")
 
         # Default for instances
         self._data_instance: Union[None, IData] = None
@@ -250,6 +267,7 @@ class AlgoInit:
         try:
             container = self._create_veritas_container()
 
+            use_case = self._input_arguments.get("use_case", "base_classification")
             fair_threshold = self._input_arguments.get("fair_threshold", 80)
             fair_metric_name = self._input_arguments.get("fair_metric", "auto")
             fair_concern = self._input_arguments.get("fair_concern", "eligible")
@@ -260,7 +278,11 @@ class AlgoInit:
             fair_priority = self._input_arguments.get("fair_priority", "benefit")
             fair_impact = self._input_arguments.get("fair_impact", "normal")
 
-            classifier = BaseClassification(
+            use_case_class = USE_CASE_MAP.get(self._use_case)
+            if not use_case_class:
+                raise ValueError(f"Unsupported use case: {self._use_case}")
+
+            use_case_instance = use_case_class(
                 model_params=[container],
                 fair_threshold=fair_threshold,
                 fair_metric_name=fair_metric_name,
@@ -273,11 +295,11 @@ class AlgoInit:
                 tran_pdp_feature=tran_pdp_feature,
             )
 
-            classifier.evaluate(visualize=True, output=True)
+            use_case_instance.evaluate(visualize=True, output=True)
             # classifier.tradeoff()
             # classifier.feature_importance()
-            classifier.explain()
-            results = classifier.compile(save_artifact=False)
+            use_case_instance.explain()
+            results = use_case_instance.compile(save_artifact=False)
             return results
 
         except Exception as e:

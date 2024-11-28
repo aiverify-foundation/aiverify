@@ -34,6 +34,21 @@ def parse_input_args():
         help="Path to the core modules (default: empty).",
     )
 
+    # Desired use case
+    parser.add_argument(
+        "--use_case",
+        default="base_classification",
+        choices=[
+            "base_classification",
+            "base_regression",
+            "credit_scoring",
+            "fairness_classification",
+            "customer_marketing",
+            "predictive_underwriting",
+        ],
+        help="Use case to evaluate",
+    )
+
     # Model configuration
     parser.add_argument("--training_data_path", default="", help="Path to training data (optional)")
     parser.add_argument("--training_ground_truth_path", default="", help="Path to training ground truth (optional)")
