@@ -13,7 +13,7 @@ import JSZip from 'jszip';
 
 type Props = {
   result: TestResults | null;
-  onUpdateResult?: (updatedResult: TestResults) => void; // Optional callback if parent wants to update
+  onUpdateResult?: (updatedResult: TestResults) => void; 
 };
 
 export default function TestResultDetail({ result, onUpdateResult }: Props) {
@@ -60,21 +60,23 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
     }
   };
 
-  const handleDownloadJson = () => {
+  const handleDownloadJson = (dataType: string) => {
     if (!currentResult) return;
-
-    const jsonData = {
-      algorithmArgs: currentResult.testArguments.algorithmArgs,
-      output: currentResult.output,
-      artifacts: currentResult.artifacts,
-    };
-
-    const blob = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
+  
+    let jsonData = "";
+    if (dataType === 'algorithmArgs') {
+      jsonData = currentResult.testArguments.algorithmArgs;
+      console.log(jsonData)
+    } else if (dataType === 'output') {
+      jsonData = currentResult.output;
+    }
+  
+    const blob = new Blob([JSON.parse(jsonData)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-
+  
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${currentResult.name || 'test_result'}.json`;
+    a.download = `${currentResult.name || 'test_result'}_${dataType}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -304,7 +306,7 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
                   size="sm"
                   text="DOWNLOAD"
                   color='primary-950'
-                  onClick={handleDownloadJson}
+                  onClick={() => handleDownloadJson('algorithmArgs')}
                 />
               </div>
             </div>
@@ -333,7 +335,7 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
                   size="sm"
                   text="DOWNLOAD"
                   color='primary-950'
-                  onClick={handleDownloadJson}
+                  onClick={() => handleDownloadJson('output')}
                 />
               </div>
               <div className="rounded text-sm">
