@@ -5,6 +5,7 @@ from typing import Any, Dict
 import jsonschema
 import numpy
 import numpy as np
+import pandas as pd
 from aiverify_test_engine.utils.validate_checks import is_empty_string
 from jsonschema.validators import validate
 
@@ -39,34 +40,45 @@ def remove_numpy_formats(data: Any) -> Any:
     if data is None:
         return None
 
-    elif isinstance(data, numpy.integer):
-        return int(data)
-
-    elif isinstance(data, numpy.floating):
-        return float(data)
-
-    elif isinstance(data, numpy.ndarray):
+    elif isinstance(data, pd.Series):
         return remove_numpy_formats(data.tolist())
 
+    elif isinstance(data, pd.DataFrame):
+        return remove_numpy_formats(data.to_dict("records"))
+
+    elif isinstance(data, numpy.integer):
+        return int(data)
+    elif isinstance(data, numpy.floating):
+        if np.isnan(data) or np.isinf(data):
+            return float(np.nan_to_num(data))
+        return float(data)
+
+    elif isinstance(data, (numpy.ndarray, numpy.matrix, numpy.ma.MaskedArray)):
+        if data.dtype.names is not None:
+            return [tuple(remove_numpy_formats(x) for x in row) for row in data]
+        elif data.ndim == 0:
+            if data.dtype.kind == "f":
+                return float(np.nan_to_num(data))
+            return data.item()
+        else:
+            if data.dtype.kind == "f":
+                data = np.nan_to_num(data)
+            return remove_numpy_formats(data.tolist())
+
     elif isinstance(data, list):
-        for count, _ in enumerate(data):
-            data[count] = remove_numpy_formats(data[count])
-        return data
+        return [remove_numpy_formats(item) for item in data]
 
     elif isinstance(data, dict):
-        new_results = dict()
-        for key, value in data.items():
-            new_results.update({str(key): remove_numpy_formats(value)})
-        return new_results
+        return {str(key): remove_numpy_formats(value) for key, value in data.items()}
 
-    elif not isinstance(data, str) and np.isnan(data):
-        return np.nan_to_num(data)
+    elif np.isscalar(data):
+        if not isinstance(data, str):
+            if np.isnan(data):
+                return float(np.nan_to_num(data))
+            elif np.isinf(data):
+                return float(np.nan_to_num(data))
 
-    elif not isinstance(data, str) and np.isinf(data):
-        return np.nan_to_num(data)
-
-    else:
-        return data
+    return data
 
 
 def validate_json(data: dict, schema: dict) -> bool:

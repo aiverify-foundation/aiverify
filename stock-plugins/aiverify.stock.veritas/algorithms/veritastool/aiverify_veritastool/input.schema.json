@@ -1,0 +1,136 @@
+{
+    "title": "Veritas Fairness Assessment Input Arguments",
+    "description": "Schema for Veritas fairness assessment input parameters",
+    "type": "object",
+    "required": [
+        "protected_features",
+        "privileged_groups",
+        "positive_label",
+        "model_type"
+    ],
+    "properties": {
+        "protected_features": {
+            "title": "Protected Features",
+            "description": "List of column names representing protected attributes",
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "minItems": 1
+        },
+        "privileged_groups": {
+            "title": "Privileged Groups",
+            "description": "Mapping of protected features to their privileged values",
+            "type": "object",
+            "additionalProperties": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            }
+        },
+        "unprivileged_groups": {
+            "title": "Unprivileged Groups",
+            "description": "Optional mapping of protected features to their unprivileged values",
+            "type": "object",
+            "additionalProperties": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            }
+        },
+        "model_type": {
+            "title": "Model Type",
+            "description": "Type of model to evaluate",
+            "type": "string",
+            "enum": [
+                "CLASSIFICATION",
+                "REGRESSION",
+                "UPLIFT"
+            ]
+        },
+        "model_name": {
+            "title": "Model Name",
+            "description": "Name for the model artifact (defaults to model type if not specified)",
+            "type": "string",
+            "default": "auto"
+        },
+        "positive_label": {
+            "title": "Positive Labels",
+            "description": "Label values considered favorable",
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "minItems": 1
+        },
+        "negative_label": {
+            "title": "Negative Labels",
+            "description": "Label values considered unfavorable (required for uplift models)",
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "fair_threshold": {
+            "title": "Fairness Threshold",
+            "description": "Threshold value for fairness metrics (0-100)",
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "default": 80
+        },
+        "fair_metric": {
+            "title": "Fairness Metric",
+            "description": "Primary fairness metric to use for evaluation",
+            "type": "string",
+            "default": "auto"
+        },
+        "fair_concern": {
+            "title": "Fairness Concern",
+            "description": "Type of fairness concern to evaluate",
+            "type": "string",
+            "enum": [
+                "eligible",
+                "inclusive",
+                "both"
+            ],
+            "default": "eligible"
+        },
+        "performance_metric": {
+            "title": "Performance Metric",
+            "description": "Primary performance metric for evaluation",
+            "type": "string",
+            "default": "balanced_acc"
+        },
+        "transparency_rows": {
+            "title": "Transparency Analysis Rows",
+            "description": "Row numbers to analyze for transparency",
+            "type": "array",
+            "items": {
+                "type": "integer",
+                "minimum": 0
+            },
+            "default": [
+                1
+            ]
+        },
+        "transparency_max_samples": {
+            "title": "Maximum Transparency Samples",
+            "description": "Maximum number of samples for transparency analysis",
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+        },
+        "transparency_features": {
+            "title": "Transparency Analysis Features",
+            "description": "Features to analyze in partial dependence plots",
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "default": []
+        }
+    }
+}

@@ -1,4 +1,5 @@
 import logging
+import os
 import shutil
 import zipfile
 from typing import Any, Dict, Tuple, Union
@@ -34,15 +35,16 @@ class PipelineManager:
         if isinstance(logger, logging.Logger):
             PipelineManager._logger = logger
 
+    @staticmethod
     def read_pipeline_path(
         pipeline_path: str, pipeline_plugins: Dict, serializer_plugins: Dict
     ) -> Tuple[bool, Union[IPipeline, None], Union[ISerializer, None], str]:
         """
         A method to read the pipeline path and return the pipeline instance and serializer instance
-        It is usually serialized by some program such as (pickle, joblib)
+        It supports both pipeline files and folders
 
         Args:
-            pipeline_path (str): The pipeline path (can be a folder path, ZIP archive or URL)
+            pipeline_path (str): The pipeline path (can be a file, folder path, ZIP archive or URL)
             pipeline_plugins (Dict): A dictionary of supported pipeline plugins
             serializer_plugins (Dict): A dictionary of supported serializer plugins
 
@@ -128,57 +130,81 @@ class PipelineManager:
 
             pipeline_path = extracted_path
 
-        # Pipeline needs to import accompanying class and load it up.
-        # Pipeline path will be in folder, and we will need to import the python modules first,
-        # then find out which is the pipeline file to be deserialized and used.
-        import_python_modules(pipeline_path)
-        non_python_files = get_non_python_files(pipeline_path)
-        if non_python_files:
+        # Check if the pipeline_path is a file
+        if os.path.isfile(pipeline_path):
             log_message(
                 PipelineManager._logger,
                 logging.INFO,
-                f"Found these non-python files: {non_python_files}",
+                f"Detected a pipeline file: {pipeline_path}",
             )
-            pipeline_file = list(non_python_files.values())[0]
-        else:
-            error_message = "There was an error getting pipeline files in the folder"
-            log_message(PipelineManager._logger, logging.ERROR, error_message)
-            return (
-                False,
-                return_pipeline_instance,
-                return_pipeline_serializer_instance,
-                error_message,
-            )
-
-        # Attempt to deserialize the pipeline with the supported serializer.
-        log_message(
-            PipelineManager._logger,
-            logging.INFO,
-            f"Attempting to deserialize pipeline: {pipeline_path}",
-        )
-        (
-            is_success,
-            pipeline,
-            return_pipeline_serializer_instance,
-        ) = PipelineManager._try_to_deserialize_pipeline(
-            pipeline_file, serializer_plugins
-        )
-
-        if temp_dir:
-            shutil.rmtree(temp_dir)
-
-        if not is_success:
-            # Failed to deserialize pipeline file
-            error_message = (
-                f"There was an error deserializing the pipeline: {pipeline_file}"
-            )
-            log_message(PipelineManager._logger, logging.ERROR, error_message)
-            return (
+            (
                 is_success,
-                return_pipeline_instance,
+                pipeline,
                 return_pipeline_serializer_instance,
-                error_message,
+            ) = PipelineManager._try_to_deserialize_pipeline(
+                pipeline_path, serializer_plugins
             )
+
+            if not is_success:
+                error_message = f"There was an error deserializing the pipeline file: {pipeline_path}"
+                log_message(PipelineManager._logger, logging.ERROR, error_message)
+                return (
+                    False,
+                    return_pipeline_instance,
+                    return_pipeline_serializer_instance,
+                    error_message,
+                )
+        else:
+            # Pipeline needs to import accompanying class and load it up.
+            # Pipeline path will be in folder, and we will need to import the python modules first,
+            # then find out which is the pipeline file to be deserialized and used.
+            import_python_modules(pipeline_path)
+            non_python_files = get_non_python_files(pipeline_path)
+            if non_python_files:
+                log_message(
+                    PipelineManager._logger,
+                    logging.INFO,
+                    f"Found these non-python files: {non_python_files}",
+                )
+                pipeline_file = list(non_python_files.values())[0]
+            else:
+                error_message = (
+                    "There was an error getting pipeline files in the folder"
+                )
+                log_message(PipelineManager._logger, logging.ERROR, error_message)
+                return (
+                    False,
+                    return_pipeline_instance,
+                    return_pipeline_serializer_instance,
+                    error_message,
+                )
+
+            # Attempt to deserialize the pipeline with the supported serializer.
+            log_message(
+                PipelineManager._logger,
+                logging.INFO,
+                f"Attempting to deserialize pipeline: {pipeline_file}",
+            )
+            (
+                is_success,
+                pipeline,
+                return_pipeline_serializer_instance,
+            ) = PipelineManager._try_to_deserialize_pipeline(
+                pipeline_file, serializer_plugins
+            )
+
+            if not is_success:
+                # Failed to deserialize pipeline file
+                error_message = (
+                    f"There was an error deserializing the pipeline: {pipeline_file}"
+                )
+                log_message(PipelineManager._logger, logging.ERROR, error_message)
+                return (
+                    False,
+                    return_pipeline_instance,
+                    return_pipeline_serializer_instance,
+                    error_message,
+                )
 
         # Attempt to identify the pipeline format with the supported list.
         log_message(
@@ -206,6 +232,9 @@ class PipelineManager:
             return_pipeline_instance = None
             error_message = f"There was an error getting pipeline format (unsupported): {type(pipeline)}"
             log_message(PipelineManager._logger, logging.ERROR, error_message)
+
+        if temp_dir:
+            shutil.rmtree(temp_dir)
 
         return (
             is_success,
