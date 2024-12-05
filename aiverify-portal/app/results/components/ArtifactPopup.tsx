@@ -57,7 +57,7 @@ const ArtifactModal = ({ isOpen, artifact, onClose, onDownload }: ArtifactModalP
         <div className="flex justify-between items-center">
           <h3 className="text-xl font-semibold">{artifact.name}</h3>
         </div>
-        <div className="mt-4">{renderArtifactContent()}</div>
+        <div className="flex mt-4 items-center justify-center">{renderArtifactContent()}</div>
         <div className="flex justify-end space-x-4 mt-4">
           <Button
             pill
