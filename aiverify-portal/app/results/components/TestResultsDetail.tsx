@@ -246,16 +246,7 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
           <p><span className="font-semibold">Model File:</span> {currentResult.testArguments.modelFile.split('/').pop()}</p>
           <p><span className="font-semibold">Model Type:</span> {currentResult.testArguments.modelType}</p>
           <p><span className="font-semibold">Test Date:</span>{' '}
-            {new Date(currentResult.created_at).toLocaleString('en-US', {
-              month: '2-digit',
-              day: '2-digit',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-              second: '2-digit',
-              hour12: false,
-              timeZone: 'Asia/Singapore',
-            })}
+            {new Date(currentResult.created_at).toLocaleString('en-GB')}
           </p>
           <p><span className="font-semibold">Test Dataset:</span> {currentResult.testArguments.testDataset.split('/').pop()}</p>
           <p><span className="font-semibold">Ground Truth Dataset:</span> {currentResult.testArguments.groundTruthDataset.split('/').pop()}</p>
@@ -291,7 +282,7 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
                 <pre className="bg-secondary-800 p-4 whitespace-pre-wrap">
                   {typeof currentResult.testArguments.algorithmArgs === 'string'
                     ? JSON.stringify(
-                      JSON.parse(JSON.parse(currentResult.testArguments.algorithmArgs)), // Double parse
+                      JSON.parse(JSON.parse(currentResult.testArguments.algorithmArgs)),
                       null,
                       2
                     )
@@ -342,16 +333,18 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
                 <h3 className="text-lg font-semibold mb-2">Artifacts</h3>
                 <div className="bg-secondary-800 max-h-64 overflow-y-auto p-4 whitespace-pre-wrap">
                   {Array.isArray(currentResult.artifacts) ? (
-                    <ul className="space-y-1 pl-6 list-disc">
+                    <ul className="space-y-1 pl-6">
                       {currentResult.artifacts.map((artifact, index) => (
-                        <li key={index}>
-                          <button
-                            onClick={() => handleArtifactClick({ id: currentResult.id, name: artifact })}
-                            className="text-primary-500 hover:underline"
-                          >
-                            {typeof artifact === 'string' ? artifact : JSON.stringify(artifact, null, 2)}
-                          </button>
-                        </li>
+                        <li key={index} className="relative before:absolute before:left-[-1.5em] before:content-['•']">
+                        <Button
+                          variant={ButtonVariant.LINK}
+                          text={typeof artifact === 'string' ? artifact : JSON.stringify(artifact, null, 2)}
+                          size="md"
+                          width={10}
+                          textColor='var(--color-primary-500)'
+                          onClick={() => handleArtifactClick({ id: currentResult.id, name: artifact })}
+                        />
+                      </li>
                       ))}
                     </ul>
                   ) : (
