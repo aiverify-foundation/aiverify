@@ -12,6 +12,7 @@ type WidgetProps = {
     const [isModalOpen, setModalOpen] = useState(false);
     const [modalContent, setModalContent] = useState<string | null>(null);
     const [modalHeading, setModalHeading] = useState<string>('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleViewProperties = () => {
         if (widget.properties) {
@@ -142,7 +143,6 @@ type WidgetProps = {
                 overlayOpacity={75}
                 width={600}
                 height={400}
-                //onPrimaryBtnClick={}
                 >
                 <pre style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>{modalContent}</pre>
                 </Modal>

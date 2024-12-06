@@ -5,11 +5,11 @@
 import React, { useState, useEffect } from 'react';
 import { Plugin } from '@/app/types';
 import { deletePlugin } from '@/lib/fetchApis/deletePlugin';
-//import { getArtifacts } from '@/lib/fetchApis/getArtifacts';
-//import ArtifactModal from './ArtifactPopup';
 import { Button, ButtonVariant } from '@/lib/components/button';
 import { Modal } from '@/lib/components/modal';
 import WidgetCard from './DisplayWidget';
+import { downloadWidgets } from '@/lib/fetchApis/downloadWidgets';
+
 
 type Props = {
   plugin: Plugin | null;
@@ -23,6 +23,7 @@ export default function PluginDetail({ plugin }: Props) {
   const [selectedSchema, setSelectedSchema] = useState<any>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setCurrentPlugin(plugin);
@@ -41,9 +42,36 @@ export default function PluginDetail({ plugin }: Props) {
     }
   };
 
-  const closeModal = () => {
-    setModalOpen(false);
-    setSelectedSchema(null);
+  const handleDownloadWidget = async (gid: string) => {
+    setIsLoading(true);
+
+    try {
+      const response = await downloadWidgets(gid);
+
+      // Create a Blob URL from the response
+      const fileBlob = await response.blob();
+      const url = window.URL.createObjectURL(fileBlob);
+
+      // Extract the filename from the Content-Disposition header
+      const disposition = response.headers.get('Content-Disposition') || '';
+      const filenameMatch = disposition.match(/filename="(.+)"/);
+      const filename = filenameMatch ? filenameMatch[1] : 'widget.zip';
+
+      // Trigger the file download
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+
+      // Clean up
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+    } catch (error) {
+      alert('Failed to download the widget file. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (!currentPlugin) {
@@ -115,34 +143,45 @@ export default function PluginDetail({ plugin }: Props) {
 
         {/* Tab Content */}
         <div className="flex-1 overflow-y-auto">
-            <div className="mt-4">
-            {activeTab === 'widgets' && (
-                <div className="space-y-4">
-                {currentPlugin.widgets.map((widget) => (
-                    <div key={`${widget.gid}:${widget.cid}`}>
-                    <WidgetCard widget={widget} />
-                    </div>
-                ))}
-                </div>
-            )}
+          <div className='flex justify-end'>
+            <Button
+              pill
+              textColor="white"
+              variant={ButtonVariant.PRIMARY}
+              size="sm"
+              text="DOWNLOAD WIDGETS"
+              color='primary-100'
+              onClick={() => handleDownloadWidget(currentPlugin.gid)}
+            />
+          </div>
+          <div className="mt-4">
+          {activeTab === 'widgets' && (
+              <div className="space-y-4">
+              {currentPlugin.widgets.map((widget) => (
+                  <div key={`${widget.gid}:${widget.cid}`}>
+                  <WidgetCard widget={widget} />
+                  </div>
+              ))}
+              </div>
+          )}
 
-            {activeTab === 'algorithms' && (
-                <div className="space-y-4">
-                {currentPlugin.algorithms.map((algorithm) => (
-                    <div
-                    key={algorithm.cid}
-                    className="p-4 border border-gray-800 rounded-lg"
-                    >
-                    <h4 className="text-sm font-bold">{algorithm.name}</h4>
-                    <p className="text-xs text-gray-400">{algorithm.description}</p>
-                    <p className="text-xs">
-                        <strong>Language:</strong> {algorithm.language}
-                    </p>
-                    </div>
-                ))}
-                </div>
-            )}
-            </div>
+          {activeTab === 'algorithms' && (
+              <div className="space-y-4">
+              {currentPlugin.algorithms.map((algorithm) => (
+                  <div
+                  key={algorithm.cid}
+                  className="p-4 border border-gray-800 rounded-lg"
+                  >
+                  <h4 className="text-sm font-bold">{algorithm.name}</h4>
+                  <p className="text-xs text-gray-400">{algorithm.description}</p>
+                  <p className="text-xs">
+                      <strong>Language:</strong> {algorithm.language}
+                  </p>
+                  </div>
+              ))}
+              </div>
+          )}
+          </div>
         </div>
     </div>
 
