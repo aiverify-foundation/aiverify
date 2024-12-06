@@ -15,6 +15,7 @@ import { CircleArrowRightIcon } from './icons/circle-arrow-right-icon';
 import { CloseIcon } from './icons/close-x-icon';
 import { DarkMoonIcon } from './icons/dark-moon-icon';
 import { DatabaseIcon } from './icons/database-icon';
+import { DeleteIcon } from './icons/delete-icon';
 import { DocumentIcon } from './icons/document-icon';
 import { FileIcon } from './icons/file-icon';
 import { FolderForChatSessionsIcon } from './icons/folder-chat-icon';
@@ -69,6 +70,7 @@ enum IconName {
   Close = 'Close',
   DarkMoon = 'DarkMoon',
   Database = 'Database',
+  Delete = 'Delete',
   Document = 'Document',
   File = 'File',
   Folder = 'Folder',
@@ -655,6 +657,16 @@ function Icon(props: IconProps) {
     case IconName.MoonAttackStrategy:
       iconToRender = (
         <MoonshotAttackStrategyIcon
+          width={size}
+          height={size}
+          className={svgClassName}
+          color={color}
+        />
+      );
+      break;
+    case IconName.Delete:
+      iconToRender = (
+        <DeleteIcon
           width={size}
           height={size}
           className={svgClassName}

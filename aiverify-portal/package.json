@@ -14,6 +14,8 @@
     "@fontsource-variable/inter": "^5.1.0",
     "@fontsource/roboto": "^5.1.0",
     "class-variance-authority": "^0.7.0",
+    "fuse.js": "^7.0.0",
+    "jszip": "^3.10.1",
     "lucide-react": "^0.446.0",
     "next": "15.0.1",
     "react": "19.0.0-rc-69d4b800-20241021",

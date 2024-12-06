@@ -34,7 +34,7 @@ export function UserFlowCards() {
             </Card.Content>
           </Card>
         </Link>
-        <Link href="/models">
+        <Link href="/home/manage">
           <Card
             size="md"
             enableTiltEffect={true}
@@ -44,115 +44,11 @@ export function UserFlowCards() {
             tiltMaxGlare={0.3}
             className="bg-secondary-500 !bg-none">
             <Card.Content className="flex flex-col justify-between p-6">
-              <Icon
-                name={IconName.Database}
-                size={50}
-                color="white"
-              />
+            <div style={{ height: 50 }} /> {/* Empty placeholder for spacing */}
               <div>
-                <p className="text-shadow-sm tracking-wide">Manage Models</p>
+                <p className="text-shadow-sm tracking-wide">Manage Models, Datasets, etc</p>
                 <h2 className="text-shadow-sm text-2xl font-bold tracking-wide">
-                  Models
-                </h2>
-              </div>
-            </Card.Content>
-          </Card>
-        </Link>
-        <Link href="/data">
-          <Card
-            size="md"
-            enableTiltEffect={true}
-            tiltSpeed={200}
-            tiltRotation={5}
-            enableTiltGlare={true}
-            tiltMaxGlare={0.3}
-            className="bg-secondary-500 !bg-none">
-            <Card.Content className="flex flex-col justify-between p-6">
-              <Icon
-                name={IconName.Database}
-                size={50}
-                color="white"
-              />
-              <div>
-                <p className="text-shadow-sm tracking-wide">Manage datasets</p>
-                <h2 className="text-shadow-sm text-2xl font-bold tracking-wide">
-                  Data
-                </h2>
-              </div>
-            </Card.Content>
-          </Card>
-        </Link>
-        <Link href="/templates">
-          <Card
-            size="md"
-            enableTiltEffect={true}
-            tiltSpeed={200}
-            tiltRotation={5}
-            enableTiltGlare={true}
-            tiltMaxGlare={0.3}
-            className="bg-secondary-500 !bg-none">
-            <Card.Content className="flex flex-col justify-between p-6">
-              <Icon
-                name={IconName.OpenedEmptyBook}
-                size={50}
-                color="white"
-              />
-              <div>
-                <p className="text-shadow-sm tracking-wide">
-                  Manage report templates
-                </p>
-                <h2 className="text-shadow-sm text-2xl font-bold tracking-wide">
-                  Report Templates
-                </h2>
-              </div>
-            </Card.Content>
-          </Card>
-        </Link>
-        <Link href="/plugins">
-          <Card
-            size="md"
-            enableTiltEffect={true}
-            tiltSpeed={200}
-            tiltRotation={5}
-            enableTiltGlare={true}
-            tiltMaxGlare={0.3}
-            className="bg-secondary-500 !bg-none">
-            <Card.Content className="flex flex-col justify-between p-6">
-              <Icon
-                name={IconName.Plug}
-                size={50}
-                color="white"
-              />
-              <div>
-                <p className="text-shadow-sm tracking-wide">Manage plugins</p>
-                <h2 className="text-shadow-sm text-2xl font-bold tracking-wide">
-                  Plugins
-                </h2>
-              </div>
-            </Card.Content>
-          </Card>
-        </Link>
-        <Link href="/results">
-          <Card
-            size="md"
-            enableTiltEffect={true}
-            tiltSpeed={200}
-            tiltRotation={5}
-            enableTiltGlare={true}
-            tiltMaxGlare={0.3}
-            className="bg-secondary-500 !bg-none">
-            <Card.Content className="flex flex-col justify-between p-6">
-              <Icon
-                name={IconName.Lightning}
-                size={50}
-                color="white"
-              />
-              <div>
-                <p className="text-shadow-sm tracking-wide">
-                  Manage test results
-                </p>
-                <h2 className="text-shadow-sm text-2xl font-bold tracking-wide">
-                  Test Results
+                  Manage
                 </h2>
               </div>
             </Card.Content>
