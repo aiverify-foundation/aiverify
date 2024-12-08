@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import ForeignKey
+from sqlalchemy.ext.hybrid import hybrid_property
 from typing import Optional
 from datetime import datetime
 
@@ -26,6 +27,10 @@ class ProjectTemplateModel(BaseORMModel, ProjectBaseModel):
     __tablename__ = "project_template"
 
     plugin_id: Mapped[Optional[str]] = mapped_column(ForeignKey("plugin.gid"))
+
+    @hybrid_property
+    def from_plugin(self):
+        return self.plugin_id is not None
 
     # plugin = relationship("PluginModel", foreign_keys=[plugin_id])
     # base = relationship("ProjectBaseModel", foreign_keys=[id])
