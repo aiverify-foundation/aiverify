@@ -47,6 +47,7 @@ type WidgetProps = {
       <div className="bg-secondary-800 border border-secondary-300 p-6 rounded-lg mb-8" >
         <div className='flex items-center justify-between space-x-2'>
             <h3 className='font-semibold text-xl'>{widget.name}</h3>
+            {/* Dependencies Check */}
             <div className="flex items-center p-1 pr-2 border-2 border-[#25A167] rounded-full space-x-1">
                 {widget.dependencies.every((dep) => dep.cid) ? (
                     <>
@@ -61,6 +62,7 @@ type WidgetProps = {
                 )}
             </div>
         </div>
+        {/* Metadata of Widget */}
         <p className='text-base mb-2'>{widget.description || "No description provided."}</p>
         <ul className="text-sm">
             {widget.gid && (
@@ -94,9 +96,8 @@ type WidgetProps = {
                 <strong>Tags:</strong> {widget.tags}
                 </li>
             )}
-        </ul>
-        {widget.dependencies && widget.dependencies.length > 0 && (
-            <div className='mt-2'>
+            {widget.dependencies && widget.dependencies.length > 0 && (
+            <div className='mt-2 text-sm'>
                 <strong>Required Dependencies:</strong>
                 <ul style={{ listStyleType: "none", padding: 0 }}>
                 {widget.dependencies.map((dep, index) => (
@@ -115,6 +116,8 @@ type WidgetProps = {
                 </ul>
             </div>
         )}
+        </ul>
+        {/* Buttons for Widget Properties & Mock Data */}
         <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
             {widget.properties && (
                 <Button
@@ -139,6 +142,7 @@ type WidgetProps = {
                 />
             )}
         </div>
+        {/* Modal for properties and mock data */}
         {isModalOpen && (
             <div className='fixed inset-0 flex items-center justify-center z-50'>
                 <Modal
@@ -147,7 +151,6 @@ type WidgetProps = {
                 textColor="white"
                 onCloseIconClick={closeModal}
                 enableScreenOverlay
-                overlayOpacity={75}
                 width={600}
                 height={400}
                 >

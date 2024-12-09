@@ -1,14 +1,13 @@
-//plugindetails
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
 import { Plugin } from '@/app/types';
-import { deletePlugin } from '@/lib/fetchApis/deletePlugin';
 import { Button, ButtonVariant } from '@/lib/components/button';
 import { Modal } from '@/lib/components/modal';
 import WidgetCard from './DisplayWidget';
 import { downloadWidgets } from '@/lib/fetchApis/downloadWidgets';
+import { deletePlugin } from '@/lib/fetchApis/deletePlugin';
+import { DeleteIcon } from '../utils/icons';
 
 
 type Props = {
@@ -21,21 +20,33 @@ export default function PluginDetail({ plugin }: Props) {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [confirmDeleteGid, setConfirmDeleteGid] = useState<string | null>(null);
+
 
   useEffect(() => {
     setCurrentPlugin(plugin);
   }, [plugin]);
 
 
-  const handleDelete = async (id: number) => {
-    try {
-      await deletePlugin(id);
-      setModalMessage('Result deleted successfully!');
-      setIsModalVisible(true);
-    } catch (error) {
-      console.error('Failed to delete result:', error);
-      setModalMessage('Failed to delete the result.');
-      setIsModalVisible(true);
+  // This handles the deletion and sets the modal message
+  const handleDelete = async (gid: string) => {
+    setConfirmDeleteGid(gid);
+    setIsModalVisible(true); // Show the modal first
+    setModalMessage('Are you sure you want to delete this plugin?'); // Confirmation message
+  };
+
+  const confirmDelete = async () => {
+    if (currentPlugin) {
+      try {
+        await deletePlugin(currentPlugin.gid);
+        setModalMessage('Plugin deleted successfully!');
+      } catch (error) {
+        console.error('Failed to delete plugin:', error);
+        setModalMessage('Failed to delete the plugin.');
+      } finally {
+        // Close the modal after action
+        setTimeout(() => setIsModalVisible(false), 1500);
+      }
     }
   };
 
@@ -81,40 +92,48 @@ export default function PluginDetail({ plugin }: Props) {
 
   return (
     <div className="bg-secondary-950 h-full text-white rounded-lg shadow-lg p-6 flex flex-col overflow-hidden">
-    {/* Popup for deleting */}
+    {/* Delete Popup */}
     {isModalVisible && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-            <Modal
-                bgColor="var(--color-primary-500)"
-                textColor="white"
-                onCloseIconClick={() => setIsModalVisible(false)}
-                enableScreenOverlay
-                heading=""
-                height={150}
-            >
-                <p>{modalMessage}</p>
-            </Modal>
+           <Modal
+            bgColor="var(--color-primary-500)"
+            textColor="white"
+            onCloseIconClick={() => setIsModalVisible(false)}
+            enableScreenOverlay
+            heading="Confirm Deletion"
+            height={200}
+            primaryBtnLabel="DELETE"
+            secondaryBtnLabel="CANCEL"
+            onPrimaryBtnClick={confirmDelete} // Handles the actual deletion
+            onSecondaryBtnClick={() => setIsModalVisible(false)} // Closes the modal
+          >
+            <p>{modalMessage}</p>
+          </Modal>
         </div>
     )}
-
+        {/* Metadata of Plugin */}
         <div className="pb-4 mb-4">
+          <div className='flex items-center justify-between'>
             <h3 className="text-2xl font-semibold mb-2">{currentPlugin.name}</h3>
-            <div className="space-y-1 text-sm">
-            <p>{currentPlugin.description}</p>
-            <p></p>
-            <p>
-                <span className="font-semibold">Version:</span> {currentPlugin.version}
-            </p>
-            <p>
-                <span className="font-semibold">Author:</span> {currentPlugin.author}
-            </p>
-            <p>
-                <span className="font-semibold">Installed on:</span>{' '}
-                {new Date(currentPlugin.updated_at).toLocaleString('en-GB')}
-            </p>
-            </div>
+            <DeleteIcon onClick={() => handleDelete(currentPlugin.gid)} />
+          </div>
+          <div className="space-y-1 text-sm">
+          <p>{currentPlugin.description}</p>
+          <p></p>
+          <p>
+              <span className="font-semibold">Version:</span> {currentPlugin.version}
+          </p>
+          <p>
+              <span className="font-semibold">Author:</span> {currentPlugin.author}
+          </p>
+          <p>
+              <span className="font-semibold">Installed on:</span>{' '}
+              {new Date(currentPlugin.updated_at).toLocaleString('en-GB')}
+          </p>
+          </div>
         </div>
 
+        {/* Tabs */}
         <div className="flex justify-start border-b border-gray-700 space-x-1 mb-4">
             <button
             className={`py-2 px-6 rounded-t ${
@@ -140,19 +159,20 @@ export default function PluginDetail({ plugin }: Props) {
 
         {/* Tab Content */}
         <div className="flex-1 overflow-y-auto">
-          <div className='flex justify-end'>
-            <Button
-              pill
-              textColor="white"
-              variant={ButtonVariant.PRIMARY}
-              size="sm"
-              text="DOWNLOAD WIDGETS"
-              color='primary-100'
-              onClick={() => handleDownloadWidget(currentPlugin.gid)}
-            />
-          </div>
-          <div className="mt-4">
+          <div>
           {activeTab === 'widgets' && (
+            <div>
+              <div className='flex justify-end mb-4'>
+                <Button
+                  pill
+                  textColor="white"
+                  variant={ButtonVariant.PRIMARY}
+                  size="sm"
+                  text="DOWNLOAD WIDGETS"
+                  color='primary-100'
+                  onClick={() => handleDownloadWidget(currentPlugin.gid)}
+                />
+              </div>
               <div className="space-y-4">
               {currentPlugin.widgets.map((widget) => (
                   <div key={`${widget.gid}:${widget.cid}`}>
@@ -160,6 +180,7 @@ export default function PluginDetail({ plugin }: Props) {
                   </div>
               ))}
               </div>
+            </div>
           )}
 
           {activeTab === 'algorithms' && (

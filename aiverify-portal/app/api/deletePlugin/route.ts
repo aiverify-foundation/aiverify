@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 
 export async function DELETE(request: Request) {
-    const url = new URL(request.url);
-    const gid = url.searchParams.get('gid');
+  const { gid } = await request.json();
+  console.log(gid)
 
   try {
     const response = await fetch(`http://127.0.0.1:4000/plugins/${gid}`, {
@@ -10,6 +10,7 @@ export async function DELETE(request: Request) {
       headers: {
         'Content-Type': 'application/json',
       },
+      body: JSON.stringify({ gid }),
     });
 
     console.log('Backend response status:', response.status);
@@ -18,7 +19,7 @@ export async function DELETE(request: Request) {
         const body = await response.text();
         if (body === '') {
             //console.log('delete 2')
-            return NextResponse.json({ message: 'Plugin deleted successfully.' }, { status: 200 });
+            return NextResponse.json({ message: 'Result deleted successfully.' }, { status: 200 });
         }
       // In case content in the body, parse
       const data = await response.json();
@@ -28,10 +29,10 @@ export async function DELETE(request: Request) {
     // If not 200 OK, read the response body as text
     const errorData = await response.text();
     console.error('Error response from backend:', errorData);
-    return NextResponse.json({ error: errorData || 'Failed to delete plugin' }, { status: response.status });
+    return NextResponse.json({ error: errorData || 'Failed to delete result' }, { status: response.status });
 
   } catch (error) {
-    console.error('Error while deleting plugin:', error);
-    return NextResponse.json({ error: 'Server error while deleting plugin' }, { status: 500 });
+    console.error('Error while deleting result:', error);
+    return NextResponse.json({ error: 'Server error while deleting result' }, { status: 500 });
   }
 }

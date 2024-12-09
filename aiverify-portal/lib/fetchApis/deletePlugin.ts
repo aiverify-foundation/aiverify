@@ -1,11 +1,12 @@
-export const deletePlugin = async (id: number) => {
+export const deletePlugin = async (gid: string) => {
     try {
+      console.log("gid is ", gid)
       const response = await fetch('/api/deletePlugin', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ gid }),
       });
   
       if (!response.ok) {
