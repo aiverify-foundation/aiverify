@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends
-from sqlalchemy.orm import Session, make_transient
+from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime
 
@@ -67,6 +67,37 @@ async def get_project_template_by_id(template_id: int, session: Session = Depend
         raise HTTPException(status_code=500, detail=f"Internal error {e}")
 
 
+@router.put("/{template_id}", response_model=ProjectTemplateOutput)
+async def update_project_template(
+    template_id: int, projectTemplate: ProjectTemplateInput, session: Session = Depends(get_db_session)
+):
+    """
+    Update a Project Template by ID
+    """
+    try:
+        template = session.query(ProjectTemplateModel).filter(ProjectTemplateModel.id == template_id).first()
+        if not template:
+            raise HTTPException(status_code=404, detail="Project Template not found")
+        if template.from_plugin:
+            raise HTTPException(status_code=400, detail="Plugin templates are not allowed to be edited")
+
+        meta = ProjectTemplateMeta(globalVars=projectTemplate.globalVars, pages=projectTemplate.pages)
+        template.name = projectTemplate.projectInfo.name
+        template.description = projectTemplate.projectInfo.description
+        template.data = meta.model_dump_json().encode("utf-8")
+        template.updated_at = datetime.now()
+
+        session.commit()
+        session.refresh(template)
+        return ProjectTemplateOutput.from_model(template)
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        session.rollback()
+        logger.error(f"Error updating project template with ID {template_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Internal error {e}")
+
+
 @router.delete("/{template_id}")
 async def delete_project_template(template_id: int, session: Session = Depends(get_db_session)):
     """
@@ -76,7 +107,7 @@ async def delete_project_template(template_id: int, session: Session = Depends(g
         template = session.query(ProjectTemplateModel).filter(ProjectTemplateModel.id == template_id).first()
         if not template:
             raise HTTPException(status_code=404, detail="Project Template not found")
-        
+
         if template.from_plugin:
             raise HTTPException(status_code=400, detail="Plugin templates are not allowed to be deleted")
 
