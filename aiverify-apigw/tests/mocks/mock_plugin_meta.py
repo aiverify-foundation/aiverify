@@ -18,7 +18,7 @@ def create_mock_plugin_meta():
     return PluginMeta.model_validate_json(json.dumps(meta))
 
 
-def create_mock_algorithm_meta(gid: str|None=None):
+def create_mock_algorithm_meta(gid: str | None=None):
     if gid is None:
         gid = str(faker.uuid4())
     meta = {
