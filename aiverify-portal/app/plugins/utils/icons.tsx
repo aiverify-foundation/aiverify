@@ -53,7 +53,6 @@ function TaskAltIcon({
   );
 }
 
-
 function CheckCircleIcon({
   size = 20,
   color = '#000000',
@@ -92,22 +91,75 @@ function CheckCircleIcon({
         height={size}
         className={className}
       >
-        <mask id="check-mask">
-          <circle cx="12" cy="12" r="10" fill={color} />
-          <path
-            d="M9 12l2 2 4-4"
-            fill="none"
-            stroke="black"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </mask>
+        <defs>
+          <mask id="check-mask">
+            <rect width="100%" height="100%" fill="white" />
+            <path
+              d="M9 12l2 2 4-4"
+              fill="none"
+              stroke="black"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </mask>
+        </defs>
         <circle cx="12" cy="12" r="10" fill={color} mask="url(#check-mask)" />
       </svg>
     </div>
   );
 }
 
-export { TaskAltIcon, CheckCircleIcon };
+function CrossCircleIcon({
+  size = 20,
+  color = '#ffffff',
+  role,
+  ariaLabel,
+  disabled = false,
+  className,
+  style,
+  onClick,
+  onMouseDown,
+}: IconProps) {
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!disabled && onClick) {
+      onClick(e);
+    }
+  };
+
+  return (
+    <div
+      role={role}
+      aria-label={ariaLabel}
+      style={{
+        width: size,
+        height: size,
+        ...style,
+      }}
+      onClick={handleClick}
+      onMouseDown={disabled ? undefined : onMouseDown}
+      className={className}
+    >
+      <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      fill={color}
+      viewBox="0 0 24 24"
+      width={size}
+      height={size}
+      className={className}
+        >
+        <defs>
+          <mask id="cut-out-x">
+            <rect width="100%" height="100%" fill="white" />
+            <line x1="8" y1="8" x2="16" y2="16" stroke="black" stroke-width="2" />
+            <line x1="16" y1="8" x2="8" y2="16" stroke="black" stroke-width="2" />
+          </mask>
+        </defs>
+        <circle cx="12" cy="12" r="10" fill={color} mask="url(#cut-out-x)" />
+      </svg>
+    </div>
+  )
+}
+
+export { TaskAltIcon, CheckCircleIcon, CrossCircleIcon };
 

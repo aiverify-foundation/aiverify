@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Widget } from '@/app/types'; // Updated import
 import { Button, ButtonVariant } from '@/lib/components/button';
-import { TaskAltIcon, CheckCircleIcon } from '../utils/icons';
+import { TaskAltIcon, CheckCircleIcon, CrossCircleIcon } from '../utils/icons';
 import { Modal } from '@/lib/components/modal';
+import { Icon, IconName } from '@/lib/components/IconSVG';
 
 type WidgetProps = {
     widget: Widget;
@@ -12,25 +13,28 @@ type WidgetProps = {
     const [isModalOpen, setModalOpen] = useState(false);
     const [modalContent, setModalContent] = useState<string | null>(null);
     const [modalHeading, setModalHeading] = useState<string>('');
-    const [isLoading, setIsLoading] = useState(false);
 
     const handleViewProperties = () => {
         if (widget.properties) {
-        setModalHeading('Widget Properties');
-        setModalContent(JSON.stringify(widget.properties, null, 2));
-        setModalOpen(true);
+            setModalHeading('Widget Properties');
+            setModalContent(JSON.stringify(widget.properties, null, 2));
+            setModalOpen(true);
         } else {
-        alert('No properties available.');
+            setModalHeading('Widget Properties');
+            setModalContent('No properties available.');
+            setModalOpen(true);
         }
     };
 
     const handleViewSampleData = () => {
         if (widget.mockdata) {
-        setModalHeading('Mock Data');
-        setModalContent(JSON.stringify(widget.mockdata, null, 2));
-        setModalOpen(true);
+            setModalHeading('Mock Data');
+            setModalContent(JSON.stringify(widget.mockdata, null, 2));
+            setModalOpen(true);
         } else {
-        alert('No mock data available.');
+            setModalHeading('Mock Data');
+            setModalContent('No mock data available.');
+            setModalOpen(true);
         }
     };
 
@@ -50,7 +54,10 @@ type WidgetProps = {
                     <span style={{ color: "#25A167", fontWeight: "bold" }}>Dependencies OK</span>
                     </>
                 ) : (
-                    <span style={{ color: "red", fontWeight: "bold" }}>Missing Dependencies</span>
+                    <div>
+                        <CrossCircleIcon color="#red" />
+                        <span style={{ color: "red", fontWeight: "bold" }}>Missing Dependencies</span>
+                    </div>
                 )}
             </div>
         </div>
@@ -100,7 +107,7 @@ type WidgetProps = {
                         marginRight: "8px",
                         }}
                     >
-                        {dep.cid ? <TaskAltIcon color='#25A167'/> : "❌"}
+                        {dep.cid ? <TaskAltIcon color='#25A167'/> : <Icon name={IconName.Warning} color="var(--color-danger)"/>}
                     </span>
                     {dep.cid}
                     </li>

@@ -16,11 +16,8 @@ type Props = {
 };
 
 export default function PluginDetail({ plugin }: Props) {
-  const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<'widgets' | 'algorithms'>('widgets');
   const [currentPlugin, setCurrentPlugin] = useState<Plugin | null>(plugin);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedSchema, setSelectedSchema] = useState<any>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
