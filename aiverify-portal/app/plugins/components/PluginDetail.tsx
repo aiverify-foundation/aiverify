@@ -9,6 +9,7 @@ import AlgorithmCard from './DisplayAlgorithm';
 import { downloadWidgets } from '@/lib/fetchApis/downloadWidgets';
 import { deletePlugin } from '@/lib/fetchApis/deletePlugin';
 import { DeleteIcon } from '../utils/icons';
+import { downloadPlugin } from '@/lib/fetchApis/downloadPlugin';
 
 
 type Props = {
@@ -83,6 +84,38 @@ export default function PluginDetail({ plugin }: Props) {
     }
   };
 
+  const handleDownloadPlugin = async (gid: string) => {
+    setIsLoading(true);
+
+    try {
+      const response = await downloadPlugin(gid);
+
+      // Create a Blob URL from the response
+      const fileBlob = await response.blob();
+      const url = window.URL.createObjectURL(fileBlob);
+
+      // Extract the filename from the Content-Disposition header
+      const disposition = response.headers.get('Content-Disposition') || '';
+      const filenameMatch = disposition.match(/filename="(.+)"/);
+      const filename = filenameMatch ? filenameMatch[1] : 'plugin.zip';
+
+      // Trigger the file download
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+
+      // Clean up
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+    } catch (error) {
+      alert('Failed to download the plugin file. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (!currentPlugin) {
     return (
       <div className="text-white text-center mt-20">
@@ -116,7 +149,19 @@ export default function PluginDetail({ plugin }: Props) {
         <div className="pb-4 mb-4">
           <div className='flex items-center justify-between'>
             <h3 className="text-2xl font-semibold mb-2">{currentPlugin.name}</h3>
-            <DeleteIcon onClick={() => handleDelete(currentPlugin.gid)} />
+            <div className="flex items-center space-x-2">
+              <Button
+                    pill
+                    textColor="white"
+                    variant={ButtonVariant.OUTLINE}
+                    hoverColor='var(--color-primary-500)'
+                    size="sm"
+                    text="DOWNLOAD"
+                    onClick={() => handleDownloadPlugin(currentPlugin.gid)}
+                  />
+              <DeleteIcon onClick={() => handleDelete(currentPlugin.gid)} />
+            </div>
+            
           </div>
           <div className="space-y-1 text-sm">
           <p>{currentPlugin.description}</p>
