@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Widget } from '@/app/types'; // Updated import
+import { Widget } from '@/app/types';
 import { Button, ButtonVariant } from '@/lib/components/button';
 import { TaskAltIcon, CheckCircleIcon, CrossCircleIcon } from '../utils/icons';
 import { Modal } from '@/lib/components/modal';
@@ -9,7 +9,7 @@ type WidgetProps = {
     widget: Widget;
   };
   
-  const WidgetDisplay: React.FC<WidgetProps> = ({ widget }) => {
+const WidgetCard: React.FC<WidgetProps> = ({ widget }) => {
     const [isModalOpen, setModalOpen] = useState(false);
     const [modalContent, setModalContent] = useState<string | null>(null);
     const [modalHeading, setModalHeading] = useState<string>('');
@@ -42,9 +42,9 @@ type WidgetProps = {
         setModalOpen(false);
         setModalContent(null);
     };
-    
+
     return (
-      <div className="bg-secondary-800 border border-secondary-300 p-6 rounded-lg mb-8" >
+    <div className="bg-secondary-800 border border-secondary-300 p-6 rounded-lg mb-8" >
         <div className='flex items-center justify-between space-x-2'>
             <h3 className='font-semibold text-xl'>{widget.name}</h3>
             {/* Dependencies Check */}
@@ -68,12 +68,12 @@ type WidgetProps = {
             {widget.gid && (
                 <li>
                 <strong>GID:</strong> {widget.gid}:{widget.cid}
-              </li>
+                </li>
             )}
             {widget.cid && (
                 <li>
                 <strong>CID:</strong> {widget.cid}
-              </li>
+                </li>
             )}
             {widget.version && (
                 <li>
@@ -84,7 +84,7 @@ type WidgetProps = {
                 <li>
                 <strong>Dimensions:</strong> Min: {widget.widgetSize.minW}x{widget.widgetSize.minH} / Max:{" "}
                 {widget.widgetSize.maxW}x{widget.widgetSize.maxH}
-              </li>
+                </li>
             )}
             {widget.author && (
             <li>
@@ -160,7 +160,7 @@ type WidgetProps = {
         )}
     </div>
     );
-  };
+};
 
 
-export default WidgetDisplay;
+export default WidgetCard;

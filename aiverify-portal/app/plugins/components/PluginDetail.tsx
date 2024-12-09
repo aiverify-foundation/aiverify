@@ -5,6 +5,7 @@ import { Plugin } from '@/app/types';
 import { Button, ButtonVariant } from '@/lib/components/button';
 import { Modal } from '@/lib/components/modal';
 import WidgetCard from './DisplayWidget';
+import AlgorithmCard from './DisplayAlgorithm';
 import { downloadWidgets } from '@/lib/fetchApis/downloadWidgets';
 import { deletePlugin } from '@/lib/fetchApis/deletePlugin';
 import { DeleteIcon } from '../utils/icons';
@@ -169,7 +170,7 @@ export default function PluginDetail({ plugin }: Props) {
                   variant={ButtonVariant.PRIMARY}
                   size="sm"
                   text="DOWNLOAD WIDGETS"
-                  color='primary-100'
+                  color="var(--color-primary-500)"
                   onClick={() => handleDownloadWidget(currentPlugin.gid)}
                 />
               </div>
@@ -186,15 +187,8 @@ export default function PluginDetail({ plugin }: Props) {
           {activeTab === 'algorithms' && (
               <div className="space-y-4">
               {currentPlugin.algorithms.map((algorithm) => (
-                  <div
-                  key={algorithm.cid}
-                  className="p-4 border border-gray-800 rounded-lg"
-                  >
-                  <h4 className="text-sm font-bold">{algorithm.name}</h4>
-                  <p className="text-xs text-gray-400">{algorithm.description}</p>
-                  <p className="text-xs">
-                      <strong>Language:</strong> {algorithm.language}
-                  </p>
+                  <div key={`$algorithm.cid:${algorithm.cid}`}>
+                    <AlgorithmCard algorithm={algorithm} />
                   </div>
               ))}
               </div>

@@ -4,7 +4,6 @@ export const downloadWidgets = async (gid: string): Promise<Response> => {
       method: 'GET',
     });
 
-    console.log(response)
     if (!response.ok) {
       const errorData = await response.text();
       console.error('Failed to fetch widget file:', errorData);

@@ -98,4 +98,4 @@ type Plugin = {
 }
 
 
-export type { Project, Widget, Plugin };
+export type { Project, Widget, Plugin, Algorithm };
