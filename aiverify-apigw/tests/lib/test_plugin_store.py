@@ -178,7 +178,7 @@ class TestReadAlgorithmDirectory:
         #     {"output": "schema"},
         # ]
 
-        with patch("builtins.open", mock_open(read_data="{}")) as mock_file:
+        with patch("builtins.open", mock_open(read_data="{}")):
             # print(f"result.mode_type == {mock_meta.modelType}")
             result = PluginStore.read_algorithm_directory(mock_algo_dir, gid=gid)
 
