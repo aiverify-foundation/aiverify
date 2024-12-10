@@ -9,7 +9,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 from .lib.logging import logger
-from .routers import project_template_router, test_result_router, plugin_router
+from .routers import project_template_router, test_result_router, plugin_router, project_router
 from .lib.database import engine
 from .models import BaseORMModel
 from .lib.plugin_store import PluginStore
@@ -24,6 +24,7 @@ app = FastAPI()
 app.include_router(test_result_router.router)
 app.include_router(plugin_router.router)
 app.include_router(project_template_router.router)
+app.include_router(project_router.router)
 
 
 # modify the openai schema
