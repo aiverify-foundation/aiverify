@@ -7,7 +7,7 @@ from datetime import datetime
 from .base_model import BaseORMModel
 from ..lib.validators import validate_gid_cid
 from ..lib.constants import ModelType, InputBlockSize
-from .project_model import ProjectTemplateModel
+from .project_template_model import ProjectTemplateModel
 
 
 class PluginModel(BaseORMModel):
@@ -30,8 +30,8 @@ class PluginModel(BaseORMModel):
     widgets_zip_hash: Mapped[Optional[str]]
     inputblocks_zip_hash: Mapped[Optional[str]]
 
-    project_templates: Mapped[List["ProjectTemplateModel"]] = relationship(
-        cascade="all, delete")
+    # project_templates: Mapped[List["ProjectTemplateModel"]] = relationship(
+    #     cascade="all, delete")
 
     created_at: Mapped[Optional[datetime]]
     updated_at: Mapped[Optional[datetime]]
@@ -225,6 +225,8 @@ class TemplateModel(PluginComponentModel):
 
     plugin_id: Mapped[int] = mapped_column(ForeignKey("plugin.gid"))
     plugin: Mapped["PluginModel"] = relationship(back_populates="templates")
+
+    project_template: Mapped["ProjectTemplateModel"] = relationship(cascade="all, delete")
 
     @hybrid_property
     def template_id(self):
