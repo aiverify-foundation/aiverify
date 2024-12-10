@@ -55,7 +55,7 @@ export async function uploadTestResult(data: {
     formData.append('artifacts', fileUpload.file);
   });
 
-  const response = await fetch('/api/test_result/upload', {
+  const response = await fetch('/api/test_results/upload', {
     method: 'POST',
     body: formData,
   });
