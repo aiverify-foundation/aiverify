@@ -7,7 +7,7 @@ import json
 from ..lib.logging import logger
 from ..lib.database import get_db_session
 from ..models import ProjectModel, ProjectTemplateModel, TestModelModel, InputBlockDataModel, TestResultModel
-from ..schemas import ProjectOutput, ProjectInformation, ProjectInput, ProjectTemplateMeta, ProjectPatchInput
+from ..schemas import ProjectOutput, ProjectInformation, ProjectInput, ProjectTemplateMeta, ProjectPatchInput, ProjectTemplateOutput, ProjectTemplateInformationOptional
 
 router = APIRouter(prefix="/projects", tags=["project"])
 
@@ -249,3 +249,44 @@ async def delete_project(project_id: int, session: Session = Depends(get_db_sess
     except Exception as e:
         logger.error(f"Error deleting project with ID {project_id}: {e}")
         raise HTTPException(status_code=500, detail=f"Internal error {e}")
+
+
+@router.post("/saveProjectAsTemplate/{project_id}", response_model=ProjectTemplateOutput)
+async def save_project_as_template(project_id: int, projectInfo: Optional[ProjectTemplateInformationOptional] = None, session: Session = Depends(get_db_session)):
+    """
+    Save a project as a template
+    """
+    try:
+        db_project = session.query(ProjectModel).filter(ProjectModel.id == project_id).first()
+        if db_project is None:
+            raise HTTPException(status_code=404, detail="Project not found")
+
+        now = datetime.now(timezone.utc)
+        template_data = db_project.data
+
+        if projectInfo:
+            name = projectInfo.name if projectInfo.name else db_project.name
+            description = projectInfo.description if projectInfo.description else db_project.description
+        else:
+            name = db_project.name
+            description = db_project.description
+
+        new_template = ProjectTemplateModel(
+            name=name,
+            description=description,
+            data=template_data,
+            created_at=now,
+            updated_at=now
+        )
+
+        session.add(new_template)
+        session.commit()
+        session.refresh(new_template)
+
+        return ProjectTemplateOutput.from_model(new_template)
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        session.rollback()
+        logger.error(f"Error saving project with ID {project_id} as template: {e}")
+        raise HTTPException(status_code=500, detail=f"Internal error: {e}")
