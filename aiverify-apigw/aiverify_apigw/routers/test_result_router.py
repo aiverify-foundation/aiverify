@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException, UploadFile, Form, Depends, Response
 from typing import List, Annotated, Any
 import json
@@ -16,10 +16,12 @@ from ..lib.filestore import save_artifact, get_artifact
 from ..lib.utils import guess_mimetype_from_filename
 from ..lib.file_utils import get_suffix, check_valid_filename
 from ..schemas import TestResult, TestResultOutput, TestResultUpdate
-from ..schemas.load_examples import test_result_examples
 from ..models import AlgorithmModel, TestModelModel, TestResultModel, TestDatasetModel, TestArtifactModel
 
 router = APIRouter(prefix="/test_results", tags=["test_result"])
+
+from ..schemas.load_examples import load_examples
+test_result_examples = load_examples("test_result_examples.json")
 
 
 # @router.get("/")
@@ -38,7 +40,7 @@ async def _save_test_result(session: Session, test_result: TestResult, artifact_
             status_code=400, detail=f"Algorithm not found: gid: {test_result.gid}, cid: {test_result.cid}"
         )
 
-    now = datetime.now()
+    now = datetime.now(timezone.utc)
     test_arguments = test_result.testArguments
 
     # validate output
