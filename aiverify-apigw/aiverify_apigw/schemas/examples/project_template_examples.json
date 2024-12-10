@@ -1,0 +1,3895 @@
+[
+  {
+    "globalVars": [
+      {
+        "key": "modelName",
+        "value": "My Model Name"
+      },
+      {
+        "key": "modelPurpose",
+        "value": "My Model Purpose"
+      }
+    ],
+    "pages": [
+      {
+        "layouts": [
+          {
+            "i": "1684304771658",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 36,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 36,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.reports:cover_page_main",
+            "key": "1684304771658",
+            "layoutItemProperties": {
+              "justifyContent": "center",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "reportTitle": "Summary Report",
+              "companyName": "{company}",
+              "reportSubtitle1": "Properties Subtitle 1",
+              "reportSubtitle2": "Properties Subtitle 2"
+            }
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1684304861608",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 2,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 2,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1684304879591",
+            "x": 0,
+            "y": 2,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1684304911088",
+            "x": 0,
+            "y": 3,
+            "w": 12,
+            "h": 9,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 7,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1684304925928",
+            "x": 0,
+            "y": 12,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1684304938875",
+            "x": 0,
+            "y": 13,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1684305199177",
+            "x": 0,
+            "y": 17,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1684305207089",
+            "x": 0,
+            "y": 18,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685631370924",
+            "x": 0,
+            "y": 19,
+            "w": 12,
+            "h": 17,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 14,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685886404602",
+            "x": 0,
+            "y": 14,
+            "w": 12,
+            "h": 3,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 3,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.reports:page_title1",
+            "key": "1684304861608",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "Introduction"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_title2",
+            "key": "1684304879591",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "Aim of AI Verify - AI Governance Testing Framework and Toolkit"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:aiv_intro",
+            "key": "1684304911088",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_divider",
+            "key": "1684304925928",
+            "layoutItemProperties": {
+              "justifyContent": "center",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_title2",
+            "key": "1684304938875",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "Use case and Model Tested"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_divider",
+            "key": "1684305199177",
+            "layoutItemProperties": {
+              "justifyContent": "center",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_title2",
+            "key": "1684305207089",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "Scope of Checks"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:overview",
+            "key": "1685631370924",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:use_case_model",
+            "key": "1685886404602",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "modelTested": "{modelName}",
+              "modelPurpose": "{modelPurpose}"
+            }
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1684305286356",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 2,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 2,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1684928997631",
+            "x": 0,
+            "y": 2,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1696318449619",
+            "x": 0,
+            "y": 3,
+            "w": 12,
+            "h": 33,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 27,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.reports:page_title1",
+            "key": "1684305286356",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "Introduction"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_title2",
+            "key": "1684928997631",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "AI Verify's 11 Principles"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:area_descriptions",
+            "key": "1696318449619",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "startIndex": "0",
+              "numAreas": "6"
+            }
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1684305343880",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 2,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 2,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1684305382986",
+            "x": 0,
+            "y": 12,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1684465230294",
+            "x": 0,
+            "y": 13,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1684465261406",
+            "x": 0,
+            "y": 14,
+            "w": 12,
+            "h": 5,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 5,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1684929172245",
+            "x": 0,
+            "y": 19,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685631407575",
+            "x": 0,
+            "y": 20,
+            "w": 12,
+            "h": 16,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 12,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685893522216",
+            "x": 0,
+            "y": 2,
+            "w": 12,
+            "h": 10,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 8,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.reports:page_title1",
+            "key": "1684305343880",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "Summary"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_divider",
+            "key": "1684305382986",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_title2",
+            "key": "1684465230294",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "Overall Completion Status"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:technical_tests_summary",
+            "key": "1684465261406",
+            "layoutItemProperties": {
+              "justifyContent": "center",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_title3",
+            "key": "1684929172245",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "Process Checks"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:overall_summary",
+            "key": "1685631407575",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:report_summary",
+            "key": "1685893522216",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "modelName": "{modelName}"
+            }
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1684929577371",
+            "x": 0,
+            "y": 6,
+            "w": 12,
+            "h": 30,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 10,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685516198460",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 4,
+            "maxW": 12,
+            "maxH": 5,
+            "minW": 12,
+            "minH": 3,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685516237216",
+            "x": 0,
+            "y": 4,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685889250883",
+            "x": 0,
+            "y": 5,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 6,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.process_checklist:summary_transparency",
+            "key": "1684929577371",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:area_header",
+            "key": "1685516198460",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "areaIndex": "1"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_divider",
+            "key": "1685516237216",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:principle_summary_header",
+            "key": "1685889250883",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "principle": "Transparency"
+            }
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1684929765131",
+            "x": 0,
+            "y": 6,
+            "w": 12,
+            "h": 30,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 10,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1686020991489",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 4,
+            "maxW": 12,
+            "maxH": 5,
+            "minW": 12,
+            "minH": 3,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1686021038974",
+            "x": 0,
+            "y": 4,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1686021061956",
+            "x": 0,
+            "y": 5,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 6,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.process_checklist:summary_explainability",
+            "key": "1684929765131",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:area_header",
+            "key": "1686020991489",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "areaIndex": "2"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_divider",
+            "key": "1686021038974",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:principle_summary_header",
+            "key": "1686021061956",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "principle": "Explainability"
+            }
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1685887236274",
+            "x": 0,
+            "y": 1,
+            "w": 12,
+            "h": 35,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 12,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685887277893",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.shap_toolbox:summary_global_exp_chart",
+            "key": "1685887236274",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "topNFeatures": "20"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_title3",
+            "key": "1685887277893",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "Technical Test"
+            }
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1684929784449",
+            "x": 0,
+            "y": 1,
+            "w": 12,
+            "h": 35,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 10,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685889602140",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 6,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.process_checklist:summary_reproducibility",
+            "key": "1684929784449",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:principle_summary_header",
+            "key": "1685889602140",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "principle": "Reproducibility"
+            }
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1684929799201",
+            "x": 0,
+            "y": 5,
+            "w": 12,
+            "h": 31,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 10,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685516376598",
+            "x": 0,
+            "y": 3,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685516380843",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 3,
+            "maxW": 12,
+            "maxH": 5,
+            "minW": 12,
+            "minH": 3,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685889740917",
+            "x": 0,
+            "y": 4,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 6,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.process_checklist:summary_safety",
+            "key": "1684929799201",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_divider",
+            "key": "1685516376598",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:area_header",
+            "key": "1685516380843",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "areaIndex": "3"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:principle_summary_header",
+            "key": "1685889740917",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "principle": "Safety"
+            }
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1684929818031",
+            "x": 0,
+            "y": 1,
+            "w": 12,
+            "h": 35,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 10,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685889767504",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 6,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.process_checklist:summary_security",
+            "key": "1684929818031",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:principle_summary_header",
+            "key": "1685889767504",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "principle": "Security"
+            }
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1684929834011",
+            "x": 0,
+            "y": 1,
+            "w": 12,
+            "h": 35,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 10,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1686021367462",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 6,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.process_checklist:summary_robustness",
+            "key": "1684929834011",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:principle_summary_header",
+            "key": "1686021367462",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "principle": "Robustness"
+            }
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1685889889908",
+            "x": 0,
+            "y": 1,
+            "w": 12,
+            "h": 6,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 6,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685889893427",
+            "x": 0,
+            "y": 7,
+            "w": 12,
+            "h": 29,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 18,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685889916737",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.robustness_toolbox:accuracy_comparison",
+            "key": "1685889889908",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.robustness_toolbox:summary_description",
+            "key": "1685889893427",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_title3",
+            "key": "1685889916737",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "Technical Test"
+            }
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1684929846191",
+            "x": 0,
+            "y": 5,
+            "w": 12,
+            "h": 31,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 10,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1686021179666",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 3,
+            "maxW": 12,
+            "maxH": 5,
+            "minW": 12,
+            "minH": 3,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1686021193976",
+            "x": 0,
+            "y": 3,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1686021199122",
+            "x": 0,
+            "y": 4,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 6,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.process_checklist:summary_fairness",
+            "key": "1684929846191",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:area_header",
+            "key": "1686021179666",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "areaIndex": "4"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_divider",
+            "key": "1686021193976",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:principle_summary_header",
+            "key": "1686021199122",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "principle": "Fairness"
+            }
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1685890039237",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685958596699",
+            "x": 0,
+            "y": 1,
+            "w": 12,
+            "h": 4,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 6,
+            "minH": 4,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685958605670",
+            "x": 0,
+            "y": 5,
+            "w": 6,
+            "h": 6,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 6,
+            "minH": 6,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685958608990",
+            "x": 6,
+            "y": 5,
+            "w": 6,
+            "h": 6,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 6,
+            "minH": 3,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685958612991",
+            "x": 0,
+            "y": 11,
+            "w": 6,
+            "h": 6,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 6,
+            "minH": 6,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685958615946",
+            "x": 6,
+            "y": 11,
+            "w": 6,
+            "h": 6,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 2,
+            "minH": 2,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685958648511",
+            "x": 0,
+            "y": 17,
+            "w": 6,
+            "h": 6,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 6,
+            "minH": 6,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685958657978",
+            "x": 6,
+            "y": 17,
+            "w": 6,
+            "h": 6,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 2,
+            "minH": 2,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685958669909",
+            "x": 0,
+            "y": 23,
+            "w": 12,
+            "h": 13,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 6,
+            "minH": 3,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.reports:page_title3",
+            "key": "1685890039237",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "Technical Test"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.fairness_metrics_toolbox_for_regression:introduction",
+            "key": "1685958596699",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.fairness_metrics_toolbox_for_regression:mean_absolute_error_parity",
+            "key": "1685958605670",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.fairness_metrics_toolbox_for_regression:mae_interpretation",
+            "key": "1685958608990",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.fairness_metrics_toolbox_for_regression:mean_square_error_parity",
+            "key": "1685958612991",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.fairness_metrics_toolbox_for_regression:mse_interpretation",
+            "key": "1685958615946",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.fairness_metrics_toolbox_for_regression:r2_parity",
+            "key": "1685958648511",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.fairness_metrics_toolbox_for_regression:r2_interpretation",
+            "key": "1685958657978",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.fairness_metrics_toolbox_for_regression:recommendation",
+            "key": "1685958669909",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1684929863861",
+            "x": 0,
+            "y": 1,
+            "w": 12,
+            "h": 35,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 10,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685890447088",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 6,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.process_checklist:summary_data_governance",
+            "key": "1684929863861",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:principle_summary_header",
+            "key": "1685890447088",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "principle": "Data Governance"
+            }
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1684929875180",
+            "x": 0,
+            "y": 5,
+            "w": 12,
+            "h": 31,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 10,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685516477764",
+            "x": 0,
+            "y": 3,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685516484179",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 3,
+            "maxW": 12,
+            "maxH": 5,
+            "minW": 12,
+            "minH": 3,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685890471172",
+            "x": 0,
+            "y": 4,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 6,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.process_checklist:summary_accountability",
+            "key": "1684929875180",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_divider",
+            "key": "1685516477764",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:area_header",
+            "key": "1685516484179",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "areaIndex": "5"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:principle_summary_header",
+            "key": "1685890471172",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "principle": "Accountability"
+            }
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1684929886817",
+            "x": 0,
+            "y": 1,
+            "w": 12,
+            "h": 35,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 10,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685890498307",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 6,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.process_checklist:summary_human_agency_oversight",
+            "key": "1684929886817",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:principle_summary_header",
+            "key": "1685890498307",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "principle": "Human Agency & Oversight"
+            }
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1684929896385",
+            "x": 0,
+            "y": 2,
+            "w": 12,
+            "h": 34,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 10,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685890535206",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 2,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 6,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.process_checklist:summary_inclusive_growth",
+            "key": "1684929896385",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:principle_summary_header",
+            "key": "1685890535206",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "principle": "Inclusive Growth, Societal & Environmental Well-being"
+            }
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1696318533775",
+            "x": 0,
+            "y": 3,
+            "w": 12,
+            "h": 33,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 10,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1696474107472",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 3,
+            "maxW": 12,
+            "maxH": 5,
+            "minW": 12,
+            "minH": 3,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.process_checklist:summary_organisational_considerations",
+            "key": "1696318533775",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:area_header",
+            "key": "1696474107472",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "areaIndex": "6"
+            }
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1684930052804",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 36,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 36,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.reports:cover_page_section",
+            "key": "1684930052804",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": "#ffffff",
+              "bgcolor": "#702f8a"
+            },
+            "properties": {
+              "sectionTitle": "Process Checklists",
+              "sectionSubTitle": "Annex A"
+            }
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1685516568279",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685516588483",
+            "x": 0,
+            "y": 1,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1687400971933",
+            "x": 0,
+            "y": 2,
+            "w": 12,
+            "h": 34,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 10,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.reports:page_title2",
+            "key": "1685516568279",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "Transparency"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_divider",
+            "key": "1685516588483",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:transparency_responses",
+            "key": "1687400971933",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1685516652952",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685516667515",
+            "x": 0,
+            "y": 1,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1687401033392",
+            "x": 0,
+            "y": 2,
+            "w": 12,
+            "h": 34,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 10,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.reports:page_title2",
+            "key": "1685516652952",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "Explainability"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_divider",
+            "key": "1685516667515",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:explainability_responses",
+            "key": "1687401033392",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1685516702631",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685516785323",
+            "x": 0,
+            "y": 1,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1687401012218",
+            "x": 0,
+            "y": 2,
+            "w": 12,
+            "h": 34,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 10,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.reports:page_title2",
+            "key": "1685516702631",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "Repeatability / Reproducibility"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_divider",
+            "key": "1685516785323",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:reproducibility_responses",
+            "key": "1687401012218",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1685518190185",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685518211988",
+            "x": 0,
+            "y": 1,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1687401077553",
+            "x": 0,
+            "y": 2,
+            "w": 12,
+            "h": 34,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 10,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.reports:page_title2",
+            "key": "1685518190185",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "Safety"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_divider",
+            "key": "1685518211988",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:safety_responses",
+            "key": "1687401077553",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1685518525074",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685518538928",
+            "x": 0,
+            "y": 1,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1687401113541",
+            "x": 0,
+            "y": 2,
+            "w": 12,
+            "h": 34,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 10,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.reports:page_title2",
+            "key": "1685518525074",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "Security"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_divider",
+            "key": "1685518538928",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:security_responses",
+            "key": "1687401113541",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1685518730146",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685518757391",
+            "x": 0,
+            "y": 1,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1687401150503",
+            "x": 0,
+            "y": 2,
+            "w": 12,
+            "h": 34,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 10,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.reports:page_title2",
+            "key": "1685518730146",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "Robustness"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_divider",
+            "key": "1685518757391",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:robustness_responses",
+            "key": "1687401150503",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1685518860877",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685518875495",
+            "x": 0,
+            "y": 1,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1687401176537",
+            "x": 0,
+            "y": 2,
+            "w": 12,
+            "h": 34,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 6,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.reports:page_title2",
+            "key": "1685518860877",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "Fairness"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_divider",
+            "key": "1685518875495",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:fairness_responses",
+            "key": "1687401176537",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1685519288011",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685519317659",
+            "x": 0,
+            "y": 1,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1687401203942",
+            "x": 0,
+            "y": 2,
+            "w": 12,
+            "h": 34,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 10,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.reports:page_title2",
+            "key": "1685519288011",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "Data Governance"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_divider",
+            "key": "1685519317659",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:data_governance_responses",
+            "key": "1687401203942",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1685519496618",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685519519853",
+            "x": 0,
+            "y": 1,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1687401236911",
+            "x": 0,
+            "y": 2,
+            "w": 12,
+            "h": 34,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 10,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.reports:page_title2",
+            "key": "1685519496618",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "Accountability"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_divider",
+            "key": "1685519519853",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:accountability_responses",
+            "key": "1687401236911",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1685519678334",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685519702139",
+            "x": 0,
+            "y": 1,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1687401259916",
+            "x": 0,
+            "y": 2,
+            "w": 12,
+            "h": 34,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 10,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.reports:page_title2",
+            "key": "1685519678334",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "Human Agency & Oversight"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_divider",
+            "key": "1685519702139",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:human_agency_oversight_responses",
+            "key": "1687401259916",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1685519866335",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685519928964",
+            "x": 0,
+            "y": 1,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1687401278892",
+            "x": 0,
+            "y": 2,
+            "w": 12,
+            "h": 34,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 10,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.reports:page_title2",
+            "key": "1685519866335",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "Inclusive Growth, Societal & Environmental Well-Being"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_divider",
+            "key": "1685519928964",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:inclusive_growth_responses",
+            "key": "1687401278892",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1696318588594",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1696318614179",
+            "x": 0,
+            "y": 1,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1696318646369",
+            "x": 0,
+            "y": 2,
+            "w": 12,
+            "h": 34,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 10,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.reports:page_title2",
+            "key": "1696318588594",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "Organisational Considerations"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_divider",
+            "key": "1696318614179",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.process_checklist:organisational_considerations_responses",
+            "key": "1696318646369",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1684934721040",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 36,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 36,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.reports:cover_page_section",
+            "key": "1684934721040",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": "#ffffff",
+              "bgcolor": "#702f8a"
+            },
+            "properties": {
+              "sectionTitle": "Technical Tests",
+              "sectionSubTitle": "Annex B"
+            }
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1684935321439",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 2,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 2,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685630872994",
+            "x": 0,
+            "y": 2,
+            "w": 12,
+            "h": 5,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 3,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.reports:page_title1",
+            "key": "1684935321439",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "Fairness Test"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:intro_fairness",
+            "key": "1685630872994",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1685958723571",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 4,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 6,
+            "minH": 4,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685958740575",
+            "x": 0,
+            "y": 4,
+            "w": 12,
+            "h": 12,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 6,
+            "minH": 3,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685958751577",
+            "x": 0,
+            "y": 16,
+            "w": 6,
+            "h": 6,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 6,
+            "minH": 6,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685958753450",
+            "x": 6,
+            "y": 16,
+            "w": 6,
+            "h": 6,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 6,
+            "minH": 3,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685958765397",
+            "x": 0,
+            "y": 22,
+            "w": 6,
+            "h": 6,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 6,
+            "minH": 6,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685958774507",
+            "x": 6,
+            "y": 22,
+            "w": 6,
+            "h": 6,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 2,
+            "minH": 2,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685958784384",
+            "x": 0,
+            "y": 28,
+            "w": 6,
+            "h": 6,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 6,
+            "minH": 6,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685958787484",
+            "x": 6,
+            "y": 28,
+            "w": 6,
+            "h": 6,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 2,
+            "minH": 2,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.fairness_metrics_toolbox_for_regression:introduction",
+            "key": "1685958723571",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.fairness_metrics_toolbox_for_regression:technical_fairness_metrics_desc",
+            "key": "1685958740575",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.fairness_metrics_toolbox_for_regression:mean_absolute_error_parity",
+            "key": "1685958751577",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.fairness_metrics_toolbox_for_regression:mae_interpretation",
+            "key": "1685958753450",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.fairness_metrics_toolbox_for_regression:mean_square_error_parity",
+            "key": "1685958765397",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.fairness_metrics_toolbox_for_regression:mse_interpretation",
+            "key": "1685958774507",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.fairness_metrics_toolbox_for_regression:r2_parity",
+            "key": "1685958784384",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.fairness_metrics_toolbox_for_regression:r2_interpretation",
+            "key": "1685958787484",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1684935391519",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 2,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 2,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685630924980",
+            "x": 0,
+            "y": 2,
+            "w": 12,
+            "h": 6,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 5,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.reports:page_title1",
+            "key": "1684935391519",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "Robustness Test"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:intro_robustness",
+            "key": "1685630924980",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1685891029275",
+            "x": 0,
+            "y": 1,
+            "w": 12,
+            "h": 35,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 18,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685894027970",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 1,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 1,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.robustness_toolbox:technical_description",
+            "key": "1685891029275",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:page_title2",
+            "key": "1685894027970",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "Robustness Toolbox"
+            }
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1684935593421",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 2,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 1,
+            "minH": 2,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685630985111",
+            "x": 0,
+            "y": 2,
+            "w": 12,
+            "h": 7,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 4,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.reports:page_title1",
+            "key": "1684935593421",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "title": "Explainability Test"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.reports:intro_explain",
+            "key": "1685630985111",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "center",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          }
+        ]
+      },
+      {
+        "layouts": [
+          {
+            "i": "1685891206589",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 3,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 4,
+            "minH": 2,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685891214915",
+            "x": 0,
+            "y": 3,
+            "w": 12,
+            "h": 7,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 2,
+            "minH": 2,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685891223150",
+            "x": 0,
+            "y": 10,
+            "w": 12,
+            "h": 19,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 12,
+            "minH": 16,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          },
+          {
+            "i": "1685891232501",
+            "x": 0,
+            "y": 29,
+            "w": 12,
+            "h": 7,
+            "maxW": 12,
+            "maxH": 36,
+            "minW": 2,
+            "minH": 2,
+            "static": false,
+            "isDraggable": false,
+            "isResizable": false,
+            "resizeHandles": null,
+            "isBounded": false
+          }
+        ],
+        "reportWidgets": [
+          {
+            "widgetGID": "aiverify.stock.shap_toolbox:introduction",
+            "key": "1685891206589",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.shap_toolbox:how_to_read",
+            "key": "1685891214915",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          },
+          {
+            "widgetGID": "aiverify.stock.shap_toolbox:global_explainability_chart",
+            "key": "1685891223150",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": {
+              "topNFeatures": "20"
+            }
+          },
+          {
+            "widgetGID": "aiverify.stock.shap_toolbox:recommendations",
+            "key": "1685891232501",
+            "layoutItemProperties": {
+              "justifyContent": "left",
+              "alignItems": "top",
+              "textAlign": "left",
+              "color": null,
+              "bgcolor": null
+            },
+            "properties": null
+          }
+        ]
+      }
+    ],
+    "projectInfo": {
+      "name": "My Test Regression Report",
+      "description": "Test summary report for regression model"
+    }
+  }
+]
