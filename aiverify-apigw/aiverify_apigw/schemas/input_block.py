@@ -1,5 +1,7 @@
-from pydantic import BaseModel, Field
-from typing import List, Optional, Annotated
+from pydantic import BaseModel, Field, Json
+from typing import List, Optional, Annotated, Any
+from datetime import datetime
+
 from ..models import InputBlockModel
 from ..lib.constants import InputBlockSize
 
@@ -53,3 +55,25 @@ class InputBlockOutput(InputBlockMeta):
             fullScreen=result.fullscreen
         )
         return obj
+
+
+class InputBlockData(BaseModel):
+    gid: str = Field(
+        description="Unique global identifier for the plugin",
+        min_length=1,
+        max_length=128,
+        pattern=r"^[a-zA-Z0-9][a-zA-Z0-9-._]*$",
+    )
+    cid: str = Field(
+        description="Unique identifier for the input block within the plugin",
+        min_length=1,
+        max_length=128,
+        pattern=r"^[a-zA-Z0-9][a-zA-Z0-9-._]*$",
+    )
+    data: Json[Any] = Field(description="User data")
+
+
+class InputBlockDataOutput(InputBlockData):
+    id: int = Field(description="Input block data id")
+    createTime: Optional[datetime] = Field(description="Start date time of test")
+    updatedTime: Optional[datetime] = Field(description="Start date time of test")
