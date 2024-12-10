@@ -44,6 +44,7 @@ class PluginManager:
         DataPluginType.DELIMITER,
     ]
     _model_priority_list: List = [
+        ModelPluginType.PYTORCH,
         ModelPluginType.LIGHTGBM,
         ModelPluginType.XGBOOST,
         ModelPluginType.SKLEARN,
@@ -51,6 +52,7 @@ class PluginManager:
         ModelPluginType.API,
     ]
     _serializer_priority_list: List = [
+        SerializerPluginType.PYTORCH,
         SerializerPluginType.PICKLE,
         SerializerPluginType.JOBLIB,
         SerializerPluginType.TENSORFLOW,
