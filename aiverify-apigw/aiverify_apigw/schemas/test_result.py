@@ -2,7 +2,6 @@ from pydantic import BaseModel, Field, model_validator
 from typing import List, Optional, Literal, Any, Self
 from datetime import datetime
 import json
-from .load_examples import test_result_examples
 from ..models import TestResultModel
 from ..lib.constants import ModelType, TestModelMode
 
@@ -73,12 +72,6 @@ class TestResult(BaseModel):
         elif isinstance(value, dict):
             return _update_obj(value)
         return value
-
-    model_config = {
-        "json_schema_extra": {
-            "examples": test_result_examples,
-        }
-    }
 
 
 class TestResultOutput(TestResult):
