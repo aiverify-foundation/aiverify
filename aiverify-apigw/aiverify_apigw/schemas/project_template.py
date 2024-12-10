@@ -5,6 +5,9 @@ from enum import StrEnum, auto
 import json
 from ..models import ProjectTemplateModel
 
+from .load_examples import load_examples
+project_template_examples = load_examples("project_template_examples.json")
+
 
 class GlobalVariable(BaseModel):
     key: str = Field(description="Property key", min_length=1, max_length=128)
@@ -62,15 +65,13 @@ class WidgetLayout(BaseModel):
         return self
 
 
-class ProjectInformation(BaseModel):
-    name: str = Field(description="Project Name", max_length=128)
-    description: Optional[str] = Field(description="Property value", max_length=256, default=None)
-    reportTitle: Optional[str] = Field(description="Property value", max_length=128, default=None)
-    company: Optional[str] = Field(description="Property value", max_length=128, default=None)
-
-
 class ProjectTemplateInformation(BaseModel):
     name: str = Field(description="Project Name", max_length=128)
+    description: Optional[str] = Field(description="Property value", max_length=256, default=None)
+
+
+class ProjectTemplateInformationOptional(BaseModel):
+    name: Optional[str] = Field(description="Project Name", max_length=128, default=None)
     description: Optional[str] = Field(description="Property value", max_length=256, default=None)
 
 
@@ -80,12 +81,27 @@ class Page(BaseModel):
 
 
 class ProjectTemplateMeta(BaseModel):
-    globalVars: Optional[List[GlobalVariable]] = None
-    pages: List[Page] = Field(Page, min_length=1, max_length=256)
+    globalVars: Optional[List[GlobalVariable]] = Field(description="Global variables in report canvas", default=None)
+    pages: List[Page] = Field(description="List of pages in report canvas", min_length=0, max_length=256, default=[])
+
+
+class ProjectTemplateMetaOptional(BaseModel):
+    globalVars: Optional[List[GlobalVariable]] = Field(description="Global variables in report canvas", default=None)
+    pages: Optional[List[Page]] = Field(description="List of pages in report canvas", min_length=0, max_length=256, default=None)
 
 
 class ProjectTemplateInput(ProjectTemplateMeta):
     projectInfo: ProjectTemplateInformation
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": project_template_examples
+        }
+    }
+
+
+class ProjectTemplatePatchInput(ProjectTemplateMetaOptional):
+    projectInfo: Optional[ProjectTemplateInformation] = None
 
 
 class ProjectTemplateOutput(ProjectTemplateInput):
@@ -106,3 +122,4 @@ class ProjectTemplateOutput(ProjectTemplateInput):
             created_at=result.created_at,
             updated_at=result.updated_at,
         )
+
