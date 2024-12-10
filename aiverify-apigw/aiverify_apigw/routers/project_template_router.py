@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends
+from pydantic import Field
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime, timezone
@@ -195,3 +196,52 @@ async def clone_project_template(template_id: str, projectInfo: Optional[Project
         session.rollback()
         logger.error(f"Error cloning project template with ID {template_id}: {e}")
         raise HTTPException(status_code=500, detail=f"Internal error {e}")
+
+
+class TemplateExportInput(ProjectTemplateInformationOptional):
+    cid: str = Field(description="Exported template CID")
+    filename: Optional[str] = Field(description="filename of zipfile to output. If left black will default to {{cid}}.zip", default=None)
+    tags: Optional[List[str]] = Field(description="Project template tags", default=None)
+
+
+@router.post("/export/{template_id}")
+async def export_project_template(template_id: str, export_info: TemplateExportInput, session: Session = Depends(get_db_session)):
+    """
+    Export a Project Template by ID as a zip file
+    """
+    try:
+        template = session.query(ProjectTemplateModel).filter(ProjectTemplateModel.id == template_id).first()
+        if not template:
+            raise HTTPException(status_code=404, detail="Project Template not found")
+
+        import io
+        import zipfile
+        import json
+        from fastapi.responses import Response
+
+        # build template meta
+        meta = {
+            "cid": export_info.cid,
+            "name": export_info.name if export_info.name else template.name,
+            "description": export_info.description if export_info.description else template.description,
+        }
+        if export_info.tags:
+            meta["tags"] = export_info.tags
+
+        # Create a zip file
+        output_zip = io.BytesIO()
+        with zipfile.ZipFile(output_zip, 'w') as zipf:
+            # Write the template data to a JSON file
+            zipf.writestr(data=template.data, zinfo_or_arcname=f"{export_info.cid}.data.json")
+            zipf.writestr(data=json.dumps(meta, indent=2), zinfo_or_arcname=f"{export_info.cid}.meta.json")
+
+        # Return the zip file as an attachment
+        output_zip.seek(0)
+        return Response(content=output_zip.getvalue(), media_type='application/zip', headers={"Content-Disposition": f"attachment; filename=templates.zip"})
+
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logger.error(f"Error exporting project template with ID {template_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Internal error {e}")
+
