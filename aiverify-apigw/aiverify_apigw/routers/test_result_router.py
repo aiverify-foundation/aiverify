@@ -407,6 +407,7 @@ async def update_test_result(
             raise HTTPException(status_code=404, detail=f"Test result not found")
 
         result.name = update_data.name
+        result.updated_at = datetime.now(timezone.utc)
         session.commit()
         session.refresh(result)
         return TestResultOutput.from_model(result)

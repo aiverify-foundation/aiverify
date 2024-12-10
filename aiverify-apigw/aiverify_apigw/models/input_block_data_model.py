@@ -6,6 +6,7 @@ from typing import Optional
 
 from .base_model import BaseORMModel
 from .user_model import UserModel
+from .plugin_model import InputBlockModel
 from ..lib.validators import validate_gid_cid
 
 
@@ -16,7 +17,9 @@ class InputBlockDataModel(BaseORMModel):
     name: Mapped[str] = mapped_column(String(256), nullable=False, index=True)
     gid: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
     cid: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
-    data: Mapped[bytes]  # serialized json, output from algos
+    inputblock_id: Mapped[int] = mapped_column(ForeignKey("inputblock.id"))
+    inputblock: Mapped["InputBlockModel"] = relationship()
+    data: Mapped[bytes]  # serialized json, output from input block save
     user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("user.id"))
     user: Mapped[Optional["UserModel"]] = relationship()
     created_at: Mapped[Optional[datetime]]
