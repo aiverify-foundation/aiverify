@@ -57,7 +57,7 @@ class PluginStore:
             session.query(InputBlockModel).delete()
             session.query(TemplateModel).delete()
             session.query(PluginComponentModel).delete()
-            session.query(ProjectTemplateModel).filter(func.length(ProjectTemplateModel.plugin_id) > 0).delete()
+            session.query(ProjectTemplateModel).filter(func.length(ProjectTemplateModel.template_id) > 0).delete()
             session.commit()
         try:
             fs_delete_all_plugins()
@@ -437,7 +437,7 @@ class PluginStore:
                     meta, meta_json, data_meta, data_json = cls.validate_template(
                         template_path=templates_subdir, meta_path=meta_file)
                     template = TemplateModel(
-                        plugin_id=plugin_meta.gid,
+                        # plugin_id=plugin_meta.gid,
                         meta=json.dumps(meta_json).encode('utf-8'),
                         id=f"{plugin_meta.gid}:{meta.cid}",
                         cid=meta.cid,
@@ -450,8 +450,6 @@ class PluginStore:
                         template=json.dumps(meta_json).encode('utf-8'),
                         project_data=json.dumps(data_json).encode('utf-8')
                     )
-                    plugin.templates.append(template)
-                    session.add(template)
 
                     # create new ProjectTemplateModel
                     project_template = ProjectTemplateModel(
@@ -462,8 +460,11 @@ class PluginStore:
                         created_at=now,
                         updated_at=now,
                     )
-                    plugin.project_templates.append(project_template)
                     session.add(project_template)
+
+                    template.project_template = project_template
+                    plugin.templates.append(template)
+                    session.add(template)
 
             # commit to DB
             session.add(plugin)
