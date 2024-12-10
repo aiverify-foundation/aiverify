@@ -336,7 +336,7 @@ def delete_plugin(gid: str):
     try:
         if isinstance(folder, Path):
             if not folder.exists() or not folder.is_dir():
-                logger.warn(f"Asset {gid} path not found or not directory")
+                logger.warning(f"Asset {gid} path not found or not directory")
                 return
             shutil.rmtree(folder, ignore_errors=True)
         elif s3 is not None:
@@ -344,7 +344,7 @@ def delete_plugin(gid: str):
             s3.delete_objects_under_prefix(folder)
 
     except Exception as e:
-        logger.warn(f"Unable to delete folder {folder}: {e}")
+        logger.warning(f"Unable to delete folder {folder}: {e}")
 
 
 def delete_all_plugins():
@@ -358,7 +358,7 @@ def delete_all_plugins():
             s3.delete_objects_under_prefix(base_plugin_dir)
 
     except Exception as e:
-        logger.warn(f"Unable to delete folder {base_plugin_dir}: {e}")
+        logger.warning(f"Unable to delete folder {base_plugin_dir}: {e}")
 
 
 def get_artifacts_folder(test_result_id: str):
