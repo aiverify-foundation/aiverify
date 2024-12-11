@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Widget } from '@/app/types';
+import { Widget } from '../utils/types';
 import { Button, ButtonVariant } from '@/lib/components/button';
 import { TaskAltIcon, CheckCircleIcon, CrossCircleIcon } from '../utils/icons';
 import { Modal } from '@/lib/components/modal';

@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Plugin } from '@/app/types';
+import { Plugin } from '../utils/types';
 import { Button, ButtonVariant } from '@/lib/components/button';
 import { Modal } from '@/lib/components/modal';
 import WidgetCard from './DisplayWidget';
 import AlgorithmCard from './DisplayAlgorithm';
+import InputBlockCard from './DisplayInputBlocks';
 import { downloadWidgets } from '@/lib/fetchApis/downloadWidgets';
 import { deletePlugin } from '@/lib/fetchApis/deletePlugin';
 import { DeleteIcon } from '../utils/icons';
@@ -228,7 +229,7 @@ export default function PluginDetail({ plugin }: Props) {
           {currentPlugin.input_blocks?.length > 0 && (
             <button
             className={`py-2 px-6 rounded-t ${
-                activeTab === 'algorithms'
+                activeTab === 'input_blocks'
                 ? 'border-b-4 border-primary-500 bg-secondary-200 text-secondary-950 font-semibold'
                 : 'text-secondary-950 bg-secondary-300'
             }`}
@@ -243,7 +244,7 @@ export default function PluginDetail({ plugin }: Props) {
           {currentPlugin.templates?.length > 0 && (
             <button
             className={`py-2 px-6 rounded-t ${
-                activeTab === 'algorithms'
+                activeTab === 'templates'
                 ? 'border-b-4 border-primary-500 bg-secondary-200 text-secondary-950 font-semibold'
                 : 'text-secondary-950 bg-secondary-300'
             }`}
@@ -263,17 +264,6 @@ export default function PluginDetail({ plugin }: Props) {
           <div>
           {activeTab === 'widgets' && (
             <div>
-              <div className='flex justify-end mb-4'>
-                <Button
-                  pill
-                  textColor="white"
-                  variant={ButtonVariant.PRIMARY}
-                  size="sm"
-                  text="DOWNLOAD WIDGETS"
-                  color="var(--color-primary-500)"
-                  onClick={() => handleDownloadWidget(currentPlugin.gid)}
-                />
-              </div>
               <div className="space-y-4">
               {currentPlugin.widgets.map((widget) => (
                   <div key={`${widget.gid}:${widget.cid}`}>
@@ -283,7 +273,6 @@ export default function PluginDetail({ plugin }: Props) {
               </div>
             </div>
           )}
-
           {activeTab === 'algorithms' && (
               <div className="space-y-4">
               {currentPlugin.algorithms.map((algorithm) => (
@@ -297,6 +286,7 @@ export default function PluginDetail({ plugin }: Props) {
               <div className="space-y-4">
               {currentPlugin.input_blocks.map((input_block) => (
                   <div key={`${input_block.gid}:${input_block.cid}`}>
+                    <InputBlockCard input_block={input_block} />
                   </div>
               ))}
               </div>
