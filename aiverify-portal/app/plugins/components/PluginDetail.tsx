@@ -17,7 +17,7 @@ type Props = {
 };
 
 export default function PluginDetail({ plugin }: Props) {
-  const [activeTab, setActiveTab] = useState<'widgets' | 'algorithms'>('widgets');
+  const [activeTab, setActiveTab] = useState<'widgets' | 'algorithms' | 'input_blocks' | 'templates' | null>(null);
   const [currentPlugin, setCurrentPlugin] = useState<Plugin | null>(plugin);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
@@ -27,6 +27,21 @@ export default function PluginDetail({ plugin }: Props) {
 
   useEffect(() => {
     setCurrentPlugin(plugin);
+
+    // Automatically select the first available tab
+    if (plugin) {
+      if (plugin.widgets?.length > 0) {
+        setActiveTab('widgets');
+      } else if (plugin.algorithms?.length > 0) {
+        setActiveTab('algorithms');
+      } else if (plugin.input_blocks?.length > 0) {
+        setActiveTab('input_blocks');
+      } else if (plugin.templates?.length > 0) {
+        setActiveTab('templates');
+      } else {
+        setActiveTab(null);
+      }
+    }
   }, [plugin]);
 
   const handleDelete = async (gid: string) => {
@@ -210,6 +225,36 @@ export default function PluginDetail({ plugin }: Props) {
             </span>
             </button>
           )}
+          {currentPlugin.input_blocks?.length > 0 && (
+            <button
+            className={`py-2 px-6 rounded-t ${
+                activeTab === 'algorithms'
+                ? 'border-b-4 border-primary-500 bg-secondary-200 text-secondary-950 font-semibold'
+                : 'text-secondary-950 bg-secondary-300'
+            }`}
+            onClick={() => setActiveTab('input_blocks')}
+            >
+            Input Blocks
+            <span className="inline-flex ml-1 items-center justify-center bg-primary-500 text-white text-sm rounded-full w-5 h-5 text-center">
+              {currentPlugin.input_blocks.length}
+            </span>
+            </button>
+          )}
+          {currentPlugin.templates?.length > 0 && (
+            <button
+            className={`py-2 px-6 rounded-t ${
+                activeTab === 'algorithms'
+                ? 'border-b-4 border-primary-500 bg-secondary-200 text-secondary-950 font-semibold'
+                : 'text-secondary-950 bg-secondary-300'
+            }`}
+            onClick={() => setActiveTab('templates')}
+            >
+            Templates
+            <span className="inline-flex ml-1 items-center justify-center bg-primary-500 text-white text-sm rounded-full w-5 h-5 text-center">
+              {currentPlugin.templates.length}
+            </span>
+            </button>
+          )}
         </div>
         )}
 
@@ -242,8 +287,24 @@ export default function PluginDetail({ plugin }: Props) {
           {activeTab === 'algorithms' && (
               <div className="space-y-4">
               {currentPlugin.algorithms.map((algorithm) => (
-                  <div key={`$algorithm.cid:${algorithm.cid}`}>
+                  <div key={`${algorithm.gid}:${algorithm.cid}`}>
                     <AlgorithmCard algorithm={algorithm} />
+                  </div>
+              ))}
+              </div>
+          )}
+          {activeTab === 'input_blocks' && (
+              <div className="space-y-4">
+              {currentPlugin.input_blocks.map((input_block) => (
+                  <div key={`${input_block.gid}:${input_block.cid}`}>
+                  </div>
+              ))}
+              </div>
+          )}
+          {activeTab === 'templates' && (
+              <div className="space-y-4">
+              {currentPlugin.templates.map((template) => (
+                  <div key={`${template.gid}:${template.cid}`}>
                   </div>
               ))}
               </div>

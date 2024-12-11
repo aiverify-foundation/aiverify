@@ -6,7 +6,6 @@ type Props = {
 };
 
 export default function PluginCard({ plugin }: Props) {
-  // const fileName = result.testArguments.modelFile.substring(result.testArguments.modelFile.lastIndexOf('/') + 1);
   return (
     <Card
       size="md"
@@ -22,17 +21,47 @@ export default function PluginCard({ plugin }: Props) {
       enableTiltEffect={false}
     >
       <Card.Content className="h-auto">
+        {/* Title */}
         <h3 className="text-lg font-semibold text-white mb-2">{plugin.name}</h3>
-        <div className=" sm:grid-cols-3 gap-y-2 text-sm text-gray-400">
-          <div>
-            <span className="font-semibold text-white">Version:</span> {plugin.version}
+
+        {/* Metadata and Tags */}
+        <div className="flex items-start space-x-70 gap-4">
+          {/* Metadata */}
+          <div className="flex flex-col gap-2 text-sm text-gray-400">
+            <div>
+              <span className="font-semibold text-white">Version:</span> {plugin.version}
+            </div>
+            <div>
+              <span className="font-semibold text-white">Author:</span> {plugin.author}
+            </div>
+            <div>
+              <span className="font-semibold text-white">Installed on:</span>{' '}
+              {new Date(plugin.updated_at).toLocaleString('en-GB')}
+            </div>
           </div>
-          <div>
-            <span className="font-semibold text-white">Author:</span> {plugin.author}
-          </div>
-          <div>
-            <span className="font-semibold text-white">Installed on:</span>{' '}
-            {new Date(plugin.updated_at).toLocaleString('en-GB')}
+
+          {/* Tags */}
+          <div className="flex flex-wrap gap-2">
+            {plugin.widgets.length > 0 && (
+              <span className="bg-white text-secondary-950 px-2 py-1 rounded text-sm">
+                widgets: {plugin.widgets.length}
+              </span>
+            )}
+            {plugin.algorithms.length > 0 && (
+              <span className="bg-white text-secondary-950 px-2 py-1 rounded text-sm">
+                algorithms: {plugin.algorithms.length}
+              </span>
+            )}
+            {plugin.input_blocks.length > 0 && (
+              <span className="bg-white text-secondary-950 px-2 py-1 rounded text-sm">
+                input blocks: {plugin.input_blocks.length}
+              </span>
+            )}
+            {plugin.templates.length > 0 && (
+              <span className="bg-white text-secondary-950 px-2 py-1 rounded text-sm">
+                templates: {plugin.templates.length}
+              </span>
+            )}
           </div>
         </div>
       </Card.Content>

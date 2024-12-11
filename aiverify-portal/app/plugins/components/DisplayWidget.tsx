@@ -48,7 +48,7 @@ const WidgetCard: React.FC<WidgetProps> = ({ widget }) => {
         <div className='flex items-center justify-between space-x-2'>
             <h3 className='font-semibold text-xl'>{widget.name}</h3>
             {/* Dependencies Check */}
-            <div className="flex items-center p-1 pr-2 border-2 border-[#25A167] rounded-full space-x-1">
+            <div className="flex items-center p-1 pr-2 border-2 border-[#25A167] rounded-full space-x-1 min-w-[180px] break-words text-center">
                 {widget.dependencies.every((dep) => dep.cid) ? (
                     <>
                     <CheckCircleIcon color="#25A167" />
