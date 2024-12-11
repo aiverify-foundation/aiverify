@@ -1,12 +1,11 @@
-import type { FileUpload } from '@/app/results/upload/components/types';
-import { ReqError, ReqResponse } from '@/app/types';
+import type { FileUpload } from '@/app/results/upload/manual/components/types';
 
 export type UploadRequestPayload = {
   fileUpload: FileUpload;
   onProgress: (progress: number) => void;
 };
 
-export async function fileUploadRequest({
+export async function uploadZipFile({
   fileUpload,
   onProgress,
 }: UploadRequestPayload) {
@@ -14,7 +13,7 @@ export async function fileUploadRequest({
     const formData = new FormData();
     formData.append('file', fileUpload.file);
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', '/api/mock/upload');
+    xhr.open('POST', '/api/test_results/upload_zip');
 
     xhr.upload.onprogress = (event) => {
       if (event.lengthComputable) {
@@ -38,32 +37,4 @@ export async function fileUploadRequest({
 
     xhr.send(formData);
   });
-}
-
-export async function updateResult(data: {
-  jsonData: object;
-  files: FileUpload[];
-}): Promise<ReqResponse<string[]>> {
-  const formData = new FormData();
-
-  formData.append('test_result', JSON.stringify(data.jsonData));
-
-  data.files.forEach((fileUpload) => {
-    formData.append('artifacts', fileUpload.file);
-  });
-
-  const response = await fetch('/api/test_results/upload', {
-    method: 'POST',
-    body: formData,
-  });
-
-  if (!response.ok) {
-    throw new Error(await response.text());
-  }
-
-  return {
-    status: response.status,
-    success: response.ok,
-    data: await response.json(),
-  };
 }

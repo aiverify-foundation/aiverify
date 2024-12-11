@@ -1,4 +1,4 @@
-import type { FileUpload } from '@/app/results/upload/components/types';
+import type { FileUpload } from '@/app/results/upload/manual/components/types';
 import { FastApiError } from '@/app/types';
 
 export async function createResult(data: {

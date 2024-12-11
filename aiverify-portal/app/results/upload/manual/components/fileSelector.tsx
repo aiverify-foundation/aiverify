@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useImperativeHandle, useState } from 'react';
-import { FileUpload } from '@/app/results/upload/components/types';
+import { FileUpload } from '@/app/results/upload/manual/components/types';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import { FileSelect } from '@/lib/components/fileSelect';
 import { cn } from '@/lib/utils/twmerge';
