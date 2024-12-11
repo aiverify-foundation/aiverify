@@ -1,5 +1,5 @@
 import type { FileUpload } from '@/app/results/upload/components/types';
-import { ReqResponse } from '@/app/types';
+import { ReqError, ReqResponse } from '@/app/types';
 
 export type UploadRequestPayload = {
   fileUpload: FileUpload;
@@ -40,7 +40,7 @@ export async function fileUploadRequest({
   });
 }
 
-export async function uploadTestResult(data: {
+export async function updateResult(data: {
   jsonData: object;
   files: FileUpload[];
 }): Promise<ReqResponse<string[]>> {
@@ -58,7 +58,7 @@ export async function uploadTestResult(data: {
   });
 
   if (!response.ok) {
-    throw new Error('Upload failed');
+    throw new Error(await response.text());
   }
 
   return {

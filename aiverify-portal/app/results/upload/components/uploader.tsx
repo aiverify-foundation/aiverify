@@ -1,18 +1,18 @@
 'use client';
 
-import { useMutation } from '@tanstack/react-query';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRef, useState } from 'react';
+import { Icon, IconName } from '@/lib/components/IconSVG';
 import { Button, ButtonVariant } from '@/lib/components/button';
 import { Modal } from '@/lib/components/modal';
 import { debounce } from '@/lib/utils/debounce';
 import { cn } from '@/lib/utils/twmerge';
 import { FileSelector, FileSelectorHandle } from './fileSelector';
+import { useCreateResult } from './hooks/useCreateResult';
 import { JsonEditorHandle } from './jsoneditor';
 import { FileUpload } from './types';
-import { uploadTestResult } from './utils/testResultUploadRequest';
 
 const JsonEditor = dynamic(
   () => import('./jsoneditor').then((mod) => mod.JsonEditor),
@@ -27,36 +27,40 @@ const ARTIFACTS_KEY = 'artifacts';
 export function Uploader({ className }: { className?: string }) {
   const editorRef = useRef<JsonEditorHandle>(null);
   const fileSelectorRef = useRef<FileSelectorHandle>(null);
-  const [successData, setSuccessData] = useState<string[] | null>(null);
+  const [successData, setSuccessData] = useState<string[] | undefined>(
+    undefined
+  );
+  const [errorData, setErrorData] = useState<string | undefined>(undefined);
   const [disableUpload, setDisableUpload] = useState(true);
-  const upload = useMutation({
-    mutationFn: uploadTestResult,
-    onSuccess: (result) => {
-      setSuccessData(result.data ?? null);
-    },
-    onError: (error) => {
-      // Handle error
-      console.error('Upload failed:', error);
-    },
-  });
+  const { mutate, status, data, error } = useCreateResult();
+
+  useEffect(() => {
+    if (status === 'success') {
+      setSuccessData(data);
+      return;
+    }
+
+    if (status === 'error' && error) {
+      setErrorData(error.detail);
+    }
+  }, [status, data]);
 
   function handleAddTestArtifact(files: FileUpload[]) {
     const artifactNames = files.map((file) => file.file.name);
     editorRef.current?.setValue(ARTIFACTS_KEY, artifactNames);
   }
 
-  async function handleUpload() {
+  function handleUploadClick() {
     const jsonData = editorRef.current?.getValue() ?? {};
     const files = fileSelectorRef.current?.getFiles() ?? [];
+    mutate({ jsonData, files });
+  }
 
-    try {
-      await upload.mutateAsync({
-        jsonData,
-        files,
-      });
-    } catch (error) {
-      console.error('Upload failed:', error);
-    }
+  function resetUploader() {
+    editorRef.current?.clear();
+    fileSelectorRef.current?.clearFiles();
+    setSuccessData(undefined);
+    setErrorData(undefined);
   }
 
   const debouncedHandleEditorChange = debounce(() => {
@@ -68,35 +72,54 @@ export function Uploader({ className }: { className?: string }) {
     setDisableUpload(true);
   }, 200);
 
-  function isJsonValid(value: string) {
-    try {
-      JSON.parse(value);
-      return true;
-    } catch (error) {
-      console.log(error);
-      return false;
-    }
-  }
-
   return (
     <React.Fragment>
       {successData ? (
         <Modal
           heading="Test Result Uploaded"
           primaryBtnLabel="OK"
+          secondaryBtnLabel="Upload Another"
           enableScreenOverlay
-          onPrimaryBtnClick={() => setSuccessData(null)}
-          onCloseIconClick={() => setSuccessData(null)}>
+          onPrimaryBtnClick={() => setSuccessData(undefined)}
+          onSecondaryBtnClick={() => {
+            resetUploader();
+          }}
+          onCloseIconClick={() => {
+            setSuccessData(undefined);
+          }}>
           <p>Your test result has been uploaded successfully.</p>
-          <p>
-            {successData.map((item) => (
-              <Link
-                key={item}
-                href={item}>
-                {item}
-              </Link>
-            ))}
-          </p>
+          <ul className="ml-8 list-inside list-disc">
+            {data &&
+              data.map((item) => (
+                <li key={item}>
+                  <Link
+                    key={item}
+                    href={item}>
+                    {item}
+                  </Link>
+                </li>
+              ))}
+          </ul>
+        </Modal>
+      ) : null}
+      {errorData ? (
+        <Modal
+          heading="Test Result Upload Failed"
+          primaryBtnLabel="OK"
+          enableScreenOverlay
+          onPrimaryBtnClick={() => setErrorData(undefined)}
+          onCloseIconClick={() => setErrorData(undefined)}>
+          <div className="mb-5 flex items-center gap-2">
+            <Icon
+              name={IconName.Alert}
+              size={30}
+              svgClassName="stroke-red-500 dark:stroke-red-500"
+            />
+            There was an error uploading your test result.
+          </div>
+          <ul className="ml-8 list-inside list-disc">
+            <li>{errorData}</li>
+          </ul>
         </Modal>
       ) : null}
       <section className={cn('flex gap-4', className)}>
@@ -113,7 +136,7 @@ export function Uploader({ className }: { className?: string }) {
               size="md"
               text="Upload"
               className="mt-8"
-              onClick={handleUpload}
+              onClick={handleUploadClick}
               disabled={disableUpload}
             />
           </div>

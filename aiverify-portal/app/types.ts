@@ -7,8 +7,18 @@ export type Project = {
   status: string;
 };
 
-export type ReqResponse<T> = {
+export type SuccessResponse<T> = {
   status: number;
   success: boolean;
   data?: T;
+};
+
+export type ErrorResponse = {
+  status: number;
+  success: boolean;
+  error: string;
+};
+
+export type FastApiError = {
+  detail: string;
 };

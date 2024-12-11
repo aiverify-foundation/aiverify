@@ -5,10 +5,10 @@ import { FileUpload } from '@/app/results/upload/components/types';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import { FileSelect } from '@/lib/components/fileSelect';
 import { cn } from '@/lib/utils/twmerge';
-// import { useUploadFiles } from './hooks/useUploadFile';
 
 export interface FileSelectorHandle {
   getFiles: () => FileUpload[];
+  clearFiles: () => void;
 }
 
 type FileSelectorProps = {
@@ -26,6 +26,7 @@ export function FileSelector({
 
   useImperativeHandle(ref, () => ({
     getFiles: () => fileUploads,
+    clearFiles: () => setFileUploads([]),
   }));
 
   function handleFileChange(files: File[]) {

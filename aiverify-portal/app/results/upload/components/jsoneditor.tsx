@@ -24,6 +24,7 @@ export interface JsonEditorHandle {
     key: string,
     value: string | number | boolean | null | (string | number)[]
   ) => void;
+  clear: () => void;
 }
 
 export function JsonEditor({
@@ -61,6 +62,16 @@ export function JsonEditor({
           };
           editorRef.current.set(updatedJson);
           onChange?.(updatedJson);
+        } catch (err) {
+          onSyntaxError(err as string);
+        }
+      }
+    },
+    clear: () => {
+      if (editorRef.current) {
+        try {
+          editorRef.current.set({});
+          onChange?.('');
         } catch (err) {
           onSyntaxError(err as string);
         }
