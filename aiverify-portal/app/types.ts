@@ -1,4 +1,4 @@
-type Project = {
+export type Project = {
   id: string;
   name: string;
   description: string;
@@ -7,4 +7,8 @@ type Project = {
   status: string;
 };
 
-export type { Project };
+export type ReqResponse<T> = {
+  status: number;
+  success: boolean;
+  data?: T;
+};

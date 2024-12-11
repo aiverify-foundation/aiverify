@@ -1,29 +1,37 @@
 'use client';
 
 import { useMutation } from '@tanstack/react-query';
+import dynamic from 'next/dynamic';
+import React from 'react';
 import { useRef, useState } from 'react';
-import { Icon } from '@/lib/components/IconSVG';
-import { IconName } from '@/lib/components/IconSVG';
 import { Button, ButtonVariant } from '@/lib/components/button';
 import { Modal } from '@/lib/components/modal';
 import { cn } from '@/lib/utils/twmerge';
 import { FileSelector, FileSelectorHandle } from './fileSelector';
-import { JsonEditor, JsonEditorHandle } from './jsoneditor';
+import { JsonEditorHandle } from './jsoneditor';
 import { FileUpload } from './types';
-import { uploadTestResult } from './utils/fileUploadRequest';
+import { uploadTestResult } from './utils/testResultUploadRequest';
+import Link from 'next/link';
+
+const JsonEditor = dynamic(
+  () => import('./jsoneditor').then((mod) => mod.JsonEditor),
+  {
+    ssr: false,
+    loading: () => <div>Loading...</div>,
+  }
+);
 
 const ARTIFACTS_KEY = 'artifacts';
 
 export function Uploader({ className }: { className?: string }) {
   const editorRef = useRef<JsonEditorHandle>(null);
   const fileSelectorRef = useRef<FileSelectorHandle>(null);
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [successData, setSuccessData] = useState<string[] | null>(null);
   const upload = useMutation({
     mutationFn: uploadTestResult,
-    onSuccess: (data) => {
-      // Handle successful upload
-      console.log('Upload successful:', data);
-      setShowSuccess(true);
+    onSuccess: (result) => {
+      console.log(result);
+      setSuccessData(result.data ?? null);
     },
     onError: (error) => {
       // Handle error
@@ -57,27 +65,48 @@ export function Uploader({ className }: { className?: string }) {
   }
 
   return (
-    <section className={cn('flex gap-4', className)}>
-      <div className="flex w-[75%] flex-col justify-between">
-        <JsonEditor
-          className="h-[600px]"
-          ref={editorRef}
-        />
-        <div className="flex justify-end">
-          <Button
-            variant={ButtonVariant.PRIMARY}
-            size="md"
-            text="Upload"
-            className="mt-8"
-            onClick={handleUpload}
+    <React.Fragment>
+      {successData ? (
+        <Modal
+          heading="Test Result Uploaded"
+          primaryBtnLabel="OK"
+          enableScreenOverlay
+          onPrimaryBtnClick={() => setSuccessData(null)}
+          onCloseIconClick={() => setSuccessData(null)}>
+          <p>Your test result has been uploaded successfully.</p>
+          <p>
+            {successData.map((item) => (
+              <Link
+                key={item}
+                href={item}>
+                {item}
+              </Link>
+            ))}
+          </p>
+        </Modal>
+      ) : null}
+      <section className={cn('flex gap-4', className)}>
+        <div className="flex w-[75%] flex-col justify-between">
+          <JsonEditor
+            className="h-[600px]"
+            ref={editorRef}
           />
+          <div className="flex justify-end">
+            <Button
+              variant={ButtonVariant.PRIMARY}
+              size="md"
+              text="Upload"
+              className="mt-8"
+              onClick={handleUpload}
+            />
+          </div>
         </div>
-      </div>
-      <FileSelector
-        onFilesUpdated={handleAddTestArtifact}
-        className="w-[25%]"
-        ref={fileSelectorRef}
-      />
-    </section>
+        <FileSelector
+          onFilesUpdated={handleAddTestArtifact}
+          className="w-[25%]"
+          ref={fileSelectorRef}
+        />
+      </section>
+    </React.Fragment>
   );
 }
