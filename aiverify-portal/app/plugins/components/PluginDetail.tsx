@@ -29,8 +29,6 @@ export default function PluginDetail({ plugin }: Props) {
     setCurrentPlugin(plugin);
   }, [plugin]);
 
-
-  // This handles the deletion and sets the modal message
   const handleDelete = async (gid: string) => {
     setConfirmDeleteGid(gid);
     setIsModalVisible(true); // Show the modal first
@@ -180,17 +178,24 @@ export default function PluginDetail({ plugin }: Props) {
         </div>
 
         {/* Tabs */}
+        {(currentPlugin.widgets?.length > 0 || currentPlugin.algorithms?.length > 0) && (
         <div className="flex justify-start border-b border-gray-700 space-x-1 mb-4">
+          {currentPlugin.widgets?.length > 0 && (
             <button
             className={`py-2 px-6 rounded-t ${
                 activeTab === 'widgets'
-                ? 'border-b-4 border-primary-500 bg-secondary-200 text-secondary-950 font-semibold'
+                ? 'border-b-4 border-primary-500 bg-secondary-200 text-secondary-950 font-semibold '
                 : 'text-secondary-950 bg-secondary-300'
             }`}
             onClick={() => setActiveTab('widgets')}
             >
             Widgets
+            <span className="inline-flex ml-1 items-center justify-center bg-primary-500 text-white text-sm rounded-full w-5 h-5 text-center">
+              {currentPlugin.widgets.length}
+            </span>
             </button>
+          )}
+          {currentPlugin.algorithms?.length > 0 && (
             <button
             className={`py-2 px-6 rounded-t ${
                 activeTab === 'algorithms'
@@ -200,11 +205,16 @@ export default function PluginDetail({ plugin }: Props) {
             onClick={() => setActiveTab('algorithms')}
             >
             Algorithms
+            <span className="inline-flex ml-1 items-center justify-center bg-primary-500 text-white text-sm rounded-full w-5 h-5 text-center">
+              {currentPlugin.algorithms.length}
+            </span>
             </button>
+          )}
         </div>
+        )}
 
         {/* Tab Content */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto scrollbar-hidden">
           <div>
           {activeTab === 'widgets' && (
             <div>
