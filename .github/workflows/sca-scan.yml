@@ -97,6 +97,14 @@ jobs:
           bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=ai-verify-apigw --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="ai-verify-apigw_$BRANCH" --detect.excluded.directories=tests --blackduck.trust.cert=true
           cd ../
 
+    - name: Install & Scan PORTAL (v2.x)
+      if: inputs.branch_to_test == 'v2.x'
+      run: |
+        cd aiverify-portal
+        npm install
+        bash <(curl -s -L https://detect.synopsys.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=aiverify-portal --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="aiverify-portal_$BRANCH" --detect.excluded.directories=tests --blackduck.trust.cert=true
+        cd ../
+
     - name: Install & Scan PORTAL (Main)
       if: inputs.branch_to_test == 'main'
       run: |
