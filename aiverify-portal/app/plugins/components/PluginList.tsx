@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Plugin } from '@/app/types';
+import { Plugin } from '../utils/types';
 import PluginCard from './PluginCard';
 import PluginsFilters from './FilterButtons';
 import PluginDetail from './PluginDetail';
@@ -22,21 +22,52 @@ export default function PluginsList({ plugins }: Props) {
   const fuse = useMemo(() => {
     const options = {
       keys: [
-        'name',
         'gid',
         'version',
+        'name',
         'author',
         'description',
         'url',
         'meta',
         'is_stock',
         'zip_hash',
-        'algorithm',
         'created_at',
         'updated_at', //algo, widget, input, templates
+        'algorithms.cid',
+        'algorithms.gid',
+        'algorithms.name',
+        'algorithms.modelType',
+        'algorithms.description',
+        'algorithms.tags',
+        'algorithms.language',
+        'algorithms.module_name',
+        'algorithms.zip_hash',
+        'widgets.cid',
+        'widgets.name',
+        'widgets.version',
+        'widgets.author',
+        'widgets.description',
+        'widgets.properties.key',
+        'widgets.tags',
+        'widgets.gid',
+        'input_blocks.cid',
+        'input_blocks.name',
+        'input_blocks.version',
+        'input_blocks.author',
+        'input_blocks.tags',
+        'input_blocks.description',
+        'input_blocks.group',
+        'input_blocks.gid',
+        'templates.cid',
+        'templates.name',
+        'templates.description',
+        'templates.author',
+        'templates.version',
+        'templates.tags',
+        'templates.gid',
       ],
       includeScore: true,
-      threshold: 0.7, // lower threshold = more accurate
+      threshold: 0.5, // lower threshold = more accurate
     };
     return new Fuse(plugins, options);
   }, [plugins]);

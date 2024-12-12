@@ -166,9 +166,12 @@ export default function PluginDetail({ plugin }: Props) {
             <h3 className="text-2xl font-semibold mb-2">{currentPlugin.name}</h3>
               <DeleteIcon onClick={() => handleDelete(currentPlugin.gid)} />
           </div>
-          <div className="space-y-1 text-sm">
+          <div className="space-y-1 text-base">
           <p>{currentPlugin.description}</p>
           <p></p>
+          <p>
+              <span className="font-semibold">GID:</span> {currentPlugin.gid}
+          </p>
           <p>
               <span className="font-semibold">Version:</span> {currentPlugin.version}
           </p>
