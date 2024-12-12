@@ -65,14 +65,24 @@ const Dropdown = ({
     if (isOpen && dropdownRef.current) {
       const dropdownRect = dropdownRef.current.getBoundingClientRect();
       const viewportWidth = window.innerWidth;
-
-      const needsLeftAlign = dropdownRect.right > viewportWidth;
+  
+      // Check if the dropdown would overflow on the right
+      const overflowsRight = dropdownRect.right > viewportWidth;
+  
+      // Check if the dropdown would overflow on the left
+      const overflowsLeft = dropdownRect.left < 0;
+  
+      // If it overflows on the right but has space on the left, align left
+      const needsLeftAlign = overflowsRight && dropdownRect.left > dropdownRect.width;
+  
+      // If it overflows on the bottom but has space on the top, align top
       const needsBottomAlign = dropdownRect.bottom > window.innerHeight;
-
+  
       const newPosition = `${needsBottomAlign ? 'top' : 'bottom'}-${needsLeftAlign ? 'left' : 'right'}` as 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right';
       setDynamicPosition(newPosition);
     }
   }, [isOpen, position]);
+  
 
   // Calculate the max width for the button
   useEffect(() => {
@@ -86,11 +96,13 @@ const Dropdown = ({
     }
   }, [data]);
 
-  const dropdownClass = `absolute w-full min-w-[400px] overflow-y-auto py-3 rounded shadow-md z-10 border-secondary-300 bg-secondary-950 ${dynamicPosition === 'bottom-right' ? 'top-full right-0 mt-2' :
-      dynamicPosition === 'bottom-left' ? 'top-full left-0 mt-2' :
-        dynamicPosition === 'top-right' ? 'bottom-full right-0 mb-2' :
-          'bottom-full left-0 mb-2'
-    }`;
+  const dropdownClass = `absolute w-full min-w-[200px] overflow-y-auto py-3 rounded shadow-md z-40 border-secondary-300 bg-secondary-950 ${
+    dynamicPosition === 'bottom-right' ? 'top-full left-0 mt-2' :
+    dynamicPosition === 'bottom-left' ? 'top-full left-0 mt-2' :
+    dynamicPosition === 'top-right' ? 'bottom-full right-0 mb-2' :
+    'bottom-full left-0 mb-2'
+  }`;
+  
 
   return (
     <div ref={dropdownRef} className='relative'>
@@ -109,9 +121,9 @@ const Dropdown = ({
         aria-expanded={isOpen}
         type='button'
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex justify-between items-center gap-2 rounded py-2 px-4 border ${selectedItem ? 'bg-blue-500 text-white' : 'bg-secondary-950 text-gray-700'
+        className={`flex justify-between items-center gap-2 rounded py-2 px-4 border ${selectedItem ? 'bg-secondary-950 text-white' : 'bg-secondary-950 text-gray-700'
           } ${style}`}
-        style={{ minWidth: maxWidth + 40 }}
+        style={{ minWidth: maxWidth + 100 }}
       >
         <span>{selectedItem?.name || title}</span>
         <Icon

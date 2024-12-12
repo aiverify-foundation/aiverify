@@ -73,19 +73,26 @@ export default function PluginsList({ plugins }: Props) {
   }, [plugins]);
 
   const filteredResults = useMemo(() => {
-    // no search query, return all the results
+    // Start with plugins filtered by search query
     let searchPlugins = searchQuery
-      ? fuse.search(searchQuery).map(plugin => plugin.item)
-      : results;
-  
-    /* if filtering selected
-    if (activeFilter) {
+    ? fuse.search(searchQuery).map(plugin => plugin.item)
+    : plugins;
+
+    // Apply pill filter logic
+    if (activeFilter === 'stock') {
       searchPlugins = searchPlugins.filter(plugin => 
-        result.testArguments.modelType === activeFilter.toLowerCase() ||
-        result.cid === activeFilter.toLowerCase()
+        plugin.is_stock
+      );
+    } else if (activeFilter) {
+      // Add other filters if needed
+      searchPlugins = searchPlugins.filter(plugin =>
+        activeFilter === 'templates' ? plugin.templates.length > 0:
+        activeFilter === 'widgets' ? plugin.widgets.length > 0 :
+        activeFilter === 'algorithms' ? plugin.algorithms.length > 0 :
+        activeFilter === 'inputBlocks' ? plugin.input_blocks.length > 0 :
+        true
       );
     }
-    */
   
     // if sorting selected
     if (sortBy === 'date-asc') {
@@ -120,7 +127,6 @@ export default function PluginsList({ plugins }: Props) {
             onFilter={handleFilter}
             onSort={handleSort}
             activeFilter={activeFilter}
-            isSplitPaneActive={true}
           />
           <div className="flex-1 overflow-y-auto mt-2 scrollbar-hidden">
             {filteredResults.map((plugin) => (
