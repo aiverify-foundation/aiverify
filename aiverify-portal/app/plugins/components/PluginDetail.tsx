@@ -7,6 +7,7 @@ import { Modal } from '@/lib/components/modal';
 import WidgetCard from './DisplayWidget';
 import AlgorithmCard from './DisplayAlgorithm';
 import InputBlockCard from './DisplayInputBlocks';
+import TemplateCard from './DisplayTemplate';
 import { downloadWidgets } from '@/lib/fetchApis/downloadWidgets';
 import { deletePlugin } from '@/lib/fetchApis/deletePlugin';
 import { DeleteIcon } from '../utils/icons';
@@ -163,19 +164,7 @@ export default function PluginDetail({ plugin }: Props) {
         <div className="pb-4 mb-4">
           <div className='flex items-center justify-between'>
             <h3 className="text-2xl font-semibold mb-2">{currentPlugin.name}</h3>
-            <div className="flex items-center space-x-2">
-              <Button
-                    pill
-                    textColor="white"
-                    variant={ButtonVariant.OUTLINE}
-                    hoverColor='var(--color-primary-500)'
-                    size="sm"
-                    text="DOWNLOAD"
-                    onClick={() => handleDownloadPlugin(currentPlugin.gid)}
-                  />
               <DeleteIcon onClick={() => handleDelete(currentPlugin.gid)} />
-            </div>
-            
           </div>
           <div className="space-y-1 text-sm">
           <p>{currentPlugin.description}</p>
@@ -295,6 +284,7 @@ export default function PluginDetail({ plugin }: Props) {
               <div className="space-y-4">
               {currentPlugin.templates.map((template) => (
                   <div key={`${template.gid}:${template.cid}`}>
+                    <TemplateCard template={template} />
                   </div>
               ))}
               </div>

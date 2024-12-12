@@ -67,7 +67,7 @@ const WidgetCard: React.FC<WidgetProps> = ({ widget }) => {
         <ul className="text-sm">
             {widget.gid && (
                 <li>
-                <strong>GID:</strong> {widget.gid}:{widget.cid}
+                <strong>GID:</strong> <span style={{ color: 'var(--color-primary-400)' }}>{widget.gid}:{widget.cid}</span>
                 </li>
             )}
             {widget.cid && (
