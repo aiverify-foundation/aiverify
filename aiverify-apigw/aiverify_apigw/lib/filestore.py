@@ -14,6 +14,7 @@ from typing import Any
 
 from .s3 import MyS3
 from .logging import logger
+from .file_utils import compute_file_hash
 
 
 s3 = None
@@ -72,6 +73,9 @@ base_plugin_dir = (
 )
 base_artifacts_dir = (
     base_data_dir.joinpath("artifacts") if isinstance(base_data_dir, Path) else urljoin(base_data_dir, "artifacts/")
+)
+base_models_dir = (
+    base_data_dir.joinpath("models") if isinstance(base_data_dir, Path) else urljoin(base_data_dir, "models/")
 )
 
 
@@ -407,3 +411,92 @@ def get_artifact(test_result_id: str, filename: str):
         key = urljoin(folder, filename)
         data = s3.get_object(key)
         return data
+
+
+def get_model_path(filename: str):
+    if isinstance(base_models_dir, Path):
+        if not base_models_dir.exists():
+            base_models_dir.mkdir(parents=True, exist_ok=True)
+        return base_models_dir.joinpath(filename)
+    else:
+        return urljoin(base_models_dir, filename)
+
+
+def save_test_model(source_path: Path) -> str:
+    target_path = get_model_path(source_path.name)
+    logger.debug(f"Save test model from {source_path} to {target_path}")
+
+    if source_path.is_dir():
+        # for folders, zip the content as well
+        (zip_content, filehash) = zip_folder(source_path)
+        zip_filename = f"{source_path.name}.zip"
+        hash_filename = f"{source_path.name}.hash"
+        if isinstance(target_path, Path):
+            shutil.copytree(source_path, target_path, dirs_exist_ok=True)
+            with open(target_path.parent.joinpath(zip_filename), "wb") as fp:
+                fp.write(zip_content.read())
+            with open(target_path.parent.joinpath(hash_filename), "w") as fp:
+                fp.write(filehash)
+        elif s3 is not None:
+            s3.upload_directory_to_s3(source_path, target_path)
+            s3.put_object(zip_filename, zip_content)
+            s3.put_object(hash_filename, filehash)
+        return filehash
+    else:
+        filehash = compute_file_hash(source_path)
+        if isinstance(target_path, Path):
+            shutil.copy(source_path, target_path)
+        elif s3 is not None:
+            s3.upload_file(source_path.as_posix(), target_path)
+        return filehash
+
+
+def get_test_model(filename: str):
+    model_path = get_model_path(filename)
+    if not check_relative_to_base(base_models_dir, filename):
+        raise FileStoreError(f"Invalid filename {filename}")
+    if isinstance(model_path, Path):
+        if not model_path.exists():
+            raise FileNotFoundError(f"File {filename} is not found")
+        if model_path.is_file():
+            with open(model_path, "rb") as fp:
+                data = fp.read()
+            return data
+        else:
+            # check for zip
+            zip_path = model_path.parent.joinpath(f"{model_path.name}.zip")
+            if zip_path.exists():
+                with open(zip_path, "rb") as fp:
+                    data = fp.read()
+                return data
+            else:
+                raise FileNotFoundError(f"File {filename} is not found")
+    elif s3 is not None:
+        if s3.check_s3_object_exists(model_path):
+            return s3.get_object(model_path)
+        elif s3.check_s3_prefix_exists(model_path):
+            return s3.get_object(f"{model_path}.zip")
+        else:
+            raise FileNotFoundError(f"File {filename} is not found")
+
+
+def delete_test_model(filename: str):
+    model_path = get_model_path(filename)
+    if not check_relative_to_base(base_models_dir, filename):
+        raise FileStoreError(f"Invalid filename {filename}")
+    if isinstance(model_path, Path):
+        if not model_path.exists():
+            return
+        if model_path.is_dir():
+            shutil.rmtree(model_path, ignore_errors=True)
+            model_path.parent.joinpath(f"{model_path.name}.zip").unlink(missing_ok=True)
+            model_path.parent.joinpath(f"{model_path}.hash").unlink(missing_ok=True)
+        else:
+            model_path.unlink()
+    elif s3 is not None:
+        if s3.check_s3_prefix_exists(model_path):
+            s3.delete_objects_under_prefix(model_path)
+            s3.delete_object(f"{model_path}.zip")
+            s3.delete_object(f"{model_path}.hash")
+        if s3.check_s3_object_exists(model_path):
+            s3.delete_object(model_path)
