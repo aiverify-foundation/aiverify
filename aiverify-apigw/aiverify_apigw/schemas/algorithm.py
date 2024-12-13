@@ -1,8 +1,9 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional, Annotated
-from ..models import AlgorithmModel
 from enum import StrEnum
+import json
 
+from ..models import AlgorithmModel
 
 class AlgorithmMeta(BaseModel):
     class ModelTypeEnum(StrEnum):
@@ -41,6 +42,8 @@ class AlgorithmOutput(AlgorithmMeta):
     language: Optional[str] = Field(description="Algorithm language", default=None)
     script: Optional[str] = Field(description="Algorithm language", default=None)
     module_name: Optional[str] = Field(description="Algorithm language", default=None)
+    inputSchema: Optional[dict] = Field(description="Algorithm input schema", default=None)
+    outputSchema: Optional[dict] = Field(description="Algorithm output schema", default=None)
     zip_hash: Optional[str] = Field(description="File hash of algorithm zip")
 
     @classmethod
@@ -58,6 +61,8 @@ class AlgorithmOutput(AlgorithmMeta):
             language=result.language,
             script=result.script,
             module_name=result.module_name,
+            inputSchema=json.loads(result.input_schema.decode("utf-8")),
+            outputSchema=json.loads(result.output_schema.decode("utf-8")),
             zip_hash=result.zip_hash,
         )
         return obj
