@@ -306,7 +306,7 @@ async def download_plugin_inputs(gid: str, session: Session = Depends(get_db_ses
 @router.get("/{gid}/bundle/{cid}")
 async def download_plugin_bundle(gid: str, cid: str, session: Session = Depends(get_db_session)) -> Response:
     """
-    Endpoint to download a plugin as a zip file.
+    Endpoint to retrieve plugin widget or inputblock MDX bundle.
     """
     try:
         stmt = select(PluginModel).filter_by(gid=gid)
@@ -335,7 +335,7 @@ async def download_plugin_bundle(gid: str, cid: str, session: Session = Depends(
 @router.get("/{gid}/summary/{cid}")
 async def download_plugin_summary(gid: str, cid: str, session: Session = Depends(get_db_session)) -> Response:
     """
-    Endpoint to download a plugin as a zip file.
+    Endpoint to retrieve plugin summary MDX bundle.
     """
     try:
         stmt = select(PluginModel).filter_by(gid=gid)
