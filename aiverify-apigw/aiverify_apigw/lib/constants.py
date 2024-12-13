@@ -16,7 +16,7 @@ class TestModelStatus(StrEnum):
     Pending = auto()
     Valid = auto()
     Invalid = auto()
-    Cancelled = auto()
+    # Cancelled = auto()
 
 
 class ModelType(StrEnum):
