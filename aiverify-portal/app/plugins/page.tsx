@@ -1,4 +1,3 @@
-import { Plugin } from '@/app/types';
 import PluginsList from './components/PluginList';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import ActionButtons from './components/ActionButtons';
@@ -15,7 +14,7 @@ export default async function PluginsPage() {
           <Icon name={IconName.Plug} size={40} color="#FFFFFF" />
           <div className="ml-3">
             <h1 className="text-2xl font-bold text-white">Plugin Manager</h1>
-            <h3 className="text-white">Manager plugins, their templates and algorithms.</h3>
+            <h3 className="text-white">Manage plugins, their templates and algorithms.</h3>
           </div>
         </div>
 

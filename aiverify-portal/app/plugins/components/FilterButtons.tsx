@@ -24,7 +24,6 @@ export default function PluginsFilters({
 
   const pillFilters = [
     { id: 'templates', label: 'TEMPLATES' },
-    { id: 'stock', label: 'STOCK' },
     { id: 'widgets', label: 'WIDGETS' },
     { id: 'algorithms', label: 'ALGORITHMS' },
     { id: 'inputBlocks', label: 'INPUT BLOCKS' },
@@ -69,7 +68,7 @@ export default function PluginsFilters({
                 ? ButtonVariant.PRIMARY
                 : ButtonVariant.OUTLINE
             }
-            size="xs"
+            size="sm"
             pill={true}
             onClick={() => handlePillClick(filter.id)}
           />

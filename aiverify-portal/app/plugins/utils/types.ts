@@ -88,4 +88,13 @@ type Algorithm = {
     updated_at: string;
   }
 
-export type { Plugin, Algorithm, Widget, inputBlock, Template};
+  type UploadStatus = 'idle' | 'uploading' | 'success' | 'error';
+
+  type FileUpload = {
+    file: File;
+    progress: number;
+    status: UploadStatus;
+    id: string;
+  };
+
+export type { Plugin, Algorithm, Widget, inputBlock, Template, UploadStatus, FileUpload};
