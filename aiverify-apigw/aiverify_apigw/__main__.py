@@ -9,7 +9,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 from .lib.logging import logger
-from .routers import project_template_router, test_result_router, plugin_router, project_router, input_block_data_router
+from .routers import project_template_router, test_result_router, plugin_router, project_router, input_block_data_router, test_model_router
 from .lib.database import engine
 from .models import BaseORMModel
 from .lib.plugin_store import PluginStore
@@ -26,6 +26,7 @@ app.include_router(input_block_data_router.router)
 app.include_router(plugin_router.router)
 app.include_router(project_template_router.router)
 app.include_router(project_router.router)
+app.include_router(test_model_router.router)
 
 
 # modify the openai schema
@@ -43,13 +44,15 @@ def custom_openapi():
     try:
         paths = openapi_schema["paths"]
         components = openapi_schema["components"]
-        upload_key = "/test_results/upload"
-        if upload_key in paths:
-            # add type of test_result field to "object". Is there a better way to force the type to object?
-            path = paths[upload_key]["post"]
-            component_ref = path["requestBody"]["content"]["multipart/form-data"]["schema"]["$ref"].split("/")[3]
-            component = components["schemas"][component_ref]
-            component["properties"]["test_result"]["type"] = "object"
+        uploads = [("test_result", "/test_results/upload", "object"), ("model_types", "/test_models/upload", "array")]
+        for upload in uploads:
+            (form_property, upload_key, data_type) = upload
+            if upload_key in paths:
+                # add type of test_result field to "object". Is there a better way to force the type to object?
+                path = paths[upload_key]["post"]
+                component_ref = path["requestBody"]["content"]["multipart/form-data"]["schema"]["$ref"].split("/")[3]
+                component = components["schemas"][component_ref]
+                component["properties"][form_property]["type"] = data_type
     except Exception as e:
         logger.warn(f"Error updating openapi schema: {e}")
 
