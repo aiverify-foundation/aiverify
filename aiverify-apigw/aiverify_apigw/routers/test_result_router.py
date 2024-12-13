@@ -72,7 +72,7 @@ async def _save_test_result(session: Session, test_result: TestResult, artifact_
                 mode=TestModelMode.Upload,
                 model_type=test_arguments.modelType,
                 status=TestModelStatus.Valid,
-                filepath=test_arguments.modelFile,
+                # filepath=test_arguments.modelFile,
                 filename=model_file.name,
                 created_at=now,
                 updated_at=now,
@@ -89,7 +89,7 @@ async def _save_test_result(session: Session, test_result: TestResult, artifact_
         test_dataset = TestDatasetModel(
             name=test_dataset_file.name,
             status=TestDatasetStatus.Valid,
-            filepath=test_arguments.testDataset,
+            # filepath=test_arguments.testDataset,
             filename=test_dataset_file.name,
             file_type=TestDatasetFileType.Folder
             if test_arguments.testDataset.endswith("/")
@@ -112,7 +112,7 @@ async def _save_test_result(session: Session, test_result: TestResult, artifact_
                 ground_truth_dataset = TestDatasetModel(
                     name=ground_truth_file.name,
                     status=TestDatasetStatus.Valid,
-                    filepath=test_arguments.groundTruthDataset,
+                    # filepath=test_arguments.groundTruthDataset,
                     filename=ground_truth_file.name,
                     file_type=TestDatasetFileType.File,
                 )
