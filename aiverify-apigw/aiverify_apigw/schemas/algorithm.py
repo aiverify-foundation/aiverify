@@ -5,6 +5,7 @@ import json
 
 from ..models import AlgorithmModel
 
+
 class AlgorithmMeta(BaseModel):
     class ModelTypeEnum(StrEnum):
         CLASSIFICATION = "classification"
