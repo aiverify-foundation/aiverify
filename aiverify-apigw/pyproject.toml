@@ -32,7 +32,7 @@ dependencies = [
   "python-dotenv>=1.0.1",
   "sqlalchemy>=2.0.32",
   "boto3>=1.35.6",
-  "jsonschema>=4.23.0",
+  "jsonschema==4.*",
   "pydantic==2.*",
 ]
 
@@ -40,6 +40,9 @@ dependencies = [
 post-install-commands = [
   "pip install -e ../aiverify-test-engine[all]",
 ]
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [tool.hatch.envs.default.scripts]
 dev = "python -m aiverify_apigw"
@@ -49,7 +52,7 @@ python = ["3.11"]
 
 [tool.hatch.envs.hatch-test]
 extra-dependencies = [
-    "faker>=28.1.0"
+  "faker>=28.1.0"
 ]
 
 [tool.ruff.lint]
