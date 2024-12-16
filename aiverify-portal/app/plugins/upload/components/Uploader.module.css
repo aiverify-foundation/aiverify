@@ -1,0 +1,95 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
+  }
+
+  
+  .uploadSection {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    max-width: 600px;
+  }
+  
+  .dropzone {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #ccc;
+    border-radius: 4px;
+    padding: 20px;
+    cursor: pointer;
+  }
+  
+  .fileInput {
+    display: none;
+  }
+  
+  .fileList {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .fileItem {
+    margin-bottom: 20px; /* Space between each file item */
+    min-width: 400px;
+  }
+  
+  .fileHeader {
+    display: flex;
+    justify-content: space-between; /* Space between file name and remove button */
+    align-items: center;
+  }
+  
+  .progressBarContainer {
+    width: 100%;
+    height: 6px;
+    background: #eee;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  
+  .progressBar {
+    height: 100%;
+    background: #4caf50;
+    height: 5px;
+    border-radius: 3px;
+  }
+  
+  
+  .fileStatus {
+    margin-top: 4px;
+    display: block;
+    font-size: 12px;
+    color: #666;
+  }
+  
+  .removeButton {
+    background: none;
+    border: none;
+    color: #f44336;
+    cursor: pointer;
+  }
+  
+  .uploadButton {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .uploadButton:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+  
