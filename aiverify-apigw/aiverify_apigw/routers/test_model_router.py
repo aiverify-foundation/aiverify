@@ -287,7 +287,7 @@ def download_test_model(model_id: int, session: Session = Depends(get_db_session
             raise HTTPException(status_code=404, detail="Test model not found")
         
         if test_model.status != TestModelStatus.Valid:
-            raise HTTPException(status_code=400, detail="Invalid model")
+            raise HTTPException(status_code=400, detail="Model is invalid")
         
         if test_model.mode != TestModelMode.Upload or test_model.filename is None or test_model.file_type is None:
             raise HTTPException(status_code=400, detail="Model file has not been uploaded")
@@ -318,6 +318,9 @@ def update_test_model(model_id: int, model_update: TestModelUpdate, session: Ses
         test_model = session.query(TestModelModel).filter(TestModelModel.id == model_id).first()
         if not test_model:
             raise HTTPException(status_code=404, detail="Test model not found")
+        
+        if test_model.status != TestModelStatus.Valid:
+            raise HTTPException(status_code=400, detail="Model is invalid")
         
         if model_update.name:
             test_model.name = model_update.name
