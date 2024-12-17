@@ -18,9 +18,10 @@ class TestDatasetModel(BaseORMModel):
     zip_hash: Mapped[Optional[str]]
     file_type: Mapped[TestDatasetFileType] = mapped_column(Enum(TestDatasetFileType))
     error_message: Mapped[Optional[str]]  # only for status == invalid
-    size: Mapped[Optional[float]]
+    size: Mapped[Optional[int]]
     num_rows: Mapped[Optional[int]]
     num_cols: Mapped[Optional[int]]
+    data_columns: Mapped[Optional[bytes]] # array of data columns information
     serializer: Mapped[Optional[str]]
     data_format: Mapped[Optional[str]]
     # date times
