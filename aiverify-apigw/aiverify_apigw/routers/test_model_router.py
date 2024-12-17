@@ -19,16 +19,6 @@ from ..lib.test_engine import TestEngineValidator, TestEngineValidatorException
 router = APIRouter(prefix="/test_models", tags=["test_models"])
 
 
-class TestModelFileUploadForm(BaseModel):
-    modelType: ModelType = Field(description="Type of the model")
-    # folderPath: Optional[str] = Field(description="Relative path of folder to save under, can be nested. E.g. folder1/folder2/folder3. If null, assume no folder")
-
-
-class TestModelFolderUploadForm(BaseModel):
-    # modelType: ModelType = Field(description="Type of the model")
-    folderPath: Optional[str] = Field(description="Relative path of folder to save under, can be nested. E.g. folder1/folder2/folder3. If null, assume no folder")
-
-
 file_upload_form_example = [
     "classification"
 ]
