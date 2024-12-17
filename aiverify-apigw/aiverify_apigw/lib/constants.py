@@ -30,10 +30,8 @@ class TestDatasetFileType(StrEnum):
 
 
 class TestDatasetStatus(StrEnum):
-    Pending = auto()
     Valid = auto()
     Invalid = auto()
-    Cancelled = auto()
 
 
 class InputBlockSize(StrEnum):

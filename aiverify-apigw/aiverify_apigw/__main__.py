@@ -9,7 +9,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 from .lib.logging import logger
-from .routers import project_template_router, test_result_router, plugin_router, project_router, input_block_data_router, test_model_router
+from .routers import project_template_router, test_result_router, plugin_router, project_router, input_block_data_router, test_model_router, test_dataset_router
 from .lib.database import engine
 from .models import BaseORMModel
 from .lib.plugin_store import PluginStore
@@ -27,6 +27,7 @@ app.include_router(plugin_router.router)
 app.include_router(project_template_router.router)
 app.include_router(project_router.router)
 app.include_router(test_model_router.router)
+app.include_router(test_dataset_router.router)
 
 
 # modify the openai schema
@@ -48,6 +49,7 @@ def custom_openapi():
             ("test_result", "/test_results/upload", "object"),
             ("model_types", "/test_models/upload", "array"),
             ("subfolders", "/test_models/upload_folder", "array"),
+            ("subfolders", "/test_datasets/upload_folder", "array"),
         ]
         for upload in uploads:
             (form_property, upload_key, data_type) = upload

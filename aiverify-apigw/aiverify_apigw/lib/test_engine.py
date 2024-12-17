@@ -1,7 +1,7 @@
 from pathlib import Path
 import importlib.util
 import sys
-from typing import Any
+from typing import Any, List
 from .logging import logger
 
 
@@ -87,6 +87,53 @@ class TestEngineValidator:
         else:
             raise TestEngineValidatorException(errmsg)
 
-        
+    @classmethod
+    def validate_dataset(cls, model_path: Path) -> tuple[str, str, int, int, List[dict]]:
+        """Validate test dataset
+
+        Args:
+            model_path (Path): Path to the test dataset file or folder
+
+        Raises:
+            TestEngineValidatorException
+
+        Returns:
+            tuple[DataPluginType, SerializerPluginType]: (model_format, serializer_type)
+        """
+        from aiverify_test_engine.plugins.enums.plugin_type import PluginType
+        plugins_manager = cls.init_engine()
+        PluginManager = plugins_manager.PluginManager
+
+        try:
+            (data_instance, data_serializer, errmsg) = PluginManager.get_instance(
+                PluginType.DATA, **{"filename": model_path.absolute().as_posix()}
+            )
+            logger.debug(f"validate dataset. data_instance:{data_instance}, data_serializer: {data_serializer}, errmsg: {errmsg}")
+            if not isinstance(data_instance, plugins_manager.IData):
+                raise TestEngineValidatorException(f"Invalid dataset instance returned: {type(data_instance)}")
+        except:
+            raise TestEngineValidatorException(f"Invalid dataset format")
+        if data_instance and data_serializer:
+            (is_success, error_messages) = data_instance.setup() 
+            if not is_success:
+                raise TestEngineValidatorException(f"Failed to perform dataset instance setup: {error_messages}")
+            # get dataset labels
+            (is_data_valid, validation_error_message) = data_instance.validate()
+            if not is_data_valid:
+                raise TestEngineValidatorException(f"Dataset could not be validated: {validation_error_message}")
+            labels = data_instance.read_labels()
+            if not labels:
+                raise TestEngineValidatorException("Dataset has no headers")
+            data_columns = []
+            for key, value in labels.items():
+                data_columns.append({"name": key, "datatype": value, "label": key})
+            (num_rows, num_cols) = data_instance.get_shape()
+            result = (data_instance.get_data_plugin_type().name.lower(), data_serializer.get_serializer_plugin_type().name.lower(), num_rows, num_cols, data_columns)
+            logger.debug(f"dataset validation result: {result}")
+            return result
+        else:
+            raise TestEngineValidatorException(errmsg)
+
+
 # # initialize the test engine
 # TestEngineValidator.init_engine()

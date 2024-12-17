@@ -9,3 +9,4 @@ from .project_template import *
 from .project import *
 from .test_model import *
 from .model_api import *
+from .test_dataset import *
