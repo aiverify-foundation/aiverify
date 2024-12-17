@@ -1,6 +1,5 @@
 from fastapi import APIRouter, HTTPException, UploadFile, Form, Depends, Response
-from pydantic import BaseModel, Field
-from typing import Optional, List, Annotated, Any, Literal
+from typing import List, Annotated, Any, Literal
 from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 import tempfile
@@ -12,7 +11,7 @@ from ..lib.constants import ModelType, TestModelMode, TestModelFileType, TestMod
 from ..lib.file_utils import check_valid_filename, check_file_size
 from ..lib.filestore import save_test_model as fs_save_test_model, delete_test_model as fs_delete_test_model, get_test_model as fs_get_test_model
 from ..lib.database import get_db_session
-from ..schemas import TestModel
+from ..schemas import TestModel, TestModelUpdate
 from ..models import TestModelModel, TestResultModel
 from ..lib.test_engine import TestEngineValidator, TestEngineValidatorException
 
@@ -287,6 +286,9 @@ def download_test_model(model_id: int, session: Session = Depends(get_db_session
         if not test_model:
             raise HTTPException(status_code=404, detail="Test model not found")
         
+        if test_model.status != TestModelStatus.Valid:
+            raise HTTPException(status_code=400, detail="Invalid model")
+        
         if test_model.mode != TestModelMode.Upload or test_model.filename is None or test_model.file_type is None:
             raise HTTPException(status_code=400, detail="Model file has not been uploaded")
         
@@ -305,6 +307,34 @@ def download_test_model(model_id: int, session: Session = Depends(get_db_session
     except Exception as e:
         logger.error(f"Error downloading test model with ID {model_id}: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
+    
+
+@router.patch("/{model_id}", response_model=TestModel)
+def update_test_model(model_id: int, model_update: TestModelUpdate, session: Session = Depends(get_db_session)):
+    """
+    Endpoint to update a specific test model by its ID.
+    """
+    try:
+        test_model = session.query(TestModelModel).filter(TestModelModel.id == model_id).first()
+        if not test_model:
+            raise HTTPException(status_code=404, detail="Test model not found")
+        
+        if model_update.name:
+            test_model.name = model_update.name
+        if model_update.description:
+            test_model.description = model_update.description
+        if model_update.modelType:
+            test_model.model_type = model_update.modelType
+        test_model.updated_at = datetime.now(timezone.utc)
+
+        session.commit()
+        session.refresh(test_model)
+        return TestModel.from_model(test_model)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating test model with ID {model_id}: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.delete("/{model_id}", response_model=dict)
@@ -320,7 +350,7 @@ def delete_test_model(model_id: int, session: Session = Depends(get_db_session))
         if session.query(TestResultModel).filter(TestResultModel.model_id == test_model.id).count() > 0:
             raise HTTPException(status_code=404, detail="Test model cannot be deleted if there are test results referencing this model")
         
-        if test_model.mode == TestModelMode.Upload and test_model.filename and test_model.size is not None:
+        if test_model.mode == TestModelMode.Upload and test_model.filename and test_model.file_type is not None:
             fs_delete_test_model(test_model.filename)
 
         session.delete(test_model)
