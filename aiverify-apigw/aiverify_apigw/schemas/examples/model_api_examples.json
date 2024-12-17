@@ -1,0 +1,147 @@
+{
+  "bearer_authentication": {
+    "summary": "Example Bearer Authentication",
+    "description": "Example with Bearer Authentication",
+    "value": {
+      "name": "Example Bearer Authentication",
+      "description": "Example of Model API with Bearer Authentication",
+      "modelType": "regression",
+      "modelAPI": {
+        "method": "POST",
+        "url": "https://localhost:5000/predict",
+        "authType": "Bearer Token",
+        "authTypeConfig": {
+          "token": "sample_token"
+        },
+        "requestBody": {
+          "mediaType": "application/x-www-form-urlencoded",
+          "isArray": false,
+          "properties": [
+            {
+              "field": "age",
+              "type": "integer"
+            },
+            {
+              "field": "gender",
+              "type": "integer"
+            },
+            {
+              "field": "race",
+              "type": "integer"
+            },
+            {
+              "field": "income",
+              "type": "integer"
+            },
+            {
+              "field": "employment",
+              "type": "integer"
+            },
+            {
+              "field": "employment_length",
+              "type": "integer"
+            },
+            {
+              "field": "total_donated",
+              "type": "integer"
+            },
+            {
+              "field": "num_donation",
+              "type": "integer"
+            }
+          ]
+        },
+        "response": {
+          "statusCode": 200,
+          "mediaType": "text/plain",
+          "schema": {
+            "type": "integer"
+          }
+        },
+        "requestConfig": {
+          "sslVerify": false,
+          "connectionTimeout": -1,
+          "rateLimit": -1,
+          "rateLimitTimeout": -1,
+          "batchLimit": -1,
+          "connectionRetries": 3,
+          "maxConnections": -1,
+          "batchStrategy": "none"
+        }
+      }
+    }
+  },
+  "basic_authentication": {
+    "summary": "Example Basic Authentication",
+    "description": "Example of Model API with Basic Authentication",
+    "value": {
+      "name": "Example Basic Authentication",
+      "description": "Example with Basic Authentication",
+      "modelType": "regression",
+      "modelAPI": {
+        "method": "POST",
+        "url": "https://localhost:5000/predict",
+        "authType": "Basic Auth",
+        "authTypeConfig": {
+          "username": "test",
+          "password": "p@ssword"
+        },
+        "requestBody": {
+          "mediaType": "application/x-www-form-urlencoded",
+          "isArray": false,
+          "properties": [
+            {
+              "field": "age",
+              "type": "integer"
+            },
+            {
+              "field": "gender",
+              "type": "integer"
+            },
+            {
+              "field": "race",
+              "type": "integer"
+            },
+            {
+              "field": "income",
+              "type": "integer"
+            },
+            {
+              "field": "employment",
+              "type": "integer"
+            },
+            {
+              "field": "employment_length",
+              "type": "integer"
+            },
+            {
+              "field": "total_donated",
+              "type": "integer"
+            },
+            {
+              "field": "num_donation",
+              "type": "integer"
+            }
+          ]
+        },
+        "response": {
+          "statusCode": 200,
+          "mediaType": "text/plain",
+          "schema": {
+            "type": "integer"
+          }
+        },
+        "requestConfig": {
+          "sslVerify": false,
+          "connectionTimeout": -1,
+          "rateLimit": -1,
+          "rateLimitTimeout": -1,
+          "batchLimit": -1,
+          "connectionRetries": 3,
+          "maxConnections": -1,
+          "batchStrategy": "none"
+        }
+      }
+    }
+  }
+}

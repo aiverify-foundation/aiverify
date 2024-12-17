@@ -7,10 +7,18 @@ from ..models.test_model_model import TestModelModel
 from ..lib.constants import TestModelMode, TestModelFileType, TestModelStatus, ModelType
 
 
+class TestModelAPIInput(BaseModel):
+    name: str = Field(description="Name of the model", min_length=1, max_length=128)
+    description: Optional[str] = Field(description="Description of the model", max_length=256)
+    modelType: ModelType = Field(description="Type of the model")
+    modelAPI: ModelAPIType = Field(description="Model API configuration")
+
+
 class TestModelUpdate(BaseModel):
     name: Optional[str] = Field(description="Name of the model", min_length=1, max_length=128, default=None)
     description: Optional[str] = Field(description="Description of the model", max_length=256, default=None)
     modelType: Optional[ModelType] = Field(description="Type of the model", default=None)
+    modelAPI: Optional[ModelAPIType] = Field(description="Model API Configuration", default=None)
 
 
 class TestModel(BaseModel):
