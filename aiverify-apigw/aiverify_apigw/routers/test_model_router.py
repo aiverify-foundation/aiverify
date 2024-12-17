@@ -214,7 +214,7 @@ def upload_folder(
                 model_type=model_type,
                 file_type=file_type,
                 filename=filename,
-                size=file.size,
+                # size=file.size,
                 created_at=now,
                 updated_at=now
             )
@@ -297,7 +297,7 @@ def download_test_model(model_id: int, session: Session = Depends(get_db_session
         if not test_model:
             raise HTTPException(status_code=404, detail="Test model not found")
         
-        if test_model.mode != TestModelMode.Upload or test_model.filename is None or test_model.size is None:
+        if test_model.mode != TestModelMode.Upload or test_model.filename is None or test_model.file_type is None:
             raise HTTPException(status_code=400, detail="Model file has not been uploaded")
         
         model_content = fs_get_test_model(test_model.filename)
