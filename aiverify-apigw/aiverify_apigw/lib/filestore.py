@@ -413,13 +413,15 @@ def get_artifact(test_result_id: str, filename: str):
         return data
 
 
-def get_model_path(filename: str):
+def get_model_path(filename: str, subfolder: str | None=None):
     if isinstance(base_models_dir, Path):
-        if not base_models_dir.exists():
-            base_models_dir.mkdir(parents=True, exist_ok=True)
-        return base_models_dir.joinpath(filename)
+        folder = base_models_dir.joinpath(subfolder) if subfolder else base_models_dir
+        if not folder.exists():
+            folder.mkdir(parents=True, exist_ok=True)
+        return folder.joinpath(filename)
     else:
-        return urljoin(base_models_dir, filename)
+        folder = urljoin(base_models_dir, f"{subfolder}/") if subfolder else base_models_dir
+        return urljoin(folder, filename)
 
 
 def save_test_model(source_path: Path) -> str:

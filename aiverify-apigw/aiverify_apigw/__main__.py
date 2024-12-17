@@ -44,7 +44,11 @@ def custom_openapi():
     try:
         paths = openapi_schema["paths"]
         components = openapi_schema["components"]
-        uploads = [("test_result", "/test_results/upload", "object"), ("model_types", "/test_models/upload", "array")]
+        uploads = [
+            ("test_result", "/test_results/upload", "object"),
+            ("model_types", "/test_models/upload", "array"),
+            ("subfolders", "/test_models/upload_folder", "array"),
+        ]
         for upload in uploads:
             (form_property, upload_key, data_type) = upload
             if upload_key in paths:

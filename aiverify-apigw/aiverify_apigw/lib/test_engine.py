@@ -40,7 +40,7 @@ class TestEngineValidator:
         return cls.plugins_manager
 
     @classmethod
-    def validate_model(cls, model_path: Path) -> tuple[str, str]:
+    def validate_model(cls, model_path: Path, is_pipline: bool = False) -> tuple[str, str]:
         """Validate test model
 
         Args:
@@ -57,19 +57,30 @@ class TestEngineValidator:
         PluginManager = plugins_manager.PluginManager
 
         try:
-            (model_instance, model_serializer, errmsg) = PluginManager.get_instance(
-                PluginType.MODEL, **{"filename": model_path.absolute().as_posix()}
-            )
+            if is_pipline:
+                (model_instance, model_serializer, errmsg) = PluginManager.get_instance(
+                    PluginType.PIPELINE, **{"pipeline_path": model_path.absolute().as_posix()}
+                )
+                logger.debug(f"validate pipeline. model_instance:{model_instance}, model_serializer: {model_serializer}, errmsg: {errmsg}")
+                if not isinstance(model_instance, plugins_manager.IPipeline):
+                    raise TestEngineValidatorException(f"Invalid model instance returned: {type(model_instance)}")
+            else:
+                (model_instance, model_serializer, errmsg) = PluginManager.get_instance(
+                    PluginType.MODEL, **{"filename": model_path.absolute().as_posix()}
+                )
+                logger.debug(f"validate model. model_instance:{model_instance}, model_serializer: {model_serializer}, errmsg: {errmsg}")
+                if not isinstance(model_instance, plugins_manager.IModel):
+                    raise TestEngineValidatorException(f"Invalid model instance returned: {type(model_instance)}")
         except:
             raise TestEngineValidatorException(f"Invalid model format")
-        logger.debug(f"validate_model. model_instance:{model_instance}, model_serializer: {model_serializer}, errmsg: {errmsg}")
-        if not isinstance(model_instance, plugins_manager.IModel):
-            raise TestEngineValidatorException(f"Invalid model instance returned: {type(model_instance)}")
         if model_instance and model_serializer:
             (is_success, error_messages) = model_instance.setup() 
             if not is_success:
                 raise TestEngineValidatorException(f"Failed to perform model instance setup: {error_messages}")
-            result = (model_instance.get_model_plugin_type().name.lower(), model_serializer.get_serializer_plugin_type().name.lower())
+            if is_pipline:
+                result = (model_instance.get_pipeline_plugin_type().name.lower(), model_serializer.get_serializer_plugin_type().name.lower())
+            else:
+                result = (model_instance.get_model_plugin_type().name.lower(), model_serializer.get_serializer_plugin_type().name.lower())
             model_instance.cleanup()
             logger.debug(f"model validation result: {result}")
             return result
