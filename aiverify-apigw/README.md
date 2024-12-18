@@ -75,7 +75,7 @@ Update the `.env` file to configure the environment variables. Below is a table 
 
 | Variable Name     | Description     | Default Value     |
 |-------------------|-----------------|-------------------|
-| `APIGW_LOG_LEVEL` | The log level for the API Gateway. | `debug` |
+| `APIGW_LOG_LEVEL` | The log level for the API Gateway. | `info` |
 | `APIGW_DATA_DIR` | The directory path for storing data. | `./data` |
 | `APIGW_DB_URI` | The database URI for the API Gateway. | `sqlite:///{APIGW_DATA_DIR}/database.db` |
 | `APIGW_HOST_ADDRESS` | Bind socket to this host. | `127.0.0.1` |
@@ -156,14 +156,13 @@ python -m venv .venv
 source .venv/bin/activate  # On Windows use `venv\Scripts\activate`
 ```
 
-3. **Install the required dependencies.**
-```sh
-pip install -e .
+3. **Run the installation script**
+There are two installation scripts [`install-amd64.sh`](./install-amd64.sh) and [install-arm64.sh](./install-arm64.sh) which you can excute depending on your machine architecture.
+
+For example, to install on your macbook:
 ```
-
-4. **Install the NodeJS scripts**
-
-See [Section](#install-the-nodejs-scripts)
+sh ./install-arm64.sh
+```
 
 ## Configuration
 
@@ -192,4 +191,18 @@ pip install pytest faker
 To run the tests:
 ```
 pytest tests
+```
+
+# Docker Setup
+To build apigw docker image, go to the `aiverify` root folder and run:
+```
+cd ..
+docker buildx build -t aiverify-apigw -f aiverify-apigw/Dockerfile .
+cd aiverify-apigw
+```
+
+To run apigw from command line, run the following command with substitutes for the environment values.
+```sh
+mkdir -p data # create data directory
+docker run --rm --name=aiverify-apigw -p 4000:4000/tcp -v "$PWD/data:/data" aiverify-apigw
 ```
