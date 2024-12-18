@@ -1,4 +1,4 @@
-import { Plugin } from '../../types';
+import { Plugin } from "../utils/types";
 import { Card } from '@/lib/components/card/card';
 
 type Props = {

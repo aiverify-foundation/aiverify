@@ -5,6 +5,7 @@ import { getAllPlugins } from '@/lib/fetchApis/getAllPlugins';
 
 export default async function PluginsPage() {
   const plugins = await getAllPlugins();
+  console.log(plugins)
 
   return (
     <div className="p-6">

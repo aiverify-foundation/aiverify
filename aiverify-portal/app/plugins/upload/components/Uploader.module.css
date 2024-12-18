@@ -10,19 +10,21 @@
     display: flex;
     gap: 20px;
     width: 100%;
-    max-width: 600px;
+    margin-top: 20px;
   }
   
   .dropzone {
-    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     border: 2px dashed #ccc;
     border-radius: 4px;
-    padding: 20px;
+    padding: 70px;
     cursor: pointer;
+    white-space: nowrap;
+    background-color: var(--color-secondary-800);
+    margin-top: 20px;
   }
   
   .fileInput {
@@ -30,16 +32,16 @@
   }
   
   .fileList {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    padding: 0 10px; /* Add padding instead of fixed margin */
+    margin: 0 auto; /* Center the list */
   }
   
   .fileItem {
-    margin-bottom: 20px; /* Space between each file item */
-    min-width: 400px;
-  }
+    width: 100%; /* Full width of parent */
+    max-width: 900px; /* Limit the maximum width */
+    margin: 0 auto 20px; /* Center align each item with spacing */
+    padding-right: 20px;
+}
   
   .fileHeader {
     display: flex;
@@ -50,7 +52,7 @@
   .progressBarContainer {
     width: 100%;
     height: 6px;
-    background: #eee;
+    background: var(--color-secondary-600);
     border-radius: 3px;
     overflow: hidden;
     margin-top: 8px;
@@ -68,28 +70,26 @@
     margin-top: 4px;
     display: block;
     font-size: 12px;
-    color: #666;
+    color: var(--color-white);
   }
   
   .removeButton {
     background: none;
     border: none;
-    color: #f44336;
-    cursor: pointer;
   }
   
   .uploadButton {
     margin-top: 20px;
     padding: 10px 20px;
-    background: #4caf50;
+    background: var(--color-primary-400);
     color: white;
     border: none;
     border-radius: 4px;
-    cursor: pointer;
   }
   
   .uploadButton:disabled {
-    background: #ccc;
+    background: var(--color-secondary-900);
     cursor: not-allowed;
+    color: var(--color-secondary-600);
   }
   

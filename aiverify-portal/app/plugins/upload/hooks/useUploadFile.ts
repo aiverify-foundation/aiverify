@@ -1,7 +1,8 @@
-import { useMutation } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useMutation, UseMutationResult, useMutationState } from '@tanstack/react-query';
 import { UploadRequestPayload, uploadZipFile } from '../components/utils/uploadZipFile';
 
-
+// Custom hook for handling the file upload
 export function useUploadFiles({
   onSuccess,
   onError,
@@ -9,9 +10,11 @@ export function useUploadFiles({
   onSuccess: () => void;
   onError: (error: Error) => void;
 }) {
-  return useMutation({
+  const mutation = useMutation<void, Error, UploadRequestPayload>({
     mutationFn: (payload: UploadRequestPayload) => uploadZipFile(payload),
     onSuccess,
     onError,
   });
+
+  return mutation; // Return the whole mutation object to access states like isLoading, isError, etc.
 }

@@ -1,14 +1,21 @@
 'use client';
 import React, { useState } from 'react';
 import styles from './Uploader.module.css';
-import { UploadStatus,FileUpload } from '../../utils/types';
+import Link from 'next/link';
+import { UploadStatus, FileUpload } from '../../utils/types';
+import { Icon, IconName } from '@/lib/components/IconSVG';
+import { Button, ButtonVariant } from '@/lib/components/button';
+import { useUploadFiles } from '../hooks/useUploadFile';
 
 interface UploadZipFileArgs {
   fileUpload: FileUpload;
   onProgress: (progress: number) => void;
 }
 
-const uploadZipFile = async ({ fileUpload, onProgress }: UploadZipFileArgs): Promise<void> => {
+const uploadZipFile = async ({
+  fileUpload,
+  onProgress,
+}: UploadZipFileArgs): Promise<void> => {
   return new Promise((resolve, reject) => {
     const totalSteps = 10;
     let currentStep = 0;
@@ -30,8 +37,22 @@ const PluginUploader = () => {
   const [fileUploads, setFileUploads] = useState<FileUpload[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
+  // Hook for managing file upload
+  const { mutate} = useUploadFiles({
+    onSuccess: () => {
+      setFileUploads((prev) =>
+        prev.map((file) => ({ ...file, status: 'success', progress: 100 }))
+      );
+    },
+    onError: (error: Error) => {
+      setFileUploads((prev) =>
+        prev.map((file) => ({ ...file, status: 'error' }))
+      );
+    },
+  });
+
   const handleFileChange = (files: File[]) => {
-    if (files.length === 0) return; // Handle empty files
+    if (files.length === 0) return;
     const filesToUpload = Array.from(files);
     const newUploads: FileUpload[] = filesToUpload.map((file) => ({
       file,
@@ -46,105 +67,107 @@ const PluginUploader = () => {
     setFileUploads((prevUploads) => prevUploads.filter((upload) => upload.id !== id));
   };
 
-  const uploadFiles = async () => {
+  const uploadFiles = () => {
     if (fileUploads.length === 0) return;
     setIsUploading(true);
 
-    try {
-      for (const fileUpload of fileUploads) {
-        setFileUploads((prevUploads) =>
-          prevUploads.map((upload) =>
-            upload.id === fileUpload.id
-              ? { ...upload, status: 'uploading' }
-              : upload
-          )
-        );
+    fileUploads.forEach((fileUpload) => {
+      setFileUploads((prevUploads) =>
+        prevUploads.map((upload) =>
+          upload.id === fileUpload.id ? { ...upload, status: 'uploading' } : upload
+        )
+      );
 
-        try {
-          await uploadZipFile({
-            fileUpload,
-            onProgress: (progress) => {
-              setFileUploads((prevUploads) =>
-                prevUploads.map((upload) =>
-                  upload.id === fileUpload.id ? { ...upload, progress } : upload
-                )
-              );
-            },
-          });
-
+      // Call mutate to trigger the upload and track progress
+      mutate({
+        fileUpload,
+        onProgress: (progress) => {
           setFileUploads((prevUploads) =>
             prevUploads.map((upload) =>
-              upload.id === fileUpload.id
-                ? { ...upload, status: "success", progress: 100 }
-                : upload
+              upload.id === fileUpload.id ? { ...upload, progress } : upload
             )
           );
-        } catch (error) {
-          setFileUploads((prevUploads) =>
-            prevUploads.map((upload) =>
-              upload.id === fileUpload.id
-                ? { ...upload, status: 'error' }
-                : upload
-            )
-          );
-        }
-      }
-    } finally {
-      setIsUploading(false);
-    }
+        },
+      });
+    });
+  };
+
+
+  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    handleFileChange(Array.from(event.dataTransfer.files));
+  };
+
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
   };
 
   return (
-    <div className={styles.container}>
-      <h1>Upload Plugin Zip File</h1>
-      <h2>
-        If you have a zipfile of your plugin, use the zip file uploader below
-      </h2>
-      <div className={styles.uploadSection}>
-        <div className={styles.dropzone}>
-          <label htmlFor="file-upload" className={styles.dropzoneLabel}>
-            Click to upload or drag files here
-          </label>
-          <input
-            id="file-upload"
-            type="file"
-            accept=".zip"
-            multiple
-            className={styles.fileInput}
-            onChange={(e) => handleFileChange(Array.from(e.target.files || []))}
-          />
-        </div>
-        <div className={styles.fileList}>
-          {fileUploads.map((file) => (
-            <div key={file.id} className={styles.fileItem}>
-              <div className={styles.fileHeader}>
-                <div className={styles.fileName}>{file.file.name}</div>
-                <button
-                  className={styles.removeButton}
-                  onClick={() => removeUpload(file.id)}
-                >
-                  Remove
-                </button>
-              </div>
-              <div className={styles.progressBarContainer}>
-                <div
-                  className={styles.progressBar}
-                  style={{ width: `${file.progress}%` }}
+    <div className='flex h-[calc(100vh-200px)] bg-secondary-950 pl-10 mb-8 overflow-y-auto scrollbar-hidden relative'>
+      <div className='mt-6 w-full'>
+        <div className='flex'>
+          <div className='mt-1 pr-12'>
+            <Link href={'/plugins'}>
+              <Icon name={IconName.ArrowLeft} color='white'/>
+            </Link>
+          </div>
+          <div className='flex flex-col w-full'>
+            <h3 className='text-xl font-semibold mb-10'>Upload Plugin Zip File</h3>
+            <h2> If you have a zipfile of your plugin, use the zip file uploader below </h2>
+            <div className={styles.uploadSection}>
+              <div
+                className={styles.dropzone}
+                onClick={() => document.getElementById("fileInput")?.click()}
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+              >
+                <input
+                  type="file"
+                  id="fileInput"
+                  style={{ display: "none" }}
+                  multiple
+                  onChange={(e) => handleFileChange(Array.from(e.target.files || []))}
                 />
+                <p>Click or drag files here to upload</p>
               </div>
-              <span className={styles.fileStatus}>{file.status}</span>
+              <div className='w-full'>
+                <h2 className='max-w-[900px] mx-auto mb-2'>Selected Files:</h2>
+                {fileUploads.map((file) => (
+                  <div key={file.id} className={styles.fileItem}>
+                    <div className={styles.fileHeader}>
+                      <div className={styles.fileName}>{file.file.name}</div>
+                      <button
+                        className={styles.removeButton}
+                        onClick={() => removeUpload(file.id)}
+                      >
+                        <Icon name={IconName.Close} color='white'/>
+                      </button>
+                    </div>
+                    <div className={styles.progressBarContainer}>
+                      <div
+                        className={styles.progressBar}
+                        style={{ width: `${file.progress}%` }}
+                      />
+                    </div>
+                    <span className={styles.fileStatus}>{file.status}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
+            <Button
+            className='uploadButton absolute bottom-4 right-4'
+            size='sm'
+            variant={ButtonVariant.PRIMARY}
+            onClick={() => uploadFiles}
+            disabled={isUploading || !fileUploads.some((file) => file.status === 'idle')}
+            text={isUploading ? 'UPLOADING...' : 'CONFIRM UPLOAD'}
+          />
+          </div>
         </div>
       </div>
-      <button
-        className={styles.uploadButton}
-        onClick={uploadFiles}
-        disabled={isUploading || !fileUploads.some((file) => file.status === 'idle')}
-      >
-        {isUploading ? 'Uploading...' : 'Confirm Upload'}
-      </button>
+
     </div>
+
   );
 };
 

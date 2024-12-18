@@ -1,4 +1,4 @@
-import { Plugin } from "../../app/types";
+import { Plugin } from "@/app/plugins/utils/types";
 
 export async function getAllPlugins(): Promise<Plugin[]> {
     const res = await fetch(`http://127.0.0.1:4000/plugins/`, {

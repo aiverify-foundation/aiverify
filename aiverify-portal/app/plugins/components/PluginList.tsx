@@ -128,7 +128,7 @@ export default function PluginsList({ plugins }: Props) {
             onSort={handleSort}
             activeFilter={activeFilter}
           />
-          <div className="flex-1 overflow-y-auto mt-2 scrollbar-hidden">
+          <div className="flex-1 overflow-y-auto mt-2 scrollbar-hidden p-1">
             {filteredResults.map((plugin) => (
               <div onClick={() => handleSelectPlugin(plugin)} key={plugin.gid}>
                 <PluginCard plugin={plugin} />

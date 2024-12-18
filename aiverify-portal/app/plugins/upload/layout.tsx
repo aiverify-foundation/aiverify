@@ -10,7 +10,7 @@ const queryClient = new QueryClient();
 // Define the layout component with children prop type
 const Layout: React.FC<{ children: ReactNode }> = ({ children }) => {
   return (
-    <main className="mx-auto px-4 pt-10 sm:px-6 lg:max-w-[1520px] lg:px-8 xl:max-w-[1720px] xl:px-12">
+    <main>
         <QueryClientProvider client={queryClient}>  
             {children} {/* Renders the page content */}      
         </QueryClientProvider>
