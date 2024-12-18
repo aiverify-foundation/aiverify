@@ -206,3 +206,8 @@ To run apigw from command line, run the following command with substitutes for t
 mkdir -p data # create data directory
 docker run --rm --name=aiverify-apigw -p 4000:4000/tcp -v "$PWD/data:/data" aiverify-apigw
 ```
+
+
+# FastAPI Documentation
+The FastAPI interactics docs can be accessed on http://{APIGW_HOST_ADDRESS}:4000/docs/. To access on localhost machine, navigate to http://localhost:4000/docs/.
+
