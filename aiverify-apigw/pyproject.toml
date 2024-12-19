@@ -34,6 +34,7 @@ dependencies = [
   "boto3>=1.35.6",
   "jsonschema==4.*",
   "pydantic==2.*",
+  "openapi-spec-validator==0.*",
 ]
 
 [tool.hatch.envs.default]

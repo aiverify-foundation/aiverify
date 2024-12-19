@@ -22,7 +22,8 @@ class TestModelModel(BaseORMModel):
     # relative to datepath. if not uploaded, leave as null
     filename: Mapped[Optional[str]] = mapped_column(String(2048), index=True, unique=True)  # only if mode == upload
     zip_hash: Mapped[Optional[str]]
-    model_api: Mapped[Optional[bytes]]  # serialized json, only if model == api
+    model_api: Mapped[Optional[bytes]]  # serialized json, only if mode == api
+    parameter_mappings: Mapped[Optional[bytes]] # only if mode == api 
     error_message: Mapped[Optional[str]]  # only for status == invalid
     # date times
     created_at: Mapped[Optional[datetime]]
