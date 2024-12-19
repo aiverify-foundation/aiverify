@@ -6,6 +6,7 @@ import { UploadStatus, FileUpload } from '../../utils/types';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import { Button, ButtonVariant } from '@/lib/components/button';
 import { useUploadFiles } from '../hooks/useUploadFile';
+import { Modal } from '@/lib/components/modal';
 
 interface UploadZipFileArgs {
   fileUpload: FileUpload;
@@ -36,6 +37,8 @@ const uploadZipFile = async ({
 const PluginUploader = () => {
   const [fileUploads, setFileUploads] = useState<FileUpload[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
 
   // Hook for managing file upload
   const { mutate} = useUploadFiles({
@@ -43,11 +46,16 @@ const PluginUploader = () => {
       setFileUploads((prev) =>
         prev.map((file) => ({ ...file, status: 'success', progress: 100 }))
       );
+      setModalMessage('Upload Successful!');
+      setIsModalVisible(true);
     },
     onError: (error: Error) => {
       setFileUploads((prev) =>
         prev.map((file) => ({ ...file, status: 'error' }))
       );
+      const errorMessage = error.message || 'An unexpected error occurred during upload.';
+      setModalMessage(`Upload failed: ${errorMessage}`);
+      setIsModalVisible(true);
     },
   });
 
@@ -92,7 +100,6 @@ const PluginUploader = () => {
     });
   };
 
-
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     handleFileChange(Array.from(event.dataTransfer.files));
@@ -102,8 +109,28 @@ const PluginUploader = () => {
     event.preventDefault();
   };
 
+  const closeModal = () => {
+    setIsModalVisible(false);
+    setIsUploading(false);
+  };
+
   return (
     <div className='flex h-[calc(100vh-200px)] bg-secondary-950 pl-10 mb-8 overflow-y-auto scrollbar-hidden relative'>
+      {/* Delete Popup */}
+    {isModalVisible && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+           <Modal
+            bgColor="var(--color-primary-500)"
+            textColor="white"
+            onCloseIconClick={closeModal}
+            enableScreenOverlay
+            heading="Deletion"
+            height={200}
+          >
+            <p>{modalMessage}</p>
+          </Modal>
+        </div>
+    )}
       <div className='mt-6 w-full'>
         <div className='flex'>
           <div className='mt-1 pr-12'>
@@ -146,7 +173,10 @@ const PluginUploader = () => {
                     <div className={styles.progressBarContainer}>
                       <div
                         className={styles.progressBar}
-                        style={{ width: `${file.progress}%` }}
+                        style={{
+                          width: `${file.progress}%`,
+                          backgroundColor: file.status === 'error' ? 'red' : 'green',
+                        }}
                       />
                     </div>
                     <span className={styles.fileStatus}>{file.status}</span>
@@ -158,7 +188,7 @@ const PluginUploader = () => {
             className='uploadButton absolute bottom-4 right-4'
             size='sm'
             variant={ButtonVariant.PRIMARY}
-            onClick={() => uploadFiles}
+            onClick={() => uploadFiles()}
             disabled={isUploading || !fileUploads.some((file) => file.status === 'idle')}
             text={isUploading ? 'UPLOADING...' : 'CONFIRM UPLOAD'}
           />
