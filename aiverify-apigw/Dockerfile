@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.11
 ARG TARGETARCH
 
 WORKDIR /app
@@ -8,8 +8,6 @@ COPY aiverify-apigw/ ./aiverify-apigw/
 COPY aiverify-test-engine/ ./aiverify-test-engine/
 COPY common/ ./common/
 COPY stock-plugins/ ./stock-plugins/
-
-WORKDIR /app
 
 # install node
 RUN apt-get update && apt-get install -y curl
