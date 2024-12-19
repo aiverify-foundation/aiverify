@@ -121,8 +121,8 @@ def _create_mock_template(gid: str):
         data=model.project_data,
         created_at=faker.date_time_this_year(),
         updated_at=faker.date_time_this_year(),
-        plugin_id=gid,
     )
+    model.project_template = project_template
     return (model, project_template)
 
 
@@ -140,11 +140,9 @@ def _create_mock_plugin(num_algo: int | None = None, num_widgets: int | None = N
     if num_templates is None:
         num_templates = faker.random_int(min=1, max=2)
     templates = []
-    project_templates = []
     for i in range(num_templates):
         model, project_template = _create_mock_template(gid)
         templates.append(model)
-        project_templates.append(project_template)
     meta = {
         "gid": gid,
         "version": faker.numerify("%!!.%!!.%!!"),  # Generates a semantic version string
@@ -166,7 +164,6 @@ def _create_mock_plugin(num_algo: int | None = None, num_widgets: int | None = N
         widgets=widgets,
         inputblocks=inputblocks,
         templates=templates,
-        project_templates=project_templates,
     )
 
 

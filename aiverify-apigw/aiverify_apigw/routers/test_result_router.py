@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException, UploadFile, Form, Depends, Response
 from typing import List, Annotated, Any
 import json
@@ -16,10 +16,12 @@ from ..lib.filestore import save_artifact, get_artifact
 from ..lib.utils import guess_mimetype_from_filename
 from ..lib.file_utils import get_suffix, check_valid_filename
 from ..schemas import TestResult, TestResultOutput, TestResultUpdate
-from ..schemas.load_examples import test_result_examples
 from ..models import AlgorithmModel, TestModelModel, TestResultModel, TestDatasetModel, TestArtifactModel
 
 router = APIRouter(prefix="/test_results", tags=["test_result"])
+
+from ..schemas.load_examples import load_examples
+test_result_examples = load_examples("test_result_examples.json")
 
 
 # @router.get("/")
@@ -38,7 +40,7 @@ async def _save_test_result(session: Session, test_result: TestResult, artifact_
             status_code=400, detail=f"Algorithm not found: gid: {test_result.gid}, cid: {test_result.cid}"
         )
 
-    now = datetime.now()
+    now = datetime.now(timezone.utc)
     test_arguments = test_result.testArguments
 
     # validate output
@@ -70,7 +72,7 @@ async def _save_test_result(session: Session, test_result: TestResult, artifact_
                 mode=TestModelMode.Upload,
                 model_type=test_arguments.modelType,
                 status=TestModelStatus.Valid,
-                filepath=test_arguments.modelFile,
+                # filepath=test_arguments.modelFile,
                 filename=model_file.name,
                 created_at=now,
                 updated_at=now,
@@ -87,7 +89,7 @@ async def _save_test_result(session: Session, test_result: TestResult, artifact_
         test_dataset = TestDatasetModel(
             name=test_dataset_file.name,
             status=TestDatasetStatus.Valid,
-            filepath=test_arguments.testDataset,
+            # filepath=test_arguments.testDataset,
             filename=test_dataset_file.name,
             file_type=TestDatasetFileType.Folder
             if test_arguments.testDataset.endswith("/")
@@ -110,7 +112,7 @@ async def _save_test_result(session: Session, test_result: TestResult, artifact_
                 ground_truth_dataset = TestDatasetModel(
                     name=ground_truth_file.name,
                     status=TestDatasetStatus.Valid,
-                    filepath=test_arguments.groundTruthDataset,
+                    # filepath=test_arguments.groundTruthDataset,
                     filename=ground_truth_file.name,
                     file_type=TestDatasetFileType.File,
                 )
@@ -405,6 +407,7 @@ async def update_test_result(
             raise HTTPException(status_code=404, detail=f"Test result not found")
 
         result.name = update_data.name
+        result.updated_at = datetime.now(timezone.utc)
         session.commit()
         session.refresh(result)
         return TestResultOutput.from_model(result)

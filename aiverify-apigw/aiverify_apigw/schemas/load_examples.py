@@ -9,4 +9,4 @@ def load_examples(filename: str):
         return examples
 
 
-test_result_examples = load_examples("test_result_examples.json")
+# test_result_examples = load_examples("test_result_examples.json")

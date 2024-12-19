@@ -4,7 +4,7 @@ from aiverify_apigw.models import ProjectTemplateModel
 from .mock_project_meta import create_mock_project_template_data_meta
 
 
-def create_mock_project_templates(session, plugin_id: str | None = None):
+def create_mock_project_templates(session, template_id: str | None = None):
     project_data = create_mock_project_template_data_meta().model_dump_json().encode('utf-8')
     project_template = ProjectTemplateModel(
         name=faker.name(),
@@ -12,7 +12,7 @@ def create_mock_project_templates(session, plugin_id: str | None = None):
         data=project_data,
         created_at=faker.date_time_this_year(),
         updated_at=faker.date_time_this_year(),
-        plugin_id=plugin_id,
+        template_id=template_id,
     )
     session.add(project_template)
     session.flush()
