@@ -86,7 +86,10 @@
         }
       },
       "else": {
-        "$comment": "TODO: Add reference to model api configuration specs"
+        "modelAPI": {
+          "$ref": "/aiverify.modelapi.schema.json",
+          "description": "Model API configuration"
+        }
       },
       "required": [
         "testDataset",
