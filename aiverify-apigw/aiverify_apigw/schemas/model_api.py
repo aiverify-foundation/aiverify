@@ -1,6 +1,7 @@
 from enum import StrEnum
 from pydantic import BaseModel, Field, HttpUrl, model_validator, field_validator, ValidationInfo
 from typing import List, Optional, Dict, Self
+from urllib.parse import urlparse, unquote
 
 
 class OpenAPIPrimitiveTypesEnum(StrEnum):
@@ -180,6 +181,11 @@ class ModelAPIRequestConfigType(BaseModel):
     batchStrategy: ModelAPIRequestConfigBatchStrategyEnum = Field(description="Batching strategy for requests.")
 
 
+class ModelAPIParametersMapping(BaseModel):
+    requestBody: Optional[Dict] = Field(description="Parameter mapping for request body", default=None)
+    parameters: Optional[Dict] = Field(description="Parameter mapping for path parameters", default=None)
+
+
 class ModelAPIType(BaseModel):
     method: OpenAPIMethodEnum = Field(description="HTTP method of the API (POST or GET).")
     url: HttpUrl = Field(description="URL of the API endpoint.")
@@ -189,8 +195,9 @@ class ModelAPIType(BaseModel):
     additionalHeaders: Optional[List[OpenAPIAdditionalHeadersType]] = Field(description="Additional headers for the API.", default=None)
     parameters: Optional[OpenAPIParametersType] = Field(description="Parameters configuration for the API.", default=None)
     requestBody: Optional[OpenAPIRequestBodyType] = Field(description="Request body configuration for the API.", default=None)
-    response: Optional[OpenAPIResponseType] = Field(description="Response configuration for the API.", default=None)
+    response: OpenAPIResponseType = Field(description="Response configuration for the API.")
     requestConfig: Optional[ModelAPIRequestConfigType] = Field(description="Request configuration for the API.", default=None)
+    # parameterMappings: Optional[ModelAPIParametersMapping] = Field(description="Specify the parameter mappings")
 
     @field_validator('authType')
     @classmethod
@@ -201,7 +208,273 @@ class ModelAPIType(BaseModel):
 
     @model_validator(mode='after')
     def validate_model_api(self) -> Self:
-        if self.method == OpenAPIMethodEnum.GET and self.requestBody:
-            raise ValueError("GET requests should not have a request body.")
+        # if self.method == OpenAPIMethodEnum.GET and self.requestBody:
+        #     raise ValueError("GET requests should not have a request body.")
+        self.exportModelAPI()
         return self
-    
+
+    def exportModelAPI(self) -> Dict:
+        import re
+        from openapi_spec_validator import validate
+        # Initialize the base OpenAPI spec
+        spec = {
+            "openapi": "3.0.3",
+            "info": {
+                "title": "API-Based Testing",
+                "version": "1.0.0",
+            },
+            "paths": {}
+        }
+
+        # Parse the URL
+        url = str(self.url).rstrip("/")
+        if self.urlParams:
+            url += self.urlParams
+        parsed_url = urlparse(url)
+        url_base = f"{parsed_url.scheme}://{parsed_url.netloc}"
+        url_pathname = unquote(parsed_url.path)
+
+        # Add servers to the spec
+        spec["servers"] = [{"url": url_base}]
+
+        # Create the path object
+        path_obj = {
+            "parameters": [],
+            "responses": {
+                str(self.response.statusCode): {
+                    "description": "successful operation",
+                    "content": {
+                        self.response.mediaType: {
+                            "schema": self.response.schema,
+                        }
+                    },
+                }
+            }
+        }
+
+        # Add authentication if specified
+        if self.authType in ["Bearer Token", "Basic Auth"]:
+            scheme = "bearer" if self.authType == "Bearer Token" else "basic"
+            spec["components"] = {
+                "securitySchemes": {
+                    "myAuth": {
+                        "type": "http",
+                        "scheme": scheme,
+                    }
+                }
+            }
+            path_obj["security"] = [{"myAuth": []}]
+
+        # Add additional headers
+        if self.additionalHeaders:
+            for header in self.additionalHeaders:
+                path_obj["parameters"].append({
+                    "in": "header",
+                    "name": header.name,
+                    "required": True,
+                    "schema": {
+                        "type": header.type,
+                        "enum": [header.value],
+                    },
+                })
+
+        # Add path parameters if any
+        path_match = re.findall(r"\{([a-z0-9_\-\s]+)\}", url_pathname, re.IGNORECASE)
+        if len(path_match) > 0 and self.parameters and self.parameters.paths and self.parameters.paths.pathParams and len(self.parameters.paths.pathParams) > 0:
+            is_complex = self.parameters.paths.mediaType != "none"
+            if not is_complex:
+                for attr in path_match:
+                    p = next((p for p in self.parameters.paths.pathParams if p.name == attr), None)
+                    if not p:
+                        raise ValueError(f"Path parameter {{{attr}}} not defined")
+                    pobj = {
+                        "in": "path",
+                        "name": p.name,
+                        "required": True,
+                        "schema": {
+                            "type": p.type,
+                        },
+                    }
+                    path_obj["parameters"].append(pobj)
+            else:
+                if len(path_match) != 1:
+                    # impose condition of only one path param for objects
+                    raise ValueError("Require one path variable for complex serialization")
+                
+                name: str = path_match[0]
+                if not name or len(name) == 0:
+                    raise ValueError("Name field required for parameters with complex serialization")
+                
+                properties = {}
+                required = []
+                for p in self.parameters.paths.pathParams:
+                    properties[p.name] = {
+                        "type": p.type,
+                    }
+                    required.append(p.name)
+                
+                object_definition = {
+                    "type": "object",
+                    "properties": properties,
+                    "required": required,
+                }
+                
+                if self.parameters.paths.isArray:
+                    schema = {
+                        "type": "array",
+                        "items": object_definition,
+                    }
+                    if self.parameters.paths.maxItems:
+                        schema["maxItems"] = self.parameters.paths.maxItems
+                    
+                    path_obj["parameters"].append({
+                        "in": "path",
+                        "name": name,
+                        "required": True,
+                        "content": {
+                            self.parameters.paths.mediaType: {
+                                "schema": schema,
+                            },
+                        },
+                    })
+                else:
+                    path_obj["parameters"].append({
+                        "in": "path",
+                        "name": name,
+                        "required": True,
+                        "content": {
+                            self.parameters.paths.mediaType: {
+                                "schema": object_definition,
+                            },
+                        },
+                    })
+
+        elif len(path_match) > 0:
+            raise ValueError("Path parameters not defined")
+        elif len(path_match) == 0 and self.parameters and self.parameters.paths:
+            raise ValueError("urlParams not defined for paths")
+
+        # Add query parameters if any
+        if self.parameters and self.parameters.queries and self.parameters.queries.queryParams and len(self.parameters.queries.queryParams) > 0:
+            is_complex = self.parameters.queries.mediaType and self.parameters.queries.mediaType != "none";
+            if not is_complex:
+                for p in self.parameters.queries.queryParams:
+                    pobj = {
+                        "in": "query",
+                        "name": p.name,
+                        "required": True,
+                        "schema": {
+                            "type": p.type,
+                        },
+                    }
+                    path_obj["parameters"].append(pobj)
+            else:
+                if not self.parameters.queries.name or len(self.parameters.queries.name) == 0:
+                    raise ValueError("Name field required for parameters with complex serialization")
+                
+                name = self.parameters.queries.name
+                properties = {}
+                required = []
+                for p in self.parameters.queries.queryParams:
+                    properties[p.name] = {
+                        "type": p.type,
+                    }
+                    required.append(p.name)
+                
+                object_definition = {
+                    "type": "object",
+                    "properties": properties,
+                    "required": required,
+                }
+                
+                if self.parameters.queries.isArray:
+                    schema = {
+                        "type": "array",
+                        "items": object_definition,
+                    }
+                    if self.parameters.queries.maxItems:
+                        schema["maxItems"] = self.parameters.queries.maxItems
+                    
+                    path_obj["parameters"].append({
+                        "in": "query",
+                        "name": name,
+                        "content": {
+                            self.parameters.queries.mediaType: {
+                                "schema": schema,
+                            },
+                        },
+                    })
+                else:
+                    path_obj["parameters"].append({
+                        "in": "query",
+                        "name": name,
+                        "content": {
+                            self.parameters.queries.mediaType: {
+                                "schema": object_definition,
+                            },
+                        },
+                    })
+
+        # Add request body
+        if self.requestBody and self.requestBody.mediaType != "none":
+            if self.method == OpenAPIMethodEnum.GET:
+                raise ValueError("GET methods cannot have a request body")
+            properties = {
+                prop.field: {"type": prop.type} for prop in self.requestBody.properties
+            }
+            required = [prop.field for prop in self.requestBody.properties]
+            object_definition = {
+                "type": "object",
+                "properties": properties,
+                "required": required,
+            }
+            if self.requestBody.isArray:
+                schema = {
+                    "type": "array",
+                    "items": object_definition,
+                }
+                if self.requestBody.name and len(self.requestBody.name) > 0:
+                    schema = {
+                        "type": "object",
+                        "properties": {
+                            self.requestBody.name: schema
+                        }
+                    }
+                if self.requestBody.maxItems:
+                    schema["maxItems"] = self.requestBody.maxItems
+                path_obj["requestBody"] = {
+                    "required": True,
+                    "content": {
+                        self.requestBody.mediaType: {
+                            "schema": schema
+                        }
+                    }
+                }
+            else:
+                path_obj["requestBody"] = {
+                    "required": True,
+                    "content": {
+                        self.requestBody.mediaType: {
+                            "schema": object_definition
+                        }
+                    }
+                }
+
+        # Add path object to spec
+        spec["paths"][url_pathname] = {self.method.value.lower(): path_obj}
+
+        try:
+            validate(spec) # type: ignore
+        except:
+            raise ValueError(f"Not valid 3.x OpenAPI schema")
+
+        # Return the final spec
+        return spec
+
+
+class ModelAPIExportSchema(BaseModel):
+    requestConfig: Optional[ModelAPIRequestConfigType] = Field(description="Request configuration for the API.", default=None)
+    response: OpenAPIResponseType = Field(description="Response configuration for the API.")
+    openapiSchema: dict = Field(description="Contains the openapi schema")
+    requestBody: Optional[Dict] = Field(description="Parameter mapping for request body", default=None)
+    parameters: Optional[Dict] = Field(description="Parameter mapping for path parameters", default=None)

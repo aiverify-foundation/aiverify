@@ -11,7 +11,7 @@ from ..lib.constants import ModelType, TestModelMode, TestModelFileType, TestMod
 from ..lib.file_utils import check_valid_filename, check_file_size
 from ..lib.filestore import save_test_model as fs_save_test_model, delete_test_model as fs_delete_test_model, get_test_model as fs_get_test_model
 from ..lib.database import get_db_session
-from ..schemas import TestModel, TestModelUpdate, TestModelAPIInput, load_examples
+from ..schemas import TestModel, TestModelUpdate, TestModelAPIInput, ModelAPIExportSchema, ModelAPIType, ModelAPIParametersMapping, load_examples
 from ..models import TestModelModel, TestResultModel
 from ..lib.test_engine import TestEngineValidator, TestEngineValidatorException
 
@@ -248,40 +248,6 @@ def upload_folder(
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.post("/modelapi", response_model=TestModel)
-def create_test_model_api(input_data: Annotated[
-                            TestModelAPIInput,
-                            Body(
-                                openapi_examples=model_api_examples
-                            )
-                        ], 
-                        session: Session = Depends(get_db_session)):
-    """
-    Endpoint to create a new TestModelModel from TestModelAPIInput.
-    """
-    try:
-        now = datetime.now(timezone.utc)
-        test_model = TestModelModel(
-            name=input_data.name,
-            description=input_data.description,
-            mode=TestModelMode.API,
-            model_type=input_data.modelType,
-            model_api=input_data.modelAPI.model_dump_json().encode("utf-8"),
-            status=TestModelStatus.Valid,
-            created_at=now,
-            updated_at=now
-        )
-
-        session.add(test_model)
-        session.commit()
-        return TestModel.from_model(test_model)
-    except HTTPException as e:
-        raise e
-    except Exception as e:
-        logger.error(f"Error creating test model: {e}")
-        raise HTTPException(status_code=500, detail="Internal server error")
-
-
 @router.get("/", response_model=List[TestModel])
 def list_test_models(session: Session = Depends(get_db_session)):
     """
@@ -312,7 +278,7 @@ def read_test_model(model_id: int, session: Session = Depends(get_db_session)):
         raise HTTPException(status_code=500, detail="Internal server error")
     
 
-@router.get("/{model_id}/download", response_class=Response)
+@router.get("/download/{model_id}", response_class=Response)
 def download_test_model(model_id: int, session: Session = Depends(get_db_session)):
     """
     Endpoint to download a specific test model by its ID.
@@ -368,6 +334,10 @@ def update_test_model(model_id: int, model_update: TestModelUpdate, session: Ses
             if test_model.mode != TestModelMode.API:
                 raise HTTPException(status_code=400, detail="Cannot update modelAPI field is mode is not API")
             test_model.model_api = model_update.modelAPI.model_dump_json().encode("utf-8")
+        if model_update.parameterMappings:
+            if test_model.mode != TestModelMode.API:
+                raise HTTPException(status_code=400, detail="Cannot update parameterMappings field is mode is not API")
+            test_model.parameter_mappings = model_update.parameterMappings.model_dump_json().encode('utf-8')
         test_model.updated_at = datetime.now(timezone.utc)
 
         session.commit()
@@ -403,4 +373,77 @@ def delete_test_model(model_id: int, session: Session = Depends(get_db_session))
         raise
     except Exception as e:
         logger.error(f"Error deleting test model with ID {model_id}: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router.post("/modelapi", response_model=TestModel)
+def create_test_model_api(input_data: Annotated[
+                            TestModelAPIInput,
+                            Body(
+                                openapi_examples=model_api_examples
+                            )
+                        ], 
+                        session: Session = Depends(get_db_session)):
+    """
+    Endpoint to create a new TestModelModel from TestModelAPIInput.
+    """
+    try:
+        now = datetime.now(timezone.utc)
+        test_model = TestModelModel(
+            name=input_data.name,
+            description=input_data.description,
+            mode=TestModelMode.API,
+            model_type=input_data.modelType,
+            model_api=input_data.modelAPI.model_dump_json().encode("utf-8"),
+            parameter_mappings=input_data.parameterMappings.model_dump_json().encode('utf-8') if input_data.parameterMappings else None,
+            status=TestModelStatus.Valid,
+            created_at=now,
+            updated_at=now
+        )
+
+        session.add(test_model)
+        session.commit()
+        return TestModel.from_model(test_model)
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logger.error(f"Error creating test model: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router.get("/exportModelAPI/{model_id}", response_model=ModelAPIExportSchema, response_model_exclude_unset=True)
+def export_test_model(model_id: int, session: Session = Depends(get_db_session)):
+    """
+    Endpoint to read a specific test model by its ID.
+    """
+    try:
+        test_model = session.query(TestModelModel).filter(TestModelModel.id == model_id).first()
+        if not test_model:
+            raise HTTPException(status_code=404, detail="Test model not found")
+        if test_model.status != TestModelStatus.Valid:
+            raise HTTPException(status_code=400, detail="Invalid model")
+        if test_model.mode != TestModelMode.API:
+            raise HTTPException(status_code=400, detail="Test model is not API mode")
+        
+        if test_model.model_api is None: # should not happen
+            raise HTTPException(status_code=500, detail="Invalid model API setting")
+        model_api = ModelAPIType.model_validate_json(test_model.model_api.decode('utf-8'))
+        openapi_schema = model_api.exportModelAPI()
+        exported_model = ModelAPIExportSchema(
+            requestConfig=model_api.requestConfig,
+            response=model_api.response,
+            openapiSchema=openapi_schema,
+            # parameterMappings=ModelAPIParametersMapping.model_validate_json(test_model.parameter_mappings.decode('utf-8')) if test_model.parameter_mappings else None,
+        )
+        if test_model.parameter_mappings:
+            mappings = ModelAPIParametersMapping.model_validate_json(test_model.parameter_mappings.decode('utf-8'))
+            if mappings.requestBody:
+                exported_model.requestBody = mappings.requestBody
+            if mappings.parameters:
+                exported_model.parameters = mappings.parameters
+        return exported_model
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error retrieving test model with ID {model_id}: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")

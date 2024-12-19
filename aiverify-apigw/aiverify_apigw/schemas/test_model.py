@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime
 
-from .model_api import ModelAPIType
+from .model_api import ModelAPIType, ModelAPIParametersMapping
 from ..models.test_model_model import TestModelModel
 from ..lib.constants import TestModelMode, TestModelFileType, TestModelStatus, ModelType
 
@@ -12,6 +12,7 @@ class TestModelAPIInput(BaseModel):
     description: Optional[str] = Field(description="Description of the model", max_length=256)
     modelType: ModelType = Field(description="Type of the model")
     modelAPI: ModelAPIType = Field(description="Model API configuration")
+    parameterMappings: Optional[ModelAPIParametersMapping] = Field(description="Parameter mappings", default=None)
 
 
 class TestModelUpdate(BaseModel):
@@ -19,6 +20,7 @@ class TestModelUpdate(BaseModel):
     description: Optional[str] = Field(description="Description of the model", max_length=256, default=None)
     modelType: Optional[ModelType] = Field(description="Type of the model", default=None)
     modelAPI: Optional[ModelAPIType] = Field(description="Model API Configuration", default=None)
+    parameterMappings: Optional[ModelAPIParametersMapping] = Field(description="Parameter mappings", default=None)
 
 
 class TestModel(BaseModel):
@@ -35,7 +37,8 @@ class TestModel(BaseModel):
     serializer: Optional[str] = Field(description="Serializer used for the model upload", default=None)
     modelFormat: Optional[str] = Field(description="Format of the model upload", default=None)
     # model api
-    modelAPI: Optional[ModelAPIType] = Field(description="Model API, if type is API", default=None)
+    modelAPI: Optional[ModelAPIType] = Field(description="Model API, if mode == API", default=None)
+    parameterMappings: Optional[ModelAPIParametersMapping] = Field(description="Parameter mappings if mode == API", default=None)
     # status
     status: TestModelStatus = Field(description="Status of the model file")
     errorMessages: Optional[str] = Field(description="Error messages related to the model", max_length=2048, default=None)
@@ -65,6 +68,7 @@ class TestModel(BaseModel):
             serializer=model.serializer,
             modelFormat=model.model_format,
             modelAPI=ModelAPIType.model_validate_json(model.model_api.decode('utf-8')) if model.model_api else None,
+            parameterMappings=ModelAPIParametersMapping.model_validate_json(model.parameter_mappings.decode('utf-8')) if model.parameter_mappings else None,
             status=model.status,
             errorMessages=model.error_message,
             created_at=model.created_at,
