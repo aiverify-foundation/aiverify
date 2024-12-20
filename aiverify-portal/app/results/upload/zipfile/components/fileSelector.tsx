@@ -1,14 +1,23 @@
 'use client';
 
 import React, { useImperativeHandle, useState } from 'react';
-import { FileUpload } from '@/app/results/upload/manual/components/types';
+import { ErrorWithMessage } from '@/app/errorTypes';
 import { uploadZipFile } from '@/app/results/upload/zipfile/utils/uploadZipFile';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import { ButtonVariant } from '@/lib/components/button';
 import { Button } from '@/lib/components/button';
 import { FileSelect } from '@/lib/components/fileSelect';
 import { cn } from '@/lib/utils/twmerge';
-import { flushSync } from 'react-dom';
+
+export type UploadStatus = 'idle' | 'uploading' | 'success' | 'error';
+
+export type FileUpload = {
+  file: File;
+  progress: number;
+  status: UploadStatus;
+  id: string;
+  error?: ErrorWithMessage;
+};
 export interface FileSelectorHandle {
   getFiles: () => FileUpload[];
   clearFiles: () => void;
@@ -29,6 +38,7 @@ export function FileSelector({
 }: FileSelectorProps) {
   const [fileUploads, setFileUploads] = useState<FileUpload[]>([]);
   const [uploaderState, setUploaderState] = useState<UploaderState>('new');
+  const [showErrors, setShowErrors] = useState(false);
 
   useImperativeHandle(ref, () => ({
     getFiles: () => fileUploads,
@@ -103,7 +113,6 @@ export function FileSelector({
                 ? {
                     ...upload,
                     progress,
-                    status: progress === 100 ? 'complete' : upload.status,
                   }
                 : upload
             );
@@ -114,18 +123,39 @@ export function FileSelector({
     });
 
     try {
-      await Promise.all(uploadPromises);
+      const results = await Promise.allSettled(uploadPromises);
+      let hasErrors = false;
+      const updatedUploads: FileUpload[] = fileUploads.map((upload, i) => {
+        if (results[i].status === 'rejected') {
+          hasErrors = true;
+          return {
+            ...upload,
+            status: 'error',
+            progress: 100,
+            error: results[i].reason,
+          };
+        }
+        return { ...upload, status: 'success', progress: 100 };
+      });
+      setFileUploads(updatedUploads);
+      if (hasErrors) {
+        setUploaderState('completedWithErrors');
+      } else {
+        setUploaderState('completed');
+      }
     } catch (error) {
-      console.error('Error uploading files:', error);
+      console.log('Unexpected error uploading files:', error);
       setUploaderState('completedWithErrors');
-    } finally {
-      setUploaderState('completed');
     }
   };
 
   function handleUploadMoreClick() {
     setUploaderState('new');
     setFileUploads([]);
+  }
+
+  function handleViewErrorsClick() {
+    setShowErrors((prev) => !prev);
   }
 
   return (
@@ -162,7 +192,7 @@ export function FileSelector({
           <ul className="flex w-full flex-col gap-2">
             {fileUploads.map((fileUpload) => {
               let statusDisplay = '';
-              if (fileUpload.status === 'complete') {
+              if (fileUpload.status === 'success') {
                 statusDisplay = 'Uploaded';
               } else if (fileUpload.status === 'uploading') {
                 statusDisplay = 'Uploading';
@@ -172,7 +202,7 @@ export function FileSelector({
               return (
                 <li
                   key={fileUpload.id}
-                  className="mb-3 flex w-full">
+                  className="mb-5 flex w-full">
                   <div className="flex w-full flex-col gap-2 text-[0.8rem]">
                     <div className="flex w-full justify-between">
                       <div className="flex items-center gap-2">
@@ -187,24 +217,37 @@ export function FileSelector({
                           {fileUpload.file.name}
                         </span>
                       </div>
-                      <span className="text-white">{statusDisplay}</span>
+                      <span
+                        className={cn(
+                          'text-white',
+                          fileUpload.status === 'error' && 'text-red-500'
+                        )}>
+                        {statusDisplay}
+                      </span>
                     </div>
                     <div className="h-1 w-full overflow-hidden rounded-sm bg-transparent">
                       <div
                         className={cn(
-                          'h-full w-full bg-blue-500 transition-[width] duration-300 ease-in-out',
-                          fileUpload.status === 'error' && 'bg-danger'
+                          'h-full w-full transition-[width] duration-300 ease-in-out',
+                          fileUpload.status === 'error'
+                            ? 'bg-red-500'
+                            : 'bg-blue-500'
                         )}
                         style={{ width: `${fileUpload.progress}%` }}
                       />
                     </div>
+                    {showErrors && fileUpload.status === 'error' ? (
+                      <div className="w-full text-right text-red-500">
+                        {fileUpload.error?.message}
+                      </div>
+                    ) : null}
                   </div>
                 </li>
               );
             })}
           </ul>
 
-          <div className="mt-8 flex justify-end">
+          <div className="mt-8 flex justify-end gap-2">
             {uploaderState === 'new' && fileUploads.length > 0 ? (
               <Button
                 variant={ButtonVariant.PRIMARY}
@@ -212,6 +255,14 @@ export function FileSelector({
                 text="Upload"
                 onClick={uploadFiles}
                 disabled={uploaderState !== 'new'}
+              />
+            ) : null}
+            {uploaderState === 'completedWithErrors' ? (
+              <Button
+                variant={ButtonVariant.SECONDARY}
+                size="md"
+                text="View Errors"
+                onClick={handleViewErrorsClick}
               />
             ) : null}
             {uploaderState === 'completed' ||

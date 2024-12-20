@@ -1,4 +1,6 @@
+import { ErrorWithMessage, PythonFastApiErrorDetail } from '@/app/errorTypes';
 import type { FileUpload } from '@/app/results/upload/manual/components/types';
+import { parseFastAPIError } from '@/lib/utils/parseFastAPIError';
 
 export type UploadRequestPayload = {
   fileUpload: FileUpload;
@@ -9,7 +11,7 @@ export async function uploadZipFile({
   fileUpload,
   onProgress,
 }: UploadRequestPayload) {
-  return new Promise<void>((resolve, reject) => {
+  return new Promise<string | ErrorWithMessage>((resolve, reject) => {
     const formData = new FormData();
     formData.append('file', fileUpload.file);
     const xhr = new XMLHttpRequest();
@@ -25,10 +27,11 @@ export async function uploadZipFile({
 
     xhr.onload = () => {
       if (xhr.status === 200) {
-        const response = JSON.parse(xhr.responseText);
-        resolve(response);
+        const result: string = JSON.parse(xhr.responseText);
+        resolve(result);
       } else {
-        reject(new Error('Upload failed'));
+        const result: PythonFastApiErrorDetail = JSON.parse(xhr.responseText);
+        reject(parseFastAPIError(result));
       }
     };
 
