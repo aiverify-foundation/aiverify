@@ -25,3 +25,63 @@ body {
   body {
   }
 }
+
+.ring
+{
+  @apply text-white;
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:80px;
+  height:80px;
+  background:transparent;
+  border:3px solid #3c3c3c;
+  border-radius:50%;
+  text-align:center;
+  line-height:80px;
+  font-family:sans-serif;
+  font-size:10px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  box-shadow:0 0 20px rgba(0,0,0,.5);
+}
+
+.ring:before
+{
+  content:'';
+  position:absolute;
+  top:-3px;
+  left:-3px;
+  width:80px;
+  height:80px;
+  border:3px solid transparent;
+  border-radius:50%;
+  animation:animateC 2s linear infinite;
+  @apply border-t-primary-50 border-r-primary-50;
+}
+
+.ring span
+{
+  display:block;
+  position:absolute;
+  top:calc(50% - 2px);
+  left:50%;
+  width:50%;
+  height:4px;
+  background:transparent;
+  transform-origin:left;
+  animation:animate 2s linear infinite;
+}
+
+.ring span:before
+{
+  @apply bg-primary-50;
+  content:'';
+  position:absolute;
+  width:16px;
+  height:16px;
+  border-radius:50%;
+  top:-6px;
+  right:-8px;
+}
