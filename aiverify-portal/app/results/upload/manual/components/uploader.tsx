@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import React, { useEffect } from 'react';
 import { useRef, useState } from 'react';
+import { FileUpload } from '@/app/results/upload/types';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import { Button, ButtonVariant } from '@/lib/components/button';
 import { Modal } from '@/lib/components/modal';
@@ -12,7 +13,6 @@ import { cn } from '@/lib/utils/twmerge';
 import { FileSelector, FileSelectorHandle } from './fileSelector';
 import { useCreateResult } from './hooks/useCreateResult';
 import { JsonEditorHandle } from './jsoneditor';
-import { FileUpload } from './types';
 
 const JsonEditor = dynamic(
   () => import('./jsoneditor').then((mod) => mod.JsonEditor),

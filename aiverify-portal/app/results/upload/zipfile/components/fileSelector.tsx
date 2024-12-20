@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useImperativeHandle, useState } from 'react';
-import { ErrorWithMessage } from '@/app/errorTypes';
+import { FileUpload } from '@/app/results/upload/types';
 import { uploadZipFile } from '@/app/results/upload/zipfile/utils/uploadZipFile';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import { ButtonVariant } from '@/lib/components/button';
@@ -9,15 +9,6 @@ import { Button } from '@/lib/components/button';
 import { FileSelect } from '@/lib/components/fileSelect';
 import { cn } from '@/lib/utils/twmerge';
 
-export type UploadStatus = 'idle' | 'uploading' | 'success' | 'error';
-
-export type FileUpload = {
-  file: File;
-  progress: number;
-  status: UploadStatus;
-  id: string;
-  error?: ErrorWithMessage;
-};
 export interface FileSelectorHandle {
   getFiles: () => FileUpload[];
   clearFiles: () => void;
