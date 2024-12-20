@@ -9,6 +9,7 @@ type FileSelectContextType = {
   inputRef: React.RefObject<HTMLInputElement>;
   isDragging: boolean;
   setIsDragging: (isDragging: boolean) => void;
+  disabled: boolean;
 };
 
 type FileSelectProps = {
@@ -16,6 +17,7 @@ type FileSelectProps = {
   children: React.ReactNode;
   multiple?: boolean;
   accept?: string;
+  disabled?: boolean;
 } & React.HTMLAttributes<HTMLDivElement>;
 
 // Context
@@ -36,6 +38,7 @@ function FileSelect({
   children,
   multiple = false,
   accept,
+  disabled = false,
   ...props
 }: FileSelectProps) {
   const [files, setFiles] = useState<File[]>([]);
@@ -58,6 +61,7 @@ function FileSelect({
     setIsDragging,
     multiple,
     accept,
+    disabled,
   };
 
   return (
@@ -91,7 +95,7 @@ type DropZoneProps = {
 };
 
 function DropZone({ children, className, style }: DropZoneProps) {
-  const { inputRef, setIsDragging, handleFiles } = useFileSelect();
+  const { inputRef, setIsDragging, handleFiles, disabled } = useFileSelect();
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -115,12 +119,12 @@ function DropZone({ children, className, style }: DropZoneProps) {
 
   return (
     <div
-      className={`${styles.dropZone} ${className}`}
+      className={`${styles.dropZone} ${className} ${disabled ? styles.disabled : ''}`}
       style={style}
-      onClick={handleClick}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}>
+      onClick={!disabled ? handleClick : undefined}
+      onDragOver={!disabled ? handleDragOver : undefined}
+      onDragLeave={!disabled ? handleDragLeave : undefined}
+      onDrop={!disabled ? handleDrop : undefined}>
       {children}
     </div>
   );

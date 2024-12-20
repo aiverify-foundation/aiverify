@@ -1,4 +1,4 @@
-export type UploadStatus = 'idle' | 'uploading' | 'success' | 'error';
+export type UploadStatus = 'idle' | 'uploading' | 'complete' | 'error';
 
 export type FileUpload = {
   file: File;

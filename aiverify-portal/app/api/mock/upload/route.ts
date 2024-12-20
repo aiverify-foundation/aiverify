@@ -1,8 +1,8 @@
+import { createWriteStream } from 'fs';
 import { writeFile } from 'fs/promises';
 import { join } from 'path';
-import { NextResponse } from 'next/server';
 import { Readable } from 'stream';
-import { createWriteStream } from 'fs';
+import { NextResponse } from 'next/server';
 
 const uploadDir = join(process.cwd(), 'public', 'uploads');
 

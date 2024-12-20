@@ -18,6 +18,7 @@ export async function uploadZipFile({
     xhr.upload.onprogress = (event) => {
       if (event.lengthComputable) {
         const percentComplete = (event.loaded / event.total) * 100;
+        console.log('percentComplete', percentComplete);
         onProgress(percentComplete);
       }
     };
