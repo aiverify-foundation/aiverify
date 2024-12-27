@@ -15,7 +15,7 @@ type Props = {
 
 export default function PluginsList({ plugins }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeFilter, setActiveFilter] = useState<string>('');
+  const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState('date');
   const [selectedResult, setSelectedResult] = useState<Plugin | null>(plugins[0] || null);
   const [results, setResults] = useState<Plugin[]>(plugins);
@@ -80,16 +80,24 @@ export default function PluginsList({ plugins }: Props) {
       ? fuse.search(searchQuery).map(plugin => plugin.item)
       : results;
 
-    if (activeFilter === 'stock') {
-      searchPlugins = searchPlugins.filter(plugin => plugin.is_stock);
-    } else if (activeFilter) {
-      searchPlugins = searchPlugins.filter(plugin =>
-        activeFilter === 'templates' ? plugin.templates.length > 0 :
-        activeFilter === 'widgets' ? plugin.widgets.length > 0 :
-        activeFilter === 'algorithms' ? plugin.algorithms.length > 0 :
-        activeFilter === 'inputBlocks' ? plugin.input_blocks.length > 0 :
-        true
-      );
+    // Filter by multiple active filters
+    if (activeFilters.length > 0) {
+      searchPlugins = searchPlugins.filter(plugin => {
+        return activeFilters.every(filter => {
+          switch (filter) {
+            case 'templates':
+              return plugin.templates.length > 0;
+            case 'widgets':
+              return plugin.widgets.length > 0;
+            case 'algorithms':
+              return plugin.algorithms.length > 0;
+            case 'inputBlocks':
+              return plugin.input_blocks.length > 0;
+            default:
+              return true;
+          }
+        });
+      });
     }
 
     if (sortBy === 'date-asc') {
@@ -101,10 +109,12 @@ export default function PluginsList({ plugins }: Props) {
     }
 
     return searchPlugins;
-  }, [searchQuery, activeFilter, sortBy, fuse, results]);
+  }, [searchQuery, activeFilters, sortBy, fuse, results]);
 
   const handleSearch = (query: string) => setSearchQuery(query);
-  const handleFilter = (filter: string) => setActiveFilter(filter);
+  const handleFilter = (filters: string[]) => {
+    setActiveFilters(filters);
+  };
   const handleSort = (newSortBy: string) => setSortBy(newSortBy);
 
   const handleSelectPlugin = (plugin: Plugin) => {
@@ -140,7 +150,7 @@ export default function PluginsList({ plugins }: Props) {
             onSearch={handleSearch}
             onFilter={handleFilter}
             onSort={handleSort}
-            activeFilter={activeFilter}
+            activeFilters={activeFilters}
           />
           <div className="flex-1 overflow-y-auto mt-2 scrollbar-hidden p-1">
             {loading ? (

@@ -10,16 +10,16 @@ import { Plugin } from '../utils/types';
 
 type FilterProps = {
   onSearch: (value: string) => void;
-  onFilter: (filter: string) => void;
+  onFilter: (filters: string[]) => void;
   onSort: (sortBy: string) => void;
-  activeFilter: string;
+  activeFilters: string[];
 };
 
 export default function PluginsFilters({
   onSearch,
   onFilter,
   onSort,
-  activeFilter,
+  activeFilters,
 }: FilterProps) {
 
   const pillFilters = [
@@ -47,9 +47,18 @@ export default function PluginsFilters({
   };
 
   const handlePillClick = (pillId: string) => {
-    const newSelection = selectedPill === pillId ? null : pillId; // Deselect if already selected
-    setSelectedPill(newSelection);
-    onFilter(newSelection || ''); // Pass the pill ID or reset to no filter
+    const newFilters = [...activeFilters];
+    const index = newFilters.indexOf(pillId);
+
+    if (index === -1) {
+      // Add filter
+      newFilters.push(pillId);
+    } else {
+      // Remove filter
+      newFilters.splice(index, 1);
+    }
+
+    onFilter(newFilters); // Pass the updated filters to parent
   };
   
 
@@ -64,7 +73,7 @@ export default function PluginsFilters({
             text={filter.label}
             textColor='white'
             variant={
-              activeFilter === filter.id
+              activeFilters.includes(filter.id)
                 ? ButtonVariant.PRIMARY
                 : ButtonVariant.OUTLINE
             }
