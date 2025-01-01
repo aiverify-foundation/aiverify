@@ -1,24 +1,24 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { TestModel } from '@/app/models/utils/types';
 
-const deleteModel = async (id: number): Promise<string> => {
+const deleteModel = async (id: string): Promise<string> => {
   const response = await fetch(`/api/test_models/${id}`, {
     method: 'DELETE',
   });
 
   if (!response.ok) {
     const errorData = await response.json();
-    console.log('response', response)
     throw new Error(errorData.detail || 'Failed to delete the model.');
   }
 
   return 'Model deleted successfully!';
 };
 
+
 export const useDeleteModel = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<string, Error, number, { previousModels?: TestModel[] }>({
+  return useMutation<string, Error, string, { previousModels?: TestModel[] }>({
     mutationFn: deleteModel,
     onMutate: async (id) => {
       // Cancel any outgoing refetches
@@ -31,7 +31,7 @@ export const useDeleteModel = () => {
       if (previousModels) {
         queryClient.setQueryData(
           ['models'],
-          previousModels.filter((model) => model.id !== id)
+          previousModels.filter((model) => String(model.id) !== id)
         );
       }
 

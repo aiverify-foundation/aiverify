@@ -15,7 +15,7 @@ interface DataGridProps {
   pageSizeOptions: number[];
   checkboxSelection?: boolean;
   onRowClick?: (row: any) => void;
-  onSelectionModelChange?: (selectedIds: number[]) => void;
+  onSelectionModelChange?: (selectedIds: string[]) => void;
 }
 
 export const DataGrid: React.FC<DataGridProps> = ({
@@ -26,14 +26,17 @@ export const DataGrid: React.FC<DataGridProps> = ({
   onRowClick,
   onSelectionModelChange,
 }) => {
-  const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
+  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(pageSizeOptions[0]);
   const [sortField, setSortField] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>(null);
   const [filters, setFilters] = useState<{ [key: string]: string | null }>({});
 
-  const handleCheckboxChange = (id: number) => {
+  const handleCheckboxChange = (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    // Prevent the row click event when checkbox is clicked
+    e.stopPropagation();
+
     const newSelectedRows = new Set(selectedRows);
     if (newSelectedRows.has(id)) {
       newSelectedRows.delete(id);
@@ -89,7 +92,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
   );
 
   return (
-    <div className="overflow-hidden border-blue-600 rounded-lg shadow-md bg-secondary-950 mt-4">
+    <div className="overflow-hidden border-blue-600 rounded-lg shadow-md bg-secondary-950">
       <table className="min-w-full table-auto">
         <thead className="bg-secondary-950 text-white">
           <tr>
@@ -134,16 +137,17 @@ export const DataGrid: React.FC<DataGridProps> = ({
           {paginatedRows.map((row) => (
             <tr
               key={row.id}
-              className="cursor-pointer hover:bg-secondary-800"
+              className="hover:bg-secondary-800"
               onClick={() => onRowClick?.(row)}
             >
               {checkboxSelection && (
-                <td className="text-center px-4 py-2">
+                <td className="text-center px-4 py-2"
+                onClick={(e) => e.stopPropagation()}>
                   <input
                     type="checkbox"
                     checked={selectedRows.has(row.id)}
-                    onChange={() => handleCheckboxChange(row.id)}
-                    className="h-4 w-4"
+                    onChange={(e) => handleCheckboxChange(row.id, e)}
+                    className="h-12 w-12 cursor-pointer"
                   />
                 </td>
               )}
