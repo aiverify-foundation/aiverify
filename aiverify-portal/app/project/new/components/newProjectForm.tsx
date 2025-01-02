@@ -2,7 +2,7 @@
 import { Button, ButtonVariant } from '@/lib/components/button';
 import { TextArea } from '@/lib/components/textArea';
 import { TextInput } from '@/lib/components/textInput';
-import { useFormState } from 'react-dom';
+import { useActionState } from 'react';
 import { ProjectFormValues } from '../../types';
 import { createProject } from '../../actions/createProject';
 import { FormState } from '@/app/types';
@@ -22,7 +22,7 @@ const initialFormValues: FormState<ProjectFormValues> = {
 
 function NewProjectForm() {
   const [showErrorModal, setShowErrorModal] = useState(false);
-  const [formState, action] = useFormState<
+  const [formState, action] = useActionState<
     FormState<ProjectFormValues>,
     FormData
   >(createProject, initialFormValues);
