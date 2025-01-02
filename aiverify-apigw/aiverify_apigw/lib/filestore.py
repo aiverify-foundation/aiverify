@@ -14,6 +14,7 @@ from typing import Any
 
 from .s3 import MyS3
 from .logging import logger
+from .file_utils import compute_file_hash
 
 
 s3 = None
@@ -72,6 +73,12 @@ base_plugin_dir = (
 )
 base_artifacts_dir = (
     base_data_dir.joinpath("artifacts") if isinstance(base_data_dir, Path) else urljoin(base_data_dir, "artifacts/")
+)
+base_models_dir = (
+    base_data_dir.joinpath("models") if isinstance(base_data_dir, Path) else urljoin(base_data_dir, "models/")
+)
+base_dataset_dir = (
+    base_data_dir.joinpath("datasets") if isinstance(base_data_dir, Path) else urljoin(base_data_dir, "datasets/")
 )
 
 
@@ -336,7 +343,7 @@ def delete_plugin(gid: str):
     try:
         if isinstance(folder, Path):
             if not folder.exists() or not folder.is_dir():
-                logger.warn(f"Asset {gid} path not found or not directory")
+                logger.warning(f"Asset {gid} path not found or not directory")
                 return
             shutil.rmtree(folder, ignore_errors=True)
         elif s3 is not None:
@@ -344,7 +351,7 @@ def delete_plugin(gid: str):
             s3.delete_objects_under_prefix(folder)
 
     except Exception as e:
-        logger.warn(f"Unable to delete folder {folder}: {e}")
+        logger.warning(f"Unable to delete folder {folder}: {e}")
 
 
 def delete_all_plugins():
@@ -358,7 +365,7 @@ def delete_all_plugins():
             s3.delete_objects_under_prefix(base_plugin_dir)
 
     except Exception as e:
-        logger.warn(f"Unable to delete folder {base_plugin_dir}: {e}")
+        logger.warning(f"Unable to delete folder {base_plugin_dir}: {e}")
 
 
 def get_artifacts_folder(test_result_id: str):
@@ -407,3 +414,185 @@ def get_artifact(test_result_id: str, filename: str):
         key = urljoin(folder, filename)
         data = s3.get_object(key)
         return data
+
+
+def get_model_path(filename: str, subfolder: str | None=None):
+    if isinstance(base_models_dir, Path):
+        folder = base_models_dir.joinpath(subfolder) if subfolder else base_models_dir
+        if not folder.exists():
+            folder.mkdir(parents=True, exist_ok=True)
+        return folder.joinpath(filename)
+    else:
+        folder = urljoin(base_models_dir, f"{subfolder}/") if subfolder else base_models_dir
+        return urljoin(folder, filename)
+
+
+def save_test_model(source_path: Path) -> str:
+    target_path = get_model_path(source_path.name)
+    logger.debug(f"Save test model from {source_path} to {target_path}")
+
+    if source_path.is_dir():
+        # for folders, zip the content as well
+        (zip_content, filehash) = zip_folder(source_path)
+        zip_filename = f"{source_path.name}.zip"
+        hash_filename = f"{source_path.name}.hash"
+        if isinstance(target_path, Path):
+            shutil.copytree(source_path, target_path, dirs_exist_ok=True)
+            with open(target_path.parent.joinpath(zip_filename), "wb") as fp:
+                fp.write(zip_content.read())
+            with open(target_path.parent.joinpath(hash_filename), "w") as fp:
+                fp.write(filehash)
+        elif s3 is not None:
+            s3.upload_directory_to_s3(source_path, target_path)
+            s3.put_object(zip_filename, zip_content)
+            s3.put_object(hash_filename, filehash)
+        return filehash
+    else:
+        filehash = compute_file_hash(source_path)
+        if isinstance(target_path, Path):
+            shutil.copy(source_path, target_path)
+        elif s3 is not None:
+            s3.upload_file(source_path.as_posix(), target_path)
+        return filehash
+
+
+def get_test_model(filename: str):
+    model_path = get_model_path(filename)
+    if not check_relative_to_base(base_models_dir, filename):
+        raise FileStoreError(f"Invalid filename {filename}")
+    if isinstance(model_path, Path):
+        if not model_path.exists():
+            raise FileNotFoundError(f"File {filename} is not found")
+        if model_path.is_file():
+            with open(model_path, "rb") as fp:
+                data = fp.read()
+            return data
+        else:
+            # check for zip
+            zip_path = model_path.parent.joinpath(f"{model_path.name}.zip")
+            if zip_path.exists():
+                with open(zip_path, "rb") as fp:
+                    data = fp.read()
+                return data
+            else:
+                raise FileNotFoundError(f"File {filename} is not found")
+    elif s3 is not None:
+        if s3.check_s3_object_exists(model_path):
+            return s3.get_object(model_path)
+        elif s3.check_s3_prefix_exists(model_path):
+            return s3.get_object(f"{model_path}.zip")
+        else:
+            raise FileNotFoundError(f"File {filename} is not found")
+
+
+def delete_test_model(filename: str):
+    model_path = get_model_path(filename)
+    if not check_relative_to_base(base_models_dir, filename):
+        raise FileStoreError(f"Invalid filename {filename}")
+    if isinstance(model_path, Path):
+        if not model_path.exists():
+            return
+        if model_path.is_dir():
+            shutil.rmtree(model_path, ignore_errors=True)
+            model_path.parent.joinpath(f"{model_path.name}.zip").unlink(missing_ok=True)
+            model_path.parent.joinpath(f"{model_path}.hash").unlink(missing_ok=True)
+        else:
+            model_path.unlink()
+    elif s3 is not None:
+        if s3.check_s3_prefix_exists(model_path):
+            s3.delete_objects_under_prefix(model_path)
+            s3.delete_object(f"{model_path}.zip")
+            s3.delete_object(f"{model_path}.hash")
+        if s3.check_s3_object_exists(model_path):
+            s3.delete_object(model_path)
+
+
+def get_dataset_path(filename: str, subfolder: str | None=None):
+    if isinstance(base_dataset_dir, Path):
+        folder = base_dataset_dir.joinpath(subfolder) if subfolder else base_dataset_dir
+        if not folder.exists():
+            folder.mkdir(parents=True, exist_ok=True)
+        return folder.joinpath(filename)
+    else:
+        folder = urljoin(base_dataset_dir, f"{subfolder}/") if subfolder else base_dataset_dir
+        return urljoin(folder, filename)
+
+
+def save_test_dataset(source_path: Path) -> str:
+    target_path = get_dataset_path(source_path.name)
+    logger.debug(f"Save test dataset from {source_path} to {target_path}")
+
+    if source_path.is_dir():
+        # for folders, zip the content as well
+        (zip_content, filehash) = zip_folder(source_path)
+        zip_filename = f"{source_path.name}.zip"
+        hash_filename = f"{source_path.name}.hash"
+        if isinstance(target_path, Path):
+            shutil.copytree(source_path, target_path, dirs_exist_ok=True)
+            with open(target_path.parent.joinpath(zip_filename), "wb") as fp:
+                fp.write(zip_content.read())
+            with open(target_path.parent.joinpath(hash_filename), "w") as fp:
+                fp.write(filehash)
+        elif s3 is not None:
+            s3.upload_directory_to_s3(source_path, target_path)
+            s3.put_object(zip_filename, zip_content)
+            s3.put_object(hash_filename, filehash)
+        return filehash
+    else:
+        filehash = compute_file_hash(source_path)
+        if isinstance(target_path, Path):
+            shutil.copy(source_path, target_path)
+        elif s3 is not None:
+            s3.upload_file(source_path.as_posix(), target_path)
+        return filehash
+    
+
+def get_test_dataset(filename: str):
+    dataset_path = get_dataset_path(filename)
+    if not check_relative_to_base(base_dataset_dir, filename):
+        raise FileStoreError(f"Invalid filename {filename}")
+    if isinstance(dataset_path, Path):
+        if not dataset_path.exists():
+            raise FileNotFoundError(f"File {filename} is not found")
+        if dataset_path.is_file():
+            with open(dataset_path, "rb") as fp:
+                data = fp.read()
+            return data
+        else:
+            # check for zip
+            zip_path = dataset_path.parent.joinpath(f"{dataset_path.name}.zip")
+            if zip_path.exists():
+                with open(zip_path, "rb") as fp:
+                    data = fp.read()
+                return data
+            else:
+                raise FileNotFoundError(f"File {filename} is not found")
+    elif s3 is not None:
+        if s3.check_s3_object_exists(dataset_path):
+            return s3.get_object(dataset_path)
+        elif s3.check_s3_prefix_exists(dataset_path):
+            return s3.get_object(f"{dataset_path}.zip")
+        else:
+            raise FileNotFoundError(f"File {filename} is not found")
+
+
+def delete_test_dataset(filename: str):
+    dataset_path = get_dataset_path(filename)
+    if not check_relative_to_base(base_dataset_dir, filename):
+        raise FileStoreError(f"Invalid filename {filename}")
+    if isinstance(dataset_path, Path):
+        if not dataset_path.exists():
+            return
+        if dataset_path.is_dir():
+            shutil.rmtree(dataset_path, ignore_errors=True)
+            dataset_path.parent.joinpath(f"{dataset_path.name}.zip").unlink(missing_ok=True)
+            dataset_path.parent.joinpath(f"{dataset_path}.hash").unlink(missing_ok=True)
+        else:
+            dataset_path.unlink()
+    elif s3 is not None:
+        if s3.check_s3_prefix_exists(dataset_path):
+            s3.delete_objects_under_prefix(dataset_path)
+            s3.delete_object(f"{dataset_path}.zip")
+            s3.delete_object(f"{dataset_path}.hash")
+        if s3.check_s3_object_exists(dataset_path):
+            s3.delete_object(dataset_path)

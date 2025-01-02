@@ -41,6 +41,7 @@ export const colors = {
   },
 };
 export const danger = 'var(--color-danger)';
+export const success = 'var(--color-success)';
 export const white = 'var(--color-white)';
 export const black = 'var(--color-black)';
 export const transparent = 'transparent';

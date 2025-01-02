@@ -13,7 +13,7 @@ def _create_mock_test_dataset():
     test_dataset = TestDatasetModel(
         name=faker.name(),
         status=TestDatasetStatus.Valid,
-        filepath=f"file:///examples/data/{filename}",
+        # filepath=f"file:///examples/data/{filename}",
         filename=filename,
         file_type=TestDatasetFileType.File,
     )

@@ -17,7 +17,7 @@ def _create_mock_test_model():
         mode=TestModelMode.Upload,
         model_type=faker.random_element(model_types),
         status=TestModelStatus.Valid,
-        filepath=f"file:///examples/model/{filename}",
+        # filepath=f"file:///examples/model/{filename}",
         filename=filename,
         created_at=fake_date,
         updated_at=fake_date,

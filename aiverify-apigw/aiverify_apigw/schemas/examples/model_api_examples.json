@@ -1,0 +1,419 @@
+{
+  "bearer_authentication": {
+    "summary": "Example Bearer Authentication",
+    "description": "Example with Bearer Authentication",
+    "value": {
+      "name": "Example Bearer Authentication",
+      "description": "Example of Model API with Bearer Authentication",
+      "modelType": "regression",
+      "modelAPI": {
+        "method": "POST",
+        "url": "https://localhost:5000/predict",
+        "authType": "Bearer Token",
+        "authTypeConfig": {
+          "token": "sample_token"
+        },
+        "requestBody": {
+          "mediaType": "application/x-www-form-urlencoded",
+          "isArray": false,
+          "properties": [
+            {
+              "field": "age",
+              "type": "integer"
+            },
+            {
+              "field": "gender",
+              "type": "integer"
+            },
+            {
+              "field": "race",
+              "type": "integer"
+            },
+            {
+              "field": "income",
+              "type": "integer"
+            },
+            {
+              "field": "employment",
+              "type": "integer"
+            },
+            {
+              "field": "employment_length",
+              "type": "integer"
+            },
+            {
+              "field": "total_donated",
+              "type": "integer"
+            },
+            {
+              "field": "num_donation",
+              "type": "integer"
+            }
+          ]
+        },
+        "response": {
+          "statusCode": 200,
+          "mediaType": "text/plain",
+          "schema": {
+            "type": "integer"
+          }
+        },
+        "requestConfig": {
+          "sslVerify": false,
+          "connectionTimeout": -1,
+          "rateLimit": -1,
+          "rateLimitTimeout": -1,
+          "batchLimit": -1,
+          "connectionRetries": 3,
+          "maxConnections": -1,
+          "batchStrategy": "none"
+        }
+      },
+      "parameterMappings": {
+        "requestBody": {
+          "age": "age",
+          "gender": "gender",
+          "race": "race",
+          "income": "income",
+          "employment": "employment",
+          "employment_length": "employment_length",
+          "total_donated": "total_donated_amount",
+          "num_donation": "number_of_donation"
+        }
+      }
+    }
+  },
+  "basic_authentication": {
+    "summary": "Example Basic Authentication",
+    "description": "Example of Model API with Basic Authentication",
+    "value": {
+      "name": "Example Basic Authentication",
+      "description": "Example with Basic Authentication",
+      "modelType": "regression",
+      "modelAPI": {
+        "method": "POST",
+        "url": "https://localhost:5000/predict",
+        "authType": "Basic Auth",
+        "authTypeConfig": {
+          "username": "test",
+          "password": "p@ssword"
+        },
+        "requestBody": {
+          "mediaType": "application/x-www-form-urlencoded",
+          "isArray": false,
+          "properties": [
+            {
+              "field": "age",
+              "type": "integer"
+            },
+            {
+              "field": "gender",
+              "type": "integer"
+            },
+            {
+              "field": "race",
+              "type": "integer"
+            },
+            {
+              "field": "income",
+              "type": "integer"
+            },
+            {
+              "field": "employment",
+              "type": "integer"
+            },
+            {
+              "field": "employment_length",
+              "type": "integer"
+            },
+            {
+              "field": "total_donated",
+              "type": "integer"
+            },
+            {
+              "field": "num_donation",
+              "type": "integer"
+            }
+          ]
+        },
+        "response": {
+          "statusCode": 200,
+          "mediaType": "text/plain",
+          "schema": {
+            "type": "integer"
+          }
+        },
+        "requestConfig": {
+          "sslVerify": false,
+          "connectionTimeout": -1,
+          "rateLimit": -1,
+          "rateLimitTimeout": -1,
+          "batchLimit": -1,
+          "connectionRetries": 3,
+          "maxConnections": -1,
+          "batchStrategy": "none"
+        }
+      },
+      "parameterMappings": {
+        "requestBody": {
+          "age": "age",
+          "gender": "gender",
+          "race": "race",
+          "income": "income",
+          "employment": "employment",
+          "employment_length": "employment_length",
+          "total_donated": "total_donated_amount",
+          "num_donation": "number_of_donation"
+        }
+      }
+    }
+  },
+  "form_data_request_body": {
+    "summary": "POST request with form-data request body",
+    "description": "Example POST request with form-data request body",
+    "value": {
+      "name": "POST request with form-data request body",
+      "description": "Example POST request with form-data request body",
+      "modelType": "regression",
+      "modelAPI": {
+        "method": "POST",
+        "url": "https://localhost:5000/predict/tc004",
+        "authType": "No Auth",
+        "requestBody": {
+          "mediaType": "multipart/form-data",
+          "isArray": false,
+          "properties": [
+            {
+              "field": "age",
+              "type": "integer"
+            },
+            {
+              "field": "gender",
+              "type": "integer"
+            },
+            {
+              "field": "race",
+              "type": "integer"
+            },
+            {
+              "field": "income",
+              "type": "integer"
+            },
+            {
+              "field": "employment",
+              "type": "integer"
+            },
+            {
+              "field": "employment_length",
+              "type": "integer"
+            },
+            {
+              "field": "total_donated",
+              "type": "integer"
+            },
+            {
+              "field": "num_donation",
+              "type": "integer"
+            }
+          ]
+        },
+        "response": {
+          "statusCode": 200,
+          "mediaType": "text/plain",
+          "schema": {
+            "type": "integer"
+          }
+        },
+        "requestConfig": {
+          "sslVerify": false,
+          "connectionTimeout": -1,
+          "rateLimit": -1,
+          "rateLimitTimeout": -1,
+          "batchLimit": -1,
+          "connectionRetries": 3,
+          "maxConnections": -1,
+          "batchStrategy": "none"
+        }
+      },
+      "parameterMappings": {
+        "requestBody": {
+          "age": "age",
+          "gender": "gender",
+          "race": "race",
+          "income": "income",
+          "employment": "employment",
+          "employment_length": "employment_length",
+          "total_donated": "total_donated_amount",
+          "num_donation": "number_of_donation"
+        }
+      }
+    }
+  },
+  "query_parameters": {
+    "summary": "GET request with query parameters",
+    "description": "Example GET request with query parameters",
+    "value": {
+      "name": "GET request with query parameters",
+      "description": "Example GET request with query parameters",
+      "modelType": "regression",
+      "modelAPI": {
+        "method": "GET",
+        "url": "https://localhost:5000/predict/tc005",
+        "authType": "No Auth",
+        "parameters": {
+          "queries": {
+            "mediaType": "none",
+            "isArray": false,
+            "queryParams": [
+              {
+                "name": "age",
+                "type": "integer"
+              },
+              {
+                "name": "gender",
+                "type": "integer"
+              },
+              {
+                "name": "race",
+                "type": "integer"
+              },
+              {
+                "name": "income",
+                "type": "integer"
+              },
+              {
+                "name": "employment",
+                "type": "integer"
+              },
+              {
+                "name": "employment_length",
+                "type": "integer"
+              },
+              {
+                "name": "total_donated",
+                "type": "integer"
+              },
+              {
+                "name": "num_donation",
+                "type": "integer"
+              }
+            ]
+          }
+        },
+        "response": {
+          "statusCode": 200,
+          "mediaType": "text/plain",
+          "schema": {
+            "type": "integer"
+          }
+        },
+        "requestConfig": {
+          "sslVerify": false,
+          "connectionTimeout": -1,
+          "rateLimit": -1,
+          "rateLimitTimeout": -1,
+          "batchLimit": -1,
+          "connectionRetries": 3,
+          "maxConnections": -1,
+          "batchStrategy": "none"
+        }
+      },
+      "parameterMappings": {
+        "parameters": {
+          "age": "age",
+          "gender": "gender",
+          "race": "race",
+          "income": "income",
+          "employment": "employment",
+          "employment_length": "employment_length",
+          "total_donated": "total_donated_amount",
+          "num_donation": "number_of_donation"
+        }
+      }
+    }
+  },
+  "path_parameters": {
+    "summary": "GET request with path parameters",
+    "description": "Example GET request with path parameters",
+    "value": {
+      "name": "GET request with path parameters",
+      "description": "Example GET request with path parameters",
+      "modelType": "regression",
+      "modelAPI": {
+        "method": "GET",
+        "url": "https://localhost:5000/predict/tc006",
+        "urlParams": "/{gender}/{race}/{age}/{income}/{employment}/{employment_length}/{total_donated}/{num_donation}",
+        "authType": "No Auth",
+        "parameters": {
+          "paths": {
+            "mediaType": "none",
+            "isArray": false,
+            "pathParams": [
+              {
+                "name": "age",
+                "type": "integer"
+              },
+              {
+                "name": "gender",
+                "type": "integer"
+              },
+              {
+                "name": "race",
+                "type": "integer"
+              },
+              {
+                "name": "income",
+                "type": "integer"
+              },
+              {
+                "name": "employment",
+                "type": "integer"
+              },
+              {
+                "name": "employment_length",
+                "type": "integer"
+              },
+              {
+                "name": "total_donated",
+                "type": "integer"
+              },
+              {
+                "name": "num_donation",
+                "type": "integer"
+              }
+            ]
+          }
+        },
+        "response": {
+          "statusCode": 200,
+          "mediaType": "text/plain",
+          "schema": {
+            "type": "integer"
+          }
+        },
+        "requestConfig": {
+          "sslVerify": false,
+          "connectionTimeout": -1,
+          "rateLimit": -1,
+          "rateLimitTimeout": -1,
+          "batchLimit": -1,
+          "connectionRetries": 3,
+          "maxConnections": -1,
+          "batchStrategy": "none"
+        }
+      },
+      "parameterMappings": {
+        "parameters": {
+          "age": "age",
+          "gender": "gender",
+          "race": "race",
+          "income": "income",
+          "employment": "employment",
+          "employment_length": "employment_length",
+          "total_donated": "total_donated_amount",
+          "num_donation": "number_of_donation"
+        }
+      }
+    }
+  }
+}
