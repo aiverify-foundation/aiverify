@@ -3,6 +3,7 @@ import { ZodError, z } from 'zod';
 import { formatZodSchemaErrors } from '@/lib/utils/formatZodSchemaErrors';
 import type { ProjectFormValues } from '../types';
 import { FormState } from '@/app/types';
+import { redirect } from 'next/navigation';
 
 const projectFormSchema = z.object({
   name: z.string().min(1, 'Name cannot be empty'),
@@ -53,9 +54,5 @@ export async function createProject(
     };
   }
 
-  return {
-    formStatus: 'success',
-    formErrors: undefined,
-    ...newProjectData,
-  };
+  redirect('/templates');
 }
