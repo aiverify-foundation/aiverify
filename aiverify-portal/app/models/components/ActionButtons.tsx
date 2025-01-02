@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 const ActionButtons: React.FC = () => (
   <div className="flex">
-    <Link href="/home">
+    <Link href="/models/upload">
       <Button
         pill
         textColor="white"
