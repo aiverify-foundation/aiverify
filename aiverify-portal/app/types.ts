@@ -30,4 +30,34 @@ type TestResults = {
   updated_at: string;
 };
 
-export type { Project, TestResults };
+type DataColumn = {
+  name: string;
+  datatype: string;
+  label: string;
+};
+
+type Dataset = {
+  id: number;
+  name: string;
+  description: string;
+  fileType: string;
+  filename: string;
+  zip_hash: string;
+  size: number;
+  serializer: string;
+  dataFormat: string;
+  numRows: number;
+  numCols: number;
+  dataColumns: DataColumn[];
+  status: string;
+  errorMessages: string;
+  created_at: string;
+  updated_at: string;
+};
+
+type FormState<T = Record<string, string | number>> = {
+  formStatus: string;
+  formErrors: Record<string, string[]> | undefined;
+} & Partial<T>;
+
+export type { Project, TestResults, Dataset, FormState };
