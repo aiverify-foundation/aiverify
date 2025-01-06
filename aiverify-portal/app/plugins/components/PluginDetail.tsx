@@ -213,7 +213,7 @@ export default function PluginDetail({ plugin, onDelete }: Props) {
         )}
 
         {/* Tab Content */}
-        <div className="flex-1 overflow-y-auto scrollbar-hidden">
+        <div className="flex-1 overflow-y-auto p-1 scrollbar-hidden">
           <div>
           {activeTab === 'widgets' && (
             <div>
