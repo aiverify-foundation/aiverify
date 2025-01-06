@@ -131,6 +131,8 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
                         value={folderName}
                         onChange={(e) => setFolderName(e.target.value)}
                         required
+                        maxLength={128}
+                        minLength={1}
                         className="w-full text-black border border-gray-300 rounded-md p-2"
                         />
                         </div>
@@ -146,15 +148,6 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
                             <option value="regression">Regression</option>
                             <option value="classification">Classification</option>
                             </select>
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-white font-medium">Subfolder:</label>
-                            <input
-                            type="text"
-                            value={subfolder}
-                            onChange={(e) => setSubfolder(e.target.value)}
-                            className="w-full text-black border border-gray-300 rounded-md p-2"
-                            />
                         </div>
                     </div>
                 <h3 className="text-lg font-medium text-white mb-2 mt-2">Selected Files:</h3>

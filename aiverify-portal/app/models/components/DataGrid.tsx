@@ -7,12 +7,13 @@ interface Column {
   headerName: string;
   sortable?: boolean;
   filterable?: boolean;
+  renderCell?: (row: any) => React.ReactNode;
 }
 
 interface DataGridProps {
   rows: any[];
   columns: Column[];
-  pageSizeOptions: number[];
+  pageSizeOptions: (number | 'All')[];
   checkboxSelection?: boolean;
   onRowClick?: (row: any) => void;
   onSelectionModelChange?: (selectedIds: string[]) => void;
@@ -28,7 +29,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
 }) => {
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize, setPageSize] = useState(pageSizeOptions[0]);
+  const [pageSize, setPageSize] = useState(pageSizeOptions.includes('All') ? 'All' : pageSizeOptions[0]);
   const [sortField, setSortField] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>(null);
   const [filters, setFilters] = useState<{ [key: string]: string | null }>({});
@@ -50,7 +51,6 @@ export const DataGrid: React.FC<DataGridProps> = ({
       onSelectionModelChange(Array.from(newSelectedRows));
     }
   };
-
 
   const handleHeaderClick = (field: string) => {
     if (sortField === field) {
@@ -86,13 +86,14 @@ export const DataGrid: React.FC<DataGridProps> = ({
     );
   }, [sortedRows, filters]);
 
-  const paginatedRows = filteredRows.slice(
-    currentPage * pageSize,
-    (currentPage + 1) * pageSize
-  );
+  const paginatedRows = pageSize === 'All' 
+    ? filteredRows // If 'All' is selected, show all rows without pagination
+    : filteredRows.slice(currentPage * Number(pageSize), (currentPage + 1) * Number(pageSize));
+
+  const pageSizeOptionsWithAll = ['All', ...pageSizeOptions.filter((option) => option !== 'All')];
 
   return (
-    <div className="overflow-hidden border-blue-600 rounded-lg shadow-md bg-secondary-950">
+    <div className="overflow-hidden border-secondary-300 rounded-lg shadow-md bg-secondary-950">
       <table className="min-w-full table-auto">
         <thead className="bg-secondary-950 text-white">
           <tr>
@@ -142,7 +143,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
             >
               {checkboxSelection && (
                 <td className="text-center px-4 py-2"
-                onClick={(e) => e.stopPropagation()}>
+                  onClick={(e) => e.stopPropagation()}>
                   <input
                     type="checkbox"
                     checked={selectedRows.has(row.id)}
@@ -153,7 +154,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
               )}
               {columns.map((col) => (
                 <td key={col.field} className="px-4 py-3 border-b border-secondary-500 text-white">
-                  {row[col.field]}
+                  {col.renderCell ? col.renderCell(row) : row[col.field]}
                 </td>
               ))}
             </tr>
@@ -161,40 +162,43 @@ export const DataGrid: React.FC<DataGridProps> = ({
         </tbody>
       </table>
       <div className="flex justify-between items-center px-5 py-2 bg-secondary-950 mt-12 mb-2">
-      <div>
+        <div>
           <select
             value={pageSize}
             onChange={(e) => {
-              setPageSize(Number(e.target.value));
-              setCurrentPage(0);
+              const selectedValue = e.target.value;
+              setPageSize(selectedValue === 'All' ? 'All' : Number(selectedValue)); 
+              setCurrentPage(0);  // Reset to the first page whenever the page size changes
             }}
             className="ml-2 px-2 py-1 border rounded-lg bg-white text-secondary-950"
           >
-            {pageSizeOptions.map((size) => (
+            {pageSizeOptionsWithAll.map((size) => (
               <option key={size} value={size}>
-                {size}
+                {size === 'All' ? 'All' : size}
               </option>
             ))}
           </select>
         </div>
-        <div>
-          {Array.from(
-            { length: Math.ceil(filteredRows.length / pageSize) },
-            (_, idx) => idx
-          ).map((page) => (
-            <button
-              key={page}
-              onClick={() => setCurrentPage(page)}
-              className={`mx-1 px-3 py-1 rounded-lg border ${
-                page === currentPage
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white text-blue-600'
-              }`}
-            >
-              {page + 1}
-            </button>
-          ))}
-        </div>
+        {pageSize !== 'All' && (
+          <div>
+            {Array.from(
+              { length: Math.ceil(filteredRows.length / Number(pageSize)) },
+              (_, idx) => idx
+            ).map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`mx-1 px-3 py-1 rounded-lg border ${
+                  page === currentPage
+                    ? 'bg-primary-600 text-secondary-950'
+                    : 'bg-secondary-900 text-white'
+                }`}
+              >
+                {page + 1}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

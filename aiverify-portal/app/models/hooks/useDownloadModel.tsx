@@ -6,6 +6,7 @@ const fetchModelData = async (id: string): Promise<any> => {
         console.log("reponse, ", response.ok)
         // Check if the response is a valid JSON
         if (!response.ok) {
+            console.log('response: ', response)
             throw new Error(`Failed to fetch model data: ${response.statusText}`);
         }
         

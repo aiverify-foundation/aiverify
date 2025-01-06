@@ -19,7 +19,7 @@ export default function ModelsFilters({
 }: FilterProps) {
 
   const pillFilters = [
-    { id: 'file', label: 'MODEL' },
+    { id: 'model', label: 'MODEL' },
     { id: 'pipeline', label: 'PIPELINE' },
     { id: 'api', label: 'MODEL API' },
   ];

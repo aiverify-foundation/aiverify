@@ -27,11 +27,37 @@ const ModelList: React.FC<Props> = ({ models }) => {
     const [loading, setLoading] = useState(false); // for loading animation
     const [selectedModel, setSelectedModel] = useState<TestModel | null>(null);
 
+    const getTypeLabel = (fileType?: string, mode?: string) => {
+        if (!fileType) {
+          return mode === 'api' ? 'Model API' : mode;
+        }
+        switch (fileType) {
+          case 'file':
+            return 'Model';
+          case 'folder':
+            return 'Model';
+          case 'pipeline':
+            return 'Pipeline';
+          default:
+            return fileType;
+        }
+      };
+      
     const columns = [
-    { field: "fileType", headerName: "Type", sortable: false },
     { field: "name", headerName: "Name", sortable: true },
     { field: "modelType", headerName: "Model Type", sortable: true },
-    { field: "updated_at", headerName: "Updated At", sortable: true },
+    {
+        field: 'type',
+        headerName: 'Type',
+        renderCell: (model: TestModel) => getTypeLabel(model.fileType, model.mode) // Use renderCell here
+      },
+    {
+        field: "updated_at", 
+        headerName: "Updated At", 
+        sortable: true,
+        renderCell: (model: TestModel) => 
+            new Date(model.updated_at).toLocaleString('en-GB')
+    },    
     ];
 
     const fuse = useMemo(() => {
@@ -64,43 +90,51 @@ const ModelList: React.FC<Props> = ({ models }) => {
       
         // if filtering selected
         if (activeFilter) {
-          searchModels = searchModels.filter(model => 
-            model.fileType === activeFilter.toLowerCase() ||
-            model.mode === activeFilter.toLowerCase()
-          );
-        }
+            if (activeFilter === 'model') {
+              // If 'MODEL' is selected, filter for both 'file' and 'folder'
+              searchModels = searchModels.filter(model => 
+                model.fileType === 'file' || model.fileType === 'folder'
+              );
+            } else {
+              // Otherwise, filter by active filter
+              searchModels = searchModels.filter(model =>
+                model.fileType === activeFilter.toLowerCase() ||
+                model.mode === activeFilter.toLowerCase()
+              );
+            }
+          }
       
         return searchModels;
       }, [searchQuery, activeFilter, fuse, results]);
 
-      const deleteModelMutation = useDeleteModel();
+    const deleteModelMutation = useDeleteModel();
 
-      const handleDelete = () => {
-        if (selectedRows.size === 0) return;
-        setModalMessage('Are you sure you want to delete the selected model(s)?');
-        setIsConfirmation(true);
-        setIsModalVisible(true);
-      };
-    
-      const confirmDelete = async () => {
-        setIsConfirmation(false); // Switch modal to result message mode
-        setLoading(true); // Start loading state
-        try {
-            const ids = Array.from(selectedRows);
-            await Promise.all(ids.map((id) => deleteModelMutation.mutateAsync(id)));
-            setTimeout(() => {
-                const updatedResults = results.filter((model) => !ids.includes(String(model.id)));
-                setResults(updatedResults); // Update the data with deleted models removed
-                setModalMessage('Models deleted successfully!');
-                setSelectedRows(new Set()); // Clear selection after successful deletion
-                setLoading(false); // End loading state
-                }, 2000);
-        } catch (error) {
-            console.error('Failed to delete models:', error);
-            setModalMessage('Failed to delete the models.');
-            setLoading(false);
-        }
-      };
+    const handleDelete = () => {
+    if (selectedRows.size === 0) return;
+    setModalMessage('Are you sure you want to delete the selected model(s)?');
+    setIsConfirmation(true);
+    setIsModalVisible(true);
+    };
+
+    const confirmDelete = async () => {
+    setIsConfirmation(false); // Switch modal to result message mode
+    setLoading(true); // Start loading state
+    try {
+        const ids = Array.from(selectedRows);
+        await Promise.all(ids.map((id) => deleteModelMutation.mutateAsync(id)));
+        setTimeout(() => {
+            const updatedResults = results.filter((model) => !ids.includes(String(model.id)));
+            setResults(updatedResults); // Update the data with deleted models removed
+            setModalMessage('Models deleted successfully!');
+            setSelectedRows(new Set()); // Clear selection after successful deletion
+            setLoading(false); // End loading state
+            }, 2000);
+    } catch (error) {
+        console.error('Failed to delete models:', error);
+        setModalMessage('Failed to delete the models.');
+        setLoading(false);
+    }
+    };
       
 
     return selectedModel ? (
@@ -151,6 +185,7 @@ const ModelList: React.FC<Props> = ({ models }) => {
 
             />
             </div>
+            
             {/* split pane */}
             <SplitPane
             leftPane={
@@ -166,7 +201,7 @@ const ModelList: React.FC<Props> = ({ models }) => {
                     <DataGrid
                         rows={filteredModels}
                         columns={columns}
-                        pageSizeOptions={[5, 10, 15, 20]}
+                        pageSizeOptions={[5, 10, 15, 20, 'All']}
                         checkboxSelection
                         onRowClick={handleSelectModel}
                         onSelectionModelChange={(selection) =>
