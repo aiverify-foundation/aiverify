@@ -29,12 +29,19 @@ export const DataGrid: React.FC<DataGridProps> = ({
 }) => {
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize, setPageSize] = useState(pageSizeOptions.includes('All') ? 'All' : pageSizeOptions[0]);
+  const [pageSize, setPageSize] = useState<number | 'All'>(
+    pageSizeOptions.find((option) => typeof option === 'number') || 5
+  );
   const [sortField, setSortField] = useState<string | null>(null);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>(null);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>(
+    null
+  );
   const [filters, setFilters] = useState<{ [key: string]: string | null }>({});
 
-  const handleCheckboxChange = (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCheckboxChange = (
+    id: string,
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     // Prevent the row click event when checkbox is clicked
     e.stopPropagation();
 
@@ -86,47 +93,54 @@ export const DataGrid: React.FC<DataGridProps> = ({
     );
   }, [sortedRows, filters]);
 
-  const paginatedRows = pageSize === 'All' 
-    ? filteredRows // If 'All' is selected, show all rows without pagination
-    : filteredRows.slice(currentPage * Number(pageSize), (currentPage + 1) * Number(pageSize));
+  const paginatedRows =
+    typeof pageSize === 'string' && pageSize === 'All'
+      ? filteredRows // If 'All' is selected, show all rows without pagination
+      : filteredRows.slice(
+          currentPage * Number(pageSize),
+          (currentPage + 1) * Number(pageSize)
+        );
 
-  const pageSizeOptionsWithAll = ['All', ...pageSizeOptions.filter((option) => option !== 'All')];
+  const pageSizeOptionsWithAll = [
+    ...pageSizeOptions.filter((option) => option !== 'All'),
+    'All',
+  ];
 
   return (
-    <div className="overflow-hidden border-secondary-300 rounded-lg shadow-md bg-secondary-950">
+    <div className="overflow-hidden rounded-lg border-secondary-300 bg-secondary-950 shadow-md">
       <table className="min-w-full table-auto">
         <thead className="bg-secondary-950 text-white">
           <tr>
-            {checkboxSelection && (
-              <th className="px-4 py-2 text-center "></th>
-            )}
+            {checkboxSelection && <th className="px-4 py-2 text-center"></th>}
             {columns.map((col) => (
               <th
                 key={col.field}
-                className="px-4 py-2 cursor-pointer hover:bg-primary-600 relative"
-              >
+                className="relative cursor-pointer px-4 py-2 hover:bg-primary-600">
                 <div
                   onClick={() => col.sortable && handleHeaderClick(col.field)}
-                  className="flex justify-between items-start mt-2"
-                >
+                  className="mt-2 flex items-start justify-between">
                   <span>{col.headerName}</span>
-                  {sortField === col.field && (sortDirection === 'asc' ? '↑' : '↓')}
+                  {sortField === col.field &&
+                    (sortDirection === 'asc' ? '↑' : '↓')}
                 </div>
                 {col.filterable && (
                   <div className="mt-2">
                     <select
-                      className="w-full px-2 py-1 border rounded-lg bg-secondary-800 text-white"
-                      onChange={(e) => handleFilterChange(col.field, e.target.value)}
-                      value={filters[col.field] || ''}
-                    >
+                      className="w-full rounded-lg border bg-secondary-800 px-2 py-1 text-white"
+                      onChange={(e) =>
+                        handleFilterChange(col.field, e.target.value)
+                      }
+                      value={filters[col.field] || ''}>
                       <option value="">All</option>
-                      {Array.from(new Set(rows.map((row) => row[col.field]))).map(
-                        (value) => (
-                          <option key={value} value={value}>
-                            {value}
-                          </option>
-                        )
-                      )}
+                      {Array.from(
+                        new Set(rows.map((row) => row[col.field]))
+                      ).map((value) => (
+                        <option
+                          key={value}
+                          value={value}>
+                          {value}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 )}
@@ -139,10 +153,10 @@ export const DataGrid: React.FC<DataGridProps> = ({
             <tr
               key={row.id}
               className="hover:bg-secondary-800"
-              onClick={() => onRowClick?.(row)}
-            >
+              onClick={() => onRowClick?.(row)}>
               {checkboxSelection && (
-                <td className="text-center px-4 py-2"
+                <td
+                  className="px-4 py-2 text-center"
                   onClick={(e) => e.stopPropagation()}>
                   <input
                     type="checkbox"
@@ -153,7 +167,9 @@ export const DataGrid: React.FC<DataGridProps> = ({
                 </td>
               )}
               {columns.map((col) => (
-                <td key={col.field} className="px-4 py-3 border-b border-secondary-500 text-white">
+                <td
+                  key={col.field}
+                  className="border-b border-secondary-500 px-4 py-3 text-white">
                   {col.renderCell ? col.renderCell(row) : row[col.field]}
                 </td>
               ))}
@@ -161,19 +177,22 @@ export const DataGrid: React.FC<DataGridProps> = ({
           ))}
         </tbody>
       </table>
-      <div className="flex justify-between items-center px-5 py-2 bg-secondary-950 mt-12 mb-2">
+      <div className="mb-2 mt-12 flex items-center justify-between bg-secondary-950 px-5 py-2">
         <div>
           <select
             value={pageSize}
             onChange={(e) => {
               const selectedValue = e.target.value;
-              setPageSize(selectedValue === 'All' ? 'All' : Number(selectedValue)); 
-              setCurrentPage(0);  // Reset to the first page whenever the page size changes
+              setPageSize(
+                selectedValue === 'All' ? 'All' : Number(selectedValue)
+              );
+              setCurrentPage(0); // Reset to the first page whenever the page size changes
             }}
-            className="ml-2 px-2 py-1 border rounded-lg bg-white text-secondary-950"
-          >
+            className="ml-2 rounded-lg border bg-white px-2 py-1 text-secondary-950">
             {pageSizeOptionsWithAll.map((size) => (
-              <option key={size} value={size}>
+              <option
+                key={size}
+                value={size}>
                 {size === 'All' ? 'All' : size}
               </option>
             ))}
@@ -188,12 +207,11 @@ export const DataGrid: React.FC<DataGridProps> = ({
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`mx-1 px-3 py-1 rounded-lg border ${
+                className={`mx-1 rounded-lg border px-3 py-1 ${
                   page === currentPage
                     ? 'bg-primary-600 text-secondary-950'
                     : 'bg-secondary-900 text-white'
-                }`}
-              >
+                }`}>
                 {page + 1}
               </button>
             ))}

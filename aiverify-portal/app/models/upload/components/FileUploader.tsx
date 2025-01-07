@@ -160,6 +160,7 @@ const FileUploader = ({ onBack }: { onBack: () => void }) => {
                             <label className="block text-white font-medium">Model Type:</label>
                             <select
                               value={modelTypes[index]}
+                              required
                               onChange={(e) => handleModelTypeChange(index, e.target.value)}
                               className="w-full text-gray-700 border border-gray-300 rounded-md"
                             >
