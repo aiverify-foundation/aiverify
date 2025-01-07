@@ -1,6 +1,5 @@
 import math
 import multiprocessing
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -669,76 +668,3 @@ def _one_hot_encode_y_true_y_pred(y_true, y_pred):
     y_onehot_true = label_binarizer.transform(y_true)
     y_onehot_pred = label_binarizer.transform(y_pred)
     return y_onehot_true, y_onehot_pred
-
-
-def test_function_cs():
-    import pickle
-
-    from ..model import ModelContainer
-    from ..usecases import CreditScoring
-
-    # Load Credit Scoring Test Data
-    PATH = Path(__file__).parent.parent.joinpath("resources", "data")
-    file = PATH / "credit_score_dict.pickle"
-    input_file = open(file, "rb")
-    cs = pickle.load(input_file)
-
-    # Reduce into two classes
-    cs["X_train"]["MARRIAGE"] = cs["X_train"]["MARRIAGE"].replace([0, 3], 1)
-    cs["X_test"]["MARRIAGE"] = cs["X_test"]["MARRIAGE"].replace([0, 3], 1)
-    # Model Container Parameters
-    y_true = np.array(cs["y_test"])
-    y_pred = np.array(cs["y_pred"])
-    y_train = np.array(cs["y_train"])
-    p_grp = {"SEX": [1], "MARRIAGE": [1]}
-    up_grp = {"SEX": [2], "MARRIAGE": [2]}
-    x_train = cs["X_train"]
-    x_test = cs["X_test"]
-    model_object = cs["model"]
-    model_name = "credit scoring"
-    model_type = "classification"
-    y_prob = cs["y_prob"]
-
-    container = ModelContainer(
-        y_true,
-        p_grp,
-        model_type,
-        model_name,
-        y_pred,
-        y_prob,
-        y_train,
-        x_train=x_train,
-        x_test=x_test,
-        model_object=model_object,
-        up_grp=up_grp,
-    )
-    cre_sco_obj = CreditScoring(
-        model_params=[container],
-        fair_threshold=0.43,
-        fair_concern="eligible",
-        fair_priority="benefit",
-        fair_impact="significant",
-        perf_metric_name="balanced_acc",
-        fair_metric_name="equal_opportunity",
-    )
-    cre_sco_obj.k = 1
-    cre_sco_obj.evaluate(output=False)
-    del cre_sco_obj.fair_metric_obj.result["indiv_fair"]
-    fair_metrics = cre_sco_obj.fair_metric_obj.result["MARRIAGE"]["fair_metric_values"]
-    perf_metrics = cre_sco_obj.perf_metric_obj.result["perf_metric_values"]
-    file = PATH / "credit_score_sample.pickle"
-    input_file = open(file, "rb")
-    sample = pickle.load(input_file)
-    expected_perf_metrics = sample[0]["perf_metric_values"]
-    expected_fair_metrics = sample[1]["MARRIAGE"]["fair_metric_values"]
-
-    for key in perf_metrics.keys():
-        if round(perf_metrics[key][0], 3) != round(expected_perf_metrics[key][0], 3):
-            print("The test results are abnormal")
-            return
-    for key in fair_metrics.keys():
-        if round(fair_metrics[key][0], 3) != round(expected_fair_metrics[key][0], 3):
-            print("The test results are abnormal")
-            return
-
-    print("Evaluation of credit scoring performed normally")
