@@ -8,10 +8,7 @@ import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from tqdm.auto import tqdm
 
-project_root = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..", "..")
-)
-
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', '..'))
 sys.path.insert(0, project_root)
 from aiverify_veritastool.config.constants import Constants
 from aiverify_veritastool.metrics.fairness_metrics import FairnessMetrics
@@ -23,13 +20,8 @@ from aiverify_veritastool.usecases.credit_scoring import CreditScoring
 from aiverify_veritastool.usecases.customer_marketing import CustomerMarketing
 from aiverify_veritastool.util.utility import check_datatype, check_value
 
-module_path = os.path.abspath(
-    os.path.join(
-        os.path.dirname(__file__),
-        "../../../aiverify_veritastool/examples/customer_marketing_example",
-    )
-)
 
+module_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../examples/customer_marketing_example'))
 sys.path.append(module_path)
 import selection
 import uplift
@@ -38,9 +30,7 @@ import util
 bins = Constants().tradeoff_threshold_bins
 
 # Load Credit Scoring Test Data
-file = os.path.join(
-    project_root, "aiverify_veritastool", "examples", "data", "credit_score_dict.pickle"
-)
+file = os.path.join(project_root, 'user_defined_files', 'veritas_data', 'credit_score_dict.pickle')
 input_file = open(file, "rb")
 cs = pickle.load(input_file)
 input_file.close()
@@ -289,20 +279,8 @@ def test_compute_negative_equalized_odds_tr():
 
 
 # Load Phase 1-Customer Marketing Uplift Model Data, Results and Related Functions
-file_prop = os.path.join(
-    project_root,
-    "aiverify_veritastool",
-    "examples",
-    "data",
-    "mktg_uplift_acq_dict.pickle",
-)
-file_rej = os.path.join(
-    project_root,
-    "aiverify_veritastool",
-    "examples",
-    "data",
-    "mktg_uplift_rej_dict.pickle",
-)
+file_prop = os.path.join(project_root, 'user_defined_files', 'veritas_data', 'mktg_uplift_acq_dict.pickle')
+file_rej = os.path.join(project_root, 'user_defined_files', 'veritas_data', 'mktg_uplift_rej_dict.pickle')
 input_prop = open(file_prop, "rb")
 input_rej = open(file_rej, "rb")
 cm_prop = pickle.load(input_prop)

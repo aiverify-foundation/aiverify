@@ -2,9 +2,7 @@ import os
 import pickle
 import sys
 
-project_root = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..", "..")
-)
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', '..'))
 sys.path.insert(0, project_root)
 import numpy as np
 import pandas as pd
@@ -22,13 +20,7 @@ from sklearn.linear_model import LogisticRegression
 
 def test_newmetric():
     # Load Credit Scoring Test Data
-    file = os.path.join(
-        project_root,
-        "aiverify_veritastool",
-        "examples",
-        "data",
-        "credit_score_dict.pickle",
-    )
+    file = os.path.join(project_root, 'user_defined_files', 'veritas_data', 'credit_score_dict.pickle')
     input_file = open(file, "rb")
     cs = pickle.load(input_file)
 

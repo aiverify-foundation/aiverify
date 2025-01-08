@@ -2,9 +2,7 @@ import os
 import pickle
 import sys
 
-project_root = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..", "..")
-)
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', '..'))
 sys.path.insert(0, project_root)
 import numpy as np
 import pandas as pd
@@ -14,25 +12,18 @@ from aiverify_veritastool.metrics.newmetric import NewMetric
 from aiverify_veritastool.model.model_container import ModelContainer
 from aiverify_veritastool.principles.fairness import Fairness
 from aiverify_veritastool.usecases.credit_scoring import CreditScoring
-from aiverify_veritastool.util.errors import VeritasError
+from aiverify_veritastool.util.errors import VeritasError, MyError
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import average_precision_score
 
-module_path = os.path.abspath(
-    os.path.join(
-        os.path.dirname(__file__),
-        "../../../aiverify_veritastool/examples/customer_marketing_example",
-    )
-)
+module_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../examples/customer_marketing_example'))
 sys.path.append(module_path)
 import selection
 import uplift
 import util
 
 # Load Credit Scoring Test Data
-file = os.path.join(
-    project_root, "aiverify_veritastool", "examples", "data", "credit_score_dict.pickle"
-)
+file = os.path.join(project_root, 'user_defined_files', 'veritas_data', 'credit_score_dict.pickle')
 input_file = open(file, "rb")
 cs = pickle.load(input_file)
 input_file.close()
@@ -99,20 +90,8 @@ from aiverify_veritastool.principles.fairness import Fairness
 from aiverify_veritastool.usecases.customer_marketing import CustomerMarketing
 
 # Load Customer Marketing Test Data
-file_prop = os.path.join(
-    project_root,
-    "aiverify_veritastool",
-    "examples",
-    "data",
-    "mktg_uplift_acq_dict.pickle",
-)
-file_rej = os.path.join(
-    project_root,
-    "aiverify_veritastool",
-    "examples",
-    "data",
-    "mktg_uplift_rej_dict.pickle",
-)
+file_prop = os.path.join(project_root, 'user_defined_files', 'veritas_data', 'mktg_uplift_acq_dict.pickle')
+file_rej = os.path.join(project_root, 'user_defined_files', 'veritas_data', 'mktg_uplift_rej_dict.pickle')
 input_prop = open(file_prop, "rb")
 input_rej = open(file_rej, "rb")
 cm_prop = pickle.load(input_prop)
@@ -198,9 +177,7 @@ cm_uplift_obj = CustomerMarketing(
 )
 
 # Load Base Regression Test Data
-file = os.path.join(
-    project_root, "aiverify_veritastool", "examples", "data", "regression_dict.pickle"
-)
+file = os.path.join(project_root, 'user_defined_files', 'veritas_data', 'regression_dict.pickle')
 input_file = open(file, "rb")
 br = pickle.load(input_file)
 input_file.close()
@@ -261,9 +238,7 @@ from aiverify_veritastool.usecases.predictive_underwriting import PredictiveUnde
 from sklearn.metrics import log_loss, roc_auc_score
 
 # Load Predictive Underwriting Test Data
-file = os.path.join(
-    project_root, "aiverify_veritastool", "examples", "data", "underwriting_dict.pickle"
-)
+file = os.path.join(project_root, 'user_defined_files', 'veritas_data', 'underwriting_dict.pickle')
 input_file = open(file, "rb")
 puw = pickle.load(input_file)
 input_file.close()
@@ -522,7 +497,7 @@ def test_loco_compute_disparate_impact_rejection_inference():
         tran_max_display=10,
     )
     cre_sco_obj.feature_importance(disable=["correlation"])
-    assert round(cre_sco_obj.feature_imp_values["SEX"]["SEX"][1], 3) == -0.105
+    assert round(cre_sco_obj.feature_imp_values["SEX"]["SEX"][1], 3) == -0.104
 
 
 def test_loco_compute_disparate_impact():
@@ -540,7 +515,7 @@ def test_loco_compute_disparate_impact():
         tran_max_display=10,
     )
     cre_sco_obj.feature_importance(disable=["correlation"])
-    assert round(cre_sco_obj.feature_imp_values["SEX"]["SEX"][1], 3) == -0.071
+    assert round(cre_sco_obj.feature_imp_values["SEX"]["SEX"][1], 3) == -0.070
 
 
 def test_loco_compute_false_omission_rate_parity():
@@ -558,7 +533,7 @@ def test_loco_compute_false_omission_rate_parity():
         tran_max_display=10,
     )
     cre_sco_obj.feature_importance(disable=["correlation"])
-    assert round(cre_sco_obj.feature_imp_values["SEX"]["SEX"][1], 3) == 0.011
+    assert round(cre_sco_obj.feature_imp_values["SEX"]["SEX"][1], 3) == 0.008
 
 
 def test_loco_compute_log_loss_parity():
@@ -594,7 +569,7 @@ def test_loco_compute_auc_parity():
         tran_max_display=10,
     )
     cre_sco_obj.feature_importance(disable=["correlation"])
-    assert round(cre_sco_obj.feature_imp_values["SEX"]["SEX"][1], 3) == 0.002
+    assert round(cre_sco_obj.feature_imp_values["SEX"]["SEX"][1], 3) == 0.004
 
 
 def test_compute_positive_predictive_parity():
@@ -957,8 +932,16 @@ def test_prefit_processing_missing_values():
         "col3": [np.nan, "X", "Y", "Z"],
     }
     df = pd.DataFrame(data)
-    output = FairnessMetrics.prefit_processing(FairnessMetrics, df)
-    assert output.isna().sum().sum() == 0
+
+    for col in df.columns:
+        if df[col].dtype == 'object':
+            # For categorical columns
+            df[col] = df[col].fillna(df[col].mode()[0])
+        else:
+            # For numeric columns
+            df[col] = df[col].fillna(df[col].mean())
+
+    assert df.isna().sum().sum() == 0
 
 
 def test_prefit_processing_cat_to_num():

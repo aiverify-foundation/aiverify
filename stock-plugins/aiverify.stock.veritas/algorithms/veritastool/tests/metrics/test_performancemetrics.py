@@ -2,9 +2,7 @@ import os
 import pickle
 import sys
 
-project_root = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..", "..")
-)
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', '..'))
 sys.path.insert(0, project_root)
 import numpy as np
 import pandas as pd
@@ -16,13 +14,7 @@ from aiverify_veritastool.principles.fairness import Fairness
 from aiverify_veritastool.usecases.credit_scoring import CreditScoring
 from aiverify_veritastool.util.errors import MyError
 
-module_path = os.path.abspath(
-    os.path.join(
-        os.path.dirname(__file__),
-        "../../../aiverify_veritastool/examples/customer_marketing_example",
-    )
-)
-
+module_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../examples/customer_marketing_example'))
 sys.path.append(module_path)
 import selection
 import uplift
@@ -30,9 +22,7 @@ import util
 from sklearn.linear_model import LogisticRegression
 
 # Load Credit Scoring Test Data
-file = os.path.join(
-    project_root, "aiverify_veritastool", "examples", "data", "credit_score_dict.pickle"
-)
+file = os.path.join(project_root, 'user_defined_files', 'veritas_data', 'credit_score_dict.pickle')
 input_file = open(file, "rb")
 cs = pickle.load(input_file)
 input_file.close()
@@ -102,20 +92,8 @@ from aiverify_veritastool.principles.fairness import Fairness
 from aiverify_veritastool.usecases.customer_marketing import CustomerMarketing
 
 # Load Customer Marketing Test Data
-file_prop = os.path.join(
-    project_root,
-    "aiverify_veritastool",
-    "examples",
-    "data",
-    "mktg_uplift_acq_dict.pickle",
-)
-file_rej = os.path.join(
-    project_root,
-    "aiverify_veritastool",
-    "examples",
-    "data",
-    "mktg_uplift_rej_dict.pickle",
-)
+file_prop = os.path.join(project_root, 'user_defined_files', 'veritas_data', 'mktg_uplift_acq_dict.pickle')
+file_rej = os.path.join(project_root, 'user_defined_files', 'veritas_data', 'mktg_uplift_rej_dict.pickle')
 input_prop = open(file_prop, "rb")
 input_rej = open(file_rej, "rb")
 cm_prop = pickle.load(input_prop)
@@ -200,9 +178,7 @@ cm_uplift_obj = CustomerMarketing(
 )
 
 # Load Base Regression Test Data
-file = os.path.join(
-    project_root, "aiverify_veritastool", "examples", "data", "regression_dict.pickle"
-)
+file = os.path.join(project_root, 'user_defined_files', 'veritas_data', 'regression_dict.pickle')
 input_file = open(file, "rb")
 br = pickle.load(input_file)
 input_file.close()
@@ -261,9 +237,7 @@ from aiverify_veritastool.model.model_container import ModelContainer
 from aiverify_veritastool.usecases.predictive_underwriting import PredictiveUnderwriting
 
 # Load Predictive Underwriting Test Data
-file = os.path.join(
-    project_root, "aiverify_veritastool", "examples", "data", "underwriting_dict.pickle"
-)
+file = os.path.join(project_root, 'user_defined_files', 'veritas_data', 'underwriting_dict.pickle')
 input_file = open(file, "rb")
 puw = pickle.load(input_file)
 input_file.close()
