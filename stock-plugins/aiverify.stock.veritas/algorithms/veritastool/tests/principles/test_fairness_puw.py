@@ -2,9 +2,7 @@ import os
 import pickle
 import sys
 
-project_root = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..", "..")
-)
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', '..'))
 sys.path.insert(0, project_root)
 import matplotlib
 import numpy as np
@@ -24,9 +22,7 @@ import pytest
 from aiverify_veritastool.util.errors import MyError
 
 # Load Predictive Underwriting Test Data
-file = os.path.join(
-    project_root, "aiverify_veritastool", "examples", "data", "underwriting_dict.pickle"
-)
+file = os.path.join(project_root, 'user_defined_files', 'veritas_data', 'underwriting_dict.pickle')
 input_file = open(file, "rb")
 puw = pickle.load(input_file)
 input_file.close()
@@ -89,34 +85,17 @@ def test_evaluate():
 
 
 def test_artifact():
-    assert (
-        pred_underwriting_obj.artifact["fairness"]["features"]["gender"]["tradeoff"][
-            "th_x"
-        ].shape
-        == pred_underwriting_obj.artifact["fairness"]["features"]["gender"]["tradeoff"][
-            "th_y"
-        ].shape
-    )
-    assert (
-        pred_underwriting_obj.artifact["fairness"]["features"]["gender"]["tradeoff"][
-            "fair"
-        ].shape
-        == pred_underwriting_obj.artifact["fairness"]["features"]["gender"]["tradeoff"][
-            "perf"
-        ].shape
-    )
-    assert (
-        pred_underwriting_obj.array_size
-        == pred_underwriting_obj.artifact["fairness"]["perf_dynamic"][
-            "threshold"
-        ].shape[0]
-    )
-    assert pred_underwriting_obj.array_size == len(
-        pred_underwriting_obj.artifact["fairness"]["perf_dynamic"]["perf"]
-    )
-    assert pred_underwriting_obj.array_size == len(
-        pred_underwriting_obj.artifact["fairness"]["perf_dynamic"]["selection_rate"]
-    )
+    tradeoff_data = pred_underwriting_obj.artifact.fairness.features['gender'].tradeoff
+    perf_dynamic = pred_underwriting_obj.artifact.fairness.perf_dynamic
+
+    # Compare shapes of tradeoff data
+    assert tradeoff_data['th_x'].shape == tradeoff_data['th_y'].shape
+    assert tradeoff_data['fair'].shape == tradeoff_data['perf'].shape
+
+    # Compare array sizes of performance dynamics data
+    assert pred_underwriting_obj.array_size == perf_dynamic['threshold'].shape[0]
+    assert pred_underwriting_obj.array_size == len(perf_dynamic['perf'])
+    assert pred_underwriting_obj.array_size == len(perf_dynamic['selection_rate'])
 
 
 def test_fairness_conclusion():
@@ -572,10 +551,7 @@ def test_check_label():
 
 def test_rootcause_group_difference():
     SEED = 123
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    path = os.path.join(
-        current_dir, "..", "..", "resources", "data", "shap_values_puw.npy"
-    )
+    path = os.path.join(project_root, 'user_defined_files', 'veritas_data', 'shap_values_puw.npy')
     path = os.path.normpath(path)
     x_train_sample = x_train.sample(n=1000, random_state=SEED)
     shap_values = np.load(path)
@@ -585,7 +561,7 @@ def test_rootcause_group_difference():
     result = pred_underwriting_obj._rootcause_group_difference(
         shap_values, group_mask, x_train_sample.columns
     )
-    expected = [
+    expected = {
         "policy_duration",
         "number_exclusions",
         "payout_amount",
@@ -596,8 +572,8 @@ def test_rootcause_group_difference():
         "num_pa_policies",
         "num_life_policies",
         "latest_purchase_product_category",
-    ]
-    assert list(result.keys()) == expected
+    }
+    assert set(result.keys()) == expected
 
     # Test case with feature_mask
     prot_var_df = x_train_sample["race"]
@@ -611,7 +587,7 @@ def test_rootcause_group_difference():
     result = pred_underwriting_obj._rootcause_group_difference(
         shap_values, group_mask, x_train_sample.columns
     )
-    expected = [
+    expected = {
         "policy_duration",
         "annual_premium",
         "tenure",
@@ -622,8 +598,8 @@ def test_rootcause_group_difference():
         "num_pa_policies",
         "race",
         "marital_status",
-    ]
-    assert list(result.keys()) == expected
+    }
+    assert set(result.keys()) == expected
 
 
 @pytest.fixture

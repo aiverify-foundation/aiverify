@@ -2,24 +2,20 @@ import os
 import pickle
 import sys
 
-project_root = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..", "..")
-)
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', '..'))
 sys.path.insert(0, project_root)
 import matplotlib
 import numpy as np
 from sklearn.linear_model import LinearRegression
-from veritastool.model.model_container import ModelContainer
-from veritastool.usecases.base_regression import BaseRegression
+from aiverify_veritastool.model.model_container import ModelContainer
+from aiverify_veritastool.usecases.base_regression import BaseRegression
 
 matplotlib.use("Agg")
 import pytest
-from veritastool.util.errors import *
+from aiverify_veritastool.util.errors import *
 
 # Load Base Regression Test Data
-file = os.path.join(
-    project_root, "veritastool", "examples", "data", "regression_dict.pickle"
-)
+file = os.path.join(project_root, 'user_defined_files', 'veritas_data', 'regression_dict.pickle')
 input_file = open(file, "rb")
 br = pickle.load(input_file)
 input_file.close()

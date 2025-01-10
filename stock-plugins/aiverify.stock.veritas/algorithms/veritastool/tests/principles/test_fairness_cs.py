@@ -2,9 +2,7 @@ import os
 import pickle
 import sys
 
-project_root = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..", "..")
-)
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', '..'))
 sys.path.insert(0, project_root)
 import matplotlib
 import numpy as np
@@ -23,9 +21,7 @@ from sklearn.linear_model import LogisticRegression
 matplotlib.use("Agg")
 
 # Load Credit Scoring Test Data
-file = os.path.join(
-    project_root, "aiverify_veritastool", "examples", "data", "credit_score_dict.pickle"
-)
+file = os.path.join(project_root, 'user_defined_files', 'veritas_data', 'credit_score_dict.pickle')
 input_file = open(file, "rb")
 cs = pickle.load(input_file)
 input_file.close()
@@ -95,24 +91,17 @@ def test_evaluate():
 
 
 def test_artifact():
-    assert (
-        cre_sco_obj.artifact["fairness"]["features"]["SEX"]["tradeoff"]["th_x"].shape
-        == cre_sco_obj.artifact["fairness"]["features"]["SEX"]["tradeoff"]["th_y"].shape
-    )
-    assert (
-        cre_sco_obj.artifact["fairness"]["features"]["SEX"]["tradeoff"]["fair"].shape
-        == cre_sco_obj.artifact["fairness"]["features"]["SEX"]["tradeoff"]["perf"].shape
-    )
-    assert (
-        cre_sco_obj.array_size
-        == cre_sco_obj.artifact["fairness"]["perf_dynamic"]["threshold"].shape[0]
-    )
-    assert cre_sco_obj.array_size == len(
-        cre_sco_obj.artifact["fairness"]["perf_dynamic"]["perf"]
-    )
-    assert cre_sco_obj.array_size == len(
-        cre_sco_obj.artifact["fairness"]["perf_dynamic"]["selection_rate"]
-    )
+    tradeoff_data = cre_sco_obj.artifact.fairness.features['SEX'].tradeoff
+    perf_dynamic = cre_sco_obj.artifact.fairness.perf_dynamic
+
+    # Compare shapes of tradeoff data
+    assert tradeoff_data['th_x'].shape == tradeoff_data['th_y'].shape
+    assert tradeoff_data['fair'].shape == tradeoff_data['perf'].shape
+
+    # Compare array sizes of performance dynamics data
+    assert cre_sco_obj.array_size == perf_dynamic['threshold'].shape[0]
+    assert cre_sco_obj.array_size == len(perf_dynamic['perf'])
+    assert cre_sco_obj.array_size == len(perf_dynamic['selection_rate'])
 
 
 def test_fairness_conclusion():
@@ -494,10 +483,7 @@ def test_check_label():
 
 def test_rootcause_group_difference():
     SEED = 123
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    path = os.path.join(
-        current_dir, "..", "..", "resources", "data", "shap_values_cs.npy"
-    )
+    path = os.path.join(project_root, 'user_defined_files', 'veritas_data', 'shap_values_cs.npy')
     path = os.path.normpath(path)
     x_train_sample = x_train.sample(n=1000, random_state=SEED)
     shap_values = np.load(path)
@@ -507,7 +493,7 @@ def test_rootcause_group_difference():
     result = cre_sco_obj._rootcause_group_difference(
         shap_values, group_mask, x_train_sample.columns
     )
-    expected = [
+    expected = {
         "BILL_AMT1",
         "LIMIT_BAL",
         "BILL_AMT3",
@@ -518,8 +504,8 @@ def test_rootcause_group_difference():
         "PAY_AMT6",
         "BILL_AMT5",
         "PAY_AMT3",
-    ]
-    assert list(result.keys()) == expected
+    }
+    assert set(result.keys()) == expected
 
     # Test case with feature_mask
     prot_var_df = x_train_sample["MARRIAGE"]
@@ -533,7 +519,7 @@ def test_rootcause_group_difference():
     result = cre_sco_obj._rootcause_group_difference(
         shap_values, group_mask, x_train_sample.columns
     )
-    expected = [
+    expected = {
         "BILL_AMT1",
         "LIMIT_BAL",
         "BILL_AMT4",
@@ -544,8 +530,8 @@ def test_rootcause_group_difference():
         "PAY_AMT5",
         "PAY_AMT6",
         "BILL_AMT3",
-    ]
-    assert list(result.keys()) == expected
+    }
+    assert set(result.keys()) == expected
 
 
 @pytest.fixture

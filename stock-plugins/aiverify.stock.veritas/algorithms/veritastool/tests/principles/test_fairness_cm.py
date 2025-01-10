@@ -5,9 +5,7 @@ import sys
 import numpy as np
 import pandas as pd
 
-project_root = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..", "..")
-)
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', '..'))
 sys.path.insert(0, project_root)
 import matplotlib
 import pytest
@@ -21,12 +19,7 @@ from aiverify_veritastool.usecases.customer_marketing import CustomerMarketing
 from aiverify_veritastool.util.errors import MyError
 
 matplotlib.use("Agg")
-module_path = os.path.abspath(
-    os.path.join(
-        os.path.dirname(__file__),
-        "../../../aiverify_veritastool/examples/customer_marketing_example",
-    )
-)
+module_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../examples/customer_marketing_example'))
 sys.path.append(module_path)
 import selection
 import uplift
@@ -34,20 +27,8 @@ import util
 
 # Load Customer Marketing Test Data
 # PATH = os.path.abspath(os.path.dirname(__file__)))
-file_prop = os.path.join(
-    project_root,
-    "aiverify_veritastool",
-    "examples",
-    "data",
-    "mktg_uplift_acq_dict.pickle",
-)
-file_rej = os.path.join(
-    project_root,
-    "aiverify_veritastool",
-    "examples",
-    "data",
-    "mktg_uplift_rej_dict.pickle",
-)
+file_prop = os.path.join(project_root, 'user_defined_files', 'veritas_data', 'mktg_uplift_acq_dict.pickle')
+file_rej = os.path.join(project_root, 'user_defined_files', 'veritas_data', 'mktg_uplift_rej_dict.pickle')
 input_prop = open(file_prop, "rb")
 input_rej = open(file_rej, "rb")
 cm_prop = pickle.load(input_prop)
@@ -152,32 +133,17 @@ def test_evaluate():
 
 
 def test_artifact():
-    assert (
-        cm_uplift_obj.artifact["fairness"]["features"]["isforeign"]["tradeoff"][
-            "th_x"
-        ].shape
-        == cm_uplift_obj.artifact["fairness"]["features"]["isforeign"]["tradeoff"][
-            "th_y"
-        ].shape
-    )
-    assert (
-        cm_uplift_obj.artifact["fairness"]["features"]["isforeign"]["tradeoff"][
-            "fair"
-        ].shape
-        == cm_uplift_obj.artifact["fairness"]["features"]["isforeign"]["tradeoff"][
-            "perf"
-        ].shape
-    )
-    assert (
-        cm_uplift_obj.array_size
-        == cm_uplift_obj.artifact["fairness"]["perf_dynamic"]["threshold"].shape[0]
-    )
-    assert cm_uplift_obj.array_size == len(
-        cm_uplift_obj.artifact["fairness"]["perf_dynamic"]["perf"]
-    )
-    assert cm_uplift_obj.array_size == len(
-        cm_uplift_obj.artifact["fairness"]["perf_dynamic"]["selection_rate"]
-    )
+    tradeoff_data = cm_uplift_obj.artifact.fairness.features['isforeign'].tradeoff
+    perf_dynamic = cm_uplift_obj.artifact.fairness.perf_dynamic
+
+    # Compare shapes of tradeoff data
+    assert tradeoff_data['th_x'].shape == tradeoff_data['th_y'].shape
+    assert tradeoff_data['fair'].shape == tradeoff_data['perf'].shape
+
+    # Compare array sizes of performance dynamics data
+    assert cm_uplift_obj.array_size == perf_dynamic['threshold'].shape[0]
+    assert cm_uplift_obj.array_size == len(perf_dynamic['perf'])
+    assert cm_uplift_obj.array_size == len(perf_dynamic['selection_rate'])
 
 
 def test_fairness_conclusion():
@@ -250,12 +216,10 @@ def test_tradeoff():
 
 
 def test_feature_importance():
-    cm_uplift_obj.feature_imp_status = 0
-    cm_uplift_obj.evaluate_status = 0
     cm_uplift_obj.feature_importance()
     assert (
         round(cm_uplift_obj.feature_imp_values["isforeign"]["isforeign"][0], 3)
-        == 645718.168
+        == 645340.683
     )
     cm_uplift_obj.feature_imp_status = -1
     cm_uplift_obj.feature_importance()

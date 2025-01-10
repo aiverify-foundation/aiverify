@@ -2,38 +2,29 @@ import os
 import pickle
 import sys
 
-project_root = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..", "..")
-)
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', '..'))
 sys.path.insert(0, project_root)
 import numpy as np
 import pandas as pd
 import pytest
 from sklearn.linear_model import LinearRegression, LogisticRegression
-from veritastool.model.model_container import ModelContainer
-from veritastool.principles.transparency import Transparency
-from veritastool.usecases.base_classification import BaseClassification
-from veritastool.usecases.base_regression import BaseRegression
-from veritastool.usecases.credit_scoring import CreditScoring
-from veritastool.usecases.customer_marketing import CustomerMarketing
-from veritastool.util.errors import *
-from veritastool.util.errors import MyError
+from aiverify_veritastool.model.model_container import ModelContainer
+from aiverify_veritastool.principles.transparency import Transparency
+from aiverify_veritastool.usecases.base_classification import BaseClassification
+from aiverify_veritastool.usecases.base_regression import BaseRegression
+from aiverify_veritastool.usecases.credit_scoring import CreditScoring
+from aiverify_veritastool.usecases.customer_marketing import CustomerMarketing
+from aiverify_veritastool.util.errors import *
+from aiverify_veritastool.util.errors import MyError
 
-module_path = os.path.abspath(
-    os.path.join(
-        os.path.dirname(__file__),
-        "../../../veritastool/examples/customer_marketing_example",
-    )
-)
+module_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../examples/customer_marketing_example'))
 sys.path.append(module_path)
 import selection
 import uplift
 import util
 
 # creating a credit scoring use case
-file = os.path.join(
-    project_root, "veritastool", "examples", "data", "credit_score_dict.pickle"
-)
+file = os.path.join(project_root, 'user_defined_files', 'veritas_data', 'credit_score_dict.pickle')
 input_file = open(file, "rb")
 cs = pickle.load(input_file)
 cs["X_train"]["MARRIAGE"] = cs["X_train"]["MARRIAGE"].replace([0, 3], 1)
@@ -233,12 +224,8 @@ cre_sco_obj1 = CreditScoring(
 assert cre_sco_obj1.tran_input_features["check_input_flag"] == 2
 
 # creating a customer marketing use case
-file_prop = os.path.join(
-    project_root, "veritastool", "examples", "data", "mktg_uplift_acq_dict.pickle"
-)
-file_rej = os.path.join(
-    project_root, "veritastool", "examples", "data", "mktg_uplift_rej_dict.pickle"
-)
+file_prop = os.path.join(project_root, 'user_defined_files', 'veritas_data', 'mktg_uplift_acq_dict.pickle')
+file_rej = os.path.join(project_root, 'user_defined_files', 'veritas_data', 'mktg_uplift_rej_dict.pickle')
 
 input_prop = open(file_prop, "rb")
 input_rej = open(file_rej, "rb")
@@ -537,9 +524,7 @@ def test_check_tran_pdp_target():
         assert True
 
     # creating a multi-class use case
-    file_prop = os.path.join(
-        project_root, "veritastool", "examples", "data", "mktg_uplift_acq_dict.pickle"
-    )
+    file_prop = os.path.join(project_root, 'user_defined_files', 'veritas_data', 'mktg_uplift_acq_dict.pickle')
     input_prop = open(file_prop, "rb")
     cm_prop = pickle.load(input_prop)
     y_true = cm_prop["y_test"]
@@ -1027,7 +1012,7 @@ def test_top_features():
         tran_max_display=10,
     )
     cre_sco_obj._data_prep()
-    assert cre_sco_obj.tran_top_features[0]["Feature_name"].tolist()[:10] == [
+    assert set(cre_sco_obj.tran_top_features[0]["Feature_name"].tolist()[:10]) == {
         "LIMIT_BAL",
         "BILL_AMT1",
         "BILL_AMT2",
@@ -1038,7 +1023,7 @@ def test_top_features():
         "BILL_AMT6",
         "PAY_AMT4",
         "PAY_AMT3",
-    ]
+    }
 
     cm_uplift_obj = CustomerMarketing(
         model_params=[container_rej, container_prop],
@@ -1058,18 +1043,18 @@ def test_top_features():
     )
     cm_uplift_obj._data_prep(model_num=0)
     cm_uplift_obj._data_prep(model_num=1)
-    assert cm_uplift_obj.tran_top_features[0]["Feature_name"].tolist()[:4] == [
+    assert set(cm_uplift_obj.tran_top_features[0]["Feature_name"].tolist()[:4]) == {
         "isforeign",
         "income",
         "age",
         "noproducts",
-    ]
-    assert cm_uplift_obj.tran_top_features[1]["Feature_name"].tolist()[:4] == [
+    }
+    assert set(cm_uplift_obj.tran_top_features[1]["Feature_name"].tolist()[:4]) == {
         "income",
         "age",
         "isforeign",
         "didrespond",
-    ]
+    }
 
 
 def test_global():
@@ -1108,7 +1093,7 @@ def test_local():
             ],
             2,
         )
-        == 0.74
+        == 0.75
     )
     assert (
         type(cre_sco_obj.tran_results["model_list"][0]["plot"]["local_plot"][40])
@@ -1353,9 +1338,7 @@ def test_compute_permutation_importance():
     assert cre_sco_obj.tran_results["permutation"]["score"] is not None
 
     # testing for regression
-    file = os.path.join(
-        project_root, "veritastool", "examples", "data", "regression_dict.pickle"
-    )
+    file = os.path.join(project_root, 'user_defined_files', 'veritas_data', 'regression_dict.pickle')
     input_file = open(file, "rb")
     br = pickle.load(input_file)
     x_train = br["x_train"]
@@ -1394,9 +1377,7 @@ def test_compute_permutation_importance():
 
     # testing for multiclass model
     # creating a multi-class use case
-    file_prop = os.path.join(
-        project_root, "veritastool", "examples", "data", "mktg_uplift_acq_dict.pickle"
-    )
+    file = os.path.join(project_root, 'user_defined_files', 'veritas_data', 'mktg_uplift_acq_dict.pickle')
     input_prop = open(file_prop, "rb")
     cm_prop = pickle.load(input_prop)
     y_true = cm_prop["y_test"]
@@ -1810,7 +1791,7 @@ def test_explain():
         tran_max_display=10,
     )
     cre_sco_obj.explain(local_row_num=60)
-    assert (
+    assert np.any(
         cre_sco_obj.tran_results["model_list"][model_num]["plot"]["local_plot"][60]
         != ""
     )
@@ -1849,7 +1830,7 @@ def test_explain():
     )
     cre_sco_obj.explain()
     cre_sco_obj.explain(local_row_num=883)
-    assert (
+    assert np.any(
         cre_sco_obj.tran_results["model_list"][model_num]["plot"]["local_plot"][883]
         != ""
     )

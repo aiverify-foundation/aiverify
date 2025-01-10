@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.ndimage.filters import gaussian_filter
+from scipy.ndimage import gaussian_filter
 
 from ..config.constants import Constants
 from .fairness_metrics import FairnessMetrics
@@ -72,16 +72,11 @@ class TradeoffRate(object):
         self.msg = None
         self.perf_metric_name = usecase_obj.perf_metric_name
         self.fair_metric_name = usecase_obj.fair_metric_name
-        self.metric_group = FairnessMetrics.map_fair_metric_to_group[
-            self.fair_metric_name
-        ][1]
+        self.metric_group = FairnessMetrics.map_fair_metric_to_group[self.fair_metric_name][1]
         # replacement flag to indicate if fair_metric_name has been replaced with another metric from fairness tree
         self.replacement_flag = 0
         if self.metric_group == "uplift":
-            if (
-                usecase_obj.spl_params["revenue"] is not None
-                and usecase_obj.spl_params["treatment_cost"] is not None
-            ):
+            if usecase_obj.spl_params["revenue"] is not None and usecase_obj.spl_params["treatment_cost"] is not None:
                 if self.perf_metric_name not in ["expected_profit", "emp_lift"]:
                     self.perf_metric_name = "expected_profit"
             else:
@@ -92,9 +87,7 @@ class TradeoffRate(object):
             self.perf_metric_name = usecase_obj.perf_metric_name
             if self.perf_metric_name not in ["balanced_acc", "f1_score"]:
                 self.perf_metric_name = "balanced_acc"
-            is_valid_metric = FairnessMetrics.map_fair_metric_to_group[
-                self.fair_metric_name
-            ][3]
+            is_valid_metric = FairnessMetrics.map_fair_metric_to_group[self.fair_metric_name][3]
             if is_valid_metric is False:
                 self.fair_metric_name = usecase_obj._fairness_tree(
                     is_pos_label_favourable=usecase_obj.fair_is_pos_label_fav
@@ -107,13 +100,8 @@ class TradeoffRate(object):
         self.fair_neutral_tolerance = usecase_obj.fair_neutral_tolerance
 
         if self.metric_group == "uplift":
-            self.proportion_of_interpolation_fitting = (
-                usecase_obj.proportion_of_interpolation_fitting
-            )
-        if (
-            usecase_obj.model_params[0].model_type == "uplift"
-            or usecase_obj.model_params[0].model_type == "credit"
-        ):
+            self.proportion_of_interpolation_fitting = usecase_obj.proportion_of_interpolation_fitting
+        if usecase_obj.model_params[0].model_type == "uplift" or usecase_obj.model_params[0].model_type == "credit":
             self.spl_params = usecase_obj.spl_params
         if self.metric_group == "uplift":
             self.y_true = [model.y_true for model in usecase_obj.model_params]
@@ -255,9 +243,7 @@ class TradeoffRate(object):
                 self.result[i]["th_x"] = self.th_x
                 self.result[i]["th_y"] = self.th_y
 
-                best_th1, best_th2, best_th3 = TradeoffRate._compute_max_perf(
-                    self, perf_values, fair_values
-                )
+                best_th1, best_th2, best_th3 = TradeoffRate._compute_max_perf(self, perf_values, fair_values)
                 self.result[i]["max_perf_point"] = best_th2
                 self.result[i]["max_perf_single_th"] = best_th1
                 self.result[i]["max_perf_neutral_fair"] = best_th3
@@ -273,9 +259,7 @@ class TradeoffRate(object):
                 self.forr,
                 self.base_selection_rate,
                 self.selection_rate,
-            ) = ModelRateClassify.compute_rates(
-                self.y_true, self.y_prob, self.sample_weight
-            )
+            ) = ModelRateClassify.compute_rates(self.y_true, self.y_prob, self.sample_weight)
 
             # define meshgrid
             self.th_x = np.linspace(
@@ -302,12 +286,8 @@ class TradeoffRate(object):
 
                 # initialising ModelRates object to access interpolated base rates
                 if self.sample_weight is None:
-                    self.rates_a = ModelRateClassify(
-                        self.y_true[mask_p], self.y_prob[mask_p]
-                    )
-                    self.rates_b = ModelRateClassify(
-                        self.y_true[mask_up], self.y_prob[mask_up]
-                    )
+                    self.rates_a = ModelRateClassify(self.y_true[mask_p], self.y_prob[mask_p])
+                    self.rates_b = ModelRateClassify(self.y_true[mask_up], self.y_prob[mask_up])
                 else:
                     self.rates_a = ModelRateClassify(
                         self.y_true[mask_p],
@@ -364,9 +344,7 @@ class TradeoffRate(object):
                 self.result[i]["th_x"] = self.th_x
                 self.result[i]["th_y"] = self.th_y
 
-                best_th1, best_th2, best_th3 = TradeoffRate._compute_max_perf(
-                    self, perf_values, fair_values
-                )
+                best_th1, best_th2, best_th3 = TradeoffRate._compute_max_perf(self, perf_values, fair_values)
 
                 # Store threshold and perf metric value for single_th
                 if idx == 0:
@@ -417,24 +395,16 @@ class TradeoffRate(object):
 
         # compute the best fairness-constrained performance metric and associated threshold
         constrained_grid = np.copy(perf_grid)
-        fair_neutral_pos = FairnessMetrics.map_fair_metric_to_group.get(
-            self.fair_metric_name
-        )[2]
+        fair_neutral_pos = FairnessMetrics.map_fair_metric_to_group.get(self.fair_metric_name)[2]
         if fair_neutral_pos == "ratio":
             fair_neutral_pos = 1
         else:
             fair_neutral_pos = 0
 
-        while (
-            np.absolute(fair_grid - fair_neutral_pos) > self.fair_neutral_tolerance
-        ).all():
+        while (np.absolute(fair_grid - fair_neutral_pos) > self.fair_neutral_tolerance).all():
             self.fair_neutral_tolerance *= 2
 
-        constrained_grid[
-            np.where(
-                np.absolute(fair_grid - fair_neutral_pos) > self.fair_neutral_tolerance
-            )
-        ] = 0
+        constrained_grid[np.where(np.absolute(fair_grid - fair_neutral_pos) > self.fair_neutral_tolerance)] = 0
         self.fair_grid = fair_grid
         idx = np.unravel_index(constrained_grid.argmax(), constrained_grid.shape)
         best_con_th_a, best_con_th_b = self.th_x[idx[1]], self.th_y[idx[0]]
@@ -495,18 +465,8 @@ class TradeoffRate(object):
             ~mask_ma[self.y_true == 1].astype(bool)
         )
         # Combine FPRs: P(R=1|Y=0) = P(R=1|Y=0,A=1)P(A=1|Y=0) + P(R=1|Y=0,A=0)P(A=0|Y=0)
-        ppv = (
-            ppv_a
-            * [
-                np.mean(mask_ma[self.y_prob > th].astype(bool))
-                for th in self.th_a.ravel()
-            ]
-        ) + (
-            ppv_b
-            * [
-                np.mean(~mask_ma[self.y_prob > th].astype(bool))
-                for th in self.th_b.ravel()
-            ]
+        ppv = (ppv_a * [np.mean(mask_ma[self.y_prob > th].astype(bool)) for th in self.th_a.ravel()]) + (
+            ppv_b * [np.mean(~mask_ma[self.y_prob > th].astype(bool)) for th in self.th_b.ravel()]
         )
 
         f1 = 2 * ((ppv * tpr) / (ppv + tpr))
@@ -796,9 +756,7 @@ class TradeoffRate(object):
         _compute_expected_profit_tr : float
                 tradeoff value
         """
-        return self.uplift_rates_a.profit(self.th_a) + self.uplift_rates_b.profit(
-            self.th_b
-        )
+        return self.uplift_rates_a.profit(self.th_a) + self.uplift_rates_b.profit(self.th_b)
 
     def _compute_emp_lift_tr(self):
         """
@@ -813,34 +771,18 @@ class TradeoffRate(object):
         maskFilterNeg = mask == -1
         mask = np.ma.array(mask, mask=maskFilterNeg).astype(bool)
         y_true_a = self.y_true[1][mask]
-        tr_p = np.array(
-            [sum(y_true_a[self.e_lift[mask] > th] == "TR") for th in self.th_a.ravel()]
-        )
-        tn_p = np.array(
-            [sum(y_true_a[self.e_lift[mask] > th] == "TN") for th in self.th_a.ravel()]
-        )
-        cr_p = np.array(
-            [sum(y_true_a[self.e_lift[mask] > th] == "CR") for th in self.th_a.ravel()]
-        )
-        cn_p = np.array(
-            [sum(y_true_a[self.e_lift[mask] > th] == "CN") for th in self.th_a.ravel()]
-        )
+        tr_p = np.array([sum(y_true_a[self.e_lift[mask] > th] == "TR") for th in self.th_a.ravel()])
+        tn_p = np.array([sum(y_true_a[self.e_lift[mask] > th] == "TN") for th in self.th_a.ravel()])
+        cr_p = np.array([sum(y_true_a[self.e_lift[mask] > th] == "CR") for th in self.th_a.ravel()])
+        cn_p = np.array([sum(y_true_a[self.e_lift[mask] > th] == "CN") for th in self.th_a.ravel()])
         t_p = np.add(tr_p, tn_p)
         c_p = np.add(cr_p, cn_p)
 
         y_true_b = self.y_true[1][~mask]
-        tr_u = np.array(
-            [sum(y_true_b[self.e_lift[~mask] > th] == "TR") for th in self.th_b.ravel()]
-        )
-        tn_u = np.array(
-            [sum(y_true_b[self.e_lift[~mask] > th] == "TN") for th in self.th_b.ravel()]
-        )
-        cr_u = np.array(
-            [sum(y_true_b[self.e_lift[~mask] > th] == "CR") for th in self.th_b.ravel()]
-        )
-        cn_u = np.array(
-            [sum(y_true_b[self.e_lift[~mask] > th] == "CN") for th in self.th_b.ravel()]
-        )
+        tr_u = np.array([sum(y_true_b[self.e_lift[~mask] > th] == "TR") for th in self.th_b.ravel()])
+        tn_u = np.array([sum(y_true_b[self.e_lift[~mask] > th] == "TN") for th in self.th_b.ravel()])
+        cr_u = np.array([sum(y_true_b[self.e_lift[~mask] > th] == "CR") for th in self.th_b.ravel()])
+        cn_u = np.array([sum(y_true_b[self.e_lift[~mask] > th] == "CN") for th in self.th_b.ravel()])
         t_u = np.add(tr_u, tn_u)
         c_u = np.add(cr_u, cn_u)
 

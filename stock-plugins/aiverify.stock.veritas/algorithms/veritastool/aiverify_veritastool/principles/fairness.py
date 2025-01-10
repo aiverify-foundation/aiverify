@@ -1633,8 +1633,8 @@ class Fairness:
             interval_cols = df.select_dtypes(include=[np.number]).columns.tolist()
             self.corr_df = df.phik_matrix(interval_cols=interval_cols, bins=self.correlation_bins)
             self.correlation_output = {
-                "feature_names": self.corr_df.columns.values,
-                "corr_values": self.corr_df.values,
+                "feature_names": self.corr_df.columns.values.tolist(),
+                "corr_values": [[float(value) for value in row] for row in self.corr_df.values.tolist()],
             }
             self.feature_imp_status_corr = True
 
@@ -1971,7 +1971,7 @@ class Fairness:
             print("\n")
 
         print(
-            """*Disclaimer: The outcome is calculated based on your inputs and is provided for informational purposes only. 
+            """*Disclaimer: The outcome is calculated based on your inputs and is provided for informational purposes only.
             Should you decide to act upon the information herein, you do so at your own risk and Veritas Toolkit will not be liable or responsible in any way. """
         )
         sys.stdout.flush()
