@@ -6,6 +6,7 @@ import { useModelData } from '@/app/models/hooks/useDownloadModel';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import { Modal } from '@/lib/components/modal';
 import { useEditModel } from '@/app/models/hooks/useEditModel';
+import Dropdown from '@/app/models/components/DropdownMenu';
 
 type Props = {
   model: TestModel;
@@ -289,12 +290,24 @@ const ModelDetail: React.FC<Props> = ({ model }) => {
                 {/* Edit Model Type */}
                 <div className="mb-4">
                   <label className="mb-2 block">Model Type</label>
-                  <input
-                    type="text"
-                    name="modelType"
-                    value={editedModel.modelType}
-                    onChange={handleInputChange}
-                    className="w-full rounded border border-gray-300 bg-transparent p-2"
+                  <Dropdown
+                    id="model-type-dropdown"
+                    title="Select Model Type"
+                    data={[
+                      { id: 'classification', name: 'Classification' },
+                      { id: 'regression', name: 'Regression' },
+                    ]}
+                    selectedId={editedModel.modelType}
+                    onSelect={(id) => {
+                      const event = {
+                        target: {
+                          name: 'modelType',
+                          value: id,
+                        },
+                      } as React.ChangeEvent<HTMLInputElement>; // Type assertion applied here
+                      handleInputChange(event);
+                    }}
+                    style="w-full rounded border border-secondary-300 bg-transparent p-2"
                   />
                 </div>
 

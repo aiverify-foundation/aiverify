@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Icon, IconName } from "@/lib/components/IconSVG";
+import { Icon, IconName } from '@/lib/components/IconSVG';
 
 interface DropdownItem {
   id: string;
@@ -50,7 +50,10 @@ const Dropdown = ({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -65,24 +68,29 @@ const Dropdown = ({
     if (isOpen && dropdownRef.current) {
       const dropdownRect = dropdownRef.current.getBoundingClientRect();
       const viewportWidth = window.innerWidth;
-  
+
       // Check if the dropdown would overflow on the right
       const overflowsRight = dropdownRect.right > viewportWidth;
-  
+
       // Check if the dropdown would overflow on the left
       const overflowsLeft = dropdownRect.left < 0;
-  
+
       // If it overflows on the right but has space on the left, align left
-      const needsLeftAlign = overflowsRight && dropdownRect.left > dropdownRect.width;
-  
+      const needsLeftAlign =
+        overflowsRight && dropdownRect.left > dropdownRect.width;
+
       // If it overflows on the bottom but has space on the top, align top
       const needsBottomAlign = dropdownRect.bottom > window.innerHeight;
-  
-      const newPosition = `${needsBottomAlign ? 'top' : 'bottom'}-${needsLeftAlign ? 'left' : 'right'}` as 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right';
+
+      const newPosition =
+        `${needsBottomAlign ? 'top' : 'bottom'}-${needsLeftAlign ? 'left' : 'right'}` as
+          | 'bottom-left'
+          | 'bottom-right'
+          | 'top-left'
+          | 'top-right';
       setDynamicPosition(newPosition);
     }
   }, [isOpen, position]);
-  
 
   // Calculate the max width for the button
   useEffect(() => {
@@ -97,15 +105,19 @@ const Dropdown = ({
   }, [data]);
 
   const dropdownClass = `absolute w-full min-w-[200px] overflow-y-auto py-3 rounded shadow-md z-40 border-secondary-300 bg-secondary-950 ${
-    dynamicPosition === 'bottom-right' ? 'top-full left-0 mt-2' :
-    dynamicPosition === 'bottom-left' ? 'top-full left-0 mt-2' :
-    dynamicPosition === 'top-right' ? 'bottom-full right-0 mb-2' :
-    'bottom-full left-0 mb-2'
+    dynamicPosition === 'bottom-right'
+      ? 'top-full left-0 mt-2'
+      : dynamicPosition === 'bottom-left'
+        ? 'top-full left-0 mt-2'
+        : dynamicPosition === 'top-right'
+          ? 'bottom-full right-0 mb-2'
+          : 'bottom-full left-0 mb-2'
   }`;
-  
 
   return (
-    <div ref={dropdownRef} className='relative'>
+    <div
+      ref={dropdownRef}
+      className="relative">
       <span
         ref={measureRef}
         style={{
@@ -116,15 +128,17 @@ const Dropdown = ({
       />
       <button
         id={id}
-        aria-label='Toggle dropdown'
-        aria-haspopup='true'
+        aria-label="Toggle dropdown"
+        aria-haspopup="true"
         aria-expanded={isOpen}
-        type='button'
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex justify-between items-center gap-2 rounded py-2 px-4 border ${selectedItem ? 'bg-secondary-950 text-white' : 'bg-secondary-950 text-white'
-          } ${style}`}
-        style={{ minWidth: maxWidth + 100 }}
-      >
+        className={`flex items-center justify-between gap-2 rounded border px-4 py-2 ${
+          selectedItem
+            ? 'bg-secondary-950 text-white'
+            : 'bg-secondary-950 text-white'
+        } ${style}`}
+        style={{ minWidth: maxWidth + 100 }}>
         <span>{selectedItem?.name || title}</span>
         <Icon
           name={isOpen ? IconName.WideArrowUp : IconName.WideArrowDown}
@@ -133,20 +147,21 @@ const Dropdown = ({
         />
       </button>
       {isOpen && (
-        <div aria-label='Dropdown menu' className={dropdownClass}>
+        <div
+          aria-label="Dropdown menu"
+          className={dropdownClass}>
           <ul
-            role='menu'
+            role="menu"
             aria-labelledby={id}
-            aria-orientation='vertical'
-            className='leading-10'
-          >
+            aria-orientation="vertical"
+            className="leading-10">
             {data?.map((item) => (
               <li
                 key={item.id}
                 onClick={() => handleChange(item)}
-                className={`flex items-center cursor-pointer hover:bg-gray-200 px-3 ${selectedItem?.id === item.id ? 'bg-secondary-950' : ''
-                  }`}
-              >
+                className={`flex cursor-pointer items-center px-3 hover:bg-secondary-800 ${
+                  selectedItem?.id === item.id ? 'bg-secondary-950' : ''
+                }`}>
                 <span>{item.name}</span>
               </li>
             ))}
