@@ -309,7 +309,7 @@ def convert_veritas_artifact_to_aiverify(
         output=processed_results,
     )
 
-    output_json = output.json(exclude_none=True, indent=4)
+    output_json = output.json(exclude_none=True)
     output_path = output_dir / "results.json"
 
     if validate_test_result_schema(json.loads(output_json)) is True:
