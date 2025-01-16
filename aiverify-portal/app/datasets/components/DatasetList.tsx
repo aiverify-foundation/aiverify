@@ -33,7 +33,11 @@ const columns: Column<Dataset>[] = [
   { field: 'name', headerName: 'Name' },
   { field: 'numRows', headerName: 'Rows' },
   { field: 'numCols', headerName: 'Columns' },
-  { field: 'updated_at', headerName: 'Date' },
+  {
+    field: 'updated_at',
+    headerName: 'Date',
+    renderCell: (row: Dataset) => new Date(row.updated_at).toLocaleString(),
+  },
 ];
 
 function DatasetList({ datasets, className }: DatasetListProps) {

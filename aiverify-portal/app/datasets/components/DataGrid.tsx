@@ -183,8 +183,9 @@ export function DataGrid<T>({
           ))}
         </tbody>
       </table>
-      <div className="absolute bottom-4 left-0 right-0 flex items-center justify-between bg-secondary-950 px-5 py-2">
-        <div>
+      {typeof pageSizeOptions[0] === 'number' &&
+      filteredRows.length > pageSizeOptions[0] ? (
+        <div className="absolute bottom-4 left-0 right-0 flex items-center justify-between bg-secondary-950 px-5 py-2">
           <select
             value={pageSize}
             onChange={(e) => {
@@ -203,29 +204,27 @@ export function DataGrid<T>({
               </option>
             ))}
           </select>
+          {pageSize !== 'All' && (
+            <div>
+              {Array.from(
+                { length: Math.ceil(filteredRows.length / Number(pageSize)) },
+                (_, idx) => idx
+              ).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`mx-1 rounded-lg border px-3 py-1 ${
+                    page === currentPage
+                      ? 'bg-primary-600 text-secondary-950'
+                      : 'bg-secondary-900 text-white'
+                  }`}>
+                  {page + 1}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
-        {pageSize !== 'All' && (
-          <div>
-            {Array.from(
-              { length: Math.ceil(filteredRows.length / Number(pageSize)) },
-              (_, idx) => idx
-            ).map((page) => (
-              <button
-                key={page}
-                onClick={() => setCurrentPage(page)}
-                className={`mx-1 rounded-lg border px-3 py-1 ${
-                  page === currentPage
-                    ? 'bg-primary-600 text-secondary-950'
-                    : 'bg-secondary-900 text-white'
-                }`}>
-                {page + 1}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+      ) : null}
     </div>
   );
 }
-
-export type { Column };
