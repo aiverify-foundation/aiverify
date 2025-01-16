@@ -40,7 +40,7 @@ type DatasetStatus = 'invalid' | 'valid';
 type FileType = 'file' | 'folder';
 
 type Dataset = {
-  id: number;
+  id: string;
   name: string;
   description: string | null;
   fileType: FileType;

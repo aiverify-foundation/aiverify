@@ -1,5 +1,6 @@
 'use client';
 
+import { cn } from '@/lib/utils/twmerge';
 import React, { useState } from 'react';
 
 type Column<T> = {
@@ -12,6 +13,7 @@ type Column<T> = {
 
 type DataGridProps<T> = {
   rows: T[];
+  highlightRow?: T;
   columns: Column<T>[];
   pageSizeOptions: (number | 'All')[];
   checkboxSelection?: boolean;
@@ -22,6 +24,7 @@ type DataGridProps<T> = {
 export function DataGrid<T>({
   rows,
   columns,
+  highlightRow,
   pageSizeOptions,
   checkboxSelection,
   onRowClick,
@@ -107,8 +110,8 @@ export function DataGrid<T>({
   ];
 
   return (
-    <div className="overflow-hidden rounded-lg border-secondary-300 bg-secondary-950 shadow-md">
-      <table className="min-w-full table-auto">
+    <div className="relative h-full overflow-hidden rounded-lg border-secondary-300 bg-secondary-950 shadow-md">
+      <table className="w-full">
         <thead className="bg-secondary-950 text-white">
           <tr>
             {checkboxSelection && <th className="px-4 py-2 text-center"></th>}
@@ -152,7 +155,10 @@ export function DataGrid<T>({
           {paginatedRows.map((row) => (
             <tr
               key={row.id}
-              className="hover:bg-secondary-800"
+              className={cn(
+                'h-[20px] hover:bg-secondary-800',
+                highlightRow?.id === row.id ? 'bg-secondary-600' : ''
+              )}
               onClick={() => onRowClick?.(row)}>
               {checkboxSelection && (
                 <td
@@ -177,7 +183,7 @@ export function DataGrid<T>({
           ))}
         </tbody>
       </table>
-      <div className="mb-2 mt-12 flex items-center justify-between bg-secondary-950 px-5 py-2">
+      <div className="absolute bottom-4 left-0 right-0 flex items-center justify-between bg-secondary-950 px-5 py-2">
         <div>
           <select
             value={pageSize}

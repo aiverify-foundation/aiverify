@@ -1,8 +1,10 @@
+import { unstable_noStore as noStore } from 'next/cache';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import { getTestDatasets } from '@/lib/fetchApis/getTestDatasets';
 import { DatasetList } from './components/DatasetList';
 
 export default async function DatasetsPage() {
+  noStore();
   const result = await getTestDatasets();
   if ('message' in result) {
     return <div>{result.message}</div>;
@@ -10,7 +12,7 @@ export default async function DatasetsPage() {
   const datasets = result.data;
 
   return (
-    <div className="p-6">
+    <main className="p-6">
       <div className="mb-1 flex items-center justify-between">
         <div className="flex items-center">
           <Icon
@@ -28,6 +30,6 @@ export default async function DatasetsPage() {
         datasets={datasets}
         className="mt-10"
       />
-    </div>
+    </main>
   );
 }
