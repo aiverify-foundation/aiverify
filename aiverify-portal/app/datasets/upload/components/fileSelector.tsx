@@ -8,6 +8,7 @@ import { ButtonVariant } from '@/lib/components/button';
 import { Button } from '@/lib/components/button';
 import { FileSelect } from '@/lib/components/fileSelect';
 import { cn } from '@/lib/utils/twmerge';
+import Link from 'next/link';
 
 export interface FileSelectorHandle {
   getFiles: () => FileUpload[];
@@ -269,6 +270,7 @@ export function FileSelector({
                 text="Upload Selected Files"
                 onClick={uploadFiles}
                 disabled={uploaderState !== 'new'}
+                pill
               />
             ) : null}
             {uploaderState === 'completedWithErrors' ? (
@@ -277,6 +279,7 @@ export function FileSelector({
                 size="md"
                 text="View Errors"
                 onClick={handleViewErrorsClick}
+                pill
               />
             ) : null}
             {uploaderState === 'completed' ||
@@ -286,8 +289,17 @@ export function FileSelector({
                 size="md"
                 text="Upload More"
                 onClick={handleUploadMoreClick}
+                pill
               />
             ) : null}
+            <Link href="/datasets">
+              <Button
+                variant={ButtonVariant.PRIMARY}
+                size="md"
+                text="View Datasets"
+                pill
+              />
+            </Link>
           </div>
         </div>
       </div>
