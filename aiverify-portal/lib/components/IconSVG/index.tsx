@@ -126,9 +126,7 @@ type WithColor = BaseIconProps & {
 };
 
 type WithClassName = BaseIconProps & {
-  svgClassName:
-    | `stroke-${string} dark:stroke-${string}`
-    | `fill-${string} dark:fill-${string}`;
+  svgClassName: `stroke-${string}` | `fill-${string}`;
   color?: never;
 };
 

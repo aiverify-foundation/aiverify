@@ -36,24 +36,26 @@ type DataColumn = {
   label: string;
 };
 
+type DatasetStatus = 'invalid' | 'valid';
+type FileType = 'file' | 'folder';
+
 type Dataset = {
   id: number;
   name: string;
-  description: string;
-  fileType: string;
+  description: string | null;
+  fileType: FileType;
   filename: string;
   zip_hash: string;
   size: number;
-  serializer: string;
-  dataFormat: string;
-  numRows: number;
-  numCols: number;
-  dataColumns: DataColumn[];
-  status: string;
-  errorMessages: string;
+  serializer: string | null;
+  dataFormat: string | null;
+  numRows: number | null;
+  numCols: number | null;
+  dataColumns: string[] | null;
+  status: DatasetStatus;
+  errorMessages: string | null;
   created_at: string;
   updated_at: string;
 };
-
 
 export type { Project, TestResults, Dataset };
