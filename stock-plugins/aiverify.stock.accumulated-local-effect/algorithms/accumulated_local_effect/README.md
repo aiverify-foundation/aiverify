@@ -27,7 +27,7 @@ Run the following bash script to execute the plugin
 root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files"
 python -m aiverify_accumulated_local_effect \
     --data_path  $root_path/data/sample_bc_credit_data.sav \
-    --model_path $root_path/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav \ 
+    --model_path $root_path/model/sample_bc_credit_sklearn_linear.LogisticRegression.sav \
     --ground_truth_path $root_path/data/sample_bc_credit_data.sav \
     --ground_truth default \
     --model_type CLASSIFICATION
