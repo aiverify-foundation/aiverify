@@ -18,6 +18,7 @@ algorithm_schema = load_schema("aiverify.algorithm.schema.json")
 widget_schema = load_schema("aiverify.widget.schema.json")
 input_block_schema = load_schema("aiverify.inputBlock.schema.json")
 template_schema = load_schema("aiverify.template.schema.json")
+template_data_schema = load_schema("aiverify.template.data.schema.json")
 test_result_schema = load_schema("aiverify.testresult.schema.json")
 
 

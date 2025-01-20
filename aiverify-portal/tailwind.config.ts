@@ -1,4 +1,3 @@
-import type { Config } from 'tailwindcss';
 import {
   colors,
   white,
@@ -6,22 +5,16 @@ import {
   currentColor,
   transparent,
 } from './lib/theme/colors';
+import type { Config } from 'tailwindcss';
 
 const config: Config = {
   darkMode: ['class'],
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './lib/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
-    colors: {
-      ...colors,
-      white,
-      black,
-      currentColor,
-      transparent,
-    },
     extend: {
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
@@ -30,6 +23,13 @@ const config: Config = {
         default: '0 2px 4px black',
         sm: '0 1px 2px black',
         lg: '0 8px 16px black',
+      },
+      colors: {
+        ...colors,
+        white,
+        black,
+        currentColor,
+        transparent,
       },
     },
   },

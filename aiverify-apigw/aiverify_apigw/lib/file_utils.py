@@ -1,4 +1,4 @@
-from pathlib import PurePath
+from pathlib import PurePath, Path
 import io
 import re
 import hashlib
@@ -17,7 +17,11 @@ def check_valid_filename(filename: str):
     # filename must be alphanumeric plus charters ./
     # sanitized = re.fullmatch(r'[a-zA-Z0-9_./]*', filename)
     # return sanitized is not None
-    return re.search(r"\.\.", filename) is None
+    return re.search(r"\.\.", filename) is None and re.search(r"[^a-zA-Z0-9._-]", filename) is None
+
+
+def check_file_size(size: int):
+    return size <= 4294967296 # 4 gb
 
 
 def append_filename(filename: str, append_name: str) -> str:
@@ -45,3 +49,20 @@ def sanitize_filename(filename: str) -> str:
     # Use regex to replace invalid characters
     sanitized = re.sub(r"[^a-zA-Z0-9./_]", "", filename)
     return sanitized
+
+
+def compute_file_hash(file_path: Path) -> str:
+    """
+    Compute the SHA-256 hash of a file.
+
+    Args:
+        file_path (Path): The path of the file to hash
+
+    Returns:
+        str: The SHA-256 hash of the file
+    """
+    hasher = hashlib.sha256()
+    with open(file_path, "rb") as f:
+        while chunk := f.read(8192):
+            hasher.update(chunk)
+    return hasher.hexdigest()

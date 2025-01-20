@@ -2,10 +2,12 @@ from sqlalchemy.orm import Mapped, mapped_column, validates, relationship
 from sqlalchemy import String, Boolean, ForeignKey, Table, Column
 from sqlalchemy.ext.hybrid import hybrid_property
 from typing import Optional, List
+from datetime import datetime
 
 from .base_model import BaseORMModel
 from ..lib.validators import validate_gid_cid
 from ..lib.constants import ModelType, InputBlockSize
+from .project_template_model import ProjectTemplateModel
 
 
 class PluginModel(BaseORMModel):
@@ -25,6 +27,14 @@ class PluginModel(BaseORMModel):
     meta: Mapped[bytes]  # schema serialized
     is_stock: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     zip_hash: Mapped[Optional[str]]
+    widgets_zip_hash: Mapped[Optional[str]]
+    inputblocks_zip_hash: Mapped[Optional[str]]
+
+    # project_templates: Mapped[List["ProjectTemplateModel"]] = relationship(
+    #     cascade="all, delete")
+
+    created_at: Mapped[Optional[datetime]]
+    updated_at: Mapped[Optional[datetime]]
 
     @validates("gid")
     def my_validate_gid_cid(self, key, value):
@@ -62,7 +72,6 @@ class PluginComponentModel(BaseORMModel):
     tags: Mapped[List["ComponentTagModel"]] = relationship(secondary=association_table, back_populates="components")
     gid: Mapped[str]
     meta: Mapped[bytes]  # schema serialized
-    zip_hash: Mapped[Optional[str]]
 
     __mapper_args__ = {
         "polymorphic_identity": "employee",
@@ -114,6 +123,8 @@ class AlgorithmModel(PluginComponentModel):
     script: Mapped[Optional[str]]
     module_name: Mapped[Optional[str]]
 
+    zip_hash: Mapped[Optional[str]]  # each algo got it's own zip
+
     plugin_id: Mapped[int] = mapped_column(ForeignKey("plugin.gid"))
     plugin: Mapped["PluginModel"] = relationship(back_populates="algorithms")
 
@@ -147,7 +158,7 @@ class InputBlockModel(PluginComponentModel):
 
     id: Mapped[str] = mapped_column(ForeignKey("plugin_component.id"), primary_key=True)
 
-    group: Mapped[str]
+    group: Mapped[Optional[str]]
     width: Mapped[InputBlockSize] = mapped_column(String, default=InputBlockSize.md)
     fullscreen: Mapped[bool]
 
@@ -159,19 +170,19 @@ class InputBlockModel(PluginComponentModel):
         return f"{self.id}"
 
 
-algo_association_table = Table(
-    "widget_algorithm_association",
-    BaseORMModel.metadata,
-    Column("widget_id", ForeignKey("widget.id")),
-    Column("algorithm_id", ForeignKey("algorithm.id")),
-)
+# algo_association_table = Table(
+#     "widget_algorithm_association",
+#     BaseORMModel.metadata,
+#     Column("widget_id", ForeignKey("widget.id")),
+#     Column("algorithm_id", ForeignKey("algorithm.id")),
+# )
 
-ib_association_table = Table(
-    "widget_inputblock_association",
-    BaseORMModel.metadata,
-    Column("widget_id", ForeignKey("widget.id")),
-    Column("inputblock_id", ForeignKey("inputblock.id")),
-)
+# ib_association_table = Table(
+#     "widget_inputblock_association",
+#     BaseORMModel.metadata,
+#     Column("widget_id", ForeignKey("widget.id")),
+#     Column("inputblock_id", ForeignKey("inputblock.id")),
+# )
 
 
 class WidgetModel(PluginComponentModel):
@@ -185,12 +196,13 @@ class WidgetModel(PluginComponentModel):
 
     widget_size: Mapped[bytes]  # serialized json for widgetSize
     properties: Mapped[Optional[bytes]]  # seralized json of widget properties
-    mockdata: Mapped[Optional[bool]]  # serialized json of mock data
+    mockdata: Mapped[Optional[bytes]]  # serialized json of mock data
     dynamic_height: Mapped[bool] = mapped_column(Boolean, default=False)
 
     # dependencies
-    algorithms: Mapped[List["AlgorithmModel"]] = relationship(secondary=algo_association_table)
-    inputblocks: Mapped[List["InputBlockModel"]] = relationship(secondary=ib_association_table)
+    dependencies: Mapped[bytes]
+    # algorithms: Mapped[List["AlgorithmModel"]] = relationship(secondary=algo_association_table)
+    # inputblocks: Mapped[List["InputBlockModel"]] = relationship(secondary=ib_association_table)
 
     plugin_id: Mapped[int] = mapped_column(ForeignKey("plugin.gid"))
     plugin: Mapped["PluginModel"] = relationship(back_populates="widgets")
@@ -209,9 +221,12 @@ class TemplateModel(PluginComponentModel):
 
     id: Mapped[str] = mapped_column(ForeignKey("plugin_component.id"), primary_key=True)
     template: Mapped[bytes]
+    project_data: Mapped[bytes]
 
     plugin_id: Mapped[int] = mapped_column(ForeignKey("plugin.gid"))
     plugin: Mapped["PluginModel"] = relationship(back_populates="templates")
+
+    project_template: Mapped["ProjectTemplateModel"] = relationship(cascade="all, delete")
 
     @hybrid_property
     def template_id(self):

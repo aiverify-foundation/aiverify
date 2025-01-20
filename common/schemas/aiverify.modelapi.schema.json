@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "/aiverify.modelapi.schema.json",
+  "title": "Model API Schema",
+  "description": "Model API schema",
+  "type": "object",
+  "properties": {
+    "requestConfig": {
+      "$ref": "#/$defs/ModelAPIRequestConfigType",
+      "description": "Request configuration for the API."
+    },
+    "response": {
+      "$ref": "#/$defs/OpenAPIResponseType",
+      "description": "Response configuration for the API."
+    },
+    "openapiSchema": {
+      "type": "object",
+      "description": "Contains the openapi schema"
+    },
+    "requestBody": {
+      "type": "object",
+      "description": "Parameter mapping for request body"
+    },
+    "parameters": {
+      "type": "object",
+      "description": "Parameter mapping for path parameters"
+    }
+  },
+  "required": [
+    "response",
+    "openapiSchema"
+  ],
+  "$defs": {
+    "ModelAPIRequestConfigType": {
+      "type": "object",
+      "properties": {
+        "sslVerify": {
+          "default": true,
+          "description": "Indicates whether to verify the SSL certificate.",
+          "type": "boolean"
+        },
+        "connectionTimeout": {
+          "default": -1,
+          "description": "Timeout for connecting to the server, in seconds.",
+          "minimum": -1,
+          "type": "integer"
+        },
+        "rateLimit": {
+          "default": -1,
+          "description": "Maximum number of requests allowed per second.",
+          "minimum": -1,
+          "type": "integer"
+        },
+        "rateLimitTimeout": {
+          "default": -1,
+          "description": "Timeout when rate limiting is applied, in seconds.",
+          "minimum": -1,
+          "type": "integer"
+        },
+        "batchLimit": {
+          "default": -1,
+          "description": "Maximum number of requests in a batch.",
+          "minimum": -1,
+          "type": "integer"
+        },
+        "connectionRetries": {
+          "default": 3,
+          "description": "Number of retries for connecting to the server.",
+          "minimum": -1,
+          "type": "integer"
+        },
+        "maxConnections": {
+          "default": -1,
+          "description": "Maximum number of concurrent connections allowed.",
+          "minimum": -1,
+          "type": "integer"
+        },
+        "batchStrategy": {
+          "description": "Batching strategy for requests.",
+          "type": "string",
+          "enum": [
+            "none",
+            "multipart"
+          ]
+        }
+      },
+      "required": [
+        "batchStrategy"
+      ]
+    },
+    "OpenAPIResponseType": {
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "type": "integer",
+          "description": "HTTP status code of the response.",
+          "maximum": 299,
+          "minimum": 200
+        },
+        "mediaType": {
+          "type": "string",
+          "description": "Media type of the response."
+        },
+        "schema": {
+          "type": "object",
+          "description": "Schema of the response in JSON format.",
+          "title": "Schema"
+        }
+      },
+      "required": [
+        "statusCode",
+        "mediaType",
+        "schema"
+      ]
+    }
+  }
+}

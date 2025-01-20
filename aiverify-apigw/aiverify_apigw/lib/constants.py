@@ -16,7 +16,7 @@ class TestModelStatus(StrEnum):
     Pending = auto()
     Valid = auto()
     Invalid = auto()
-    Cancelled = auto()
+    # Cancelled = auto()
 
 
 class ModelType(StrEnum):
@@ -30,10 +30,8 @@ class TestDatasetFileType(StrEnum):
 
 
 class TestDatasetStatus(StrEnum):
-    Pending = auto()
     Valid = auto()
     Invalid = auto()
-    Cancelled = auto()
 
 
 class InputBlockSize(StrEnum):

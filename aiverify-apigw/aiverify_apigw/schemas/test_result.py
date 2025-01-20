@@ -1,8 +1,7 @@
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, model_validator, Json
 from typing import List, Optional, Literal, Any, Self
 from datetime import datetime
 import json
-from .load_examples import test_result_examples
 from ..models import TestResultModel
 from ..lib.constants import ModelType, TestModelMode
 
@@ -15,7 +14,7 @@ class TestArguments(BaseModel):
     modelType: Literal["classification", "regression"] = Field(description="AI model type")
     groundTruthDataset: Optional[str] = Field(default=None, description="URI of test dataset")
     groundTruth: Optional[str] = Field(default=None, description="Ground truth column name")
-    algorithmArgs: str = Field(
+    algorithmArgs: Json[Any] = Field(
         description="Argument provided to the algorithm for running the tests. Test arguments should be defined in input.schema.json under each algorithm"
     )
     modelFile: Optional[str] = Field(default=None, description="URI of model file")
@@ -74,12 +73,6 @@ class TestResult(BaseModel):
             return _update_obj(value)
         return value
 
-    model_config = {
-        "json_schema_extra": {
-            "examples": test_result_examples,
-        }
-    }
-
 
 class TestResultOutput(TestResult):
     id: int  # test_result_id
@@ -91,14 +84,15 @@ class TestResultOutput(TestResult):
     def from_model(cls, result: TestResultModel) -> "TestResultOutput":
         modelType = "regression" if result.model.model_type == ModelType.Regression else "classification"
         mode = "api" if result.model.mode == TestModelMode.API else "upload"
+        algo_arguments = result.algo_arguments.decode("utf-8")
         test_argument = TestArguments(
-            testDataset=result.test_dataset.filepath,
+            testDataset=result.test_dataset.filename,
             mode=mode,
             modelType=modelType,
-            groundTruthDataset=result.ground_truth_dataset.filepath,
+            groundTruthDataset=result.ground_truth_dataset.filename,
             groundTruth=result.ground_truth,
-            algorithmArgs=result.algo_arguments.decode("utf-8"),
-            modelFile=result.model.filepath,
+            algorithmArgs=algo_arguments,
+            modelFile=result.model.filename,
         )
         obj = TestResultOutput(
             id=result.id,
