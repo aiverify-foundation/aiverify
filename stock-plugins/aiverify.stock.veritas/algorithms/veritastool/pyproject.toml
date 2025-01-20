@@ -1,9 +1,12 @@
 [project]
 name = "aiverify-veritastool"
 description = "Veritas Diagnosis tool for fairness & transparency assessment."
-authors = [{ name = "MAS Veritas" }, { name = "AI Verify" }]
+authors = [
+    { name = "MAS Veritas" },
+    { name = "AI Verify" },
+    { name = "Resaro" },
+]
 readme = "README.md"
-version = "0.1.0a1"
 dependencies = [
     "numpy==1.26.4",
     "joblib==1.4.2",
@@ -18,8 +21,17 @@ dependencies = [
     "shap==0.46.0",
     "matplotlib-inline==0.1.6",
     "Jinja2==3.1.2",
+    "aiverify-test-engine==2.0.0a2",
 ]
 requires-python = ">=3.10,<3.12"
+dynamic = ["version"]
+
+[project.scripts]
+aiverify_veritastool = "aiverify_veritastool.__main__:main"
+
+[tool.hatch.version]
+path = "aiverify_veritastool/algo.meta.json"
+pattern = '"version":\s*"(?P<version>[^"]+)"'
 
 [tool.hatch.metadata]
 allow-direct-references = true
