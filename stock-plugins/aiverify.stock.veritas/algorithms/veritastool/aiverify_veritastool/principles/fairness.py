@@ -10,6 +10,7 @@ from copy import deepcopy
 from math import floor
 from pathlib import Path
 
+import phik  # noqa
 import IPython
 import ipywidgets as widgets
 import matplotlib.patches as mpatches

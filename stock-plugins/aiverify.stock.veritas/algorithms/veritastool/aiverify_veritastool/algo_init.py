@@ -31,7 +31,6 @@ from aiverify_test_engine.utils.json_utils import (
     remove_numpy_formats,
     validate_test_result_schema,
 )
-from rich import print
 
 USE_CASE_MAP = {
     "base_classification": BaseClassification,
