@@ -7,17 +7,17 @@ AI Verify Test Engine provides core interfaces, converters, data, model and plug
 ## Installation
 
 > [!IMPORTANT]  
-> Currently, aiverify-test-engine is in alpha release. To install the package, you should specify the version i.e. `pip install aiverify-test-engine==2.0.0a1`.
+> Currently, aiverify-test-engine is in alpha release. To install the package, you should specify the version i.e. `pip install aiverify-test-engine==2.0.0a2`.
 
 Install `aiverify-test-engine` via pip. The following table list the available install options and the optional dependencies along with the additional functionality that is supported.
 
-| Installation Command | Description |
-| --- | --- |
-| `pip install aiverify-test-engine` | Installs only the core functionalites. Supports tabular data formats like CSV, as well as Pandas pickle and Joblib files, and Scikit-learn models. |
-| `pip install aiverify-test-engine[dev]` | Includes additional dependencies for development. Intended for developers who want to contribute to the project. |
-| `pip install aiverify-test-engine[tensorflow]` | Installs optional Tensorflow and Keras dependencies. |
-| `pip install aiverify-test-engine[gbm]` | Installs XGBoost and LightGBM packages. Supports serializing models in these formats. |
-| `pip install aiverify-test-engine[all]` | Installs the core package along with all additional non development dependencies.  |
+| Installation Command                           | Description                                                                                                                                        |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pip install aiverify-test-engine`             | Installs only the core functionalites. Supports tabular data formats like CSV, as well as Pandas pickle and Joblib files, and Scikit-learn models. |
+| `pip install aiverify-test-engine[dev]`        | Includes additional dependencies for development. Intended for developers who want to contribute to the project.                                   |
+| `pip install aiverify-test-engine[tensorflow]` | Installs optional Tensorflow and Keras dependencies.                                                                                               |
+| `pip install aiverify-test-engine[gbm]`        | Installs XGBoost and LightGBM packages. Supports serializing models in these formats.                                                              |
+| `pip install aiverify-test-engine[all]`        | Installs the core package along with all additional non development dependencies.                                                                  |
 
 ## Developer Guide
 
@@ -42,7 +42,6 @@ aiverify-test-engine/
 ├── pyproject.toml          # Project configuration file
 ```
 
-
 ### Running Tests
 
 ```bash
@@ -56,7 +55,9 @@ hatch build
 ```
 
 ## License
-* Licensed under Apache Software License 2.0
+
+- Licensed under Apache Software License 2.0
 
 ## Developers:
-* AI Verify
+
+- AI Verify
