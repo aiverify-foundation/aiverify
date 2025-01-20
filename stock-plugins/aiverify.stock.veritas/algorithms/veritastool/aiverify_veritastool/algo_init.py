@@ -5,7 +5,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Tuple, Union
+from typing import Dict, List, Tuple, Union
 
 from aiverify_veritastool.model.model_container import ModelContainer
 from aiverify_veritastool.usecases import (
@@ -68,6 +68,11 @@ class AlgoInit:
         input_arguments: dict,
     ):
         # Core parameters
+        self._supported_algorithm_model_type: List = [
+            ModelType.CLASSIFICATION,
+            ModelType.REGRESSION,
+            ModelType.UPLIFT,
+        ]
         self._base_path: Path = Path().absolute()
         self._requires_ground_truth: bool = True
         self._run_as_pipeline: bool = run_as_pipeline
@@ -84,6 +89,8 @@ class AlgoInit:
         self._training_ground_truth_path = input_arguments.get("training_ground_truth_path", None)
         self._input_arguments = input_arguments
         self._model_type = model_type
+        if self._model_type not in self._supported_algorithm_model_type:
+            raise RuntimeError("The algorithm has failed validation for model type")
 
         # Ground truth handling
         if self._requires_ground_truth:
@@ -295,8 +302,6 @@ class AlgoInit:
             )
 
             use_case_instance.evaluate(visualize=True, output=True)
-            # classifier.tradeoff()
-            # classifier.feature_importance()
             use_case_instance.explain()
             results = use_case_instance.compile(save_artifact=False)
             return results

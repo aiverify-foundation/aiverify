@@ -4,9 +4,10 @@
     "name": "VeritasTool",
     "modelType": [
         "classification",
-        "regression"
+        "regression",
+        "uplift"
     ],
-    "version": "2.0.0a1",
+    "version": "2.0.0a2",
     "author": "AI Verify",
     "description": "Veritas Diagnosis tool for fairness & transparency assessment.",
     "tags": [
@@ -21,13 +22,10 @@
     "requireGroundTruth": true,
     "requiredFiles": [
         "AUTHORS.rst",
-        "CHANGELOG.md",
         "input.schema.json",
         "LICENSE",
         "output.schema.json",
         "algo.meta.json",
-        "algo.py",
-        "README.md",
-        "syntax_checker.py"
+        "README.md"
     ]
 }
