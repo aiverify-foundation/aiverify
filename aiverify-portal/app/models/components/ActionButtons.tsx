@@ -1,6 +1,6 @@
+import Link from 'next/link';
 import React from 'react';
 import { Button, ButtonVariant } from '@/lib/components/button';
-import Link from 'next/link';
 
 const ActionButtons: React.FC = () => (
   <div className="flex">

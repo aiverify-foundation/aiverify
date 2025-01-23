@@ -1,29 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import { TestModel } from '@/app/models/utils/types';
-import { Button, ButtonVariant } from '@/lib/components/button';
-import { useModelAPIData } from '@/app/models/hooks/useDownloadModelAPI';
-import { useModelData } from '@/app/models/hooks/useDownloadModel';
-import { Icon, IconName } from '@/lib/components/IconSVG';
-import { Modal } from '@/lib/components/modal';
-import { useEditModel } from '@/app/models/hooks/useEditModel';
 import Dropdown from '@/app/models/components/DropdownMenu';
+import { useModelData } from '@/app/models/hooks/useDownloadModel';
+import { useModelAPIData } from '@/app/models/hooks/useDownloadModelAPI';
+import { useEditModel } from '@/app/models/hooks/useEditModel';
+import { TestModel } from '@/app/models/utils/types';
+import { Icon, IconName } from '@/lib/components/IconSVG';
+import { Button, ButtonVariant } from '@/lib/components/button';
+import { Modal } from '@/lib/components/modal';
 
 type Props = {
   model: TestModel;
 };
 
 const ModelDetail: React.FC<Props> = ({ model }) => {
-  const [modelAPIData, setModelAPIData] = useState<any>(null);
-  const [modelData, setModelData] = useState<any>(null);
-  const [isModelAPIDataLoading, setIsModelAPIDataLoading] = useState(false);
-  const [isModelDataLoading, setIsModelDataLoading] = useState(false);
-  const [isModelAPIDataError, setIsModelAPIDataError] = useState(false);
-  const [isModelDataError, setIsModelDataError] = useState(false);
+  const [modelAPIData, setModelAPIData] = useState<Record<
+    string,
+    unknown
+  > | null>(null);
+  const [modelData, setModelData] = useState<{
+    blob: Blob;
+    filename: string;
+  } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editedModel, setEditedModel] = useState<TestModel>(model);
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState('');
   const [feedbackSuccess, setFeedbackSuccess] = useState(false);
+
+  // Correct hook for fetching API data
+  const fetchModelAPIDataHook = useModelAPIData();
+
+  // Correct hook for fetching model data
+  const { data: modelDataHook } = useModelData(String(model.id));
 
   // Update editedModel when model changes
   useEffect(() => {
@@ -31,47 +39,44 @@ const ModelDetail: React.FC<Props> = ({ model }) => {
   }, [model]);
 
   const fetchModelAPIData = async () => {
-    setIsModelAPIDataLoading(true);
     try {
-      const data = await useModelAPIData(String(model.id));
-      setModelAPIData(data.data);
+      const result = await fetchModelAPIDataHook(String(model.id));
+
+      if ('data' in result) {
+        // Convert ModelAPIData to Record<string, unknown>
+        setModelAPIData(result.data.data);
+      }
     } catch (error) {
-      setIsModelAPIDataError(true);
-    } finally {
-      setIsModelAPIDataLoading(false);
+      console.error('Error fetching API data:', error);
     }
   };
 
-  const fetchModelData = async () => {
-    setIsModelDataLoading(true);
-    try {
-      const data = await useModelData(String(model.id));
-      setModelData(data.data);
-    } catch (error) {
-      setIsModelDataError(true);
-    } finally {
-      setIsModelDataLoading(false);
+  useEffect(() => {
+    if (modelDataHook) {
+      setModelData(modelDataHook);
     }
-  };
+  }, [modelDataHook]);
 
   const handleDownload = async () => {
     if (!modelData) {
-      await fetchModelData();
+      return;
     }
-    if (modelData && modelData.blob) {
-      const { blob, filename } = modelData;
-      const fileURL = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = fileURL;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(fileURL);
-    }
+
+    const { blob, filename } = modelData;
+    const fileURL = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = fileURL;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(fileURL);
   };
 
-  const handleDownloadJson = (data: any, filename: string) => {
+  const handleDownloadJson = (
+    data: Record<string, unknown>,
+    filename: string
+  ) => {
     const blob = new Blob([JSON.stringify(data, null, 2)], {
       type: 'application/json',
     });
@@ -101,13 +106,13 @@ const ModelDetail: React.FC<Props> = ({ model }) => {
 
   const handleSaveChanges = async () => {
     try {
-      // Call mutateAsync and get the formatted success message directly
       await EditModelMutation.mutateAsync(editedModel);
       setFeedbackMessage('Changes made successfully!');
       setFeedbackSuccess(true);
-    } catch (error: any) {
-      // Catch error message directly from the hook
-      setFeedbackMessage(error.message);
+    } catch (error) {
+      setFeedbackMessage(
+        error instanceof Error ? error.message : 'Unknown error'
+      );
       setFeedbackSuccess(false);
       setEditedModel(model);
       setJsonInput(JSON.stringify(model.modelAPI, null, 2));
@@ -134,13 +139,11 @@ const ModelDetail: React.FC<Props> = ({ model }) => {
 
   const handleJsonChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
-    setJsonInput(value); // Update the raw string state
+    setJsonInput(value);
 
     try {
       const parsed = JSON.parse(value);
       setJsonError('');
-
-      // Update the modelAPI inside editedModel with the parsed JSON
       setEditedModel((prevModel) => ({
         ...prevModel,
         modelAPI: parsed,
@@ -221,7 +224,6 @@ const ModelDetail: React.FC<Props> = ({ model }) => {
         )}
       </div>
       <div className="mt-4 flex justify-end">
-        {/* Download button for API mode */}
         {model.modelAPI && (
           <Button
             pill
@@ -234,7 +236,6 @@ const ModelDetail: React.FC<Props> = ({ model }) => {
           />
         )}
 
-        {/* Download button for non-API mode */}
         {!model.modelAPI && (
           <Button
             pill

@@ -1,21 +1,22 @@
 'use client';
 
 import React, { useState } from 'react';
+import { TestModel } from '@/app/models/utils/types';
 
 interface Column {
-  field: string;
+  field: keyof TestModel; // The field should correspond to a key of TestModel
   headerName: string;
   sortable?: boolean;
   filterable?: boolean;
-  renderCell?: (row: any) => React.ReactNode;
+  renderCell?: (row: TestModel) => React.ReactNode; // renderCell is a function that takes a TestModel and returns a React node
 }
 
 interface DataGridProps {
-  rows: any[];
-  columns: Column[];
+  rows: TestModel[]; // rows is an array of TestModel
+  columns: Column[]; // columns is an array of Column objects
   pageSizeOptions: (number | 'All')[];
   checkboxSelection?: boolean;
-  onRowClick?: (row: any) => void;
+  onRowClick?: (row: TestModel) => void;
   onSelectionModelChange?: (selectedIds: string[]) => void;
 }
 
@@ -32,11 +33,13 @@ export const DataGrid: React.FC<DataGridProps> = ({
   const [pageSize, setPageSize] = useState<number | 'All'>(
     pageSizeOptions.find((option) => typeof option === 'number') || 5
   );
-  const [sortField, setSortField] = useState<string | null>(null);
+  const [sortField, setSortField] = useState<keyof TestModel | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>(
     null
   );
-  const [filters, setFilters] = useState<{ [key: string]: string | null }>({});
+  const [filters, setFilters] = useState<{ [K in keyof TestModel]?: string }>(
+    {}
+  );
 
   const handleCheckboxChange = (
     id: string,
@@ -59,7 +62,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
     }
   };
 
-  const handleHeaderClick = (field: string) => {
+  const handleHeaderClick = (field: keyof TestModel) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : null);
       if (!sortDirection) setSortField(null);
@@ -88,7 +91,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
   const filteredRows = React.useMemo(() => {
     return sortedRows.filter((row) =>
       Object.entries(filters).every(([field, value]) =>
-        value ? String(row[field]).includes(value) : true
+        value ? String(row[field as keyof TestModel]).includes(value) : true
       )
     );
   }, [sortedRows, filters]);
@@ -106,12 +109,14 @@ export const DataGrid: React.FC<DataGridProps> = ({
     'All',
   ];
 
+  const getRowId = (row: TestModel): string => String(row.id);
+
   return (
     <div className="overflow-hidden rounded-lg border-secondary-300 bg-secondary-950 shadow-md">
       <table className="min-w-full table-auto">
         <thead className="bg-secondary-950 text-white">
           <tr>
-            {checkboxSelection && <th className="px-4 py-2 text-center"></th>}
+            {checkboxSelection && <th className="px-4 py-2 text-center" />}
             {columns.map((col) => (
               <th
                 key={col.field}
@@ -130,15 +135,16 @@ export const DataGrid: React.FC<DataGridProps> = ({
                       onChange={(e) =>
                         handleFilterChange(col.field, e.target.value)
                       }
-                      value={filters[col.field] || ''}>
+                      value={String(filters[col.field] || '')} // Ensure it's a string
+                    >
                       <option value="">All</option>
                       {Array.from(
                         new Set(rows.map((row) => row[col.field]))
                       ).map((value) => (
                         <option
-                          key={value}
-                          value={value}>
-                          {value}
+                          key={String(value)}
+                          value={String(value)}>
+                          {String(value)}
                         </option>
                       ))}
                     </select>
@@ -160,8 +166,8 @@ export const DataGrid: React.FC<DataGridProps> = ({
                   onClick={(e) => e.stopPropagation()}>
                   <input
                     type="checkbox"
-                    checked={selectedRows.has(row.id)}
-                    onChange={(e) => handleCheckboxChange(row.id, e)}
+                    checked={selectedRows.has(getRowId(row))}
+                    onChange={(e) => handleCheckboxChange(getRowId(row), e)}
                     className="h-12 w-12 cursor-pointer"
                   />
                 </td>
@@ -170,7 +176,11 @@ export const DataGrid: React.FC<DataGridProps> = ({
                 <td
                   key={col.field}
                   className="border-b border-secondary-500 px-4 py-3 text-white">
-                  {col.renderCell ? col.renderCell(row) : row[col.field]}
+                  {col.renderCell ? (
+                    col.renderCell(row)
+                  ) : (
+                    <span>{String(row[col.field])}</span> // Make sure it's a valid React node
+                  )}
                 </td>
               ))}
             </tr>
@@ -180,7 +190,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
       <div className="mb-2 mt-12 flex items-center justify-between bg-secondary-950 px-5 py-2">
         <div>
           <select
-            value={pageSize}
+            value={String(pageSize)}
             onChange={(e) => {
               const selectedValue = e.target.value;
               setPageSize(
@@ -191,8 +201,8 @@ export const DataGrid: React.FC<DataGridProps> = ({
             className="ml-2 rounded-lg border bg-white px-2 py-1 text-secondary-950">
             {pageSizeOptionsWithAll.map((size) => (
               <option
-                key={size}
-                value={size}>
+                key={String(size)}
+                value={String(size)}>
                 {size === 'All' ? 'All' : size}
               </option>
             ))}

@@ -72,9 +72,6 @@ const Dropdown = ({
       // Check if the dropdown would overflow on the right
       const overflowsRight = dropdownRect.right > viewportWidth;
 
-      // Check if the dropdown would overflow on the left
-      const overflowsLeft = dropdownRect.left < 0;
-
       // If it overflows on the right but has space on the left, align left
       const needsLeftAlign =
         overflowsRight && dropdownRect.left > dropdownRect.width;

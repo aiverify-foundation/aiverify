@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { IconName } from '@/lib/components/IconSVG';
 import { Icon } from '@/lib/components/IconSVG';
-import { TextInput } from '@/lib/components/textInput';
 import { Button, ButtonVariant } from '@/lib/components/button';
+import { TextInput } from '@/lib/components/textInput';
 
 type FilterProps = {
   onSearch: (value: string) => void;
@@ -17,7 +17,6 @@ export default function ModelsFilters({
   onFilter,
   activeFilter,
 }: FilterProps) {
-
   const pillFilters = [
     { id: 'model', label: 'MODEL' },
     { id: 'pipeline', label: 'PIPELINE' },
@@ -37,17 +36,21 @@ export default function ModelsFilters({
     setSelectedPill(newSelection);
     onFilter(newSelection || ''); // Pass the pill ID or reset to no filter
   };
-  
 
   return (
     // Vertical layout for split pane active
     <section className="flex justify-between">
       {/* Search Bar */}
       <div>
-        <div className="relative flex items-center w-full">
+        <div className="relative flex w-full items-center">
           <TextInput
             placeholder="Search Models"
-            inputStyles={{ paddingLeft: 40, height: '40px', backgroundColor:'var(--color-transparent)', color:'#FFFFFF' }}
+            inputStyles={{
+              paddingLeft: 40,
+              height: '40px',
+              backgroundColor: 'var(--color-transparent)',
+              color: '#FFFFFF',
+            }}
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
           />
@@ -75,7 +78,7 @@ export default function ModelsFilters({
                 transform: 'translateY(-50%)',
                 cursor: 'pointer',
               }}
-              color='white'
+              color="white"
               onClick={() => handleSearchChange('')}
             />
           )}
@@ -87,7 +90,7 @@ export default function ModelsFilters({
           <Button
             key={filter.id}
             text={filter.label}
-            textColor='white'
+            textColor="white"
             variant={
               activeFilter === filter.id
                 ? ButtonVariant.PRIMARY

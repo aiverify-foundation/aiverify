@@ -1,15 +1,15 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import Fuse from 'fuse.js';
+import React, { useState, useMemo } from 'react';
+import ModelDetail from '@/app/models/components/ModelDetail';
+import SplitPane from '@/app/models/components/SplitPane';
+import { useDeleteModel } from '@/app/models/hooks/useDeleteModel';
 import { TestModel } from '@/app/models/utils/types';
+import { Icon, IconName } from '@/lib/components/IconSVG';
+import { Modal } from '@/lib/components/modal';
 import { DataGrid } from './DataGrid';
 import ModelsFilters from './FilterButtons';
-import Fuse from 'fuse.js';
-import { useDeleteModel } from '../hooks/useDeleteModel';
-import { Modal } from '@/lib/components/modal';
-import { Icon, IconName } from '@/lib/components/IconSVG';
-import SplitPane from '@/app/models/components/SplitPane';
-import ModelDetail from './ModelDetail';
 
 type Props = {
   models: TestModel[];
@@ -42,21 +42,25 @@ const ModelList: React.FC<Props> = ({ models }) => {
     }
   };
 
-  const columns = [
+  const columns: {
+    field: string;
+    headerName: string;
+    sortable?: boolean;
+    renderCell?: (row: TestModel) => React.ReactNode;
+  }[] = [
     { field: 'name', headerName: 'Name', sortable: true },
     { field: 'modelType', headerName: 'Model Type', sortable: true },
     {
       field: 'type',
       headerName: 'Type',
-      renderCell: (model: TestModel) =>
-        getTypeLabel(model.fileType, model.mode), // Use renderCell here
+      renderCell: (row: TestModel) => getTypeLabel(row.fileType, row.mode), // Use row instead of model
     },
     {
       field: 'updated_at',
       headerName: 'Updated At',
       sortable: true,
-      renderCell: (model: TestModel) =>
-        new Date(model.updated_at).toLocaleString('en-GB'),
+      renderCell: (row: TestModel) =>
+        new Date(row.updated_at).toLocaleString('en-GB'),
     },
   ];
 
@@ -182,7 +186,7 @@ const ModelList: React.FC<Props> = ({ models }) => {
     <div
       className="flex w-full items-center justify-center rounded-lg bg-secondary-950 p-4"
       style={{ height }}>
-      <div className="spinner-border inline-block h-12 w-12 animate-spin rounded-full border-4 border-primary-500 border-t-transparent"></div>
+      <div className="spinner-border inline-block h-12 w-12 animate-spin rounded-full border-4 border-primary-500 border-t-transparent" />
     </div>
   );
 
