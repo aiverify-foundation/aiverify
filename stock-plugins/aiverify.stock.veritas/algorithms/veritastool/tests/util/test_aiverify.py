@@ -217,3 +217,55 @@ def test_convert_veritas_artifact_model_type_validation(
             test_args=test_args
         )
         assert (tmp_path / "results.json").exists()
+        
+def test_process_dict(tmp_path, sample_base64_image, monkeypatch):
+    """Test processing dictionary with base64 images"""
+    test_dict = {
+        "image": f"data:image/png;base64,{sample_base64_image}",
+        "nested": {
+            "image": f"data:image/png;base64,{sample_base64_image}"
+        },
+        "list": [
+            f"data:image/png;base64,{sample_base64_image}",
+            {"image": f"data:image/png;base64,{sample_base64_image}"}
+        ],
+        "normal": "text"
+    }
+
+    def mock_save_base64_image(*args, **kwargs):
+        return "images/test.png"
+
+    monkeypatch.setattr('aiverify_veritastool.util.aiverify.save_base64_image', mock_save_base64_image)
+    result = process_dict(test_dict, tmp_path)
+
+    # Test image paths are correctly replaced
+    assert result["image"] == "images/test.png"
+    assert result["nested"]["image"] == "images/test.png"
+    assert result["list"][0] == "images/test.png"
+    assert result["list"][1]["image"] == "images/test.png"
+    assert result["normal"] == "text"
+    
+    # Test artifacts field
+    assert "artifacts" in result
+    assert len(result["artifacts"]) == 4
+    assert all(path == "images/test.png" for path in result["artifacts"])
+
+def test_process_dict_no_images(tmp_path):
+    """Test processing dictionary without base64 images"""
+    test_dict = {
+        "text": "hello",
+        "nested": {
+            "number": 123
+        },
+        "list": ["a", "b", {"text": "c"}]
+    }
+
+    result = process_dict(test_dict, tmp_path)
+
+    # Verify original structure is maintained
+    assert result["text"] == "hello"
+    assert result["nested"]["number"] == 123
+    assert result["list"] == ["a", "b", {"text": "c"}]
+    
+    # Verify no artifacts field when no images
+    assert "artifacts" not in result

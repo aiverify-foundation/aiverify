@@ -59,7 +59,9 @@ def save_base64_image(base64_str: str, output_dir: Path, image_name: str) -> str
         return base64_str  # Return original string if saving fails
 
 
-def process_dict(d: dict[str, Any], output_dir: Path, parent_key: str = "") -> dict[str, Any]:
+def process_dict(
+    d: dict[str, Any], output_dir: Path, parent_key: str = "", _root_call: bool = True
+) -> tuple[dict[str, Any], list[str]]:
     """
     Recursively process dictionary to find and save base64 encoded images.
 
@@ -75,31 +77,40 @@ def process_dict(d: dict[str, Any], output_dir: Path, parent_key: str = "") -> d
     Returns
     -------
     Dict[str, Any]
-        Processed dictionary with image paths instead of base64 strings
+        Processed dictionary with image paths instead of base64 strings and added artifacts list
     """
     result = {}
+    image_paths = []
+
+    def process_value(value, current_key: str) -> tuple[Any, list[str]]:
+        if isinstance(value, dict):
+            processed = process_dict(value, output_dir, current_key, False)
+            # Collect any nested artifacts
+            nested_paths = processed.pop("artifacts", []) if "artifacts" in processed else []
+            return processed, nested_paths
+
+        if isinstance(value, str) and is_base64_image(value):
+            path = save_base64_image(value, output_dir, current_key)
+            return path, [path]
+
+        return value, []
 
     for key, value in d.items():
         current_key = f"{parent_key}_{key}" if parent_key else key
 
-        if isinstance(value, dict):
-            result[key] = process_dict(value, output_dir, current_key)
-
-        elif isinstance(value, list):
-            result[key] = [
-                process_dict(item, output_dir, f"{current_key}_{i}")
-                if isinstance(item, dict)
-                else save_base64_image(item, output_dir, f"{current_key}_{i}")
-                if isinstance(item, str) and is_base64_image(item)
-                else item
-                for i, item in enumerate(value)
-            ]
-
-        elif isinstance(value, str) and is_base64_image(value):
-            result[key] = save_base64_image(value, output_dir, current_key)
-
+        if isinstance(value, list):
+            result[key] = []
+            for i, item in enumerate(value):
+                processed, paths = process_value(item, f"{current_key}_{i}")
+                result[key].append(processed)
+                image_paths.extend(paths)
         else:
-            result[key] = value
+            processed, paths = process_value(value, current_key)
+            result[key] = processed
+            image_paths.extend(paths)
+
+    if image_paths:
+        result["artifacts"] = image_paths
 
     return result
 

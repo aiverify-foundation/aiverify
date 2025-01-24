@@ -21,7 +21,7 @@ dependencies = [
     "shap==0.46.0",
     "matplotlib-inline==0.1.6",
     "Jinja2==3.1.2",
-    "aiverify-test-engine==2.0.0a2",
+    "aiverify-test-engine>=2.0.0a2",
 ]
 requires-python = ">=3.10,<3.12"
 dynamic = ["version"]

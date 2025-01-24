@@ -1,6 +1,6 @@
 {
     "cid": "veritastool",
-    "gid": "aiverify.stock.veritastool",
+    "gid": "aiverify.stock.veritas",
     "name": "VeritasTool",
     "modelType": [
         "classification",
