@@ -1,0 +1,98 @@
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import type { Plugin } from '@/app/types';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/lib/components/accordion';
+import { TextInput } from '@/lib/components/textInput';
+import { getWidgetMdxBundle } from '@/lib/fetchApis/getWidgetMdxBundle';
+import { cn } from '@/lib/utils/twmerge';
+
+type PluginsPanelProps = {
+  plugins: Plugin[];
+  className?: string;
+};
+
+async function fetchWidgetMdxBundles(
+  plugins: Plugin[],
+  setPluginsWithMdx: Dispatch<SetStateAction<Plugin[]>>
+) {
+  plugins.forEach((plugin, index) => {
+    const mdxPromisesForThisPlugin = plugin.widgets.map((widget) =>
+      getWidgetMdxBundle(plugin.gid, widget.cid)
+    );
+    Promise.allSettled(mdxPromisesForThisPlugin).then((mdxResults) => {
+      setPluginsWithMdx((prev) => {
+        const newPlugins = [...prev];
+        const currentPlugin = { ...prev[index] };
+        mdxResults.forEach((result, i) => {
+          if (
+            result.status == 'fulfilled' &&
+            result.value.status == 'success'
+          ) {
+            currentPlugin.widgets[i].mdx = result.value.data;
+          }
+        });
+        return newPlugins;
+      });
+    });
+  });
+}
+
+function PlunginsPanel(props: PluginsPanelProps) {
+  const { plugins, className } = props;
+  const [pluginsWithMdx, setPluginsWithMdx] = useState<Plugin[]>(plugins);
+  console.log(pluginsWithMdx);
+
+  useEffect(() => {
+    fetchWidgetMdxBundles(plugins, setPluginsWithMdx);
+  }, [plugins]);
+
+  const AccordionHero = (
+    <Accordion
+      type="single"
+      className="mx-auto mt-3 max-w-sm"
+      collapsible>
+      {plugins.map((plugin) => {
+        return (
+          <AccordionItem
+            key={plugin.gid}
+            value={`item-${plugin.gid}`}>
+            <AccordionTrigger>
+              <span className="font-semibold text-gray-200">{plugin.name}</span>
+            </AccordionTrigger>
+            <AccordionContent>
+              <ol className="flex flex-col gap-2">
+                {plugin.widgets.map((widget) => {
+                  return (
+                    <li key={widget.cid}>
+                      <div
+                        data-id={`${plugin.gid}-${widget.cid}`}
+                        draggable={true}
+                        className="cursor-grab rounded-md border border-gray-400 p-2 text-gray-400 hover:bg-secondary-1000 active:cursor-grabbing">
+                        {widget.name}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ol>
+            </AccordionContent>
+          </AccordionItem>
+        );
+      })}
+    </Accordion>
+  );
+
+  return (
+    <section className={cn('flex flex-col', className)}>
+      <div>
+        <TextInput placeholder="Search" />
+      </div>
+      {AccordionHero}
+    </section>
+  );
+}
+
+export { PlunginsPanel };

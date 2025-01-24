@@ -1,10 +1,17 @@
 'use client';
 import clsx from 'clsx';
-import { useRef } from 'react';
-import GridLayout, { ItemCallback, Layout } from 'react-grid-layout';
-import { Plugin, Widget } from '@/app/types';
-import { TextInput } from '@/lib/components/textInput';
+import { useRef, useState } from 'react';
+import GridLayout, {
+  DragOverEvent,
+  ItemCallback,
+  Layout,
+  Layouts,
+} from 'react-grid-layout';
+import { MdxBundle, Plugin, Widget } from '@/app/types';
+import { PlunginsPanel } from './pluginsPanel';
 import styles from './styles/designer.module.css';
+import 'react-grid-layout/css/styles.css';
+import 'react-resizable/css/styles.css';
 
 const GRID_WIDTH = 774;
 const GRID_ROW_HEIGHT = 30;
@@ -12,13 +19,43 @@ const GRID_MAX_ROWS = 36;
 const GRID_STRICT_STYLE: React.CSSProperties = { height: '1080px' };
 
 type DesignProps = {
-  plugins: Record<string, Widget[]>[];
+  plugins: Plugin[];
 };
 
+function parseMDXBundle(bundle: MdxBundle) {
+  const { code } = bundle;
+  const Component = new Function(`${code}; return Component;`)();
+  return Component;
+}
+
 const gridLayouts: Layout[] = [];
+
 function Designer({ plugins }: DesignProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
-  console.log(plugins);
+  const [widgets, setWidgets] = useState<Widget[]>([]);
+
+  const widgetComponents = widgets.map((widget) => {
+    if (widget.mdx) {
+      const MdxComponent = parseMDXBundle(widget.mdx);
+      return <MdxComponent key={widget.cid} />;
+    }
+  });
+
+  function handleDrop(layout: Layout[], item: Layout, e: Event) {
+    console.log('drop', layout, item, e);
+    const widgetId = (e.target as HTMLElement).dataset.id;
+    console.log(widgetId);
+  }
+
+  function handleLayoutChange(layout: Layout[]) {
+    console.log(layout);
+  }
+
+  function handleGridItemDropDragOver(e: DragOverEvent) {
+    console.log(e);
+    return { w: 2, h: 2 };
+  }
+
   return (
     <main className="flex h-full gap-8">
       <section className="flex h-full w-[250px] flex-col gap-4 bg-secondary-900 p-4">
@@ -26,9 +63,7 @@ function Designer({ plugins }: DesignProps) {
           <h4 className="mb-0 text-lg font-bold">Project Name</h4>
           <p className="text-sm text-white">Project Description</p>
         </div>
-        <div>
-          <TextInput placeholder="Search" />
-        </div>
+        <PlunginsPanel plugins={plugins} />
       </section>
       <div className="mt-8 flex h-full flex-col gap-2">
         <div className="mb-8">
@@ -54,66 +89,28 @@ function Designer({ plugins }: DesignProps) {
             margin={[0, 0]}
             compactType={null}
             // onDrag={handleOnGridItemDrag}
-            // onDrop={handleGridItemDrop}
+            onDrop={handleDrop}
             // onDragStart={handleGridItemDragStart}
             // onDragStop={handleGridItemDragStop}
             // onResizeStart={handleCanvasResizeStart}
-            // onDropDragOver={handleGridItemDropDragOver}
-            // onLayoutChange={handleLayoutChange}
+            onDropDragOver={handleGridItemDropDragOver}
+            onLayoutChange={handleLayoutChange}
             // onResizeStop={handleGridItemResizeStop}
             preventCollision
-            isDroppable={true}
             isResizable={true}
+            isDroppable={true}
+            isDraggable={true}
             isBounded
+            // useCSSTransforms={true}
             resizeHandles={['s', 'w', 'e', 'n', 'sw', 'nw', 'se', 'ne']}
             style={GRID_STRICT_STYLE}>
-            <div
-              key="1"
-              data-grid={{ x: 0, y: 0, w: 6, h: 4 }}
-              className="rounded-md bg-primary-700 p-4">
-              <h3 className="text-lg font-bold">Header Widget</h3>
-              <p>This is a sample header widget that can be dragged around</p>
-            </div>
-
-            <div
+            {widgetComponents}
+            {/* <div
+              className="bg-blue-900"
               key="2"
-              data-grid={{ x: 6, y: 2, w: 6, h: 8 }}
-              className="rounded-md bg-secondary-600 p-4">
-              <h3 className="text-lg font-bold">Chart Widget</h3>
-              <div className="flex h-full items-center justify-center">
-                <p className="text-primary-300">
-                  Chart visualization goes here
-                </p>
-              </div>
-            </div>
-
-            <div
-              key="3"
-              data-grid={{ x: 0, y: 8, w: 6, h: 6 }}
-              className="rounded-md bg-slate-800 p-4">
-              <h3 className="text-lg font-bold">Text Block</h3>
-              <p className="mt-2">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua.
-              </p>
-            </div>
-
-            <div
-              key="4"
-              data-grid={{ x: 6, y: 20, w: 6, h: 4 }}
-              className="rounded-md bg-secondary-800 p-4">
-              <h3 className="text-lg font-bold">Metrics Widget</h3>
-              <div className="mt-4 flex justify-around">
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-primary-300">95%</p>
-                  <p className="text-sm">Accuracy</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-primary-300">0.82</p>
-                  <p className="text-sm">F1 Score</p>
-                </div>
-              </div>
-            </div>
+              data-grid={{ x: 2, y: 0, w: 4, h: 3 }}>
+              Drop here
+            </div> */}
           </GridLayout>
         </div>
       </div>
