@@ -54,7 +54,8 @@
           "type": "string",
           "enum": [
             "classification",
-            "regression"
+            "regression",
+            "uplift"
           ]
         },
         "groundTruthDataset": {

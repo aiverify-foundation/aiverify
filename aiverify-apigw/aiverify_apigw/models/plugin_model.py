@@ -64,7 +64,7 @@ class PluginComponentModel(BaseORMModel):
     # id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     id: Mapped[str] = mapped_column(primary_key=True)
     cid: Mapped[str] = mapped_column(String(128), index=True, nullable=False)
-    name: Mapped[str] = mapped_column(String(128), nullable=False)
+    name: Mapped[str] = mapped_column(String(256), nullable=False)
     type: Mapped[str]
     version: Mapped[Optional[str]]
     author: Mapped[Optional[str]]
@@ -159,6 +159,7 @@ class InputBlockModel(PluginComponentModel):
     id: Mapped[str] = mapped_column(ForeignKey("plugin_component.id"), primary_key=True)
 
     group: Mapped[Optional[str]]
+    groupNumber: Mapped[Optional[int]]
     width: Mapped[InputBlockSize] = mapped_column(String, default=InputBlockSize.md)
     fullscreen: Mapped[bool]
 

@@ -22,6 +22,7 @@ class TestModelStatus(StrEnum):
 class ModelType(StrEnum):
     Classification = auto()
     Regression = auto()
+    Uplift = auto()
 
 
 class TestDatasetFileType(StrEnum):
