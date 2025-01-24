@@ -10,34 +10,34 @@
 			"type": "string",
 			"pattern": "^[a-zA-Z0-9][a-zA-Z0-9-._]*$",
 			"minLength": 1,
-      "maxLength": 128
+			"maxLength": 128
 		},
 		"version": {
 			"description": "Version of the plugin",
 			"type": "string",
 			"minLength": 1,
-      "maxLength": 256
+			"maxLength": 256
 		},
 		"name": {
 			"description": "Plugin name",
 			"type": "string",
 			"minLength": 1,
-      "maxLength": 128
+			"maxLength": 256
 		},
 		"author": {
 			"description": "Plugin author",
 			"type": "string",
-      "maxLength": 128
+			"maxLength": 256
 		},
 		"description": {
 			"description": "Plugin description",
 			"type": "string",
-      "maxLength": 256
+			"maxLength": 4096
 		},
 		"url": {
 			"description": "URL of project page",
 			"type": "string",
-      "maxLength": 2048
+			"maxLength": 2048
 		}
 	},
 	"required": [

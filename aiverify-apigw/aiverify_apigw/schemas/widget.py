@@ -13,8 +13,8 @@ class WidgetMetaSize(BaseModel):
 
 class WidgetMetaProperty(BaseModel):
     key: str = Field(description="Property key", min_length=1, max_length=128)
-    helper: str = Field(description="Helper text for the property", max_length=128)
-    default: Optional[str] = Field(default=None, description="Property default value", max_length=128)
+    helper: str = Field(description="Helper text for the property", max_length=256)
+    default: Optional[str] = Field(default=None, description="Property default value", max_length=4096)
 
 
 class WidgetMetaDependency(BaseModel):
