@@ -389,7 +389,7 @@ class AlgoInit:
                 },
                 mode="upload",
             )
-
+            artifacts = results.pop("artifacts", []) if "artifacts" in results else None
             output = ITestResult(
                 gid=meta_file["gid"],
                 cid=meta_file["cid"],
@@ -398,6 +398,7 @@ class AlgoInit:
                 timeTaken=round(self._time_taken, 4),
                 testArguments=test_arguments,
                 output=results,
+                artifacts=artifacts,
             )
             output_json = output.json(exclude_none=True, indent=4)
             if validate_test_result_schema(json.loads(output_json)) is True:
