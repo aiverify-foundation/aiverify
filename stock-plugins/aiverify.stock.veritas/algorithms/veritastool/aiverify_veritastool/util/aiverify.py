@@ -307,6 +307,7 @@ def convert_veritas_artifact_to_aiverify(
 
     # Process results to extract images
     processed_results = process_dict(results, output_dir)
+    artifacts = processed_results.pop("artifacts", []) if "artifacts" in processed_results else None
 
     # Create the output result
     startTime = datetime.now().isoformat()
@@ -318,6 +319,7 @@ def convert_veritas_artifact_to_aiverify(
         timeTaken=0,
         testArguments=test_arguments,
         output=processed_results,
+        artifacts=artifacts,
     )
 
     output_json = output.json(exclude_none=True)
