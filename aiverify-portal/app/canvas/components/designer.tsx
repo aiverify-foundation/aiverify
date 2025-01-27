@@ -1,17 +1,24 @@
 'use client';
 import clsx from 'clsx';
 import { useRef, useState } from 'react';
+import { useReducer } from 'react';
 import GridLayout, {
   DragOverEvent,
   ItemCallback,
   Layout,
   Layouts,
 } from 'react-grid-layout';
+import { z } from 'zod';
 import { MdxBundle, Plugin, Widget } from '@/app/types';
+import { Callout } from '@/lib/components/callout';
+import { findWidgetFromPluginsById } from '../utils/findWidgetFromPluginsById';
+import { initialState } from './hooks/designReducer';
 import { PlunginsPanel } from './pluginsPanel';
 import styles from './styles/designer.module.css';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
+import { RiErrorWarningFill } from '@remixicon/react';
+import { designReducer } from './hooks/designReducer';
 
 const GRID_WIDTH = 774;
 const GRID_ROW_HEIGHT = 30;
@@ -22,29 +29,59 @@ type DesignProps = {
   plugins: Plugin[];
 };
 
-function parseMDXBundle(bundle: MdxBundle) {
-  const { code } = bundle;
-  const Component = new Function(`${code}; return Component;`)();
-  return Component;
-}
+type EventDataTransfer = Event & {
+  dataTransfer: {
+    getData: (type: 'application/json') => string;
+  };
+};
+
+const widgetItemSchema = z.object({
+  gid: z.string(),
+  cid: z.string(),
+});
+
+export type WidgetCompositeId = z.infer<typeof widgetItemSchema>;
 
 const gridLayouts: Layout[] = [];
 
 function Designer({ plugins }: DesignProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
-  const [widgets, setWidgets] = useState<Widget[]>([]);
+  const [state, dispatch] = useReducer(designReducer, initialState);
+  const [error, setError] = useState<string | undefined>();
+  console.log(plugins);
 
-  const widgetComponents = widgets.map((widget) => {
-    if (widget.mdx) {
-      const MdxComponent = parseMDXBundle(widget.mdx);
-      return <MdxComponent key={widget.cid} />;
+  function handleDrop(layout: Layout[], item: Layout, e: EventDataTransfer) {
+    console.log('drop', layout);
+    const data: unknown = JSON.parse(
+      e.dataTransfer.getData('application/json')
+    );
+    const result = widgetItemSchema.safeParse(data);
+    if (!result.success) {
+      console.error('Invalid widget item data', result.error);
+      setError(result.error?.message);
+      return;
     }
-  });
-
-  function handleDrop(layout: Layout[], item: Layout, e: Event) {
-    console.log('drop', layout, item, e);
-    const widgetId = (e.target as HTMLElement).dataset.id;
-    console.log(widgetId);
+    const validData: WidgetCompositeId = result.data;
+    const widget = findWidgetFromPluginsById(
+      plugins,
+      validData.gid,
+      validData.cid
+    );
+    if (!widget) {
+      console.error(
+        `Widget not found - gid: ${validData.gid} - cid: ${validData.cid}`
+      );
+      setError(
+        `Widget not found - gid: ${validData.gid} - cid: ${validData.cid}`
+      );
+      return;
+    }
+    const widgetLayout = { x: 0, y: 0, w: 1, h: 1, i: widget.cid };
+    dispatch({
+      type: 'ADD_WIDGET_TO_CANVAS',
+      widgetLayout,
+      widgetToRender: widget,
+    });
   }
 
   function handleLayoutChange(layout: Layout[]) {
@@ -72,6 +109,13 @@ function Designer({ plugins }: DesignProps) {
             Drag report widgets from the left panel onto the design canvas
           </p>
         </div>
+        <Callout
+          variant="error"
+          title="Data from the dropped widget is invalid"
+          icon={RiErrorWarningFill}>
+          The data from the widget you dropped is invalid. Please check the data
+          and try again.
+        </Callout>
         <div
           ref={canvasRef}
           className={clsx(
@@ -104,7 +148,6 @@ function Designer({ plugins }: DesignProps) {
             // useCSSTransforms={true}
             resizeHandles={['s', 'w', 'e', 'n', 'sw', 'nw', 'se', 'ne']}
             style={GRID_STRICT_STYLE}>
-            {widgetComponents}
             {/* <div
               className="bg-blue-900"
               key="2"

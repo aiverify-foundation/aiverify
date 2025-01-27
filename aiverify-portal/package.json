@@ -30,8 +30,10 @@
     "next": "15.1.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
+    "react-error-boundary": "^5.0.0",
     "react-grid-layout": "^1.5.0",
     "tailwind-merge": "^2.5.2",
+    "tailwind-variants": "^0.3.1",
     "tailwindcss-animate": "^1.0.7",
     "vanilla-tilt": "^1.8.1",
     "zod": "^3.23.8"

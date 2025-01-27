@@ -149,6 +149,8 @@ type Widget = {
   mdx?: MdxBundle;
 };
 
+type WidgetToRender = Pick<Widget, 'gid' | 'cid' | 'properties' | 'mdx'>;
+
 type Plugin = {
   gid: string;
   version: string;
@@ -172,4 +174,4 @@ type MdxBundle = {
   frontmatter: unknown;
 };
 
-export type { Project, TestResults, Plugin, MdxBundle, Widget };
+export type { Project, TestResults, Plugin, MdxBundle, Widget, WidgetToRender };

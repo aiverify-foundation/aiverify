@@ -64,20 +64,28 @@ function PlunginsPanel(props: PluginsPanelProps) {
               <span className="font-semibold text-gray-200">{plugin.name}</span>
             </AccordionTrigger>
             <AccordionContent>
-              <ol className="flex flex-col gap-2">
+              <section className="flex flex-col gap-2">
                 {plugin.widgets.map((widget) => {
                   return (
-                    <li key={widget.cid}>
-                      <div
-                        data-id={`${plugin.gid}-${widget.cid}`}
-                        draggable={true}
-                        className="cursor-grab rounded-md border border-gray-400 p-2 text-gray-400 hover:bg-secondary-1000 active:cursor-grabbing">
-                        {widget.name}
-                      </div>
-                    </li>
+                    <div
+                      key={widget.cid}
+                      draggable={true}
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData(
+                          'application/json',
+                          JSON.stringify({
+                            gid: plugin.gid,
+                            cid: widget.cid,
+                          })
+                        );
+                        e.dataTransfer.effectAllowed = 'copy';
+                      }}
+                      className="cursor-grab rounded-md border border-gray-400 p-2 text-gray-400 hover:bg-secondary-1000 active:cursor-grabbing">
+                      {widget.name}
+                    </div>
                   );
                 })}
-              </ol>
+              </section>
             </AccordionContent>
           </AccordionItem>
         );
