@@ -44,19 +44,19 @@ class PluginManager:
         DataPluginType.DELIMITER,
     ]
     _model_priority_list: List = [
-        ModelPluginType.PYTORCH,
         ModelPluginType.LIGHTGBM,
         ModelPluginType.XGBOOST,
         ModelPluginType.SKLEARN,
         ModelPluginType.TENSORFLOW,
+        ModelPluginType.PYTORCH,
         ModelPluginType.API,
     ]
     _serializer_priority_list: List = [
-        SerializerPluginType.PYTORCH,
         SerializerPluginType.PICKLE,
         SerializerPluginType.JOBLIB,
         SerializerPluginType.TENSORFLOW,
         SerializerPluginType.IMAGE,
+        SerializerPluginType.PYTORCH,
         SerializerPluginType.DELIMITER,
     ]
     _pipeline_priority_list: List = [PipelinePluginType.SKLEARN]

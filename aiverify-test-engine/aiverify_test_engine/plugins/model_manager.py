@@ -139,7 +139,7 @@ class ModelManager:
             logging.INFO,
             f"Attempting to read model: {model_file}",
         )
-
+       
         # Validate the inputs
         if (
             model_file is None
