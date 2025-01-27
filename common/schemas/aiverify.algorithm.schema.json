@@ -17,24 +17,25 @@
 			"type": "string",
 			"pattern": "^[a-zA-Z0-9][a-zA-Z0-9-._]*$",
 			"minLength": 1,
-      "maxLength": 128
+			"maxLength": 128
 		},
 		"name": {
 			"description": "Algorithm name",
 			"type": "string",
 			"minLength": 1,
-      "maxLength": 128
+			"maxLength": 256
 		},
 		"modelType": {
 			"description": "AI model type",
 			"type": "array",
 			"minItems": 1,
-			"maxItems": 2,
+			"maxItems": 3,
 			"items": {
 				"type": "string",
 				"enum": [
 					"classification",
-					"regression"
+					"regression",
+					"uplift"
 				]
 			}
 		},
@@ -42,18 +43,18 @@
 			"description": "Version of the algorithm, default to plugin version if not specificed",
 			"type": "string",
 			"minLength": 1,
-      "maxLength": 256
+			"maxLength": 256
 		},
 		"author": {
 			"description": "Algorithm author",
 			"type": "string",
 			"minLength": 1,
-      "maxLength": 128
+			"maxLength": 256
 		},
 		"description": {
 			"description": "Plugin description",
 			"type": "string",
-      "maxLength": 256
+			"maxLength": 4096
 		},
 		"tags": {
 			"description": "Tags describing this algorithm",
@@ -62,7 +63,7 @@
 			"items": {
 				"type": "string",
 				"minLength": 1,
-      	"maxLength": 128
+				"maxLength": 128
 			}
 		},
 		"requireGroundTruth": {

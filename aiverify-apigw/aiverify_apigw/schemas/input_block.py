@@ -20,19 +20,20 @@ class InputBlockMeta(BaseModel):
         max_length=128,
         pattern=r"^[a-zA-Z0-9][a-zA-Z0-9-._]*$",
     )
-    name: str = Field(description="Input Block name", min_length=1, max_length=128)
+    name: str = Field(description="Input Block name", min_length=1, max_length=256)
     version: Optional[str] = Field(
         default=None,
         description="Version of the input block, default to plugin version if not specified",
         min_length=1,
         max_length=256,
     )
-    author: Optional[str] = Field(default=None, description="Input block author", min_length=1, max_length=128)
+    author: Optional[str] = Field(default=None, description="Input block author", min_length=1, max_length=256)
     tags: Optional[List[Annotated[str, Field(min_length=1, max_length=128)]]] = Field(
         default=None, description="Input block tags, used for searching", max_length=128
     )
-    description: Optional[str] = Field(default=None, description="Input Block description", max_length=256)
-    group: Optional[str] = Field(default=None, description="Input Block group", min_length=1, max_length=128)
+    description: Optional[str] = Field(default=None, description="Input Block description", max_length=4096)
+    group: Optional[str] = Field(default=None, description="Input Block group", min_length=1, max_length=256)
+    groupNumber: Optional[int] = Field(default=None, description="Input Block group number")
     width: Optional[InputBlockSize] = Field(
         default="md", description="Width of Input Block dialog"
     )
