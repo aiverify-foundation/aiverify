@@ -7,8 +7,8 @@ type ModalProps = {
   left?: React.CSSProperties['left'];
   width?: React.CSSProperties['width'];
   height?: React.CSSProperties['height'];
-  bgColor: React.CSSProperties['backgroundColor'];
-  textColor: React.CSSProperties['color'];
+  bgColor?: React.CSSProperties['backgroundColor'];
+  textColor?: React.CSSProperties['color'];
   headingColor?: React.CSSProperties['color'];
   heading: string;
   hideCloseIcon?: boolean;
@@ -29,8 +29,6 @@ function Modal(props: ModalProps) {
     left,
     width = 500,
     height = 260,
-    bgColor,
-    textColor,
     headingColor,
     heading,
     hideCloseIcon = false,
@@ -38,7 +36,7 @@ function Modal(props: ModalProps) {
     primaryBtnLabel,
     secondaryBtnLabel,
     enableScreenOverlay,
-    overlayOpacity = 0.3,
+    overlayOpacity = 0.6,
     className,
     onPrimaryBtnClick,
     onSecondaryBtnClick,
@@ -56,15 +54,12 @@ function Modal(props: ModalProps) {
         />
       )}
       <div
-        className={`absolute left-1/2 top-1/2 z-[1000] h-[260px] w-[600px] -translate-x-1/2 -translate-y-1/2 transform rounded-[5px] bg-gradient-to-br from-secondary-600 to-secondary-700 p-6 dark:bg-secondary-700 ${className}`}
+        className={`absolute left-1/2 top-1/2 z-[1000] h-[260px] w-[600px] -translate-x-1/2 -translate-y-1/2 transform rounded-[5px] bg-gradient-to-br from-secondary-600 to-secondary-700 p-6 shadow-xl dark:bg-secondary-700 ${className}`}
         style={{
           top,
           left,
           width,
           height,
-          backgroundColor: bgColor,
-          color: textColor,
-          boxShadow: '2px 2px 12px rgba(0,0,0,.4)',
         }}>
         <header
           className="mb-3 flex justify-between"

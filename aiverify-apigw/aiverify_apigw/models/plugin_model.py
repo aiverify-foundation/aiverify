@@ -7,7 +7,7 @@ from datetime import datetime
 from .base_model import BaseORMModel
 from ..lib.validators import validate_gid_cid
 from ..lib.constants import ModelType, InputBlockSize
-from .project_model import ProjectTemplateModel
+from .project_template_model import ProjectTemplateModel
 
 
 class PluginModel(BaseORMModel):
@@ -30,8 +30,8 @@ class PluginModel(BaseORMModel):
     widgets_zip_hash: Mapped[Optional[str]]
     inputblocks_zip_hash: Mapped[Optional[str]]
 
-    project_templates: Mapped[List["ProjectTemplateModel"]] = relationship(
-        cascade="all, delete")
+    # project_templates: Mapped[List["ProjectTemplateModel"]] = relationship(
+    #     cascade="all, delete")
 
     created_at: Mapped[Optional[datetime]]
     updated_at: Mapped[Optional[datetime]]
@@ -64,7 +64,7 @@ class PluginComponentModel(BaseORMModel):
     # id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     id: Mapped[str] = mapped_column(primary_key=True)
     cid: Mapped[str] = mapped_column(String(128), index=True, nullable=False)
-    name: Mapped[str] = mapped_column(String(128), nullable=False)
+    name: Mapped[str] = mapped_column(String(256), nullable=False)
     type: Mapped[str]
     version: Mapped[Optional[str]]
     author: Mapped[Optional[str]]
@@ -159,6 +159,7 @@ class InputBlockModel(PluginComponentModel):
     id: Mapped[str] = mapped_column(ForeignKey("plugin_component.id"), primary_key=True)
 
     group: Mapped[Optional[str]]
+    groupNumber: Mapped[Optional[int]]
     width: Mapped[InputBlockSize] = mapped_column(String, default=InputBlockSize.md)
     fullscreen: Mapped[bool]
 
@@ -225,6 +226,8 @@ class TemplateModel(PluginComponentModel):
 
     plugin_id: Mapped[int] = mapped_column(ForeignKey("plugin.gid"))
     plugin: Mapped["PluginModel"] = relationship(back_populates="templates")
+
+    project_template: Mapped["ProjectTemplateModel"] = relationship(cascade="all, delete")
 
     @hybrid_property
     def template_id(self):

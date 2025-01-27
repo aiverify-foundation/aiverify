@@ -30,7 +30,7 @@ COPY stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/al
 # Install algorithm requirements
 RUN cd aiverify-test-engine && \
     pip install --no-cache-dir '.[dev]' && \
-    cd ../stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification ./stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification && \
+    cd ../stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification && \
     pip install --no-cache-dir .
 
 ENTRYPOINT ["python3", "-m", "aiverify_fairness_metrics_toolbox_for_classification"]

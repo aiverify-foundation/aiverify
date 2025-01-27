@@ -16,7 +16,7 @@
 			"description": "Input Block name",
 			"type": "string",
 			"minLength": 1,
-			"maxLength": 128
+			"maxLength": 256
 		},
 		"version": {
 			"description": "Version of the input block, default to plugin version if not specificed",
@@ -28,7 +28,7 @@
 			"description": "Input block author",
 			"type": "string",
 			"minLength": 1,
-			"maxLength": 128
+			"maxLength": 256
 		},
 		"tags": {
 			"description": "Input block tags, used for searching",
@@ -43,13 +43,17 @@
 		"description": {
 			"description": "Input Block description",
 			"type": "string",
-			"maxLength": 256
+			"maxLength": 4096
 		},
 		"group": {
 			"description": "Input Block group",
 			"type": "string",
 			"minLength": 1,
-			"maxLength": 128
+			"maxLength": 256
+		},
+		"groupNumber": {
+			"description": "Input Block group number, used to order blocks within a group",
+			"type": "integer"
 		},
 		"width": {
 			"description": "Width of Input Block dialog",

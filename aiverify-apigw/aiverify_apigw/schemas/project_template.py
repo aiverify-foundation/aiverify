@@ -1,8 +1,12 @@
 from pydantic import BaseModel, Field, model_validator
-from typing_extensions import Self
-from typing import List, Optional
+from typing import List, Optional, Self
 from datetime import datetime
 from enum import StrEnum, auto
+import json
+from ..models import ProjectTemplateModel
+
+from .load_examples import load_examples
+project_template_examples = load_examples("project_template_examples.json")
 
 
 class GlobalVariable(BaseModel):
@@ -61,29 +65,61 @@ class WidgetLayout(BaseModel):
         return self
 
 
-class ProjectInformation(BaseModel):
-    name: str = Field(description="Property value", max_length=128)
-    description: str = Field(description="Property value", max_length=256)
-    reportTitle: str = Field(description="Property value", max_length=128)
-    company: str = Field(description="Property value", max_length=128)
+class ProjectTemplateInformation(BaseModel):
+    name: str = Field(description="Project Name", max_length=256)
+    description: Optional[str] = Field(description="Property value", max_length=4096, default=None)
+
+
+class ProjectTemplateInformationOptional(BaseModel):
+    name: Optional[str] = Field(description="Project Name", max_length=256, default=None)
+    description: Optional[str] = Field(description="Property value", max_length=4096, default=None)
 
 
 class Page(BaseModel):
     layouts: List[WidgetLayout]
-    reportWidgets: List[ReportWidget] = Field(min_length=1, max_length=256)
+    reportWidgets: List[ReportWidget] = Field(min_length=0, max_length=256)
 
 
 class ProjectTemplateMeta(BaseModel):
-    globalVars: Optional[List[GlobalVariable]] = None
-    pages: List[Page] = Field(Page, min_length=1, max_length=256)
+    globalVars: Optional[List[GlobalVariable]] = Field(description="Global variables in report canvas", default=None)
+    pages: List[Page] = Field(description="List of pages in report canvas", min_length=0, max_length=256, default=[])
+
+
+class ProjectTemplateMetaOptional(BaseModel):
+    globalVars: Optional[List[GlobalVariable]] = Field(description="Global variables in report canvas", default=None)
+    pages: Optional[List[Page]] = Field(description="List of pages in report canvas", min_length=0, max_length=256, default=None)
 
 
 class ProjectTemplateInput(ProjectTemplateMeta):
-    fromPlugin: Optional[bool] = False
-    projectInfo: ProjectInformation
+    projectInfo: ProjectTemplateInformation
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": project_template_examples
+        }
+    }
+
+
+class ProjectTemplatePatchInput(ProjectTemplateMetaOptional):
+    projectInfo: Optional[ProjectTemplateInformation] = None
 
 
 class ProjectTemplateOutput(ProjectTemplateInput):
     id: int  # project template id
+    fromPlugin: Optional[bool] = False
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+
+    @classmethod
+    def from_model(cls, result: ProjectTemplateModel) -> "ProjectTemplateOutput":
+        meta = ProjectTemplateMeta.model_validate(json.loads(result.data.decode("utf-8")))
+        return ProjectTemplateOutput(
+            id=result.id,
+            pages=meta.pages,
+            globalVars=meta.globalVars,
+            fromPlugin=result.from_plugin,
+            projectInfo=ProjectTemplateInformation(name=result.name, description=result.description),
+            created_at=result.created_at,
+            updated_at=result.updated_at,
+        )
+

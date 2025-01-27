@@ -16,7 +16,7 @@
       "description": "Widget name",
       "type": "string",
       "minLength": 1,
-      "maxLength": 128
+      "maxLength": 256
     },
     "version": {
       "description": "Version of the widget, default to plugin version if not specificed",
@@ -28,12 +28,12 @@
       "description": "Widget author",
       "type": "string",
       "minLength": 1,
-      "maxLength": 128
+      "maxLength": 256
     },
     "description": {
       "description": "Widget description",
       "type": "string",
-      "maxLength": 256
+      "maxLength": 4096
     },
     "widgetSize": {
       "description": "Describe the widget size in terms of canvas grid units",
@@ -87,12 +87,12 @@
           "helper": {
             "description": "Helper text for the property",
             "type": "string",
-            "maxLength": 128
+            "maxLength": 256
           },
           "default": {
             "description": "Property default value",
             "type": "string",
-            "maxLength": 128
+            "maxLength": 4096
           }
         },
         "required": [
@@ -171,7 +171,7 @@
             "description": "Path to the file containing sample data",
             "type": "string",
             "minLength": 1,
-            "maxLength": 256
+            "maxLength": 2048
           }
         },
         "required": [

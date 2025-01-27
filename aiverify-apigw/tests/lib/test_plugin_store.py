@@ -57,7 +57,7 @@ class TestPluginStoreDeleteAllPlugins:
         assert db_session.query(WidgetModel).count() == len(mock_plugins[1].widgets)
         assert db_session.query(InputBlockModel).count() == len(mock_plugins[1].inputblocks)
         assert db_session.query(TemplateModel).count() == len(mock_plugins[1].templates)
-        assert db_session.query(ProjectTemplateModel).count() == len(mock_plugins[1].project_templates)
+        assert db_session.query(ProjectTemplateModel).count() == len(mock_plugins[1].templates)
 
     @patch("aiverify_apigw.lib.plugin_store.fs_delete_all_plugins")
     def test_delete_all_plugins(self, mock_delete_all_plugins, db_session, mock_plugins, mock_project_template):
@@ -178,7 +178,7 @@ class TestReadAlgorithmDirectory:
         #     {"output": "schema"},
         # ]
 
-        with patch("builtins.open", mock_open(read_data="{}")) as mock_file:
+        with patch("builtins.open", mock_open(read_data="{}")):
             # print(f"result.mode_type == {mock_meta.modelType}")
             result = PluginStore.read_algorithm_directory(mock_algo_dir, gid=gid)
 

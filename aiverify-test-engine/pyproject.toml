@@ -19,7 +19,6 @@ dependencies = [
     "attrs==23.2.0",
     "jsonschema-specifications==2023.12.1",
     "jsonschema==4.21.1",
-    "redis==5.0.1",
     "referencing==0.33.0",
     "rpds-py==0.17.1",
     "setuptools==75.1.0",

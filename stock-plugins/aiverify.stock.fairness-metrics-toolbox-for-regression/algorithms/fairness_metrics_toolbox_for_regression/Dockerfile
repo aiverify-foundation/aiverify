@@ -30,7 +30,7 @@ COPY stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-regression/algori
 # Install algorithm requirements
 RUN cd aiverify-test-engine && \
     pip install --no-cache-dir '.[dev]' && \
-    cd ../stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-regression/algorithms/fairness_metrics_toolbox_for_regression ./stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-regression/algorithms/fairness_metrics_toolbox_for_regression && \
+    cd ../stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-regression/algorithms/fairness_metrics_toolbox_for_regression && \
     pip install --no-cache-dir .
 
 ENTRYPOINT ["python3", "-m", "aiverify_fairness_metrics_toolbox_for_regression"]
