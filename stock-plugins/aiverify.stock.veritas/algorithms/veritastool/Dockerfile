@@ -1,14 +1,24 @@
 FROM python:3.11-slim
 
-RUN apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y git gcc
+# Combine all apt-get installations into a single layer with cleanup
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y \
+    git \
+    gcc \
+    g++ \
+    libhdf5-dev \
+    pkg-config && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# Install HDF5 using apt
-RUN apt-get update && apt-get install -y libhdf5-dev pkg-config
+# Set environment variables for Python and pip
+ENV PYTHONUNBUFFERED=1
+ENV PIP_NO_CACHE_DIR=1
 
-RUN pip install --upgrade pip
-RUN pip install --no-binary h5py h5py
+# Combine pip installations into a single layer
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir --no-binary h5py h5py
 
 WORKDIR /app/aiverify
 
@@ -19,12 +29,13 @@ COPY aiverify-test-engine ./aiverify-test-engine
 COPY stock-plugins/user_defined_files ./stock-plugins/user_defined_files
 
 # Copy algorithm folder
-COPY stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification ./stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification
+COPY stock-plugins/aiverify.stock.veritas/algorithms/veritastool ./stock-plugins/aiverify.stock.veritas/algorithms/veritastool
 
 # Install algorithm requirements
-WORKDIR /app/aiverify/stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification
-RUN pip install pytest
-RUN pip install -e '.[dev]'
+RUN cd aiverify-test-engine && \
+    pip install --no-cache-dir '.[dev]' && \
+    cd ../stock-plugins/aiverify.stock.veritas/algorithms/veritastool && \
+    pip install --no-cache-dir .
 
-ENTRYPOINT ["python3", "-m", "aiverify_fairness_metrics_toolbox_for_classification"]
+ENTRYPOINT ["python3", "-m", "aiverify_veritastool"]
 

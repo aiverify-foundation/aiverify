@@ -279,3 +279,41 @@ Run the following steps to execute the unit and integration tests inside the `te
 cd aiverify/stock-plugins/aiverify.stock.veritas/algorithms/veritastool
 pytest .
 ```
+
+## Run using Docker
+
+In the aiverify root directory, run the following command to build the docker image
+
+```sh
+docker build -t aiverify-veritastool:v2.0.0a2 -f ./stock-plugins/aiverify.stock.veritas/algorithms/veritastool/Dockerfile .
+```
+
+Modify the parameters accordingly and run the example bash script:
+
+```sh
+#!/bin/bash
+docker run \
+  -v $(pwd)/stock-plugins/user_defined_files:/input \
+  -v $(pwd)/stock-plugins/aiverify.stock.veritas/algorithms/veritastool/output:/app/aiverify/output \
+  aiverify-veritastool:v2.0.0a2 \
+  --data_path /input/veritas_data/cs_X_test.pkl \
+  --model_path /input/veritas_data/cs_model.pkl \
+  --ground_truth_path /input/veritas_data/cs_y_test.pkl \
+  --ground_truth y_test \
+  --training_data_path /input/veritas_data/cs_X_train.pkl \
+  --training_ground_truth_path /input/veritas_data/cs_y_train.pkl \
+  --training_ground_truth y_train \
+  --use_case "base_regression" \
+  --privileged_groups '{"SEX": [1], "MARRIAGE": [1]}' \
+  --model_type CLASSIFICATION \
+  --fair_threshold 80 \
+  --fair_metric "auto" \
+  --fair_concern "eligible" \
+  --performance_metric "accuracy" \
+  --transparency_rows 20 40 \
+  --transparency_max_samples 1000 \
+  --transparency_features LIMIT_BAL \
+  --run_pipeline
+```
+
+If the algorithm runs successfully, the results of the test will be saved in an `output` folder in the algorithm directory.
