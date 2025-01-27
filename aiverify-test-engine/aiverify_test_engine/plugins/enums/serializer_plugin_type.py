@@ -11,3 +11,4 @@ class SerializerPluginType(Enum):
     TENSORFLOW = 3
     DELIMITER = 4
     IMAGE = 5
+    PYTORCH = 6

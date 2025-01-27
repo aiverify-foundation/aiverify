@@ -11,3 +11,4 @@ class ModelPluginType(Enum):
     XGBOOST = 3
     LIGHTGBM = 4
     API = 5
+    PYTORCH = 6

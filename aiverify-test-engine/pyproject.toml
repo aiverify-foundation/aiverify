@@ -40,7 +40,9 @@ tensorflow = ["tensorflow==2.14.0"]
 
 gbm = ["lightgbm==4.5.0", "xgboost==2.1.1"]
 
-all = ["aiverify-test-engine[tensorflow]", "aiverify-test-engine[gbm]"]
+pytorch = ["torch>=2.0", "torchvision>=0.15.0"]
+
+all = ["aiverify-test-engine[tensorflow]", "aiverify-test-engine[gbm]", "aiverify-test-engine[pytorch]"]
 
 dev = [
     "aiverify-test-engine[all]",
