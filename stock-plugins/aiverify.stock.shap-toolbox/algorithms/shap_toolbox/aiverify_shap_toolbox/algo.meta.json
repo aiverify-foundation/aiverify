@@ -6,7 +6,7 @@
         "classification",
         "regression"
     ],
-    "version": "2.0.0a1",
+    "version": "2.0.0a2",
     "author": "AI Verify",
     "description": "SHAP (SHapley Additive exPlanations) is a game theoretic approach to explain the output of any machine learning model.",
     "tags": [
@@ -24,7 +24,6 @@
         "algo.meta.json",
         "algo.py",
         "README.md",
-        "syntax_checker.py",
         "src"
     ]
 }
