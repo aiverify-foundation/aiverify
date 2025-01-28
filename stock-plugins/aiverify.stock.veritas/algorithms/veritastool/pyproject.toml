@@ -1,0 +1,41 @@
+[project]
+name = "aiverify-veritastool"
+description = "Veritas Diagnosis tool for fairness & transparency assessment."
+authors = [
+    { name = "MAS Veritas" },
+    { name = "AI Verify" },
+    { name = "Resaro" },
+]
+readme = "README.md"
+dependencies = [
+    "numpy==1.26.4",
+    "joblib==1.4.2",
+    "scikit-learn==1.5.2",
+    "scipy==1.14.1",
+    "pandas==2.2.2",
+    "ipywidgets==8.0.4",
+    "ipython == 8.11.0",
+    "matplotlib==3.7.1",
+    "tqdm==4.65.0",
+    "phik==0.12.4",
+    "shap==0.46.0",
+    "matplotlib-inline==0.1.6",
+    "Jinja2==3.1.2",
+    "aiverify-test-engine>=2.0.0a2",
+]
+requires-python = ">=3.10,<3.12"
+dynamic = ["version"]
+
+[project.scripts]
+aiverify_veritastool = "aiverify_veritastool.__main__:main"
+
+[tool.hatch.version]
+path = "aiverify_veritastool/algo.meta.json"
+pattern = '"version":\s*"(?P<version>[^"]+)"'
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

@@ -1,0 +1,31 @@
+{
+    "cid": "veritastool",
+    "gid": "aiverify.stock.veritas",
+    "name": "VeritasTool",
+    "modelType": [
+        "classification",
+        "regression",
+        "uplift"
+    ],
+    "version": "2.0.0a2",
+    "author": "AI Verify",
+    "description": "Veritas Diagnosis tool for fairness & transparency assessment.",
+    "tags": [
+        "classification",
+        "binary classification",
+        "multiclass classification",
+        "regression",
+        "uplift",
+        "fairness",
+        "transparency"
+    ],
+    "requireGroundTruth": true,
+    "requiredFiles": [
+        "AUTHORS.rst",
+        "input.schema.json",
+        "LICENSE",
+        "output.schema.json",
+        "algo.meta.json",
+        "README.md"
+    ]
+}

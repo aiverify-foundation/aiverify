@@ -196,7 +196,6 @@ class Plugin(IPipeline):
         """
         pipeline_algorithm = ""
         is_success = False
-
         module_type_name = f"{type(pipeline).__module__}.{type(pipeline).__name__}"
         for supported_algo in self._supported_algorithms:
             if supported_algo == module_type_name:
