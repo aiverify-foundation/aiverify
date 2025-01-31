@@ -1,10 +1,10 @@
-import { Plugin, Widget } from '@/app/types';
+import { WidgetOnGridLayout, PluginForGridLayout } from '@/app/canvas/types';
 
 function findWidgetFromPluginsById(
-  plugins: Plugin[],
+  plugins: PluginForGridLayout[],
   pluginId: string,
   widgetId: string
-): Widget | undefined {
+): WidgetOnGridLayout | undefined {
   return plugins
     .find((plugin) => plugin.gid === pluginId)
     ?.widgets.find((widget) => widget.cid === widgetId);

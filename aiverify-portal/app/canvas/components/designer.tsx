@@ -7,8 +7,9 @@ import React, { useRef, useState } from 'react';
 import { useReducer } from 'react';
 import GridLayout, { DragOverEvent, Layout } from 'react-grid-layout';
 import { z } from 'zod';
+import { PluginForGridLayout, WidgetOnGridLayout } from '@/app/canvas/types';
 import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPluginsById';
-import { Plugin, Widget } from '@/app/types';
+import { Widget } from '@/app/types';
 import { Callout } from '@/lib/components/callout';
 import { GridItemComponent } from './gridItemComponent';
 import { initialState } from './hooks/designReducer';
@@ -22,7 +23,7 @@ const GRID_MAX_ROWS = 36;
 const GRID_STRICT_STYLE: React.CSSProperties = { height: '1080px' };
 
 type DesignProps = {
-  plugins: Plugin[];
+  plugins: PluginForGridLayout[];
 };
 
 type EventDataTransfer = Event & {
@@ -31,7 +32,7 @@ type EventDataTransfer = Event & {
   };
 };
 
-type GridItemDivRequiredStyles = `relative ${string}`;
+type GridItemDivRequiredStyles = `relative${string}`;
 const gridItemDivRequiredStyles: GridItemDivRequiredStyles = 'relative';
 
 const widgetItemSchema = z.object({
@@ -49,7 +50,7 @@ function Designer({ plugins }: DesignProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const [state, dispatch] = useReducer(designReducer, initialState);
   const [error, setError] = useState<string | undefined>();
-  const { widgetLayouts, currentPage, widgets } = state;
+  const { layouts, currentPage, widgets } = state;
   console.log(plugins);
 
   function handleDrop(layout: Layout[], item: Layout, e: EventDataTransfer) {
@@ -78,24 +79,15 @@ function Designer({ plugins }: DesignProps) {
       return;
     }
     const gridItemId = createGridItemId(widget);
-    const widgetLayout = {
-      x: item.x,
-      y: item.y,
-      w: item.w,
-      h: item.h,
-      minW: widget.widgetSize.minW,
-      minH: widget.widgetSize.minH,
-      maxW: widget.widgetSize.maxW,
-      maxH: widget.widgetSize.maxH,
-      i: gridItemId,
-    };
-    const widgetWithGridItemId = {
+    const { x, y, w, h, minW, minH, maxW, maxH, i } = item;
+    const itemLayout = { x, y, w, h, minW, minH, maxW, maxH, i: gridItemId };
+    const widgetWithGridItemId: WidgetOnGridLayout = {
       ...widget,
       gridItemId,
     };
     dispatch({
       type: 'ADD_WIDGET_TO_CANVAS',
-      widgetLayout,
+      itemLayout,
       widget: widgetWithGridItemId,
     });
   }
@@ -108,6 +100,18 @@ function Designer({ plugins }: DesignProps) {
     console.log(e);
     return { w: 2, h: 2 };
   }
+
+  function handleGridItemResizeStop(layout: Layout[]) {
+    console.log(layout);
+    const { x, y, w, h, minW, minH, maxW, maxH, i } = layout[0];
+    const itemLayout = { x, y, w, h, minW, minH, maxW, maxH, i };
+    dispatch({
+      type: 'RESIZE_WIDGET',
+      itemLayout,
+    });
+  }
+
+  console.log(state.widgets);
 
   return (
     <main className="flex h-full gap-8">
@@ -142,7 +146,7 @@ function Designer({ plugins }: DesignProps) {
           )}>
           <div className={styles.canvas_grid} />
           <GridLayout
-            layout={widgetLayouts[currentPage]}
+            layout={layouts[currentPage]}
             width={GRID_WIDTH}
             rowHeight={GRID_ROW_HEIGHT}
             maxRows={GRID_MAX_ROWS}
@@ -155,7 +159,7 @@ function Designer({ plugins }: DesignProps) {
             // onResizeStart={handleCanvasResizeStart}
             onDropDragOver={handleGridItemDropDragOver}
             onLayoutChange={handleLayoutChange}
-            // onResizeStop={handleGridItemResizeStop}
+            onResizeStop={handleGridItemResizeStop}
             preventCollision
             isResizable={true}
             isDroppable={true}

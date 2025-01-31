@@ -1,18 +1,18 @@
 import { Layout } from 'react-grid-layout';
-import { Widget } from '@/app/types';
+import { WidgetOnGridLayout } from '@/app/canvas/types';
 import { findWidgetInsertPosition } from './utils/findWidgetInsertPosition';
 
 type DesignState = {
   currentPage: number;
-  widgetLayouts: Layout[][];
-  widgets: Widget[][];
+  layouts: Layout[][];
+  widgets: WidgetOnGridLayout[][];
 };
 
 type WidgetAction =
   | {
       type: 'ADD_WIDGET_TO_CANVAS';
-      widgetLayout: Layout;
-      widget: Widget;
+      itemLayout: Layout;
+      widget: WidgetOnGridLayout;
     }
   | {
       type: 'DELETE_WIDGET_FROM_CANVAS';
@@ -20,8 +20,7 @@ type WidgetAction =
     }
   | {
       type: 'RESIZE_WIDGET';
-      widgetIndex: number;
-      widgetLayout: Layout;
+      itemLayout: Layout;
     }
   | {
       type: 'CHANGE_WIDGET_POSITION';
@@ -31,28 +30,27 @@ type WidgetAction =
 
 const initialState: DesignState = {
   currentPage: 0,
-  widgetLayouts: [[]],
+  layouts: [[]],
   widgets: [[]],
 };
 
 function designReducer(state: DesignState, action: WidgetAction): DesignState {
+  const { layouts, widgets } = state;
   switch (action.type) {
     case 'ADD_WIDGET_TO_CANVAS':
-      const { widgetLayouts, widgets } = state;
-      const { widgetLayout, widget } = action;
       const insertPosition = findWidgetInsertPosition(
-        widgetLayouts[state.currentPage],
-        widgetLayout
+        layouts[state.currentPage],
+        action.itemLayout
       );
-      const updatedWidgetLayouts = [...widgetLayouts[state.currentPage]];
-      updatedWidgetLayouts.splice(insertPosition, 0, widgetLayout);
-      widgetLayouts[state.currentPage] = updatedWidgetLayouts;
+      const updatedWidgetLayouts = [...layouts[state.currentPage]];
+      updatedWidgetLayouts.splice(insertPosition, 0, action.itemLayout);
+      layouts[state.currentPage] = updatedWidgetLayouts;
       const updatedWidgetsList = [...widgets[state.currentPage]];
-      updatedWidgetsList.splice(insertPosition, 0, widget);
+      updatedWidgetsList.splice(insertPosition, 0, action.widget);
       widgets[state.currentPage] = updatedWidgetsList;
       return {
         ...state,
-        widgetLayouts,
+        layouts,
         widgets,
       };
     case 'DELETE_WIDGET_FROM_CANVAS':

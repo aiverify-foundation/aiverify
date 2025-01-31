@@ -146,8 +146,6 @@ type Widget = {
     | null;
   dynamicHeight: boolean;
   gid: string;
-  mdx?: MdxBundle;
-  gridItemId?: string;
 };
 
 type Plugin = {
