@@ -44,7 +44,6 @@ async function fetchWidgetMdxBundles(
 function PlunginsPanel(props: PluginsPanelProps) {
   const { plugins, className } = props;
   const [pluginsWithMdx, setPluginsWithMdx] = useState<Plugin[]>(plugins);
-  console.log(pluginsWithMdx);
 
   useEffect(() => {
     fetchWidgetMdxBundles(plugins, setPluginsWithMdx);

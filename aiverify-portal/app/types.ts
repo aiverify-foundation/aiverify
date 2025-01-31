@@ -147,9 +147,8 @@ type Widget = {
   dynamicHeight: boolean;
   gid: string;
   mdx?: MdxBundle;
+  gridItemId?: string;
 };
-
-type WidgetToRender = Pick<Widget, 'gid' | 'cid' | 'properties' | 'mdx'>;
 
 type Plugin = {
   gid: string;
@@ -171,7 +170,7 @@ type Plugin = {
 
 type MdxBundle = {
   code: string;
-  frontmatter: unknown;
+  frontmatter: object;
 };
 
-export type { Project, TestResults, Plugin, MdxBundle, Widget, WidgetToRender };
+export type { Project, TestResults, Plugin, MdxBundle, Widget };

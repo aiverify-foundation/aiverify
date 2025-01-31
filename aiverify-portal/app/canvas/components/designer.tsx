@@ -1,24 +1,20 @@
 'use client';
-import clsx from 'clsx';
-import { useRef, useState } from 'react';
-import { useReducer } from 'react';
-import GridLayout, {
-  DragOverEvent,
-  ItemCallback,
-  Layout,
-  Layouts,
-} from 'react-grid-layout';
-import { z } from 'zod';
-import { MdxBundle, Plugin, Widget } from '@/app/types';
-import { Callout } from '@/lib/components/callout';
-import { findWidgetFromPluginsById } from '../utils/findWidgetFromPluginsById';
-import { initialState } from './hooks/designReducer';
-import { PlunginsPanel } from './pluginsPanel';
-import styles from './styles/designer.module.css';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import { RiErrorWarningFill } from '@remixicon/react';
+import clsx from 'clsx';
+import React, { useRef, useState } from 'react';
+import { useReducer } from 'react';
+import GridLayout, { DragOverEvent, Layout } from 'react-grid-layout';
+import { z } from 'zod';
+import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPluginsById';
+import { Plugin, Widget } from '@/app/types';
+import { Callout } from '@/lib/components/callout';
+import { GridItemComponent } from './gridItemComponent';
+import { initialState } from './hooks/designReducer';
 import { designReducer } from './hooks/designReducer';
+import { PlunginsPanel } from './pluginsPanel';
+import styles from './styles/designer.module.css';
 
 const GRID_WIDTH = 774;
 const GRID_ROW_HEIGHT = 30;
@@ -35,6 +31,9 @@ type EventDataTransfer = Event & {
   };
 };
 
+type GridItemDivRequiredStyles = `relative ${string}`;
+const gridItemDivRequiredStyles: GridItemDivRequiredStyles = 'relative';
+
 const widgetItemSchema = z.object({
   gid: z.string(),
   cid: z.string(),
@@ -42,16 +41,18 @@ const widgetItemSchema = z.object({
 
 export type WidgetCompositeId = z.infer<typeof widgetItemSchema>;
 
-const gridLayouts: Layout[] = [];
+function createGridItemId(widget: Widget) {
+  return `${widget.gid}-${widget.cid}-${Date.now()}`;
+}
 
 function Designer({ plugins }: DesignProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const [state, dispatch] = useReducer(designReducer, initialState);
   const [error, setError] = useState<string | undefined>();
+  const { widgetLayouts, currentPage, widgets } = state;
   console.log(plugins);
 
   function handleDrop(layout: Layout[], item: Layout, e: EventDataTransfer) {
-    console.log('drop', layout);
     const data: unknown = JSON.parse(
       e.dataTransfer.getData('application/json')
     );
@@ -76,16 +77,31 @@ function Designer({ plugins }: DesignProps) {
       );
       return;
     }
-    const widgetLayout = { x: 0, y: 0, w: 1, h: 1, i: widget.cid };
+    const gridItemId = createGridItemId(widget);
+    const widgetLayout = {
+      x: item.x,
+      y: item.y,
+      w: item.w,
+      h: item.h,
+      minW: widget.widgetSize.minW,
+      minH: widget.widgetSize.minH,
+      maxW: widget.widgetSize.maxW,
+      maxH: widget.widgetSize.maxH,
+      i: gridItemId,
+    };
+    const widgetWithGridItemId = {
+      ...widget,
+      gridItemId,
+    };
     dispatch({
       type: 'ADD_WIDGET_TO_CANVAS',
       widgetLayout,
-      widgetToRender: widget,
+      widget: widgetWithGridItemId,
     });
   }
 
   function handleLayoutChange(layout: Layout[]) {
-    console.log(layout);
+    // dispatch({});
   }
 
   function handleGridItemDropDragOver(e: DragOverEvent) {
@@ -126,7 +142,7 @@ function Designer({ plugins }: DesignProps) {
           )}>
           <div className={styles.canvas_grid} />
           <GridLayout
-            layout={gridLayouts}
+            layout={widgetLayouts[currentPage]}
             width={GRID_WIDTH}
             rowHeight={GRID_ROW_HEIGHT}
             maxRows={GRID_MAX_ROWS}
@@ -148,12 +164,16 @@ function Designer({ plugins }: DesignProps) {
             // useCSSTransforms={true}
             resizeHandles={['s', 'w', 'e', 'n', 'sw', 'nw', 'se', 'ne']}
             style={GRID_STRICT_STYLE}>
-            {/* <div
-              className="bg-blue-900"
-              key="2"
-              data-grid={{ x: 2, y: 0, w: 4, h: 3 }}>
-              Drop here
-            </div> */}
+            {state.widgets[state.currentPage].map((widget) => {
+              if (!widget.gridItemId) return null;
+              return (
+                <div
+                  key={widget.gridItemId}
+                  className={gridItemDivRequiredStyles}>
+                  <GridItemComponent widget={widget} />
+                </div>
+              );
+            })}
           </GridLayout>
         </div>
       </div>
