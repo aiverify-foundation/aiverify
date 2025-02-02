@@ -1,9 +1,10 @@
 import { RiDeleteBin5Line } from '@remixicon/react';
 import { getMDXComponent } from 'mdx-bundler/client';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { WidgetOnGridLayout } from '@/app/canvas/types';
+import { EditableText } from './EditableText';
 
 type GridItemComponentProps = {
   widget: WidgetOnGridLayout;
@@ -11,6 +12,43 @@ type GridItemComponentProps = {
   testData?: unknown;
   onDeleteClick: () => void;
   isDragging?: boolean;
+};
+
+type EditableComponentWrapperProps = {
+  children: React.ReactNode;
+  onTextChange?: (newText: string) => void;
+};
+
+const EditableComponentWrapper = ({
+  children,
+}: EditableComponentWrapperProps) => {
+  const wrapTextNodes = (node: React.ReactNode): React.ReactNode => {
+    if (typeof node === 'string' || typeof node === 'number') {
+      return (
+        <EditableText
+          value={String(node)}
+          onChange={(value) => console.log('Text changed:', value)}
+        />
+      );
+    }
+
+    if (React.isValidElement(node)) {
+      const children = React.Children.toArray(node.props.children);
+
+      if (children.length === 0) return node;
+
+      const wrappedChildren = children.map((child) => wrapTextNodes(child));
+
+      return React.cloneElement(node, {
+        ...node.props,
+        children: wrappedChildren,
+      });
+    }
+
+    return node;
+  };
+
+  return <>{wrapTextNodes(children)}</>;
 };
 
 function GridItemComponent(props: GridItemComponentProps) {
@@ -130,10 +168,12 @@ function GridItemComponent(props: GridItemComponentProps) {
         className="relative h-full w-full"
         onMouseOver={handleMouseEnter}
         onMouseLeave={handleMouseLeave}>
-        <Component
-          properties={properties}
-          frontmatter={widget.mdx ? widget.mdx.frontmatter : {}}
-        />
+        <EditableComponentWrapper>
+          <Component
+            properties={properties}
+            frontmatter={widget.mdx ? widget.mdx.frontmatter : {}}
+          />
+        </EditableComponentWrapper>
       </div>
     </React.Fragment>
   );

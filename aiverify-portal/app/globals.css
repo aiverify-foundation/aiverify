@@ -26,6 +26,33 @@ body {
   }
 }
 
+.custom-scrollbar {
+  @apply overflow-y-auto;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  @apply w-2;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply rounded-full border-2 border-transparent bg-clip-padding;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
 .ring
 {
   @apply text-white;
@@ -85,3 +112,4 @@ body {
   top:-6px;
   right:-8px;
 }
+

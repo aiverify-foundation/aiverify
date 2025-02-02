@@ -52,7 +52,7 @@ function PlunginsPanel(props: PluginsPanelProps) {
   const AccordionHero = (
     <Accordion
       type="single"
-      className="mx-auto mt-3 max-w-sm"
+      className="mt-3"
       collapsible>
       {plugins.map((plugin) => {
         return (
