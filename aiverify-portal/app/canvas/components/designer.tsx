@@ -1,7 +1,7 @@
 'use client';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-import { RiErrorWarningFill } from '@remixicon/react';
+import { RiDeleteBin5Line } from '@remixicon/react';
 import clsx from 'clsx';
 import React, { useRef, useState } from 'react';
 import { useReducer } from 'react';
@@ -11,6 +11,11 @@ import { PluginForGridLayout, WidgetOnGridLayout } from '@/app/canvas/types';
 import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPluginsById';
 import { Widget } from '@/app/types';
 import { Callout } from '@/lib/components/callout';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/lib/components/popover';
 import { GridItemComponent } from './gridItemComponent';
 import { initialState } from './hooks/designReducer';
 import { designReducer } from './hooks/designReducer';
@@ -33,7 +38,8 @@ type EventDataTransfer = Event & {
 };
 
 type GridItemDivRequiredStyles = `relative${string}`;
-const gridItemDivRequiredStyles: GridItemDivRequiredStyles = 'relative';
+const gridItemDivRequiredStyles: GridItemDivRequiredStyles =
+  'relative hover:outline hover:outline-2 hover:outline-blue-500 hover:outline-offset-2';
 
 const widgetItemSchema = z.object({
   gid: z.string(),
@@ -51,7 +57,7 @@ function Designer({ plugins }: DesignProps) {
   const [state, dispatch] = useReducer(designReducer, initialState);
   const [error, setError] = useState<string | undefined>();
   const { layouts, currentPage, widgets } = state;
-  console.log(plugins);
+  // console.log(plugins);
 
   function handleDrop(layout: Layout[], item: Layout, e: EventDataTransfer) {
     const data: unknown = JSON.parse(
@@ -92,26 +98,23 @@ function Designer({ plugins }: DesignProps) {
     });
   }
 
-  function handleLayoutChange(layout: Layout[]) {
-    // dispatch({});
-  }
-
-  function handleGridItemDropDragOver(e: DragOverEvent) {
-    console.log(e);
-    return { w: 2, h: 2 };
-  }
-
   function handleGridItemResizeStop(layout: Layout[]) {
-    console.log(layout);
     const { x, y, w, h, minW, minH, maxW, maxH, i } = layout[0];
-    const itemLayout = { x, y, w, h, minW, minH, maxW, maxH, i };
     dispatch({
       type: 'RESIZE_WIDGET',
-      itemLayout,
+      itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
     });
   }
 
-  console.log(state.widgets);
+  function handleGridItemDragStop(layout: Layout[]) {
+    const { x, y, w, h, minW, minH, maxW, maxH, i } = layout[0];
+    dispatch({
+      type: 'CHANGE_WIDGET_POSITION',
+      itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
+    });
+  }
+
+  // console.log(state);
 
   return (
     <main className="flex h-full gap-8">
@@ -129,13 +132,13 @@ function Designer({ plugins }: DesignProps) {
             Drag report widgets from the left panel onto the design canvas
           </p>
         </div>
-        <Callout
+        {/* <Callout
           variant="error"
           title="Data from the dropped widget is invalid"
           icon={RiErrorWarningFill}>
           The data from the widget you dropped is invalid. Please check the data
           and try again.
-        </Callout>
+        </Callout> */}
         <div
           ref={canvasRef}
           className={clsx(
@@ -155,17 +158,17 @@ function Designer({ plugins }: DesignProps) {
             // onDrag={handleOnGridItemDrag}
             onDrop={handleDrop}
             // onDragStart={handleGridItemDragStart}
-            // onDragStop={handleGridItemDragStop}
+            onDragStop={handleGridItemDragStop}
             // onResizeStart={handleCanvasResizeStart}
-            onDropDragOver={handleGridItemDropDragOver}
-            onLayoutChange={handleLayoutChange}
+            // onDropDragOver={handleGridItemDropDragOver}
+            // onLayoutChange={handleLayoutChange}
             onResizeStop={handleGridItemResizeStop}
             preventCollision
             isResizable={true}
             isDroppable={true}
             isDraggable={true}
             isBounded
-            // useCSSTransforms={true}
+            useCSSTransforms={true}
             resizeHandles={['s', 'w', 'e', 'n', 'sw', 'nw', 'se', 'ne']}
             style={GRID_STRICT_STYLE}>
             {state.widgets[state.currentPage].map((widget) => {

@@ -24,8 +24,7 @@ type WidgetAction =
     }
   | {
       type: 'CHANGE_WIDGET_POSITION';
-      widgetIndex: number;
-      targetIndex: number;
+      itemLayout: Layout;
     };
 
 const initialState: DesignState = {
@@ -36,18 +35,18 @@ const initialState: DesignState = {
 
 function designReducer(state: DesignState, action: WidgetAction): DesignState {
   const { layouts, widgets } = state;
+  const clonedCurrentPageLayouts = layouts[state.currentPage].slice();
   switch (action.type) {
     case 'ADD_WIDGET_TO_CANVAS':
       const insertPosition = findWidgetInsertPosition(
-        layouts[state.currentPage],
+        clonedCurrentPageLayouts,
         action.itemLayout
       );
-      const updatedWidgetLayouts = [...layouts[state.currentPage]];
-      updatedWidgetLayouts.splice(insertPosition, 0, action.itemLayout);
-      layouts[state.currentPage] = updatedWidgetLayouts;
-      const updatedWidgetsList = [...widgets[state.currentPage]];
-      updatedWidgetsList.splice(insertPosition, 0, action.widget);
-      widgets[state.currentPage] = updatedWidgetsList;
+      clonedCurrentPageLayouts.splice(insertPosition, 0, action.itemLayout);
+      layouts[state.currentPage] = clonedCurrentPageLayouts;
+      const clonedCurrentPageWidgets = widgets[state.currentPage].slice();
+      clonedCurrentPageWidgets.splice(insertPosition, 0, action.widget);
+      widgets[state.currentPage] = clonedCurrentPageWidgets;
       return {
         ...state,
         layouts,
@@ -56,9 +55,27 @@ function designReducer(state: DesignState, action: WidgetAction): DesignState {
     case 'DELETE_WIDGET_FROM_CANVAS':
       return { ...state };
     case 'RESIZE_WIDGET':
-      return { ...state };
+      const resizingIndex = clonedCurrentPageLayouts.findIndex(
+        (layout) => layout.i === action.itemLayout.i
+      );
+      if (resizingIndex === -1) {
+        console.error('resizing - layout index not found');
+        return state;
+      }
+      clonedCurrentPageLayouts[resizingIndex] = action.itemLayout;
+      layouts[state.currentPage] = clonedCurrentPageLayouts;
+      return { ...state, layouts };
     case 'CHANGE_WIDGET_POSITION':
-      return { ...state };
+      const movingIndex = clonedCurrentPageLayouts.findIndex(
+        (layout) => layout.i === action.itemLayout.i
+      );
+      if (movingIndex === -1) {
+        console.error('moving - layout index not found');
+        return state;
+      }
+      clonedCurrentPageLayouts[movingIndex] = action.itemLayout;
+      layouts[state.currentPage] = clonedCurrentPageLayouts;
+      return { ...state, layouts };
   }
 }
 
