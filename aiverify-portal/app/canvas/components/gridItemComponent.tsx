@@ -9,9 +9,12 @@ type GridItemComponentProps = {
   widget: WidgetOnGridLayout;
   inputBlockData?: unknown;
   testData?: unknown;
+  onDeleteClick: () => void;
+  isDragging?: boolean;
 };
 
-function GridItemComponent({ widget }: GridItemComponentProps) {
+function GridItemComponent(props: GridItemComponentProps) {
+  const { widget, onDeleteClick, isDragging } = props;
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const gridItemRef = useRef<HTMLDivElement>(null);
@@ -42,6 +45,16 @@ function GridItemComponent({ widget }: GridItemComponentProps) {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (isDragging) {
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current);
+      }
+      setShowContextMenu(false);
+      isHoveringRef.current = false;
+    }
+  }, [isDragging]);
 
   useEffect(() => {
     if (!showContextMenu) return;
@@ -92,20 +105,26 @@ function GridItemComponent({ widget }: GridItemComponentProps) {
 
   return (
     <React.Fragment>
-      {showContextMenu &&
-        createPortal(
-          <div
-            className="fixed cursor-pointer rounded bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950"
-            style={{
-              top: `${menuPosition.top}px`,
-              left: `${menuPosition.left}px`,
-            }}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}>
-            <RiDeleteBin5Line className="m-2 h-5 w-5 text-red-500 hover:text-red-600" />
-          </div>,
-          document.body
-        )}
+      {showContextMenu && !isDragging
+        ? createPortal(
+            <div
+              className="fixed cursor-pointer rounded bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950"
+              style={{
+                top: `${menuPosition.top}px`,
+                left: `${menuPosition.left}px`,
+              }}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              onMouseDown={(e) => {
+                // Prevent grid drag from starting
+                e.stopPropagation();
+              }}
+              onClick={onDeleteClick}>
+              <RiDeleteBin5Line className="m-1 h-5 w-5 text-red-500 hover:text-red-600" />
+            </div>,
+            document.body
+          )
+        : null}
       <div
         ref={gridItemRef}
         className="relative h-full w-full"

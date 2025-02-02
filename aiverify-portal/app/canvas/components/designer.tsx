@@ -11,11 +11,6 @@ import { PluginForGridLayout, WidgetOnGridLayout } from '@/app/canvas/types';
 import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPluginsById';
 import { Widget } from '@/app/types';
 import { Callout } from '@/lib/components/callout';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/lib/components/popover';
 import { GridItemComponent } from './gridItemComponent';
 import { initialState } from './hooks/designReducer';
 import { designReducer } from './hooks/designReducer';
@@ -57,6 +52,7 @@ function Designer({ plugins }: DesignProps) {
   const [state, dispatch] = useReducer(designReducer, initialState);
   const [error, setError] = useState<string | undefined>();
   const { layouts, currentPage, widgets } = state;
+  const [draggingId, setDraggingId] = useState<string | null>(null);
   // console.log(plugins);
 
   function handleDrop(layout: Layout[], item: Layout, e: EventDataTransfer) {
@@ -98,12 +94,23 @@ function Designer({ plugins }: DesignProps) {
     });
   }
 
+  function handleGridItemResizeStart(layout: Layout[]) {
+    const { i } = layout[0];
+    setDraggingId(i);
+  }
+
   function handleGridItemResizeStop(layout: Layout[]) {
     const { x, y, w, h, minW, minH, maxW, maxH, i } = layout[0];
     dispatch({
       type: 'RESIZE_WIDGET',
       itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
     });
+    setDraggingId(null);
+  }
+
+  function handleGridItemDragStart(layout: Layout[]) {
+    const { i } = layout[0];
+    setDraggingId(i);
   }
 
   function handleGridItemDragStop(layout: Layout[]) {
@@ -112,9 +119,17 @@ function Designer({ plugins }: DesignProps) {
       type: 'CHANGE_WIDGET_POSITION',
       itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
     });
+    setDraggingId(null);
   }
 
-  // console.log(state);
+  function handleDeleteGridItem(index: number) {
+    dispatch({
+      type: 'DELETE_WIDGET_FROM_CANVAS',
+      index,
+    });
+  }
+
+  console.log(state);
 
   return (
     <main className="flex h-full gap-8">
@@ -155,29 +170,30 @@ function Designer({ plugins }: DesignProps) {
             maxRows={GRID_MAX_ROWS}
             margin={[0, 0]}
             compactType={null}
-            // onDrag={handleOnGridItemDrag}
             onDrop={handleDrop}
-            // onDragStart={handleGridItemDragStart}
+            onDragStart={handleGridItemDragStart}
             onDragStop={handleGridItemDragStop}
-            // onResizeStart={handleCanvasResizeStart}
-            // onDropDragOver={handleGridItemDropDragOver}
-            // onLayoutChange={handleLayoutChange}
             onResizeStop={handleGridItemResizeStop}
+            onResizeStart={handleGridItemResizeStart}
             preventCollision
             isResizable={true}
             isDroppable={true}
             isDraggable={true}
             isBounded
             useCSSTransforms={true}
-            resizeHandles={['s', 'w', 'e', 'n', 'sw', 'nw', 'se', 'ne']}
+            resizeHandles={['sw', 'nw', 'se', 'ne']}
             style={GRID_STRICT_STYLE}>
-            {state.widgets[state.currentPage].map((widget) => {
+            {state.widgets[state.currentPage].map((widget, index) => {
               if (!widget.gridItemId) return null;
               return (
                 <div
                   key={widget.gridItemId}
                   className={gridItemDivRequiredStyles}>
-                  <GridItemComponent widget={widget} />
+                  <GridItemComponent
+                    widget={widget}
+                    onDeleteClick={() => handleDeleteGridItem(index)}
+                    isDragging={draggingId === widget.gridItemId}
+                  />
                 </div>
               );
             })}
