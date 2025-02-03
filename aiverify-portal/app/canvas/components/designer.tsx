@@ -213,6 +213,11 @@ function Designer({ plugins }: DesignProps) {
     });
   }
 
+  function handleGridItemDoubleClick(e: React.MouseEvent) {
+    e.stopPropagation();
+    console.log(e);
+  }
+
   return (
     <div className="relative h-full w-full">
       <section className="absolute z-10 flex h-full w-[300px] flex-col bg-secondary-900 p-4">
@@ -271,7 +276,8 @@ function Designer({ plugins }: DesignProps) {
                   return (
                     <div
                       key={widget.gridItemId}
-                      className={gridItemDivRequiredStyles}>
+                      className={gridItemDivRequiredStyles}
+                      onDoubleClick={handleGridItemDoubleClick}>
                       <GridItemComponent
                         widget={widget}
                         onDeleteClick={() => handleDeleteGridItem(index)}

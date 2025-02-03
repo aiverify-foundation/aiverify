@@ -1,10 +1,9 @@
-import { RiDeleteBin5Line } from '@remixicon/react';
-import { getMDXComponent } from 'mdx-bundler/client';
+import { RiDeleteBin5Line, RiFileEditLine } from '@remixicon/react';
+import { getMDXComponent, MDXContentProps } from 'mdx-bundler/client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { WidgetOnGridLayout } from '@/app/canvas/types';
-import { EditableText } from './EditableText';
 
 type GridItemComponentProps = {
   widget: WidgetOnGridLayout;
@@ -14,67 +13,42 @@ type GridItemComponentProps = {
   isDragging?: boolean;
 };
 
-type EditableComponentWrapperProps = {
-  children: React.ReactNode;
-  onTextChange?: (newText: string) => void;
-};
-
-const EditableComponentWrapper = ({
-  children,
-}: EditableComponentWrapperProps) => {
-  const wrapTextNodes = (node: React.ReactNode): React.ReactNode => {
-    if (typeof node === 'string' || typeof node === 'number') {
-      return (
-        <EditableText
-          value={String(node)}
-          onChange={(value) => console.log('Text changed:', value)}
-        />
-      );
-    }
-
-    if (React.isValidElement(node)) {
-      const children = React.Children.toArray(node.props.children);
-
-      if (children.length === 0) return node;
-
-      const wrappedChildren = children.map((child) => wrapTextNodes(child));
-
-      return React.cloneElement(node, {
-        ...node.props,
-        children: wrappedChildren,
-      });
-    }
-
-    return node;
+/**
+ * This is a higher-order component that allows developers to add modifications like styling to the MDX component.
+ * It is currently not doing anything, but it is a placeholder for future use.
+ * Currently it has placeholders for h2, h1, but no modifications are added.
+ * @param WrappedComponent - The MDX component to wrap.
+ * @returns A new component that adds text behavior to the MDX component.
+ */
+const withTextBehavior = <P extends MDXContentProps>(
+  WrappedComponent: React.FunctionComponent<P>
+) => {
+  return function EnhancedComponent(props: P) {
+    return (
+      <WrappedComponent
+        {...props}
+        components={{
+          ...props.components,
+          h1: (h1Props: { children: React.ReactNode }) => (
+            <h1>{h1Props.children}</h1>
+          ),
+          h2: (h2Props: { children: React.ReactNode }) => (
+            <h2>{h2Props.children}</h2>
+          ),
+        }}
+      />
+    );
   };
-
-  return <>{wrapTextNodes(children)}</>;
 };
 
 function GridItemComponent(props: GridItemComponentProps) {
   const { widget, onDeleteClick, isDragging } = props;
   const [showContextMenu, setShowContextMenu] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const gridItemRef = useRef<HTMLDivElement>(null);
   const hideTimeoutRef = useRef<NodeJS.Timeout>(null);
   const isHoveringRef = useRef<boolean>(false);
-
-  function handleMouseEnter() {
-    isHoveringRef.current = true;
-    if (hideTimeoutRef.current) {
-      clearTimeout(hideTimeoutRef.current);
-    }
-    setShowContextMenu(true);
-  }
-
-  function handleMouseLeave() {
-    isHoveringRef.current = false;
-    hideTimeoutRef.current = setTimeout(() => {
-      if (!isHoveringRef.current) {
-        setShowContextMenu(false);
-      }
-    }, 500); // 500ms delay before hiding
-  }
 
   useEffect(() => {
     return () => {
@@ -120,6 +94,27 @@ function GridItemComponent(props: GridItemComponentProps) {
     };
   }, [showContextMenu]);
 
+  function handleMouseEnter() {
+    isHoveringRef.current = true;
+    if (hideTimeoutRef.current) {
+      clearTimeout(hideTimeoutRef.current);
+    }
+    setShowContextMenu(true);
+  }
+
+  function handleMouseLeave() {
+    isHoveringRef.current = false;
+    hideTimeoutRef.current = setTimeout(() => {
+      if (!isHoveringRef.current) {
+        setShowContextMenu(false);
+      }
+    }, 500); //delay before hiding
+  }
+
+  function handleEditClick() {
+    setIsEditing(true);
+  }
+
   const Component = useMemo(() => {
     if (!widget.mdx) {
       const MissingMdxMessage = () => (
@@ -128,8 +123,9 @@ function GridItemComponent(props: GridItemComponentProps) {
       MissingMdxMessage.displayName = 'MissingMdxMessage';
       return MissingMdxMessage;
     }
-    return getMDXComponent(widget.mdx.code);
-  }, [widget, widget.mdx]);
+    const MDXComponent = getMDXComponent(widget.mdx.code);
+    return withTextBehavior(MDXComponent);
+  }, [widget, widget.mdx, isEditing]);
 
   const properties = useMemo(() => {
     if (!widget.properties) return {};
@@ -154,7 +150,18 @@ function GridItemComponent(props: GridItemComponentProps) {
               <div className="rounded bg-secondary-600 px-2 py-1 text-xs shadow-lg">
                 {widget.name}
               </div>
-              <div className="flex">
+              <div className="flex gap-1">
+                <div
+                  className="cursor-pointer rounded bg-secondary-400 shadow-lg"
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
+                  onMouseDown={(e) => {
+                    // Prevent grid drag from starting
+                    e.stopPropagation();
+                  }}
+                  onClick={handleEditClick}>
+                  <RiFileEditLine className="m-1 h-5 w-5 text-white hover:text-blue-800" />
+                </div>
                 <div
                   className="cursor-pointer rounded bg-secondary-400 shadow-lg"
                   onMouseEnter={handleMouseEnter}
@@ -176,12 +183,10 @@ function GridItemComponent(props: GridItemComponentProps) {
         className="relative h-full w-full"
         onMouseOver={handleMouseEnter}
         onMouseLeave={handleMouseLeave}>
-        <EditableComponentWrapper>
-          <Component
-            properties={properties}
-            frontmatter={widget.mdx ? widget.mdx.frontmatter : {}}
-          />
-        </EditableComponentWrapper>
+        <Component
+          properties={properties}
+          frontmatter={widget.mdx ? widget.mdx.frontmatter : undefined}
+        />
       </div>
     </React.Fragment>
   );

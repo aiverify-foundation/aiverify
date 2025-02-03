@@ -106,3 +106,7 @@
   -o-user-drag: none;
   user-drag: none;
 }
+
+.canvas h1 {
+  @apply text-black text-2xl;
+}
