@@ -76,15 +76,16 @@
 	So, just use exact height value of 36 rows * 30px to remove the leftover from screen
 	*/
   position: relative;
-  background-color: #e3e2e2;
+  background-color: white;
   /* margin: auto; */
   margin-bottom: 50px;
   padding: var(--A4-canvas-padding);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .canvas_grid {
   --grid-row-height: 30px;
-  --grid-line-color: #cacaca;
+  --grid-line-color: #d9d8d8;
   --grid-container-width: calc(
     var(--A4-canvas-width) - var(--A4-canvas-padding) * 2
   );

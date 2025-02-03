@@ -32,25 +32,26 @@ body {
 
 .custom-scrollbar::-webkit-scrollbar {
   @apply w-2;
+  background-color: black;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  @apply bg-transparent;
+  background-color: black;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
   @apply rounded-full border-2 border-transparent bg-clip-padding;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(120, 120, 120, 0.3);
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba(126, 126, 126, 0.3);
 }
 
 /* Firefox */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  scrollbar-color: rgba(126, 126, 126, 0.3) transparent;
 }
 
 .ring

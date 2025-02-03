@@ -210,15 +210,17 @@ function Designer({ plugins }: DesignProps) {
         />
       </section>
       <section className="relative flex h-full w-full flex-1 flex-col gap-2">
-        <div className="absolute left-[340px] top-[30px]">
-          <h4 className="text-lg font-bold">Design the report</h4>
-          <p className="text-sm font-light text-white">
+        <div className="absolute left-[340px] top-[30px] z-30">
+          {/* <h4 className="text-lg font-bold text-primary-900">
+            Design the report
+          </h4>
+          <p className="text-sm font-light text-primary-800">
             Drag report widgets from the left panel onto the design canvas
-          </p>
+          </p> */}
         </div>
         <div
           ref={containerRef}
-          className="custom-scrollbar relative h-full cursor-grab overflow-auto active:cursor-grabbing"
+          className="custom-scrollbar relative h-full cursor-grab overflow-auto bg-slate-100 active:cursor-grabbing"
           onMouseDown={handleFreeFormAreaMouseDown}
           onMouseUp={handleFreeFormAreaMouseUp}
           onMouseMove={handleFreeFormAreaMouseMove}
