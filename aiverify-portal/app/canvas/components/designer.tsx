@@ -1,7 +1,6 @@
 'use client';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-import clsx from 'clsx';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useReducer } from 'react';
 import GridLayout, { Layout } from 'react-grid-layout';
@@ -10,6 +9,7 @@ import { PluginForGridLayout, WidgetOnGridLayout } from '@/app/canvas/types';
 import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPluginsById';
 import { Widget } from '@/app/types';
 import { cn } from '@/lib/utils/twmerge';
+import { EditingOverlay } from './editingOverlay';
 import { GridItemComponent } from './gridItemComponent';
 import { initialState } from './hooks/designReducer';
 import { designReducer } from './hooks/designReducer';
@@ -60,6 +60,12 @@ function Designer({ plugins }: DesignProps) {
   const [scrollLeft, setScrollLeft] = useState(0);
   const [scrollTop, setScrollTop] = useState(0);
   const [isDraggingFreeFormArea, setIsDraggingFreeFormArea] = useState(false);
+  const [editingGridItemId, setEditingGridItemId] = useState<string | null>(
+    null
+  );
+  const [editingElement, setEditingElement] = useState<HTMLDivElement | null>(
+    null
+  );
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -213,85 +219,116 @@ function Designer({ plugins }: DesignProps) {
     });
   }
 
-  function handleGridItemDoubleClick(e: React.MouseEvent) {
-    e.stopPropagation();
-    console.log(e);
+  function handleGridItemEditClick(
+    gridItemId: string,
+    gridItemHtmlElement: HTMLDivElement | null
+  ) {
+    setEditingGridItemId(gridItemId);
+    setEditingElement(gridItemHtmlElement);
+  }
+
+  function handleEditingClose() {
+    setEditingGridItemId(null);
+    setEditingElement(null);
+  }
+
+  function handleEditingSave(updatedWidget: WidgetOnGridLayout) {
+    dispatch({
+      type: 'UPDATE_WIDGET',
+      widget: updatedWidget,
+    });
+    setEditingGridItemId(null);
+    setEditingElement(null);
   }
 
   return (
-    <div className="relative h-full w-full">
-      <section className="absolute z-10 flex h-full w-[300px] flex-col bg-secondary-900 p-4">
-        <div>
-          <h4 className="mb-0 text-lg font-bold">Project Name</h4>
-          <p className="text-sm text-white">Project Description</p>
-        </div>
-        <PlunginsPanel
-          plugins={plugins}
-          className="custom-scrollbar w-full overflow-auto"
-        />
-      </section>
-      <section className="relative flex h-full w-full flex-1 flex-col gap-2">
-        <div
-          ref={containerRef}
-          className="custom-scrollbar relative h-full cursor-grab overflow-auto bg-slate-100 active:cursor-grabbing"
-          onMouseDown={handleFreeFormAreaMouseDown}
-          onMouseUp={handleFreeFormAreaMouseUp}
-          onMouseMove={
-            isDraggingFreeFormArea ? handleFreeFormAreaMouseMove : undefined
+    <React.Fragment>
+      {editingGridItemId && editingElement ? (
+        <EditingOverlay
+          widget={
+            state.widgets[state.currentPage].find(
+              (w) => w.gridItemId === editingGridItemId
+            )!
           }
-          onMouseLeave={handleFreeFormAreaMouseUp}>
-          <div className="flex min-h-[2000px] min-w-[6000px] justify-center pt-[500px]">
-            <div
-              ref={canvasRef}
-              className={cn(
-                styles.canvas,
-                styles.reportRoot,
-                styles.reportContainer,
-                styles.reportHeight,
-                'cursor-default active:cursor-default'
-              )}>
-              <div className={styles.canvas_grid} />
-              <GridLayout
-                layout={layouts[currentPage]}
-                width={GRID_WIDTH}
-                rowHeight={GRID_ROW_HEIGHT}
-                maxRows={GRID_MAX_ROWS}
-                margin={[0, 0]}
-                compactType={null}
-                onDrop={handleWidgetDrop}
-                onDragStart={handleGridItemDragStart}
-                onDragStop={handleGridItemDragStop}
-                onResizeStop={handleGridItemResizeStop}
-                onResizeStart={handleGridItemResizeStart}
-                preventCollision
-                isResizable={true}
-                isDroppable={true}
-                isDraggable={true}
-                isBounded
-                useCSSTransforms={true}
-                resizeHandles={['sw', 'nw', 'se', 'ne']}
-                style={GRID_STRICT_STYLE}>
-                {state.widgets[state.currentPage].map((widget, index) => {
-                  if (!widget.gridItemId) return null;
-                  return (
-                    <div
-                      key={widget.gridItemId}
-                      className={gridItemDivRequiredStyles}
-                      onDoubleClick={handleGridItemDoubleClick}>
-                      <GridItemComponent
-                        widget={widget}
-                        onDeleteClick={() => handleDeleteGridItem(index)}
-                        isDragging={draggingId === widget.gridItemId}
-                      />
-                    </div>
-                  );
-                })}
-              </GridLayout>
+          originalElement={editingElement}
+          onClose={handleEditingClose}
+          onSave={handleEditingSave}
+        />
+      ) : null}
+      <div className="relative h-full w-full">
+        <section className="absolute z-10 flex h-full w-[300px] flex-col bg-secondary-900 p-4">
+          <div>
+            <h4 className="mb-0 text-lg font-bold">Project Name</h4>
+            <p className="text-sm text-white">Project Description</p>
+          </div>
+          <PlunginsPanel
+            plugins={plugins}
+            className="custom-scrollbar w-full overflow-auto"
+          />
+        </section>
+        <section className="relative flex h-full w-full flex-1 flex-col gap-2">
+          <div
+            ref={containerRef}
+            className="custom-scrollbar relative h-full cursor-grab overflow-auto bg-slate-100 active:cursor-grabbing"
+            onMouseDown={handleFreeFormAreaMouseDown}
+            onMouseUp={handleFreeFormAreaMouseUp}
+            onMouseMove={
+              isDraggingFreeFormArea ? handleFreeFormAreaMouseMove : undefined
+            }
+            onMouseLeave={handleFreeFormAreaMouseUp}>
+            <div className="flex min-h-[2000px] min-w-[6000px] justify-center pt-[500px]">
+              <div
+                ref={canvasRef}
+                className={cn(
+                  styles.canvas,
+                  styles.reportRoot,
+                  styles.reportContainer,
+                  styles.reportHeight,
+                  'cursor-default active:cursor-default'
+                )}>
+                <div className={styles.canvas_grid} />
+                <GridLayout
+                  layout={layouts[currentPage]}
+                  width={GRID_WIDTH}
+                  rowHeight={GRID_ROW_HEIGHT}
+                  maxRows={GRID_MAX_ROWS}
+                  margin={[0, 0]}
+                  compactType={null}
+                  onDrop={handleWidgetDrop}
+                  onDragStart={handleGridItemDragStart}
+                  onDragStop={handleGridItemDragStop}
+                  onResizeStop={handleGridItemResizeStop}
+                  onResizeStart={handleGridItemResizeStart}
+                  preventCollision
+                  isResizable={true}
+                  isDroppable={true}
+                  isDraggable={true}
+                  isBounded
+                  useCSSTransforms={true}
+                  resizeHandles={['sw', 'nw', 'se', 'ne']}
+                  style={GRID_STRICT_STYLE}>
+                  {state.widgets[state.currentPage].map((widget, index) => {
+                    if (!widget.gridItemId) return null;
+                    return (
+                      <div
+                        key={widget.gridItemId}
+                        className={gridItemDivRequiredStyles}>
+                        <GridItemComponent
+                          widget={widget}
+                          onDeleteClick={() => handleDeleteGridItem(index)}
+                          onEditClick={handleGridItemEditClick}
+                          isDragging={draggingId === widget.gridItemId}
+                        />
+                      </div>
+                    );
+                  })}
+                </GridLayout>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
-    </div>
+        </section>
+      </div>
+    </React.Fragment>
   );
 }
 

@@ -10,6 +10,10 @@ type GridItemComponentProps = {
   inputBlockData?: unknown;
   testData?: unknown;
   onDeleteClick: () => void;
+  onEditClick: (
+    gridItemId: string,
+    gridItemHtmlElement: HTMLDivElement | null
+  ) => void;
   isDragging?: boolean;
 };
 
@@ -42,9 +46,8 @@ const withTextBehavior = <P extends MDXContentProps>(
 };
 
 function GridItemComponent(props: GridItemComponentProps) {
-  const { widget, onDeleteClick, isDragging } = props;
+  const { widget, onDeleteClick, onEditClick, isDragging } = props;
   const [showContextMenu, setShowContextMenu] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const gridItemRef = useRef<HTMLDivElement>(null);
   const hideTimeoutRef = useRef<NodeJS.Timeout>(null);
@@ -112,7 +115,7 @@ function GridItemComponent(props: GridItemComponentProps) {
   }
 
   function handleEditClick() {
-    setIsEditing(true);
+    onEditClick(widget.gridItemId, gridItemRef.current);
   }
 
   const Component = useMemo(() => {
@@ -125,7 +128,7 @@ function GridItemComponent(props: GridItemComponentProps) {
     }
     const MDXComponent = getMDXComponent(widget.mdx.code);
     return withTextBehavior(MDXComponent);
-  }, [widget, widget.mdx, isEditing]);
+  }, [widget, widget.mdx]);
 
   const properties = useMemo(() => {
     if (!widget.properties) return {};

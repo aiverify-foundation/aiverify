@@ -25,6 +25,10 @@ type WidgetAction =
   | {
       type: 'CHANGE_WIDGET_POSITION';
       itemLayout: Layout;
+    }
+  | {
+      type: 'UPDATE_WIDGET';
+      widget: WidgetOnGridLayout;
     };
 
 const initialState: DesignState = {
@@ -52,6 +56,7 @@ function designReducer(state: DesignState, action: WidgetAction): DesignState {
         layouts,
         widgets,
       };
+
     case 'DELETE_WIDGET_FROM_CANVAS':
       clonedCurrentPageLayouts.splice(action.index, 1);
       const clonedCurrentPageWidgetsForDelete =
@@ -60,6 +65,7 @@ function designReducer(state: DesignState, action: WidgetAction): DesignState {
       layouts[state.currentPage] = clonedCurrentPageLayouts;
       widgets[state.currentPage] = clonedCurrentPageWidgetsForDelete;
       return { ...state, layouts, widgets };
+
     case 'RESIZE_WIDGET':
       const resizingIndex = clonedCurrentPageLayouts.findIndex(
         (layout) => layout.i === action.itemLayout.i
@@ -71,6 +77,7 @@ function designReducer(state: DesignState, action: WidgetAction): DesignState {
       clonedCurrentPageLayouts[resizingIndex] = action.itemLayout;
       layouts[state.currentPage] = clonedCurrentPageLayouts;
       return { ...state, layouts };
+
     case 'CHANGE_WIDGET_POSITION':
       const movingIndex = clonedCurrentPageLayouts.findIndex(
         (layout) => layout.i === action.itemLayout.i
@@ -92,6 +99,21 @@ function designReducer(state: DesignState, action: WidgetAction): DesignState {
       clonedCurrentPageLayouts[movingIndex] = action.itemLayout;
       layouts[state.currentPage] = clonedCurrentPageLayouts;
       return { ...state, layouts };
+
+    case 'UPDATE_WIDGET':
+      return {
+        ...state,
+        widgets: {
+          ...state.widgets,
+          [state.currentPage]: state.widgets[state.currentPage].map((widget) =>
+            widget.gridItemId === action.widget.gridItemId
+              ? action.widget
+              : widget
+          ),
+        },
+      };
+    default:
+      return state;
   }
 }
 
