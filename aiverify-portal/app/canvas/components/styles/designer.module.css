@@ -108,11 +108,11 @@
 }
 
 .canvas h1,
-.canvas .h1TextInput {
+.h1TextInput {
   @apply text-black text-2xl;
 }
 
 .canvas h2,
-.canvas .h2TextInput {
+.h2TextInput {
   @apply text-black text-xl;
 }
