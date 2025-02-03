@@ -149,7 +149,7 @@ function Designer({ plugins }: DesignProps) {
       return;
     }
     const gridItemId = createGridItemId(widget);
-    const { x, y, w, h, minW, minH, maxW, maxH, i } = item;
+    const { x, y, w, h, minW, minH, maxW, maxH } = item;
     const itemLayout = { x, y, w, h, minW, minH, maxW, maxH, i: gridItemId };
     const widgetWithGridItemId: WidgetOnGridLayout = {
       ...widget,
@@ -162,13 +162,21 @@ function Designer({ plugins }: DesignProps) {
     });
   }
 
-  function handleGridItemResizeStart(layout: Layout[]) {
-    const { i } = layout[0];
+  function handleGridItemResizeStart(
+    _layouts: Layout[],
+    _: Layout,
+    itemLayout: Layout
+  ) {
+    const { i } = itemLayout;
     setDraggingId(i);
   }
 
-  function handleGridItemResizeStop(layout: Layout[]) {
-    const { x, y, w, h, minW, minH, maxW, maxH, i } = layout[0];
+  function handleGridItemResizeStop(
+    _layouts: Layout[],
+    _: Layout,
+    itemLayout: Layout
+  ) {
+    const { x, y, w, h, minW, minH, maxW, maxH, i } = itemLayout;
     dispatch({
       type: 'RESIZE_WIDGET',
       itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
@@ -176,13 +184,21 @@ function Designer({ plugins }: DesignProps) {
     setDraggingId(null);
   }
 
-  function handleGridItemDragStart(layout: Layout[]) {
-    const { i } = layout[0];
+  function handleGridItemDragStart(
+    _layouts: Layout[],
+    _: Layout,
+    itemLayout: Layout
+  ) {
+    const { i } = itemLayout;
     setDraggingId(i);
   }
 
-  function handleGridItemDragStop(layout: Layout[]) {
-    const { x, y, w, h, minW, minH, maxW, maxH, i } = layout[0];
+  function handleGridItemDragStop(
+    _layouts: Layout[],
+    _: Layout,
+    itemLayout: Layout
+  ) {
+    const { x, y, w, h, minW, minH, maxW, maxH, i } = itemLayout;
     dispatch({
       type: 'CHANGE_WIDGET_POSITION',
       itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
@@ -210,20 +226,14 @@ function Designer({ plugins }: DesignProps) {
         />
       </section>
       <section className="relative flex h-full w-full flex-1 flex-col gap-2">
-        <div className="absolute left-[340px] top-[30px] z-30">
-          {/* <h4 className="text-lg font-bold text-primary-900">
-            Design the report
-          </h4>
-          <p className="text-sm font-light text-primary-800">
-            Drag report widgets from the left panel onto the design canvas
-          </p> */}
-        </div>
         <div
           ref={containerRef}
           className="custom-scrollbar relative h-full cursor-grab overflow-auto bg-slate-100 active:cursor-grabbing"
           onMouseDown={handleFreeFormAreaMouseDown}
           onMouseUp={handleFreeFormAreaMouseUp}
-          onMouseMove={handleFreeFormAreaMouseMove}
+          onMouseMove={
+            isDraggingFreeFormArea ? handleFreeFormAreaMouseMove : undefined
+          }
           onMouseLeave={handleFreeFormAreaMouseUp}>
           <div className="flex min-h-[2000px] min-w-[6000px] justify-center pt-[500px]">
             <div
