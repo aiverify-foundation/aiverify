@@ -5,7 +5,7 @@ name: Software Composition Analysis
 on:
   # Runs on a schedule
   schedule:
-    - cron: '00 11 * * FRI'
+    - cron: "5 14 * * 5"
 
   # Run this workflow manually from Actions tab
   workflow_dispatch:
@@ -28,7 +28,7 @@ jobs:
   software-composition-analysis:
 
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
 
     steps:
 
