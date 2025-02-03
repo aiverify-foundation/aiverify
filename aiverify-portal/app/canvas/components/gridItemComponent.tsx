@@ -1,6 +1,6 @@
 import { RiDeleteBin5Line } from '@remixicon/react';
 import { getMDXComponent } from 'mdx-bundler/client';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { WidgetOnGridLayout } from '@/app/canvas/types';
@@ -146,19 +146,27 @@ function GridItemComponent(props: GridItemComponentProps) {
       {showContextMenu && !isDragging
         ? createPortal(
             <div
-              className="fixed cursor-pointer rounded bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950"
+              className="fixed flex flex-col gap-1"
               style={{
                 top: `${menuPosition.top}px`,
                 left: `${menuPosition.left}px`,
-              }}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-              onMouseDown={(e) => {
-                // Prevent grid drag from starting
-                e.stopPropagation();
-              }}
-              onClick={onDeleteClick}>
-              <RiDeleteBin5Line className="m-1 h-5 w-5 text-red-500 hover:text-red-600" />
+              }}>
+              <div className="rounded bg-secondary-600 px-2 py-1 text-xs shadow-lg">
+                {widget.name}
+              </div>
+              <div className="flex">
+                <div
+                  className="cursor-pointer rounded bg-secondary-400 shadow-lg"
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
+                  onMouseDown={(e) => {
+                    // Prevent grid drag from starting
+                    e.stopPropagation();
+                  }}
+                  onClick={onDeleteClick}>
+                  <RiDeleteBin5Line className="m-1 h-5 w-5 text-white hover:text-red-500" />
+                </div>
+              </div>
             </div>,
             document.body
           )

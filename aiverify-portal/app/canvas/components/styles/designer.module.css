@@ -1,6 +1,5 @@
 .reportRoot {
-  color: var(--color-gray);
-  font-size: 14px;
+  @apply text-black text-[14px]
 }
 
 .reportContainer {
@@ -30,41 +29,6 @@
   );
 }
 
-.reportWidgetComponent {
-  display: flex;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  height: 100%;
-  border: 4px solid transparent;
-}
-
-.reportWidgetComponent:hover {
-  border-color: #4654f9;
-}
-
-.invalidWidget {
-  background-color: #ffffff;
-}
-
-.panelsAndCanvasContainer {
-  position: absolute;
-  display: flex;
-  min-width: 1400px;
-}
-
-.designArea {
-  min-width: 840px;
-  max-width: 960px;
-  width: calc(100vw * (60 / 100));
-}
-
-.designColumn {
-  width: 794px;
-  margin: auto;
-}
-
 .canvas {
   --A4-canvas-width: 794px;
   --A4-canvas-padding: 10px;
@@ -75,15 +39,12 @@
 	That leaves a bit of space leftover.
 	So, just use exact height value of 36 rows * 30px to remove the leftover from screen
 	*/
-  position: relative;
-  background-color: white;
-  /* margin: auto; */
-  margin-bottom: 50px;
   padding: var(--A4-canvas-padding);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  @apply relative bg-white mb-[50px] shadow;
 }
 
 .canvas_grid {
+  @apply absolute;
   --grid-row-height: 30px;
   --grid-line-color: #d9d8d8;
   --grid-container-width: calc(
@@ -92,7 +53,6 @@
   --grid-container-height: calc(
     var(--A4-canvas-height) + 1px - var(--A4-canvas-padding) * 2
   );
-  position: absolute;
   left: var(--A4-canvas-padding);
   top: var(--A4-canvas-padding);
   width: var(--grid-container-width);
@@ -107,58 +67,6 @@
       transparent 1px 100%
     );
   background-size: calc(calc(100% - 0.03em) / 12) var(--grid-row-height);
-}
-
-.canvas_topbar {
-  width: var(--A4-canvas-width);
-  margin: auto;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.canvas_item_highlight {
-  position: absolute;
-  background-color: #4654f9;
-  z-index: 100;
-}
-
-.paginationBar {
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-}
-
-.menuContainer {
-  display: flex;
-  flex-direction: column;
-  position: absolute;
-  z-index: 102;
-}
-
-.gridItem_title {
-  width: max-content;
-  max-width: 200px;
-  background: var(--color-white);
-  padding: 5px 10px;
-  margin-bottom: 5px;
-  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.2);
-  border-radius: 2px;
-  font-size: 13px;
-}
-
-.gridItem_menu {
-  display: flex;
-  align-items: center;
-  border-radius: 2px;
-}
-
-.gridItem_btnWrapper {
-  background: var(--color-white);
-  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.2);
-  margin-right: 3px;
-  border-radius: 2px;
 }
 
 .gridItem_dheightNote {
