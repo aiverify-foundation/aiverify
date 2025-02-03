@@ -2,13 +2,14 @@
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import clsx from 'clsx';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useReducer } from 'react';
 import GridLayout, { Layout } from 'react-grid-layout';
 import { z } from 'zod';
 import { PluginForGridLayout, WidgetOnGridLayout } from '@/app/canvas/types';
 import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPluginsById';
 import { Widget } from '@/app/types';
+import { cn } from '@/lib/utils/twmerge';
 import { GridItemComponent } from './gridItemComponent';
 import { initialState } from './hooks/designReducer';
 import { designReducer } from './hooks/designReducer';
@@ -52,7 +53,7 @@ function Designer({ plugins }: DesignProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const [state, dispatch] = useReducer(designReducer, initialState);
   const [error, setError] = useState<string | undefined>();
-  const { layouts, currentPage, widgets } = state;
+  const { layouts, currentPage } = state;
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [startX, setStartX] = useState(0);
   const [startY, setStartY] = useState(0);
@@ -74,8 +75,18 @@ function Designer({ plugins }: DesignProps) {
     };
   }, [isDraggingFreeFormArea]);
 
-  const handleFreeFormAreaMouseDown = (e: React.MouseEvent) => {
+  useLayoutEffect(() => {
+    if (containerRef.current) {
+      const totalWidth = containerRef.current.scrollWidth;
+      const viewportWidth = containerRef.current.clientWidth;
+      containerRef.current.scrollLeft = (totalWidth - viewportWidth) / 2;
+      containerRef.current.scrollTop = 400;
+    }
+  }, []);
+
+  function handleFreeFormAreaMouseDown(e: React.MouseEvent) {
     if (!containerRef.current) return;
+    if (canvasRef.current?.contains(e.target as Node)) return;
 
     setIsDraggingFreeFormArea(true);
     setStartX(e.pageX - containerRef.current.offsetLeft);
@@ -83,20 +94,19 @@ function Designer({ plugins }: DesignProps) {
     setScrollLeft(containerRef.current.scrollLeft);
     setScrollTop(containerRef.current.scrollTop);
 
-    // Change cursor style
     containerRef.current.style.cursor = 'grabbing';
     containerRef.current.style.userSelect = 'none';
-  };
+  }
 
-  const handleFreeFormAreaMouseUp = () => {
+  function handleFreeFormAreaMouseUp() {
     if (!containerRef.current) return;
 
     setIsDraggingFreeFormArea(false);
     containerRef.current.style.cursor = 'grab';
     containerRef.current.style.removeProperty('user-select');
-  };
+  }
 
-  const handleFreeFormAreaMouseMove = (e: React.MouseEvent) => {
+  function handleFreeFormAreaMouseMove(e: React.MouseEvent) {
     if (!isDraggingFreeFormArea || !containerRef.current) return;
 
     e.preventDefault();
@@ -107,9 +117,13 @@ function Designer({ plugins }: DesignProps) {
 
     containerRef.current.scrollLeft = scrollLeft - walkX;
     containerRef.current.scrollTop = scrollTop - walkY;
-  };
+  }
 
-  function handleDrop(layout: Layout[], item: Layout, e: EventDataTransfer) {
+  function handleWidgetDrop(
+    layout: Layout[],
+    item: Layout,
+    e: EventDataTransfer
+  ) {
     const data: unknown = JSON.parse(
       e.dataTransfer.getData('application/json')
     );
@@ -184,8 +198,8 @@ function Designer({ plugins }: DesignProps) {
   }
 
   return (
-    <main className="flex h-full gap-8">
-      <section className="flex h-full w-[300px] flex-shrink-0 flex-col gap-4 bg-secondary-900 p-4">
+    <div className="relative h-full w-full">
+      <section className="absolute z-10 flex h-full w-[300px] flex-col bg-secondary-900 p-4">
         <div>
           <h4 className="mb-0 text-lg font-bold">Project Name</h4>
           <p className="text-sm text-white">Project Description</p>
@@ -195,8 +209,8 @@ function Designer({ plugins }: DesignProps) {
           className="custom-scrollbar w-full overflow-auto"
         />
       </section>
-      <div className="flex h-full flex-1 flex-col gap-2">
-        <div className="mb-8">
+      <section className="relative flex h-full w-full flex-1 flex-col gap-2">
+        <div className="absolute left-[340px] top-[30px]">
           <h4 className="text-lg font-bold">Design the report</h4>
           <p className="text-sm font-light text-white">
             Drag report widgets from the left panel onto the design canvas
@@ -204,19 +218,20 @@ function Designer({ plugins }: DesignProps) {
         </div>
         <div
           ref={containerRef}
-          className="custom-scrollbar relative h-full max-w-[calc(100vw-260px)] cursor-grab overflow-auto active:cursor-grabbing"
+          className="custom-scrollbar relative h-full cursor-grab overflow-auto active:cursor-grabbing"
           onMouseDown={handleFreeFormAreaMouseDown}
           onMouseUp={handleFreeFormAreaMouseUp}
           onMouseMove={handleFreeFormAreaMouseMove}
           onMouseLeave={handleFreeFormAreaMouseUp}>
-          <div className="min-h-[2000px] min-w-[2000px]">
+          <div className="flex min-h-[2000px] min-w-[6000px] justify-center pt-[500px]">
             <div
               ref={canvasRef}
-              className={clsx(
+              className={cn(
                 styles.canvas,
                 styles.reportRoot,
                 styles.reportContainer,
-                styles.reportHeight
+                styles.reportHeight,
+                'cursor-default active:cursor-default'
               )}>
               <div className={styles.canvas_grid} />
               <GridLayout
@@ -226,7 +241,7 @@ function Designer({ plugins }: DesignProps) {
                 maxRows={GRID_MAX_ROWS}
                 margin={[0, 0]}
                 compactType={null}
-                onDrop={handleDrop}
+                onDrop={handleWidgetDrop}
                 onDragStart={handleGridItemDragStart}
                 onDragStop={handleGridItemDragStop}
                 onResizeStop={handleGridItemResizeStop}
@@ -257,8 +272,8 @@ function Designer({ plugins }: DesignProps) {
             </div>
           </div>
         </div>
-      </div>
-    </main>
+      </section>
+    </div>
   );
 }
 
