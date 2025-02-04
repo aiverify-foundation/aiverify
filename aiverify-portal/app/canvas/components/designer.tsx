@@ -1,26 +1,21 @@
 'use client';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-import {
-  RiFileAddLine,
-  RiArrowUpSLine,
-  RiArrowDownSLine,
-  RiZoomOutLine,
-  RiZoomInLine,
-} from '@remixicon/react';
+import { RiFileAddLine } from '@remixicon/react';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useReducer } from 'react';
-import { flushSync } from 'react-dom';
 import GridLayout, { Layout } from 'react-grid-layout';
 import { z } from 'zod';
 import { PluginForGridLayout, WidgetOnGridLayout } from '@/app/canvas/types';
 import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPluginsById';
 import { Widget } from '@/app/types';
 import { cn } from '@/lib/utils/twmerge';
+import { ZoomControl } from './ZoomControl';
 import { EditingOverlay } from './editingOverlay';
 import { GridItemComponent } from './gridItemComponent';
 import { initialState } from './hooks/designReducer';
 import { designReducer } from './hooks/designReducer';
+import { PageNavigation } from './pageNavigation';
 import { PlunginsPanel } from './pluginsPanel';
 import styles from './styles/designer.module.css';
 
@@ -37,12 +32,11 @@ const PAGE_GAP = 128; // equivalent to gap-32 (32 * 4 = 128px)
 const PADDING_TOP = 100; // matches pt-[100px]
 const PADDING_BOTTOM = 100; // extra padding at bottom
 
-const MIN_ZOOM = 0.25;
-const MAX_ZOOM = 2;
 const ZOOM_STEP = 0.25;
 
 type DesignProps = {
   plugins: PluginForGridLayout[];
+  printMode?: boolean;
 };
 
 type EventDataTransfer = Event & {
@@ -320,11 +314,11 @@ function Designer({ plugins }: DesignProps) {
   }
 
   function handleZoomIn() {
-    setZoomLevel((prev) => Math.min(prev + ZOOM_STEP, MAX_ZOOM));
+    setZoomLevel((prev) => Math.min(prev + ZOOM_STEP, 2));
   }
 
   function handleZoomOut() {
-    setZoomLevel((prev) => Math.max(prev - ZOOM_STEP, MIN_ZOOM));
+    setZoomLevel((prev) => Math.max(prev - ZOOM_STEP, 0.25));
   }
 
   function handleZoomReset() {
@@ -357,65 +351,21 @@ function Designer({ plugins }: DesignProps) {
           />
         </section>
         <div className="fixed right-[90px] top-[170px] z-50 -translate-x-1/2 transform">
-          <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 shadow-lg">
-            <button
-              onClick={handlePreviousPage}
-              disabled={currentPage === 0}
-              className="rounded p-1 hover:bg-gray-100 disabled:opacity-50"
-              title="Previous page">
-              <RiArrowUpSLine className="h-5 w-5 text-gray-900" />
-            </button>
-
-            <div className="flex flex-col gap-2">
-              {layouts.map((_, index) => (
-                <button
-                  key={`page-nav-${index}`}
-                  onClick={() => handlePageChange(index)}
-                  className={cn(
-                    'flex h-6 w-6 items-center justify-center rounded-lg transition-colors',
-                    currentPage === index
-                      ? 'bg-gray-700 text-white'
-                      : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
-                  )}
-                  title={`Go to page ${index + 1}`}>
-                  {index + 1}
-                </button>
-              ))}
-            </div>
-
-            <button
-              onClick={handleNextPage}
-              disabled={currentPage === layouts.length - 1}
-              className="rounded p-1 hover:bg-gray-100 disabled:opacity-50"
-              title="Next page">
-              <RiArrowDownSLine className="h-5 w-5 text-gray-900" />
-            </button>
-          </div>
+          <PageNavigation
+            layouts={layouts}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            onNextPage={handleNextPage}
+            onPreviousPage={handlePreviousPage}
+          />
         </div>
-
         <div className="fixed right-[20px] top-[170px] z-50 -translate-x-1/2 transform">
-          <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 shadow-lg">
-            <button
-              onClick={handleZoomIn}
-              disabled={zoomLevel >= MAX_ZOOM}
-              className="rounded p-1 hover:hover:bg-gray-200 disabled:opacity-50"
-              title="Zoom in">
-              <RiZoomInLine className="h-5 w-5 text-gray-900" />
-            </button>
-            <button
-              onClick={handleZoomReset}
-              className="rounded p-1 text-xs text-gray-900 hover:bg-gray-200"
-              title="Reset zoom">
-              {Math.round(zoomLevel * 100)}%
-            </button>
-            <button
-              onClick={handleZoomOut}
-              disabled={zoomLevel <= MIN_ZOOM}
-              className="rounded p-1 hover:hover:bg-gray-200 disabled:opacity-50"
-              title="Zoom out">
-              <RiZoomOutLine className="h-5 w-5 text-gray-900" />
-            </button>
-          </div>
+          <ZoomControl
+            zoomLevel={zoomLevel}
+            onZoomIn={handleZoomIn}
+            onZoomOut={handleZoomOut}
+            onZoomReset={handleZoomReset}
+          />
         </div>
         <div
           className="fixed right-[50px] top-[120px] z-50 mx-auto flex max-w-lg cursor-pointer"
