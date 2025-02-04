@@ -18,7 +18,7 @@ pip uninstall pip-licenses prettytable wcwidth -y > /dev/null
 # Dependency check
 echo "Dependency check..."
 pip install pip-audit > /dev/null
-pip uninstall setuptools -y > /dev/null
+#pip uninstall setuptools -y > /dev/null
 set +e
 pip-audit --format markdown --desc on -o pip-audit-report.md &> pip-audit-count.txt
 exit_code=$?
