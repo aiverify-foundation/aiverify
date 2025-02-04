@@ -49,11 +49,6 @@ else
   touch license-report.html
 fi
 
-# Create badges
-#pip install anybadge
-#python3 ci/createBadges.py dependency
-#python3 ci/createBadges.py license
-
 deactivate
 rm -rf ci-venv
 
