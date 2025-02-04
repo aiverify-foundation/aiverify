@@ -26,7 +26,7 @@ on:
 
   push:
     branches: [ "ci/v2-workflows" ]
-          
+
 # Allow one concurrent deployment
 concurrency:
   group: ${{ github.repository }}-${{ github.workflow }}
@@ -61,7 +61,7 @@ jobs:
         with:
           ref: ${{ env.MS_BRANCH }}
           sparse-checkout: |
-            stock-plugins/aiverify.stock.accumulated-local-effect
+            stock-plugins/aiverify.stock.accumulated-local-effect/algorithms/accumulated_local_effect
             .ci
 
       # Setup python    
@@ -74,7 +74,7 @@ jobs:
 
       # Install dependencies
       - name: Install dependencies
-        working-directory: ${{ github.workspace }}/stock-plugins/aiverify.stock.accumulated-local-effect
+        working-directory: ${{ github.workspace }}/stock-plugins/aiverify.stock.accumulated-local-effect/algorithms/accumulated_local_effect
         run: |
           pip install .
           pip install pytest pytest-mock pytest-html pytest-json pytest-cov coverage anybadge
@@ -82,15 +82,10 @@ jobs:
 
       # Check 1: Unit tests & coverage    
       - name: Unit tests with coverage
-        working-directory: ${{ github.workspace }}/stock-plugins/aiverify.stock.accumulated-local-effect
+        working-directory: ${{ github.workspace }}/stock-plugins/aiverify.stock.accumulated-local-effect/algorithms/accumulated_local_effect
         if: ${{ ! cancelled() }}
         timeout-minutes: 30
         run: |      
-          cd algorithms
-          for algo_dir in */; do
-            echo "algo-dir: $algo_dir"
-            cd "$algo_dir"
-
             set +e
             bash ../../../../.ci/run-test.sh aiverify_accumulated_local_effect -m
             source ../../../../.ci/gen_pre_build_summ.sh test
@@ -103,5 +98,4 @@ jobs:
             if [ $test_status -ne 0 ] || [ $coverage_status -ne 0 ]; then
                 exit 1
             fi
-            cd ..
-          done
+
