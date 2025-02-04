@@ -2,7 +2,7 @@
 source_dir=aiverify_test_engine
 
 set +e
-flake8 --format=html --htmldir=flake8-report --count  $source_dir > flake8-report.txt
+flake8 --count  $source_dir > flake8-report.txt
 cat flake8-report.txt
 exit_code=$?
 #python3 ci/createBadges.py lint
