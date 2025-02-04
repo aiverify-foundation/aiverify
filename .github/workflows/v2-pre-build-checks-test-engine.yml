@@ -44,16 +44,13 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           echo "MS_BRANCH=${{ github.event.pull_request.head.ref }}" >> "$GITHUB_ENV"
-          echo "MS_DATA_BRANCH=dev_main" >> "$GITHUB_ENV"
           echo "PR_NUM=#${{ github.event.pull_request.number }}" >> "$GITHUB_ENV"
 
       - name: Set branch variable (workflow_dispatch)
         if: github.event_name == 'workflow_dispatch'
         run: |
           echo "MS_BRANCH=${{ inputs.branch_to_test }}" >> "$GITHUB_ENV"
-          echo "MS_DATA_BRANCH=dev_main" >> "$GITHUB_ENV"
           echo "PR_NUM=#0" >> "$GITHUB_ENV"
-          echo "${{ inputs.branch_to_test }}"
 
       # Checkout code
       - name: Checkout code
