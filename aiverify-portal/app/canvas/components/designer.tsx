@@ -1,6 +1,7 @@
 'use client';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
+import { RiFileAddLine } from '@remixicon/react';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useReducer } from 'react';
 import GridLayout, { Layout } from 'react-grid-layout';
@@ -8,6 +9,8 @@ import { z } from 'zod';
 import { PluginForGridLayout, WidgetOnGridLayout } from '@/app/canvas/types';
 import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPluginsById';
 import { Widget } from '@/app/types';
+import { NewCard } from '@/lib/components/newcard';
+import { Popover, PopoverContent } from '@/lib/components/popover';
 import { cn } from '@/lib/utils/twmerge';
 import { EditingOverlay } from './editingOverlay';
 import { GridItemComponent } from './gridItemComponent';
@@ -155,8 +158,19 @@ function Designer({ plugins }: DesignProps) {
       return;
     }
     const gridItemId = createGridItemId(widget);
-    const { x, y, w, h, minW, minH, maxW, maxH } = item;
-    const itemLayout = { x, y, w, h, minW, minH, maxW, maxH, i: gridItemId };
+    const { x, y } = item;
+    const { minW, minH, maxH, maxW } = widget.widgetSize;
+    const itemLayout = {
+      x,
+      y,
+      w: maxW,
+      h: minH,
+      minW,
+      minH,
+      maxW,
+      maxH,
+      i: gridItemId,
+    };
     const widgetWithGridItemId: WidgetOnGridLayout = {
       ...widget,
       gridItemId,
@@ -266,6 +280,14 @@ function Designer({ plugins }: DesignProps) {
             className="custom-scrollbar w-full overflow-auto"
           />
         </section>
+        <div className="fixed right-[50px] top-[120px] z-50 mx-auto flex max-w-lg cursor-pointer">
+          <div className="flex items-center gap-2">
+            <div className="rounded-lg bg-gray-300 shadow-sm">
+              <RiFileAddLine className="m-1 h-5 w-5 text-secondary-950 hover:text-blue-500" />
+            </div>
+            <div className="text-shadow-xs text-sm text-gray-900">New Page</div>
+          </div>
+        </div>
         <section className="relative flex h-full w-full flex-1 flex-col gap-2">
           <div
             ref={containerRef}

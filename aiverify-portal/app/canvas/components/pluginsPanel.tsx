@@ -45,6 +45,7 @@ function PlunginsPanel(props: PluginsPanelProps) {
   const { plugins, className } = props;
   const [pluginsWithMdx, setPluginsWithMdx] = useState<Plugin[]>(plugins);
 
+  // TODO - plugins with mdx should be handled at parent component
   useEffect(() => {
     fetchWidgetMdxBundles(plugins, setPluginsWithMdx);
   }, [plugins]);

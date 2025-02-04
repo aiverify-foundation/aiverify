@@ -24,6 +24,7 @@ const withEditingBehavior = <P extends MDXContentProps>(
   return function EditableComponent(
     props: P & { onTextChange?: (path: string, value: string) => void }
   ) {
+    console.log('components', props.components);
     return (
       <WrappedComponent
         {...props}
@@ -45,12 +46,55 @@ const withEditingBehavior = <P extends MDXContentProps>(
           },
           // Handle headings similarly
           h1: (h1Props: { children: React.ReactNode }) => {
+            console.log('h1', h1Props.children);
             return (
               <input
                 type="text"
                 value={h1Props.children as string}
                 onChange={(e) => props.onTextChange?.('h1', e.target.value)}
                 className={cn(styles.h1TextInput, 'w-full focus:outline-none')}
+              />
+            );
+          },
+          h2: (h1Props: { children: React.ReactNode }) => {
+            return (
+              <input
+                type="text"
+                value={h1Props.children as string}
+                onChange={(e) => props.onTextChange?.('h1', e.target.value)}
+                className={cn(styles.h2TextInput, 'w-full focus:outline-none')}
+              />
+            );
+          },
+          h3: (h1Props: { children: React.ReactNode }) => {
+            return (
+              <input
+                type="text"
+                value={h1Props.children as string}
+                onChange={(e) => props.onTextChange?.('h1', e.target.value)}
+                className={cn(styles.h3TextInput, 'w-full focus:outline-none')}
+              />
+            );
+          },
+          h4: (h1Props: { children: React.ReactNode }) => {
+            return (
+              <input
+                type="text"
+                value={h1Props.children as string}
+                onChange={(e) => props.onTextChange?.('h1', e.target.value)}
+                className={cn(styles.h4TextInput, 'w-full focus:outline-none')}
+              />
+            );
+          },
+          // Add text handler for naked text nodes
+          text: ({ children }: { children: React.ReactNode }) => {
+            console.log('text', children);
+            return (
+              <input
+                type="text"
+                value={children}
+                onChange={(e) => props.onTextChange?.('text', e.target.value)}
+                className="w-full bg-transparent"
               />
             );
           },

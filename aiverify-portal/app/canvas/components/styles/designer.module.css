@@ -116,3 +116,18 @@
 .h2TextInput {
   @apply text-black text-xl;
 }
+
+.canvas h3,
+.h3TextInput {
+  @apply text-red-500 text-lg;
+}
+
+.canvas h4,
+.h4TextInput {
+  @apply text-black text-base;
+}
+
+.canvas p,
+.pTextInput {
+  @apply text-black text-sm;
+}
