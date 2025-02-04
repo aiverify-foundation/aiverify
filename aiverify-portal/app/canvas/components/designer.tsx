@@ -1,16 +1,19 @@
 'use client';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-import { RiFileAddLine } from '@remixicon/react';
+import {
+  RiFileAddLine,
+  RiArrowUpSLine,
+  RiArrowDownSLine,
+} from '@remixicon/react';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useReducer } from 'react';
+import { flushSync } from 'react-dom';
 import GridLayout, { Layout } from 'react-grid-layout';
 import { z } from 'zod';
 import { PluginForGridLayout, WidgetOnGridLayout } from '@/app/canvas/types';
 import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPluginsById';
 import { Widget } from '@/app/types';
-import { NewCard } from '@/lib/components/newcard';
-import { Popover, PopoverContent } from '@/lib/components/popover';
 import { cn } from '@/lib/utils/twmerge';
 import { EditingOverlay } from './editingOverlay';
 import { GridItemComponent } from './gridItemComponent';
@@ -26,6 +29,12 @@ const GRID_STRICT_STYLE: React.CSSProperties = {
   height: '1080px',
   width: '774px',
 };
+
+// Add these constants for calculations
+const PAGE_HEIGHT = 1080; // matches GRID_STRICT_STYLE height
+const PAGE_GAP = 128; // equivalent to gap-32 (32 * 4 = 128px)
+const PADDING_TOP = 100; // matches pt-[100px]
+const PADDING_BOTTOM = 100; // extra padding at bottom
 
 type DesignProps = {
   plugins: PluginForGridLayout[];
@@ -255,6 +264,47 @@ function Designer({ plugins }: DesignProps) {
     setEditingElement(null);
   }
 
+  function handleAddNewPage() {
+    flushSync(() => {
+      dispatch({
+        type: 'ADD_NEW_PAGE',
+      });
+    });
+    const newPageElement = document.getElementById(
+      `page-${layouts.length - 1}`
+    );
+    newPageElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function handlePageChange(pageIndex: number) {
+    dispatch({
+      type: 'SET_CURRENT_PAGE',
+      pageIndex,
+    });
+    const pageElement = document.getElementById(`page-${pageIndex}`);
+    pageElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function handleNextPage() {
+    if (currentPage < layouts.length - 1) {
+      handlePageChange(currentPage + 1);
+    }
+  }
+
+  function handlePreviousPage() {
+    if (currentPage > 0) {
+      handlePageChange(currentPage - 1);
+    }
+  }
+
+  const calculateMinHeight = () => {
+    const totalPagesHeight = layouts.length * PAGE_HEIGHT;
+    const totalGapsHeight = (layouts.length - 1) * PAGE_GAP;
+    const totalHeight =
+      totalPagesHeight + totalGapsHeight + PADDING_TOP + PADDING_BOTTOM;
+    return `${totalHeight}px`;
+  };
+
   return (
     <React.Fragment>
       {editingGridItemId && editingElement ? (
@@ -280,7 +330,45 @@ function Designer({ plugins }: DesignProps) {
             className="custom-scrollbar w-full overflow-auto"
           />
         </section>
-        <div className="fixed right-[50px] top-[120px] z-50 mx-auto flex max-w-lg cursor-pointer">
+        <div className="fixed right-[90px] top-[160px] z-50 -translate-x-1/2 transform">
+          <div className="flex flex-col items-center gap-2 rounded-lg p-2 shadow-lg">
+            <button
+              onClick={handlePreviousPage}
+              disabled={currentPage === 0}
+              className="rounded p-1 hover:bg-gray-100 disabled:opacity-50"
+              title="Previous page">
+              <RiArrowUpSLine className="h-5 w-5 text-gray-900" />
+            </button>
+
+            <div className="flex flex-col gap-2">
+              {layouts.map((_, index) => (
+                <button
+                  key={`page-nav-${index}`}
+                  onClick={() => handlePageChange(index)}
+                  className={cn(
+                    'flex h-6 w-6 items-center justify-center rounded-lg transition-colors',
+                    currentPage === index
+                      ? 'bg-gray-700 text-white'
+                      : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                  )}
+                  title={`Go to page ${index + 1}`}>
+                  {index + 1}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={handleNextPage}
+              disabled={currentPage === layouts.length - 1}
+              className="rounded p-1 hover:bg-gray-100 disabled:opacity-50"
+              title="Next page">
+              <RiArrowDownSLine className="h-5 w-5 text-gray-900" />
+            </button>
+          </div>
+        </div>
+        <div
+          className="fixed right-[50px] top-[120px] z-50 mx-auto flex max-w-lg cursor-pointer"
+          onClick={handleAddNewPage}>
           <div className="flex items-center gap-2">
             <div className="rounded-lg bg-gray-300 shadow-sm">
               <RiFileAddLine className="m-1 h-5 w-5 text-secondary-950 hover:text-blue-500" />
@@ -298,53 +386,61 @@ function Designer({ plugins }: DesignProps) {
               isDraggingFreeFormArea ? handleFreeFormAreaMouseMove : undefined
             }
             onMouseLeave={handleFreeFormAreaMouseUp}>
-            <div className="flex min-h-[2000px] min-w-[6000px] justify-center pt-[500px]">
-              <div
-                ref={canvasRef}
-                className={cn(
-                  styles.canvas,
-                  styles.reportRoot,
-                  styles.reportContainer,
-                  styles.reportHeight,
-                  'cursor-default active:cursor-default'
-                )}>
-                <div className={styles.canvas_grid} />
-                <GridLayout
-                  layout={layouts[currentPage]}
-                  width={GRID_WIDTH}
-                  rowHeight={GRID_ROW_HEIGHT}
-                  maxRows={GRID_MAX_ROWS}
-                  margin={[0, 0]}
-                  compactType={null}
-                  onDrop={handleWidgetDrop}
-                  onDragStart={handleGridItemDragStart}
-                  onDragStop={handleGridItemDragStop}
-                  onResizeStop={handleGridItemResizeStop}
-                  onResizeStart={handleGridItemResizeStart}
-                  preventCollision
-                  isResizable={true}
-                  isDroppable={true}
-                  isDraggable={true}
-                  isBounded
-                  useCSSTransforms={true}
-                  resizeHandles={['sw', 'nw', 'se', 'ne']}
-                  style={GRID_STRICT_STYLE}>
-                  {state.widgets[state.currentPage].map((widget, index) => {
-                    if (!widget.gridItemId) return null;
-                    return (
-                      <div
-                        key={widget.gridItemId}
-                        className={gridItemDivRequiredStyles}>
-                        <GridItemComponent
-                          widget={widget}
-                          onDeleteClick={() => handleDeleteGridItem(index)}
-                          onEditClick={handleGridItemEditClick}
-                          isDragging={draggingId === widget.gridItemId}
-                        />
-                      </div>
-                    );
-                  })}
-                </GridLayout>
+            <div
+              className="flex min-w-[6000px] justify-center pt-[500px]"
+              style={{ minHeight: calculateMinHeight() }}>
+              <div className="flex flex-col gap-2">
+                {layouts.map((layout, pageIndex) => (
+                  <div
+                    id={`page-${pageIndex}`}
+                    key={`page-${pageIndex}`}
+                    ref={canvasRef}
+                    className={cn(
+                      styles.canvas,
+                      styles.reportRoot,
+                      styles.reportContainer,
+                      styles.reportHeight,
+                      'cursor-default active:cursor-default'
+                    )}>
+                    <div className={styles.canvas_grid} />
+                    <GridLayout
+                      layout={layouts[pageIndex]}
+                      width={GRID_WIDTH}
+                      rowHeight={GRID_ROW_HEIGHT}
+                      maxRows={GRID_MAX_ROWS}
+                      margin={[0, 0]}
+                      compactType={null}
+                      onDrop={handleWidgetDrop}
+                      onDragStart={handleGridItemDragStart}
+                      onDragStop={handleGridItemDragStop}
+                      onResizeStop={handleGridItemResizeStop}
+                      onResizeStart={handleGridItemResizeStart}
+                      preventCollision
+                      isResizable={true}
+                      isDroppable={true}
+                      isDraggable={true}
+                      isBounded
+                      useCSSTransforms={true}
+                      resizeHandles={['sw', 'nw', 'se', 'ne']}
+                      style={GRID_STRICT_STYLE}>
+                      {state.widgets[state.currentPage].map((widget, index) => {
+                        if (!widget.gridItemId) return null;
+                        return (
+                          <div
+                            key={widget.gridItemId}
+                            className={gridItemDivRequiredStyles}>
+                            <GridItemComponent
+                              widget={widget}
+                              onDeleteClick={() => handleDeleteGridItem(index)}
+                              onEditClick={handleGridItemEditClick}
+                              isDragging={draggingId === widget.gridItemId}
+                            />
+                          </div>
+                        );
+                      })}
+                    </GridLayout>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

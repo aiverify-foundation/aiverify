@@ -29,7 +29,9 @@ type WidgetAction =
   | {
       type: 'UPDATE_WIDGET';
       widget: WidgetOnGridLayout;
-    };
+    }
+  | { type: 'ADD_NEW_PAGE' }
+  | { type: 'SET_CURRENT_PAGE'; pageIndex: number };
 
 const initialState: DesignState = {
   currentPage: 0,
@@ -112,6 +114,21 @@ function designReducer(state: DesignState, action: WidgetAction): DesignState {
           ),
         },
       };
+
+    case 'ADD_NEW_PAGE':
+      return {
+        ...state,
+        layouts: [...state.layouts, []],
+        widgets: [...state.widgets, []],
+        currentPage: state.layouts.length,
+      };
+
+    case 'SET_CURRENT_PAGE':
+      return {
+        ...state,
+        currentPage: action.pageIndex,
+      };
+
     default:
       return state;
   }

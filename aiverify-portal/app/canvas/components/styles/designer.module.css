@@ -13,6 +13,7 @@
 	So, just use exact height value of 36 rows * 30px to remove the leftover from screen
 	*/
   width: var(--A4-page-width);
+  scroll-margin-top: 100px;
 }
 
 .reportHeight {
