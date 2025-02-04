@@ -10,14 +10,15 @@ import { PluginForGridLayout, WidgetOnGridLayout } from '@/app/canvas/types';
 import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPluginsById';
 import { Widget } from '@/app/types';
 import { cn } from '@/lib/utils/twmerge';
-import { ZoomControl } from './ZoomControl';
 import { EditingOverlay } from './editingOverlay';
 import { GridItemComponent } from './gridItemComponent';
 import { initialState } from './hooks/designReducer';
 import { designReducer } from './hooks/designReducer';
+import { useDragToScroll } from './hooks/useDragToScroll';
 import { PageNavigation } from './pageNavigation';
 import { PlunginsPanel } from './pluginsPanel';
 import styles from './styles/designer.module.css';
+import { ZoomControl } from './zoomControl';
 
 const GRID_WIDTH = 774;
 const GRID_ROW_HEIGHT = 30;
@@ -66,11 +67,6 @@ function Designer({ plugins }: DesignProps) {
   const [error, setError] = useState<string | undefined>();
   const { layouts, currentPage } = state;
   const [draggingId, setDraggingId] = useState<string | null>(null);
-  const [startX, setStartX] = useState(0);
-  const [startY, setStartY] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-  const [scrollTop, setScrollTop] = useState(0);
-  const [isDraggingFreeFormArea, setIsDraggingFreeFormArea] = useState(false);
   const [editingGridItemId, setEditingGridItemId] = useState<string | null>(
     null
   );
@@ -80,18 +76,12 @@ function Designer({ plugins }: DesignProps) {
   const [zoomLevel, setZoomLevel] = useState(1);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const handleGlobalMouseUp = () => {
-      if (isDraggingFreeFormArea) {
-        handleFreeFormAreaMouseUp();
-      }
-    };
-
-    document.addEventListener('mouseup', handleGlobalMouseUp);
-    return () => {
-      document.removeEventListener('mouseup', handleGlobalMouseUp);
-    };
-  }, [isDraggingFreeFormArea]);
+  const {
+    isDragging: isDraggingFreeFormArea,
+    handleMouseDown: handleFreeFormAreaMouseDown,
+    handleMouseUp: handleFreeFormAreaMouseUp,
+    handleMouseMove: handleFreeFormAreaMouseMove,
+  } = useDragToScroll(containerRef, canvasRef);
 
   useLayoutEffect(() => {
     if (containerRef.current) {
@@ -115,41 +105,6 @@ function Designer({ plugins }: DesignProps) {
       }
     }
   }, [layouts.length]);
-
-  function handleFreeFormAreaMouseDown(e: React.MouseEvent) {
-    if (!containerRef.current) return;
-    if (canvasRef.current?.contains(e.target as Node)) return;
-
-    setIsDraggingFreeFormArea(true);
-    setStartX(e.pageX - containerRef.current.offsetLeft);
-    setStartY(e.pageY - containerRef.current.offsetTop);
-    setScrollLeft(containerRef.current.scrollLeft);
-    setScrollTop(containerRef.current.scrollTop);
-
-    containerRef.current.style.cursor = 'grabbing';
-    containerRef.current.style.userSelect = 'none';
-  }
-
-  function handleFreeFormAreaMouseUp() {
-    if (!containerRef.current) return;
-
-    setIsDraggingFreeFormArea(false);
-    containerRef.current.style.cursor = 'grab';
-    containerRef.current.style.removeProperty('user-select');
-  }
-
-  function handleFreeFormAreaMouseMove(e: React.MouseEvent) {
-    if (!isDraggingFreeFormArea || !containerRef.current) return;
-
-    e.preventDefault();
-    const x = e.pageX - containerRef.current.offsetLeft;
-    const y = e.pageY - containerRef.current.offsetTop;
-    const walkX = (x - startX) * 1.5; // Adjust multiplier for speed
-    const walkY = (y - startY) * 1.5;
-
-    containerRef.current.scrollLeft = scrollLeft - walkX;
-    containerRef.current.scrollTop = scrollTop - walkY;
-  }
 
   function handleWidgetDrop(
     layout: Layout[],
@@ -350,23 +305,21 @@ function Designer({ plugins }: DesignProps) {
             className="custom-scrollbar w-full overflow-auto"
           />
         </section>
-        <div className="fixed right-[90px] top-[170px] z-50 -translate-x-1/2 transform">
-          <PageNavigation
-            layouts={layouts}
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-            onNextPage={handleNextPage}
-            onPreviousPage={handlePreviousPage}
-          />
-        </div>
-        <div className="fixed right-[20px] top-[170px] z-50 -translate-x-1/2 transform">
-          <ZoomControl
-            zoomLevel={zoomLevel}
-            onZoomIn={handleZoomIn}
-            onZoomOut={handleZoomOut}
-            onZoomReset={handleZoomReset}
-          />
-        </div>
+        <PageNavigation
+          layouts={layouts}
+          currentPage={currentPage}
+          onPageChange={handlePageChange}
+          onNextPage={handleNextPage}
+          onPreviousPage={handlePreviousPage}
+          className="fixed right-[110px] top-[170px] z-50"
+        />
+        <ZoomControl
+          zoomLevel={zoomLevel}
+          onZoomIn={handleZoomIn}
+          onZoomOut={handleZoomOut}
+          onZoomReset={handleZoomReset}
+          className="fixed right-[40px] top-[170px] z-50"
+        />
         <div
           className="fixed right-[50px] top-[120px] z-50 mx-auto flex max-w-lg cursor-pointer"
           onClick={handleAddNewPage}>
@@ -394,8 +347,6 @@ function Designer({ plugins }: DesignProps) {
                 transform: `scale(${zoomLevel})`,
                 transformOrigin: 'center top',
                 transition: 'transform 0.2s ease-out',
-                width: `${100 / zoomLevel}%`,
-                height: `${100 / zoomLevel}%`,
               }}>
               <div className="flex flex-col gap-2">
                 {layouts.map((layout, pageIndex) => (
