@@ -1,7 +1,7 @@
 #!/bin/bash
 source_dir=${1:aiverify_test_engine}
 
-if [ "$1" == "-m" ]; then
+if [ "$2" == "-m" ]; then
   test_cmd="python3 -m pytest"
 else
   test_cmd=pytest
