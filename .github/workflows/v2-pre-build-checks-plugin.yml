@@ -62,6 +62,7 @@ jobs:
           ref: ${{ env.MS_BRANCH }}
           sparse-checkout: |
             stock-plugins/aiverify.stock.accumulated-local-effect/algorithms/accumulated_local_effect
+            stock-plugins/user_defined_files
             .ci
 
       # Setup python    
