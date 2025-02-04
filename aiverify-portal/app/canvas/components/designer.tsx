@@ -5,6 +5,8 @@ import {
   RiFileAddLine,
   RiArrowUpSLine,
   RiArrowDownSLine,
+  RiZoomOutLine,
+  RiZoomInLine,
 } from '@remixicon/react';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useReducer } from 'react';
@@ -30,11 +32,14 @@ const GRID_STRICT_STYLE: React.CSSProperties = {
   width: '774px',
 };
 
-// Add these constants for calculations
 const PAGE_HEIGHT = 1080; // matches GRID_STRICT_STYLE height
 const PAGE_GAP = 128; // equivalent to gap-32 (32 * 4 = 128px)
 const PADDING_TOP = 100; // matches pt-[100px]
 const PADDING_BOTTOM = 100; // extra padding at bottom
+
+const MIN_ZOOM = 0.25;
+const MAX_ZOOM = 2;
+const ZOOM_STEP = 0.25;
 
 type DesignProps = {
   plugins: PluginForGridLayout[];
@@ -78,6 +83,7 @@ function Designer({ plugins }: DesignProps) {
   const [editingElement, setEditingElement] = useState<HTMLDivElement | null>(
     null
   );
+  const [zoomLevel, setZoomLevel] = useState(1);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -101,6 +107,20 @@ function Designer({ plugins }: DesignProps) {
       containerRef.current.scrollTop = 400;
     }
   }, []);
+
+  useEffect(() => {
+    // Only scroll if layouts length has increased
+    if (layouts.length > 0) {
+      const newPageElement = document.getElementById(
+        `page-${layouts.length - 1}`
+      );
+      if (newPageElement) {
+        setTimeout(() => {
+          newPageElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 0);
+      }
+    }
+  }, [layouts.length]);
 
   function handleFreeFormAreaMouseDown(e: React.MouseEvent) {
     if (!containerRef.current) return;
@@ -265,15 +285,9 @@ function Designer({ plugins }: DesignProps) {
   }
 
   function handleAddNewPage() {
-    flushSync(() => {
-      dispatch({
-        type: 'ADD_NEW_PAGE',
-      });
+    dispatch({
+      type: 'ADD_NEW_PAGE',
     });
-    const newPageElement = document.getElementById(
-      `page-${layouts.length - 1}`
-    );
-    newPageElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   function handlePageChange(pageIndex: number) {
@@ -297,13 +311,25 @@ function Designer({ plugins }: DesignProps) {
     }
   }
 
-  const calculateMinHeight = () => {
+  function calculateMinHeight() {
     const totalPagesHeight = layouts.length * PAGE_HEIGHT;
     const totalGapsHeight = (layouts.length - 1) * PAGE_GAP;
     const totalHeight =
       totalPagesHeight + totalGapsHeight + PADDING_TOP + PADDING_BOTTOM;
     return `${totalHeight}px`;
-  };
+  }
+
+  function handleZoomIn() {
+    setZoomLevel((prev) => Math.min(prev + ZOOM_STEP, MAX_ZOOM));
+  }
+
+  function handleZoomOut() {
+    setZoomLevel((prev) => Math.max(prev - ZOOM_STEP, MIN_ZOOM));
+  }
+
+  function handleZoomReset() {
+    setZoomLevel(1);
+  }
 
   return (
     <React.Fragment>
@@ -330,8 +356,8 @@ function Designer({ plugins }: DesignProps) {
             className="custom-scrollbar w-full overflow-auto"
           />
         </section>
-        <div className="fixed right-[90px] top-[160px] z-50 -translate-x-1/2 transform">
-          <div className="flex flex-col items-center gap-2 rounded-lg p-2 shadow-lg">
+        <div className="fixed right-[90px] top-[170px] z-50 -translate-x-1/2 transform">
+          <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 shadow-lg">
             <button
               onClick={handlePreviousPage}
               disabled={currentPage === 0}
@@ -366,6 +392,31 @@ function Designer({ plugins }: DesignProps) {
             </button>
           </div>
         </div>
+
+        <div className="fixed right-[20px] top-[170px] z-50 -translate-x-1/2 transform">
+          <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 shadow-lg">
+            <button
+              onClick={handleZoomIn}
+              disabled={zoomLevel >= MAX_ZOOM}
+              className="rounded p-1 hover:hover:bg-gray-200 disabled:opacity-50"
+              title="Zoom in">
+              <RiZoomInLine className="h-5 w-5 text-gray-900" />
+            </button>
+            <button
+              onClick={handleZoomReset}
+              className="rounded p-1 text-xs text-gray-900 hover:bg-gray-200"
+              title="Reset zoom">
+              {Math.round(zoomLevel * 100)}%
+            </button>
+            <button
+              onClick={handleZoomOut}
+              disabled={zoomLevel <= MIN_ZOOM}
+              className="rounded p-1 hover:hover:bg-gray-200 disabled:opacity-50"
+              title="Zoom out">
+              <RiZoomOutLine className="h-5 w-5 text-gray-900" />
+            </button>
+          </div>
+        </div>
         <div
           className="fixed right-[50px] top-[120px] z-50 mx-auto flex max-w-lg cursor-pointer"
           onClick={handleAddNewPage}>
@@ -388,7 +439,14 @@ function Designer({ plugins }: DesignProps) {
             onMouseLeave={handleFreeFormAreaMouseUp}>
             <div
               className="flex min-w-[6000px] justify-center pt-[500px]"
-              style={{ minHeight: calculateMinHeight() }}>
+              style={{
+                minHeight: calculateMinHeight(),
+                transform: `scale(${zoomLevel})`,
+                transformOrigin: 'center top',
+                transition: 'transform 0.2s ease-out',
+                width: `${100 / zoomLevel}%`,
+                height: `${100 / zoomLevel}%`,
+              }}>
               <div className="flex flex-col gap-2">
                 {layouts.map((layout, pageIndex) => (
                   <div
