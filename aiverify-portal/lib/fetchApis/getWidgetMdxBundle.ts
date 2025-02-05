@@ -1,7 +1,7 @@
 import { MdxBundle } from '@/app/types';
 import { ApiResult, processResponse } from '@/lib/utils/fetchRequestHelpers';
 
-const endpointUrl = '/api/plugins';
+const endpointUrl = `${process.env.APIGW_HOST}/plugins`;
 
 export async function getWidgetMdxBundle(
   pluginId: string,

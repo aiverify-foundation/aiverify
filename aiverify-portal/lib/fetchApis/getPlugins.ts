@@ -1,7 +1,9 @@
 import { z } from 'zod';
+import { PluginForGridLayout, WidgetOnGridLayout } from '@/app/canvas/types';
 import { ErrorWithMessage } from '@/app/errorTypes';
-import { Plugin, PluginWithMdxBundle, Widget } from '@/app/types';
+import { Plugin } from '@/app/types';
 import { ApiResult, processResponse } from '@/lib/utils/fetchRequestHelpers';
+import { getWidgetMdxBundle } from './getWidgetMdxBundle';
 
 export const ProjectSchema = z.object({
   id: z.string(),
@@ -18,7 +20,51 @@ const endpointUrl = `${process.env.APIGW_HOST}/plugins`;
 
 type Options = {
   groupByPluginId?: boolean;
+  populateMdx?: boolean;
 };
+
+export async function populateMdxBundles(
+  plugins: Plugin[]
+): Promise<PluginForGridLayout[]> {
+  // Create new array to avoid mutations
+  const pluginsWithMdx = plugins.map((plugin) => ({ ...plugin }));
+
+  await Promise.allSettled(
+    pluginsWithMdx.map(async (plugin, pluginIndex) => {
+      const mdxResults = await Promise.allSettled(
+        plugin.widgets.map((widget) =>
+          getWidgetMdxBundle(plugin.gid, widget.cid)
+        )
+      );
+
+      // Create new widgets array
+      pluginsWithMdx[pluginIndex].widgets = plugin.widgets.map(
+        (widget, widgetIndex) => {
+          const result = mdxResults[widgetIndex];
+
+          if (
+            result.status === 'fulfilled' &&
+            result.value.status === 'success'
+          ) {
+            return {
+              ...widget,
+              mdx: result.value.data,
+            } as WidgetOnGridLayout;
+          }
+
+          // Handle rejected promises or unsuccessful responses
+          console.error(
+            `Failed to load MDX for widget ${widget.cid} in plugin ${plugin.gid}:`,
+            result.status === 'rejected' ? result.reason : result.value
+          );
+          return widget;
+        }
+      );
+    })
+  );
+
+  return pluginsWithMdx as PluginForGridLayout[];
+}
 
 export async function getPlugins(
   options: Options = { groupByPluginId: false }

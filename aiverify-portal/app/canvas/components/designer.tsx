@@ -30,7 +30,7 @@ const PADDING_TOP = 100; // matches pt-[100px]
 const PADDING_BOTTOM = 100; // extra padding at bottom
 
 type DesignProps = {
-  plugins: PluginForGridLayout[];
+  pluginsWithMdx: PluginForGridLayout[];
   printMode?: boolean;
 };
 
@@ -55,7 +55,7 @@ function createGridItemId(widget: Widget) {
   return `${widget.gid}-${widget.cid}-${Date.now()}`;
 }
 
-function Designer({ plugins }: DesignProps) {
+function Designer({ pluginsWithMdx }: DesignProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const [state, dispatch] = useReducer(designReducer, initialState);
   const { layouts, currentPage } = state;
@@ -126,7 +126,7 @@ function Designer({ plugins }: DesignProps) {
     }
     const validData: WidgetCompositeId = result.data;
     const widget = findWidgetFromPluginsById(
-      plugins,
+      pluginsWithMdx,
       validData.gid,
       validData.cid
     );
@@ -305,7 +305,7 @@ function Designer({ plugins }: DesignProps) {
             <p className="text-sm text-white">Project Description</p>
           </div>
           <PlunginsPanel
-            plugins={plugins}
+            plugins={pluginsWithMdx}
             className="custom-scrollbar w-full overflow-auto"
           />
         </section>

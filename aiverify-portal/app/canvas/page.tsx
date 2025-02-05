@@ -1,4 +1,4 @@
-import { getPlugins } from '@/lib/fetchApis/getPlugins';
+import { getPlugins, populateMdxBundles } from '@/lib/fetchApis/getPlugins';
 import { Designer } from './components/designer';
 
 export default async function CanvasPage() {
@@ -9,5 +9,6 @@ export default async function CanvasPage() {
   if (!Array.isArray(plugins.data)) {
     return <div>Invalid plugins data</div>;
   }
-  return <Designer plugins={plugins.data} />;
+  const pluginsWithMdx = await populateMdxBundles(plugins.data);
+  return <Designer pluginsWithMdx={pluginsWithMdx} />;
 }
