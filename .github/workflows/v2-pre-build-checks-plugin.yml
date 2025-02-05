@@ -23,6 +23,14 @@ on:
         required: true
         default: 'v2.x'
         type: string
+      plugin_name:
+        description: 'Name of plugin to test'
+        required: true
+        default: 'accumulated-local-effect'
+      algo_name:
+        description: 'Name of algo to test'
+        required: true
+        default: 'accumulated_local_effect'
 
 # Allow one concurrent deployment
 concurrency:
@@ -45,12 +53,16 @@ jobs:
         run: |
           echo "MS_BRANCH=${{ github.event.pull_request.head.ref }}" >> "$GITHUB_ENV"
           echo "PR_NUM=#${{ github.event.pull_request.number }}" >> "$GITHUB_ENV"
+          echo "PLUGIN_NAME=accumulated-local-effect" >> "$GITHUB_ENV"
+          echo "ALGO_NAME=accumulated_local_effect" >> "$GITHUB_ENV"
 
       - name: Set branch variable (workflow_dispatch)
         if: github.event_name == 'workflow_dispatch'
         run: |
           echo "MS_BRANCH=${{ inputs.branch_to_test }}" >> "$GITHUB_ENV"
           echo "PR_NUM=#0" >> "$GITHUB_ENV"
+          echo "PLUGIN_NAME=${{ inputs.plugin_name }}" >> "$GITHUB_ENV"
+          echo "ALGO_NAME=${{ inputs.algo_name }}" >> "$GITHUB_ENV"
 
       # Checkout code
       - name: Checkout code
@@ -58,7 +70,7 @@ jobs:
         with:
           ref: ${{ env.MS_BRANCH }}
           sparse-checkout: |
-            stock-plugins/aiverify.stock.accumulated-local-effect/algorithms/accumulated_local_effect
+            stock-plugins/aiverify.stock.${{ env.PLUGIN_NAME }}/algorithms/${{ env.ALGO_NAME }}
             stock-plugins/user_defined_files
             .ci
 
@@ -72,7 +84,7 @@ jobs:
 
       # Install dependencies
       - name: Install dependencies
-        working-directory: ${{ github.workspace }}/stock-plugins/aiverify.stock.accumulated-local-effect/algorithms/accumulated_local_effect
+        working-directory: ${{ github.workspace }}/stock-plugins/aiverify.stock.${{ env.PLUGIN_NAME }}/algorithms/${{ env.ALGO_NAME }}
         run: |
           pip install .
           pip install pytest pytest-mock pytest-html pytest-json pytest-cov coverage anybadge
@@ -80,12 +92,12 @@ jobs:
 
       # Check 1: Unit tests & coverage    
       - name: Unit tests with coverage
-        working-directory: ${{ github.workspace }}/stock-plugins/aiverify.stock.accumulated-local-effect/algorithms/accumulated_local_effect
+        working-directory: ${{ github.workspace }}/stock-plugins/aiverify.stock.${{ env.PLUGIN_NAME }}/algorithms/${{ env.ALGO_NAME }}
         if: ${{ ! cancelled() }}
         timeout-minutes: 30
         run: |      
             set +e
-            bash ../../../../.ci/run-test.sh aiverify_accumulated_local_effect -m
+            bash ../../../../.ci/run-test.sh aiverify_${{ env.ALGO_NAME }} -m
             source ../../../../.ci/gen_pre_build_summ.sh test
             test_status=$?
             source ../../../../.ci/gen_pre_build_summ.sh coverage
@@ -101,10 +113,10 @@ jobs:
       - name: Code quality analysis (flake8)
         id: code_quality
         if: ${{ ! cancelled() }}
-        working-directory: ${{ github.workspace }}/stock-plugins/aiverify.stock.accumulated-local-effect/algorithms/accumulated_local_effect
+        working-directory: ${{ github.workspace }}/stock-plugins/aiverify.stock.${{ env.PLUGIN_NAME }}/algorithms/${{ env.ALGO_NAME }}
         run: |
           set +e
-          bash ../../../../.ci/run-flake8.sh aiverify_accumulated_local_effect
+          bash ../../../../.ci/run-flake8.sh aiverify_${{ env.ALGO_NAME }}
           source ../../../../.ci/gen_pre_build_summ.sh lint
           lint_status=$?
           echo "CODE_QUALITY_STATUS=$LINT_SUMMARY" >> $GITHUB_ENV
@@ -115,7 +127,7 @@ jobs:
       - name: Dependency analysis (vulnerabilities & licenses)
         id: dependency_analysis
         if: ${{ ! cancelled() }}
-        working-directory: ${{ github.workspace }}/stock-plugins/aiverify.stock.accumulated-local-effect/algorithms/accumulated_local_effect
+        working-directory: ${{ github.workspace }}/stock-plugins/aiverify.stock.${{ env.PLUGIN_NAME }}/algorithms/${{ env.ALGO_NAME }}
         run: |
           set +e
           bash ../../../../.ci/run-pip-audit.sh
