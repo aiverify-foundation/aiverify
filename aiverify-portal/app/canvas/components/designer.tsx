@@ -106,7 +106,10 @@ function Designer({ plugins }: DesignProps) {
       );
       if (newPageElement) {
         setTimeout(() => {
-          newPageElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          newPageElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+          });
         }, 0);
       }
     }
@@ -341,7 +344,7 @@ function Designer({ plugins }: DesignProps) {
               style={{
                 minHeight: calculateMinHeight(),
                 transform: `scale(${zoomLevel})`,
-                transformOrigin: 'center top',
+                transformOrigin: 'center center',
                 transition: 'transform 0.2s ease-out',
               }}>
               <div className="flex flex-col gap-2">
