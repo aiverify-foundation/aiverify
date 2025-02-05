@@ -116,6 +116,7 @@ jobs:
         working-directory: ${{ github.workspace }}/stock-plugins/aiverify.stock.${{ env.PLUGIN_NAME }}/algorithms/${{ env.ALGO_NAME }}
         run: |
           set +e
+          cp ../../../../.ci/.flake8 .
           bash ../../../../.ci/run-flake8.sh aiverify_${{ env.ALGO_NAME }}
           source ../../../../.ci/gen_pre_build_summ.sh lint
           lint_status=$?
