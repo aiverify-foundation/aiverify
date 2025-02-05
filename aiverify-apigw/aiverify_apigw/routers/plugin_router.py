@@ -35,6 +35,8 @@ async def read_plugins(session: Session = Depends(get_db_session)) -> List[Plugi
     except Exception as e:
         logger.error(f"Error retrieving plugin list: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
+    finally:
+        session.close()  # Explicitly close the session
 
 
 @router.get("/{gid}", response_model=PluginOutput)
@@ -53,6 +55,8 @@ async def read_plugin(gid: str, session: Session = Depends(get_db_session)) -> P
     except Exception as e:
         logger.error(f"Error retrieving plugin with gid {gid}: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
+    finally:
+        session.close()  # Explicitly close the session
 
 
 @router.delete("/{gid}")
@@ -76,6 +80,8 @@ async def delete_plugin(gid: str, session: Session = Depends(get_db_session)) ->
     except Exception as e:
         logger.error(f"Error deleting plugin with gid {gid}: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
+    finally:
+        session.close()  # Explicitly close the session
 
 
 @router.post("/upload", response_model=PluginOutput)
@@ -239,6 +245,8 @@ async def download_plugin_algorithm(gid: str, cid: str, session: Session = Depen
     except Exception as e:
         logger.error(f"Error downloading plugin: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
+    finally:
+        session.close()  # Explicitly close the session
 
 
 @router.get("/{gid}/widgets")
@@ -270,6 +278,8 @@ async def download_plugin_widgets(gid: str, session: Session = Depends(get_db_se
     except Exception as e:
         logger.error(f"Error downloading plugin: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
+    finally:
+        session.close()  # Explicitly close the session
 
 
 @router.get("/{gid}/input_blocks")
@@ -301,6 +311,8 @@ async def download_plugin_inputs(gid: str, session: Session = Depends(get_db_ses
     except Exception as e:
         logger.error(f"Error downloading plugin: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
+    finally:
+        session.close()  # Explicitly close the session
 
 
 @router.get("/{gid}/bundle/{cid}")
@@ -330,6 +342,8 @@ async def download_plugin_bundle(gid: str, cid: str, session: Session = Depends(
     except Exception as e:
         logger.error(f"Error downloading plugin: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
+    finally:
+        session.close()  # Explicitly close the session
 
 
 @router.get("/{gid}/summary/{cid}")
@@ -359,3 +373,5 @@ async def download_plugin_summary(gid: str, cid: str, session: Session = Depends
     except Exception as e:
         logger.error(f"Error downloading plugin: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
+    finally:
+        session.close()  # Explicitly close the session
