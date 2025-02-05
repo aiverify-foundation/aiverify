@@ -3,9 +3,10 @@
 }
 
 .reportContainer {
-  --A4-page-width: 794px;
-  --A4-page-padding: 10px;
-  --A4-page-height: 1100px;
+  --zoom-level: 1;
+  --A4-page-width: calc(794px * var(--zoom-level));
+  --A4-page-padding: calc(10px * var(--zoom-level));
+  --A4-page-height: calc(1100px * var(--zoom-level));
   /* 
 	Page height: Based on aspect-ratio, relative to width 794px, it should be 1123px. 
 	That computes to 36 number of rows (30px per row), with padding 10px factored in.
@@ -13,7 +14,7 @@
 	So, just use exact height value of 36 rows * 30px to remove the leftover from screen
 	*/
   width: var(--A4-page-width);
-  scroll-margin-top: 100px;
+  scroll-margin-top: calc(100px * var(--zoom-level));
 }
 
 .reportHeight {
@@ -31,9 +32,10 @@
 }
 
 .canvas {
-  --A4-canvas-width: 794px;
-  --A4-canvas-padding: 10px;
-  --A4-canvas-height: 1100px;
+  --zoom-level: 1;
+  --A4-canvas-width: calc(794px * var(--zoom-level));
+  --A4-canvas-padding: calc(10px * var(--zoom-level));
+  --A4-canvas-height: calc(1100px * var(--zoom-level));
   /* 
 	Canvas height: Based on aspect-ratio, relative to width 794px, it should be 1123px. 
 	That computes to 36 number of rows (30px per row), with padding 10px factored in.
@@ -46,7 +48,7 @@
 
 .canvas_grid {
   @apply absolute;
-  --grid-row-height: 30px;
+  --grid-row-height: calc(30px * var(--zoom-level));
   --grid-line-color: #d9d8d8;
   --grid-container-width: calc(
     var(--A4-canvas-width) - var(--A4-canvas-padding) * 2

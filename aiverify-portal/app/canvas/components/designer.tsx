@@ -21,8 +21,9 @@ import { PlunginsPanel } from './pluginsPanel';
 import styles from './styles/designer.module.css';
 import { ZoomControl } from './zoomControl';
 
-const GRID_WIDTH = 774;
-const GRID_ROW_HEIGHT = 30;
+const BASE_GRID_WIDTH = 774;
+const BASE_GRID_ROW_HEIGHT = 30;
+const BASE_PAGE_HEIGHT = 1080;
 const GRID_MAX_ROWS = 36;
 const GRID_STRICT_STYLE: React.CSSProperties = {
   height: '1080px',
@@ -269,11 +270,23 @@ function Designer({ plugins }: DesignProps) {
     }
   }
 
+  // Calculate actual dimensions based on zoom
+  const gridWidth = Math.round(BASE_GRID_WIDTH * zoomLevel);
+  const gridRowHeight = Math.round(BASE_GRID_ROW_HEIGHT * zoomLevel);
+  const pageHeight = Math.round(BASE_PAGE_HEIGHT * zoomLevel);
+
+  const gridStyle: React.CSSProperties = {
+    height: `${pageHeight}px`,
+    width: `${gridWidth}px`,
+  };
+
   function calculateMinHeight() {
-    const totalPagesHeight = layouts.length * PAGE_HEIGHT;
-    const totalGapsHeight = (layouts.length - 1) * PAGE_GAP;
+    const totalPagesHeight = layouts.length * pageHeight;
+    const totalGapsHeight = (layouts.length - 1) * (PAGE_GAP * zoomLevel);
     const totalHeight =
-      totalPagesHeight + totalGapsHeight + PADDING_TOP + PADDING_BOTTOM;
+      totalPagesHeight +
+      totalGapsHeight +
+      (PADDING_TOP + PADDING_BOTTOM) * zoomLevel;
     return `${totalHeight}px`;
   }
 
@@ -343,9 +356,7 @@ function Designer({ plugins }: DesignProps) {
               className="flex min-w-[6000px] justify-center pt-[500px]"
               style={{
                 minHeight: calculateMinHeight(),
-                transform: `scale(${zoomLevel})`,
-                transformOrigin: 'center center',
-                transition: 'transform 0.2s ease-out',
+                transition: 'all 0.2s ease-out',
               }}>
               <div className="flex flex-col gap-2">
                 {layouts.map((layout, pageIndex) => (
@@ -353,6 +364,7 @@ function Designer({ plugins }: DesignProps) {
                     id={`page-${pageIndex}`}
                     key={`page-${pageIndex}`}
                     ref={canvasRef}
+                    style={{ '--zoom-level': zoomLevel } as React.CSSProperties}
                     className={cn(
                       styles.canvas,
                       styles.reportRoot,
@@ -363,8 +375,8 @@ function Designer({ plugins }: DesignProps) {
                     <div className={styles.canvas_grid} />
                     <GridLayout
                       layout={layouts[pageIndex]}
-                      width={GRID_WIDTH}
-                      rowHeight={GRID_ROW_HEIGHT}
+                      width={gridWidth}
+                      rowHeight={gridRowHeight}
                       maxRows={GRID_MAX_ROWS}
                       margin={[0, 0]}
                       compactType={null}
@@ -380,7 +392,7 @@ function Designer({ plugins }: DesignProps) {
                       isBounded
                       useCSSTransforms={true}
                       resizeHandles={['sw', 'nw', 'se', 'ne']}
-                      style={GRID_STRICT_STYLE}>
+                      style={gridStyle}>
                       {state.widgets[state.currentPage].map((widget, index) => {
                         if (!widget.gridItemId) return null;
                         return (
