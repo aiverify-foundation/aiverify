@@ -76,6 +76,8 @@ jobs:
           pip install .[all]
           pip install pytest pytest-mock pytest-html pytest-json pytest-cov coverage anybadge
           pip install flake8 flake8-html
+          pip install pipdeptree
+          pipdeptree -fl 
 
       # Check 1: Unit tests & coverage
       - name: Unit tests with coverage
