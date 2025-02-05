@@ -33,7 +33,7 @@ const PAGE_GAP = 128; // equivalent to gap-32 (32 * 4 = 128px)
 const PADDING_TOP = 100; // matches pt-[100px]
 const PADDING_BOTTOM = 100; // extra padding at bottom
 
-const ZOOM_STEP = 0.25;
+const ZOOM_STEP = 0.01;
 
 type DesignProps = {
   plugins: PluginForGridLayout[];

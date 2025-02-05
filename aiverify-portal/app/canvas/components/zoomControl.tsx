@@ -1,4 +1,5 @@
 import { RiZoomInLine, RiZoomOutLine } from '@remixicon/react';
+import { useRef, useCallback, useEffect } from 'react';
 import { cn } from '@/lib/utils/twmerge';
 
 const MIN_ZOOM = 0.25;
@@ -19,6 +20,24 @@ export function ZoomControl({
   onZoomReset,
   className,
 }: ZoomControlProps) {
+  const zoomIntervalRef = useRef<NodeJS.Timeout>(null);
+  const ZOOM_INTERVAL = 10; // ms between zoom actions
+
+  const startContinuousZoom = useCallback((zoomFn: () => void) => {
+    zoomFn(); // immediate first zoom
+    zoomIntervalRef.current = setInterval(zoomFn, ZOOM_INTERVAL);
+  }, []);
+
+  const stopContinuousZoom = useCallback(() => {
+    if (zoomIntervalRef.current) {
+      clearInterval(zoomIntervalRef.current);
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => stopContinuousZoom(); // cleanup on unmount
+  }, [stopContinuousZoom]);
+
   return (
     <div
       className={cn(
@@ -26,7 +45,9 @@ export function ZoomControl({
         className
       )}>
       <button
-        onClick={onZoomIn}
+        onMouseDown={() => startContinuousZoom(onZoomIn)}
+        onMouseUp={stopContinuousZoom}
+        onMouseLeave={stopContinuousZoom}
         disabled={zoomLevel >= MAX_ZOOM}
         className="rounded p-1 hover:hover:bg-gray-200 disabled:opacity-50"
         title="Zoom in">
@@ -39,7 +60,9 @@ export function ZoomControl({
         {Math.round(zoomLevel * 100)}%
       </button>
       <button
-        onClick={onZoomOut}
+        onMouseDown={() => startContinuousZoom(onZoomOut)}
+        onMouseUp={stopContinuousZoom}
+        onMouseLeave={stopContinuousZoom}
         disabled={zoomLevel <= MIN_ZOOM}
         className="rounded p-1 hover:hover:bg-gray-200 disabled:opacity-50"
         title="Zoom out">
