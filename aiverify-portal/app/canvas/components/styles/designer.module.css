@@ -13,12 +13,11 @@
 	That leaves a bit of space leftover.
 	So, just use exact height value of 36 rows * 30px to remove the leftover from screen
 	*/
-  width: var(--A4-page-width);
-  scroll-margin-top: calc(100px * var(--zoom-level));
+  @apply w-[--A4-page-width] scroll-mt-[calc(100px*var(--zoom-level))];
 }
 
 .reportHeight {
-  height: var(--A4-page-height);
+  @apply h-[--A4-page-height];
 }
 
 .printPage {
@@ -26,9 +25,7 @@
 	Print page width factors in padding left and padding right - 10px each, that we see on canvas.
 	Not using padding attribute here to prevent the page number that gets printed by pdf generator, to be flushed right to the edge
 	*/
-  width: calc(
-    var(--A4-page-width) - var(--A4-page-padding) - var(--A4-page-padding)
-  );
+  @apply w-[calc(var(--A4-page-width)-var(--A4-page-padding)-var(--A4-page-padding))];
 }
 
 .canvas {
@@ -42,24 +39,16 @@
 	That leaves a bit of space leftover.
 	So, just use exact height value of 36 rows * 30px to remove the leftover from screen
 	*/
-  padding: var(--A4-canvas-padding);
-  @apply relative bg-white mb-[50px] shadow;
+  @apply relative bg-white mb-[50px] shadow p-[--A4-canvas-padding];
 }
 
 .canvas_grid {
   @apply absolute;
   --grid-row-height: calc(30px * var(--zoom-level));
   --grid-line-color: #d9d8d8;
-  --grid-container-width: calc(
-    var(--A4-canvas-width) - var(--A4-canvas-padding) * 2
-  );
-  --grid-container-height: calc(
-    var(--A4-canvas-height) + 1px - var(--A4-canvas-padding) * 2
-  );
-  left: var(--A4-canvas-padding);
-  top: var(--A4-canvas-padding);
-  width: var(--grid-container-width);
-  height: var(--grid-container-height);
+  --grid-container-width: calc(var(--A4-canvas-width) - var(--A4-canvas-padding) * 2);
+  --grid-container-height: calc(var(--A4-canvas-height) + 1px - var(--A4-canvas-padding) * 2);
+  @apply left-[--A4-canvas-padding] top-[--A4-canvas-padding] w-[--grid-container-width] h-[--grid-container-height];
   background-image: repeating-linear-gradient(
       var(--grid-line-color) 0 1px,
       transparent 1px 100%
@@ -73,14 +62,7 @@
 }
 
 .gridItem_dheightNote {
-  display: flex;
-  align-items: center;
-  border-radius: 2px;
-  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.2);
-  background: var(--color-white);
-  margin-bottom: 5px;
-  font-size: 13px;
-  width: 130px;
+  @apply flex items-center rounded-[2px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.2)] bg-white mb-[5px] text-[13px] w-[130px];
 }
 
 @keyframes animateHeight {
@@ -94,8 +76,7 @@
 }
 
 .dynHeightIndicator {
-  position: absolute;
-  color: var(--color-palette-violet-red);
+  @apply absolute text-[--color-palette-violet-red];
   animation-duration: 0.3s;
   animation-name: animateHeight;
   animation-iteration-count: infinite;
@@ -103,6 +84,7 @@
 }
 
 .noDrag {
+  @apply select-none;
   -webkit-user-drag: none;
   -khtml-user-drag: none;
   -moz-user-drag: none;

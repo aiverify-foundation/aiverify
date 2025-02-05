@@ -25,12 +25,6 @@ const BASE_GRID_WIDTH = 774;
 const BASE_GRID_ROW_HEIGHT = 30;
 const BASE_PAGE_HEIGHT = 1080;
 const GRID_MAX_ROWS = 36;
-const GRID_STRICT_STYLE: React.CSSProperties = {
-  height: '1080px',
-  width: '774px',
-};
-
-const PAGE_HEIGHT = 1080; // matches GRID_STRICT_STYLE height
 const PAGE_GAP = 128; // equivalent to gap-32 (32 * 4 = 128px)
 const PADDING_TOP = 100; // matches pt-[100px]
 const PADDING_BOTTOM = 100; // extra padding at bottom
