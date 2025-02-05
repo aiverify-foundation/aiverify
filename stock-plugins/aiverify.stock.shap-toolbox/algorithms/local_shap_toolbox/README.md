@@ -8,7 +8,7 @@ This plugin explains how your features affect your overall prediction for a sing
   
 | Name               | Description                                                                                      |
 | ------------------ | ------------------------------------------------------------------------------------------------ |
-| SHAP Toolbox | SHAP (SHapley Additive exPlanations) is a game theoretic approach to explain the output of any machine learning model. |
+| Local SHAP Toolbox | SHAP (SHapley Additive exPlanations) is a game theoretic approach to explain the output of any machine learning model. |
 
 - Widgets
 
