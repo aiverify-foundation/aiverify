@@ -5,39 +5,25 @@ import { cn } from '@/lib/utils/twmerge';
 const MIN_ZOOM = 0.25;
 const MAX_ZOOM = 2;
 
-interface ZoomControlProps {
+type ZoomControlProps = {
   zoomLevel: number;
   onZoomIn: () => void;
   onZoomOut: () => void;
   onZoomReset: () => void;
+  startContinuousZoom: (zoomFn: () => void) => void;
+  stopContinuousZoom: () => void;
   className?: string;
-}
+};
 
 export function ZoomControl({
   zoomLevel,
   onZoomIn,
   onZoomOut,
   onZoomReset,
+  startContinuousZoom,
+  stopContinuousZoom,
   className,
 }: ZoomControlProps) {
-  const zoomIntervalRef = useRef<NodeJS.Timeout>(null);
-  const ZOOM_INTERVAL = 10; // ms between zoom actions
-
-  const startContinuousZoom = useCallback((zoomFn: () => void) => {
-    zoomFn(); // immediate first zoom
-    zoomIntervalRef.current = setInterval(zoomFn, ZOOM_INTERVAL);
-  }, []);
-
-  const stopContinuousZoom = useCallback(() => {
-    if (zoomIntervalRef.current) {
-      clearInterval(zoomIntervalRef.current);
-    }
-  }, []);
-
-  useEffect(() => {
-    return () => stopContinuousZoom(); // cleanup on unmount
-  }, [stopContinuousZoom]);
-
   return (
     <div
       className={cn(

@@ -15,6 +15,7 @@ import { GridItemComponent } from './gridItemComponent';
 import { initialState } from './hooks/designReducer';
 import { designReducer } from './hooks/designReducer';
 import { useDragToScroll } from './hooks/useDragToScroll';
+import { useZoom } from './hooks/useZoom';
 import { PageNavigation } from './pageNavigation';
 import { PlunginsPanel } from './pluginsPanel';
 import styles from './styles/designer.module.css';
@@ -32,8 +33,6 @@ const PAGE_HEIGHT = 1080; // matches GRID_STRICT_STYLE height
 const PAGE_GAP = 128; // equivalent to gap-32 (32 * 4 = 128px)
 const PADDING_TOP = 100; // matches pt-[100px]
 const PADDING_BOTTOM = 100; // extra padding at bottom
-
-const ZOOM_STEP = 0.01;
 
 type DesignProps = {
   plugins: PluginForGridLayout[];
@@ -64,8 +63,8 @@ function createGridItemId(widget: Widget) {
 function Designer({ plugins }: DesignProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const [state, dispatch] = useReducer(designReducer, initialState);
-  const [error, setError] = useState<string | undefined>();
   const { layouts, currentPage } = state;
+  const [error, setError] = useState<string | undefined>();
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [editingGridItemId, setEditingGridItemId] = useState<string | null>(
     null
@@ -73,7 +72,14 @@ function Designer({ plugins }: DesignProps) {
   const [editingElement, setEditingElement] = useState<HTMLDivElement | null>(
     null
   );
-  const [zoomLevel, setZoomLevel] = useState(1);
+  const {
+    zoomLevel,
+    zoomIn,
+    zoomOut,
+    resetZoom,
+    startContinuousZoom,
+    stopContinuousZoom,
+  } = useZoom();
   const containerRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -268,18 +274,6 @@ function Designer({ plugins }: DesignProps) {
     return `${totalHeight}px`;
   }
 
-  function handleZoomIn() {
-    setZoomLevel((prev) => Math.min(prev + ZOOM_STEP, 2));
-  }
-
-  function handleZoomOut() {
-    setZoomLevel((prev) => Math.max(prev - ZOOM_STEP, 0.25));
-  }
-
-  function handleZoomReset() {
-    setZoomLevel(1);
-  }
-
   return (
     <React.Fragment>
       {editingGridItemId && editingElement ? (
@@ -315,9 +309,11 @@ function Designer({ plugins }: DesignProps) {
         />
         <ZoomControl
           zoomLevel={zoomLevel}
-          onZoomIn={handleZoomIn}
-          onZoomOut={handleZoomOut}
-          onZoomReset={handleZoomReset}
+          onZoomIn={zoomIn}
+          onZoomOut={zoomOut}
+          onZoomReset={resetZoom}
+          startContinuousZoom={startContinuousZoom}
+          stopContinuousZoom={stopContinuousZoom}
           className="fixed right-[40px] top-[170px] z-50"
         />
         <div
