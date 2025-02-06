@@ -44,6 +44,7 @@ runs:
         echo "PR_NUM=#0" >> "$GITHUB_ENV"
         echo "PLUGIN_NAME=${{ inputs.plugin_name }}" >> "$GITHUB_ENV"
         echo "ALGO_NAME=${{ inputs.algo_name }}" >> "$GITHUB_ENV"
+      shell: bash
 
     # Checkout code
     - name: Checkout code
@@ -70,12 +71,12 @@ runs:
         pip install .
         pip install pytest pytest-mock pytest-html pytest-json pytest-cov coverage anybadge
         pip install flake8 flake8-html
+      shell: bash
 
     # Check 1: Unit tests & coverage    
     - name: Unit tests with coverage
       working-directory: ${{ github.workspace }}/stock-plugins/aiverify.stock.${{ env.PLUGIN_NAME }}/algorithms/${{ env.ALGO_NAME }}
       if: ${{ ! cancelled() }}
-      timeout-minutes: 30
       run: |      
           set +e
           bash ../../../.ci/run-test.sh aiverify_${{ env.ALGO_NAME }} -m
@@ -89,6 +90,7 @@ runs:
           if [ $test_status -ne 0 ] || [ $coverage_status -ne 0 ]; then
               exit 1
           fi
+      shell: bash
 
     # Check 2: Code quality analysis (flake8)
     - name: Code quality analysis (flake8)
@@ -104,6 +106,7 @@ runs:
         echo "CODE_QUALITY_STATUS=$LINT_SUMMARY" >> $GITHUB_ENV
         set -e
         exit $lint_status
+      shell: bash
 
     # Check 3: Dependency vulnerability & license analysis (pip-audit)
     - name: Dependency analysis (vulnerabilities & licenses)
@@ -123,6 +126,7 @@ runs:
         if [ $dep_status -ne 0 ] || [ $lic_status -ne 0 ]; then
           exit 1
         fi
+      shell: bash
 
     - name: Capture step statuses
       if: ${{ ! cancelled() }}
@@ -130,6 +134,7 @@ runs:
         echo "UNIT_TESTS_STATUS=${{ steps.unit_tests.outcome }}" >> $GITHUB_ENV
         echo "CODE_QUALITY_STATUS=${{ steps.code_quality.outcome }}" >> $GITHUB_ENV
         echo "DEPENDENCY_ANALYSIS_STATUS=${{ steps.dependency_analysis.outcome }}" >> $GITHUB_ENV
+      shell: bash
 
     # # Send slack notification
     # - name: Send slack notification
