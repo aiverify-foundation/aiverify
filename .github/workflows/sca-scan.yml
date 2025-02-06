@@ -291,8 +291,8 @@ jobs:
 
     - name: Commit All Notices File
       run: |
-        git add .
         git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
         git config --global user.email "username@users.noreply.github.com"
+        git add .
         git commit -m "Update All Notices File"
         # git push
