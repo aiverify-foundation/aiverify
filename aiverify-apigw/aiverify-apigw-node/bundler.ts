@@ -1,7 +1,7 @@
 import { bundleMDX } from "mdx-bundler";
 import rehypeMdxImportMedia from "rehype-mdx-import-media";
 import remarkGfm from "remark-gfm";
-
+import path from "path";
 export async function bundleWidgetMDX(
   scriptPath: string
 ): Promise<ReturnType<typeof bundleMDX>> {
@@ -23,7 +23,8 @@ export async function bundleWidgetMDX(
         ...options.loader,
         ".png": "dataurl",
       };
-      options.external = ["aiverify-shared-library/*", "moment"];
+      options.nodePaths = [path.resolve(process.cwd(), "node_modules")];
+      // options.external = ["aiverify-shared-library/*", "moment"];
       return options;
     },
   });

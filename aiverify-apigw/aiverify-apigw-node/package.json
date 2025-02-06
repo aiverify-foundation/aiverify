@@ -13,6 +13,7 @@
   "dependencies": {
     "esbuild": "^0.24.0",
     "mdx-bundler": "^10.0.3",
+    "moment": "^2.30.1",
     "rehype-mdx-import-media": "^1.2.0",
     "remark-gfm": "^4.0.0"
   },
