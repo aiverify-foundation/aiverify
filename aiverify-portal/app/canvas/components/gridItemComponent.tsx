@@ -190,6 +190,9 @@ function GridItemComponent(props: GridItemComponentProps) {
         <Component
           properties={properties}
           result={widget.result}
+          getIBData={() => null} // TODO: add IB data
+          getResults={() => null} // TODO: add results
+          metrics={{}} // TODO: add metrics
           frontmatter={widget.mdx ? widget.mdx.frontmatter : undefined}
         />
       </div>

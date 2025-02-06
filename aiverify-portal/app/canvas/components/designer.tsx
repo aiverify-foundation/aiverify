@@ -307,7 +307,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
           </div>
           <PlunginsPanel
             plugins={pluginsWithMdx}
-            className="custom-scrollbar w-full overflow-auto pr-[10px]"
+            className="custom-scrollbar w-full overflow-auto pr-[10px] pt-[50px]"
           />
         </section>
         <PageNavigation

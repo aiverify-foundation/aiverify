@@ -1,3 +1,5 @@
+import Fuse from 'fuse.js';
+import { useEffect, useState } from 'react';
 import type { PluginForGridLayout } from '@/app/canvas/types';
 import {
   Accordion,
@@ -15,13 +17,40 @@ type PluginsPanelProps = {
 
 function PlunginsPanel(props: PluginsPanelProps) {
   const { plugins, className } = props;
+  const [searchValue, setSearchValue] = useState('');
+  const [sortedPlugins, setSortedPlugins] = useState<PluginForGridLayout[]>([]);
+
+  useEffect(() => {
+    const sorted = plugins
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((plugin) => ({
+        ...plugin,
+        widgets: [...plugin.widgets].sort((a, b) =>
+          a.name.localeCompare(b.name)
+        ),
+      }));
+
+    if (!searchValue.trim()) {
+      setSortedPlugins(sorted);
+      return;
+    }
+
+    const fuse = new Fuse(sorted, {
+      keys: ['name', 'widgets.name', 'widgets.description'],
+      threshold: 0.3,
+      ignoreLocation: true,
+      includeMatches: true,
+    });
+
+    const results = fuse.search(searchValue);
+    setSortedPlugins(results.map((result) => result.item));
+  }, [plugins, searchValue]);
 
   const AccordionHero = (
     <Accordion
       type="single"
-      className="mt-3"
       collapsible>
-      {plugins.map((plugin) => {
+      {sortedPlugins.map((plugin) => {
         return (
           <AccordionItem
             key={plugin.gid}
@@ -62,7 +91,11 @@ function PlunginsPanel(props: PluginsPanelProps) {
   return (
     <section className={cn('flex flex-col', className)}>
       <div>
-        <TextInput placeholder="Search" />
+        <TextInput
+          placeholder="Search plugins"
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+        />
       </div>
       {AccordionHero}
     </section>
