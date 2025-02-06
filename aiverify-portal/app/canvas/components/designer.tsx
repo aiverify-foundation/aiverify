@@ -1,7 +1,7 @@
 'use client';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-import { RiFileAddLine } from '@remixicon/react';
+import { RiFileAddLine, RiDeleteBinLine } from '@remixicon/react';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useReducer } from 'react';
 import GridLayout, { Layout } from 'react-grid-layout';
@@ -10,6 +10,7 @@ import { PluginForGridLayout, WidgetOnGridLayout } from '@/app/canvas/types';
 import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPluginsById';
 import { populateInitialWidgetResult } from '@/app/canvas/utils/populateInitialWidgetResult';
 import { Widget } from '@/app/types';
+import { Tooltip } from '@/lib/components/tooltip';
 import { cn } from '@/lib/utils/twmerge';
 import { EditingOverlay } from './editingOverlay';
 import { GridItemComponent } from './gridItemComponent';
@@ -21,7 +22,6 @@ import { PageNavigation } from './pageNavigation';
 import { PlunginsPanel } from './pluginsPanel';
 import styles from './styles/designer.module.css';
 import { ZoomControl } from './zoomControl';
-
 const BASE_GRID_WIDTH = 774;
 const BASE_GRID_ROW_HEIGHT = 30;
 const BASE_PAGE_HEIGHT = 1080;
@@ -265,6 +265,17 @@ function Designer({ pluginsWithMdx }: DesignProps) {
     }
   }
 
+  function handleDeletePage(pageIndex: number) {
+    if (layouts.length > 1) {
+      dispatch({
+        type: 'DELETE_PAGE',
+        pageIndex,
+      });
+    } else {
+      console.warn('Cannot delete the last remaining page.');
+    }
+  }
+
   // Calculate actual dimensions based on zoom
   const gridWidth = Math.round(BASE_GRID_WIDTH * zoomLevel);
   const gridRowHeight = Math.round(BASE_GRID_ROW_HEIGHT * zoomLevel);
@@ -368,6 +379,18 @@ function Designer({ pluginsWithMdx }: DesignProps) {
                       'cursor-default active:cursor-default'
                     )}>
                     <div className={styles.canvas_grid} />
+                    <div className="absolute right-[-65px] top-0 m-2 flex flex-col text-xs text-gray-500">
+                      Page {pageIndex + 1}
+                      <Tooltip
+                        sideOffset={-10}
+                        content="Delete Page"
+                        side="right">
+                        <RiDeleteBinLine
+                          className="mt-2 cursor-pointer rounded bg-gray-300 p-1 text-gray-500 shadow-sm hover:text-red-500"
+                          onClick={() => handleDeletePage(pageIndex)}
+                        />
+                      </Tooltip>
+                    </div>
                     <GridLayout
                       layout={layout}
                       width={gridWidth}

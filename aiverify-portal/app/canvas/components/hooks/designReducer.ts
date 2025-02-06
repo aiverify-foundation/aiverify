@@ -35,7 +35,8 @@ type WidgetAction =
       widget: WidgetOnGridLayout;
     }
   | { type: 'ADD_NEW_PAGE' }
-  | { type: 'SET_CURRENT_PAGE'; pageIndex: number };
+  | { type: 'SET_CURRENT_PAGE'; pageIndex: number }
+  | { type: 'DELETE_PAGE'; pageIndex: number };
 
 const initialState: DesignState = {
   currentPage: 0,
@@ -167,6 +168,25 @@ function designReducer(state: DesignState, action: WidgetAction): DesignState {
         ...state,
         currentPage: action.pageIndex,
       };
+
+    case 'DELETE_PAGE': {
+      const { pageIndex } = action;
+      const newLayouts = state.layouts.filter(
+        (_, index) => index !== pageIndex
+      );
+      const newWidgets = state.widgets.filter(
+        (_, index) => index !== pageIndex
+      );
+
+      const newCurrentPage = Math.min(state.currentPage, newLayouts.length - 1);
+
+      return {
+        ...state,
+        layouts: newLayouts,
+        widgets: newWidgets,
+        currentPage: newCurrentPage,
+      };
+    }
 
     default:
       return state;
