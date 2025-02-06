@@ -13,18 +13,22 @@ type WidgetAction =
       type: 'ADD_WIDGET_TO_CANVAS';
       itemLayout: Layout;
       widget: WidgetOnGridLayout;
+      pageIndex: number;
     }
   | {
       type: 'DELETE_WIDGET_FROM_CANVAS';
       index: number;
+      pageIndex: number;
     }
   | {
       type: 'RESIZE_WIDGET';
       itemLayout: Layout;
+      pageIndex: number;
     }
   | {
       type: 'CHANGE_WIDGET_POSITION';
       itemLayout: Layout;
+      pageIndex: number;
     }
   | {
       type: 'UPDATE_WIDGET';
@@ -41,66 +45,101 @@ const initialState: DesignState = {
 
 function designReducer(state: DesignState, action: WidgetAction): DesignState {
   const { layouts, widgets } = state;
-  const clonedCurrentPageLayouts = layouts[state.currentPage].slice();
+
   switch (action.type) {
-    case 'ADD_WIDGET_TO_CANVAS':
+    case 'ADD_WIDGET_TO_CANVAS': {
+      const clonedPageLayouts = layouts[action.pageIndex].slice();
       const insertPosition = findWidgetInsertPosition(
-        clonedCurrentPageLayouts,
+        clonedPageLayouts,
         action.itemLayout
       );
-      clonedCurrentPageLayouts.splice(insertPosition, 0, action.itemLayout);
-      layouts[state.currentPage] = clonedCurrentPageLayouts;
-      const clonedCurrentPageWidgets = widgets[state.currentPage].slice();
-      clonedCurrentPageWidgets.splice(insertPosition, 0, action.widget);
-      widgets[state.currentPage] = clonedCurrentPageWidgets;
+      clonedPageLayouts.splice(insertPosition, 0, action.itemLayout);
+      const clonedPageWidgets = widgets[action.pageIndex].slice();
+      clonedPageWidgets.splice(insertPosition, 0, action.widget);
+
       return {
         ...state,
-        layouts,
-        widgets,
+        layouts: layouts.map((layout, i) =>
+          i === action.pageIndex ? clonedPageLayouts : layout
+        ),
+        widgets: widgets.map((widget, i) =>
+          i === action.pageIndex ? clonedPageWidgets : widget
+        ),
       };
+    }
 
-    case 'DELETE_WIDGET_FROM_CANVAS':
-      clonedCurrentPageLayouts.splice(action.index, 1);
-      const clonedCurrentPageWidgetsForDelete =
-        widgets[state.currentPage].slice();
-      clonedCurrentPageWidgetsForDelete.splice(action.index, 1);
-      layouts[state.currentPage] = clonedCurrentPageLayouts;
-      widgets[state.currentPage] = clonedCurrentPageWidgetsForDelete;
-      return { ...state, layouts, widgets };
+    case 'DELETE_WIDGET_FROM_CANVAS': {
+      const clonedPageLayouts = layouts[action.pageIndex].slice();
+      const clonedPageWidgets = widgets[action.pageIndex].slice();
 
-    case 'RESIZE_WIDGET':
-      const resizingIndex = clonedCurrentPageLayouts.findIndex(
+      clonedPageLayouts.splice(action.index, 1);
+      clonedPageWidgets.splice(action.index, 1);
+
+      return {
+        ...state,
+        layouts: layouts.map((layout, i) =>
+          i === action.pageIndex ? clonedPageLayouts : layout
+        ),
+        widgets: widgets.map((widget, i) =>
+          i === action.pageIndex ? clonedPageWidgets : widget
+        ),
+      };
+    }
+
+    case 'RESIZE_WIDGET': {
+      const clonedPageLayouts = layouts[action.pageIndex].slice();
+      const resizingIndex = clonedPageLayouts.findIndex(
         (layout) => layout.i === action.itemLayout.i
       );
+
       if (resizingIndex === -1) {
         console.error('resizing - layout index not found');
         return state;
       }
-      clonedCurrentPageLayouts[resizingIndex] = action.itemLayout;
-      layouts[state.currentPage] = clonedCurrentPageLayouts;
-      return { ...state, layouts };
 
-    case 'CHANGE_WIDGET_POSITION':
-      const movingIndex = clonedCurrentPageLayouts.findIndex(
+      clonedPageLayouts[resizingIndex] = action.itemLayout;
+
+      return {
+        ...state,
+        layouts: layouts.map((layout, i) =>
+          i === action.pageIndex ? clonedPageLayouts : layout
+        ),
+      };
+    }
+
+    case 'CHANGE_WIDGET_POSITION': {
+      const clonedPageLayouts = layouts[action.pageIndex].slice();
+      const clonedPageWidgets = widgets[action.pageIndex].slice();
+
+      const movingIndex = clonedPageLayouts.findIndex(
         (layout) => layout.i === action.itemLayout.i
       );
+
       if (movingIndex === -1) {
         console.error('moving - layout index not found');
         return state;
       }
-      const clonedCurrentPageWidgetsForMove =
-        widgets[state.currentPage].slice();
-      const widgetToMove = clonedCurrentPageWidgetsForMove[movingIndex];
-      clonedCurrentPageWidgetsForMove.splice(movingIndex, 1);
+
+      const widgetToMove = clonedPageWidgets[movingIndex];
+      clonedPageWidgets.splice(movingIndex, 1);
+
       const newPosition = findWidgetInsertPosition(
-        clonedCurrentPageLayouts,
+        clonedPageLayouts,
         action.itemLayout
       );
-      clonedCurrentPageWidgetsForMove.splice(newPosition, 0, widgetToMove);
-      widgets[state.currentPage] = clonedCurrentPageWidgetsForMove;
-      clonedCurrentPageLayouts[movingIndex] = action.itemLayout;
-      layouts[state.currentPage] = clonedCurrentPageLayouts;
-      return { ...state, layouts };
+      clonedPageWidgets.splice(newPosition, 0, widgetToMove);
+      clonedPageLayouts[movingIndex] = action.itemLayout;
+
+      return {
+        ...state,
+        layouts: layouts.map((layout, i) =>
+          i === action.pageIndex ? clonedPageLayouts : layout
+        ),
+        widgets: widgets.map((widget, i) =>
+          i === action.pageIndex ? clonedPageWidgets : widget
+        ),
+      };
+    }
 
     case 'UPDATE_WIDGET':
       return {
