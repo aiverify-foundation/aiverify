@@ -55,6 +55,7 @@ runs:
           stock-plugins/aiverify.stock.${{ env.PLUGIN_NAME }}/algorithms/${{ env.ALGO_NAME }}
           stock-plugins/user_defined_files
           .ci
+          .github/actions/pre-build-checks-plugin
 
     # Setup python    
     - name: Setup python 3.11
