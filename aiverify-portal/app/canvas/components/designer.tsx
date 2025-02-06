@@ -10,6 +10,7 @@ import { PluginForGridLayout, WidgetOnGridLayout } from '@/app/canvas/types';
 import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPluginsById';
 import { Widget } from '@/app/types';
 import { cn } from '@/lib/utils/twmerge';
+import { populateInitialWidgetResult } from '../utils/populateInitialWidgetResult';
 import { EditingOverlay } from './editingOverlay';
 import { GridItemComponent } from './gridItemComponent';
 import { initialState } from './hooks/designReducer';
@@ -52,10 +53,11 @@ const widgetItemSchema = z.object({
 export type WidgetCompositeId = z.infer<typeof widgetItemSchema>;
 
 function createGridItemId(widget: Widget) {
-  return `${widget.gid}-${widget.cid}-${Date.now()}`;
+  return `${widget.gid}-${widget.cid}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
 function Designer({ pluginsWithMdx }: DesignProps) {
+  console.log('pluginsWithMdx:', pluginsWithMdx);
   const canvasRef = useRef<HTMLDivElement>(null);
   const [state, dispatch] = useReducer(designReducer, initialState);
   const { layouts, currentPage } = state;
@@ -111,7 +113,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
   }, [layouts.length]);
 
   function handleWidgetDrop(
-    layout: Layout[],
+    _layout: Layout[],
     item: Layout,
     e: EventDataTransfer
   ) {
@@ -139,7 +141,10 @@ function Designer({ pluginsWithMdx }: DesignProps) {
       );
       return;
     }
-    const gridItemId = createGridItemId(widget);
+
+    const widgetWithInitialData: WidgetOnGridLayout =
+      populateInitialWidgetResult(widget);
+    const gridItemId = createGridItemId(widgetWithInitialData);
     const { x, y } = item;
     const { minW, minH, maxH, maxW } = widget.widgetSize;
     const itemLayout = {
@@ -154,7 +159,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
       i: gridItemId,
     };
     const widgetWithGridItemId: WidgetOnGridLayout = {
-      ...widget,
+      ...widgetWithInitialData,
       gridItemId,
     };
     dispatch({
@@ -284,6 +289,8 @@ function Designer({ pluginsWithMdx }: DesignProps) {
     return `${totalHeight}px`;
   }
 
+  console.log(state);
+
   return (
     <React.Fragment>
       {editingGridItemId && editingElement ? (
@@ -306,7 +313,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
           </div>
           <PlunginsPanel
             plugins={pluginsWithMdx}
-            className="custom-scrollbar w-full overflow-auto"
+            className="custom-scrollbar w-full overflow-auto pr-[10px]"
           />
         </section>
         <PageNavigation
@@ -368,7 +375,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
                     )}>
                     <div className={styles.canvas_grid} />
                     <GridLayout
-                      layout={layouts[pageIndex]}
+                      layout={layout}
                       width={gridWidth}
                       rowHeight={gridRowHeight}
                       maxRows={GRID_MAX_ROWS}
@@ -389,9 +396,10 @@ function Designer({ pluginsWithMdx }: DesignProps) {
                       style={gridStyle}>
                       {state.widgets[state.currentPage].map((widget, index) => {
                         if (!widget.gridItemId) return null;
+                        const uniqueKey = `page${state.currentPage}-${widget.gridItemId}`;
                         return (
                           <div
-                            key={widget.gridItemId}
+                            key={uniqueKey}
                             className={gridItemDivRequiredStyles}>
                             <GridItemComponent
                               widget={widget}

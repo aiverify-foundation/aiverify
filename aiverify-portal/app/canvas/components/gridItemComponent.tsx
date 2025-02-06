@@ -189,6 +189,7 @@ function GridItemComponent(props: GridItemComponentProps) {
         onMouseLeave={handleMouseLeave}>
         <Component
           properties={properties}
+          result={widget.result}
           frontmatter={widget.mdx ? widget.mdx.frontmatter : undefined}
         />
       </div>
