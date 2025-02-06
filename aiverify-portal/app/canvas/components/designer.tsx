@@ -322,11 +322,12 @@ function Designer({ pluginsWithMdx }: DesignProps) {
           />
         </section>
         <PageNavigation
-          layouts={layouts}
+          totalPages={layouts.length}
           currentPage={currentPage}
           onPageChange={handlePageChange}
           onNextPage={handleNextPage}
           onPreviousPage={handlePreviousPage}
+          onAddPage={handleAddNewPage}
           className="fixed right-[110px] top-[170px] z-50"
         />
         <ZoomControl
@@ -338,16 +339,6 @@ function Designer({ pluginsWithMdx }: DesignProps) {
           stopContinuousZoom={stopContinuousZoom}
           className="fixed right-[40px] top-[170px] z-50"
         />
-        <div
-          className="fixed right-[50px] top-[120px] z-50 mx-auto flex max-w-lg cursor-pointer"
-          onClick={handleAddNewPage}>
-          <div className="flex items-center gap-2">
-            <div className="rounded-lg bg-gray-300 shadow-sm">
-              <RiFileAddLine className="m-1 h-5 w-5 text-secondary-950 hover:text-blue-500" />
-            </div>
-            <div className="text-shadow-xs text-sm text-gray-900">New Page</div>
-          </div>
-        </div>
         <section className="relative flex h-full w-full flex-1 flex-col gap-2">
           <div
             ref={containerRef}
