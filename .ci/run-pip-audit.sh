@@ -7,7 +7,11 @@ source ci-venv/bin/activate
 pip install --upgrade pip > /dev/null
 
 # Install dependencies
-pip install .[all] > /dev/null
+if [ -z "$1" ]; then
+  pip install . > /dev/null
+else
+  pip install .["$1"] > /dev/null
+fi
 
 # License check
 echo "License check..."
