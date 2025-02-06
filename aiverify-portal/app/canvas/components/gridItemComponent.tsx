@@ -39,6 +39,7 @@ const withTextBehavior = <P extends MDXContentProps>(
           h2: (h2Props: { children: React.ReactNode }) => (
             <h2>{h2Props.children}</h2>
           ),
+          p: ({ children }) => <div className="mb-4">{children}</div>,
         }}
       />
     );
