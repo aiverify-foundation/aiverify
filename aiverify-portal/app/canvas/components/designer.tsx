@@ -187,12 +187,14 @@ function Designer({ pluginsWithMdx }: DesignProps) {
       setDraggingId(null);
     };
 
-  const handleGridItemDragStart =
-    (pageIndex: number) =>
-    (_layouts: Layout[], _: Layout, itemLayout: Layout) => {
-      const { i } = itemLayout;
-      setDraggingId(i);
-    };
+  function handleGridItemDragStart(
+    _layouts: Layout[],
+    _: Layout,
+    itemLayout: Layout
+  ) {
+    const { i } = itemLayout;
+    setDraggingId(i);
+  }
 
   const handleGridItemDragStop =
     (pageIndex: number) =>
@@ -282,8 +284,6 @@ function Designer({ pluginsWithMdx }: DesignProps) {
       (PADDING_TOP + PADDING_BOTTOM) * zoomLevel;
     return `${totalHeight}px`;
   }
-
-  console.log(state);
 
   return (
     <React.Fragment>
@@ -376,7 +376,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
                       margin={[0, 0]}
                       compactType={null}
                       onDrop={handleWidgetDrop(pageIndex)}
-                      onDragStart={handleGridItemDragStart(pageIndex)}
+                      onDragStart={handleGridItemDragStart}
                       onDragStop={handleGridItemDragStop(pageIndex)}
                       onResizeStop={handleGridItemResizeStop(pageIndex)}
                       onResizeStart={handleGridItemResizeStart(pageIndex)}
