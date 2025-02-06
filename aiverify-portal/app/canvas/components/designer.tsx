@@ -321,24 +321,24 @@ function Designer({ pluginsWithMdx }: DesignProps) {
             className="custom-scrollbar w-full overflow-auto pr-[10px] pt-[50px]"
           />
         </section>
-        <PageNavigation
-          totalPages={layouts.length}
-          currentPage={currentPage}
-          onPageChange={handlePageChange}
-          onNextPage={handleNextPage}
-          onPreviousPage={handlePreviousPage}
-          onAddPage={handleAddNewPage}
-          className="fixed right-[110px] top-[170px] z-50"
-        />
-        <ZoomControl
-          zoomLevel={zoomLevel}
-          onZoomIn={zoomIn}
-          onZoomOut={zoomOut}
-          onZoomReset={resetZoom}
-          startContinuousZoom={startContinuousZoom}
-          stopContinuousZoom={stopContinuousZoom}
-          className="fixed right-[40px] top-[170px] z-50"
-        />
+        <div className="fixed right-[100px] top-[120px] z-50 flex flex-col gap-4">
+          <ZoomControl
+            zoomLevel={zoomLevel}
+            onZoomIn={zoomIn}
+            onZoomOut={zoomOut}
+            onZoomReset={resetZoom}
+            startContinuousZoom={startContinuousZoom}
+            stopContinuousZoom={stopContinuousZoom}
+          />
+          <PageNavigation
+            totalPages={layouts.length}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            onNextPage={handleNextPage}
+            onPreviousPage={handlePreviousPage}
+            onAddPage={handleAddNewPage}
+          />
+        </div>
         <section className="relative flex h-full w-full flex-1 flex-col gap-2">
           <div
             ref={containerRef}

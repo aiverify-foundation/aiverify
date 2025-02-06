@@ -27,7 +27,7 @@ export function ZoomControl({
   return (
     <div
       className={cn(
-        'flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 shadow-lg',
+        'flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg',
         className
       )}>
       <button
@@ -35,9 +35,9 @@ export function ZoomControl({
         onMouseUp={stopContinuousZoom}
         onMouseLeave={stopContinuousZoom}
         disabled={zoomLevel >= MAX_ZOOM}
-        className="rounded p-1 hover:hover:bg-gray-200 disabled:opacity-50"
+        className="disabled:opacity-50"
         title="Zoom in">
-        <RiZoomInLine className="h-5 w-5 text-gray-900" />
+        <RiZoomInLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
       </button>
       <button
         onClick={onZoomReset}
@@ -50,9 +50,9 @@ export function ZoomControl({
         onMouseUp={stopContinuousZoom}
         onMouseLeave={stopContinuousZoom}
         disabled={zoomLevel <= MIN_ZOOM}
-        className="rounded p-1 hover:hover:bg-gray-200 disabled:opacity-50"
+        className="disabled:opacity-50"
         title="Zoom out">
-        <RiZoomOutLine className="h-5 w-5 text-gray-900" />
+        <RiZoomOutLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
       </button>
     </div>
   );
