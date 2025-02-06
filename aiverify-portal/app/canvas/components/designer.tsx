@@ -1,18 +1,18 @@
 'use client';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-import { RiFileAddLine, RiDeleteBinLine } from '@remixicon/react';
+import { RiDeleteBinLine } from '@remixicon/react';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useReducer } from 'react';
 import GridLayout, { Layout } from 'react-grid-layout';
 import { z } from 'zod';
 import { PluginForGridLayout, WidgetOnGridLayout } from '@/app/canvas/types';
 import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPluginsById';
+import { getWidgetAlgosFromPlugins } from '@/app/canvas/utils/getWidgetAlgosFromPlugins';
 import { populateInitialWidgetResult } from '@/app/canvas/utils/populateInitialWidgetResult';
 import { Widget } from '@/app/types';
 import { Tooltip } from '@/lib/components/tooltip';
 import { cn } from '@/lib/utils/twmerge';
-import { getWidgetAlgosFromPlugins } from '../utils/getWidgetAlgosFromPlugins';
 import { AlgosToRun } from './algosToRun';
 import { EditingOverlay } from './editingOverlay';
 import { GridItemComponent } from './gridItemComponent';
@@ -343,7 +343,10 @@ function Designer({ pluginsWithMdx }: DesignProps) {
             onPreviousPage={handlePreviousPage}
             onAddPage={handleAddNewPage}
           />
-          <AlgosToRun onClick={() => null} />
+          <AlgosToRun
+            onClick={() => null}
+            algos={state.algos}
+          />
         </div>
         <section className="relative flex h-full w-full flex-1 flex-col gap-2">
           <div
@@ -421,6 +424,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
                               }
                               onEditClick={handleGridItemEditClick}
                               isDragging={draggingId === widget.gridItemId}
+                              algosMap={state.algos}
                             />
                           </div>
                         );

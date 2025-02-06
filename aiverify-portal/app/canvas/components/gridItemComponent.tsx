@@ -1,9 +1,14 @@
-import { RiDeleteBin5Line, RiFileEditLine } from '@remixicon/react';
+import {
+  RiDeleteBin5Line,
+  RiFileEditLine,
+  RiFlaskLine,
+} from '@remixicon/react';
 import { getMDXComponent, MDXContentProps } from 'mdx-bundler/client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { WidgetOnGridLayout } from '@/app/canvas/types';
+import { Algorithm } from '@/app/types';
 
 type GridItemComponentProps = {
   widget: WidgetOnGridLayout;
@@ -15,6 +20,7 @@ type GridItemComponentProps = {
     gridItemHtmlElement: HTMLDivElement | null
   ) => void;
   isDragging?: boolean;
+  algosMap: Record<string, Algorithm[]>;
 };
 
 /**
@@ -47,7 +53,7 @@ const withTextBehavior = <P extends MDXContentProps>(
 };
 
 function GridItemComponent(props: GridItemComponentProps) {
-  const { widget, onDeleteClick, onEditClick, isDragging } = props;
+  const { widget, onDeleteClick, onEditClick, isDragging, algosMap } = props;
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const gridItemRef = useRef<HTMLDivElement>(null);
@@ -151,7 +157,7 @@ function GridItemComponent(props: GridItemComponentProps) {
                 top: `${menuPosition.top}px`,
                 left: `${menuPosition.left}px`,
               }}>
-              <div className="rounded bg-secondary-600 px-2 py-1 text-xs shadow-lg">
+              <div className="max-w-[200px] break-words rounded bg-secondary-600 px-2 py-1 text-xs shadow-lg">
                 {widget.name}
               </div>
               <div className="flex gap-1">
@@ -178,6 +184,26 @@ function GridItemComponent(props: GridItemComponentProps) {
                   <RiDeleteBin5Line className="m-1 h-5 w-5 text-white hover:text-red-500" />
                 </div>
               </div>
+              {Object.keys(algosMap).length > 0 && (
+                <section className="flex flex-col gap-1">
+                  {algosMap[widget.gridItemId] &&
+                    algosMap[widget.gridItemId].map((algo) => (
+                      <div
+                        key={algo.cid}
+                        className="mt-1 flex w-[250px] flex-col items-start gap-2 rounded bg-secondary-200 p-4 text-gray-500 shadow-md">
+                        <div className="flex items-center gap-2">
+                          <RiFlaskLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
+                          <h2 className="text-[0.9rem] font-semibold">Tests</h2>
+                        </div>
+                        <div className="mb-2 h-[1px] w-full bg-gray-500" />
+                        <h3 className="text-[0.9rem] font-semibold">
+                          {algo.name}
+                        </h3>
+                        <p className="text-[0.8rem]">{algo.description}</p>
+                      </div>
+                    ))}
+                </section>
+              )}
             </div>,
             document.body
           )

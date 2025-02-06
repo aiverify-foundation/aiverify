@@ -1,4 +1,5 @@
 import { PluginForGridLayout, WidgetOnGridLayout } from '@/app/canvas/types';
+import { Algorithm } from '@/app/types';
 
 export function getWidgetAlgosFromPlugins(
   pluginsWithMdx: PluginForGridLayout[],

@@ -1,5 +1,6 @@
 import { Layout } from 'react-grid-layout';
 import { WidgetOnGridLayout } from '@/app/canvas/types';
+import { Algorithm } from '@/app/types';
 import { findWidgetInsertPosition } from './utils/findWidgetInsertPosition';
 
 type DesignState = {

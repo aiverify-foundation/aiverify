@@ -1,4 +1,5 @@
 import { RiFlaskLine } from '@remixicon/react';
+import { Algorithm } from '@/app/types';
 import {
   Accordion,
   AccordionContent,
@@ -11,63 +12,55 @@ import {
   PopoverTrigger,
 } from '@/lib/components/popover';
 import { cn } from '@/lib/utils/twmerge';
-
 type AlgosToRunProps = {
   className?: string;
   disabled?: boolean;
-  algos: Algorithm[];
+  algos: Record<string, Algorithm[]>;
   onClick: () => void;
 };
 
 function AlgosToRun(props: AlgosToRunProps) {
   const { algos, className, disabled, onClick } = props;
 
-  // const AccordionHero = (
-  //   <Accordion
-  //     type="single"
-  //     collapsible>
-  //     {algos.map((plugin) => {
-  //       return (
-  //         <AccordionItem
-  //           key={plugin.gid}
-  //           value={`item-${plugin.gid}`}>
-  //           <AccordionTrigger>
-  //             <span className="font-semibold text-gray-200">{plugin.name}</span>
-  //           </AccordionTrigger>
-  //           <AccordionContent>
-  //             <section className="flex flex-col gap-2">
-  //               {plugin.widgets.map((widget) => {
-  //                 return (
-  //                   <div
-  //                     key={widget.cid}
-  //                     draggable={true}
-  //                     onDragStart={(e) => {
-  //                       e.dataTransfer.setData(
-  //                         'application/json',
-  //                         JSON.stringify({
-  //                           gid: plugin.gid,
-  //                           cid: widget.cid,
-  //                         })
-  //                       );
-  //                       e.dataTransfer.effectAllowed = 'copy';
-  //                     }}
-  //                     className="cursor-grab rounded-md border border-gray-400 p-2 text-gray-400 hover:bg-secondary-1000 active:cursor-grabbing">
-  //                     {widget.name}
-  //                   </div>
-  //                 );
-  //               })}
-  //             </section>
-  //           </AccordionContent>
-  //         </AccordionItem>
-  //       );
-  //     })}
-  //   </Accordion>
-  // );
+  const AccordionHero = (
+    <Accordion
+      type="single"
+      collapsible
+      className="w-full">
+      {Object.keys(algos).length > 0 &&
+        Object.keys(algos).map((algoCids) => {
+          return (
+            <AccordionItem
+              key={algoCids}
+              value={`item-${algoCids}`}>
+              <AccordionTrigger>
+                <span className="font-semibold text-gray-200">
+                  {algos[algoCids][0].name}
+                </span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <section className="flex flex-col gap-2">
+                  {algos[algoCids].map((algo) => {
+                    return (
+                      <div
+                        key={algo.cid}
+                        className="rounded-md p-2 text-gray-400">
+                        {algo.description}
+                      </div>
+                    );
+                  })}
+                </section>
+              </AccordionContent>
+            </AccordionItem>
+          );
+        })}
+    </Accordion>
+  );
 
   return (
     <div
       className={cn(
-        'flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 shadow-lg',
+        'flex flex-col items-center gap-2 break-words rounded-lg bg-gray-300 p-2 shadow-lg',
         className
       )}>
       <Popover>
@@ -77,9 +70,13 @@ function AlgosToRun(props: AlgosToRunProps) {
         <PopoverContent
           side="left"
           sideOffset={40}
-          alignOffset={100}>
+          alignOffset={100}
+          className="w-[320px] bg-secondary-900">
           <div>
-            <h1>Tests to run</h1>
+            <h1 className="mb-2 text-[1rem] font-semibold text-white">
+              Tests to run
+            </h1>
+            {AccordionHero}
           </div>
         </PopoverContent>
       </Popover>

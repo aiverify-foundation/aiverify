@@ -171,4 +171,4 @@ type MdxBundle = {
   frontmatter: Record<string, unknown> | undefined;
 };
 
-export type { Project, TestResults, Plugin, MdxBundle, Widget };
+export type { Project, TestResults, Plugin, MdxBundle, Widget, Algorithm };
