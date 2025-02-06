@@ -6,6 +6,7 @@ type DesignState = {
   currentPage: number;
   layouts: Layout[][];
   widgets: WidgetOnGridLayout[][];
+  algos: Record<string, Algorithm[]>;
 };
 
 type WidgetAction =
@@ -13,6 +14,7 @@ type WidgetAction =
       type: 'ADD_WIDGET_TO_CANVAS';
       itemLayout: Layout;
       widget: WidgetOnGridLayout;
+      algos: Algorithm[] | undefined;
       pageIndex: number;
     }
   | {
@@ -42,6 +44,7 @@ const initialState: DesignState = {
   currentPage: 0,
   layouts: [[]],
   widgets: [[]],
+  algos: {},
 };
 
 function designReducer(state: DesignState, action: WidgetAction): DesignState {
@@ -58,6 +61,19 @@ function designReducer(state: DesignState, action: WidgetAction): DesignState {
       const clonedPageWidgets = widgets[action.pageIndex].slice();
       clonedPageWidgets.splice(insertPosition, 0, action.widget);
 
+      let clonedAlgos = state.algos;
+      if (action.algos && action.algos.length > 0) {
+        clonedAlgos = { ...state.algos };
+        if (clonedAlgos[action.widget.gridItemId]) {
+          clonedAlgos[action.widget.gridItemId] = [
+            ...clonedAlgos[action.widget.gridItemId],
+            ...action.algos,
+          ];
+        } else {
+          clonedAlgos[action.widget.gridItemId] = action.algos.slice();
+        }
+      }
+
       return {
         ...state,
         layouts: layouts.map((layout, i) =>
@@ -66,6 +82,7 @@ function designReducer(state: DesignState, action: WidgetAction): DesignState {
         widgets: widgets.map((widget, i) =>
           i === action.pageIndex ? clonedPageWidgets : widget
         ),
+        algos: clonedAlgos,
       };
     }
 

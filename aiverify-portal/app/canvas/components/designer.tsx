@@ -12,6 +12,8 @@ import { populateInitialWidgetResult } from '@/app/canvas/utils/populateInitialW
 import { Widget } from '@/app/types';
 import { Tooltip } from '@/lib/components/tooltip';
 import { cn } from '@/lib/utils/twmerge';
+import { getWidgetAlgosFromPlugins } from '../utils/getWidgetAlgosFromPlugins';
+import { AlgosToRun } from './algosToRun';
 import { EditingOverlay } from './editingOverlay';
 import { GridItemComponent } from './gridItemComponent';
 import { initialState } from './hooks/designReducer';
@@ -57,9 +59,9 @@ function createGridItemId(widget: Widget, pageIndex: number) {
 }
 
 function Designer({ pluginsWithMdx }: DesignProps) {
-  console.log('pluginsWithMdx:', pluginsWithMdx);
   const canvasRef = useRef<HTMLDivElement>(null);
   const [state, dispatch] = useReducer(designReducer, initialState);
+  console.log(state);
   const { layouts, currentPage } = state;
   const [error, setError] = useState<string | undefined>();
   const [draggingId, setDraggingId] = useState<string | null>(null);
@@ -160,10 +162,13 @@ function Designer({ pluginsWithMdx }: DesignProps) {
         ...widgetWithInitialData,
         gridItemId,
       };
+      const algos = getWidgetAlgosFromPlugins(pluginsWithMdx, widget);
+      console.log(algos);
       dispatch({
         type: 'ADD_WIDGET_TO_CANVAS',
         itemLayout,
         widget: widgetWithGridItemId,
+        algos,
         pageIndex,
       });
     };
@@ -338,6 +343,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
             onPreviousPage={handlePreviousPage}
             onAddPage={handleAddNewPage}
           />
+          <AlgosToRun onClick={() => null} />
         </div>
         <section className="relative flex h-full w-full flex-1 flex-col gap-2">
           <div
