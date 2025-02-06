@@ -321,7 +321,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
             className="custom-scrollbar w-full overflow-auto pr-[10px] pt-[50px]"
           />
         </section>
-        <div className="fixed right-[100px] top-[120px] z-50 flex flex-col gap-4">
+        <div className="fixed right-[100px] top-[120px] z-50 flex w-[50px] max-w-[50px] flex-col gap-4">
           <ZoomControl
             zoomLevel={zoomLevel}
             onZoomIn={zoomIn}
