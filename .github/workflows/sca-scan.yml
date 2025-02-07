@@ -293,6 +293,8 @@ jobs:
       run: |
         git config --global user.name $GITHUB_ACTOR
         git config --global user.email "username@users.noreply.github.com"
+        git pull
+        git branch -l
         git add .
         git commit -m "Update All Notices File"
         git push origin $GITHUB_REF_NAME
