@@ -23,15 +23,15 @@ inputs:
 
 outputs:
   unit_test_status:
-    value: '-' 
+    value: ${{ steps.unit_test.outputs.unit_test_status }}
   code_coverage_status: 
-    value: '-'
+    value: ${{ steps.unit_test.outputs.code_coverage_status }}
   code_quality_status:
-    value: '-'
+    value: ${{ steps.code_quality.outputs.code_quality_status }}
   dependency_status:
-    value: '-'
+    value: ${{ steps.dependency_analysis.outputs.dependency_status }}
   license_status:
-    value: '-'
+    value: ${{ steps.dependency_analysis.outputs.license_status }}
 
 runs:
   using: "composite"
@@ -78,6 +78,7 @@ runs:
 
     # Check 1: Unit tests & coverage    
     - name: Unit tests with coverage
+      id: unit_test
       working-directory: ${{ github.workspace }}/stock-plugins/aiverify.stock.${{ env.PLUGIN_NAME }}/algorithms/${{ env.ALGO_NAME }}
       if: ${{ ! cancelled() }}
       run: |      

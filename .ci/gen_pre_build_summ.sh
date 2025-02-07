@@ -11,8 +11,8 @@ read_coverage() {
     echo -e "${RED}${message}"
     return 1
   else
-    BLUE='\033[0;34m'
-    echo - "${BLUE}${message}"
+    GREEN='\033[0;92m'
+    echo -e "${GREEN}${message}"
     return 0
   fi
 }
@@ -29,8 +29,8 @@ read_test() {
     echo -e "${RED}${message}"
     return 1
   else
-    BLUE='\033[0;34m'
-    echo - "${BLUE}${message}"
+    GREEN='\033[0;92m'
+    echo -e "${GREEN}${message}"
     return 0
   fi
 }
@@ -45,8 +45,8 @@ read_lint() {
     echo -e "${RED}${message}"
     return 1
   else
-    BLUE='\033[0;34m'
-    echo - "${BLUE}${message}"
+    GREEN='\033[0;92m'
+    echo -e "${GREEN}${message}"
     return 0
   fi
 }
@@ -66,8 +66,8 @@ read_dependency() {
     echo -e "${RED}${message}"
     return 1
   else
-    BLUE='\033[0;34m'
-    echo - "${BLUE}${message}"
+    GREEN='\033[0;92m'
+    echo -e "${GREEN}${message}"
     return 0
   fi
 }
@@ -106,8 +106,8 @@ read_license() {
     echo -e "${RED}${message}"
     return 1
   else
-    BLUE='\033[0;34m'
-    echo - "${BLUE}${message}"
+    GREEN='\033[0;92m'
+    echo -e "${GREEN}${message}"
     return 0
   fi
 }
