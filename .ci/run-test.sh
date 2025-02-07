@@ -1,11 +1,11 @@
 #!/bin/bash
 source_dir=${1:aiverify_test_engine}
 
-echo "#######################################################################"
-echo "###                                                                 ###"
-echo "###                   UNIT TEST & CODE COVERAGE                     ###"
-echo "###                                                                 ###"
-echo "#######################################################################"
+echo "#############################################################################"
+echo "###                                                                       ###"
+echo "###                        UNIT TEST & CODE COVERAGE                      ###"
+echo "###                                                                       ###"
+echo "#############################################################################"
 
 if [ "$2" == "-m" ]; then
   test_cmd="python3 -m pytest"
@@ -20,6 +20,5 @@ coverage html
 coverage json --pretty-print
 set -e
 if [ $exit_code -ne 0 ]; then
-#  echo "pytest failed, exiting..."
   exit $exit_code
 fi

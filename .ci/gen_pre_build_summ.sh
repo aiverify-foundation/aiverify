@@ -62,22 +62,35 @@ read_dependency() {
 
 # Function to read license data
 read_license() {
-  copyleftLic=("GPL" "LGPL" "MPL" "AGPL" "EUPL" "CCDL" "EPL" "CC-BY-SA" "OSL" "CPL")
-  numCopyleftLic=0
+  strong_copyleft=("GPL" "AGPL" "EUPL" "CCDL" "EPL" "OSL" "CPL")
+  weak_copyleft=("LGPL" "MPL" "CC-BY-SA")
+  #copyleftLic=("GPL" "LGPL" "MPL" "AGPL" "EUPL" "CCDL" "EPL" "CC-BY-SA" "OSL" "CPL")
+  numCopyleftLicStrong=0
   if [ -f licenses-found.md ]; then
     while IFS= read -r line; do
-      for lic in "${copyleftLic[@]}"; do
+      for lic in "${strong_copyleft[@]}"; do
         if [[ $line == *"$lic"* ]]; then
-          ((numCopyleftLic++))
+          ((numCopyleftLicStrong++))
           break
         fi
       done
     done < licenses-found.md
   fi
-  message="Copyleft licenses found: $numCopyleftLic"
+  numCopyleftLicWeak=0
+  if [ -f licenses-found.md ]; then
+    while IFS= read -r line; do
+      for lic in "${weak_copyleft[@]}"; do
+        if [[ $line == *"$lic"* ]]; then
+          ((numCopyleftLicWeak++))
+          break
+        fi
+      done
+    done < licenses-found.md
+  fi
+  message="Copyleft licenses found: strong=$numCopyleftLicStrong weak=$numCopyleftLicWeak"
   export LICENSE_SUMMARY="$message"
   echo "$message"
-  if [ "$numCopyleftLic" -ne 0 ]; then
+  if [ "$numCopyleftLicStrong" -ne 0 ] || [ "$numCopyleftLicWeak" -ne 0 ]; then
     return 1
   else
     return 0

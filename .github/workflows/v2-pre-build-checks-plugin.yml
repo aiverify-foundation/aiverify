@@ -51,7 +51,7 @@ jobs:
       - name: Set branch variable (pull_request)
         if: github.event_name == 'pull_request'
         run: |
-          echo "MS_BRANCH=${{ github.event.pull_request.head.ref }}" >> "$GITHUB_ENV"
+          echo "BRANCH_TO_TEST=${{ github.event.pull_request.head.ref }}" >> "$GITHUB_ENV"
           echo "PR_NUM=#${{ github.event.pull_request.number }}" >> "$GITHUB_ENV"
           echo "PLUGIN_NAME=accumulated-local-effect" >> "$GITHUB_ENV"
           echo "ALGO_NAME=accumulated_local_effect" >> "$GITHUB_ENV"
@@ -59,7 +59,7 @@ jobs:
       - name: Set branch variable (workflow_dispatch)
         if: github.event_name == 'workflow_dispatch'
         run: |
-          echo "MS_BRANCH=${{ inputs.branch_to_test }}" >> "$GITHUB_ENV"
+          echo "BRANCH_TO_TEST=${{ inputs.branch_to_test }}" >> "$GITHUB_ENV"
           echo "PR_NUM=#0" >> "$GITHUB_ENV"
           echo "PLUGIN_NAME=${{ inputs.plugin_name }}" >> "$GITHUB_ENV"
           echo "ALGO_NAME=${{ inputs.algo_name }}" >> "$GITHUB_ENV"
@@ -68,7 +68,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ env.MS_BRANCH }}
+          ref: ${{ env.BRANCH_TO_TEST }}
           sparse-checkout: |
             .github/actions/pre-build-checks-plugin
 
@@ -76,16 +76,17 @@ jobs:
         id: pre_build_checks
         uses: ./.github/actions/pre-build-checks-plugin
         with:
-          branch_to_test: ${{ env.MS_BRANCH }}
+          branch_to_test: ${{ env.BRANCH_TO_TEST }}
           plugin_name: ${{ env.PLUGIN_NAME }}
           algo_name: ${{ env.ALGO_NAME }}
 
-      - name: Capture step statuses
+      - name: Capture pre-build checks status
         if: ${{ ! cancelled() }}
         run: |
           echo "UNIT_TESTS_STATUS=${{ steps.pre_build_checks.outputs.unit_tests_status }}" >> $GITHUB_ENV
           echo "CODE_QUALITY_STATUS=${{ steps.pre_build_checks.outputs.code_quality_status }}" >> $GITHUB_ENV
-          echo "DEPENDENCY_ANALYSIS_STATUS=${{ steps.pre_build_checks.outputs.dependency_status }}" >> $GITHUB_ENV
+          echo "DEPENDENCY_STATUS=${{ steps.pre_build_checks.outputs.dependency_status }}" >> $GITHUB_ENV
+          echo "LICENSE_STATUS"=${{ steps.pre_build_checks.outputs.license_status }}" >> $GITHUB_ENV
 
       # # Send slack notification
       # - name: Send slack notification

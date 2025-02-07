@@ -1,10 +1,10 @@
 #!/bin/bash
 
-echo "#######################################################################"
-echo "###                                                                 ###"
-echo "###             DEPENDENCY VULNERABILITY & LICENSE SCAN             ###"
-echo "###                                                                 ###"
-echo "#######################################################################"
+echo "#############################################################################"
+echo "###                                                                       ###"
+echo "###                DEPENDENCY VULNERABILITY & LICENSE SCAN                ###"
+echo "###                                                                       ###"
+echo "#############################################################################"
 
 # Create venv for ci
 python3 -m venv ci-venv
@@ -43,17 +43,31 @@ else
 fi
 
 if [ -f licenses-found.md ]; then
-  copyleftLic=("GPL" "LGPL" "MPL" "AGPL" "EUPL" "CCDL" "EPL" "CC-BY-SA" "OSL" "CPL")
-  echo "============ Copyleft Licenses Found ============"
+  strong_copyleft=("GPL" "AGPL" "EUPL" "CCDL" "EPL" "OSL" "CPL")
+  weak_copyleft=("LGPL" "MPL" "CC-BY-SA")
+  
+  echo "============ Strong Copyleft Licenses Found ============"
   head -n 2 licenses-found.md
   while IFS= read -r line; do
-    for lic in "${copyleftLic[@]}"; do
+    for lic in "${strong_copyleft[@]}"; do
       if [[ $line == *"$lic"* ]]; then
         echo "$line"
         break
       fi
     done
   done < licenses-found.md
+  
+  echo "============ Weak Copyleft Licenses Found ============"
+  head -n 2 licenses-found.md
+  while IFS= read -r line; do
+    for lic in "${weak_copyleft[@]}"; do
+      if [[ $line == *"$lic"* ]]; then
+        echo "$line"
+        break
+      fi
+    done
+  done < licenses-found.md
+  
   mdtree licenses-found.md > license-report.html
 else
   touch license-report.html
