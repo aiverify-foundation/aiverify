@@ -296,4 +296,4 @@ jobs:
         git pull
         git add .
         git commit -m "Update All Notices File"
-        git push origin $GITHUB_REF_NAME
+        git push
