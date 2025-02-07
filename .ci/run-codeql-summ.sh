@@ -46,8 +46,7 @@ if [ "$alerts_count" -gt 0 ]; then
   # OUTPUT_MESSAGES+="Alerts by severity:\n"
   # OUTPUT_MESSAGES+="$(jq -r '.[] | .rule.severity' "$OUTPUT_FILE" | sort | uniq -c)\n"
   OUTPUT_MESSAGES+=" - "
-  OUTPUT_MESSAGES+="$(jq -r '.[] | .rule.severity' "$OUTPUT_FILE" | sort | uniq -c | tr '\n' ' '). "
-
+  OUTPUT_MESSAGES+="$(jq -r '.[] | .rule.severity' "$OUTPUT_FILE" | sort | uniq -c | tr '\n' ' ' | tr -s ' ')"
   rm "$OUTPUT_FILE"
   echo -e "$OUTPUT_MESSAGES"
   echo "There are CodeQL alerts, please check Security>Code Scanning tab in the repository for more details."
