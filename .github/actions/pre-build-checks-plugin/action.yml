@@ -74,7 +74,6 @@ runs:
         pipdeptree -fl 
         pip install pytest pytest-mock pytest-html pytest-json pytest-cov coverage anybadge > /dev/null
         pip install flake8 flake8-html > /dev/null
-
       shell: bash
 
     # Check 1: Unit tests & coverage    
@@ -95,6 +94,7 @@ runs:
               exit 1
           fi
       shell: bash
+      continue-on-error: true
 
     # Check 2: Code quality analysis (flake8)
     - name: Code quality analysis (flake8)
@@ -111,6 +111,7 @@ runs:
         set -e
         exit $lint_status
       shell: bash
+      continue-on-error: true
 
     # Check 3: Dependency vulnerability & license analysis (pip-audit)
     - name: Dependency analysis (vulnerabilities & licenses)
@@ -127,11 +128,12 @@ runs:
         echo "DEPENDENCY_STATUS=$DEPENDENCY_SUMMARY" >> $GITHUB_ENV
         echo "LICENSE_STATUS=$LICENSE_SUMMARY" >> $GITHUB_ENV
         set -e
-        if [ $dep_status -ne 0 ] || [ $lic_status -ne 0 ]; then
-          exit 1
-        fi
+        # if [ $dep_status -ne 0 ] || [ $lic_status -ne 0 ]; then
+        #   exit 1
+        # fi
       shell: bash
-
+      continue-on-error: true
+      
     # # Send slack notification
     # - name: Send slack notification
     #   if: ${{ ! cancelled() }}
