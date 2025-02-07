@@ -293,7 +293,6 @@ jobs:
       run: |
         git config --global user.name github-actions
         git config --global user.email github-actions@github.com
-        git pull
         git add .
         git commit -m "Update All Notices File"
         
@@ -301,8 +300,5 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        git checkout update-notices
-        gh pr create --base main --title "Update All Notices File" --body "Update All Notices File"
-        git push origin $GITHUB_REF_NAME
-        
-        
+        gh pr create --base v2.x --title "Update All Notices File" --body "Update All Notices File"
+        gh pr merge
