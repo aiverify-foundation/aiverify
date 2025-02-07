@@ -295,7 +295,7 @@ jobs:
       run: |
         git config --global user.name github-actions
         git config --global user.email github-actions@github.com
-        git branch --set-upstream-to update-notices
+        git branch --set-upstream-to origin update-notices
         git switch update-notices
         git pull
         git add .
