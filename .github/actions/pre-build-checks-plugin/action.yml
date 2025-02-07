@@ -40,8 +40,7 @@ runs:
 
     - name: Set branch variable
       run: |
-        echo "MS_BRANCH=${{ inputs.branch_to_test }}" >> "$GITHUB_ENV"
-        echo "PR_NUM=#0" >> "$GITHUB_ENV"
+        echo "BRANCH_TO_TEST=${{ inputs.branch_to_test }}" >> "$GITHUB_ENV"
         echo "PLUGIN_NAME=${{ inputs.plugin_name }}" >> "$GITHUB_ENV"
         echo "ALGO_NAME=${{ inputs.algo_name }}" >> "$GITHUB_ENV"
       shell: bash
@@ -50,7 +49,7 @@ runs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        ref: ${{ env.MS_BRANCH }}
+        ref: ${{ env.BRANCH_TO_TEST }}
         sparse-checkout: |
           stock-plugins/aiverify.stock.${{ env.PLUGIN_NAME }}/algorithms/${{ env.ALGO_NAME }}
           stock-plugins/user_defined_files
@@ -69,9 +68,13 @@ runs:
     - name: Install dependencies
       working-directory: ${{ github.workspace }}/stock-plugins/aiverify.stock.${{ env.PLUGIN_NAME }}/algorithms/${{ env.ALGO_NAME }}
       run: |
-        pip install .
-        pip install pytest pytest-mock pytest-html pytest-json pytest-cov coverage anybadge
-        pip install flake8 flake8-html
+        echo "Install dependencies"
+        pip install . > /dev/null
+        pip install pipdeptree > /dev/null
+        pipdeptree -fl 
+        pip install pytest pytest-mock pytest-html pytest-json pytest-cov coverage anybadge > /dev/null
+        pip install flake8 flake8-html > /dev/null
+
       shell: bash
 
     # Check 1: Unit tests & coverage    

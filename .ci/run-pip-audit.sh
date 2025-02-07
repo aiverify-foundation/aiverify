@@ -1,5 +1,11 @@
 #!/bin/bash
 
+echo "#######################################################################"
+echo "###                                                                 ###"
+echo "###             DEPENDENCY VULNERABILITY & LICENSE SCAN             ###"
+echo "###                                                                 ###"
+echo "#######################################################################"
+
 # Create venv for ci
 python3 -m venv ci-venv
 source ci-venv/bin/activate
@@ -20,7 +26,7 @@ pip-licenses --format markdown --output-file licenses-found.md > /dev/null
 pip uninstall pip-licenses prettytable wcwidth -y > /dev/null
 
 # Dependency check
-echo "Dependency check..."
+echo "Dependency vulnerability check..."
 pip install pip-audit > /dev/null
 #pip uninstall setuptools -y > /dev/null
 set +e
