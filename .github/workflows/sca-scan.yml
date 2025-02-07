@@ -297,7 +297,9 @@ jobs:
         git add .
         git commit -m "Update All Notices File"
         
-    - name: Create Pull Request
+    - name: Create & Merge Pull Request
       run: |
         gh pr create --base main --title "Update All Notices File" --body "Update All Notices File"
+        git push origin $GITHUB_REF_NAME
+        
         
