@@ -39,12 +39,12 @@ fi
 # Total alert count
 cat "$OUTPUT_FILE"
 alerts_count=$(jq '. | length' "$OUTPUT_FILE")
-OUTPUT_MESSAGES+="Total CodeQL alerts: $alerts_count - "
+OUTPUT_MESSAGES+="Total CodeQL alerts: $alerts_count\n"
 
 # Display alerts by severity if there are any alerts
 if [ "$alerts_count" -gt 0 ]; then
   # OUTPUT_MESSAGES+="Alerts by severity:\n"
-  OUTPUT_MESSAGES+="$(jq -r '.[] | .rule.severity' "$OUTPUT_FILE" | sort | uniq -c), "
+  OUTPUT_MESSAGES+="$(jq -r '.[] | .rule.severity' "$OUTPUT_FILE" | sort | uniq -c)\n"
   rm "$OUTPUT_FILE"
   echo -e "$OUTPUT_MESSAGES"
   echo "There are CodeQL alerts, please check Security>Code Scanning tab in the repository for more details."
