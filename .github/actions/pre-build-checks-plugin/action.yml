@@ -132,14 +132,6 @@ runs:
         fi
       shell: bash
 
-    - name: Capture step statuses
-      if: ${{ ! cancelled() }}
-      run: |
-        echo "UNIT_TESTS_STATUS=${{ steps.unit_tests.outcome }}" >> $GITHUB_ENV
-        echo "CODE_QUALITY_STATUS=${{ steps.code_quality.outcome }}" >> $GITHUB_ENV
-        echo "DEPENDENCY_ANALYSIS_STATUS=${{ steps.dependency_analysis.outcome }}" >> $GITHUB_ENV
-      shell: bash
-
     # # Send slack notification
     # - name: Send slack notification
     #   if: ${{ ! cancelled() }}
@@ -153,6 +145,6 @@ runs:
     #         "ref": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
     #       }
     #   env:
-    #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CI }}
 
           

@@ -80,25 +80,17 @@ jobs:
           plugin_name: ${{ env.PLUGIN_NAME }}
           algo_name: ${{ env.ALGO_NAME }}
 
-      - name: Capture pre-build checks status
+          # Send slack notification
+      - name: Send slack notification
         if: ${{ ! cancelled() }}
-        run: |
-          echo "UNIT_TESTS_STATUS=${{ steps.pre_build_checks.outputs.unit_tests_status }}" >> $GITHUB_ENV
-          echo "CODE_QUALITY_STATUS=${{ steps.pre_build_checks.outputs.code_quality_status }}" >> $GITHUB_ENV
-          echo "DEPENDENCY_STATUS=${{ steps.pre_build_checks.outputs.dependency_status }}" >> $GITHUB_ENV
-          echo "LICENSE_STATUS"=${{ steps.pre_build_checks.outputs.license_status }}" >> $GITHUB_ENV
-
-      # # Send slack notification
-      # - name: Send slack notification
-      #   if: ${{ ! cancelled() }}
-      #   uses: slackapi/slack-github-action@v1.26.0
-      #   with:
-      #     payload: |
-      #       {
-      #         "workflow": "${{ github.repository }} | ${{ github.workflow }} | ${{ env.PR_NUM }}",
-      #         "status": "${{ job.status }}",
-      #         "details": "${{ env.UNIT_TESTS_STATUS }} | ${{ env.CODE_COVERAGE_STATUS }} | ${{ env.CODE_QUALITY_STATUS }} | ${{ env.DEPENDENCY_STATUS }} | ${{ env.LICENSE_STATUS }}",
-      #         "ref": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-      #       }
-      #   env:
-      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "workflow": "${{ github.repository }} | ${{ github.workflow }} | ${{ env.PR_NUM }}",
+              "status": "${{ job.status }}",
+              "details": "${{ steps.pre_build_checks.outputs.unit_tests_status }} | ${{ steps.pre_build_checks.outputs.code_quality_status }} | ${{ steps.pre_build_checks.outputs.dependency_status }} | ${{ steps.pre_build_checks.outputs.license_status }}",
+              "ref": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CI }}
