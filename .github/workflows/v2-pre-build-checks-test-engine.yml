@@ -11,7 +11,7 @@ on:
   pull_request:
     types: [ assigned, synchronize ]
     branches:
-      - 'main'
+      - 'v2.x'
     paths:
       - 'aiverify-test-engine/**'
 
