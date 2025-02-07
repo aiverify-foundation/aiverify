@@ -1,0 +1,103 @@
+# Pre-build Checks
+# 1. Unit tests with code coverage (pytest)
+# 2. Code quality analysis (flake8)
+# 3. Dependency analysis (vulnerabilities)
+# 4. Dependency analysis (copyleft licenses)
+
+name: v2 Pre-build Checks (algo rt)
+
+env:
+  PLUGIN_NAME: 'robustness-toolbox'
+  ALGO_NAME: 'robustness_toolbox'
+
+on:
+  # Runs when a pull request to main is being assigned
+  pull_request:
+    types: [ assigned, synchronize ]
+    branches:
+      - 'v2.x'
+    paths:
+      - 'stock-plugins/aiverify.stock.robustness-toolbox/**'
+
+  push:
+    branches: [ ci/v2-workflows ]
+
+  # Run this workflow manually from Actions tab
+  workflow_dispatch:
+    inputs:
+      branch_to_test:
+        description: 'Branch or tag to run test'
+        required: true
+        default: 'v2.x'
+        type: string
+      plugin_name:
+        description: 'Name of plugin to test'
+        required: true
+        default: $PLUGIN_NAME
+      algo_name:
+        description: 'Name of algo to test'
+        required: true
+        default: $ALGO_NAME
+    
+# Allow one concurrent deployment
+concurrency:
+  group: ${{ github.repository }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+
+  pre-build-checks:
+    # Run only when PR is assigned, even on subsequent commits (i.e. synchronize)
+    if: (github.event_name == 'pull_request' && github.event.pull_request.assignee != null) || github.event_name == 'workflow_dispatch'
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    steps:
+
+      - name: Set branch variable (pull_request)
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "BRANCH_TO_TEST=${{ github.event.pull_request.head.ref }}" >> "$GITHUB_ENV"
+          echo "PR_NUM=#${{ github.event.pull_request.number }}" >> "$GITHUB_ENV"
+          echo "PLUGIN_NAME=$PLUGIN_NAME" >> "$GITHUB_ENV"
+          echo "ALGO_NAME=$ALGO_NAME" >> "$GITHUB_ENV"
+
+      - name: Set branch variable (workflow_dispatch)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          echo "BRANCH_TO_TEST=${{ inputs.branch_to_test }}" >> "$GITHUB_ENV"
+          echo "PR_NUM=#0" >> "$GITHUB_ENV"
+          echo "PLUGIN_NAME=${{ inputs.plugin_name }}" >> "$GITHUB_ENV"
+          echo "ALGO_NAME=${{ inputs.algo_name }}" >> "$GITHUB_ENV"
+
+      # Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH_TO_TEST }}
+          sparse-checkout: |
+            .github/actions/pre-build-checks-plugin
+
+      - name: Run pre-build checks
+        id: pre_build_checks
+        uses: ./.github/actions/pre-build-checks-plugin
+        with:
+          branch_to_test: ${{ env.BRANCH_TO_TEST }}
+          plugin_name: ${{ env.PLUGIN_NAME }}
+          algo_name: ${{ env.ALGO_NAME }}
+
+          # Send slack notification
+      - name: Send slack notification
+        if: ${{ ! cancelled() }}
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "workflow": "${{ github.repository }} | ${{ github.workflow }} | ${{ env.PR_NUM }}",
+              "status": "${{ job.status }}",
+              "details": "${{ steps.pre_build_checks.outputs.unit_test_status }} | ${{ steps.pre_build_checks.outputs.code_quality_status }} | ${{ steps.pre_build_checks.outputs.dependency_status }} | ${{ steps.pre_build_checks.outputs.license_status }}",
+              "ref": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CI }}
