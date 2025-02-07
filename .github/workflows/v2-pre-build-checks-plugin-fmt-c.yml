@@ -32,6 +32,9 @@ on:
         required: true
         default: 'fairness_metrics_toolbox_for_classification'
 
+  push:
+    branches: [ 'v2.x' ]
+
 # Allow one concurrent deployment
 concurrency:
   group: ${{ github.repository }}-${{ github.workflow }}
