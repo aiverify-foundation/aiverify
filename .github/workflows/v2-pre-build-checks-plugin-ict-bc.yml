@@ -4,7 +4,7 @@
 # 3. Dependency analysis (vulnerabilities)
 # 4. Dependency analysis (copyleft licenses)
 
-name: v2 Pre-build Checks (algo ict-br)
+name: v2 Pre-build Checks (algo ict-bc)
 
 env:
   PLUGIN_NAME: 'image-corruption-toolbox'
@@ -36,6 +36,9 @@ on:
         required: true
         default: $ALGO_NAME
 
+  push:
+    branches: [ ci/v2-workflows ]
+    
 # Allow one concurrent deployment
 concurrency:
   group: ${{ github.repository }}-${{ github.workflow }}
