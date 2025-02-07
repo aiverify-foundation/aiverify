@@ -300,5 +300,5 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        gh pr create --base v2.x --title "Update All Notices File" --body "Update All Notices File"
+        gh pr create --base v2.x --title "Update All Notices File" --body "Update All Notices File" --head $(git branch --show-current)
         gh pr merge
