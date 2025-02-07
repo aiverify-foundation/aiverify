@@ -40,7 +40,7 @@ on:
     branches: [ 'ci/v2-workflows' ]
     paths:       
       - "stock-plugins/aiverify.stock.$PLUGIN_NAME/**"
-      
+
 # Allow one concurrent deployment
 concurrency:
   group: ${{ github.repository }}-${{ github.workflow }}
@@ -58,7 +58,7 @@ jobs:
     steps:
 
       - name: Set branch variable (pull_request)
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' || github.event_name == 'push'
         run: |
           echo "BRANCH_TO_TEST=${{ github.event.pull_request.head.ref }}" >> "$GITHUB_ENV"
           echo "PR_NUM=#${{ github.event.pull_request.number }}" >> "$GITHUB_ENV"
