@@ -5,6 +5,11 @@
 # 4. Dependency analysis (copyleft licenses)
 
 name: v2 Pre-build Checks (algo fmt-c)
+
+env:
+  PLUGIN_NAME: 'fairness-metrics-toolbox-for-classification'
+  ALGO_NAME: 'fairness_metrics_toolbox_for_classification'
+
 on:
   # Runs when a pull request to main is being assigned
   pull_request:
@@ -12,7 +17,7 @@ on:
     branches:
       - 'v2.x'
     paths:
-      - 'stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/**'
+      - "stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/**"
 
   # Run this workflow manually from Actions tab
   workflow_dispatch:
@@ -25,11 +30,11 @@ on:
       plugin_name:
         description: 'Name of plugin to test'
         required: true
-        default: 'fairness-metrics-toolbox-for-classification'
+        default: $PLUGIN_NAME
       algo_name:
         description: 'Name of algo to test'
         required: true
-        default: 'fairness_metrics_toolbox_for_classification'
+        default: $ALGO_NAME
 
 # Allow one concurrent deployment
 concurrency:
@@ -52,8 +57,8 @@ jobs:
         run: |
           echo "BRANCH_TO_TEST=${{ github.event.pull_request.head.ref }}" >> "$GITHUB_ENV"
           echo "PR_NUM=#${{ github.event.pull_request.number }}" >> "$GITHUB_ENV"
-          echo "PLUGIN_NAME=accumulated-local-effect" >> "$GITHUB_ENV"
-          echo "ALGO_NAME=accumulated_local_effect" >> "$GITHUB_ENV"
+          echo "PLUGIN_NAME=$PLUGIN_NAME" >> "$GITHUB_ENV"
+          echo "ALGO_NAME=$ALGO_NAME" >> "$GITHUB_ENV"
 
       - name: Set branch variable (workflow_dispatch)
         if: github.event_name == 'workflow_dispatch'

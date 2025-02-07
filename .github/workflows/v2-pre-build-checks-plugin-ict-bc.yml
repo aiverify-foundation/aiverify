@@ -4,11 +4,11 @@
 # 3. Dependency analysis (vulnerabilities)
 # 4. Dependency analysis (copyleft licenses)
 
-name: v2 Pre-build Checks (algo ale)
+name: v2 Pre-build Checks (algo ict-br)
 
 env:
-  PLUGIN_NAME: 'accumulated-local-effect'
-  ALGO_NAME: 'accumulated_local_effort'
+  PLUGIN_NAME: 'image-corruption-toolbox'
+  ALGO_NAME: 'blur_corruptions'
 
 on:
   # Runs when a pull request to main is being assigned
@@ -17,7 +17,7 @@ on:
     branches:
       - 'v2.x'
     paths:
-      - "stock-plugins/aiverify.stock.accumulated-local-effect/**"
+      - 'stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions/**'
 
   # Run this workflow manually from Actions tab
   workflow_dispatch:
@@ -36,6 +36,9 @@ on:
         required: true
         default: $ALGO_NAME
 
+  push:
+    branches: [ ci/v2-workflows ]
+    
 # Allow one concurrent deployment
 concurrency:
   group: ${{ github.repository }}-${{ github.workflow }}
