@@ -16,7 +16,6 @@ from aiverify_test_engine.utils.json_utils import load_schema_file, validate_jso
 from aiverify_test_engine.utils.simple_progress import SimpleProgress
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
-
 # =====================================================================================
 # NOTE:
 # 1. Check that you have installed the aiverify_test_engine latest package.
@@ -168,6 +167,8 @@ class Plugin(IAlgorithm):
             log_level (int): The logging level
             log_message (str): The logging message
         """
+        print('add_to_log')
+        
         if self._logger is not None:
             if not isinstance(log_level, int) or not isinstance(log_message, str):
                 raise RuntimeError(
