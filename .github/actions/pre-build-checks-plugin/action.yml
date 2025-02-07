@@ -22,16 +22,15 @@ inputs:
     default: 'accumulated_local_effect'
 
 outputs:
-  unit_tests_status:
-    value: ${{ env.UNIT_TESTS_STATUS }}
+  unit_test_status:
+    value: '-' 
   code_coverage_status: 
-    value: ${{ env.CODE_COVERAGE_STATUS }}
+    value: '-'
   code_quality_status:
-    value: ${{ env.CODE_QUALITY_STATUS }}
+    value: '-'
   dependency_status:
-    value: ${{ env.DEPENDENCY_STATUS }}
+    value: '-'
   license_status:
-    value: ${{ env.LICENSE_STATUS }}
 
 runs:
   using: "composite"
@@ -40,9 +39,9 @@ runs:
 
     - name: Set branch variable
       run: |
-        echo "BRANCH_TO_TEST=${{ inputs.branch_to_test }}" >> "$GITHUB_ENV"
-        echo "PLUGIN_NAME=${{ inputs.plugin_name }}" >> "$GITHUB_ENV"
-        echo "ALGO_NAME=${{ inputs.algo_name }}" >> "$GITHUB_ENV"
+        echo "BRANCH_TO_TEST=${{ inputs.branch_to_test }}" >> $GITHUB_ENV
+        echo "PLUGIN_NAME=${{ inputs.plugin_name }}" >> $GITHUB_ENV
+        echo "ALGO_NAME=${{ inputs.algo_name }}" >> $GITHUB_ENV
       shell: bash
 
     # Checkout code
@@ -87,14 +86,13 @@ runs:
           test_status=$?
           source ../../../../.ci/gen_pre_build_summ.sh coverage
           coverage_status=$?
-          echo "UNIT_TESTS_STATUS=$UNITTEST_SUMMARY" >> $GITHUB_ENV
-          echo "CODE_COVERAGE_STATUS=$COVERAGE_SUMMARY" >> $GITHUB_ENV
+          echo "unit_test_status=$UNITTEST_SUMMARY" >> $GITHUB_OUTPUT
+          echo "code_coverage_status=$COVERAGE_SUMMARY" >> $GITHUB_OUTPUT
           set -e
           if [ $test_status -ne 0 ] || [ $coverage_status -ne 0 ]; then
               exit 1
           fi
       shell: bash
-      continue-on-error: true
 
     # Check 2: Code quality analysis (flake8)
     - name: Code quality analysis (flake8)
@@ -107,11 +105,10 @@ runs:
         bash ../../../../.ci/run-flake8.sh aiverify_${{ env.ALGO_NAME }}
         source ../../../../.ci/gen_pre_build_summ.sh lint
         lint_status=$?
-        echo "CODE_QUALITY_STATUS=$LINT_SUMMARY" >> $GITHUB_ENV
+        echo "code_quality_status=$LINT_SUMMARY" >> $GITHUB_OUTPUT
         set -e
         exit $lint_status
       shell: bash
-      continue-on-error: true
 
     # Check 3: Dependency vulnerability & license analysis (pip-audit)
     - name: Dependency analysis (vulnerabilities & licenses)
@@ -125,15 +122,14 @@ runs:
         dep_status=$?
         source ../../../../.ci/gen_pre_build_summ.sh license
         lic_status=$?
-        echo "DEPENDENCY_STATUS=$DEPENDENCY_SUMMARY" >> $GITHUB_ENV
-        echo "LICENSE_STATUS=$LICENSE_SUMMARY" >> $GITHUB_ENV
+        echo "dependency_status=$DEPENDENCY_SUMMARY" >> $GITHUB_OUTPUT
+        echo "license_status=$LICENSE_SUMMARY" >> $GITHUB_OUTPUT
         set -e
-        # if [ $dep_status -ne 0 ] || [ $lic_status -ne 0 ]; then
-        #   exit 1
-        # fi
+        if [ $dep_status -ne 0 ] || [ $lic_status -ne 0 ]; then
+          exit 1
+        fi
       shell: bash
-      continue-on-error: true
-      
+
     # # Send slack notification
     # - name: Send slack notification
     #   if: ${{ ! cancelled() }}

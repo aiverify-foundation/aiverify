@@ -5,11 +5,14 @@ read_coverage() {
   covPct=$(jq '.totals.percent_covered' coverage.json)
   covPctRounded=$(printf "%.0f" "$covPct")
   message="Coverage percentage: $covPctRounded"
-  echo "$message"
   export COVERAGE_SUMMARY="$message"
   if (( covPctRounded < 70 )); then
+    RED='\033[0;31m'
+    echo -e "${RED}${message}"
     return 1
   else
+    BLUE='\033[0;34m'
+    echo - "${BLUE}${message}"
     return 0
   fi
 }
@@ -20,11 +23,14 @@ read_test() {
   testPassed=$(echo "$testJson" | jq '.passed // 0')
   testFailed=$(echo "$testJson" | jq '.failed // 0')
   message="Unit tests passed: $testPassed, failed: $testFailed"
-  echo "$message"
   export UNITTEST_SUMMARY="$message"
   if [ "$testFailed" -ne 0 ]; then
+    RED='\033[0;31m'
+    echo -e "${RED}${message}"
     return 1
   else
+    BLUE='\033[0;34m'
+    echo - "${BLUE}${message}"
     return 0
   fi
 }
@@ -33,11 +39,14 @@ read_test() {
 read_lint() {
   last_line=$(tail -n 1 flake8-report.txt)
   message="Lint errors: $last_line"
-  echo "$message"
   export LINT_SUMMARY="$message"
   if [ "$last_line" -ne 0 ]; then
+    RED='\033[0;31m'
+    echo -e "${RED}${message}"
     return 1
   else
+    BLUE='\033[0;34m'
+    echo - "${BLUE}${message}"
     return 0
   fi
 }
@@ -51,11 +60,14 @@ read_dependency() {
     numVul=$(grep -oP 'Found \K\d+' pip-audit-count.txt)
   fi
   message="Dependency vulnerabilities found: $numVul"
-  echo "$message"
   export DEPENDENCY_SUMMARY="$message"
   if [ "$numVul" -ne 0 ]; then
+    RED='\033[0;31m'
+    echo -e "${RED}${message}"
     return 1
   else
+    BLUE='\033[0;34m'
+    echo - "${BLUE}${message}"
     return 0
   fi
 }
@@ -89,10 +101,13 @@ read_license() {
   fi
   message="Copyleft licenses found: strong=$numCopyleftLicStrong weak=$numCopyleftLicWeak"
   export LICENSE_SUMMARY="$message"
-  echo "$message"
   if [ "$numCopyleftLicStrong" -ne 0 ] || [ "$numCopyleftLicWeak" -ne 0 ]; then
+    RED='\033[0;31m'
+    echo -e "${RED}${message}"
     return 1
   else
+    BLUE='\033[0;34m'
+    echo - "${BLUE}${message}"
     return 0
   fi
 }
