@@ -4,8 +4,7 @@
 # 3. Dependency analysis (vulnerabilities)
 # 4. Dependency analysis (copyleft licenses)
 
-name: v2 Pre-build Checks (fairness_metrics_toolbox_for_classification)
-
+name: v2 Pre-build Checks (algo fmt-c)
 on:
   # Runs when a pull request to main is being assigned
   pull_request:
