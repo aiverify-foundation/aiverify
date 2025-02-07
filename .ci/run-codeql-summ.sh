@@ -37,7 +37,6 @@ if [ $? -ne 0 ]; then
 fi
 
 # Total alert count
-cat "$OUTPUT_FILE"
 alerts_count=$(jq '. | length' "$OUTPUT_FILE")
 OUTPUT_MESSAGES+="Total CodeQL alerts: $alerts_count"
 
@@ -48,13 +47,15 @@ if [ "$alerts_count" -gt 0 ]; then
   OUTPUT_MESSAGES+=" - "
   OUTPUT_MESSAGES+="$(jq -r '.[] | .rule.severity' "$OUTPUT_FILE" | sort | uniq -c | tr '\n' ' ' | tr -s ' ')"
   rm "$OUTPUT_FILE"
-  echo -e "$OUTPUT_MESSAGES"
-  echo "There are CodeQL alerts, please check Security>Code Scanning tab in the repository for more details."
+  RED='\033[0;31m'
+  echo -e "${RED}${OUTPUT_MESSAGES}"
+  echo -e "${RED}Refer to Security>Code Scanning for more details."
   export CODEQL_SUMMARY="$OUTPUT_MESSAGES"
   return 2
 else
   rm "$OUTPUT_FILE"
-  echo -e "$OUTPUT_MESSAGES"
+  GREEN='\033[0;92m'
+  echo -e "${GREEN}${OUTPUT_MESSAGES}"
   export CODEQL_SUMMARY="$OUTPUT_MESSAGES"
   return 0
 fi
