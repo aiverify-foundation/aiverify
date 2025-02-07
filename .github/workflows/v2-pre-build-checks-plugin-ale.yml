@@ -33,9 +33,6 @@ on:
         required: true
         default: 'accumulated_local_effect'
 
-  push:
-    branches: [ 'ci/v2-workflows' ]
-    
 # Allow one concurrent deployment
 concurrency:
   group: ${{ github.repository }}-${{ github.workflow }}
