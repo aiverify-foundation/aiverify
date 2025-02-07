@@ -39,7 +39,7 @@ on:
   push:
     branches: [ 'ci/v2-workflows' ]
     paths:       
-      - "stock-plugins/aiverify.stock.$PLUGIN_NAME/**"
+      - "stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-regression/**"
 
 # Allow one concurrent deployment
 concurrency:
