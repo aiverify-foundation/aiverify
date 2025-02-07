@@ -19,9 +19,6 @@ on:
     paths:
       - 'stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/environment_corruptions/**'
 
-  push:
-    branches: [ ci/v2-workflows ]
-
   # Run this workflow manually from Actions tab
   workflow_dispatch:
     inputs:
