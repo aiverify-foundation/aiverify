@@ -301,7 +301,7 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        gh pr create --base main --title "Update All Notices File" --body "Update All Notices File"
+        gh pr create --base main --title "Update All Notices File" --body "Update All Notices File" --head
         git push origin $GITHUB_REF_NAME
         
         
