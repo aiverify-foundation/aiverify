@@ -38,7 +38,9 @@ on:
 
   push:
     branches: [ 'ci/v2-workflows' ]
-
+    paths:       
+      - "stock-plugins/aiverify.stock.$PLUGIN_NAME/**"
+      
 # Allow one concurrent deployment
 concurrency:
   group: ${{ github.repository }}-${{ github.workflow }}
