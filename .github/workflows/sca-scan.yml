@@ -293,6 +293,8 @@ jobs:
       run: |
         git config --global user.name github-actions
         git config --global user.email github-actions@github.com
+        git branch update-notices
+        git switch update-notices
         git add .
         git commit -m "Update All Notices File"
         
