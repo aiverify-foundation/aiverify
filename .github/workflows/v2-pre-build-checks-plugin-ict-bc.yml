@@ -36,9 +36,6 @@ on:
         required: true
         default: $ALGO_NAME
 
-  push:
-    branches: [ ci/v2-workflows ]
-    
 # Allow one concurrent deployment
 concurrency:
   group: ${{ github.repository }}-${{ github.workflow }}
