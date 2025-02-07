@@ -89,7 +89,7 @@ jobs:
             {
               "workflow": "${{ github.repository }} | ${{ github.workflow }} | ${{ env.PR_NUM }}",
               "status": "${{ job.status }}",
-              "details": "${{ steps.pre_build_checks.outputs.unit_tests_status }} | ${{ steps.pre_build_checks.outputs.code_quality_status }} | ${{ steps.pre_build_checks.outputs.dependency_status }} | ${{ steps.pre_build_checks.outputs.license_status }}",
+              "details": "${{ steps.pre_build_checks.outputs.unit_test_status }} | ${{ steps.pre_build_checks.outputs.code_quality_status }} | ${{ steps.pre_build_checks.outputs.dependency_status }} | ${{ steps.pre_build_checks.outputs.license_status }}",
               "ref": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             }
         env:
