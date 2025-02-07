@@ -43,20 +43,20 @@ jobs:
       - name: Set branch variable (pull_request)
         if: github.event_name == 'pull_request'
         run: |
-          echo "MS_BRANCH=${{ github.event.pull_request.head.ref }}" >> "$GITHUB_ENV"
+          echo "BRANCH_TO_TEST=${{ github.event.pull_request.head.ref }}" >> "$GITHUB_ENV"
           echo "PR_NUM=#${{ github.event.pull_request.number }}" >> "$GITHUB_ENV"
 
       - name: Set branch variable (workflow_dispatch)
         if: github.event_name == 'workflow_dispatch'
         run: |
-          echo "MS_BRANCH=${{ inputs.branch_to_test }}" >> "$GITHUB_ENV"
+          echo "BRANCH_TO_TEST=${{ inputs.branch_to_test }}" >> "$GITHUB_ENV"
           echo "PR_NUM=#0" >> "$GITHUB_ENV"
 
       # Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          ref: ${{ env.MS_BRANCH }}
+          ref: ${{ env.BRANCH_TO_TEST }}
           sparse-checkout: |
             aiverify-test-engine
             .ci
@@ -81,7 +81,7 @@ jobs:
 
       # Check 1: Unit tests & coverage
       - name: Unit tests with coverage
-        id: unit_tests
+        id: unit_test
         if: ${{ ! cancelled() }}
         working-directory: ${{ github.workspace }}/aiverify-test-engine
         timeout-minutes: 30
@@ -92,8 +92,8 @@ jobs:
           test_status=$?
           source ../.ci/gen_pre_build_summ.sh coverage
           coverage_status=$?
-          echo "UNIT_TESTS_STATUS=$UNITTEST_SUMMARY" >> $GITHUB_ENV
-          echo "CODE_COVERAGE_STATUS=$COVERAGE_SUMMARY" >> $GITHUB_ENV
+          echo "unit_test_status=$UNITTEST_SUMMARY" >> $GITHUB_OUTPUT
+          echo "code_coverage_status=$COVERAGE_SUMMARY" >> $GITHUB_OUTPUT
           set -e
           if [ $test_status -ne 0 ] || [ $coverage_status -ne 0 ]; then
             exit 1
@@ -109,7 +109,7 @@ jobs:
           bash ../.ci/run-flake8.sh aiverify_test_engine
           source ../.ci/gen_pre_build_summ.sh lint
           lint_status=$?
-          echo "CODE_QUALITY_STATUS=$LINT_SUMMARY" >> $GITHUB_ENV
+          echo "code_quality_status=$LINT_SUMMARY" >> $GITHUB_OUTPUT
           set -e
           exit $lint_status
 
@@ -125,32 +125,25 @@ jobs:
           dep_status=$?
           source ../.ci/gen_pre_build_summ.sh license
           lic_status=$?
-          echo "DEPENDENCY_STATUS=$DEPENDENCY_SUMMARY" >> $GITHUB_ENV
-          echo "LICENSE_STATUS=$LICENSE_SUMMARY" >> $GITHUB_ENV
+          echo "dependency_status=$DEPENDENCY_SUMMARY" >> $GITHUB_OUTPUT
+          echo "license_status=$LICENSE_SUMMARY" >> $GITHUB_OUTPUT
           set -e
           if [ $dep_status -ne 0 ] || [ $lic_status -ne 0 ]; then
             exit 1
           fi
 
-      - name: Capture step statuses
+      # Send slack notification
+      - name: Send slack notification
         if: ${{ ! cancelled() }}
-        run: |
-          echo "UNIT_TESTS_STATUS=${{ steps.unit_tests.outcome }}" >> $GITHUB_ENV
-          echo "CODE_QUALITY_STATUS=${{ steps.code_quality.outcome }}" >> $GITHUB_ENV
-          echo "DEPENDENCY_ANALYSIS_STATUS=${{ steps.dependency_analysis.outcome }}" >> $GITHUB_ENV
-
-      # # Send slack notification
-      # - name: Send slack notification
-      #   if: ${{ ! cancelled() }}
-      #   uses: slackapi/slack-github-action@v1.26.0
-      #   with:
-      #     payload: |
-      #       {
-      #         "workflow": "${{ github.repository }} | ${{ github.workflow }} | ${{ env.PR_NUM }}",
-      #         "status": "${{ job.status }}",
-      #         "details": "${{ env.UNIT_TESTS_STATUS }} | ${{ env.CODE_COVERAGE_STATUS }} | ${{ env.CODE_QUALITY_STATUS }} | ${{ env.DEPENDENCY_STATUS }} | ${{ env.LICENSE_STATUS }}",
-      #         "ref": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-      #       }
-      #   env:
-      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "workflow": "${{ github.repository }} | ${{ github.workflow }} | ${{ env.PR_NUM }}",
+              "status": "${{ job.status }}",
+              "details": "${{ steps.unit_test.outputs.unit_test_status }} | ${{ steps.unit_test.outputs.code_coverage_status }} | ${{ steps.dependency_analysis.outputs.dependency_status }} | ${{ steps.dependency_analysis.outputs.license_status }}",
+              "ref": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CI }}
 

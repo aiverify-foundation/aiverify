@@ -132,19 +132,5 @@ runs:
         fi
       shell: bash
 
-    # # Send slack notification
-    # - name: Send slack notification
-    #   if: ${{ ! cancelled() }}
-    #   uses: slackapi/slack-github-action@v1.26.0
-    #   with:
-    #     payload: |
-    #       {
-    #         "workflow": "${{ github.repository }} | ${{ github.workflow }} | ${{ env.PR_NUM }}",
-    #         "status": "${{ job.status }}",
-    #         "details": "${{ env.UNIT_TESTS_STATUS }} | ${{ env.CODE_COVERAGE_STATUS }} | ${{ env.CODE_QUALITY_STATUS }} | ${{ env.DEPENDENCY_STATUS }} | ${{ env.LICENSE_STATUS }}",
-    #         "ref": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-    #       }
-    #   env:
-    #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CI }}
 
           
