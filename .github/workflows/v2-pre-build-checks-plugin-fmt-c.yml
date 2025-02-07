@@ -33,7 +33,7 @@ on:
         default: 'fairness_metrics_toolbox_for_classification'
 
   push:
-    branches: [ 'v2.x' ]
+    branches: [ 'ci/v2-workflows' ]
 
 # Allow one concurrent deployment
 concurrency:
