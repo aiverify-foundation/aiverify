@@ -301,12 +301,10 @@ jobs:
         git add .
         git commit -m "Update All Notices File"
         git push --set-upstream origin update-notices
-        gh pr create --base v2.x --title "Update All Notices File" --body "Update All Notices File" --head $(git branch --show-current)
-        gh pr merge v2.x
         
-    # - name: Create & Merge Pull Request
-    #   env:
-    #     GH_TOKEN: ${{ github.token }}
-    #   run: |
-    #     gh pr create --base v2.x --title "Update All Notices File" --body "Update All Notices File" --head $(git branch --show-current)
-    #     gh pr merge
+    - name: Create & Merge Pull Request
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        gh pr create --base v2.x --title "Update All Notices File" --body "Update All Notices File" --head $(git branch --show-current)
+        gh pr merge --admin -d
