@@ -50,7 +50,7 @@ jobs:
 
   pre-build-checks:
     # Run only when PR is assigned, even on subsequent commits (i.e. synchronize)
-    if: (github.event_name == 'pull_request' && github.event.pull_request.assignee != null) || github.event_name == 'workflow_dispatch'
+    if: (github.event_name == 'pull_request' && github.event.pull_request.assignee != null) || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
 
     runs-on: ubuntu-latest
     timeout-minutes: 40
