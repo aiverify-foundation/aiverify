@@ -13,7 +13,7 @@ name: "SAST - CodeQL"
 
 on:
   push:
-    branches: [ main, v2.x. ci/v2-workflows ]
+    branches: [ main, v2.x, ci/v2-workflows ]
 
   pull_request:
     # The branches below must be a subset of the branches above
