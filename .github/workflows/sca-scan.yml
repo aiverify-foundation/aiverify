@@ -290,6 +290,8 @@ jobs:
     #       deactivate
 
     - name: Commit All Notices File
+      env:
+        GH_TOKEN: ${{ github.token }}
       run: |
         git config --global user.name github-actions
         git config --global user.email github-actions@github.com
@@ -297,10 +299,13 @@ jobs:
         git switch update-notices
         git add .
         git commit -m "Update All Notices File"
-        
-    - name: Create & Merge Pull Request
-      env:
-        GH_TOKEN: ${{ github.token }}
-      run: |
+        git push
         gh pr create --base v2.x --title "Update All Notices File" --body "Update All Notices File" --head $(git branch --show-current)
         gh pr merge
+        
+    # - name: Create & Merge Pull Request
+    #   env:
+    #     GH_TOKEN: ${{ github.token }}
+    #   run: |
+    #     gh pr create --base v2.x --title "Update All Notices File" --body "Update All Notices File" --head $(git branch --show-current)
+    #     gh pr merge
