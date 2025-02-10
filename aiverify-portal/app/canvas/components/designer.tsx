@@ -2,13 +2,7 @@
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import { RiDeleteBinLine, RiGridLine } from '@remixicon/react';
-import React, {
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useReducer } from 'react';
 import GridLayout, { Layout } from 'react-grid-layout';
 import { z } from 'zod';
@@ -22,8 +16,8 @@ import { cn } from '@/lib/utils/twmerge';
 import { AlgosToRun } from './algosToRun';
 import { EditingOverlay } from './editingOverlay';
 import { GridItemComponent } from './gridItemComponent';
-import { initialState } from './hooks/designReducer';
-import { designReducer } from './hooks/designReducer';
+import { initialState } from './hooks/pagesDesignReducer';
+import { pagesDesignReducer } from './hooks/pagesDesignReducer';
 import { useDragToScroll } from './hooks/useDragToScroll';
 import { useZoom } from './hooks/useZoom';
 import { PageNavigation } from './pageNavigation';
@@ -84,8 +78,8 @@ function createGridItemId(widget: Widget, pageIndex: number) {
 function Designer({ pluginsWithMdx }: DesignProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const isInitialMount = useRef(true);
-  const [state, dispatch] = useReducer(designReducer, initialState);
-  const [showGrid, setShowGrid] = useState(false);
+  const [state, dispatch] = useReducer(pagesDesignReducer, initialState);
+  const [showGrid, setShowGrid] = useState(true);
   const { layouts, currentPage } = state;
   const [error, setError] = useState<string | undefined>();
   const [draggingId, setDraggingId] = useState<string | null>(null);

@@ -48,7 +48,10 @@ const initialState: DesignState = {
   algos: {},
 };
 
-function designReducer(state: DesignState, action: WidgetAction): DesignState {
+function pagesDesignReducer(
+  state: DesignState,
+  action: WidgetAction
+): DesignState {
   const { layouts, widgets } = state;
 
   switch (action.type) {
@@ -211,4 +214,9 @@ function designReducer(state: DesignState, action: WidgetAction): DesignState {
   }
 }
 
-export { designReducer, initialState, type WidgetAction, type DesignState };
+export {
+  pagesDesignReducer,
+  initialState,
+  type WidgetAction,
+  type DesignState,
+};
