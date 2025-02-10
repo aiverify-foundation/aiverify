@@ -1,8 +1,14 @@
 'use client';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-import { RiDeleteBinLine } from '@remixicon/react';
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { RiDeleteBinLine, RiGridLine } from '@remixicon/react';
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useReducer } from 'react';
 import GridLayout, { Layout } from 'react-grid-layout';
 import { z } from 'zod';
@@ -23,15 +29,31 @@ import { useZoom } from './hooks/useZoom';
 import { PageNavigation } from './pageNavigation';
 import { PlunginsPanel } from './pluginsPanel';
 import { ZoomControl } from './zoomControl';
-const A4_WIDTH = 794;
-const A4_HEIGHT = 1100;
-const A4_MARGIN = 10;
-const GRID_MAX_ROWS = 36;
-const BASE_GRID_WIDTH = A4_WIDTH - A4_MARGIN * 2;
-const BASE_GRID_ROW_HEIGHT = Math.floor(A4_HEIGHT / GRID_MAX_ROWS); // ~30.5px
-const BASE_PAGE_HEIGHT = A4_HEIGHT - A4_MARGIN * 2;
-const PAGE_GAP = 128;
-const CONTAINER_PAD = 100;
+
+/*
+  Designer component has 3 sections:
+  - The plugins panel section
+  - The controls section
+  - The design section
+
+  The design section has 3 key nested areas (nested divs):
+  - The free form area
+    - This area is the largest area and takes up the entire width of the screen and full height below page header.
+  - The content area
+    - This is a container wrapping the main content. It has large overflowing excess width and height to allow dragging and scrolling.
+  - The pages wrapper
+    - This is a container wrapping all the pages.
+*/
+
+const A4_WIDTH = 794; // ideal width of A4 page
+const A4_HEIGHT = 1100; // ideal height of A4 page
+const A4_MARGIN = 12; // margin of A4 page
+const GRID_MAX_ROWS = 36; // max rows of the grid
+const GRID_WIDTH = A4_WIDTH - A4_MARGIN * 2; // width of the grid within the A4 page
+const GRID_ROW_HEIGHT = Math.floor(A4_HEIGHT / GRID_MAX_ROWS); // calculated height of each row in the grid
+const GRID_HEIGHT = A4_HEIGHT - A4_MARGIN * 2; // height of the grid within the A4 page
+const PAGE_GAP = 128; // spacing between pages
+const CONTAINER_PAD = 100; // padding used to calculate virtual space at top and bottom of the free from content
 
 type DesignProps = {
   pluginsWithMdx: PluginForGridLayout[];
@@ -63,6 +85,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const isInitialMount = useRef(true);
   const [state, dispatch] = useReducer(designReducer, initialState);
+  const [showGrid, setShowGrid] = useState(false);
   const { layouts, currentPage } = state;
   const [error, setError] = useState<string | undefined>();
   const [draggingId, setDraggingId] = useState<string | null>(null);
@@ -294,24 +317,29 @@ function Designer({ pluginsWithMdx }: DesignProps) {
   }
 
   // Calculate actual dimensions based on zoom
-  const gridWidth = Math.round(BASE_GRID_WIDTH * zoomLevel);
-  const gridRowHeight = Math.round(BASE_GRID_ROW_HEIGHT * zoomLevel);
-  const pageHeight = Math.round(BASE_PAGE_HEIGHT * zoomLevel);
+  const [gridWidth, gridRowHeight, pageHeight] = useMemo(
+    () => [
+      Math.round(GRID_WIDTH * zoomLevel),
+      Math.round(GRID_ROW_HEIGHT * zoomLevel),
+      Math.round(GRID_HEIGHT * zoomLevel),
+    ],
+    [zoomLevel]
+  );
 
-  const gridStyle: React.CSSProperties = {
+  const gridLayoutStyle: React.CSSProperties = {
     height: `${pageHeight}px`,
     width: `${gridWidth}px`,
   };
 
-  function calculateMinHeight() {
+  const contentWrapperMinHeight = useMemo(() => {
     const totalPagesHeight = layouts.length * pageHeight;
     const totalGapsHeight = (layouts.length - 1) * (PAGE_GAP * zoomLevel);
     const totalHeight =
       totalPagesHeight +
       totalGapsHeight +
-      (CONTAINER_PAD + CONTAINER_PAD) * zoomLevel; // containerpadding top and bottom
+      (CONTAINER_PAD + CONTAINER_PAD) * zoomLevel; // container spacings at top and bottom
     return `${totalHeight}px`;
-  }
+  }, [layouts.length, pageHeight, zoomLevel]);
 
   return (
     <React.Fragment>
@@ -339,6 +367,17 @@ function Designer({ pluginsWithMdx }: DesignProps) {
           />
         </section>
         <section className="fixed right-[100px] top-[120px] z-50 flex w-[50px] max-w-[50px] flex-col gap-4">
+          <div
+            className={cn(
+              'flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg'
+            )}>
+            <button
+              className="disabled:opacity-50"
+              title="Toggle Grid"
+              onClick={() => setShowGrid(!showGrid)}>
+              <RiGridLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
+            </button>
+          </div>
           <ZoomControl
             zoomLevel={zoomLevel}
             onZoomIn={zoomIn}
@@ -372,14 +411,14 @@ function Designer({ pluginsWithMdx }: DesignProps) {
             }
             onMouseLeave={handleFreeFormAreaMouseUp}>
             <div
-              id="freeFormAreaContent"
+              id="contentWrapper"
               className="flex min-w-[6000px] justify-center pt-[500px]"
               style={{
-                minHeight: calculateMinHeight(),
+                minHeight: contentWrapperMinHeight,
                 transition: 'all 0.2s ease-out',
               }}>
               <div
-                id="pagesLayout"
+                id="pagesWrapper"
                 className="flex flex-col gap-2">
                 {layouts.map((layout, pageIndex) => (
                   <div
@@ -394,23 +433,18 @@ function Designer({ pluginsWithMdx }: DesignProps) {
                     }
                     className={cn(
                       'relative mb-[50px] bg-white text-sm text-black shadow',
-                      'cursor-default active:cursor-default',
-                      `scroll-mt-[${100 * zoomLevel}px]`,
-                      `w-[${A4_WIDTH * zoomLevel}px]`,
-                      `h-[${A4_HEIGHT * zoomLevel}px]`
+                      'cursor-default active:cursor-default'
                     )}>
                     <div
-                      className={cn(
-                        `absolute`,
-                        `left-[calc(${A4_MARGIN}px*var(--zoom-level))]`,
-                        `top-[calc(${A4_MARGIN}px*var(--zoom-level))]`,
-                        `w-[calc(${A4_WIDTH - 20}px*var(--zoom-level))]`,
-                        `h-[calc(${A4_HEIGHT - 19}px*var(--zoom-level))]`
-                      )}
+                      id={`gridOverlay-${pageIndex}`}
+                      className="absolute"
                       style={{
-                        backgroundImage: `repeating-linear-gradient(#d9d8d8 0 1px, transparent 1px 100%), 
-                                         repeating-linear-gradient(90deg, #d9d8d8 0 1px, transparent 1px 100%)`,
-                        backgroundSize: `calc((100% - 0.03em) / 12) ${30 * zoomLevel}px`,
+                        display: showGrid ? 'block' : 'none',
+                        width: `${(A4_WIDTH - A4_MARGIN * 2) * zoomLevel + 1}px`,
+                        height: `${(A4_HEIGHT - A4_MARGIN * 2) * zoomLevel + 1}px`,
+                        backgroundImage: `radial-gradient(circle at 0 0, black 1.5px, transparent 0.2px)`,
+                        backgroundSize: `${((A4_WIDTH - A4_MARGIN * 2) * zoomLevel) / 12}px ${30 * zoomLevel}px`,
+                        backgroundPosition: '0 0',
                       }}
                     />
                     <div className="absolute right-[-65px] top-0 m-2 flex flex-col text-xs text-gray-500">
@@ -444,7 +478,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
                       isBounded
                       useCSSTransforms={true}
                       resizeHandles={['sw', 'nw', 'se', 'ne']}
-                      style={gridStyle}>
+                      style={gridLayoutStyle}>
                       {state.widgets[pageIndex].map((widget, widgetIndex) => {
                         if (!widget.gridItemId) return null;
                         return (
