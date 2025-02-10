@@ -22,12 +22,20 @@
 			"description": "Plugin name",
 			"type": "string",
 			"minLength": 1,
+<<<<<<< HEAD
 			"maxLength": 256
+=======
+			"maxLength": 128
+>>>>>>> 9a0526b5 (inital commit for test engine worker)
 		},
 		"author": {
 			"description": "Plugin author",
 			"type": "string",
+<<<<<<< HEAD
 			"maxLength": 256
+=======
+			"maxLength": 128
+>>>>>>> 9a0526b5 (inital commit for test engine worker)
 		},
 		"description": {
 			"description": "Plugin description",

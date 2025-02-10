@@ -1,0 +1,35 @@
+version: '3.8'
+
+name: aiverify
+services:
+  apigw:
+    build:
+      context: ../../
+      dockerfile: aiverify-apigw/Dockerfile
+    profiles: [frontend,fontend_te]
+    ports:
+      - "4000:4000"
+    volumes:
+      - aiverify_apigw_data:/data
+    environment:
+      APIGW_LOG_LEVEL: "debug"
+      APIGW_DATA_DIR: "/data"
+      APIGW_HOST_ADDRESS: "0.0.0.0"
+    networks:
+      - aiverify_net
+
+  valkey:
+    image: valkey/valkey:8
+    profiles: [fontend_te]
+    ports:
+      - '6379:6379'
+    networks:
+      - aiverify_net
+
+volumes:
+  aiverify_apigw_data:
+    driver: local
+
+networks:
+  aiverify_net:
+    driver: bridge
