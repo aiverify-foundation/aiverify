@@ -302,7 +302,7 @@ class PluginStore:
 
                 session.expunge(plugin)
                 return plugin
-
+    
     @classmethod
     def scan_plugin_directory(cls, folder: Path, temp_dir: Path, is_stock: bool = False):
         """Scan the plugin directory and save the plugin information to DB.
@@ -399,6 +399,15 @@ class PluginStore:
                 for meta_file in meta_files:
                     meta, meta_json = cls.validate_widget(widget_path=widgets_subdir,
                                                           meta_path=meta_file, folder=mdx_bundle_folder)
+                    # Process mock data for widgets if present
+                    if meta.mockdata:
+                        for mock_entry in meta.mockdata:
+                            if mock_entry.datapath:
+                                mock_file = widgets_subdir.joinpath(mock_entry.datapath)
+                                if mock_file.exists():
+                                    with open(mock_file, 'r') as f:
+                                        mock_entry.data = json.load(f)
+                                        meta_json['mockdata'] = [m.model_dump() for m in meta.mockdata]
                     if meta.dependencies:
                         dependencies = [dep.model_dump_json() for dep in meta.dependencies]
                         # dependencies = [
@@ -420,7 +429,7 @@ class PluginStore:
                         properties=json.dumps([prop.model_dump_json() for prop in meta.properties]
                                               ).encode("utf-8") if meta.properties else None,
                         mockdata=json.dumps([md.model_dump_json() for md in meta.mockdata]
-                                            ).encode("utf-8") if meta.mockdata else None,
+                                        ).encode("utf-8") if meta.mockdata else None,
                         dynamic_height=meta.dynamicHeight,
                         dependencies=json.dumps(dependencies).encode('utf-8'),
                     )
