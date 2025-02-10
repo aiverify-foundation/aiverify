@@ -89,14 +89,8 @@ function Designer({ pluginsWithMdx }: DesignProps) {
   const [editingElement, setEditingElement] = useState<HTMLDivElement | null>(
     null
   );
-  const {
-    zoomLevel,
-    zoomIn,
-    zoomOut,
-    resetZoom,
-    startContinuousZoom,
-    stopContinuousZoom,
-  } = useZoom();
+  const { zoomLevel, resetZoom, startContinuousZoom, stopContinuousZoom } =
+    useZoom();
   const freeFormAreaRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -374,8 +368,6 @@ function Designer({ pluginsWithMdx }: DesignProps) {
           </div>
           <ZoomControl
             zoomLevel={zoomLevel}
-            onZoomIn={zoomIn}
-            onZoomOut={zoomOut}
             onZoomReset={resetZoom}
             startContinuousZoom={startContinuousZoom}
             stopContinuousZoom={stopContinuousZoom}

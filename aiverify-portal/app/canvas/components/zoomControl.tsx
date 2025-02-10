@@ -1,5 +1,4 @@
 import { RiZoomInLine, RiZoomOutLine } from '@remixicon/react';
-import { useRef, useCallback, useEffect } from 'react';
 import { cn } from '@/lib/utils/twmerge';
 
 const MIN_ZOOM = 0.25;
@@ -7,18 +6,14 @@ const MAX_ZOOM = 2;
 
 type ZoomControlProps = {
   zoomLevel: number;
-  onZoomIn: () => void;
-  onZoomOut: () => void;
   onZoomReset: () => void;
-  startContinuousZoom: (zoomFn: () => void) => void;
+  startContinuousZoom: (direction: 'in' | 'out') => void;
   stopContinuousZoom: () => void;
   className?: string;
 };
 
 export function ZoomControl({
   zoomLevel,
-  onZoomIn,
-  onZoomOut,
   onZoomReset,
   startContinuousZoom,
   stopContinuousZoom,
@@ -31,7 +26,7 @@ export function ZoomControl({
         className
       )}>
       <button
-        onMouseDown={() => startContinuousZoom(onZoomIn)}
+        onMouseDown={() => startContinuousZoom('in')}
         onMouseUp={stopContinuousZoom}
         onMouseLeave={stopContinuousZoom}
         disabled={zoomLevel >= MAX_ZOOM}
@@ -46,7 +41,7 @@ export function ZoomControl({
         {Math.round(zoomLevel * 100)}%
       </button>
       <button
-        onMouseDown={() => startContinuousZoom(onZoomOut)}
+        onMouseDown={() => startContinuousZoom('out')}
         onMouseUp={stopContinuousZoom}
         onMouseLeave={stopContinuousZoom}
         disabled={zoomLevel <= MIN_ZOOM}

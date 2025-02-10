@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback } from 'react';
 
 // Amount to change zoom level by on each step
 const ZOOM_STEP = 0.01;
@@ -9,8 +9,8 @@ const MAX_ZOOM = 2;
 // Interval in milliseconds between continuous zoom steps
 const ZOOM_INTERVAL = 30;
 
-export function useZoom(initialZoom = 1) {
-  const [zoomLevel, setZoomLevel] = useState(initialZoom);
+export function useZoom() {
+  const [zoomLevel, setZoomLevel] = useState(1);
   const zoomIntervalRef = useRef<NodeJS.Timeout>(null);
 
   const zoomIn = useCallback(() => {
@@ -25,10 +25,14 @@ export function useZoom(initialZoom = 1) {
     setZoomLevel(1);
   }, []);
 
-  const startContinuousZoom = useCallback((zoomFn: () => void) => {
-    zoomFn();
-    zoomIntervalRef.current = setInterval(zoomFn, ZOOM_INTERVAL);
-  }, []);
+  const startContinuousZoom = useCallback(
+    (direction: 'in' | 'out') => {
+      const zoomFn = direction === 'in' ? zoomIn : zoomOut;
+      zoomFn();
+      zoomIntervalRef.current = setInterval(zoomFn, ZOOM_INTERVAL);
+    },
+    [zoomIn, zoomOut]
+  );
 
   const stopContinuousZoom = useCallback(() => {
     if (zoomIntervalRef.current) {
@@ -36,14 +40,8 @@ export function useZoom(initialZoom = 1) {
     }
   }, []);
 
-  useEffect(() => {
-    return () => stopContinuousZoom();
-  }, [stopContinuousZoom]);
-
   return {
     zoomLevel,
-    zoomIn,
-    zoomOut,
     resetZoom,
     startContinuousZoom,
     stopContinuousZoom,
