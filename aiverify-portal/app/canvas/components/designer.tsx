@@ -136,6 +136,19 @@ function Designer({ pluginsWithMdx }: DesignProps) {
     }
   }, [layouts.length]);
 
+  useEffect(() => {
+    if (freeFormAreaRef.current) {
+      const element = freeFormAreaRef.current;
+      const currentScrollTop = element.scrollTop;
+      const scrollableWidth = element.scrollWidth - element.clientWidth;
+      const horizontalCenter =
+        scrollableWidth * (element.scrollLeft / (scrollableWidth || 1));
+
+      element.scrollLeft = horizontalCenter;
+      element.scrollTop = currentScrollTop; // Maintain the same vertical scroll position
+    }
+  }, [zoomLevel]);
+
   const handleWidgetDrop =
     (pageIndex: number) =>
     (_layout: Layout[], item: Layout, e: EventDataTransfer) => {
@@ -402,7 +415,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
               className="flex min-w-[6000px] justify-center"
               style={{
                 minHeight: contentWrapperMinHeight,
-                paddingTop: `${500 * zoomLevel}px`,
+                paddingTop: `${CONTAINER_PAD * zoomLevel}px`,
                 transition: 'all 0.2s ease-out',
               }}>
               <div
