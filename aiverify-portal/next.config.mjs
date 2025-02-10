@@ -10,6 +10,14 @@ const nextConfig = {
         source: '/api/test_results/upload_zip',
         destination: `${process.env.APIGW_HOST}/test_results/upload_zip`,
       },
+      {
+        source: '/api/test_datasets',
+        destination: `${process.env.APIGW_HOST}/test_datasets`,
+      },
+      {
+        source: '/api/test_datasets/upload',
+        destination: `${process.env.APIGW_HOST}/test_datasets/upload`,
+      },
     ];
   },
 };
