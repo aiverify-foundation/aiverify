@@ -336,10 +336,15 @@ function Designer({ pluginsWithMdx }: DesignProps) {
   const contentWrapperMinHeight = useMemo(() => {
     const totalPagesHeight = layouts.length * pageHeight;
     const totalGapsHeight = (layouts.length - 1) * (PAGE_GAP * zoomLevel);
-    const totalHeight =
-      totalPagesHeight +
-      totalGapsHeight +
-      (CONTAINER_PAD + CONTAINER_PAD) * zoomLevel; // container spacings at top and bottom
+    const containerPadding = (CONTAINER_PAD + CONTAINER_PAD) * zoomLevel;
+    const totalHeight = totalPagesHeight + totalGapsHeight + containerPadding;
+
+    // If single page and content smaller than viewport, center vertically
+    if (layouts.length === 1 && freeFormAreaRef.current) {
+      const viewportHeight = freeFormAreaRef.current.clientHeight;
+      return `${Math.max(viewportHeight, totalHeight)}px`;
+    }
+
     return `${totalHeight}px`;
   }, [layouts.length, pageHeight, zoomLevel]);
 
@@ -415,7 +420,12 @@ function Designer({ pluginsWithMdx }: DesignProps) {
               className="flex min-w-[6000px] justify-center"
               style={{
                 minHeight: contentWrapperMinHeight,
-                paddingTop: `${CONTAINER_PAD * zoomLevel}px`,
+                paddingTop:
+                  layouts.length === 1
+                    ? 'auto'
+                    : `${CONTAINER_PAD * zoomLevel}px`,
+                display: 'flex',
+                alignItems: layouts.length === 1 ? 'center' : 'flex-start',
                 transition: 'all 0.2s ease-out',
               }}>
               <div
