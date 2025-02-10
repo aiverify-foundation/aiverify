@@ -426,8 +426,10 @@ function Designer({ pluginsWithMdx }: DesignProps) {
                       className="absolute"
                       style={{
                         display: showGrid ? 'block' : 'none',
-                        width: `${(A4_WIDTH - A4_MARGIN * 2) * zoomLevel + 1}px`,
-                        height: `${(A4_HEIGHT - A4_MARGIN * 2) * zoomLevel + 1}px`,
+                        top: `${A4_MARGIN * zoomLevel}px`,
+                        left: `${A4_MARGIN * zoomLevel}px`,
+                        right: `${A4_MARGIN * zoomLevel}px`,
+                        bottom: `${A4_MARGIN * zoomLevel}px`,
                         backgroundImage: `radial-gradient(circle at 0 0, black 1.5px, transparent 0.2px)`,
                         backgroundSize: `${((A4_WIDTH - A4_MARGIN * 2) * zoomLevel) / 12}px ${30 * zoomLevel}px`,
                         backgroundPosition: '0 0',
