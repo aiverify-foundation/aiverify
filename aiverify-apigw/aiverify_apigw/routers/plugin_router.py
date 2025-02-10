@@ -11,7 +11,7 @@ from ..lib.filestore import get_plugin_zip, get_plugin_algorithm_zip, backup_plu
 from ..lib.plugin_store import PluginStore, PluginStoreException
 from ..lib.file_utils import sanitize_filename
 from ..schemas import PluginOutput
-from ..models import PluginModel, AlgorithmModel, WidgetModel
+from ..models import PluginModel, AlgorithmModel, WidgetModel, InputBlockModel
 
 router = APIRouter(prefix="/plugins", tags=["plugin"])
 
@@ -316,9 +316,12 @@ async def download_plugin_bundle(gid: str, cid: str, session: Session = Depends(
         if not plugin:
             raise HTTPException(status_code=404, detail="Plugin not found")
         
-        widget_stmt = select(WidgetModel).filter_by(gid=gid, cid=cid.split(':')[-1])
+        cid_suffix = cid.split(':')[-1]
+
+        # Check if cid exists as a widget 
+        widget_stmt = select(WidgetModel).filter_by(gid=gid, cid=cid_suffix)
         widget = session.scalar(widget_stmt)
-        
+
         if widget:
             # Get the bundle
             bundle = get_plugin_mdx_bundle(gid, cid)
@@ -334,6 +337,13 @@ async def download_plugin_bundle(gid: str, cid: str, session: Session = Depends(
                     logger.error(f"Failed to decode mock data for widget {cid}")
             
             return JSONResponse(content=resp_obj)
+        
+         # Check if cid exists as an input block
+        input_stmt = select(InputBlockModel).filter_by(gid=gid, cid=cid_suffix)
+        input_block = session.scalar(input_stmt)
+
+        if not input_block:
+            raise HTTPException(status_code=404, detail=f"Invalid cid: {cid} not found in widget or input block")
         
         # If not a widget, just return the bundle as before
         bundle = get_plugin_mdx_bundle(gid, cid)
