@@ -307,9 +307,9 @@ function Designer({ pluginsWithMdx }: DesignProps) {
   // Calculate actual dimensions based on zoom
   const [gridWidth, gridRowHeight, pageHeight] = useMemo(
     () => [
-      Math.round(GRID_WIDTH * zoomLevel),
-      Math.round(GRID_ROW_HEIGHT * zoomLevel),
-      Math.round(GRID_HEIGHT * zoomLevel),
+      GRID_WIDTH * zoomLevel,
+      GRID_ROW_HEIGHT * zoomLevel,
+      GRID_HEIGHT * zoomLevel,
     ],
     [zoomLevel]
   );
@@ -317,6 +317,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
   const gridLayoutStyle: React.CSSProperties = {
     height: `${pageHeight}px`,
     width: `${gridWidth}px`,
+    transition: 'width 0.1s ease-out, height 0.1s ease-out',
   };
 
   const contentWrapperMinHeight = useMemo(() => {
@@ -398,9 +399,10 @@ function Designer({ pluginsWithMdx }: DesignProps) {
             onMouseLeave={handleFreeFormAreaMouseUp}>
             <div
               id="contentWrapper"
-              className="flex min-w-[6000px] justify-center pt-[500px]"
+              className="flex min-w-[6000px] justify-center"
               style={{
                 minHeight: contentWrapperMinHeight,
+                paddingTop: `${500 * zoomLevel}px`,
                 transition: 'all 0.2s ease-out',
               }}>
               <div
@@ -433,6 +435,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
                         backgroundImage: `radial-gradient(circle at 0 0, black 1.5px, transparent 0.2px)`,
                         backgroundSize: `${((A4_WIDTH - A4_MARGIN * 2) * zoomLevel) / 12}px ${30 * zoomLevel}px`,
                         backgroundPosition: '0 0',
+                        transition: 'all 0.1s ease-out',
                       }}
                     />
                     <div className="absolute right-[-65px] top-0 m-2 flex flex-col text-xs text-gray-500">
