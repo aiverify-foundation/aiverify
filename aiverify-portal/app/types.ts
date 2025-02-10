@@ -30,4 +30,32 @@ type TestResults = {
   updated_at: string;
 };
 
-export type { Project, TestResults };
+type DataColumn = {
+  name: string;
+  datatype: string;
+  label: string;
+};
+
+type DatasetStatus = 'invalid' | 'valid';
+type FileType = 'file' | 'folder';
+
+type Dataset = {
+  id: string;
+  name: string;
+  description: string | null;
+  fileType: FileType;
+  filename: string;
+  zip_hash: string;
+  size: number;
+  serializer: string | null;
+  dataFormat: string | null;
+  numRows: number | null;
+  numCols: number | null;
+  dataColumns: string[] | null;
+  status: DatasetStatus;
+  errorMessages: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type { Project, TestResults, Dataset };
