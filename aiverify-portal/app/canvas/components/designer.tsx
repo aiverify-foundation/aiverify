@@ -22,15 +22,16 @@ import { useDragToScroll } from './hooks/useDragToScroll';
 import { useZoom } from './hooks/useZoom';
 import { PageNavigation } from './pageNavigation';
 import { PlunginsPanel } from './pluginsPanel';
-import styles from './styles/designer.module.css';
 import { ZoomControl } from './zoomControl';
-const BASE_GRID_WIDTH = 774;
-const BASE_GRID_ROW_HEIGHT = 30;
-const BASE_PAGE_HEIGHT = 1080;
+const A4_WIDTH = 794;
+const A4_HEIGHT = 1100;
+const A4_MARGIN = 10;
 const GRID_MAX_ROWS = 36;
-const PAGE_GAP = 128; // equivalent to gap-32 (32 * 4 = 128px)
-const PADDING_TOP = 100; // matches pt-[100px]
-const PADDING_BOTTOM = 100; // extra padding at bottom
+const BASE_GRID_WIDTH = A4_WIDTH - A4_MARGIN * 2;
+const BASE_GRID_ROW_HEIGHT = Math.floor(A4_HEIGHT / GRID_MAX_ROWS); // ~30.5px
+const BASE_PAGE_HEIGHT = A4_HEIGHT - A4_MARGIN * 2;
+const PAGE_GAP = 128;
+const CONTAINER_PAD = 100;
 
 type DesignProps = {
   pluginsWithMdx: PluginForGridLayout[];
@@ -60,8 +61,8 @@ function createGridItemId(widget: Widget, pageIndex: number) {
 
 function Designer({ pluginsWithMdx }: DesignProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
+  const isInitialMount = useRef(true);
   const [state, dispatch] = useReducer(designReducer, initialState);
-  console.log(state);
   const { layouts, currentPage } = state;
   const [error, setError] = useState<string | undefined>();
   const [draggingId, setDraggingId] = useState<string | null>(null);
@@ -79,35 +80,45 @@ function Designer({ pluginsWithMdx }: DesignProps) {
     startContinuousZoom,
     stopContinuousZoom,
   } = useZoom();
-  const containerRef = useRef<HTMLDivElement>(null);
+  const freeFormAreaRef = useRef<HTMLDivElement>(null);
 
   const {
     isDragging: isDraggingFreeFormArea,
     handleMouseDown: handleFreeFormAreaMouseDown,
     handleMouseUp: handleFreeFormAreaMouseUp,
     handleMouseMove: handleFreeFormAreaMouseMove,
-  } = useDragToScroll(containerRef, canvasRef);
+  } = useDragToScroll(freeFormAreaRef, canvasRef);
 
-  useLayoutEffect(() => {
-    if (containerRef.current) {
-      const totalWidth = containerRef.current.scrollWidth;
-      const viewportWidth = containerRef.current.clientWidth;
-      containerRef.current.scrollLeft = (totalWidth - viewportWidth) / 2;
-      containerRef.current.scrollTop = 400;
+  useEffect(() => {
+    if (freeFormAreaRef.current) {
+      const totalWidth = freeFormAreaRef.current.scrollWidth;
+      const viewportWidth = freeFormAreaRef.current.clientWidth;
+      freeFormAreaRef.current.scrollLeft = (totalWidth - viewportWidth) / 2;
+      if (isInitialMount.current) {
+        isInitialMount.current = false;
+        return;
+      }
     }
   }, []);
 
   useEffect(() => {
-    // Only scroll if layouts length has increased
+    // Skip on initial mount
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
     if (layouts.length > 0) {
       const newPageElement = document.getElementById(
         `page-${layouts.length - 1}`
       );
       if (newPageElement) {
         setTimeout(() => {
-          newPageElement.scrollIntoView({
+          const scrollPadding = CONTAINER_PAD;
+          const elementTop = newPageElement.offsetTop;
+          freeFormAreaRef.current?.scrollTo({
+            top: elementTop - scrollPadding,
             behavior: 'smooth',
-            block: 'start',
           });
         }, 0);
       }
@@ -163,7 +174,6 @@ function Designer({ pluginsWithMdx }: DesignProps) {
         gridItemId,
       };
       const algos = getWidgetAlgosFromPlugins(pluginsWithMdx, widget);
-      console.log(algos);
       dispatch({
         type: 'ADD_WIDGET_TO_CANVAS',
         itemLayout,
@@ -173,12 +183,14 @@ function Designer({ pluginsWithMdx }: DesignProps) {
       });
     };
 
-  const handleGridItemResizeStart =
-    (pageIndex: number) =>
-    (_layouts: Layout[], _: Layout, itemLayout: Layout) => {
-      const { i } = itemLayout;
-      setDraggingId(i);
-    };
+  const handleGridItemResizeStart = (
+    _layouts: Layout[],
+    _: Layout,
+    itemLayout: Layout
+  ) => {
+    const { i } = itemLayout;
+    setDraggingId(i);
+  };
 
   const handleGridItemResizeStop =
     (pageIndex: number) =>
@@ -297,7 +309,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
     const totalHeight =
       totalPagesHeight +
       totalGapsHeight +
-      (PADDING_TOP + PADDING_BOTTOM) * zoomLevel;
+      (CONTAINER_PAD + CONTAINER_PAD) * zoomLevel; // containerpadding top and bottom
     return `${totalHeight}px`;
   }
 
@@ -315,7 +327,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
           onSave={handleEditingSave}
         />
       ) : null}
-      <div className="relative h-full w-full">
+      <main className="relative h-full w-full">
         <section className="absolute z-10 flex h-full w-[300px] flex-col bg-secondary-900 p-4">
           <div>
             <h4 className="mb-0 text-lg font-bold">Project Name</h4>
@@ -326,7 +338,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
             className="custom-scrollbar w-full overflow-auto pr-[10px] pt-[50px]"
           />
         </section>
-        <div className="fixed right-[100px] top-[120px] z-50 flex w-[50px] max-w-[50px] flex-col gap-4">
+        <section className="fixed right-[100px] top-[120px] z-50 flex w-[50px] max-w-[50px] flex-col gap-4">
           <ZoomControl
             zoomLevel={zoomLevel}
             onZoomIn={zoomIn}
@@ -347,10 +359,11 @@ function Designer({ pluginsWithMdx }: DesignProps) {
             onClick={() => null}
             algos={state.algos}
           />
-        </div>
+        </section>
         <section className="relative flex h-full w-full flex-1 flex-col gap-2">
           <div
-            ref={containerRef}
+            id="freeFormArea"
+            ref={freeFormAreaRef}
             className="custom-scrollbar relative h-full cursor-grab overflow-auto bg-slate-100 active:cursor-grabbing"
             onMouseDown={handleFreeFormAreaMouseDown}
             onMouseUp={handleFreeFormAreaMouseUp}
@@ -359,26 +372,47 @@ function Designer({ pluginsWithMdx }: DesignProps) {
             }
             onMouseLeave={handleFreeFormAreaMouseUp}>
             <div
+              id="freeFormAreaContent"
               className="flex min-w-[6000px] justify-center pt-[500px]"
               style={{
                 minHeight: calculateMinHeight(),
                 transition: 'all 0.2s ease-out',
               }}>
-              <div className="flex flex-col gap-2">
+              <div
+                id="pagesLayout"
+                className="flex flex-col gap-2">
                 {layouts.map((layout, pageIndex) => (
                   <div
                     id={`page-${pageIndex}`}
                     key={`page-${pageIndex}`}
                     ref={canvasRef}
-                    style={{ '--zoom-level': zoomLevel } as React.CSSProperties}
+                    style={
+                      {
+                        '--zoom-level': zoomLevel,
+                        padding: `${A4_MARGIN * zoomLevel}px`,
+                      } as React.CSSProperties
+                    }
                     className={cn(
-                      styles.canvas,
-                      styles.reportRoot,
-                      styles.reportContainer,
-                      styles.reportHeight,
-                      'cursor-default active:cursor-default'
+                      'relative mb-[50px] bg-white text-sm text-black shadow',
+                      'cursor-default active:cursor-default',
+                      `scroll-mt-[${100 * zoomLevel}px]`,
+                      `w-[${A4_WIDTH * zoomLevel}px]`,
+                      `h-[${A4_HEIGHT * zoomLevel}px]`
                     )}>
-                    <div className={styles.canvas_grid} />
+                    <div
+                      className={cn(
+                        `absolute`,
+                        `left-[calc(${A4_MARGIN}px*var(--zoom-level))]`,
+                        `top-[calc(${A4_MARGIN}px*var(--zoom-level))]`,
+                        `w-[calc(${A4_WIDTH - 20}px*var(--zoom-level))]`,
+                        `h-[calc(${A4_HEIGHT - 19}px*var(--zoom-level))]`
+                      )}
+                      style={{
+                        backgroundImage: `repeating-linear-gradient(#d9d8d8 0 1px, transparent 1px 100%), 
+                                         repeating-linear-gradient(90deg, #d9d8d8 0 1px, transparent 1px 100%)`,
+                        backgroundSize: `calc((100% - 0.03em) / 12) ${30 * zoomLevel}px`,
+                      }}
+                    />
                     <div className="absolute right-[-65px] top-0 m-2 flex flex-col text-xs text-gray-500">
                       Page {pageIndex + 1}
                       <Tooltip
@@ -402,7 +436,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
                       onDragStart={handleGridItemDragStart}
                       onDragStop={handleGridItemDragStop(pageIndex)}
                       onResizeStop={handleGridItemResizeStop(pageIndex)}
-                      onResizeStart={handleGridItemResizeStart(pageIndex)}
+                      onResizeStart={handleGridItemResizeStart}
                       preventCollision
                       isResizable={true}
                       isDroppable={true}
@@ -436,7 +470,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
             </div>
           </div>
         </section>
-      </div>
+      </main>
     </React.Fragment>
   );
 }

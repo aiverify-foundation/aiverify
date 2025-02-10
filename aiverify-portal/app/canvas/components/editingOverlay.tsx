@@ -2,8 +2,6 @@ import { getMDXComponent, MDXContentProps } from 'mdx-bundler/client';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { WidgetOnGridLayout } from '@/app/canvas/types';
-import { cn } from '@/lib/utils/twmerge';
-import styles from './styles/designer.module.css';
 type EditingOverlayProps = {
   widget: WidgetOnGridLayout;
   originalElement: HTMLElement | null;
@@ -52,7 +50,7 @@ const withEditingBehavior = <P extends MDXContentProps>(
                 type="text"
                 value={h1Props.children as string}
                 onChange={(e) => props.onTextChange?.('h1', e.target.value)}
-                className={cn(styles.h1TextInput, 'w-full focus:outline-none')}
+                className="w-full text-4xl font-bold focus:outline-none"
               />
             );
           },
@@ -62,7 +60,7 @@ const withEditingBehavior = <P extends MDXContentProps>(
                 type="text"
                 value={h1Props.children as string}
                 onChange={(e) => props.onTextChange?.('h1', e.target.value)}
-                className={cn(styles.h2TextInput, 'w-full focus:outline-none')}
+                className="w-full text-3xl font-semibold focus:outline-none"
               />
             );
           },
@@ -72,7 +70,7 @@ const withEditingBehavior = <P extends MDXContentProps>(
                 type="text"
                 value={h1Props.children as string}
                 onChange={(e) => props.onTextChange?.('h1', e.target.value)}
-                className={cn(styles.h3TextInput, 'w-full focus:outline-none')}
+                className="w-full text-2xl font-medium focus:outline-none"
               />
             );
           },
@@ -82,7 +80,7 @@ const withEditingBehavior = <P extends MDXContentProps>(
                 type="text"
                 value={h1Props.children as string}
                 onChange={(e) => props.onTextChange?.('h1', e.target.value)}
-                className={cn(styles.h4TextInput, 'w-full focus:outline-none')}
+                className="w-full text-xl font-medium focus:outline-none"
               />
             );
           },
