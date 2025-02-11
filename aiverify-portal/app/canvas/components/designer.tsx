@@ -83,6 +83,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
   const { layouts, currentPage, showGrid } = state;
   const [error, setError] = useState<string | undefined>();
   const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [isGridItemDragging, setIsGridItemDragging] = useState(false);
   const [editingGridItemId, setEditingGridItemId] = useState<string | null>(
     null
   );
@@ -214,6 +215,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
   ) => {
     const { i } = itemLayout;
     setDraggingId(i);
+    setIsGridItemDragging(true);
   };
 
   const handleGridItemResizeStop =
@@ -226,6 +228,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
         pageIndex,
       });
       setDraggingId(null);
+      setIsGridItemDragging(false);
     };
 
   function handleGridItemDragStart(
@@ -235,6 +238,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
   ) {
     const { i } = itemLayout;
     setDraggingId(i);
+    setIsGridItemDragging(true);
   }
 
   const handleGridItemDragStop =
@@ -247,6 +251,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
         pageIndex,
       });
       setDraggingId(null);
+      setIsGridItemDragging(false);
     };
 
   const handleDeleteGridItem = (pageIndex: number, widgetIndex: number) => {
@@ -360,12 +365,18 @@ function Designer({ pluginsWithMdx }: DesignProps) {
         id="freeFormArea"
         ref={freeFormAreaRef}
         className="custom-scrollbar relative h-full cursor-grab overflow-auto bg-slate-100 active:cursor-grabbing"
-        onMouseDown={handleFreeFormAreaMouseDown}
-        onMouseUp={handleFreeFormAreaMouseUp}
-        onMouseMove={
-          isDraggingFreeFormArea ? handleFreeFormAreaMouseMove : undefined
+        onMouseDown={
+          !isGridItemDragging ? handleFreeFormAreaMouseDown : undefined
         }
-        onMouseLeave={handleFreeFormAreaMouseUp}>
+        onMouseUp={!isGridItemDragging ? handleFreeFormAreaMouseUp : undefined}
+        onMouseMove={
+          isDraggingFreeFormArea && !isGridItemDragging
+            ? handleFreeFormAreaMouseMove
+            : undefined
+        }
+        onMouseLeave={
+          !isGridItemDragging ? handleFreeFormAreaMouseUp : undefined
+        }>
         <div
           id="contentWrapper"
           className="flex min-w-[6000px] justify-center transition-all duration-200 ease-out"
