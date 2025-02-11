@@ -46,7 +46,6 @@ const GRID_ROWS = 36; // number of rows of the grid
 const GRID_COLUMNS = 12; // number of columns of the grid
 const GRID_WIDTH = A4_WIDTH; // width of the grid within the A4 page
 const GRID_ROW_HEIGHT = A4_HEIGHT / GRID_ROWS; // calculated height of each row in the grid
-const GRID_COLUMN_WIDTH = A4_WIDTH / GRID_COLUMNS; // calculated width of each column in the grid
 const GRID_HEIGHT = A4_HEIGHT; // height of the grid within the A4 page
 const PAGE_GAP = 128; // spacing between pages
 const CONTAINER_PAD = 100; // padding used to calculate virtual space at top and bottom of the free from content
@@ -81,8 +80,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const isInitialMount = useRef(true);
   const [state, dispatch] = useReducer(pagesDesignReducer, initialState);
-  const [showGrid, setShowGrid] = useState(true);
-  const { layouts, currentPage } = state;
+  const { layouts, currentPage, showGrid } = state;
   const [error, setError] = useState<string | undefined>();
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [editingGridItemId, setEditingGridItemId] = useState<string | null>(
@@ -486,7 +484,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
             <button
               className="disabled:opacity-50"
               title="Toggle Grid"
-              onClick={() => setShowGrid(!showGrid)}>
+              onClick={() => dispatch({ type: 'TOGGLE_GRID' })}>
               <RiGridLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
             </button>
           </div>

@@ -3,11 +3,20 @@ import { WidgetOnGridLayout } from '@/app/canvas/types';
 import { Algorithm } from '@/app/types';
 import { findWidgetInsertPosition } from './utils/findWidgetInsertPosition';
 
-type DesignState = {
-  currentPage: number;
+export type State = {
   layouts: Layout[][];
   widgets: WidgetOnGridLayout[][];
   algos: Record<string, Algorithm[]>;
+  currentPage: number;
+  showGrid: boolean;
+};
+
+export const initialState: State = {
+  layouts: [[]],
+  widgets: [[]],
+  algos: {},
+  currentPage: 0,
+  showGrid: true,
 };
 
 type WidgetAction =
@@ -39,19 +48,10 @@ type WidgetAction =
     }
   | { type: 'ADD_NEW_PAGE' }
   | { type: 'SET_CURRENT_PAGE'; pageIndex: number }
-  | { type: 'DELETE_PAGE'; pageIndex: number };
+  | { type: 'DELETE_PAGE'; pageIndex: number }
+  | { type: 'TOGGLE_GRID' };
 
-const initialState: DesignState = {
-  currentPage: 0,
-  layouts: [[]],
-  widgets: [[]],
-  algos: {},
-};
-
-function pagesDesignReducer(
-  state: DesignState,
-  action: WidgetAction
-): DesignState {
+function pagesDesignReducer(state: State, action: WidgetAction): State {
   const { layouts, widgets } = state;
 
   switch (action.type) {
@@ -209,14 +209,15 @@ function pagesDesignReducer(
       };
     }
 
+    case 'TOGGLE_GRID':
+      return {
+        ...state,
+        showGrid: !state.showGrid,
+      };
+
     default:
       return state;
   }
 }
 
-export {
-  pagesDesignReducer,
-  initialState,
-  type WidgetAction,
-  type DesignState,
-};
+export { pagesDesignReducer, type WidgetAction };
