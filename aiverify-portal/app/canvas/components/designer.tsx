@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils/twmerge';
 import { AlgosToRun } from './algosToRun';
 import { EditingOverlay } from './editingOverlay';
 import { GridItemComponent } from './gridItemComponent';
+import { GridLines } from './gridLines';
 import { initialState } from './hooks/pagesDesignReducer';
 import { pagesDesignReducer } from './hooks/pagesDesignReducer';
 import { useDragToScroll } from './hooks/useDragToScroll';
@@ -40,13 +41,13 @@ import { ZoomControl } from './zoomControl';
 */
 const A4_WIDTH = 794; // ideal width of A4 page
 const A4_HEIGHT = 1100; // ideal height of A4 page
-const A4_MARGIN = 0; // margin of A4 page
+const A4_MARGIN = 12; // margin of A4 page
 const GRID_ROWS = 36; // number of rows of the grid
 const GRID_COLUMNS = 12; // number of columns of the grid
 const GRID_WIDTH = A4_WIDTH; // width of the grid within the A4 page
 const GRID_ROW_HEIGHT = A4_HEIGHT / GRID_ROWS; // calculated height of each row in the grid
+const GRID_COLUMN_WIDTH = A4_WIDTH / GRID_COLUMNS; // calculated width of each column in the grid
 const GRID_HEIGHT = A4_HEIGHT; // height of the grid within the A4 page
-const GRID_LINE_THICKNESS = 1; // thickness of the grid lines
 const PAGE_GAP = 128; // spacing between pages
 const CONTAINER_PAD = 100; // padding used to calculate virtual space at top and bottom of the free from content
 
@@ -350,35 +351,10 @@ function Designer({ pluginsWithMdx }: DesignProps) {
       transition: 'width 0.1s ease-out, height 0.1s ease-out',
       fontSize: `${zoomLevel}rem`,
       margin: `${A4_MARGIN}px`,
+      background: 'transparent',
     }),
     [gridHeight, gridWidth, zoomLevel]
   );
-
-  const gridLineStyle = useMemo<React.CSSProperties>(() => {
-    const svgSize = {
-      width: (GRID_WIDTH / GRID_COLUMNS) * zoomLevel,
-      height: (GRID_HEIGHT / GRID_ROWS) * zoomLevel + GRID_LINE_THICKNESS,
-    };
-
-    const svgGrid = `
-      <svg width='${svgSize.width}' height='${svgSize.height}' xmlns='http://www.w3.org/2000/svg'>
-        <line x1='0' y1='0' x2='${svgSize.width}' y2='0' stroke='rgba(0,0,0,0.1)'
-          stroke-width='${GRID_LINE_THICKNESS}'/>
-        <line x1='0' y1='0' x2='0' y2='${svgSize.height}' stroke='rgba(0,0,0,0.1)'
-          stroke-width='${GRID_LINE_THICKNESS}'/>
-      </svg>
-    `;
-
-    return {
-      backgroundImage: showGrid
-        ? `url("data:image/svg+xml,${encodeURIComponent(svgGrid)}")`
-        : 'none',
-      backgroundSize: `${svgSize.width}px ${svgSize.height}px`,
-      backgroundRepeat: 'repeat',
-      backgroundPosition: `0 0`,
-      transition: 'all 0.1s ease-out',
-    };
-  }, [showGrid, zoomLevel]);
 
   const pagesSection = (
     <section className="relative flex h-full w-full flex-1 flex-col gap-2">
@@ -394,14 +370,12 @@ function Designer({ pluginsWithMdx }: DesignProps) {
         onMouseLeave={handleFreeFormAreaMouseUp}>
         <div
           id="contentWrapper"
-          className="flex min-w-[6000px] justify-center"
+          className="flex min-w-[6000px] justify-center transition-all duration-200 ease-out"
           style={{
             minHeight: contentWrapperMinHeight,
             paddingTop:
               layouts.length === 1 ? 'auto' : `${CONTAINER_PAD * zoomLevel}px`,
-            display: 'flex',
             alignItems: layouts.length === 1 ? 'center' : 'flex-start',
-            transition: 'all 0.2s ease-out',
           }}>
           <div
             id="pagesWrapper"
@@ -412,9 +386,16 @@ function Designer({ pluginsWithMdx }: DesignProps) {
                 key={`page-${pageIndex}`}
                 ref={canvasRef}
                 className={cn(
-                  'relative mb-[50px] bg-white text-sm text-black shadow',
+                  'relative bg-white text-black shadow',
                   'cursor-default active:cursor-default'
                 )}>
+                {showGrid && (
+                  <GridLines
+                    columns={GRID_COLUMNS}
+                    rows={GRID_ROWS}
+                    padding={A4_MARGIN}
+                  />
+                )}
                 <div className="absolute right-[-65px] top-0 m-2 flex flex-col text-xs text-gray-500">
                   Page {pageIndex + 1}
                   <Tooltip
@@ -446,10 +427,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
                   isBounded
                   useCSSTransforms={true}
                   resizeHandles={['sw', 'nw', 'se', 'ne']}
-                  style={{
-                    ...gridLayoutStyle,
-                    ...gridLineStyle,
-                  }}
+                  style={gridLayoutStyle}
                   className="[&>*]:text-inherit">
                   {state.widgets[pageIndex].map((widget, widgetIndex) => {
                     if (!widget.gridItemId) return null;
@@ -504,10 +482,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
           />
         </section>
         <section className="fixed right-[100px] top-[120px] z-50 flex w-[50px] max-w-[50px] flex-col gap-4">
-          <div
-            className={cn(
-              'flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg'
-            )}>
+          <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
             <button
               className="disabled:opacity-50"
               title="Toggle Grid"
