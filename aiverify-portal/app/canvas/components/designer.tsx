@@ -399,6 +399,19 @@ function Designer({ pluginsWithMdx }: DesignProps) {
     </section>
   );
 
+  const pluginsPanelSection = (
+    <section className="absolute z-10 flex h-full w-[300px] flex-col bg-secondary-900 p-4">
+      <div>
+        <h4 className="mb-0 text-lg font-bold">Project Name</h4>
+        <p className="text-sm text-white">Project Description</p>
+      </div>
+      <PlunginsPanel
+        plugins={pluginsWithMdx}
+        className="custom-scrollbar w-full overflow-auto pr-[10px] pt-[50px]"
+      />
+    </section>
+  );
+
   const pagesSection = (
     <section className="relative flex h-full w-full flex-1 flex-col gap-2">
       <div
@@ -521,16 +534,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
         />
       ) : null}
       <main className="relative h-full w-full">
-        <section className="absolute z-10 flex h-full w-[300px] flex-col bg-secondary-900 p-4">
-          <div>
-            <h4 className="mb-0 text-lg font-bold">Project Name</h4>
-            <p className="text-sm text-white">Project Description</p>
-          </div>
-          <PlunginsPanel
-            plugins={pluginsWithMdx}
-            className="custom-scrollbar w-full overflow-auto pr-[10px] pt-[50px]"
-          />
-        </section>
+        {pluginsPanelSection}
         {controlsSection}
         {pagesSection}
       </main>
