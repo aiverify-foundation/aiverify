@@ -331,6 +331,17 @@ function Designer({ pluginsWithMdx }: DesignProps) {
     height: `${pageHeight}px`,
     width: `${gridWidth}px`,
     transition: 'width 0.1s ease-out, height 0.1s ease-out',
+    fontSize: `${zoomLevel}rem`,
+    '--zoom-scale': zoomLevel,
+  } as React.CSSProperties;
+
+  const gridLineStyle: React.CSSProperties = {
+    backgroundImage: showGrid
+      ? `radial-gradient(circle at 0 0, black 1.5px, transparent 0.2px)`
+      : 'none',
+    backgroundSize: `${((A4_WIDTH - A4_MARGIN * 2) * zoomLevel) / 12 - 0.2}px ${30 * zoomLevel}px`,
+    backgroundPosition: '0 0',
+    transition: 'all 0.1s ease-out',
   };
 
   const contentWrapperMinHeight = useMemo(() => {
@@ -446,21 +457,6 @@ function Designer({ pluginsWithMdx }: DesignProps) {
                       'relative mb-[50px] bg-white text-sm text-black shadow',
                       'cursor-default active:cursor-default'
                     )}>
-                    <div
-                      id={`gridOverlay-${pageIndex}`}
-                      className="absolute"
-                      style={{
-                        display: showGrid ? 'block' : 'none',
-                        top: `${A4_MARGIN * zoomLevel}px`,
-                        left: `${A4_MARGIN * zoomLevel}px`,
-                        right: `${A4_MARGIN * zoomLevel}px`,
-                        bottom: `${A4_MARGIN * zoomLevel}px`,
-                        backgroundImage: `radial-gradient(circle at 0 0, black 1.5px, transparent 0.2px)`,
-                        backgroundSize: `${((A4_WIDTH - A4_MARGIN * 2) * zoomLevel) / 12}px ${30 * zoomLevel}px`,
-                        backgroundPosition: '0 0',
-                        transition: 'all 0.1s ease-out',
-                      }}
-                    />
                     <div className="absolute right-[-65px] top-0 m-2 flex flex-col text-xs text-gray-500">
                       Page {pageIndex + 1}
                       <Tooltip
@@ -492,7 +488,11 @@ function Designer({ pluginsWithMdx }: DesignProps) {
                       isBounded
                       useCSSTransforms={true}
                       resizeHandles={['sw', 'nw', 'se', 'ne']}
-                      style={gridLayoutStyle}>
+                      style={{
+                        ...gridLayoutStyle,
+                        ...gridLineStyle,
+                      }}
+                      className="[&>*]:text-inherit">
                       {state.widgets[pageIndex].map((widget, widgetIndex) => {
                         if (!widget.gridItemId) return null;
                         return (
