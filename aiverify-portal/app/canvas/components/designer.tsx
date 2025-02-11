@@ -161,8 +161,8 @@ function Designer({ pluginsWithMdx }: DesignProps) {
       try {
         data = JSON.parse(e.dataTransfer.getData('application/json'));
       } catch (error) {
-        console.error('Invalid widget item data', error);
-        setError('Invalid widget item data');
+        console.error('Invalid widget item json', error);
+        setError('Invalid widget item json');
         return;
       }
       const result = widgetItemSchema.safeParse(data);
