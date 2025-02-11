@@ -121,7 +121,7 @@ jobs:
           cd aiverify-test-engine
           python3 -m venv .venv
           source .venv/bin/activate
-          pip install .[all]
+          pip install -e .
           bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=aiverify-test-engine --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="aiverify-test-engine_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv aiverify_test_engine_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
