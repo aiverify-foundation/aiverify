@@ -121,7 +121,7 @@ jobs:
           cd aiverify-test-engine
           python3 -m venv .venv
           source .venv/bin/activate
-          pip install -e .[all]
+          pip install -e '.[all]'
           bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=aiverify-test-engine --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="aiverify-test-engine_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv aiverify_test_engine_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
@@ -198,7 +198,7 @@ jobs:
           source .venv/bin/activate
           pip install -e .
           bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=fairness-metrics-toolbox-for-regression --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="fairness-metrics-toolbox-for-regression_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
-          mv fairness_metrics_toolbox_for_regression/fairness_metrics_toolbox_for_regression_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
+          mv fairness_metrics_toolbox_for_regression_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
 
     - name: Install & Scan Blur Corruptions (v2.x)
@@ -231,7 +231,7 @@ jobs:
           source .venv/bin/activate
           pip install -e .
           bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=environment-corruptions --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="environment-corruptions_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
-          mv environment_corruptions/environment_corruptions_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
+          mv environment_corruptions_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
 
     - name: Install & Scan General Corruptions (v2.x)
@@ -290,9 +290,21 @@ jobs:
           deactivate
 
     - name: Commit All Notices File
+      env:
+        GH_TOKEN: ${{ github.token }}
       run: |
+        git config --global user.name github-actions
+        git config --global user.email github-actions@github.com
+        git pull
+        git branch update-notices
+        git switch update-notices
         git add .
-        git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
-        git config --global user.email "username@users.noreply.github.com"
         git commit -m "Update All Notices File"
-        # git push
+        git push --set-upstream origin update-notices
+        
+    - name: Create & Merge Pull Request
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        gh pr create --base update-scan --title "Update All Notices File" --body "Update All Notices File" --head $(git branch --show-current)
+        gh pr merge --merge --admin
