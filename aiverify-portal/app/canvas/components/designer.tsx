@@ -97,6 +97,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
   const { zoomLevel, resetZoom, startContinuousZoom, stopContinuousZoom } =
     useZoom();
   const freeFormAreaRef = useRef<HTMLDivElement>(null);
+  const [newDraggedWidget, setNewDraggedWidget] = useState<Widget | null>(null);
 
   const {
     isDragging: isDraggingFreeFormArea,
@@ -399,6 +400,14 @@ function Designer({ pluginsWithMdx }: DesignProps) {
     </section>
   );
 
+  function handlePluginWidgetDragStart(widget: WidgetOnGridLayout) {
+    setNewDraggedWidget(widget);
+  }
+
+  function handlePluginWidgetDragEnd() {
+    setNewDraggedWidget(null);
+  }
+
   const pluginsPanelSection = (
     <section className="absolute z-10 flex h-full w-[300px] flex-col bg-secondary-900 p-4">
       <div>
@@ -408,6 +417,8 @@ function Designer({ pluginsWithMdx }: DesignProps) {
       <PlunginsPanel
         plugins={pluginsWithMdx}
         className="custom-scrollbar w-full overflow-auto pr-[10px] pt-[50px]"
+        onDragStart={handlePluginWidgetDragStart}
+        onDragEnd={handlePluginWidgetDragEnd}
       />
     </section>
   );
@@ -487,11 +498,20 @@ function Designer({ pluginsWithMdx }: DesignProps) {
                   isDroppable={true}
                   isDraggable={true}
                   isBounded
-                  useCSSTransforms={true}
+                  useCSSTransforms={!isInitialMount.current}
                   resizeHandle={<ResizeHandle />}
                   resizeHandles={['sw', 'nw', 'se', 'ne']}
                   style={gridLayoutStyle}
-                  className="[&>*]:text-inherit">
+                  className="[&>*]:text-inherit"
+                  droppingItem={
+                    newDraggedWidget
+                      ? {
+                          i: '__dropping-elem__',
+                          w: newDraggedWidget.widgetSize.maxW,
+                          h: newDraggedWidget.widgetSize.minH,
+                        }
+                      : undefined
+                  }>
                   {state.widgets[pageIndex].map((widget, widgetIndex) => {
                     if (!widget.gridItemId) return null;
                     return (

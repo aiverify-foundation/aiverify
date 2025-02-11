@@ -1,6 +1,9 @@
 import Fuse from 'fuse.js';
 import { useEffect, useState } from 'react';
-import type { PluginForGridLayout } from '@/app/canvas/types';
+import type {
+  PluginForGridLayout,
+  WidgetOnGridLayout,
+} from '@/app/canvas/types';
 import {
   Accordion,
   AccordionContent,
@@ -13,10 +16,12 @@ import { cn } from '@/lib/utils/twmerge';
 type PluginsPanelProps = {
   plugins: PluginForGridLayout[];
   className?: string;
+  onDragStart: (widget: WidgetOnGridLayout) => void;
+  onDragEnd: () => void;
 };
 
 function PlunginsPanel(props: PluginsPanelProps) {
-  const { plugins, className } = props;
+  const { plugins, className, onDragStart, onDragEnd } = props;
   const [searchValue, setSearchValue] = useState('');
   const [sortedPlugins, setSortedPlugins] = useState<PluginForGridLayout[]>([]);
 
@@ -74,6 +79,10 @@ function PlunginsPanel(props: PluginsPanelProps) {
                           })
                         );
                         e.dataTransfer.effectAllowed = 'copy';
+                        onDragStart(widget);
+                      }}
+                      onDragEnd={() => {
+                        onDragEnd();
                       }}
                       className="cursor-grab rounded-md border border-gray-400 p-2 text-gray-400 hover:bg-secondary-1000 active:cursor-grabbing">
                       {widget.name}
