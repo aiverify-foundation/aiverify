@@ -488,7 +488,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
                   isDraggable={true}
                   isBounded
                   useCSSTransforms={true}
-                  resizeHandle={<ResizeHandle handleAxis="__axis__" />}
+                  resizeHandle={<ResizeHandle />}
                   resizeHandles={['sw', 'nw', 'se', 'ne']}
                   style={gridLayoutStyle}
                   className="[&>*]:text-inherit">

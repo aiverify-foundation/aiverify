@@ -1,8 +1,7 @@
 import React from 'react';
 
 type ResizeHandleProps = {
-  handleAxis: 'sw' | 'nw' | 'se' | 'ne';
-  ref: React.RefObject<HTMLSpanElement>;
+  ref?: React.RefObject<HTMLSpanElement>;
   [key: string]: unknown;
 };
 
