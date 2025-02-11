@@ -23,6 +23,7 @@ import { useDragToScroll } from './hooks/useDragToScroll';
 import { useZoom } from './hooks/useZoom';
 import { PageNavigation } from './pageNavigation';
 import { PlunginsPanel } from './pluginsPanel';
+import { ResizeHandle } from './resizeHandle';
 import { ZoomControl } from './zoomControl';
 
 /*
@@ -50,6 +51,8 @@ const GRID_HEIGHT = A4_HEIGHT; // height of the grid within the A4 page
 const PAGE_GAP = 128; // spacing between pages
 const CONTAINER_PAD = 100; // padding used to calculate virtual space at top and bottom of the free from content
 
+type GridItemDivRequiredStyles = `relative group${string}`; // mandatory to have relative and group
+
 type DesignProps = {
   pluginsWithMdx: PluginForGridLayout[];
   printMode?: boolean;
@@ -61,9 +64,10 @@ type EventDataTransfer = Event & {
   };
 };
 
-type GridItemDivRequiredStyles = `relative${string}`;
-const gridItemDivRequiredStyles: GridItemDivRequiredStyles =
-  'relative hover:outline hover:outline-2 hover:outline-blue-500 hover:outline-offset-2';
+const gridItemDivRequiredStyles: GridItemDivRequiredStyles = `relative group
+  hover:outline hover:outline-2 
+  hover:outline-blue-500 hover:outline-offset-2
+  active:outline-none`;
 
 const widgetItemSchema = z.object({
   gid: z.string(),
@@ -153,9 +157,14 @@ function Designer({ pluginsWithMdx }: DesignProps) {
   const handleWidgetDrop =
     (pageIndex: number) =>
     (_layout: Layout[], item: Layout, e: EventDataTransfer) => {
-      const data: unknown = JSON.parse(
-        e.dataTransfer.getData('application/json')
-      );
+      let data: unknown;
+      try {
+        data = JSON.parse(e.dataTransfer.getData('application/json'));
+      } catch (error) {
+        console.error('Invalid widget item data', error);
+        setError('Invalid widget item data');
+        return;
+      }
       const result = widgetItemSchema.safeParse(data);
       if (!result.success) {
         console.error('Invalid widget item data', result.error);
@@ -359,6 +368,37 @@ function Designer({ pluginsWithMdx }: DesignProps) {
     [gridHeight, gridWidth, zoomLevel]
   );
 
+  const controlsSection = (
+    <section className="fixed right-[100px] top-[120px] z-50 flex w-[50px] max-w-[50px] flex-col gap-4">
+      <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
+        <button
+          className="disabled:opacity-50"
+          title="Toggle Grid"
+          onClick={() => dispatch({ type: 'TOGGLE_GRID' })}>
+          <RiGridLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
+        </button>
+      </div>
+      <ZoomControl
+        zoomLevel={zoomLevel}
+        onZoomReset={resetZoom}
+        startContinuousZoom={startContinuousZoom}
+        stopContinuousZoom={stopContinuousZoom}
+      />
+      <PageNavigation
+        totalPages={layouts.length}
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
+        onNextPage={handleNextPage}
+        onPreviousPage={handlePreviousPage}
+        onAddPage={handleAddNewPage}
+      />
+      <AlgosToRun
+        onClick={() => null}
+        algos={state.algos}
+      />
+    </section>
+  );
+
   const pagesSection = (
     <section className="relative flex h-full w-full flex-1 flex-col gap-2">
       <div
@@ -435,6 +475,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
                   isDraggable={true}
                   isBounded
                   useCSSTransforms={true}
+                  resizeHandle={<ResizeHandle handleAxis="__axis__" />}
                   resizeHandles={['sw', 'nw', 'se', 'ne']}
                   style={gridLayoutStyle}
                   className="[&>*]:text-inherit">
@@ -490,34 +531,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
             className="custom-scrollbar w-full overflow-auto pr-[10px] pt-[50px]"
           />
         </section>
-        <section className="fixed right-[100px] top-[120px] z-50 flex w-[50px] max-w-[50px] flex-col gap-4">
-          <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
-            <button
-              className="disabled:opacity-50"
-              title="Toggle Grid"
-              onClick={() => dispatch({ type: 'TOGGLE_GRID' })}>
-              <RiGridLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
-            </button>
-          </div>
-          <ZoomControl
-            zoomLevel={zoomLevel}
-            onZoomReset={resetZoom}
-            startContinuousZoom={startContinuousZoom}
-            stopContinuousZoom={stopContinuousZoom}
-          />
-          <PageNavigation
-            totalPages={layouts.length}
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-            onNextPage={handleNextPage}
-            onPreviousPage={handlePreviousPage}
-            onAddPage={handleAddNewPage}
-          />
-          <AlgosToRun
-            onClick={() => null}
-            algos={state.algos}
-          />
-        </section>
+        {controlsSection}
         {pagesSection}
       </main>
     </React.Fragment>
