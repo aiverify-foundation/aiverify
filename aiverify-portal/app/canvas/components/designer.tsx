@@ -38,14 +38,15 @@ import { ZoomControl } from './zoomControl';
   - The pages wrapper
     - This is a container wrapping all the pages.
 */
-
 const A4_WIDTH = 794; // ideal width of A4 page
 const A4_HEIGHT = 1100; // ideal height of A4 page
-const A4_MARGIN = 12; // margin of A4 page
-const GRID_MAX_ROWS = 36; // max rows of the grid
-const GRID_WIDTH = A4_WIDTH - A4_MARGIN * 2; // width of the grid within the A4 page
-const GRID_ROW_HEIGHT = Math.floor(A4_HEIGHT / GRID_MAX_ROWS); // calculated height of each row in the grid
-const GRID_HEIGHT = A4_HEIGHT - A4_MARGIN * 2; // height of the grid within the A4 page
+const A4_MARGIN = 0; // margin of A4 page
+const GRID_ROWS = 36; // number of rows of the grid
+const GRID_COLUMNS = 12; // number of columns of the grid
+const GRID_WIDTH = A4_WIDTH; // width of the grid within the A4 page
+const GRID_ROW_HEIGHT = A4_HEIGHT / GRID_ROWS; // calculated height of each row in the grid
+const GRID_HEIGHT = A4_HEIGHT; // height of the grid within the A4 page
+const GRID_LINE_THICKNESS = 1; // thickness of the grid lines
 const PAGE_GAP = 128; // spacing between pages
 const CONTAINER_PAD = 100; // padding used to calculate virtual space at top and bottom of the free from content
 
@@ -318,7 +319,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
   }
 
   // Calculate actual dimensions based on zoom
-  const [gridWidth, gridRowHeight, pageHeight] = useMemo(
+  const [gridWidth, gridRowHeight, gridHeight] = useMemo(
     () => [
       GRID_WIDTH * zoomLevel,
       GRID_ROW_HEIGHT * zoomLevel,
@@ -327,25 +328,8 @@ function Designer({ pluginsWithMdx }: DesignProps) {
     [zoomLevel]
   );
 
-  const gridLayoutStyle: React.CSSProperties = {
-    height: `${pageHeight}px`,
-    width: `${gridWidth}px`,
-    transition: 'width 0.1s ease-out, height 0.1s ease-out',
-    fontSize: `${zoomLevel}rem`,
-    '--zoom-scale': zoomLevel,
-  } as React.CSSProperties;
-
-  const gridLineStyle: React.CSSProperties = {
-    backgroundImage: showGrid
-      ? `radial-gradient(circle at 0 0, black 1.5px, transparent 0.2px)`
-      : 'none',
-    backgroundSize: `${((A4_WIDTH - A4_MARGIN * 2) * zoomLevel) / 12 - 0.2}px ${30 * zoomLevel}px`,
-    backgroundPosition: '0 0',
-    transition: 'all 0.1s ease-out',
-  };
-
   const contentWrapperMinHeight = useMemo(() => {
-    const totalPagesHeight = layouts.length * pageHeight;
+    const totalPagesHeight = layouts.length * gridHeight;
     const totalGapsHeight = (layouts.length - 1) * (PAGE_GAP * zoomLevel);
     const containerPadding = (CONTAINER_PAD + CONTAINER_PAD) * zoomLevel;
     const totalHeight = totalPagesHeight + totalGapsHeight + containerPadding;
@@ -357,7 +341,142 @@ function Designer({ pluginsWithMdx }: DesignProps) {
     }
 
     return `${totalHeight}px`;
-  }, [layouts.length, pageHeight, zoomLevel]);
+  }, [layouts.length, gridHeight, zoomLevel]);
+
+  const gridLayoutStyle = useMemo<React.CSSProperties>(
+    () => ({
+      height: gridHeight,
+      width: gridWidth,
+      transition: 'width 0.1s ease-out, height 0.1s ease-out',
+      fontSize: `${zoomLevel}rem`,
+      margin: `${A4_MARGIN}px`,
+    }),
+    [gridHeight, gridWidth, zoomLevel]
+  );
+
+  const gridLineStyle = useMemo<React.CSSProperties>(() => {
+    const svgSize = {
+      width: (GRID_WIDTH / GRID_COLUMNS) * zoomLevel,
+      height: (GRID_HEIGHT / GRID_ROWS) * zoomLevel + GRID_LINE_THICKNESS,
+    };
+
+    const svgGrid = `
+      <svg width='${svgSize.width}' height='${svgSize.height}' xmlns='http://www.w3.org/2000/svg'>
+        <line x1='0' y1='0' x2='${svgSize.width}' y2='0' stroke='rgba(0,0,0,0.1)'
+          stroke-width='${GRID_LINE_THICKNESS}'/>
+        <line x1='0' y1='0' x2='0' y2='${svgSize.height}' stroke='rgba(0,0,0,0.1)'
+          stroke-width='${GRID_LINE_THICKNESS}'/>
+      </svg>
+    `;
+
+    return {
+      backgroundImage: showGrid
+        ? `url("data:image/svg+xml,${encodeURIComponent(svgGrid)}")`
+        : 'none',
+      backgroundSize: `${svgSize.width}px ${svgSize.height}px`,
+      backgroundRepeat: 'repeat',
+      backgroundPosition: `0 0`,
+      transition: 'all 0.1s ease-out',
+    };
+  }, [showGrid, zoomLevel]);
+
+  const pagesSection = (
+    <section className="relative flex h-full w-full flex-1 flex-col gap-2">
+      <div
+        id="freeFormArea"
+        ref={freeFormAreaRef}
+        className="custom-scrollbar relative h-full cursor-grab overflow-auto bg-slate-100 active:cursor-grabbing"
+        onMouseDown={handleFreeFormAreaMouseDown}
+        onMouseUp={handleFreeFormAreaMouseUp}
+        onMouseMove={
+          isDraggingFreeFormArea ? handleFreeFormAreaMouseMove : undefined
+        }
+        onMouseLeave={handleFreeFormAreaMouseUp}>
+        <div
+          id="contentWrapper"
+          className="flex min-w-[6000px] justify-center"
+          style={{
+            minHeight: contentWrapperMinHeight,
+            paddingTop:
+              layouts.length === 1 ? 'auto' : `${CONTAINER_PAD * zoomLevel}px`,
+            display: 'flex',
+            alignItems: layouts.length === 1 ? 'center' : 'flex-start',
+            transition: 'all 0.2s ease-out',
+          }}>
+          <div
+            id="pagesWrapper"
+            className="flex flex-col gap-2">
+            {layouts.map((layout, pageIndex) => (
+              <div
+                id={`page-${pageIndex}`}
+                key={`page-${pageIndex}`}
+                ref={canvasRef}
+                className={cn(
+                  'relative mb-[50px] bg-white text-sm text-black shadow',
+                  'cursor-default active:cursor-default'
+                )}>
+                <div className="absolute right-[-65px] top-0 m-2 flex flex-col text-xs text-gray-500">
+                  Page {pageIndex + 1}
+                  <Tooltip
+                    sideOffset={-10}
+                    content="Delete Page"
+                    side="right">
+                    <RiDeleteBinLine
+                      className="mt-2 cursor-pointer rounded bg-gray-300 p-1 text-gray-500 shadow-sm hover:text-red-500"
+                      onClick={() => handleDeletePage(pageIndex)}
+                    />
+                  </Tooltip>
+                </div>
+                <GridLayout
+                  layout={layout}
+                  width={gridWidth}
+                  rowHeight={gridRowHeight}
+                  maxRows={GRID_ROWS}
+                  margin={[0, 0]}
+                  compactType={null}
+                  onDrop={handleWidgetDrop(pageIndex)}
+                  onDragStart={handleGridItemDragStart}
+                  onDragStop={handleGridItemDragStop(pageIndex)}
+                  onResizeStop={handleGridItemResizeStop(pageIndex)}
+                  onResizeStart={handleGridItemResizeStart}
+                  preventCollision
+                  isResizable={true}
+                  isDroppable={true}
+                  isDraggable={true}
+                  isBounded
+                  useCSSTransforms={true}
+                  resizeHandles={['sw', 'nw', 'se', 'ne']}
+                  style={{
+                    ...gridLayoutStyle,
+                    ...gridLineStyle,
+                  }}
+                  className="[&>*]:text-inherit">
+                  {state.widgets[pageIndex].map((widget, widgetIndex) => {
+                    if (!widget.gridItemId) return null;
+                    return (
+                      <div
+                        key={widget.gridItemId}
+                        className={gridItemDivRequiredStyles}>
+                        <GridItemComponent
+                          widget={widget}
+                          onDeleteClick={() =>
+                            handleDeleteGridItem(pageIndex, widgetIndex)
+                          }
+                          onEditClick={handleGridItemEditClick}
+                          isDragging={draggingId === widget.gridItemId}
+                          algosMap={state.algos}
+                        />
+                      </div>
+                    );
+                  })}
+                </GridLayout>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 
   return (
     <React.Fragment>
@@ -415,109 +534,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
             algos={state.algos}
           />
         </section>
-        <section className="relative flex h-full w-full flex-1 flex-col gap-2">
-          <div
-            id="freeFormArea"
-            ref={freeFormAreaRef}
-            className="custom-scrollbar relative h-full cursor-grab overflow-auto bg-slate-100 active:cursor-grabbing"
-            onMouseDown={handleFreeFormAreaMouseDown}
-            onMouseUp={handleFreeFormAreaMouseUp}
-            onMouseMove={
-              isDraggingFreeFormArea ? handleFreeFormAreaMouseMove : undefined
-            }
-            onMouseLeave={handleFreeFormAreaMouseUp}>
-            <div
-              id="contentWrapper"
-              className="flex min-w-[6000px] justify-center"
-              style={{
-                minHeight: contentWrapperMinHeight,
-                paddingTop:
-                  layouts.length === 1
-                    ? 'auto'
-                    : `${CONTAINER_PAD * zoomLevel}px`,
-                display: 'flex',
-                alignItems: layouts.length === 1 ? 'center' : 'flex-start',
-                transition: 'all 0.2s ease-out',
-              }}>
-              <div
-                id="pagesWrapper"
-                className="flex flex-col gap-2">
-                {layouts.map((layout, pageIndex) => (
-                  <div
-                    id={`page-${pageIndex}`}
-                    key={`page-${pageIndex}`}
-                    ref={canvasRef}
-                    style={
-                      {
-                        '--zoom-level': zoomLevel,
-                        padding: `${A4_MARGIN * zoomLevel}px`,
-                      } as React.CSSProperties
-                    }
-                    className={cn(
-                      'relative mb-[50px] bg-white text-sm text-black shadow',
-                      'cursor-default active:cursor-default'
-                    )}>
-                    <div className="absolute right-[-65px] top-0 m-2 flex flex-col text-xs text-gray-500">
-                      Page {pageIndex + 1}
-                      <Tooltip
-                        sideOffset={-10}
-                        content="Delete Page"
-                        side="right">
-                        <RiDeleteBinLine
-                          className="mt-2 cursor-pointer rounded bg-gray-300 p-1 text-gray-500 shadow-sm hover:text-red-500"
-                          onClick={() => handleDeletePage(pageIndex)}
-                        />
-                      </Tooltip>
-                    </div>
-                    <GridLayout
-                      layout={layout}
-                      width={gridWidth}
-                      rowHeight={gridRowHeight}
-                      maxRows={GRID_MAX_ROWS}
-                      margin={[0, 0]}
-                      compactType={null}
-                      onDrop={handleWidgetDrop(pageIndex)}
-                      onDragStart={handleGridItemDragStart}
-                      onDragStop={handleGridItemDragStop(pageIndex)}
-                      onResizeStop={handleGridItemResizeStop(pageIndex)}
-                      onResizeStart={handleGridItemResizeStart}
-                      preventCollision
-                      isResizable={true}
-                      isDroppable={true}
-                      isDraggable={true}
-                      isBounded
-                      useCSSTransforms={true}
-                      resizeHandles={['sw', 'nw', 'se', 'ne']}
-                      style={{
-                        ...gridLayoutStyle,
-                        ...gridLineStyle,
-                      }}
-                      className="[&>*]:text-inherit">
-                      {state.widgets[pageIndex].map((widget, widgetIndex) => {
-                        if (!widget.gridItemId) return null;
-                        return (
-                          <div
-                            key={widget.gridItemId}
-                            className={gridItemDivRequiredStyles}>
-                            <GridItemComponent
-                              widget={widget}
-                              onDeleteClick={() =>
-                                handleDeleteGridItem(pageIndex, widgetIndex)
-                              }
-                              onEditClick={handleGridItemEditClick}
-                              isDragging={draggingId === widget.gridItemId}
-                              algosMap={state.algos}
-                            />
-                          </div>
-                        );
-                      })}
-                    </GridLayout>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
+        {pagesSection}
       </main>
     </React.Fragment>
   );
