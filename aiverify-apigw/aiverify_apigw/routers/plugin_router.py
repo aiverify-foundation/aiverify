@@ -1,3 +1,4 @@
+import json
 from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Response
 from fastapi.responses import JSONResponse
 from typing import List
@@ -10,7 +11,7 @@ from ..lib.filestore import get_plugin_zip, get_plugin_algorithm_zip, backup_plu
 from ..lib.plugin_store import PluginStore, PluginStoreException
 from ..lib.file_utils import sanitize_filename
 from ..schemas import PluginOutput
-from ..models import PluginModel, AlgorithmModel
+from ..models import PluginModel, AlgorithmModel, WidgetModel, InputBlockModel
 
 router = APIRouter(prefix="/plugins", tags=["plugin"])
 
@@ -314,6 +315,40 @@ async def download_plugin_bundle(gid: str, cid: str, session: Session = Depends(
 
         if not plugin:
             raise HTTPException(status_code=404, detail="Plugin not found")
+        
+        cid_suffix = cid.split(':')[-1]
+
+        # Check if cid exists as a widget 
+        widget_stmt = select(WidgetModel).filter_by(gid=gid, cid=cid_suffix)
+        widget = session.scalar(widget_stmt)
+
+        if widget:
+            # Get the bundle
+            bundle = get_plugin_mdx_bundle(gid, cid)
+            resp_obj = {key: bundle[key] for key in ['code', 'frontmatter']}
+            
+            # Add mock data if available
+            if widget.mockdata:
+                try:
+                    mock_data = json.loads(widget.mockdata.decode('utf-8'))
+                    # Include the actual data from the mockdata field
+                    resp_obj['mockData'] = mock_data
+                except json.JSONDecodeError:
+                    logger.error(f"Failed to decode mock data for widget {cid}")
+            
+            return JSONResponse(content=resp_obj)
+        
+         # Check if cid exists as an input block
+        input_stmt = select(InputBlockModel).filter_by(gid=gid, cid=cid_suffix)
+        input_block = session.scalar(input_stmt)
+
+        if not input_block:
+            raise HTTPException(status_code=404, detail=f"Invalid cid: {cid} not found in widget or input block")
+        
+        # If not a widget, just return the bundle as before
+        bundle = get_plugin_mdx_bundle(gid, cid)
+        resp_obj = {key: bundle[key] for key in ['code', 'frontmatter']}
+        return JSONResponse(content=resp_obj)
 
         # Call the get_plugin_zip method from filestore to create the zip file
         bundle = get_plugin_mdx_bundle(gid, cid)

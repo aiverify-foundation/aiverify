@@ -24,15 +24,15 @@ export function UserManageFlowCards() {
                 color="white"
               />
               <div>
-                <p className="text-shadow-sm tracking-wide">Manage Models</p>
-                <h2 className="text-shadow-sm text-2xl font-bold tracking-wide">
+                <p className="tracking-wide text-shadow-sm">Manage Models</p>
+                <h2 className="text-2xl font-bold tracking-wide text-shadow-sm">
                   Models
                 </h2>
               </div>
             </Card.Content>
           </Card>
         </Link>
-        <Link href="/data">
+        <Link href="/datasets">
           <Card
             size="md"
             enableTiltEffect={true}
@@ -48,8 +48,8 @@ export function UserManageFlowCards() {
                 color="white"
               />
               <div>
-                <p className="text-shadow-sm tracking-wide">Manage datasets</p>
-                <h2 className="text-shadow-sm text-2xl font-bold tracking-wide">
+                <p className="tracking-wide text-shadow-sm">Manage datasets</p>
+                <h2 className="text-2xl font-bold tracking-wide text-shadow-sm">
                   Data
                 </h2>
               </div>
@@ -72,10 +72,10 @@ export function UserManageFlowCards() {
                 color="white"
               />
               <div>
-                <p className="text-shadow-sm tracking-wide">
+                <p className="tracking-wide text-shadow-sm">
                   Manage report templates
                 </p>
-                <h2 className="text-shadow-sm text-2xl font-bold tracking-wide">
+                <h2 className="text-2xl font-bold tracking-wide text-shadow-sm">
                   Report Templates
                 </h2>
               </div>
@@ -98,8 +98,8 @@ export function UserManageFlowCards() {
                 color="white"
               />
               <div>
-                <p className="text-shadow-sm tracking-wide">Manage plugins</p>
-                <h2 className="text-shadow-sm text-2xl font-bold tracking-wide">
+                <p className="tracking-wide text-shadow-sm">Manage plugins</p>
+                <h2 className="text-2xl font-bold tracking-wide text-shadow-sm">
                   Plugins
                 </h2>
               </div>
@@ -122,10 +122,10 @@ export function UserManageFlowCards() {
                 color="white"
               />
               <div>
-                <p className="text-shadow-sm tracking-wide">
+                <p className="tracking-wide text-shadow-sm">
                   Manage test results
                 </p>
-                <h2 className="text-shadow-sm text-2xl font-bold tracking-wide">
+                <h2 className="text-2xl font-bold tracking-wide text-shadow-sm">
                   Test Results
                 </h2>
               </div>
