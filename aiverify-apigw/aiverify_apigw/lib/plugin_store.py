@@ -302,7 +302,40 @@ class PluginStore:
 
                 session.expunge(plugin)
                 return plugin
-
+    
+    @classmethod
+    def validate_mock_data_path(cls, base_dir: Path, datapath: str) -> bool:
+        """
+        Validate that the mock data file exists and is within the allowed directory.
+        
+        Args:
+            base_dir (Path): Base plugin directory (widget or input block directory)
+            datapath (str): Relative path to mock data file
+        
+        Returns:
+            bool: True if path is valid, False otherwise
+        """
+        try:
+            # Convert datapath to Path object
+            data_file = Path(datapath)
+            
+            # Resolve the absolute path of the mock data file
+            full_path = (base_dir / data_file).resolve()
+            base_resolved = base_dir.resolve()
+            
+            # Check if:
+            # 1. The path exists
+            # 2. It's a file
+            # 3. It's within the base directory (prevent directory traversal)
+            return (
+                full_path.exists() and 
+                full_path.is_file() and 
+                base_resolved in full_path.parents
+            )
+        except Exception as e:
+            logger.error(f"Error validating mock data path: {str(e)}")
+            return False
+    
     @classmethod
     def scan_plugin_directory(cls, folder: Path, temp_dir: Path, is_stock: bool = False):
         """Scan the plugin directory and save the plugin information to DB.
@@ -399,6 +432,32 @@ class PluginStore:
                 for meta_file in meta_files:
                     meta, meta_json = cls.validate_widget(widget_path=widgets_subdir,
                                                           meta_path=meta_file, folder=mdx_bundle_folder)
+                    # Process mock data for widgets if present
+                    if meta.mockdata:
+                        valid_mock_data = []
+                        for mock_entry in meta.mockdata:
+                            if not hasattr(mock_entry, 'datapath'):
+                                logger.warning(f"Mock data entry missing datapath in widget {meta.cid}")
+                                continue
+                                
+                            # Validate the mock data path using the static method
+                            if cls.validate_mock_data_path(widgets_subdir, mock_entry.datapath):
+                                try:
+                                    with open(widgets_subdir / mock_entry.datapath, 'r') as f:
+                                        mock_entry.data = json.load(f)
+                                    valid_mock_data.append(mock_entry)
+                                except Exception as e:
+                                    logger.error(f"Error reading mock data file for widget {meta.cid}: {str(e)}")
+                            else:
+                                logger.warning(
+                                    f"Invalid mock data path '{mock_entry.datapath}' "
+                                    f"for widget {meta.cid}"
+                                )
+                        
+                        # Update meta_json with valid mock data only
+                        meta.mockdata = valid_mock_data
+                        meta_json['mockdata'] = [m.model_dump() for m in valid_mock_data]
+                        
                     if meta.dependencies:
                         dependencies = [dep.model_dump_json() for dep in meta.dependencies]
                         # dependencies = [
@@ -420,7 +479,7 @@ class PluginStore:
                         properties=json.dumps([prop.model_dump_json() for prop in meta.properties]
                                               ).encode("utf-8") if meta.properties else None,
                         mockdata=json.dumps([md.model_dump_json() for md in meta.mockdata]
-                                            ).encode("utf-8") if meta.mockdata else None,
+                                        ).encode("utf-8") if meta.mockdata else None,
                         dynamic_height=meta.dynamicHeight,
                         dependencies=json.dumps(dependencies).encode('utf-8'),
                     )
