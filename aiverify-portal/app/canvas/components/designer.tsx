@@ -161,6 +161,7 @@ function Designer({ pluginsWithMdx, testResults }: DesignProps) {
   const handleWidgetDrop =
     (pageIndex: number) =>
     (_layout: Layout[], item: Layout, e: EventDataTransfer) => {
+      setIsGridItemDragging(false);
       let data: unknown;
       try {
         data = JSON.parse(e.dataTransfer.getData('application/json'));
