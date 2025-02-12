@@ -13,8 +13,8 @@ class TestDatasetColumnUpdate(BaseModel):
 
 
 class TestDatasetUpdate(BaseModel):
-    name: Optional[str] = Field(description="Name of the model", min_length=1, max_length=128, default=None)
-    description: Optional[str] = Field(description="Description of the model", max_length=256, default=None)
+    name: Optional[str] = Field(description="Name of the model", min_length=1, max_length=256, default=None)
+    description: Optional[str] = Field(description="Description of the model", max_length=4096, default=None)
     dataColumns: Optional[List[TestDatasetColumnUpdate]] = Field(description="Update column labels", default=None)
 
 

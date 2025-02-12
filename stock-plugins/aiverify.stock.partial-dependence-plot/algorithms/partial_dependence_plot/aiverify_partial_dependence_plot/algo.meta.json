@@ -6,7 +6,7 @@
         "classification",
         "regression"
     ],
-    "version": "2.0.0a1",
+    "version": "2.0.0a2",
     "author": "AI Verify",
     "description": "A Partial Dependence Plot (PDP) explains how each feature and its feature value contribute to the predictions.",
     "tags": [
@@ -23,7 +23,6 @@
         "output.schema.json",
         "partial_dependence_plot.meta.json",
         "partial_dependence_plot.py",
-        "README.md",
-        "syntax_checker.py"
+        "README.md"
     ]
 }

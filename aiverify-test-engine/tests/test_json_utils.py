@@ -1,6 +1,7 @@
 import subprocess
 
 import numpy as np
+import pandas as pd
 import pytest
 from aiverify_test_engine.utils.json_utils import (
     load_schema_file,
@@ -156,6 +157,27 @@ class TestCollectionJsonUtils:
                     "fourth_val": 3,
                     "fifth_val": [22.0, 23.2],
                     "sixth_val": [2, 3],
+                },
+            ),
+            (
+                pd.Series([1.0, np.nan, np.inf], dtype=np.float64),
+                [1.0, 0.0, 1.7976931348623157e308],
+            ),
+            # Structured array with named fields
+            (
+                np.array(
+                    [(1.0, np.nan), (np.inf, 2.0)], dtype=[("x", "f8"), ("y", "f8")]
+                ),
+                [(1.0, 0.0), (1.7976931348623157e308, 2.0)],
+            ),
+            (
+                {
+                    "series": pd.Series([1.0, np.nan]),
+                    "list": [np.array([6.0, np.nan]), pd.Series([np.inf, 8.0])],
+                },
+                {
+                    "series": [1.0, 0.0],
+                    "list": [[6.0, 0.0], [1.7976931348623157e308, 8.0]],
                 },
             ),
         ],

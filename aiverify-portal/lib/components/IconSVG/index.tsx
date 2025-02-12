@@ -126,9 +126,7 @@ type WithColor = BaseIconProps & {
 };
 
 type WithClassName = BaseIconProps & {
-  svgClassName:
-    | `stroke-${string} dark:stroke-${string}`
-    | `fill-${string} dark:fill-${string}`;
+  svgClassName: `stroke-${string}` | `fill-${string}`;
   color?: never;
 };
 
@@ -174,9 +172,9 @@ function Icon(props: IconProps) {
     case IconName.Folder:
       iconToRender = (
         <FolderIcon
-          backColor="#2980b9"
-          frontColor="#3498db"
-          midColor="#bdc3c7"
+          backColor="#F5F5F5"
+          frontColor="#FFFFFF"
+          midColor="#FAFAFA"
           width={size}
           height={size}
         />

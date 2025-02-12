@@ -8,10 +8,10 @@ from ..models import ProjectModel
 
 
 class ProjectInformation(BaseModel):
-    name: str = Field(description="Project Name", max_length=128)
-    description: Optional[str] = Field(description="Property value", max_length=256, default=None)
-    reportTitle: Optional[str] = Field(description="Property value", max_length=128, default=None)
-    company: Optional[str] = Field(description="Property value", max_length=128, default=None)
+    name: str = Field(description="Project Name", max_length=256)
+    description: Optional[str] = Field(description="Property value", max_length=4096, default=None)
+    reportTitle: Optional[str] = Field(description="Property value", max_length=256, default=None)
+    company: Optional[str] = Field(description="Property value", max_length=256, default=None)
 
     model_config = {
         "json_schema_extra": {

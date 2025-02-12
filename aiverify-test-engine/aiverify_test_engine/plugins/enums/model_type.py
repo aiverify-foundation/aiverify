@@ -8,3 +8,4 @@ class ModelType(Enum):
 
     CLASSIFICATION = 1
     REGRESSION = 2
+    UPLIFT = 3

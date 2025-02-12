@@ -1,0 +1,374 @@
+{
+    "title": "Model Artifact Schema",
+    "description": "A schema for model artifact output including fairness and transparency metrics",
+    "type": "object",
+    "properties": {
+        "fairness": {
+            "type": [
+                "object",
+                "null"
+            ],
+            "properties": {
+                "fairness_init": {
+                    "type": "object",
+                    "required": [
+                        "fair_metric_name_input",
+                        "fair_metric_name",
+                        "perf_metric_name",
+                        "protected_features",
+                        "fair_threshold_input",
+                        "fair_neutral_tolerance"
+                    ],
+                    "properties": {
+                        "fair_metric_name_input": {
+                            "type": "string"
+                        },
+                        "fair_metric_name": {
+                            "type": "string"
+                        },
+                        "perf_metric_name": {
+                            "type": "string"
+                        },
+                        "protected_features": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "fair_threshold_input": {
+                            "type": "number"
+                        },
+                        "fair_neutral_tolerance": {
+                            "type": "number"
+                        },
+                        "fair_priority": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "fair_concern": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "fair_impact": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    }
+                },
+                "perf_metric_values": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        },
+                        "minItems": 2,
+                        "maxItems": 2
+                    }
+                },
+                "class_distribution": {
+                    "type": [
+                        "object",
+                        "null"
+                    ],
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
+                "weighted_confusion_matrix": {
+                    "type": "object",
+                    "properties": {
+                        "tp": {
+                            "type": [
+                                "number",
+                                "null"
+                            ]
+                        },
+                        "fp": {
+                            "type": [
+                                "number",
+                                "null"
+                            ]
+                        },
+                        "tn": {
+                            "type": [
+                                "number",
+                                "null"
+                            ]
+                        },
+                        "fn": {
+                            "type": [
+                                "number",
+                                "null"
+                            ]
+                        }
+                    }
+                },
+                "correlation_matrix": {
+                    "type": [
+                        "object",
+                        "null"
+                    ],
+                    "properties": {
+                        "feature_names": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "corr_values": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "type": "number"
+                                }
+                            }
+                        }
+                    }
+                },
+                "features": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "object",
+                        "required": [
+                            "fair_threshold",
+                            "privileged",
+                            "unprivileged",
+                            "feature_distribution",
+                            "fair_metric_values",
+                            "fairness_conclusion"
+                        ],
+                        "properties": {
+                            "fair_threshold": {
+                                "type": "number"
+                            },
+                            "privileged": {
+                                "type": "array",
+                                "items": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": [
+                                            "string",
+                                            "number",
+                                            "integer"
+                                        ]
+                                    }
+                                }
+                            },
+                            "unprivileged": {
+                                "type": "array",
+                                "items": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": [
+                                            "string",
+                                            "number",
+                                            "integer"
+                                        ]
+                                    }
+                                }
+                            },
+                            "feature_distribution": {
+                                "type": "object",
+                                "required": [
+                                    "privileged_group",
+                                    "unprivileged_group"
+                                ],
+                                "properties": {
+                                    "privileged_group": {
+                                        "type": "number"
+                                    },
+                                    "unprivileged_group": {
+                                        "type": "number"
+                                    }
+                                }
+                            },
+                            "fair_metric_values": {
+                                "type": "object",
+                                "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": [
+                                            "number",
+                                            "string"
+                                        ]
+                                    }
+                                }
+                            },
+                            "fairness_conclusion": {
+                                "type": "string",
+                                "enum": [
+                                    "fair",
+                                    "unfair"
+                                ]
+                            },
+                            "tradeoff": {
+                                "type": [
+                                    "object",
+                                    "null"
+                                ]
+                            },
+                            "feature_importance": {
+                                "type": [
+                                    "object",
+                                    "null"
+                                ],
+                                "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": [
+                                            "number",
+                                            "string"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "transparency": {
+            "type": [
+                "object",
+                "null"
+            ],
+            "properties": {
+                "permutation": {
+                    "type": [
+                        "object",
+                        "null"
+                    ],
+                    "properties": {
+                        "title": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "footnote": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "scores": {
+                            "type": [
+                                "array",
+                                "null"
+                            ],
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "feature",
+                                    "score"
+                                ],
+                                "properties": {
+                                    "feature": {
+                                        "type": "string"
+                                    },
+                                    "score": {
+                                        "type": "number"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "model_list": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "id"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "summary_plot": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "summary_plot_data_table": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "local_interpretability": {
+                                "type": [
+                                    "array",
+                                    "null"
+                                ],
+                                "items": {
+                                    "type": "object",
+                                    "required": [
+                                        "id",
+                                        "efx",
+                                        "fx",
+                                        "plot_display",
+                                        "feature_info"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "efx": {
+                                            "type": "number"
+                                        },
+                                        "fx": {
+                                            "type": "number"
+                                        },
+                                        "plot_display": {
+                                            "type": "boolean"
+                                        },
+                                        "feature_info": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "required": [
+                                                    "Feature_name",
+                                                    "Shap"
+                                                ],
+                                                "properties": {
+                                                    "Feature_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "Value": {
+                                                        "type": [
+                                                            "number",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "Shap": {
+                                                        "type": "number"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "partial_dependence_plot": {
+                                "type": [
+                                    "object",
+                                    "null"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
