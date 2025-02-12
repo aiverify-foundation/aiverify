@@ -94,25 +94,25 @@ jobs:
       - name: Prepare matrix for algorithms and plugins to test
         id: prepare_matrix
         run: |
-          MATRIX="\"matrix\": {\"algo_name\": [${{ env.ALGO_TO_TEST }}], \"plugin_name\": [${{ env.PLUGIN_TO_TEST }}]}"
+          MATRIX="matrix={\"algo_name\": [${{ env.ALGO_TO_TEST }}], \"plugin_name\": [${{ env.PLUGIN_TO_TEST }}]}"
           echo "$MATRIX"
-          echo "$MATRIX" > matrix.json
+          echo "$MATRIX" >> "$GITHUB_OUTPUT"
 
-      - name: Set up job matrix
-        uses: actions/github-script@v4
-        id: set-matrix
-        with:
-          script: |
-            const fs = require('fs');
-            const matrix = JSON.parse(fs.readFileSync('matrix.json', 'utf8'));
-            return matrix;
-          result-encoding: string
+      # - name: Set up job matrix
+      #   uses: actions/github-script@v4
+      #   id: set-matrix
+      #   with:
+      #     script: |
+      #       const fs = require('fs');
+      #       const matrix = JSON.parse(fs.readFileSync('matrix.json', 'utf8'));
+      #       return matrix;
+      #     result-encoding: string
 
   run-pre-build-checks:
     needs: init-pre-build-checks
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{ fromJson(needs.set-matrix.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.init-pre-build-checks.outputs.matrix) }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
