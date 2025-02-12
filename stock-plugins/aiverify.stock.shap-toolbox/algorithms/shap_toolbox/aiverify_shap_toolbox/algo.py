@@ -30,7 +30,6 @@ from aiverify_test_engine.utils.url_utils import is_url
 #    Alternatively, you may install the plugins that you require by installing the
 #    requirements individually.
 # 3. Do not modify the class name, else the plugin cannot be read by the system.
-# 4. Test1
 # =====================================================================================
 class Plugin(IAlgorithm):
     """
