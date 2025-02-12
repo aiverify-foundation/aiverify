@@ -112,7 +112,7 @@ jobs:
       - name: Prepare matrix for algorithms and plugins to test
         id: prepare_matrix
         run: |
-          echo "matrix={\"algo_name\": [${ALGO_TO_TEST[*]}], \"plugin_name\": [${PLUGIN_TO_TEST[*]}]}" > matrix.json
+          echo "\"matrix\"={\"algo_name\": [${ALGO_TO_TEST[*]}], \"plugin_name\": [${PLUGIN_TO_TEST[*]}]}" > matrix.json
         shell: bash
 
       - name: Set up job matrix
