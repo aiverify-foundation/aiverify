@@ -91,10 +91,6 @@ jobs:
 
           echo "branch_to_test=${{ github.ref }}" >> "$GITHUB_OUTPUT"
 
-      - name: Prepare matrix for algorithms and plugins to test
-        id: prepare_matrix
-        run: |
-
           matrix_include=$(for i in "${!ALGO_TO_TEST[@]}"; do echo "{\"algo_name\":\"${ALGO_TO_TEST[$i]}\", \"plugin_name\":\"${PLUGIN_TO_TEST[$i]}\"}"; done | jq -s .)
           echo "matrix={\"include\":[$matrix_include"]} >> "$GITHUB_ENV"
           echo ${{ env.matrix }}
