@@ -112,6 +112,13 @@ type Algorithm = {
   zip_hash: string;
 };
 
+type WidgetProperty = {
+  key: string;
+  helper: string;
+  default: string;
+  value?: string;
+};
+
 type Widget = {
   cid: string;
   name: string;
@@ -124,13 +131,7 @@ type Widget = {
     maxW: number;
     maxH: number;
   };
-  properties:
-    | {
-        key: string;
-        helper: string;
-        default: string;
-      }[]
-    | null;
+  properties: WidgetProperty[] | null;
   tags: string | null;
   dependencies: {
     gid: string | null;
@@ -171,4 +172,12 @@ type MdxBundle = {
   frontmatter: Record<string, unknown> | undefined;
 };
 
-export type { Project, TestResults, Plugin, MdxBundle, Widget, Algorithm };
+export type {
+  Project,
+  TestResults,
+  Plugin,
+  MdxBundle,
+  Widget,
+  Algorithm,
+  WidgetProperty,
+};

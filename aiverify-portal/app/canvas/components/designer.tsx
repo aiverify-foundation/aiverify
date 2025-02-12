@@ -88,12 +88,13 @@ function Designer({ pluginsWithMdx }: DesignProps) {
   const [error, setError] = useState<string | undefined>();
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [isGridItemDragging, setIsGridItemDragging] = useState(false);
-  const [editingGridItemId, setEditingGridItemId] = useState<string | null>(
-    null
-  );
   const [editingElement, setEditingElement] = useState<HTMLDivElement | null>(
     null
   );
+  const [editingWidget, setEditingWidget] = useState<WidgetOnGridLayout | null>(
+    null
+  );
+  const [editingPageIndex, setEditingPageIndex] = useState<number | null>(null);
   const { zoomLevel, resetZoom, startContinuousZoom, stopContinuousZoom } =
     useZoom();
   const freeFormAreaRef = useRef<HTMLDivElement>(null);
@@ -272,26 +273,31 @@ function Designer({ pluginsWithMdx }: DesignProps) {
     });
   };
 
-  function handleGridItemEditClick(
-    gridItemId: string,
-    gridItemHtmlElement: HTMLDivElement | null
-  ) {
-    setEditingGridItemId(gridItemId);
-    setEditingElement(gridItemHtmlElement);
-  }
+  const handleGridItemEditClick =
+    (pageIndex: number) =>
+    (
+      gridItemId: string,
+      gridItemHtmlElement: HTMLDivElement | null,
+      widget: WidgetOnGridLayout
+    ) => {
+      setEditingElement(gridItemHtmlElement);
+      setEditingPageIndex(pageIndex);
+      setEditingWidget(widget);
+    };
 
-  function handleEditingClose() {
-    setEditingGridItemId(null);
-    setEditingElement(null);
-  }
-
-  function handleEditingSave(updatedWidget: WidgetOnGridLayout) {
+  function handleEditClose(updatedWidget: WidgetOnGridLayout) {
+    if (editingPageIndex === null) {
+      console.error('Editing page index is not set');
+      return;
+    }
     dispatch({
       type: 'UPDATE_WIDGET',
       widget: updatedWidget,
+      pageIndex: editingPageIndex,
     });
-    setEditingGridItemId(null);
     setEditingElement(null);
+    setEditingPageIndex(null);
+    setEditingWidget(null);
   }
 
   function handleAddNewPage() {
@@ -523,7 +529,7 @@ function Designer({ pluginsWithMdx }: DesignProps) {
                           onDeleteClick={() =>
                             handleDeleteGridItem(pageIndex, widgetIndex)
                           }
-                          onEditClick={handleGridItemEditClick}
+                          onEditClick={handleGridItemEditClick(pageIndex)}
                           isDragging={draggingId === widget.gridItemId}
                           algosMap={state.algos}
                         />
@@ -541,16 +547,12 @@ function Designer({ pluginsWithMdx }: DesignProps) {
 
   return (
     <React.Fragment>
-      {editingGridItemId && editingElement ? (
+      {editingElement && editingPageIndex != null && editingWidget ? (
         <EditingOverlay
-          widget={
-            state.widgets[state.currentPage].find(
-              (w) => w.gridItemId === editingGridItemId
-            )!
-          }
+          widget={editingWidget}
+          pageIndex={editingPageIndex}
           originalElement={editingElement}
-          onClose={handleEditingClose}
-          onSave={handleEditingSave}
+          onClose={handleEditClose}
         />
       ) : null}
       <main className="relative h-full w-full">

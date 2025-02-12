@@ -42,14 +42,15 @@ type WidgetAction =
       itemLayout: Layout;
       pageIndex: number;
     }
-  | {
-      type: 'UPDATE_WIDGET';
-      widget: WidgetOnGridLayout;
-    }
   | { type: 'ADD_NEW_PAGE' }
   | { type: 'SET_CURRENT_PAGE'; pageIndex: number }
   | { type: 'DELETE_PAGE'; pageIndex: number }
-  | { type: 'TOGGLE_GRID' };
+  | { type: 'TOGGLE_GRID' }
+  | {
+      type: 'UPDATE_WIDGET';
+      widget: WidgetOnGridLayout;
+      pageIndex: number;
+    };
 
 function pagesDesignReducer(state: State, action: WidgetAction): State {
   const { layouts, widgets } = state;
@@ -163,19 +164,6 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       };
     }
 
-    case 'UPDATE_WIDGET':
-      return {
-        ...state,
-        widgets: {
-          ...state.widgets,
-          [state.currentPage]: state.widgets[state.currentPage].map((widget) =>
-            widget.gridItemId === action.widget.gridItemId
-              ? action.widget
-              : widget
-          ),
-        },
-      };
-
     case 'ADD_NEW_PAGE':
       return {
         ...state,
@@ -214,6 +202,22 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         ...state,
         showGrid: !state.showGrid,
       };
+
+    case 'UPDATE_WIDGET': {
+      const clonedPageWidgets = widgets[action.pageIndex].slice();
+      const widgetIndex = clonedPageWidgets.findIndex(
+        (w) => w.gridItemId === action.widget.gridItemId
+      );
+      if (widgetIndex >= 0) {
+        clonedPageWidgets[widgetIndex] = action.widget;
+      }
+      return {
+        ...state,
+        widgets: widgets.map((widget, i) =>
+          i === action.pageIndex ? clonedPageWidgets : widget
+        ),
+      };
+    }
 
     default:
       return state;

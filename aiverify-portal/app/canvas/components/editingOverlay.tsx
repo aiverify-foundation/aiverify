@@ -2,11 +2,12 @@ import { getMDXComponent, MDXContentProps } from 'mdx-bundler/client';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { WidgetOnGridLayout } from '@/app/canvas/types';
+import { WidgetProperty } from '@/app/types';
 type EditingOverlayProps = {
   widget: WidgetOnGridLayout;
   originalElement: HTMLElement | null;
-  onClose: () => void;
-  onSave: (updatedWidget: WidgetOnGridLayout) => void;
+  onClose: (updatedWidget: WidgetOnGridLayout) => void;
+  pageIndex: number;
 };
 
 /**
@@ -19,47 +20,44 @@ type EditingOverlayProps = {
 const withEditingBehavior = <P extends MDXContentProps>(
   WrappedComponent: React.FunctionComponent<P>
 ) => {
-  return function EditableComponent(
-    props: P & { onTextChange?: (path: string, value: string) => void }
-  ) {
-    console.log('components', props.components);
+  return function EditableComponent(props: P) {
     return (
       <WrappedComponent
         {...props}
         components={{
-          ...props.components,
-          // Handle regular text nodes
           p: ({ children }: { children: React.ReactNode }) => {
             if (typeof children === 'string') {
               return (
                 <input
                   type="text"
-                  value={children}
-                  onChange={(e) => props.onTextChange?.('p', e.target.value)}
+                  defaultValue={children}
                   className="w-full bg-transparent focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
               );
             }
             return <p>{children}</p>;
           },
-          // Handle headings similarly
-          h1: (h1Props: { children: React.ReactNode }) => {
-            console.log('h1', h1Props.children);
-            return (
-              <input
-                type="text"
-                value={h1Props.children as string}
-                onChange={(e) => props.onTextChange?.('h1', e.target.value)}
-                className="w-full text-4xl font-bold focus:outline-none"
-              />
-            );
+          h1: ({
+            children,
+            ...props
+          }: { children: React.ReactNode } & Record<string, any>) => {
+            if ('data-aivkey' in props) {
+              return (
+                <input
+                  type="text"
+                  name={props['data-aivkey']}
+                  defaultValue={children as string}
+                  className="w-full text-[1rem] font-bold text-black focus:outline-none"
+                />
+              );
+            }
+            return <h1 {...props}>{children}</h1>;
           },
           h2: (h1Props: { children: React.ReactNode }) => {
             return (
               <input
                 type="text"
                 value={h1Props.children as string}
-                onChange={(e) => props.onTextChange?.('h1', e.target.value)}
                 className="w-full text-3xl font-semibold focus:outline-none"
               />
             );
@@ -69,7 +67,7 @@ const withEditingBehavior = <P extends MDXContentProps>(
               <input
                 type="text"
                 value={h1Props.children as string}
-                onChange={(e) => props.onTextChange?.('h1', e.target.value)}
+                onChange={(e) => props.onTextChange?.(e.target.value)}
                 className="w-full text-2xl font-medium focus:outline-none"
               />
             );
@@ -79,20 +77,8 @@ const withEditingBehavior = <P extends MDXContentProps>(
               <input
                 type="text"
                 value={h1Props.children as string}
-                onChange={(e) => props.onTextChange?.('h1', e.target.value)}
+                onChange={(e) => props.onTextChange?.(e.target.value)}
                 className="w-full text-xl font-medium focus:outline-none"
-              />
-            );
-          },
-          // Add text handler for naked text nodes
-          text: ({ children }: { children: React.ReactNode }) => {
-            console.log('text', children);
-            return (
-              <input
-                type="text"
-                value={children}
-                onChange={(e) => props.onTextChange?.('text', e.target.value)}
-                className="w-full bg-transparent"
               />
             );
           },
@@ -107,9 +93,7 @@ function EditingOverlay({
   widget,
   originalElement,
   onClose,
-  onSave,
 }: EditingOverlayProps) {
-  const [editedText, setEditedText] = useState<Record<string, string>>({});
   const overlayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -130,6 +114,7 @@ function EditingOverlay({
       MissingMdxMessage.displayName = 'MissingMdxMessage';
       return MissingMdxMessage;
     }
+    console.log('widget.mdx', widget.mdx.code);
     const MDXComponent = getMDXComponent(widget.mdx.code);
     return withEditingBehavior(MDXComponent);
   }, [widget, widget.mdx]);
@@ -139,21 +124,32 @@ function EditingOverlay({
     return widget.properties.reduce((props, property) => {
       return {
         ...props,
-        [property.key]: property.default || property.helper,
+        [property.key]: property.value || property.default || property.helper,
       };
     }, {});
-  }, [widget.properties]);
+  }, [widget, widget.properties]);
 
-  const handleTextChange = (path: string, value: string) => {
-    setEditedText((prev) => ({
-      ...prev,
-      [path]: value,
-    }));
+  const handleTextChange = (value: string) => {};
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const values = Object.fromEntries(formData);
+    const updatedWidget: WidgetOnGridLayout = {
+      ...widget,
+      properties: widget.properties?.map((prop) => ({
+        ...prop,
+        value: values[prop.key] || prop.value,
+      })),
+    };
+
+    onClose(updatedWidget);
   };
 
   const handleBackgroundClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
-      onClose();
+      const form = overlayRef.current?.querySelector('form');
+      form?.requestSubmit();
     }
   };
 
@@ -164,11 +160,13 @@ function EditingOverlay({
       <div
         ref={overlayRef}
         className="fixed z-50 rounded-md border-2 border-blue-500 bg-white shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]">
-        <EditableMDXComponent
-          properties={properties}
-          onTextChange={handleTextChange}
-          frontmatter={widget.mdx.frontmatter}
-        />
+        <form onSubmit={handleFormSubmit}>
+          <EditableMDXComponent
+            properties={properties}
+            onTextChange={handleTextChange}
+            frontmatter={widget.mdx.frontmatter}
+          />
+        </form>
       </div>
     </div>,
     document.body

@@ -17,7 +17,8 @@ type GridItemComponentProps = {
   onDeleteClick: () => void;
   onEditClick: (
     gridItemId: string,
-    gridItemHtmlElement: HTMLDivElement | null
+    gridItemHtmlElement: HTMLDivElement | null,
+    widget: WidgetOnGridLayout
   ) => void;
   isDragging?: boolean;
   algosMap: Record<string, Algorithm[]>;
@@ -34,18 +35,19 @@ const withTextBehavior = <P extends MDXContentProps>(
   WrappedComponent: React.FunctionComponent<P>
 ) => {
   return function EnhancedComponent(props: P) {
+    console.log('props', props.components);
     return (
       <WrappedComponent
         {...props}
         components={{
           ...props.components,
-          h1: (h1Props: { children: React.ReactNode }) => (
-            <h1>{h1Props.children}</h1>
-          ),
-          h2: (h2Props: { children: React.ReactNode }) => (
-            <h2>{h2Props.children}</h2>
-          ),
-          p: ({ children }) => <div>{children}</div>,
+          // h1: (h1Props: { children: React.ReactNode }) => (
+          //   <h1>{h1Props.children}</h1>
+          // ),
+          // h2: (h2Props: { children: React.ReactNode }) => (
+          //   <h2>{h2Props.children}</h2>
+          // ),
+          // p: ({ children }) => <div>{children}!!</div>,
         }}
       />
     );
@@ -122,7 +124,7 @@ function GridItemComponent(props: GridItemComponentProps) {
   }
 
   function handleEditClick() {
-    onEditClick(widget.gridItemId, gridItemRef.current);
+    onEditClick(widget.gridItemId, gridItemRef.current, widget);
   }
 
   const Component = useMemo(() => {
@@ -142,7 +144,7 @@ function GridItemComponent(props: GridItemComponentProps) {
     return widget.properties.reduce((props, property) => {
       return {
         ...props,
-        [property.key]: property.default || property.helper,
+        [property.key]: property.value || property.default || property.helper,
       };
     }, {});
   }, [widget.properties]);
