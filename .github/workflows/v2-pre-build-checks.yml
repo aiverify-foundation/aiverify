@@ -8,7 +8,7 @@ name: v2 Pre-build Checks
 
 env:
   PLUGIN_NAME: 'accumulated-local-effect'
-  ALGO_NAMES:  'accumulated_local_effort, robustness-toolbox, shap-toolbox'
+  ALGO_NAMES:  'accumulated-local-effort, robustness-toolbox, shap-toolbox'
   PLUGIN_NAMES: 'accumulated-local-effect, robustness-toolbox, shap-toolbox'
  
   GH_TOKEN: ${{ github.token }}
@@ -92,8 +92,8 @@ jobs:
           echo "branch_to_test=${{ github.ref }}" >> "$GITHUB_OUTPUT"
 
           matrix_include=$(for i in "${!ALGO_TO_TEST[@]}"; do echo "{\"algo_name\":\"${ALGO_TO_TEST[$i]}\", \"plugin_name\":\"${PLUGIN_TO_TEST[$i]}\"}"; done | jq -s .)
-          echo "matrix={\"include\":[$matrix_include"]} >> "$GITHUB_ENV"
-          echo ${{ env.matrix }}
+          echo "matrix={\"include\":[$matrix_include]}"
+          # echo ${{ env.matrix }}
 
           # MATRIX="matrix={\"include\":[\"algo_name\": [${{ env.ALGO_TO_TEST }}], \"plugin_name\": [${{ env.PLUGIN_TO_TEST }}]}"
           # echo "$MATRIX"
