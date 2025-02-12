@@ -37,7 +37,11 @@ class WidgetMetaMockData(BaseModel):
         max_length=128,
     )
     cid: str = Field(description="CID of sample data for component dependency", min_length=1, max_length=128)
-    # datapath: str = Field(description="Path to the file containing sample data", min_length=1, max_length=256)
+    datapath: str = Field(description="Path to the file containing sample data", min_length=1, max_length=256)
+    data: Optional[dict] = Field(
+        default=None,
+        description="Actual mock data loaded from the datapath file"
+    )
 
 
 class WidgetMeta(BaseModel):
@@ -82,6 +86,20 @@ class WidgetOutput (WidgetMeta):
 
     @classmethod
     def from_model(cls, result: WidgetModel) -> "WidgetOutput":
+        # Parse mock data if it exists
+        mockdata = None
+        if result.mockdata:
+            try:
+                mock_data_list = json.loads(result.mockdata.decode('utf-8'))
+                mockdata = []
+                for mock in mock_data_list:
+                    # Ensure the data field is passed through as-is without type validation
+                    if 'data' in mock:
+                        mock['data'] = json.loads(mock['data']) if isinstance(mock['data'], str) else mock['data']
+                    mockdata.append(WidgetMetaMockData.model_validate(mock))
+            except Exception as e:
+                import logging
+                logging.error(f"Error parsing mock data for widget {result.cid}: {str(e)}")
         obj = cls(
             cid=result.cid,
             gid=result.plugin.gid,
@@ -95,8 +113,7 @@ class WidgetOutput (WidgetMeta):
             # tags=result.tags,
             dependencies=[WidgetMetaDependency.model_validate_json(dep) for dep in json.loads(
                 result.dependencies.decode('utf-8'))] if result.dependencies else None,
-            mockdata=[WidgetMetaMockData.model_validate_json(mock) for mock in json.loads(
-                result.mockdata.decode('utf-8'))] if result.mockdata else None,
+            mockdata=mockdata,
             dynamicHeight=result.dynamic_height
         )
         return obj
