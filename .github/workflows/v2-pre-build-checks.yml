@@ -8,7 +8,7 @@ name: v2 Pre-build Checks
 
 env:
   PLUGIN_NAME: 'accumulated-local-effect'
-  ALGO_NAMES:  'accumulated-local-effort, robustness-toolbox, shap-toolbox'
+  ALGO_NAMES:  'accumulated-local-effect, robustness-toolbox, shap-toolbox'
   PLUGIN_NAMES: 'accumulated-local-effect, robustness-toolbox, shap-toolbox'
  
   GH_TOKEN: ${{ github.token }}
