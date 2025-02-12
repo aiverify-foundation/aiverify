@@ -89,7 +89,7 @@ jobs:
           echo "Algorithms to test: ${ALGO_TO_TEST[*]}"
           echo "Plugins to test: ${PLUGIN_TO_TEST[*]}"
 
-          echo "::set-output name=branch_to_test::${{ github.ref }}"
+          echo "branch_to_test=${{ github.ref }}" >> $GITHUB_OUTPUT
 
       - name: Set branch variable (pull_request)
         if: github.event_name == 'pull_request'
@@ -99,7 +99,7 @@ jobs:
           echo "PLUGIN_NAME=$PLUGIN_NAME" >> "$GITHUB_ENV"
           echo "ALGO_NAME=$ALGO_NAME" >> "$GITHUB_ENV"
 
-          echo "::set-output name=branch_to_test::${{ github.event.pull_request.head.ref }}"
+          echo "branch_to_test=${{ github.event.pull_request.head.ref }}" >> $GITHUB_OUTPUT
 
       - name: Set branch variable (workflow_dispatch)
         if: github.event_name == 'workflow_dispatch'
