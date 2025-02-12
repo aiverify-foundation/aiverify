@@ -124,7 +124,6 @@ jobs:
             const matrix = JSON.parse(fs.readFileSync('matrix.json', 'utf8'));
             return matrix;
           result-encoding: string
-          result: matrix
 
   run-pre-build-checks:
     needs: init-pre-build-checks
