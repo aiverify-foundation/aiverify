@@ -94,7 +94,7 @@ jobs:
       - name: Prepare matrix for algorithms and plugins to test
         id: prepare_matrix
         run: |
-          MATRIX="\"matrix\"={\"algo_name\": [${{ env.ALGO_TO_TEST }}], \"plugin_name\": [${{ env.PLUGIN_TO_TEST }}]}"
+          MATRIX="\"matrix\": {\"algo_name\": [${{ env.ALGO_TO_TEST }}], \"plugin_name\": [${{ env.PLUGIN_TO_TEST }}]}"
           echo "$MATRIX"
           echo "$MATRIX" > matrix.json
 
