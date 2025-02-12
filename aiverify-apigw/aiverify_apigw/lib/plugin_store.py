@@ -304,7 +304,7 @@ class PluginStore:
                 return plugin
     
     @classmethod
-    def validate_mock_data_path(base_dir: Path, datapath: str) -> bool:
+    def validate_mock_data_path(cls, base_dir: Path, datapath: str) -> bool:
         """
         Validate that the mock data file exists and is within the allowed directory.
         
