@@ -95,8 +95,12 @@ jobs:
           echo "branch_to_test=${{ github.ref }}" >> "$GITHUB_OUTPUT"
 
           matrix_include=$(for i in "${!ALGO_TO_TEST[@]}"; do echo "{\"algo_name\":\"${ALGO_TO_TEST[$i]}\", \"plugin_name\":\"${PLUGIN_TO_TEST[$i]}\"}"; done | jq -s . | tr -d '\n')
+          
           echo "matrix={\"include\":$matrix_include}" >> "$GITHUB_OUTPUT"
 
+          MATRIX="{\"include\":$matrix_include}"
+          echo $MATRIX
+          
       # - name: Set up job matrix
       #   uses: actions/github-script@v4
       #   id: set-matrix
