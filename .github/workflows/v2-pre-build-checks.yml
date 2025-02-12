@@ -9,6 +9,8 @@ name: v2 Pre-build Checks
 env:
   PLUGIN_NAME: 'accumulated-local-effect'
   ALGO_NAME: 'accumulated_local_effort'
+  GH_TOKEN: ${{ github.token }}
+  
 
 on:
   # Runs when a pull request to main is being assigned
