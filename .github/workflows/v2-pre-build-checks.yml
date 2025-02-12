@@ -8,7 +8,9 @@ name: v2 Pre-build Checks
 
 env:
   PLUGIN_NAME: 'accumulated-local-effect'
-  ALGO_NAME: 'accumulated_local_effort'
+  ALGO_NAMES:  'accumulated_local_effort, robustness-toolbox, shap-toolbox'
+  PLUGIN_NAMES: 'accumulated-local-effect, robustness-toolbox, shap-toolbox'
+ 
   GH_TOKEN: ${{ github.token }}
   
 
@@ -48,7 +50,7 @@ concurrency:
 
 jobs:
 
-  pre-build-checks:
+  init-pre-build-checks:
     # Run only when PR is assigned, even on subsequent commits (i.e. synchronize)
     if: (github.event_name == 'pull_request' && github.event.pull_request.assignee != null) || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
 
@@ -66,46 +68,92 @@ jobs:
           echo "PUSH_FILES=$PUSH_FILES" >> "$GITHUB_ENV"
           echo "Files changed in this push:"
           echo "$PUSH_FILES"
-      # - name: Set branch variable (pull_request)
-      #   if: github.event_name == 'pull_request'
-      #   run: |
-      #     echo "BRANCH_TO_TEST=${{ github.event.pull_request.head.ref }}" >> "$GITHUB_ENV"
-      #     echo "PR_NUM=#${{ github.event.pull_request.number }}" >> "$GITHUB_ENV"
-      #     echo "PLUGIN_NAME=$PLUGIN_NAME" >> "$GITHUB_ENV"
-      #     echo "ALGO_NAME=$ALGO_NAME" >> "$GITHUB_ENV"
 
-      # - name: Set branch variable (workflow_dispatch)
-      #   if: github.event_name == 'workflow_dispatch'
-      #   run: |
-      #     echo "BRANCH_TO_TEST=${{ inputs.branch_to_test }}" >> "$GITHUB_ENV"
-      #     echo "PR_NUM=#0" >> "$GITHUB_ENV"
-      #     echo "PLUGIN_NAME=${{ inputs.plugin_name }}" >> "$GITHUB_ENV"
-      #     echo "ALGO_NAME=${{ inputs.algo_name }}" >> "$GITHUB_ENV"
+          ALGO_NAMES=(${ALGO_NAMES//,/ })
+          PLUGIN_NAMES=(${PLUGIN_NAMES//,/ })
+          declare -A ALGO_PLUGIN_MAP
 
-      # # Checkout code
-      # - name: Checkout code
-      #   uses: actions/checkout@v4
-      #   with:
-      #     ref: ${{ env.BRANCH_TO_TEST }}
-      #     sparse-checkout: |
-      #       .github/actions/pre-build-checks-plugin
+          for file in $PUSH_FILES; do
+            for i in "${!ALGO_NAMES[@]}"; do
+              if [[ $file == *"${ALGO_NAMES[$i]}"* ]]; then
+                ALGO_PLUGIN_MAP["${ALGO_NAMES[$i]}"]="${PLUGIN_NAMES[$i]}"
+              fi
+            done
+          done
 
-      # - name: Run pre-build checks
-      #   id: pre_build_checks
-      #   uses: ./.github/actions/pre-build-checks-plugin
-      #   with:
-      #     branch_to_test: ${{ env.BRANCH_TO_TEST }}
-      #     plugin_name: ${{ env.PLUGIN_NAME }}
-      #     algo_name: ${{ env.ALGO_NAME }}
+          ALGO_TO_TEST=(${!ALGO_PLUGIN_MAP[@]})
+          PLUGIN_TO_TEST=(${ALGO_PLUGIN_MAP[@]})
 
-      #     # Send slack notification
+          echo "ALGO_TO_TEST=${ALGO_TO_TEST[*]}" >> "$GITHUB_ENV"
+          echo "PLUGIN_TO_TEST=${PLUGIN_TO_TEST[*]}" >> "$GITHUB_ENV"
+          echo "Algorithms to test: ${ALGO_TO_TEST[*]}"
+          echo "Plugins to test: ${PLUGIN_TO_TEST[*]}"
+
+          echo "::set-output name=branch_to_test::${{ github.ref }}"
+
+      - name: Set branch variable (pull_request)
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "BRANCH_TO_TEST=${{ github.event.pull_request.head.ref }}" >> "$GITHUB_ENV"
+          echo "PR_NUM=#${{ github.event.pull_request.number }}" >> "$GITHUB_ENV"
+          echo "PLUGIN_NAME=$PLUGIN_NAME" >> "$GITHUB_ENV"
+          echo "ALGO_NAME=$ALGO_NAME" >> "$GITHUB_ENV"
+
+          echo "::set-output name=branch_to_test::${{ github.event.pull_request.head.ref }}"
+
+      - name: Set branch variable (workflow_dispatch)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          echo "BRANCH_TO_TEST=${{ inputs.branch_to_test }}" >> "$GITHUB_ENV"
+          echo "PR_NUM=#0" >> "$GITHUB_ENV"
+          echo "PLUGIN_NAME=${{ inputs.plugin_name }}" >> "$GITHUB_ENV"
+          echo "ALGO_NAME=${{ inputs.algo_name }}" >> "$GITHUB_ENV"
+
+      - name: Prepare matrix for algorithms and plugins to test
+        id: prepare_matrix
+        run: |
+          echo "matrix={\"algo_name\": [${ALGO_TO_TEST[*]}], \"plugin_name\": [${PLUGIN_TO_TEST[*]}]}" > matrix.json
+        shell: bash
+
+      - name: Set up job matrix
+        uses: actions/github-script@v4
+        id: set-matrix
+        with:
+          script: |
+            const fs = require('fs');
+            const matrix = JSON.parse(fs.readFileSync('matrix.json', 'utf8'));
+            return matrix;
+          result-encoding: string
+          result: matrix
+
+  run-pre-build-checks:
+    needs: init-pre-build-checks
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.set-matrix.outputs.matrix) }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.init-pre-build-checks.outputs.branch_to_test }}
+          sparse-checkout: |
+            .github/actions/pre-build-checks-plugin
+
+      - name: Run pre-build checks
+        id: pre_build_checks
+        uses: ./.github/actions/pre-build-checks-plugin
+        with:
+          branch_to_test: ${{ needs.pre-build-checks.outputs.branch_to_test }}
+          plugin_name: ${{ matrix.plugin_name }}
+          algo_name: ${{ matrix.algo_name }}
+            
       # - name: Send slack notification
       #   if: ${{ ! cancelled() }}
       #   uses: slackapi/slack-github-action@v1.26.0
       #   with:
       #     payload: |
       #       {
-      #         "workflow": "${{ github.repository }} | ${{ github.workflow }} | ${{ env.PR_NUM }}",
+      #         "workflow": "${{ github.repository }} | ${{ github.workflow }} | ${{ needs.pre-build-checks.outputs.PR_NUM }}",
       #         "status": "${{ job.status }}",
       #         "details": "${{ steps.pre_build_checks.outputs.unit_test_status }} | ${{ steps.pre_build_checks.outputs.code_quality_status }} | ${{ steps.pre_build_checks.outputs.dependency_status }} | ${{ steps.pre_build_checks.outputs.license_status }}",
       #         "ref": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
