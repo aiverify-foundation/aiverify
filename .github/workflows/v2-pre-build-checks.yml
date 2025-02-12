@@ -89,16 +89,16 @@ jobs:
           echo "Algorithms to test: ${ALGO_TO_TEST[*]}"
           echo "Plugins to test: ${PLUGIN_TO_TEST[*]}"
 
-          echo "branch_to_test=${{ github.ref }}" >> "$GITHUB_OUTPUT"
+          echo "branch_to_test=ci/v2-workflows" >> "$GITHUB_OUTPUT"
 
       - name: Next Step
         run: |
           echo "Next step"
 
-      - name: Prepare matrix for algorithms and plugins to test
-        id: prepare_matrix
-        run: |
-          echo "\"matrix\"={\"algo_name\": [${{ env.ALGO_TO_TEST }}], \"plugin_name\": [${{ env.PLUGIN_TO_TEST }}]}" > matrix.json
+      # - name: Prepare matrix for algorithms and plugins to test
+      #   id: prepare_matrix
+      #   run: |
+      #     echo "\"matrix\"={\"algo_name\": [${{ env.ALGO_TO_TEST }}], \"plugin_name\": [${{ env.PLUGIN_TO_TEST }}]}" > matrix.json
 
       - name: Set up job matrix
         uses: actions/github-script@v4
