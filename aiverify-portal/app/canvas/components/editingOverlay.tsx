@@ -25,22 +25,28 @@ const withEditingBehavior = <P extends MDXContentProps>(
       <WrappedComponent
         {...props}
         components={{
-          p: ({ children }: { children: React.ReactNode }) => {
-            if (typeof children === 'string') {
+          p: ({
+            children,
+            ...props
+          }: { children: React.ReactNode } & Record<string, any>) => {
+            console.log('props for P tag!', props);
+            if ('data-aivkey' in props) {
               return (
                 <input
                   type="text"
-                  defaultValue={children}
+                  name={props['data-aivkey']}
+                  defaultValue={children as string}
                   className="w-full bg-transparent focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
               );
             }
-            return <p>{children}</p>;
+            return <div {...props}>{children}</div>;
           },
           h1: ({
             children,
             ...props
           }: { children: React.ReactNode } & Record<string, any>) => {
+            console.log('props for H1 tag!', props);
             if ('data-aivkey' in props) {
               return (
                 <input
@@ -52,35 +58,6 @@ const withEditingBehavior = <P extends MDXContentProps>(
               );
             }
             return <h1 {...props}>{children}</h1>;
-          },
-          h2: (h1Props: { children: React.ReactNode }) => {
-            return (
-              <input
-                type="text"
-                value={h1Props.children as string}
-                className="w-full text-3xl font-semibold focus:outline-none"
-              />
-            );
-          },
-          h3: (h1Props: { children: React.ReactNode }) => {
-            return (
-              <input
-                type="text"
-                value={h1Props.children as string}
-                onChange={(e) => props.onTextChange?.(e.target.value)}
-                className="w-full text-2xl font-medium focus:outline-none"
-              />
-            );
-          },
-          h4: (h1Props: { children: React.ReactNode }) => {
-            return (
-              <input
-                type="text"
-                value={h1Props.children as string}
-                onChange={(e) => props.onTextChange?.(e.target.value)}
-                className="w-full text-xl font-medium focus:outline-none"
-              />
-            );
           },
           // Add other heading levels as needed...
         }}
@@ -114,7 +91,6 @@ function EditingOverlay({
       MissingMdxMessage.displayName = 'MissingMdxMessage';
       return MissingMdxMessage;
     }
-    console.log('widget.mdx', widget.mdx.code);
     const MDXComponent = getMDXComponent(widget.mdx.code);
     return withEditingBehavior(MDXComponent);
   }, [widget, widget.mdx]);
@@ -155,11 +131,11 @@ function EditingOverlay({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-40 bg-transparent bg-opacity-50"
+      className="fixed inset-0 z-40 bg-transparent"
       onClick={handleBackgroundClick}>
       <div
         ref={overlayRef}
-        className="fixed z-50 rounded-md border-2 border-blue-500 bg-white shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]">
+        className="fixed z-50 border border-blue-500 bg-white">
         <form onSubmit={handleFormSubmit}>
           <EditableMDXComponent
             properties={properties}

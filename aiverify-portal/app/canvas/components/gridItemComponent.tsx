@@ -35,7 +35,6 @@ const withTextBehavior = <P extends MDXContentProps>(
   WrappedComponent: React.FunctionComponent<P>
 ) => {
   return function EnhancedComponent(props: P) {
-    console.log('props', props.components);
     return (
       <WrappedComponent
         {...props}
@@ -136,7 +135,8 @@ function GridItemComponent(props: GridItemComponentProps) {
       return MissingMdxMessage;
     }
     const MDXComponent = getMDXComponent(widget.mdx.code);
-    return withTextBehavior(MDXComponent);
+    // return withTextBehavior(MDXComponent);
+    return MDXComponent;
   }, [widget, widget.mdx]);
 
   const properties = useMemo(() => {
