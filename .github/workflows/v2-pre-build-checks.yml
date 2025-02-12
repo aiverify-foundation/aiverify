@@ -88,26 +88,8 @@ jobs:
           echo "PLUGIN_TO_TEST=${PLUGIN_TO_TEST[*]}" >> "$GITHUB_ENV"
           echo "Algorithms to test: ${ALGO_TO_TEST[*]}"
           echo "Plugins to test: ${PLUGIN_TO_TEST[*]}"
-
+          
           echo "branch_to_test=${{ github.ref }}" >> $GITHUB_OUTPUT
-
-      - name: Set branch variable (pull_request)
-        if: github.event_name == 'pull_request'
-        run: |
-          echo "BRANCH_TO_TEST=${{ github.event.pull_request.head.ref }}" >> "$GITHUB_ENV"
-          echo "PR_NUM=#${{ github.event.pull_request.number }}" >> "$GITHUB_ENV"
-          echo "PLUGIN_NAME=$PLUGIN_NAME" >> "$GITHUB_ENV"
-          echo "ALGO_NAME=$ALGO_NAME" >> "$GITHUB_ENV"
-
-          echo "branch_to_test=${{ github.event.pull_request.head.ref }}" >> $GITHUB_OUTPUT
-
-      - name: Set branch variable (workflow_dispatch)
-        if: github.event_name == 'workflow_dispatch'
-        run: |
-          echo "BRANCH_TO_TEST=${{ inputs.branch_to_test }}" >> "$GITHUB_ENV"
-          echo "PR_NUM=#0" >> "$GITHUB_ENV"
-          echo "PLUGIN_NAME=${{ inputs.plugin_name }}" >> "$GITHUB_ENV"
-          echo "ALGO_NAME=${{ inputs.algo_name }}" >> "$GITHUB_ENV"
 
       - name: Prepare matrix for algorithms and plugins to test
         id: prepare_matrix
