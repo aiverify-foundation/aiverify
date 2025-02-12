@@ -89,7 +89,7 @@ jobs:
           echo "Algorithms to test: ${ALGO_TO_TEST[*]}"
           echo "Plugins to test: ${PLUGIN_TO_TEST[*]}"
 
-          echo "branch_to_test=ci/v2-workflows" >> "$GITHUB_OUTPUT"
+          echo "branch_to_test=v2-workflows" >> "$GITHUB_OUTPUT"
 
       - name: Next Step
         run: |
