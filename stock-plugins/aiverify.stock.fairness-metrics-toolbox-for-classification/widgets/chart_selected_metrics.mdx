@@ -40,6 +40,7 @@ export const GetChart = ({ data, getContainerObserver, results }) => {
     // Special graph as they have more than 2 subgroups
     if (metrics[i] == "Equal Parity" || metrics[i] == "Disparate Impact"){
       content.push(<MetricBarChart2
+        key={`${metrics[i]}-${i}`}
         metric={metrics_map[metrics[i]]}
         width={container.width}
         height={container.height / metrics.length}
@@ -49,6 +50,7 @@ export const GetChart = ({ data, getContainerObserver, results }) => {
     }
     else{
       content.push(<MetricBarChart
+        key={`${metrics[i]}-${i}`}
         metric={metrics_map[metrics[i]]}
         width={container.width}
         height={container.height / metrics.length}

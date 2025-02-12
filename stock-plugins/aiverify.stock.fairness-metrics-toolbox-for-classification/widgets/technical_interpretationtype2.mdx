@@ -9,9 +9,10 @@ export const TechnicalInterpretationChart2 = ({ metric, container, data }) => {
   function getContent(display) {
     let content = [];
     for (let oc in display) {
+      let i = 0;
       const item = display[oc]
       content.push(
-        <div style={{border:"1px solid black", backgroundColor:"#eee", textAlign:"center", padding:'5px', marginBottom: '5px'}}>
+        <div key={i++} style={{border:"1px solid black", backgroundColor:"#eee", textAlign:"center", padding:'5px', marginBottom: '5px'}}>
           {item.minName} vs {item.maxName}<br/>
           {item.outputClass}<br/>{Math.round(item.minValue * 1000 + Number.EPSILON) / 1000} (between {item.minName}) vs {Math.round(item.maxValue * 1000 + Number.EPSILON) / 1000} (between {item.maxName})<br/>
         </div>
@@ -26,7 +27,7 @@ export const TechnicalInterpretationChart2 = ({ metric, container, data }) => {
       const item = display[oc]
       
       content.push(
-        <div style={{border:"1px solid black", backgroundColor:"#eee", textAlign:"center", padding:'5px', marginBottom: '5px'}}>
+        <div key={Math.round(item.parity * 1000 + Number.EPSILON) / 1000} style={{border:"1px solid black", backgroundColor:"#eee", textAlign:"center", padding:'5px', marginBottom: '5px'}}>
           {/* {item.outputClass}<br/>{item.minName} vs {item.maxName}<br/>{Math.round(item.parity * 1000 + Number.EPSILON) / 1000}<br/> */}
           {item.groups}<br/>
           {item.outputClass}<br/>{Math.round(item.parity * 1000 + Number.EPSILON) / 1000}<br/>

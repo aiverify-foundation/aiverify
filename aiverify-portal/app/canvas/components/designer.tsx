@@ -182,12 +182,12 @@ function Designer({ pluginsWithMdx, testResults }: DesignProps) {
         validData.cid
       );
       let testResult = null;
-      console.log(testResults);
+      // console.log(testResults);
+      console.log(widget);
       if (testResults && widget) {
         testResult = findTestResultsByWidgetId(testResults, widget.gid);
         console.log(testResult);
       }
-      return;
       if (!widget) {
         console.error(
           `Widget not found - gid: ${validData.gid} - cid: ${validData.cid}`

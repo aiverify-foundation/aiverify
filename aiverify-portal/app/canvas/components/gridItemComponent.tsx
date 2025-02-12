@@ -8,7 +8,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { WidgetOnGridLayout } from '@/app/canvas/types';
-import { Algorithm } from '@/app/types';
+import { Algorithm, TestResultData, InputBlockData } from '@/app/types';
 
 type GridItemComponentProps = {
   widget: WidgetOnGridLayout;
@@ -24,6 +24,21 @@ type GridItemComponentProps = {
   algosMap: Record<string, Algorithm[]>;
 };
 
+type ContainerObserverCallback = (width: number, height: number) => void;
+type GetContainerObserver = (callback: ContainerObserverCallback) => ResizeObserver;
+
+type MdxComponentProps = MDXContentProps & {
+  properties: Record<string, unknown>;
+  results: TestResultData;
+  inputBlockData: InputBlockData;
+  getContainerObserver: GetContainerObserver;
+  getIBData: (cid: string) => InputBlockData;
+  getResults: (cid: string) => TestResultData;
+  frontmatter?: Record<string, unknown>;
+};
+
+type TestResultDataMapping = Record<string, TestResultData>;
+type InputBlockDataMapping = Record<string, InputBlockData>;
 /**
  * This is a higher-order component that allows developers to add modifications like styling to the MDX component.
  * It is currently not doing anything, but it is a placeholder for future use.
@@ -60,6 +75,7 @@ function GridItemComponent(props: GridItemComponentProps) {
   const gridItemRef = useRef<HTMLDivElement>(null);
   const hideTimeoutRef = useRef<NodeJS.Timeout>(null);
   const isHoveringRef = useRef<boolean>(false);
+  let resizeObserver: ResizeObserver | null = null;
 
   useEffect(() => {
     return () => {
@@ -126,7 +142,7 @@ function GridItemComponent(props: GridItemComponentProps) {
     onEditClick(widget.gridItemId, gridItemRef.current, widget);
   }
 
-  const Component = useMemo(() => {
+  const Component: React.ComponentType<MdxComponentProps> = useMemo(() => {
     if (!widget.mdx) {
       const MissingMdxMessage = () => (
         <div>{`${widget.name} - ${widget.cid} : Missing mdx`}</div>
@@ -148,6 +164,30 @@ function GridItemComponent(props: GridItemComponentProps) {
       };
     }, {});
   }, [widget.properties]);
+
+  const mockResults = useMemo(() => {
+    if (widget.mockdata && widget.mockdata.length > 0) {
+      return widget.mockdata.reduce<TestResultDataMapping>((acc, mock) => {
+        if (mock.type === "Algorithm") {
+          acc[`${widget.gid}-${mock.cid}`] = mock.data;
+        }
+        return acc;
+      }, {});
+    }
+    return {};
+  }, [widget, widget.mdx]);
+
+  const mockInputs = useMemo(() => {
+    if (widget.mockdata && widget.mockdata.length > 0) {
+      return widget.mockdata.reduce<InputBlockDataMapping>((acc, mock) => {
+        if (mock.type === "InputBlock") {
+          acc[`${widget.gid}-${mock.cid}`] = mock.data;
+        }
+        return acc;
+      }, {});
+    }
+    return {};
+  }, [widget, widget.mdx]);
 
   return (
     <React.Fragment>
@@ -217,9 +257,25 @@ function GridItemComponent(props: GridItemComponentProps) {
         onMouseLeave={handleMouseLeave}>
         <Component
           properties={properties}
-          result={widget.result}
-          getIBData={() => null} // TODO: add IB data
-          getResults={() => null} // TODO: add results - in progress (pattern ok) // need another for get Artifacts
+          results={mockResults}
+          inputBlockData={mockInputs}
+          getIBData={(cid) => mockInputs[`${widget.gid}-${cid}`]}
+          getResults={(cid) => mockResults[`${widget.gid}-${cid}`]}
+          getContainerObserver={(callback) => {
+            if (resizeObserver) return resizeObserver;
+            resizeObserver = new ResizeObserver(() => {
+              if (gridItemRef.current && gridItemRef.current.parentElement) {
+                callback(
+                  gridItemRef.current.parentElement.offsetWidth - 20,
+                  gridItemRef.current.parentElement.offsetHeight - 20
+                );
+              }
+            });
+            if (gridItemRef.current && gridItemRef.current.parentElement)
+              resizeObserver.observe(gridItemRef.current.parentElement);
+            return resizeObserver;
+          }}
+          // need another for get Artifacts
           frontmatter={widget.mdx ? widget.mdx.frontmatter : undefined}
         />
       </div>

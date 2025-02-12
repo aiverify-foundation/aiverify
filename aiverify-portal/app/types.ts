@@ -30,6 +30,9 @@ type TestResults = {
   updated_at: string;
 };
 
+type TestResultData = Record<string, string | number | boolean | object | string[] | number[] | boolean[] | object[]>;
+type InputBlockData = Record<string, string | number | boolean | object | string[] | number[] | boolean[] | object[]>;
+
 type DataColumn = {
   name: string;
   datatype: string;
@@ -147,6 +150,13 @@ type WidgetProperty = {
   value?: string;
 };
 
+type MockData = {
+  type: "Algorithm" | "InputBlock";
+  gid: string | null;
+  cid: string;
+  data: Record<string, string | number | boolean | object | string[] | number[] | boolean[] | object[]>;
+};
+
 type Widget = {
   cid: string;
   name: string;
@@ -166,13 +176,7 @@ type Widget = {
     cid: string;
     version: string | null;
   }[];
-  mockdata:
-    | {
-        type: string;
-        gid: string | null;
-        cid: string;
-      }[]
-    | null;
+  mockdata: MockData[] | null;
   dynamicHeight: boolean;
   gid: string;
 };
@@ -209,4 +213,6 @@ export type {
   Widget,
   Algorithm,
   WidgetProperty,
+  TestResultData,
+  InputBlockData
 };
