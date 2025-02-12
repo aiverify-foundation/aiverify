@@ -1,4 +1,4 @@
-import { MdxBundle, Widget, Plugin } from '@/app/types';
+import { MdxBundle, Widget, Plugin, TestResults } from '@/app/types';
 
 type WidgetOnGridLayout = Widget & {
   mdx: MdxBundle;
@@ -10,4 +10,10 @@ type PluginForGridLayout = Omit<Plugin, 'widgets'> & {
   widgets: WidgetOnGridLayout[];
 };
 
-export type { WidgetOnGridLayout, PluginForGridLayout };
+type ParsedTestResults = TestResults & {
+  output: {
+    [key: string]: string | number | boolean | object;
+  };
+};
+
+export type { WidgetOnGridLayout, PluginForGridLayout, ParsedTestResults };

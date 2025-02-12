@@ -6,7 +6,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useReducer } from 'react';
 import GridLayout, { Layout } from 'react-grid-layout';
 import { z } from 'zod';
-import { PluginForGridLayout, WidgetOnGridLayout } from '@/app/canvas/types';
+import { ParsedTestResults, PluginForGridLayout, WidgetOnGridLayout } from '@/app/canvas/types';
 import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPluginsById';
 import { getWidgetAlgosFromPlugins } from '@/app/canvas/utils/getWidgetAlgosFromPlugins';
 import { populateInitialWidgetResult } from '@/app/canvas/utils/populateInitialWidgetResult';
@@ -55,6 +55,7 @@ type GridItemDivRequiredStyles = `relative group${string}`; // mandatory to have
 
 type DesignProps = {
   pluginsWithMdx: PluginForGridLayout[];
+  testResults?: ParsedTestResults[];
   printMode?: boolean;
 };
 
@@ -80,7 +81,8 @@ function createGridItemId(widget: Widget, pageIndex: number) {
   return `${widget.gid}-${widget.cid}-p${pageIndex}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
-function Designer({ pluginsWithMdx }: DesignProps) {
+function Designer({ pluginsWithMdx, testResults }: DesignProps) {
+  console.log('testResults', testResults);
   const canvasRef = useRef<HTMLDivElement>(null);
   const isInitialMount = useRef(true);
   const [state, dispatch] = useReducer(pagesDesignReducer, initialState);
