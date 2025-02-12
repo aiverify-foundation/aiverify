@@ -75,7 +75,9 @@ jobs:
 
           for file in $PUSH_FILES; do
             for i in "${!ALGO_NAMES[@]}"; do
+              echo "$file == ${ALGO_NAMES[$i]}"
               if [[ $file == *"${ALGO_NAMES[$i]}"* ]]; then
+                echo "matched ${ALGO_NAMES[$i]}"
                 ALGO_PLUGIN_MAP["${ALGO_NAMES[$i]}"]="${PLUGIN_NAMES[$i]}"
               fi
             done
@@ -95,7 +97,7 @@ jobs:
           echo "matrix={\"include\":[$matrix_include]}"
 
           # echo ${{ env.matrix }}
-          # MATRIX="matrix={\"include\":[\"algo_name\": [${{ env.ALGO_TO_TEST }}], \"plugin_name\": [${{ env.PLUGIN_TO_TEST }}]}"
+          # MATRIX="matrix={\"include\":\"algo_name\": [${{ env.ALGO_TO_TEST }}], \"plugin_name\": [${{ env.PLUGIN_TO_TEST }}}"
           # echo "$MATRIX"
           # echo "$MATRIX" >> "$GITHUB_OUTPUT"
 
