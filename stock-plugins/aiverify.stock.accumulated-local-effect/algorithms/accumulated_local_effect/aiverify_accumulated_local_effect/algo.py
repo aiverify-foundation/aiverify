@@ -26,7 +26,6 @@ from aiverify_test_engine.utils.simple_progress import SimpleProgress
 #    Alternatively, you may install the plugins that you require by installing the
 #    requirements individually.
 # 3. Do not modify the class name, else the plugin cannot be read by the system.
-# 4. Test
 # =====================================================================================
 class Plugin(IAlgorithm):
     """
