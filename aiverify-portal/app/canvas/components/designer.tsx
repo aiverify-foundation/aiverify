@@ -7,6 +7,7 @@ import { useReducer } from 'react';
 import GridLayout, { Layout } from 'react-grid-layout';
 import { z } from 'zod';
 import { ParsedTestResults, PluginForGridLayout, WidgetOnGridLayout } from '@/app/canvas/types';
+import { findTestResultsByWidgetId } from '@/app/canvas/utils/findTestResultsByWidgetId';
 import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPluginsById';
 import { getWidgetAlgosFromPlugins } from '@/app/canvas/utils/getWidgetAlgosFromPlugins';
 import { populateInitialWidgetResult } from '@/app/canvas/utils/populateInitialWidgetResult';
@@ -82,7 +83,6 @@ function createGridItemId(widget: Widget, pageIndex: number) {
 }
 
 function Designer({ pluginsWithMdx, testResults }: DesignProps) {
-  console.log('testResults', testResults);
   const canvasRef = useRef<HTMLDivElement>(null);
   const isInitialMount = useRef(true);
   const [state, dispatch] = useReducer(pagesDesignReducer, initialState);
@@ -181,6 +181,13 @@ function Designer({ pluginsWithMdx, testResults }: DesignProps) {
         validData.gid,
         validData.cid
       );
+      let testResult = null;
+      console.log(testResults);
+      if (testResults && widget) {
+        testResult = findTestResultsByWidgetId(testResults, widget.gid);
+        console.log(testResult);
+      }
+      return;
       if (!widget) {
         console.error(
           `Widget not found - gid: ${validData.gid} - cid: ${validData.cid}`
@@ -267,13 +274,14 @@ function Designer({ pluginsWithMdx, testResults }: DesignProps) {
       setIsGridItemDragging(false);
     };
 
-  const handleDeleteGridItem = (pageIndex: number, widgetIndex: number) => {
-    dispatch({
-      type: 'DELETE_WIDGET_FROM_CANVAS',
-      index: widgetIndex,
-      pageIndex,
+  const handleDeleteGridItem =
+    (pageIndex: number, widgetIndex: number) => () => {
+      dispatch({
+        type: 'DELETE_WIDGET_FROM_CANVAS',
+        index: widgetIndex,
+        pageIndex,
     });
-  };
+    };
 
   const handleGridItemEditClick =
     (pageIndex: number) =>
@@ -528,9 +536,7 @@ function Designer({ pluginsWithMdx, testResults }: DesignProps) {
                         className={gridItemDivRequiredStyles}>
                         <GridItemComponent
                           widget={widget}
-                          onDeleteClick={() =>
-                            handleDeleteGridItem(pageIndex, widgetIndex)
-                          }
+                          onDeleteClick={handleDeleteGridItem(pageIndex, widgetIndex)}
                           onEditClick={handleGridItemEditClick(pageIndex)}
                           isDragging={draggingId === widget.gridItemId}
                           algosMap={state.algos}
