@@ -180,10 +180,17 @@ function GridItemComponent(props: GridItemComponentProps) {
   }, [widget, widget.mdx, testResultsMapping]);
 
   const mockInputs = useMemo(() => {
-    if (testResultsMapping) {
-      return testResultsMapping;
-    }
-
+    // if (testResultsMapping) {
+    //   if (widget.mockdata && widget.mockdata.length > 0) {
+    //     return widget.mockdata.reduce<InputBlockDataMapping>((acc, mock) => {
+    //       if (mock.type === "InputBlock") {
+    //         acc[`${widget.gid}:${mock.cid}`] = mock.data;
+    //         mock.data.metrics = getRandomFairnessMetrics();
+    //       }
+    //       return acc;
+    //     }, {});
+    //   }
+    // }
     if (widget.mockdata && widget.mockdata.length > 0) {
       return widget.mockdata.reduce<InputBlockDataMapping>((acc, mock) => {
         if (mock.type === "InputBlock") {
@@ -195,8 +202,8 @@ function GridItemComponent(props: GridItemComponentProps) {
     return {};
   }, [widget, widget.mdx, testResultsMapping]);
 
-  console.log(mockResults);
-
+  console.log('mockResults', mockResults);
+  console.log('mockInputs', mockInputs);
 
   return (
     <React.Fragment>
