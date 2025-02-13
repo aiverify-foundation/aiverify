@@ -39,6 +39,7 @@ type MdxComponentProps = MDXContentProps & {
 
 type TestResultDataMapping = Record<string, TestResultData>;
 type InputBlockDataMapping = Record<string, InputBlockData>;
+
 /**
  * This is a higher-order component that allows developers to add modifications like styling to the MDX component.
  * It is currently not doing anything, but it is a placeholder for future use.

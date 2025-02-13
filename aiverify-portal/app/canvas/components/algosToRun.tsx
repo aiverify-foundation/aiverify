@@ -14,13 +14,11 @@ import {
 import { cn } from '@/lib/utils/twmerge';
 type AlgosToRunProps = {
   className?: string;
-  disabled?: boolean;
   algos: Record<string, Algorithm[]>;
-  onClick: () => void;
 };
 
 function AlgosToRun(props: AlgosToRunProps) {
-  const { algos, className, disabled, onClick } = props;
+  const { algos, className } = props;
 
   const AccordionHero = (
     <Accordion

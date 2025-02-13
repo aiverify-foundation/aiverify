@@ -1,4 +1,4 @@
-import { MdxBundle, Widget, Plugin, TestResults } from '@/app/types';
+import { MdxBundle, Widget, Plugin, TestResults, InputBlockData, TestResultData } from '@/app/types';
 
 type WidgetOnGridLayout = Widget & {
   mdx: MdxBundle;
@@ -13,4 +13,7 @@ type ParsedTestResults = TestResults & {
   output: Record<string, string | number | boolean | object | string[] | number[] | boolean[] | object[]>;
 };
 
-export type { WidgetOnGridLayout, PluginForGridLayout, ParsedTestResults };
+type TestResultDataMapping = Record<string, TestResultData>;
+type InputBlockDataMapping = Record<string, InputBlockData>;
+
+export type { WidgetOnGridLayout, PluginForGridLayout, ParsedTestResults, TestResultDataMapping, InputBlockDataMapping };
