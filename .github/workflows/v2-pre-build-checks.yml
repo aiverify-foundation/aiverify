@@ -55,15 +55,15 @@ jobs:
     if: (github.event_name == 'pull_request' && github.event.pull_request.assignee != null) || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
     runs-on: ubuntu-latest
     outputs:
-      branch_to_test: ${{ steps.init.outputs.branch_to_test }}
-      matrix: ${{ steps.init.outputs.matrix }}
+      branch_to_test: ${{ steps.prep_matrix_push.outputs.branch_to_test }}
+      matrix: ${{ steps.prep_matrix_push.outputs.matrix }}
     
     timeout-minutes: 40
 
     steps:
 
       - name: Prepare matrix (push)
-        id: prep-matrix-push
+        id: prep_matrix_push
         if: github.event_name == 'push'
         run: |
           echo "BRANCH_TO_TEST=${{ github.ref }}" >> "$GITHUB_ENV"
@@ -120,7 +120,7 @@ jobs:
         id: pre_build_checks
         uses: ./.github/actions/pre-build-checks-plugin
         with:
-          branch_to_test: ${{ needs.pre-build-checks.outputs.branch_to_test }}
+          branch_to_test: ${{ needs.init-pre-build-checks.outputs.branch_to_test }}
           plugin_name: ${{ matrix.plugin_name }}
           algo_name: ${{ matrix.algo_name }}
             
