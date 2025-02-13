@@ -168,6 +168,8 @@ class Plugin(IAlgorithm):
             log_level (int): The logging level
             log_message (str): The logging message
         """
+
+        print('test')
         if self._logger is not None:
             if not isinstance(log_level, int) or not isinstance(log_message, str):
                 raise RuntimeError(
