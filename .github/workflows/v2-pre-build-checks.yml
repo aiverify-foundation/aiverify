@@ -53,13 +53,16 @@ jobs:
   init-pre-build-checks:
     # Run only when PR is assigned, even on subsequent commits (i.e. synchronize)
     if: (github.event_name == 'pull_request' && github.event.pull_request.assignee != null) || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
-
     runs-on: ubuntu-latest
+    outputs:
+      branch_to_test: ${{ steps.init.outputs.branch_to_test }}
+      matrix: ${{ steps.init.outputs.matrix }}
     timeout-minutes: 40
 
     steps:
 
       - name: Set branch variable (push)
+        id: init
         if: github.event_name == 'push'
         run: |
           echo "BRANCH_TO_TEST=${{ github.ref }}" >> "$GITHUB_ENV"
@@ -87,20 +90,19 @@ jobs:
           # Extract values (plugin_name) from ALGO_PLUGIN_MAP map
           PLUGIN_TO_TEST=(${ALGO_PLUGIN_MAP[@]})
 
-          echo "ALGO_TO_TEST=${ALGO_TO_TEST[*]}" >> "$GITHUB_ENV"
-          echo "PLUGIN_TO_TEST=${PLUGIN_TO_TEST[*]}" >> "$GITHUB_ENV"
+          echo "ALGO_TO_TEST=${ALGO_TO_TEST[*]}" >> $GITHUB_ENV
+          echo "PLUGIN_TO_TEST=${PLUGIN_TO_TEST[*]}" >> $GITHUB_ENV
           echo "Algorithms to test: ${ALGO_TO_TEST[*]}"
           echo "Plugins to test: ${PLUGIN_TO_TEST[*]}"
-
-          echo "branch_to_test=${{ github.ref }}" >> "$GITHUB_OUTPUT"
 
           # matrix_include=$(for i in "${!ALGO_TO_TEST[@]}"; do echo "{\"algo_name\":\"${ALGO_TO_TEST[$i]}\", \"plugin_name\":\"${PLUGIN_TO_TEST[$i]}\"}"; done | jq -s . | tr -d '\n')
           matrix_include=$(for i in "${!ALGO_TO_TEST[@]}"; do echo "{\"algo_name\":\"${ALGO_TO_TEST[$i]}\", \"plugin_name\":\"${PLUGIN_TO_TEST[$i]}\"}"; done | jq -s . | tr -d '[:space:]')
 
-          echo "matrix={\"include\":$matrix_include}" >> "$GITHUB_OUTPUT"
-
           MATRIX="{\"include\":$matrix_include}"
           echo $MATRIX
+
+          echo "branch_to_test=${{ github.ref }}" >> $GITHUB_OUTPUT
+          echo "matrix={\"include\":$matrix_include}" >> $GITHUB_OUTPUT
 
       # - name: Set up job matrix
       #   uses: actions/github-script@v4
@@ -120,7 +122,7 @@ jobs:
         run: |
           echo "matrix = ${{ needs.init-pre-build-checks.outputs.matrix }}"    
           echo "branch_to_test = ${{ needs.init-pre-build-checks.outputs.branch_to_test }}"
-          
+
   run-pre-build-checks:
     needs: init-pre-build-checks
     runs-on: ubuntu-latest
