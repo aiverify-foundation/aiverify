@@ -6,12 +6,12 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useReducer } from 'react';
 import GridLayout, { Layout } from 'react-grid-layout';
 import { z } from 'zod';
-import { ParsedTestResults, PluginForGridLayout, WidgetOnGridLayout } from '@/app/canvas/types';
+import { ParsedTestResults, PluginForGridLayout, WidgetOnGridLayout, TestResultDataMapping } from '@/app/canvas/types';
 import { findTestResultsByWidgetId } from '@/app/canvas/utils/findTestResultsByWidgetId';
 import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPluginsById';
 import { getWidgetAlgosFromPlugins } from '@/app/canvas/utils/getWidgetAlgosFromPlugins';
 import { populateInitialWidgetResult } from '@/app/canvas/utils/populateInitialWidgetResult';
-import { Widget } from '@/app/types';
+import { TestResultData, Widget } from '@/app/types';
 import { Tooltip } from '@/lib/components/tooltip';
 import { cn } from '@/lib/utils/twmerge';
 import { AlgosToRun } from './algosToRun';
@@ -84,7 +84,6 @@ function createGridItemId(widget: Widget, pageIndex: number) {
 }
 
 function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
-  console.log(testResults);
   const canvasRef = useRef<HTMLDivElement>(null);
   const isInitialMount = useRef(true);
   const [state, dispatch] = useReducer(pagesDesignReducer, initialState);
@@ -103,7 +102,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     useZoom();
   const freeFormAreaRef = useRef<HTMLDivElement>(null);
   const [newDraggedWidget, setNewDraggedWidget] = useState<Widget | null>(null);
-
+  const [testResultsMapping, setTestResultsMapping] = useState<TestResultDataMapping | null>(null);
   const {
     isDragging: isDraggingFreeFormArea,
     handleMouseDown: handleFreeFormAreaMouseDown,
@@ -184,13 +183,6 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
           validData.gid,
           validData.cid
         );
-        let testResult = null;
-        // console.log(testResults);
-        console.log(widget);
-        if (testResults && widget) {
-          testResult = findTestResultsByWidgetId(testResults, widget.gid);
-          console.log(testResult);
-        }
         if (!widget) {
           console.error(
             `Widget not found - gid: ${validData.gid} - cid: ${validData.cid}`
@@ -351,7 +343,28 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     }
   }
 
-  // Calculate actual dimensions based on zoom
+  function handlePluginWidgetDragStart(widget: WidgetOnGridLayout) {
+    setNewDraggedWidget(widget);
+  }
+
+  function handlePluginWidgetDragEnd() {
+    setNewDraggedWidget(null);
+  }
+
+  function handleSelectUploadedTestResults(selectedResults: ParsedTestResults[]) {
+    if (selectedResults.length === 0) {
+      setTestResultsMapping(null);
+      return;
+    }
+    const testResultsMapping = selectedResults.reduce((acc, result) => {
+      acc[`${result.gid}:${result.cid}`] = result.output;
+      return acc;
+    }, {} as Record<string, TestResultData>);
+
+    setTestResultsMapping(testResultsMapping);
+  }
+
+    // Calculate actual dimensions based on zoom
   const [gridWidth, gridRowHeight, gridHeight] = useMemo(
     () => [
       GRID_WIDTH * zoomLevel,
@@ -359,6 +372,18 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
       GRID_HEIGHT * zoomLevel,
     ],
     [zoomLevel]
+  );
+
+  const gridLayoutStyle = useMemo<React.CSSProperties>(
+    () => ({
+      height: gridHeight,
+      width: gridWidth,
+      transition: 'width 0.1s ease-out, height 0.1s ease-out',
+      fontSize: `${zoomLevel}rem`,
+      margin: `${A4_MARGIN}px`,
+      background: 'transparent',
+    }),
+    [gridHeight, gridWidth, zoomLevel]
   );
 
   const contentWrapperMinHeight = useMemo(() => {
@@ -375,26 +400,6 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
 
     return `${totalHeight}px`;
   }, [layouts.length, gridHeight, zoomLevel]);
-
-  const gridLayoutStyle = useMemo<React.CSSProperties>(
-    () => ({
-      height: gridHeight,
-      width: gridWidth,
-      transition: 'width 0.1s ease-out, height 0.1s ease-out',
-      fontSize: `${zoomLevel}rem`,
-      margin: `${A4_MARGIN}px`,
-      background: 'transparent',
-    }),
-    [gridHeight, gridWidth, zoomLevel]
-  );
-
-  function handlePluginWidgetDragStart(widget: WidgetOnGridLayout) {
-    setNewDraggedWidget(widget);
-  }
-
-  function handlePluginWidgetDragEnd() {
-    setNewDraggedWidget(null);
-  }
 
   const pageControlsSection = (
     <section className="fixed right-[100px] top-[120px] z-50 flex w-[50px] max-w-[50px] flex-col gap-4">
@@ -542,6 +547,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
                           onEditClick={handleGridItemEditClick(pageIndex)}
                           isDragging={draggingId === widget.gridItemId}
                           algosMap={state.algos}
+                          testResultsMapping={testResultsMapping}
                         />
                       </div>
                     );
@@ -559,6 +565,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     <section className="fixed left-[420px] top-[90px] z-50 flex w-[50px] max-w-[50px] flex-col gap-4">
       <TestResultsPicker
         testResults={testResults}
+        onOkClick={handleSelectUploadedTestResults}
       />
     </section>
   );

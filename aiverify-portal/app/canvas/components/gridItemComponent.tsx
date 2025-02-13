@@ -7,13 +7,13 @@ import { getMDXComponent, MDXContentProps } from 'mdx-bundler/client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import React from 'react';
 import { createPortal } from 'react-dom';
-import { WidgetOnGridLayout } from '@/app/canvas/types';
+import { InputBlockDataMapping, TestResultDataMapping, WidgetOnGridLayout } from '@/app/canvas/types';
 import { Algorithm, TestResultData, InputBlockData } from '@/app/types';
 
 type GridItemComponentProps = {
   widget: WidgetOnGridLayout;
   inputBlockData?: unknown;
-  testData?: unknown;
+  testResultsMapping?: TestResultDataMapping | null;
   onDeleteClick: () => void;
   onEditClick: (
     gridItemId: string,
@@ -36,9 +36,6 @@ type MdxComponentProps = MDXContentProps & {
   getResults: (cid: string) => TestResultData;
   frontmatter?: Record<string, unknown>;
 };
-
-type TestResultDataMapping = Record<string, TestResultData>;
-type InputBlockDataMapping = Record<string, InputBlockData>;
 
 /**
  * This is a higher-order component that allows developers to add modifications like styling to the MDX component.
@@ -70,7 +67,7 @@ const withTextBehavior = <P extends MDXContentProps>(
 };
 
 function GridItemComponent(props: GridItemComponentProps) {
-  const { widget, onDeleteClick, onEditClick, isDragging, algosMap } = props;
+  const { widget, onDeleteClick, onEditClick, isDragging, algosMap, testResultsMapping } = props;
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const gridItemRef = useRef<HTMLDivElement>(null);
@@ -167,28 +164,39 @@ function GridItemComponent(props: GridItemComponentProps) {
   }, [widget.properties]);
 
   const mockResults = useMemo(() => {
+    if (testResultsMapping) {
+      return testResultsMapping;
+    }
+
     if (widget.mockdata && widget.mockdata.length > 0) {
       return widget.mockdata.reduce<TestResultDataMapping>((acc, mock) => {
         if (mock.type === "Algorithm") {
-          acc[`${widget.gid}-${mock.cid}`] = mock.data;
+          acc[`${widget.gid}:${mock.cid}`] = mock.data;
         }
         return acc;
       }, {});
     }
     return {};
-  }, [widget, widget.mdx]);
+  }, [widget, widget.mdx, testResultsMapping]);
 
   const mockInputs = useMemo(() => {
+    if (testResultsMapping) {
+      return testResultsMapping;
+    }
+
     if (widget.mockdata && widget.mockdata.length > 0) {
       return widget.mockdata.reduce<InputBlockDataMapping>((acc, mock) => {
         if (mock.type === "InputBlock") {
-          acc[`${widget.gid}-${mock.cid}`] = mock.data;
+          acc[`${widget.gid}:${mock.cid}`] = mock.data;
         }
         return acc;
       }, {});
     }
     return {};
-  }, [widget, widget.mdx]);
+  }, [widget, widget.mdx, testResultsMapping]);
+
+  console.log(mockResults);
+
 
   return (
     <React.Fragment>
@@ -260,8 +268,8 @@ function GridItemComponent(props: GridItemComponentProps) {
           properties={properties}
           results={mockResults}
           inputBlockData={mockInputs}
-          getIBData={(cid) => mockInputs[`${widget.gid}-${cid}`]}
-          getResults={(cid) => mockResults[`${widget.gid}-${cid}`]}
+          getIBData={(cid) => mockInputs[`${widget.gid}:${cid}`]}
+          getResults={(cid) => mockResults[`${widget.gid}:${cid}`]}
           getContainerObserver={(callback) => {
             if (resizeObserver) return resizeObserver;
             resizeObserver = new ResizeObserver(() => {

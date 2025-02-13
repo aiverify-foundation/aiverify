@@ -9,13 +9,12 @@ import { cn } from '@/lib/utils/twmerge';
 type TestResultsPickerProps = {
   className?: string;
   testResults: ParsedTestResults[];
+  onOkClick: (selectedResults: ParsedTestResults[]) => void;
 };
 
 function TestResultsPicker(props: TestResultsPickerProps) {
-  const { testResults, className } = props;
+  const { testResults, className, onOkClick } = props;
   const [selectedTestResults, setSelectedTestResults] = useState<ParsedTestResults[]>([]);
-
-  console.log(selectedTestResults);
 
   return (
     <div className={cn("flex justify-center", className)}>
@@ -71,7 +70,7 @@ function TestResultsPicker(props: TestResultsPickerProps) {
             </Button>
           </DrawerClose>
           <DrawerClose asChild>
-            <Button className="w-full sm:w-fit">Ok, use selected results</Button>
+            <Button className="w-full sm:w-fit" onClick={() => onOkClick(selectedTestResults)}>Ok, use selected results</Button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>
