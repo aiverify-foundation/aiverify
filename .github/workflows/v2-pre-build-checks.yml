@@ -119,6 +119,7 @@ jobs:
       - name: Print Matrix
         run: |
           echo "matrix = ${{ needs.init-pre-build-checks.outputs.matrix }}"    
+          echo "branch_to_test = ${{ needs.init-pre-build-checks.outputs.branch_to_test }}"
           
   run-pre-build-checks:
     needs: init-pre-build-checks
