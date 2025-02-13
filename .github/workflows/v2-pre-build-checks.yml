@@ -57,6 +57,7 @@ jobs:
     outputs:
       branch_to_test: ${{ steps.init.outputs.branch_to_test }}
       matrix: ${{ steps.init.outputs.matrix }}
+    
     timeout-minutes: 40
 
     steps:
@@ -90,8 +91,8 @@ jobs:
           # Extract values (plugin_name) from ALGO_PLUGIN_MAP map
           PLUGIN_TO_TEST=(${ALGO_PLUGIN_MAP[@]})
 
-          echo "ALGO_TO_TEST=${ALGO_TO_TEST[*]}" >> $GITHUB_ENV
-          echo "PLUGIN_TO_TEST=${PLUGIN_TO_TEST[*]}" >> $GITHUB_ENV
+          echo "ALGO_TO_TEST=${ALGO_TO_TEST[*]}" >> "$GITHUB_ENV"
+          echo "PLUGIN_TO_TEST=${PLUGIN_TO_TEST[*]}" >> "$GITHUB_ENV"
           echo "Algorithms to test: ${ALGO_TO_TEST[*]}"
           echo "Plugins to test: ${PLUGIN_TO_TEST[*]}"
 
@@ -101,8 +102,8 @@ jobs:
           MATRIX="{\"include\":$matrix_include}"
           echo $MATRIX
 
-          echo "branch_to_test=${{ github.ref }}" >> $GITHUB_OUTPUT
-          echo "matrix={\"include\":$matrix_include}" >> $GITHUB_OUTPUT
+          echo "branch_to_test=${{ github.ref }}" >> "$GITHUB_OUTPUT"
+          echo "matrix={\"include\":$matrix_include}" >> "$GITHUB_OUTPUT"
 
       # - name: Set up job matrix
       #   uses: actions/github-script@v4
