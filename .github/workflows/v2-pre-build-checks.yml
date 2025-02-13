@@ -112,6 +112,14 @@ jobs:
       #       return matrix;
       #     result-encoding: string
 
+  test-job:
+    needs: init-pre-build-checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Matrix
+        run: |
+          echo "matrix = ${{ needs.init-pre-build-checks.outputs.matrix }}"    
+          
   run-pre-build-checks:
     needs: init-pre-build-checks
     runs-on: ubuntu-latest
