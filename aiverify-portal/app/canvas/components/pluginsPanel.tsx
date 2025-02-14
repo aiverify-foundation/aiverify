@@ -20,7 +20,7 @@ type PluginsPanelProps = {
   onDragEnd: () => void;
 };
 
-function PlunginsPanel(props: PluginsPanelProps) {
+function PluginsPanel(props: PluginsPanelProps) {
   const { plugins, className, onDragStart, onDragEnd } = props;
   const [searchValue, setSearchValue] = useState('');
   const [sortedPlugins, setSortedPlugins] = useState<PluginForGridLayout[]>([]);
@@ -61,7 +61,13 @@ function PlunginsPanel(props: PluginsPanelProps) {
             key={plugin.gid}
             value={`item-${plugin.gid}`}>
             <AccordionTrigger>
-              <span className="font-semibold text-gray-200">{plugin.name}</span>
+              <div className="flex items-center gap-2 font-semibold text-gray-200">
+                <div>{plugin.name}</div>
+                <div className="text-xs text-gray-400">
+                  {plugin.widgets.length} widgets
+                </div>
+              </div>
+
             </AccordionTrigger>
             <AccordionContent>
               <section className="flex flex-col gap-2">
@@ -111,4 +117,4 @@ function PlunginsPanel(props: PluginsPanelProps) {
   );
 }
 
-export { PlunginsPanel };
+export { PluginsPanel };

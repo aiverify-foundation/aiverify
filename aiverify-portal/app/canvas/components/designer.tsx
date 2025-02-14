@@ -7,7 +7,6 @@ import { useReducer } from 'react';
 import GridLayout, { Layout } from 'react-grid-layout';
 import { z } from 'zod';
 import { ParsedTestResults, PluginForGridLayout, WidgetOnGridLayout, TestResultDataMapping } from '@/app/canvas/types';
-import { findTestResultsByWidgetId } from '@/app/canvas/utils/findTestResultsByWidgetId';
 import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPluginsById';
 import { getWidgetAlgosFromPlugins } from '@/app/canvas/utils/getWidgetAlgosFromPlugins';
 import { populateInitialWidgetResult } from '@/app/canvas/utils/populateInitialWidgetResult';
@@ -23,7 +22,7 @@ import { pagesDesignReducer } from './hooks/pagesDesignReducer';
 import { useDragToScroll } from './hooks/useDragToScroll';
 import { useZoom } from './hooks/useZoom';
 import { PageNavigation } from './pageNavigation';
-import { PlunginsPanel } from './pluginsPanel';
+import { PluginsPanel } from './pluginsPanel';
 import { ResizeHandle } from './resizeHandle';
 import { TestResultsPicker } from './testResultsPicker';
 import { ZoomControl } from './zoomControl';
@@ -364,7 +363,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     setTestResultsMapping(testResultsMapping);
   }
 
-    // Calculate actual dimensions based on zoom
+  // Calculate actual dimensions based on zoom
   const [gridWidth, gridRowHeight, gridHeight] = useMemo(
     () => [
       GRID_WIDTH * zoomLevel,
@@ -437,7 +436,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
         <h4 className="mb-0 text-lg font-bold">Project Name</h4>
         <p className="text-sm text-white">Project Description</p>
       </div>
-      <PlunginsPanel
+      <PluginsPanel
         plugins={pluginsWithMdx}
         className="custom-scrollbar w-full overflow-auto pr-[10px] pt-[50px]"
         onDragStart={handlePluginWidgetDragStart}
@@ -569,6 +568,8 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
       />
     </section>
   );
+
+  console.log('state', state);
 
   return (
     <React.Fragment>
