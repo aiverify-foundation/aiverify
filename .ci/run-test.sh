@@ -14,10 +14,10 @@ else
 fi
 
 set +e
-$test_cmd --cov=$source_dir --cov-branch --html=test-report.html --json=test-report.json
+$test_cmd --cov=$source_dir --cov-branch --html=test-report.html --json="${source_dir}-test-report.json"
 exit_code=$?
 coverage html
-coverage json --pretty-print
+coverage json --pretty-print -o "${source_dir}-cov.json"
 set -e
 if [ $exit_code -ne 0 ]; then
   exit $exit_code

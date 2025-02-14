@@ -8,7 +8,7 @@ echo "###                                                                       
 echo "#############################################################################"
 
 set +e
-flake8 --count  $source_dir > flake8-report.txt
+flake8 --count  $source_dir > "${source_dir}-flake8-report.txt"
 cat flake8-report.txt
 exit_code=$?
 

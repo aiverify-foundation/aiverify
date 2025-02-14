@@ -2,7 +2,7 @@
 
 # Function to read coverage data
 read_coverage() {
-  covPct=$(jq '.totals.percent_covered' coverage.json)
+  covPct=$(jq '.totals.percent_covered' "$1-cov.json")
   covPctRounded=$(printf "%.0f" "$covPct")
   message="Coverage percentage: $covPctRounded"
   export COVERAGE_SUMMARY="$message"
@@ -19,7 +19,7 @@ read_coverage() {
 
 # Function to read test data
 read_test() {
-  testJson=$(jq '.report.summary' test-report.json)
+  testJson=$(jq '.report.summary' "$1-test-report.json")
   testPassed=$(echo "$testJson" | jq '.passed // 0')
   testFailed=$(echo "$testJson" | jq '.failed // 0')
   message="Unit tests passed: $testPassed, failed: $testFailed"
@@ -37,7 +37,7 @@ read_test() {
 
 # Function to read lint data
 read_lint() {
-  last_line=$(tail -n 1 flake8-report.txt)
+  last_line=$(tail -n 1 "$1-flake8-report.txt")
   message="Lint errors: $last_line"
   export LINT_SUMMARY="$message"
   if [ "$last_line" -ne 0 ]; then
@@ -53,11 +53,11 @@ read_lint() {
 
 # Function to read dependency data
 read_dependency() {
-  content=$(<pip-audit-count.txt)
+  content=$(<"$1-pip-audit-count.txt")
   if [[ $content == *"No known vulnerabilities found"* ]]; then
     numVul=0
   else
-    numVul=$(grep -oP 'Found \K\d+' pip-audit-count.txt)
+    numVul=$(grep -oP 'Found \K\d+' "$1-pip-audit-count.txt")
   fi
   message="Dependency vulnerabilities found: $numVul"
   export DEPENDENCY_SUMMARY="$message"
@@ -78,7 +78,7 @@ read_license() {
   weak_copyleft=("LGPL" "MPL" "CC-BY-SA")
   #copyleftLic=("GPL" "LGPL" "MPL" "AGPL" "EUPL" "CCDL" "EPL" "CC-BY-SA" "OSL" "CPL")
   numCopyleftLicStrong=0
-  if [ -f licenses-found.md ]; then
+  if [ -f "$1-licenses-found.md" ]; then
     while IFS= read -r line; do
       for lic in "${strong_copyleft[@]}"; do
         if [[ $line == *"$lic"* ]]; then
@@ -86,10 +86,10 @@ read_license() {
           break
         fi
       done
-    done < licenses-found.md
+    done < "$1-licenses-found.md"
   fi
   numCopyleftLicWeak=0
-  if [ -f licenses-found.md ]; then
+  if [ -f "$1-licenses-found.md" ]; then
     while IFS= read -r line; do
       for lic in "${weak_copyleft[@]}"; do
         if [[ $line == *"$lic"* ]]; then
@@ -97,7 +97,7 @@ read_license() {
           break
         fi
       done
-    done < licenses-found.md
+    done < "$1-licenses-found.md"
   fi
   message="Copyleft licenses found: strong=$numCopyleftLicStrong weak=$numCopyleftLicWeak"
   export LICENSE_SUMMARY="$message"
@@ -120,22 +120,23 @@ gen_summary() {
   fi
 
   summaryToGen=$1
+  module=${2:-aiverify_test_engine}
 
   case $summaryToGen in
     "coverage")
-      read_coverage
+      read_coverage "$module"
       ;;
     "test")
-      read_test
+      read_test "$module"
       ;;
     "lint")
-      read_lint
+      read_lint "$module"
       ;;
     "dependency")
-      read_dependency
+      read_dependency "$module"
       ;;
     "license")
-      read_license
+      read_license "$module"
       ;;
     *)
       echo "Unknown summary type: $summaryToGen"

@@ -13,7 +13,6 @@ env:
  
   GH_TOKEN: ${{ github.token }}
   
-
 on:
   # Runs when a pull request to main is being assigned
   pull_request:

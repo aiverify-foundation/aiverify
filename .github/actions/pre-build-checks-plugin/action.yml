@@ -84,9 +84,9 @@ runs:
       run: |      
           set +e
           bash ../../../../.ci/run-test.sh aiverify_${{ env.ALGO_NAME }} -m
-          source ../../../../.ci/gen_pre_build_summ.sh test
+          source ../../../../.ci/gen_pre_build_summ.sh test aiverify_${{ env.ALGO_NAME }}
           test_status=$?
-          source ../../../../.ci/gen_pre_build_summ.sh coverage
+          source ../../../../.ci/gen_pre_build_summ.sh coverage aiverify_${{ env.ALGO_NAME }}
           coverage_status=$?
           echo "unit_test_status=$UNITTEST_SUMMARY" >> $GITHUB_OUTPUT
           echo "code_coverage_status=$COVERAGE_SUMMARY" >> $GITHUB_OUTPUT
@@ -105,7 +105,7 @@ runs:
         set +e
         cp ../../../../.ci/.flake8 .
         bash ../../../../.ci/run-flake8.sh aiverify_${{ env.ALGO_NAME }}
-        source ../../../../.ci/gen_pre_build_summ.sh lint
+        source ../../../../.ci/gen_pre_build_summ.sh lint aiverify_${{ env.ALGO_NAME }}
         lint_status=$?
         echo "code_quality_status=$LINT_SUMMARY" >> $GITHUB_OUTPUT
         set -e
@@ -119,10 +119,10 @@ runs:
       working-directory: ${{ github.workspace }}/stock-plugins/aiverify.stock.${{ env.PLUGIN_NAME }}/algorithms/${{ env.ALGO_NAME }}
       run: |
         set +e
-        bash ../../../../.ci/run-pip-audit.sh
-        source ../../../../.ci/gen_pre_build_summ.sh dependency
+        bash ../../../../.ci/run-pip-audit.sh aiverify_${{ env.ALGO_NAME }}
+        source ../../../../.ci/gen_pre_build_summ.sh dependency aiverify_${{ env.ALGO_NAME }}
         dep_status=$?
-        source ../../../../.ci/gen_pre_build_summ.sh license
+        source ../../../../.ci/gen_pre_build_summ.sh license aiverify_${{ env.ALGO_NAME }}
         lic_status=$?
         echo "dependency_status=$DEPENDENCY_SUMMARY" >> $GITHUB_OUTPUT
         echo "license_status=$LICENSE_SUMMARY" >> $GITHUB_OUTPUT
@@ -132,5 +132,16 @@ runs:
         fi
       shell: bash
 
-
-          
+    - name: Send slack notification
+      if: ${{ ! cancelled() }}
+      uses: slackapi/slack-github-action@v1.26.0
+      with:
+        payload: |
+          {
+            "workflow": "${{ github.repository }} | ${{ github.workflow }} | ${{ env.ALGO_NAME }} }",
+            "status": "${{ job.status }}",
+            "details": "${{ steps.unit_test.outputs.unit_test_status }} | ${{ steps.unit_test.outputs.code_coverage_status }} | ${{ steps.code_quality.outputs.code_quality_status }} | ${{ steps.dependency_analysis.outputs.dependency_status }} | ${{ steps.dependency_analysis.outputs.license_status }}",
+            "ref": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CI }}
