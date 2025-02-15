@@ -52,7 +52,7 @@ runs:
         echo "BRANCH_TO_TEST=${{ inputs.branch_to_test }}" >> $GITHUB_ENV
         echo "PLUGIN_NAME=${{ inputs.plugin_name }}" >> $GITHUB_ENV
         echo "ALGO_NAME=${{ inputs.algo_name }}" >> $GITHUB_ENV
-        if [ "${{ inputs.algo_name }}" == "test-engine" ]; then
+        if [ "${{ inputs.algo_name }}" == "test_engine" ]; then
           echo "WDIR=aiverify-test-engine" >> $GITHUB_ENV
         else
           echo "WDIR=stock-plugins/aiverify.stock.${{ inputs.plugin_name }}/algorithms/${{ inputs.algo_name }}" >> $GITHUB_ENV
