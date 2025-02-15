@@ -29,7 +29,7 @@ on:
     types: [ assigned, synchronize ]
     branches:
       - 'v2.x'
-   paths:
+    paths:
       - 'aiverify-test-engine/**'
       - 'stock-plugins/**'
 
