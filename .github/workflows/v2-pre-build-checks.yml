@@ -65,9 +65,9 @@ jobs:
           echo "BRANCH_TO_TEST=${{ github.event.pull_request.head.ref }}" >> "$GITHUB_ENV"
           echo "PR_NUM=#${{ github.event.pull_request.number }}" >> "$GITHUB_ENV"
           PR_FILES=$(gh pr view ${{ github.event.pull_request.number }} --json files --jq '.files[].path' | paste -sd "," -)
-          echo "Files changed in this pull request:"
-          echo "$PR_FILES"
-          echo "CHANGED_FILES=${PR_FILES}" >> "$GITHUB_ENV"
+          # echo "Files changed in this pull request:"
+          # echo "$PR_FILES"
+          # echo "CHANGED_FILES=${PR_FILES}" >> $GITHUB_ENV
 
       - name: Set env variables (push)
         if: github.event_name == 'push'
