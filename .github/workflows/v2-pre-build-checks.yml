@@ -154,3 +154,7 @@ jobs:
           algo_name: ${{ matrix.algo_name }}
           slack_url: ${{ secrets.SLACK_WEBHOOK_CI }}
 
+      - name: Set status
+        id: set_status
+        run: |
+          echo "${{ steps.pre_build_checks.outputs.status }}"

@@ -41,6 +41,8 @@ outputs:
     value: ${{ steps.dependency_analysis.outputs.dependency_status }}
   license_status:
     value: ${{ steps.dependency_analysis.outputs.license_status }}
+  status:
+    value: ${{ steps.set_status.outputs.status }}
 
 runs:
   using: "composite"
@@ -155,3 +157,12 @@ runs:
           }
       env:
         SLACK_WEBHOOK_URL: ${{ inputs.slack_url }}
+
+    - name: Set status
+      id: set_status
+      run: |
+        if [ "${{ job.status }}" == "failure" ]; then
+          echo "status=failure" >> $GITHUB_OUTPUT
+        else
+          echo "status=success" >> $GITHUB_OUTPUT
+      shell: bash
