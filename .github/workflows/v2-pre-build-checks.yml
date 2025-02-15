@@ -160,15 +160,14 @@ jobs:
           echo "branch=${{ needs.init-pre-build-checks.outputs.branch_to_test }}"
           echo "pr_num=${{ needs.init-pre-build-checks.outputs.pr_num }}"
           echo "matrix=${{ needs.init-pre-build-checks.outputs.matrix}}"
-          
-          
-          +635
-          +
+
   run-pre-build-checks:
     needs: init-pre-build-checks
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJson(needs.init-pre-build-checks.outputs.matrix) }}
+      fail-fast: true
+      max-parallel: 1
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
