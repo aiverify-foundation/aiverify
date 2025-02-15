@@ -55,9 +55,9 @@ on:
   #   branches: [ ci/v2-workflows ]
 
 # Allow one concurrent deployment
-# concurrency:
-#   group: ${{ github.repository }}-${{ github.workflow }}
-#   cancel-in-progress: true
+concurrency:
+  group: ${{ github.repository }}-${{ github.workflow }}
+  cancel-in-progress: true
 
 jobs:
 

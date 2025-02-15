@@ -97,7 +97,7 @@ runs:
       run: |
         echo "Install dependencies"
         if [ "${{ inputs.algo_name }}" == "test_engine" ]; then
-          pip install .[all] /dev/null
+          pip install .[all] > /dev/null
         else
           pip install . > /dev/null
         fi
