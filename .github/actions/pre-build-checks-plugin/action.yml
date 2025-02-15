@@ -62,8 +62,8 @@ runs:
 
     # Checkout code
     - name: Checkout code (plugin)
-      if {{ env.ALGO_NAME != 'test_engine' }}
       uses: actions/checkout@v4
+      if {{ env.ALGO_NAME != 'test_engine' }}
       with:
         ref: ${{ env.BRANCH_TO_TEST }}
         sparse-checkout: |
@@ -72,9 +72,10 @@ runs:
           .ci
           .github/actions/pre-build-checks-plugin
 
+
     - name: Checkout code (test-engine)
-      if {{ env.ALGO_NAME == 'test_engine' }}
       uses: actions/checkout@v4
+      if {{ env.ALGO_NAME == 'test_engine' }}
       with:
         ref: ${{ env.BRANCH_TO_TEST }}
         sparse-checkout: |
