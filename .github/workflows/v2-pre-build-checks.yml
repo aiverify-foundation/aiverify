@@ -64,8 +64,8 @@ jobs:
         run: |
           echo "BRANCH_TO_TEST=${{ github.event.pull_request.head.ref }}" >> "$GITHUB_ENV"
           echo "PR_NUM=#${{ github.event.pull_request.number }}" >> "$GITHUB_ENV"
-          PR_FILES=$(gh api repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files --jq '.[].filename' | paste -sd "," -)
-          # PR_FILES=$(gh pr view ${{ github.event.pull_request.number }} --json files --jq '.files[].path' | paste -sd "," -)
+          #PR_FILES=$(gh api repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files --jq '.[].filename' | paste -sd "," -)
+          PR_FILES=$(gh pr view ${{ github.event.pull_request.number }} --repo github.com/${{ github.repository }} --json files --jq '.files[].path' | paste -sd "," -)
           echo "Files changed in this pull request:"
           echo "$PR_FILES"
           echo "CHANGED_FILES=${PR_FILES}" >> $GITHUB_ENV
