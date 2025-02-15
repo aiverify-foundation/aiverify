@@ -52,11 +52,17 @@ runs:
         echo "BRANCH_TO_TEST=${{ inputs.branch_to_test }}" >> $GITHUB_ENV
         echo "PLUGIN_NAME=${{ inputs.plugin_name }}" >> $GITHUB_ENV
         echo "ALGO_NAME=${{ inputs.algo_name }}" >> $GITHUB_ENV
+        if [ "${{ inputs.algo_name }}" == "test-engine" ]; then
+          echo "WDIR=aiverify-test-engine" >> $GITHUB_ENV
+        else
+          echo "WDIR=stock-plugins/aiverify.stock.${{ env.PLUGIN_NAME }}/algorithms/${{ env.ALGO_NAME }}" >> $GITHUB_ENV
+        fi        
         echo "STATUS=success" >> $GITHUB_ENV
       shell: bash
 
     # Checkout code
-    - name: Checkout code
+    - name: Checkout code (plugin)
+      if inputs.algo_name != 'test_engine'
       uses: actions/checkout@v4
       with:
         ref: ${{ env.BRANCH_TO_TEST }}
@@ -66,20 +72,32 @@ runs:
           .ci
           .github/actions/pre-build-checks-plugin
 
+    - name: Checkout code (test-engine)
+      if inputs.algo_name == 'test_engine'
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ env.BRANCH_TO_TEST }}
+        sparse-checkout: |
+          aiverify-test-engine
+          .ci
+          .github/actions/pre-build-checks-plugin
+
     # Setup python    
     - name: Setup python 3.11
       uses: actions/setup-python@v5
       with:
         python-version: "3.11"
         cache: 'pip'
-        cache-dependency-path: stock-plugins
 
     # Install dependencies
     - name: Install dependencies
-      working-directory: ${{ github.workspace }}/stock-plugins/aiverify.stock.${{ env.PLUGIN_NAME }}/algorithms/${{ env.ALGO_NAME }}
+      working-directory: ${{ github.workspace }}/${{ env.WDIR }}
       run: |
         echo "Install dependencies"
-        pip install . > /dev/null
+       if [ "${{ inputs.algo_name }}" == "test-engine" ]; then
+          pip install .[all] /dev/null
+        else
+          pip install . > /dev/null
         pip install pipdeptree > /dev/null
         pipdeptree -fl 
         pip install pytest pytest-mock pytest-html pytest-json pytest-cov coverage anybadge > /dev/null
@@ -89,7 +107,7 @@ runs:
     # Check 1: Unit tests & coverage    
     - name: Unit tests with coverage
       id: unit_test
-      working-directory: ${{ github.workspace }}/stock-plugins/aiverify.stock.${{ env.PLUGIN_NAME }}/algorithms/${{ env.ALGO_NAME }}
+      working-directory: ${{ github.workspace }}/${{ env.WDIR }}
       if: ${{ ! cancelled() }}
       run: |      
           set +e
@@ -111,7 +129,7 @@ runs:
     - name: Code quality analysis (flake8)
       id: code_quality
       if: ${{ ! cancelled() }}
-      working-directory: ${{ github.workspace }}/stock-plugins/aiverify.stock.${{ env.PLUGIN_NAME }}/algorithms/${{ env.ALGO_NAME }}
+      working-directory: ${{ github.workspace }}/${{ env.WDIR }}
       run: |
         set +e
         cp ../../../../.ci/.flake8 .
@@ -130,7 +148,7 @@ runs:
     - name: Dependency analysis (vulnerabilities & licenses)
       id: dependency_analysis
       if: ${{ ! cancelled() }}
-      working-directory: ${{ github.workspace }}/stock-plugins/aiverify.stock.${{ env.PLUGIN_NAME }}/algorithms/${{ env.ALGO_NAME }}
+      working-directory: ${{ github.workspace }}/{{ env.WDIR }}
       run: |
         set +e
         bash ../../../../.ci/run-pip-audit.sh aiverify_${{ env.ALGO_NAME }}

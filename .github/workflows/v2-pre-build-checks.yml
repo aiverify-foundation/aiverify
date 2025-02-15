@@ -7,19 +7,20 @@
 name: v2 Pre-build Checks
 
 env:
-  ALGO_NAMES:  'accumulated_local_effect, fairness_metrics_toolbox_for_classification,
+  ALGO_NAMES:  'test_engine,
+                accumulated_local_effect, fairness_metrics_toolbox_for_classification,
                 fairness_metrics_toolbox_for_regression, blur_corruptions,
                 digital_corruptions, environment_corruptions,
                 general_corruptions, partial_dependence_plot,
                 robustness_toolbox, shap_toolbox,
                 veritastool'
-  PLUGIN_NAMES: 'accumulated-local-effect, fairness-metrics-toolbox-for-classification,
+  PLUGIN_NAMES: 'aiverify-test-engine,
+                 accumulated-local-effect, fairness-metrics-toolbox-for-classification,
                  fairness-metrics-toolbox-for-regression, image-corruption-toolbox,
                  image-corruption-toolbox, image-corruption-toolbox, 
                  image-corruption-toolbox, partial-dependence-plot,
                  robustness-toolbox, shap-toolbox
-                 veritas'
- 
+                 veritas' 
   GH_TOKEN: ${{ github.token }}
   
 on:
@@ -28,6 +29,10 @@ on:
     types: [ assigned, synchronize ]
     branches:
       - 'v2.x'
+   paths:
+      - 'aiverify-test-engine/**'
+      - 'stock-plugins/**'
+
 
   # Run this workflow manually from Actions tab
   workflow_dispatch:
@@ -74,7 +79,6 @@ jobs:
         run: |
           echo "BRANCH_TO_TEST=${{ github.event.pull_request.head.ref }}" >> "$GITHUB_ENV"
           echo "PR_NUM=#${{ github.event.pull_request.number }}" >> "$GITHUB_ENV"
-          #PR_FILES=$(gh api repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files --jq '.[].filename' | paste -sd "," -)
           PR_FILES=$(gh pr view ${{ github.event.pull_request.number }} --repo github.com/${{ github.repository }} --json files --jq '.files[].path' | paste -sd "," -)
           echo "Files changed in this pull request:"
           echo "$PR_FILES"
@@ -100,7 +104,6 @@ jobs:
 
           IFS=',' read -ra FILE_ARRAY <<< "$FILE_LIST"
           for file in "${FILE_ARRAY[@]}"; do
-          # for file in $FILE_LIST; do
             for i in "${!ALGO_NAMES[@]}"; do
               # Check if the file name contains the algorithm name
               if [[ $file == *"${ALGO_NAMES[$i]}"* ]]; then
@@ -116,8 +119,8 @@ jobs:
           # Extract values (plugin_name) from ALGO_PLUGIN_MAP map
           PLUGIN_TO_TEST=(${ALGO_PLUGIN_MAP[@]})
 
-          echo "ALGO_TO_TEST=${ALGO_TO_TEST[*]}" >> "$GITHUB_ENV"
-          echo "PLUGIN_TO_TEST=${PLUGIN_TO_TEST[*]}" >> "$GITHUB_ENV"
+          echo "ALGO_TO_TEST=${ALGO_TO_TEST[*]}" >> $GITHUB_ENV
+          echo "PLUGIN_TO_TEST=${PLUGIN_TO_TEST[*]}" >> $GITHUB_ENV
           echo "Algorithms to test: ${ALGO_TO_TEST[*]}"
           echo "Plugins to test: ${PLUGIN_TO_TEST[*]}"
 
