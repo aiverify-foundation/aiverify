@@ -19,8 +19,6 @@ on:
     types: [ assigned, synchronize ]
     branches:
       - 'v2.x'
-    paths:
-      - "stock-plugins/aiverify.stock.accumulated-local-effect/**"
 
   # Run this workflow manually from Actions tab
   workflow_dispatch:
@@ -54,28 +52,74 @@ jobs:
     if: (github.event_name == 'pull_request' && github.event.pull_request.assignee != null) || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
     runs-on: ubuntu-latest
     outputs:
-      branch_to_test: ${{ steps.prep_matrix_push.outputs.branch_to_test }}
-      matrix: ${{ steps.prep_matrix_push.outputs.matrix }}
+      branch_to_test: ${{ steps.prep_matrix.outputs.branch_to_test }}
+      pr_num: ${{ steps.prep_matrix.outputs.pr_num }}
+      matrix: ${{ steps.prep_matrix.outputs.matrix }}
     
     timeout-minutes: 40
 
     steps:
 
-      - name: Prepare matrix (push)
-        id: prep_matrix_push
+      - name: Set env variables (pull request)
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "BRANCH_TO_TEST=${{ github.event.pull_request.head.ref }}" >> "$GITHUB_ENV"
+          echo "PR_NUM=#${{ github.event.pull_request.number }}" >> "$GITHUB_ENV"
+          PR_FILES=$(gh pr view ${{ github.event.pull_request.number }} --json files --jq '.files[].path')
+          echo "Files changed in this pull request:"
+          echo "$PR_FILES"
+          echo "CHANGED_FILES=${PR_FILES}" >> "$GITHUB_ENV"
+
+      - name: Set env variables (push)
         if: github.event_name == 'push'
         run: |
           echo "BRANCH_TO_TEST=${{ github.ref }}" >> "$GITHUB_ENV"
-          echo "PUSH_COMMIT=${{ github.sha }}" >> "$GITHUB_ENV"
+          echo "PR_NUM=000" >> $GITHUB_ENV
           PUSH_FILES=$(gh api repos/${{ github.repository }}/commits/${{ github.sha }} | jq -r '.files[].filename')
           echo "Files changed in this push:"
           echo "$PUSH_FILES"
+          echo "CHANGED_FILES=${PUSH_FILES}" >> $GITHUB_ENV
 
+          # ALGO_NAMES=(${ALGO_NAMES//,/ })
+          # PLUGIN_NAMES=(${PLUGIN_NAMES//,/ })
+          # declare -A ALGO_PLUGIN_MAP
+
+          # for file in $PUSH_FILES; do
+          #   for i in "${!ALGO_NAMES[@]}"; do
+          #     # Check if the file name contains the algorithm name
+          #     if [[ $file == *"${ALGO_NAMES[$i]}"* ]]; then
+          #       # Add algo name and corresponding plugin name to the associative array
+          #       ALGO_PLUGIN_MAP["${ALGO_NAMES[$i]}"]="${PLUGIN_NAMES[$i]}"
+          #     fi
+          #   done
+          # done
+
+          # # Extract keys (algo_name) from ALGO_PLUGIN_MAP map
+          # ALGO_TO_TEST=(${!ALGO_PLUGIN_MAP[@]})
+          # # Extract values (plugin_name) from ALGO_PLUGIN_MAP map
+          # PLUGIN_TO_TEST=(${ALGO_PLUGIN_MAP[@]})
+
+          # echo "ALGO_TO_TEST=${ALGO_TO_TEST[*]}" >> "$GITHUB_ENV"
+          # echo "PLUGIN_TO_TEST=${PLUGIN_TO_TEST[*]}" >> "$GITHUB_ENV"
+          # echo "Algorithms to test: ${ALGO_TO_TEST[*]}"
+          # echo "Plugins to test: ${PLUGIN_TO_TEST[*]}"
+
+          # matrix_include=$(for i in "${!ALGO_TO_TEST[@]}"; do echo "{\"algo_name\":\"${ALGO_TO_TEST[$i]}\", \"plugin_name\":\"${PLUGIN_TO_TEST[$i]}\"}"; done | jq -s . | tr -d '[:space:]')
+          # MATRIX="{\"include\":$matrix_include}"
+          # echo $MATRIX
+
+          # echo "branch_to_test=${{ github.ref }}" >> $GITHUB_OUTPUT
+          # echo "matrix={\"include\":$matrix_include}" >> $GITHUB_OUTPUT
+
+      - name: Prepare Matrix
+        id: prep_matrix
+        run: |
+          FILE_LIST=${{ env.CHANGED_FILES }}
           ALGO_NAMES=(${ALGO_NAMES//,/ })
           PLUGIN_NAMES=(${PLUGIN_NAMES//,/ })
           declare -A ALGO_PLUGIN_MAP
 
-          for file in $PUSH_FILES; do
+          for file in $FILE_LIST; do
             for i in "${!ALGO_NAMES[@]}"; do
               # Check if the file name contains the algorithm name
               if [[ $file == *"${ALGO_NAMES[$i]}"* ]]; then
@@ -87,6 +131,7 @@ jobs:
 
           # Extract keys (algo_name) from ALGO_PLUGIN_MAP map
           ALGO_TO_TEST=(${!ALGO_PLUGIN_MAP[@]})
+
           # Extract values (plugin_name) from ALGO_PLUGIN_MAP map
           PLUGIN_TO_TEST=(${ALGO_PLUGIN_MAP[@]})
 
@@ -99,9 +144,23 @@ jobs:
           MATRIX="{\"include\":$matrix_include}"
           echo $MATRIX
 
-          echo "branch_to_test=${{ github.ref }}" >> "$GITHUB_OUTPUT"
-          echo "matrix={\"include\":$matrix_include}" >> "$GITHUB_OUTPUT"
+          echo "branch_to_test=${{ env.BRANCH_TO_TEST }}" >> $GITHUB_OUTPUT
+          echo "pr_num=${{ env.PR_NUM }}" >> $GITHUB_OUTPUT
+          echo "matrix={\"include\":$matrix_include}" >> $GITHUB_OUTPUT
 
+  test-test:
+    needs: init-pre-build-checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show outputs
+        run: |
+          echo "branch=${{ needs.init-pre-build-checks.outputs.branch_to_test }}"
+          echo "pr_num=${{ needs.init-pre-build-checks.outputs.pr_num }}"
+          echo "matrix=${{ needs.init-pre-build-checks.outputs.matrix}}"
+          
+          
+          +635
+          +
   run-pre-build-checks:
     needs: init-pre-build-checks
     runs-on: ubuntu-latest
@@ -120,9 +179,11 @@ jobs:
         uses: ./.github/actions/pre-build-checks-plugin
         with:
           branch_to_test: ${{ needs.init-pre-build-checks.outputs.branch_to_test }}
+          pr_num: ${{ needs.init-pre-build-checks.outputs.pr_num }}
           plugin_name: ${{ matrix.plugin_name }}
           algo_name: ${{ matrix.algo_name }}
-            
+          slack_url: ${{ secrets.SLACK_WEBHOOK_CI }}
+
       # - name: Send slack notification
       #   if: ${{ ! cancelled() }}
       #   uses: slackapi/slack-github-action@v1.26.0

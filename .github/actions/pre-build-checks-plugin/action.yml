@@ -12,6 +12,11 @@ inputs:
     required: true
     default: 'v2.x'
     type: string
+  pr_num:
+    description: 'PR number'
+    required: true
+    default: '000'
+    type: string
   plugin_name:
     description: 'Name of plugin to test'
     required: true
@@ -20,6 +25,10 @@ inputs:
     description: 'Name of algo to test'
     required: true
     default: 'accumulated_local_effect'
+  slack_url:
+    description: 'Slack webhook URL for notifications'
+    required: true
+    type: string
 
 outputs:
   unit_test_status:
@@ -138,10 +147,10 @@ runs:
       with:
         payload: |
           {
-            "workflow": "${{ github.repository }} | ${{ github.workflow }} | ${{ env.ALGO_NAME }} }",
+            "workflow": "${{ github.repository }} | ${{ github.workflow }} | ${{ inputs.pr_num }} | ${{ env.ALGO_NAME }} }",
             "status": "${{ job.status }}",
             "details": "${{ steps.unit_test.outputs.unit_test_status }} | ${{ steps.unit_test.outputs.code_coverage_status }} | ${{ steps.code_quality.outputs.code_quality_status }} | ${{ steps.dependency_analysis.outputs.dependency_status }} | ${{ steps.dependency_analysis.outputs.license_status }}",
             "ref": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           }
       env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CI }}
+        SLACK_WEBHOOK_URL: ${{ inputs.slack_url }}
