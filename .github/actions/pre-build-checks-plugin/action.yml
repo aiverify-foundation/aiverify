@@ -62,7 +62,7 @@ runs:
 
     # Checkout code
     - name: Checkout code (plugin)
-      if inputs.algo_name != 'test_engine'
+      if {{ env.ALGO_NAME != 'test_engine' }}
       uses: actions/checkout@v4
       with:
         ref: ${{ env.BRANCH_TO_TEST }}
@@ -73,7 +73,7 @@ runs:
           .github/actions/pre-build-checks-plugin
 
     - name: Checkout code (test-engine)
-      if inputs.algo_name == 'test_engine'
+      if {{ env.ALGO_NAME == 'test_engine' }}
       uses: actions/checkout@v4
       with:
         ref: ${{ env.BRANCH_TO_TEST }}
