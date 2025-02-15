@@ -41,19 +41,18 @@ outputs:
     value: ${{ steps.dependency_analysis.outputs.dependency_status }}
   license_status:
     value: ${{ steps.dependency_analysis.outputs.license_status }}
-  status:
-    value: ${{ steps.set_status.outputs.status }}
 
 runs:
   using: "composite"
 
   steps:
 
-    - name: Set branch variable
+    - name: Set env variables
       run: |
         echo "BRANCH_TO_TEST=${{ inputs.branch_to_test }}" >> $GITHUB_ENV
         echo "PLUGIN_NAME=${{ inputs.plugin_name }}" >> $GITHUB_ENV
         echo "ALGO_NAME=${{ inputs.algo_name }}" >> $GITHUB_ENV
+        echo "STATUS=success" >> $GITHUB_ENV
       shell: bash
 
     # Checkout code
@@ -103,6 +102,7 @@ runs:
           echo "code_coverage_status=$COVERAGE_SUMMARY" >> $GITHUB_OUTPUT
           set -e
           if [ $test_status -ne 0 ] || [ $coverage_status -ne 0 ]; then
+              echo "STATUS=failure" >> $GITHUB_ENV
               exit 1
           fi
       shell: bash
@@ -120,7 +120,10 @@ runs:
         lint_status=$?
         echo "code_quality_status=$LINT_SUMMARY" >> $GITHUB_OUTPUT
         set -e
-        exit $lint_status
+        if [ $lint_status -ne 0 ]; then
+            echo "STATUS=failure" >> $GITHUB_ENV
+            exit $lint_status
+        fi
       shell: bash
 
     # Check 3: Dependency vulnerability & license analysis (pip-audit)
@@ -139,6 +142,7 @@ runs:
         echo "license_status=$LICENSE_SUMMARY" >> $GITHUB_OUTPUT
         set -e
         if [ $dep_status -ne 0 ] || [ $lic_status -ne 0 ]; then
+          echo "STATUS=failure" >> $GITHUB_ENV
           exit 1
         fi
       shell: bash
@@ -151,18 +155,9 @@ runs:
         payload: |
           {
             "workflow": "${{ github.repository }} | ${{ github.workflow }} | ${{ inputs.pr_num }} | ${{ env.ALGO_NAME }} }",
-            "status": "${{ job.status }}",
+            "status": "${{ env.STATUS }}",
             "details": "${{ steps.unit_test.outputs.unit_test_status }} | ${{ steps.unit_test.outputs.code_coverage_status }} | ${{ steps.code_quality.outputs.code_quality_status }} | ${{ steps.dependency_analysis.outputs.dependency_status }} | ${{ steps.dependency_analysis.outputs.license_status }}",
             "ref": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           }
       env:
         SLACK_WEBHOOK_URL: ${{ inputs.slack_url }}
-
-    - name: Set status
-      id: set_status
-      run: |
-        if [ "${{ job.status }}" == "failure" ]; then
-          echo "status=failure" >> $GITHUB_OUTPUT
-        else
-          echo "status=success" >> $GITHUB_OUTPUT
-      shell: bash

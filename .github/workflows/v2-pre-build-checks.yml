@@ -119,16 +119,6 @@ jobs:
           echo "pr_num=${{ env.PR_NUM }}" >> $GITHUB_OUTPUT
           echo "matrix={\"include\":$matrix_include}" >> $GITHUB_OUTPUT
 
-  test-test:
-    needs: init-pre-build-checks
-    runs-on: ubuntu-latest
-    steps:
-      - name: Show outputs
-        run: |
-          echo "branch=${{ needs.init-pre-build-checks.outputs.branch_to_test }}"
-          echo "pr_num=${{ needs.init-pre-build-checks.outputs.pr_num }}"
-          echo "matrix=${{ needs.init-pre-build-checks.outputs.matrix}}"
-
   run-pre-build-checks:
     needs: init-pre-build-checks
     runs-on: ubuntu-latest
@@ -153,8 +143,3 @@ jobs:
           plugin_name: ${{ matrix.plugin_name }}
           algo_name: ${{ matrix.algo_name }}
           slack_url: ${{ secrets.SLACK_WEBHOOK_CI }}
-
-      - name: Set status
-        id: set_status
-        run: |
-          echo "${{ steps.pre_build_checks.outputs.status }}"
