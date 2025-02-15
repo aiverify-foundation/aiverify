@@ -63,7 +63,6 @@ runs:
     # Checkout code
     - name: Checkout code (plugin)
       uses: actions/checkout@v4
-      if {{ env.ALGO_NAME != 'test_engine' }}
       with:
         ref: ${{ env.BRANCH_TO_TEST }}
         sparse-checkout: |
@@ -72,16 +71,15 @@ runs:
           .ci
           .github/actions/pre-build-checks-plugin
 
-
-    - name: Checkout code (test-engine)
-      uses: actions/checkout@v4
-      if {{ env.ALGO_NAME == 'test_engine' }}
-      with:
-        ref: ${{ env.BRANCH_TO_TEST }}
-        sparse-checkout: |
-          aiverify-test-engine
-          .ci
-          .github/actions/pre-build-checks-plugin
+    # - name: Checkout code (test-engine)
+    #   uses: actions/checkout@v4
+    #   if {{ env.ALGO_NAME == 'test_engine' }}
+    #   with:
+    #     ref: ${{ env.BRANCH_TO_TEST }}
+    #     sparse-checkout: |
+    #       aiverify-test-engine
+    #       .ci
+    #       .github/actions/pre-build-checks-plugin
 
     # Setup python    
     - name: Setup python 3.11
