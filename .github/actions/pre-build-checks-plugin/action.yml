@@ -93,10 +93,11 @@ runs:
       working-directory: ${{ github.workspace }}/${{ env.WDIR }}
       run: |
         echo "Install dependencies"
-       if [ "${{ inputs.algo_name }}" == "test-engine" ]; then
+        if [ "${{ inputs.algo_name }}" == "test-engine" ]; then
           pip install .[all] /dev/null
         else
           pip install . > /dev/null
+        fi
         pip install pipdeptree > /dev/null
         pipdeptree -fl 
         pip install pytest pytest-mock pytest-html pytest-json pytest-cov coverage anybadge > /dev/null
