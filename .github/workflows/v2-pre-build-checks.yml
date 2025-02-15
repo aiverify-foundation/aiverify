@@ -7,8 +7,18 @@
 name: v2 Pre-build Checks
 
 env:
-  ALGO_NAMES:  'accumulated_local_effect, robustness_toolbox, shap_toolbox'
-  PLUGIN_NAMES: 'accumulated-local-effect, robustness-toolbox, shap-toolbox'
+  ALGO_NAMES:  'accumulated_local_effect, fairness_metrics_toolbox_for_classification,
+                fairness_metrics_toolbox_for_regression, blur_corruptions,
+                digital_corruptions, environment_corruptions,
+                general_corruptions, partial_dependence_plot,
+                robustness_toolbox, shap_toolbox,
+                veritastool'
+  PLUGIN_NAMES: 'accumulated-local-effect, fairness-metrics-toolbox-for-classification,
+                 fairness-metrics-toolbox-for-regression, image-corruption-toolbox,
+                 image-corruption-toolbox, image-corruption-toolbox, 
+                 image-corruption-toolbox, partial-dependence-plot,
+                 robustness-toolbox, shap-toolbox
+                 veritas'
  
   GH_TOKEN: ${{ github.token }}
   
