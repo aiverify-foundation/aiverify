@@ -55,7 +55,7 @@ runs:
         if [ "${{ inputs.algo_name }}" == "test-engine" ]; then
           echo "WDIR=aiverify-test-engine" >> $GITHUB_ENV
         else
-          echo "WDIR=stock-plugins/aiverify.stock.${{ env.PLUGIN_NAME }}/algorithms/${{ env.ALGO_NAME }}" >> $GITHUB_ENV
+          echo "WDIR=stock-plugins/aiverify.stock.${{ inputs.plugin_name }}/algorithms/${{ inputs.algo_name }}" >> $GITHUB_ENV
         fi        
         echo "STATUS=success" >> $GITHUB_ENV
       shell: bash
