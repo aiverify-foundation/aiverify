@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import styles from './Uploader.module.css';
 import useUploadFile from '@/app/models/upload/hooks/useUploadFile';
+import { UploadIcon } from '@/app/models/upload/utils/icons';
+import { Icon, IconName } from '@/lib/components/IconSVG';
 import { Button, ButtonVariant } from '@/lib/components/button';
 import { Modal } from '@/lib/components/modal';
-import { Icon, IconName } from '@/lib/components/IconSVG';
+import styles from './Uploader.module.css';
 
-const FileUploader = ({ onBack }: { onBack: () => void }) => {
+const FileUploader = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [modelTypes, setModelTypes] = useState<string[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -41,7 +42,7 @@ const FileUploader = ({ onBack }: { onBack: () => void }) => {
       setIsModalVisible(true);
       return;
     }
-  
+
     if (modelTypes.some((type) => type === '')) {
       setModalMessage('Please select a model type for all files.');
       setIsModalVisible(true);
@@ -56,17 +57,15 @@ const FileUploader = ({ onBack }: { onBack: () => void }) => {
       console.log(`Appending file: ${file.name}`);
       formData.append('files', file); // Correct field name without array syntax
     });
-  
+
     // Join the model types as a comma-separated string
     const modelTypesString = modelTypes.join(',');
     console.log(`Appending model types: ${modelTypesString}`);
-    formData.append('model_types', modelTypesString); 
-    
+    formData.append('model_types', modelTypesString);
 
-    for (let pair of formData.entries()) {
-      console.log("paired:", pair[0], pair[1]);
+    for (const pair of formData.entries()) {
+      console.log('paired:', pair[0], pair[1]);
     }
-  
 
     mutate(formData, {
       onSuccess: () => {
@@ -100,7 +99,7 @@ const FileUploader = ({ onBack }: { onBack: () => void }) => {
   };
 
   return (
-    <div className='flex h-[calc(100vh-200px)] bg-secondary-950 pl-10 mb-8 overflow-y-auto scrollbar-hidden relative'>
+    <div className="relative mb-8 flex h-[calc(100vh-200px)] overflow-y-auto pl-10 scrollbar-hidden">
       {/* Modal Popup */}
       {isModalVisible && (
         <Modal
@@ -109,64 +108,106 @@ const FileUploader = ({ onBack }: { onBack: () => void }) => {
           onCloseIconClick={closeModal}
           enableScreenOverlay
           heading="Upload Status"
-          height={200}
-        >
+          height={200}>
           <p>{modalMessage}</p>
         </Modal>
       )}
 
-      <div className='mt-6 w-full'>
-        <div className='flex'>
-          <div className='mt-1 pr-12'>
-            <Icon name={IconName.ArrowLeft} color='white' onClick={onBack}/>
-          </div>
-          <div className='flex flex-col w-full mr-20'>
-            <h3 className='text-2xl font-semibold mb-4'>Upload AI Model</h3>
-            <div className=''>
-              <form onSubmit={handleSubmit} className="w-full">
-                <div className='flex items-center gap-20 w-full'>
-                  <h2>If you have a model file, use the file uploader below</h2>
-                  <div
-                    className={`${styles.dropzone} flex-1`}
-                    onClick={() => document.getElementById("fileInput")?.click()}
-                    onDrop={handleDrop}
-                    onDragOver={handleDragOver}
-                  >
-                    <p className="text-gray-500">Drag and drop files here, or click to select files</p>
-                    <input
-                      id="fileInput"
-                      type="file"
-                      accept=".sav,.pkl"
-                      multiple
-                      className="hidden"
-                      onChange={(e) => handleFiles(e.target.files || [])}
-                    />
+      <div className="mt-6 w-full">
+        <div className="flex w-full flex-col">
+          <div className="pr-20">
+            <form
+              onSubmit={handleSubmit}
+              className="w-full">
+              {/* Upload Requirements */}
+              <div className="flex w-full items-start space-x-20 p-4">
+                {/* Left Section: Header, Description, and Requirements */}
+                <div className="w-1/2 space-y-4">
+                  <h2 className="text-lg font-semibold">Before uploading...</h2>
+                  <p className="mt-1 text-sm text-gray-400">
+                    Check that the model file meets the following requirements.
+                  </p>
+                  <div className="mt-4 rounded-lg border border-secondary-300 p-4">
+                    <ul className="mt-2 space-y-1 text-sm">
+                      <li>
+                        <strong>File Size:</strong> Less than 4GB
+                      </li>
+                      <li>
+                        <strong>Data Format:</strong> LightGBM, Scikit-learn,
+                        TensorFlow, XGBoost
+                      </li>
+                      <li>
+                        <strong>Serializer Type:</strong> Pickle or Joblib
+                      </li>
+                      <li className="text-xs text-gray-400">
+                        * If your model includes data preprocessing, upload the
+                        pipeline <span className="text-purple-400">here</span>{' '}
+                        instead.
+                      </li>
+                    </ul>
                   </div>
                 </div>
+
+                {/* Right Section: Drag & Drop Upload */}
+                <div
+                  className={`${styles.dropzone} flex-1`}
+                  onClick={() => document.getElementById('fileInput')?.click()}
+                  onDrop={handleDrop}
+                  onDragOver={handleDragOver}>
+                  <UploadIcon size={80} />
+                  <p className="mt-2 text-sm text-gray-300">
+                    <span className="text-purple-400">Drag & drop</span> or{' '}
+                    <span className="cursor-pointer text-purple-400">
+                      Click to Browse
+                    </span>
+                  </p>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Maximum 10 files per upload
+                  </p>
+                  <input
+                    id="fileInput"
+                    type="file"
+                    accept=".sav,.pkl"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => handleFiles(e.target.files || [])}
+                  />
+                </div>
+              </div>
+              <h3 className="mb-2 p-4 text-lg font-medium text-white">
+                Selected Files:
+              </h3>
+              {/* Selected Files Section */}
               {selectedFiles.length > 0 && (
                 <div className="mb-8 mt-8">
-                  <h3 className="text-lg font-medium text-white mb-2">Selected Files:</h3>
-                  <div className='mt-4 border-2 border-gray-400 p-4 rounded-lg overflow-y-auto max-h-64'>
-                    <ul className="list-disc list-inside text-gray-300">
+                  <div className="mt-4 max-h-64 overflow-y-auto rounded-lg border-2 border-gray-400 p-4">
+                    <ul className="list-inside list-disc text-gray-300">
                       {selectedFiles.map((file, index) => (
-                        <li key={index} className="flex items-center space-x-20 space-y-4">
+                        <li
+                          key={index}
+                          className="flex items-center space-x-20 space-y-4">
                           <Icon
                             name={IconName.Close}
                             onClick={() => handleRemoveFile(index)}
-                            color='#FFFFFF'
+                            color="#FFFFFF"
                           />
                           <span>{file.name}</span>
                           <div className="ml-4">
-                            <label className="block text-white font-medium">Model Type:</label>
+                            <label className="block font-medium text-white">
+                              Model Type:
+                            </label>
                             <select
                               value={modelTypes[index]}
                               required
-                              onChange={(e) => handleModelTypeChange(index, e.target.value)}
-                              className="w-full text-gray-700 border border-gray-300 rounded-md"
-                            >
+                              onChange={(e) =>
+                                handleModelTypeChange(index, e.target.value)
+                              }
+                              className="w-full rounded-md border border-gray-300 text-gray-700">
                               <option value="">Select</option>
                               <option value="regression">Regression</option>
-                              <option value="classification">Classification</option>
+                              <option value="classification">
+                                Classification
+                              </option>
                             </select>
                           </div>
                         </li>
@@ -176,16 +217,19 @@ const FileUploader = ({ onBack }: { onBack: () => void }) => {
                 </div>
               )}
 
+              <div className="mt-6 mt-auto flex items-center justify-end">
                 <Button
+                  pill
                   size="sm"
                   type="submit"
                   variant={ButtonVariant.PRIMARY}
-                  disabled={isLoading}
-                  text={isLoading ? 'Uploading...' : 'Upload Files'}
-                  className="w-full flex items-center ml-auto mt-5"
+                  disabled={
+                    isLoading || !selectedFiles || selectedFiles.length === 0
+                  }
+                  text={isLoading ? 'Uploading...' : 'UPLOAD FILE(S)'}
                 />
-              </form>
-            </div>
+              </div>
+            </form>
           </div>
         </div>
       </div>

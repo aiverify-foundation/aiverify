@@ -1,75 +1,74 @@
 .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 20px;
-  }
-
-  
-  .uploadSection {
-    display: flex;
-    gap: 20px;
-    width: 100%;
-    margin-top: 20px;
-  }
-  
-  .dropzone {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border: 3px dashed var(--color-primary-400);;
-    border-radius: 4px;
-    padding: 70px;
-    cursor: pointer;
-    white-space: nowrap;
-    background-color: var(--color-secondary-900);
-  }
-  
-  .fileInput {
-    display: none;
-  }
-  
-  .fileList {
-    padding: 0 10px; /* Add padding instead of fixed margin */
-    margin: 0 auto; /* Center the list */
-  }
-  
-  .fileItem {
-    width: 100%; /* Full width of parent */
-    padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px;
 }
-  
-  .fileHeader {
-    display: flex;
-    justify-content: space-between; /* Space between file name and remove button */
-    align-items: left;
-  }
-  
-  .progressBarContainer {
-    width: 100%;
-    height: 6px;
-    background: var(--color-secondary-600);
-    border-radius: 3px;
-    overflow: hidden;
-    margin-top: 8px;
-  }
-  
-  .progressBar {
-    height: 100%;
-    height: 5px;
-    border-radius: 3px;
-  }
-  
-  
-  .fileStatus {
-    margin-top: 4px;
-    display: block;
-    font-size: 12px;
-    color: var(--color-white);
-  }
-  
-  .removeButton {
-    background: none;
-    border: none;
-  }
+
+.uploadSection {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 3px dashed var(--color-primary-400);
+  border-radius: 4px;
+  padding: 40px;
+  cursor: pointer;
+  white-space: nowrap;
+  background-color: var(--color-secondary-900);
+  margin-left: 40px;
+}
+
+.fileInput {
+  display: none;
+}
+
+.fileList {
+  padding: 0 10px; /* Add padding instead of fixed margin */
+  margin: 0 auto; /* Center the list */
+}
+
+.fileItem {
+  width: 100%; /* Full width of parent */
+  padding: 20px;
+}
+
+.fileHeader {
+  display: flex;
+  justify-content: space-between; /* Space between file name and remove button */
+  align-items: left;
+}
+
+.progressBarContainer {
+  width: 100%;
+  height: 6px;
+  background: var(--color-secondary-600);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.progressBar {
+  height: 100%;
+  height: 5px;
+  border-radius: 3px;
+}
+
+.fileStatus {
+  margin-top: 4px;
+  display: block;
+  font-size: 12px;
+  color: var(--color-white);
+}
+
+.removeButton {
+  background: none;
+  border: none;
+}

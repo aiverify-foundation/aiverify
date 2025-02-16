@@ -33,9 +33,11 @@ class FileStoreError(Exception):
 
 
 def check_relative_to_base(base_path: Path | str, filepath: str) -> bool:
-    logger.debug(f"check_relative_to_base: {base_path} -> {filepath}")
+    print(f"check_relative_to_base: {base_path} -> {filepath}")
     if isinstance(base_path, Path):
-        return base_path.joinpath(filepath).resolve().is_relative_to(base_path)
+        filepath = Path(filepath)
+        full_path = base_path / filepath
+        return full_path.is_relative_to(base_path)
     else:
         # for s3 must be full url
         return urljoin(base_path, filepath).startswith(base_path)

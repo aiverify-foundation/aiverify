@@ -1,7 +1,7 @@
-import { Icon, IconName } from '@/lib/components/IconSVG';
 import ActionButtons from '@/app/models/components/ActionButtons';
-import { getTestModels } from '@/lib/fetchApis/getAllModels';
 import ModelList from '@/app/models/components/ModelList';
+import { Icon, IconName } from '@/lib/components/IconSVG';
+import { getTestModels } from '@/lib/fetchApis/getAllModels';
 
 export default async function ModelsPage() {
   const models = await getTestModels();

@@ -3,30 +3,66 @@
 import { useState } from 'react';
 import FileUploader from '@/app/models/upload/components/FileUploader';
 import FolderUpload from '@/app/models/upload/components/FolderUploader';
+import { Icon, IconName } from '@/lib/components/IconSVG';
+import { Button, ButtonVariant } from '@/lib/components/button';
 
 const ModelUploader = ({ onBack }: { onBack: () => void }) => {
   const [activeTab, setActiveTab] = useState<'file' | 'folder'>('file');
 
   return (
-    <div className="upload-page">
-      <header className="tabs">
-        <button
-          className={activeTab === 'file' ? 'active' : ''}
-          onClick={() => setActiveTab('file')}
-        >
-          File
-        </button>
-        <button
-          className={activeTab === 'folder' ? 'active' : ''}
-          onClick={() => setActiveTab('folder')}
-        >
-          Folder
-        </button>
-      </header>
+    <div className="min-h-screen p-8">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-8 flex items-center justify-between">
+          <div className="flex items-center">
+            <Icon
+              name={IconName.ArrowLeft}
+              color="white"
+              size={30}
+              onClick={onBack}
+            />
+            <h1 className="ml-6 text-2xl font-semibold text-white">
+              Add New AI Model {'>'} Upload Model File
+            </h1>
+          </div>
+          <div className="inline-flex p-1">
+            <div className="flex items-center">
+              <Button
+                pill
+                textColor="white"
+                variant={
+                  activeTab === 'file'
+                    ? ButtonVariant.PRIMARY
+                    : ButtonVariant.OUTLINE
+                }
+                size="sm"
+                text="FILE"
+                className="!rounded-r-none rounded-l-full"
+                onClick={() => setActiveTab('file')}
+              />
+              <Button
+                pill
+                textColor="white"
+                variant={
+                  activeTab === 'folder'
+                    ? ButtonVariant.PRIMARY
+                    : ButtonVariant.OUTLINE
+                }
+                size="sm"
+                text="FOLDER"
+                className="!rounded-l-none rounded-r-full"
+                onClick={() => setActiveTab('folder')}
+              />
+            </div>
+          </div>
+        </div>
 
-      <div className="upload-form">
-        {activeTab === 'file' && <FileUploader onBack={onBack}/>}
-        {activeTab === 'folder' && <FolderUpload onBack={onBack}/>}
+        <div className="rounded-lg p-8">
+          {activeTab === 'file' ? (
+            <FileUploader />
+          ) : (
+            <FolderUpload onBack={onBack} />
+          )}
+        </div>
       </div>
     </div>
   );

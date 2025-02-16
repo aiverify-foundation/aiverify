@@ -43,7 +43,7 @@ const ModelList: React.FC<Props> = ({ models }) => {
   };
 
   const columns: {
-    field: string;
+    field: keyof TestModel;
     headerName: string;
     sortable?: boolean;
     renderCell?: (row: TestModel) => React.ReactNode;
@@ -51,7 +51,7 @@ const ModelList: React.FC<Props> = ({ models }) => {
     { field: 'name', headerName: 'Name', sortable: true },
     { field: 'modelType', headerName: 'Model Type', sortable: true },
     {
-      field: 'type',
+      field: 'fileType',
       headerName: 'Type',
       renderCell: (row: TestModel) => getTypeLabel(row.fileType, row.mode), // Use row instead of model
     },
@@ -263,7 +263,7 @@ const ModelList: React.FC<Props> = ({ models }) => {
       </div>
 
       {/* Data Grid or Loading Rectangle */}
-      <div className="mt-2">
+      <div className="mt-2 w-full">
         {loading ? renderLoading('400px') : renderDataGrid()}
       </div>
     </div>

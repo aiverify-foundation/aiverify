@@ -1,13 +1,9 @@
 'use client';
 
-import React, { ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import '../globals.css';
+import React, { ReactNode } from 'react';
+import '@/app/globals.css';
 import LayoutHeader from './components/LayoutHeader';
-
-type LayoutProps = {
-  children: ReactNode;
-};
 
 const queryClient = new QueryClient();
 

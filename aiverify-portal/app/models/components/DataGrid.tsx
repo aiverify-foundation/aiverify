@@ -113,7 +113,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
 
   return (
     <div className="overflow-hidden rounded-lg border-secondary-300 bg-secondary-950 shadow-md">
-      <table className="min-w-full table-auto">
+      <table className="w-full table-auto">
         <thead className="bg-secondary-950 text-white">
           <tr>
             {checkboxSelection && <th className="px-4 py-2 text-center" />}
@@ -123,7 +123,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
                 className="relative cursor-pointer px-4 py-2 hover:bg-primary-600">
                 <div
                   onClick={() => col.sortable && handleHeaderClick(col.field)}
-                  className="mt-2 flex items-start justify-between">
+                  className="mt-2 flex w-full items-start justify-between">
                   <span>{col.headerName}</span>
                   {sortField === col.field &&
                     (sortDirection === 'asc' ? '↑' : '↓')}
