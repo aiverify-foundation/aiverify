@@ -23,7 +23,7 @@
   cursor: pointer;
   white-space: nowrap;
   background-color: var(--color-secondary-900);
-  margin-left: 40px;
+  margin-left: 20px;
 }
 
 .fileInput {

@@ -146,7 +146,6 @@ const FolderUpload = ({}: { onBack: () => void }) => {
                   <input
                     id="fileInput"
                     type="file"
-                    accept=".sav,.pkl"
                     multiple
                     className="hidden"
                     onChange={(e) => handleFiles(e.target.files || [])}

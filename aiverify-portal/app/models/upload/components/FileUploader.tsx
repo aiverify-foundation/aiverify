@@ -99,7 +99,7 @@ const FileUploader = () => {
   };
 
   return (
-    <div className="relative mb-8 flex h-[calc(100vh-200px)] overflow-y-auto pl-10 scrollbar-hidden">
+    <div className="relative flex h-[calc(100vh-200px)] overflow-y-auto scrollbar-hidden">
       {/* Modal Popup */}
       {isModalVisible && (
         <Modal
@@ -115,20 +115,20 @@ const FileUploader = () => {
 
       <div className="mt-6 w-full">
         <div className="flex w-full flex-col">
-          <div className="pr-20">
+          <div className="">
             <form
               onSubmit={handleSubmit}
               className="w-full">
               {/* Upload Requirements */}
               <div className="flex w-full items-start space-x-20 p-4">
                 {/* Left Section: Header, Description, and Requirements */}
-                <div className="w-1/2 space-y-4">
+                <div className="w-1/2">
                   <h2 className="text-lg font-semibold">Before uploading...</h2>
                   <p className="mt-1 text-sm text-gray-400">
                     Check that the model file meets the following requirements.
                   </p>
                   <div className="mt-4 rounded-lg border border-secondary-300 p-4">
-                    <ul className="mt-2 space-y-1 text-sm">
+                    <ul className="mt-2 space-y-2 text-sm">
                       <li>
                         <strong>File Size:</strong> Less than 4GB
                       </li>
@@ -180,20 +180,20 @@ const FileUploader = () => {
               {/* Selected Files Section */}
               {selectedFiles.length > 0 && (
                 <div className="mb-8 mt-8">
-                  <div className="mt-4 max-h-64 overflow-y-auto rounded-lg border-2 border-gray-400 p-4">
-                    <ul className="list-inside list-disc text-gray-300">
+                  <div className="mt-4 max-h-64 overflow-y-auto rounded-lg border border-secondary-300 p-6">
+                    <ul className="list-inside list-disc text-white">
                       {selectedFiles.map((file, index) => (
                         <li
                           key={index}
-                          className="flex items-center space-x-20 space-y-4">
+                          className="flex items-center gap-8 space-x-8">
                           <Icon
                             name={IconName.Close}
                             onClick={() => handleRemoveFile(index)}
                             color="#FFFFFF"
                           />
-                          <span>{file.name}</span>
-                          <div className="ml-4">
-                            <label className="block font-medium text-white">
+                          <span className="text-white">{file.name}</span>
+                          <div className="ml-4 flex items-center">
+                            <label className="mr-2 font-medium text-white">
                               Model Type:
                             </label>
                             <select
@@ -202,7 +202,7 @@ const FileUploader = () => {
                               onChange={(e) =>
                                 handleModelTypeChange(index, e.target.value)
                               }
-                              className="w-full rounded-md border border-gray-300 text-gray-700">
+                              className="rounded-md border border-secondary-300 text-black">
                               <option value="">Select</option>
                               <option value="regression">Regression</option>
                               <option value="classification">

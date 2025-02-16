@@ -31,7 +31,7 @@ const UploadPage: React.FC<UploadPageProps> = () => {
   };
 
   const renderSelectionOptions = () => (
-    <div className="relative flex h-full flex-col">
+    <div className="relative flex h-full flex-col overflow-y-auto">
       <div className="flex items-center">
         <Link href="/models">
           <Icon
@@ -133,7 +133,7 @@ const UploadPage: React.FC<UploadPageProps> = () => {
   );
 
   return (
-    <div className="mt-6 flex h-[calc(100vh-150px)] bg-secondary-950 pt-6 text-white">
+    <div className="mt-6 flex h-[calc(100vh-150px)] rounded-2xl bg-secondary-950 pt-6 text-white">
       <LayoutHeader />
       <div className="mx-auto w-full p-6">
         {!selectedMethod ? renderSelectionOptions() : null}
