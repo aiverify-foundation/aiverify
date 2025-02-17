@@ -166,7 +166,7 @@ const WidgetCard: React.FC<WidgetProps> = ({ widget }) => {
       </div>
       {/* Modal for properties and mock data */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto">
           <Modal
             heading={modalHeading}
             bgColor="var(--color-secondary-950)"
@@ -175,9 +175,11 @@ const WidgetCard: React.FC<WidgetProps> = ({ widget }) => {
             enableScreenOverlay
             width={600}
             height={400}>
-            <pre style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
-              {modalContent}
-            </pre>
+            <div className="h-72 overflow-y-auto p-4">
+              <pre className="whitespace-pre-wrap break-words">
+                {modalContent}
+              </pre>
+            </div>
           </Modal>
         </div>
       )}
