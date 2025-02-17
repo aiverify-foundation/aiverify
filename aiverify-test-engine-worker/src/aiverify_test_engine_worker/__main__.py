@@ -1,13 +1,28 @@
 from dotenv import load_dotenv
 load_dotenv(override=True)
 
-from lib.client import client, worker_id, init_group
-from lib.contants import TASK_STREAM_NAME, TASK_GROUP_NAME
-from lib.logging import logger
+from .lib.client import client, worker_id, init_group
+from .lib.contants import TASK_STREAM_NAME, TASK_GROUP_NAME
+from .lib.logging import logger
+from .pipeline.pipeline import Pipeline
+from .pipeline.schemas import TestRunTask, PipelineData, ModeEnum
 
 
 if __name__ == "__main__":
     logger.info(f"Running test engine worker {worker_id}")
+
+    pipeline = Pipeline()
+    task = TestRunTask(
+        id="123",
+        mode=ModeEnum.UPLOAD,
+        algorithmId="algo1",
+        algorithmArgs={"arg1": "value1"},
+        testDataset="dataset1",
+        modelFile="/tmp/data/modelfile"
+    )
+    pipeline_data = PipelineData(task=task)
+    pipeline.run(pipeline_data)
+
     init_group()
     try:
         while True:

@@ -3,7 +3,7 @@ import valkey
 import uuid
 
 from .logging import logger
-from lib.contants import TASK_STREAM_NAME, TASK_GROUP_NAME
+from .contants import TASK_STREAM_NAME, TASK_GROUP_NAME
 
 
 host = os.getenv("VALKEY_HOST_ADDRESS", "127.0.0.1")

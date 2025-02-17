@@ -29,6 +29,8 @@ classifiers = [
 dependencies = [
   "valkey[libvalkey]==6.*",
   "python-dotenv>=1.0.1",
+  "pydantic==2.*",
+  "jsonschema==4.*",
 ]
 
 [tool.hatch.envs.default]
