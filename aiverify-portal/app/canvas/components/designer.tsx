@@ -108,6 +108,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     handleMouseUp: handleFreeFormAreaMouseUp,
     handleMouseMove: handleFreeFormAreaMouseMove,
   } = useDragToScroll(freeFormAreaRef, canvasRef);
+  const [resizingId, setResizingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (freeFormAreaRef.current) {
@@ -230,6 +231,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     const { i } = itemLayout;
     setDraggingId(i);
     setIsGridItemDragging(true);
+    setResizingId(i);
   };
 
   const handleGridItemResizeStop =
@@ -243,6 +245,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
         });
         setDraggingId(null);
         setIsGridItemDragging(false);
+        setResizingId(null);
       };
 
   function handleGridItemDragStart(
@@ -545,6 +548,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
                           onDeleteClick={handleDeleteGridItem(pageIndex, widgetIndex)}
                           onEditClick={handleGridItemEditClick(pageIndex)}
                           isDragging={draggingId === widget.gridItemId}
+                          isResizing={resizingId === widget.gridItemId}
                           algosMap={state.algos}
                           testResultsMapping={testResultsMapping}
                         />

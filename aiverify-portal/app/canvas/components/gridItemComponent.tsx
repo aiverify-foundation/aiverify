@@ -21,11 +21,9 @@ type GridItemComponentProps = {
     widget: WidgetOnGridLayout
   ) => void;
   isDragging?: boolean;
+  isResizing: boolean;
   algosMap: Record<string, Algorithm[]>;
 };
-
-// type ContainerObserverCallback = (width: number, height: number) => void;
-// type GetContainerObserver = (callback: ContainerObserverCallback) => ResizeObserver;
 
 type MdxComponentProps = MDXContentProps & {
   id: string;
@@ -68,8 +66,7 @@ const withTextBehavior = <P extends MDXContentProps>(
   };
 };
 
-function GridItemComponent(props: GridItemComponentProps) {
-  const { widget, onDeleteClick, onEditClick, isDragging, algosMap, testResultsMapping } = props;
+function GridItemComponent({ widget, onDeleteClick, onEditClick, isDragging, isResizing, algosMap, testResultsMapping }: GridItemComponentProps) {
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const gridItemRef = useRef<HTMLDivElement>(null);
@@ -287,17 +284,20 @@ function GridItemComponent(props: GridItemComponentProps) {
         className="relative h-full w-full"
         onMouseOver={handleMouseEnter}
         onMouseLeave={handleMouseLeave}>
-        <Component
-          id={widget.gridItemId}
-          properties={properties}
-          results={mockResults}
-          inputBlockData={mockInputs}
-          getIBData={(cid) => mockInputs[`${widget.gid}:${cid}`]}
-          getResults={(cid) => mockResults[`${widget.gid}:${cid}`]}
-          width={dimensions.width}
-          height={dimensions.height}
-        // need another for get Artifacts
-        />
+        {isResizing ? (
+          <div className="h-full w-full bg-gray-100" />
+        ) : (
+          <Component
+            id={widget.gridItemId}
+            properties={properties}
+            results={mockResults}
+            inputBlockData={mockInputs}
+            getIBData={(cid) => mockInputs[`${widget.gid}:${cid}`]}
+            getResults={(cid) => mockResults[`${widget.gid}:${cid}`]}
+            width={dimensions.width}
+            height={dimensions.height}
+          />
+        )}
       </div>
     </React.Fragment>
   );
