@@ -7,6 +7,7 @@ export type State = {
   layouts: Layout[][];
   widgets: WidgetOnGridLayout[][];
   algos: Record<string, Algorithm[]>;
+  inputBlocks: Record<string, unknown>;
   currentPage: number;
   showGrid: boolean;
 };
@@ -15,6 +16,7 @@ export const initialState: State = {
   layouts: [[]],
   widgets: [[]],
   algos: {},
+  inputBlocks: {},
   currentPage: 0,
   showGrid: true,
 };

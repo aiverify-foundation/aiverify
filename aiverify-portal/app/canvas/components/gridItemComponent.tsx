@@ -24,17 +24,19 @@ type GridItemComponentProps = {
   algosMap: Record<string, Algorithm[]>;
 };
 
-type ContainerObserverCallback = (width: number, height: number) => void;
-type GetContainerObserver = (callback: ContainerObserverCallback) => ResizeObserver;
+// type ContainerObserverCallback = (width: number, height: number) => void;
+// type GetContainerObserver = (callback: ContainerObserverCallback) => ResizeObserver;
 
 type MdxComponentProps = MDXContentProps & {
+  id: string;
   properties: Record<string, unknown>;
   results: TestResultData;
   inputBlockData: InputBlockData;
-  getContainerObserver: GetContainerObserver;
+  // getContainerObserver: GetContainerObserver;
   getIBData: (cid: string) => InputBlockData;
   getResults: (cid: string) => TestResultData;
-  frontmatter?: Record<string, unknown>;
+  width?: number;
+  height?: number;
 };
 
 /**
@@ -73,7 +75,19 @@ function GridItemComponent(props: GridItemComponentProps) {
   const gridItemRef = useRef<HTMLDivElement>(null);
   const hideTimeoutRef = useRef<NodeJS.Timeout>(null);
   const isHoveringRef = useRef<boolean>(false);
-  let resizeObserver: ResizeObserver | null = null;
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    if (!gridItemRef.current) return;
+
+    const resizeObserver = new ResizeObserver(entries => {
+      const { width, height } = entries[0].contentRect;
+      setDimensions({ width, height });
+    });
+
+    resizeObserver.observe(gridItemRef.current);
+    return () => resizeObserver.disconnect();
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -202,97 +216,87 @@ function GridItemComponent(props: GridItemComponentProps) {
     return {};
   }, [widget, widget.mdx, testResultsMapping]);
 
-  console.log('mockResults', mockResults);
-  console.log('mockInputs', mockInputs);
+  // console.log('mockResults', mockResults);
+  // console.log('mockInputs', mockInputs);
+
+  const contextMenu = showContextMenu && !isDragging
+    ? createPortal(
+      <div
+        className="fixed flex flex-col gap-1"
+        style={{
+          top: `${menuPosition.top}px`,
+          left: `${menuPosition.left}px`,
+        }}>
+        <div className="max-w-[200px] break-words rounded bg-secondary-600 px-2 py-1 text-xs shadow-lg">
+          {widget.name}
+        </div>
+        <div className="flex gap-1">
+          <div
+            className="cursor-pointer rounded bg-secondary-400 shadow-lg"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            onMouseDown={(e) => {
+              // Prevent grid drag from starting
+              e.stopPropagation();
+            }}
+            onClick={handleEditClick}>
+            <RiFileEditLine className="m-1 h-5 w-5 text-white hover:text-blue-800" />
+          </div>
+          <div
+            className="cursor-pointer rounded bg-secondary-400 shadow-lg"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            onMouseDown={(e) => {
+              // Prevent grid drag from starting
+              e.stopPropagation();
+            }}
+            onClick={onDeleteClick}>
+            <RiDeleteBin5Line className="m-1 h-5 w-5 text-white hover:text-red-500" />
+          </div>
+        </div>
+        {Object.keys(algosMap).length > 0 && (
+          <section className="flex flex-col gap-1">
+            {algosMap[widget.gridItemId] &&
+              algosMap[widget.gridItemId].map((algo) => (
+                <div
+                  key={algo.cid}
+                  className="mt-1 flex w-[250px] flex-col items-start gap-2 rounded bg-secondary-200 p-4 text-gray-500 shadow-md">
+                  <div className="flex items-center gap-2">
+                    <RiFlaskLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
+                    <h2 className="text-[0.9rem] font-semibold">Tests</h2>
+                  </div>
+                  <div className="mb-2 h-[1px] w-full bg-gray-500" />
+                  <h3 className="text-[0.9rem] font-semibold">
+                    {algo.name}
+                  </h3>
+                  <p className="text-[0.8rem]">{algo.description}</p>
+                </div>
+              ))}
+          </section>
+        )}
+      </div>,
+      document.body
+    )
+    : null;
 
   return (
     <React.Fragment>
-      {showContextMenu && !isDragging
-        ? createPortal(
-            <div
-              className="fixed flex flex-col gap-1"
-              style={{
-                top: `${menuPosition.top}px`,
-                left: `${menuPosition.left}px`,
-              }}>
-              <div className="max-w-[200px] break-words rounded bg-secondary-600 px-2 py-1 text-xs shadow-lg">
-                {widget.name}
-              </div>
-              <div className="flex gap-1">
-                <div
-                  className="cursor-pointer rounded bg-secondary-400 shadow-lg"
-                  onMouseEnter={handleMouseEnter}
-                  onMouseLeave={handleMouseLeave}
-                  onMouseDown={(e) => {
-                    // Prevent grid drag from starting
-                    e.stopPropagation();
-                  }}
-                  onClick={handleEditClick}>
-                  <RiFileEditLine className="m-1 h-5 w-5 text-white hover:text-blue-800" />
-                </div>
-                <div
-                  className="cursor-pointer rounded bg-secondary-400 shadow-lg"
-                  onMouseEnter={handleMouseEnter}
-                  onMouseLeave={handleMouseLeave}
-                  onMouseDown={(e) => {
-                    // Prevent grid drag from starting
-                    e.stopPropagation();
-                  }}
-                  onClick={onDeleteClick}>
-                  <RiDeleteBin5Line className="m-1 h-5 w-5 text-white hover:text-red-500" />
-                </div>
-              </div>
-              {Object.keys(algosMap).length > 0 && (
-                <section className="flex flex-col gap-1">
-                  {algosMap[widget.gridItemId] &&
-                    algosMap[widget.gridItemId].map((algo) => (
-                      <div
-                        key={algo.cid}
-                        className="mt-1 flex w-[250px] flex-col items-start gap-2 rounded bg-secondary-200 p-4 text-gray-500 shadow-md">
-                        <div className="flex items-center gap-2">
-                          <RiFlaskLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
-                          <h2 className="text-[0.9rem] font-semibold">Tests</h2>
-                        </div>
-                        <div className="mb-2 h-[1px] w-full bg-gray-500" />
-                        <h3 className="text-[0.9rem] font-semibold">
-                          {algo.name}
-                        </h3>
-                        <p className="text-[0.8rem]">{algo.description}</p>
-                      </div>
-                    ))}
-                </section>
-              )}
-            </div>,
-            document.body
-          )
-        : null}
+      {contextMenu}
       <div
         ref={gridItemRef}
         className="relative h-full w-full"
         onMouseOver={handleMouseEnter}
         onMouseLeave={handleMouseLeave}>
         <Component
+          id={widget.gridItemId}
           properties={properties}
           results={mockResults}
           inputBlockData={mockInputs}
           getIBData={(cid) => mockInputs[`${widget.gid}:${cid}`]}
           getResults={(cid) => mockResults[`${widget.gid}:${cid}`]}
-          getContainerObserver={(callback) => {
-            if (resizeObserver) return resizeObserver;
-            resizeObserver = new ResizeObserver(() => {
-              if (gridItemRef.current && gridItemRef.current.parentElement) {
-                callback(
-                  gridItemRef.current.parentElement.offsetWidth - 20,
-                  gridItemRef.current.parentElement.offsetHeight - 20
-                );
-              }
-            });
-            if (gridItemRef.current && gridItemRef.current.parentElement)
-              resizeObserver.observe(gridItemRef.current.parentElement);
-            return resizeObserver;
-          }}
-          // need another for get Artifacts
-          frontmatter={widget.mdx ? widget.mdx.frontmatter : undefined}
+          width={dimensions.width}
+          height={dimensions.height}
+        // need another for get Artifacts
         />
       </div>
     </React.Fragment>
