@@ -45,7 +45,10 @@ on:
         description: 'Name of algo to test'
         required: true
         default: 'accumulated_local_effect,shap_toolbox'
-
+        
+  push:
+    branches: [ ci/v2-pre-build-checks' ]
+    
 # Allow one concurrent deployment
 concurrency:
   group: ${{ github.repository }}-${{ github.workflow }}
