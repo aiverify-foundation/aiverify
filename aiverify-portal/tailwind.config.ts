@@ -35,6 +35,17 @@ const config: Config = {
   },
   plugins: [
     require('@tailwindcss/typography'),
+    function ({ addUtilities }) {
+      addUtilities({
+        '.scrollbar-hidden': {
+          'scrollbar-width': 'none' /* For Firefox */,
+          '-ms-overflow-style': 'none' /* For Internet Explorer and Edge */,
+        },
+        '.scrollbar-hidden::-webkit-scrollbar': {
+          display: 'none' /* For Chrome, Safari, and Opera */,
+        },
+      });
+    },
     function ({ matchUtilities, theme }) {
       matchUtilities(
         {
