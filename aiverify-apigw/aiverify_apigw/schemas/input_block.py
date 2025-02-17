@@ -35,7 +35,7 @@ class InputBlockMeta(BaseModel):
     group: Optional[str] = Field(default=None, description="Input Block group", min_length=1, max_length=256)
     groupNumber: Optional[int] = Field(default=None, description="Input Block group number")
     width: Optional[InputBlockSize] = Field(
-        default="md", description="Width of Input Block dialog"
+        default=InputBlockSize.md, description="Width of Input Block dialog"
     )
     fullScreen: Optional[bool] = Field(default=False, description="Width of Input Block dialog")
 
