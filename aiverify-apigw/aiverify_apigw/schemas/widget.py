@@ -92,11 +92,18 @@ class WidgetOutput (WidgetMeta):
             try:
                 mock_data_list = json.loads(result.mockdata.decode('utf-8'))
                 mockdata = []
-                for mock in mock_data_list:
-                    # Ensure the data field is passed through as-is without type validation
-                    if 'data' in mock:
-                        mock['data'] = json.loads(mock['data']) if isinstance(mock['data'], str) else mock['data']
-                    mockdata.append(WidgetMetaMockData.model_validate(mock))
+                for mock_item in mock_data_list:
+                    if isinstance(mock_item, str):
+                        mock_item = json.loads(mock_item)
+                    
+                    if 'data' in mock_item:
+                        if isinstance(mock_item['data'], str):
+                            try:
+                                mock_item['data'] = json.loads(mock_item['data'])
+                            except json.JSONDecodeError:
+                                pass
+                    
+                    mockdata.append(WidgetMetaMockData.model_validate(mock_item))
             except Exception as e:
                 import logging
                 logging.error(f"Error parsing mock data for widget {result.cid}: {str(e)}")
