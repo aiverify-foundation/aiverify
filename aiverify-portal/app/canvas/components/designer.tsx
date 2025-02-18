@@ -15,6 +15,7 @@ import { Tooltip } from '@/lib/components/tooltip';
 import { cn } from '@/lib/utils/twmerge';
 import { AlgosToRun } from './algosToRun';
 import { EditingOverlay } from './editingOverlay';
+import { FreeFormArea } from './freeFormArea';
 import { GridItemComponent } from './gridItemComponent';
 import { GridLines } from './gridLines';
 import { initialState } from './hooks/pagesDesignReducer';
@@ -455,10 +456,10 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     // If single page and content smaller than viewport, center vertically
     if (layouts.length === 1 && freeFormAreaRef.current) {
       const viewportHeight = freeFormAreaRef.current.clientHeight;
-      return `${Math.max(viewportHeight, totalHeight)}px`;
+      return Math.max(viewportHeight, totalHeight);
     }
 
-    return `${totalHeight}px`;
+    return totalHeight;
   }, [layouts.length, gridHeight, zoomLevel]);
 
   const pageControlsSection = (
@@ -507,121 +508,100 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   );
 
   const pagesSection = (
-    <section className="relative flex h-full w-full flex-1 flex-col gap-2">
-      <div
-        id="freeFormArea"
-        ref={freeFormAreaRef}
-        className="custom-scrollbar relative h-full cursor-grab overflow-auto bg-slate-100 active:cursor-grabbing"
-        onMouseDown={
-          !draggingGridItemId && !resizingGridItemId ? handleFreeFormAreaMouseDown : undefined
-        }
-        onMouseUp={!draggingGridItemId && !resizingGridItemId ? handleFreeFormAreaMouseUp : undefined}
-        onMouseMove={
-          isDraggingFreeFormArea && !draggingGridItemId && !resizingGridItemId
-            ? handleFreeFormAreaMouseMove
-            : undefined
-        }
-        onMouseLeave={
-          !draggingGridItemId && !resizingGridItemId ? handleFreeFormAreaMouseUp : undefined
-        }>
+    <FreeFormArea
+      ref={freeFormAreaRef}
+      pagesLength={layouts.length}
+      zoomLevel={zoomLevel}
+      contentWrapperMinHeight={contentWrapperMinHeight}
+      onMouseDown={!draggingGridItemId && !resizingGridItemId ? handleFreeFormAreaMouseDown : undefined}
+      onMouseUp={!draggingGridItemId && !resizingGridItemId ? handleFreeFormAreaMouseUp : undefined}
+      onMouseMove={isDraggingFreeFormArea && !draggingGridItemId && !resizingGridItemId
+        ? handleFreeFormAreaMouseMove
+        : undefined}
+      onMouseLeave={!draggingGridItemId && !resizingGridItemId ? handleFreeFormAreaMouseUp : undefined}>
+      {layouts.map((layout, pageIndex) => (
         <div
-          id="contentWrapper"
-          className="flex min-w-[6000px] justify-center transition-all duration-200 ease-out"
-          style={{
-            minHeight: contentWrapperMinHeight,
-            paddingTop:
-              layouts.length === 1 ? 'auto' : `${CONTAINER_PAD * zoomLevel}px`,
-            alignItems: layouts.length === 1 ? 'center' : 'flex-start',
-          }}>
-          <div
-            id="pagesWrapper"
-            className="flex flex-col gap-2">
-            {layouts.map((layout, pageIndex) => (
-              <div
-                id={`page-${pageIndex}`}
-                key={`page-${pageIndex}`}
-                ref={canvasRef}
-                className={cn(
-                  'relative bg-white text-black shadow',
-                  'cursor-default active:cursor-default'
-                )}>
-                {showGrid && (
-                  <GridLines
-                    columns={GRID_COLUMNS}
-                    rows={GRID_ROWS}
-                    padding={A4_MARGIN}
-                  />
-                )}
-                <div className="absolute right-[-65px] top-0 m-2 flex flex-col text-xs text-gray-500">
-                  Page {pageIndex + 1}
-                  <Tooltip
-                    sideOffset={-10}
-                    content="Delete Page"
-                    side="right">
-                    <RiDeleteBinLine
-                      className="mt-2 cursor-pointer rounded bg-gray-300 p-1 text-gray-500 shadow-sm hover:text-red-500"
-                      onClick={() => handleDeletePage(pageIndex)}
-                    />
-                  </Tooltip>
-                </div>
-                <GridLayout
-                  layout={layout}
-                  width={gridWidth}
-                  rowHeight={gridRowHeight}
-                  maxRows={GRID_ROWS}
-                  margin={[0, 0]}
-                  compactType={null}
-                  onDrop={handleWidgetDrop(pageIndex)}
-                  onDragStart={handleGridItemDragStart}
-                  onDragStop={handleGridItemDragStop(pageIndex)}
-                  onResizeStop={handleGridItemResizeStop(pageIndex)}
-                  onResizeStart={handleGridItemResizeStart}
-                  preventCollision
-                  isResizable={true}
-                  isDroppable={true}
-                  isDraggable={true}
-                  isBounded={false}
-                  allowOverlap={false}
-                  useCSSTransforms={!isInitialMount.current}
-                  resizeHandle={<ResizeHandle />}
-                  resizeHandles={['sw', 'nw', 'se', 'ne']}
-                  style={gridLayoutStyle}
-                  className="[&>*]:text-inherit"
-                  droppingItem={
-                    newDraggedWidget
-                      ? {
-                        // makes the dropping red placeholder size of the widget
-                        i: '__dropping-elem__',
-                        w: newDraggedWidget.widgetSize.maxW,
-                        h: newDraggedWidget.widgetSize.minH,
-                      } : undefined
-                  }>
-                  {state.widgets[pageIndex].map((widget, widgetIndex) => {
-                    if (!widget.gridItemId) return null;
-                    return (
-                      <div
-                        id={widget.gridItemId}
-                        key={widget.gridItemId}
-                        className={gridItemDivRequiredStyles}>
-                        <GridItemComponent
-                          widget={widget}
-                          onDeleteClick={handleDeleteGridItem(pageIndex, widgetIndex)}
-                          onEditClick={handleGridItemEditClick(pageIndex)}
-                          isDragging={draggingGridItemId === widget.gridItemId}
-                          isResizing={resizingGridItemId === widget.gridItemId}
-                          algosMap={state.algos}
-                          testResultsMapping={testResultsMapping}
-                        />
-                      </div>
-                    );
-                  })}
-                </GridLayout>
-              </div>
-            ))}
+          id={`page-${pageIndex}`}
+          key={`page-${pageIndex}`}
+          ref={canvasRef}
+          className={cn(
+            'relative bg-white text-black shadow',
+            'cursor-default active:cursor-default'
+          )}>
+          {showGrid && (
+            <GridLines
+              columns={GRID_COLUMNS}
+              rows={GRID_ROWS}
+              padding={A4_MARGIN}
+            />
+          )}
+          <div className="absolute right-[-65px] top-0 m-2 flex flex-col text-xs text-gray-500">
+            Page {pageIndex + 1}
+            <Tooltip
+              sideOffset={-10}
+              content="Delete Page"
+              side="right">
+              <RiDeleteBinLine
+                className="mt-2 cursor-pointer rounded bg-gray-300 p-1 text-gray-500 shadow-sm hover:text-red-500"
+                onClick={() => handleDeletePage(pageIndex)}
+              />
+            </Tooltip>
           </div>
+          <GridLayout
+            layout={layout}
+            width={gridWidth}
+            rowHeight={gridRowHeight}
+            maxRows={GRID_ROWS}
+            margin={[0, 0]}
+            compactType={null}
+            onDrop={handleWidgetDrop(pageIndex)}
+            onDragStart={handleGridItemDragStart}
+            onDragStop={handleGridItemDragStop(pageIndex)}
+            onResizeStop={handleGridItemResizeStop(pageIndex)}
+            onResizeStart={handleGridItemResizeStart}
+            preventCollision
+            isResizable={true}
+            isDroppable={true}
+            isDraggable={true}
+            isBounded={false}
+            allowOverlap={false}
+            useCSSTransforms={!isInitialMount.current}
+            resizeHandle={<ResizeHandle />}
+            resizeHandles={['sw', 'nw', 'se', 'ne']}
+            style={gridLayoutStyle}
+            className="[&>*]:text-inherit"
+            droppingItem={
+              newDraggedWidget
+                ? {
+                  // makes the dropping red placeholder size of the widget
+                  i: '__dropping-elem__',
+                  w: newDraggedWidget.widgetSize.maxW,
+                  h: newDraggedWidget.widgetSize.minH,
+                } : undefined
+            }>
+            {state.widgets[pageIndex].map((widget, widgetIndex) => {
+              if (!widget.gridItemId) return null;
+              return (
+                <div
+                  id={widget.gridItemId}
+                  key={widget.gridItemId}
+                  className={gridItemDivRequiredStyles}>
+                  <GridItemComponent
+                    widget={widget}
+                    onDeleteClick={handleDeleteGridItem(pageIndex, widgetIndex)}
+                    onEditClick={handleGridItemEditClick(pageIndex)}
+                    isDragging={draggingGridItemId === widget.gridItemId}
+                    isResizing={resizingGridItemId === widget.gridItemId}
+                    algosMap={state.algos}
+                    testResultsMapping={testResultsMapping}
+                  />
+                </div>
+              );
+            })}
+          </GridLayout>
         </div>
-      </div>
-    </section>
+      ))}
+    </FreeFormArea>
   );
 
   const testControlsSection = (
