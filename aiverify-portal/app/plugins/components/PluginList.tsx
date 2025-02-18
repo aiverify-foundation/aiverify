@@ -159,14 +159,20 @@ export default function PluginsList({ plugins }: Props) {
   return (
     <SplitPane
       leftPane={
-        <div className="flex h-full flex-col">
+        <div
+          className="flex h-full flex-col"
+          role="region"
+          aria-label="Plugins list">
           <PluginsFilters
             onSearch={handleSearch}
             onFilter={handleFilter}
             onSort={handleSort}
             activeFilters={activeFilters}
           />
-          <div className="mt-2 flex-1 overflow-y-auto p-1 scrollbar-hidden">
+          <div
+            className="mt-2 flex-1 overflow-y-auto p-1 scrollbar-hidden"
+            role="list"
+            aria-label="Filtered plugins">
             {loading
               ? Array.from({ length: 10 }).map((_, index) => (
                   <Card
@@ -181,14 +187,17 @@ export default function PluginsList({ plugins }: Props) {
                       height: '200px',
                     }}
                     cardColor="var(--color-secondary-950)"
-                    enableTiltEffect={false}>
+                    enableTiltEffect={false}
+                    aria-label="Loading plugin card">
                     <Card.Content className="h-auto" />
                   </Card>
                 ))
               : filteredResults.map((plugin) => (
                   <div
                     onClick={() => handleSelectPlugin(plugin)}
-                    key={plugin.gid}>
+                    key={plugin.gid}
+                    role="listitem"
+                    aria-label={`Plugin: ${plugin.name}`}>
                     <PluginCard plugin={plugin} />
                   </div>
                 ))}
@@ -197,7 +206,11 @@ export default function PluginsList({ plugins }: Props) {
       }
       rightPane={
         loading ? (
-          <div className="flex h-full animate-pulse flex-col rounded-lg bg-secondary-950 p-6 shadow-lg" />
+          <div
+            className="flex h-full animate-pulse flex-col rounded-lg bg-secondary-950 p-6 shadow-lg"
+            role="region"
+            aria-label="Loading plugin details"
+          />
         ) : (
           <PluginDetail
             plugin={selectedResult}

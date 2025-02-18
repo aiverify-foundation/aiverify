@@ -18,48 +18,84 @@ export default function PluginCard({ plugin }: Props) {
         height: 'auto',
       }}
       cardColor="var(--color-secondary-950)"
-      enableTiltEffect={false}>
+      enableTiltEffect={false}
+      aria-label={`Plugin card for ${plugin.name}`}>
       <Card.Content className="h-auto">
         {/* Title */}
-        <h3 className="mb-2 text-lg font-semibold text-white">{plugin.name}</h3>
+        <h3
+          className="mb-2 text-lg font-semibold text-white"
+          role="heading"
+          aria-level={3}>
+          {plugin.name}
+        </h3>
 
         {/* Metadata and Tags */}
         <div className="space-x-70 flex items-start gap-4">
           {/* Metadata */}
-          <div className="flex flex-col gap-2 text-sm text-gray-400">
+          <div
+            className="flex flex-col gap-2 text-sm text-gray-400"
+            role="group"
+            aria-label="Plugin metadata">
             <div>
-              <span className="font-semibold text-white">Version:</span>{' '}
+              <span
+                className="font-semibold text-white"
+                aria-label={`Version ${plugin.version}`}>
+                Version:
+              </span>{' '}
               {plugin.version}
             </div>
             <div>
-              <span className="font-semibold text-white">Author:</span>{' '}
+              <span
+                className="font-semibold text-white"
+                aria-label={`Author ${plugin.author}`}>
+                Author:
+              </span>{' '}
               {plugin.author}
             </div>
             <div>
-              <span className="font-semibold text-white">Installed on:</span>{' '}
+              <span
+                className="font-semibold text-white"
+                aria-label={`Installed on ${new Date(plugin.updated_at).toLocaleString('en-GB')}`}>
+                Installed on:
+              </span>{' '}
               {new Date(plugin.updated_at).toLocaleString('en-GB')}
             </div>
           </div>
 
           {/* Tags */}
-          <div className="flex flex-wrap gap-2">
+          <div
+            className="flex flex-wrap gap-2"
+            role="group"
+            aria-label="Plugin tags">
             {plugin.widgets.length > 0 && (
-              <span className="rounded bg-white px-2 py-1 text-sm text-secondary-950">
+              <span
+                className="rounded bg-white px-2 py-1 text-sm text-secondary-950"
+                role="status"
+                aria-label={`Widgets count: ${plugin.widgets.length}`}>
                 widgets: {plugin.widgets.length}
               </span>
             )}
             {plugin.algorithms.length > 0 && (
-              <span className="rounded bg-white px-2 py-1 text-sm text-secondary-950">
+              <span
+                className="rounded bg-white px-2 py-1 text-sm text-secondary-950"
+                role="status"
+                aria-label={`Algorithms count: ${plugin.algorithms.length}`}>
                 algorithms: {plugin.algorithms.length}
               </span>
             )}
             {plugin.input_blocks.length > 0 && (
-              <span className="rounded bg-white px-2 py-1 text-sm text-secondary-950">
+              <span
+                className="rounded bg-white px-2 py-1 text-sm text-secondary-950"
+                role="status"
+                aria-label={`Input blocks count: ${plugin.input_blocks.length}`}>
                 input blocks: {plugin.input_blocks.length}
               </span>
             )}
             {plugin.templates.length > 0 && (
-              <span className="rounded bg-white px-2 py-1 text-sm text-secondary-950">
+              <span
+                className="rounded bg-white px-2 py-1 text-sm text-secondary-950"
+                role="status"
+                aria-label={`Templates count: ${plugin.templates.length}`}>
                 templates: {plugin.templates.length}
               </span>
             )}

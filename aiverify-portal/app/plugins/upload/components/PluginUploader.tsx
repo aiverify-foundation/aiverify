@@ -94,10 +94,16 @@ const PluginUploader = () => {
   };
 
   return (
-    <div className="relative mb-8 flex h-[calc(100vh-200px)] overflow-y-auto rounded-lg bg-secondary-950 pl-10 scrollbar-hidden">
+    <div
+      className="relative mb-8 flex h-[calc(100vh-200px)] overflow-y-auto rounded-lg bg-secondary-950 pl-10 scrollbar-hidden"
+      role="region"
+      aria-label="Plugin uploader container">
       {/* Upload Popup */}
       {isModalVisible && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          role="dialog"
+          aria-label="upload status modal">
           <Modal
             bgColor="var(--color-primary-500)"
             textColor="white"
@@ -105,47 +111,60 @@ const PluginUploader = () => {
             enableScreenOverlay
             heading="Upload New Plugin"
             height={200}>
-            <p>{modalMessage}</p>
+            <p id="upload-confirmation-message">{modalMessage}</p>
           </Modal>
         </div>
       )}
       <div className="mt-6 w-full p-8">
-        <div className="mb-8 flex items-center justify-between">
+        <div
+          className="mb-8 flex items-center justify-between"
+          role="banner"
+          aria-label="Uploader header">
           <div className="flex items-center">
             <Link href="/plugins">
               <Icon
                 name={IconName.ArrowLeft}
                 color="white"
                 size={30}
+                aria-label="Back to plugins"
               />
             </Link>
-            <h1 className="ml-6 text-2xl font-semibold text-white">
+            <h1
+              className="ml-6 text-2xl font-semibold text-white"
+              aria-label="upload plugin header"
+              aria-level={1}>
               Add New Plugin {'>'} Upload Plugin File
             </h1>
           </div>
         </div>
         <div className="flex">
-          <div className="mr-20 flex w-full flex-col">
+          <div
+            className="mr-20 flex w-full flex-col"
+            role="main"
+            aria-label="File upload section">
             <div className="flex gap-4">
               <div className="flex-1">
                 <h3>Before uploading...</h3>
                 <p className="mb-6 text-[0.9rem] text-secondary-300">
-                  Check that the dataset file meets the following requirments.
+                  Check that the plugin file meets the following requirments.
                 </p>
                 <div className="rounded-md border border-secondary-400 p-4 text-[0.8rem]">
-                  <ul className="list-none">
-                    <li>
+                  <ul
+                    className="list-none"
+                    role="list"
+                    aria-label="list of plugin upload requirements">
+                    <li role="listitem">
                       File Size:{' '}
                       <span className="text-secondary-300">Less than 4GB</span>
                     </li>
-                    <li>
+                    <li role="listitem">
                       Data Format:{' '}
                       <span className="text-secondary-300">
                         Pandas, Delimiter-separated Values (comma, tab,
                         semicolon, pipe, space, colon), Image(jpeg, jpg, png)
                       </span>
                     </li>
-                    <li>
+                    <li role="listitem">
                       Serialiser Type:{' '}
                       <span className="text-secondary-300">Pickle, Joblib</span>
                     </li>
@@ -156,7 +175,9 @@ const PluginUploader = () => {
                 className={`${styles.dropzone} flex-1`}
                 onClick={() => document.getElementById('fileInput')?.click()}
                 onDrop={handleDrop}
-                onDragOver={handleDragOver}>
+                onDragOver={handleDragOver}
+                role="button"
+                aria-label="File drop zone">
                 <input
                   type="file"
                   id="fileInput"

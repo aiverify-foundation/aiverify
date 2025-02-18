@@ -48,21 +48,42 @@ const WidgetCard: React.FC<WidgetProps> = ({ widget }) => {
   };
 
   return (
-    <div className="mb-8 rounded-lg border border-secondary-300 bg-secondary-800 p-6">
+    <div
+      className="mb-8 rounded-lg border border-secondary-300 bg-secondary-800 p-6"
+      role="region"
+      aria-labelledby={`widget-${widget.gid || widget.cid}`}>
       <div className="flex items-center justify-between space-x-2">
-        <h3 className="text-xl font-semibold">{widget.name}</h3>
+        <h3
+          id={`widget-${widget.gid || widget.cid}`}
+          className="text-xl font-semibold">
+          {widget.name}
+        </h3>
         {/* Dependencies Check */}
-        <div className="flex min-w-[180px] items-center space-x-1 break-words rounded-full border-2 border-[#25A167] p-1 pl-2 pr-2 text-center">
+        <div
+          className="flex min-w-[180px] items-center space-x-1 break-words rounded-full border-2 border-[#25A167] p-1 pl-2 pr-2 text-center"
+          role="status"
+          aria-live="polite"
+          aria-label={
+            widget.dependencies.every((dep) => dep.cid)
+              ? 'All dependencies are met'
+              : 'Missing dependencies'
+          }>
           {widget.dependencies.every((dep) => dep.cid) ? (
             <>
-              <CheckCircleIcon color="#25A167" />
+              <CheckCircleIcon
+                color="#25A167"
+                aria-hidden="true"
+              />
               <span style={{ color: '#25A167', fontWeight: 'bold' }}>
                 Dependencies OK
               </span>
             </>
           ) : (
             <div>
-              <CrossCircleIcon color="#red" />
+              <CrossCircleIcon
+                color="#red"
+                aria-hidden="true"
+              />
               <span style={{ color: 'red', fontWeight: 'bold' }}>
                 Missing Dependencies
               </span>
@@ -74,9 +95,11 @@ const WidgetCard: React.FC<WidgetProps> = ({ widget }) => {
       <p className="mb-2 text-base">
         {widget.description || 'No description provided.'}
       </p>
-      <ul className="text-sm">
+      <ul
+        className="text-sm"
+        role="list">
         {widget.gid && (
-          <li>
+          <li role="listitem">
             <strong>GID:</strong>{' '}
             <span style={{ color: 'var(--color-primary-400)' }}>
               {widget.gid}:{widget.cid}
@@ -84,41 +107,45 @@ const WidgetCard: React.FC<WidgetProps> = ({ widget }) => {
           </li>
         )}
         {widget.cid && (
-          <li>
+          <li role="listitem">
             <strong>CID:</strong> {widget.cid}
           </li>
         )}
         {widget.version && (
-          <li>
+          <li role="listitem">
             <strong>Version:</strong> {widget.version || 'N/A'}
           </li>
         )}
         {widget.widgetSize && (
-          <li>
+          <li role="listitem">
             <strong>Dimensions:</strong> Min: {widget.widgetSize.minW}x
             {widget.widgetSize.minH} / Max: {widget.widgetSize.maxW}x
             {widget.widgetSize.maxH}
           </li>
         )}
         {widget.author && (
-          <li>
+          <li role="listitem">
             <strong>Author:</strong> {widget.author}
           </li>
         )}
         {widget.tags && (
-          <li>
+          <li role="listitem">
             <strong>Tags:</strong> {widget.tags}
           </li>
         )}
         {widget.dependencies && widget.dependencies.length > 0 && (
           <div className="mt-2 text-sm">
             <strong>Required Dependencies:</strong>
-            <ul style={{ listStyleType: 'none', padding: 0 }}>
+            <ul
+              style={{ listStyleType: 'none', padding: 0 }}
+              role="list">
               {widget.dependencies.map((dep, index) => (
                 <li
                   key={index}
-                  style={{ display: 'flex', alignItems: 'center' }}>
+                  style={{ display: 'flex', alignItems: 'center' }}
+                  role="listitem">
                   <span
+                    aria-hidden="true"
                     style={{
                       color: dep.gid ? 'green' : 'red',
                       marginRight: '8px',
@@ -150,6 +177,7 @@ const WidgetCard: React.FC<WidgetProps> = ({ widget }) => {
             text="PROPERTIES"
             color="var(--color-primary-600)"
             onClick={() => handleViewProperties()}
+            aria-label="View widget properties"
           />
         )}
         {widget.mockdata && (
@@ -161,6 +189,7 @@ const WidgetCard: React.FC<WidgetProps> = ({ widget }) => {
             text="MOCK DATA"
             color="var(--color-primary-600)"
             onClick={() => handleViewSampleData()}
+            aria-label="View widget mock data"
           />
         )}
       </div>
@@ -174,7 +203,9 @@ const WidgetCard: React.FC<WidgetProps> = ({ widget }) => {
             onCloseIconClick={closeModal}
             enableScreenOverlay
             width={600}
-            height={400}>
+            height={400}
+            aria-modal="true"
+            aria-labelledby="modal-heading">
             <div className="h-72 overflow-y-auto p-4">
               <pre className="whitespace-pre-wrap break-words">
                 {modalContent}

@@ -59,9 +59,14 @@ export default function PluginsFilters({
 
   return (
     // Vertical layout for split pane active
-    <section className="flex flex-col space-y-4">
+    <section
+      className="flex flex-col space-y-4"
+      aria-labelledby="filter-section-title">
       {/* Pill Filters */}
-      <div className="flex flex-wrap justify-between">
+      <div
+        className="flex flex-wrap justify-between"
+        role="group"
+        aria-label="Filter by category">
         {pillFilters.map((filter) => (
           <Button
             key={filter.id}
@@ -75,6 +80,8 @@ export default function PluginsFilters({
             size="sm"
             pill={true}
             onClick={() => handlePillClick(filter.id)}
+            aria-pressed={activeFilters.includes(filter.id)}
+            aria-label={`Filter by ${filter.label}`}
           />
         ))}
       </div>
@@ -88,6 +95,7 @@ export default function PluginsFilters({
             title="Select"
             data={filterOptions}
             onSelect={(id) => handlePillClick(id)}
+            aria-label="Filter by tags"
           />
         </div>
 
@@ -98,6 +106,7 @@ export default function PluginsFilters({
             id="sort-dropdown"
             data={sortOptions}
             onSelect={(sortBy) => onSort(sortBy)}
+            aria-label="Sort plugins"
           />
         </div>
       </div>
@@ -113,6 +122,7 @@ export default function PluginsFilters({
             inputStyles={{ paddingLeft: 40, height: '40px' }}
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
+            aria-label="Search for plugins"
           />
           {/* Magnify Glass Icon */}
           <Icon
@@ -125,6 +135,8 @@ export default function PluginsFilters({
               transform: 'translateY(-50%)',
             }}
             svgClassName="fill-secondary-800 dark:fill-secondary-800"
+            role="img"
+            aria-label="Search icon"
           />
           {/* Clear Search Icon */}
           {searchQuery && (
@@ -140,6 +152,8 @@ export default function PluginsFilters({
               }}
               svgClassName="fill-secondary-800 dark:fill-secondary-800"
               onClick={() => handleSearchChange('')}
+              role="button"
+              aria-label="Clear search input"
             />
           )}
         </div>

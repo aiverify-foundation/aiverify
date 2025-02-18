@@ -117,7 +117,13 @@ const Dropdown = ({
   return (
     <div
       ref={dropdownRef}
-      className="relative">
+      className="relative"
+      role="combobox"
+      aria-haspopup="listbox"
+      aria-expanded={isOpen}
+      aria-owns={`${id}-dropdown`}
+      aria-controls={`${id}-dropdown`}
+      aria-label={`Dropdown for selecting ${title}`}>
       <span
         ref={measureRef}
         style={{
@@ -148,16 +154,20 @@ const Dropdown = ({
       </button>
       {isOpen && (
         <div
-          aria-label="Dropdown menu"
+          id={`${id}-dropdown`}
+          role="listbox"
+          aria-label={`Options for ${title}`}
           className={dropdownClass}>
           <ul
-            role="menu"
+            role="presentation"
             aria-labelledby={id}
             aria-orientation="vertical"
             className="leading-10">
             {data?.map((item) => (
               <li
                 key={item.id}
+                role="option"
+                aria-selected={selectedItem?.id === item.id}
                 onClick={() => handleChange(item)}
                 className={`flex cursor-pointer items-center px-3 hover:bg-gray-200 ${
                   selectedItem?.id === item.id ? 'bg-secondary-950' : ''
