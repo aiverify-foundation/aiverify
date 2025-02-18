@@ -17,7 +17,7 @@ type GridItemComponentProps = {
   onDeleteClick: () => void;
   onEditClick: (
     gridItemId: string,
-    gridItemHtmlElement: HTMLDivElement | null,
+    gridItemHtmlElement: HTMLDivElement,
     widget: WidgetOnGridLayout
   ) => void;
   isDragging?: boolean;
@@ -148,7 +148,8 @@ function GridItemComponent({ widget, onDeleteClick, onEditClick, isDragging, isR
   }
 
   function handleEditClick() {
-    onEditClick(widget.gridItemId, gridItemRef.current, widget);
+    if (gridItemRef.current !== null)
+      onEditClick(widget.gridItemId, gridItemRef.current, widget);
   }
 
   const Component: React.ComponentType<MdxComponentProps> = useMemo(() => {

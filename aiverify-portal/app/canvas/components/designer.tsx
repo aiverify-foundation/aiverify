@@ -88,19 +88,16 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   const [state, dispatch] = useReducer(pagesDesignReducer, initialState);
   const { layouts, currentPage, showGrid } = state;
   const [error, setError] = useState<string | undefined>();
-  const [draggingId, setDraggingId] = useState<string | null>(null);
-  const [isGridItemDragging, setIsGridItemDragging] = useState(false);
-  const [editingElement, setEditingElement] = useState<HTMLDivElement | null>(
-    null
-  );
-  const [editingWidget, setEditingWidget] = useState<WidgetOnGridLayout | null>(
-    null
-  );
+  const [newDraggedWidget, setNewDraggedWidget] = useState<Widget | null>(null);
+  const [draggingGridItemId, setDraggingGridItemId] = useState<string | null>(null);
+  const [resizingGridItemId, setResizingGridItemId] = useState<string | null>(null);
+  const [editingGridItem, setEditingGridItem] = useState<[WidgetOnGridLayout, HTMLDivElement] | null>(null)
+  console.log('draggingGridItemId', draggingGridItemId);
+  console.log('resizingGridItemId', resizingGridItemId);
   const [editingPageIndex, setEditingPageIndex] = useState<number | null>(null);
   const { zoomLevel, resetZoom, startContinuousZoom, stopContinuousZoom } =
     useZoom();
   const freeFormAreaRef = useRef<HTMLDivElement>(null);
-  const [newDraggedWidget, setNewDraggedWidget] = useState<Widget | null>(null);
   const [testResultsMapping, setTestResultsMapping] = useState<TestResultDataMapping | null>(null);
   const {
     isDragging: isDraggingFreeFormArea,
@@ -108,7 +105,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     handleMouseUp: handleFreeFormAreaMouseUp,
     handleMouseMove: handleFreeFormAreaMouseMove,
   } = useDragToScroll(freeFormAreaRef, canvasRef);
-  const [resizingId, setResizingId] = useState<string | null>(null);
+  const [draggedGridItem, setDraggedGridItem] = useState<Layout | null>(null);
 
   useEffect(() => {
     if (freeFormAreaRef.current) {
@@ -162,7 +159,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   const handleWidgetDrop =
     (pageIndex: number) =>
       (_layout: Layout[], item: Layout, e: EventDataTransfer) => {
-        setIsGridItemDragging(false);
+        setDraggingGridItemId(null);
         let data: unknown;
         try {
           data = JSON.parse(e.dataTransfer.getData('application/json'));
@@ -229,23 +226,19 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     itemLayout: Layout
   ) => {
     const { i } = itemLayout;
-    setDraggingId(i);
-    setIsGridItemDragging(true);
-    setResizingId(i);
+    setResizingGridItemId(i);
   };
 
   const handleGridItemResizeStop =
     (pageIndex: number) =>
       (_layouts: Layout[], _: Layout, itemLayout: Layout) => {
+        setResizingGridItemId(null);
         const { x, y, w, h, minW, minH, maxW, maxH, i } = itemLayout;
         dispatch({
           type: 'RESIZE_WIDGET',
           itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
           pageIndex,
         });
-        setDraggingId(null);
-        setIsGridItemDragging(false);
-        setResizingId(null);
       };
 
   function handleGridItemDragStart(
@@ -253,22 +246,61 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     _: Layout,
     itemLayout: Layout
   ) {
-    const { i } = itemLayout;
-    setDraggingId(i);
-    setIsGridItemDragging(true);
+    setDraggingGridItemId(itemLayout.i);
+    setDraggedGridItem(itemLayout);
   }
 
   const handleGridItemDragStop =
     (pageIndex: number) =>
       (_layouts: Layout[], _: Layout, itemLayout: Layout) => {
         const { x, y, w, h, minW, minH, maxW, maxH, i } = itemLayout;
-        dispatch({
-          type: 'CHANGE_WIDGET_POSITION',
-          itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
-          pageIndex,
+
+        // Get the element being dragged
+        const element = document.getElementById(i);
+        if (!element) return;
+
+        // Find which page the element is currently over
+        const pages = Array.from(document.querySelectorAll('[id^="page-"]'));
+        const targetPage = pages.find(page => {
+          const rect = page.getBoundingClientRect();
+          const elementRect = element.getBoundingClientRect();
+          return (
+            elementRect.top >= rect.top &&
+            elementRect.bottom <= rect.bottom
+          );
         });
-        setDraggingId(null);
-        setIsGridItemDragging(false);
+
+        if (!targetPage) {
+          // If not over any page, return to original position
+          dispatch({
+            type: 'CHANGE_WIDGET_POSITION',
+            itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
+            pageIndex,
+          });
+        } else {
+          const targetPageIndex = parseInt(targetPage.id.split('-')[1]);
+
+          if (targetPageIndex !== pageIndex) {
+            // Move to different page
+            dispatch({
+              type: 'MOVE_WIDGET_TO_PAGE',
+              itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
+              fromPageIndex: pageIndex,
+              toPageIndex: targetPageIndex,
+              widgetId: i
+            });
+          } else {
+            // Same page movement
+            dispatch({
+              type: 'CHANGE_WIDGET_POSITION',
+              itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
+              pageIndex,
+            });
+          }
+        }
+
+        setDraggedGridItem(null);
+        setDraggingGridItemId(null);
       };
 
   const handleDeleteGridItem =
@@ -284,12 +316,11 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     (pageIndex: number) =>
       (
         gridItemId: string,
-        gridItemHtmlElement: HTMLDivElement | null,
+        gridItemHtmlElement: HTMLDivElement,
         widget: WidgetOnGridLayout
       ) => {
-        setEditingElement(gridItemHtmlElement);
+        setEditingGridItem([widget, gridItemHtmlElement])
         setEditingPageIndex(pageIndex);
-        setEditingWidget(widget);
       };
 
   function handleEditClose(updatedWidget: WidgetOnGridLayout) {
@@ -302,9 +333,8 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
       widget: updatedWidget,
       pageIndex: editingPageIndex,
     });
-    setEditingElement(null);
+    setEditingGridItem(null);
     setEditingPageIndex(null);
-    setEditingWidget(null);
   }
 
   function handleAddNewPage() {
@@ -455,16 +485,16 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
         ref={freeFormAreaRef}
         className="custom-scrollbar relative h-full cursor-grab overflow-auto bg-slate-100 active:cursor-grabbing"
         onMouseDown={
-          !isGridItemDragging ? handleFreeFormAreaMouseDown : undefined
+          !draggingGridItemId && !resizingGridItemId ? handleFreeFormAreaMouseDown : undefined
         }
-        onMouseUp={!isGridItemDragging ? handleFreeFormAreaMouseUp : undefined}
+        onMouseUp={!draggingGridItemId && !resizingGridItemId ? handleFreeFormAreaMouseUp : undefined}
         onMouseMove={
-          isDraggingFreeFormArea && !isGridItemDragging
+          isDraggingFreeFormArea && !draggingGridItemId && !resizingGridItemId
             ? handleFreeFormAreaMouseMove
             : undefined
         }
         onMouseLeave={
-          !isGridItemDragging ? handleFreeFormAreaMouseUp : undefined
+          !draggingGridItemId && !resizingGridItemId ? handleFreeFormAreaMouseUp : undefined
         }>
         <div
           id="contentWrapper"
@@ -522,7 +552,8 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
                   isResizable={true}
                   isDroppable={true}
                   isDraggable={true}
-                  isBounded
+                  isBounded={false}
+                  allowOverlap={false}
                   useCSSTransforms={!isInitialMount.current}
                   resizeHandle={<ResizeHandle />}
                   resizeHandles={['sw', 'nw', 'se', 'ne']}
@@ -535,20 +566,27 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
                         w: newDraggedWidget.widgetSize.maxW,
                         h: newDraggedWidget.widgetSize.minH,
                       }
-                      : undefined
+                      : draggingGridItemId != null && draggedGridItem
+                        ? {
+                          i: '__dropping-elem__',
+                          w: draggedGridItem.w,
+                          h: draggedGridItem.h,
+                        }
+                        : undefined
                   }>
                   {state.widgets[pageIndex].map((widget, widgetIndex) => {
                     if (!widget.gridItemId) return null;
                     return (
                       <div
+                        id={widget.gridItemId}
                         key={widget.gridItemId}
                         className={gridItemDivRequiredStyles}>
                         <GridItemComponent
                           widget={widget}
                           onDeleteClick={handleDeleteGridItem(pageIndex, widgetIndex)}
                           onEditClick={handleGridItemEditClick(pageIndex)}
-                          isDragging={draggingId === widget.gridItemId}
-                          isResizing={resizingId === widget.gridItemId}
+                          isDragging={draggingGridItemId === widget.gridItemId}
+                          isResizing={resizingGridItemId === widget.gridItemId}
                           algosMap={state.algos}
                           testResultsMapping={testResultsMapping}
                         />
@@ -577,11 +615,11 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
 
   return (
     <React.Fragment>
-      {editingElement && editingPageIndex != null && editingWidget ? (
+      {editingGridItem && editingPageIndex != null ? (
         <EditingOverlay
-          widget={editingWidget}
           pageIndex={editingPageIndex}
-          originalElement={editingElement}
+          widget={editingGridItem[0]}
+          originalElement={editingGridItem[1]}
           onClose={handleEditClose}
         />
       ) : null}
