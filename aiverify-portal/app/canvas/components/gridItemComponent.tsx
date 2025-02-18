@@ -4,11 +4,13 @@ import {
   RiFlaskLine,
 } from '@remixicon/react';
 import { getMDXComponent, MDXContentProps } from 'mdx-bundler/client';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { InputBlockDataMapping, TestResultDataMapping, WidgetOnGridLayout } from '@/app/canvas/types';
+import { calculateTotalContentHeight } from '@/app/canvas/utils/calculateTotalContentHeight';
 import { Algorithm, TestResultData, InputBlockData } from '@/app/types';
+import { GRID_HEIGHT } from './dimensionsConstants';
 
 type GridItemComponentProps = {
   widget: WidgetOnGridLayout;
@@ -23,6 +25,7 @@ type GridItemComponentProps = {
   isDragging?: boolean;
   isResizing: boolean;
   algosMap: Record<string, Algorithm[]>;
+  onContentOverflow?: (gridItemId: string, totalHeight: number, requiredPages: number) => void;
 };
 
 type MdxComponentProps = MDXContentProps & {
@@ -30,7 +33,6 @@ type MdxComponentProps = MDXContentProps & {
   properties: Record<string, unknown>;
   results: TestResultData;
   inputBlockData: InputBlockData;
-  // getContainerObserver: GetContainerObserver;
   getIBData: (cid: string) => InputBlockData;
   getResults: (cid: string) => TestResultData;
   width?: number;
@@ -66,13 +68,24 @@ const withTextBehavior = <P extends MDXContentProps>(
   };
 };
 
-function GridItemComponent({ widget, onDeleteClick, onEditClick, isDragging, isResizing, algosMap, testResultsMapping }: GridItemComponentProps) {
+function GridItemComponent({ widget, onDeleteClick, onEditClick, isDragging, isResizing, algosMap, testResultsMapping, onContentOverflow }: GridItemComponentProps) {
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const gridItemRef = useRef<HTMLDivElement>(null);
   const hideTimeoutRef = useRef<NodeJS.Timeout>(null);
   const isHoveringRef = useRef<boolean>(false);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
+  useLayoutEffect(() => {
+    setTimeout(() => {
+      if (!gridItemRef.current) return;
+      const totalHeight = calculateTotalContentHeight(gridItemRef.current);
+      const requiredPages = Math.ceil(totalHeight / GRID_HEIGHT);
+      if (requiredPages > 1) {
+        onContentOverflow?.(widget.gridItemId, totalHeight, requiredPages);
+      }
+    }, 0)
+  }, [testResultsMapping, widget.gridItemId]);
 
   useEffect(() => {
     if (!gridItemRef.current) return;

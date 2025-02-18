@@ -1,4 +1,5 @@
 import { MouseEvent } from "react";
+import { CONTAINER_PAD } from "./dimensionsConstants";
 
 type FreeFormAreaProps = {
   ref: React.RefObject<HTMLDivElement | null>;
@@ -11,9 +12,6 @@ type FreeFormAreaProps = {
   onMouseMove: ((e: MouseEvent) => void) | undefined;
   onMouseLeave: (() => void) | undefined;
 };
-
-const CONTAINER_PAD = 100; // padding used to calculate virtual space at top and bottom of the free from content
-
 
 function FreeFormArea(props: FreeFormAreaProps) {
   const {
