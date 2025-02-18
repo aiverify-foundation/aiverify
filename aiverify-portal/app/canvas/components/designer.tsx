@@ -72,6 +72,7 @@ const gridItemDivRequiredStyles: GridItemDivRequiredStyles = `relative group
   active:outline-none`;
 
 const widgetItemSchema = z.object({
+  gridItemId: z.string().optional(),
   gid: z.string(),
   cid: z.string(),
 });
@@ -85,6 +86,7 @@ function createGridItemId(widget: Widget, pageIndex: number) {
 function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const isInitialMount = useRef(true);
+  const freeFormAreaRef = useRef<HTMLDivElement>(null);
   const [state, dispatch] = useReducer(pagesDesignReducer, initialState);
   const { layouts, currentPage, showGrid } = state;
   const [error, setError] = useState<string | undefined>();
@@ -92,12 +94,9 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   const [draggingGridItemId, setDraggingGridItemId] = useState<string | null>(null);
   const [resizingGridItemId, setResizingGridItemId] = useState<string | null>(null);
   const [editingGridItem, setEditingGridItem] = useState<[WidgetOnGridLayout, HTMLDivElement] | null>(null)
-  console.log('draggingGridItemId', draggingGridItemId);
-  console.log('resizingGridItemId', resizingGridItemId);
   const [editingPageIndex, setEditingPageIndex] = useState<number | null>(null);
   const { zoomLevel, resetZoom, startContinuousZoom, stopContinuousZoom } =
     useZoom();
-  const freeFormAreaRef = useRef<HTMLDivElement>(null);
   const [testResultsMapping, setTestResultsMapping] = useState<TestResultDataMapping | null>(null);
   const {
     isDragging: isDraggingFreeFormArea,
@@ -105,7 +104,6 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     handleMouseUp: handleFreeFormAreaMouseUp,
     handleMouseMove: handleFreeFormAreaMouseMove,
   } = useDragToScroll(freeFormAreaRef, canvasRef);
-  const [draggedGridItem, setDraggedGridItem] = useState<Layout | null>(null);
 
   useEffect(() => {
     if (freeFormAreaRef.current) {
@@ -172,6 +170,11 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
         if (!result.success) {
           console.error('Invalid widget item data', result.error);
           setError(result.error?.message);
+          return;
+        }
+        if (result.data.gridItemId) {
+          // todo - for handling existing grid item id
+          console.log(data)
           return;
         }
         const validData: WidgetCompositeId = result.data;
@@ -247,12 +250,12 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     itemLayout: Layout
   ) {
     setDraggingGridItemId(itemLayout.i);
-    setDraggedGridItem(itemLayout);
   }
 
   const handleGridItemDragStop =
     (pageIndex: number) =>
       (_layouts: Layout[], _: Layout, itemLayout: Layout) => {
+        console.log('handleGridItemDragStop', itemLayout);
         const { x, y, w, h, minW, minH, maxW, maxH, i } = itemLayout;
 
         // Get the element being dragged
@@ -299,7 +302,6 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
           }
         }
 
-        setDraggedGridItem(null);
         setDraggingGridItemId(null);
       };
 
@@ -322,6 +324,32 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
         setEditingGridItem([widget, gridItemHtmlElement])
         setEditingPageIndex(pageIndex);
       };
+
+  const handleGridItemDrag = (
+    _layouts: Layout[],
+    _: Layout,
+    itemLayout: Layout,
+    placeholder: Layout,
+    event: MouseEvent,
+    element: HTMLElement
+  ) => {
+    if (!element) return;
+
+    const gridElement = element.closest('.react-grid-layout');
+    if (!gridElement) return;
+
+    const gridRect = gridElement.getBoundingClientRect();
+    const elementRect = element.getBoundingClientRect();
+
+    const isOutsideGrid =
+      elementRect.top > gridRect.bottom ||
+      elementRect.bottom < gridRect.top ||
+      elementRect.left > gridRect.right ||
+      elementRect.left < gridRect.left;
+
+    element.style.opacity = isOutsideGrid ? '0.5' : '1';
+    // element.querySelector('div')?.setAttribute('draggable', isOutsideGrid ? 'true' : 'false');
+  };
 
   function handleEditClose(updatedWidget: WidgetOnGridLayout) {
     if (editingPageIndex === null) {
@@ -562,17 +590,11 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
                   droppingItem={
                     newDraggedWidget
                       ? {
+                        // makes the dropping red placeholder size of the widget
                         i: '__dropping-elem__',
                         w: newDraggedWidget.widgetSize.maxW,
                         h: newDraggedWidget.widgetSize.minH,
-                      }
-                      : draggingGridItemId != null && draggedGridItem
-                        ? {
-                          i: '__dropping-elem__',
-                          w: draggedGridItem.w,
-                          h: draggedGridItem.h,
-                        }
-                        : undefined
+                      } : undefined
                   }>
                   {state.widgets[pageIndex].map((widget, widgetIndex) => {
                     if (!widget.gridItemId) return null;
@@ -611,7 +633,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     </section>
   );
 
-  console.log('state', state);
+  // console.log('state', state);
 
   return (
     <React.Fragment>
