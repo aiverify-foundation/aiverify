@@ -1,7 +1,7 @@
 'use client';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-import { RiDeleteBinLine, RiGridLine } from '@remixicon/react';
+import { RiGridLine } from '@remixicon/react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useReducer } from 'react';
 import GridLayout, { Layout } from 'react-grid-layout';
@@ -11,7 +11,6 @@ import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPlug
 import { getWidgetAlgosFromPlugins } from '@/app/canvas/utils/getWidgetAlgosFromPlugins';
 import { populateInitialWidgetResult } from '@/app/canvas/utils/populateInitialWidgetResult';
 import { TestResultData, Widget } from '@/app/types';
-import { Tooltip } from '@/lib/components/tooltip';
 import { cn } from '@/lib/utils/twmerge';
 import { AlgosToRun } from './algosToRun';
 import { EditingOverlay } from './editingOverlay';
@@ -23,6 +22,7 @@ import { pagesDesignReducer } from './hooks/pagesDesignReducer';
 import { useDragToScroll } from './hooks/useDragToScroll';
 import { useZoom } from './hooks/useZoom';
 import { PageNavigation } from './pageNavigation';
+import { PageNumber } from './pageNumber';
 import { PluginsPanel } from './pluginsPanel';
 import { ResizeHandle } from './resizeHandle';
 import { TestResultsPicker } from './testResultsPicker';
@@ -404,14 +404,6 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     }
   }
 
-  function handlePluginWidgetDragStart(widget: WidgetOnGridLayout) {
-    setNewDraggedWidget(widget);
-  }
-
-  function handlePluginWidgetDragEnd() {
-    setNewDraggedWidget(null);
-  }
-
   function handleSelectUploadedTestResults(selectedResults: ParsedTestResults[]) {
     if (selectedResults.length === 0) {
       setTestResultsMapping(null);
@@ -501,8 +493,8 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
       <PluginsPanel
         plugins={pluginsWithMdx}
         className="custom-scrollbar w-full overflow-auto pr-[10px] pt-[50px]"
-        onDragStart={handlePluginWidgetDragStart}
-        onDragEnd={handlePluginWidgetDragEnd}
+        onDragStart={(widget) => setNewDraggedWidget(widget)}
+        onDragEnd={() => setNewDraggedWidget(null)}
       />
     </section>
   );
@@ -535,18 +527,10 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
               padding={A4_MARGIN}
             />
           )}
-          <div className="absolute right-[-65px] top-0 m-2 flex flex-col text-xs text-gray-500">
-            Page {pageIndex + 1}
-            <Tooltip
-              sideOffset={-10}
-              content="Delete Page"
-              side="right">
-              <RiDeleteBinLine
-                className="mt-2 cursor-pointer rounded bg-gray-300 p-1 text-gray-500 shadow-sm hover:text-red-500"
-                onClick={() => handleDeletePage(pageIndex)}
-              />
-            </Tooltip>
-          </div>
+          <PageNumber
+            pageNumber={pageIndex + 1}
+            onDeleteClick={() => handleDeletePage(pageIndex)}
+          />
           <GridLayout
             layout={layout}
             width={gridWidth}
