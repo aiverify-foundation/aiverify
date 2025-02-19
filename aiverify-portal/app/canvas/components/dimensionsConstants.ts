@@ -6,7 +6,6 @@ const GRID_COLUMNS = 12; // number of columns of the grid
 const GRID_WIDTH = A4_WIDTH - A4_MARGIN * 2; // width of the grid within the A4 page
 const GRID_HEIGHT = A4_HEIGHT - A4_MARGIN * 2; // height of the grid within the A4 page
 const GRID_ROW_HEIGHT = GRID_HEIGHT / GRID_ROWS; // calculated height of each row in the grid
-const PAGE_GAP = 128; // spacing between pages
 const CONTAINER_PAD = 100; // padding used to calculate virtual space at top and bottom of the free from content
 
 export {
@@ -18,6 +17,5 @@ export {
   GRID_WIDTH,
   GRID_ROW_HEIGHT,
   GRID_HEIGHT,
-  PAGE_GAP,
   CONTAINER_PAD,
 };

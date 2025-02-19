@@ -40,8 +40,10 @@ function FreeFormArea(props: FreeFormAreaProps) {
         style={{
           minHeight: contentWrapperMinHeight,
           paddingTop:
-            pagesLength === 1 ? 'auto' : `${CONTAINER_PAD * zoomLevel}px`,
+            pagesLength === 1 ? 'auto' : `${CONTAINER_PAD}px`,
           alignItems: pagesLength === 1 ? 'center' : 'flex-start',
+          transform: `scale(${zoomLevel})`,
+          transformOrigin: 'center center',
         }}>
         <div
           id="pagesWrapper"

@@ -21,7 +21,6 @@ import {
   GRID_WIDTH,
   GRID_ROW_HEIGHT,
   GRID_HEIGHT,
-  PAGE_GAP,
   CONTAINER_PAD,
   A4_HEIGHT,
   A4_WIDTH
@@ -134,29 +133,27 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
       );
       if (newPageElement) {
         setTimeout(() => {
-          const scrollPadding = CONTAINER_PAD;
-          const elementTop = newPageElement.offsetTop;
+          const elementTop = (newPageElement.offsetTop - CONTAINER_PAD) * zoomLevel;
           freeFormAreaRef.current?.scrollTo({
-            top: elementTop - scrollPadding,
-            behavior: 'smooth',
+            top: elementTop,
           });
         }, 0);
       }
     }
   }, [layouts.length]);
 
-  useEffect(() => {
-    if (freeFormAreaRef.current) {
-      const element = freeFormAreaRef.current;
-      const currentScrollTop = element.scrollTop;
-      const scrollableWidth = element.scrollWidth - element.clientWidth;
-      const horizontalCenter =
-        scrollableWidth * (element.scrollLeft / (scrollableWidth || 1));
+  // useEffect(() => {
+  //   if (freeFormAreaRef.current) {
+  //     const element = freeFormAreaRef.current;
+  //     const currentScrollTop = element.scrollTop;
+  //     const scrollableWidth = element.scrollWidth - element.clientWidth;
+  //     const horizontalCenter =
+  //       scrollableWidth * (element.scrollLeft / (scrollableWidth || 1));
 
-      element.scrollLeft = horizontalCenter;
-      element.scrollTop = currentScrollTop; // Maintain the same vertical scroll position
-    }
-  }, [zoomLevel]);
+  //     element.scrollLeft = horizontalCenter;
+  //     element.scrollTop = currentScrollTop; // Maintain the same vertical scroll position
+  //   }
+  // }, [zoomLevel]);
 
   useEffect(() => {
     if (isInitialMount.current) return;
@@ -401,42 +398,18 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     setSelectedGridItemId(gridItemId);
   }
 
-  // Calculate actual dimensions based on zoom
-  const [gridWidth, gridRowHeight, gridHeight] = useMemo(
-    () => [
-      GRID_WIDTH * zoomLevel,
-      GRID_ROW_HEIGHT * zoomLevel,
-      GRID_HEIGHT * zoomLevel,
-    ],
-    [zoomLevel]
-  );
-
-  const gridLayoutStyle = useMemo<React.CSSProperties>(
-    () => ({
-      height: gridHeight,
-      width: gridWidth,
-      transition: 'width 0.1s ease-out, height 0.1s ease-out',
-      fontSize: `${zoomLevel}rem`,
-      margin: `${A4_MARGIN}px`,
-      background: 'transparent',
-    }),
-    [gridHeight, gridWidth, zoomLevel]
-  );
-
   const contentWrapperMinHeight = useMemo(() => {
-    const totalPagesHeight = layouts.length * gridHeight;
-    const totalGapsHeight = (layouts.length - 1) * (PAGE_GAP * zoomLevel);
-    const containerPadding = (CONTAINER_PAD + CONTAINER_PAD) * zoomLevel;
-    const totalHeight = totalPagesHeight + totalGapsHeight + containerPadding;
+    const totalPagesHeight = layouts.length * GRID_HEIGHT;
+    const containerPadding = (CONTAINER_PAD + CONTAINER_PAD);
+    const totalHeight = totalPagesHeight + containerPadding;
 
-    // If single page and content smaller than viewport, center vertically
     if (layouts.length === 1 && freeFormAreaRef.current) {
       const viewportHeight = freeFormAreaRef.current.clientHeight;
       return Math.max(viewportHeight, totalHeight);
     }
 
     return totalHeight;
-  }, [layouts.length, gridHeight, zoomLevel]);
+  }, [layouts.length]);
 
   const pageControlsSection = (
     <section className="fixed right-[100px] top-[120px] z-50 flex w-[50px] max-w-[50px] flex-col gap-4">
@@ -520,8 +493,8 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
               !isOverflowPage && 'mt-2'
             )}
             style={{
-              height: isOverflowPage ? A4_HEIGHT * zoomLevel : 'auto',
-              width: isOverflowPage ? A4_WIDTH * zoomLevel : 'auto',
+              height: isOverflowPage ? A4_HEIGHT : 'auto',
+              width: isOverflowPage ? A4_WIDTH : 'auto',
             }}>
             {!isOverflowPage && showGrid && (
               <GridLines
@@ -534,12 +507,13 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
               pageNumber={pageIndex + 1}
               onDeleteClick={!isOverflowPage ? () => handleDeletePage(pageIndex) : undefined}
               isOverflowPage={isOverflowPage}
+              zoomLevel={zoomLevel}
             />
             {isOverflowPage && overflowParent !== null ? (
               <div className="absolute inset-0 flex items-center justify-center"
                 style={{
-                  height: A4_HEIGHT * zoomLevel,
-                  width: A4_WIDTH * zoomLevel
+                  height: A4_HEIGHT,
+                  width: A4_WIDTH
                 }}>
                 <div className="text-gray-200 text-sm">
                   Overflow content from page {overflowParent + 1}
@@ -548,8 +522,8 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
             ) : (
               <GridLayout
                 layout={layout}
-                width={gridWidth}
-                rowHeight={gridRowHeight}
+                width={GRID_WIDTH}
+                rowHeight={GRID_ROW_HEIGHT}
                 maxRows={GRID_ROWS}
                 margin={[0, 0]}
                 compactType={null}
@@ -567,7 +541,11 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
                 useCSSTransforms={!isInitialMount.current}
                 resizeHandle={<ResizeHandle />}
                 resizeHandles={['sw', 'nw', 'se', 'ne']}
-                style={gridLayoutStyle}
+                style={{
+                  height: GRID_HEIGHT,
+                  width: GRID_WIDTH,
+                  margin: `${A4_MARGIN}px`,
+                }}
                 className="[&>*]:text-inherit"
                 droppingItem={droppingItemPlaceholder}>
                 {state.widgets[pageIndex].map((widget, widgetIndex) => {

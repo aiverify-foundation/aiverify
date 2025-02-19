@@ -6,15 +6,18 @@ type PageNumberProps = {
   pageNumber: number;
   onDeleteClick?: () => void;
   isOverflowPage?: boolean;
+  zoomLevel: number;
 };
 
-function PageNumber({ pageNumber, onDeleteClick, isOverflowPage }: PageNumberProps) {
+function PageNumber({ pageNumber, onDeleteClick, isOverflowPage, zoomLevel }: PageNumberProps) {
   return (
     <div className={cn(
-      'absolute top-0 m-2 flex flex-col text-xs text-gray-500',
-      !isOverflowPage && 'right-[-65px]',
-      isOverflowPage && 'right-[-90px]'
-    )}>
+      'absolute top-0 m-2 flex flex-col text-xs text-gray-500 origin-top-right',
+    )}
+      style={{
+        transform: `scale(${1 / zoomLevel})`,
+        right: `${(isOverflowPage ? -15 : -10) / zoomLevel}%`,
+      }}>
       Page {pageNumber}
       {!isOverflowPage && onDeleteClick && (
         <Tooltip
