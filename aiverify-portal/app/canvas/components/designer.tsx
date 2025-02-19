@@ -87,11 +87,6 @@ function createGridItemId(widget: Widget, pageIndex: number) {
   return `${widget.gid}-${widget.cid}-p${pageIndex}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
-type OverflowPage = {
-  parentPageIndex: number;
-  parentWidgetId: string;
-}
-
 function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const isInitialMount = useRef(true);
@@ -167,7 +162,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
 
     setTimeout(() => {
       const { overflows, numOfRequiredPages } = isPageContentOverflow(layouts[currentPage], state.widgets[currentPage]);
-      console.log('overflows', overflows, numOfRequiredPages);
+
       // Count existing overflow pages for current page
       const existingOverflowPages = state.pageTypes.filter(
         (type, idx) => type === 'overflow' && state.overflowParents[idx] === currentPage
