@@ -13,7 +13,7 @@ import { Algorithm, TestResultData, InputBlockData } from '@/app/types';
 import { GRID_HEIGHT } from './dimensionsConstants';
 
 export const gridItemRootClassName = 'grid-item-root';
-type requiredStyles = `grid-item-root relative h-auto w-full${string}`; // strictly required styles
+type requiredStyles = `grid-item-root relative h-auto w-full min-h-full${string}`; // strictly required styles
 
 type GridItemComponentProps = {
   widget: WidgetOnGridLayout;
@@ -42,7 +42,7 @@ type MdxComponentProps = MDXContentProps & {
   height?: number;
 };
 
-const itemStyle: requiredStyles = 'grid-item-root relative h-auto w-full';
+const itemStyle: requiredStyles = 'grid-item-root relative h-auto w-full min-h-full';
 
 /**
  * This is a higher-order component that allows developers to add modifications like styling to the MDX component.

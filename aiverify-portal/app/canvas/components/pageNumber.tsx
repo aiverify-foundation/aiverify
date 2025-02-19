@@ -1,5 +1,6 @@
 import { RiDeleteBinLine } from "@remixicon/react";
 import { Tooltip } from "@/lib/components/tooltip";
+import { cn } from "@/lib/utils/twmerge";
 
 type PageNumberProps = {
   pageNumber: number;
@@ -9,7 +10,11 @@ type PageNumberProps = {
 
 function PageNumber({ pageNumber, onDeleteClick, isOverflowPage }: PageNumberProps) {
   return (
-    <div className="absolute right-[-65px] top-0 m-2 flex flex-col text-xs text-gray-500">
+    <div className={cn(
+      'absolute top-0 m-2 flex flex-col text-xs text-gray-500',
+      !isOverflowPage && 'right-[-65px]',
+      isOverflowPage && 'right-[-90px]'
+    )}>
       Page {pageNumber}
       {!isOverflowPage && onDeleteClick && (
         <Tooltip

@@ -204,11 +204,41 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
 
     case 'DELETE_PAGE': {
       const { pageIndex } = action;
+
+      // Find indices of overflow pages to remove if this is a grid page
+      const overflowIndicesToRemove =
+        state.pageTypes[pageIndex] === 'grid'
+          ? state.pageTypes.reduce((indices, type, idx) => {
+              if (
+                type === 'overflow' &&
+                state.overflowParents[idx] === pageIndex
+              ) {
+                indices.push(idx);
+              }
+              return indices;
+            }, [] as number[])
+          : [];
+
+      // Combine all indices to remove
+      const allIndicesToRemove = [pageIndex, ...overflowIndicesToRemove];
+
+      // Filter out the deleted pages and their overflow pages
       const newLayouts = state.layouts.filter(
-        (_, index) => index !== pageIndex
+        (_, idx) => !allIndicesToRemove.includes(idx)
       );
       const newWidgets = state.widgets.filter(
-        (_, index) => index !== pageIndex
+        (_, idx) => !allIndicesToRemove.includes(idx)
+      );
+      const newPageTypes = state.pageTypes.filter(
+        (_, idx) => !allIndicesToRemove.includes(idx)
+      );
+      const newOverflowParents = state.overflowParents.filter(
+        (_, idx) => !allIndicesToRemove.includes(idx)
+      );
+
+      // Adjust overflow parent indices after deletion
+      const adjustedOverflowParents = newOverflowParents.map((parent) =>
+        parent === null ? null : parent >= pageIndex ? parent - 1 : parent
       );
 
       const newCurrentPage = Math.min(state.currentPage, newLayouts.length - 1);
@@ -217,6 +247,8 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         ...state,
         layouts: newLayouts,
         widgets: newWidgets,
+        pageTypes: newPageTypes,
+        overflowParents: adjustedOverflowParents,
         currentPage: newCurrentPage,
       };
     }

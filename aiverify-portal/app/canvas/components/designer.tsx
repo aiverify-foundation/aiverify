@@ -170,7 +170,6 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     setTimeout(() => {
       const { overflows, numOfRequiredPages } = isPageContentOverflow(layouts[currentPage], state.widgets[currentPage]);
       console.log('overflows', overflows, numOfRequiredPages);
-
       // Count existing overflow pages for current page
       const existingOverflowPages = state.pageTypes.filter(
         (type, idx) => type === 'overflow' && state.overflowParents[idx] === currentPage
@@ -582,7 +581,8 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
             className={cn(
               'relative bg-white text-black shadow',
               'cursor-default active:cursor-default',
-              isOverflowPage && 'pointer-events-none'
+              isOverflowPage && 'pointer-events-none',
+              !isOverflowPage && 'mt-2'
             )}
             style={{
               height: isOverflowPage ? A4_HEIGHT : 'auto',
@@ -603,7 +603,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
             {isOverflowPage && overflowParent !== null ? (
               <div className="absolute inset-0 flex items-center justify-center"
                 style={{ height: A4_HEIGHT, width: A4_WIDTH }}>
-                <div className="text-gray-400 text-sm">
+                <div className="text-gray-200 text-sm">
                   Overflow content from page {overflowParent + 1}
                 </div>
               </div>
