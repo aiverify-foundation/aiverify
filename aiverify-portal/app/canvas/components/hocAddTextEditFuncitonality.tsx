@@ -2,6 +2,7 @@ import { MDXContentProps } from 'mdx-bundler/client';
 import React from 'react';
 
 const dataKeyName = 'data-aivkey';
+export const editorInputClassName = 'editor-input';
 
 /**
  * This is a higher-order component that allows developers to add modifications like styling to the MDX component.
@@ -13,6 +14,19 @@ export const hocAddTextEditFunctionality = <P extends MDXContentProps>(
   WrappedComponent: React.FunctionComponent<P>
 ) => {
   return function EditableComponent(props: P) {
+    const h1Ref = React.useRef<HTMLTextAreaElement>(null);
+    const h2Ref = React.useRef<HTMLTextAreaElement>(null);
+    const h3Ref = React.useRef<HTMLTextAreaElement>(null);
+
+    React.useEffect(() => {
+      [h1Ref, h2Ref, h3Ref].forEach(ref => {
+        if (ref.current) {
+          const length = ref.current.value.length;
+          ref.current.setSelectionRange(length, length);
+        }
+      });
+    }, []);
+
     return (
       <WrappedComponent
         {...props}
@@ -24,16 +38,9 @@ export const hocAddTextEditFunctionality = <P extends MDXContentProps>(
             if (dataKeyName in props) {
               return (
                 <textarea
-                  style={{
-                    overflow: 'hidden',
-                    resize: 'none',
-                    height: 'auto',
-                    whiteSpace: 'pre-wrap',
-                    width: '100%'
-                  }}
                   name={props[dataKeyName]}
                   defaultValue={children as string}
-                  className="w-full bg-transparent focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className={`input-p ${editorInputClassName}`}
                 />
               );
             }
@@ -46,6 +53,7 @@ export const hocAddTextEditFunctionality = <P extends MDXContentProps>(
             if (dataKeyName in props) {
               return (
                 <textarea
+                  ref={h1Ref}
                   autoFocus
                   onInput={(e) => {
                     const target = e.target as HTMLTextAreaElement;
@@ -54,7 +62,7 @@ export const hocAddTextEditFunctionality = <P extends MDXContentProps>(
                   }}
                   name={props[dataKeyName]}
                   defaultValue={children as string}
-                  className="input-h1"
+                  className={`input-h1 ${editorInputClassName}`}
                 />
               );
             }
@@ -67,6 +75,7 @@ export const hocAddTextEditFunctionality = <P extends MDXContentProps>(
             if (dataKeyName in props) {
               return (
                 <textarea
+                  ref={h2Ref}
                   autoFocus
                   onInput={(e) => {
                     const target = e.target as HTMLTextAreaElement;
@@ -75,7 +84,7 @@ export const hocAddTextEditFunctionality = <P extends MDXContentProps>(
                   }}
                   name={props[dataKeyName]}
                   defaultValue={children as string}
-                  className="input-h2"
+                  className={`input-h2 ${editorInputClassName}`}
                 />
               );
             }
@@ -88,6 +97,7 @@ export const hocAddTextEditFunctionality = <P extends MDXContentProps>(
             if (dataKeyName in props) {
               return (
                 <textarea
+                  ref={h3Ref}
                   autoFocus
                   onInput={(e) => {
                     const target = e.target as HTMLTextAreaElement;
@@ -96,7 +106,7 @@ export const hocAddTextEditFunctionality = <P extends MDXContentProps>(
                   }}
                   name={props[dataKeyName]}
                   defaultValue={children as string}
-                  className="input-h3"
+                  className={`input-h3 ${editorInputClassName}`}
                 />
               );
             }

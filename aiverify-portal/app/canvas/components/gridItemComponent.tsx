@@ -11,6 +11,7 @@ import { InputBlockDataMapping, TestResultDataMapping, WidgetOnGridLayout } from
 import { calculateTotalContentHeight } from '@/app/canvas/utils/calculateTotalContentHeight';
 import { Algorithm, TestResultData, InputBlockData } from '@/app/types';
 import { GRID_HEIGHT } from './dimensionsConstants';
+import { editorInputClassName } from './hocAddTextEditFuncitonality';
 
 export const gridItemRootClassName = 'grid-item-root';
 type requiredStyles = `grid-item-root relative h-auto w-full min-h-full${string}`; // strictly required styles
@@ -119,9 +120,13 @@ function GridItemComponent({ widget, onDeleteClick, onEditClick, isDragging, isR
     };
   }, [showContextMenu]);
 
-  // Add click outside handler
   useEffect(() => {
+    if (!showContextMenu) return;
+
     function handleClickOutside(event: MouseEvent) {
+      if ((event.target as HTMLElement).classList.contains(editorInputClassName)) {
+        return;
+      }
       if (gridItemRef.current && !gridItemRef.current.contains(event.target as Node)) {
         setShowContextMenu(false);
       }
@@ -129,7 +134,7 @@ function GridItemComponent({ widget, onDeleteClick, onEditClick, isDragging, isR
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [showContextMenu]);
 
   function handleClick() {
     setShowContextMenu(true);
@@ -149,7 +154,6 @@ function GridItemComponent({ widget, onDeleteClick, onEditClick, isDragging, isR
       return MissingMdxMessage;
     }
     const MDXComponent = getMDXComponent(widget.mdx.code);
-    // return withTextBehavior(MDXComponent);
     return MDXComponent;
   }, [widget, widget.mdx]);
 
