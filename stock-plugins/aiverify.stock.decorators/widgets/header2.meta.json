@@ -1,6 +1,6 @@
 {
-  "cid": "header1",
-  "name": "Header 1",
+  "cid": "header2",
+  "name": "Header 2",
   "tags": [
     "stock",
     "decorator",
@@ -8,14 +8,14 @@
   ],
   "properties": [
     {
-      "key": "heading1",
-      "helper": "Enter the heading 1",
+      "key": "heading2",
+      "helper": "Enter the heading 2",
       "default": ""
     }
   ],
   "widgetSize": {
     "minW": 1,
-    "minH": 2,
+    "minH": 1,
     "maxW": 12,
     "maxH": 36
   },

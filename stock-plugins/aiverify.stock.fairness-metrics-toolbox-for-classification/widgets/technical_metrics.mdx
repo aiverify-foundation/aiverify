@@ -20,17 +20,19 @@ export const GetAllMetrics = ({ id, results, width, height }) => {
   let metrics = Object.values(metrics_map);
 
   return (
-    <div style={{ width, height }}>
-      {metrics.map((metric) =>
+    <div style={{ width, height: 'auto', display: 'flex', gap: 5, flexDirection: 'column' }}>
+      {metrics.map((metric, idx) =>
         metric == "Equal Selection Parity" || metric == "Disparate Impact" ? (
           <TechnicalInterpretationChart2
-            key={`${id}-${metric}`}
+            id={`${id}-${metric}-${idx}`}
+            key={`${id}-${metric}-${idx}`}
             metric={metric}
             data={results}
           />
         ) : (
           <TechnicalInterpretationChart
-            key={`${id}-${metric}`}
+            id={`${id}-${metric}-${idx}`}
+            key={`${id}-${metric}-${idx}`}
             metric={metric}
             data={results}
           />
@@ -40,24 +42,26 @@ export const GetAllMetrics = ({ id, results, width, height }) => {
   );
 };
 
-### Fairness Metrics
+<div className="widget-wrapper" style={{ height: 'auto' }}>
+  ### Fairness Metrics
 
-## The displayed metric(s) demonstrate the equity between two subgroups. In cases where the selected feature consists of more than two subgroups (such as race with multiple subgroups), the parity value is determined by comparing the subgroup with the smallest value to the subgroup with the largest value.
+  ## The displayed metric(s) demonstrate the equity between two subgroups. In cases where the selected feature consists of more than two subgroups (such as race with multiple subgroups), the parity value is determined by comparing the subgroup with the smallest value to the subgroup with the largest value.
 
-<ul>
-  <li>
-    <i>Disparate Impact</i>: The closer the value is to 1, the better it is.
-  </li>
-  <li>
-    <i>Equal Selection Parity</i>: The smaller the value, the better it is.
-  </li>
-  <li>Other fairness metrics: The smaller the value, the better it is</li>
-</ul>
-<br />
+  <ul>
+    <li>
+      <i>Disparate Impact</i>: The closer the value is to 1, the better it is.
+    </li>
+    <li>
+      <i>Equal Selection Parity</i>: The smaller the value, the better it is.
+    </li>
+    <li>Other fairness metrics: The smaller the value, the better it is</li>
+  </ul>
+  <br />
 
-<GetAllMetrics
-  id={props.id}
-  results={props.getResults(cid)}
-  width={props.width}
-  height={props.height}
-/>
+  <GetAllMetrics
+    id={props.id}
+    results={props.getResults(cid)}
+    width={props.width}
+    height={props.height}
+  />
+</div>
