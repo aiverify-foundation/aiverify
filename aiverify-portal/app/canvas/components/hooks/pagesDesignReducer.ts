@@ -10,6 +10,8 @@ export type State = {
   inputBlocks: Record<string, unknown>;
   currentPage: number;
   showGrid: boolean;
+  pageTypes: ('grid' | 'overflow')[]; // Track page types
+  overflowParents: Array<number | null>; // just track parent page index, null for grid pages
 };
 
 export const initialState: State = {
@@ -19,6 +21,8 @@ export const initialState: State = {
   inputBlocks: {},
   currentPage: 0,
   showGrid: true,
+  pageTypes: ['grid'],
+  overflowParents: [null],
 };
 
 type WidgetAction =
@@ -59,6 +63,15 @@ type WidgetAction =
       fromPageIndex: number;
       toPageIndex: number;
       widgetId: string;
+    }
+  | {
+      type: 'ADD_OVERFLOW_PAGES';
+      parentPageIndex: number;
+      count: number;
+    }
+  | {
+      type: 'REMOVE_OVERFLOW_PAGES';
+      parentPageIndex: number;
     };
 
 function pagesDesignReducer(state: State, action: WidgetAction): State {
@@ -178,6 +191,8 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         ...state,
         layouts: [...state.layouts, []],
         widgets: [...state.widgets, []],
+        pageTypes: [...state.pageTypes, 'grid'],
+        overflowParents: [...state.overflowParents, null],
         currentPage: state.layouts.length,
       };
 
@@ -262,6 +277,76 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         ...state,
         layouts: newLayouts,
         widgets: newWidgets,
+      };
+    }
+
+    case 'ADD_OVERFLOW_PAGES': {
+      const { parentPageIndex, count } = action;
+      const insertIndex = parentPageIndex + 1;
+
+      const newLayouts = new Array(count).fill([]);
+      const newWidgets = new Array(count).fill([]);
+      const newPageTypes = new Array(count).fill('overflow');
+      const newOverflowParents = new Array(count).fill(parentPageIndex);
+
+      return {
+        ...state,
+        layouts: [
+          ...state.layouts.slice(0, insertIndex),
+          ...newLayouts,
+          ...state.layouts.slice(insertIndex),
+        ],
+        widgets: [
+          ...state.widgets.slice(0, insertIndex),
+          ...newWidgets,
+          ...state.widgets.slice(insertIndex),
+        ],
+        pageTypes: [
+          ...state.pageTypes.slice(0, insertIndex),
+          ...newPageTypes,
+          ...state.pageTypes.slice(insertIndex),
+        ],
+        overflowParents: [
+          ...state.overflowParents.slice(0, insertIndex),
+          ...newOverflowParents,
+          ...state.overflowParents.slice(insertIndex),
+        ],
+      };
+    }
+
+    case 'REMOVE_OVERFLOW_PAGES': {
+      const { parentPageIndex } = action;
+
+      // Find indices of overflow pages to remove
+      const indicesToRemove = state.pageTypes.reduce((indices, type, idx) => {
+        if (
+          type === 'overflow' &&
+          state.overflowParents[idx] === parentPageIndex
+        ) {
+          indices.push(idx);
+        }
+        return indices;
+      }, [] as number[]);
+
+      // Remove the pages
+      return {
+        ...state,
+        layouts: state.layouts.filter(
+          (_, idx) => !indicesToRemove.includes(idx)
+        ),
+        widgets: state.widgets.filter(
+          (_, idx) => !indicesToRemove.includes(idx)
+        ),
+        pageTypes: state.pageTypes.filter(
+          (_, idx) => !indicesToRemove.includes(idx)
+        ),
+        overflowParents: state.overflowParents.filter(
+          (_, idx) => !indicesToRemove.includes(idx)
+        ),
+        currentPage:
+          state.currentPage >= parentPageIndex
+            ? parentPageIndex
+            : state.currentPage,
       };
     }
 

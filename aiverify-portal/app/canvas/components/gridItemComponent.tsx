@@ -12,6 +12,9 @@ import { calculateTotalContentHeight } from '@/app/canvas/utils/calculateTotalCo
 import { Algorithm, TestResultData, InputBlockData } from '@/app/types';
 import { GRID_HEIGHT } from './dimensionsConstants';
 
+export const gridItemRootClassName = 'grid-item-root';
+type requiredStyles = `grid-item-root relative h-auto w-full${string}`; // strictly required styles
+
 type GridItemComponentProps = {
   widget: WidgetOnGridLayout;
   inputBlockData?: unknown;
@@ -38,6 +41,8 @@ type MdxComponentProps = MDXContentProps & {
   width?: number;
   height?: number;
 };
+
+const itemStyle: requiredStyles = 'grid-item-root relative h-auto w-full';
 
 /**
  * This is a higher-order component that allows developers to add modifications like styling to the MDX component.
@@ -295,11 +300,11 @@ function GridItemComponent({ widget, onDeleteClick, onEditClick, isDragging, isR
       {contextMenu}
       <div
         ref={gridItemRef}
-        className="relative h-full w-full"
+        className={itemStyle}
         onMouseOver={handleMouseEnter}
         onMouseLeave={handleMouseLeave}>
         {isResizing ? (
-          <div className="h-full w-full bg-gray-100" />
+          <div className="h-auto w-full bg-gray-100" />
         ) : (
           <Component
             id={widget.gridItemId}
