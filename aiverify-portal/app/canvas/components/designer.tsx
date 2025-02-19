@@ -25,6 +25,7 @@ import {
   A4_HEIGHT,
   A4_WIDTH
 } from './dimensionsConstants';
+import { TestResultsDrawer } from './drawers/testResultsDrawer';
 import { EditingOverlay } from './editingOverlay';
 import { FreeFormArea } from './freeFormArea';
 import { GridItemComponent } from './gridItemComponent';
@@ -37,7 +38,6 @@ import { PageNavigation } from './pageNavigation';
 import { PageNumber } from './pageNumber';
 import { PluginsPanel } from './pluginsPanel';
 import { ResizeHandle } from './resizeHandle';
-import { TestResultsPicker } from './testResultsPicker';
 import { ZoomControl } from './zoomControl';
 /*
   Designer component has 3 sections:
@@ -382,6 +382,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   }
 
   function handleSelectUploadedTestResults(selectedResults: ParsedTestResults[]) {
+    console.log('selectedResults', selectedResults);
     if (selectedResults.length === 0) {
       setTestResultsMapping(null);
       return;
@@ -558,12 +559,13 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
                         selectedGridItemId === widget.gridItemId && 'outline outline-2 outline-blue-500 outline-offset-2')}
                       onClick={handleGridItemClick(widget.gridItemId)}>
                       <GridItemComponent
+                        plugins={pluginsWithMdx}
                         widget={widget}
                         onDeleteClick={handleDeleteGridItem(pageIndex, widgetIndex)}
                         onEditClick={handleGridItemEditClick(pageIndex)}
                         isDragging={draggingGridItemId === widget.gridItemId}
                         isResizing={resizingGridItemId === widget.gridItemId}
-                        algosMap={state.algos}
+                        algosMapping={state.algos}
                         testResultsMapping={testResultsMapping}
                       />
                     </div>
@@ -578,8 +580,8 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   );
 
   const testControlsSection = (
-    <section className="fixed left-[420px] top-[90px] z-50 flex w-[50px] max-w-[50px] flex-col gap-4">
-      <TestResultsPicker
+    <section className="fixed left-[320px] top-[90px] z-10 flex flex-col gap-4">
+      <TestResultsDrawer
         testResults={testResults}
         onOkClick={handleSelectUploadedTestResults}
       />

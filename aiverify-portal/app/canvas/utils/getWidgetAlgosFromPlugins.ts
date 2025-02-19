@@ -7,13 +7,12 @@ export function getWidgetAlgosFromPlugins(
 ) {
   const algos: Algorithm[] = [];
 
+  // go through all the widget dependencies and get the algos from the list of plugins
   for (const dependency of widget.dependencies) {
     const plugin = pluginsWithMdx.find((p) => p.gid === widget.gid);
     if (!plugin) continue;
 
-    const algo = plugin.algorithms?.find(
-      (a) => a.cid === `aiverify_${dependency.cid}` //TODO : clarify the prefix aiverify_
-    );
+    const algo = plugin.algorithms?.find((a) => a.cid === dependency.cid);
     if (algo) {
       algos.push(algo);
     }

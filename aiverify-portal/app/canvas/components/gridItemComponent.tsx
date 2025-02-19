@@ -1,41 +1,38 @@
-import {
-  RiDeleteBin5Line,
-  RiFileEditLine,
-  RiFlaskLine,
-} from '@remixicon/react';
 import { getMDXComponent, MDXContentProps } from 'mdx-bundler/client';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import React from 'react';
-import { createPortal } from 'react-dom';
 import { InputBlockDataMapping, TestResultDataMapping, WidgetOnGridLayout } from '@/app/canvas/types';
 import { calculateTotalContentHeight } from '@/app/canvas/utils/calculateTotalContentHeight';
-import { Algorithm, TestResultData, InputBlockData } from '@/app/types';
+import { Algorithm, TestResultData, InputBlockData, Plugin } from '@/app/types';
 import { GRID_HEIGHT } from './dimensionsConstants';
+import { GridItemContextMenu } from './gridItemContextMenu';
 import { editorInputClassName } from './hocAddTextEditFuncitonality';
+import { WidgetPropertiesDrawer } from './drawers/widgetPropertiesDrawer';
 
 export const gridItemRootClassName = 'grid-item-root';
 type requiredStyles = `grid-item-root relative h-auto w-full min-h-full${string}`; // strictly required styles
 
 type GridItemComponentProps = {
+  plugins: Plugin[];
   widget: WidgetOnGridLayout;
   inputBlockData?: unknown;
   testResultsMapping?: TestResultDataMapping | null;
+  algosMapping: Record<string, Algorithm[]>;
+  isDragging?: boolean;
+  isResizing: boolean;
   onDeleteClick: () => void;
   onEditClick: (
     gridItemId: string,
     gridItemHtmlElement: HTMLDivElement,
     widget: WidgetOnGridLayout
   ) => void;
-  isDragging?: boolean;
-  isResizing: boolean;
-  algosMap: Record<string, Algorithm[]>;
   onContentOverflow?: (gridItemId: string, totalHeight: number, requiredPages: number) => void;
 };
 
 type MdxComponentProps = MDXContentProps & {
   id: string;
   properties: Record<string, unknown>;
-  results: TestResultData;
+  testResult: TestResultData;
   inputBlockData: InputBlockData;
   getIBData: (cid: string) => InputBlockData;
   getResults: (cid: string) => TestResultData;
@@ -45,8 +42,9 @@ type MdxComponentProps = MDXContentProps & {
 
 const itemStyle: requiredStyles = 'grid-item-root relative h-auto w-full min-h-full';
 
-function GridItemComponent({ widget, onDeleteClick, onEditClick, isDragging, isResizing, algosMap, testResultsMapping, onContentOverflow }: GridItemComponentProps) {
+function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDragging, isResizing, algosMapping, testResultsMapping, onContentOverflow }: GridItemComponentProps) {
   const [showContextMenu, setShowContextMenu] = useState(false);
+  const [showWidgetProperties, setShowWidgetProperties] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const gridItemRef = useRef<HTMLDivElement>(null);
   const hideTimeoutRef = useRef<NodeJS.Timeout>(null);
@@ -138,6 +136,7 @@ function GridItemComponent({ widget, onDeleteClick, onEditClick, isDragging, isR
 
   function handleClick() {
     setShowContextMenu(true);
+    setShowWidgetProperties(true);
   }
 
   function handleEditClick() {
@@ -167,7 +166,7 @@ function GridItemComponent({ widget, onDeleteClick, onEditClick, isDragging, isR
     }, {});
   }, [widget.properties]);
 
-  const mockResults = useMemo(() => {
+  const testResult = useMemo(() => {
     if (testResultsMapping) {
       return testResultsMapping;
     }
@@ -208,66 +207,24 @@ function GridItemComponent({ widget, onDeleteClick, onEditClick, isDragging, isR
 
   // console.log('mockResults', mockResults);
   // console.log('mockInputs', mockInputs);
-
-  const contextMenu = showContextMenu && !isDragging
-    ? createPortal(
-      <div
-        className="fixed flex flex-col gap-1"
-        style={{
-          top: `${menuPosition.top}px`,
-          left: `${menuPosition.left}px`,
-        }}>
-        <div className="max-w-[200px] break-words rounded bg-secondary-600 px-2 py-1 text-xs shadow-lg">
-          {widget.name}
-        </div>
-        <div className="flex gap-1">
-          <div
-            className="cursor-pointer rounded bg-secondary-400 shadow-lg"
-            onMouseDown={(e) => {
-              // Prevent grid drag from starting
-              e.stopPropagation();
-            }}
-            onClick={handleEditClick}>
-            <RiFileEditLine className="m-1 h-5 w-5 text-white hover:text-blue-800" />
-          </div>
-          <div
-            className="cursor-pointer rounded bg-secondary-400 shadow-lg"
-            onMouseDown={(e) => {
-              // Prevent grid drag from starting
-              e.stopPropagation();
-            }}
-            onClick={onDeleteClick}>
-            <RiDeleteBin5Line className="m-1 h-5 w-5 text-white hover:text-red-500" />
-          </div>
-        </div>
-        {Object.keys(algosMap).length > 0 && (
-          <section className="flex flex-col gap-1">
-            {algosMap[widget.gridItemId] &&
-              algosMap[widget.gridItemId].map((algo) => (
-                <div
-                  key={algo.cid}
-                  className="mt-1 flex w-[250px] flex-col items-start gap-2 rounded bg-secondary-200 p-4 text-gray-500 shadow-md">
-                  <div className="flex items-center gap-2">
-                    <RiFlaskLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
-                    <h2 className="text-[0.9rem] font-semibold">Tests</h2>
-                  </div>
-                  <div className="mb-2 h-[1px] w-full bg-gray-500" />
-                  <h3 className="text-[0.9rem] font-semibold">
-                    {algo.name}
-                  </h3>
-                  <p className="text-[0.8rem]">{algo.description}</p>
-                </div>
-              ))}
-          </section>
-        )}
-      </div>,
-      document.body
-    )
-    : null;
+  console.log(widget)
 
   return (
     <React.Fragment>
-      {contextMenu}
+      {showContextMenu && !isDragging ?
+        <GridItemContextMenu
+          widget={widget}
+          menuPosition={menuPosition}
+          onDeleteClick={onDeleteClick}
+          onEditClick={handleEditClick} /> : null}
+      {showWidgetProperties && <WidgetPropertiesDrawer
+        plugins={plugins}
+        widget={widget}
+        algorithms={algosMapping[widget.gridItemId]}
+        open={showWidgetProperties}
+        setOpen={setShowWidgetProperties}
+        onOkClick={() => setShowWidgetProperties(false)}
+      />}
       <div
         ref={gridItemRef}
         className={itemStyle}
@@ -278,10 +235,10 @@ function GridItemComponent({ widget, onDeleteClick, onEditClick, isDragging, isR
           <Component
             id={widget.gridItemId}
             properties={properties}
-            results={mockResults}
+            testResult={testResult}
             inputBlockData={mockInputs}
             getIBData={(cid) => mockInputs[`${widget.gid}:${cid}`]}
-            getResults={(cid) => mockResults[`${widget.gid}:${cid}`]}
+            getResults={(cid) => testResult[`${widget.gid}:${cid}`]}
             width={dimensions.width}
             height={dimensions.height}
           />
