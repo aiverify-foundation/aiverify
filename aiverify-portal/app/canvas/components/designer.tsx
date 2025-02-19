@@ -274,18 +274,21 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
         });
       };
 
-  const handleGridItemDrag = (
+  const handleGridItemDragStart = (
     _layouts: Layout[],
     _: Layout,
-    itemLayout: Layout
+    itemLayout: Layout,
   ) => {
     setDraggingGridItemId(itemLayout.i);
   };
 
   const handleGridItemDragStop =
     (pageIndex: number) =>
-      (_layouts: Layout[], _: Layout, itemLayout: Layout) => {
-        const { x, y, w, h, minW, minH, maxW, maxH, i } = itemLayout;
+      (_layouts: Layout[], oldItem: Layout, newItem: Layout) => {
+        if (oldItem.x === newItem.x && oldItem.y === newItem.y) {
+          return; // Position didn't change, skip dispatch
+        }
+        const { x, y, w, h, minW, minH, maxW, maxH, i } = newItem;
         dispatch({
           type: 'CHANGE_WIDGET_POSITION',
           itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
@@ -532,7 +535,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
                 margin={[0, 0]}
                 compactType={null}
                 onDrop={handleWidgetDrop(pageIndex)}
-                onDragStart={handleGridItemDrag}
+                onDragStart={handleGridItemDragStart}
                 onDragStop={handleGridItemDragStop(pageIndex)}
                 onResizeStop={handleGridItemResizeStop(pageIndex)}
                 onResizeStart={handleGridItemResizeStart}
