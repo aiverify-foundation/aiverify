@@ -23,8 +23,14 @@ export const hocAddTextEditFunctionality = <P extends MDXContentProps>(
           }: { children: React.ReactNode } & Record<string, string>) => {
             if (dataKeyName in props) {
               return (
-                <input
-                  type="text"
+                <textarea
+                  style={{
+                    overflow: 'hidden',
+                    resize: 'none',
+                    height: 'auto',
+                    whiteSpace: 'pre-wrap',
+                    width: '100%'
+                  }}
                   name={props[dataKeyName]}
                   defaultValue={children as string}
                   className="w-full bg-transparent focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -39,11 +45,16 @@ export const hocAddTextEditFunctionality = <P extends MDXContentProps>(
           }: { children: React.ReactNode } & Record<string, string>) => {
             if (dataKeyName in props) {
               return (
-                <input
-                  type="text"
+                <textarea
+                  autoFocus
+                  onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    target.style.height = 'auto';
+                    target.style.height = `${target.scrollHeight}px`;
+                  }}
                   name={props[dataKeyName]}
                   defaultValue={children as string}
-                  className="w-full text-[1rem] font-bold text-black focus:outline-none"
+                  className="input-h1"
                 />
               );
             }
@@ -55,11 +66,16 @@ export const hocAddTextEditFunctionality = <P extends MDXContentProps>(
           }: { children: React.ReactNode } & Record<string, string>) => {
             if (dataKeyName in props) {
               return (
-                <input
-                  type="text"
+                <textarea
+                  autoFocus
+                  onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    target.style.height = 'auto';
+                    target.style.height = `${target.scrollHeight}px`;
+                  }}
                   name={props[dataKeyName]}
                   defaultValue={children as string}
-                  className="w-full text-[1rem] font-bold text-black focus:outline-none"
+                  className="input-h2"
                 />
               );
             }
@@ -71,11 +87,16 @@ export const hocAddTextEditFunctionality = <P extends MDXContentProps>(
           }: { children: React.ReactNode } & Record<string, string>) => {
             if (dataKeyName in props) {
               return (
-                <input
-                  type="text"
+                <textarea
+                  autoFocus
+                  onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    target.style.height = 'auto';
+                    target.style.height = `${target.scrollHeight}px`;
+                  }}
                   name={props[dataKeyName]}
                   defaultValue={children as string}
-                  className="w-full text-[1rem] font-bold text-black focus:outline-none"
+                  className="input-h3"
                 />
               );
             }

@@ -3,6 +3,9 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { WidgetOnGridLayout } from '@/app/canvas/types';
 import { hocAddTextEditFunctionality } from './hocAddTextEditFuncitonality';
+
+type EditingOverlayRequiredStyles = `editing-overlay ${string}`;
+
 type EditingOverlayProps = {
   widget: WidgetOnGridLayout;
   originalElement: HTMLElement | null;
@@ -72,9 +75,11 @@ function EditingOverlay({
     }
   };
 
+  const editingOverlayRequiredStyles: EditingOverlayRequiredStyles = 'editing-overlay fixed inset-0 z-40 bg-transparent';
+
   return createPortal(
     <div
-      className="fixed inset-0 z-40 bg-transparent"
+      className={editingOverlayRequiredStyles}
       onClick={handleBackgroundClick}>
       <div
         ref={overlayRef}

@@ -55,7 +55,7 @@ import { ZoomControl } from './zoomControl';
     - This is a container wrapping all the pages.
 */
 
-type GridItemDivRequiredStyles = `relative group z-10${string}`; // mandatory to have relative and group
+type GridItemDivRequiredStyles = `grid-comp-wrapper relative group z-10${string}`; // mandatory to have relative and group
 
 type DesignProps = {
   pluginsWithMdx: PluginForGridLayout[];
@@ -70,7 +70,7 @@ type EventDataTransfer = Event & {
 };
 
 
-const gridItemDivRequiredStyles: GridItemDivRequiredStyles = `relative group z-10
+const gridItemDivRequiredStyles: GridItemDivRequiredStyles = `grid-comp-wrapper relative group z-10
   hover:outline hover:outline-2 
   hover:outline-blue-500 hover:outline-offset-2
   active:outline-none`;
@@ -97,6 +97,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   const [newDraggedWidget, setNewDraggedWidget] = useState<Widget | null>(null);
   const [draggingGridItemId, setDraggingGridItemId] = useState<string | null>(null);
   const [resizingGridItemId, setResizingGridItemId] = useState<string | null>(null);
+  const [selectedGridItemId, setSelectedGridItemId] = useState<string | null>(null);
   const [editingGridItem, setEditingGridItem] = useState<[WidgetOnGridLayout, HTMLDivElement] | null>(null)
   const [editingPageIndex, setEditingPageIndex] = useState<number | null>(null);
   const { zoomLevel, resetZoom, zoomIn, zoomOut } = useZoom();
@@ -182,6 +183,18 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
       }
     }, 0)
   }, [layouts[currentPage], state.widgets[currentPage], state.pageTypes, state.overflowParents]);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.grid-comp-wrapper')) { // All grid items have 'group' class
+        setSelectedGridItemId(null);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleWidgetDrop =
     (pageIndex: number) =>
@@ -384,6 +397,10 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     setTestResultsMapping(testResultsMapping);
   }
 
+  const handleGridItemClick = (gridItemId: string) => () => {
+    setSelectedGridItemId(gridItemId);
+  }
+
   // Calculate actual dimensions based on zoom
   const [gridWidth, gridRowHeight, gridHeight] = useMemo(
     () => [
@@ -559,7 +576,9 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
                     <div
                       id={widget.gridItemId}
                       key={widget.gridItemId}
-                      className={gridItemDivRequiredStyles}>
+                      className={cn(gridItemDivRequiredStyles,
+                        selectedGridItemId === widget.gridItemId && 'outline outline-2 outline-blue-500 outline-offset-2')}
+                      onClick={handleGridItemClick(widget.gridItemId)}>
                       <GridItemComponent
                         widget={widget}
                         onDeleteClick={handleDeleteGridItem(pageIndex, widgetIndex)}

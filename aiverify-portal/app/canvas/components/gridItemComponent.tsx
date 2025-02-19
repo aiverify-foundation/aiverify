@@ -44,35 +44,6 @@ type MdxComponentProps = MDXContentProps & {
 
 const itemStyle: requiredStyles = 'grid-item-root relative h-auto w-full min-h-full';
 
-/**
- * This is a higher-order component that allows developers to add modifications like styling to the MDX component.
- * It is currently not doing anything, but it is a placeholder for future use.
- * Currently it has placeholders for h2, h1, but no modifications are added.
- * @param WrappedComponent - The MDX component to wrap.
- * @returns A new component that adds text behavior to the MDX component.
- */
-const withTextBehavior = <P extends MDXContentProps>(
-  WrappedComponent: React.FunctionComponent<P>
-) => {
-  return function EnhancedComponent(props: P) {
-    return (
-      <WrappedComponent
-        {...props}
-        components={{
-          ...props.components,
-          // h1: (h1Props: { children: React.ReactNode }) => (
-          //   <h1>{h1Props.children}</h1>
-          // ),
-          // h2: (h2Props: { children: React.ReactNode }) => (
-          //   <h2>{h2Props.children}</h2>
-          // ),
-          // p: ({ children }) => <div>{children}!!</div>,
-        }}
-      />
-    );
-  };
-};
-
 function GridItemComponent({ widget, onDeleteClick, onEditClick, isDragging, isResizing, algosMap, testResultsMapping, onContentOverflow }: GridItemComponentProps) {
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
@@ -148,21 +119,20 @@ function GridItemComponent({ widget, onDeleteClick, onEditClick, isDragging, isR
     };
   }, [showContextMenu]);
 
-  function handleMouseEnter() {
-    isHoveringRef.current = true;
-    if (hideTimeoutRef.current) {
-      clearTimeout(hideTimeoutRef.current);
-    }
-    setShowContextMenu(true);
-  }
-
-  function handleMouseLeave() {
-    isHoveringRef.current = false;
-    hideTimeoutRef.current = setTimeout(() => {
-      if (!isHoveringRef.current) {
+  // Add click outside handler
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (gridItemRef.current && !gridItemRef.current.contains(event.target as Node)) {
         setShowContextMenu(false);
       }
-    }, 500); //delay before hiding
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  function handleClick() {
+    setShowContextMenu(true);
   }
 
   function handleEditClick() {
@@ -249,8 +219,6 @@ function GridItemComponent({ widget, onDeleteClick, onEditClick, isDragging, isR
         <div className="flex gap-1">
           <div
             className="cursor-pointer rounded bg-secondary-400 shadow-lg"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
             onMouseDown={(e) => {
               // Prevent grid drag from starting
               e.stopPropagation();
@@ -260,8 +228,6 @@ function GridItemComponent({ widget, onDeleteClick, onEditClick, isDragging, isR
           </div>
           <div
             className="cursor-pointer rounded bg-secondary-400 shadow-lg"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
             onMouseDown={(e) => {
               // Prevent grid drag from starting
               e.stopPropagation();
@@ -301,8 +267,7 @@ function GridItemComponent({ widget, onDeleteClick, onEditClick, isDragging, isR
       <div
         ref={gridItemRef}
         className={itemStyle}
-        onMouseOver={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}>
+        onClick={handleClick}>
         {isResizing ? (
           <div className="h-auto w-full bg-gray-100" />
         ) : (
