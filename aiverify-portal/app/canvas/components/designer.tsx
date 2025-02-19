@@ -104,8 +104,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   const [resizingGridItemId, setResizingGridItemId] = useState<string | null>(null);
   const [editingGridItem, setEditingGridItem] = useState<[WidgetOnGridLayout, HTMLDivElement] | null>(null)
   const [editingPageIndex, setEditingPageIndex] = useState<number | null>(null);
-  const { zoomLevel, resetZoom, startContinuousZoom, stopContinuousZoom } =
-    useZoom();
+  const { zoomLevel, resetZoom, zoomIn, zoomOut } = useZoom();
   const [testResultsMapping, setTestResultsMapping] = useState<TestResultDataMapping | null>(null);
   const {
     isDragging: isDraggingFreeFormArea,
@@ -503,8 +502,8 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
       <ZoomControl
         zoomLevel={zoomLevel}
         onZoomReset={resetZoom}
-        startContinuousZoom={startContinuousZoom}
-        stopContinuousZoom={stopContinuousZoom}
+        onZoomIn={zoomIn}
+        onZoomOut={zoomOut}
       />
       <PageNavigation
         totalPages={layouts.length}

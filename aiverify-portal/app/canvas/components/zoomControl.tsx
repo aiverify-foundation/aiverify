@@ -7,16 +7,16 @@ const MAX_ZOOM = 2;
 type ZoomControlProps = {
   zoomLevel: number;
   onZoomReset: () => void;
-  startContinuousZoom: (direction: 'in' | 'out') => void;
-  stopContinuousZoom: () => void;
+  onZoomIn: () => void;
+  onZoomOut: () => void;
   className?: string;
 };
 
 export function ZoomControl({
   zoomLevel,
   onZoomReset,
-  startContinuousZoom,
-  stopContinuousZoom,
+  onZoomIn,
+  onZoomOut,
   className,
 }: ZoomControlProps) {
   return (
@@ -26,9 +26,7 @@ export function ZoomControl({
         className
       )}>
       <button
-        onMouseDown={() => startContinuousZoom('in')}
-        onMouseUp={stopContinuousZoom}
-        onMouseLeave={stopContinuousZoom}
+        onClick={onZoomIn}
         disabled={zoomLevel >= MAX_ZOOM}
         className="disabled:opacity-50"
         title="Zoom in">
@@ -41,9 +39,7 @@ export function ZoomControl({
         {Math.round(zoomLevel * 100)}%
       </button>
       <button
-        onMouseDown={() => startContinuousZoom('out')}
-        onMouseUp={stopContinuousZoom}
-        onMouseLeave={stopContinuousZoom}
+        onClick={onZoomOut}
         disabled={zoomLevel <= MIN_ZOOM}
         className="disabled:opacity-50"
         title="Zoom out">
