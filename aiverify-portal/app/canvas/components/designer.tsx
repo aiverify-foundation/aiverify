@@ -286,6 +286,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     (pageIndex: number) =>
       (_layouts: Layout[], oldItem: Layout, newItem: Layout) => {
         if (oldItem.x === newItem.x && oldItem.y === newItem.y) {
+          setDraggingGridItemId(null);
           return; // Position didn't change, skip dispatch
         }
         const { x, y, w, h, minW, minH, maxW, maxH, i } = newItem;
@@ -495,6 +496,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
             key={`page-${pageIndex}`}
             ref={canvasRef}
             className={cn(
+              'standard-report-page',
               'relative bg-white text-black shadow',
               'cursor-default active:cursor-default',
               isOverflowPage && 'pointer-events-none',

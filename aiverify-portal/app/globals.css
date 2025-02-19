@@ -1,5 +1,6 @@
 @import '@fontsource-variable/inter';
 @import '@/lib/theme/colors.css';
+@import '@/lib/theme/standardReport.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
