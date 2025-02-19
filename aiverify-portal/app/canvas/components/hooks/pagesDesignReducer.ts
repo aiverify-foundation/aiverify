@@ -58,13 +58,6 @@ type WidgetAction =
       pageIndex: number;
     }
   | {
-      type: 'MOVE_WIDGET_TO_PAGE';
-      itemLayout: Layout;
-      fromPageIndex: number;
-      toPageIndex: number;
-      widgetId: string;
-    }
-  | {
       type: 'ADD_OVERFLOW_PAGES';
       parentPageIndex: number;
       count: number;
@@ -272,43 +265,6 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         widgets: widgets.map((widget, i) =>
           i === action.pageIndex ? clonedPageWidgets : widget
         ),
-      };
-    }
-
-    case 'MOVE_WIDGET_TO_PAGE': {
-      const { itemLayout, fromPageIndex, toPageIndex, widgetId } = action;
-
-      // Find widget to move
-      const widgetToMove = state.widgets[fromPageIndex].find(
-        (w) => w.gridItemId === widgetId
-      );
-
-      if (!widgetToMove) return state;
-
-      // Remove from source page
-      const sourceWidgets = state.widgets[fromPageIndex].filter(
-        (w) => w.gridItemId !== widgetId
-      );
-
-      // Add to target page
-      const targetWidgets = [...state.widgets[toPageIndex], widgetToMove];
-
-      // Update layouts
-      const newLayouts = [...state.layouts];
-      newLayouts[fromPageIndex] = newLayouts[fromPageIndex].filter(
-        (l) => l.i !== widgetId
-      );
-      newLayouts[toPageIndex] = [...newLayouts[toPageIndex], itemLayout];
-
-      // Update widgets array
-      const newWidgets = [...state.widgets];
-      newWidgets[fromPageIndex] = sourceWidgets;
-      newWidgets[toPageIndex] = targetWidgets;
-
-      return {
-        ...state,
-        layouts: newLayouts,
-        widgets: newWidgets,
       };
     }
 

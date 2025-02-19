@@ -112,7 +112,6 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     handleMouseUp: handleFreeFormAreaMouseUp,
     handleMouseMove: handleFreeFormAreaMouseMove,
   } = useDragToScroll(freeFormAreaRef, canvasRef);
-  const [overflowPages, setOverflowPages] = useState<OverflowPage[]>([]);
 
   useEffect(() => {
     if (freeFormAreaRef.current) {
@@ -280,64 +279,23 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
         });
       };
 
-  function handleGridItemDragStart(
+  const handleGridItemDrag = (
     _layouts: Layout[],
     _: Layout,
     itemLayout: Layout
-  ) {
+  ) => {
     setDraggingGridItemId(itemLayout.i);
-  }
+  };
 
   const handleGridItemDragStop =
     (pageIndex: number) =>
       (_layouts: Layout[], _: Layout, itemLayout: Layout) => {
-        console.log('handleGridItemDragStop', itemLayout);
         const { x, y, w, h, minW, minH, maxW, maxH, i } = itemLayout;
-
-        // Get the element being dragged
-        const element = document.getElementById(i);
-        if (!element) return;
-
-        // Find which page the element is currently over
-        const pages = Array.from(document.querySelectorAll('[id^="page-"]'));
-        const targetPage = pages.find(page => {
-          const rect = page.getBoundingClientRect();
-          const elementRect = element.getBoundingClientRect();
-          return (
-            elementRect.top >= rect.top &&
-            elementRect.bottom <= rect.bottom
-          );
+        dispatch({
+          type: 'CHANGE_WIDGET_POSITION',
+          itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
+          pageIndex,
         });
-
-        if (!targetPage) {
-          // If not over any page, return to original position
-          dispatch({
-            type: 'CHANGE_WIDGET_POSITION',
-            itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
-            pageIndex,
-          });
-        } else {
-          const targetPageIndex = parseInt(targetPage.id.split('-')[1]);
-
-          if (targetPageIndex !== pageIndex) {
-            // Move to different page
-            dispatch({
-              type: 'MOVE_WIDGET_TO_PAGE',
-              itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
-              fromPageIndex: pageIndex,
-              toPageIndex: targetPageIndex,
-              widgetId: i
-            });
-          } else {
-            // Same page movement
-            dispatch({
-              type: 'CHANGE_WIDGET_POSITION',
-              itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
-              pageIndex,
-            });
-          }
-        }
-
         setDraggingGridItemId(null);
       };
 
@@ -361,31 +319,6 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
         setEditingPageIndex(pageIndex);
       };
 
-  const handleGridItemDrag = (
-    _layouts: Layout[],
-    _: Layout,
-    itemLayout: Layout,
-    placeholder: Layout,
-    event: MouseEvent,
-    element: HTMLElement
-  ) => {
-    if (!element) return;
-
-    const gridElement = element.closest('.react-grid-layout');
-    if (!gridElement) return;
-
-    const gridRect = gridElement.getBoundingClientRect();
-    const elementRect = element.getBoundingClientRect();
-
-    const isOutsideGrid =
-      elementRect.top > gridRect.bottom ||
-      elementRect.bottom < gridRect.top ||
-      elementRect.left > gridRect.right ||
-      elementRect.left < gridRect.left;
-
-    element.style.opacity = isOutsideGrid ? '0.5' : '1';
-    // element.querySelector('div')?.setAttribute('draggable', isOutsideGrid ? 'true' : 'false');
-  };
 
   function handleEditClose(updatedWidget: WidgetOnGridLayout) {
     if (editingPageIndex === null) {
@@ -542,24 +475,10 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
       h: newDraggedWidget.widgetSize.minH,
     } : undefined
 
-  const handleContentOverflow = (pageIndex: number, widgetId: string, element: HTMLElement) => {
-    const { overflows, requiredPages } = checkWidgetOverflow(element);
-    if (overflows) {
-      const newOverflowPages: OverflowPage[] = [];
-      for (let i = 1; i < requiredPages; i++) {
-        newOverflowPages.push({
-          parentPageIndex: pageIndex,
-          parentWidgetId: widgetId
-        });
-      }
-      setOverflowPages(newOverflowPages);
-    }
-  };
-
   const pagesSection = (
     <FreeFormArea
       ref={freeFormAreaRef}
-      pagesLength={layouts.length + overflowPages.length}
+      pagesLength={layouts.length}
       zoomLevel={zoomLevel}
       contentWrapperMinHeight={contentWrapperMinHeight}
       onMouseDown={!draggingGridItemId && !resizingGridItemId ? handleFreeFormAreaMouseDown : undefined}
@@ -584,8 +503,8 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
               !isOverflowPage && 'mt-2'
             )}
             style={{
-              height: isOverflowPage ? A4_HEIGHT : 'auto',
-              width: isOverflowPage ? A4_WIDTH : 'auto',
+              height: isOverflowPage ? A4_HEIGHT * zoomLevel : 'auto',
+              width: isOverflowPage ? A4_WIDTH * zoomLevel : 'auto',
             }}>
             {!isOverflowPage && showGrid && (
               <GridLines
@@ -601,7 +520,10 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
             />
             {isOverflowPage && overflowParent !== null ? (
               <div className="absolute inset-0 flex items-center justify-center"
-                style={{ height: A4_HEIGHT, width: A4_WIDTH }}>
+                style={{
+                  height: A4_HEIGHT * zoomLevel,
+                  width: A4_WIDTH * zoomLevel
+                }}>
                 <div className="text-gray-200 text-sm">
                   Overflow content from page {overflowParent + 1}
                 </div>
@@ -615,7 +537,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
                 margin={[0, 0]}
                 compactType={null}
                 onDrop={handleWidgetDrop(pageIndex)}
-                onDragStart={handleGridItemDragStart}
+                onDragStart={handleGridItemDrag}
                 onDragStop={handleGridItemDragStop(pageIndex)}
                 onResizeStop={handleGridItemResizeStop(pageIndex)}
                 onResizeStart={handleGridItemResizeStart}
@@ -623,7 +545,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
                 isResizable={true}
                 isDroppable={true}
                 isDraggable={true}
-                isBounded={false}
+                isBounded={true}
                 allowOverlap={false}
                 useCSSTransforms={!isInitialMount.current}
                 resizeHandle={<ResizeHandle />}
@@ -637,12 +559,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
                     <div
                       id={widget.gridItemId}
                       key={widget.gridItemId}
-                      className={gridItemDivRequiredStyles}
-                      ref={(el) => {
-                        if (el) {
-                          handleContentOverflow(pageIndex, widget.gridItemId, el);
-                        }
-                      }}>
+                      className={gridItemDivRequiredStyles}>
                       <GridItemComponent
                         widget={widget}
                         onDeleteClick={handleDeleteGridItem(pageIndex, widgetIndex)}
