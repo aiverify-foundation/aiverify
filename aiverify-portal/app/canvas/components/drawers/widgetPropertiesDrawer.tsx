@@ -43,7 +43,10 @@ function WidgetPropertiesDrawer(props: WidgetPropertiesDrawerProps) {
   }).filter((ib) => ib !== undefined);
 
   return (
-    <div className={cn("flex justify-center", className)}>
+    <div
+      className={cn("flex justify-center", className)}
+      onMouseDown={(e) => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()}>
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerContent className="sm:max-w-lg">
           <DrawerHeader>
