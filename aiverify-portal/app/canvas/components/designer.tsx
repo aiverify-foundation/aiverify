@@ -1,12 +1,20 @@
 'use client';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-import { RiGridLine, RiArrowLeftLine, RiArrowRightLine } from '@remixicon/react';
+import {
+  RiGridLine,
+  RiArrowLeftLine,
+  RiArrowRightLine,
+} from '@remixicon/react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useReducer } from 'react';
 import GridLayout, { Layout } from 'react-grid-layout';
 import { z } from 'zod';
-import { ParsedTestResults, PluginForGridLayout, WidgetOnGridLayout } from '@/app/canvas/types';
+import {
+  ParsedTestResults,
+  PluginForGridLayout,
+  WidgetOnGridLayout,
+} from '@/app/canvas/types';
 import { findTestResultById } from '@/app/canvas/utils/findTestResultsById';
 import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPluginsById';
 import { getWidgetAlgosFromPlugins } from '@/app/canvas/utils/getWidgetAlgosFromPlugins';
@@ -24,7 +32,7 @@ import {
   GRID_HEIGHT,
   CONTAINER_PAD,
   A4_HEIGHT,
-  A4_WIDTH
+  A4_WIDTH,
 } from './dimensionsConstants';
 import { TestResultsDrawer } from './drawers/testResultsDrawer';
 import { EditingOverlay } from './editingOverlay';
@@ -55,7 +63,8 @@ import { ZoomControl } from './zoomControl';
     - This is a container wrapping all the pages.
 */
 
-type GridItemDivRequiredStyles = `grid-comp-wrapper relative group z-10${string}`; // mandatory to have relative and group
+type GridItemDivRequiredStyles =
+  `grid-comp-wrapper relative group z-10${string}`; // mandatory to have relative and group
 
 type DesignProps = {
   pluginsWithMdx: PluginForGridLayout[];
@@ -68,7 +77,6 @@ type EventDataTransfer = Event & {
     getData: (type: 'application/json') => string;
   };
 };
-
 
 const gridItemDivRequiredStyles: GridItemDivRequiredStyles = `grid-comp-wrapper relative group z-10
   hover:outline hover:outline-2 
@@ -95,13 +103,23 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   const { layouts, currentPage, showGrid } = state;
   const [error, setError] = useState<string | undefined>();
   const [newDraggedWidget, setNewDraggedWidget] = useState<Widget | null>(null);
-  const [draggingGridItemId, setDraggingGridItemId] = useState<string | null>(null);
-  const [resizingGridItemId, setResizingGridItemId] = useState<string | null>(null);
-  const [selectedGridItemId, setSelectedGridItemId] = useState<string | null>(null);
-  const [editingGridItem, setEditingGridItem] = useState<[WidgetOnGridLayout, HTMLDivElement] | null>(null)
+  const [draggingGridItemId, setDraggingGridItemId] = useState<string | null>(
+    null
+  );
+  const [resizingGridItemId, setResizingGridItemId] = useState<string | null>(
+    null
+  );
+  const [selectedGridItemId, setSelectedGridItemId] = useState<string | null>(
+    null
+  );
+  const [editingGridItem, setEditingGridItem] = useState<
+    [WidgetOnGridLayout, HTMLDivElement] | null
+  >(null);
   const [editingPageIndex, setEditingPageIndex] = useState<number | null>(null);
   const { zoomLevel, resetZoom, zoomIn, zoomOut } = useZoom();
-  const [selectedTestResults, setSelectedTestResults] = useState<ParsedTestResults[]>([]);
+  const [selectedTestResults, setSelectedTestResults] = useState<
+    ParsedTestResults[]
+  >([]);
   const {
     isDragging: isDraggingFreeFormArea,
     handleMouseDown: handleFreeFormAreaMouseDown,
@@ -135,7 +153,8 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
       );
       if (newPageElement) {
         setTimeout(() => {
-          const elementTop = (newPageElement.offsetTop - CONTAINER_PAD) * zoomLevel;
+          const elementTop =
+            (newPageElement.offsetTop - CONTAINER_PAD) * zoomLevel;
           freeFormAreaRef.current?.scrollTo({
             top: elementTop,
           });
@@ -161,32 +180,42 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     if (isInitialMount.current) return;
 
     setTimeout(() => {
-      const { overflows, numOfRequiredPages } = isPageContentOverflow(layouts[currentPage], state.widgets[currentPage]);
+      const { overflows, numOfRequiredPages } = isPageContentOverflow(
+        layouts[currentPage],
+        state.widgets[currentPage]
+      );
 
       // Count existing overflow pages for current page
       const existingOverflowPages = state.pageTypes.filter(
-        (type, idx) => type === 'overflow' && state.overflowParents[idx] === currentPage
+        (type, idx) =>
+          type === 'overflow' && state.overflowParents[idx] === currentPage
       ).length;
 
       if (overflows && existingOverflowPages < numOfRequiredPages - 1) {
         dispatch({
           type: 'ADD_OVERFLOW_PAGES',
           parentPageIndex: currentPage,
-          count: (numOfRequiredPages - 1) - existingOverflowPages
+          count: numOfRequiredPages - 1 - existingOverflowPages,
         });
       } else if (!overflows && existingOverflowPages > 0) {
         dispatch({
           type: 'REMOVE_OVERFLOW_PAGES',
-          parentPageIndex: currentPage
+          parentPageIndex: currentPage,
         });
       }
-    }, 0)
-  }, [layouts[currentPage], state.widgets[currentPage], state.pageTypes, state.overflowParents]);
+    }, 0);
+  }, [
+    layouts[currentPage],
+    state.widgets[currentPage],
+    state.pageTypes,
+    state.overflowParents,
+  ]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       const target = e.target as HTMLElement;
-      if (!target.closest('.grid-comp-wrapper')) { // All grid items have 'group' class
+      if (!target.closest('.grid-comp-wrapper')) {
+        // All grid items have 'group' class
         setSelectedGridItemId(null);
       }
     }
@@ -197,82 +226,85 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
 
   const handleWidgetDrop =
     (pageIndex: number) =>
-      (_layout: Layout[], item: Layout, e: EventDataTransfer) => {
-        setDraggingGridItemId(null);
-        let data: unknown;
-        try {
-          data = JSON.parse(e.dataTransfer.getData('application/json'));
-        } catch (error) {
-          console.error('Invalid widget item json', error);
-          setError('Invalid widget item json');
-          return;
-        }
-        const result = widgetItemSchema.safeParse(data);
-        if (!result.success) {
-          console.error('Invalid widget item data', result.error);
-          setError(result.error?.message);
-          return;
-        }
-        if (result.data.gridItemId) {
-          // todo - for handling existing grid item id
-          console.log(data)
-          return;
-        }
-        const validData: WidgetCompositeId = result.data;
-        const widget = findWidgetFromPluginsById(
-          pluginsWithMdx,
-          validData.gid,
-          validData.cid
+    (_layout: Layout[], item: Layout, e: EventDataTransfer) => {
+      setDraggingGridItemId(null);
+      let data: unknown;
+      try {
+        data = JSON.parse(e.dataTransfer.getData('application/json'));
+      } catch (error) {
+        console.error('Invalid widget item json', error);
+        setError('Invalid widget item json');
+        return;
+      }
+      const result = widgetItemSchema.safeParse(data);
+      if (!result.success) {
+        console.error('Invalid widget item data', result.error);
+        setError(result.error?.message);
+        return;
+      }
+      if (result.data.gridItemId) {
+        // todo - for handling existing grid item id
+        console.log(data);
+        return;
+      }
+      const validData: WidgetCompositeId = result.data;
+      const widget = findWidgetFromPluginsById(
+        pluginsWithMdx,
+        validData.gid,
+        validData.cid
+      );
+      if (!widget) {
+        console.error(
+          `Widget not found - gid: ${validData.gid} - cid: ${validData.cid}`
         );
-        if (!widget) {
-          console.error(
-            `Widget not found - gid: ${validData.gid} - cid: ${validData.cid}`
-          );
-          setError(
-            `Widget not found - gid: ${validData.gid} - cid: ${validData.cid}`
-          );
-          return;
-        }
+        setError(
+          `Widget not found - gid: ${validData.gid} - cid: ${validData.cid}`
+        );
+        return;
+      }
 
-        const widgetWithInitialData: WidgetOnGridLayout =
-          populateInitialWidgetResult(widget);
-        const gridItemId = createGridItemId(widget, pageIndex);
-        const { x, y } = item;
-        const { minW, minH, maxH, maxW } = widget.widgetSize;
-        const itemLayout = {
-          x,
-          y,
-          w: maxW,
-          h: minH,
-          minW,
-          minH,
-          maxW,
-          maxH,
-          i: gridItemId,
-        };
-        const widgetWithGridItemId: WidgetOnGridLayout = {
-          ...widgetWithInitialData,
-          gridItemId,
-        };
-        const algos = getWidgetAlgosFromPlugins(pluginsWithMdx, widget);
-        const algosTracker: WidgetAlgoTracker[] = algos.map((algo) => {
-          const matchSelectedResult = findTestResultById(selectedTestResults, algo.gid, algo.cid);
-          return {
-            gid: algo.gid,
-            cid: algo.cid,
-            testResultsCreatedAt: matchSelectedResult?.created_at,
-          };
-        });
-
-        dispatch({
-          type: 'ADD_WIDGET_TO_CANVAS',
-          itemLayout,
-          widget: widgetWithGridItemId,
-          algos: algosTracker,
-          pageIndex,
-        });
-
+      const widgetWithInitialData: WidgetOnGridLayout =
+        populateInitialWidgetResult(widget);
+      const gridItemId = createGridItemId(widget, pageIndex);
+      const { x, y } = item;
+      const { minW, minH, maxH, maxW } = widget.widgetSize;
+      const itemLayout = {
+        x,
+        y,
+        w: maxW,
+        h: minH,
+        minW,
+        minH,
+        maxW,
+        maxH,
+        i: gridItemId,
       };
+      const widgetWithGridItemId: WidgetOnGridLayout = {
+        ...widgetWithInitialData,
+        gridItemId,
+      };
+      const algos = getWidgetAlgosFromPlugins(pluginsWithMdx, widget);
+      const algosTracker: WidgetAlgoTracker[] = algos.map((algo) => {
+        const matchSelectedResult = findTestResultById(
+          selectedTestResults,
+          algo.gid,
+          algo.cid
+        );
+        return {
+          gid: algo.gid,
+          cid: algo.cid,
+          testResultsCreatedAt: matchSelectedResult?.created_at,
+        };
+      });
+
+      dispatch({
+        type: 'ADD_WIDGET_TO_CANVAS',
+        itemLayout,
+        widget: widgetWithGridItemId,
+        algos: algosTracker,
+        pageIndex,
+      });
+    };
 
   const handleGridItemResizeStart = (
     _layouts: Layout[],
@@ -285,39 +317,39 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
 
   const handleGridItemResizeStop =
     (pageIndex: number) =>
-      (_layouts: Layout[], _: Layout, itemLayout: Layout) => {
-        setResizingGridItemId(null);
-        const { x, y, w, h, minW, minH, maxW, maxH, i } = itemLayout;
-        dispatch({
-          type: 'RESIZE_WIDGET',
-          itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
-          pageIndex,
-        });
-      };
+    (_layouts: Layout[], _: Layout, itemLayout: Layout) => {
+      setResizingGridItemId(null);
+      const { x, y, w, h, minW, minH, maxW, maxH, i } = itemLayout;
+      dispatch({
+        type: 'RESIZE_WIDGET',
+        itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
+        pageIndex,
+      });
+    };
 
   const handleGridItemDragStart = (
     _layouts: Layout[],
     _: Layout,
-    itemLayout: Layout,
+    itemLayout: Layout
   ) => {
     setDraggingGridItemId(itemLayout.i);
   };
 
   const handleGridItemDragStop =
     (pageIndex: number) =>
-      (_layouts: Layout[], oldItem: Layout, newItem: Layout) => {
-        if (oldItem.x === newItem.x && oldItem.y === newItem.y) {
-          setDraggingGridItemId(null);
-          return; // Position didn't change, skip dispatch
-        }
-        const { x, y, w, h, minW, minH, maxW, maxH, i } = newItem;
-        dispatch({
-          type: 'CHANGE_WIDGET_POSITION',
-          itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
-          pageIndex,
-        });
+    (_layouts: Layout[], oldItem: Layout, newItem: Layout) => {
+      if (oldItem.x === newItem.x && oldItem.y === newItem.y) {
         setDraggingGridItemId(null);
-      };
+        return; // Position didn't change, skip dispatch
+      }
+      const { x, y, w, h, minW, minH, maxW, maxH, i } = newItem;
+      dispatch({
+        type: 'CHANGE_WIDGET_POSITION',
+        itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
+        pageIndex,
+      });
+      setDraggingGridItemId(null);
+    };
 
   const handleDeleteGridItem =
     (pageIndex: number, widgetIndex: number) => () => {
@@ -330,15 +362,14 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
 
   const handleGridItemEditClick =
     (pageIndex: number) =>
-      (
-        gridItemId: string,
-        gridItemHtmlElement: HTMLDivElement,
-        widget: WidgetOnGridLayout
-      ) => {
-        setEditingGridItem([widget, gridItemHtmlElement])
-        setEditingPageIndex(pageIndex);
-      };
-
+    (
+      gridItemId: string,
+      gridItemHtmlElement: HTMLDivElement,
+      widget: WidgetOnGridLayout
+    ) => {
+      setEditingGridItem([widget, gridItemHtmlElement]);
+      setEditingPageIndex(pageIndex);
+    };
 
   function handleEditClose(updatedWidget: WidgetOnGridLayout) {
     if (editingPageIndex === null) {
@@ -414,18 +445,19 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
       algos: results.map((result) => ({
         gid: result.gid,
         cid: result.cid,
-        testResultsCreatedAt: results.length > 0 ? result.created_at : undefined,
+        testResultsCreatedAt:
+          results.length > 0 ? result.created_at : undefined,
       })),
     });
   }
 
   const handleGridItemClick = (gridItemId: string) => () => {
     setSelectedGridItemId(gridItemId);
-  }
+  };
 
   const contentWrapperMinHeight = useMemo(() => {
     const totalPagesHeight = layouts.length * GRID_HEIGHT;
-    const containerPadding = (CONTAINER_PAD + CONTAINER_PAD);
+    const containerPadding = CONTAINER_PAD + CONTAINER_PAD;
     const totalHeight = totalPagesHeight + containerPadding;
 
     if (layouts.length === 1 && freeFormAreaRef.current) {
@@ -469,24 +501,22 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   const pluginsPanelSection = (
     <section
       className={cn(
-        "absolute z-10 flex h-full flex-col bg-secondary-900 transition-all duration-300",
-        isPanelOpen ? "w-[300px]" : "w-[40px]"
-      )}
-    >
+        'absolute z-10 flex h-full flex-col bg-secondary-900 transition-all duration-300',
+        isPanelOpen ? 'w-[300px]' : 'w-[40px]'
+      )}>
       <button
         onClick={() => setIsPanelOpen(!isPanelOpen)}
-        className="absolute -right-4 top-4 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-secondary-900 text-white hover:bg-secondary-800"
-      >
+        className="absolute -right-4 top-4 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-secondary-900 text-white hover:bg-secondary-800">
         {isPanelOpen ? <RiArrowLeftLine /> : <RiArrowRightLine />}
       </button>
 
       {!isPanelOpen && (
-        <div className="absolute left-3.5 top-[130px] -translate-y-1/2 -rotate-90 whitespace-nowrap text-sm text-white origin-left">
+        <div className="absolute left-3.5 top-[130px] origin-left -translate-y-1/2 -rotate-90 whitespace-nowrap text-sm text-white">
           Plugins / Widgets
         </div>
       )}
 
-      <div className={cn("p-4", !isPanelOpen && "hidden")}>
+      <div className={cn('p-4', !isPanelOpen && 'hidden')}>
         <h4 className="mb-0 text-lg font-bold">Project Name</h4>
         <p className="text-sm text-white">Project Description</p>
         <PluginsPanel
@@ -501,11 +531,12 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
 
   const droppingItemPlaceholder = newDraggedWidget
     ? {
-      // makes the dropping red placeholder size of the widget
-      i: '__dropping-elem__',
-      w: newDraggedWidget.widgetSize.maxW,
-      h: newDraggedWidget.widgetSize.minH,
-    } : undefined
+        // makes the dropping red placeholder size of the widget
+        i: '__dropping-elem__',
+        w: newDraggedWidget.widgetSize.maxW,
+        h: newDraggedWidget.widgetSize.minH,
+      }
+    : undefined;
 
   const pagesSection = (
     <FreeFormArea
@@ -513,12 +544,26 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
       pagesLength={layouts.length}
       zoomLevel={zoomLevel}
       contentWrapperMinHeight={contentWrapperMinHeight}
-      onMouseDown={!draggingGridItemId && !resizingGridItemId ? handleFreeFormAreaMouseDown : undefined}
-      onMouseUp={!draggingGridItemId && !resizingGridItemId ? handleFreeFormAreaMouseUp : undefined}
-      onMouseMove={isDraggingFreeFormArea && !draggingGridItemId && !resizingGridItemId
-        ? handleFreeFormAreaMouseMove
-        : undefined}
-      onMouseLeave={!draggingGridItemId && !resizingGridItemId ? handleFreeFormAreaMouseUp : undefined}>
+      onMouseDown={
+        !draggingGridItemId && !resizingGridItemId
+          ? handleFreeFormAreaMouseDown
+          : undefined
+      }
+      onMouseUp={
+        !draggingGridItemId && !resizingGridItemId
+          ? handleFreeFormAreaMouseUp
+          : undefined
+      }
+      onMouseMove={
+        isDraggingFreeFormArea && !draggingGridItemId && !resizingGridItemId
+          ? handleFreeFormAreaMouseMove
+          : undefined
+      }
+      onMouseLeave={
+        !draggingGridItemId && !resizingGridItemId
+          ? handleFreeFormAreaMouseUp
+          : undefined
+      }>
       {state.layouts.map((layout, pageIndex) => {
         const isOverflowPage = state.pageTypes[pageIndex] === 'overflow';
         const overflowParent = state.overflowParents[pageIndex];
@@ -548,17 +593,20 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
             )}
             <PageNumber
               pageNumber={pageIndex + 1}
-              onDeleteClick={!isOverflowPage ? () => handleDeletePage(pageIndex) : undefined}
+              onDeleteClick={
+                !isOverflowPage ? () => handleDeletePage(pageIndex) : undefined
+              }
               isOverflowPage={isOverflowPage}
               zoomLevel={zoomLevel}
             />
             {isOverflowPage && overflowParent !== null ? (
-              <div className="absolute inset-0 flex items-center justify-center"
+              <div
+                className="absolute inset-0 flex items-center justify-center"
                 style={{
                   height: A4_HEIGHT,
-                  width: A4_WIDTH
+                  width: A4_WIDTH,
                 }}>
-                <div className="text-gray-200 text-sm">
+                <div className="text-sm text-gray-200">
                   Overflow content from page {overflowParent + 1}
                 </div>
               </div>
@@ -597,13 +645,19 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
                     <div
                       id={widget.gridItemId}
                       key={widget.gridItemId}
-                      className={cn(gridItemDivRequiredStyles,
-                        selectedGridItemId === widget.gridItemId && 'outline outline-2 outline-blue-500 outline-offset-2')}
+                      className={cn(
+                        gridItemDivRequiredStyles,
+                        selectedGridItemId === widget.gridItemId &&
+                          'outline outline-2 outline-offset-2 outline-blue-500'
+                      )}
                       onClick={handleGridItemClick(widget.gridItemId)}>
                       <GridItemComponent
                         plugins={pluginsWithMdx}
                         widget={widget}
-                        onDeleteClick={handleDeleteGridItem(pageIndex, widgetIndex)}
+                        onDeleteClick={handleDeleteGridItem(
+                          pageIndex,
+                          widgetIndex
+                        )}
                         onEditClick={handleGridItemEditClick(pageIndex)}
                         isDragging={draggingGridItemId === widget.gridItemId}
                         isResizing={resizingGridItemId === widget.gridItemId}
@@ -622,10 +676,11 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   );
 
   const testControlsSection = (
-    <section className={cn(
-      "fixed top-[90px] z-10 flex flex-col gap-4",
-      isPanelOpen ? "left-[320px]" : "left-[100px]"
-    )}>
+    <section
+      className={cn(
+        'fixed top-[90px] z-10 flex flex-col gap-4',
+        isPanelOpen ? 'left-[320px]' : 'left-[100px]'
+      )}>
       <TestResultsDrawer
         testResults={testResults}
         onOkClick={handleSelectUploadedTestResults}
@@ -633,7 +688,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     </section>
   );
 
-  // console.log('state', state);
+  console.log('state', state);
 
   return (
     <React.Fragment>
