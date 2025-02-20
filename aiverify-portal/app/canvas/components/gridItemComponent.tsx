@@ -46,7 +46,7 @@ function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDrag
   const [showWidgetProperties, setShowWidgetProperties] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const gridItemRef = useRef<HTMLDivElement>(null);
-  const hideTimeoutRef = useRef<NodeJS.Timeout>(null);
+  const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isHoveringRef = useRef<boolean>(false);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   let testResultMatch = undefined;
@@ -127,7 +127,7 @@ function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDrag
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showContextMenu]);
 
-  function handleClick() {
+  function handleInfoClick() {
     setShowContextMenu(true);
     setShowWidgetProperties(true);
   }
@@ -135,6 +135,23 @@ function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDrag
   function handleEditClick() {
     if (gridItemRef.current !== null)
       onEditClick(widget.gridItemId, gridItemRef.current, widget);
+  }
+
+  function handleMouseEnter() {
+    if (hideTimeoutRef.current) {
+      clearTimeout(hideTimeoutRef.current);
+    }
+    isHoveringRef.current = true;
+    setShowContextMenu(true);
+  }
+
+  function handleMouseLeave() {
+    isHoveringRef.current = false;
+    hideTimeoutRef.current = setTimeout(() => {
+      if (!isHoveringRef.current) {
+        setShowContextMenu(false);
+      }
+    }, 300); // 300ms delay before hiding
   }
 
   const Component: React.ComponentType<MdxComponentProps> = useMemo(() => {
@@ -206,8 +223,16 @@ function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDrag
           widget={widget}
           menuPosition={menuPosition}
           onDeleteClick={onDeleteClick}
+          onInfoClick={handleInfoClick}
+          onMouseEnter={() => {
+            if (hideTimeoutRef.current) {
+              clearTimeout(hideTimeoutRef.current);
+            }
+            isHoveringRef.current = true;
+          }}
+          onMouseLeave={handleMouseLeave}
           onEditClick={handleEditClick} /> : null}
-      {showWidgetProperties && <WidgetPropertiesDrawer
+      {showWidgetProperties ? <WidgetPropertiesDrawer
         plugins={plugins}
         widget={widget}
         testResultsMeta={testResultMatch}
@@ -215,11 +240,12 @@ function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDrag
         setOpen={setShowWidgetProperties}
         onOkClick={() => setShowWidgetProperties(false)}
         onDeleteClick={onDeleteClick}
-      />}
+      /> : null}
       <div
         ref={gridItemRef}
         className={itemStyle}
-        onClick={handleClick}>
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}>
         {isResizing ? (
           <div className="h-auto w-full bg-gray-100" />
         ) : (

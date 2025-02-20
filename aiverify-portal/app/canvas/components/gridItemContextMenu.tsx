@@ -1,4 +1,4 @@
-import { RiDeleteBin5Line, RiFileEditLine } from '@remixicon/react';
+import { RiDeleteBin5Line, RiFileEditLine, RiInformationLine } from '@remixicon/react';
 import { createPortal } from 'react-dom';
 import { WidgetOnGridLayout } from '@/app/canvas/types';
 
@@ -7,16 +7,29 @@ type GridItemContextMenuProps = {
   menuPosition: { top: number; left: number };
   onDeleteClick: () => void;
   onEditClick: () => void;
+  onInfoClick: () => void;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
 };
 
-function GridItemContextMenu({ widget, menuPosition, onDeleteClick, onEditClick }: GridItemContextMenuProps) {
+function GridItemContextMenu({
+  widget,
+  menuPosition,
+  onDeleteClick,
+  onEditClick,
+  onInfoClick,
+  onMouseEnter,
+  onMouseLeave
+}: GridItemContextMenuProps) {
   return createPortal(
     <div
       className="fixed flex flex-col gap-1"
       style={{
         top: `${menuPosition.top}px`,
         left: `${menuPosition.left}px`,
-      }}>
+      }}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}>
       <div className="max-w-[200px] break-words rounded bg-secondary-600 px-2 py-1 text-xs shadow-lg">
         {widget.name}
       </div>
@@ -38,6 +51,15 @@ function GridItemContextMenu({ widget, menuPosition, onDeleteClick, onEditClick 
           }}
           onClick={onDeleteClick}>
           <RiDeleteBin5Line className="m-1 h-5 w-5 text-white hover:text-red-500" />
+        </div>
+        <div
+          className="cursor-pointer rounded bg-secondary-400 shadow-lg"
+          onMouseDown={(e) => {
+            // Prevent grid drag from starting
+            e.stopPropagation();
+          }}
+          onClick={onInfoClick}>
+          <RiInformationLine className="m-1 h-5 w-5 text-white hover:text-blue-800" />
         </div>
       </div>
     </div>,
