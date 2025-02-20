@@ -110,8 +110,17 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       const clonedPageLayouts = layouts[action.pageIndex].slice();
       const clonedPageWidgets = widgets[action.pageIndex].slice();
 
+      // Get widget ID before deletion to clean up algos
+      const widgetToDelete = clonedPageWidgets[action.index];
+
       clonedPageLayouts.splice(action.index, 1);
       clonedPageWidgets.splice(action.index, 1);
+
+      // Clean up algos
+      const clonedAlgos = { ...state.algos };
+      if (widgetToDelete) {
+        delete clonedAlgos[widgetToDelete.gridItemId];
+      }
 
       return {
         ...state,
@@ -121,6 +130,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         widgets: widgets.map((widget, i) =>
           i === action.pageIndex ? clonedPageWidgets : widget
         ),
+        algos: clonedAlgos,
       };
     }
 

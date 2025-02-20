@@ -30,8 +30,28 @@ type TestResults = {
   updated_at: string;
 };
 
-type TestResultData = Record<string, string | number | boolean | object | string[] | number[] | boolean[] | object[]>;
-type InputBlockData = Record<string, string | number | boolean | object | string[] | number[] | boolean[] | object[]>;
+type TestResultData = Record<
+  string,
+  | string
+  | number
+  | boolean
+  | object
+  | string[]
+  | number[]
+  | boolean[]
+  | object[]
+>;
+type InputBlockData = Record<
+  string,
+  | string
+  | number
+  | boolean
+  | object
+  | string[]
+  | number[]
+  | boolean[]
+  | object[]
+>;
 
 type DataColumn = {
   name: string;
@@ -151,10 +171,20 @@ type WidgetProperty = {
 };
 
 type MockData = {
-  type: "Algorithm" | "InputBlock";
+  type: 'Algorithm' | 'InputBlock';
   gid: string | null;
   cid: string;
-  data: Record<string, string | number | boolean | object | string[] | number[] | boolean[] | object[]>;
+  data: Record<
+    string,
+    | string
+    | number
+    | boolean
+    | object
+    | string[]
+    | number[]
+    | boolean[]
+    | object[]
+  >;
 };
 
 type Widget = {
@@ -181,6 +211,20 @@ type Widget = {
   gid: string;
 };
 
+type InputBlock = {
+  cid: string;
+  gid: string;
+  name: string;
+  version: string | null;
+  author: string | null;
+  tags: string | null;
+  description: string | null;
+  group: string | null;
+  groupNumber: string | null;
+  width: string;
+  fullScreen: boolean;
+};
+
 type Plugin = {
   gid: string;
   version: string;
@@ -193,7 +237,7 @@ type Plugin = {
   zip_hash: string;
   algorithms: Algorithm[];
   widgets: Widget[];
-  input_blocks: unknown[];
+  input_blocks: InputBlock[];
   templates: unknown[];
   created_at: string;
   updated_at: string;
@@ -214,5 +258,6 @@ export type {
   Algorithm,
   WidgetProperty,
   TestResultData,
-  InputBlockData
+  InputBlockData,
+  InputBlock,
 };

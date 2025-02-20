@@ -1,13 +1,11 @@
 import { getMDXComponent, MDXContentProps } from 'mdx-bundler/client';
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import React from 'react';
 import { InputBlockDataMapping, TestResultDataMapping, WidgetOnGridLayout } from '@/app/canvas/types';
-import { calculateTotalContentHeight } from '@/app/canvas/utils/calculateTotalContentHeight';
 import { Algorithm, TestResultData, InputBlockData, Plugin } from '@/app/types';
-import { GRID_HEIGHT } from './dimensionsConstants';
+import { WidgetPropertiesDrawer } from './drawers/widgetPropertiesDrawer';
 import { GridItemContextMenu } from './gridItemContextMenu';
 import { editorInputClassName } from './hocAddTextEditFuncitonality';
-import { WidgetPropertiesDrawer } from './drawers/widgetPropertiesDrawer';
 
 export const gridItemRootClassName = 'grid-item-root';
 type requiredStyles = `grid-item-root relative h-auto w-full min-h-full${string}`; // strictly required styles
@@ -17,7 +15,7 @@ type GridItemComponentProps = {
   widget: WidgetOnGridLayout;
   inputBlockData?: unknown;
   testResultsMapping?: TestResultDataMapping | null;
-  algosMapping: Record<string, Algorithm[]>;
+  algorithms: Algorithm[];
   isDragging?: boolean;
   isResizing: boolean;
   onDeleteClick: () => void;
@@ -42,7 +40,7 @@ type MdxComponentProps = MDXContentProps & {
 
 const itemStyle: requiredStyles = 'grid-item-root relative h-auto w-full min-h-full';
 
-function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDragging, isResizing, algosMapping, testResultsMapping, onContentOverflow }: GridItemComponentProps) {
+function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDragging, isResizing, testResultsMapping }: GridItemComponentProps) {
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [showWidgetProperties, setShowWidgetProperties] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
@@ -50,17 +48,6 @@ function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDrag
   const hideTimeoutRef = useRef<NodeJS.Timeout>(null);
   const isHoveringRef = useRef<boolean>(false);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-
-  useLayoutEffect(() => {
-    setTimeout(() => {
-      if (!gridItemRef.current) return;
-      const totalHeight = calculateTotalContentHeight(gridItemRef.current);
-      const requiredPages = Math.ceil(totalHeight / GRID_HEIGHT);
-      if (requiredPages > 1) {
-        onContentOverflow?.(widget.gridItemId, totalHeight, requiredPages);
-      }
-    }, 0)
-  }, [testResultsMapping, widget.gridItemId]);
 
   useEffect(() => {
     if (!gridItemRef.current) return;
@@ -220,10 +207,10 @@ function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDrag
       {showWidgetProperties && <WidgetPropertiesDrawer
         plugins={plugins}
         widget={widget}
-        algorithms={algosMapping[widget.gridItemId]}
         open={showWidgetProperties}
         setOpen={setShowWidgetProperties}
         onOkClick={() => setShowWidgetProperties(false)}
+        onDeleteClick={onDeleteClick}
       />}
       <div
         ref={gridItemRef}
