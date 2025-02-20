@@ -1,4 +1,4 @@
-import { RiFlaskFill, RiFlaskLine, RiSurveyFill, RiSurveyLine } from '@remixicon/react';
+import { RiArticleFill, RiFlaskFill, RiFlaskLine, RiSurveyFill, RiSurveyLine } from '@remixicon/react';
 import React from 'react';
 import { ParsedTestResults, WidgetOnGridLayout } from '@/app/canvas/types';
 import { findAlgoFromPluginsById } from '@/app/canvas/utils/findAlgoFromPluginsById';
@@ -18,12 +18,13 @@ type WidgetPropertiesDrawerProps = {
   widget: WidgetOnGridLayout;
   onOkClick: () => void;
   onDeleteClick: () => void;
+  onChangeTestResultClick: () => void;
   open: boolean;
   setOpen: (open: boolean) => void;
 };
 
 function WidgetPropertiesDrawer(props: WidgetPropertiesDrawerProps) {
-  const { plugins, widget, testResultsMeta, inputBlocksDataUsed, className, onOkClick, onDeleteClick, open, setOpen } = props;
+  const { plugins, widget, testResultsMeta, inputBlocksDataUsed, className, onOkClick, onDeleteClick, onChangeTestResultClick, open, setOpen } = props;
   const parentPlugin = findPluginByGid(plugins, widget.gid);
   const algos = widget.dependencies.map((dep) => {
     if (!dep.cid) {
@@ -80,12 +81,16 @@ function WidgetPropertiesDrawer(props: WidgetPropertiesDrawerProps) {
                     <h2 className="text-[0.8rem] font-semibold">Test(s) results</h2>
                   </div>
                   {!testResultsMeta ?
-                    <div className=" text-[0.8rem] text-blue-600">Currently using mock data</div> :
+                    <div className="flex flex-col">
+                      <div className=" text-[0.8rem] text-blue-600 mb-1">Currently using mock data</div>
+                      <Button variant="secondary" onClick={() => onChangeTestResultClick()}>Use an existing test result for this widget</Button>
+                    </div> :
                     <div className="flex flex-col items-start">
                       <div className=" text-[0.8rem] text-blue-600">{testResultsMeta.name}</div>
                       <div className=" text-[0.8rem] text-blue-600">Created at: {new Date(testResultsMeta.created_at).toLocaleString()}</div>
                       <div className=" text-[0.8rem] text-blue-600">Updated at: {new Date(testResultsMeta.updated_at).toLocaleString()}</div>
                       <div className=" text-[0.8rem] text-blue-600">Version: {testResultsMeta.version}</div>
+                      <Button variant="secondary" onClick={() => onChangeTestResultClick()}>Use different test result for this widget</Button>
                     </div>
                   }
                 </div>
@@ -119,7 +124,10 @@ function WidgetPropertiesDrawer(props: WidgetPropertiesDrawerProps) {
                     <RiSurveyFill className="h-4 w-4 text-gray-500 hover:text-gray-900" />
                     <h2 className="text-[0.8rem] font-semibold">User Input Data</h2>
                   </div>
-                  {!inputBlocksDataUsed ? <div className=" text-[0.8rem] text-blue-600">Currently using mock data</div> : null}
+                  {!inputBlocksDataUsed ? <div className="flex flex-col">
+                    <div className=" text-[0.8rem] text-blue-600 mb-1">Currently using mock data</div>
+                    <Button variant="secondary" onClick={() => onChangeTestResultClick()}>Enter your data</Button>
+                  </div> : null}
                 </div>
               </React.Fragment>
             ) : null}
