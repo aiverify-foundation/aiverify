@@ -1,7 +1,7 @@
 'use client';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-import { RiGridLine } from '@remixicon/react';
+import { RiGridLine, RiArrowLeftLine, RiArrowRightLine } from '@remixicon/react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useReducer } from 'react';
 import GridLayout, { Layout } from 'react-grid-layout';
@@ -108,6 +108,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     handleMouseUp: handleFreeFormAreaMouseUp,
     handleMouseMove: handleFreeFormAreaMouseMove,
   } = useDragToScroll(freeFormAreaRef, canvasRef);
+  const [isPanelOpen, setIsPanelOpen] = useState(true);
 
   useEffect(() => {
     if (freeFormAreaRef.current) {
@@ -466,17 +467,35 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   );
 
   const pluginsPanelSection = (
-    <section className="absolute z-10 flex h-full w-[300px] flex-col bg-secondary-900 p-4">
-      <div>
+    <section
+      className={cn(
+        "absolute z-10 flex h-full flex-col bg-secondary-900 transition-all duration-300",
+        isPanelOpen ? "w-[300px]" : "w-[40px]"
+      )}
+    >
+      <button
+        onClick={() => setIsPanelOpen(!isPanelOpen)}
+        className="absolute -right-4 top-4 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-secondary-900 text-white hover:bg-secondary-800"
+      >
+        {isPanelOpen ? <RiArrowLeftLine /> : <RiArrowRightLine />}
+      </button>
+
+      {!isPanelOpen && (
+        <div className="absolute left-3.5 top-[130px] -translate-y-1/2 -rotate-90 whitespace-nowrap text-sm text-white origin-left">
+          Plugins / Widgets
+        </div>
+      )}
+
+      <div className={cn("p-4", !isPanelOpen && "hidden")}>
         <h4 className="mb-0 text-lg font-bold">Project Name</h4>
         <p className="text-sm text-white">Project Description</p>
+        <PluginsPanel
+          plugins={pluginsWithMdx}
+          className="custom-scrollbar w-full overflow-auto pr-[10px] pt-[50px]"
+          onDragStart={(widget) => setNewDraggedWidget(widget)}
+          onDragEnd={() => setNewDraggedWidget(null)}
+        />
       </div>
-      <PluginsPanel
-        plugins={pluginsWithMdx}
-        className="custom-scrollbar w-full overflow-auto pr-[10px] pt-[50px]"
-        onDragStart={(widget) => setNewDraggedWidget(widget)}
-        onDragEnd={() => setNewDraggedWidget(null)}
-      />
     </section>
   );
 
@@ -603,7 +622,10 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   );
 
   const testControlsSection = (
-    <section className="fixed left-[320px] top-[90px] z-10 flex flex-col gap-4">
+    <section className={cn(
+      "fixed top-[90px] z-10 flex flex-col gap-4",
+      isPanelOpen ? "left-[320px]" : "left-[100px]"
+    )}>
       <TestResultsDrawer
         testResults={testResults}
         onOkClick={handleSelectUploadedTestResults}
