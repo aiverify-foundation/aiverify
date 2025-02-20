@@ -14,8 +14,6 @@ type GridItemComponentProps = {
   plugins: Plugin[];
   widget: WidgetOnGridLayout;
   inputBlockData?: unknown;
-  testResultsMapping?: TestResultDataMapping | null;
-  algorithms: Algorithm[];
   isDragging?: boolean;
   isResizing: boolean;
   onDeleteClick: () => void;
@@ -24,7 +22,6 @@ type GridItemComponentProps = {
     gridItemHtmlElement: HTMLDivElement,
     widget: WidgetOnGridLayout
   ) => void;
-  onContentOverflow?: (gridItemId: string, totalHeight: number, requiredPages: number) => void;
 };
 
 type MdxComponentProps = MDXContentProps & {
@@ -40,7 +37,7 @@ type MdxComponentProps = MDXContentProps & {
 
 const itemStyle: requiredStyles = 'grid-item-root relative h-auto w-full min-h-full';
 
-function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDragging, isResizing, testResultsMapping }: GridItemComponentProps) {
+function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDragging, isResizing }: GridItemComponentProps) {
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [showWidgetProperties, setShowWidgetProperties] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
@@ -154,9 +151,9 @@ function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDrag
   }, [widget.properties]);
 
   const testResult = useMemo(() => {
-    if (testResultsMapping) {
-      return testResultsMapping;
-    }
+    // if (testResultsMapping) {
+    //   return testResultsMapping;
+    // }
 
     if (widget.mockdata && widget.mockdata.length > 0) {
       return widget.mockdata.reduce<TestResultDataMapping>((acc, mock) => {
@@ -167,7 +164,7 @@ function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDrag
       }, {});
     }
     return {};
-  }, [widget, widget.mdx, testResultsMapping]);
+  }, [widget, widget.mdx]);
 
   const mockInputs = useMemo(() => {
     // if (testResultsMapping) {
@@ -190,11 +187,10 @@ function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDrag
       }, {});
     }
     return {};
-  }, [widget, widget.mdx, testResultsMapping]);
+  }, [widget, widget.mdx]);
 
   // console.log('mockResults', mockResults);
   // console.log('mockInputs', mockInputs);
-  console.log(widget)
 
   return (
     <React.Fragment>

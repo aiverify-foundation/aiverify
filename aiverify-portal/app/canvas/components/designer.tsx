@@ -6,12 +6,12 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useReducer } from 'react';
 import GridLayout, { Layout } from 'react-grid-layout';
 import { z } from 'zod';
-import { ParsedTestResults, PluginForGridLayout, WidgetOnGridLayout, TestResultDataMapping } from '@/app/canvas/types';
+import { ParsedTestResults, PluginForGridLayout, WidgetOnGridLayout } from '@/app/canvas/types';
+import { findTestResultById } from '@/app/canvas/utils/findTestResultsById';
 import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPluginsById';
 import { getWidgetAlgosFromPlugins } from '@/app/canvas/utils/getWidgetAlgosFromPlugins';
 import { isPageContentOverflow } from '@/app/canvas/utils/isPageContentOverflow';
 import { populateInitialWidgetResult } from '@/app/canvas/utils/populateInitialWidgetResult';
-import { TestResultData, Widget } from '@/app/types';
 import { cn } from '@/lib/utils/twmerge';
 import { AlgosToRun } from './algosToRun';
 import {
@@ -30,7 +30,7 @@ import { EditingOverlay } from './editingOverlay';
 import { FreeFormArea } from './freeFormArea';
 import { GridItemComponent } from './gridItemComponent';
 import { GridLines } from './gridLines';
-import { initialState } from './hooks/pagesDesignReducer';
+import { initialState, WidgetAlgoTracker } from './hooks/pagesDesignReducer';
 import { pagesDesignReducer } from './hooks/pagesDesignReducer';
 import { useDragToScroll } from './hooks/useDragToScroll';
 import { useZoom } from './hooks/useZoom';
@@ -39,6 +39,7 @@ import { PageNumber } from './pageNumber';
 import { PluginsPanel } from './pluginsPanel';
 import { ResizeHandle } from './resizeHandle';
 import { ZoomControl } from './zoomControl';
+import { Widget } from '@/app/types';
 /*
   Designer component has 3 sections:
   - The plugins panel section
@@ -100,7 +101,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   const [editingGridItem, setEditingGridItem] = useState<[WidgetOnGridLayout, HTMLDivElement] | null>(null)
   const [editingPageIndex, setEditingPageIndex] = useState<number | null>(null);
   const { zoomLevel, resetZoom, zoomIn, zoomOut } = useZoom();
-  const [testResultsMapping, setTestResultsMapping] = useState<TestResultDataMapping | null>(null);
+  const [selectedTestResults, setSelectedTestResults] = useState<ParsedTestResults[]>([]);
   const {
     isDragging: isDraggingFreeFormArea,
     handleMouseDown: handleFreeFormAreaMouseDown,
@@ -253,11 +254,20 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
           gridItemId,
         };
         const algos = getWidgetAlgosFromPlugins(pluginsWithMdx, widget);
+        const algosTracker: WidgetAlgoTracker[] = algos.map((algo) => {
+          const matchSelectedResult = findTestResultById(selectedTestResults, algo.gid, algo.cid);
+          return {
+            gid: algo.gid,
+            cid: algo.cid,
+            testResultsCreatedAt: matchSelectedResult?.created_at,
+          };
+        });
+
         dispatch({
           type: 'ADD_WIDGET_TO_CANVAS',
           itemLayout,
           widget: widgetWithGridItemId,
-          algos,
+          algos: algosTracker,
           pageIndex,
         });
 
@@ -381,18 +391,31 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     }
   }
 
-  function handleSelectUploadedTestResults(selectedResults: ParsedTestResults[]) {
-    console.log('selectedResults', selectedResults);
-    if (selectedResults.length === 0) {
-      setTestResultsMapping(null);
+  function handleSelectUploadedTestResults(results: ParsedTestResults[]) {
+    if (results.length === 0) {
+      setSelectedTestResults((prev) => {
+        const updatedResults = prev.map((result) => ({
+          gid: result.gid,
+          cid: result.cid,
+          testResultsCreatedAt: undefined,
+        }));
+        dispatch({
+          type: 'UPDATE_ALGO_TRACKER',
+          algos: updatedResults,
+        });
+        return [];
+      });
       return;
     }
-    const testResultsMapping = selectedResults.reduce((acc, result) => {
-      acc[`${result.gid}:${result.cid}`] = result.output;
-      return acc;
-    }, {} as Record<string, TestResultData>);
-
-    setTestResultsMapping(testResultsMapping);
+    setSelectedTestResults(results);
+    dispatch({
+      type: 'UPDATE_ALGO_TRACKER',
+      algos: results.map((result) => ({
+        gid: result.gid,
+        cid: result.cid,
+        testResultsCreatedAt: results.length > 0 ? result.created_at : undefined,
+      })),
+    });
   }
 
   const handleGridItemClick = (gridItemId: string) => () => {
@@ -436,9 +459,9 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
         onPreviousPage={handlePreviousPage}
         onAddPage={handleAddNewPage}
       />
-      <AlgosToRun
+      {/* <AlgosToRun
         algos={state.algos}
-      />
+      /> */}
     </section>
   );
 
@@ -565,8 +588,6 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
                         onEditClick={handleGridItemEditClick(pageIndex)}
                         isDragging={draggingGridItemId === widget.gridItemId}
                         isResizing={resizingGridItemId === widget.gridItemId}
-                        algosMapping={state.algos}
-                        testResultsMapping={testResultsMapping}
                       />
                     </div>
                   );

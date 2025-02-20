@@ -1,12 +1,17 @@
 import { Layout } from 'react-grid-layout';
 import { WidgetOnGridLayout } from '@/app/canvas/types';
-import { Algorithm } from '@/app/types';
 import { findWidgetInsertPosition } from './utils/findWidgetInsertPosition';
+
+export type WidgetAlgoTracker = {
+  gid: string;
+  cid: string;
+  testResultsCreatedAt?: string;
+};
 
 export type State = {
   layouts: Layout[][];
   widgets: WidgetOnGridLayout[][];
-  algos: Record<string, Algorithm[]>;
+  algosTracker: Record<string, WidgetAlgoTracker[]>;
   inputBlocks: Record<string, unknown>;
   currentPage: number;
   showGrid: boolean;
@@ -17,7 +22,7 @@ export type State = {
 export const initialState: State = {
   layouts: [[]],
   widgets: [[]],
-  algos: {},
+  algosTracker: {},
   inputBlocks: {},
   currentPage: 0,
   showGrid: true,
@@ -30,7 +35,7 @@ type WidgetAction =
       type: 'ADD_WIDGET_TO_CANVAS';
       itemLayout: Layout;
       widget: WidgetOnGridLayout;
-      algos: Algorithm[] | undefined;
+      algos: WidgetAlgoTracker[] | undefined;
       pageIndex: number;
     }
   | {
@@ -65,6 +70,10 @@ type WidgetAction =
   | {
       type: 'REMOVE_OVERFLOW_PAGES';
       parentPageIndex: number;
+    }
+  | {
+      type: 'UPDATE_ALGO_TRACKER';
+      algos: WidgetAlgoTracker[];
     };
 
 function pagesDesignReducer(state: State, action: WidgetAction): State {
@@ -81,9 +90,9 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       const clonedPageWidgets = widgets[action.pageIndex].slice();
       clonedPageWidgets.splice(insertPosition, 0, action.widget);
 
-      let clonedAlgos = state.algos;
+      let clonedAlgos = state.algosTracker;
       if (action.algos && action.algos.length > 0) {
-        clonedAlgos = { ...state.algos };
+        clonedAlgos = { ...state.algosTracker };
         if (clonedAlgos[action.widget.gridItemId]) {
           clonedAlgos[action.widget.gridItemId] = [
             ...clonedAlgos[action.widget.gridItemId],
@@ -102,7 +111,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         widgets: widgets.map((widget, i) =>
           i === action.pageIndex ? clonedPageWidgets : widget
         ),
-        algos: clonedAlgos,
+        algosTracker: clonedAlgos,
       };
     }
 
@@ -117,7 +126,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       clonedPageWidgets.splice(action.index, 1);
 
       // Clean up algos
-      const clonedAlgos = { ...state.algos };
+      const clonedAlgos = { ...state.algosTracker };
       if (widgetToDelete) {
         delete clonedAlgos[widgetToDelete.gridItemId];
       }
@@ -130,7 +139,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         widgets: widgets.map((widget, i) =>
           i === action.pageIndex ? clonedPageWidgets : widget
         ),
-        algos: clonedAlgos,
+        algosTracker: clonedAlgos,
       };
     }
 
@@ -346,6 +355,20 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
             ? parentPageIndex
             : state.currentPage,
       };
+    }
+
+    case 'UPDATE_ALGO_TRACKER': {
+      const clonedAlgos = { ...state.algosTracker };
+      action.algos.forEach((algo) => {
+        Object.keys(clonedAlgos).forEach((key) => {
+          clonedAlgos[key] = clonedAlgos[key].map((existing) =>
+            existing.gid === algo.gid && existing.cid === algo.cid
+              ? { ...existing, testResultsCreatedAt: algo.testResultsCreatedAt }
+              : existing
+          );
+        });
+      });
+      return { ...state, algosTracker: clonedAlgos };
     }
 
     default:
