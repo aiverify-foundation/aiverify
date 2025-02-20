@@ -1,8 +1,10 @@
 import { getMDXComponent, MDXContentProps } from 'mdx-bundler/client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import React from 'react';
-import { InputBlockDataMapping, TestResultDataMapping, WidgetOnGridLayout } from '@/app/canvas/types';
-import { Algorithm, TestResultData, InputBlockData, Plugin } from '@/app/types';
+import { WidgetAlgoTracker } from '@/app/canvas/components/hooks/pagesDesignReducer';
+import { InputBlockDataMapping, ParsedTestResults, TestResultDataMapping, WidgetOnGridLayout } from '@/app/canvas/types';
+import { findTestResultByIdAndTime } from '@/app/canvas/utils/findTestResultByIdAndTime';
+import { TestResultData, InputBlockData, Plugin } from '@/app/types';
 import { WidgetPropertiesDrawer } from './drawers/widgetPropertiesDrawer';
 import { GridItemContextMenu } from './gridItemContextMenu';
 import { editorInputClassName } from './hocAddTextEditFuncitonality';
@@ -13,6 +15,8 @@ type requiredStyles = `grid-item-root relative h-auto w-full min-h-full${string}
 type GridItemComponentProps = {
   plugins: Plugin[];
   widget: WidgetOnGridLayout;
+  testResultsUsed?: WidgetAlgoTracker[];
+  testResults: ParsedTestResults[];
   inputBlockData?: unknown;
   isDragging?: boolean;
   isResizing: boolean;
@@ -37,7 +41,7 @@ type MdxComponentProps = MDXContentProps & {
 
 const itemStyle: requiredStyles = 'grid-item-root relative h-auto w-full min-h-full';
 
-function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDragging, isResizing }: GridItemComponentProps) {
+function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDragging, isResizing, testResultsUsed, testResults }: GridItemComponentProps) {
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [showWidgetProperties, setShowWidgetProperties] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
@@ -45,6 +49,11 @@ function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDrag
   const hideTimeoutRef = useRef<NodeJS.Timeout>(null);
   const isHoveringRef = useRef<boolean>(false);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  let testResultMatch = undefined;
+
+  if (testResultsUsed && testResultsUsed.length > 0 && testResultsUsed[0].testResultsCreatedAt !== undefined) {
+    testResultMatch = findTestResultByIdAndTime(testResults, testResultsUsed[0].gid, testResultsUsed[0].cid, testResultsUsed[0].testResultsCreatedAt);
+  }
 
   useEffect(() => {
     if (!gridItemRef.current) return;
@@ -151,9 +160,9 @@ function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDrag
   }, [widget.properties]);
 
   const testResult = useMemo(() => {
-    // if (testResultsMapping) {
-    //   return testResultsMapping;
-    // }
+    if (testResultMatch) {
+      return { [`${widget.gid}:${testResultMatch.cid}`]: testResultMatch.output };
+    }
 
     if (widget.mockdata && widget.mockdata.length > 0) {
       return widget.mockdata.reduce<TestResultDataMapping>((acc, mock) => {
@@ -164,7 +173,8 @@ function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDrag
       }, {});
     }
     return {};
-  }, [widget, widget.mdx]);
+  }, [widget, widget.mdx, testResultsUsed]);
+
 
   const mockInputs = useMemo(() => {
     // if (testResultsMapping) {
@@ -189,9 +199,6 @@ function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDrag
     return {};
   }, [widget, widget.mdx]);
 
-  // console.log('mockResults', mockResults);
-  // console.log('mockInputs', mockInputs);
-
   return (
     <React.Fragment>
       {showContextMenu && !isDragging ?
@@ -203,6 +210,7 @@ function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDrag
       {showWidgetProperties && <WidgetPropertiesDrawer
         plugins={plugins}
         widget={widget}
+        testResultsMeta={testResultMatch}
         open={showWidgetProperties}
         setOpen={setShowWidgetProperties}
         onOkClick={() => setShowWidgetProperties(false)}

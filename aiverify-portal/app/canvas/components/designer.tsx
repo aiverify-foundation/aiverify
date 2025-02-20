@@ -12,6 +12,7 @@ import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPlug
 import { getWidgetAlgosFromPlugins } from '@/app/canvas/utils/getWidgetAlgosFromPlugins';
 import { isPageContentOverflow } from '@/app/canvas/utils/isPageContentOverflow';
 import { populateInitialWidgetResult } from '@/app/canvas/utils/populateInitialWidgetResult';
+import { Widget } from '@/app/types';
 import { cn } from '@/lib/utils/twmerge';
 import { AlgosToRun } from './algosToRun';
 import {
@@ -39,7 +40,6 @@ import { PageNumber } from './pageNumber';
 import { PluginsPanel } from './pluginsPanel';
 import { ResizeHandle } from './resizeHandle';
 import { ZoomControl } from './zoomControl';
-import { Widget } from '@/app/types';
 /*
   Designer component has 3 sections:
   - The plugins panel section
@@ -588,6 +588,8 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
                         onEditClick={handleGridItemEditClick(pageIndex)}
                         isDragging={draggingGridItemId === widget.gridItemId}
                         isResizing={resizingGridItemId === widget.gridItemId}
+                        testResultsUsed={state.algosTracker[widget.gridItemId]}
+                        testResults={testResults}
                       />
                     </div>
                   );
@@ -609,7 +611,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     </section>
   );
 
-  console.log('state', state);
+  // console.log('state', state);
 
   return (
     <React.Fragment>

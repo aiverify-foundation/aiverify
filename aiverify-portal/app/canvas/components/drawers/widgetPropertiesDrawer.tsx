@@ -1,10 +1,10 @@
 import { RiFlaskFill, RiFlaskLine, RiSurveyFill, RiSurveyLine } from '@remixicon/react';
 import React from 'react';
-import { WidgetOnGridLayout } from '@/app/canvas/types';
+import { ParsedTestResults, WidgetOnGridLayout } from '@/app/canvas/types';
 import { findAlgoFromPluginsById } from '@/app/canvas/utils/findAlgoFromPluginsById';
 import { findInputBlockFromPluginsById } from '@/app/canvas/utils/findInputBlockFromPluginsById';
 import { findPluginByGid } from '@/app/canvas/utils/findPluginByGid';
-import { Algorithm, InputBlockData, Plugin } from '@/app/types';
+import { InputBlockData, Plugin } from '@/app/types';
 import { Button } from '@/lib/components/Button/button';
 import { DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerBody } from '@/lib/components/drawer';
 import { Drawer } from '@/lib/components/drawer';
@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils/twmerge';
 type WidgetPropertiesDrawerProps = {
   plugins: Plugin[];
   className?: string;
-  testResultsUsed?: Algorithm[];
+  testResultsMeta?: ParsedTestResults;
   inputBlocksDataUsed?: InputBlockData[];
   widget: WidgetOnGridLayout;
   onOkClick: () => void;
@@ -23,7 +23,7 @@ type WidgetPropertiesDrawerProps = {
 };
 
 function WidgetPropertiesDrawer(props: WidgetPropertiesDrawerProps) {
-  const { plugins, widget, testResultsUsed, inputBlocksDataUsed, className, onOkClick, onDeleteClick, open, setOpen } = props;
+  const { plugins, widget, testResultsMeta, inputBlocksDataUsed, className, onOkClick, onDeleteClick, open, setOpen } = props;
   const parentPlugin = findPluginByGid(plugins, widget.gid);
   const algos = widget.dependencies.map((dep) => {
     if (!dep.cid) {
@@ -74,9 +74,20 @@ function WidgetPropertiesDrawer(props: WidgetPropertiesDrawerProps) {
                     ))}
                   </ul>
                 </div>
-                <div className="flex items-center gap-2 mt-8 text-gray-500 ml-5">
-                  <RiFlaskFill className="h-4 w-4 text-gray-500 hover:text-gray-900" />
-                  <h2 className="text-[0.8rem] font-semibold">Test(s) results</h2>
+                <div className="flex flex-col items-start gap-1 ml-5">
+                  <div className="flex items-center gap-2 mt-8 text-gray-500">
+                    <RiFlaskFill className="h-4 w-4 text-gray-500 hover:text-gray-900" />
+                    <h2 className="text-[0.8rem] font-semibold">Test(s) results</h2>
+                  </div>
+                  {!testResultsMeta ?
+                    <div className=" text-[0.8rem] text-blue-600">Currently using mock data</div> :
+                    <div className="flex flex-col items-start">
+                      <div className=" text-[0.8rem] text-blue-600">{testResultsMeta.name}</div>
+                      <div className=" text-[0.8rem] text-blue-600">Created at: {new Date(testResultsMeta.created_at).toLocaleString()}</div>
+                      <div className=" text-[0.8rem] text-blue-600">Updated at: {new Date(testResultsMeta.updated_at).toLocaleString()}</div>
+                      <div className=" text-[0.8rem] text-blue-600">Version: {testResultsMeta.version}</div>
+                    </div>
+                  }
                 </div>
                 <div className="mb-2 h-[1px] w-full bg-gray-200 my-8" />
               </React.Fragment>
@@ -103,9 +114,12 @@ function WidgetPropertiesDrawer(props: WidgetPropertiesDrawerProps) {
                     ))}
                   </ul>
                 </div>
-                <div className="flex items-center gap-2 mt-8 text-gray-500 ml-6">
-                  <RiSurveyFill className="h-4 w-4 text-gray-500 hover:text-gray-900" />
-                  <h2 className="text-[0.8rem] font-semibold">User Input Data</h2>
+                <div className="flex flex-col items-start gap-1 ml-5">
+                  <div className="flex items-center gap-2 mt-8 text-gray-500">
+                    <RiSurveyFill className="h-4 w-4 text-gray-500 hover:text-gray-900" />
+                    <h2 className="text-[0.8rem] font-semibold">User Input Data</h2>
+                  </div>
+                  {!inputBlocksDataUsed ? <div className=" text-[0.8rem] text-blue-600">Currently using mock data</div> : null}
                 </div>
               </React.Fragment>
             ) : null}
