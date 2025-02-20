@@ -26,6 +26,7 @@ type GridItemComponentProps = {
     gridItemHtmlElement: HTMLDivElement,
     widget: WidgetOnGridLayout
   ) => void;
+  onChangeTestResultClick: (result?: ParsedTestResults) => void;
 };
 
 type MdxComponentProps = MDXContentProps & {
@@ -41,7 +42,7 @@ type MdxComponentProps = MDXContentProps & {
 
 const itemStyle: requiredStyles = 'grid-item-root relative h-auto w-full min-h-full';
 
-function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDragging, isResizing, testResultsUsed, testResults }: GridItemComponentProps) {
+function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDragging, isResizing, testResultsUsed, testResults, onChangeTestResultClick }: GridItemComponentProps) {
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [showWidgetProperties, setShowWidgetProperties] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
@@ -236,10 +237,12 @@ function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDrag
         plugins={plugins}
         widget={widget}
         testResultsMeta={testResultMatch}
+        testResults={testResults}
         open={showWidgetProperties}
         setOpen={setShowWidgetProperties}
         onOkClick={() => setShowWidgetProperties(false)}
         onDeleteClick={onDeleteClick}
+        onChangeTestResultClick={onChangeTestResultClick}
       /> : null}
       <div
         ref={gridItemRef}

@@ -128,6 +128,17 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   } = useDragToScroll(freeFormAreaRef, canvasRef);
   const [isPanelOpen, setIsPanelOpen] = useState(true);
 
+  const handleChangeTestResult = (pageIndex: number, widgetIndex: number) => (result?: ParsedTestResults) => {
+    dispatch({
+      type: 'UPDATE_ALGO_TRACKER',
+      algos: [{
+        gid: state.widgets[pageIndex][widgetIndex].gid,
+        cid: state.widgets[pageIndex][widgetIndex].cid,
+        testResultsCreatedAt: result?.created_at
+      }]
+    });
+  };
+
   useEffect(() => {
     if (freeFormAreaRef.current) {
       const totalWidth = freeFormAreaRef.current.scrollWidth;
@@ -226,85 +237,85 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
 
   const handleWidgetDrop =
     (pageIndex: number) =>
-    (_layout: Layout[], item: Layout, e: EventDataTransfer) => {
-      setDraggingGridItemId(null);
-      let data: unknown;
-      try {
-        data = JSON.parse(e.dataTransfer.getData('application/json'));
-      } catch (error) {
-        console.error('Invalid widget item json', error);
-        setError('Invalid widget item json');
-        return;
-      }
-      const result = widgetItemSchema.safeParse(data);
-      if (!result.success) {
-        console.error('Invalid widget item data', result.error);
-        setError(result.error?.message);
-        return;
-      }
-      if (result.data.gridItemId) {
-        // todo - for handling existing grid item id
-        console.log(data);
-        return;
-      }
-      const validData: WidgetCompositeId = result.data;
-      const widget = findWidgetFromPluginsById(
-        pluginsWithMdx,
-        validData.gid,
-        validData.cid
-      );
-      if (!widget) {
-        console.error(
-          `Widget not found - gid: ${validData.gid} - cid: ${validData.cid}`
+      (_layout: Layout[], item: Layout, e: EventDataTransfer) => {
+        setDraggingGridItemId(null);
+        let data: unknown;
+        try {
+          data = JSON.parse(e.dataTransfer.getData('application/json'));
+        } catch (error) {
+          console.error('Invalid widget item json', error);
+          setError('Invalid widget item json');
+          return;
+        }
+        const result = widgetItemSchema.safeParse(data);
+        if (!result.success) {
+          console.error('Invalid widget item data', result.error);
+          setError(result.error?.message);
+          return;
+        }
+        if (result.data.gridItemId) {
+          // todo - for handling existing grid item id
+          console.log(data);
+          return;
+        }
+        const validData: WidgetCompositeId = result.data;
+        const widget = findWidgetFromPluginsById(
+          pluginsWithMdx,
+          validData.gid,
+          validData.cid
         );
-        setError(
-          `Widget not found - gid: ${validData.gid} - cid: ${validData.cid}`
-        );
-        return;
-      }
+        if (!widget) {
+          console.error(
+            `Widget not found - gid: ${validData.gid} - cid: ${validData.cid}`
+          );
+          setError(
+            `Widget not found - gid: ${validData.gid} - cid: ${validData.cid}`
+          );
+          return;
+        }
 
-      const widgetWithInitialData: WidgetOnGridLayout =
-        populateInitialWidgetResult(widget);
-      const gridItemId = createGridItemId(widget, pageIndex);
-      const { x, y } = item;
-      const { minW, minH, maxH, maxW } = widget.widgetSize;
-      const itemLayout = {
-        x,
-        y,
-        w: maxW,
-        h: minH,
-        minW,
-        minH,
-        maxW,
-        maxH,
-        i: gridItemId,
-      };
-      const widgetWithGridItemId: WidgetOnGridLayout = {
-        ...widgetWithInitialData,
-        gridItemId,
-      };
-      const algos = getWidgetAlgosFromPlugins(pluginsWithMdx, widget);
-      const algosTracker: WidgetAlgoTracker[] = algos.map((algo) => {
-        const matchSelectedResult = findTestResultById(
-          selectedTestResults,
-          algo.gid,
-          algo.cid
-        );
-        return {
-          gid: algo.gid,
-          cid: algo.cid,
-          testResultsCreatedAt: matchSelectedResult?.created_at,
+        const widgetWithInitialData: WidgetOnGridLayout =
+          populateInitialWidgetResult(widget);
+        const gridItemId = createGridItemId(widget, pageIndex);
+        const { x, y } = item;
+        const { minW, minH, maxH, maxW } = widget.widgetSize;
+        const itemLayout = {
+          x,
+          y,
+          w: maxW,
+          h: minH,
+          minW,
+          minH,
+          maxW,
+          maxH,
+          i: gridItemId,
         };
-      });
+        const widgetWithGridItemId: WidgetOnGridLayout = {
+          ...widgetWithInitialData,
+          gridItemId,
+        };
+        const algos = getWidgetAlgosFromPlugins(pluginsWithMdx, widget);
+        const algosTracker: WidgetAlgoTracker[] = algos.map((algo) => {
+          const matchSelectedResult = findTestResultById(
+            selectedTestResults,
+            algo.gid,
+            algo.cid
+          );
+          return {
+            gid: algo.gid,
+            cid: algo.cid,
+            testResultsCreatedAt: matchSelectedResult?.created_at,
+          };
+        });
 
-      dispatch({
-        type: 'ADD_WIDGET_TO_CANVAS',
-        itemLayout,
-        widget: widgetWithGridItemId,
-        algos: algosTracker,
-        pageIndex,
-      });
-    };
+        dispatch({
+          type: 'ADD_WIDGET_TO_CANVAS',
+          itemLayout,
+          widget: widgetWithGridItemId,
+          algos: algosTracker,
+          pageIndex,
+        });
+      };
 
   const handleGridItemResizeStart = (
     _layouts: Layout[],
@@ -317,15 +328,15 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
 
   const handleGridItemResizeStop =
     (pageIndex: number) =>
-    (_layouts: Layout[], _: Layout, itemLayout: Layout) => {
-      setResizingGridItemId(null);
-      const { x, y, w, h, minW, minH, maxW, maxH, i } = itemLayout;
-      dispatch({
-        type: 'RESIZE_WIDGET',
-        itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
-        pageIndex,
-      });
-    };
+      (_layouts: Layout[], _: Layout, itemLayout: Layout) => {
+        setResizingGridItemId(null);
+        const { x, y, w, h, minW, minH, maxW, maxH, i } = itemLayout;
+        dispatch({
+          type: 'RESIZE_WIDGET',
+          itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
+          pageIndex,
+        });
+      };
 
   const handleGridItemDragStart = (
     _layouts: Layout[],
@@ -337,19 +348,19 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
 
   const handleGridItemDragStop =
     (pageIndex: number) =>
-    (_layouts: Layout[], oldItem: Layout, newItem: Layout) => {
-      if (oldItem.x === newItem.x && oldItem.y === newItem.y) {
+      (_layouts: Layout[], oldItem: Layout, newItem: Layout) => {
+        if (oldItem.x === newItem.x && oldItem.y === newItem.y) {
+          setDraggingGridItemId(null);
+          return; // Position didn't change, skip dispatch
+        }
+        const { x, y, w, h, minW, minH, maxW, maxH, i } = newItem;
+        dispatch({
+          type: 'CHANGE_WIDGET_POSITION',
+          itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
+          pageIndex,
+        });
         setDraggingGridItemId(null);
-        return; // Position didn't change, skip dispatch
-      }
-      const { x, y, w, h, minW, minH, maxW, maxH, i } = newItem;
-      dispatch({
-        type: 'CHANGE_WIDGET_POSITION',
-        itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
-        pageIndex,
-      });
-      setDraggingGridItemId(null);
-    };
+      };
 
   const handleDeleteGridItem =
     (pageIndex: number, widgetIndex: number) => () => {
@@ -362,14 +373,14 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
 
   const handleGridItemEditClick =
     (pageIndex: number) =>
-    (
-      gridItemId: string,
-      gridItemHtmlElement: HTMLDivElement,
-      widget: WidgetOnGridLayout
-    ) => {
-      setEditingGridItem([widget, gridItemHtmlElement]);
-      setEditingPageIndex(pageIndex);
-    };
+      (
+        gridItemId: string,
+        gridItemHtmlElement: HTMLDivElement,
+        widget: WidgetOnGridLayout
+      ) => {
+        setEditingGridItem([widget, gridItemHtmlElement]);
+        setEditingPageIndex(pageIndex);
+      };
 
   function handleEditClose(updatedWidget: WidgetOnGridLayout) {
     if (editingPageIndex === null) {
@@ -531,11 +542,11 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
 
   const droppingItemPlaceholder = newDraggedWidget
     ? {
-        // makes the dropping red placeholder size of the widget
-        i: '__dropping-elem__',
-        w: newDraggedWidget.widgetSize.maxW,
-        h: newDraggedWidget.widgetSize.minH,
-      }
+      // makes the dropping red placeholder size of the widget
+      i: '__dropping-elem__',
+      w: newDraggedWidget.widgetSize.maxW,
+      h: newDraggedWidget.widgetSize.minH,
+    }
     : undefined;
 
   const pagesSection = (
@@ -648,7 +659,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
                       className={cn(
                         gridItemDivRequiredStyles,
                         selectedGridItemId === widget.gridItemId &&
-                          'outline outline-2 outline-offset-2 outline-blue-500'
+                        'outline outline-2 outline-offset-2 outline-blue-500'
                       )}
                       onClick={handleGridItemClick(widget.gridItemId)}>
                       <GridItemComponent
@@ -663,6 +674,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
                         isResizing={resizingGridItemId === widget.gridItemId}
                         testResultsUsed={state.algosTracker[widget.gridItemId]}
                         testResults={testResults}
+                        onChangeTestResultClick={handleChangeTestResult(pageIndex, widgetIndex)}
                       />
                     </div>
                   );
