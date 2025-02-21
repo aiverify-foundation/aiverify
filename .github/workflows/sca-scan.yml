@@ -77,6 +77,12 @@ jobs:
           python3 -m venv .venv
           source .venv/bin/activate
           pip install -e .
+          pip freeze > requirements.txt
+          rm -rf .venv
+
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
           bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=aiverify-apigw --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="aiverify-apigw_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv aiverify_apigw_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
@@ -94,7 +100,7 @@ jobs:
       if: inputs.branch_to_test == 'v2.x'
       run: |
         cd aiverify-portal
-        npm install
+        npm install --omit-dev
         bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=aiverify-portal --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="aiverify-portal_$BRANCH" --detect.excluded.directories=tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
         mv aiverify_portal_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
         cd ../
@@ -173,6 +179,12 @@ jobs:
           python3 -m venv .venv
           source .venv/bin/activate
           pip install -e .
+          pip freeze > requirements.txt
+          rm -rf .venv
+
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
           bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=accumulated-local-effect --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="accumulated-local-effect_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv accumulated_local_effect_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
@@ -181,7 +193,7 @@ jobs:
       if: inputs.branch_to_test == 'v2.x'
       run: |
           cd stock-plugins/aiverify.stock.decorators
-          npm install
+          npm install --omit-dev
           bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=decorators --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="decorators_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv decorators_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
 
@@ -192,6 +204,12 @@ jobs:
           python3 -m venv .venv
           source .venv/bin/activate
           pip install -e .
+          pip freeze > requirements.txt
+          rm -rf .venv
+
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
           bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=fairness-metrics-toolbox-for-classification --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="fairness-metrics-toolbox-for-classification_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv fairness_metrics_toolbox_for_classification_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
@@ -203,6 +221,12 @@ jobs:
           python3 -m venv .venv
           source .venv/bin/activate
           pip install -e .
+          pip freeze > requirements.txt
+          rm -rf .venv
+
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
           bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=fairness-metrics-toolbox-for-regression --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="fairness-metrics-toolbox-for-regression_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv fairness_metrics_toolbox_for_regression_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
@@ -214,6 +238,12 @@ jobs:
           python3 -m venv .venv
           source .venv/bin/activate
           pip install -e .
+          pip freeze > requirements.txt
+          rm -rf .venv
+
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
           bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=blur-corruptions --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="blur-corruptions_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv blur_corruptions_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
@@ -225,6 +255,12 @@ jobs:
           python3 -m venv .venv
           source .venv/bin/activate
           pip install -e .
+          pip freeze > requirements.txt
+          rm -rf .venv
+
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
           bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=digital-corruptions --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="digital-corruptions_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv digital_corruptions_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
@@ -236,6 +272,12 @@ jobs:
           python3 -m venv .venv
           source .venv/bin/activate
           pip install -e .
+          pip freeze > requirements.txt
+          rm -rf .venv
+
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
           bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=environment-corruptions --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="environment-corruptions_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv environment_corruptions_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
@@ -247,6 +289,12 @@ jobs:
           python3 -m venv .venv
           source .venv/bin/activate
           pip install -e .
+          pip freeze > requirements.txt
+          rm -rf .venv
+
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
           bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=general-corruptions --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="general-corruptions_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv general_corruptions_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
@@ -258,6 +306,12 @@ jobs:
           python3 -m venv .venv
           source .venv/bin/activate
           pip install -e .
+          pip freeze > requirements.txt
+          rm -rf .venv
+
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
           bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=partial-dependence-plot --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="partial-dependence-plot_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv partial_dependence_plot_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
@@ -269,6 +323,12 @@ jobs:
           python3 -m venv .venv
           source .venv/bin/activate
           pip install -e .
+          pip freeze > requirements.txt
+          rm -rf .venv
+
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
           bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=robustness-toolbox --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="robustness-toolbox_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv robustness_toolbox_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
@@ -280,6 +340,12 @@ jobs:
           python3 -m venv .venv
           source .venv/bin/activate
           pip install -e .
+          pip freeze > requirements.txt
+          rm -rf .venv
+
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
           bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=shap-toolbox --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="shap-toolbox_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv shap_toolbox_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
@@ -291,26 +357,32 @@ jobs:
           python3 -m venv .venv
           source .venv/bin/activate
           pip install -e .
+          pip freeze > requirements.txt
+          rm -rf .venv
+
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
           bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=veritas --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="veritas_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv veritas_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
 
-    - name: Commit All Notices File
-      env:
-        GH_TOKEN: ${{ github.token }}
-      run: |
-        git config --global user.name github-actions
-        git config --global user.email github-actions@github.com
-        git pull
-        git branch update-notices
-        git switch update-notices
-        git add .
-        git commit -m "Update All Notices File"
-        git push --set-upstream origin update-notices
+    # - name: Commit All Notices File
+    #   env:
+    #     GH_TOKEN: ${{ github.token }}
+    #   run: |
+    #     git config --global user.name github-actions
+    #     git config --global user.email github-actions@github.com
+    #     git pull
+    #     git branch update-notices
+    #     git switch update-notices
+    #     git add .
+    #     git commit -m "Update All Notices File"
+    #     git push --set-upstream origin update-notices
         
-    - name: Create & Merge Pull Request
-      env:
-        GH_TOKEN: ${{ github.token }}
-      run: |
-        gh pr create --base update-scan --title "Update All Notices File" --body "Update All Notices File" --head $(git branch --show-current)
-        gh pr merge --merge --admin
+    # - name: Create & Merge Pull Request
+    #   env:
+    #     GH_TOKEN: ${{ github.token }}
+    #   run: |
+    #     gh pr create --base update-scan --title "Update All Notices File" --body "Update All Notices File" --head $(git branch --show-current)
+    #     gh pr merge --merge --admin
