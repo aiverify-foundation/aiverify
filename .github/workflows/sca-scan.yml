@@ -101,7 +101,8 @@ jobs:
       run: |
         cd aiverify-portal
         rm pnpm-lock.yaml package-lock.json
-        npm install --omit=dev
+        npm -v
+        npm install --omit=dev --omit=optional
         bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=aiverify-portal --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="aiverify-portal_$BRANCH" --detect.excluded.directories=tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
         mv aiverify_portal_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
         cd ../
@@ -194,7 +195,7 @@ jobs:
       if: inputs.branch_to_test == 'v2.x'
       run: |
           cd stock-plugins/aiverify.stock.decorators
-          npm install --omit-dev
+          npm install
           bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=decorators --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="decorators_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv decorators_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
 
