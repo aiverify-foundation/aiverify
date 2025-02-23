@@ -1,22 +1,19 @@
+/*
+ * This is the standard report theme.
+ * It is used to style the report pages and the widgets.
+ * It is also used to style the editing overlay.
+ */
+
 #pagesWrapper {
   .standard-report-page {
     h1 {
       @apply mb-1 text-4xl font-bold leading-normal;
     }
-    .input-h1 {
-      @apply w-full text-4xl font-bold leading-normal text-black focus:outline-none;
-    }
     h2 {
       @apply mb-1 text-3xl font-bold;
     }
-    .input-h2 {
-      @apply w-full text-3xl font-bold text-black focus:outline-none;
-    }
     h3 {
       @apply mb-1 text-2xl font-bold;
-    }
-    .input-h3 {
-      @apply w-full text-2xl font-bold text-black focus:outline-none;
     }
     p {
       @apply text-base;
