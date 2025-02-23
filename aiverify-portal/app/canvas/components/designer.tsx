@@ -691,7 +691,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     <section
       className={cn(
         'fixed top-[90px] z-10 flex flex-col gap-4',
-        isPanelOpen ? 'left-[320px]' : 'left-[100px]'
+        isPanelOpen ? 'left-[340px]' : 'left-[100px]'
       )}>
       <TestResultsDrawer
         testResults={testResults}

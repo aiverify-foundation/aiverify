@@ -1,4 +1,4 @@
-import { RiArticleFill, RiFlaskFill, RiFlaskLine, RiSurveyFill, RiSurveyLine } from '@remixicon/react';
+import { RiFlaskFill, RiFlaskLine, RiSurveyFill, RiSurveyLine } from '@remixicon/react';
 import React from 'react';
 import { ParsedTestResults, WidgetOnGridLayout } from '@/app/canvas/types';
 import { findAlgoFromPluginsById } from '@/app/canvas/utils/findAlgoFromPluginsById';
