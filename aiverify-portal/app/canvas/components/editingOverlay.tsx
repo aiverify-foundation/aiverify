@@ -39,6 +39,7 @@ function EditingOverlay({
       return MissingMdxMessage;
     }
     const MDXComponent = getMDXComponent(widget.mdx.code);
+    // Add text edit functionality to the MDX component before returning it
     return hocAddTextEditFunctionality(MDXComponent);
   }, [widget, widget.mdx]);
 
@@ -55,13 +56,14 @@ function EditingOverlay({
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!widget.properties) return;
     const formData = new FormData(e.target as HTMLFormElement);
     const values = Object.fromEntries(formData);
     const updatedWidget: WidgetOnGridLayout = {
       ...widget,
       properties: widget.properties?.map((prop) => ({
         ...prop,
-        value: values[prop.key] || prop.value,
+        value: values[prop.key] as string || prop.value,
       })),
     };
 

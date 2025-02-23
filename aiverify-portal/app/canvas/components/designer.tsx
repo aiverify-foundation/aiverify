@@ -174,19 +174,6 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     }
   }, [layouts.length]);
 
-  // useEffect(() => {
-  //   if (freeFormAreaRef.current) {
-  //     const element = freeFormAreaRef.current;
-  //     const currentScrollTop = element.scrollTop;
-  //     const scrollableWidth = element.scrollWidth - element.clientWidth;
-  //     const horizontalCenter =
-  //       scrollableWidth * (element.scrollLeft / (scrollableWidth || 1));
-
-  //     element.scrollLeft = horizontalCenter;
-  //     element.scrollTop = currentScrollTop; // Maintain the same vertical scroll position
-  //   }
-  // }, [zoomLevel]);
-
   useEffect(() => {
     if (isInitialMount.current) return;
 
@@ -238,6 +225,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   const handleWidgetDrop =
     (pageIndex: number) =>
       (_layout: Layout[], item: Layout, e: EventDataTransfer) => {
+        console.log(`[handleWidgetDrop] Dropping widget at page ${pageIndex}, position: (${item.x}, ${item.y})`);
         setDraggingGridItemId(null);
         let data: unknown;
         try {
@@ -322,6 +310,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     _: Layout,
     itemLayout: Layout
   ) => {
+    console.log(`[handleGridItemResizeStart] Starting resize of item ${itemLayout.i}`);
     const { i } = itemLayout;
     setResizingGridItemId(i);
   };
@@ -329,6 +318,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   const handleGridItemResizeStop =
     (pageIndex: number) =>
       (_layouts: Layout[], _: Layout, itemLayout: Layout) => {
+        console.log(`[handleGridItemResizeStop] Finished resizing item ${itemLayout.i} to w:${itemLayout.w}, h:${itemLayout.h}`);
         setResizingGridItemId(null);
         const { x, y, w, h, minW, minH, maxW, maxH, i } = itemLayout;
         dispatch({
@@ -343,12 +333,14 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     _: Layout,
     itemLayout: Layout
   ) => {
+    console.log(`[handleGridItemDragStart] Starting drag of item ${itemLayout.i}`);
     setDraggingGridItemId(itemLayout.i);
   };
 
   const handleGridItemDragStop =
     (pageIndex: number) =>
       (_layouts: Layout[], oldItem: Layout, newItem: Layout) => {
+        console.log(`[handleGridItemDragStop] Moving item ${newItem.i} from (${oldItem.x},${oldItem.y}) to (${newItem.x},${newItem.y})`);
         if (oldItem.x === newItem.x && oldItem.y === newItem.y) {
           setDraggingGridItemId(null);
           return; // Position didn't change, skip dispatch
@@ -364,6 +356,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
 
   const handleDeleteGridItem =
     (pageIndex: number, widgetIndex: number) => () => {
+      console.log(`[handleDeleteGridItem] Deleting widget at page ${pageIndex}, index ${widgetIndex}`);
       dispatch({
         type: 'DELETE_WIDGET_FROM_CANVAS',
         index: widgetIndex,
@@ -378,11 +371,13 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
         gridItemHtmlElement: HTMLDivElement,
         widget: WidgetOnGridLayout
       ) => {
+        console.log(`[handleGridItemEditClick] Editing widget ${gridItemId} on page ${pageIndex}`);
         setEditingGridItem([widget, gridItemHtmlElement]);
         setEditingPageIndex(pageIndex);
       };
 
   function handleEditClose(updatedWidget: WidgetOnGridLayout) {
+    console.log(`[handleEditClose] Saving changes to widget ${updatedWidget.gridItemId}`);
     if (editingPageIndex === null) {
       console.error('Editing page index is not set');
       return;
@@ -397,12 +392,14 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   }
 
   function handleAddNewPage() {
+    console.log('[handleAddNewPage] Adding new page');
     dispatch({
       type: 'ADD_NEW_PAGE',
     });
   }
 
   function handlePageChange(pageIndex: number) {
+    console.log(`[handlePageChange] Switching to page ${pageIndex}`);
     dispatch({
       type: 'SET_CURRENT_PAGE',
       pageIndex,
@@ -412,18 +409,21 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   }
 
   function handleNextPage() {
+    console.log('[handleNextPage] Moving to next page');
     if (currentPage < layouts.length - 1) {
       handlePageChange(currentPage + 1);
     }
   }
 
   function handlePreviousPage() {
+    console.log('[handlePreviousPage] Moving to previous page');
     if (currentPage > 0) {
       handlePageChange(currentPage - 1);
     }
   }
 
   function handleDeletePage(pageIndex: number) {
+    console.log(`[handleDeletePage] Attempting to delete page ${pageIndex}`);
     if (layouts.length > 1) {
       dispatch({
         type: 'DELETE_PAGE',
@@ -435,6 +435,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   }
 
   function handleSelectUploadedTestResults(results: ParsedTestResults[]) {
+    console.log(`[handleSelectUploadedTestResults] Updating with ${results.length} test results`);
     if (results.length === 0) {
       setSelectedTestResults((prev) => {
         const updatedResults = prev.map((result) => ({
@@ -462,9 +463,6 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     });
   }
 
-  const handleGridItemClick = (gridItemId: string) => () => {
-    setSelectedGridItemId(gridItemId);
-  };
 
   const contentWrapperMinHeight = useMemo(() => {
     const totalPagesHeight = layouts.length * GRID_HEIGHT;
@@ -654,14 +652,17 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
                   if (!widget.gridItemId) return null;
                   return (
                     <div
+                      /*
+                        Avoid adding onClick event handler to this grid item component wrapper.
+                        If a handler function is required in the future, stop event proparation in that handler.
+                      */
                       id={widget.gridItemId}
                       key={widget.gridItemId}
                       className={cn(
                         gridItemDivRequiredStyles,
                         selectedGridItemId === widget.gridItemId &&
                         'outline outline-2 outline-offset-2 outline-blue-500'
-                      )}
-                      onClick={handleGridItemClick(widget.gridItemId)}>
+                      )}>
                       <GridItemComponent
                         plugins={pluginsWithMdx}
                         widget={widget}

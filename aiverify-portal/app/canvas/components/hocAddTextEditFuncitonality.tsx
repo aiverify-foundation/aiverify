@@ -19,6 +19,7 @@ export const hocAddTextEditFunctionality = <P extends MDXContentProps>(
     const h3Ref = React.useRef<HTMLTextAreaElement>(null);
 
     React.useEffect(() => {
+      // Set the cursor to the end of the text area
       [h1Ref, h2Ref, h3Ref].forEach(ref => {
         if (ref.current) {
           const length = ref.current.value.length;
@@ -26,6 +27,13 @@ export const hocAddTextEditFunctionality = <P extends MDXContentProps>(
         }
       });
     }, []);
+
+    const handleTextAreaInput = (e: React.FormEvent<HTMLTextAreaElement>) => {
+      // Adjust the height of the text area to fit the content
+      const target = e.target as HTMLTextAreaElement;
+      target.style.height = 'auto';
+      target.style.height = `${target.scrollHeight}px`;
+    };
 
     return (
       <WrappedComponent
@@ -55,11 +63,10 @@ export const hocAddTextEditFunctionality = <P extends MDXContentProps>(
                 <textarea
                   ref={h1Ref}
                   autoFocus
-                  onInput={(e) => {
-                    const target = e.target as HTMLTextAreaElement;
-                    target.style.height = 'auto';
-                    target.style.height = `${target.scrollHeight}px`;
+                  onClick={(e) => {
+                    e.stopPropagation();
                   }}
+                  onInput={handleTextAreaInput}
                   name={props[dataKeyName]}
                   defaultValue={children as string}
                   className={`input-h1 ${editorInputClassName}`}
@@ -77,11 +84,7 @@ export const hocAddTextEditFunctionality = <P extends MDXContentProps>(
                 <textarea
                   ref={h2Ref}
                   autoFocus
-                  onInput={(e) => {
-                    const target = e.target as HTMLTextAreaElement;
-                    target.style.height = 'auto';
-                    target.style.height = `${target.scrollHeight}px`;
-                  }}
+                  onInput={handleTextAreaInput}
                   name={props[dataKeyName]}
                   defaultValue={children as string}
                   className={`input-h2 ${editorInputClassName}`}
@@ -99,11 +102,7 @@ export const hocAddTextEditFunctionality = <P extends MDXContentProps>(
                 <textarea
                   ref={h3Ref}
                   autoFocus
-                  onInput={(e) => {
-                    const target = e.target as HTMLTextAreaElement;
-                    target.style.height = 'auto';
-                    target.style.height = `${target.scrollHeight}px`;
-                  }}
+                  onInput={handleTextAreaInput}
                   name={props[dataKeyName]}
                   defaultValue={children as string}
                   className={`input-h3 ${editorInputClassName}`}
