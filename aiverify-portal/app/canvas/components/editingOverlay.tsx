@@ -13,6 +13,16 @@ type EditingOverlayProps = {
   pageIndex: number;
 };
 
+/**
+ * @file aiverify/aiverify-portal/app/canvas/components/editingOverlay.tsx
+ * The editing overlay is a modal that allows the user to edit the properties of a widget.
+ * There is a background overlay that is used to close the overlay when the user clicks outside of it.
+ * The modal renders a form that contains the widget properties. It is rendered directly above the widget.
+ * The form is submitted when the user clicks outside of it.
+ * 
+ * @see {@link /app/canvas/components/hocAddTextEditFuncitonality.tsx} to see which components are editable.
+ */
+
 function EditingOverlay({
   widget,
   originalElement,

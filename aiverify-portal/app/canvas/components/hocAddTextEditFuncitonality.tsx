@@ -1,13 +1,29 @@
 import { MDXContentProps } from 'mdx-bundler/client';
 import React from 'react';
 
+/** 
+ * IMPORTANT: dataKeyName value is used to identify the data key in the properties object.
+ * This key name must match the key name used in the mdx parser/bundler in aiverify-apigw-node
+ * @see {@link /aiverify/aiverify-apigw-node/bundler.ts} for the correct value.
+ */
 const dataKeyName = 'data-aivkey';
+
+
 export const editorInputClassName = 'editor-input';
 
 /**
- * This is a higher-order component that allows developers to add modifications like styling to the MDX component.
+ * This is a higher-order component that allows developers to add modifications the MDX component.
+ * Currently, it adds text edit functionality to the MDX component.
+ * The following components are editable:
+ * - p
+ * - h1
+ * - h2
+ * - h3
+ * 
  * @param WrappedComponent - The MDX component to wrap.
  * @returns A new component that adds text behavior to the MDX component.
+ * 
+ * @see {@link /app/canvas/components/editingOverlay.tsx} to see how this component is used.
  */
 
 export const hocAddTextEditFunctionality = <P extends MDXContentProps>(
@@ -29,7 +45,7 @@ export const hocAddTextEditFunctionality = <P extends MDXContentProps>(
     }, []);
 
     const handleTextAreaInput = (e: React.FormEvent<HTMLTextAreaElement>) => {
-      // Adjust the height of the text area to fit the content
+      // Adjust the height of the text area to fit the content as the user types
       const target = e.target as HTMLTextAreaElement;
       target.style.height = 'auto';
       target.style.height = `${target.scrollHeight}px`;
