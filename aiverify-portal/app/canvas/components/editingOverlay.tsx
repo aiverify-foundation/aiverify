@@ -31,6 +31,7 @@ function EditingOverlay({
   const overlayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // get the original element's bounding client rect for positioning and sizing the editing overlay
     if (originalElement && overlayRef.current) {
       const rect = originalElement.getBoundingClientRect();
       overlayRef.current.style.top = `${rect.top}px`;

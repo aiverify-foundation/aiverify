@@ -101,7 +101,6 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   const freeFormAreaRef = useRef<HTMLDivElement>(null);
   const [state, dispatch] = useReducer(pagesDesignReducer, initialState);
   const { layouts, currentPage, showGrid } = state;
-  const [error, setError] = useState<string | undefined>();
   const [newDraggedWidget, setNewDraggedWidget] = useState<Widget | null>(null);
   const [draggingGridItemId, setDraggingGridItemId] = useState<string | null>(
     null
@@ -232,13 +231,11 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
           data = JSON.parse(e.dataTransfer.getData('application/json'));
         } catch (error) {
           console.error('Invalid widget item json', error);
-          setError('Invalid widget item json');
           return;
         }
         const result = widgetItemSchema.safeParse(data);
         if (!result.success) {
           console.error('Invalid widget item data', result.error);
-          setError(result.error?.message);
           return;
         }
         if (result.data.gridItemId) {
@@ -254,9 +251,6 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
         );
         if (!widget) {
           console.error(
-            `Widget not found - gid: ${validData.gid} - cid: ${validData.cid}`
-          );
-          setError(
             `Widget not found - gid: ${validData.gid} - cid: ${validData.cid}`
           );
           return;
