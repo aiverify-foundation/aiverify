@@ -290,7 +290,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
         type: 'ADD_WIDGET_TO_CANVAS',
         itemLayout,
         widget: widgetWithGridItemId,
-        algos: gridItemToAlgosMap,
+        gridItemAlgosMap: gridItemToAlgosMap,
         pageIndex,
       });
     };
@@ -451,7 +451,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
         }));
         dispatch({
           type: 'UPDATE_ALGO_TRACKER',
-          algos: updatedResults,
+          gridItemAlgosMap: updatedResults,
         });
         return [];
       });
@@ -460,7 +460,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     setSelectedTestResults(results);
     dispatch({
       type: 'UPDATE_ALGO_TRACKER',
-      algos: results.map((result) => ({
+      gridItemAlgosMap: results.map((result) => ({
         gid: result.gid,
         cid: result.cid,
         testResultsCreatedAt:

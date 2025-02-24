@@ -39,7 +39,7 @@ type WidgetAction =
       type: 'ADD_WIDGET_TO_CANVAS';
       itemLayout: Layout;
       widget: WidgetOnGridLayout;
-      algos: WidgetAlgoAndResultIdentifier[] | undefined;
+      gridItemAlgosMap: WidgetAlgoAndResultIdentifier[] | undefined;
       pageIndex: number;
     }
   | {
@@ -77,7 +77,7 @@ type WidgetAction =
     }
   | {
       type: 'UPDATE_ALGO_TRACKER';
-      algos: WidgetAlgoAndResultIdentifier[];
+      gridItemAlgosMap: WidgetAlgoAndResultIdentifier[];
     };
 
 function pagesDesignReducer(state: State, action: WidgetAction): State {
@@ -94,16 +94,17 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       const clonedPageWidgets = widgets[action.pageIndex].slice();
       clonedPageWidgets.splice(insertPosition, 0, action.widget);
 
-      let clonedAlgos = state.gridItemToAlgosMap;
-      if (action.algos && action.algos.length > 0) {
-        clonedAlgos = { ...state.gridItemToAlgosMap };
-        if (clonedAlgos[action.widget.gridItemId]) {
-          clonedAlgos[action.widget.gridItemId] = [
-            ...clonedAlgos[action.widget.gridItemId],
-            ...action.algos,
+      let clonedAlgosMap = state.gridItemToAlgosMap;
+      if (action.gridItemAlgosMap && action.gridItemAlgosMap.length > 0) {
+        clonedAlgosMap = { ...state.gridItemToAlgosMap };
+        if (clonedAlgosMap[action.widget.gridItemId]) {
+          clonedAlgosMap[action.widget.gridItemId] = [
+            ...clonedAlgosMap[action.widget.gridItemId],
+            ...action.gridItemAlgosMap,
           ];
         } else {
-          clonedAlgos[action.widget.gridItemId] = action.algos.slice();
+          clonedAlgosMap[action.widget.gridItemId] =
+            action.gridItemAlgosMap.slice();
         }
       }
 
@@ -115,7 +116,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         widgets: widgets.map((widget, i) =>
           i === action.pageIndex ? clonedPageWidgets : widget
         ),
-        gridItemToAlgosMap: clonedAlgos,
+        gridItemToAlgosMap: clonedAlgosMap,
       };
     }
 
@@ -362,17 +363,20 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
     }
 
     case 'UPDATE_ALGO_TRACKER': {
-      const clonedAlgos = { ...state.gridItemToAlgosMap };
-      action.algos.forEach((algo) => {
-        Object.keys(clonedAlgos).forEach((key) => {
-          clonedAlgos[key] = clonedAlgos[key].map((existing) =>
-            existing.gid === algo.gid && existing.cid === algo.cid
-              ? { ...existing, testResultsCreatedAt: algo.testResultsCreatedAt }
+      const clonedAlgosMap = { ...state.gridItemToAlgosMap };
+      action.gridItemAlgosMap.forEach((algoMap) => {
+        Object.keys(clonedAlgosMap).forEach((key) => {
+          clonedAlgosMap[key] = clonedAlgosMap[key].map((existing) =>
+            existing.gid === algoMap.gid && existing.cid === algoMap.cid
+              ? {
+                  ...existing,
+                  testResultsCreatedAt: algoMap.testResultsCreatedAt,
+                }
               : existing
           );
         });
       });
-      return { ...state, gridItemToAlgosMap: clonedAlgos };
+      return { ...state, gridItemToAlgosMap: clonedAlgosMap };
     }
 
     default:
