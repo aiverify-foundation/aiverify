@@ -127,22 +127,8 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   } = useDragToScroll(freeFormAreaRef, canvasRef);
   const [isPanelOpen, setIsPanelOpen] = useState(true);
 
-  const handleChangeTestResult =
-    (pageIndex: number, widgetIndex: number) =>
-    (result?: ParsedTestResults) => {
-      dispatch({
-        type: 'UPDATE_ALGO_TRACKER',
-        algos: [
-          {
-            gid: state.widgets[pageIndex][widgetIndex].gid,
-            cid: state.widgets[pageIndex][widgetIndex].cid,
-            testResultsCreatedAt: result?.created_at,
-          },
-        ],
-      });
-    };
-
   useEffect(() => {
+    // position free form area horizontal - centered. Then flag initial mount as done.
     if (freeFormAreaRef.current) {
       const totalWidth = freeFormAreaRef.current.scrollWidth;
       const viewportWidth = freeFormAreaRef.current.clientWidth;
@@ -166,12 +152,11 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
         `page-${layouts.length - 1}`
       );
       if (newPageElement) {
+        // Add a temporary scroll margin
+        newPageElement.style.scrollMarginTop = `${zoomLevel + 100}px`; // Adjust this value as needed
         setTimeout(() => {
-          const elementTop =
-            (newPageElement.offsetTop - CONTAINER_PAD) * zoomLevel;
-          freeFormAreaRef.current?.scrollTo({
-            top: elementTop,
-          });
+          newPageElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          newPageElement.style.scrollMarginTop = ''; // remove the temp margin
         }, 0);
       }
     }
