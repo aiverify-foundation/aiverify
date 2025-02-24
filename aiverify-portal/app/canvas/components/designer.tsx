@@ -127,16 +127,20 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   } = useDragToScroll(freeFormAreaRef, canvasRef);
   const [isPanelOpen, setIsPanelOpen] = useState(true);
 
-  const handleChangeTestResult = (pageIndex: number, widgetIndex: number) => (result?: ParsedTestResults) => {
-    dispatch({
-      type: 'UPDATE_ALGO_TRACKER',
-      algos: [{
-        gid: state.widgets[pageIndex][widgetIndex].gid,
-        cid: state.widgets[pageIndex][widgetIndex].cid,
-        testResultsCreatedAt: result?.created_at
-      }]
-    });
-  };
+  const handleChangeTestResult =
+    (pageIndex: number, widgetIndex: number) =>
+    (result?: ParsedTestResults) => {
+      dispatch({
+        type: 'UPDATE_ALGO_TRACKER',
+        algos: [
+          {
+            gid: state.widgets[pageIndex][widgetIndex].gid,
+            cid: state.widgets[pageIndex][widgetIndex].cid,
+            testResultsCreatedAt: result?.created_at,
+          },
+        ],
+      });
+    };
 
   useEffect(() => {
     if (freeFormAreaRef.current) {
@@ -223,134 +227,146 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
 
   const handleWidgetDrop =
     (pageIndex: number) =>
-      (_layout: Layout[], item: Layout, e: EventDataTransfer) => {
-        console.log(`[handleWidgetDrop] Dropping widget at page ${pageIndex}, position: (${item.x}, ${item.y})`);
-        setDraggingGridItemId(null);
-        let data: unknown;
-        try {
-          data = JSON.parse(e.dataTransfer.getData('application/json'));
-        } catch (error) {
-          console.error('Invalid widget item json', error);
-          return;
-        }
-        const result = widgetItemSchema.safeParse(data);
-        if (!result.success) {
-          console.error('Invalid widget item data', result.error);
-          return;
-        }
-        if (result.data.gridItemId) {
-          // todo - for handling existing grid item id
-          console.log(data);
-          return;
-        }
-        const validData: WidgetCompositeId = result.data;
-        const widget = findWidgetFromPluginsById(
-          pluginsWithMdx,
-          validData.gid,
-          validData.cid
+    (_layout: Layout[], item: Layout, e: EventDataTransfer) => {
+      console.log(
+        `[handleWidgetDrop] Dropping widget at page ${pageIndex}, position: (${item.x}, ${item.y})`
+      );
+      setDraggingGridItemId(null);
+      let data: unknown;
+      try {
+        data = JSON.parse(e.dataTransfer.getData('application/json'));
+      } catch (error) {
+        console.error('Invalid widget item json', error);
+        return;
+      }
+      const result = widgetItemSchema.safeParse(data);
+      if (!result.success) {
+        console.error('Invalid widget item data', result.error);
+        return;
+      }
+      if (result.data.gridItemId) {
+        // todo - for handling existing grid item id
+        console.log(data);
+        return;
+      }
+      const validData: WidgetCompositeId = result.data;
+      const widget = findWidgetFromPluginsById(
+        pluginsWithMdx,
+        validData.gid,
+        validData.cid
+      );
+      if (!widget) {
+        console.error(
+          `Widget not found - gid: ${validData.gid} - cid: ${validData.cid}`
         );
-        if (!widget) {
-          console.error(
-            `Widget not found - gid: ${validData.gid} - cid: ${validData.cid}`
-          );
-          return;
-        }
+        return;
+      }
 
-        const widgetWithInitialData: WidgetOnGridLayout =
-          populateInitialWidgetResult(widget);
-        const gridItemId = createGridItemId(widget, pageIndex);
-        const { x, y } = item;
-        const { minW, minH, maxH, maxW } = widget.widgetSize;
-        const itemLayout = {
-          x,
-          y,
-          w: maxW,
-          h: minH,
-          minW,
-          minH,
-          maxW,
-          maxH,
-          i: gridItemId,
-        };
-        const widgetWithGridItemId: WidgetOnGridLayout = {
-          ...widgetWithInitialData,
-          gridItemId,
-        };
-        const algos = getWidgetAlgosFromPlugins(pluginsWithMdx, widget);
-        const algosTracker: WidgetAlgoTracker[] = algos.map((algo) => {
-          const matchSelectedResult = findTestResultById(
-            selectedTestResults,
-            algo.gid,
-            algo.cid
-          );
-          return {
-            gid: algo.gid,
-            cid: algo.cid,
-            testResultsCreatedAt: matchSelectedResult?.created_at,
-          };
-        });
-
-        dispatch({
-          type: 'ADD_WIDGET_TO_CANVAS',
-          itemLayout,
-          widget: widgetWithGridItemId,
-          algos: algosTracker,
-          pageIndex,
-        });
+      const widgetWithInitialData: WidgetOnGridLayout =
+        populateInitialWidgetResult(widget);
+      const gridItemId = createGridItemId(widget, pageIndex);
+      const { x, y } = item;
+      const { minW, minH, maxH, maxW } = widget.widgetSize;
+      const itemLayout = {
+        x,
+        y,
+        w: maxW,
+        h: minH,
+        minW,
+        minH,
+        maxW,
+        maxH,
+        i: gridItemId,
       };
+      const widgetWithGridItemId: WidgetOnGridLayout = {
+        ...widgetWithInitialData,
+        gridItemId,
+      };
+      const algos = getWidgetAlgosFromPlugins(pluginsWithMdx, widget);
+      const algosTracker: WidgetAlgoTracker[] = algos.map((algo) => {
+        const matchSelectedResult = findTestResultById(
+          selectedTestResults,
+          algo.gid,
+          algo.cid
+        );
+        return {
+          gid: algo.gid,
+          cid: algo.cid,
+          testResultsCreatedAt: matchSelectedResult?.created_at,
+        };
+      });
+
+      dispatch({
+        type: 'ADD_WIDGET_TO_CANVAS',
+        itemLayout,
+        widget: widgetWithGridItemId,
+        algos: algosTracker,
+        pageIndex,
+      });
+    };
 
   const handleGridItemResizeStart = (
     _layouts: Layout[],
     _: Layout,
     itemLayout: Layout
   ) => {
-    console.log(`[handleGridItemResizeStart] Starting resize of item ${itemLayout.i}`);
+    console.log(
+      `[handleGridItemResizeStart] Starting resize of item ${itemLayout.i}`
+    );
     const { i } = itemLayout;
     setResizingGridItemId(i);
   };
 
   const handleGridItemResizeStop =
     (pageIndex: number) =>
-      (_layouts: Layout[], _: Layout, itemLayout: Layout) => {
-        console.log(`[handleGridItemResizeStop] Finished resizing item ${itemLayout.i} to w:${itemLayout.w}, h:${itemLayout.h}`);
-        setResizingGridItemId(null);
-        const { x, y, w, h, minW, minH, maxW, maxH, i } = itemLayout;
-        dispatch({
-          type: 'RESIZE_WIDGET',
-          itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
-          pageIndex,
-        });
-      };
+    (_layouts: Layout[], _: Layout, itemLayout: Layout) => {
+      console.log(
+        `[handleGridItemResizeStop] Finished resizing item ${itemLayout.i} to w:${itemLayout.w}, h:${itemLayout.h}`
+      );
+      setResizingGridItemId(null);
+      const { x, y, w, h, minW, minH, maxW, maxH, i } = itemLayout;
+      dispatch({
+        type: 'RESIZE_WIDGET',
+        itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
+        pageIndex,
+      });
+    };
 
   const handleGridItemDragStart = (
     _layouts: Layout[],
     _: Layout,
     itemLayout: Layout
   ) => {
-    console.log(`[handleGridItemDragStart] Starting drag of item ${itemLayout.i}`);
+    console.log(
+      `[handleGridItemDragStart] Starting drag of item ${itemLayout.i}`
+    );
     setDraggingGridItemId(itemLayout.i);
   };
 
   const handleGridItemDragStop =
     (pageIndex: number) =>
-      (_layouts: Layout[], oldItem: Layout, newItem: Layout) => {
-        console.log(`[handleGridItemDragStop] Moving item ${newItem.i} from (${oldItem.x},${oldItem.y}) to (${newItem.x},${newItem.y})`);
-        if (oldItem.x === newItem.x && oldItem.y === newItem.y) {
-          setDraggingGridItemId(null);
-          return; // Position didn't change, skip dispatch
-        }
-        const { x, y, w, h, minW, minH, maxW, maxH, i } = newItem;
-        dispatch({
-          type: 'CHANGE_WIDGET_POSITION',
-          itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
-          pageIndex,
-        });
+    (_layouts: Layout[], oldItem: Layout, newItem: Layout) => {
+      console.log(
+        `[handleGridItemDragStop] Moving item ${newItem.i} from (${oldItem.x},${oldItem.y}) to (${newItem.x},${newItem.y})`
+      );
+      if (oldItem.x === newItem.x && oldItem.y === newItem.y) {
         setDraggingGridItemId(null);
-      };
+        return; // Position didn't change, skip dispatch
+      }
+      const { x, y, w, h, minW, minH, maxW, maxH, i } = newItem;
+      dispatch({
+        type: 'CHANGE_WIDGET_POSITION',
+        itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
+        pageIndex,
+      });
+      setDraggingGridItemId(null);
+    };
 
   const handleDeleteGridItem =
     (pageIndex: number, widgetIndex: number) => () => {
-      console.log(`[handleDeleteGridItem] Deleting widget at page ${pageIndex}, index ${widgetIndex}`);
+      console.log(
+        `[handleDeleteGridItem] Deleting widget at page ${pageIndex}, index ${widgetIndex}`
+      );
       dispatch({
         type: 'DELETE_WIDGET_FROM_CANVAS',
         index: widgetIndex,
@@ -360,18 +376,22 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
 
   const handleGridItemEditClick =
     (pageIndex: number) =>
-      (
-        gridItemId: string,
-        gridItemHtmlElement: HTMLDivElement,
-        widget: WidgetOnGridLayout
-      ) => {
-        console.log(`[handleGridItemEditClick] Editing widget ${gridItemId} on page ${pageIndex}`);
-        setEditingGridItem([widget, gridItemHtmlElement]);
-        setEditingPageIndex(pageIndex);
-      };
+    (
+      gridItemId: string,
+      gridItemHtmlElement: HTMLDivElement,
+      widget: WidgetOnGridLayout
+    ) => {
+      console.log(
+        `[handleGridItemEditClick] Editing widget ${gridItemId} on page ${pageIndex}`
+      );
+      setEditingGridItem([widget, gridItemHtmlElement]);
+      setEditingPageIndex(pageIndex);
+    };
 
   function handleEditClose(updatedWidget: WidgetOnGridLayout) {
-    console.log(`[handleEditClose] Saving changes to widget ${updatedWidget.gridItemId}`);
+    console.log(
+      `[handleEditClose] Saving changes to widget ${updatedWidget.gridItemId}`
+    );
     if (editingPageIndex === null) {
       console.error('Editing page index is not set');
       return;
@@ -429,7 +449,9 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   }
 
   function handleSelectUploadedTestResults(results: ParsedTestResults[]) {
-    console.log(`[handleSelectUploadedTestResults] Updating with ${results.length} test results`);
+    console.log(
+      `[handleSelectUploadedTestResults] Updating with ${results.length} test results`
+    );
     if (results.length === 0) {
       setSelectedTestResults((prev) => {
         const updatedResults = prev.map((result) => ({
@@ -456,7 +478,6 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
       })),
     });
   }
-
 
   const contentWrapperMinHeight = useMemo(() => {
     const totalPagesHeight = layouts.length * GRID_HEIGHT;
@@ -534,11 +555,11 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
 
   const droppingItemPlaceholder = newDraggedWidget
     ? {
-      // makes the dropping red placeholder size of the widget
-      i: '__dropping-elem__',
-      w: newDraggedWidget.widgetSize.maxW,
-      h: newDraggedWidget.widgetSize.minH,
-    }
+        // makes the dropping red placeholder size of the widget
+        i: '__dropping-elem__',
+        w: newDraggedWidget.widgetSize.maxW,
+        h: newDraggedWidget.widgetSize.minH,
+      }
     : undefined;
 
   const pagesSection = (
@@ -655,10 +676,10 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
                       className={cn(
                         gridItemDivRequiredStyles,
                         selectedGridItemId === widget.gridItemId &&
-                        'outline outline-2 outline-offset-2 outline-blue-500'
+                          'outline outline-2 outline-offset-2 outline-blue-500'
                       )}>
                       <GridItemComponent
-                        plugins={pluginsWithMdx}
+                        allAvalaiblePlugins={pluginsWithMdx}
                         widget={widget}
                         onDeleteClick={handleDeleteGridItem(
                           pageIndex,
@@ -669,7 +690,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
                         isResizing={resizingGridItemId === widget.gridItemId}
                         testResultsUsed={state.algosTracker[widget.gridItemId]}
                         testResults={testResults}
-                        onChangeTestResultClick={handleChangeTestResult(pageIndex, widgetIndex)}
+                        layout={state.layouts[pageIndex][widgetIndex]}
                       />
                     </div>
                   );

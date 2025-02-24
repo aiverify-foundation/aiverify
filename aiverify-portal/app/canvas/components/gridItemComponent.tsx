@@ -1,19 +1,26 @@
 import { getMDXComponent, MDXContentProps } from 'mdx-bundler/client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import React from 'react';
+import { Layout } from 'react-grid-layout';
 import { WidgetAlgoTracker } from '@/app/canvas/components/hooks/pagesDesignReducer';
-import { InputBlockDataMapping, ParsedTestResults, TestResultDataMapping, WidgetOnGridLayout } from '@/app/canvas/types';
+import {
+  InputBlockDataMapping,
+  ParsedTestResults,
+  TestResultDataMapping,
+  WidgetOnGridLayout,
+} from '@/app/canvas/types';
 import { findTestResultByIdAndTime } from '@/app/canvas/utils/findTestResultByIdAndTime';
 import { TestResultData, InputBlockData, Plugin } from '@/app/types';
 import { WidgetPropertiesDrawer } from './drawers/widgetPropertiesDrawer';
 import { GridItemContextMenu } from './gridItemContextMenu';
 import { editorInputClassName } from './hocAddTextEditFuncitonality';
-
 export const gridItemRootClassName = 'grid-item-root';
-type requiredStyles = `grid-item-root relative h-auto w-full min-h-full${string}`; // strictly required styles
+type requiredStyles =
+  `grid-item-root relative h-auto w-full min-h-full${string}`; // strictly required styles
 
 type GridItemComponentProps = {
-  plugins: Plugin[];
+  allAvalaiblePlugins: Plugin[];
+  layout: Layout;
   widget: WidgetOnGridLayout;
   testResultsUsed?: WidgetAlgoTracker[];
   testResults: ParsedTestResults[];
@@ -26,7 +33,6 @@ type GridItemComponentProps = {
     gridItemHtmlElement: HTMLDivElement,
     widget: WidgetOnGridLayout
   ) => void;
-  onChangeTestResultClick: (result?: ParsedTestResults) => void;
 };
 
 type MdxComponentProps = MDXContentProps & {
@@ -40,9 +46,20 @@ type MdxComponentProps = MDXContentProps & {
   height?: number;
 };
 
-const itemStyle: requiredStyles = 'grid-item-root relative h-auto w-full min-h-full';
+const itemStyle: requiredStyles =
+  'grid-item-root relative h-auto w-full min-h-full';
 
-function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDragging, isResizing, testResultsUsed, testResults, onChangeTestResultClick }: GridItemComponentProps) {
+function GridItemComponent({
+  layout,
+  allAvalaiblePlugins,
+  widget,
+  isDragging,
+  isResizing,
+  testResultsUsed,
+  testResults,
+  onDeleteClick,
+  onEditClick,
+}: GridItemComponentProps) {
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [showWidgetProperties, setShowWidgetProperties] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
@@ -52,14 +69,23 @@ function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDrag
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   let testResultMatch = undefined;
 
-  if (testResultsUsed && testResultsUsed.length > 0 && testResultsUsed[0].testResultsCreatedAt !== undefined) {
-    testResultMatch = findTestResultByIdAndTime(testResults, testResultsUsed[0].gid, testResultsUsed[0].cid, testResultsUsed[0].testResultsCreatedAt);
+  if (
+    testResultsUsed &&
+    testResultsUsed.length > 0 &&
+    testResultsUsed[0].testResultsCreatedAt !== undefined
+  ) {
+    testResultMatch = findTestResultByIdAndTime(
+      testResults,
+      testResultsUsed[0].gid,
+      testResultsUsed[0].cid,
+      testResultsUsed[0].testResultsCreatedAt
+    );
   }
 
   useEffect(() => {
     if (!gridItemRef.current) return;
 
-    const resizeObserver = new ResizeObserver(entries => {
+    const resizeObserver = new ResizeObserver((entries) => {
       const { width, height } = entries[0].contentRect;
       setDimensions({ width, height });
     });
@@ -116,10 +142,15 @@ function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDrag
     if (!showContextMenu) return;
 
     function handleClickOutside(event: MouseEvent) {
-      if ((event.target as HTMLElement).classList.contains(editorInputClassName)) {
+      if (
+        (event.target as HTMLElement).classList.contains(editorInputClassName)
+      ) {
         return;
       }
-      if (gridItemRef.current && !gridItemRef.current.contains(event.target as Node)) {
+      if (
+        gridItemRef.current &&
+        !gridItemRef.current.contains(event.target as Node)
+      ) {
         setShowContextMenu(false);
       }
     }
@@ -179,12 +210,14 @@ function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDrag
 
   const testResult = useMemo(() => {
     if (testResultMatch) {
-      return { [`${widget.gid}:${testResultMatch.cid}`]: testResultMatch.output };
+      return {
+        [`${widget.gid}:${testResultMatch.cid}`]: testResultMatch.output,
+      };
     }
 
     if (widget.mockdata && widget.mockdata.length > 0) {
       return widget.mockdata.reduce<TestResultDataMapping>((acc, mock) => {
-        if (mock.type === "Algorithm") {
+        if (mock.type === 'Algorithm') {
           acc[`${widget.gid}:${mock.cid}`] = mock.data;
         }
         return acc;
@@ -192,7 +225,6 @@ function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDrag
     }
     return {};
   }, [widget, widget.mdx, testResultsUsed]);
-
 
   const mockInputs = useMemo(() => {
     // if (testResultsMapping) {
@@ -208,7 +240,7 @@ function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDrag
     // }
     if (widget.mockdata && widget.mockdata.length > 0) {
       return widget.mockdata.reduce<InputBlockDataMapping>((acc, mock) => {
-        if (mock.type === "InputBlock") {
+        if (mock.type === 'InputBlock') {
           acc[`${widget.gid}:${mock.cid}`] = mock.data;
         }
         return acc;
@@ -219,7 +251,7 @@ function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDrag
 
   return (
     <React.Fragment>
-      {showContextMenu && !isDragging ?
+      {showContextMenu && !isDragging ? (
         <GridItemContextMenu
           widget={widget}
           menuPosition={menuPosition}
@@ -232,18 +264,22 @@ function GridItemComponent({ plugins, widget, onDeleteClick, onEditClick, isDrag
             isHoveringRef.current = true;
           }}
           onMouseLeave={handleMouseLeave}
-          onEditClick={handleEditClick} /> : null}
-      {showWidgetProperties ? <WidgetPropertiesDrawer
-        plugins={plugins}
-        widget={widget}
-        testResultsMeta={testResultMatch}
-        testResults={testResults}
-        open={showWidgetProperties}
-        setOpen={setShowWidgetProperties}
-        onOkClick={() => setShowWidgetProperties(false)}
-        onDeleteClick={onDeleteClick}
-        onChangeTestResultClick={onChangeTestResultClick}
-      /> : null}
+          onEditClick={handleEditClick}
+        />
+      ) : null}
+      {showWidgetProperties ? (
+        <WidgetPropertiesDrawer
+          layout={layout}
+          allAvailablePlugins={allAvalaiblePlugins}
+          widget={widget}
+          testResultsUsed={testResultMatch}
+          allAvailableTestResults={testResults}
+          open={showWidgetProperties}
+          setOpen={setShowWidgetProperties}
+          onOkClick={() => setShowWidgetProperties(false)}
+          onDeleteClick={onDeleteClick}
+        />
+      ) : null}
       <div
         ref={gridItemRef}
         className={itemStyle}
