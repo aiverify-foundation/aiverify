@@ -2,7 +2,7 @@ import { Layout } from 'react-grid-layout';
 import { WidgetOnGridLayout } from '@/app/canvas/types';
 import { findWidgetInsertPosition } from './utils/findWidgetInsertPosition';
 
-export type WidgetAlgoTracker = {
+export type WidgetAlgoAndResultIdentifier = {
   gid: string;
   cid: string;
   testResultsCreatedAt?: string;
@@ -13,7 +13,8 @@ type WidgetGridItemId = string;
 export type State = {
   layouts: Layout[][];
   widgets: WidgetOnGridLayout[][];
-  gridItemToAlgosMap: Record<WidgetGridItemId, WidgetAlgoTracker[]>;
+  algorithmsOnReport: Algorithm[];
+  gridItemToAlgosMap: Record<WidgetGridItemId, WidgetAlgoAndResultIdentifier[]>;
   inputBlocks: Record<WidgetGridItemId, unknown>;
   currentPage: number;
   showGrid: boolean;
@@ -24,6 +25,7 @@ export type State = {
 export const initialState: State = {
   layouts: [[]],
   widgets: [[]],
+  algorithmsOnReport: [],
   gridItemToAlgosMap: {},
   inputBlocks: {},
   currentPage: 0,
@@ -37,7 +39,7 @@ type WidgetAction =
       type: 'ADD_WIDGET_TO_CANVAS';
       itemLayout: Layout;
       widget: WidgetOnGridLayout;
-      algos: WidgetAlgoTracker[] | undefined;
+      algos: WidgetAlgoAndResultIdentifier[] | undefined;
       pageIndex: number;
     }
   | {
@@ -75,7 +77,7 @@ type WidgetAction =
     }
   | {
       type: 'UPDATE_ALGO_TRACKER';
-      algos: WidgetAlgoTracker[];
+      algos: WidgetAlgoAndResultIdentifier[];
     };
 
 function pagesDesignReducer(state: State, action: WidgetAction): State {

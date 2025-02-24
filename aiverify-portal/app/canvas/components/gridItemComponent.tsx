@@ -2,7 +2,7 @@ import { getMDXComponent, MDXContentProps } from 'mdx-bundler/client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import React from 'react';
 import { Layout } from 'react-grid-layout';
-import { WidgetAlgoTracker } from '@/app/canvas/components/hooks/pagesDesignReducer';
+import { WidgetAlgoAndResultIdentifier } from '@/app/canvas/components/hooks/pagesDesignReducer';
 import {
   InputBlockDataMapping,
   ParsedTestResults,
@@ -22,7 +22,7 @@ type GridItemComponentProps = {
   allAvalaiblePlugins: Plugin[];
   layout: Layout;
   widget: WidgetOnGridLayout;
-  testResultsUsed?: WidgetAlgoTracker[];
+  testResultsUsed?: WidgetAlgoAndResultIdentifier[];
   testResults: ParsedTestResults[];
   inputBlockData?: unknown;
   isDragging?: boolean;

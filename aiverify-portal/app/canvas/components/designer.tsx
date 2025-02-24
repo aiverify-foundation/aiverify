@@ -38,7 +38,10 @@ import { EditingOverlay } from './editingOverlay';
 import { FreeFormArea } from './freeFormArea';
 import { GridItemComponent } from './gridItemComponent';
 import { GridLines } from './gridLines';
-import { initialState, WidgetAlgoTracker } from './hooks/pagesDesignReducer';
+import {
+  initialState,
+  WidgetAlgoAndResultIdentifier,
+} from './hooks/pagesDesignReducer';
 import { pagesDesignReducer } from './hooks/pagesDesignReducer';
 import { useDragToScroll } from './hooks/useDragToScroll';
 import { useZoom } from './hooks/useZoom';
@@ -268,18 +271,20 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
         gridItemId,
       };
       const algos = getWidgetAlgosFromPlugins(pluginsWithMdx, widget);
-      const gridItemToAlgosMap: WidgetAlgoTracker[] = algos.map((algo) => {
-        const matchSelectedResult = findTestResultById(
-          selectedTestResults,
-          algo.gid,
-          algo.cid
-        );
-        return {
-          gid: algo.gid,
-          cid: algo.cid,
-          testResultsCreatedAt: matchSelectedResult?.created_at,
-        };
-      });
+      const gridItemToAlgosMap: WidgetAlgoAndResultIdentifier[] = algos.map(
+        (algo) => {
+          const matchSelectedResult = findTestResultById(
+            selectedTestResults,
+            algo.gid,
+            algo.cid
+          );
+          return {
+            gid: algo.gid,
+            cid: algo.cid,
+            testResultsCreatedAt: matchSelectedResult?.created_at,
+          };
+        }
+      );
 
       dispatch({
         type: 'ADD_WIDGET_TO_CANVAS',

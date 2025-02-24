@@ -1,6 +1,13 @@
 import { PluginForGridLayout, WidgetOnGridLayout } from '@/app/canvas/types';
 import { Algorithm } from '@/app/types';
 
+/**
+ * Retrieves algorithms from plugins based on widget dependencies
+ * @param pluginsWithMdx Array of plugins with MDX content
+ * @param widget WidgetOnGridLayout object containing widget information
+ * @returns Array of algorithms found in the widget's dependencies
+ */
+
 export function getWidgetAlgosFromPlugins(
   pluginsWithMdx: PluginForGridLayout[],
   widget: WidgetOnGridLayout
