@@ -18,6 +18,7 @@ import {
 import { findTestResultById } from '@/app/canvas/utils/findTestResultsById';
 import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPluginsById';
 import { getWidgetAlgosFromPlugins } from '@/app/canvas/utils/getWidgetAlgosFromPlugins';
+import { getWidgetInputBlocksFromPlugins } from '@/app/canvas/utils/getWidgetInputBlocksFromPlugins';
 import { isPageContentOverflow } from '@/app/canvas/utils/isPageContentOverflow';
 import { populateInitialWidgetResult } from '@/app/canvas/utils/populateInitialWidgetResult';
 import { Widget } from '@/app/types';
@@ -286,12 +287,18 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
         }
       );
 
+      const inputBlocks = getWidgetInputBlocksFromPlugins(
+        pluginsWithMdx,
+        widgetWithGridItemId
+      );
+
       dispatch({
         type: 'ADD_WIDGET_TO_CANVAS',
         itemLayout,
         widget: widgetWithGridItemId,
         gridItemAlgosMap: gridItemToAlgosMap,
         algorithms: algos,
+        inputBlocks,
         pageIndex,
       });
     };
@@ -708,6 +715,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   );
 
   console.log('state', state);
+  // console.log('plugins', pluginsWithMdx);
 
   return (
     <React.Fragment>

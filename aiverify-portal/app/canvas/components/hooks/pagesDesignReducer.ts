@@ -1,6 +1,6 @@
 import { Layout } from 'react-grid-layout';
 import { WidgetOnGridLayout } from '@/app/canvas/types';
-import { Algorithm } from '@/app/types';
+import { Algorithm, InputBlock } from '@/app/types';
 import { findWidgetInsertPosition } from './utils/findWidgetInsertPosition';
 
 export type WidgetAlgoAndResultIdentifier = {
@@ -16,11 +16,11 @@ export type State = {
   widgets: WidgetOnGridLayout[][];
   algorithmsOnReport: Algorithm[];
   gridItemToAlgosMap: Record<WidgetGridItemId, WidgetAlgoAndResultIdentifier[]>;
-  inputBlocks: Record<WidgetGridItemId, unknown>;
   currentPage: number;
   showGrid: boolean;
   pageTypes: ('grid' | 'overflow')[]; // Track page types
   overflowParents: Array<number | null>; // just track parent page index, null for grid pages
+  inputBlocksOnReport: InputBlock[];
 };
 
 export const initialState: State = {
@@ -28,11 +28,11 @@ export const initialState: State = {
   widgets: [[]],
   algorithmsOnReport: [],
   gridItemToAlgosMap: {},
-  inputBlocks: {},
   currentPage: 0,
   showGrid: true,
   pageTypes: ['grid'],
   overflowParents: [null],
+  inputBlocksOnReport: [],
 };
 
 type WidgetAction =
@@ -42,6 +42,7 @@ type WidgetAction =
       widget: WidgetOnGridLayout;
       gridItemAlgosMap: WidgetAlgoAndResultIdentifier[] | undefined;
       algorithms: Algorithm[];
+      inputBlocks: InputBlock[];
       pageIndex: number;
     }
   | {
@@ -122,6 +123,19 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         }
       });
 
+      // Update input blocks list without duplicates
+      const newInputBlocks = [...state.inputBlocksOnReport];
+      action.inputBlocks.forEach((inputBlock) => {
+        if (
+          !newInputBlocks.some(
+            (existing) =>
+              existing.gid === inputBlock.gid && existing.cid === inputBlock.cid
+          )
+        ) {
+          newInputBlocks.push(inputBlock);
+        }
+      });
+
       return {
         ...state,
         layouts: layouts.map((layout, i) =>
@@ -132,6 +146,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         ),
         gridItemToAlgosMap: clonedAlgosMap,
         algorithmsOnReport: newAlgorithms,
+        inputBlocksOnReport: newInputBlocks,
       };
     }
 
@@ -161,6 +176,17 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
           )
       );
 
+      // Clean up inputBlocksOnReport
+      const allRemainingWidgets = state.widgets.flat();
+      const newInputBlocksOnReport = state.inputBlocksOnReport.filter(
+        (inputBlock) =>
+          allRemainingWidgets.some((widget) =>
+            widget.dependencies.some(
+              (dep) => dep.gid === inputBlock.gid && dep.cid === inputBlock.cid
+            )
+          )
+      );
+
       return {
         ...state,
         layouts: layouts.map((layout, i) =>
@@ -171,6 +197,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         ),
         gridItemToAlgosMap: clonedAlgosMap,
         algorithmsOnReport: newAlgorithmsOnReport,
+        inputBlocksOnReport: newInputBlocksOnReport,
       };
     }
 

@@ -20,7 +20,7 @@ export function getWidgetInputBlocksFromPlugins(
     if (!plugin) continue;
 
     const inputBlock = plugin.input_blocks?.find(
-      (ib) => ib.cid === dependency.cid && ib.gid === dependency.gid
+      (ib) => ib.cid === dependency.cid
     );
     if (inputBlock) {
       inputBlocks.push(inputBlock);
