@@ -33,6 +33,7 @@ import {
   A4_HEIGHT,
   A4_WIDTH,
 } from './dimensionsConstants';
+import { ReportAlgorithmsDrawer } from './drawers/reportAlgorithms';
 import { TestResultsDrawer } from './drawers/testResultsDrawer';
 import { EditingOverlay } from './editingOverlay';
 import { FreeFormArea } from './freeFormArea';
@@ -48,7 +49,6 @@ import { useZoom } from './hooks/useZoom';
 import { PageNavigation } from './pageNavigation';
 import { PageNumber } from './pageNumber';
 import { PluginsPanel } from './pluginsPanel';
-import { AlgosToRun } from './reportAlgorithms';
 import { ResizeHandle } from './resizeHandle';
 import { ZoomControl } from './zoomControl';
 /*
@@ -291,6 +291,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
         itemLayout,
         widget: widgetWithGridItemId,
         gridItemAlgosMap: gridItemToAlgosMap,
+        algorithms: algos,
         pageIndex,
       });
     };
@@ -506,9 +507,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
         onPreviousPage={handlePreviousPage}
         onAddPage={handleAddNewPage}
       />
-      {/* <AlgosToRun
-        algos={state.algos}
-      /> */}
+      <ReportAlgorithmsDrawer algorithms={state.algorithmsOnReport} />
     </section>
   );
 

@@ -1,5 +1,6 @@
 import { Layout } from 'react-grid-layout';
 import { WidgetOnGridLayout } from '@/app/canvas/types';
+import { Algorithm } from '@/app/types';
 import { findWidgetInsertPosition } from './utils/findWidgetInsertPosition';
 
 export type WidgetAlgoAndResultIdentifier = {
@@ -40,6 +41,7 @@ type WidgetAction =
       itemLayout: Layout;
       widget: WidgetOnGridLayout;
       gridItemAlgosMap: WidgetAlgoAndResultIdentifier[] | undefined;
+      algorithms: Algorithm[];
       pageIndex: number;
     }
   | {
@@ -108,6 +110,18 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         }
       }
 
+      // Update algorithms list without duplicates
+      const newAlgorithms = [...state.algorithmsOnReport];
+      action.algorithms.forEach((algo) => {
+        if (
+          !newAlgorithms.some(
+            (existing) => existing.gid === algo.gid && existing.cid === algo.cid
+          )
+        ) {
+          newAlgorithms.push(algo);
+        }
+      });
+
       return {
         ...state,
         layouts: layouts.map((layout, i) =>
@@ -117,6 +131,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
           i === action.pageIndex ? clonedPageWidgets : widget
         ),
         gridItemToAlgosMap: clonedAlgosMap,
+        algorithmsOnReport: newAlgorithms,
       };
     }
 
@@ -130,11 +145,21 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       clonedPageLayouts.splice(action.index, 1);
       clonedPageWidgets.splice(action.index, 1);
 
-      // Clean up algos
-      const clonedAlgos = { ...state.gridItemToAlgosMap };
+      // Clean up algos from map
+      const clonedAlgosMap = { ...state.gridItemToAlgosMap };
       if (widgetToDelete) {
-        delete clonedAlgos[widgetToDelete.gridItemId];
+        delete clonedAlgosMap[widgetToDelete.gridItemId];
       }
+
+      // Clean up algorithmsOnReport
+      const allRemainingAlgos = Object.values(clonedAlgosMap).flat();
+      const newAlgorithmsOnReport = (state.algorithmsOnReport || []).filter(
+        (algo) =>
+          allRemainingAlgos.some(
+            (remaining) =>
+              remaining.gid === algo.gid && remaining.cid === algo.cid
+          )
+      );
 
       return {
         ...state,
@@ -144,7 +169,8 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         widgets: widgets.map((widget, i) =>
           i === action.pageIndex ? clonedPageWidgets : widget
         ),
-        gridItemToAlgosMap: clonedAlgos,
+        gridItemToAlgosMap: clonedAlgosMap,
+        algorithmsOnReport: newAlgorithmsOnReport,
       };
     }
 
