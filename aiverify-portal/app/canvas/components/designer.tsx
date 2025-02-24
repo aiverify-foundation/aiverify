@@ -5,6 +5,7 @@ import {
   RiGridLine,
   RiArrowLeftLine,
   RiArrowRightLine,
+  RiPrinterLine,
 } from '@remixicon/react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useReducer } from 'react';
@@ -38,7 +39,7 @@ import { ReportAlgorithmsDrawer } from './drawers/reportAlgorithms';
 import { ReportInputBlocksDrawer } from './drawers/reportInputBlocks';
 import { TestResultsDrawer } from './drawers/testResultsDrawer';
 import { EditingOverlay } from './editingOverlay';
-import { FreeFormArea } from './freeFormArea';
+import { FreeFormDraggableArea } from './freeFormDraggableArea';
 import { GridItemComponent } from './gridItemComponent';
 import { GridLines } from './gridLines';
 import {
@@ -47,26 +48,13 @@ import {
 } from './hooks/pagesDesignReducer';
 import { pagesDesignReducer } from './hooks/pagesDesignReducer';
 import { useDragToScroll } from './hooks/useDragToScroll';
+import { usePrintable } from './hooks/usePrintable';
 import { useZoom } from './hooks/useZoom';
 import { PageNavigation } from './pageNavigation';
 import { PageNumber } from './pageNumber';
 import { PluginsPanel } from './pluginsPanel';
 import { ResizeHandle } from './resizeHandle';
 import { ZoomControl } from './zoomControl';
-/*
-  Designer component has 3 sections:
-  - The plugins panel section
-  - The controls section
-  - The design section
-
-  The design section has 3 key nested areas (nested divs):
-  - The free form area
-    - This area is the largest area and takes up the entire width of the screen and full height below page header.
-  - The content area
-    - This is a container wrapping the main content. It has large overflowing excess width and height to allow dragging and scrolling.
-  - The pages wrapper
-    - This is a container wrapping all the pages.
-*/
 
 type GridItemDivRequiredStyles =
   `grid-comp-wrapper relative group z-10${string}`; // mandatory to have relative and group
@@ -82,6 +70,8 @@ type EventDataTransfer = Event & {
     getData: (type: 'application/json') => string;
   };
 };
+
+const pagesContentWrapperId = 'printable-content'; // element id for the pages wrapper (used for printing)
 
 const gridItemDivRequiredStyles: GridItemDivRequiredStyles = `grid-comp-wrapper relative group z-10
   hover:outline hover:outline-2 
@@ -131,6 +121,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     handleMouseMove: handleFreeFormAreaMouseMove,
   } = useDragToScroll(freeFormAreaRef, canvasRef);
   const [isPanelOpen, setIsPanelOpen] = useState(true);
+  const canvasPrint = usePrintable({ printableId: pagesContentWrapperId });
 
   useEffect(() => {
     // position free form area horizontal - centered. Then flag initial mount as done.
@@ -496,6 +487,14 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
       <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
         <button
           className="disabled:opacity-50"
+          title="Print"
+          onClick={canvasPrint.print}>
+          <RiPrinterLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
+        </button>
+      </div>
+      <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
+        <button
+          className="disabled:opacity-50"
           title="Toggle Grid"
           onClick={() => dispatch({ type: 'TOGGLE_GRID' })}>
           <RiGridLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
@@ -561,7 +560,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
     : undefined;
 
   const pagesSection = (
-    <FreeFormArea
+    <FreeFormDraggableArea
       ref={freeFormAreaRef}
       pagesLength={layouts.length}
       zoomLevel={zoomLevel}
@@ -586,121 +585,128 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
           ? handleFreeFormAreaMouseUp
           : undefined
       }>
-      {state.layouts.map((layout, pageIndex) => {
-        const isOverflowPage = state.pageTypes[pageIndex] === 'overflow';
-        const overflowParent = state.overflowParents[pageIndex];
+      <div
+        id={pagesContentWrapperId}
+        ref={canvasPrint.contentRef}
+        className="flex flex-col">
+        {state.layouts.map((layout, pageIndex) => {
+          const isOverflowPage = state.pageTypes[pageIndex] === 'overflow';
+          const overflowParent = state.overflowParents[pageIndex];
 
-        return (
-          <div
-            id={`page-${pageIndex}`}
-            key={`page-${pageIndex}`}
-            ref={canvasRef}
-            className={cn(
-              'standard-report-page',
-              'relative bg-white text-black shadow',
-              'cursor-default active:cursor-default',
-              isOverflowPage && 'pointer-events-none',
-              !isOverflowPage && 'mt-2'
-            )}
-            style={{
-              height: isOverflowPage ? A4_HEIGHT : 'auto',
-              width: isOverflowPage ? A4_WIDTH : 'auto',
-            }}>
-            {!isOverflowPage && showGrid && (
-              <GridLines
-                columns={GRID_COLUMNS}
-                rows={GRID_ROWS}
-                padding={A4_MARGIN}
+          return (
+            <div
+              id={`page-${pageIndex}`}
+              key={`page-${pageIndex}`}
+              ref={canvasRef}
+              className={cn(
+                'standard-report-page',
+                'relative bg-white text-black shadow',
+                'cursor-default active:cursor-default',
+                isOverflowPage && 'pointer-events-none',
+                !isOverflowPage && 'mt-2'
+              )}
+              style={{
+                height: isOverflowPage ? A4_HEIGHT : 'auto',
+                width: isOverflowPage ? A4_WIDTH : 'auto',
+              }}>
+              {!isOverflowPage && showGrid && (
+                <GridLines
+                  columns={GRID_COLUMNS}
+                  rows={GRID_ROWS}
+                  padding={A4_MARGIN}
+                />
+              )}
+              <PageNumber
+                pageNumber={pageIndex + 1}
+                onDeleteClick={
+                  !isOverflowPage
+                    ? () => handleDeletePage(pageIndex)
+                    : undefined
+                }
+                isOverflowPage={isOverflowPage}
+                zoomLevel={zoomLevel}
               />
-            )}
-            <PageNumber
-              pageNumber={pageIndex + 1}
-              onDeleteClick={
-                !isOverflowPage ? () => handleDeletePage(pageIndex) : undefined
-              }
-              isOverflowPage={isOverflowPage}
-              zoomLevel={zoomLevel}
-            />
-            {isOverflowPage && overflowParent !== null ? (
-              <div
-                className="absolute inset-0 flex items-center justify-center"
-                style={{
-                  height: A4_HEIGHT,
-                  width: A4_WIDTH,
-                }}>
-                <div className="text-sm text-gray-200">
-                  Overflow content from page {overflowParent + 1}
+              {isOverflowPage && overflowParent !== null ? (
+                <div
+                  className="absolute inset-0 flex items-center justify-center"
+                  style={{
+                    height: A4_HEIGHT,
+                    width: A4_WIDTH,
+                  }}>
+                  <div className="text-sm text-gray-200">
+                    Overflow content from page {overflowParent + 1}
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <GridLayout
-                layout={layout}
-                width={GRID_WIDTH}
-                rowHeight={GRID_ROW_HEIGHT}
-                maxRows={GRID_ROWS}
-                margin={[0, 0]}
-                compactType={null}
-                onDrop={handleWidgetDrop(pageIndex)}
-                onDragStart={handleGridItemDragStart}
-                onDragStop={handleGridItemDragStop(pageIndex)}
-                onResizeStop={handleGridItemResizeStop(pageIndex)}
-                onResizeStart={handleGridItemResizeStart}
-                preventCollision
-                isResizable={true}
-                isDroppable={true}
-                isDraggable={true}
-                isBounded={true}
-                allowOverlap={false}
-                useCSSTransforms={!isInitialMount.current}
-                resizeHandle={<ResizeHandle />}
-                resizeHandles={['sw', 'nw', 'se', 'ne']}
-                style={{
-                  height: GRID_HEIGHT,
-                  width: GRID_WIDTH,
-                  margin: `${A4_MARGIN}px`,
-                }}
-                className="[&>*]:text-inherit"
-                droppingItem={droppingItemPlaceholder}>
-                {state.widgets[pageIndex].map((widget, widgetIndex) => {
-                  if (!widget.gridItemId) return null;
-                  return (
-                    <div
-                      /*
+              ) : (
+                <GridLayout
+                  layout={layout}
+                  width={GRID_WIDTH}
+                  rowHeight={GRID_ROW_HEIGHT}
+                  maxRows={GRID_ROWS}
+                  margin={[0, 0]}
+                  compactType={null}
+                  onDrop={handleWidgetDrop(pageIndex)}
+                  onDragStart={handleGridItemDragStart}
+                  onDragStop={handleGridItemDragStop(pageIndex)}
+                  onResizeStop={handleGridItemResizeStop(pageIndex)}
+                  onResizeStart={handleGridItemResizeStart}
+                  preventCollision
+                  isResizable={true}
+                  isDroppable={true}
+                  isDraggable={true}
+                  isBounded={true}
+                  allowOverlap={false}
+                  useCSSTransforms={!isInitialMount.current}
+                  resizeHandle={<ResizeHandle />}
+                  resizeHandles={['sw', 'nw', 'se', 'ne']}
+                  style={{
+                    height: GRID_HEIGHT,
+                    width: GRID_WIDTH,
+                    margin: `${A4_MARGIN}px`,
+                  }}
+                  className="[&>*]:text-inherit"
+                  droppingItem={droppingItemPlaceholder}>
+                  {state.widgets[pageIndex].map((widget, widgetIndex) => {
+                    if (!widget.gridItemId) return null;
+                    return (
+                      <div
+                        /*
                         Avoid adding onClick event handler to this grid item component wrapper.
                         If a handler function is required in the future, stop event proparation in that handler.
                       */
-                      id={widget.gridItemId}
-                      key={widget.gridItemId}
-                      className={cn(
-                        gridItemDivRequiredStyles,
-                        selectedGridItemId === widget.gridItemId &&
-                          'outline outline-2 outline-offset-2 outline-blue-500'
-                      )}>
-                      <GridItemComponent
-                        allAvalaiblePlugins={pluginsWithMdx}
-                        widget={widget}
-                        onDeleteClick={handleDeleteGridItem(
-                          pageIndex,
-                          widgetIndex
-                        )}
-                        onEditClick={handleGridItemEditClick(pageIndex)}
-                        isDragging={draggingGridItemId === widget.gridItemId}
-                        isResizing={resizingGridItemId === widget.gridItemId}
-                        testResultsUsed={
-                          state.gridItemToAlgosMap[widget.gridItemId]
-                        }
-                        testResults={testResults}
-                        layout={state.layouts[pageIndex][widgetIndex]}
-                      />
-                    </div>
-                  );
-                })}
-              </GridLayout>
-            )}
-          </div>
-        );
-      })}
-    </FreeFormArea>
+                        id={widget.gridItemId}
+                        key={widget.gridItemId}
+                        className={cn(
+                          gridItemDivRequiredStyles,
+                          selectedGridItemId === widget.gridItemId &&
+                            'outline outline-2 outline-offset-2 outline-blue-500'
+                        )}>
+                        <GridItemComponent
+                          allAvalaiblePlugins={pluginsWithMdx}
+                          widget={widget}
+                          onDeleteClick={handleDeleteGridItem(
+                            pageIndex,
+                            widgetIndex
+                          )}
+                          onEditClick={handleGridItemEditClick(pageIndex)}
+                          isDragging={draggingGridItemId === widget.gridItemId}
+                          isResizing={resizingGridItemId === widget.gridItemId}
+                          testResultsUsed={
+                            state.gridItemToAlgosMap[widget.gridItemId]
+                          }
+                          testResults={testResults}
+                          layout={state.layouts[pageIndex][widgetIndex]}
+                        />
+                      </div>
+                    );
+                  })}
+                </GridLayout>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </FreeFormDraggableArea>
   );
 
   const testControlsSection = (
@@ -718,6 +724,21 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
 
   console.log('state', state);
   // console.log('plugins', pluginsWithMdx);
+
+  /*
+    Designer component has 3 sections:
+    - The plugins panel section
+    - The controls section
+    - The design section
+
+    The design section has 3 key nested areas (nested divs):
+    - The free form area
+      - This area is the largest area and takes up the entire width of the screen and full height below page header.
+    - The content area
+      - This is a container wrapping the main content. It has large overflowing excess width and height to allow dragging and scrolling.
+    - The pages wrapper
+      - This is a container wrapping all the pages.
+  */
 
   return (
     <React.Fragment>
