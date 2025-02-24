@@ -6,8 +6,9 @@
 
 #pagesWrapper {
   .standard-report-page {
+    @apply text-base;
     h1 {
-      @apply mb-1 text-4xl font-bold leading-normal;
+      @apply mb-1 text-4xl font-bold;
     }
     h2 {
       @apply mb-1 text-3xl font-bold;
@@ -16,7 +17,6 @@
       @apply mb-1 text-2xl font-bold;
     }
     p {
-      @apply text-base;
     }
     ul {
       @apply list-disc p-4 pl-5;
