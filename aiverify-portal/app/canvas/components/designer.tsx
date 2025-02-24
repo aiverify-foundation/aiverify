@@ -71,7 +71,7 @@ type EventDataTransfer = Event & {
   };
 };
 
-const pagesContentWrapperId = 'printable-content'; // element id for the pages wrapper (used for printing)
+const pagesContentWrapperId = 'printableContent'; // element id for the pages wrapper (used for printing)
 
 const gridItemDivRequiredStyles: GridItemDivRequiredStyles = `grid-comp-wrapper relative group z-10
   hover:outline hover:outline-2 

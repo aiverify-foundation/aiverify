@@ -15,9 +15,12 @@ export function usePrintable(options: UsePrintableOptions = {}) {
   const contentRef = useRef<HTMLDivElement>(null);
 
   const print = useCallback(() => {
-    const originalContent = document.body.innerHTML;
-    const printContent = contentRef.current?.innerHTML;
+    // Create a temporary container for print content
+    const printContainer = document.createElement('div');
+    printContainer.id = printableId;
+    printContainer.innerHTML = contentRef.current?.innerHTML || '';
 
+    // Create and append print styles
     const styleSheet = document.createElement('style');
     styleSheet.innerHTML = `
       @media print {
@@ -35,14 +38,27 @@ export function usePrintable(options: UsePrintableOptions = {}) {
         }
       }
     `;
-    document.head.appendChild(styleSheet);
 
-    if (printContent) {
-      document.body.innerHTML = `<div id="${printableId}">${printContent}</div>`;
-      window.print();
-      document.body.innerHTML = originalContent;
-      styleSheet.remove();
-      location.reload();
+    // Store original elements
+    const originalPrintContainer = document.getElementById(printableId);
+
+    // Append temporary elements
+    document.head.appendChild(styleSheet);
+    document.body.appendChild(printContainer);
+
+    // Hide original content during print
+    if (originalPrintContainer) {
+      originalPrintContainer.style.display = 'none';
+    }
+
+    // Print and cleanup
+    window.print();
+
+    // Cleanup after print dialog closes
+    styleSheet.remove();
+    printContainer.remove();
+    if (originalPrintContainer) {
+      originalPrintContainer.style.display = '';
     }
   }, [printableId]);
 

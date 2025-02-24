@@ -4,7 +4,7 @@
  * It is also used to style the editing overlay.
  */
 
-#pagesWrapper {
+#printableContent {
   .standard-report-page {
     @apply text-base;
     h1 {
