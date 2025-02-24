@@ -35,6 +35,7 @@ import {
   A4_WIDTH,
 } from './dimensionsConstants';
 import { ReportAlgorithmsDrawer } from './drawers/reportAlgorithms';
+import { ReportInputBlocksDrawer } from './drawers/reportInputBlocks';
 import { TestResultsDrawer } from './drawers/testResultsDrawer';
 import { EditingOverlay } from './editingOverlay';
 import { FreeFormArea } from './freeFormArea';
@@ -515,6 +516,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
         onAddPage={handleAddNewPage}
       />
       <ReportAlgorithmsDrawer algorithms={state.algorithmsOnReport} />
+      <ReportInputBlocksDrawer inputBlocks={state.inputBlocksOnReport} />
     </section>
   );
 
