@@ -5,13 +5,16 @@ type ResizeHandleProps = {
   [key: string]: unknown;
 };
 
+const mainHandleClasses =
+  'react-resizable-handle invisible group-hover:visible group-active:visible print:hidden';
+
 function ResizeHandle(props: ResizeHandleProps) {
   const { handleAxis, ref, ...rest } = props;
   const positionClasses = {
-    sw: 'react-resizable-handle react-resizable-handle-sw invisible group-hover:visible group-active:visible',
-    nw: 'react-resizable-handle react-resizable-handle-nw invisible group-hover:visible group-active:visible',
-    se: 'react-resizable-handle react-resizable-handle-se invisible group-hover:visible group-active:visible',
-    ne: 'react-resizable-handle react-resizable-handle-ne invisible group-hover:visible group-active:visible',
+    sw: `${mainHandleClasses} react-resizable-handle-sw`,
+    nw: `${mainHandleClasses} react-resizable-handle-nw`,
+    se: `${mainHandleClasses} react-resizable-handle-se`,
+    ne: `${mainHandleClasses} react-resizable-handle-ne`,
   };
 
   return (

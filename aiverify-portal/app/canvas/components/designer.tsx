@@ -614,6 +614,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
                   columns={GRID_COLUMNS}
                   rows={GRID_ROWS}
                   padding={A4_MARGIN}
+                  className="print:hidden"
                 />
               )}
               <PageNumber
@@ -625,6 +626,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
                 }
                 isOverflowPage={isOverflowPage}
                 zoomLevel={zoomLevel}
+                className="print:hidden"
               />
               {isOverflowPage && overflowParent !== null ? (
                 <div

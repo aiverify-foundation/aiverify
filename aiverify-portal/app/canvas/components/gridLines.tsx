@@ -6,6 +6,7 @@ type GridLinesProps = {
   rows: number;
   padding: number;
   lineColor?: React.CSSProperties['borderColor'];
+  className?: string;
 };
 
 function GridLines({
@@ -13,10 +14,14 @@ function GridLines({
   rows,
   padding = 12,
   lineColor = '#e5e7eb',
+  className,
 }: GridLinesProps) {
   return (
     <div
-      className="absolute left-0 top-0 grid h-full w-full grid-cols-12 grid-rows-[repeat(36,1fr)]"
+      className={cn(
+        'absolute left-0 top-0 grid h-full w-full grid-cols-12 grid-rows-[repeat(36,1fr)]',
+        className
+      )}
       style={{
         padding,
         borderColor: lineColor,

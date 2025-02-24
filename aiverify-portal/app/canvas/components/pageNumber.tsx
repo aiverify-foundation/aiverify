@@ -1,19 +1,28 @@
-import { RiDeleteBinLine } from "@remixicon/react";
-import { Tooltip } from "@/lib/components/tooltip";
-import { cn } from "@/lib/utils/twmerge";
+import { RiDeleteBinLine } from '@remixicon/react';
+import { Tooltip } from '@/lib/components/tooltip';
+import { cn } from '@/lib/utils/twmerge';
 
 type PageNumberProps = {
   pageNumber: number;
   onDeleteClick?: () => void;
   isOverflowPage?: boolean;
   zoomLevel: number;
+  className?: string;
 };
 
-function PageNumber({ pageNumber, onDeleteClick, isOverflowPage, zoomLevel }: PageNumberProps) {
+function PageNumber({
+  pageNumber,
+  onDeleteClick,
+  isOverflowPage,
+  zoomLevel,
+  className,
+}: PageNumberProps) {
   return (
-    <div className={cn(
-      'absolute top-0 m-2 flex flex-col text-xs text-gray-500 origin-top-right',
-    )}
+    <div
+      className={cn(
+        'absolute top-0 m-2 flex origin-top-right flex-col text-xs text-gray-500',
+        className
+      )}
       style={{
         transform: `scale(${1 / zoomLevel})`,
         right: `${(isOverflowPage ? -15 : -10) / zoomLevel}%`,
