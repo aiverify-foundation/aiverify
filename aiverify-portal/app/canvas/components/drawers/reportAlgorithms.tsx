@@ -1,5 +1,4 @@
-import { RiArticleFill, RiFlaskLine, RiFlaskFill } from '@remixicon/react';
-import { useState } from 'react';
+import { RiFlaskLine, RiFlaskFill } from '@remixicon/react';
 import { Algorithm } from '@/app/types';
 import { Button } from '@/lib/components/Button/button';
 import {
@@ -32,9 +31,14 @@ function ReportAlgorithmsDrawer(props: ReportAlgorithmsDrawerProps) {
           <DrawerTrigger asChild>
             <div className="flex w-full flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
               <button
-                className="disabled:opacity-50"
+                className="relative disabled:opacity-50"
                 title="View test(s)/algorithm(s) for this report">
                 <FlaskIconComponent className="h-5 w-5 text-gray-500 hover:text-gray-900" />
+                {algorithms.length > 0 && (
+                  <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 text-[0.7rem] text-white">
+                    {algorithms.length}
+                  </span>
+                )}
               </button>
             </div>
           </DrawerTrigger>
