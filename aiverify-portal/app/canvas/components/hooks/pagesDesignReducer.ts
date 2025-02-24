@@ -8,11 +8,13 @@ export type WidgetAlgoTracker = {
   testResultsCreatedAt?: string;
 };
 
+type WidgetGridItemId = string;
+
 export type State = {
   layouts: Layout[][];
   widgets: WidgetOnGridLayout[][];
-  algosTracker: Record<string, WidgetAlgoTracker[]>;
-  inputBlocks: Record<string, unknown>;
+  gridItemToAlgosMap: Record<WidgetGridItemId, WidgetAlgoTracker[]>;
+  inputBlocks: Record<WidgetGridItemId, unknown>;
   currentPage: number;
   showGrid: boolean;
   pageTypes: ('grid' | 'overflow')[]; // Track page types
@@ -22,7 +24,7 @@ export type State = {
 export const initialState: State = {
   layouts: [[]],
   widgets: [[]],
-  algosTracker: {},
+  gridItemToAlgosMap: {},
   inputBlocks: {},
   currentPage: 0,
   showGrid: true,
@@ -90,9 +92,9 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       const clonedPageWidgets = widgets[action.pageIndex].slice();
       clonedPageWidgets.splice(insertPosition, 0, action.widget);
 
-      let clonedAlgos = state.algosTracker;
+      let clonedAlgos = state.gridItemToAlgosMap;
       if (action.algos && action.algos.length > 0) {
-        clonedAlgos = { ...state.algosTracker };
+        clonedAlgos = { ...state.gridItemToAlgosMap };
         if (clonedAlgos[action.widget.gridItemId]) {
           clonedAlgos[action.widget.gridItemId] = [
             ...clonedAlgos[action.widget.gridItemId],
@@ -111,7 +113,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         widgets: widgets.map((widget, i) =>
           i === action.pageIndex ? clonedPageWidgets : widget
         ),
-        algosTracker: clonedAlgos,
+        gridItemToAlgosMap: clonedAlgos,
       };
     }
 
@@ -126,7 +128,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       clonedPageWidgets.splice(action.index, 1);
 
       // Clean up algos
-      const clonedAlgos = { ...state.algosTracker };
+      const clonedAlgos = { ...state.gridItemToAlgosMap };
       if (widgetToDelete) {
         delete clonedAlgos[widgetToDelete.gridItemId];
       }
@@ -139,7 +141,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         widgets: widgets.map((widget, i) =>
           i === action.pageIndex ? clonedPageWidgets : widget
         ),
-        algosTracker: clonedAlgos,
+        gridItemToAlgosMap: clonedAlgos,
       };
     }
 
@@ -358,7 +360,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
     }
 
     case 'UPDATE_ALGO_TRACKER': {
-      const clonedAlgos = { ...state.algosTracker };
+      const clonedAlgos = { ...state.gridItemToAlgosMap };
       action.algos.forEach((algo) => {
         Object.keys(clonedAlgos).forEach((key) => {
           clonedAlgos[key] = clonedAlgos[key].map((existing) =>
@@ -368,7 +370,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
           );
         });
       });
-      return { ...state, algosTracker: clonedAlgos };
+      return { ...state, gridItemToAlgosMap: clonedAlgos };
     }
 
     default:

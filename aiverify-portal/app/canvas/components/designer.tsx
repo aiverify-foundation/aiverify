@@ -22,7 +22,6 @@ import { isPageContentOverflow } from '@/app/canvas/utils/isPageContentOverflow'
 import { populateInitialWidgetResult } from '@/app/canvas/utils/populateInitialWidgetResult';
 import { Widget } from '@/app/types';
 import { cn } from '@/lib/utils/twmerge';
-import { AlgosToRun } from './algosToRun';
 import {
   A4_MARGIN,
   GRID_ROWS,
@@ -46,6 +45,7 @@ import { useZoom } from './hooks/useZoom';
 import { PageNavigation } from './pageNavigation';
 import { PageNumber } from './pageNumber';
 import { PluginsPanel } from './pluginsPanel';
+import { AlgosToRun } from './reportAlgorithms';
 import { ResizeHandle } from './resizeHandle';
 import { ZoomControl } from './zoomControl';
 /*
@@ -268,7 +268,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
         gridItemId,
       };
       const algos = getWidgetAlgosFromPlugins(pluginsWithMdx, widget);
-      const algosTracker: WidgetAlgoTracker[] = algos.map((algo) => {
+      const gridItemToAlgosMap: WidgetAlgoTracker[] = algos.map((algo) => {
         const matchSelectedResult = findTestResultById(
           selectedTestResults,
           algo.gid,
@@ -285,7 +285,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
         type: 'ADD_WIDGET_TO_CANVAS',
         itemLayout,
         widget: widgetWithGridItemId,
-        algos: algosTracker,
+        algos: gridItemToAlgosMap,
         pageIndex,
       });
     };
@@ -673,7 +673,9 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
                         onEditClick={handleGridItemEditClick(pageIndex)}
                         isDragging={draggingGridItemId === widget.gridItemId}
                         isResizing={resizingGridItemId === widget.gridItemId}
-                        testResultsUsed={state.algosTracker[widget.gridItemId]}
+                        testResultsUsed={
+                          state.gridItemToAlgosMap[widget.gridItemId]
+                        }
                         testResults={testResults}
                         layout={state.layouts[pageIndex][widgetIndex]}
                       />
