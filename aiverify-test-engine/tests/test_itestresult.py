@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 from aiverify_test_engine.interfaces.itestresult import ITestArguments, ITestResult
-from pydantic import FileUrl, ValidationError
+from pydantic import AnyUrl, ValidationError
 
 
 def test_valid_ittestarguments():
@@ -17,13 +17,13 @@ def test_valid_ittestarguments():
     }
 
     arguments = ITestArguments(**valid_data)
-    assert arguments.testDataset == valid_data["testDataset"]
+    assert str(arguments.testDataset) == valid_data["testDataset"]
     assert arguments.mode == valid_data["mode"]
     assert arguments.modelType == valid_data["modelType"]
-    assert arguments.groundTruthDataset == valid_data["groundTruthDataset"]
+    assert str(arguments.groundTruthDataset) == valid_data["groundTruthDataset"]
     assert arguments.groundTruth == valid_data["groundTruth"]
     assert arguments.algorithmArgs == valid_data["algorithmArgs"]
-    assert arguments.modelFile == valid_data["modelFile"]
+    assert str(arguments.modelFile) == valid_data["modelFile"]
 
 
 def test_valid_ittestresult():
@@ -49,7 +49,8 @@ def test_valid_ittestresult():
     assert result.startTime == valid_data["startTime"]
     assert result.timeTaken == valid_data["timeTaken"]
     assert (
-        result.testArguments.testDataset == valid_data["testArguments"]["testDataset"]
+        str(result.testArguments.testDataset)
+        == valid_data["testArguments"]["testDataset"]
     )
 
 
@@ -72,8 +73,7 @@ def test_path_to_uri():
     }
 
     arguments = ITestArguments(**valid_data)
-    # Check if opath is of type FileUrl
-    assert isinstance(arguments.testDataset, FileUrl)
+    assert isinstance(arguments.testDataset, AnyUrl)
 
 
 def test_invalid_mode_ittestarguments():
