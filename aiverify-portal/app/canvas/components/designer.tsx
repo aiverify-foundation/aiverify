@@ -630,7 +630,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
               />
               {isOverflowPage && overflowParent !== null ? (
                 <div
-                  className="absolute inset-0 flex items-center justify-center"
+                  className="absolute flex items-center justify-center"
                   style={{
                     height: A4_HEIGHT,
                     width: A4_WIDTH,
