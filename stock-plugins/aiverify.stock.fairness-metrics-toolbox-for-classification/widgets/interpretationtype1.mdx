@@ -8,19 +8,17 @@ export const InterpretationChart = ({ metric, container, data }) => {
 
   function getContent(display) {
     let content = [];
-    for (let oc in display) {
-      const item = display[oc]
-      content.push(<li>For {item.outputClass}, the parity between the min subgroup ({item.minName}) and max subgroup ({item.maxName}) is {Math.round(item.parity * 1000 + Number.EPSILON) / 1000}</li>)
-    }
+    display.forEach((item, index) => {
+      content.push(<li key={`${item.outputClass}-${index}`}>For {item.outputClass}, the parity between the min subgroup ({item.minName}) and max subgroup ({item.maxName}) is {Math.round(item.parity * 1000 + Number.EPSILON) / 1000}</li>)
+    });
     return content;
   }
 
   function getTwoLabelContent(display) {
     let content = [];
-    for (let oc in display) {
-      const item = display[oc]
-      content.push(<li>For {item.outputClass}, the parity between the two subgroups ({item.minName} and {item.maxName}) is {Math.round(item.parity * 1000 + Number.EPSILON) / 1000}</li>)
-    }
+    display.forEach((item, index) => {
+      content.push(<li key={`${item.outputClass}-${index}`}>For {item.outputClass}, the parity between the two subgroups ({item.minName} and {item.maxName}) is {Math.round(item.parity * 1000 + Number.EPSILON) / 1000}</li>)
+    });
     return content;
   }
 
