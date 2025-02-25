@@ -10,6 +10,7 @@ type UrlSearchParams = {
   searchParams: {
     projectId?: string;
     testResultIds?: string;
+    templateId?: string; // TODO: Add templateId to the URL params and fetch the template from the database. This should be done after template saving has been implemented.
   };
 };
 
