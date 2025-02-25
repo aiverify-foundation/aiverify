@@ -8,16 +8,16 @@ from ..lib.constants import TestModelMode, TestModelFileType, TestModelStatus, M
 
 
 class TestModelAPIInput(BaseModel):
-    name: str = Field(description="Name of the model", min_length=1, max_length=128)
-    description: Optional[str] = Field(description="Description of the model", max_length=256)
+    name: str = Field(description="Name of the model", min_length=1, max_length=256)
+    description: Optional[str] = Field(description="Description of the model", max_length=4096)
     modelType: ModelType = Field(description="Type of the model")
     modelAPI: ModelAPIType = Field(description="Model API configuration")
     parameterMappings: Optional[ModelAPIParametersMapping] = Field(description="Parameter mappings", default=None)
 
 
 class TestModelUpdate(BaseModel):
-    name: Optional[str] = Field(description="Name of the model", min_length=1, max_length=128, default=None)
-    description: Optional[str] = Field(description="Description of the model", max_length=256, default=None)
+    name: Optional[str] = Field(description="Name of the model", min_length=1, max_length=256, default=None)
+    description: Optional[str] = Field(description="Description of the model", max_length=4096, default=None)
     modelType: Optional[ModelType] = Field(description="Type of the model", default=None)
     modelAPI: Optional[ModelAPIType] = Field(description="Model API Configuration", default=None)
     parameterMappings: Optional[ModelAPIParametersMapping] = Field(description="Parameter mappings", default=None)
@@ -25,8 +25,8 @@ class TestModelUpdate(BaseModel):
 
 class TestModel(BaseModel):
     id: int = Field(description="Unique identifier for the model")
-    name: str = Field(description="Name of the model", min_length=1, max_length=128)
-    description: Optional[str] = Field(description="Description of the model", max_length=256)
+    name: str = Field(description="Name of the model", min_length=1, max_length=256)
+    description: Optional[str] = Field(description="Description of the model", max_length=4096)
     mode: TestModelMode = Field(description="Mode to indicate whether it's upload or api")
     modelType: ModelType = Field(description="Type of the model")
     # model file

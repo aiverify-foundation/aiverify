@@ -1,6 +1,6 @@
 [project]
 name = "aiverify-test-engine"
-version = "2.0.0a1"
+version = "2.0.0a2"
 authors = [{ name = "AI Verify" }]
 description = "AI Verify Test Engine provides core interfaces, converters, data, model and plugin managers to facilitate the development of tests for AI systems. It is used as a base library for all AI Verify official stock-plugins and can be used to develop custom plugins."
 dependencies = [
@@ -13,7 +13,6 @@ dependencies = [
     "scipy==1.14.1",
     "httpx==0.26.0",
     "openapi-schema-validator==0.6.2",
-    "aiopenapi3==0.2.1",
     "aiometer==0.5.0",
     "async-timeout==4.0.3",
     "attrs==23.2.0",
@@ -23,6 +22,7 @@ dependencies = [
     "rpds-py==0.17.1",
     "setuptools==75.1.0",
     "requests==2.32.3",
+    "pydantic==2.*",
 ]
 readme = "README.md"
 requires-python = ">=3.10,<3.12"
