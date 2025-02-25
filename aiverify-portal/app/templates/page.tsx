@@ -21,7 +21,7 @@ export default async function TemplatesPage(props: UrlSearchParams) {
   const templates = response.data;
 
   return (
-    <main className="h-screen w-full px-6">
+    <main className="w-full px-6">
       <h1 className="mb-0 mt-6 text-2xl font-bold tracking-wide">
         Select A Report Template
       </h1>
