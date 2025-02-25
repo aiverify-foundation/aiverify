@@ -7,6 +7,24 @@ type Project = {
   status: string;
 };
 
+type ProjectInfo = {
+  globalVars: unknown[];
+  pages: unknown[];
+  id: number;
+  templateId: string | null;
+  projectInfo: {
+    name: string;
+    description: string;
+    reportTitle: string;
+    company: string;
+  };
+  testModelId: string | null;
+  inputBlocks: unknown[];
+  testResults: unknown[];
+  created_at: string;
+  updated_at: string;
+};
+
 type TestResult = {
   id: number;
   gid: string;
@@ -267,4 +285,5 @@ export type {
   InputBlock,
   FormState,
   DataColumn,
+  ProjectInfo,
 };

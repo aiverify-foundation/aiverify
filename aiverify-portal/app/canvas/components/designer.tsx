@@ -23,6 +23,7 @@ import { getWidgetInputBlocksFromPlugins } from '@/app/canvas/utils/getWidgetInp
 import { isPageContentOverflow } from '@/app/canvas/utils/isPageContentOverflow';
 import { populateInitialWidgetResult } from '@/app/canvas/utils/populateInitialWidgetResult';
 import { Widget } from '@/app/types';
+import { ProjectInfo } from '@/app/types';
 import { cn } from '@/lib/utils/twmerge';
 import {
   A4_MARGIN,
@@ -60,6 +61,7 @@ type GridItemDivRequiredStyles =
   `grid-comp-wrapper relative group z-10${string}`; // mandatory to have relative and group
 
 type DesignerProps = {
+  project: ProjectInfo;
   allPluginsWithMdx: PluginForGridLayout[];
   allTestResults: ParsedTestResults[]; // ParsedTestResult should have value of 'output' property in the form of Javascript object
   selectedTestResultsFromUrlParams?: ParsedTestResults[];
@@ -92,10 +94,12 @@ function createGridItemId(widget: Widget, pageIndex: number) {
 
 function Designer(props: DesignerProps) {
   const {
+    project,
     allPluginsWithMdx,
     allTestResults = [],
     selectedTestResultsFromUrlParams = [],
   } = props;
+  console.log('project', project);
   const canvasRef = useRef<HTMLDivElement>(null);
   const isInitialMount = useRef(true);
   const freeFormAreaRef = useRef<HTMLDivElement>(null);
@@ -543,8 +547,8 @@ function Designer(props: DesignerProps) {
       )}
 
       <div className={cn('p-4', !isPanelOpen && 'hidden')}>
-        <h4 className="mb-0 text-lg font-bold">Project Name</h4>
-        <p className="text-sm text-white">Project Description</p>
+        <h4 className="mb-0 text-lg font-bold">{project.projectInfo.name}</h4>
+        <p className="text-sm text-white">{project.projectInfo.description}</p>
         <PluginsPanel
           plugins={allPluginsWithMdx}
           className="custom-scrollbar w-full overflow-auto pr-[10px] pt-[50px]"

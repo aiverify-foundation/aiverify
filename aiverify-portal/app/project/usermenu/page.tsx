@@ -1,7 +1,9 @@
 import { RiFlaskFill, RiFlaskLine, RiUploadLine } from '@remixicon/react';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import { UserFlows } from '@/app/userFlowsEnum';
 import { Card } from '@/lib/components/Card';
+import { fetchProjects } from '@/lib/fetchApis/getProjects';
 
 type UrlSearchParams = {
   searchParams: {
@@ -10,11 +12,13 @@ type UrlSearchParams = {
   };
 };
 
-export default function UserMenuPage(props: UrlSearchParams) {
-  const { projectId, flow } = props.searchParams;
+export default async function UserMenuPage(props: UrlSearchParams) {
+  const searchParams = await props.searchParams;
+  const { projectId, flow } = searchParams;
+  const result = await fetchProjects({ id: parseInt(projectId) });
 
-  if (!projectId || !flow) {
-    throw new Error('Project ID and flow are required');
+  if (!projectId || !flow || 'message' in result) {
+    notFound();
   }
 
   return (
@@ -25,7 +29,7 @@ export default function UserMenuPage(props: UrlSearchParams) {
       <section className="mt-16 flex flex-wrap justify-center gap-10">
         <Link
           className="flex-1 basis-[350px]"
-          href={`/results?flow=${UserFlows.NewProjectWithExistingTemplate}&projectId=${projectId}`}>
+          href={`/results?flow=${flow}&projectId=${projectId}`}>
           <Card className="min-h-[250px] w-full cursor-pointer border-none bg-secondary-800 text-white hover:bg-secondary-700">
             <h3 className="mb-8 flex items-center gap-4 text-xl font-semibold text-white">
               <RiFlaskFill className="h-8 w-8 text-primary-500" />
@@ -39,7 +43,7 @@ export default function UserMenuPage(props: UrlSearchParams) {
         </Link>
         <Link
           className="flex-1 basis-[350px]"
-          href={`/results/upload/zipfile?flow=${UserFlows.NewProjectWithExistingTemplate}&projectId=${projectId}`}>
+          href={`/results/upload/zipfile?flow=${flow}&projectId=${projectId}`}>
           <Card className="min-h-[250px] w-full cursor-pointer border-none bg-secondary-800 text-white hover:bg-secondary-700">
             <h3 className="mb-8 flex items-center gap-4 text-xl font-semibold text-white">
               <RiUploadLine className="h-8 w-8 text-primary-500" />
@@ -52,7 +56,7 @@ export default function UserMenuPage(props: UrlSearchParams) {
         </Link>
         <Link
           className="flex-1 basis-[350px]"
-          href={`/canvas?flow=${UserFlows.NewProjectWithExistingTemplate}&projectId=${projectId}`}>
+          href={`/canvas?flow=${flow}&projectId=${projectId}`}>
           <Card className="min-h-[250px] w-full cursor-pointer border-none bg-secondary-800 text-white hover:bg-secondary-700">
             <h3 className="mb-8 flex items-center gap-4 text-xl font-semibold text-white">
               <RiFlaskLine className="h-8 w-8 text-primary-500" />

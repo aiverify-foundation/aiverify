@@ -1,21 +1,35 @@
+import { notFound } from 'next/navigation';
+import { ProjectInfo } from '@/app/types';
+import { UserFlows } from '@/app/userFlowsEnum';
 import {
   getPlugins,
   populatePluginsMdxBundles,
 } from '@/lib/fetchApis/getPlugins';
+import { fetchProjects } from '@/lib/fetchApis/getProjects';
 import { getTestResults } from '@/lib/fetchApis/getTestResults';
 import { Designer } from './components/designer';
 import { ParsedTestResults } from './types';
 
 type UrlSearchParams = {
   searchParams: {
-    projectId?: string;
+    flow: UserFlows;
+    projectId: string;
     testResultIds?: string;
     templateId?: string; // TODO: Add templateId to the URL params and fetch the template from the database. This should be done after template saving has been implemented.
   };
 };
 
 export default async function CanvasPage(props: UrlSearchParams) {
-  const { projectId, testResultIds } = props.searchParams;
+  const searchParams = await props.searchParams;
+  const { flow, projectId, testResultIds } = searchParams;
+  const result = await fetchProjects({ id: parseInt(projectId) });
+
+  if (!projectId || !flow || 'message' in result) {
+    notFound();
+  }
+
+  const project = result.data as ProjectInfo;
+
   const plugins = await getPlugins({ groupByPluginId: false });
   const testResults = await getTestResults();
 
@@ -54,6 +68,7 @@ export default async function CanvasPage(props: UrlSearchParams) {
 
   return (
     <Designer
+      project={project}
       allPluginsWithMdx={pluginsWithMdx}
       allTestResults={parsedTestResults}
       selectedTestResultsFromUrlParams={selectedTestResultsFromUrlParams}
