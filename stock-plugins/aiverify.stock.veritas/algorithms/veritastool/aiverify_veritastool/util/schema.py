@@ -1,7 +1,7 @@
 import warnings
 import json
 from typing import Dict, List, Optional, Tuple, Union, Literal
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, RootModel, Field, ValidationError
 
 
 # Schema for Fairness Metrics
@@ -13,16 +13,16 @@ class FeatureDistribution(BaseModel):
 
 
 class WeightedConfusionMatrix(BaseModel):
-    tp: Optional[float]
-    fp: Optional[float]
-    tn: Optional[float]
-    fn: Optional[float]
+    tp: Optional[float] = None
+    fp: Optional[float] = None
+    tn: Optional[float] = None
+    fn: Optional[float] = None
 
 
-class FeatureImportance(BaseModel):
+class FeatureImportance(RootModel):
     # Dict where key is feature name and value is a list containing:
     # [coefficient, percentage, conclusion_message, recommendation]
-    __root__: Dict[str, List[Union[float, str]]]
+    root: Dict[str, List[Union[float, str]]]
 
 
 class FeatureMetrics(BaseModel):
