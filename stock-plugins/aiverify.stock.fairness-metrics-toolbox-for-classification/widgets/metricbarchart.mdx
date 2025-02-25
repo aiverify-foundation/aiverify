@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { BarChart } from 'aiverify-shared-library/charts'
 
-export const MetricBarChart = ({ metric, width="100%", height="100%", data }) => {
+export const MetricBarChart = ({ metric, width, height, data }) => {
   const [ mydata, setmydata ] = useState({
     data: [],
     bars: [],
@@ -23,7 +23,6 @@ export const MetricBarChart = ({ metric, width="100%", height="100%", data }) =>
         outputClass: `Class ${outputClasses[oc]}`,
       }
       for (let row of result) {
-        let group1 = JSON.stringify(row.group);
         let group = sensitiveFeatures.map((f,idx) => `${f}:${row.group[idx]}` ).join(",")
         groups[group] = 1;
         obj[group] = row.metric;
@@ -41,8 +40,8 @@ export const MetricBarChart = ({ metric, width="100%", height="100%", data }) =>
   }
 
   return (
-    <div style={{ width:width, height:height, padding:10, display:"flex", flexDirection:"column" }}>
-      <h4 style={{ padding:0, margin:0 }}>{metric}</h4>
+    <div className="chart-container chart-bar" style={{ width, height }}>
+      <h4>{metric}</h4>
       <BarChart
         data={mydata.data}
         xAxisDataKey="outputClass"

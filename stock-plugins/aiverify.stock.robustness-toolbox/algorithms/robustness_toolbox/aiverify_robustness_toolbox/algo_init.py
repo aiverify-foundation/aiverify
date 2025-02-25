@@ -297,7 +297,7 @@ class AlgoInit:
             output=results,
         )
 
-        output_json = output.json(exclude_none=True, indent=4)
+        output_json = output.model_dump_json(exclude_none=True, indent=4)
         if validate_test_result_schema(json.loads(output_json)) is True:
             with open(output_path, "w") as json_file:
                 json_file.write(output_json)

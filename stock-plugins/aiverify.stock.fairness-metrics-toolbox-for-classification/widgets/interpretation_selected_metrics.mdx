@@ -24,6 +24,7 @@ export const GetInterpretation = ({ data, container, results }) => {
     // Special graph as they have more than 2 subgroups
     if (metrics[i] == "Equal Parity" || metrics[i] == "Disparate Impact"){
       content.push(<InterpretationChart2
+        key={`chart-${i}`}
         metric={metrics_map[metrics[0]]}
         container={container}
         data={results}
@@ -31,12 +32,13 @@ export const GetInterpretation = ({ data, container, results }) => {
     }
     else{
       content.push(<InterpretationChart
+        key={`chart-${i}`}
         metric={metrics_map[metrics[i]]}
         container={container}
         data={results}
       />)
-      }
     }
+  }
 
   return (
     <div>{content}</div>

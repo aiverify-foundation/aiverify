@@ -1,17 +1,4 @@
-This is a [Next.js](https://nextjs.org) project
+## AI Verify Portal (Web UI)
 
-## Getting Started
+The AI Verify Portal is currently undergoing a comprehensive revamp as part of AI Verify 2.0. We are working on enhancing the user interface to improve your experience. Stay tuned for updates!
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

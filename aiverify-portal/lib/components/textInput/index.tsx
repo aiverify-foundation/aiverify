@@ -66,18 +66,26 @@ function TextInput(props: TextInputProps) {
 
   return (
     <div
-      className={clsx(styles.textInput, error !== undefined ? styles.inputError : null)}
-      style={style}
-    >
+      className={clsx(
+        styles.textInput,
+        error !== undefined ? styles.inputError : null
+      )}
+      style={style}>
       <label htmlFor={id}>
         {label !== '' && label !== undefined ? (
-          <div className={clsx(styles.label, labelClassName)} style={labelStyles}>
+          <div
+            className={clsx(styles.label, labelClassName)}
+            style={labelStyles}>
             <div>{label}</div>
             {labelSibling}
           </div>
+        ) : labelSibling ? (
+          labelSibling
         ) : null}
         {description ? (
-          <div className={styles.description} style={descriptionStyles}>
+          <div
+            className={styles.description}
+            style={descriptionStyles}>
             {description}
           </div>
         ) : null}

@@ -5,7 +5,7 @@
     "modelType": [
         "classification"
     ],
-    "version": "2.0.0a1",
+    "version": "2.0.0a2",
     "author": "AI Verify",
     "description": "Algorithm that adds general corruptions (gaussian, poisson and salt and pepper noise)",
     "tags": [
@@ -21,7 +21,6 @@
         "output.schema.json",
         "algo.meta.json",
         "algo.py",
-        "README.md",
-        "syntax_checker.py"
+        "README.md"
     ]
 }

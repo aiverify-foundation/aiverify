@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: false,
   async rewrites() {
     return [
       {
@@ -9,6 +10,26 @@ const nextConfig = {
       {
         source: '/api/test_results/upload_zip',
         destination: `${process.env.APIGW_HOST}/test_results/upload_zip`,
+      },
+      {
+        source: '/api/plugins/:pluginId/bundle/:widgetId',
+        destination: `${process.env.APIGW_HOST}/plugins/:pluginId/bundle/:widgetId`,
+      },
+      {
+        source: '/api/test_datasets',
+        destination: `${process.env.APIGW_HOST}/test_datasets`,
+      },
+      {
+        source: '/api/test_datasets/upload',
+        destination: `${process.env.APIGW_HOST}/test_datasets/upload`,
+      },
+      {
+        source: '/api/plugins/upload',
+        destination: `${process.env.APIGW_HOST}/plugins/upload`,
+      },
+      {
+        source: '/api/plugins/:id',
+        destination: `${process.env.APIGW_HOST}/plugins/:id`,
       },
     ];
   },
