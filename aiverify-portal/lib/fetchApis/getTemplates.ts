@@ -1,21 +1,22 @@
-import { z } from 'zod';
 import { ErrorWithMessage } from '@/app/errorTypes';
 import { ReportTemplate } from '@/app/templates/types';
 import { ApiResult, processResponse } from '@/lib/utils/fetchRequestHelpers';
 
-export const TemplateSchema = z.object({});
+const endpointUrl = `${process.env.APIGW_HOST}/project_templates`;
 
-export type TemplateSchemaType = z.infer<typeof TemplateSchema>;
+type Options = {
+  id?: number;
+};
 
-export async function fetchTemplates(): Promise<
-  ApiResult<ReportTemplate[]> | ErrorWithMessage
-> {
-  const response = await fetch('http://localhost:4000/project_templates');
-  const result = await processResponse<ReportTemplate[]>(response);
-  if ('message' in result) {
-    return result;
+export async function fetchTemplates(
+  opts?: Options
+): Promise<ApiResult<ReportTemplate[]> | ErrorWithMessage> {
+  let requestUrl = endpointUrl;
+  if (opts && opts.id != undefined) {
+    requestUrl = `${endpointUrl}/${opts.id}`;
   }
+  const response = await fetch(requestUrl, { cache: 'force-cache' });
+  const result = await processResponse<ReportTemplate[]>(response);
 
-  // TODO: add zod parse error parse and return
   return result;
 }
