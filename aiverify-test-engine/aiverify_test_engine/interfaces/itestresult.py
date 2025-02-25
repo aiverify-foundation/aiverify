@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List, Optional
 
 from aiverify_test_engine.utils.url_utils import get_absolute_path
-from pydantic import AnyUrl, BaseModel, Field, FileUrl, validator
+from pydantic import AnyUrl, BaseModel, ConfigDict, Field, FileUrl, field_validator
 
 
 class ITestArguments(BaseModel):
@@ -10,10 +10,10 @@ class ITestArguments(BaseModel):
     mode: str = Field(
         ...,
         description="Mode of model used, upload for model file and api for model api",
-        regex="^(upload|api)$",
+        pattern="^(upload|api)$",
     )
     modelType: str = Field(
-        ..., description="AI model type", regex="^(classification|regression)$"
+        ..., description="AI model type", pattern="^(classification|regression)$"
     )
     groundTruthDataset: Optional[AnyUrl | FileUrl] = Field(
         None, description="URI of ground truth dataset"
@@ -25,11 +25,13 @@ class ITestArguments(BaseModel):
     )
     modelFile: Optional[AnyUrl | FileUrl] = Field(None, description="URI of model file")
 
-    @validator("modelType", pre=True)
+    @field_validator("modelType", mode="before")
+    @classmethod
     def validate_model_type(cls, value):
         return value.lower()
 
-    @validator("testDataset", "groundTruthDataset", "modelFile", pre=True)
+    @field_validator("testDataset", "groundTruthDataset", "modelFile", mode="before")
+    @classmethod
     def validate_uri(cls, value):
         return get_absolute_path(value)
 
@@ -44,7 +46,7 @@ class ITestResult(BaseModel):
         description="Unique global identifier for the plugin",
         min_length=1,
         max_length=128,
-        regex=r"^[a-zA-Z0-9][a-zA-Z0-9-._]*$",
+        pattern=r"^[a-zA-Z0-9][a-zA-Z0-9-._]*$",
     )
     cid: str = Field(
         ...,
@@ -68,10 +70,11 @@ class ITestResult(BaseModel):
         description="List the test artifacts (e.g., images) produced by the algorithm, to be uploaded to API-GW",
     )
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "/aiverify.algorithm.testresult.schema.json",
             "title": "Algorithm Output Schema",
             "description": "AI Verify algorithm output schema",
         }
+    )
