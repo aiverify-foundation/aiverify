@@ -92,13 +92,11 @@ def test_weighted_confusion_matrix_model():
 def test_feature_importance_model():
     """Test FeatureImportance model validation"""
     valid_data = {
-        "__root__": {
-            "feature1": [0.5, 25.0, "High importance", "Consider keeping"],
-            "feature2": [0.3, 15.0, "Medium importance", "Monitor"]
-        }
+        "feature1": [0.5, 25.0, "High importance", "Consider keeping"],
+        "feature2": [0.3, 15.0, "Medium importance", "Monitor"]
     }
-    importance = FeatureImportance(**valid_data)
-    assert importance.__root__["feature1"][0] == 0.5
+    importance = FeatureImportance(valid_data)
+    assert importance.root["feature1"][0] == 0.5 
 
 def test_parse_model_artifact_valid(sample_valid_data):
     """Test parsing valid model artifact data"""
