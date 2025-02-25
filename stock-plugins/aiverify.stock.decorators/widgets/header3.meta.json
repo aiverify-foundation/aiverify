@@ -1,16 +1,15 @@
 {
   "cid": "header3",
   "name": "Header 3",
-  "tags": ["stock", "decorator","header"],
+  "tags": [
+    "stock",
+    "decorator",
+    "header"
+  ],
   "properties": [
     {
-      "key": "title",
-      "helper": "Enter the header title",
-      "default": ""
-    },
-    {
-      "key": "text",
-      "helper": "Enter the text for paragraph below header",
+      "key": "heading3",
+      "helper": "Enter the heading 3",
       "default": ""
     }
   ],
