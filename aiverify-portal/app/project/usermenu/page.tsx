@@ -32,7 +32,7 @@ export default function UserMenuPage(props: UrlSearchParams) {
               Use Existing Test Results
             </h3>
             <p className="mt-2 leading-6 text-white">
-              Use existing test results that have already been uploaded to the
+              Use existing test results that are already available in the
               system.
             </p>
           </Card>
