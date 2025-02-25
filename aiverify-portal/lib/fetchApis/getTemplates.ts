@@ -1,7 +1,7 @@
 import { z } from 'zod';
+import { ErrorWithMessage } from '@/app/errorTypes';
 import { ReportTemplate } from '@/app/templates/types';
-import { ErrorWithMessage } from '@/lib/utils/error-utils';
-import { ApiResult, processResponse } from '@/lib/utils/http-requests';
+import { ApiResult, processResponse } from '@/lib/utils/fetchRequestHelpers';
 
 export const TemplateSchema = z.object({});
 
