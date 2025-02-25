@@ -7,7 +7,8 @@ type Project = {
   status: string;
 };
 
-type TestResults = {
+type TestResult = {
+  id: number;
   gid: string;
   cid: string;
   version: string;
@@ -24,7 +25,6 @@ type TestResults = {
   };
   output: string;
   artifacts: unknown[];
-  id: number;
   name: string;
   created_at: string;
   updated_at: string;
@@ -250,7 +250,7 @@ type MdxBundle = {
 
 export type {
   Project,
-  TestResults,
+  TestResult,
   Dataset,
   Plugin,
   MdxBundle,

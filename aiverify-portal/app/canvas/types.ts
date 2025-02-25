@@ -2,7 +2,7 @@ import {
   MdxBundle,
   Widget,
   Plugin,
-  TestResults,
+  TestResult,
   InputBlockData,
   TestResultData,
 } from '@/app/types';
@@ -22,7 +22,7 @@ type PluginForGridLayout = Omit<Plugin, 'widgets'> & {
   widgets: WidgetOnGridLayout[];
 };
 
-type ParsedTestResults = TestResults & {
+type ParsedTestResults = TestResult & {
   output: Record<
     string,
     | string

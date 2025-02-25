@@ -1,38 +1,46 @@
-import { TestResults } from '../../types';
+import { TestResult } from '@/app/types';
 import { Card } from '@/lib/components/card/card';
 
 type Props = {
-  result: TestResults;
+  result: TestResult;
 };
 
 export default function TestResultsCard({ result }: Props) {
-  const fileName = result.testArguments.modelFile.substring(result.testArguments.modelFile.lastIndexOf('/') + 1);
-  const testDatasetName = result.testArguments.testDataset.substring(result.testArguments.testDataset.lastIndexOf('/') + 1);
+  const fileName = result.testArguments.modelFile.substring(
+    result.testArguments.modelFile.lastIndexOf('/') + 1
+  );
+  const testDatasetName = result.testArguments.testDataset.substring(
+    result.testArguments.testDataset.lastIndexOf('/') + 1
+  );
   return (
     <Card
       size="md"
-      className="mb-4 shadow-md hover:shadow-lg transition-shadow duration-200 w-full" // Option 2
+      className="mb-4 w-full shadow-md transition-shadow duration-200 hover:shadow-lg" // Option 2
       style={{
         border: '1px solid var(--color-secondary-300)',
         borderRadius: '0.5rem',
         padding: '1rem',
         width: '100%', // Option 1: Fallback for inline styles
-        height: 'auto'
+        height: 'auto',
       }}
       cardColor="var(--color-secondary-950)"
-      enableTiltEffect={false}
-    >
+      enableTiltEffect={false}>
       <Card.Content className="h-auto">
-        <h3 className="text-lg font-semibold text-white mb-2">{result.name}</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 text-sm text-gray-400">
+        <h3 className="mb-2 text-lg font-semibold text-white">{result.name}</h3>
+        <div className="grid grid-cols-1 gap-y-2 text-sm text-gray-400 sm:grid-cols-2">
           <div>
-            <span className="font-semibold text-white">Model File:</span> {fileName}
+            <span className="font-semibold text-white">Model File:</span>{' '}
+            {fileName}
           </div>
           <div>
-            <span className="font-semibold text-white">Model Type:</span> {result.testArguments.modelType}
+            <span className="font-semibold text-white">Model Type:</span>{' '}
+            {result.testArguments.modelType}
           </div>
           <div>
-            <span className="font-semibold text-white">Model Test Dataset:</span> {testDatasetName}
+            <span className="font-semibold text-white">
+              Model Test Dataset:
+            </span>{' '}
+            {testDatasetName}
           </div>
           <div>
             <span className="font-semibold text-white">Test Date:</span>{' '}
