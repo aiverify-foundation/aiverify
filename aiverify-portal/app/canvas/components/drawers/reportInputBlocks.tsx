@@ -1,6 +1,6 @@
 import { RiFileTextLine, RiFileTextFill } from '@remixicon/react';
 import { InputBlock } from '@/app/types';
-import { Button } from '@/lib/components/Button/button';
+import { Button } from '@/lib/components/Button';
 import {
   DrawerClose,
   DrawerContent,

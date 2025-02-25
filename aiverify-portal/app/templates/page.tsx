@@ -1,8 +1,8 @@
 import { Suspense } from 'react';
+import { Button } from '@/lib/components/Button';
 import { TemplateCardsContainer } from './components/templateCardsContainer';
 import { TemplateCardsLoading } from './components/templateCardsLoading';
 import { TemplateFilters } from './components/templateFilters';
-import { Button, ButtonVariant } from '@/lib/components/button';
 
 function TemplatesPage() {
   return (
@@ -20,10 +20,9 @@ function TemplatesPage() {
         <div className="mt-[80px] flex justify-end">
           <Button
             type="submit"
-            text="Next"
-            variant={ButtonVariant.PRIMARY}
-            size="sm"
-          />
+            className="w-[100px]">
+            Next
+          </Button>
         </div>
       </Suspense>
     </main>

@@ -1,7 +1,7 @@
 import { RiArticleFill } from '@remixicon/react';
 import { useState } from 'react';
 import { ParsedTestResults } from '@/app/canvas/types';
-import { Button } from '@/lib/components/Button/button';
+import { Button } from '@/lib/components/Button';
 import {
   DrawerClose,
   DrawerContent,
@@ -44,6 +44,9 @@ function TestResultsDrawer(props: TestResultsDrawerProps) {
               &nbsp;Test results for this report
             </Button>
           </DrawerTrigger>
+          {selectedTestResults.length > 0 ? (
+            <SelectedTestResults results={selectedTestResults} />
+          ) : null}
           {selectedTestResults.length > 0 ? (
             <SelectedTestResults results={selectedTestResults} />
           ) : null}
