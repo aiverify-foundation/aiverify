@@ -11,6 +11,7 @@ type WidgetOnGridLayout = Widget & {
   mdx: MdxBundle;
   gridItemId: string;
   testResultCompositeId: {
+    // TODO: review - probably redundant
     pluginGid: string;
     algoCid: string;
     timeCreated: string;
