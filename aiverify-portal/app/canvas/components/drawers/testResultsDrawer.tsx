@@ -41,7 +41,7 @@ function TestResultsDrawer(props: TestResultsDrawerProps) {
           <DrawerTrigger asChild>
             <Button variant="secondary">
               <RiArticleFill className="h-5 w-5 text-gray-500 hover:text-gray-900" />
-              &nbsp;Use existing test results for this report
+              &nbsp;Test results for this report
             </Button>
           </DrawerTrigger>
           {selectedTestResults.length > 0 ? (
