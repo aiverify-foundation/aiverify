@@ -156,7 +156,7 @@ def invoke_aiverify_digital_corruptions_plugin():
         f"Core Modules Path: {args.core_modules_path}\n"
         f"Seed Value: {args.set_seed}\n"
         f"Annotated Ground Truth Path: {args.annotated_ground_truth_path}\n"
-        f"File Name Label: {args.file_name_label}",
+        f"File Name Label: {args.file_name_label}\n",
         f"User Defined Parameters: {user_defined_params}",
     )
     print("*" * 20)
