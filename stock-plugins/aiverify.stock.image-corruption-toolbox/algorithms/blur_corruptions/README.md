@@ -1,13 +1,16 @@
 # Algorithm - Blur Corruptions
 
 ## Description
-* Robustness plugin with blur corruptions
+
+- Robustness plugin with blur corruptions
 
 ## License
-* Licensed under Apache Software License 2.0
 
-## Developers:
-* AI Verify
+- Licensed under Apache Software License 2.0
+
+## Developers
+
+- AI Verify
 
 ## Installation
 
@@ -17,7 +20,7 @@ Each test algorithm can now be installed via pip and run individually.
 pip install aiverify-blur-corruptions==2.0.0a1
 ```
 
-## Example Usage:
+## Example Usage
 
 Run the following bash script to execute the plugin
 
@@ -40,6 +43,10 @@ python -m aiverify_blur_corruptions \
 
 If the algorithm runs successfully, the results of the test will be saved in an `output` folder.
 
+## Notebook Preview
+
+Use the [blur.ipynb](aiverify_blur_corruptions/utils/blur.ipynb) notebook to preview each corruption function and modify the default parameter values if needed.
+
 ## Develop plugin locally
 
 Execute the below bash script in the project root
@@ -54,20 +61,22 @@ source .venv/bin/activate
 # execute plugin
 cd aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions/
 
-# install aiverify-test-engine 
+# install aiverify-test-engine
 pip install -e '.[dev]'
 
 python -m aiverify_blur_corruptions --data_path  <data_path> --model_path <model_path> --ground_truth_path <ground_truth_path> --ground_truth <str> --model_type CLASSIFICATION --run_pipeline --set_seed <int> --annotated_ground_truth_path <annotated_file_path> --file_name_label <str>
 ```
 
 ## Build Plugin
+
 ```sh
 cd aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions/
 hatch build
 ```
 
 ## Tests
-### Pytest is used as the testing framework.
+
+### Pytest is used as the testing framework
 
 Run the following steps to execute the unit and integration tests inside the `tests/` folder
 
@@ -77,12 +86,15 @@ pytest .
 ```
 
 ## Run using Docker
+
 In the aiverify root directory, run the below command to build the docker image
+
 ```sh
 docker build -t aiverify-blur-corruptions:v2.0.0a1 -f stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions/Dockerfile .
 ```
 
 Run the below bash script to run the algorithm
+
 ```sh
 #!/bin/bash
 docker run \
@@ -99,11 +111,15 @@ docker run \
   --set_seed 10 \
   --file_name_label file_name
 ```
+
 If the algorithm runs successfully, the results of the test will be saved in an `output` folder in the algorithm directory.
 
 ## Tests
-### Pytest is used as the testing framework.
+
+### Pytest is used as the testing framework
+
 Run the following steps to execute the unit and integration tests inside the `tests/` folder
+
 ```sh
 docker run --entrypoint python3 aiverify-blur-corruptions:v2.0.0a1 -m pytest .
 ```

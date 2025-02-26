@@ -1,13 +1,16 @@
 # Algorithm - Environment Corruptions
 
 ## Description
-* Robustness plugin with environment corruptions
+
+- Robustness plugin with environment corruptions
 
 ## License
-* Licensed under Apache Software License 2.0
 
-## Developers:
-* AI Verify
+- Licensed under Apache Software License 2.0
+
+## Developers
+
+- AI Verify
 
 ## Installation
 
@@ -16,22 +19,8 @@ Each test algorithm can now be installed via pip and run individually.
 ```sh
 pip install aiverify-environment-corruptions==2.0.0a1
 ```
-> [!NOTE]  
-> This plugin requires on imagemagick to be installed. Follow the steps below to resolve the dependency.
-> 
-```sh
-# install imagemagick v6
-brew uninstall imagemagick
-brew install imagemagick@6
-brew unlink imagemagick
-brew link imagemagick@6 --force
 
-# ~/.bashrc or ~/.zshrc
-export BREW_PREFIX=$(brew --prefix)
-export MAGICK_HOME="$BREW_PREFIX/opt/imagemagick@6"
-```
-
-## Example Usage:
+## Example Usage
 
 Run the following bash script to execute the plugin
 
@@ -52,7 +41,11 @@ python -m aiverify_environment_corruptions \
   --file_name_label file_name
 ```
 
-If the algorithm runs successfully, the results of the test will be saved in an `output` folder. 
+If the algorithm runs successfully, the results of the test will be saved in an `output` folder.
+
+## Notebook Preview
+
+Use the [environment.ipynb](aiverify_environment_corruptions/utils/environment.ipynb) notebook to preview each corruption function and modify the default parameter values if needed.
 
 ## Develop plugin locally
 
@@ -68,20 +61,23 @@ source .venv/bin/activate
 # execute plugin
 cd aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/environment_corruptions/
 
-# install aiverify-test-engine 
+# install aiverify-test-engine
 pip install -e '.[dev]'
 
 python -m aiverify_environment_corruptions --data_path  <data_path> --model_path <model_path> --ground_truth_path <ground_truth_path> --ground_truth <str> --model_type CLASSIFICATION --run_pipeline --set_seed <int> --annotated_ground_truth_path <annotated_file_path> --file_name_label <str>
 ```
 
 ## Build Plugin
+
 ```sh
 cd aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/environment_corruptions/
 hatch build
 ```
 
 ## Tests
-### Pytest is used as the testing framework.
+
+### Pytest is used as the testing framework
+
 Run the following steps to execute the unit and integration tests inside the `tests/` folder
 
 ```sh
@@ -90,12 +86,15 @@ pytest .
 ```
 
 ## Run using Docker
+
 In the aiverify root directory, run the below command to build the docker image
+
 ```sh
 docker build -t aiverify-environment-corruptions:v2.0.0a1 -f stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/environment_corruptions/Dockerfile .
 ```
 
 Run the below bash script to run the algorithm
+
 ```sh
 #!/bin/bash
 docker run \
@@ -112,11 +111,15 @@ docker run \
   --set_seed 10 \
   --file_name_label file_name
 ```
+
 If the algorithm runs successfully, the results of the test will be saved in an `output` folder in the algorithm directory.
 
 ## Tests
-### Pytest is used as the testing framework.
+
+### Pytest is used as the testing framework
+
 Run the following steps to execute the unit and integration tests inside the `tests/` folder
+
 ```sh
 docker run --entrypoint python3 aiverify-environment-corruptions:v2.0.0a1 -m pytest .
 ```
