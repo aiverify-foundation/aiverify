@@ -24,6 +24,30 @@
             "description": "Change to a specific seed for random selection the sample data for display if desired",
             "default": 10,
             "type": "integer"
+        },
+        "exclude": {
+            "title": "Name(s) of environment corruption to exclude",
+            "description": "Specify the name(s) of environment corruption function to exclude. Runs all corruptions if not provided.",
+            "type": ["array", "null"],
+            "items": {"type": "string"}
+        },
+        "snow_intensity": {
+            "title": "Snow intensity value(s)",
+            "description": "Customize the intensity value(s) for the Snow corruption function.",
+            "type": ["array", "null"],
+            "items": {"type": "number"}
+        },
+        "fog_intensity": {
+            "title": "Fog intensity value(s)",
+            "description": "Customize the intensity value(s) for the Fog corruption function.",
+            "type": ["array", "null"],
+            "items": {"type": "number"}
+        },
+        "rain_type": {
+            "title": "Rain type(s)",
+            "description": "Customize the type(s) for the Rain corruption function.",
+            "type": ["array", "null"],
+            "items": {"type": "string"}
         }
     }
 }

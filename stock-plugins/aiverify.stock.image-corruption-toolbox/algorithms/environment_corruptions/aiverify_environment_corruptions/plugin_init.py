@@ -1,7 +1,8 @@
 import argparse
 
-from aiverify_environment_corruptions.algo_init import AlgoInit
 from aiverify_test_engine.plugins.enums.model_type import ModelType
+
+from aiverify_environment_corruptions.algo_init import AlgoInit
 
 parser = argparse.ArgumentParser(description="Run the plugin test with specified parameters.")
 
@@ -50,6 +51,30 @@ def parse_input_args():
         help="Path to the annotated labels file.",
     )
     parser.add_argument("--file_name_label", default="", help="The label of the file name.")
+    parser.add_argument(
+        "--exclude",
+        nargs="+",
+        help="Specify the name(s) of environment corruption function to exclude. Runs all corruptions if not provided.",
+    )
+    parser.add_argument(
+        "--snow_intensity",
+        nargs="+",
+        type=float,
+        help="Customize the intensity value(s) for the Snow corruption function.",
+    )
+    parser.add_argument(
+        "--fog_intensity",
+        nargs="+",
+        type=float,
+        help="Customize the intensity value(s) for the Fog corruption function.",
+    )
+    parser.add_argument(
+        "--rain_type",
+        nargs="+",
+        type=str,
+        choices=["drizzle", "heavy", "torrential"],
+        help="Customize the type(s) for the Rain corruption function.",
+    )
 
 
 def invoke_aiverify_digital_corruptions_plugin():
@@ -70,10 +95,18 @@ def invoke_aiverify_digital_corruptions_plugin():
     # Map string argument to ModelType enum
     model_type = ModelType[args.model_type]
 
+    user_defined_params = {
+        "exclude": args.exclude,
+        "snow_intensity": args.snow_intensity,
+        "fog_intensity": args.fog_intensity,
+        "rain_type": args.rain_type,
+    }
+
     plugin_argument_values = {
         "set_seed": args.set_seed,
         "annotated_ground_truth_path": args.annotated_ground_truth_path,
         "file_name_label": args.file_name_label,
+        **user_defined_params,
     }
 
     print("*" * 20)
@@ -89,7 +122,8 @@ def invoke_aiverify_digital_corruptions_plugin():
         f"Core Modules Path: {args.core_modules_path}\n"
         f"Seed Value: {args.set_seed}\n"
         f"Annotated Ground Truth Path: {args.annotated_ground_truth_path}\n"
-        f"File Name Label: {args.file_name_label}"
+        f"File Name Label: {args.file_name_label}\n"
+        f"User Defined Parameters: {user_defined_params}"
     )
     print("*" * 20)
 
