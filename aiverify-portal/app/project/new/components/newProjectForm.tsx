@@ -1,15 +1,15 @@
 'use client';
+import { useActionState } from 'react';
+import { useEffect, useState } from 'react';
+import { createProject } from '@/app/project/actions/createProject';
+import { ProjectFormValues } from '@/app/project/types';
+import { FormState } from '@/app/types';
+import { Icon } from '@/lib/components/IconSVG';
+import { IconName } from '@/lib/components/IconSVG';
 import { Button, ButtonVariant } from '@/lib/components/button';
+import { Modal } from '@/lib/components/modal';
 import { TextArea } from '@/lib/components/textArea';
 import { TextInput } from '@/lib/components/textInput';
-import { useActionState } from 'react';
-import { ProjectFormValues } from '../../types';
-import { createProject } from '../../actions/createProject';
-import { FormState } from '@/app/types';
-import { useEffect, useState } from 'react';
-import { Icon } from '@/lib/components/IconSVG';
-import { Modal } from '@/lib/components/modal';
-import { IconName } from '@/lib/components/IconSVG';
 
 const initialFormValues: FormState<ProjectFormValues> = {
   formStatus: 'initial',
