@@ -18,11 +18,16 @@ type UrlSearchParams = {
 export default async function TemplatesPage(props: UrlSearchParams) {
   const params = await props.searchParams;
   const { projectId, flow } = params;
-  if (projectId == undefined) {
+  if (flow == undefined) {
+    console.log('flow id is required');
     notFound();
   }
 
-  const result = await fetchProjects({ ids: [projectId] });
+  if (flow == UserFlows.NewProject && projectId == undefined) {
+    notFound();
+  }
+
+  const result = await fetchProjects({ ids: [projectId as string] });
   if ('message' in result) {
     notFound();
   }

@@ -47,9 +47,6 @@ function TestResultsDrawer(props: TestResultsDrawerProps) {
           {selectedTestResults.length > 0 ? (
             <SelectedTestResults results={selectedTestResults} />
           ) : null}
-          {selectedTestResults.length > 0 ? (
-            <SelectedTestResults results={selectedTestResults} />
-          ) : null}
         </div>
         <DrawerContent className="sm:max-w-lg">
           <DrawerHeader>

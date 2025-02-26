@@ -1,9 +1,9 @@
 'use server';
 import { redirect } from 'next/navigation';
 import { ZodError, z } from 'zod';
-import { ErrorWithMessage } from '@/app/errorTypes';
 import type { ProjectFormValues } from '@/app/project/types';
 import { FormState, ProjectInfo } from '@/app/types';
+import { UserFlows } from '@/app/userFlowsEnum';
 import { processResponse } from '@/lib/utils/fetchRequestHelpers';
 import { formatZodSchemaErrors } from '@/lib/utils/formatZodSchemaErrors';
 
@@ -14,7 +14,7 @@ const projectFormSchema = z.object({
   company: z.string(),
 });
 
-const endpoint = 'http://localhost:4000/projects';
+const endpoint = `${process.env.APIGW_HOST}/projects`;
 
 export async function createProject(
   prevState: FormState<ProjectFormValues>,
@@ -56,5 +56,7 @@ export async function createProject(
     };
   }
 
-  redirect(`/templates?projectId=${result.data.id}`);
+  redirect(
+    `/templates?flow=${UserFlows.NewProject}&projectId=${result.data.id}`
+  );
 }

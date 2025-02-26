@@ -23,7 +23,7 @@ export default async function CanvasPage(props: UrlSearchParams) {
   const { flow, projectId, testResultIds } = searchParams;
   const result = await fetchProjects({ ids: [projectId] });
 
-  if (!projectId || !flow || 'message' in result) {
+  if (!projectId || flow == undefined || 'message' in result) {
     notFound();
   }
 
