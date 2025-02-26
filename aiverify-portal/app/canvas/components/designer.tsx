@@ -7,6 +7,7 @@ import {
   RiArrowRightLine,
   RiPrinterLine,
 } from '@remixicon/react';
+import Link from 'next/link';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useReducer } from 'react';
 import GridLayout, { Layout } from 'react-grid-layout';
@@ -23,6 +24,9 @@ import { getWidgetInputBlocksFromPlugins } from '@/app/canvas/utils/getWidgetInp
 import { isPageContentOverflow } from '@/app/canvas/utils/isPageContentOverflow';
 import { populateInitialWidgetResult } from '@/app/canvas/utils/populateInitialWidgetResult';
 import { Widget } from '@/app/types';
+import { ProjectInfo } from '@/app/types';
+import { UserFlows } from '@/app/userFlowsEnum';
+import { Button } from '@/lib/components/Button';
 import { cn } from '@/lib/utils/twmerge';
 import {
   A4_MARGIN,
@@ -60,9 +64,14 @@ type GridItemDivRequiredStyles =
   `grid-comp-wrapper relative group z-10${string}`; // mandatory to have relative and group
 
 type DesignerProps = {
+  flow: UserFlows;
+  project: ProjectInfo;
   allPluginsWithMdx: PluginForGridLayout[];
   allTestResults: ParsedTestResults[]; // ParsedTestResult should have value of 'output' property in the form of Javascript object
   selectedTestResultsFromUrlParams?: ParsedTestResults[];
+  disabled?: boolean;
+  disableNextButton?: boolean;
+  disablePreviousButton?: boolean;
 };
 
 type EventDataTransfer = Event & {
@@ -92,9 +101,14 @@ function createGridItemId(widget: Widget, pageIndex: number) {
 
 function Designer(props: DesignerProps) {
   const {
+    flow,
+    project,
     allPluginsWithMdx,
     allTestResults = [],
     selectedTestResultsFromUrlParams = [],
+    disabled = false,
+    disableNextButton = false,
+    disablePreviousButton = false,
   } = props;
   const canvasRef = useRef<HTMLDivElement>(null);
   const isInitialMount = useRef(true);
@@ -487,7 +501,7 @@ function Designer(props: DesignerProps) {
     return totalHeight;
   }, [layouts.length]);
 
-  const pageControlsSection = (
+  const mainControlsSection = (
     <section className="fixed right-[100px] top-[120px] z-50 flex w-[50px] max-w-[50px] flex-col gap-4">
       <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
         <button
@@ -497,14 +511,16 @@ function Designer(props: DesignerProps) {
           <RiPrinterLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
         </button>
       </div>
-      <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
-        <button
-          className="disabled:opacity-50"
-          title="Toggle Grid"
-          onClick={() => dispatch({ type: 'TOGGLE_GRID' })}>
-          <RiGridLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
-        </button>
-      </div>
+      {!disabled ? (
+        <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
+          <button
+            className="disabled:opacity-50"
+            title="Toggle Grid"
+            onClick={() => dispatch({ type: 'TOGGLE_GRID' })}>
+            <RiGridLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
+          </button>
+        </div>
+      ) : null}
       <ZoomControl
         zoomLevel={zoomLevel}
         onZoomReset={resetZoom}
@@ -512,6 +528,7 @@ function Designer(props: DesignerProps) {
         onZoomOut={zoomOut}
       />
       <PageNavigation
+        disableAddPage={disabled}
         totalPages={layouts.length}
         currentPage={currentPage}
         onPageChange={handlePageChange}
@@ -543,8 +560,8 @@ function Designer(props: DesignerProps) {
       )}
 
       <div className={cn('p-4', !isPanelOpen && 'hidden')}>
-        <h4 className="mb-0 text-lg font-bold">Project Name</h4>
-        <p className="text-sm text-white">Project Description</p>
+        <h4 className="mb-0 text-lg font-bold">{project.projectInfo.name}</h4>
+        <p className="text-sm text-white">{project.projectInfo.description}</p>
         <PluginsPanel
           plugins={allPluginsWithMdx}
           className="custom-scrollbar w-full overflow-auto pr-[10px] pt-[50px]"
@@ -624,6 +641,7 @@ function Designer(props: DesignerProps) {
               )}
               <PageNumber
                 pageNumber={pageIndex + 1}
+                disableDelete={disabled}
                 onDeleteClick={
                   !isOverflowPage
                     ? () => handleDeletePage(pageIndex)
@@ -716,7 +734,7 @@ function Designer(props: DesignerProps) {
     </FreeFormDraggableArea>
   );
 
-  const testControlsSection = (
+  const testSelector = (
     <section
       className={cn(
         'fixed top-[90px] z-10 flex flex-col gap-4',
@@ -734,13 +752,13 @@ function Designer(props: DesignerProps) {
   // console.log('plugins', allPluginsWithMdx);
 
   /*
-    Designer component has 3 sections:
+    Designer component has 3 main sections:
     - The plugins panel section
     - The controls section
     - The design section
 
     The design section has 3 key nested areas (nested divs):
-    - The free form area
+    - The free form draggable area
       - This area is the largest area and takes up the entire width of the screen and full height below page header.
     - The content area
       - This is a container wrapping the main content. It has large overflowing excess width and height to allow dragging and scrolling.
@@ -759,11 +777,32 @@ function Designer(props: DesignerProps) {
         />
       ) : null}
       <main className="relative h-full w-full">
-        {pluginsPanelSection}
-        {testControlsSection}
-        {pageControlsSection}
+        {disabled ? null : pluginsPanelSection}
+        {disabled ? null : testSelector}
+        {mainControlsSection}
         {pagesSection}
       </main>
+      <section className="fixed bottom-0 right-[50px] h-[100px] bg-transparent">
+        <div className="flex items-center justify-center gap-4">
+          {flow !== undefined &&
+          flow !== UserFlows.ExistingProject &&
+          !disablePreviousButton ? (
+            <Link
+              href={`/project/usermenu?flow=${flow}&projectId=${project.id}`}>
+              <Button
+                className="w-[130px] gap-4 p-2 text-white"
+                variant="secondary">
+                <RiArrowLeftLine /> Back
+              </Button>
+            </Link>
+          ) : null}
+          {!disableNextButton ? (
+            <Button className="w-[130px] gap-4 p-2 text-white">
+              Next <RiArrowRightLine />
+            </Button>
+          ) : null}
+        </div>
+      </section>
     </React.Fragment>
   );
 }

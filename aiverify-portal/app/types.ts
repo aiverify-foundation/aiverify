@@ -7,6 +7,24 @@ type Project = {
   status: string;
 };
 
+type ProjectInfo = {
+  globalVars: unknown[];
+  pages: unknown[];
+  id: number;
+  templateId: string | null;
+  projectInfo: {
+    name: string;
+    description: string;
+    reportTitle: string;
+    company: string;
+  };
+  testModelId: string | null;
+  inputBlocks: unknown[];
+  testResults: unknown[];
+  created_at: string;
+  updated_at: string;
+};
+
 type TestResult = {
   id: number;
   gid: string;
@@ -80,6 +98,11 @@ type Dataset = {
   created_at: string;
   updated_at: string;
 };
+
+type FormState<T = Record<string, string | number>> = {
+  formStatus: string;
+  formErrors: Record<string, string[]> | undefined;
+} & Partial<T>;
 
 type AlgorithmInputSchema = {
   title: string;
@@ -260,4 +283,7 @@ export type {
   TestResultData,
   InputBlockData,
   InputBlock,
+  FormState,
+  DataColumn,
+  ProjectInfo,
 };
