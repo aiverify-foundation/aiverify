@@ -24,6 +24,30 @@
             "description": "Change to a specific seed for random selection the sample data for display if desired",
             "default": 10,
             "type": "integer"
+        },
+        "exclude": {
+            "title": "Name(s) of general corruption to exclude",
+            "description": "Specify the name(s) of general corruption function to exclude. Runs all corruptions if not provided.",
+            "type": ["array", "null"],
+            "items": {"type": "string"}
+        },
+        "gaussian_noise_sigma": {
+            "title": "Gaussian Noise sigma value(s)",
+            "description": "Customize the sigma value(s) for the Gaussian Noise corruption function.",
+            "type": ["array", "null"],
+            "items": {"type": "number"}
+        },
+        "poisson_noise_scale": {
+            "title": "Poisson Noise scale value(s)",
+            "description": "Customize the scale value(s) for the Poisson Noise corruption function.",
+            "type": ["array", "null"],
+            "items": {"type": "number"}
+        },
+        "salt_and_pepper_noise_amount": {
+            "title": "Salt and Pepper Noise amount value(s)",
+            "description": "Customize the amount value(s) for the Salt and Pepper Noise corruption function.",
+            "type": ["array", "null"],
+            "items": {"type": "number"}
         }
     }
 }
