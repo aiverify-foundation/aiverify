@@ -24,6 +24,60 @@
             "description": "Change to a specific seed for random selection the sample data for display if desired",
             "default": 10,
             "type": "integer"
+        },
+        "exclude": {
+            "title": "Name(s) of digital corruption to exclude",
+            "description": "Specify the name(s) of digital corruption function to exclude. Runs all corruptions if not provided.",
+            "type": ["array", "null"],
+            "items": {"type": "string"}
+        },
+        "brightness_down_factor": {
+            "title": "Brightness Down factor value(s)",
+            "description": "Customize the factor value(s) for the Brightness Down corruption function.",
+            "type": ["array", "null"],
+            "items": {"type": "number"}
+        },
+        "brightness_up_factor": {
+            "title": "Brightness Up factor value(s)",
+            "description": "Customize the factor value(s) for the Brightness Up corruption function.",
+            "type": ["array", "null"],
+            "items": {"type": "number"}
+        },
+        "contrast_down_factor": {
+            "title": "Contrast Down factor value(s)",
+            "description": "Customize the factor value(s) for the Contrast Down corruption function.",
+            "type": ["array", "null"],
+            "items": {"type": "number"}
+        },
+        "contrast_up_factor": {
+            "title": "Contrast Up factor value(s)",
+            "description": "Customize the factor value(s) for the Contrast Up corruption function.",
+            "type": ["array", "null"],
+            "items": {"type": "number"}
+        },
+        "saturate_down_factor": {
+            "title": "Saturate Down factor value(s)",
+            "description": "Customize the factor value(s) for the Saturate Down corruption function.",
+            "type": ["array", "null"],
+            "items": {"type": "number"}
+        },
+        "saturate_up_factor": {
+            "title": "Saturate Up factor value(s)",
+            "description": "Customize the factor value(s) for the Saturate Up corruption function.",
+            "type": ["array", "null"],
+            "items": {"type": "number"}
+        },
+        "perspective_sigma": {
+            "title": "Perspective sigma value(s)",
+            "description": "Customize the sigma value(s) for the Perspective corruption function.",
+            "type": ["array", "null"],
+            "items": {"type": "number"}
+        },
+        "jpeg_compression_quality": {
+            "title": "JPEG Compression quality value(s)",
+            "description": "Customize the quality value(s) for the JPEG Compression corruption function.",
+            "type": ["array", "null"],
+            "items": {"type": "integer"}
         }
     }
 }

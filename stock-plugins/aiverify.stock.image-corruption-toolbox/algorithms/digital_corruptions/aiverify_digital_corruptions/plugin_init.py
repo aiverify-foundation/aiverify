@@ -1,7 +1,8 @@
 import argparse
 
-from aiverify_digital_corruptions.algo_init import AlgoInit
 from aiverify_test_engine.plugins.enums.model_type import ModelType
+
+from aiverify_digital_corruptions.algo_init import AlgoInit
 
 parser = argparse.ArgumentParser(description="Run the plugin test with specified parameters.")
 
@@ -50,6 +51,59 @@ def parse_input_args():
         help="Path to the annotated labels file.",
     )
     parser.add_argument("--file_name_label", default="", help="The label of the file name.")
+    parser.add_argument(
+        "--exclude",
+        nargs="+",
+        help="Specify the name(s) of digital corruption function to exclude. Runs all corruptions if not provided.",
+    )
+    parser.add_argument(
+        "--brightness_down_factor",
+        nargs="+",
+        type=float,
+        help="Customize the factor value(s) for the Brightness Down corruption function.",
+    )
+    parser.add_argument(
+        "--brightness_up_factor",
+        nargs="+",
+        type=float,
+        help="Customize the factor value(s) for the Brightness Up corruption function.",
+    )
+    parser.add_argument(
+        "--contrast_down_factor",
+        nargs="+",
+        type=float,
+        help="Customize the factor value(s) for the Contrast Down corruption function.",
+    )
+    parser.add_argument(
+        "--contrast_up_factor",
+        nargs="+",
+        type=float,
+        help="Customize the factor value(s) for the Contrast Up corruption function.",
+    )
+    parser.add_argument(
+        "--saturate_down_factor",
+        nargs="+",
+        type=float,
+        help="Customize the factor value(s) for the Saturate Down corruption function.",
+    )
+    parser.add_argument(
+        "--saturate_up_factor",
+        nargs="+",
+        type=float,
+        help="Customize the factor value(s) for the Saturate Up corruption function.",
+    )
+    parser.add_argument(
+        "--perspective_sigma",
+        nargs="+",
+        type=float,
+        help="Customize the sigma value(s) for the Perspective corruption function.",
+    )
+    parser.add_argument(
+        "--jpeg_compression_quality",
+        nargs="+",
+        type=int,
+        help="Customize the quality value(s) for the JPEG Compression corruption function.",
+    )
 
 
 def invoke_aiverify_digital_corruptions_plugin():
@@ -70,10 +124,23 @@ def invoke_aiverify_digital_corruptions_plugin():
     # Map string argument to ModelType enum
     model_type = ModelType[args.model_type]
 
+    user_defined_params = {
+        "exclude": args.exclude,
+        "brightness_down_factor": args.brightness_down_factor,
+        "brightness_up_factor": args.brightness_up_factor,
+        "contrast_down_factor": args.contrast_down_factor,
+        "contrast_up_factor": args.contrast_up_factor,
+        "saturate_down_factor": args.saturate_down_factor,
+        "saturate_up_factor": args.saturate_up_factor,
+        "perspective_sigma": args.perspective_sigma,
+        "jpeg_compression_quality": args.jpeg_compression_quality,
+    }
+
     plugin_argument_values = {
         "set_seed": args.set_seed,
         "annotated_ground_truth_path": args.annotated_ground_truth_path,
         "file_name_label": args.file_name_label,
+        **user_defined_params,
     }
 
     print("*" * 20)
@@ -89,7 +156,8 @@ def invoke_aiverify_digital_corruptions_plugin():
         f"Core Modules Path: {args.core_modules_path}\n"
         f"Seed Value: {args.set_seed}\n"
         f"Annotated Ground Truth Path: {args.annotated_ground_truth_path}\n"
-        f"File Name Label: {args.file_name_label}"
+        f"File Name Label: {args.file_name_label}",
+        f"User Defined Parameters: {user_defined_params}",
     )
     print("*" * 20)
 
