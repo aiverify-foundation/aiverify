@@ -3,6 +3,7 @@ import {
   RiArrowDownSLine,
   RiFileAddLine,
 } from '@remixicon/react';
+import React from 'react';
 import { Layout } from 'react-grid-layout';
 import { Tooltip } from '@/lib/components/tooltip';
 import { cn } from '@/lib/utils/twmerge';
@@ -10,11 +11,12 @@ import { cn } from '@/lib/utils/twmerge';
 type PageNavigationProps = {
   totalPages: number;
   currentPage: number;
+  className?: string;
+  disableAddPage?: boolean;
   onPageChange: (pageIndex: number) => void;
   onNextPage: () => void;
   onPreviousPage: () => void;
   onAddPage: () => void;
-  className?: string;
 };
 
 function PageNavigation({
@@ -25,6 +27,7 @@ function PageNavigation({
   onPreviousPage,
   onAddPage,
   className,
+  disableAddPage = false,
 }: PageNavigationProps) {
   const getVisiblePages = () => {
     const pages = [];
@@ -72,13 +75,17 @@ function PageNavigation({
         'flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 shadow-lg',
         className
       )}>
-      <button
-        className="disabled:opacity-50"
-        onClick={onAddPage}
-        title="Add new page">
-        <RiFileAddLine className="m-1 h-5 w-5 cursor-pointer text-gray-500 hover:text-gray-900" />
-      </button>
-      <div className="h-[1px] w-full bg-gray-400" />
+      {!disableAddPage ? (
+        <React.Fragment>
+          <button
+            className="disabled:opacity-50"
+            onClick={onAddPage}
+            title="Add new page">
+            <RiFileAddLine className="m-1 h-5 w-5 cursor-pointer text-gray-500 hover:text-gray-900" />
+          </button>
+          <div className="h-[1px] w-full bg-gray-400" />
+        </React.Fragment>
+      ) : null}
       <button
         onClick={onPreviousPage}
         disabled={currentPage === 0}

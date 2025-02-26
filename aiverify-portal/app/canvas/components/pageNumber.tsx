@@ -8,6 +8,7 @@ type PageNumberProps = {
   isOverflowPage?: boolean;
   zoomLevel: number;
   className?: string;
+  disableDelete?: boolean;
 };
 
 function PageNumber({
@@ -16,6 +17,7 @@ function PageNumber({
   isOverflowPage,
   zoomLevel,
   className,
+  disableDelete = false,
 }: PageNumberProps) {
   return (
     <div
@@ -28,7 +30,7 @@ function PageNumber({
         right: `${(isOverflowPage ? -15 : -10) / zoomLevel}%`,
       }}>
       Page {pageNumber}
-      {!isOverflowPage && onDeleteClick && (
+      {!isOverflowPage && onDeleteClick && !disableDelete && (
         <Tooltip
           sideOffset={-10}
           content="Delete Page"

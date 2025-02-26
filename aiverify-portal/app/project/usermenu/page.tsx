@@ -1,6 +1,5 @@
 import {
   RiArrowLeftLine,
-  RiArrowRightLine,
   RiFlaskFill,
   RiFlaskLine,
   RiUploadLine,

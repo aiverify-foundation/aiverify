@@ -69,6 +69,9 @@ type DesignerProps = {
   allPluginsWithMdx: PluginForGridLayout[];
   allTestResults: ParsedTestResults[]; // ParsedTestResult should have value of 'output' property in the form of Javascript object
   selectedTestResultsFromUrlParams?: ParsedTestResults[];
+  disabled?: boolean;
+  disableNextButton?: boolean;
+  disablePreviousButton?: boolean;
 };
 
 type EventDataTransfer = Event & {
@@ -103,8 +106,10 @@ function Designer(props: DesignerProps) {
     allPluginsWithMdx,
     allTestResults = [],
     selectedTestResultsFromUrlParams = [],
+    disabled = true,
+    disableNextButton = false,
+    disablePreviousButton = false,
   } = props;
-  console.log('project', project);
   const canvasRef = useRef<HTMLDivElement>(null);
   const isInitialMount = useRef(true);
   const freeFormAreaRef = useRef<HTMLDivElement>(null);
@@ -496,7 +501,7 @@ function Designer(props: DesignerProps) {
     return totalHeight;
   }, [layouts.length]);
 
-  const pageControlsSection = (
+  const mainControlsSection = (
     <section className="fixed right-[100px] top-[120px] z-50 flex w-[50px] max-w-[50px] flex-col gap-4">
       <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
         <button
@@ -506,14 +511,16 @@ function Designer(props: DesignerProps) {
           <RiPrinterLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
         </button>
       </div>
-      <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
-        <button
-          className="disabled:opacity-50"
-          title="Toggle Grid"
-          onClick={() => dispatch({ type: 'TOGGLE_GRID' })}>
-          <RiGridLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
-        </button>
-      </div>
+      {!disabled ? (
+        <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
+          <button
+            className="disabled:opacity-50"
+            title="Toggle Grid"
+            onClick={() => dispatch({ type: 'TOGGLE_GRID' })}>
+            <RiGridLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
+          </button>
+        </div>
+      ) : null}
       <ZoomControl
         zoomLevel={zoomLevel}
         onZoomReset={resetZoom}
@@ -521,6 +528,7 @@ function Designer(props: DesignerProps) {
         onZoomOut={zoomOut}
       />
       <PageNavigation
+        disableAddPage={disabled}
         totalPages={layouts.length}
         currentPage={currentPage}
         onPageChange={handlePageChange}
@@ -633,6 +641,7 @@ function Designer(props: DesignerProps) {
               )}
               <PageNumber
                 pageNumber={pageIndex + 1}
+                disableDelete={disabled}
                 onDeleteClick={
                   !isOverflowPage
                     ? () => handleDeletePage(pageIndex)
@@ -768,14 +777,16 @@ function Designer(props: DesignerProps) {
         />
       ) : null}
       <main className="relative h-full w-full">
-        {pluginsPanelSection}
-        {testSelector}
-        {pageControlsSection}
+        {disabled ? null : pluginsPanelSection}
+        {disabled ? null : testSelector}
+        {mainControlsSection}
         {pagesSection}
       </main>
       <section className="fixed bottom-0 right-[50px] h-[100px] bg-transparent">
         <div className="flex items-center justify-center gap-4">
-          {flow !== undefined && flow !== UserFlows.ExistingProject ? (
+          {flow !== undefined &&
+          flow !== UserFlows.ExistingProject &&
+          !disablePreviousButton ? (
             <Link
               href={`/project/usermenu?flow=${flow}&projectId=${project.id}`}>
               <Button
@@ -785,9 +796,11 @@ function Designer(props: DesignerProps) {
               </Button>
             </Link>
           ) : null}
-          <Button className="w-[130px] gap-4 p-2 text-white">
-            Next <RiArrowRightLine />
-          </Button>
+          {!disableNextButton ? (
+            <Button className="w-[130px] gap-4 p-2 text-white">
+              Next <RiArrowRightLine />
+            </Button>
+          ) : null}
         </div>
       </section>
     </React.Fragment>
