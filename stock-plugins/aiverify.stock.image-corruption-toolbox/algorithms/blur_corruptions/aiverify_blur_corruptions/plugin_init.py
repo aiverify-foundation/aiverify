@@ -1,7 +1,8 @@
 import argparse
 
-from aiverify_blur_corruptions.algo_init import AlgoInit
 from aiverify_test_engine.plugins.enums.model_type import ModelType
+
+from aiverify_blur_corruptions.algo_init import AlgoInit
 
 parser = argparse.ArgumentParser(description="Run the plugin test with specified parameters.")
 
