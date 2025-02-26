@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-import { ProjectInfo } from '@/app/types';
 import { UserFlows } from '@/app/userFlowsEnum';
 import {
   getPlugins,
@@ -22,13 +21,13 @@ type UrlSearchParams = {
 export default async function CanvasPage(props: UrlSearchParams) {
   const searchParams = await props.searchParams;
   const { flow, projectId, testResultIds } = searchParams;
-  const result = await fetchProjects({ id: parseInt(projectId) });
+  const result = await fetchProjects({ ids: [projectId] });
 
   if (!projectId || !flow || 'message' in result) {
     notFound();
   }
 
-  const project = result.data as ProjectInfo;
+  const project = result.data[0];
 
   const plugins = await getPlugins({ groupByPluginId: false });
   const testResults = await getTestResults();
@@ -68,6 +67,7 @@ export default async function CanvasPage(props: UrlSearchParams) {
 
   return (
     <Designer
+      flow={flow}
       project={project}
       allPluginsWithMdx={pluginsWithMdx}
       allTestResults={parsedTestResults}

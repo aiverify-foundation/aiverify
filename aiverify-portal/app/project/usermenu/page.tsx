@@ -15,7 +15,7 @@ type UrlSearchParams = {
 export default async function UserMenuPage(props: UrlSearchParams) {
   const searchParams = await props.searchParams;
   const { projectId, flow } = searchParams;
-  const result = await fetchProjects({ id: parseInt(projectId) });
+  const result = await fetchProjects({ ids: [projectId] });
 
   if (!projectId || !flow || 'message' in result) {
     notFound();
