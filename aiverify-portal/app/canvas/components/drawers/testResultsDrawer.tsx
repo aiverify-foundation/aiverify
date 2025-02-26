@@ -39,7 +39,7 @@ function TestResultsDrawer(props: TestResultsDrawerProps) {
       <Drawer>
         <div className="flex flex-col items-start gap-2">
           <DrawerTrigger asChild>
-            <Button variant="secondary">
+            <Button variant="white">
               <RiArticleFill className="h-5 w-5 text-gray-500 hover:text-gray-900" />
               &nbsp;Test results for this report
             </Button>
