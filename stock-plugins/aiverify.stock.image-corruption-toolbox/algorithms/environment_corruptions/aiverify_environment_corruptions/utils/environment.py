@@ -19,6 +19,8 @@ def snow(img: np.ndarray, intensity: float = 2.5) -> np.ndarray:
         np.ndarray: Numpy ndarray of image with Snow corruption.
     """
     transform = A.RandomSnow(brightness_coeff=intensity, snow_point_range=(0.1, 0.1), method="texture", p=1.0)
+    if img.dtype != np.uint8:
+        img = img.astype(np.float32)
     return transform(image=img)["image"]
 
 
@@ -56,6 +58,8 @@ def rain(img: np.ndarray, type: Literal["drizzle", "heavy", "torrential"] = "dri
         np.ndarray: Numpy ndarray of image with Rain corruption.
     """
     transform = A.RandomRain(rain_type=type, p=1.0)
+    if img.dtype != np.uint8:
+        img = img.astype(np.float32)
     return transform(image=img)["image"]
 
 
