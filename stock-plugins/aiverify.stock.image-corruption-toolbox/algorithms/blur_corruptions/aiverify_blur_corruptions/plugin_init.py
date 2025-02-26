@@ -50,19 +50,11 @@ def parse_input_args():
         help="Path to the annotated labels file.",
     )
     parser.add_argument("--file_name_label", default="", help="The label of the file name.")
-
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument(
-        "--include",
-        nargs="+",
-        help="Specify the name(s) of blur corruption function to include. Runs all corruptions if not provided.",
-    )
-    group.add_argument(
+    parser.add_argument(
         "--exclude",
         nargs="+",
         help="Specify the name(s) of blur corruption function to exclude. Runs all corruptions if not provided.",
     )
-
     parser.add_argument(
         "--gaussian_blur_sigma",
         nargs="+",
@@ -120,7 +112,6 @@ def invoke_aiverify_blur_corruptions_plugin():
     model_type = ModelType[args.model_type]
 
     user_defined_params = {
-        "include": args.include,
         "exclude": args.exclude,
         "gaussian_blur_sigma": args.gaussian_blur_sigma,
         "glass_blur_max_delta": args.glass_blur_max_delta,

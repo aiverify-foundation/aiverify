@@ -335,13 +335,11 @@ class Plugin(IAlgorithm):
             }
         )
 
-        # Filter corruption functions based on "include" / "exclude" flags
-        if includes := self._input_arguments.get("include"):
-            blur_corruptions = {k: v for k, v in blur_corruptions.items() if k.lower() in includes}
-        elif excludes := self._input_arguments.get("exclude"):
+        # Remove corruption functions flagged by "exclude"
+        if excludes := self._input_arguments.get("exclude"):
             blur_corruptions = {k: v for k, v in blur_corruptions.items() if k.lower() not in excludes}
 
-        # initialise main image directory
+        # Initialise main image directory
         if Path(str(self._tmp_path)).exists():
             shutil.rmtree(str(self._tmp_path))
         Path(str(self._tmp_path)).mkdir(parents=True, exist_ok=True)
