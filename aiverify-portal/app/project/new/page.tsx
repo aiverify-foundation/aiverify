@@ -20,7 +20,7 @@ function NewProjectPage() {
               Provide general information required for the report generation
             </p>
           </div>
-          <div className="h-auto w-[1px] bg-white opacity-20"></div>
+          <div className="h-auto w-[1px] bg-white opacity-20" />
           <NewProjectForm />
         </div>
       </section>
