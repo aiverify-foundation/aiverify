@@ -7,6 +7,7 @@ import {
   RiArrowRightLine,
   RiPrinterLine,
 } from '@remixicon/react';
+import Link from 'next/link';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useReducer } from 'react';
 import GridLayout, { Layout } from 'react-grid-layout';
@@ -24,6 +25,8 @@ import { isPageContentOverflow } from '@/app/canvas/utils/isPageContentOverflow'
 import { populateInitialWidgetResult } from '@/app/canvas/utils/populateInitialWidgetResult';
 import { Widget } from '@/app/types';
 import { ProjectInfo } from '@/app/types';
+import { UserFlows } from '@/app/userFlowsEnum';
+import { Button } from '@/lib/components/Button';
 import { cn } from '@/lib/utils/twmerge';
 import {
   A4_MARGIN,
@@ -61,6 +64,7 @@ type GridItemDivRequiredStyles =
   `grid-comp-wrapper relative group z-10${string}`; // mandatory to have relative and group
 
 type DesignerProps = {
+  flow: UserFlows;
   project: ProjectInfo;
   allPluginsWithMdx: PluginForGridLayout[];
   allTestResults: ParsedTestResults[]; // ParsedTestResult should have value of 'output' property in the form of Javascript object
@@ -94,6 +98,7 @@ function createGridItemId(widget: Widget, pageIndex: number) {
 
 function Designer(props: DesignerProps) {
   const {
+    flow,
     project,
     allPluginsWithMdx,
     allTestResults = [],
@@ -720,7 +725,7 @@ function Designer(props: DesignerProps) {
     </FreeFormDraggableArea>
   );
 
-  const testControlsSection = (
+  const testSelector = (
     <section
       className={cn(
         'fixed top-[90px] z-10 flex flex-col gap-4',
@@ -738,13 +743,13 @@ function Designer(props: DesignerProps) {
   // console.log('plugins', allPluginsWithMdx);
 
   /*
-    Designer component has 3 sections:
+    Designer component has 3 main sections:
     - The plugins panel section
     - The controls section
     - The design section
 
     The design section has 3 key nested areas (nested divs):
-    - The free form area
+    - The free form draggable area
       - This area is the largest area and takes up the entire width of the screen and full height below page header.
     - The content area
       - This is a container wrapping the main content. It has large overflowing excess width and height to allow dragging and scrolling.
@@ -764,10 +769,27 @@ function Designer(props: DesignerProps) {
       ) : null}
       <main className="relative h-full w-full">
         {pluginsPanelSection}
-        {testControlsSection}
+        {testSelector}
         {pageControlsSection}
         {pagesSection}
       </main>
+      <section className="fixed bottom-0 right-[50px] h-[100px] bg-transparent">
+        <div className="flex items-center justify-center gap-4">
+          {flow !== undefined && flow !== UserFlows.ExistingProject ? (
+            <Link
+              href={`/project/usermenu?flow=${flow}&projectId=${project.id}`}>
+              <Button
+                className="w-[130px] gap-4 p-2 text-white"
+                variant="secondary">
+                <RiArrowLeftLine /> Back
+              </Button>
+            </Link>
+          ) : null}
+          <Button className="w-[130px] gap-4 p-2 text-white">
+            Next <RiArrowRightLine />
+          </Button>
+        </div>
+      </section>
     </React.Fragment>
   );
 }
