@@ -106,7 +106,7 @@ function Designer(props: DesignerProps) {
     allPluginsWithMdx,
     allTestResults = [],
     selectedTestResultsFromUrlParams = [],
-    disabled = true,
+    disabled = false,
     disableNextButton = false,
     disablePreviousButton = false,
   } = props;
