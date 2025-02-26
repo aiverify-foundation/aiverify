@@ -7,8 +7,8 @@ import {
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { UserFlows } from '@/app/userFlowsEnum';
-import { Button } from '@/lib/components/Button';
-import { Card } from '@/lib/components/Card';
+import { Button } from '@/lib/components/TremurButton';
+import { Card } from '@/lib/components/TremurCard';
 import { fetchProjects } from '@/lib/fetchApis/getProjects';
 
 type UrlSearchParams = {

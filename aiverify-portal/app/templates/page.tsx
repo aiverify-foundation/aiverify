@@ -2,7 +2,7 @@ import { RiFileChartFill } from '@remixicon/react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { UserFlows } from '@/app/userFlowsEnum';
-import { Card } from '@/lib/components/Card';
+import { Card } from '@/lib/components/TremurCard';
 import { fetchProjects } from '@/lib/fetchApis/getProjects';
 import { fetchTemplates } from '@/lib/fetchApis/getTemplates';
 import { TemplateCards } from './components/templateCards';
