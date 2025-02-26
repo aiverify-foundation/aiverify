@@ -14,6 +14,7 @@ import { TestResultData, InputBlockData, Plugin } from '@/app/types';
 import { WidgetPropertiesDrawer } from './drawers/widgetPropertiesDrawer';
 import { GridItemContextMenu } from './gridItemContextMenu';
 import { editorInputClassName } from './hocAddTextEditFuncitonality';
+import { WidgetErrorBoundary } from './widgetErrorBoundary';
 export const gridItemRootClassName = 'grid-item-root';
 type requiredStyles =
   `grid-item-root relative h-auto w-full min-h-full${string}`; // strictly required styles
@@ -67,6 +68,7 @@ function GridItemComponent({
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isHoveringRef = useRef<boolean>(false);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const enableEditing = widget.properties && widget.properties.length > 0;
   let testResultMatch = undefined;
 
   if (
@@ -227,17 +229,6 @@ function GridItemComponent({
   }, [widget, widget.mdx, testResultsUsed]);
 
   const mockInputs = useMemo(() => {
-    // if (testResultsMapping) {
-    //   if (widget.mockdata && widget.mockdata.length > 0) {
-    //     return widget.mockdata.reduce<InputBlockDataMapping>((acc, mock) => {
-    //       if (mock.type === "InputBlock") {
-    //         acc[`${widget.gid}:${mock.cid}`] = mock.data;
-    //         mock.data.metrics = getRandomFairnessMetrics();
-    //       }
-    //       return acc;
-    //     }, {});
-    //   }
-    // }
     if (widget.mockdata && widget.mockdata.length > 0) {
       return widget.mockdata.reduce<InputBlockDataMapping>((acc, mock) => {
         if (mock.type === 'InputBlock') {
@@ -254,6 +245,7 @@ function GridItemComponent({
       {showContextMenu && !isDragging ? (
         <GridItemContextMenu
           widget={widget}
+          hideEditIcon={!enableEditing}
           menuPosition={menuPosition}
           onDeleteClick={onDeleteClick}
           onInfoClick={handleInfoClick}
@@ -288,16 +280,18 @@ function GridItemComponent({
         {isResizing ? (
           <div className="h-auto w-full bg-gray-100" />
         ) : (
-          <Component
-            id={widget.gridItemId}
-            properties={properties}
-            testResult={testResult}
-            inputBlockData={mockInputs}
-            getIBData={(cid) => mockInputs[`${widget.gid}:${cid}`]}
-            getResults={(cid) => testResult[`${widget.gid}:${cid}`]}
-            width={dimensions.width}
-            height={dimensions.height}
-          />
+          <WidgetErrorBoundary widgetName={widget.name || widget.cid}>
+            <Component
+              id={widget.gridItemId}
+              properties={properties}
+              testResult={testResult}
+              inputBlockData={mockInputs}
+              getIBData={(cid) => mockInputs[`${widget.gid}:${cid}`]}
+              getResults={(cid) => testResult[`${widget.gid}:${cid}`]}
+              width={dimensions.width}
+              height={dimensions.height}
+            />
+          </WidgetErrorBoundary>
         )}
       </div>
     </React.Fragment>
