@@ -51,6 +51,55 @@ def parse_input_args():
     )
     parser.add_argument("--file_name_label", default="", help="The label of the file name.")
 
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument(
+        "--include",
+        nargs="+",
+        help="Specify the name(s) of blur corruption function to include. Runs all corruptions if not provided.",
+    )
+    group.add_argument(
+        "--exclude",
+        nargs="+",
+        help="Specify the name(s) of blur corruption function to exclude. Runs all corruptions if not provided.",
+    )
+
+    parser.add_argument(
+        "--gaussian_blur_sigma",
+        nargs="+",
+        type=float,
+        help="Customize the sigma value(s) for the Gaussian Blur corruption function.",
+    )
+    parser.add_argument(
+        "--glass_blur_max_delta",
+        nargs="+",
+        type=int,
+        help="Customize the max delta value(s) for the Glass Blur corruption function.",
+    )
+    parser.add_argument(
+        "--defocus_blur_radius",
+        nargs="+",
+        type=int,
+        help="Customize the radius value(s) for the Defocus Blur corruption function.",
+    )
+    parser.add_argument(
+        "--horizontal_motion_blur_kernel_size",
+        nargs="+",
+        type=int,
+        help="Customize the kernel size value(s) for the Horizontal Motion Blur corruption function.",
+    )
+    parser.add_argument(
+        "--vertical_motion_blur_kernel_size",
+        nargs="+",
+        type=int,
+        help="Customize the kernel size value(s) for the Vertical Motion Blur corruption function.",
+    )
+    parser.add_argument(
+        "--zoom_blur_zoom_factor",
+        nargs="+",
+        type=float,
+        help="Customize the zoom factor value(s) for the Zoom Blur corruption function.",
+    )
+
 
 def invoke_aiverify_blur_corruptions_plugin():
     # =====================================================================================
@@ -70,10 +119,22 @@ def invoke_aiverify_blur_corruptions_plugin():
     # Map string argument to ModelType enum
     model_type = ModelType[args.model_type]
 
+    user_defined_params = {
+        "include": args.include,
+        "exclude": args.exclude,
+        "gaussian_blur_sigma": args.gaussian_blur_sigma,
+        "glass_blur_max_delta": args.glass_blur_max_delta,
+        "defocus_blur_radius": args.defocus_blur_radius,
+        "horizontal_motion_blur_kernel_size": args.horizontal_motion_blur_kernel_size,
+        "vertical_motion_blur_kernel_size": args.vertical_motion_blur_kernel_size,
+        "zoom_blur_zoom_factor": args.zoom_blur_zoom_factor,
+    }
+
     plugin_argument_values = {
         "set_seed": args.set_seed,
         "annotated_ground_truth_path": args.annotated_ground_truth_path,
         "file_name_label": args.file_name_label,
+        **user_defined_params,
     }
 
     print("*" * 20)
@@ -89,7 +150,8 @@ def invoke_aiverify_blur_corruptions_plugin():
         f"Core Modules Path: {args.core_modules_path}\n"
         f"Seed Value: {args.set_seed}\n"
         f"Annotated Ground Truth Path: {args.annotated_ground_truth_path}\n"
-        f"File Name Label: {args.file_name_label}"
+        f"File Name Label: {args.file_name_label}\n"
+        f"User Defined Parameters: {user_defined_params}"
     )
     print("*" * 20)
 

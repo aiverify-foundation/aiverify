@@ -1,210 +1,141 @@
-import cv2
+import albumentations as A
 import numpy as np
-from scipy.ndimage import zoom as scizoom
-from skimage.filters import gaussian
+
+DEFAULT_PARAMS: dict[str, list] = {}  # {"<function>_<keyword>" : [<value1>, <value2>, ...]}
 
 
-def disk(radius: int, alias_blur: float = 0.1, dtype: type = np.float32) -> np.ndarray:
+def gaussian_blur(img: np.ndarray, sigma: float = 2.0) -> np.ndarray:
     """
-    Modified from : https://github.com/hendrycks/robustness/blob/master/ImageNet-C/create_c/make_imagenet_c.py
-    (Apache 2.0)
-    """
-    if radius <= 8:
-        L = np.arange(-8, 8 + 1)
-        ksize = (3, 3)
-    else:
-        L = np.arange(-radius, radius + 1)
-        ksize = (5, 5)
-    X, Y = np.meshgrid(L, L)
-    aliased_disk = np.array((X**2 + Y**2) <= radius**2, dtype=dtype)  # circle
-    aliased_disk /= np.sum(aliased_disk)
+    Apply Gaussian blur to the input image.
 
-    # supersample disk to antialias
-    return cv2.GaussianBlur(aliased_disk, ksize=ksize, sigmaX=alias_blur)
+    Gaussian blur is a widely used image processing technique that reduces image noise and detail, creating a smoothing
+    effect.
+
+    Args:
+        img (np.ndarray): Numpy ndarray of original image to be corrupted.
+        sigma (float, optional): Standard deviation of the Gaussian kernel. Must be in range [0, inf). Defaults to 2.0.
+
+    Returns:
+        np.ndarray: Numpy ndarray of image with Gaussian blur corruption.
+    """
+    transform = A.GaussianBlur(sigma_limit=(sigma, sigma), blur_limit=0, p=1.0)
+    return transform(image=img)["image"]
 
 
-def clipped_zoom(img: np.ndarray, zoom_factor: int) -> np.ndarray:
+DEFAULT_PARAMS["gaussian_blur_sigma"] = [0.5, 1.0, 2.0, 3.0, 4.0]
+
+
+def glass_blur(img: np.ndarray, max_delta: int = 3) -> np.ndarray:
     """
-    Modified from : https://github.com/hendrycks/robustness/blob/master/ImageNet-C/create_c/make_imagenet_c.py
-    (Apache 2.0)
+    Apply a glass blur effect to the input image.
+
+    This transform simulates the effect of looking through textured glass by locally shuffling pixels in the image. It
+    creates a distorted, frosted glass-like appearance.
+
+    Args:
+        img (np.ndarray): Numpy ndarray of original image to be corrupted.
+        max_delta (int, optional): Maximum distance in pixels for shuffling. Determines how far pixels can be moved.
+        Larger value creates more distortion. Must be a positive integer. Defaults to 3.
+
+    Returns:
+        np.ndarray: Numpy ndarray of image with glass blur corruption.
     """
-    height = img.shape[0]
-    # ceil crop height(= crop width)
-    crop_height = int(np.ceil(height / zoom_factor))
-    top = (height - crop_height) // 2
-    img = scizoom(
-        img[top : top + crop_height, top : top + crop_height],
-        (zoom_factor, zoom_factor, 1),
-        order=1,
+    transform = A.GlassBlur(max_delta=max_delta, sigma=0.7, iterations=2, mode="fast", p=1.0)
+    return transform(image=img)["image"]
+
+
+DEFAULT_PARAMS["glass_blur_max_delta"] = [1, 2, 3, 4, 5]
+
+
+def defocus_blur(img: np.ndarray, radius: int = 7) -> np.ndarray:
+    """
+    Apply defocus blur to the input image.
+
+    This transform simulates the effect of an out-of-focus camera by applying a defocus blur to the image. It uses a
+    combination of disc kernels and Gaussian blur to create a realistic defocus effect.
+
+    Args:
+        img (np.ndarray) : Numpy ndarray of original image to be corrupted.
+        radius (int, optional) : Radius of the defocus blur. Larger values create a stronger blur effect. Defaults to 7.
+
+    Returns:
+        np.ndarray: Numpy ndarray of image with defocus blur corruption.
+    """
+    transform = A.Defocus(radius=(radius, radius), alias_blur=(0.5, 0.5), p=1.0)
+    return transform(image=img)["image"]
+
+
+DEFAULT_PARAMS["defocus_blur_radius"] = [3, 5, 7, 9, 11]
+
+
+def horizontal_motion_blur(img: np.ndarray, kernel_size: int = 11) -> np.ndarray:
+    """
+    Apply horizontal motion blur to the input image using a line-shaped kernel.
+
+    This transform simulates motion blur effects that occur during image capture, such as camera shake or object
+    movement.
+
+    Args:
+        img (np.ndarray) : Numpy ndarray of original image to be corrupted.
+        kernel_size (int, optional) : Kernel size for blurring. Should be in range [3, inf). Defaults to 11.
+
+    Returns:
+        np.ndarray: Numpy ndarray of the image with horizontal motion blur corruption.
+    """
+    transform = A.MotionBlur(
+        blur_limit=(kernel_size, kernel_size),
+        angle_range=(0.0, 0.0),
+        direction_range=(0.0, 0.0),
+        allow_shifted=False,
+        p=1.0,
     )
-    # trim off any extra pixels
-    trim_top = (img.shape[0] - height) // 2
-    return img[trim_top : trim_top + height, trim_top : trim_top + height]
+    return transform(image=img)["image"]
 
 
-def gaussian_blur(img: np.ndarray, severity: int = 1) -> np.ndarray:
+DEFAULT_PARAMS["horizontal_motion_blur_kernel_size"] = [3, 7, 11, 15, 19]
+
+
+def vertical_motion_blur(img: np.ndarray, kernel_size: int = 11) -> np.ndarray:
     """
-    Adding gaussian blur to images
-    Modified from : https://github.com/hendrycks/robustness/blob/master/ImageNet-C/create_c/make_imagenet_c.py
-    (Apache 2.0)
+    Apply vertical motion blur to the input image using a line-shaped kernel.
 
-    Parameters:
-        img (np.ndarray) : Numpy ndarray of original image to be corrupted
-        severity (int) : Level of severity of noise added
-
-    Returns:
-        np.ndarray: Numpy ndarray of image with Gaussian blur corruption
-    """
-    severity_constant = [8, 15, 23, 35, 65][severity - 1]
-    img = gaussian(img, sigma=severity_constant, channel_axis=2)
-    return np.clip(img, 0, 1)
-
-
-def glass_blur(img: np.ndarray, severity=1) -> np.ndarray:
-    """
-    Adding glass blur to images
-    Modified from : https://github.com/hendrycks/robustness/blob/master/ImageNet-C/create_c/make_imagenet_c.py
-    (Apache 2.0)
-
-    Parameters:
-        img (np.ndarray) : Numpy ndarray of original image to be corrupted
-        severity (int) : Level of severity of noise addedd
-
-    Returns:
-        np.ndarray: Numpy ndarray of image with glassblur corruption
-    """
-    # severity_constant = [sigma, max_delta, iterations]
-    severity_constant = [
-        (1.5, 4, 1),
-        (1.8, 4, 3),
-        (2.0, 5, 4),
-        (2.2, 7, 5),
-        (3.0, 8, 6),
-    ][severity - 1]
-    img = np.uint8(gaussian(img, sigma=severity_constant[0], channel_axis=2) * 255)
-    sigma = severity_constant[0]
-    max_delta = severity_constant[1]
-    iterations = severity_constant[2]
-    # locally shuffle pixels, iterations depends on the severity level and
-    for i in range(iterations):
-        # height, width = img.shape
-        for h in range(img.shape[0] - max_delta, max_delta, -1):
-            for w in range(img.shape[1] - max_delta, max_delta, -1):
-                dx, dy = np.random.randint(-max_delta, max_delta, size=(2,))
-                h_prime, w_prime = h + dy, w + dx
-                # swap
-                img[h, w], img[h_prime, w_prime] = img[h_prime, w_prime], img[h, w]
-    return np.clip(gaussian(img / 255.0, sigma, channel_axis=2), 0, 1)
-
-
-def defocus_blur(img: np.ndarray, severity: int = 1) -> np.ndarray:
-    """
-    Adding defocus to images
-    Modified from : https://github.com/hendrycks/robustness/blob/master/ImageNet-C/create_c/make_imagenet_c.py
-    (Apache 2.0)
-
-    Parameters:
-        img (np.ndarray) : Numpy ndarray of original image to be corrupted
-        severity (int) : Level of severity of noise addedd
-
-    Returns:
-        np.ndarray: Numpy ndarray of image with defocus blur corruption
-    """
-    severity_constant = [(9, 0.6), (13, 0.4), (18, 0.3), (25, 0.3), (35, 0.3)][severity - 1]
-    radius = severity_constant[0]
-    alias_blur = severity_constant[1]
-    kernel = disk(radius, alias_blur)
-    channels = []
-    two_dim = False
-    for d in range(3):
-        channels.append(cv2.filter2D(img[:, :, d], -1, kernel))
-    channels = np.array(channels).transpose((1, 2, 0))
-    if two_dim:
-        channels = cv2.cvtColor(channels, cv2.COLOR_RGB2GRAY)
-    return np.clip(channels, 0, 1)
-
-
-def horizontal_motion_blur(img: np.ndarray, severity: int = 1) -> np.ndarray:
-    """
-    Perform the hoirzontal motion blur effect.
-    Adapted from: https://github.com/stanfordmlgroup/cheXphoto/tree/master/transforms (MIT)
+    This transform simulates motion blur effects that occur during image capture, such as camera shake or object
+    movement.
 
     Args:
-        img (np.ndarray) : Numpy ndarray of original image to be corrupted
-        severity (int) : Level of severity of noise addedd
+        img (np.ndarray) : Numpy ndarray of original image to be corrupted.
+        kernel_size (int, optional) : Kernel size for blurring. Should be in range [3, inf). Defaults to 11.
 
     Returns:
-        np.ndarray: Numpy ndarray of the image perturbed by the blur
+        np.ndarray: Numpy ndarray of the image with vertical motion blur corruption.
     """
-    severity_constant = [25, 40, 60, 95, 200][severity - 1]
-    img = img * 255.0
-    two = False
-    if img.ndim == 2:
-        two = True
-        img = np.expand_dims(img, axis=2)
-    img = img[:, :, ::-1].copy()
-    # generating the kernel
-    kernel_motion_blur = np.zeros((severity_constant, severity_constant))
-    kernel_motion_blur[int((severity_constant - 1) / 2), :] = np.ones(severity_constant)
-    kernel_motion_blur = kernel_motion_blur / severity_constant
-
-    # applying the kernel to the input image
-    output = cv2.filter2D(img, -1, kernel_motion_blur)
-    output = cv2.cvtColor(output.astype(np.uint8), cv2.COLOR_BGR2RGB)
-    if two:
-        np.squeeze(output, axis=2)
-
-    return output / 255.0
+    transform = A.MotionBlur(
+        blur_limit=(kernel_size, kernel_size),
+        angle_range=(90.0, 90.0),
+        direction_range=(0.0, 0.0),
+        allow_shifted=False,
+        p=1.0,
+    )
+    return transform(image=img)["image"]
 
 
-def vertical_motion_blur(img: np.ndarray, severity: int = 1) -> np.ndarray:
+DEFAULT_PARAMS["vertical_motion_blur_kernel_size"] = [3, 7, 11, 15, 19]
+
+
+def zoom_blur(img: np.ndarray, zoom_factor: float = 1.1) -> np.ndarray:
     """
-    Perform the vertical motion blur effect.
-    Adapted from: https://github.com/stanfordmlgroup/cheXphoto/tree/master/transforms (MIT)
+    Apply zoom blur corruption.
 
     Args:
-        img (np.ndarray) : Numpy ndarray of original image to be corrupted
-        severity (int) : Level of severity of noise addedd
+        img (np.ndarray): Numpy ndarray of original image to be corrupted.
+        zoom_factor (float, optional): Zoom blurring factor. Larger value creates a stronger effect. All zoom_factor 
+        values should be larger than 1. Defaults to 1.1.
 
     Returns:
-        np.ndarray: Numpy ndarray of the image perturbed by the blur
+        np.ndarray: Numpy ndarray of the image with zoom blur corruption.
     """
-    severity_constant = [25, 40, 55, 85, 145][severity - 1]
-    img = img * 255.0
-    img = img[:, :, ::-1].copy()
-    # generating the kernel
-    kernel_motion_blur = np.zeros((severity_constant, severity_constant))
-    kernel_motion_blur[:, int((severity_constant - 1) / 2)] = np.ones(severity_constant)
-    kernel_motion_blur = kernel_motion_blur / severity_constant
-
-    # applying the kernel to the input image
-    output = cv2.filter2D(img, -1, kernel_motion_blur)
-    output = cv2.cvtColor(output.astype(np.uint8), cv2.COLOR_BGR2RGB)
-    return output / 255.0
+    transform = A.ZoomBlur(max_factor=(zoom_factor, zoom_factor), step_factor=(0.03, 0.03), p=1.0)
+    return transform(image=img)["image"]
 
 
-def zoom_blur(img: np.ndarray, severity: int = 1) -> np.ndarray:
-    """
-    Adding blur caused by zooming to images
-    Modified from : https://github.com/hendrycks/robustness/blob/master/ImageNet-C/create_c/make_imagenet_c.py
-    (Apache 2.0)
-
-    Parameters:
-        img (np.ndarray) : Numpy ndarray of original image to be corrupted
-        severity (int) : Level of severity of noise addedd
-
-    Returns:
-        np.ndarray: Numpy ndarray of the image with zoom blur corruption
-    """
-    severity_constant = [
-        np.arange(1, 1.16, 0.01),
-        np.arange(1, 1.26, 0.01),
-        np.arange(1, 1.46, 0.02),
-        np.arange(1, 1.66, 0.02),
-        np.arange(1, 2.4, 0.03),
-    ][severity - 1]
-    out = np.zeros_like(img)
-    for zoom_factor in severity_constant:
-        out += clipped_zoom(img, zoom_factor)
-    img = (img + out) / (len(severity_constant) + 1)
-    return np.clip(img, 0, 1)
+DEFAULT_PARAMS["zoom_blur_zoom_factor"] = [1.00, 1.05, 1.10, 1.15, 1.20]

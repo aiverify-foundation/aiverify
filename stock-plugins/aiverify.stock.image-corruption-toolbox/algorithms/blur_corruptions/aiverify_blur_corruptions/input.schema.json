@@ -24,6 +24,54 @@
             "description": "Change to a specific seed for random selection the sample data for display if desired",
             "default": 10,
             "type": "integer"
+        },
+        "include": {
+            "title": "Name(s) of blur corruption to include",
+            "description": "Specify the name(s) of blur corruption function to include. Runs all corruptions if not provided.",
+            "type": ["array", "null"],
+            "items": {"type": "string"}
+        },
+        "exclude": {
+            "title": "Name(s) of blur corruption to exclude",
+            "description": "Specify the name(s) of blur corruption function to exclude. Runs all corruptions if not provided.",
+            "type": ["array", "null"],
+            "items": {"type": "string"}
+        },
+        "gaussian_blur_sigma": {
+            "title": "Gaussian Blur sigma value(s)",
+            "description": "Customize the sigma value(s) for the Gaussian Blur corruption function.",
+            "type": ["array", "null"],
+            "items": {"type": "number"}
+        },
+        "glass_blur_max_delta": {
+            "title": "Glass Blur max delta value(s)",
+            "description": "Customize the max delta value(s) for the Glass Blur corruption function.",
+            "type": ["array", "null"],
+            "items": {"type": "integer"}
+        },
+        "defocus_blur_radius": {
+            "title": "Defocus Blur radius value(s)",
+            "description": "Customize the radius value(s) for the Defocus Blur corruption function.",
+            "type": ["array", "null"],
+            "items": {"type": "integer"}
+        },
+        "horizontal_motion_blur_kernel_size": {
+            "title": "Horizontal Motion Blur kernel size value(s)",
+            "description": "Customize the kernel size value(s) for the Horizontal Motion Blur corruption function.",
+            "type": ["array", "null"],
+            "items": {"type": "integer"}
+        },
+        "vertical_motion_blur_kernel_size": {
+            "title": "Vertical Motion Blur kernel size value(s)",
+            "description": "Customize the kernel size value(s) for the Vertical Motion Blur corruption function.",
+            "type": ["array", "null"],
+            "items": {"type": "integer"}
+        },
+        "zoom_blur_zoom_factor": {
+            "title": "Zoom Blur zoom factor value(s)",
+            "description": "Customize the zoom factor value(s) for the Zoom Blur corruption function.",
+            "type": ["array", "null"],
+            "items": {"type": "number"}
         }
     }
 }
