@@ -1,8 +1,9 @@
 from pathlib import Path
 
 import pytest
-from aiverify_general_corruptions.algo_init import AlgoInit
 from aiverify_test_engine.plugins.enums.model_type import ModelType
+
+from aiverify_general_corruptions.algo_init import AlgoInit
 
 image_pipeline = {
     "data_path": str("../../../user_defined_files/data/raw_fashion_image_10"),
@@ -29,6 +30,9 @@ def test_aiverify_general_corruptions_plugin(data_set):
         ),
         "file_name_label": "file_name",
         "set_seed": 10,
+        "exclude": ["poisson_noise"],
+        "salt_and_pepper_noise_amount": [0.1, 0.2, 0.3],
+        "poisson_noise_scale": [1, 2, 3, 4, 5],
     }
 
     plugin_test = AlgoInit(
