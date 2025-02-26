@@ -94,6 +94,8 @@ def saturate_down(img: np.ndarray, factor: float = 0.4) -> np.ndarray:
     transform = A.HueSaturationValue(
         sat_shift_limit=(-factor * 255, -factor * 255), hue_shift_limit=(0, 0), val_shift_limit=(0, 0), p=1.0
     )
+    if img.dtype != np.uint8:
+        img = img.astype(np.float32)
     return transform(image=img)["image"]
 
 
@@ -115,6 +117,8 @@ def saturate_up(img: np.ndarray, factor: float = 0.4) -> np.ndarray:
     transform = A.HueSaturationValue(
         sat_shift_limit=(factor * 255, factor * 255), hue_shift_limit=(0, 0), val_shift_limit=(0, 0), p=1.0
     )
+    if img.dtype != np.uint8:
+        img = img.astype(np.float32)
     return transform(image=img)["image"]
 
 
