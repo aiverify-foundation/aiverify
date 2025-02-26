@@ -1,7 +1,14 @@
-import { RiFlaskFill, RiFlaskLine, RiUploadLine } from '@remixicon/react';
+import {
+  RiArrowLeftLine,
+  RiArrowRightLine,
+  RiFlaskFill,
+  RiFlaskLine,
+  RiUploadLine,
+} from '@remixicon/react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { UserFlows } from '@/app/userFlowsEnum';
+import { Button } from '@/lib/components/Button';
 import { Card } from '@/lib/components/Card';
 import { fetchProjects } from '@/lib/fetchApis/getProjects';
 
@@ -68,6 +75,17 @@ export default async function UserMenuPage(props: UrlSearchParams) {
           </Card>
         </Link>
       </section>
+      {flow !== undefined && flow !== UserFlows.ExistingProject ? (
+        <section className="mt-[200px] flex items-center justify-start gap-4">
+          <Link href={`/templates?flow=${flow}&projectId=${projectId}`}>
+            <Button
+              className="w-[130px] gap-4 p-2 text-white"
+              variant="secondary">
+              <RiArrowLeftLine /> Back
+            </Button>
+          </Link>
+        </section>
+      ) : null}
     </main>
   );
 }

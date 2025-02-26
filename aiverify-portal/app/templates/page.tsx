@@ -1,3 +1,4 @@
+import { RiFileChartFill } from '@remixicon/react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { UserFlows } from '@/app/userFlowsEnum';
@@ -43,15 +44,16 @@ export default async function TemplatesPage(props: UrlSearchParams) {
       {templates.length > 1 ? <TemplateFilters /> : null}
       <section className="mt-6 flex flex-wrap gap-6">
         <Link
-          href={`/canvas?flow=${UserFlows.NewProjectWithExistingTemplate}&projectId=${projectId}`}>
+          href={`/project/usermenu?flow=${UserFlows.NewProjectWithNewTemplate}&projectId=${projectId}`}>
           <Card className="min-h-[250px] max-w-lg cursor-pointer border-none bg-secondary-800 text-white hover:bg-secondary-700">
-            <h3 className="mb-4 text-xl font-semibold text-white">
+            <h3 className="mb-8 flex text-xl font-semibold text-white">
+              <RiFileChartFill className="mr-2 h-8 w-8 text-primary-500" />{' '}
               Create New Report Template
             </h3>
-            <p className="mt-2 leading-6 text-white">
+            <p className="leading-6 text-white">
               Start from scratch and design your own template. Drag widgets from
               the sidebar and drop them onto the canvas to build your custom
-              report layout.
+              report.
             </p>
           </Card>
         </Link>
