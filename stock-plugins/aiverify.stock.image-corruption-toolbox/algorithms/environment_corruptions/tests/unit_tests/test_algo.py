@@ -3,7 +3,6 @@ import logging
 from pathlib import Path
 
 import pytest
-from aiverify_environment_corruptions.algo import Plugin
 from aiverify_test_engine.interfaces.idata import IData
 from aiverify_test_engine.interfaces.ipipeline import IPipeline
 from aiverify_test_engine.plugins.enums.model_type import ModelType
@@ -16,6 +15,8 @@ from aiverify_test_engine.utils.json_utils import (
     validate_json,
 )
 from aiverify_test_engine.utils.simple_progress import SimpleProgress
+
+from aiverify_environment_corruptions.algo import Plugin
 
 
 def test_discover_plugin():
@@ -493,3 +494,56 @@ def test_valid_run(get_data_instance_and_serializer_without_ground_truth):
     )
 
     assert validate_status
+
+
+def test_exclude():
+    test_object = ObjectTest()
+    test_object._input_args.update({"exclude": ["snow"]})
+    test_plugin = Plugin(
+        test_object._data_instance_and_serializer,
+        test_object._model_instance_and_serializer,
+        test_object._ground_truth_instance_and_serializer,
+        test_object._data_instance_and_serializer[0],
+        test_object._model_instance_and_serializer[0],
+        **test_object._input_args,
+    )
+    test_plugin.generate()
+    results = remove_numpy_formats(test_plugin.get_results())
+
+    validate_status = validate_json(
+        results,
+        load_schema_file(
+            str(Path(__file__).parent.parent.parent / "aiverify_environment_corruptions" / "output.schema.json")
+        ),
+    )
+
+    assert validate_status
+    for data in results["results"]:
+        assert data["corruption_function"].lower() not in test_object._input_args["exclude"]
+
+
+def test_user_defined_params():
+    test_object = ObjectTest()
+    test_object._input_args.update({"rain_type": ["drizzle", "heavy"]})
+    test_plugin = Plugin(
+        test_object._data_instance_and_serializer,
+        test_object._model_instance_and_serializer,
+        test_object._ground_truth_instance_and_serializer,
+        test_object._data_instance_and_serializer[0],
+        test_object._model_instance_and_serializer[0],
+        **test_object._input_args,
+    )
+    test_plugin.generate()
+    results = remove_numpy_formats(test_plugin.get_results())
+
+    validate_status = validate_json(
+        results,
+        load_schema_file(
+            str(Path(__file__).parent.parent.parent / "aiverify_environment_corruptions" / "output.schema.json")
+        ),
+    )
+
+    assert validate_status
+    for data in results["results"]:
+        if data["corruption_function"] == "Rain":
+            assert len(data["accuracy"]) == 3
