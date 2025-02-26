@@ -1,7 +1,7 @@
 import albumentations as A
 import numpy as np
 
-DEFAULT_PARAMS: dict[str, list] = {}  # {"<function>_<keyword>" : [<value1>, <value2>, ...]}
+DEFAULT_PARAMS: dict[str, list] = {}
 
 
 def gaussian_blur(img: np.ndarray, sigma: float = 2.0) -> np.ndarray:
@@ -16,9 +16,9 @@ def gaussian_blur(img: np.ndarray, sigma: float = 2.0) -> np.ndarray:
         sigma (float, optional): Standard deviation of the Gaussian kernel. Must be in range [0, inf). Defaults to 2.0.
 
     Returns:
-        np.ndarray: Numpy ndarray of image with Gaussian blur corruption.
+        np.ndarray: Numpy ndarray of image with Gaussian Blur corruption.
     """
-    transform = A.GaussianBlur(sigma_limit=(sigma, sigma), blur_limit=0, p=1.0)
+    transform = A.GaussianBlur(sigma_limit=(sigma, sigma), p=1.0)
     return transform(image=img)["image"]
 
 
@@ -35,12 +35,12 @@ def glass_blur(img: np.ndarray, max_delta: int = 3) -> np.ndarray:
     Args:
         img (np.ndarray): Numpy ndarray of original image to be corrupted.
         max_delta (int, optional): Maximum distance in pixels for shuffling. Determines how far pixels can be moved.
-        Larger value creates more distortion. Must be a positive integer. Defaults to 3.
+            Larger value creates more distortion. Must be a positive integer. Defaults to 3.
 
     Returns:
-        np.ndarray: Numpy ndarray of image with glass blur corruption.
+        np.ndarray: Numpy ndarray of image with Glass Blur corruption.
     """
-    transform = A.GlassBlur(max_delta=max_delta, sigma=0.7, iterations=2, mode="fast", p=1.0)
+    transform = A.GlassBlur(max_delta=max_delta, p=1.0)
     return transform(image=img)["image"]
 
 
@@ -59,7 +59,7 @@ def defocus_blur(img: np.ndarray, radius: int = 7) -> np.ndarray:
         radius (int, optional) : Radius of the defocus blur. Larger values create a stronger blur effect. Defaults to 7.
 
     Returns:
-        np.ndarray: Numpy ndarray of image with defocus blur corruption.
+        np.ndarray: Numpy ndarray of image with Defocus Blur corruption.
     """
     transform = A.Defocus(radius=(radius, radius), alias_blur=(0.5, 0.5), p=1.0)
     return transform(image=img)["image"]
@@ -80,7 +80,7 @@ def horizontal_motion_blur(img: np.ndarray, kernel_size: int = 11) -> np.ndarray
         kernel_size (int, optional) : Kernel size for blurring. Should be in range [3, inf). Defaults to 11.
 
     Returns:
-        np.ndarray: Numpy ndarray of the image with horizontal motion blur corruption.
+        np.ndarray: Numpy ndarray of the image with Horizontal Motion Blur corruption.
     """
     transform = A.MotionBlur(
         blur_limit=(kernel_size, kernel_size),
@@ -107,7 +107,7 @@ def vertical_motion_blur(img: np.ndarray, kernel_size: int = 11) -> np.ndarray:
         kernel_size (int, optional) : Kernel size for blurring. Should be in range [3, inf). Defaults to 11.
 
     Returns:
-        np.ndarray: Numpy ndarray of the image with vertical motion blur corruption.
+        np.ndarray: Numpy ndarray of the image with Vertical Motion Blur corruption.
     """
     transform = A.MotionBlur(
         blur_limit=(kernel_size, kernel_size),
@@ -128,11 +128,11 @@ def zoom_blur(img: np.ndarray, zoom_factor: float = 1.1) -> np.ndarray:
 
     Args:
         img (np.ndarray): Numpy ndarray of original image to be corrupted.
-        zoom_factor (float, optional): Zoom blurring factor. Larger value creates a stronger effect. All zoom_factor 
-        values should be larger than 1. Defaults to 1.1.
+        zoom_factor (float, optional): Zoom blurring factor. Larger value creates a stronger effect. All zoom_factor
+            values should be larger than 1. Defaults to 1.1.
 
     Returns:
-        np.ndarray: Numpy ndarray of the image with zoom blur corruption.
+        np.ndarray: Numpy ndarray of the image with Zoom Blur corruption.
     """
     transform = A.ZoomBlur(max_factor=(zoom_factor, zoom_factor), step_factor=(0.03, 0.03), p=1.0)
     return transform(image=img)["image"]
