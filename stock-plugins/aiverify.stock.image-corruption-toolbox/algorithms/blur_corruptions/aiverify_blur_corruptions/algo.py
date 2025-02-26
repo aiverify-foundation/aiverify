@@ -8,7 +8,6 @@ from typing import Dict, List, Tuple, Union
 
 import numpy as np
 import pandas as pd
-from aiverify_blur_corruptions.utils import blur
 from aiverify_test_engine.interfaces.ialgorithm import IAlgorithm
 from aiverify_test_engine.interfaces.idata import IData
 from aiverify_test_engine.interfaces.imodel import IModel
@@ -21,6 +20,8 @@ from aiverify_test_engine.utils.json_utils import load_schema_file, validate_jso
 from aiverify_test_engine.utils.simple_progress import SimpleProgress
 from PIL import Image
 from sklearn.metrics import accuracy_score
+
+from aiverify_blur_corruptions.utils import blur
 
 
 # =====================================================================================
