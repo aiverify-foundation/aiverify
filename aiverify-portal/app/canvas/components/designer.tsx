@@ -43,10 +43,10 @@ import { FreeFormDraggableArea } from './freeFormDraggableArea';
 import { GridItemComponent } from './gridItemComponent';
 import { GridLines } from './gridLines';
 import {
+  pagesDesignReducer,
   initialState,
   WidgetAlgoAndResultIdentifier,
 } from './hooks/pagesDesignReducer';
-import { pagesDesignReducer } from './hooks/pagesDesignReducer';
 import { useDragToScroll } from './hooks/useDragToScroll';
 import { usePrintable } from './hooks/usePrintable';
 import { useZoom } from './hooks/useZoom';
@@ -59,10 +59,10 @@ import { ZoomControl } from './zoomControl';
 type GridItemDivRequiredStyles =
   `grid-comp-wrapper relative group z-10${string}`; // mandatory to have relative and group
 
-type DesignProps = {
-  pluginsWithMdx: PluginForGridLayout[];
-  testResults: ParsedTestResults[];
-  printMode?: boolean;
+type DesignerProps = {
+  allPluginsWithMdx: PluginForGridLayout[];
+  allTestResults: ParsedTestResults[]; // ParsedTestResult should have value of 'output' property in the form of Javascript object
+  selectedTestResultsFromUrlParams?: ParsedTestResults[];
 };
 
 type EventDataTransfer = Event & {
@@ -90,7 +90,12 @@ function createGridItemId(widget: Widget, pageIndex: number) {
   return `${widget.gid}-${widget.cid}-p${pageIndex}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
-function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
+function Designer(props: DesignerProps) {
+  const {
+    allPluginsWithMdx,
+    allTestResults = [],
+    selectedTestResultsFromUrlParams = [],
+  } = props;
   const canvasRef = useRef<HTMLDivElement>(null);
   const isInitialMount = useRef(true);
   const freeFormAreaRef = useRef<HTMLDivElement>(null);
@@ -113,7 +118,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
   const { zoomLevel, resetZoom, zoomIn, zoomOut } = useZoom();
   const [selectedTestResults, setSelectedTestResults] = useState<
     ParsedTestResults[]
-  >([]);
+  >(selectedTestResultsFromUrlParams);
   const {
     isDragging: isDraggingFreeFormArea,
     handleMouseDown: handleFreeFormAreaMouseDown,
@@ -232,7 +237,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
       }
       const validData: WidgetCompositeId = result.data;
       const widget = findWidgetFromPluginsById(
-        pluginsWithMdx,
+        allPluginsWithMdx,
         validData.gid,
         validData.cid
       );
@@ -263,7 +268,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
         ...widgetWithInitialData,
         gridItemId,
       };
-      const algos = getWidgetAlgosFromPlugins(pluginsWithMdx, widget);
+      const algos = getWidgetAlgosFromPlugins(allPluginsWithMdx, widget);
       const gridItemToAlgosMap: WidgetAlgoAndResultIdentifier[] = algos.map(
         (algo) => {
           const matchSelectedResult = findTestResultById(
@@ -280,7 +285,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
       );
 
       const inputBlocks = getWidgetInputBlocksFromPlugins(
-        pluginsWithMdx,
+        allPluginsWithMdx,
         widgetWithGridItemId
       );
 
@@ -541,7 +546,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
         <h4 className="mb-0 text-lg font-bold">Project Name</h4>
         <p className="text-sm text-white">Project Description</p>
         <PluginsPanel
-          plugins={pluginsWithMdx}
+          plugins={allPluginsWithMdx}
           className="custom-scrollbar w-full overflow-auto pr-[10px] pt-[50px]"
           onDragStart={(widget) => setNewDraggedWidget(widget)}
           onDragEnd={() => setNewDraggedWidget(null)}
@@ -684,7 +689,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
                             'outline outline-2 outline-offset-2 outline-blue-500'
                         )}>
                         <GridItemComponent
-                          allAvalaiblePlugins={pluginsWithMdx}
+                          allAvalaiblePlugins={allPluginsWithMdx}
                           widget={widget}
                           onDeleteClick={handleDeleteGridItem(
                             pageIndex,
@@ -696,7 +701,7 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
                           testResultsUsed={
                             state.gridItemToAlgosMap[widget.gridItemId]
                           }
-                          testResults={testResults}
+                          testResults={allTestResults}
                           layout={state.layouts[pageIndex][widgetIndex]}
                         />
                       </div>
@@ -718,14 +723,15 @@ function Designer({ pluginsWithMdx, testResults = [] }: DesignProps) {
         isPanelOpen ? 'left-[340px]' : 'left-[100px]'
       )}>
       <TestResultsDrawer
-        testResults={testResults}
+        allTestResults={allTestResults}
+        selectedTestResultsFromUrlParams={selectedTestResults}
         onOkClick={handleSelectUploadedTestResults}
       />
     </section>
   );
 
   console.log('state', state);
-  // console.log('plugins', pluginsWithMdx);
+  // console.log('plugins', allPluginsWithMdx);
 
   /*
     Designer component has 3 sections:
