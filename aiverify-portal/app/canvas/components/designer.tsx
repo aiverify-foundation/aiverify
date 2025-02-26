@@ -26,7 +26,7 @@ import { populateInitialWidgetResult } from '@/app/canvas/utils/populateInitialW
 import { Widget } from '@/app/types';
 import { ProjectInfo } from '@/app/types';
 import { UserFlows } from '@/app/userFlowsEnum';
-import { Button } from '@/lib/components/Button';
+import { Button } from '@/lib/components/TremurButton';
 import { cn } from '@/lib/utils/twmerge';
 import {
   A4_MARGIN,

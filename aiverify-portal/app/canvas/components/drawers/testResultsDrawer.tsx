@@ -1,7 +1,7 @@
 import { RiArticleFill } from '@remixicon/react';
 import { useState } from 'react';
 import { ParsedTestResults } from '@/app/canvas/types';
-import { Button } from '@/lib/components/Button';
+import { Button } from '@/lib/components/TremurButton';
 import {
   DrawerClose,
   DrawerContent,

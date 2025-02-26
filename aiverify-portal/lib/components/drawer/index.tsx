@@ -4,7 +4,7 @@ import * as DrawerPrimitives from '@radix-ui/react-dialog';
 import { RiCloseLine } from '@remixicon/react';
 import * as React from 'react';
 
-import { Button } from '@/lib/components/Button';
+import { Button } from '@/lib/components/TremurButton';
 import { focusRing } from '@/lib/utils/focusRing';
 
 import { cn } from '@/lib/utils/twmerge';

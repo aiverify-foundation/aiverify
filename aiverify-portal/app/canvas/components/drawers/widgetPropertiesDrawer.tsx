@@ -11,7 +11,7 @@ import { findAlgoFromPluginsById } from '@/app/canvas/utils/findAlgoFromPluginsB
 import { findInputBlockFromPluginsById } from '@/app/canvas/utils/findInputBlockFromPluginsById';
 import { findPluginByGid } from '@/app/canvas/utils/findPluginByGid';
 import { InputBlockData, Plugin } from '@/app/types';
-import { Button } from '@/lib/components/Button';
+import { Button } from '@/lib/components/TremurButton';
 import {
   DrawerClose,
   DrawerContent,

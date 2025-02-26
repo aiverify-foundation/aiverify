@@ -1,6 +1,6 @@
 import { RiFlaskLine, RiFlaskFill } from '@remixicon/react';
 import { Algorithm } from '@/app/types';
-import { Button } from '@/lib/components/Button';
+import { Button } from '@/lib/components/TremurButton';
 import {
   DrawerClose,
   DrawerContent,
