@@ -67,6 +67,12 @@ type GridItemComponentProps = {
     gridItemHtmlElement: HTMLDivElement,
     widget: WidgetOnGridLayout
   ) => void;
+
+  /** Callback triggered when info button is clicked */
+  onInfoClick: () => void;
+
+  /** Callback triggered when widget properties drawer is closed */
+  onWidgetPropertiesClose: () => void;
 };
 
 type MdxComponentProps = MDXContentProps & {
@@ -93,16 +99,61 @@ function GridItemComponent({
   testResultsUsed,
   onDeleteClick,
   onEditClick,
+  onInfoClick,
+  onWidgetPropertiesClose,
 }: GridItemComponentProps) {
+  /**
+   * Controls visibility of the context menu that appears when hovering over a widget
+   * Contains edit, delete, and info buttons
+   */
   const [showContextMenu, setShowContextMenu] = useState(false);
+
+  /**
+   * Controls visibility of the widget properties drawer
+   * Shows detailed information about the widget and its test results
+   */
   const [showWidgetProperties, setShowWidgetProperties] = useState(false);
+
+  /**
+   * Tracks the position of the context menu relative to the widget
+   * Updated when the widget moves or the window scrolls
+   */
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
+
+  /**
+   * Reference to the grid item's DOM element
+   * Used for positioning the context menu and measuring dimensions
+   */
   const gridItemRef = useRef<HTMLDivElement>(null);
+
+  /**
+   * Stores the timeout ID for delayed hiding of the context menu
+   * Used to prevent the menu from disappearing immediately when mouse leaves
+   */
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  /**
+   * Tracks whether the mouse is currently hovering over the widget or its menu
+   * Used to prevent the menu from hiding when moving between the widget and menu
+   */
   const isHoveringRef = useRef<boolean>(false);
+
+  /**
+   * Stores the current width and height of the widget
+   * Updated by ResizeObserver when the widget's size changes
+   */
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
+  /**
+   * Determines if the widget has editable properties
+   * Controls whether the edit button is shown in the context menu
+   */
   const enableEditing = widget.properties && widget.properties.length > 0;
 
+  /**
+   * Prepares the list of test results used by this widget for display in the properties drawer
+   * Filters the full test results list to only include those relevant to this widget
+   */
   const testResultsListForDrawer = useMemo(() => {
     // prepare list of test results that are used by this widget, for the widget properties drawer
     if (testResultsUsed && testResultsUsed.length > 0) {
@@ -122,6 +173,11 @@ function GridItemComponent({
     return [];
   }, [testResultsUsed]);
 
+  /**
+   * Prepares test result data for the widget to consume and display
+   * Maps algorithm IDs to their corresponding test results or mock data
+   * If no test result is found for an algorithm, falls back to mock data
+   */
   const testResultWidgetData = useMemo(() => {
     // prepare test result data for the widget to consume and display data (draw graphs, etc),
     // based on test results that are used by this widget. If no test result is found for an algo,
@@ -161,6 +217,10 @@ function GridItemComponent({
     return {};
   }, [testResultsUsed]);
 
+  /**
+   * Extracts mock input data from the widget's configuration
+   * Used when real input block data is not available
+   */
   const mockInputs = useMemo(() => {
     if (widget.mockdata && widget.mockdata.length > 0) {
       return widget.mockdata.reduce<InputBlockDataMapping>((acc, mock) => {
@@ -173,7 +233,10 @@ function GridItemComponent({
     return {};
   }, [widget, widget.mdx]);
 
-  // handle resizing of the grid item
+  /**
+   * Sets up a ResizeObserver to track the widget's dimensions
+   * Updates the dimensions state when the widget is resized
+   */
   useEffect(() => {
     if (!gridItemRef.current) return;
 
@@ -186,6 +249,10 @@ function GridItemComponent({
     return () => resizeObserver.disconnect();
   }, []);
 
+  /**
+   * Cleanup function for the hide timeout
+   * Ensures no memory leaks from lingering timeouts
+   */
   useEffect(() => {
     return () => {
       if (hideTimeoutRef.current) {
@@ -194,6 +261,10 @@ function GridItemComponent({
     };
   }, []);
 
+  /**
+   * Hides the context menu when the widget is being dragged
+   * Prevents the menu from appearing in the wrong position during drag
+   */
   useEffect(() => {
     if (isDragging) {
       if (hideTimeoutRef.current) {
@@ -204,6 +275,10 @@ function GridItemComponent({
     }
   }, [isDragging]);
 
+  /**
+   * Updates the position of the context menu when it's visible
+   * Ensures the menu stays aligned with the widget when scrolling or resizing
+   */
   useEffect(() => {
     if (!showContextMenu) return;
 
@@ -230,6 +305,10 @@ function GridItemComponent({
     };
   }, [showContextMenu]);
 
+  /**
+   * Handles clicks outside the widget to hide the context menu
+   * Special case to prevent hiding when clicking in an editor input field
+   */
   useEffect(() => {
     if (!showContextMenu) return;
 
@@ -251,16 +330,39 @@ function GridItemComponent({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showContextMenu]);
 
+  /**
+   * Calls the onWidgetPropertiesClose callback when the properties drawer is closed
+   * Allows parent components to react to the drawer closing
+   */
+  useEffect(() => {
+    if (showWidgetProperties === false) {
+      onWidgetPropertiesClose();
+    }
+  }, [showWidgetProperties]);
+
+  /**
+   * Handles clicks on the info button in the context menu
+   * Shows both the context menu and properties drawer
+   */
   function handleInfoClick() {
     setShowContextMenu(true);
     setShowWidgetProperties(true);
+    onInfoClick();
   }
 
+  /**
+   * Handles clicks on the edit button in the context menu
+   * Calls the parent's onEditClick with the widget and its DOM element
+   */
   function handleEditClick() {
     if (gridItemRef.current !== null)
       onEditClick(widget.gridItemId, gridItemRef.current, widget);
   }
 
+  /**
+   * Shows the context menu when mouse enters the widget
+   * Clears any pending hide timeout
+   */
   function handleMouseEnter() {
     if (hideTimeoutRef.current) {
       clearTimeout(hideTimeoutRef.current);
@@ -269,6 +371,10 @@ function GridItemComponent({
     setShowContextMenu(true);
   }
 
+  /**
+   * Sets up delayed hiding of the context menu when mouse leaves
+   * Uses a timeout to allow moving the mouse to the menu without it disappearing
+   */
   function handleMouseLeave() {
     isHoveringRef.current = false;
     hideTimeoutRef.current = setTimeout(() => {
@@ -278,6 +384,10 @@ function GridItemComponent({
     }, 300); // 300ms delay before hiding
   }
 
+  /**
+   * Creates the MDX component for the widget
+   * Falls back to a placeholder if MDX code is missing
+   */
   const Component: React.ComponentType<MdxComponentProps> = useMemo(() => {
     if (!widget.mdx) {
       const MissingMdxMessage = () => (
@@ -290,6 +400,10 @@ function GridItemComponent({
     return MDXComponent;
   }, [widget, widget.mdx]);
 
+  /**
+   * Transforms the widget's property definitions into a props object
+   * Used to pass configuration to the MDX component
+   */
   const properties = useMemo(() => {
     if (!widget.properties) return {};
     return widget.properties.reduce((props, property) => {
@@ -302,6 +416,7 @@ function GridItemComponent({
 
   return (
     <React.Fragment>
+      {/* Context menu that appears when hovering over the widget */}
       {showContextMenu && !isDragging ? (
         <GridItemContextMenu
           widget={widget}
@@ -319,6 +434,8 @@ function GridItemComponent({
           onEditClick={handleEditClick}
         />
       ) : null}
+
+      {/* Properties drawer that shows detailed widget information */}
       {showWidgetProperties ? (
         <WidgetPropertiesDrawer
           layout={layout}
@@ -331,14 +448,18 @@ function GridItemComponent({
           onDeleteClick={onDeleteClick}
         />
       ) : null}
+
+      {/* The widget container element */}
       <div
         ref={gridItemRef}
         className={itemStyle}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}>
         {isResizing ? (
+          // Show a placeholder during resize to improve performance
           <div className="h-auto w-full bg-gray-100" />
         ) : (
+          // Render the actual widget content with error boundary protection
           <WidgetErrorBoundary widgetName={widget.name || widget.cid}>
             <Component
               id={widget.gridItemId}

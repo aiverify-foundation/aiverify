@@ -64,13 +64,28 @@ type GridItemDivRequiredStyles =
   `grid-comp-wrapper relative group z-10${string}`; // mandatory to have relative and group
 
 type DesignerProps = {
+  /** Identifies the user flow/journey context in which the designer is being used */
   flow: UserFlows;
+
+  /** Contains information about the current project including id, name, and description */
   project: ProjectInfo;
+
+  /** Collection of all available plugins with their MDX source code that can be used in the designer */
   allPluginsWithMdx: PluginForGridLayout[];
+
+  /** All test results available in the system that can be applied to widgets */
   allTestResultsOnSystem: ParsedTestResults[]; // ParsedTestResult should have value of 'output' property in the form of Javascript object
+
+  /** Pre-selected test results based on URL parameters */
   selectedTestResultsFromUrlParams?: ParsedTestResults[];
+
+  /** When true, disables editing functionality (view-only mode) */
   disabled?: boolean;
+
+  /** When true, hides the Next button in the navigation */
   disableNextButton?: boolean;
+
+  /** When true, hides the Back button in the navigation */
   disablePreviousButton?: boolean;
 };
 
@@ -81,8 +96,8 @@ type EventDataTransfer = Event & {
 };
 
 const pagesContentWrapperId = 'printableContent'; // element id for the pages wrapper (used for printing)
-
-const gridItemDivRequiredStyles: GridItemDivRequiredStyles = `grid-comp-wrapper relative group z-10
+const criticalGridItemWrapperClass = 'grid-comp-wrapper'; // class for the grid item wrapper used in some event handling
+const gridItemDivRequiredStyles: GridItemDivRequiredStyles = `${criticalGridItemWrapperClass} relative group z-10
   hover:outline hover:outline-2 
   hover:outline-blue-500 hover:outline-offset-2
   active:outline-none`;
@@ -94,6 +109,19 @@ const widgetItemSchema = z.object({
 });
 
 export type WidgetCompositeId = z.infer<typeof widgetItemSchema>;
+
+/**
+ * Creates a unique identifier for a grid item by combining:
+ * - The plugin's global ID (gid)
+ * - The widget's component ID (cid)
+ * - The page index
+ * - Current timestamp
+ * - Random string
+ *
+ * @param widget - The widget to create an ID for
+ * @param pageIndex - The index of the page the widget is on
+ * @returns A unique string ID in format: "{gid}-{cid}-p{pageIndex}-{timestamp}-{random}"
+ */
 
 function createGridItemId(widget: Widget, pageIndex: number) {
   return `${widget.gid}-${widget.cid}-p${pageIndex}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -110,38 +138,71 @@ function Designer(props: DesignerProps) {
     disableNextButton = false,
     disablePreviousButton = false,
   } = props;
+
+  // Reference to the canvas element for positioning and measurements
   const canvasRef = useRef<HTMLDivElement>(null);
+
+  // Flag to track initial component mount for initialization logic
   const isInitialMount = useRef(true);
+
+  // Reference to the draggable area that contains all pages
   const freeFormAreaRef = useRef<HTMLDivElement>(null);
+
+  // Main state management using reducer pattern for complex canvas state
   const [state, dispatch] = useReducer(pagesDesignReducer, initialState);
+
+  // Destructured values from the main state for convenient access
   const { layouts, currentPage, showGrid } = state;
+
+  // Tracks the widget currently being dragged from the plugins panel
   const [newDraggedWidget, setNewDraggedWidget] = useState<Widget | null>(null);
+
+  // Tracks the ID of a grid item currently being dragged within the canvas
   const [draggingGridItemId, setDraggingGridItemId] = useState<string | null>(
     null
   );
+
+  // Tracks the ID of a grid item currently being resized
   const [resizingGridItemId, setResizingGridItemId] = useState<string | null>(
     null
   );
+
+  // Tracks the ID of the currently selected grid item for highlighting
   const [selectedGridItemId, setSelectedGridItemId] = useState<string | null>(
     null
   );
+
+  // Stores the widget and its HTML element when being edited
   const [editingGridItem, setEditingGridItem] = useState<
     [WidgetOnGridLayout, HTMLDivElement] | null
   >(null);
+
+  // Tracks which page contains the widget being edited
   const [editingPageIndex, setEditingPageIndex] = useState<number | null>(null);
+
+  // Zoom functionality for the canvas view
   const { zoomLevel, resetZoom, zoomIn, zoomOut } = useZoom();
+
+  // Currently selected test results to be applied to widgets
   const [selectedTestResults, setSelectedTestResults] = useState<
     ParsedTestResults[]
   >(selectedTestResultsFromUrlParams);
+
+  // Drag-to-scroll functionality for navigating the canvas
   const {
     isDragging: isDraggingFreeFormArea,
     handleMouseDown: handleFreeFormAreaMouseDown,
     handleMouseUp: handleFreeFormAreaMouseUp,
     handleMouseMove: handleFreeFormAreaMouseMove,
   } = useDragToScroll(freeFormAreaRef, canvasRef);
+
+  // Controls visibility of the plugins panel sidebar
   const [isPanelOpen, setIsPanelOpen] = useState(true);
+
+  // Printing functionality for the canvas content
   const canvasPrint = usePrintable({ printableId: pagesContentWrapperId });
 
+  // Determines the back button link based on the current user flow
   let updatedBackFlow = flow;
   if (flow === UserFlows.NewProjectWithExistingTemplateAndResults) {
     updatedBackFlow = UserFlows.NewProjectWithExistingTemplate;
@@ -157,6 +218,10 @@ function Designer(props: DesignerProps) {
     backButtonLink = `/project/usermenu?flow=${flow}&projectId=${project?.id}`;
   }
 
+  /**
+   * Centers the free form area horizontally on initial load
+   * This ensures the canvas is properly positioned in the viewport when first rendered
+   */
   useEffect(() => {
     // position free form area horizontal - centered. Then flag initial mount as done.
     if (freeFormAreaRef.current) {
@@ -170,6 +235,11 @@ function Designer(props: DesignerProps) {
     }
   }, []);
 
+  /**
+   * Scrolls to newly added pages when layouts change
+   * When a new page is added, this automatically scrolls the view to show that page
+   * Uses a temporary scroll margin to account for zoom level
+   */
   useEffect(() => {
     // Skip on initial mount
     if (isInitialMount.current) {
@@ -192,6 +262,11 @@ function Designer(props: DesignerProps) {
     }
   }, [layouts.length]);
 
+  /**
+   * Manages overflow pages based on content size
+   * Automatically adds or removes overflow pages when content exceeds page boundaries
+   * Checks if widgets on the current page need additional pages to display properly
+   */
   useEffect(() => {
     if (isInitialMount.current) return;
 
@@ -227,11 +302,17 @@ function Designer(props: DesignerProps) {
     state.overflowParents,
   ]);
 
+  /**
+   * Handles deselection of grid items when clicking outside
+   * When user clicks anywhere outside a grid item, this clears the current selection
+   * Sets up and cleans up the document-level click event listener
+   */
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       const target = e.target as HTMLElement;
-      if (!target.closest('.grid-comp-wrapper')) {
-        // All grid items have 'group' class
+      if (!target.closest(`.${criticalGridItemWrapperClass}`)) {
+        // All grid items have <criticalGridItemWrapperClass> class
+        // if the target is not a grid item, clear the selected grid item id
         setSelectedGridItemId(null);
       }
     }
@@ -240,6 +321,13 @@ function Designer(props: DesignerProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  /**
+   * Handles dropping a widget onto the canvas grid
+   * Creates a new widget instance at the drop location with proper sizing and configuration
+   *
+   * @param pageIndex - The page where the widget is being dropped
+   * @returns A callback function that processes the drop event
+   */
   const handleWidgetDrop =
     (pageIndex: number) =>
     (_layout: Layout[], item: Layout, e: EventDataTransfer) => {
@@ -247,6 +335,8 @@ function Designer(props: DesignerProps) {
         `[handleWidgetDrop] Dropping widget at page ${pageIndex}, position: (${item.x}, ${item.y})`
       );
       setDraggingGridItemId(null);
+
+      // Parse the JSON data from the drag event
       let data: unknown;
       try {
         data = JSON.parse(e.dataTransfer.getData('application/json'));
@@ -254,16 +344,22 @@ function Designer(props: DesignerProps) {
         console.error('Invalid widget item json', error);
         return;
       }
+
+      // Validate the widget data structure using Zod schema
       const result = widgetItemSchema.safeParse(data);
       if (!result.success) {
         console.error('Invalid widget item data', result.error);
         return;
       }
+
+      // Handle case where an existing widget is being moved (not implemented yet)
       if (result.data.gridItemId) {
         // todo - for handling existing grid item id
         console.log(data);
         return;
       }
+
+      // Find the widget definition from available plugins
       const validData: WidgetCompositeId = result.data;
       const widget = findWidgetFromPluginsById(
         allPluginsWithMdx,
@@ -277,9 +373,13 @@ function Designer(props: DesignerProps) {
         return;
       }
 
+      // Initialize the widget with default data and create a unique ID
       const widgetWithInitialData: WidgetOnGridLayout =
         populateInitialWidgetResult(widget);
       const gridItemId = createGridItemId(widget, pageIndex);
+
+      // Configure the layout properties for the new widget
+      // Uses maximum width and minimum height as initial dimensions
       const { x, y } = item;
       const { minW, minH, maxH, maxW } = widget.widgetSize;
       const itemLayout = {
@@ -293,13 +393,19 @@ function Designer(props: DesignerProps) {
         maxH,
         i: gridItemId,
       };
+
+      // Assign the grid item ID to the widget
       const widgetWithGridItemId: WidgetOnGridLayout = {
         ...widgetWithInitialData,
         gridItemId,
       };
+
+      // Get algorithms associated with this widget and map them to test results
+      // This connects the widget to any relevant test data that should be displayed
       const algos = getWidgetAlgosFromPlugins(allPluginsWithMdx, widget);
       const gridItemToAlgosMap: WidgetAlgoAndResultIdentifier[] = algos.map(
         (algo) => {
+          // Find matching test results for this algorithm by gid and cid
           const matchSelectedResult = findTestResultByAlgoGidAndCid(
             selectedTestResults,
             algo.gid,
@@ -313,11 +419,13 @@ function Designer(props: DesignerProps) {
         }
       );
 
+      // Get input blocks associated with this widget
       const inputBlocks = getWidgetInputBlocksFromPlugins(
         allPluginsWithMdx,
         widgetWithGridItemId
       );
 
+      // Dispatch action to add the widget to the canvas state
       dispatch({
         type: 'ADD_WIDGET_TO_CANVAS',
         itemLayout,
@@ -329,6 +437,10 @@ function Designer(props: DesignerProps) {
       });
     };
 
+  /**
+   * Handles the start of a resize operation on a grid item
+   * Tracks which item is being resized to manage UI state
+   */
   const handleGridItemResizeStart = (
     _layouts: Layout[],
     _: Layout,
@@ -341,6 +453,13 @@ function Designer(props: DesignerProps) {
     setResizingGridItemId(i);
   };
 
+  /**
+   * Handles the completion of a resize operation
+   * Updates the widget's dimensions in the state
+   *
+   * @param pageIndex - The page containing the resized widget
+   * @returns A callback function that processes the resize completion
+   */
   const handleGridItemResizeStop =
     (pageIndex: number) =>
     (_layouts: Layout[], _: Layout, itemLayout: Layout) => {
@@ -356,6 +475,10 @@ function Designer(props: DesignerProps) {
       });
     };
 
+  /**
+   * Handles the start of a drag operation on a grid item
+   * Tracks which item is being dragged to manage UI state
+   */
   const handleGridItemDragStart = (
     _layouts: Layout[],
     _: Layout,
@@ -367,16 +490,27 @@ function Designer(props: DesignerProps) {
     setDraggingGridItemId(itemLayout.i);
   };
 
+  /**
+   * Handles the completion of a drag operation
+   * Updates the widget's position in the state if it has changed
+   *
+   * @param pageIndex - The page containing the dragged widget
+   * @returns A callback function that processes the drag completion
+   */
   const handleGridItemDragStop =
     (pageIndex: number) =>
     (_layouts: Layout[], oldItem: Layout, newItem: Layout) => {
       console.log(
         `[handleGridItemDragStop] Moving item ${newItem.i} from (${oldItem.x},${oldItem.y}) to (${newItem.x},${newItem.y})`
       );
+
+      // Skip state update if position didn't actually change
+      // This prevents unnecessary re-renders
       if (oldItem.x === newItem.x && oldItem.y === newItem.y) {
         setDraggingGridItemId(null);
         return; // Position didn't change, skip dispatch
       }
+
       const { x, y, w, h, minW, minH, maxW, maxH, i } = newItem;
       dispatch({
         type: 'CHANGE_WIDGET_POSITION',
@@ -386,6 +520,13 @@ function Designer(props: DesignerProps) {
       setDraggingGridItemId(null);
     };
 
+  /**
+   * Creates a handler function to delete a specific widget
+   *
+   * @param pageIndex - The page containing the widget to delete
+   * @param widgetIndex - The index of the widget in the page's widgets array
+   * @returns A callback function that deletes the widget when called
+   */
   const handleDeleteGridItem =
     (pageIndex: number, widgetIndex: number) => () => {
       console.log(
@@ -398,6 +539,13 @@ function Designer(props: DesignerProps) {
       });
     };
 
+  /**
+   * Creates a handler function to edit a specific widget
+   * Sets up the editing state with the widget and its HTML element
+   *
+   * @param pageIndex - The page containing the widget to edit
+   * @returns A callback function that initiates editing for the widget
+   */
   const handleGridItemEditClick =
     (pageIndex: number) =>
     (
@@ -412,6 +560,12 @@ function Designer(props: DesignerProps) {
       setEditingPageIndex(pageIndex);
     };
 
+  /**
+   * Handles saving changes after editing a widget
+   * Updates the widget in the state and clears the editing state
+   *
+   * @param updatedWidget - The widget with updated properties
+   */
   function handleEditClose(updatedWidget: WidgetOnGridLayout) {
     console.log(
       `[handleEditClose] Saving changes to widget ${updatedWidget.gridItemId}`
@@ -429,6 +583,10 @@ function Designer(props: DesignerProps) {
     setEditingPageIndex(null);
   }
 
+  /**
+   * Adds a new blank page to the report
+   * Dispatches an action to create the page in the state
+   */
   function handleAddNewPage() {
     console.log('[handleAddNewPage] Adding new page');
     dispatch({
@@ -436,6 +594,12 @@ function Designer(props: DesignerProps) {
     });
   }
 
+  /**
+   * Changes the current active page
+   * Updates the state and scrolls to the selected page
+   *
+   * @param pageIndex - The index of the page to switch to
+   */
   function handlePageChange(pageIndex: number) {
     console.log(`[handlePageChange] Switching to page ${pageIndex}`);
     dispatch({
@@ -446,6 +610,10 @@ function Designer(props: DesignerProps) {
     pageElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  /**
+   * Navigates to the next page if available
+   * Uses handlePageChange to perform the actual navigation
+   */
   function handleNextPage() {
     console.log('[handleNextPage] Moving to next page');
     if (currentPage < layouts.length - 1) {
@@ -453,6 +621,10 @@ function Designer(props: DesignerProps) {
     }
   }
 
+  /**
+   * Navigates to the previous page if available
+   * Uses handlePageChange to perform the actual navigation
+   */
   function handlePreviousPage() {
     console.log('[handlePreviousPage] Moving to previous page');
     if (currentPage > 0) {
@@ -460,6 +632,12 @@ function Designer(props: DesignerProps) {
     }
   }
 
+  /**
+   * Deletes a page from the report
+   * Prevents deletion of the last remaining page
+   *
+   * @param pageIndex - The index of the page to delete
+   */
   function handleDeletePage(pageIndex: number) {
     console.log(`[handleDeletePage] Attempting to delete page ${pageIndex}`);
     if (layouts.length > 1) {
@@ -472,12 +650,20 @@ function Designer(props: DesignerProps) {
     }
   }
 
+  /**
+   * Updates the selected test results and applies them to widgets
+   * Maps test results to algorithms based on matching gid and cid
+   *
+   * @param results - The array of test results selected by the user
+   */
   function handleSelectUploadedTestResults(results: ParsedTestResults[]) {
     console.log(
       `[handleSelectUploadedTestResults] Updating with ${results.length} test results`
     );
+
+    // Special case: when no results are selected, clear all test result associations
     if (results.length === 0) {
-      // no results selected, set all testResultIds in grid item algos map to undefined
+      // Create a map with undefined testResultId for all existing algorithms
       setSelectedTestResults((prev) => {
         const updatedResults = prev.map((result) => ({
           gid: result.gid,
@@ -492,6 +678,8 @@ function Designer(props: DesignerProps) {
       });
       return;
     }
+
+    // Update selected results and create mapping for algorithms
     setSelectedTestResults(results);
     dispatch({
       type: 'UPDATE_ALGO_TRACKER',
@@ -503,11 +691,30 @@ function Designer(props: DesignerProps) {
     });
   }
 
+  /**
+   * Calculates the minimum height required for the content wrapper
+   * This ensures proper scrolling and display of all pages in the canvas
+   *
+   * The calculation works as follows:
+   * 1. Computes total height needed for all pages (pages × page height)
+   * 2. Adds container padding (top and bottom)
+   * 3. For single-page layouts, ensures the height is at least as tall as the viewport
+   *    to prevent unnecessary scrollbars while still allowing content to expand
+   *
+   * This value is recalculated whenever the number of pages changes
+   */
   const contentWrapperMinHeight = useMemo(() => {
+    // Calculate height needed for all pages
     const totalPagesHeight = layouts.length * GRID_HEIGHT;
+
+    // Account for padding at top and bottom of container
     const containerPadding = CONTAINER_PAD + CONTAINER_PAD;
+
+    // Total height needed for all content
     const totalHeight = totalPagesHeight + containerPadding;
 
+    // Special case for single page: ensure it fills at least the viewport height
+    // This prevents unnecessary scrolling while still allowing content to expand
     if (layouts.length === 1 && freeFormAreaRef.current) {
       const viewportHeight = freeFormAreaRef.current.clientHeight;
       return Math.max(viewportHeight, totalHeight);
@@ -723,12 +930,19 @@ function Designer(props: DesignerProps) {
                         )}>
                         <GridItemComponent
                           allAvalaiblePlugins={allPluginsWithMdx}
+                          allInputBlocksOnSystem={[]} // TODO: Add input blocks
                           widget={widget}
                           onDeleteClick={handleDeleteGridItem(
                             pageIndex,
                             widgetIndex
                           )}
                           onEditClick={handleGridItemEditClick(pageIndex)}
+                          onInfoClick={() =>
+                            setSelectedGridItemId(widget.gridItemId)
+                          }
+                          onWidgetPropertiesClose={() =>
+                            setSelectedGridItemId(null)
+                          }
                           isDragging={draggingGridItemId === widget.gridItemId}
                           isResizing={resizingGridItemId === widget.gridItemId}
                           testResultsUsed={
