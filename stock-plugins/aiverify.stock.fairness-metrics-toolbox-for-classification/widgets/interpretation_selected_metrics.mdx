@@ -4,7 +4,7 @@ import { InterpretationChart } from './interpretationtype1.mdx';
 import { InterpretationChart2 } from './interpretationtype2.mdx';
 
 
-export const GetInterpretation = ({ data, container, results }) => {
+export const GetInterpretation = ({ data, results }) => {
   let metrics_map = {
     'False Negative Rate Parity': "False Negative Rate",
     "False Positive Rate Parity": "False Positive Rate",
@@ -26,7 +26,6 @@ export const GetInterpretation = ({ data, container, results }) => {
       content.push(<InterpretationChart2
         key={`chart-${i}`}
         metric={metrics_map[metrics[0]]}
-        container={container}
         data={results}
       />)
     }
@@ -34,7 +33,6 @@ export const GetInterpretation = ({ data, container, results }) => {
       content.push(<InterpretationChart
         key={`chart-${i}`}
         metric={metrics_map[metrics[i]]}
-        container={container}
         data={results}
       />)
     }
@@ -45,15 +43,13 @@ export const GetInterpretation = ({ data, container, results }) => {
   )
 }
 
-<>
-  <div>
-    <b>What it means:</b>
-    <br/>
-    The test results enable the Company to help its stakeholder understand if the model is able to predict the outcomes fairly among the demographic groups.
-    <GetInterpretation
-      data={props.getIBData(ib_cid)}
-      container={props.container}
-      results={props.getResults(cid)}
-    />
-  </div>
-</>
+<div>
+  <b>What it means:</b>
+  <br/>
+  The test results enable the Company to help its stakeholder understand if the model is able to predict the outcomes fairly among the demographic groups.
+  <GetInterpretation
+    id={props.id}
+    data={props.getIBData(ib_cid)}
+    results={props.getResults(cid)}
+  />
+</div>

@@ -21,8 +21,6 @@ export const MetricsChart = ({ id, data, results, width, height }) => {
   };
 
   return (
-    <div style={{ width, height }}>
-    {
       data.metrics.map(metric => 
         metric == "Equal Parity" || metric == "Disparate Impact" ?
           <MetricBarChart2
@@ -39,13 +37,12 @@ export const MetricsChart = ({ id, data, results, width, height }) => {
             data={results}
           />
       )
-    }
-    </div>
   )
 }
 
 
 <MetricsChart
+  id={props.id}
   data={props.getIBData(ib_cid)}
   results={props.getResults(cid)}
   width={props.width}

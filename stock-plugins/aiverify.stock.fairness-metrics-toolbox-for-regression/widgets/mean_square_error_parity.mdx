@@ -5,6 +5,7 @@ import { MetricBarChart } from "./metricbarchart.mdx";
 <MetricBarChart
   metric="mse"
   metric_name="Mean Square Error Parity"
-  getContainerObserver={props.getContainerObserver}
   data={props.getResults(cid)}
+  width={props.width}
+  height={props.height}
 />
