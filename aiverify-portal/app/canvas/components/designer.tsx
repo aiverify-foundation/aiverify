@@ -863,7 +863,7 @@ function Designer(props: DesignerProps) {
               )}
               <PageNumber
                 pageNumber={pageIndex + 1}
-                disableDelete={disabled}
+                disableDelete={disabled || layouts.length <= 1}
                 onDeleteClick={
                   !isOverflowPage
                     ? () => handleDeletePage(pageIndex)

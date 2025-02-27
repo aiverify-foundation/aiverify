@@ -36,7 +36,9 @@ export function isPageContentOverflow(
   const elementHeight = lastItemHtmlElement.getBoundingClientRect().height;
   const positionHeight = lastItemLayout.y * GRID_ROW_HEIGHT;
   const gridHeight = lastItemLayout.h * GRID_ROW_HEIGHT;
-  const totalHeight = positionHeight + Math.max(gridHeight, elementHeight);
+  const totalHeight = Math.floor(
+    positionHeight + Math.max(gridHeight, elementHeight)
+  );
   const numOfRequiredPages = Math.ceil(totalHeight / GRID_HEIGHT);
   return { overflows: numOfRequiredPages > 1, numOfRequiredPages };
 }
