@@ -1,8 +1,8 @@
 {
   "cid": "environment-samples-snow",
   "widgetSize": {
-    "minW": 1,
-    "minH": 1,
+    "minW": 8,
+    "minH": 7,
     "maxW": 12,
     "maxH": 36
   },
@@ -10,13 +10,13 @@
   "description": "To generate sample images for environment corruptions (snow)",
   "dependencies": [
     {
-      "cid": "environment_corruptions"
+      "cid": "aiverify_environment_corruptions"
     }
   ],
   "mockdata": [
     {
       "type": "Algorithm",
-      "cid": "environment_corruptions",
+      "cid": "aiverify_environment_corruptions",
       "datapath": "environment-corruption-mock-data.json"
     }
   ]
