@@ -57,7 +57,7 @@ def parse_input_args():
         nargs="+",
         choices=["all"] + [name.lower() for name in environment.CORRUPTIONS],
         default=["all"],
-        help="Specify the name(s) of digital environment function to include. Default: 'all'",
+        help="Specify the name(s) of environment corruption function to include. Default: 'all'",
     )
     parser.add_argument(
         "--snow_intensity",
