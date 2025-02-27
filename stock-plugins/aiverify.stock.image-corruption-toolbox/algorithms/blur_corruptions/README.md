@@ -79,7 +79,7 @@ python -m aiverify_blur_corruptions \
   --run_pipeline \
   --annotated_ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
   --set_seed 10 \
-  --file_name_label file_name
+  --file_name_label file_name \
   --include gaussian_blur defocus_blur
 ```
 
