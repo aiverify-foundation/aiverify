@@ -1,0 +1,5 @@
+{
+  "cid": "accuracy",
+  "name": "Accuracy (General Good Practice)",
+  "description": "This input block consists of 5 process checklist questions that the user has to complete. The 5 questions pertain to 2 testable criterion: 1) Model Reliability 2) Model Reproducibility"
+}
