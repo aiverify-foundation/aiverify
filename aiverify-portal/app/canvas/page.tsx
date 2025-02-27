@@ -4,7 +4,7 @@ import {
   getPlugins,
   populatePluginsMdxBundles,
 } from '@/lib/fetchApis/getPlugins';
-import { fetchProjects } from '@/lib/fetchApis/getProjects';
+import { getProjects } from '@/lib/fetchApis/getProjects';
 import { getTestResults } from '@/lib/fetchApis/getTestResults';
 import { Designer } from './components/designer';
 import { ParsedTestResults } from './types';
@@ -21,7 +21,7 @@ type UrlSearchParams = {
 export default async function CanvasPage(props: UrlSearchParams) {
   const searchParams = await props.searchParams;
   const { flow, projectId, testResultIds } = searchParams;
-  const result = await fetchProjects({ ids: [projectId] });
+  const result = await getProjects({ ids: [projectId] });
 
   if (!projectId || flow == undefined || 'message' in result) {
     notFound();

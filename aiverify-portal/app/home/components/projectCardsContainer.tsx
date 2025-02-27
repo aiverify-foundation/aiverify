@@ -1,4 +1,4 @@
-import { fetchProjects } from '@/lib/fetchApis/getAllProjects';
+import { getProjects } from '@/lib/fetchApis/getProjects';
 import { ProjectCards } from './projectCards';
 
 type ProjectCardsContainerProps = {
@@ -8,7 +8,7 @@ type ProjectCardsContainerProps = {
 export async function ProjectCardsContainer({
   className,
 }: ProjectCardsContainerProps) {
-  const response = await fetchProjects();
+  const response = await getProjects();
   if ('message' in response) {
     throw new Error(response.message);
   }
