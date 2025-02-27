@@ -559,7 +559,7 @@ function Designer(props: DesignerProps) {
         </div>
       )}
 
-      <div className={cn('p-4', !isPanelOpen && 'hidden')}>
+      <div className={cn('h-full p-4 pr-2', !isPanelOpen && 'hidden')}>
         <h4 className="mb-0 text-lg font-bold">{project.projectInfo.name}</h4>
         <p className="text-sm text-white">{project.projectInfo.description}</p>
         <PluginsPanel
