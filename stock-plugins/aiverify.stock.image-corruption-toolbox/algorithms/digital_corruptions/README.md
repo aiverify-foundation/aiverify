@@ -43,9 +43,63 @@ python -m aiverify_digital_corruptions \
 
 If the algorithm runs successfully, the results of the test will be saved in an `output` folder.
 
-## Notebook Preview
+## Including Specific Digital Corruptions
 
-Use the [digital.ipynb](aiverify_digital_corruptions/utils/digital.ipynb) notebook to preview each corruption function and modify the default parameter values if needed.
+### Usage
+
+By default, **all** digital corruption functions are applied. You can use the `--include` flag to specify which functions to include.
+
+```sh
+--include [FUNCTION_NAME ...]
+```
+
+### Options
+
+- `all` -> Includes all digital corruption functions (default)
+- `brightness_down`
+- `brightness_up`
+- `contrast_down`
+- `contrast_up`
+- `saturate_down`
+- `saturate_up`
+- `perspective`
+- `jpeg_compression`
+
+### Example: Applying only Perspective and JPEG Compression corruptions
+
+```sh
+#!/bin/bash
+
+root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files"
+
+python -m aiverify_digital_corruptions \
+  --data_path $root_path/data/raw_fashion_image_10 \
+  --model_path $root_path/pipeline/multiclass_classification_image_mnist_fashion \
+  --ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.**sav** \
+  --ground_truth label \
+  --model_type CLASSIFICATION \
+  --run_pipeline \
+  --annotated_ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
+  --set_seed 10 \
+  --file_name_label file_name
+  --include perspective jpeg_compression
+```
+
+## Customizing Parameters
+
+To fine-tune digital corruption parameters, use the [Digital Corruption Playground Notebook](./playground.ipynb). This notebook allows you to:
+
+✅ Visualize the effects of different digital corruption functions.
+
+✅ Experiment with different parameter values.
+
+✅ Apply custom values in the CLI using flags like:
+
+```sh
+--brightness_down_factor 0.1 0.2 0.3
+```
+
+After selecting the desired parameters, update your CLI command accordingly.
 
 ## Develop plugin locally
 
@@ -67,16 +121,14 @@ pip install -e '.[dev]'
 python -m aiverify_digital_corruptions --data_path  <data_path> --model_path <model_path> --ground_truth_path <ground_truth_path> --ground_truth <str> --model_type CLASSIFICATION --run_pipeline --set_seed <int> --annotated_ground_truth_path <annotated_file_path> --file_name_label <str>
 ```
 
-## Build Plugin
+### Build Plugin
 
 ```sh
 cd aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions/
 hatch build
 ```
 
-## Tests
-
-### Pytest is used as the testing framework
+### Tests
 
 Run the following steps to execute the unit and integration tests inside the `tests/` folder
 
@@ -114,9 +166,7 @@ docker run \
 
 If the algorithm runs successfully, the results of the test will be saved in an `output` folder in the algorithm directory.
 
-## Tests
-
-### Pytest is used as the testing framework
+### Tests
 
 Run the following steps to execute the unit and integration tests inside the `tests/` folder
 
