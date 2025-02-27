@@ -24,6 +24,11 @@
     ol {
       @apply list-decimal pl-5;
     }
+    .chart-container {
+      width: 100%;
+    }
+    .chart-bar {
+    }
   }
 }
 
