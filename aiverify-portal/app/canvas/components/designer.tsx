@@ -142,6 +142,21 @@ function Designer(props: DesignerProps) {
   const [isPanelOpen, setIsPanelOpen] = useState(true);
   const canvasPrint = usePrintable({ printableId: pagesContentWrapperId });
 
+  let updatedBackFlow = flow;
+  if (flow === UserFlows.NewProjectWithExistingTemplateAndResults) {
+    updatedBackFlow = UserFlows.NewProjectWithExistingTemplate;
+  } else if (flow === UserFlows.NewProjectWithNewTemplateAndResults) {
+    updatedBackFlow = UserFlows.NewProjectWithNewTemplate;
+  }
+
+  let backButtonLink = `/results?flow=${updatedBackFlow}&projectId=${project?.id}`;
+  if (
+    flow === UserFlows.NewProjectWithExistingTemplateAndRunNewTests ||
+    flow === UserFlows.NewProjectWithNewTemplateAndRunNewTests
+  ) {
+    backButtonLink = `/project/usermenu?flow=${flow}&projectId=${project?.id}`;
+  }
+
   useEffect(() => {
     // position free form area horizontal - centered. Then flag initial mount as done.
     if (freeFormAreaRef.current) {
@@ -785,10 +800,9 @@ function Designer(props: DesignerProps) {
       <section className="fixed bottom-0 right-[50px] h-[100px] bg-transparent">
         <div className="flex items-center justify-center gap-4">
           {flow !== undefined &&
-          flow !== UserFlows.ExistingProject &&
+          flow !== UserFlows.EditExistingProject &&
           !disablePreviousButton ? (
-            <Link
-              href={`/project/usermenu?flow=${flow}&projectId=${project.id}`}>
+            <Link href={backButtonLink}>
               <Button
                 className="w-[130px] gap-4 p-2 text-white"
                 variant="secondary">

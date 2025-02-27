@@ -22,6 +22,10 @@ export default async function UserMenuPage(props: UrlSearchParams) {
   const searchParams = await props.searchParams;
   const { projectId, flow } = searchParams;
   const result = await fetchProjects({ ids: [projectId] });
+  let updatedFlow = flow;
+  if (flow === UserFlows.NewProjectWithNewTemplate) {
+    updatedFlow = UserFlows.NewProjectWithNewTemplateAndRunNewTests;
+  }
 
   if (!projectId || !flow || 'message' in result) {
     notFound();
@@ -62,7 +66,7 @@ export default async function UserMenuPage(props: UrlSearchParams) {
         </Link>
         <Link
           className="flex-1 basis-[350px]"
-          href={`/canvas?flow=${flow}&projectId=${projectId}`}>
+          href={`/canvas?flow=${updatedFlow}&projectId=${projectId}`}>
           <Card className="min-h-[250px] w-full cursor-pointer border-none bg-secondary-800 text-white hover:bg-secondary-700">
             <h3 className="mb-8 flex items-center gap-4 text-xl font-semibold text-white">
               <RiFlaskLine className="h-8 w-8 text-primary-500" />
@@ -74,7 +78,7 @@ export default async function UserMenuPage(props: UrlSearchParams) {
           </Card>
         </Link>
       </section>
-      {flow !== undefined && flow !== UserFlows.ExistingProject ? (
+      {flow !== undefined && flow !== UserFlows.EditExistingProject ? (
         <section className="mt-[200px] flex items-center justify-start gap-4">
           <Link href={`/templates?flow=${flow}&projectId=${projectId}`}>
             <Button
