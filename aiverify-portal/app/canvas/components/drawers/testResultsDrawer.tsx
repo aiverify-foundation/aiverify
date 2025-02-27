@@ -18,14 +18,14 @@ import { SelectedTestResults } from './selectedTestResult';
 
 type TestResultsDrawerProps = {
   className?: string;
-  allTestResults: ParsedTestResults[];
+  allTestResultsOnSystem: ParsedTestResults[];
   selectedTestResultsFromUrlParams: ParsedTestResults[];
   onOkClick: (selectedResults: ParsedTestResults[]) => void;
 };
 
 function TestResultsDrawer(props: TestResultsDrawerProps) {
   const {
-    allTestResults,
+    allTestResultsOnSystem,
     selectedTestResultsFromUrlParams,
     className,
     onOkClick,
@@ -57,7 +57,7 @@ function TestResultsDrawer(props: TestResultsDrawerProps) {
           </DrawerHeader>
           <DrawerBody>
             <div className="space-y-4">
-              {allTestResults.map((result, index) => (
+              {allTestResultsOnSystem.map((result, index) => (
                 <label
                   key={index}
                   className="flex items-center gap-3">

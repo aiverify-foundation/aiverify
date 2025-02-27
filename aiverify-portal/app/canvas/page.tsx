@@ -23,11 +23,17 @@ export default async function CanvasPage(props: UrlSearchParams) {
   const { flow, projectId, testResultIds } = searchParams;
   const result = await fetchProjects({ ids: [projectId] });
 
-  if (!projectId || flow == undefined || 'message' in result) {
-    notFound();
-  }
+  // temp commented out
+  // if (!projectId || flow == undefined || 'message' in result) {
+  //   notFound();
+  // }
 
-  const project = result.data[0];
+  const project = {
+    projectInfo: {
+      name: 'Test Project',
+      description: 'Test Description',
+    },
+  }; //result.data[0]; //temp commented out
 
   const plugins = await getPlugins({ groupByPluginId: false });
   const testResults = await getTestResults();
@@ -70,7 +76,7 @@ export default async function CanvasPage(props: UrlSearchParams) {
       flow={flow}
       project={project}
       allPluginsWithMdx={pluginsWithMdx}
-      allTestResults={parsedTestResults}
+      allTestResultsOnSystem={parsedTestResults}
       selectedTestResultsFromUrlParams={selectedTestResultsFromUrlParams}
     />
   );

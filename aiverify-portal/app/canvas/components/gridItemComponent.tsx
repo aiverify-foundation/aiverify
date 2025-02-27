@@ -9,7 +9,7 @@ import {
   TestResultDataMapping,
   WidgetOnGridLayout,
 } from '@/app/canvas/types';
-import { findTestResultByIdAndTime } from '@/app/canvas/utils/findTestResultByIdAndTime';
+import { findTestResultById } from '@/app/canvas/utils/findTestResultById';
 import { TestResultData, InputBlockData, Plugin } from '@/app/types';
 import { WidgetPropertiesDrawer } from './drawers/widgetPropertiesDrawer';
 import { GridItemContextMenu } from './gridItemContextMenu';
@@ -24,7 +24,7 @@ type GridItemComponentProps = {
   layout: Layout;
   widget: WidgetOnGridLayout;
   testResultsUsed?: WidgetAlgoAndResultIdentifier[];
-  testResults: ParsedTestResults[];
+  allTestResultsOnSystem: ParsedTestResults[];
   inputBlockData?: unknown;
   isDragging?: boolean;
   isResizing: boolean;
@@ -57,7 +57,7 @@ function GridItemComponent({
   isDragging,
   isResizing,
   testResultsUsed,
-  testResults,
+  allTestResultsOnSystem,
   onDeleteClick,
   onEditClick,
 }: GridItemComponentProps) {
@@ -74,13 +74,11 @@ function GridItemComponent({
   if (
     testResultsUsed &&
     testResultsUsed.length > 0 &&
-    testResultsUsed[0].testResultsCreatedAt !== undefined
+    testResultsUsed[0].testResultId !== undefined
   ) {
-    testResultMatch = findTestResultByIdAndTime(
-      testResults,
-      testResultsUsed[0].gid,
-      testResultsUsed[0].cid,
-      testResultsUsed[0].testResultsCreatedAt
+    testResultMatch = findTestResultById(
+      allTestResultsOnSystem,
+      testResultsUsed[0].testResultId
     );
   }
 
@@ -265,7 +263,7 @@ function GridItemComponent({
           allAvailablePlugins={allAvalaiblePlugins}
           widget={widget}
           testResultsUsed={testResultMatch}
-          allAvailableTestResults={testResults}
+          allAvailableTestResults={allTestResultsOnSystem}
           open={showWidgetProperties}
           setOpen={setShowWidgetProperties}
           onOkClick={() => setShowWidgetProperties(false)}
