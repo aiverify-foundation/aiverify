@@ -1,8 +1,9 @@
 from pathlib import Path
 
 import pytest
-from aiverify_blur_corruptions.algo_init import AlgoInit
 from aiverify_test_engine.plugins.enums.model_type import ModelType
+
+from aiverify_blur_corruptions.algo_init import AlgoInit
 
 image_pipeline = {
     "data_path": str("../../../user_defined_files/data/raw_fashion_image_10"),
@@ -29,9 +30,9 @@ def test_aiverify_blur_corruptions_plugin(data_set):
         ),
         "file_name_label": "file_name",
         "set_seed": 10,
-        "exclude": ["defocus_blur", "zoom_blur", "vertical_motion_blur"],
-        "glass_blur_max_delta": [1, 3, 5],
+        "include": ["horizontal_motion_blur", "zoom_blur"],
         "zoom_blur_zoom_factor": [1.0, 1.5, 2.0, 2.5, 3.0],
+        "glass_blur_max_delta": [1, 3, 5],
     }
 
     plugin_test = AlgoInit(

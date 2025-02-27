@@ -5,7 +5,8 @@
     "required": [
         "annotated_ground_truth_path",
         "file_name_label",
-        "set_seed"
+        "set_seed",
+        "include"
     ],
     "properties": {
         "annotated_ground_truth_path": {
@@ -25,10 +26,10 @@
             "default": 10,
             "type": "integer"
         },
-        "exclude": {
-            "title": "Name(s) of blur corruption to exclude",
-            "description": "Specify the name(s) of blur corruption function to exclude. Runs all corruptions if not provided.",
-            "type": ["array", "null"],
+        "include": {
+            "title": "Name(s) of blur corruption to include",
+            "description": "Specify the name(s) of blur corruption function to include. Default: 'all'",
+            "type": "array",
             "items": {"type": "string"}
         },
         "gaussian_blur_sigma": {

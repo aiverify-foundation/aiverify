@@ -3,6 +3,7 @@ import argparse
 from aiverify_test_engine.plugins.enums.model_type import ModelType
 
 from aiverify_blur_corruptions.algo_init import AlgoInit
+from aiverify_blur_corruptions.utils import blur
 
 parser = argparse.ArgumentParser(description="Run the plugin test with specified parameters.")
 
@@ -52,9 +53,11 @@ def parse_input_args():
     )
     parser.add_argument("--file_name_label", default="", help="The label of the file name.")
     parser.add_argument(
-        "--exclude",
+        "--include",
         nargs="+",
-        help="Specify the name(s) of blur corruption function to exclude. Runs all corruptions if not provided.",
+        choices=["all"] + [name.lower() for name in blur.CORRUPTIONS],
+        default=["all"],
+        help="Specify the name(s) of blur corruption function to include. Default: 'all'",
     )
     parser.add_argument(
         "--gaussian_blur_sigma",
@@ -113,7 +116,7 @@ def invoke_aiverify_blur_corruptions_plugin():
     model_type = ModelType[args.model_type]
 
     user_defined_params = {
-        "exclude": args.exclude,
+        "include": args.include,
         "gaussian_blur_sigma": args.gaussian_blur_sigma,
         "glass_blur_max_delta": args.glass_blur_max_delta,
         "defocus_blur_radius": args.defocus_blur_radius,

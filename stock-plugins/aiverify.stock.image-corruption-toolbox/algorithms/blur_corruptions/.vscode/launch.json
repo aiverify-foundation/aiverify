@@ -29,10 +29,9 @@
         "10",
         "--file_name_label",
         "file_name",
-        "--exclude",
-        "glass_blur",
-        "defocus_blur",
+        "--include",
         "horizontal_motion_blur",
+        "zoom_blur",
         "--horizontal",
         "1",
         "2",
@@ -44,9 +43,7 @@
         "3",
         "5",
         "--zoom",
-        "6",
-        "7",
-        "8"
+        "6"
       ],
       "justMyCode": false
     }

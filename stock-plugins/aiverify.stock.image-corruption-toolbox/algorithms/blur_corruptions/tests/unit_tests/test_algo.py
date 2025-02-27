@@ -67,6 +67,7 @@ class ObjectTest:
             ),
             "file_name_label": "file_name",
             "set_seed": 10,
+            "include": ["all"],
         }
 
         expected_exception = RuntimeError
@@ -495,9 +496,9 @@ def test_valid_run(get_data_instance_and_serializer_without_ground_truth):
     assert validate_status
 
 
-def test_exclude():
+def test_include():
     test_object = ObjectTest()
-    test_object._input_args.update({"exclude": ["defocus_blur", "zoom_blur", "vertical_motion_blur"]})
+    test_object._input_args.update({"include": ["horizontal_motion_blur", "zoom_blur"]})
     test_plugin = Plugin(
         test_object._data_instance_and_serializer,
         test_object._model_instance_and_serializer,
@@ -516,7 +517,7 @@ def test_exclude():
 
     assert validate_status
     for data in results["results"]:
-        assert data["corruption_function"].lower() not in test_object._input_args["exclude"]
+        assert data["corruption_function"].lower() in test_object._input_args["include"]
 
 
 def test_user_defined_params():
