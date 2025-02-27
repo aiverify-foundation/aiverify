@@ -1,4 +1,3 @@
-import collections
 import copy
 import logging
 import pickle
@@ -324,17 +323,11 @@ class Plugin(IAlgorithm):
         file_names = [Path(i).name for i in self._data.get_data()["image_directory"]]
         self._ordered_ground_truth = annotated_ground_truth.reindex(file_names)
 
-        general_corruptions = collections.OrderedDict(
-            {
-                "Gaussian_Noise": general.gaussian_noise,
-                "Poisson_Noise": general.poisson_noise,
-                "Salt_and_Pepper_Noise": general.salt_and_pepper_noise,
-            }
-        )
-
-        # Remove corruption functions flagged by "exclude"
-        if excludes := self._input_arguments.get("exclude"):
-            general_corruptions = {k: v for k, v in general_corruptions.items() if k.lower() not in excludes}
+        # Select corruptions flagged by "include"
+        if "all" not in (includes := self._input_arguments["include"]):
+            corruptions = {k: v for k, v in general.CORRUPTIONS.items() if k.lower() in includes}
+        else:
+            corruptions = general.CORRUPTIONS
 
         # Initialise main image directory
         if Path(str(self._tmp_path)).exists():
@@ -350,7 +343,7 @@ class Plugin(IAlgorithm):
         parameters = copy.deepcopy(general.DEFAULT_PARAMS)
         parameters.update(user_params)
 
-        self._assess_robustness(general_corruptions, parameters)
+        self._assess_robustness(corruptions, parameters)
 
         # Update progress (For 100% completion)
         self._progress_inst.update(1)

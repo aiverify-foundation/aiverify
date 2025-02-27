@@ -1,7 +1,7 @@
 import albumentations as A
 import numpy as np
 
-DEFAULT_PARAMS: dict[str, list] = {}
+DEFAULT_PARAMS: dict[str, list] = {}  # Must be in format {"<function>_<param>": [values...]}
 
 
 def gaussian_noise(img: np.ndarray, sigma: float = 0.3) -> np.ndarray:
@@ -59,3 +59,9 @@ def salt_and_pepper_noise(img: np.ndarray, amount: float = 0.2) -> np.ndarray:
 
 
 DEFAULT_PARAMS["salt_and_pepper_noise_amount"] = [0.1, 0.15, 0.2, 0.25, 0.3]
+
+CORRUPTIONS = {
+    "Gaussian_Noise": gaussian_noise,
+    "Poisson_Noise": poisson_noise,
+    "Salt_and_Pepper_Noise": salt_and_pepper_noise,
+}

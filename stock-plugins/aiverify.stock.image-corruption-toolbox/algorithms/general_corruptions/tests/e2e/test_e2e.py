@@ -30,7 +30,7 @@ def test_aiverify_general_corruptions_plugin(data_set):
         ),
         "file_name_label": "file_name",
         "set_seed": 10,
-        "exclude": ["poisson_noise"],
+        "include": ["gaussian_noise", "salt_and_pepper_noise"],
         "salt_and_pepper_noise_amount": [0.1, 0.2, 0.3],
         "poisson_noise_scale": [1, 2, 3, 4, 5],
     }
