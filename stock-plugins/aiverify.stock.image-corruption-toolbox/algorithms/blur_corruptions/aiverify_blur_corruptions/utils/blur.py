@@ -1,7 +1,7 @@
 import albumentations as A
 import numpy as np
 
-DEFAULT_PARAMS: dict[str, list] = {}
+DEFAULT_PARAMS: dict[str, list] = {}  # Must be in format {<function>_<param>: [values...]}
 
 
 def gaussian_blur(img: np.ndarray, sigma: float = 2.0) -> np.ndarray:
@@ -139,3 +139,12 @@ def zoom_blur(img: np.ndarray, zoom_factor: float = 1.1) -> np.ndarray:
 
 
 DEFAULT_PARAMS["zoom_blur_zoom_factor"] = [1.00, 1.05, 1.10, 1.15, 1.20]
+
+CORRUPTIONS = {
+    "Gaussian_Blur": gaussian_blur,
+    "Glass_Blur": glass_blur,
+    "Defocus_Blur": defocus_blur,
+    "Horizontal_Motion_Blur": horizontal_motion_blur,
+    "Vertical_Motion_Blur": vertical_motion_blur,
+    "Zoom_Blur": zoom_blur,
+}

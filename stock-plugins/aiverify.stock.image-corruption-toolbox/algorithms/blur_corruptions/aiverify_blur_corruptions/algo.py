@@ -2,7 +2,6 @@ import copy
 import logging
 import pickle
 import shutil
-from collections import OrderedDict
 from pathlib import Path, PurePath
 from typing import Dict, List, Tuple, Union
 
@@ -325,20 +324,11 @@ class Plugin(IAlgorithm):
         file_names = [Path(i).name for i in self._data.get_data()["image_directory"]]
         self._ordered_ground_truth = annotated_ground_truth.reindex(file_names)
 
-        blur_corruptions = OrderedDict(
-            {
-                "Gaussian_Blur": blur.gaussian_blur,
-                "Glass_Blur": blur.glass_blur,
-                "Defocus_Blur": blur.defocus_blur,
-                "Horizontal_Motion_Blur": blur.horizontal_motion_blur,
-                "Vertical_Motion_Blur": blur.vertical_motion_blur,
-                "Zoom_Blur": blur.zoom_blur,
-            }
-        )
-
-        # Remove corruption functions flagged by "exclude"
-        if excludes := self._input_arguments.get("exclude"):
-            blur_corruptions = {k: v for k, v in blur_corruptions.items() if k.lower() not in excludes}
+        # Select corruptions flagged by "include"
+        if "all" not in (includes := self._input_arguments["include"]):
+            corruptions = {k: v for k, v in blur.CORRUPTIONS.items() if k.lower() in includes}
+        else:
+            corruptions = blur.CORRUPTIONS
 
         # Initialise main image directory
         if Path(str(self._tmp_path)).exists():
@@ -354,7 +344,7 @@ class Plugin(IAlgorithm):
         parameters = copy.deepcopy(blur.DEFAULT_PARAMS)
         parameters.update(user_params)
 
-        self._assess_robustness(blur_corruptions, parameters)
+        self._assess_robustness(corruptions, parameters)
 
         # Update progress (For 100% completion)
         self._progress_inst.update(1)
