@@ -38,7 +38,7 @@ def fog(img: np.ndarray, intensity: float = 0.5) -> np.ndarray:
     Returns:
         np.ndarray: Numpy ndarray of image with Fog corruption.
     """
-    transform = A.RandomFog(fog_coef_range=(intensity, intensity), alpha_coef=0.08, p=1.0)
+    transform = A.RandomFog(fog_coef_range=(intensity, intensity), alpha_coef=0.2, p=1.0)
     return transform(image=img)["image"]
 
 
