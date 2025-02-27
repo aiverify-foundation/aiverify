@@ -96,10 +96,10 @@ def parse_input_args():
         help="Customize the factor value(s) for the Saturate Up corruption function.",
     )
     parser.add_argument(
-        "--perspective_sigma",
+        "--random_perspective_sigma",
         nargs="+",
         type=float,
-        help="Customize the sigma value(s) for the Perspective corruption function.",
+        help="Customize the sigma value(s) for the Random Perspective corruption function.",
     )
     parser.add_argument(
         "--jpeg_compression_quality",
@@ -135,7 +135,7 @@ def invoke_aiverify_digital_corruptions_plugin():
         "contrast_up_factor": args.contrast_up_factor,
         "saturate_down_factor": args.saturate_down_factor,
         "saturate_up_factor": args.saturate_up_factor,
-        "perspective_sigma": args.perspective_sigma,
+        "random_perspective_sigma": args.random_perspective_sigma,
         "jpeg_compression_quality": args.jpeg_compression_quality,
     }
 

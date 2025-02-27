@@ -500,7 +500,7 @@ def test_valid_run(get_data_instance_and_serializer_without_ground_truth):
 
 def test_include():
     test_object = ObjectTest()
-    test_object._input_args.update({"include": ["contrast_down", "perspective"]})
+    test_object._input_args.update({"include": ["contrast_down", "random_perspective"]})
     test_plugin = Plugin(
         test_object._data_instance_and_serializer,
         test_object._model_instance_and_serializer,

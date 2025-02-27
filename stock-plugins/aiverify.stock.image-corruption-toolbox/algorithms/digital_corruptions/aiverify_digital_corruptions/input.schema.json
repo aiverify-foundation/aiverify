@@ -68,9 +68,9 @@
             "type": ["array", "null"],
             "items": {"type": "number"}
         },
-        "perspective_sigma": {
-            "title": "Perspective sigma value(s)",
-            "description": "Customize the sigma value(s) for the Perspective corruption function",
+        "random_perspective_sigma": {
+            "title": "Random Perspective sigma value(s)",
+            "description": "Customize the sigma value(s) for the Random Perspective corruption function",
             "type": ["array", "null"],
             "items": {"type": "number"}
         },

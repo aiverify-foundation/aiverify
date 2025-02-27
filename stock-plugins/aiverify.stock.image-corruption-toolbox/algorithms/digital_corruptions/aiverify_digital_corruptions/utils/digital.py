@@ -125,7 +125,7 @@ def saturate_up(img: np.ndarray, factor: float = 0.4) -> np.ndarray:
 DEFAULT_PARAMS["saturate_up_factor"] = [0.1, 0.25, 0.4, 0.55, 0.7]
 
 
-def perspective(img: np.ndarray, sigma: float = 0.2) -> np.ndarray:
+def random_perspective(img: np.ndarray, sigma: float = 0.2) -> np.ndarray:
     """
     Apply random four point perspective transformation to the input.
 
@@ -135,13 +135,13 @@ def perspective(img: np.ndarray, sigma: float = 0.2) -> np.ndarray:
             distances of the subimage's corners from the full image's corners. Defaults to 0.2.
 
     Returns:
-        np.ndarray: Numpy ndarray of image with Perspective corruption.
+        np.ndarray: Numpy ndarray of image with Random Perspective corruption.
     """
     transform = A.Perspective(scale=(sigma, sigma), p=1.0)
     return transform(image=img)["image"]
 
 
-DEFAULT_PARAMS["perspective_sigma"] = [0.1, 0.15, 0.2, 0.25, 0.3]
+DEFAULT_PARAMS["random_perspective_sigma"] = [0.1, 0.15, 0.2, 0.25, 0.3]
 
 
 def jpeg_compression(img: np.ndarray, quality: int = 30) -> np.ndarray:
@@ -172,6 +172,6 @@ CORRUPTIONS = {
     "Contrast_Up": contrast_up,
     "Saturate_Down": saturate_down,
     "Saturate_Up": saturate_up,
-    "Perspective": perspective,
+    "Random_Perspective": random_perspective,
     "JPEG_Compression": jpeg_compression,
 }

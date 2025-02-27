@@ -62,10 +62,10 @@ By default, **all** digital corruption functions are applied. You can use the `-
 - `contrast_up`
 - `saturate_down`
 - `saturate_up`
-- `perspective`
+- `random_perspective`
 - `jpeg_compression`
 
-### Example: Applying only Perspective and JPEG Compression corruptions
+### Example: Applying only Random Perspective and JPEG Compression corruptions
 
 ```sh
 #!/bin/bash
@@ -82,7 +82,7 @@ python -m aiverify_digital_corruptions \
   --annotated_ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
   --set_seed 10 \
   --file_name_label file_name
-  --include perspective jpeg_compression
+  --include random_perspective jpeg_compression
 ```
 
 ## Customizing Parameters

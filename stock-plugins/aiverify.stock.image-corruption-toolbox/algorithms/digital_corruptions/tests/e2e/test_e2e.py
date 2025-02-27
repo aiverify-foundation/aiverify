@@ -30,8 +30,8 @@ def test_aiverify_digital_corruptions_plugin(data_set):
         ),
         "file_name_label": "file_name",
         "set_seed": 10,
-        "include": ["contrast_down", "perspective"],
-        "perspective_sigma": [1.0, 1.5, 2.0],
+        "include": ["contrast_down", "random_perspective"],
+        "random_perspective_sigma": [1.0, 1.5, 2.0],
         "brightness_down_factor": [0.1, 0.3, 0.5],
     }
 
