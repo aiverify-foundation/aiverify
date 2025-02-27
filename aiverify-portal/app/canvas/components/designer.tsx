@@ -7,6 +7,7 @@ import {
   RiArrowRightLine,
   RiPrinterLine,
 } from '@remixicon/react';
+import { debounce } from 'lodash';
 import Link from 'next/link';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useReducer } from 'react';
@@ -247,20 +248,27 @@ function Designer(props: DesignerProps) {
       return;
     }
 
-    if (layouts.length > 0) {
-      const newPageElement = document.getElementById(
-        `page-${layouts.length - 1}`
-      );
-      if (newPageElement) {
-        // Add a temporary scroll margin
-        newPageElement.style.scrollMarginTop = `${zoomLevel + 100}px`; // Adjust this value as needed
-        setTimeout(() => {
+    // Debounce the scroll to new page functionality
+    const debouncedScrollToNewPage = debounce(() => {
+      if (layouts.length > 0) {
+        const newPageElement = document.getElementById(
+          `page-${layouts.length - 1}`
+        );
+        if (newPageElement) {
+          // Add a temporary scroll margin
+          newPageElement.style.scrollMarginTop = `${zoomLevel + 100}px`; // Adjust this value as needed
           newPageElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
           newPageElement.style.scrollMarginTop = ''; // remove the temp margin
-        }, 0);
+        }
       }
-    }
-  }, [layouts.length]);
+    }, 200); // 200ms debounce time
+
+    debouncedScrollToNewPage();
+
+    return () => {
+      debouncedScrollToNewPage.cancel(); // Clean up the debounce on unmount
+    };
+  }, [layouts.length, zoomLevel]);
 
   /**
    * Manages overflow pages based on content size
@@ -270,7 +278,8 @@ function Designer(props: DesignerProps) {
   useEffect(() => {
     if (isInitialMount.current) return;
 
-    setTimeout(() => {
+    // Debounce the overflow check to avoid excessive calculations
+    const debouncedOverflowCheck = debounce(() => {
       const { overflows, numOfRequiredPages } = isPageContentOverflow(
         layouts[currentPage],
         state.widgets[currentPage]
@@ -294,7 +303,13 @@ function Designer(props: DesignerProps) {
           parentPageIndex: currentPage,
         });
       }
-    }, 0);
+    }, 300); // 300ms debounce time
+
+    debouncedOverflowCheck();
+
+    return () => {
+      debouncedOverflowCheck.cancel(); // Clean up the debounce on unmount
+    };
   }, [
     layouts[currentPage],
     state.widgets[currentPage],
@@ -328,114 +343,132 @@ function Designer(props: DesignerProps) {
    * @param pageIndex - The page where the widget is being dropped
    * @returns A callback function that processes the drop event
    */
-  const handleWidgetDrop =
-    (pageIndex: number) =>
-    (_layout: Layout[], item: Layout, e: EventDataTransfer) => {
-      console.log(
-        `[handleWidgetDrop] Dropping widget at page ${pageIndex}, position: (${item.x}, ${item.y})`
-      );
-      setDraggingGridItemId(null);
-
-      // Parse the JSON data from the drag event
-      let data: unknown;
-      try {
-        data = JSON.parse(e.dataTransfer.getData('application/json'));
-      } catch (error) {
-        console.error('Invalid widget item json', error);
-        return;
-      }
-
-      // Validate the widget data structure using Zod schema
-      const result = widgetItemSchema.safeParse(data);
-      if (!result.success) {
-        console.error('Invalid widget item data', result.error);
-        return;
-      }
-
-      // Handle case where an existing widget is being moved (not implemented yet)
-      if (result.data.gridItemId) {
-        // todo - for handling existing grid item id
-        console.log(data);
-        return;
-      }
-
-      // Find the widget definition from available plugins
-      const validData: WidgetCompositeId = result.data;
-      const widget = findWidgetFromPluginsById(
-        allPluginsWithMdx,
-        validData.gid,
-        validData.cid
-      );
-      if (!widget) {
-        console.error(
-          `Widget not found - gid: ${validData.gid} - cid: ${validData.cid}`
-        );
-        return;
-      }
-
-      // Initialize the widget with default data and create a unique ID
-      const widgetWithInitialData: WidgetOnGridLayout =
-        populateInitialWidgetResult(widget);
-      const gridItemId = createGridItemId(widget, pageIndex);
-
-      // Configure the layout properties for the new widget
-      // Uses maximum width and minimum height as initial dimensions
-      const { x, y } = item;
-      const { minW, minH, maxH, maxW } = widget.widgetSize;
-      const itemLayout = {
-        x,
-        y,
-        w: maxW,
-        h: minH,
-        minW,
-        minH,
-        maxW,
-        maxH,
-        i: gridItemId,
-      };
-
-      // Assign the grid item ID to the widget
-      const widgetWithGridItemId: WidgetOnGridLayout = {
-        ...widgetWithInitialData,
-        gridItemId,
-      };
-
-      // Get algorithms associated with this widget and map them to test results
-      // This connects the widget to any relevant test data that should be displayed
-      const algos = getWidgetAlgosFromPlugins(allPluginsWithMdx, widget);
-      const gridItemToAlgosMap: WidgetAlgoAndResultIdentifier[] = algos.map(
-        (algo) => {
-          // Find matching test results for this algorithm by gid and cid
-          const matchSelectedResult = findTestResultByAlgoGidAndCid(
-            selectedTestResults,
-            algo.gid,
-            algo.cid
-          );
-          return {
-            gid: algo.gid,
-            cid: algo.cid,
-            testResultId: matchSelectedResult?.id,
-          };
+  const handleWidgetDrop = useMemo(() => {
+    return (pageIndex: number) => {
+      // Return a function that captures the event data immediately
+      return (_layout: Layout[], item: Layout, e: EventDataTransfer) => {
+        // Capture the data from the event immediately
+        let jsonData: string;
+        try {
+          jsonData = e.dataTransfer.getData('application/json');
+        } catch (error) {
+          console.error('Failed to get data from event', error);
+          return;
         }
-      );
 
-      // Get input blocks associated with this widget
-      const inputBlocks = getWidgetInputBlocksFromPlugins(
-        allPluginsWithMdx,
-        widgetWithGridItemId
-      );
+        // Now debounce the processing of that data
+        const processDroppedWidget = debounce(() => {
+          console.log(
+            `[handleWidgetDrop] Dropping widget at page ${pageIndex}, position: (${item.x}, ${item.y})`
+          );
+          setDraggingGridItemId(null);
 
-      // Dispatch action to add the widget to the canvas state
-      dispatch({
-        type: 'ADD_WIDGET_TO_CANVAS',
-        itemLayout,
-        widget: widgetWithGridItemId,
-        gridItemAlgosMap: gridItemToAlgosMap,
-        algorithms: algos,
-        inputBlocks,
-        pageIndex,
-      });
+          // Parse the JSON data we captured earlier
+          let data: unknown;
+          try {
+            data = JSON.parse(jsonData);
+          } catch (error) {
+            console.error('Invalid widget item json', error);
+            return;
+          }
+
+          // Validate the widget data structure using Zod schema
+          const result = widgetItemSchema.safeParse(data);
+          if (!result.success) {
+            console.error('Invalid widget item data', result.error);
+            return;
+          }
+
+          // Handle case where an existing widget is being moved (not implemented yet)
+          if (result.data.gridItemId) {
+            // todo - for handling existing grid item id
+            console.log(data);
+            return;
+          }
+
+          // Find the widget definition from available plugins
+          const validData: WidgetCompositeId = result.data;
+          const widget = findWidgetFromPluginsById(
+            allPluginsWithMdx,
+            validData.gid,
+            validData.cid
+          );
+          if (!widget) {
+            console.error(
+              `Widget not found - gid: ${validData.gid} - cid: ${validData.cid}`
+            );
+            return;
+          }
+
+          // Initialize the widget with default data and create a unique ID
+          const widgetWithInitialData: WidgetOnGridLayout =
+            populateInitialWidgetResult(widget);
+          const gridItemId = createGridItemId(widget, pageIndex);
+
+          // Configure the layout properties for the new widget
+          // Uses maximum width and minimum height as initial dimensions
+          const { x, y } = item;
+          const { minW, minH, maxH, maxW } = widget.widgetSize;
+          const itemLayout = {
+            x,
+            y,
+            w: maxW,
+            h: minH,
+            minW,
+            minH,
+            maxW,
+            maxH,
+            i: gridItemId,
+          };
+
+          // Assign the grid item ID to the widget
+          const widgetWithGridItemId: WidgetOnGridLayout = {
+            ...widgetWithInitialData,
+            gridItemId,
+          };
+
+          // Get algorithms associated with this widget and map them to test results
+          // This connects the widget to any relevant test data that should be displayed
+          const algos = getWidgetAlgosFromPlugins(allPluginsWithMdx, widget);
+          const gridItemToAlgosMap: WidgetAlgoAndResultIdentifier[] = algos.map(
+            (algo) => {
+              // Find matching test results for this algorithm by gid and cid
+              const matchSelectedResult = findTestResultByAlgoGidAndCid(
+                selectedTestResults,
+                algo.gid,
+                algo.cid
+              );
+              return {
+                gid: algo.gid,
+                cid: algo.cid,
+                testResultId: matchSelectedResult?.id,
+              };
+            }
+          );
+
+          // Get input blocks associated with this widget
+          const inputBlocks = getWidgetInputBlocksFromPlugins(
+            allPluginsWithMdx,
+            widgetWithGridItemId
+          );
+
+          // Dispatch action to add the widget to the canvas state
+          dispatch({
+            type: 'ADD_WIDGET_TO_CANVAS',
+            itemLayout,
+            widget: widgetWithGridItemId,
+            gridItemAlgosMap: gridItemToAlgosMap,
+            algorithms: algos,
+            inputBlocks,
+            pageIndex,
+          });
+        }, 100);
+
+        // Execute the debounced function
+        processDroppedWidget();
+      };
     };
+  }, [allPluginsWithMdx, selectedTestResults]);
 
   /**
    * Handles the start of a resize operation on a grid item
@@ -460,20 +493,23 @@ function Designer(props: DesignerProps) {
    * @param pageIndex - The page containing the resized widget
    * @returns A callback function that processes the resize completion
    */
-  const handleGridItemResizeStop =
-    (pageIndex: number) =>
-    (_layouts: Layout[], _: Layout, itemLayout: Layout) => {
-      console.log(
-        `[handleGridItemResizeStop] Finished resizing item ${itemLayout.i} to w:${itemLayout.w}, h:${itemLayout.h}`
-      );
-      setResizingGridItemId(null);
-      const { x, y, w, h, minW, minH, maxW, maxH, i } = itemLayout;
-      dispatch({
-        type: 'RESIZE_WIDGET',
-        itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
-        pageIndex,
-      });
+  const handleGridItemResizeStop = useMemo(() => {
+    return (pageIndex: number) => {
+      // Debounce the resize stop handler
+      return debounce((_layouts: Layout[], _: Layout, itemLayout: Layout) => {
+        console.log(
+          `[handleGridItemResizeStop] Finished resizing item ${itemLayout.i} to w:${itemLayout.w}, h:${itemLayout.h}`
+        );
+        setResizingGridItemId(null);
+        const { x, y, w, h, minW, minH, maxW, maxH, i } = itemLayout;
+        dispatch({
+          type: 'RESIZE_WIDGET',
+          itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
+          pageIndex,
+        });
+      }, 150); // 150ms debounce time
     };
+  }, []);
 
   /**
    * Handles the start of a drag operation on a grid item
@@ -497,28 +533,34 @@ function Designer(props: DesignerProps) {
    * @param pageIndex - The page containing the dragged widget
    * @returns A callback function that processes the drag completion
    */
-  const handleGridItemDragStop =
-    (pageIndex: number) =>
-    (_layouts: Layout[], oldItem: Layout, newItem: Layout) => {
-      console.log(
-        `[handleGridItemDragStop] Moving item ${newItem.i} from (${oldItem.x},${oldItem.y}) to (${newItem.x},${newItem.y})`
-      );
+  const handleGridItemDragStop = useMemo(() => {
+    return (pageIndex: number) => {
+      // Debounce the drag stop handler
+      return debounce(
+        (_layouts: Layout[], oldItem: Layout, newItem: Layout) => {
+          console.log(
+            `[handleGridItemDragStop] Moving item ${newItem.i} from (${oldItem.x},${oldItem.y}) to (${newItem.x},${newItem.y})`
+          );
 
-      // Skip state update if position didn't actually change
-      // This prevents unnecessary re-renders
-      if (oldItem.x === newItem.x && oldItem.y === newItem.y) {
-        setDraggingGridItemId(null);
-        return; // Position didn't change, skip dispatch
-      }
+          // Skip state update if position didn't actually change
+          // This prevents unnecessary re-renders
+          if (oldItem.x === newItem.x && oldItem.y === newItem.y) {
+            setDraggingGridItemId(null);
+            return; // Position didn't change, skip dispatch
+          }
 
-      const { x, y, w, h, minW, minH, maxW, maxH, i } = newItem;
-      dispatch({
-        type: 'CHANGE_WIDGET_POSITION',
-        itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
-        pageIndex,
-      });
-      setDraggingGridItemId(null);
+          const { x, y, w, h, minW, minH, maxW, maxH, i } = newItem;
+          dispatch({
+            type: 'CHANGE_WIDGET_POSITION',
+            itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
+            pageIndex,
+          });
+          setDraggingGridItemId(null);
+        },
+        150
+      ); // 150ms debounce time
     };
+  }, []);
 
   /**
    * Creates a handler function to delete a specific widget
@@ -977,7 +1019,7 @@ function Designer(props: DesignerProps) {
     </section>
   );
 
-  console.log('state', state);
+  // console.log('state', state);
   // console.log('plugins', allPluginsWithMdx);
 
   /*
