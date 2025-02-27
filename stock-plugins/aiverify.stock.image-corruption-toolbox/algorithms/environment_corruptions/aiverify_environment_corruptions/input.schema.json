@@ -34,19 +34,19 @@
         },
         "snow_intensity": {
             "title": "Snow intensity value(s)",
-            "description": "Customize the intensity value(s) for the Snow corruption function.",
+            "description": "Customize the intensity value(s) for the Snow corruption function",
             "type": ["array", "null"],
             "items": {"type": "number"}
         },
         "fog_intensity": {
             "title": "Fog intensity value(s)",
-            "description": "Customize the intensity value(s) for the Fog corruption function.",
+            "description": "Customize the intensity value(s) for the Fog corruption function",
             "type": ["array", "null"],
             "items": {"type": "number"}
         },
         "rain_type": {
             "title": "Rain type(s)",
-            "description": "Customize the type(s) for the Rain corruption function.",
+            "description": "Customize the type(s) for the Rain corruption function",
             "type": ["array", "null"],
             "items": {"type": "string"}
         }

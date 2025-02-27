@@ -34,19 +34,19 @@
         },
         "gaussian_noise_sigma": {
             "title": "Gaussian Noise sigma value(s)",
-            "description": "Customize the sigma value(s) for the Gaussian Noise corruption function.",
+            "description": "Customize the sigma value(s) for the Gaussian Noise corruption function",
             "type": ["array", "null"],
             "items": {"type": "number"}
         },
         "poisson_noise_scale": {
             "title": "Poisson Noise scale value(s)",
-            "description": "Customize the scale value(s) for the Poisson Noise corruption function.",
+            "description": "Customize the scale value(s) for the Poisson Noise corruption function",
             "type": ["array", "null"],
             "items": {"type": "number"}
         },
         "salt_and_pepper_noise_amount": {
             "title": "Salt and Pepper Noise amount value(s)",
-            "description": "Customize the amount value(s) for the Salt and Pepper Noise corruption function.",
+            "description": "Customize the amount value(s) for the Salt and Pepper Noise corruption function",
             "type": ["array", "null"],
             "items": {"type": "number"}
         }

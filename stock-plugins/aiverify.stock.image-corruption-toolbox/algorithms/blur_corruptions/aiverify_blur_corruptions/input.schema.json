@@ -34,37 +34,37 @@
         },
         "gaussian_blur_sigma": {
             "title": "Gaussian Blur sigma value(s)",
-            "description": "Customize the sigma value(s) for the Gaussian Blur corruption function.",
+            "description": "Customize the sigma value(s) for the Gaussian Blur corruption function",
             "type": ["array", "null"],
             "items": {"type": "number"}
         },
         "glass_blur_max_delta": {
             "title": "Glass Blur max delta value(s)",
-            "description": "Customize the max delta value(s) for the Glass Blur corruption function.",
+            "description": "Customize the max delta value(s) for the Glass Blur corruption function",
             "type": ["array", "null"],
             "items": {"type": "integer"}
         },
         "defocus_blur_radius": {
             "title": "Defocus Blur radius value(s)",
-            "description": "Customize the radius value(s) for the Defocus Blur corruption function.",
+            "description": "Customize the radius value(s) for the Defocus Blur corruption function",
             "type": ["array", "null"],
             "items": {"type": "integer"}
         },
         "horizontal_motion_blur_kernel_size": {
             "title": "Horizontal Motion Blur kernel size value(s)",
-            "description": "Customize the kernel size value(s) for the Horizontal Motion Blur corruption function.",
+            "description": "Customize the kernel size value(s) for the Horizontal Motion Blur corruption function",
             "type": ["array", "null"],
             "items": {"type": "integer"}
         },
         "vertical_motion_blur_kernel_size": {
             "title": "Vertical Motion Blur kernel size value(s)",
-            "description": "Customize the kernel size value(s) for the Vertical Motion Blur corruption function.",
+            "description": "Customize the kernel size value(s) for the Vertical Motion Blur corruption function",
             "type": ["array", "null"],
             "items": {"type": "integer"}
         },
         "zoom_blur_zoom_factor": {
             "title": "Zoom Blur zoom factor value(s)",
-            "description": "Customize the zoom factor value(s) for the Zoom Blur corruption function.",
+            "description": "Customize the zoom factor value(s) for the Zoom Blur corruption function",
             "type": ["array", "null"],
             "items": {"type": "number"}
         }

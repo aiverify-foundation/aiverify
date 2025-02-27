@@ -1,7 +1,7 @@
 import albumentations as A
 import numpy as np
 
-DEFAULT_PARAMS: dict[str, list] = {}  # Must be in format {<function>_<param>: [values...]}
+DEFAULT_PARAMS: dict[str, list] = {}  # Must be in format {"<function>_<param>": [values...]}
 
 
 def gaussian_blur(img: np.ndarray, sigma: float = 2.0) -> np.ndarray:
