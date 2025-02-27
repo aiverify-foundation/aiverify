@@ -462,7 +462,7 @@ function Designer(props: DesignerProps) {
       `[handleSelectUploadedTestResults] Updating with ${results.length} test results`
     );
     if (results.length === 0) {
-      // no results selected
+      // no results selected, set all testResultIds in grid item algos map to undefined
       setSelectedTestResults((prev) => {
         const updatedResults = prev.map((result) => ({
           gid: result.gid,
