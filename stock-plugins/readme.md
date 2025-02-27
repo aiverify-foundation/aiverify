@@ -206,3 +206,45 @@ marginBottom: '10px',
 </div>
 )}
 ```
+
+### 11. Columns
+
+Use css grid to create columns:
+
+Here's an example of a widget that uses css grid to create containing lines charts:
+
+```mdx
+return (
+  <div className="chart-container" style={{
+    display: "grid", // Creates a CSS grid layout
+    gridTemplateColumns: "repeat(3, 1fr)", // Creates 3 equal-width columns
+    gap: "20px", // Adds 20px spacing between grid items
+    height }}> // Uses the height prop passed to the widget
+      {mydata.data.map((each_feature, index) => {
+        return (
+          <div key={`${id}-${index}`}>
+            {Object.entries(each_feature).map(function ([key, value]) {
+              return (
+                <div key={`${id}-${key}`} style={{ height:"calc(100% - 40px)" }}>
+                  <h5 style={{ textAlign: "center" }}>{key}</h5>
+                  <LineChart data={value}
+                    xAxisDataKey="feature_value"
+                    xAxisProps={{ width:"100%", fontSize:8}}
+                    yAxisProps={{ fontSize:8}}
+                    lines={[{ dataKey:"ale"}]}
+                  />
+                </div>
+              )
+            })}
+          </div>
+        )
+      })
+    }
+  </div>
+```
+
+
+### 12. Using Keys in React Components
+
+When rendering lists of elements in React components within MDX files, always use unique key props. The widget receives an `id` prop which is unique per widget instance - use this to generate unique keys:
+
