@@ -23,18 +23,11 @@ export default async function CanvasPage(props: UrlSearchParams) {
   const { flow, projectId, testResultIds } = searchParams;
   const result = await fetchProjects({ ids: [projectId] });
 
-  // temp commented out
-  // if (!projectId || flow == undefined || 'message' in result) {
-  //   notFound();
-  // }
+  if (!projectId || flow == undefined || 'message' in result) {
+    notFound();
+  }
 
-  const project = {
-    projectInfo: {
-      name: 'Test Project',
-      description: 'Test Description',
-    },
-  }; //result.data[0]; //temp commented out
-
+  const project = result.data[0];
   const plugins = await getPlugins({ groupByPluginId: false });
   const testResults = await getTestResults();
 
