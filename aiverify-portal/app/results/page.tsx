@@ -1,5 +1,5 @@
 import { Icon, IconName } from '@/lib/components/IconSVG';
-import { getTestResults } from '@/lib/fetchApis/getAllTestResults';
+import { getTestResults } from '@/lib/fetchApis/getTestResults';
 import ActionButtons from './components/ActionButton';
 import TestResultsList from './components/TestResultsList';
 

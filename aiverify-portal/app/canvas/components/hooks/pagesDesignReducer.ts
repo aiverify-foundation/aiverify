@@ -12,15 +12,15 @@ export type WidgetAlgoAndResultIdentifier = {
 type WidgetGridItemId = string;
 
 export type State = {
-  layouts: Layout[][];
-  widgets: WidgetOnGridLayout[][];
-  algorithmsOnReport: Algorithm[];
+  layouts: Layout[][]; // 2d array - rows rerpresent pages, columns hold widget layout objects (react grid layout object)
+  widgets: WidgetOnGridLayout[][]; // 2d array - rows represent pages, columns holds widget objects
+  algorithmsOnReport: Algorithm[]; // Keeps track of all the algos/tests that's required by the report
+  inputBlocksOnReport: InputBlock[]; // Keeps track of all the input blocks that's required by the report
   gridItemToAlgosMap: Record<WidgetGridItemId, WidgetAlgoAndResultIdentifier[]>;
-  currentPage: number;
-  showGrid: boolean;
-  pageTypes: ('grid' | 'overflow')[]; // Track page types
-  overflowParents: Array<number | null>; // just track parent page index, null for grid pages
-  inputBlocksOnReport: InputBlock[];
+  currentPage: number; // Keeps track of the current page
+  showGrid: boolean; // Keeps track of the grid visibility
+  pageTypes: ('grid' | 'overflow')[]; // Track page types - 1D array of page types
+  overflowParents: Array<number | null>; // just track parent page index, null for grid pages [null,null,null,2,2]
 };
 
 export const initialState: State = {
@@ -56,7 +56,7 @@ type WidgetAction =
       pageIndex: number;
     }
   | {
-      type: 'CHANGE_WIDGET_POSITION';
+      type: 'CHANGE_WIDGET_POSITION'; //TODO - review; I was using this for moving widgets across pages.
       itemLayout: Layout;
       pageIndex: number;
     }
@@ -93,7 +93,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         clonedPageLayouts,
         action.itemLayout
       );
-      clonedPageLayouts.splice(insertPosition, 0, action.itemLayout);
+      clonedPageLayouts.splice(insertPosition, 0, action.itemLayout); //splice creates a new array
       const clonedPageWidgets = widgets[action.pageIndex].slice();
       clonedPageWidgets.splice(insertPosition, 0, action.widget);
 
