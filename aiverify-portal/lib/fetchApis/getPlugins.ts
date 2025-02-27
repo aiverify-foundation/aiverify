@@ -23,7 +23,7 @@ type Options = {
   populateMdx?: boolean;
 };
 
-export async function populateMdxBundles(
+export async function populatePluginsMdxBundles(
   plugins: Plugin[]
 ): Promise<PluginForGridLayout[]> {
   // Create new array to avoid mutations

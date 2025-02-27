@@ -2,7 +2,7 @@
 
 import JSZip from 'jszip';
 import React, { useState, useEffect } from 'react';
-import { TestResults } from '@/app/types';
+import { TestResult } from '@/app/types';
 import { Button, ButtonVariant } from '@/lib/components/button';
 import { Modal } from '@/lib/components/modal';
 import { deleteResult } from '@/lib/fetchApis/deleteTestResult';
@@ -12,8 +12,8 @@ import ArtifactModal from './ArtifactPopup';
 import { ResultsNameHeader } from './ResultsNameHeader';
 
 type Props = {
-  result: TestResults | null;
-  onUpdateResult?: (updatedResult: TestResults) => void;
+  result: TestResult | null;
+  onUpdateResult?: (updatedResult: TestResult) => void;
 };
 
 export default function TestResultDetail({ result, onUpdateResult }: Props) {
@@ -21,9 +21,7 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
   const [activeTab, setActiveTab] = useState<
     'testArguments' | 'outputArtifacts'
   >('testArguments');
-  const [currentResult, setCurrentResult] = useState<TestResults | null>(
-    result
-  );
+  const [currentResult, setCurrentResult] = useState<TestResult | null>(result);
   const [modalOpen, setModalOpen] = useState(false); // State for modal
   const [selectedArtifact, setSelectedArtifact] = useState<any>(null);
   const [isDownloading, setIsDownloading] = useState(false);
