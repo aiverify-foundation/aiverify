@@ -2,7 +2,6 @@ import copy
 import logging
 import pickle
 import shutil
-from collections import OrderedDict
 from pathlib import Path, PurePath
 from typing import Dict, List, Tuple, Union
 
@@ -323,17 +322,11 @@ class Plugin(IAlgorithm):
         file_names = [Path(i).name for i in self._data.get_data()["image_directory"]]
         self._ordered_ground_truth = annotated_ground_truth.reindex(file_names)
 
-        environment_corruptions = OrderedDict(
-            {
-                "Snow": environment.snow,
-                "Fog": environment.fog,
-                "Rain": environment.rain,
-            }
-        )
-
-        # Remove corruption functions flagged by "exclude"
-        if excludes := self._input_arguments.get("exclude"):
-            environment_corruptions = {k: v for k, v in environment_corruptions.items() if k.lower() not in excludes}
+        # Select corruptions flagged by "include"
+        if "all" not in (includes := self._input_arguments["include"]):
+            corruptions = {k: v for k, v in environment.CORRUPTIONS.items() if k.lower() in includes}
+        else:
+            corruptions = environment.CORRUPTIONS
 
         # Initialise main image directory
         if Path(str(self._tmp_path)).exists():
@@ -351,7 +344,7 @@ class Plugin(IAlgorithm):
         parameters = copy.deepcopy(environment.DEFAULT_PARAMS)
         parameters.update(user_params)
 
-        self._assess_robustness(environment_corruptions, parameters)
+        self._assess_robustness(corruptions, parameters)
 
         # Update progress (For 100% completion)
         self._progress_inst.update(1)

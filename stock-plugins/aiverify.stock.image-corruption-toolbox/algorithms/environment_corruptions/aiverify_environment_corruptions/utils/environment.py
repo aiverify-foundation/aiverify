@@ -3,7 +3,7 @@ from typing import Literal
 import albumentations as A
 import numpy as np
 
-DEFAULT_PARAMS: dict[str, list] = {}
+DEFAULT_PARAMS: dict[str, list] = {}  # Must be in format {"<function>_<param>": [values...]}
 
 
 def snow(img: np.ndarray, intensity: float = 2.5) -> np.ndarray:
@@ -64,3 +64,9 @@ def rain(img: np.ndarray, type: Literal["drizzle", "heavy", "torrential"] = "dri
 
 
 DEFAULT_PARAMS["rain_type"] = ["drizzle", "heavy", "torrential"]
+
+CORRUPTIONS = {
+    "Snow": snow,
+    "Fog": fog,
+    "Rain": rain,
+}
