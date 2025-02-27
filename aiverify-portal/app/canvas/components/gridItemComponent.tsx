@@ -11,7 +11,12 @@ import {
 } from '@/app/canvas/types';
 import { findMockDataByTypeAndCid } from '@/app/canvas/utils/findMockDataByTypeAndCid';
 import { findTestResultById } from '@/app/canvas/utils/findTestResultById';
-import { TestResultData, InputBlockData, Plugin } from '@/app/types';
+import {
+  TestResultData,
+  InputBlockData,
+  Plugin,
+  InputBlock,
+} from '@/app/types';
 import { WidgetPropertiesDrawer } from './drawers/widgetPropertiesDrawer';
 import { GridItemContextMenu } from './gridItemContextMenu';
 import { editorInputClassName } from './hocAddTextEditFuncitonality';
@@ -35,6 +40,9 @@ type GridItemComponentProps = {
 
   /** All test results available in the system that widgets can access */
   allTestResultsOnSystem: ParsedTestResults[];
+
+  /** All input blocks available in the system that widgets can access */
+  allInputBlocksOnSystem: InputBlock[];
 
   /** Optional data from input blocks that the widget might need */
   inputBlockData?: unknown;
@@ -96,6 +104,7 @@ function GridItemComponent({
   const enableEditing = widget.properties && widget.properties.length > 0;
 
   const testResultsListForDrawer = useMemo(() => {
+    // prepare list of test results that are used by this widget, for the widget properties drawer
     if (testResultsUsed && testResultsUsed.length > 0) {
       return testResultsUsed.reduce<ParsedTestResults[]>((acc, result) => {
         if (result.testResultId !== undefined) {
@@ -114,6 +123,9 @@ function GridItemComponent({
   }, [testResultsUsed]);
 
   const testResultWidgetData = useMemo(() => {
+    // prepare test result data for the widget to consume and display data (draw graphs, etc),
+    // based on test results that are used by this widget. If no test result is found for an algo,
+    // the mock data is used instead.
     if (testResultsUsed && testResultsUsed.length > 0) {
       return testResultsUsed.reduce<TestResultDataMapping>((acc, result) => {
         if (result.testResultId !== undefined) {
@@ -149,17 +161,19 @@ function GridItemComponent({
     return {};
   }, [testResultsUsed]);
 
-  //   if (widget.mockdata && widget.mockdata.length > 0) {
-  //     return widget.mockdata.reduce<TestResultDataMapping>((acc, mock) => {
-  //       if (mock.type === 'Algorithm') {
-  //         acc[`${widget.gid}:${mock.cid}`] = mock.data;
-  //       }
-  //       return acc;
-  //     }, {});
-  //   }
-  //   return {};
-  // }, [widget, widget.mdx, testResultsUsed]);
+  const mockInputs = useMemo(() => {
+    if (widget.mockdata && widget.mockdata.length > 0) {
+      return widget.mockdata.reduce<InputBlockDataMapping>((acc, mock) => {
+        if (mock.type === 'InputBlock') {
+          acc[`${widget.gid}:${mock.cid}`] = mock.data;
+        }
+        return acc;
+      }, {});
+    }
+    return {};
+  }, [widget, widget.mdx]);
 
+  // handle resizing of the grid item
   useEffect(() => {
     if (!gridItemRef.current) return;
 
@@ -285,18 +299,6 @@ function GridItemComponent({
       };
     }, {});
   }, [widget.properties]);
-
-  const mockInputs = useMemo(() => {
-    if (widget.mockdata && widget.mockdata.length > 0) {
-      return widget.mockdata.reduce<InputBlockDataMapping>((acc, mock) => {
-        if (mock.type === 'InputBlock') {
-          acc[`${widget.gid}:${mock.cid}`] = mock.data;
-        }
-        return acc;
-      }, {});
-    }
-    return {};
-  }, [widget, widget.mdx]);
 
   return (
     <React.Fragment>
