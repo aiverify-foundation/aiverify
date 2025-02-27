@@ -30,9 +30,9 @@ def test_aiverify_digital_corruptions_plugin(data_set):
         ),
         "file_name_label": "file_name",
         "set_seed": 10,
-        "exclude": ["brightness_up", "contrast_down", "perspective"],
+        "include": ["contrast_down", "perspective"],
+        "perspective_sigma": [1.0, 1.5, 2.0],
         "brightness_down_factor": [0.1, 0.3, 0.5],
-        "perspective_sigma": [1.0, 1.5, 2.0, 2.5, 3.0],
     }
 
     plugin_test = AlgoInit(

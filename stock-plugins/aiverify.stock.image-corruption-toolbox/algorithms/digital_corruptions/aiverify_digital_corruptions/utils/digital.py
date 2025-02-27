@@ -1,7 +1,7 @@
 import albumentations as A
 import numpy as np
 
-DEFAULT_PARAMS: dict[str, list] = {}
+DEFAULT_PARAMS: dict[str, list] = {}  # Must be in format {<function>_<param>: [values...]}
 
 
 def brightness_down(img: np.ndarray, factor: float = 0.5) -> np.ndarray:
@@ -164,3 +164,14 @@ def jpeg_compression(img: np.ndarray, quality: int = 30) -> np.ndarray:
 
 
 DEFAULT_PARAMS["jpeg_compression_quality"] = [90, 60, 30, 15, 5]
+
+CORRUPTIONS = {
+    "Brightness_Down": brightness_down,
+    "Brightness_Up": brightness_up,
+    "Contrast_Down": contrast_down,
+    "Contrast_Up": contrast_up,
+    "Saturate_Down": saturate_down,
+    "Saturate_Up": saturate_up,
+    "Perspective": perspective,
+    "JPEG_Compression": jpeg_compression,
+}

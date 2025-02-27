@@ -2,7 +2,6 @@ import copy
 import logging
 import pickle
 import shutil
-from collections import OrderedDict
 from pathlib import Path, PurePath
 from typing import Dict, List, Tuple, Union
 
@@ -323,22 +322,11 @@ class Plugin(IAlgorithm):
         file_names = [Path(i).name for i in self._data.get_data()["image_directory"]]
         self._ordered_ground_truth = annotated_ground_truth.reindex(file_names)
 
-        digital_corruptions = OrderedDict(
-            {
-                "Brightness_Down": digital.brightness_down,
-                "Brightness_Up": digital.brightness_up,
-                "Contrast_Down": digital.contrast_down,
-                "Contrast_Up": digital.contrast_up,
-                "Saturate_Down": digital.saturate_down,
-                "Saturate_Up": digital.saturate_up,
-                "Perspective": digital.perspective,
-                "JPEG_Compression": digital.jpeg_compression,
-            }
-        )
-
-        # Remove corruption functions flagged by "exclude"
-        if excludes := self._input_arguments.get("exclude"):
-            digital_corruptions = {k: v for k, v in digital_corruptions.items() if k.lower() not in excludes}
+        # Select corruptions flagged by "include"
+        if "all" not in (includes := self._input_arguments["include"]):
+            corruptions = {k: v for k, v in digital.CORRUPTIONS.items() if k.lower() in includes}
+        else:
+            corruptions = digital.CORRUPTIONS
 
         # Initialise main image directory
         if Path(str(self._tmp_path)).exists():
@@ -354,7 +342,7 @@ class Plugin(IAlgorithm):
         parameters = copy.deepcopy(digital.DEFAULT_PARAMS)
         parameters.update(user_params)
 
-        self._assess_robustness(digital_corruptions, parameters)
+        self._assess_robustness(corruptions, parameters)
 
         # Update progress (For 100% completion)
         self._progress_inst.update(1)
