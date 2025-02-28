@@ -1,0 +1,126 @@
+import React, { useEffect, useState } from 'react';
+
+export const TechnicalInterpretationChart2 = ({ id, metric, data }) => {
+  const [mydata, setmydata] = useState({
+    data: [],
+    numLabels: 0,
+  });
+
+  function getContent(display) {
+    let content = [];
+    let i = 0;
+    for (let oc in display) {
+      const item = display[oc]
+      content.push(
+        <div key={`${id}-${i++}-type2`} style={{border:"1px solid black", backgroundColor:"#eee", textAlign:"center", padding:'5px', marginBottom: '5px'}}>
+          {item.minName} vs {item.maxName}<br/>
+          {item.outputClass}<br/>{Math.round(item.minValue * 1000 + Number.EPSILON) / 1000} (between {item.minName}) vs {Math.round(item.maxValue * 1000 + Number.EPSILON) / 1000} (between {item.maxName})<br/>
+        </div>
+      )
+    }
+    return content;
+  }
+
+  function getSimpleContent(display) {
+    let content = [];
+    let i = 0;
+    for (let oc in display) {
+      const item = display[oc]
+      content.push(
+        <div key={`${id}-${i++}-type2-simple`} style={{border:"1px solid black", backgroundColor:"#eee", textAlign:"center", padding:'5px', marginBottom: '5px'}}>
+          {item.groups}<br/>
+          {item.outputClass}<br/>{Math.round(item.parity * 1000 + Number.EPSILON) / 1000}<br/>
+        </div>
+        )
+    }
+    return content;
+  }
+
+  function getGroupName(data, features, numSubGroups) {
+    let group1 = null
+    let group2 = null
+    
+    if (numSubGroups >= 4) {
+      group1 = features.map((f, idx) => `${f}:${data.group.slice(0, 2)[idx]}`).join(",");
+      group2 = features.map((f, idx) => `${f}:${data.group.slice(2, 4)[idx]}`).join(",");
+    }
+    if (numSubGroups == 2) {
+      group1 = features.map((f, idx) => `${f}:${data.group.slice(0, 1)[idx]}`).join(",");
+      group2 = features.map((f, idx) => `${f}:${data.group.slice(1, 2)[idx]}`).join(",");
+    }
+    return [group1, group2].join(" and ");
+  }
+
+  useEffect(() => {
+    let display = []
+    if (!data || !data.results || !data.output_classes || !data.sensitive_feature)
+      return;
+    if (data.results[0][metric].length == 1) {
+      const outputClasses = data.output_classes;
+      const sensitiveFeatures = data.sensitive_feature;
+      for (let oc = 0; oc < data.results.length; oc++) {
+        let groups = getGroupName(data.results[oc][metric][0], sensitiveFeatures, 2)
+        let obj = {}
+        obj["outputClass"] = `Class ${outputClasses[oc]}`
+        obj["groups"] = groups
+        obj["parity"] = data.results[oc][metric][0].metric
+        display.push(obj);
+      }
+    }
+    else {
+      const outputClasses = data.output_classes;
+      const sensitiveFeatures = data.sensitive_feature;
+
+      for (let oc = 0; oc < data.results.length; oc++) {
+        const result = data.results[oc][metric];
+        let min = result[0].metric;
+        let max = result[0].metric;
+        let numSubGroups = data.results[oc][metric][0].group.length
+        let minGroup = getGroupName(result[0], sensitiveFeatures, numSubGroups)
+        let maxGroup = minGroup;
+        for (let row of result) {
+          let group = getGroupName(row, sensitiveFeatures, numSubGroups)
+          local_metric = row.metric;
+          if (local_metric < min) {
+            min = local_metric
+            minGroup = group
+          }
+          if (local_metric >= max) {
+            max = local_metric
+            maxGroup = group
+          }
+        }
+        let obj = {}
+        obj["outputClass"] = `Class ${outputClasses[oc]}`
+        obj["simpleDisplay"] = `False`
+        obj["minValue"] = min;
+        obj["maxValue"] = max;
+        obj["minName"] = minGroup;
+        obj["maxName"] = maxGroup;
+        display.push(obj);
+      }
+    }
+    setmydata({
+      data: display,
+      numLabels: data.results[0][metric].length,
+    });
+  }, [metric, data])
+
+  if (mydata.numLabels == 1) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 5, width: '40%', flexShrink: 0 }}>
+        <h4>{metric}</h4>
+        {getSimpleContent(mydata.data)}
+      </div>
+    );
+  }
+  else {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 5, width: '40%', flexShrink: 0 }}>
+        <h4>{metric}</h4>
+        {getContent(mydata.data)}
+      </div>
+    )
+  }
+
+}
