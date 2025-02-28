@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { UserFlows } from '@/app/userFlowsEnum';
+import { getInputBlockDatas } from '@/lib/fetchApis/getInputBlockDatas';
 import {
   getPlugins,
   populatePluginsMdxBundles,
@@ -30,6 +31,7 @@ export default async function CanvasPage(props: UrlSearchParams) {
   const project = result.data[0];
   const plugins = await getPlugins({ groupByPluginId: false });
   const testResults = await getTestResults();
+  const inputBlockDatas = await getInputBlockDatas();
 
   const parsedTestResults = testResults.map((result) => {
     try {
@@ -70,6 +72,7 @@ export default async function CanvasPage(props: UrlSearchParams) {
       project={project}
       allPluginsWithMdx={pluginsWithMdx}
       allTestResultsOnSystem={parsedTestResults}
+      allInputBlockDatasOnSystem={inputBlockDatas}
       selectedTestResultsFromUrlParams={selectedTestResultsFromUrlParams}
     />
   );

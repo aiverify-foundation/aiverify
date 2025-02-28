@@ -9,6 +9,12 @@ export type WidgetAlgoAndResultIdentifier = {
   testResultId?: number;
 };
 
+export type WidgetInputBlockIdentifier = {
+  gid: string;
+  cid: string;
+  inputBlockDataId?: number;
+};
+
 type WidgetGridItemId = string;
 
 export type State = {
@@ -17,6 +23,10 @@ export type State = {
   algorithmsOnReport: Algorithm[]; // Keeps track of all the algos/tests that's required by the report
   inputBlocksOnReport: InputBlock[]; // Keeps track of all the input blocks that's required by the report
   gridItemToAlgosMap: Record<WidgetGridItemId, WidgetAlgoAndResultIdentifier[]>;
+  gridItemToInputBlockDatasMap: Record<
+    WidgetGridItemId,
+    WidgetInputBlockIdentifier[]
+  >;
   currentPage: number; // Keeps track of the current page
   showGrid: boolean; // Keeps track of the grid visibility
   pageTypes: ('grid' | 'overflow')[]; // Track page types - 1D array of page types
@@ -28,6 +38,7 @@ export const initialState: State = {
   widgets: [[]],
   algorithmsOnReport: [],
   gridItemToAlgosMap: {},
+  gridItemToInputBlockDatasMap: {},
   currentPage: 0,
   showGrid: true,
   pageTypes: ['grid'],
@@ -41,6 +52,7 @@ type WidgetAction =
       itemLayout: Layout;
       widget: WidgetOnGridLayout;
       gridItemAlgosMap: WidgetAlgoAndResultIdentifier[] | undefined;
+      gridItemInputBlockDatasMap: WidgetInputBlockIdentifier[] | undefined;
       algorithms: Algorithm[];
       inputBlocks: InputBlock[];
       pageIndex: number;
@@ -81,6 +93,10 @@ type WidgetAction =
   | {
       type: 'UPDATE_ALGO_TRACKER';
       gridItemAlgosMap: WidgetAlgoAndResultIdentifier[];
+    }
+  | {
+      type: 'UPDATE_INPUT_BLOCK_TRACKER';
+      gridItemInputBlockDatasMap: WidgetInputBlockIdentifier[];
     };
 
 function pagesDesignReducer(state: State, action: WidgetAction): State {
@@ -98,6 +114,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       clonedPageWidgets.splice(insertPosition, 0, action.widget);
 
       let clonedAlgosMap = state.gridItemToAlgosMap;
+      let clonedInputBlockDatasMap = state.gridItemToInputBlockDatasMap;
       if (action.gridItemAlgosMap && action.gridItemAlgosMap.length > 0) {
         clonedAlgosMap = { ...state.gridItemToAlgosMap };
         if (clonedAlgosMap[action.widget.gridItemId]) {
@@ -111,6 +128,21 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         }
       }
 
+      if (
+        action.gridItemInputBlockDatasMap &&
+        action.gridItemInputBlockDatasMap.length > 0
+      ) {
+        clonedInputBlockDatasMap = { ...state.gridItemToInputBlockDatasMap };
+        if (clonedInputBlockDatasMap[action.widget.gridItemId]) {
+          clonedInputBlockDatasMap[action.widget.gridItemId] = [
+            ...clonedInputBlockDatasMap[action.widget.gridItemId],
+            ...action.gridItemInputBlockDatasMap,
+          ];
+        } else {
+          clonedInputBlockDatasMap[action.widget.gridItemId] =
+            action.gridItemInputBlockDatasMap.slice();
+        }
+      }
       // Update algorithms list without duplicates
       const newAlgorithms = [...state.algorithmsOnReport];
       action.algorithms.forEach((algo) => {
@@ -145,6 +177,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
           i === action.pageIndex ? clonedPageWidgets : widget
         ),
         gridItemToAlgosMap: clonedAlgosMap,
+        gridItemToInputBlockDatasMap: clonedInputBlockDatasMap,
         algorithmsOnReport: newAlgorithms,
         inputBlocksOnReport: newInputBlocks,
       };
@@ -430,6 +463,30 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         });
       });
       return { ...state, gridItemToAlgosMap: clonedAlgosMap };
+    }
+
+    case 'UPDATE_INPUT_BLOCK_TRACKER': {
+      const clonedInputBlockDatasMap = {
+        ...state.gridItemToInputBlockDatasMap,
+      };
+      action.gridItemInputBlockDatasMap.forEach((inputBlockDataMap) => {
+        Object.keys(clonedInputBlockDatasMap).forEach((key) => {
+          clonedInputBlockDatasMap[key] = clonedInputBlockDatasMap[key].map(
+            (existing) =>
+              existing.gid === inputBlockDataMap.gid &&
+              existing.cid === inputBlockDataMap.cid
+                ? {
+                    ...existing,
+                    inputBlockDataId: inputBlockDataMap.inputBlockDataId,
+                  }
+                : existing
+          );
+        });
+      });
+      return {
+        ...state,
+        gridItemToInputBlockDatasMap: clonedInputBlockDatasMap,
+      };
     }
 
     default:

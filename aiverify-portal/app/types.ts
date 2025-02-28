@@ -68,17 +68,17 @@ type TestResultData = Record<
   | boolean[]
   | object[]
 >;
-type InputBlockData = Record<
-  string,
-  | string
-  | number
-  | boolean
-  | object
-  | string[]
-  | number[]
-  | boolean[]
-  | object[]
->;
+// type InputBlockData = Record<
+//   string,
+//   | string
+//   | number
+//   | boolean
+//   | object
+//   | string[]
+//   | number[]
+//   | boolean[]
+//   | object[]
+// >;
 
 type DataColumn = {
   name: string;
@@ -255,6 +255,17 @@ type InputBlock = {
   groupNumber: string | null;
   width: string;
   fullScreen: boolean;
+};
+
+type InputBlockData = {
+  gid: string;
+  cid: string;
+  name: string;
+  group: string;
+  data: Record<string, string | string[] | number | boolean | object>;
+  id: number;
+  created_at: string;
+  updated_at: string;
 };
 
 type Plugin = {

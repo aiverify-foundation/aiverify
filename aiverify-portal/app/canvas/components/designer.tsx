@@ -18,13 +18,14 @@ import {
   PluginForGridLayout,
   WidgetOnGridLayout,
 } from '@/app/canvas/types';
+import { findInputBlockDatasByGidAndCid } from '@/app/canvas/utils/findInputBlockDatasByGidAndCid';
 import { findTestResultByAlgoGidAndCid } from '@/app/canvas/utils/findTestResultByAlgoGidAndCid';
 import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPluginsById';
 import { getWidgetAlgosFromPlugins } from '@/app/canvas/utils/getWidgetAlgosFromPlugins';
 import { getWidgetInputBlocksFromPlugins } from '@/app/canvas/utils/getWidgetInputBlocksFromPlugins';
 import { isPageContentOverflow } from '@/app/canvas/utils/isPageContentOverflow';
 import { populateInitialWidgetResult } from '@/app/canvas/utils/populateInitialWidgetResult';
-import { Widget } from '@/app/types';
+import { InputBlockData, Widget } from '@/app/types';
 import { ProjectInfo } from '@/app/types';
 import { UserFlows } from '@/app/userFlowsEnum';
 import { Button } from '@/lib/components/TremurButton';
@@ -40,6 +41,7 @@ import {
   A4_HEIGHT,
   A4_WIDTH,
 } from './dimensionsConstants';
+import { InputBlockDatasDrawer } from './drawers/inputBlockDatasDrawer';
 import { ReportAlgorithmsDrawer } from './drawers/reportAlgorithms';
 import { ReportInputBlocksDrawer } from './drawers/reportInputBlocks';
 import { TestResultsDrawer } from './drawers/testResultsDrawer';
@@ -51,6 +53,7 @@ import {
   pagesDesignReducer,
   initialState,
   WidgetAlgoAndResultIdentifier,
+  WidgetInputBlockIdentifier,
 } from './hooks/pagesDesignReducer';
 import { useDragToScroll } from './hooks/useDragToScroll';
 import { usePrintable } from './hooks/usePrintable';
@@ -76,6 +79,9 @@ type DesignerProps = {
 
   /** All test results available in the system that can be applied to widgets */
   allTestResultsOnSystem: ParsedTestResults[]; // ParsedTestResult should have value of 'output' property in the form of Javascript object
+
+  /** All input block datas available in the system that can be applied to widgets */
+  allInputBlockDatasOnSystem: InputBlockData[];
 
   /** Pre-selected test results based on URL parameters */
   selectedTestResultsFromUrlParams?: ParsedTestResults[];
@@ -137,12 +143,15 @@ function Designer(props: DesignerProps) {
     project,
     allPluginsWithMdx,
     allTestResultsOnSystem = [],
+    allInputBlockDatasOnSystem = [],
     selectedTestResultsFromUrlParams = [],
     disabled = false,
     disableNextButton = false,
     disablePreviousButton = false,
     pageNavigationMode = 'multi',
   } = props;
+
+  console.log(allInputBlockDatasOnSystem);
 
   // Reference to the canvas element for positioning and measurements
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -192,6 +201,11 @@ function Designer(props: DesignerProps) {
   const [selectedTestResults, setSelectedTestResults] = useState<
     ParsedTestResults[]
   >(selectedTestResultsFromUrlParams);
+
+  // Currently selected input block datas to be applied to widgets
+  const [selectedInputBlockDatas, setSelectedInputBlockDatas] = useState<
+    InputBlockData[]
+  >([]);
 
   // Drag-to-scroll functionality for navigating the canvas
   const { isDraggingRef: isDraggingFreeFormAreaRef } = useDragToScroll(
@@ -454,12 +468,29 @@ function Designer(props: DesignerProps) {
             widgetWithGridItemId
           );
 
+          // Get input block datas associated with each input block
+          const inputBlockDatas = inputBlocks.flatMap((inputBlock) =>
+            findInputBlockDatasByGidAndCid(
+              allInputBlockDatasOnSystem,
+              inputBlock.gid,
+              inputBlock.cid
+            )
+          );
+
+          const gridItemToInputBlockDatasMap: WidgetInputBlockIdentifier[] =
+            inputBlockDatas.map((inputBlockData) => ({
+              gid: inputBlockData.gid,
+              cid: inputBlockData.cid,
+              inputBlockDataId: inputBlockData.id,
+            }));
+
           // Dispatch action to add the widget to the canvas state
           dispatch({
             type: 'ADD_WIDGET_TO_CANVAS',
             itemLayout,
             widget: widgetWithGridItemId,
             gridItemAlgosMap: gridItemToAlgosMap,
+            gridItemInputBlockDatasMap: gridItemToInputBlockDatasMap,
             algorithms: algos,
             inputBlocks,
             pageIndex,
@@ -727,6 +758,47 @@ function Designer(props: DesignerProps) {
         cid: result.cid,
         testResultId: result.id,
       })),
+    });
+  }
+
+  /**
+   * Updates the selected input block datas and applies them to widgets
+   * Maps input block datas to input blocks based on matching gid and cid
+   *
+   * @param inputBlockDatas - The array of input block datas selected by the user
+   */
+  function handleSelectInputBlockDatas(inputBlockDatas: InputBlockData[]) {
+    console.log(
+      `[handleSelectInputBlockDatas] Updating with ${inputBlockDatas.length} input block datas`
+    );
+
+    // Special case: when no input block datas are selected, clear all input block data associations
+    if (inputBlockDatas.length === 0) {
+      setSelectedInputBlockDatas((prev) => {
+        const updatedInputBlockDatas = prev.map((inputBlockData) => ({
+          gid: inputBlockData.gid,
+          cid: inputBlockData.cid,
+          inputBlockDataId: undefined,
+        }));
+        dispatch({
+          type: 'UPDATE_INPUT_BLOCK_TRACKER',
+          gridItemInputBlockDatasMap:
+            updatedInputBlockDatas as WidgetInputBlockIdentifier[],
+        });
+        return [];
+      });
+      return;
+    }
+
+    // Update selected input block datas and create mapping for input blocks
+    setSelectedInputBlockDatas(inputBlockDatas);
+    dispatch({
+      type: 'UPDATE_INPUT_BLOCK_TRACKER',
+      gridItemInputBlockDatasMap: inputBlockDatas.map((inputBlockData) => ({
+        gid: inputBlockData.gid,
+        cid: inputBlockData.cid,
+        inputBlockDataId: inputBlockData.id,
+      })) as WidgetInputBlockIdentifier[],
     });
   }
 
@@ -1004,6 +1076,20 @@ function Designer(props: DesignerProps) {
     </section>
   );
 
+  const inputBlockSelector = (
+    <section
+      className={cn(
+        'fixed top-[150px] z-10 flex flex-col gap-4',
+        isPanelOpen ? 'left-[340px]' : 'left-[100px]'
+      )}>
+      <InputBlockDatasDrawer
+        allInputBlockDatasOnSystem={allInputBlockDatasOnSystem}
+        selectedInputBlockDatasFromUrlParams={selectedInputBlockDatas}
+        onOkClick={handleSelectInputBlockDatas}
+      />
+    </section>
+  );
+
   // console.log('state', state);
   // console.log('plugins', allPluginsWithMdx);
 
@@ -1035,6 +1121,7 @@ function Designer(props: DesignerProps) {
       <main className="relative h-full w-full">
         {disabled ? null : pluginsPanelSection}
         {disabled ? null : testSelector}
+        {disabled ? null : inputBlockSelector}
         {mainControlsSection}
         {pagesSection}
       </main>
