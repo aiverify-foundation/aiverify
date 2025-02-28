@@ -55,6 +55,25 @@ body {
   scrollbar-color: rgba(126, 126, 126, 0.3) transparent;
 }
 
+/* Loading animation ring*/
+
+@keyframes animateC {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes animate {
+  0% {
+    transform: rotate(45deg);
+  }
+  100% {
+    transform: rotate(405deg);
+  }
+}
+
 .ring {
   @apply text-white;
   position: absolute;
@@ -109,11 +128,4 @@ body {
   border-radius: 50%;
   top: -6px;
   right: -8px;
-}
-
-.chart-container {
-  width: 100%;
-}
-
-.chart-bar {
 }

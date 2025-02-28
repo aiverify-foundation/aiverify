@@ -1,10 +1,19 @@
 type Project = {
-  id: string;
-  name: string;
-  description: string;
-  createdAt: string;
-  model: string;
-  status: string;
+  globalVars: unknown[];
+  pages: unknown[];
+  id: number;
+  templateId: string | null;
+  projectInfo: {
+    name: string;
+    description: string;
+    reportTitle: string;
+    company: string;
+  };
+  testModelId: string | null;
+  inputBlocks: unknown[];
+  testResults: unknown[];
+  created_at: string;
+  updated_at: string;
 };
 
 type ProjectInfo = {
@@ -42,7 +51,7 @@ type TestResult = {
     modelFile: string;
   };
   output: string;
-  artifacts: unknown[];
+  artifacts?: string[];
   name: string;
   created_at: string;
   updated_at: string;
@@ -59,17 +68,17 @@ type TestResultData = Record<
   | boolean[]
   | object[]
 >;
-type InputBlockData = Record<
-  string,
-  | string
-  | number
-  | boolean
-  | object
-  | string[]
-  | number[]
-  | boolean[]
-  | object[]
->;
+// type InputBlockData = Record<
+//   string,
+//   | string
+//   | number
+//   | boolean
+//   | object
+//   | string[]
+//   | number[]
+//   | boolean[]
+//   | object[]
+// >;
 
 type DataColumn = {
   name: string;
@@ -208,6 +217,7 @@ type MockData = {
     | boolean[]
     | object[]
   >;
+  artifacts?: string[];
 };
 
 type Widget = {
@@ -246,6 +256,17 @@ type InputBlock = {
   groupNumber: string | null;
   width: string;
   fullScreen: boolean;
+};
+
+type InputBlockData = {
+  gid: string;
+  cid: string;
+  name: string;
+  group: string;
+  data: Record<string, string | string[] | number | boolean | object>;
+  id: number;
+  created_at: string;
+  updated_at: string;
 };
 
 type Plugin = {

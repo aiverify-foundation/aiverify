@@ -1,10 +1,11 @@
 import { notFound } from 'next/navigation';
 import { UserFlows } from '@/app/userFlowsEnum';
+import { getInputBlockDatas } from '@/lib/fetchApis/getInputBlockDatas';
 import {
   getPlugins,
   populatePluginsMdxBundles,
 } from '@/lib/fetchApis/getPlugins';
-import { fetchProjects } from '@/lib/fetchApis/getProjects';
+import { getProjects } from '@/lib/fetchApis/getProjects';
 import { getTestResults } from '@/lib/fetchApis/getTestResults';
 import { Designer } from './components/designer';
 import { ParsedTestResults } from './types';
@@ -21,7 +22,7 @@ type UrlSearchParams = {
 export default async function CanvasPage(props: UrlSearchParams) {
   const searchParams = await props.searchParams;
   const { flow, projectId, testResultIds } = searchParams;
-  const result = await fetchProjects({ ids: [projectId] });
+  const result = await getProjects({ ids: [projectId] });
 
   if (!projectId || flow == undefined || 'message' in result) {
     notFound();
@@ -30,6 +31,7 @@ export default async function CanvasPage(props: UrlSearchParams) {
   const project = result.data[0];
   const plugins = await getPlugins({ groupByPluginId: false });
   const testResults = await getTestResults();
+  const inputBlockDatas = await getInputBlockDatas();
 
   const parsedTestResults = testResults.map((result) => {
     try {
@@ -70,6 +72,7 @@ export default async function CanvasPage(props: UrlSearchParams) {
       project={project}
       allPluginsWithMdx={pluginsWithMdx}
       allTestResultsOnSystem={parsedTestResults}
+      allInputBlockDatasOnSystem={inputBlockDatas}
       selectedTestResultsFromUrlParams={selectedTestResultsFromUrlParams}
     />
   );

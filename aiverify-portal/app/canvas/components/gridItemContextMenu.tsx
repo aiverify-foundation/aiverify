@@ -1,4 +1,8 @@
-import { RiDeleteBin5Line, RiFileEditLine, RiInformationLine } from '@remixicon/react';
+import {
+  RiDeleteBin5Line,
+  RiPencilLine,
+  RiInformationLine,
+} from '@remixicon/react';
 import { createPortal } from 'react-dom';
 import { WidgetOnGridLayout } from '@/app/canvas/types';
 
@@ -21,7 +25,7 @@ function GridItemContextMenu({
   onEditClick,
   onInfoClick,
   onMouseEnter,
-  onMouseLeave
+  onMouseLeave,
 }: GridItemContextMenuProps) {
   return createPortal(
     <div
@@ -44,7 +48,7 @@ function GridItemContextMenu({
               e.stopPropagation();
             }}
             onClick={onEditClick}>
-            <RiFileEditLine className="m-1 h-5 w-5 text-white hover:text-blue-800" />
+            <RiPencilLine className="m-1 h-5 w-5 text-white hover:text-blue-800" />
           </div>
         ) : null}
         <div
