@@ -497,8 +497,7 @@ function Designer(props: DesignerProps) {
    */
   const handleGridItemResizeStop = useMemo(() => {
     return (pageIndex: number) => {
-      // Debounce the resize stop handler
-      return debounce((_layouts: Layout[], _: Layout, itemLayout: Layout) => {
+      return (_layouts: Layout[], _: Layout, itemLayout: Layout) => {
         console.log(
           `[handleGridItemResizeStop] Finished resizing item ${itemLayout.i} to w:${itemLayout.w}, h:${itemLayout.h}`
         );
@@ -509,7 +508,7 @@ function Designer(props: DesignerProps) {
           itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
           pageIndex,
         });
-      }, 150); // 150ms debounce time
+      };
     };
   }, []);
 
@@ -537,30 +536,26 @@ function Designer(props: DesignerProps) {
    */
   const handleGridItemDragStop = useMemo(() => {
     return (pageIndex: number) => {
-      // Debounce the drag stop handler
-      return debounce(
-        (_layouts: Layout[], oldItem: Layout, newItem: Layout) => {
-          console.log(
-            `[handleGridItemDragStop] Moving item ${newItem.i} from (${oldItem.x},${oldItem.y}) to (${newItem.x},${newItem.y})`
-          );
+      return (_layouts: Layout[], oldItem: Layout, newItem: Layout) => {
+        console.log(
+          `[handleGridItemDragStop] Moving item ${newItem.i} from (${oldItem.x},${oldItem.y}) to (${newItem.x},${newItem.y})`
+        );
 
-          // Skip state update if position didn't actually change
-          // This prevents unnecessary re-renders
-          if (oldItem.x === newItem.x && oldItem.y === newItem.y) {
-            setDraggingGridItemId(null);
-            return; // Position didn't change, skip dispatch
-          }
-
-          const { x, y, w, h, minW, minH, maxW, maxH, i } = newItem;
-          dispatch({
-            type: 'CHANGE_WIDGET_POSITION',
-            itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
-            pageIndex,
-          });
+        // Skip state update if position didn't actually change
+        // This prevents unnecessary re-renders
+        if (oldItem.x === newItem.x && oldItem.y === newItem.y) {
           setDraggingGridItemId(null);
-        },
-        150
-      ); // 150ms debounce time
+          return; // Position didn't change, skip dispatch
+        }
+
+        const { x, y, w, h, minW, minH, maxW, maxH, i } = newItem;
+        dispatch({
+          type: 'CHANGE_WIDGET_POSITION',
+          itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
+          pageIndex,
+        });
+        setDraggingGridItemId(null);
+      };
     };
   }, []);
 
