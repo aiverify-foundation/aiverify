@@ -7,10 +7,10 @@ type FreeFormDraggableAreaProps = {
   zoomLevel: number;
   contentWrapperMinHeight: number;
   children: React.ReactNode;
-  onMouseDown: ((e: MouseEvent) => void) | undefined;
-  onMouseUp: (() => void) | undefined;
-  onMouseMove: ((e: MouseEvent) => void) | undefined;
-  onMouseLeave: (() => void) | undefined;
+  onMouseDown?: ((e: MouseEvent) => void) | undefined;
+  onMouseUp?: (() => void) | undefined;
+  onMouseMove?: ((e: MouseEvent) => void) | undefined;
+  onMouseLeave?: (() => void) | undefined;
 };
 
 function FreeFormDraggableArea(props: FreeFormDraggableAreaProps) {

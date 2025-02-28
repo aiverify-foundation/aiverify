@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 interface DragToScrollOptions {
   speedMultiplier?: number;
@@ -10,64 +10,90 @@ export function useDragToScroll(
   options: DragToScrollOptions = {}
 ) {
   const { speedMultiplier = 1.5 } = options;
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [startY, setStartY] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-  const [scrollTop, setScrollTop] = useState(0);
 
+  // Use only refs, no state at all
+  const isDraggingRef = useRef(false);
+  const startXRef = useRef(0);
+  const startYRef = useRef(0);
+  const scrollLeftRef = useRef(0);
+  const scrollTopRef = useRef(0);
+
+  // Store event handlers in refs so we can reference them in cleanup
+  const handlersRef = useRef({
+    handleMouseDown: null as ((e: MouseEvent) => void) | null,
+    handleMouseMove: null as ((e: MouseEvent) => void) | null,
+    handleMouseUp: null as ((e: MouseEvent) => void) | null,
+  });
+
+  // Set up all event handlers via a single effect
   useEffect(() => {
-    const handleGlobalMouseUp = () => {
-      if (isDragging) {
-        handleMouseUp();
-      }
+    const container = containerRef.current;
+    if (!container) return;
+
+    // Define handlers that close over the refs
+    const handleMouseDown = (e: MouseEvent) => {
+      if (!container) return;
+
+      // Check if we should exclude this target
+      if (excludeRef?.current?.contains(e.target as Node)) return;
+
+      isDraggingRef.current = true;
+      startXRef.current = e.pageX - container.offsetLeft;
+      startYRef.current = e.pageY - container.offsetTop;
+      scrollLeftRef.current = container.scrollLeft;
+      scrollTopRef.current = container.scrollTop;
+
+      container.style.cursor = 'grabbing';
+      container.style.userSelect = 'none';
     };
 
-    document.addEventListener('mouseup', handleGlobalMouseUp);
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDraggingRef.current || !container) return;
+
+      e.preventDefault();
+      const x = e.pageX - container.offsetLeft;
+      const y = e.pageY - container.offsetTop;
+      const walkX = (x - startXRef.current) * speedMultiplier;
+      const walkY = (y - startYRef.current) * speedMultiplier;
+
+      container.scrollLeft = scrollLeftRef.current - walkX;
+      container.scrollTop = scrollTopRef.current - walkY;
+    };
+
+    const handleMouseUp = () => {
+      if (!container) return;
+      if (!isDraggingRef.current) return;
+
+      isDraggingRef.current = false;
+      container.style.cursor = 'grab';
+      container.style.removeProperty('user-select');
+    };
+
+    // Store handlers in ref for cleanup
+    handlersRef.current = {
+      handleMouseDown,
+      handleMouseMove,
+      handleMouseUp,
+    };
+
+    // Attach event listeners directly to DOM
+    container.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    container.addEventListener('mouseleave', handleMouseUp);
+
+    // Clean up
     return () => {
-      document.removeEventListener('mouseup', handleGlobalMouseUp);
+      container.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      container.removeEventListener('mouseleave', handleMouseUp);
     };
-  }, [isDragging]);
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (!containerRef.current) return;
-    if (excludeRef?.current?.contains(e.target as Node)) return;
-
-    setIsDragging(true);
-    setStartX(e.pageX - containerRef.current.offsetLeft);
-    setStartY(e.pageY - containerRef.current.offsetTop);
-    setScrollLeft(containerRef.current.scrollLeft);
-    setScrollTop(containerRef.current.scrollTop);
-
-    containerRef.current.style.cursor = 'grabbing';
-    containerRef.current.style.userSelect = 'none';
-  };
-
-  const handleMouseUp = () => {
-    if (!containerRef.current) return;
-
-    setIsDragging(false);
-    containerRef.current.style.cursor = 'grab';
-    containerRef.current.style.removeProperty('user-select');
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !containerRef.current) return;
-
-    e.preventDefault();
-    const x = e.pageX - containerRef.current.offsetLeft;
-    const y = e.pageY - containerRef.current.offsetTop;
-    const walkX = (x - startX) * speedMultiplier;
-    const walkY = (y - startY) * speedMultiplier;
-
-    containerRef.current.scrollLeft = scrollLeft - walkX;
-    containerRef.current.scrollTop = scrollTop - walkY;
-  };
+  }, [containerRef, excludeRef, speedMultiplier]);
 
   return {
-    isDragging,
-    handleMouseDown,
-    handleMouseUp,
-    handleMouseMove,
+    // Return only the isDraggingRef for checking status
+    // No event handlers are returned since they're attached directly
+    isDraggingRef,
   };
 }

@@ -141,7 +141,7 @@ function Designer(props: DesignerProps) {
     disabled = false,
     disableNextButton = false,
     disablePreviousButton = false,
-    pageNavigationMode = 'single', // Default to current behavior
+    pageNavigationMode = 'multi',
   } = props;
 
   // Reference to the canvas element for positioning and measurements
@@ -194,12 +194,10 @@ function Designer(props: DesignerProps) {
   >(selectedTestResultsFromUrlParams);
 
   // Drag-to-scroll functionality for navigating the canvas
-  const {
-    isDragging: isDraggingFreeFormArea,
-    handleMouseDown: handleFreeFormAreaMouseDown,
-    handleMouseUp: handleFreeFormAreaMouseUp,
-    handleMouseMove: handleFreeFormAreaMouseMove,
-  } = useDragToScroll(freeFormAreaRef, canvasRef);
+  const { isDraggingRef: isDraggingFreeFormAreaRef } = useDragToScroll(
+    freeFormAreaRef,
+    canvasRef
+  );
 
   // Controls visibility of the plugins panel sidebar
   const [isPanelOpen, setIsPanelOpen] = useState(true);
@@ -856,27 +854,7 @@ function Designer(props: DesignerProps) {
       ref={freeFormAreaRef}
       pagesLength={layouts.length}
       zoomLevel={zoomLevel}
-      contentWrapperMinHeight={contentWrapperMinHeight}
-      onMouseDown={
-        !draggingGridItemId && !resizingGridItemId
-          ? handleFreeFormAreaMouseDown
-          : undefined
-      }
-      onMouseUp={
-        !draggingGridItemId && !resizingGridItemId
-          ? handleFreeFormAreaMouseUp
-          : undefined
-      }
-      onMouseMove={
-        isDraggingFreeFormArea && !draggingGridItemId && !resizingGridItemId
-          ? handleFreeFormAreaMouseMove
-          : undefined
-      }
-      onMouseLeave={
-        !draggingGridItemId && !resizingGridItemId
-          ? handleFreeFormAreaMouseUp
-          : undefined
-      }>
+      contentWrapperMinHeight={contentWrapperMinHeight}>
       <div
         id={pagesContentWrapperId}
         ref={canvasPrint.contentRef}
@@ -1048,7 +1026,7 @@ function Designer(props: DesignerProps) {
     - The pages wrapper
       - This is a container wrapping all the pages.
   */
-
+  console.log('state', state);
   return (
     <React.Fragment>
       {editingGridItem && editingPageIndex != null ? (
