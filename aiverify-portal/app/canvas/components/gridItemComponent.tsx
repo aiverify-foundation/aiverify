@@ -455,7 +455,7 @@ function GridItemMain({
         className={itemStyle}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}>
-        {isResizing ? (
+        {isResizing || isDragging ? (
           // Show a placeholder during resize to improve performance
           <div className="h-auto w-full bg-gray-100" />
         ) : (
