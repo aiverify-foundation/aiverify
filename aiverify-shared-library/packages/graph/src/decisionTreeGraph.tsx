@@ -1,19 +1,19 @@
-import React, { useRef, useEffect, useState } from 'react';
-import cytoscape from 'cytoscape';
-import dagre from 'cytoscape-dagre';
-import cytoscapeDomNode from 'cytoscape-dom-node';
+import React, { useRef, useEffect, useState } from "react";
+import cytoscape from "cytoscape";
+import dagre from "cytoscape-dagre";
+import cytoscapeDomNode from "cytoscape-dom-node";
 
-cytoscape.use( dagre );
-cytoscape.use( cytoscapeDomNode );
+cytoscape.use(dagre);
+cytoscape.use(cytoscapeDomNode);
 
-const LINE_COLOR = '#212529';
-const TEXT_COLOR = '#202020';
-const EDGE_TEXT_COLOR = '#202020';
-const BACKGROUND_COLOR = '#FFF';
+const LINE_COLOR = "#212529";
+const TEXT_COLOR = "#202020";
+const EDGE_TEXT_COLOR = "#202020";
+const BACKGROUND_COLOR = "#FFF";
 const HIGHLIGH_COLOR = "#ff0d57";
 const HIGHLIGH_TEXT_COLOR = "#f9f9f9";
-const SELECT_COLOR = '#1E88E5';
-const SELECT_COLOR2 = '#13B755';
+const SELECT_COLOR = "#1E88E5";
+const SELECT_COLOR2 = "#13B755";
 const SELECT_TEXT_COLOR = "#f9f9f9";
 
 // export type DecisionTreeObject = {
@@ -22,7 +22,7 @@ const SELECT_TEXT_COLOR = "#f9f9f9";
 // }
 
 // my api extensions
-cytoscape('core', 'resetGraph', function(){
+cytoscape("core", "resetGraph", function () {
   // @ts-ignore
   let cy = this;
   // cy.elements().classes([]);
@@ -35,13 +35,13 @@ cytoscape('core', 'resetGraph', function(){
   return cy;
 });
 
-cytoscape('core', 'outcomes', function(){
+cytoscape("core", "outcomes", function () {
   // @ts-ignore
   let cy = this;
-  return cy.nodes('[type = "outcome"]')
+  return cy.nodes('[type = "outcome"]');
 });
 
-cytoscape('core', 'setOutcome', function(outcomeNode: cytoscape.NodeSingular){
+cytoscape("core", "setOutcome", function (outcomeNode: cytoscape.NodeSingular) {
   // @ts-ignore
   let cy = this;
   const successors = outcomeNode.successors();
@@ -52,47 +52,49 @@ cytoscape('core', 'setOutcome', function(outcomeNode: cytoscape.NodeSingular){
   // let branch = descendentNodes.union(outcomeNode);
   // cy.fit(branch, '10px')
   const firstChild = descendentNodes[0];
-  firstChild.addClass("highlight")
+  firstChild.addClass("highlight");
   return firstChild;
 });
 
-cytoscape('core', 'chooseOutcome', function(id: string, on: boolean){
+cytoscape("core", "chooseOutcome", function (id: string, on: boolean) {
   // @ts-ignore
   let cy = this;
   let node = cy.$id(id);
   if (on) {
-    node.addClass("highlight")
+    node.addClass("highlight");
   } else {
-    node.removeClass("highlight")
+    node.removeClass("highlight");
   }
 });
 
-cytoscape('core', 'getSelections', function(){
+cytoscape("core", "getSelections", function () {
   // @ts-ignore
   let cy = this;
   // let outcomes = cy.$('node[type="outcome"]').$('.highlight');
   let nodes: string[] = [];
   let edges: string[] = [];
-  (cy.nodes(".highlight") as any[]).forEach( node => { nodes.push(node.id()) } );
-  (cy.edges(".edge-selected") as any[]).forEach( edge => { edges.push(edge.id()) } );
+  (cy.nodes(".highlight") as any[]).forEach((node) => {
+    nodes.push(node.id());
+  });
+  (cy.edges(".edge-selected") as any[]).forEach((edge) => {
+    edges.push(edge.id());
+  });
   return {
     nodes,
     edges,
-  }
+  };
 });
 
-
-cytoscape('collection', 'getChoices', function(){
+cytoscape("collection", "getChoices", function () {
   // @ts-ignore
   let qn = this;
   return qn.outgoers("edge").toArray();
 });
 
-cytoscape('collection', 'choose', function(){
+cytoscape("collection", "choose", function () {
   // @ts-ignore
   let edge = this;
-  if (edge.hasClass("edge-selected"))
-    return null;
+  if (edge.hasClass("edge-selected")) return null;
   let qn = edge.source();
   let nextqn = edge.target();
 
@@ -114,140 +116,150 @@ export type DecisionTreeGraphProps = {
   height?: number | string;
   onReady?: (cy: cytoscape.Core) => void;
   layoutOptions: any;
-}
+  isEditing?: boolean;
+};
 
 export const substitute = (paragraph: string, definitions: any) => {
-	return paragraph.replace(/\[(\w+)\]/g, (match, p1) => {
+  return paragraph.replace(/\[(\w+)\]/g, (match, p1) => {
     // console.log("match", match, p1);
-    let str = definitions[p1]?definitions[p1]:"<INVALID>"
+    let str = definitions[p1] ? definitions[p1] : "<INVALID>";
     str = str.toLowerCase().trim();
     return str.charAt(0).toUpperCase() + str.slice(1);
   });
-}
+};
 
-export default function DecisionTreeGraph({ graphdata, definitions, width, height, onReady, layoutOptions={} }: DecisionTreeGraphProps) {
+export default function DecisionTreeGraph({
+  graphdata,
+  definitions,
+  width,
+  height,
+  onReady,
+  layoutOptions = {},
+  isEditing = false,
+}: DecisionTreeGraphProps) {
+  // Default to not editing if not provided
   const cyRef = useRef<HTMLDivElement>(null);
-  const cy = useRef<cytoscape.Core|null>(null);
+  const cy = useRef<cytoscape.Core | null>(null);
   // const graphdata = useRef<cytoscape.CollectionReturnValue|null>(null);
 
   const style: cytoscape.Stylesheet[] = [
     {
-      selector: 'node(text)', // default node style
+      selector: "node(text)", // default node style
       style: {
         "text-wrap": "wrap",
-        "width": "340px",
-        "height": "100px",
+        width: "340px",
+        height: "100px",
         "text-max-width": "330px",
         "font-size": "28px",
         "font-family": "sans-serif",
         "text-valign": "center",
         "text-halign": "center",
         "background-color": BACKGROUND_COLOR,
-        "color": TEXT_COLOR,
+        color: TEXT_COLOR,
         "border-width": "1px",
         "border-color": LINE_COLOR,
-        'label': 'data(text)',
-        'shape': 'round-rectangle',
-      }
+        label: "data(text)",
+        shape: "round-rectangle",
+      },
     },
     {
       selector: 'node[type="question"]',
       style: {
-        'shape': 'diamond',
-        "width": "520px",
-        "height": "220px",
+        shape: "diamond",
+        width: "520px",
+        height: "220px",
         "text-max-width": "360px",
       },
     },
     {
       selector: 'node[type="outcome"]',
       style: {
-        "width": "500px",
-        "height": "150px",
+        width: "500px",
+        height: "150px",
         "text-max-width": "490px",
       },
     },
     {
       selector: 'node[type="metric2"]',
       style: {
-        "width": "340px",
-        "height": "210px",
+        width: "340px",
+        height: "210px",
         "background-opacity": 0,
       },
     },
     {
       selector: ".hidden",
       style: {
-        display: 'none',
-      }
+        display: "none",
+      },
     },
     {
-      selector: '.highlight',
+      selector: ".highlight",
       style: {
         "border-width": "4px",
         "border-color": HIGHLIGH_COLOR,
         "background-color": HIGHLIGH_COLOR,
-        "color": HIGHLIGH_TEXT_COLOR,
-      }
+        color: HIGHLIGH_TEXT_COLOR,
+      },
     },
-    {   
-      selector: '.answer',
+    {
+      selector: ".answer",
       style: {
         // "border-width": "4px",
         // "border-color": SELECT_COLOR,
         "border-opacity": 0.7,
         "background-color": SELECT_COLOR,
-        "color": SELECT_TEXT_COLOR,
+        color: SELECT_TEXT_COLOR,
         // "text-outline-color": "yellow",
-      }
-    },  
-    {   
-      selector: '.selected-metric',
+      },
+    },
+    {
+      selector: ".selected-metric",
       style: {
         // "border-width": "4px",
         // "border-color": SELECT_COLOR2,
         "border-opacity": 0.7,
         "background-color": SELECT_COLOR2,
-        "color": SELECT_TEXT_COLOR,
+        color: SELECT_TEXT_COLOR,
         // "text-outline-color": "yellow",
-      }
+      },
     },
     {
-      selector: 'edge[text]', // default edge style
+      selector: "edge[text]", // default edge style
       style: {
-        'label': 'data(text)',
+        label: "data(text)",
         "text-wrap": "wrap",
         // "text-max-width": "100px",
         "text-max-width": "200px",
-        'line-color': LINE_COLOR,
-        'width': 1,
-        'target-arrow-color': LINE_COLOR,
-        'curve-style': 'taxi',
-        'target-arrow-shape': 'triangle',
+        "line-color": LINE_COLOR,
+        width: 1,
+        "target-arrow-color": LINE_COLOR,
+        "curve-style": "taxi",
+        "target-arrow-shape": "triangle",
         // "font-size": "12px",
         "font-size": "24px",
         // "font-size": "26px",
-        "color": TEXT_COLOR,
+        color: TEXT_COLOR,
         "taxi-direction": "downward",
-      }
+      },
     },
-    {   
-      selector: '.edge-selected',
+    {
+      selector: ".edge-selected",
       style: {
-        'line-color': HIGHLIGH_COLOR,
-        'target-arrow-color': HIGHLIGH_COLOR,
-        'width': 3,
-      }
-    },  
+        "line-color": HIGHLIGH_COLOR,
+        "target-arrow-color": HIGHLIGH_COLOR,
+        width: 3,
+      },
+    },
   ]; // styles
 
   const defaultLayoutOptions: any = {
-    name: 'dagre',
+    name: "dagre",
     nodeDimensionsIncludeLabels: true,
     padding: 20,
     spacingFactor: 1.0,
     fit: true,
-  }
+  };
 
   const createMetricDomNode = (node: any) => {
     let div = document.createElement("div");
@@ -279,18 +291,19 @@ export default function DecisionTreeGraph({ graphdata, definitions, width, heigh
     child2.innerHTML = node.data.text_negative;
     div.appendChild(child2);
     return div;
-  }
+  };
 
   useEffect(() => {
-    if (!graphdata || !definitions)
-      return;
+    if (!graphdata || !definitions) return;
 
-    let elements = {...graphdata};
+    let elements = { ...graphdata };
     for (let node of elements.nodes) {
       if (node.data.stext)
         node.data.text = substitute(node.data.stext, definitions);
       if (node.data.gqn)
-        node.data.qn = (node.data.gqn as string[]).map(qn => substitute(qn, definitions));
+        node.data.qn = (node.data.gqn as string[]).map((qn) =>
+          substitute(qn, definitions)
+        );
       if (node.data.type && node.data.type === "metric2") {
         // node.data.text = node.data.text_positive;
         node.data.dom = createMetricDomNode(node);
@@ -305,9 +318,9 @@ export default function DecisionTreeGraph({ graphdata, definitions, width, heigh
     cy.current = cytoscape({
       container: cyRef.current,
 
-      boxSelectionEnabled: false,
-      autounselectify: true,
-      autoungrabify: true,
+      boxSelectionEnabled: isEditing,
+      autounselectify: !isEditing,
+      autoungrabify: !isEditing,
 
       layout: {
         ...defaultLayoutOptions,
@@ -317,8 +330,6 @@ export default function DecisionTreeGraph({ graphdata, definitions, width, heigh
       style,
 
       elements,
-
-      // headless: true,
     });
 
     // @ts-ignore
@@ -329,7 +340,7 @@ export default function DecisionTreeGraph({ graphdata, definitions, width, heigh
     if (onReady) {
       cy.current.ready(() => {
         onReady(cy.current!);
-      })
+      });
     }
     // let coll = cy.current.collection(elements);
     // coll.add(elements);
@@ -338,10 +349,24 @@ export default function DecisionTreeGraph({ graphdata, definitions, width, heigh
     // graphdata.current.restore();
     // let layout = cy.current.elements().layout(defaultLayoutOptions);
     // layout.run();
+  }, [graphdata, definitions, isEditing]);
 
-  }, [graphdata, definitions])
+  // handles interactivity changes based on isEditing
+  useEffect(() => {
+    console.log("isEditing in decisiontreegraph:", isEditing);
+    if (cy.current) {
+      console.log("Updating interactivity with isEditing:", isEditing);
+      cy.current.boxSelectionEnabled(isEditing);
+      cy.current.autounselectify(!isEditing);
+      cy.current.autoungrabify(!isEditing);
+    }
+  }, [isEditing]);
 
   return (
-    <div ref={cyRef} style={{ width:width||'100%', height:height||'100%' }} />
-  )
+    <div
+      ref={cyRef}
+      style={{ width: width || "100%", height: height || "100%" }}
+    />
+  );
 }
+
