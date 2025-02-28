@@ -89,7 +89,7 @@ type MdxComponentProps = MDXContentProps & {
 const itemStyle: requiredStyles =
   'grid-item-root relative h-auto w-full min-h-full';
 
-function GridItemComponent({
+function GridItemMain({
   allAvalaiblePlugins,
   allTestResultsOnSystem,
   layout,
@@ -478,4 +478,18 @@ function GridItemComponent({
   );
 }
 
-export { GridItemComponent };
+// Use custom comparison function to prevent unnecessary re-renders
+export const GridItemComponent = React.memo(
+  GridItemMain,
+  (prevProps, nextProps) => {
+    // Only re-render if widget data changed, it's being dragged/resized, or selection state changed
+    return (
+      prevProps.widget === nextProps.widget &&
+      prevProps.isDragging === nextProps.isDragging &&
+      prevProps.isResizing === nextProps.isResizing &&
+      prevProps.layout === nextProps.layout &&
+      JSON.stringify(prevProps.testResultsUsed) ===
+        JSON.stringify(nextProps.testResultsUsed)
+    );
+  }
+);
