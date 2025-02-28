@@ -20,24 +20,30 @@ class InputBlockMeta(BaseModel):
         max_length=128,
         pattern=r"^[a-zA-Z0-9][a-zA-Z0-9-._]*$",
     )
-    name: str = Field(description="Input Block name", min_length=1, max_length=256)
+    name: str = Field(description="Input Block name",
+                      min_length=1, max_length=256)
     version: Optional[str] = Field(
         default=None,
         description="Version of the input block, default to plugin version if not specified",
         min_length=1,
         max_length=256,
     )
-    author: Optional[str] = Field(default=None, description="Input block author", min_length=1, max_length=256)
+    author: Optional[str] = Field(
+        default=None, description="Input block author", min_length=1, max_length=256)
     tags: Optional[List[Annotated[str, Field(min_length=1, max_length=128)]]] = Field(
         default=None, description="Input block tags, used for searching", max_length=128
     )
-    description: Optional[str] = Field(default=None, description="Input Block description", max_length=4096)
-    group: Optional[str] = Field(default=None, description="Input Block group", min_length=1, max_length=256)
-    groupNumber: Optional[int] = Field(default=None, description="Input Block group number")
+    description: Optional[str] = Field(
+        default=None, description="Input Block description", max_length=4096)
+    group: Optional[str] = Field(
+        default=None, description="Input Block group", min_length=1, max_length=256)
+    groupNumber: Optional[int] = Field(
+        default=None, description="Input Block group number")
     width: Optional[InputBlockSize] = Field(
         default="md", description="Width of Input Block dialog"
     )
-    fullScreen: Optional[bool] = Field(default=False, description="Width of Input Block dialog")
+    fullScreen: Optional[bool] = Field(
+        default=False, description="Width of Input Block dialog")
 
 
 class InputBlockOutput(InputBlockMeta):
@@ -56,7 +62,8 @@ class InputBlockOutput(InputBlockMeta):
             name=result.name,
             version=result.version,
             author=result.author,
-            tags=[str(tag.name) for tag in result.tags] if result.tags else None,
+            tags=[str(tag.name)
+                  for tag in result.tags] if result.tags else None,
             description=result.description,
             group=result.group,
             width=result.width,
@@ -83,6 +90,11 @@ class InputBlockData(BaseModel):
         min_length=1,
         max_length=128,
     )
+    group: str = Field(  # Added the group field with validation
+        description="Unique group identifier to ensure each group contains unique checklists",
+        min_length=1,
+        max_length=128,
+    )
     data: dict = Field(description="User data")
 
     model_config = {
@@ -106,6 +118,11 @@ class InputBlockDataUpdate(BaseModel):
         max_length=128,
     )
     data: dict = Field(description="User data")
+    group: str = Field(
+        description="Group name for this input block data",
+        min_length=1,
+        max_length=128,
+    )
 
     model_config = {
         "json_schema_extra": {
@@ -131,6 +148,7 @@ class InputBlockDataOutput(InputBlockData):
             gid=result.gid,
             cid=result.cid,
             name=result.name,
+            group=result.group,
             data=json.loads(result.data.decode("utf-8")),
             created_at=result.created_at,
             updated_at=result.updated_at,
