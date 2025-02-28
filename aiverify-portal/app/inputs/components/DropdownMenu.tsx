@@ -37,7 +37,9 @@ const Dropdown = ({
 
   const handleChange = (item: DropdownItem) => {
     setSelectedItem(item);
-    onSelect && onSelect(item.id);
+    if (onSelect) {
+      onSelect(item.id);
+    }
     setIsOpen(false);
   };
 
@@ -73,7 +75,6 @@ const Dropdown = ({
       const overflowsRight = dropdownRect.right > viewportWidth;
 
       // Check if the dropdown would overflow on the left
-      const overflowsLeft = dropdownRect.left < 0;
 
       // If it overflows on the right but has space on the left, align left
       const needsLeftAlign =

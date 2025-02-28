@@ -1,33 +1,17 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
-import { Icon, IconName } from '@/lib/components/IconSVG';
-import { useEditGroup } from '../hooks/useEditGroupName';
-import { useDeleteGroup } from '../hooks/useDeleteGroup';
-import { useChecklists } from '@/app/inputs/context/ChecklistsContext';
-import { Modal } from '@/lib/components/modal';
 import { useRouter } from 'next/navigation';
-import { fetchConfigFiles } from '../hooks/fetchConfigFiles'; // Import fetchConfigFiles
-import { exportToExcel } from '../utils/exportToExcel'; // Import exportToExcel
+import { useState, useEffect, useCallback } from 'react';
+import { fetchConfigFiles } from '@/app/inputs/checklists/[groupId]/hooks/fetchConfigFiles'; // Import fetchConfigFiles
+import { useDeleteGroup } from '@/app/inputs/checklists/[groupId]/hooks/useDeleteGroup';
+import { useEditGroup } from '@/app/inputs/checklists/[groupId]/hooks/useEditGroupName';
+import { exportToExcel } from '@/app/inputs/checklists/[groupId]/utils/exportToExcel'; // Import exportToExcel
+import { useChecklists } from '@/app/inputs/context/ChecklistsContext';
+import { Icon, IconName } from '@/lib/components/IconSVG';
+import { Modal } from '@/lib/components/modal';
 
 interface GroupHeaderProps {
   groupName: string;
 }
-
-// Define interfaces for our worksheet data types
-interface ChecklistMetadata {
-  'Checklist ID': string;
-  Name: string;
-  'Created At': string;
-  'Updated At': string;
-  Status: string;
-}
-
-interface ChecklistResponse {
-  'Question ID': string;
-  Response: string;
-}
-
-type WorksheetDataType = ChecklistMetadata | ChecklistResponse;
 
 const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
   const router = useRouter();
@@ -37,7 +21,7 @@ const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
   const [modalMessage, setModalMessage] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
-  const [configFiles, setConfigFiles] = useState<Record<string, string>>({});
+  const [, setConfigFiles] = useState<Record<string, string>>({});
 
   const { checklists, setChecklists, setSelectedGroup } = useChecklists();
 

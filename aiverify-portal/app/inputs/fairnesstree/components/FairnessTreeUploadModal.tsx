@@ -1,14 +1,15 @@
 // FairnessTreeUploadModal.tsx
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import { useMDXBundle } from '../hooks/useMDXBundle';
-import { useFairnessTree } from '../context/FairnessTreeContext';
-import { useSubmitFairnessTree } from '../hooks/useSubmitFairnessTree';
-import { Modal } from '@/lib/components/modal';
 import { getMDXComponent } from 'mdx-bundler/client';
+import React, { useState, useMemo } from 'react';
+import { InfoIcon } from '@/app/inputs/checklists/upload/utils/icons';
+import { useFairnessTree } from '@/app/inputs/fairnesstree/context/FairnessTreeContext';
+import { useMDXBundle } from '@/app/inputs/fairnesstree/hooks/useMDXBundle';
+import { useSubmitFairnessTree } from '@/app/inputs/fairnesstree/hooks/useSubmitFairnessTree';
+import { FairnessTreeData } from '@/app/inputs/utils/types';
+import { Modal } from '@/lib/components/modal';
 import './DecisionTree.css';
-import { InfoIcon } from '../../checklists/upload/utils/icons';
 import { Tooltip } from './Tooltip';
 
 interface FairnessTreeModalProps {
@@ -36,8 +37,7 @@ export const FairnessTreeUploadModal: React.FC<FairnessTreeModalProps> = ({
   }, [mdxBundle]);
 
   const { addFairnessTree } = useFairnessTree();
-  const { submitFairnessTree, isSubmitting, submitError } =
-    useSubmitFairnessTree();
+  const { submitFairnessTree } = useSubmitFairnessTree();
 
   const [name, setName] = useState<string>('');
   const [showWarning, setShowWarning] = useState<boolean>(false);
@@ -45,7 +45,7 @@ export const FairnessTreeUploadModal: React.FC<FairnessTreeModalProps> = ({
   const [modalMessage, setModalMessage] = useState<string | null>(null);
   const [modalError, setModalError] = useState<string | null>(null);
 
-  const [treeData, setTreeData] = useState<Record<string, any>>({
+  const [treeData, setTreeData] = useState<FairnessTreeData>({
     sensitiveFeature: '',
     favourableOutcomeName: '',
     qualified: '',
@@ -79,6 +79,7 @@ export const FairnessTreeUploadModal: React.FC<FairnessTreeModalProps> = ({
         name,
         group: name,
         data: treeData,
+        cid: 'fairness_tree',
       });
       setModalMessage('Tree updated successfully');
       setIsSubmitted(true); // Switch to the success/error modal

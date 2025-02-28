@@ -1,12 +1,11 @@
 'use client';
-import React, { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card } from '@/lib/components/card/card';
-import { useChecklists } from '@/app/inputs/context/ChecklistsContext';
-import { Icon, IconName } from '@/lib/components/IconSVG';
-import { useMDXSummaryBundle } from '../hooks/useMDXSummaryBundle';
+import React, { useMemo } from 'react';
 import * as ReactJSXRuntime from 'react/jsx-runtime';
+import { useMDXSummaryBundle } from '@/app/inputs/checklists/[groupId]/hooks/useMDXSummaryBundle';
+import { useChecklists } from '@/app/inputs/context/ChecklistsContext';
 import { Checklist } from '@/app/inputs/utils/types';
+import { Card } from '@/lib/components/card/card';
 
 const ChecklistMDX: React.FC<{ checklist: Checklist }> = ({ checklist }) => {
   const {
@@ -74,7 +73,7 @@ const GroupDetail: React.FC<{
   groupChecklists: Checklist[];
   groupName: string;
 }> = ({ groupChecklists, groupName }) => {
-  const { checklists, setSelectedChecklist } = useChecklists();
+  const { setSelectedChecklist } = useChecklists();
   const router = useRouter();
 
   const handleChecklistClick = (checklistId: number) => {
@@ -87,50 +86,6 @@ const GroupDetail: React.FC<{
     }
   };
 
-  const createMDXComponent = (code: string, checklistData: any) => {
-    try {
-      // Define the context with all necessary runtime dependencies
-      const context = {
-        React,
-        jsx: ReactJSXRuntime.jsx,
-        jsxs: ReactJSXRuntime.jsxs,
-        _jsx_runtime: ReactJSXRuntime,
-        Fragment: ReactJSXRuntime.Fragment,
-      };
-
-      // Execute the code to get the module
-      const moduleFactory = new Function(...Object.keys(context), `${code}`);
-
-      // Get the module with all exports
-      const moduleExports = moduleFactory(...Object.values(context));
-
-      // Extract the component and metadata
-      const MDXContent = moduleExports.default;
-      const progress = moduleExports.progress;
-      const summary = moduleExports.summary;
-
-      // Create a wrapper component that includes both the content and metadata
-      return function MDXWrapper(props: any) {
-        return (
-          <div className="mdx-content">
-            {summary && (
-              <div className="mt-4 text-sm text-gray-400">
-                {summary(props.data)}
-              </div>
-            )}
-            {progress && (
-              <div className="mt-4 text-sm text-gray-400">
-                {progress(props.data)}%
-              </div>
-            )}
-          </div>
-        );
-      };
-    } catch (error) {
-      console.error('Error creating MDX component:', error);
-      return null;
-    }
-  };
   return (
     <div className="flex h-full flex-col gap-4 overflow-y-auto bg-secondary-950 p-1 scrollbar-hidden">
       {groupChecklists.map((checklist) => (

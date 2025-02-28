@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useChecklists } from '@/app/inputs/checklists/upload/context/ChecklistsContext';
-import { useMDXBundle } from '../../../[groupId]/[checklistId]/hooks/useMDXBundle';
-import { Modal } from '@/lib/components/modal';
-import { useRouter } from 'next/navigation';
-import * as ReactJSXRuntime from 'react/jsx-runtime';
-import { Skeleton } from '../../../[groupId]/[checklistId]/utils/Skeletion';
 import dynamic from 'next/dynamic';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import * as ReactJSXRuntime from 'react/jsx-runtime';
+import { useMDXBundle } from '@/app/inputs/checklists/[groupId]/[checklistId]/hooks/useMDXBundle';
+import { Skeleton } from '@/app/inputs/checklists/[groupId]/[checklistId]/utils/Skeletion';
+import { useChecklists } from '@/app/inputs/checklists/upload/context/ChecklistsContext';
+import { Modal } from '@/lib/components/modal';
 import styles from './ChecklistDetail.module.css';
 
 interface ChecklistDetailProps {
@@ -53,10 +52,7 @@ const ChecklistDetail: React.FC<ChecklistDetailProps> = ({ id }) => {
     [checklist, localData, id, updateChecklistData]
   );
 
-  const { data: mdxBundle, isLoading: isLoadingMDX } = useMDXBundle(
-    checklist?.gid,
-    checklist?.cid
-  );
+  const { data: mdxBundle } = useMDXBundle(checklist?.gid, checklist?.cid);
 
   const MDXComponent = useMemo(() => {
     if (!mdxBundle?.code) return null;

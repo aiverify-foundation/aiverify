@@ -1,10 +1,9 @@
-import { useState, useEffect, use } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { processResponse, ApiResult } from '@/lib/utils/http-requests';
-import { parseFastAPIError } from '@/lib/utils/parseFastAPIError';
+import { useState, useEffect } from 'react';
 import { FairnessTree, FairnessTreeData } from '@/app/inputs/utils/types';
 import { isApiError, toErrorWithMessage } from '@/lib/utils/error-utils';
-import { useRouter } from 'next/navigation';
+import { processResponse, ApiResult } from '@/lib/utils/http-requests';
+import { parseFastAPIError } from '@/lib/utils/parseFastAPIError';
 
 interface UseFairnessTreeEditProps {
   tree: FairnessTree;
@@ -17,11 +16,7 @@ interface TreeUpdates {
   data: FairnessTreeData;
 }
 
-export const useFairnessTreeEdit = ({
-  tree,
-  onClose,
-}: UseFairnessTreeEditProps) => {
-  const router = useRouter();
+export const useFairnessTreeEdit = ({ tree }: UseFairnessTreeEditProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [treeName, setTreeName] = useState(tree.name);
   const [hasChanges, setHasChanges] = useState(false);
@@ -38,7 +33,7 @@ export const useFairnessTreeEdit = ({
   );
   const [metrics, setMetrics] = useState<string[]>(tree.data?.metrics || []);
 
-  const handleChangeData = (key: string, value: any) => {
+  const handleChangeData = (key: string, value: string[]) => {
     if (key === 'selectedOutcomes') {
       setSelectedOutcomes(value);
       setTreeData((prevData) => ({

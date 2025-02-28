@@ -1,12 +1,12 @@
 // /app/inputs/components/GroupList.tsx
 'use client';
-import React, { useMemo, useState } from 'react';
-import { Card } from '@/lib/components/card/card';
-import { Checklist, GroupedChecklists } from '@/app/inputs/utils/types';
-import ChecklistsFilters from '../../components/FilterButtons';
 import Fuse from 'fuse.js';
 import { useRouter } from 'next/navigation';
+import React, { useMemo, useState } from 'react';
+import ChecklistsFilters from '@/app/inputs/components/FilterButtons';
 import { useChecklists } from '@/app/inputs/context/ChecklistsContext';
+import { Checklist, GroupedChecklists } from '@/app/inputs/utils/types';
+import { Card } from '@/lib/components/card/card';
 
 type GroupListProps = {
   checklists: Checklist[];
@@ -56,7 +56,7 @@ const GroupList: React.FC<GroupListProps> = ({ checklists }) => {
 
   // Filter and sort the groups based on search query and sort options
   const filteredGroups = useMemo(() => {
-    let filtered = searchQuery
+    const filtered = searchQuery
       ? fuse.search(searchQuery).map((result) => result.item)
       : Object.keys(groupedChecklists);
 

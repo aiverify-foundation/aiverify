@@ -5,7 +5,6 @@ import { IconName } from '@/lib/components/IconSVG';
 import { Icon } from '@/lib/components/IconSVG';
 import { TextInput } from '@/lib/components/textInput';
 import Dropdown from './DropdownMenu';
-import { Button, ButtonVariant } from '@/lib/components/button';
 
 type FilterProps = {
   onSearch: (value: string) => void;
@@ -18,7 +17,7 @@ export default function ChecklistsFilters({ onSearch, onSort }: FilterProps) {
     { id: 'date-desc', name: 'Updated Date (newest to oldest)' },
     { id: 'name', name: 'Name (A-Z)' },
   ];
-  const [selectedPill, setSelectedPill] = useState<string | null>(null);
+  const [] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearchChange = (value: string) => {

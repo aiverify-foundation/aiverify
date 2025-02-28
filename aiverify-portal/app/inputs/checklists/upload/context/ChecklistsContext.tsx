@@ -1,4 +1,5 @@
 'use client';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React, {
   createContext,
   useContext,
@@ -6,7 +7,6 @@ import React, {
   useCallback,
   useEffect,
 } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Types
 interface Checklist {

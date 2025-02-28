@@ -1,16 +1,19 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
-import { useChecklist } from '../hooks/useChecklist';
-import { useMDXBundle } from '../hooks/useMDXBundle';
-import { Skeleton } from '../utils/Skeletion';
-import { Alert, AlertDescription } from '../utils/Alert';
-import { Modal } from '@/lib/components/modal';
-import type { MDXProps } from '../utils/types';
+import React, { useState, useEffect, useRef } from 'react';
 import * as ReactJSXRuntime from 'react/jsx-runtime';
+import { useChecklist } from '@/app/inputs/checklists/[groupId]/[checklistId]/hooks/useChecklist';
+import { useMDXBundle } from '@/app/inputs/checklists/[groupId]/[checklistId]/hooks/useMDXBundle';
+import useUpdateChecklist from '@/app/inputs/checklists/[groupId]/[checklistId]/hooks/useUpdateChecklist';
+import {
+  Alert,
+  AlertDescription,
+} from '@/app/inputs/checklists/[groupId]/[checklistId]/utils/Alert';
+import { Skeleton } from '@/app/inputs/checklists/[groupId]/[checklistId]/utils/Skeletion';
+import type { MDXProps } from '@/app/inputs/checklists/[groupId]/[checklistId]/utils/types';
+import { Modal } from '@/lib/components/modal';
 import styles from './ChecklistDetail.module.css';
-import useUpdateChecklist from '../hooks/useUpdateChecklist';
 
 interface ChecklistDetailProps {
   id: string;
@@ -34,7 +37,7 @@ const ChecklistDetail: React.FC<ChecklistDetailProps> = ({ id }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [, setShowSaveModal] = useState(false);
   const [showClearModal, setShowClearModal] = useState(false);
   const autoSaveTimeout = useRef<NodeJS.Timeout | null>(null);
 

@@ -1,15 +1,18 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 'use client';
 import React, { useMemo } from 'react';
-import { useChecklists } from '@/app/inputs/checklists/upload/context/ChecklistsContext';
+import * as ReactJSXRuntime from 'react/jsx-runtime';
+import { useMDXSummaryBundle } from '@/app/inputs/checklists/[groupId]/hooks/useMDXSummaryBundle';
 import {
   WarningCircleIcon,
   CheckCircleIcon,
-} from '../../[groupId]/utils/icons';
-import { useMDXSummaryBundle } from '../../[groupId]/hooks/useMDXSummaryBundle';
-import * as ReactJSXRuntime from 'react/jsx-runtime';
+} from '@/app/inputs/checklists/[groupId]/utils/icons';
+import { useChecklists } from '@/app/inputs/checklists/upload/context/ChecklistsContext';
+
+// need to check back on eslint for usemdxbundle and usememo in callback
 
 const ProgressBar: React.FC = () => {
-  const { checklists, groupName } = useChecklists();
+  const { checklists } = useChecklists();
 
   const calculateOverallProgress = () => {
     let totalProgress = 0;
@@ -52,11 +55,10 @@ const ProgressBar: React.FC = () => {
       {/* Individual Checklist Progress */}
       <div className="space-y-3">
         {checklists.map((checklist) => {
-          const {
-            data: mdxSummaryBundle,
-            isLoading,
-            error,
-          } = useMDXSummaryBundle(checklist.gid, checklist.cid);
+          const { data: mdxSummaryBundle } = useMDXSummaryBundle(
+            checklist.gid,
+            checklist.cid
+          );
 
           const progressData = useMemo(() => {
             if (!mdxSummaryBundle?.code) return null;

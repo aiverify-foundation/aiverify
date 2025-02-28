@@ -15,7 +15,6 @@ function CheckCircleIcon({
   color = '#000000',
   role,
   ariaLabel,
-  disabled = false,
   className,
   style,
 }: IconProps) {
@@ -67,7 +66,6 @@ function WarningCircleIcon({
   color = '#000000',
   role,
   ariaLabel,
-  disabled = false,
   className,
   style,
 }: IconProps) {

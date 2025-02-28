@@ -1,17 +1,17 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { useParams } from 'next/navigation';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import ChecklistDetail from './components/ChecklistDetail';
 import Link from 'next/link';
-import { Icon, IconName } from '@/lib/components/IconSVG';
-import { Modal } from '@/lib/components/modal';
+import { useParams } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   useChecklists,
   ChecklistsProvider,
 } from '@/app/inputs/checklists/upload/context/ChecklistsContext';
-import { usePathname, useRouter } from 'next/navigation';
+import { Icon, IconName } from '@/lib/components/IconSVG';
+import { Modal } from '@/lib/components/modal';
+import ChecklistDetail from './components/ChecklistDetail';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -133,7 +133,10 @@ export default function ChecklistDetailPage() {
     selectedChecklist,
   } = useChecklists();
 
-  useEffect(() => {}, [checklists]);
+  // see if redundant
+  useEffect(() => {
+    console.log('Checklists updated:', checklists);
+  }, [checklists]);
 
   const { checkForExistingData, clearAllChecklists } = useChecklists();
   const { showModal, setShowModal } = useInactivityCheck();

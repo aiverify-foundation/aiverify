@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 
 interface FairnessTreeData {
   cid: string;
-  data: any;
+  data: unknown;
   gid: string;
   name: string;
   group: string;

@@ -1,13 +1,12 @@
 'use client';
-import React, { useMemo, useState } from 'react';
-import { Card } from '@/lib/components/card/card';
-import { FairnessTree } from '@/app/inputs/utils/types';
-import ChecklistsFilters from '@/app/inputs/components/FilterButtons';
 import Fuse from 'fuse.js';
-import { useRouter } from 'next/navigation';
-import { useMDXSummaryBundle } from '@/app/inputs/fairnesstree/hooks/useMDXSummaryBundle';
-import * as ReactJSXRuntime from 'react/jsx-runtime';
 import dynamic from 'next/dynamic';
+import React, { useMemo, useState } from 'react';
+import * as ReactJSXRuntime from 'react/jsx-runtime';
+import ChecklistsFilters from '@/app/inputs/components/FilterButtons';
+import { useMDXSummaryBundle } from '@/app/inputs/fairnesstree/hooks/useMDXSummaryBundle';
+import { FairnessTree } from '@/app/inputs/utils/types';
+import { Card } from '@/lib/components/card/card';
 
 type GroupListProps = {
   trees: FairnessTree[];
@@ -81,8 +80,6 @@ const FairnessTreeMDXModal = dynamic(() => import('./FairnessTreeMDXModal'), {
 });
 
 const FairnessTreeGroupList: React.FC<GroupListProps> = ({ trees }) => {
-  const router = useRouter();
-
   // State for search query and sort option
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('date-desc');
@@ -110,7 +107,7 @@ const FairnessTreeGroupList: React.FC<GroupListProps> = ({ trees }) => {
 
   // Filter and sort the trees based on search query and sort options
   const filteredTrees = useMemo(() => {
-    let filtered = searchQuery
+    const filtered = searchQuery
       ? fuse.search(searchQuery).map((result) => result.item)
       : trees;
 

@@ -1,23 +1,21 @@
 'use client';
 
+import { getMDXComponent } from 'mdx-bundler/client';
 import React, { useMemo, useState } from 'react';
-import { Modal } from '@/lib/components/modal';
+import { InfoIcon } from '@/app/inputs/checklists/upload/utils/icons';
+import { useDeleteFairnessTree } from '@/app/inputs/fairnesstree/hooks/useDeleteFairnessTree';
+import { useFairnessTreeEdit } from '@/app/inputs/fairnesstree/hooks/useEditFairnessTree';
 import { useMDXBundle } from '@/app/inputs/fairnesstree/hooks/useMDXBundle';
 import { FairnessTree } from '@/app/inputs/utils/types';
-import { getMDXComponent } from 'mdx-bundler/client';
-import { useFairnessTreeEdit } from '@/app/inputs/fairnesstree/hooks/useEditFairnessTree';
-import { useDeleteFairnessTree } from '@/app/inputs/fairnesstree/hooks/useDeleteFairnessTree';
+import { Modal } from '@/lib/components/modal';
 import './DecisionTree.css';
-import { InfoIcon } from '../../checklists/upload/utils/icons';
 import { Tooltip } from './Tooltip';
-import { useRouter } from 'next/navigation';
 
 const FairnessTreeMDXModal: React.FC<{
   tree: FairnessTree;
   isOpen: boolean;
   onClose: () => void;
-}> = ({ tree, isOpen, onClose }) => {
-  const router = useRouter();
+}> = ({ tree, onClose }) => {
   const [modalMessage, setModalMessage] = useState<string | null>(null);
   const [modalError, setModalError] = useState<string | null>(null);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
@@ -27,9 +25,7 @@ const FairnessTreeMDXModal: React.FC<{
     setIsEditing,
     treeName,
     setTreeName,
-    hasChanges,
     treeData,
-    mutation,
     handleChangeData,
     handleSaveChanges,
   } = useFairnessTreeEdit({ tree, onClose });
@@ -46,7 +42,9 @@ const FairnessTreeMDXModal: React.FC<{
   );
 
   const handleDelete = () => {
-    deleteTree(tree.id);
+    if (tree.id) {
+      deleteTree(tree.id);
+    }
   };
 
   const handleSave = async () => {

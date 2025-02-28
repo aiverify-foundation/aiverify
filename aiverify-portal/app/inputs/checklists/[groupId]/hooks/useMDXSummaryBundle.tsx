@@ -1,13 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 
-interface MDXBundleExports {
-  default: React.ComponentType<any>;
-  progress?: (props: any) => number;
-  summary?: (props: any) => string;
-  validate?: (props: any) => boolean;
-  frontmatter?: Record<string, unknown>;
-}
-
 interface MDXBundle {
   code: string;
   frontmatter: Record<string, unknown>;

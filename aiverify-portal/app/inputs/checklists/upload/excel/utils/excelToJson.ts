@@ -44,7 +44,7 @@ export const excelToJson = (
 
       const submissions: ChecklistSubmission[] = [];
 
-      workbook.SheetNames.forEach((sheetName) => {
+      workbook.SheetNames.forEach((sheetName: string) => {
         const worksheet = workbook.Sheets[sheetName];
         const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
@@ -61,10 +61,11 @@ export const excelToJson = (
 
         const checklistData: ChecklistData = {};
 
-        json.forEach((row: any) => {
-          const pid = row[0]; // PID is in column A (first column)
-          const completed = row[4]; // "completed" is in column E (5th column)
-          const elaboration = row[5]; // "elaboration" is in column F (6th column)
+        json.forEach((row: unknown) => {
+          const typedRow = row as string[];
+          const pid = typedRow[0]; // PID is in column A (first column)
+          const completed = typedRow[4]; // "completed" is in column E (5th column)
+          const elaboration = typedRow[5]; // "elaboration" is in column F (6th column)
 
           // Validate PID format (e.g., 9.1.1, 9.2.1, etc.)
           const pidRegex = /^\d+(\.\d+)+$/; // Matches patterns like 9.1.1, 9.2.1, etc.

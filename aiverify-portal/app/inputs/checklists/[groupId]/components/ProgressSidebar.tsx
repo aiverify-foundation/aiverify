@@ -1,9 +1,12 @@
 'use client';
-import React, { useMemo, useContext } from 'react';
-import { useChecklists } from '@/app/inputs/context/ChecklistsContext';
-import { WarningCircleIcon, CheckCircleIcon } from '../utils/icons';
-import { useMDXSummaryBundle } from '../hooks/useMDXSummaryBundle';
+import React, { useMemo } from 'react';
 import * as ReactJSXRuntime from 'react/jsx-runtime';
+import { useMDXSummaryBundle } from '@/app/inputs/checklists/[groupId]/hooks/useMDXSummaryBundle';
+import {
+  WarningCircleIcon,
+  CheckCircleIcon,
+} from '@/app/inputs/checklists/[groupId]/utils/icons';
+import { useChecklists } from '@/app/inputs/context/ChecklistsContext';
 
 const ProgressBar: React.FC<{ groupName: string }> = ({ groupName }) => {
   const { checklists } = useChecklists();

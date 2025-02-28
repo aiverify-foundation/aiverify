@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useChecklists } from '../context/ChecklistsContext';
+import React, { useEffect } from 'react';
+import { useChecklists } from '@/app/inputs/checklists/upload/context/ChecklistsContext';
+import { InfoIcon } from '@/app/inputs/checklists/upload/utils/icons';
 import { Tooltip } from './Tooltip';
-import { InfoIcon } from '../utils/icons';
 
 export const GroupNameInput: React.FC = () => {
   const { groupName, setGroupName } = useChecklists();

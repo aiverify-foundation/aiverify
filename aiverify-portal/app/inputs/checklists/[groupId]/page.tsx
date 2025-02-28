@@ -1,18 +1,18 @@
 'use client';
-import { Suspense, useMemo, useState, useEffect } from 'react';
-import GroupDetail from './components/GroupDetail';
-import { useChecklists } from '@/app/inputs/context/ChecklistsContext';
-import { usePathname, useSearchParams } from 'next/navigation';
-import { Icon, IconName } from '@/lib/components/IconSVG';
-import ActionButtons from '../components/ActionButtons';
-import Link from 'next/link';
-import { ChevronLeftIcon } from '@/app/inputs/utils/icons';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import SplitPane from './components/SplitPane';
-import ProgressBar from './components/ProgressSidebar';
-import GroupHeader from './components/GroupNameHeader';
-import ChecklistsFilters from '../../components/FilterButtons';
 import Fuse from 'fuse.js';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Suspense, useMemo, useState, useEffect } from 'react';
+import ActionButtons from '@/app/inputs/checklists/components/ActionButtons';
+import ChecklistsFilters from '@/app/inputs/components/FilterButtons';
+import { useChecklists } from '@/app/inputs/context/ChecklistsContext';
+import { ChevronLeftIcon } from '@/app/inputs/utils/icons';
+import { Icon, IconName } from '@/lib/components/IconSVG';
+import GroupDetail from './components/GroupDetail';
+import GroupHeader from './components/GroupNameHeader';
+import ProgressBar from './components/ProgressSidebar';
+import SplitPane from './components/SplitPane';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -61,7 +61,7 @@ export default function GroupDetailPage() {
   // Filter and sort checklists
   const filteredChecklists = useMemo(() => {
     // First, filter by search query
-    let filtered = searchQuery
+    const filtered = searchQuery
       ? fuse.search(searchQuery).map((result) => result.item)
       : checklists;
 

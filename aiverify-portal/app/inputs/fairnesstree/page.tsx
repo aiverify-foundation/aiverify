@@ -1,11 +1,11 @@
+import Link from 'next/link';
+import { QueryProvider } from '@/app/inputs/fairnesstree/components/QueryProvider';
+import { ChevronLeftIcon } from '@/app/inputs/utils/icons';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import { getAllFairnessTrees } from '@/lib/fetchApis/getAllFairnessTrees';
 import ActionButtons from './components/ActionButtons';
-import Link from 'next/link';
-import { ChevronLeftIcon } from '@/app/inputs/utils/icons';
 import FairnessTreeHydration from './components/FairnessTreeHydration';
 import { FairnessTreeProvider } from './context/FairnessTreeContext';
-import { QueryProvider } from '@/app/inputs/fairnesstree/components/QueryProvider';
 
 export default async function FairnessTreePage() {
   const trees = await getAllFairnessTrees();

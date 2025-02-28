@@ -1,20 +1,20 @@
 'use client';
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useState, useRef, JSX } from 'react';
 import {
   ChecklistsProvider,
   useChecklists,
 } from '@/app/inputs/checklists/upload/context/ChecklistsContext';
-import GroupDetail from './components/GroupDetail';
-import ProgressBar from './components/ProgressSidebar';
-import { GroupNameInput } from './components/GroupNameInput';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import SplitPane from './components/SplitPane';
-import { Modal } from '@/lib/components/modal';
-import { usePathname, useRouter } from 'next/navigation';
 import { useChecklistSubmission } from '@/app/inputs/checklists/upload/hooks/useUploadSubmission';
-import { ChevronLeftIcon } from '../../utils/icons';
-import Link from 'next/link';
+import { ChevronLeftIcon } from '@/app/inputs/utils/icons';
+import { Modal } from '@/lib/components/modal';
+import GroupDetail from './components/GroupDetail';
+import { GroupNameInput } from './components/GroupNameInput';
+import ProgressBar from './components/ProgressSidebar';
+import SplitPane from './components/SplitPane';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,7 +34,7 @@ interface ValidationError {
   type: string;
   loc: string[];
   msg: string;
-  input: any;
+  input: string;
 }
 
 interface SubmissionError {
@@ -73,7 +73,7 @@ function ErrorMessage({ error }: { error: SubmissionError | null }) {
     return (
       <div>
         <p>
-          '{groupName}' already exists. Please modify the group name and try
+          `{groupName}` already exists. Please modify the group name and try
           again.
         </p>
       </div>
@@ -201,11 +201,7 @@ function ChecklistsPageContent() {
   const router = useRouter();
 
   // Use the submission hook
-  const {
-    submitChecklist,
-    isSubmitting,
-    error: submissionError,
-  } = useChecklistSubmission();
+  const { submitChecklist } = useChecklistSubmission();
 
   // Save logic using mutation
   const saveAllChecklists = async () => {
@@ -298,7 +294,7 @@ function ChecklistsPageContent() {
           Please enter a group name before saving.
         </div>
       )}
-      <div className="flex-1 w-full overflow-y-auto rounded bg-secondary-950 p-6 scrollbar-hidden">
+      <div className="w-full flex-1 overflow-y-auto rounded bg-secondary-950 p-6 scrollbar-hidden">
         <GroupNameInput />
         <SplitPane
           leftPane={<ProgressBar />}

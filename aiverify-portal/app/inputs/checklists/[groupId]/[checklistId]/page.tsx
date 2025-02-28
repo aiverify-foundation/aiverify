@@ -1,11 +1,11 @@
 'use client';
 
-import React from 'react';
-import { useParams } from 'next/navigation';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import ChecklistDetail from './components/ChecklistDetail';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
+import React from 'react';
 import { Icon, IconName } from '@/lib/components/IconSVG';
+import ChecklistDetail from './components/ChecklistDetail';
 
 const queryClient = new QueryClient({
   defaultOptions: {

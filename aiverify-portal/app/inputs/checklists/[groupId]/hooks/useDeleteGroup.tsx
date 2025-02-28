@@ -1,5 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
+import { useMutation } from '@tanstack/react-query';
 import { Checklist } from '@/app/inputs/utils/types';
 
 interface DeleteGroupNameParams {
@@ -30,9 +29,9 @@ export const useDeleteGroup = () => {
       try {
         await Promise.all(deletePromises);
       } catch (error) {
+        console.log(error);
         throw new Error('Failed to delete one or more checklists in the group');
       }
     },
-    onSuccess: () => {},
   });
 };

@@ -1,14 +1,10 @@
 // hooks/useUpdateChecklist.ts
 import { useMutation } from '@tanstack/react-query';
-import { Checklist } from '@/app/inputs/utils/types';
 
-const updateChecklist = async (
-  variables: {
-    id: string;
-    data: { data: Record<string, string>; name: string; group: string };
-  },
-  context?: unknown // Add the second argument for context
-) => {
+const updateChecklist = async (variables: {
+  id: string;
+  data: { data: Record<string, string>; name: string; group: string };
+}) => {
   const { id, data } = variables;
 
   const response = await fetch(`/api/input_block_data/${id}`, {
@@ -29,7 +25,7 @@ const updateChecklist = async (
 // Define the custom hook
 const useUpdateChecklist = () => {
   return useMutation<
-    any,
+    unknown,
     Error,
     {
       id: string;

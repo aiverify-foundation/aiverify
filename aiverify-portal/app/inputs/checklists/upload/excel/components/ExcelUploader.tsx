@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
-import { useChecklistSubmission } from '@/app/inputs/checklists/upload/hooks/useUploadSubmission';
 import { excelToJson } from '@/app/inputs/checklists/upload/excel/utils/excelToJson';
+import { useChecklistSubmission } from '@/app/inputs/checklists/upload/hooks/useUploadSubmission';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import { Button, ButtonVariant } from '@/lib/components/button';
 import { Modal } from '@/lib/components/modal';
@@ -13,7 +13,7 @@ const ExcelUploader = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
 
-  const { submitChecklist, isSubmitting, error } = useChecklistSubmission();
+  const { submitChecklist } = useChecklistSubmission();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];

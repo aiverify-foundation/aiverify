@@ -54,7 +54,7 @@ export const ChecklistsProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('selectedGroup', groupName);
   };
 
-  const setSelectedChecklist = (checklist: Checklist) => {
+  const setSelectedChecklist = () => {
     // logic to set selected checklist
   };
 

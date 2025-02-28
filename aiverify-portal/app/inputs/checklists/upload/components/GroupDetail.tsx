@@ -1,10 +1,12 @@
 'use client';
-import React, { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card } from '@/lib/components/card/card';
-import { useChecklists } from '@/app/inputs/checklists/upload/context/ChecklistsContext';
-import { useMDXSummaryBundle } from '../../[groupId]/hooks/useMDXSummaryBundle';
+import React, { useMemo } from 'react';
 import * as ReactJSXRuntime from 'react/jsx-runtime';
+import { useMDXSummaryBundle } from '@/app/inputs/checklists/[groupId]/hooks/useMDXSummaryBundle';
+import { useChecklists } from '@/app/inputs/checklists/upload/context/ChecklistsContext';
+import { Card } from '@/lib/components/card/card';
+
+//todo: replace any type
 
 interface ChecklistMDXProps {
   checklist: {
@@ -53,8 +55,8 @@ const ChecklistMDX: React.FC<ChecklistMDXProps> = ({ checklist }) => {
   if (isLoading) {
     return (
       <div className="animate-pulse">
-        <div className="h-4 w-3/4 rounded bg-secondary-800"></div>
-        <div className="mt-2 h-4 w-1/2 rounded bg-secondary-800"></div>
+        <div className="h-4 w-3/4 rounded bg-secondary-800" />
+        <div className="mt-2 h-4 w-1/2 rounded bg-secondary-800" />
       </div>
     );
   }
@@ -100,9 +102,10 @@ const ChecklistMDX: React.FC<ChecklistMDXProps> = ({ checklist }) => {
 };
 
 const GroupDetail: React.FC = () => {
-  const { checklists, setSelectedChecklist, groupName } = useChecklists();
+  const { checklists, setSelectedChecklist } = useChecklists();
   const router = useRouter();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleChecklistClick = (checklist: any) => {
     setSelectedChecklist(checklist);
     router.push(`/inputs/checklists/upload/${checklist.cid}`);

@@ -1,5 +1,4 @@
 import { useMutation } from '@tanstack/react-query';
-import { Checklist } from '@/app/inputs/utils/types';
 
 type ChecklistData = {
   [key: string]: string; // e.g., "completed-2.1.1": "Yes"
@@ -17,7 +16,7 @@ interface ValidationError {
   type: string;
   loc: string[];
   msg: string;
-  input: any;
+  input: string;
 }
 
 interface SubmissionError {

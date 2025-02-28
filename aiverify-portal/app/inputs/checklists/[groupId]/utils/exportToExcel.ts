@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import ExcelJS from 'exceljs';
 
 export type WorksheetDataType = {

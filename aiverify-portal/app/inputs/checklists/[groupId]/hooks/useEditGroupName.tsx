@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { Checklist } from '@/app/inputs/utils/types';
 
 interface UpdateGroupNameParams {
@@ -7,7 +7,7 @@ interface UpdateGroupNameParams {
   checklists: Checklist[];
 }
 
-export const useEditGroup = (onSuccess?: () => void) => {
+export const useEditGroup = () => {
   return useMutation({
     mutationFn: async ({
       groupName,
@@ -41,7 +41,6 @@ export const useEditGroup = (onSuccess?: () => void) => {
 
       await Promise.all(updatePromises);
     },
-    onSuccess: () => {},
     onError: (error) => {
       console.error('Error updating group name:', error);
     },

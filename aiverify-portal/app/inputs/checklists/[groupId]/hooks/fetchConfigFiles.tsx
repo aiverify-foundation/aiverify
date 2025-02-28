@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import JSZip from 'jszip';
 
 const gid = `aiverify.stock.process_checklist`;
@@ -61,6 +62,7 @@ async function parseConfigModule(content: string): Promise<any> {
   try {
     const blob = new Blob([content], { type: 'application/javascript' });
     const url = URL.createObjectURL(blob);
+    // eslint-disable-next-line @next/next/no-assign-module-variable
     const module = await import(/* webpackIgnore: true */ url);
     URL.revokeObjectURL(url);
 

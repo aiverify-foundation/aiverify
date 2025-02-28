@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
+import { isApiError, toErrorWithMessage } from '@/lib/utils/error-utils';
 import { processResponse } from '@/lib/utils/http-requests';
 import { parseFastAPIError } from '@/lib/utils/parseFastAPIError';
-import { isApiError, toErrorWithMessage } from '@/lib/utils/error-utils';
 
 export const useDeleteFairnessTree = (
   onSuccess: (data: unknown) => void,

@@ -1,13 +1,7 @@
 // fairnesstreecontext.tsx
 'use client';
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-
-interface FairnessTree {
-  gid: string;
-  name: string;
-  group: string;
-  data: any;
-}
+import { FairnessTree } from '@/app/inputs/utils/types';
 
 interface FairnessTreeContextType {
   fairnessTrees: FairnessTree[];

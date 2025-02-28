@@ -24,8 +24,15 @@ export interface FairnessTreeData {
   unqualified: string;
   selectedOutcomes: string[]; // Assuming IDs of selected outcomes
   metrics: string[]; // Assuming IDs of metrics
-  selections: string[];
-  [key: string]: string | string[] | undefined; // Allows only keys that match "ans-{something}", undefined is for delete
+  selections: {
+    nodes: string[]; // Array of node IDs
+    edges: string[]; // Array of edge IDs
+  };
+  [key: string]:
+    | string
+    | string[]
+    | { nodes: string[]; edges: string[] }
+    | undefined; // Allows only keys that match "ans-{something}", undefined is for delete
 }
 
 export interface FairnessTree {
@@ -34,9 +41,9 @@ export interface FairnessTree {
   name: string;
   group: string;
   data: FairnessTreeData;
-  id: number;
-  created_at: string;
-  updated_at: string;
+  id?: number;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export type GroupedChecklists = {

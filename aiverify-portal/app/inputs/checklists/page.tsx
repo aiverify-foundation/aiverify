@@ -1,8 +1,8 @@
+import Link from 'next/link';
+import { ChevronLeftIcon } from '@/app/inputs/utils/icons';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import { getAllChecklists } from '@/lib/fetchApis/getAllChecklists';
 import ActionButtons from './components/ActionButtons';
-import Link from 'next/link';
-import { ChevronLeftIcon } from '@/app/inputs/utils/icons';
 import GroupList from './components/GroupList';
 
 export default async function ChecklistsPage() {
