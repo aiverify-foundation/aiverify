@@ -789,12 +789,14 @@ function Designer(props: DesignerProps) {
           </button>
         </div>
       ) : null}
-      <ZoomControl
-        zoomLevel={zoomLevel}
-        onZoomReset={resetZoom}
-        onZoomIn={zoomIn}
-        onZoomOut={zoomOut}
-      />
+      {pageNavigationMode === 'multi' && (
+        <ZoomControl
+          zoomLevel={zoomLevel}
+          onZoomReset={resetZoom}
+          onZoomIn={zoomIn}
+          onZoomOut={zoomOut}
+        />
+      )}
       <PageNavigation
         disableAddPage={disabled}
         totalPages={layouts.length}
