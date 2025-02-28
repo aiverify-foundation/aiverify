@@ -1,0 +1,121 @@
+{
+    "title": "Algorithm Plugin Output Arguments",
+    "description": "A schema for algorithm plugin output arguments",
+    "type": "object",
+    "required": [
+        "feature_names",
+        "results"
+    ],
+    "properties": {
+        "feature_names": {
+            "type": "array",
+            "description": "Array of feature names",
+            "minItems": 1,
+            "items": {
+                "type": "string"
+            }
+        },
+        "results": {
+            "description": "Matrix of feature values (# feature names)",
+            "type": "object",
+            "required": [
+                "num_local_classes",
+                "local",
+                "single_explainer_values",
+                "single_shap_values",
+                "global_shap_values",
+                "global_samples",
+                "num_global_classes",
+                "global"
+            ],
+            "properties": {
+                "num_local_classes": {
+                    "description": "Number of local classes",
+                    "type": "number"
+                },
+                "local": {
+                    "description": "# of local classes",
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "array",
+                        "minItems": 1,
+                        "items": {
+                            "type": "array",
+                            "description": "class values",
+                            "minItems": 1,
+                            "items": {
+                                "type": "number"
+                            }
+                        }
+                    }
+                },
+                "single_explainer_values": {
+                    "description": "array of single explainer values",
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "single_shap_values": {
+                    "description": "array of single shap values",
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "array",
+                        "description": "class values",
+                        "minItems": 1,
+                        "items": {
+                            "type": "number"
+                        }
+                    }
+                },
+                "global_shap_values": {
+                    "description": "global shap values",
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "description": "Matrix of SHAP values (# samples x # features)",
+                        "minItems": 1,
+                        "items": {
+                            "type": "array",
+                            "description": "Array of SHAP values for each feature",
+                            "minItems": 1,
+                            "items": {
+                                "type": "number"
+                            }
+                        }
+                    }
+                },
+                "global_samples": {
+                    "description": "Matrix of feature values (# samples x # features)",
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "description": "Array of sample values for each feature",
+                        "minItems": 1,
+                        "items": {
+                            "type": "number"
+                        }
+                    }
+                },
+                "num_global_classes": {
+                    "description": "Number of global classes",
+                    "type": "number"
+                },
+                "global": {
+                    "description": "# of global classes",
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "minItems": 1,
+                        "items": {
+                            "type": "number"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

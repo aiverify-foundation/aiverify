@@ -1,0 +1,39 @@
+{
+    "title": "Algorithm Plugin Input Arguments",
+    "description": "A schema for algorithm plugin input arguments",
+    "type": "object",
+    "required": [
+        "explain_type",
+        "background_path",
+        "background_samples",
+        "data_samples"
+    ],
+    "properties": {
+        "explain_type": {
+            "title": "Type of Explainability",
+            "description": "Options: [global (default), local]. Global explainability explains overall dataset. Local explinability explains a random data point.",
+            "type": "string",
+            "default": "global",
+            "enum": [
+                "global",
+                "local"
+            ]
+        },
+        "background_path": {
+            "title": "Path of the Background Path",
+            "description": "Background data path",
+            "type": "string",
+            "ui:widget": "selectDataset"
+        },
+        "background_samples": {
+            "title": "Size of the Background",
+            "description": "Background Samples (e.g. 25)",
+            "type": "number"
+        },
+        "data_samples": {
+            "title": "Size of the Test Dataset",
+            "description": "Data Samples (e.g. 25)",
+            "type": "number"
+        }
+    }
+}

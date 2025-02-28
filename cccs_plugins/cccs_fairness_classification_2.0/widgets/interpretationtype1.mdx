@@ -1,0 +1,100 @@
+import React, { useEffect, useState } from 'react';
+
+export const InterpretationChart = ({ metric, container, data }) => {
+  const [mydata, setmydata] = useState({
+    data: [],
+    numFeatureLabels: 0,
+  });
+
+  function getContent(display) {
+    let content = [];
+    display.forEach((item, index) => {
+      content.push(<li key={`${item.outputClass}-${index}`}>For {item.outputClass}, the parity between the min subgroup ({item.minName}) and max subgroup ({item.maxName}) is {Math.round(item.parity * 1000 + Number.EPSILON) / 1000}</li>)
+    });
+    return content;
+  }
+
+  function getTwoLabelContent(display) {
+    let content = [];
+    display.forEach((item, index) => {
+      content.push(<li key={`${item.outputClass}-${index}`}>For {item.outputClass}, the parity between the two subgroups ({item.minName} and {item.maxName}) is {Math.round(item.parity * 1000 + Number.EPSILON) / 1000}</li>)
+    });
+    return content;
+  }
+
+  useEffect(() => {
+    let display = [];
+    const sensitiveFeatures = data.sensitive_feature;
+    const outputClasses = data.output_classes;
+    let numFeatureLabels = 0;
+    if (!data || !data.results || !data.output_classes || !data.sensitive_feature) {
+      return <div>No results</div>;
+    }
+
+    else {
+      for (let oc = 0; oc < data.results.length; oc++) {
+        if (sensitiveFeatures.length == 1) {
+          numFeatureLabels = data.results[0][metric].length;
+          max_group = sensitiveFeatures.map((f, idx) => `${f}:${data.results[oc][metric][0].group[idx]}`)
+          min_group = sensitiveFeatures.map((f, idx) => `${f}:${data.results[oc][metric][0].group[idx]}`)
+        }
+        else {
+          max_group = sensitiveFeatures.map((f, idx) => `${f}:${data.results[oc][metric][0].group[idx]}`).join(",")
+          min_group = sensitiveFeatures.map((f, idx) => `${f}:${data.results[oc][metric][0].group[idx]}`).join(",")
+        }
+        let max = data.results[oc][metric][0].metric
+        let min = data.results[oc][metric][0].metric
+        for (let row of data.results[oc][metric]) {
+          if (sensitiveFeatures.length == 1) {
+            group = sensitiveFeatures.map((f, idx) => `${f}:${row.group[idx]}`)
+          }
+          else {
+            group = sensitiveFeatures.map((f, idx) => `${f}:${row.group[idx]}`).join(",")
+          }
+          local_metric = row.metric
+          if (local_metric < min) {
+            min = local_metric
+            min_group = group
+          }
+          if (local_metric >= max) {
+            max = local_metric
+            max_group = group
+          }
+        }
+        let diff = 0;
+        diff = max - min
+        let obj = {}
+        obj["outputClass"] = `Class ${outputClasses[oc]}`
+        obj["minName"] = min_group
+        obj["maxName"] = max_group
+        obj["parity"] = diff
+        display.push(obj)
+      }
+    }
+    setmydata({
+      data: display,
+      numFeatureLabels: numFeatureLabels,
+    });
+  }, [metric, data])
+
+  if (mydata.numFeatureLabels == 2) {
+    return (
+      <div style={{ width: "100%" }}>
+        <p>You have selected <i>{metric}</i> as an appropriate metric for your use case. In an ideal situation, the parity should be close to 0%.</p>
+        <ul>{getTwoLabelContent(mydata.data)}</ul>
+      </div>
+    )
+  }
+
+  else {
+    return (
+      <div style={{ width: "100%" }}>
+        <p>You have selected <i>{metric}</i> as an appropriate metric for your use case. In an ideal situation, the parity should be close to 0%.</p>
+        <ul>{getContent(mydata.data)}</ul>
+      </div>
+    );
+  }
+}
+
+
+
