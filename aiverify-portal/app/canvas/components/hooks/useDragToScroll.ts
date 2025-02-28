@@ -37,14 +37,28 @@ export function useDragToScroll(
       // Check if we should exclude this target
       if (excludeRef?.current?.contains(e.target as Node)) return;
 
+      // Check if the click originated from a grid item or its children
+      // This prevents conflicting with GridLayout drag/resize operations
+      const target = e.target as HTMLElement;
+      if (
+        target.closest('.grid-comp-wrapper') ||
+        target.closest('.react-resizable-handle')
+      ) {
+        return;
+      }
+
       isDraggingRef.current = true;
       startXRef.current = e.pageX - container.offsetLeft;
       startYRef.current = e.pageY - container.offsetTop;
       scrollLeftRef.current = container.scrollLeft;
       scrollTopRef.current = container.scrollTop;
 
+      /* Warning: The below simple cursor grabbing pointer codes is nice but it 
+      invalidates css tree causing browser to be janky when dragging. So don't use it.
+      leaving it here for future reference.
+      */
       // container.style.cursor = 'grabbing';
-      container.style.userSelect = 'none';
+      // container.style.userSelect = 'none';
     };
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -65,8 +79,12 @@ export function useDragToScroll(
       if (!isDraggingRef.current) return;
 
       isDraggingRef.current = false;
+      /* Warning: The below simple cursor grabbing pointer codes is nice but it 
+      invalidates css tree causing browser to be janky when dragging. So don't use it.
+      leaving it here for future reference.
+      */
       // container.style.cursor = 'grab';
-      container.style.removeProperty('user-select');
+      // container.style.removeProperty('user-select');
     };
 
     // Store handlers in ref for cleanup
