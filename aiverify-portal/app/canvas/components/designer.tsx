@@ -1063,7 +1063,7 @@ function Designer(props: DesignerProps) {
         {mainControlsSection}
         {pagesSection}
       </main>
-      <section className="fixed bottom-0 right-[50px] h-[100px] bg-transparent">
+      <section className="fixed bottom-[-10] right-[200px] h-[100px] bg-transparent">
         <div className="flex items-center justify-center gap-4">
           {flow !== undefined &&
           flow !== UserFlows.EditExistingProject &&
