@@ -6,7 +6,7 @@ import { findWidgetInsertPosition } from './utils/findWidgetInsertPosition';
 export type WidgetAlgoAndResultIdentifier = {
   gid: string;
   cid: string;
-  testResultsCreatedAt?: string;
+  testResultId?: number;
 };
 
 type WidgetGridItemId = string;
@@ -423,7 +423,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
             existing.gid === algoMap.gid && existing.cid === algoMap.cid
               ? {
                   ...existing,
-                  testResultsCreatedAt: algoMap.testResultsCreatedAt,
+                  testResultId: algoMap.testResultId,
                 }
               : existing
           );

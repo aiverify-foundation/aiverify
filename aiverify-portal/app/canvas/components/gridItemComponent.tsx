@@ -9,25 +9,59 @@ import {
   TestResultDataMapping,
   WidgetOnGridLayout,
 } from '@/app/canvas/types';
-import { findTestResultByIdAndTime } from '@/app/canvas/utils/findTestResultByIdAndTime';
-import { TestResultData, InputBlockData, Plugin } from '@/app/types';
+import { findMockDataByTypeAndCid } from '@/app/canvas/utils/findMockDataByTypeAndCid';
+import { findTestResultById } from '@/app/canvas/utils/findTestResultById';
+import {
+  TestResultData,
+  InputBlockData,
+  Plugin,
+  InputBlock,
+} from '@/app/types';
 import { WidgetPropertiesDrawer } from './drawers/widgetPropertiesDrawer';
 import { GridItemContextMenu } from './gridItemContextMenu';
 import { editorInputClassName } from './hocAddTextEditFuncitonality';
+import { WidgetErrorBoundary } from './widgetErrorBoundary';
 export const gridItemRootClassName = 'grid-item-root';
 type requiredStyles =
   `grid-item-root relative h-auto w-full min-h-full${string}`; // strictly required styles
 
 type GridItemComponentProps = {
+  /** Array of all available plugins in the system, used for finding dependencies and metadata */
   allAvalaiblePlugins: Plugin[];
+
+  /** React-grid-layout Layout object containing position and dimension information */
   layout: Layout;
+
+  /** Widget configuration with MDX code, properties, and metadata */
   widget: WidgetOnGridLayout;
+
+  /** Test results used by this widget, linking algorithm CIDs to result IDs */
   testResultsUsed?: WidgetAlgoAndResultIdentifier[];
-  testResults: ParsedTestResults[];
+
+  /** All test results available in the system that widgets can access */
+  allTestResultsOnSystem: ParsedTestResults[];
+
+  /** All input blocks available in the system that widgets can access */
+  allInputBlocksOnSystem: InputBlock[];
+
+  /** Optional data from input blocks that the widget might need */
   inputBlockData?: unknown;
+
+  /** Whether the grid item is currently being dragged */
   isDragging?: boolean;
+
+  /** Whether the grid item is currently being resized */
   isResizing: boolean;
+
+  /** Callback triggered when delete button is clicked */
   onDeleteClick: () => void;
+
+  /**
+   * Callback triggered when edit button is clicked
+   * @param gridItemId - ID of the grid item
+   * @param gridItemHtmlElement - Reference to the DOM element
+   * @param widget - The widget configuration object
+   */
   onEditClick: (
     gridItemId: string,
     gridItemHtmlElement: HTMLDivElement,
@@ -50,13 +84,13 @@ const itemStyle: requiredStyles =
   'grid-item-root relative h-auto w-full min-h-full';
 
 function GridItemComponent({
-  layout,
   allAvalaiblePlugins,
+  allTestResultsOnSystem,
+  layout,
   widget,
   isDragging,
   isResizing,
   testResultsUsed,
-  testResults,
   onDeleteClick,
   onEditClick,
 }: GridItemComponentProps) {
@@ -67,21 +101,79 @@ function GridItemComponent({
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isHoveringRef = useRef<boolean>(false);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  let testResultMatch = undefined;
+  const enableEditing = widget.properties && widget.properties.length > 0;
 
-  if (
-    testResultsUsed &&
-    testResultsUsed.length > 0 &&
-    testResultsUsed[0].testResultsCreatedAt !== undefined
-  ) {
-    testResultMatch = findTestResultByIdAndTime(
-      testResults,
-      testResultsUsed[0].gid,
-      testResultsUsed[0].cid,
-      testResultsUsed[0].testResultsCreatedAt
-    );
-  }
+  const testResultsListForDrawer = useMemo(() => {
+    // prepare list of test results that are used by this widget, for the widget properties drawer
+    if (testResultsUsed && testResultsUsed.length > 0) {
+      return testResultsUsed.reduce<ParsedTestResults[]>((acc, result) => {
+        if (result.testResultId !== undefined) {
+          const testResult = findTestResultById(
+            allTestResultsOnSystem,
+            result.testResultId
+          );
+          if (testResult) {
+            acc.push(testResult);
+          }
+        }
+        return acc;
+      }, []);
+    }
+    return [];
+  }, [testResultsUsed]);
 
+  const testResultWidgetData = useMemo(() => {
+    // prepare test result data for the widget to consume and display data (draw graphs, etc),
+    // based on test results that are used by this widget. If no test result is found for an algo,
+    // the mock data is used instead.
+    if (testResultsUsed && testResultsUsed.length > 0) {
+      return testResultsUsed.reduce<TestResultDataMapping>((acc, result) => {
+        if (result.testResultId !== undefined) {
+          const testResult = findTestResultById(
+            allTestResultsOnSystem,
+            result.testResultId
+          );
+          if (testResult) {
+            acc[`${widget.gid}:${result.cid}`] = testResult.output;
+          } else {
+            const mockData = findMockDataByTypeAndCid(
+              widget.mockdata || [],
+              'Algorithm',
+              result.cid
+            );
+            if (mockData) {
+              acc[`${widget.gid}:${result.cid}`] = mockData.data;
+            }
+          }
+        } else {
+          const mockData = findMockDataByTypeAndCid(
+            widget.mockdata || [],
+            'Algorithm',
+            result.cid
+          );
+          if (mockData) {
+            acc[`${widget.gid}:${result.cid}`] = mockData.data;
+          }
+        }
+        return acc;
+      }, {});
+    }
+    return {};
+  }, [testResultsUsed]);
+
+  const mockInputs = useMemo(() => {
+    if (widget.mockdata && widget.mockdata.length > 0) {
+      return widget.mockdata.reduce<InputBlockDataMapping>((acc, mock) => {
+        if (mock.type === 'InputBlock') {
+          acc[`${widget.gid}:${mock.cid}`] = mock.data;
+        }
+        return acc;
+      }, {});
+    }
+    return {};
+  }, [widget, widget.mdx]);
+
+  // handle resizing of the grid item
   useEffect(() => {
     if (!gridItemRef.current) return;
 
@@ -208,52 +300,12 @@ function GridItemComponent({
     }, {});
   }, [widget.properties]);
 
-  const testResult = useMemo(() => {
-    if (testResultMatch) {
-      return {
-        [`${widget.gid}:${testResultMatch.cid}`]: testResultMatch.output,
-      };
-    }
-
-    if (widget.mockdata && widget.mockdata.length > 0) {
-      return widget.mockdata.reduce<TestResultDataMapping>((acc, mock) => {
-        if (mock.type === 'Algorithm') {
-          acc[`${widget.gid}:${mock.cid}`] = mock.data;
-        }
-        return acc;
-      }, {});
-    }
-    return {};
-  }, [widget, widget.mdx, testResultsUsed]);
-
-  const mockInputs = useMemo(() => {
-    // if (testResultsMapping) {
-    //   if (widget.mockdata && widget.mockdata.length > 0) {
-    //     return widget.mockdata.reduce<InputBlockDataMapping>((acc, mock) => {
-    //       if (mock.type === "InputBlock") {
-    //         acc[`${widget.gid}:${mock.cid}`] = mock.data;
-    //         mock.data.metrics = getRandomFairnessMetrics();
-    //       }
-    //       return acc;
-    //     }, {});
-    //   }
-    // }
-    if (widget.mockdata && widget.mockdata.length > 0) {
-      return widget.mockdata.reduce<InputBlockDataMapping>((acc, mock) => {
-        if (mock.type === 'InputBlock') {
-          acc[`${widget.gid}:${mock.cid}`] = mock.data;
-        }
-        return acc;
-      }, {});
-    }
-    return {};
-  }, [widget, widget.mdx]);
-
   return (
     <React.Fragment>
       {showContextMenu && !isDragging ? (
         <GridItemContextMenu
           widget={widget}
+          hideEditIcon={!enableEditing}
           menuPosition={menuPosition}
           onDeleteClick={onDeleteClick}
           onInfoClick={handleInfoClick}
@@ -272,8 +324,7 @@ function GridItemComponent({
           layout={layout}
           allAvailablePlugins={allAvalaiblePlugins}
           widget={widget}
-          testResultsUsed={testResultMatch}
-          allAvailableTestResults={testResults}
+          testResultsUsed={testResultsListForDrawer}
           open={showWidgetProperties}
           setOpen={setShowWidgetProperties}
           onOkClick={() => setShowWidgetProperties(false)}
@@ -288,16 +339,18 @@ function GridItemComponent({
         {isResizing ? (
           <div className="h-auto w-full bg-gray-100" />
         ) : (
-          <Component
-            id={widget.gridItemId}
-            properties={properties}
-            testResult={testResult}
-            inputBlockData={mockInputs}
-            getIBData={(cid) => mockInputs[`${widget.gid}:${cid}`]}
-            getResults={(cid) => testResult[`${widget.gid}:${cid}`]}
-            width={dimensions.width}
-            height={dimensions.height}
-          />
+          <WidgetErrorBoundary widgetName={widget.name || widget.cid}>
+            <Component
+              id={widget.gridItemId}
+              properties={properties}
+              testResult={testResultWidgetData}
+              inputBlockData={mockInputs}
+              getIBData={(cid) => mockInputs[`${widget.gid}:${cid}`]}
+              getResults={(cid) => testResultWidgetData[`${widget.gid}:${cid}`]}
+              width={dimensions.width}
+              height={dimensions.height}
+            />
+          </WidgetErrorBoundary>
         )}
       </div>
     </React.Fragment>

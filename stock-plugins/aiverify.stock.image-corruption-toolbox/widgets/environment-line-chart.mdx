@@ -1,17 +1,15 @@
-import { CorruptionLineChart } from './corruptionlinechart.mdx'
-export const algo_cid = "environment_corruptions"
+import { CorruptionLineChart } from "./corruptionlinechart.mdx";
+export const algo_cid = "aiverify_environment_corruptions";
 
 {
   props.getResults(algo_cid) ? (
-    <>
-        <CorruptionLineChart
-          data={props.getResults(algo_cid).results}
-          getContainerObserver={props.getContainerObserver}
-          corruption_function="Environment Corruptions"
-        />
-    </>
+    <CorruptionLineChart
+        data={props.getResults(algo_cid).results}
+        corruption_function="Environment Corruptions"
+        width={props.width}
+        height={props.height}
+      />
   ) : (
     <div>No data</div>
   )
 }
-

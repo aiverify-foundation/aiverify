@@ -1,8 +1,8 @@
 {
   "cid": "ale_graph",
   "widgetSize": {
-    "minW": 2,
-    "minH": 2,
+    "minW": 12,
+    "minH": 20,
     "maxW": 12,
     "maxH": 36
   },
@@ -13,13 +13,13 @@
   ],
   "dependencies": [
     {
-      "cid": "accumulated_local_effect"
+      "cid": "aiverfy_accumulated_local_effect"
     }
   ],
   "mockdata": [
     {
       "type": "Algorithm",
-      "cid": "accumulated_local_effect",
+      "cid": "aiverfy_accumulated_local_effect",
       "datapath": "accumulated_local_effect.sample.json"
     }
   ]

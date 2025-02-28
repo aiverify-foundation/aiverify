@@ -5,6 +5,7 @@ import { WidgetOnGridLayout } from '@/app/canvas/types';
 type GridItemContextMenuProps = {
   widget: WidgetOnGridLayout;
   menuPosition: { top: number; left: number };
+  hideEditIcon?: boolean;
   onDeleteClick: () => void;
   onEditClick: () => void;
   onInfoClick: () => void;
@@ -15,6 +16,7 @@ type GridItemContextMenuProps = {
 function GridItemContextMenu({
   widget,
   menuPosition,
+  hideEditIcon = false,
   onDeleteClick,
   onEditClick,
   onInfoClick,
@@ -34,15 +36,17 @@ function GridItemContextMenu({
         {widget.name}
       </div>
       <div className="flex gap-1">
-        <div
-          className="cursor-pointer rounded bg-secondary-400 shadow-lg"
-          onMouseDown={(e) => {
-            // Prevent grid drag from starting
-            e.stopPropagation();
-          }}
-          onClick={onEditClick}>
-          <RiFileEditLine className="m-1 h-5 w-5 text-white hover:text-blue-800" />
-        </div>
+        {!hideEditIcon ? (
+          <div
+            className="cursor-pointer rounded bg-secondary-400 shadow-lg"
+            onMouseDown={(e) => {
+              // Prevent grid drag from starting
+              e.stopPropagation();
+            }}
+            onClick={onEditClick}>
+            <RiFileEditLine className="m-1 h-5 w-5 text-white hover:text-blue-800" />
+          </div>
+        ) : null}
         <div
           className="cursor-pointer rounded bg-secondary-400 shadow-lg"
           onMouseDown={(e) => {

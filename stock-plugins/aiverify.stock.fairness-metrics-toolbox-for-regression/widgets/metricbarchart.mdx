@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { BarChart } from 'aiverify-shared-library/charts'
 
-export const MetricBarChart = ({ metric, metric_name, getContainerObserver, data }) => {
+export const MetricBarChart = ({ metric, metric_name, data, width, height }) => {
   const [ mydata, setmydata ] = useState({
     data: [],
     bars: [],
   });
-  const [ container, setContainer ] = useState({
-    width: 0,
-    height: 0,
-  })
 
   const wrapperStyle = {
     fontSize: "12px"
@@ -43,17 +39,6 @@ export const MetricBarChart = ({ metric, metric_name, getContainerObserver, data
       bars: Object.keys(groups).map(grp => ({ dataKey: grp })),
     })
   }, [metric, data])
-
-  useEffect(() => {
-    if (getContainerObserver) {
-      getContainerObserver((width, height) => {
-        setContainer({
-          width,
-          height
-        })
-      })
-    }
-  },[getContainerObserver])
   
   if(mydata.data.length == 0){
     return(
@@ -64,16 +49,18 @@ export const MetricBarChart = ({ metric, metric_name, getContainerObserver, data
   }
 
   return (
-    <div style={{ width:container.width, height:container.height,padding:10, display:"flex", flexDirection:"column" }}>
-      <center><h4 style={{ padding:5, margin:0 }}>{metric_name}</h4></center>
-      <BarChart
-        data={mydata.data}
-        xAxisDataKey="mae"
-        bars={mydata.bars}
-        chartProps={{ layout:"vertical" }}
-        legendProps={{ wrapperStyle }}
-        yAxisProps={{ width:5 }}
-      />
+    <div className="chart-container chart-bar" style={{ width, height }}>
+      <h4 style={{ padding:5, margin:0, textAlign:"center" }}>{metric_name}</h4>
+      <div style={{ height: "calc(100% - 40px)" }}>
+        <BarChart
+          data={mydata.data}
+          xAxisDataKey="mae"
+          bars={mydata.bars}
+          chartProps={{ layout:"vertical" }}
+          legendProps={{ wrapperStyle }}
+          yAxisProps={{ width:5 }}
+        />
+      </div>
     </div>
   )
 }

@@ -28,7 +28,6 @@ export default async function CanvasPage(props: UrlSearchParams) {
   }
 
   const project = result.data[0];
-
   const plugins = await getPlugins({ groupByPluginId: false });
   const testResults = await getTestResults();
 
@@ -70,7 +69,7 @@ export default async function CanvasPage(props: UrlSearchParams) {
       flow={flow}
       project={project}
       allPluginsWithMdx={pluginsWithMdx}
-      allTestResults={parsedTestResults}
+      allTestResultsOnSystem={parsedTestResults}
       selectedTestResultsFromUrlParams={selectedTestResultsFromUrlParams}
     />
   );

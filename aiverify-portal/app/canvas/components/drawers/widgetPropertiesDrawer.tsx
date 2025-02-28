@@ -10,6 +10,7 @@ import { ParsedTestResults, WidgetOnGridLayout } from '@/app/canvas/types';
 import { findAlgoFromPluginsById } from '@/app/canvas/utils/findAlgoFromPluginsById';
 import { findInputBlockFromPluginsById } from '@/app/canvas/utils/findInputBlockFromPluginsById';
 import { findPluginByGid } from '@/app/canvas/utils/findPluginByGid';
+import { findTestResultByAlgoGidAndCid } from '@/app/canvas/utils/findTestResultByAlgoGidAndCid';
 import { InputBlockData, Plugin } from '@/app/types';
 import { Button } from '@/lib/components/TremurButton';
 import {
@@ -29,9 +30,7 @@ type WidgetPropertiesDrawerProps = {
   open: boolean;
   layout: Layout;
   allAvailablePlugins: Plugin[];
-  // All available test results in the system is available here for future use if required (currently not used)
-  allAvailableTestResults: ParsedTestResults[];
-  testResultsUsed?: ParsedTestResults;
+  testResultsUsed?: ParsedTestResults[];
   inputBlocksDataUsed?: InputBlockData[];
   widget: WidgetOnGridLayout;
   onOkClick: () => void;
@@ -56,7 +55,6 @@ function WidgetPropertiesDrawer(props: WidgetPropertiesDrawerProps) {
     onDeleteClick,
     setOpen,
   } = props;
-  console.log(allAvailablePlugins);
   const parentPlugin = findPluginByGid(allAvailablePlugins, widget.gid);
   const algos = widget.dependencies
     .map((dep) => {
@@ -77,7 +75,6 @@ function WidgetPropertiesDrawer(props: WidgetPropertiesDrawerProps) {
       return findInputBlockFromPluginsById(allAvailablePlugins, gid, ib.cid);
     })
     .filter((ib) => ib !== undefined);
-  console.log(widget);
   return (
     <div
       className={cn('flex justify-center', className)}
@@ -127,48 +124,63 @@ function WidgetPropertiesDrawer(props: WidgetPropertiesDrawerProps) {
                     </h2>
                   </div>
                   <ul>
-                    {algos.map((algo) => (
-                      <li
-                        key={algo.cid}
-                        className="ml-2 mt-1 flex flex-col items-start gap-1 p-0 text-gray-400">
-                        {/* <div className="mb-2 h-[1px] w-full bg-gray-500" /> */}
-                        <h3 className="text-[0.9rem] font-semibold">
-                          {algo.name}
-                        </h3>
-                        <p className="text-[0.8rem]">{algo.description}</p>
-                      </li>
-                    ))}
+                    {algos.map((algo) => {
+                      const testResultForThisAlgo = testResultsUsed
+                        ? findTestResultByAlgoGidAndCid(
+                            testResultsUsed,
+                            algo.gid,
+                            algo.cid
+                          )
+                        : null;
+                      return (
+                        <li
+                          key={algo.cid}
+                          className="ml-2 mt-1 flex flex-col items-start gap-1 p-0 text-gray-400">
+                          {/* <div className="mb-2 h-[1px] w-full bg-gray-500" /> */}
+                          <h3 className="text-[0.9rem] font-semibold">
+                            {algo.name}
+                          </h3>
+                          <p className="text-[0.8rem]">{algo.description}</p>
+                          <div className="ml-5 flex flex-col items-start gap-1">
+                            <div className="mt-8 flex items-center gap-2 text-gray-500">
+                              <RiFlaskFill className="h-4 w-4 text-gray-500 hover:text-gray-900" />
+                              <h2 className="text-[0.8rem] font-semibold">
+                                Test(s) results
+                              </h2>
+                            </div>
+                            {!testResultForThisAlgo ? (
+                              <div className="mb-1 text-[0.8rem] text-blue-600">
+                                Currently using mock data
+                              </div>
+                            ) : (
+                              <div className="flex flex-col items-start gap-2">
+                                <div className="flex flex-col items-start">
+                                  <div className="text-[0.8rem] text-blue-600">
+                                    {testResultForThisAlgo.name}
+                                  </div>
+                                  <div className="text-[0.8rem] text-blue-600">
+                                    Created at:{' '}
+                                    {new Date(
+                                      testResultForThisAlgo.created_at
+                                    ).toLocaleString()}
+                                  </div>
+                                  <div className="text-[0.8rem] text-blue-600">
+                                    Updated at:{' '}
+                                    {new Date(
+                                      testResultForThisAlgo.updated_at
+                                    ).toLocaleString()}
+                                  </div>
+                                  <div className="text-[0.8rem] text-blue-600">
+                                    Version: {testResultForThisAlgo.version}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </li>
+                      );
+                    })}
                   </ul>
-                </div>
-                <div className="ml-5 flex flex-col items-start gap-1">
-                  <div className="mt-8 flex items-center gap-2 text-gray-500">
-                    <RiFlaskFill className="h-4 w-4 text-gray-500 hover:text-gray-900" />
-                    <h2 className="text-[0.8rem] font-semibold">
-                      Test(s) results
-                    </h2>
-                  </div>
-                  {!testResultsUsed ? (
-                    <div className="mb-1 text-[0.8rem] text-blue-600">
-                      Currently using mock data
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-start">
-                      <div className="text-[0.8rem] text-blue-600">
-                        {testResultsUsed.name}
-                      </div>
-                      <div className="text-[0.8rem] text-blue-600">
-                        Created at:{' '}
-                        {new Date(testResultsUsed.created_at).toLocaleString()}
-                      </div>
-                      <div className="text-[0.8rem] text-blue-600">
-                        Updated at:{' '}
-                        {new Date(testResultsUsed.updated_at).toLocaleString()}
-                      </div>
-                      <div className="text-[0.8rem] text-blue-600">
-                        Version: {testResultsUsed.version}
-                      </div>
-                    </div>
-                  )}
                 </div>
                 <Divider />
               </React.Fragment>

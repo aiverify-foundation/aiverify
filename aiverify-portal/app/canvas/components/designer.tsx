@@ -17,7 +17,7 @@ import {
   PluginForGridLayout,
   WidgetOnGridLayout,
 } from '@/app/canvas/types';
-import { findTestResultById } from '@/app/canvas/utils/findTestResultsById';
+import { findTestResultByAlgoGidAndCid } from '@/app/canvas/utils/findTestResultByAlgoGidAndCid';
 import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPluginsById';
 import { getWidgetAlgosFromPlugins } from '@/app/canvas/utils/getWidgetAlgosFromPlugins';
 import { getWidgetInputBlocksFromPlugins } from '@/app/canvas/utils/getWidgetInputBlocksFromPlugins';
@@ -67,7 +67,7 @@ type DesignerProps = {
   flow: UserFlows;
   project: ProjectInfo;
   allPluginsWithMdx: PluginForGridLayout[];
-  allTestResults: ParsedTestResults[]; // ParsedTestResult should have value of 'output' property in the form of Javascript object
+  allTestResultsOnSystem: ParsedTestResults[]; // ParsedTestResult should have value of 'output' property in the form of Javascript object
   selectedTestResultsFromUrlParams?: ParsedTestResults[];
   disabled?: boolean;
   disableNextButton?: boolean;
@@ -104,7 +104,7 @@ function Designer(props: DesignerProps) {
     flow,
     project,
     allPluginsWithMdx,
-    allTestResults = [],
+    allTestResultsOnSystem = [],
     selectedTestResultsFromUrlParams = [],
     disabled = false,
     disableNextButton = false,
@@ -300,7 +300,7 @@ function Designer(props: DesignerProps) {
       const algos = getWidgetAlgosFromPlugins(allPluginsWithMdx, widget);
       const gridItemToAlgosMap: WidgetAlgoAndResultIdentifier[] = algos.map(
         (algo) => {
-          const matchSelectedResult = findTestResultById(
+          const matchSelectedResult = findTestResultByAlgoGidAndCid(
             selectedTestResults,
             algo.gid,
             algo.cid
@@ -308,7 +308,7 @@ function Designer(props: DesignerProps) {
           return {
             gid: algo.gid,
             cid: algo.cid,
-            testResultsCreatedAt: matchSelectedResult?.created_at,
+            testResultId: matchSelectedResult?.id,
           };
         }
       );
@@ -477,11 +477,12 @@ function Designer(props: DesignerProps) {
       `[handleSelectUploadedTestResults] Updating with ${results.length} test results`
     );
     if (results.length === 0) {
+      // no results selected, set all testResultIds in grid item algos map to undefined
       setSelectedTestResults((prev) => {
         const updatedResults = prev.map((result) => ({
           gid: result.gid,
           cid: result.cid,
-          testResultsCreatedAt: undefined,
+          testResultId: undefined,
         }));
         dispatch({
           type: 'UPDATE_ALGO_TRACKER',
@@ -497,8 +498,7 @@ function Designer(props: DesignerProps) {
       gridItemAlgosMap: results.map((result) => ({
         gid: result.gid,
         cid: result.cid,
-        testResultsCreatedAt:
-          results.length > 0 ? result.created_at : undefined,
+        testResultId: result.id,
       })),
     });
   }
@@ -574,7 +574,7 @@ function Designer(props: DesignerProps) {
         </div>
       )}
 
-      <div className={cn('p-4', !isPanelOpen && 'hidden')}>
+      <div className={cn('h-full p-4 pr-2', !isPanelOpen && 'hidden')}>
         <h4 className="mb-0 text-lg font-bold">{project.projectInfo.name}</h4>
         <p className="text-sm text-white">{project.projectInfo.description}</p>
         <PluginsPanel
@@ -734,7 +734,7 @@ function Designer(props: DesignerProps) {
                           testResultsUsed={
                             state.gridItemToAlgosMap[widget.gridItemId]
                           }
-                          testResults={allTestResults}
+                          allTestResultsOnSystem={allTestResultsOnSystem}
                           layout={state.layouts[pageIndex][widgetIndex]}
                         />
                       </div>
@@ -756,7 +756,7 @@ function Designer(props: DesignerProps) {
         isPanelOpen ? 'left-[340px]' : 'left-[100px]'
       )}>
       <TestResultsDrawer
-        allTestResults={allTestResults}
+        allTestResultsOnSystem={allTestResultsOnSystem}
         selectedTestResultsFromUrlParams={selectedTestResults}
         onOkClick={handleSelectUploadedTestResults}
       />
