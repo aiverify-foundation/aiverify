@@ -1,7 +1,9 @@
 import { InputBlock, FairnessTree } from '@/app/inputs/utils/types';
 
+const endpointUrl = `${process.env.APIGW_HOST}/input_block_data`;
+
 export async function getAllFairnessTrees(): Promise<FairnessTree[]> {
-  const res = await fetch(`http://127.0.0.1:4000/input_block_data/`, {
+  const res = await fetch(endpointUrl, {
     cache: 'no-store',
   });
 

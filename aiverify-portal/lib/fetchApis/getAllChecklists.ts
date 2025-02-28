@@ -1,7 +1,9 @@
 import { InputBlock, Checklist } from '@/app/inputs/utils/types';
 
+const endpointUrl = `${process.env.APIGW_HOST}/input_block_data`;
+
 export async function getAllChecklists(): Promise<Checklist[]> {
-  const res = await fetch(`http://127.0.0.1:4000/input_block_data/`, {
+  const res = await fetch(endpointUrl, {
     cache: 'no-store',
   });
 
@@ -15,4 +17,3 @@ export async function getAllChecklists(): Promise<Checklist[]> {
     (block) => block.gid === 'aiverify.stock.process_checklist'
   ) as Checklist[];
 }
-
