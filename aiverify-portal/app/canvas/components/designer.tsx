@@ -88,6 +88,9 @@ type DesignerProps = {
 
   /** When true, hides the Back button in the navigation */
   disablePreviousButton?: boolean;
+
+  /** Controls the page navigation mode: 'multi' shows all pages at once, 'single' shows only one page */
+  pageNavigationMode?: 'multi' | 'single';
 };
 
 type EventDataTransfer = Event & {
@@ -138,6 +141,7 @@ function Designer(props: DesignerProps) {
     disabled = false,
     disableNextButton = false,
     disablePreviousButton = false,
+    pageNavigationMode = 'single', // Default to current behavior
   } = props;
 
   // Reference to the canvas element for positioning and measurements
@@ -879,6 +883,11 @@ function Designer(props: DesignerProps) {
           const isOverflowPage = state.pageTypes[pageIndex] === 'overflow';
           const overflowParent = state.overflowParents[pageIndex];
 
+          // In single mode, only render the current page
+          if (pageNavigationMode === 'single' && pageIndex !== currentPage) {
+            return null;
+          }
+
           return (
             <div
               id={`page-${pageIndex}`}
@@ -889,7 +898,8 @@ function Designer(props: DesignerProps) {
                 'relative bg-white text-black shadow',
                 'cursor-default active:cursor-default',
                 isOverflowPage && 'pointer-events-none',
-                !isOverflowPage && 'mt-2'
+                !isOverflowPage && pageNavigationMode === 'multi' && 'mt-2',
+                pageNavigationMode === 'single' && 'mx-auto'
               )}
               style={{
                 height: isOverflowPage ? A4_HEIGHT : 'auto',
