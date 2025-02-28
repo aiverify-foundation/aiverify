@@ -4,6 +4,7 @@ import React from 'react';
 import { Layout } from 'react-grid-layout';
 import { WidgetAlgoAndResultIdentifier } from '@/app/canvas/components/hooks/pagesDesignReducer';
 import {
+  ArtifactsMapping,
   InputBlockDataMapping,
   ParsedTestResults,
   TestResultDataMapping,
@@ -209,6 +210,49 @@ function GridItemMain({
           );
           if (mockData) {
             acc[`${widget.gid}:${result.cid}`] = mockData.data;
+          }
+        }
+        return acc;
+      }, {});
+    }
+    return {};
+  }, [testResultsUsed]);
+
+  /**
+   * Prepares artifact data for the widget to consume
+   * Maps algorithm IDs to their corresponding artifacts or mock artifacts
+   * If no test result is found for an algorithm, falls back to mock data
+   */
+  const widgetArtifacts = useMemo(() => {
+    // prepare artifacts data for the widget to consume, based on test results used by this widget
+    // If no test result is found for an algo, the mock data artifacts are used instead
+    if (testResultsUsed && testResultsUsed.length > 0) {
+      return testResultsUsed.reduce<ArtifactsMapping>((acc, result) => {
+        if (result.testResultId !== undefined) {
+          const testResult = findTestResultById(
+            allTestResultsOnSystem,
+            result.testResultId
+          );
+          if (testResult && testResult.artifacts) {
+            acc[`${widget.gid}:${result.cid}`] = testResult.artifacts;
+          } else {
+            const mockData = findMockDataByTypeAndCid(
+              widget.mockdata || [],
+              'Algorithm',
+              result.cid
+            );
+            if (mockData && mockData.artifacts) {
+              acc[`${widget.gid}:${result.cid}`] = mockData.artifacts;
+            }
+          }
+        } else {
+          const mockData = findMockDataByTypeAndCid(
+            widget.mockdata || [],
+            'Algorithm',
+            result.cid
+          );
+          if (mockData && mockData.artifacts) {
+            acc[`${widget.gid}:${result.cid}`] = mockData.artifacts;
           }
         }
         return acc;
@@ -464,10 +508,12 @@ function GridItemMain({
             <Component
               id={widget.gridItemId}
               properties={properties}
+              artifacts={widgetArtifacts}
               testResult={testResultWidgetData}
               inputBlockData={mockInputs}
               getIBData={(cid) => mockInputs[`${widget.gid}:${cid}`]}
               getResults={(cid) => testResultWidgetData[`${widget.gid}:${cid}`]}
+              getArtifacts={(cid) => widgetArtifacts[`${widget.gid}:${cid}`]}
               width={dimensions.width}
               height={dimensions.height}
             />

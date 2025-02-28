@@ -37,6 +37,7 @@ type ParsedTestResults = TestResult & {
 };
 
 type TestResultDataMapping = Record<string, TestResultData>;
+type ArtifactsMapping = Record<string, string[]>;
 type InputBlockDataMapping = Record<string, InputBlockData>;
 
 export type {
@@ -45,4 +46,5 @@ export type {
   ParsedTestResults,
   TestResultDataMapping,
   InputBlockDataMapping,
+  ArtifactsMapping,
 };

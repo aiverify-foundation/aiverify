@@ -51,7 +51,7 @@ type TestResult = {
     modelFile: string;
   };
   output: string;
-  artifacts: unknown[];
+  artifacts?: string[];
   name: string;
   created_at: string;
   updated_at: string;
@@ -217,6 +217,7 @@ type MockData = {
     | boolean[]
     | object[]
   >;
+  artifacts?: string[];
 };
 
 type Widget = {
