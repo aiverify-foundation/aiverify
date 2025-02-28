@@ -43,7 +43,7 @@ export function useDragToScroll(
       scrollLeftRef.current = container.scrollLeft;
       scrollTopRef.current = container.scrollTop;
 
-      container.style.cursor = 'grabbing';
+      // container.style.cursor = 'grabbing';
       container.style.userSelect = 'none';
     };
 
@@ -65,7 +65,7 @@ export function useDragToScroll(
       if (!isDraggingRef.current) return;
 
       isDraggingRef.current = false;
-      container.style.cursor = 'grab';
+      // container.style.cursor = 'grab';
       container.style.removeProperty('user-select');
     };
 

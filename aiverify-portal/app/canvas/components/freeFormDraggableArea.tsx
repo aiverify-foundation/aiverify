@@ -30,20 +30,23 @@ function FreeFormDraggableArea(props: FreeFormDraggableAreaProps) {
       <div
         id="freeFormArea"
         ref={ref}
-        className="custom-scrollbar relative h-full cursor-grab overflow-auto bg-slate-100 active:cursor-grabbing"
+        className="custom-scrollbar relative h-full cursor-grab overflow-auto bg-slate-100"
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
         onMouseMove={onMouseMove}
         onMouseLeave={onMouseLeave}>
         <div
           id="contentWrapper"
-          className="flex min-w-[6000px] justify-center transition-all duration-200 ease-out"
+          className="flex min-w-[3000px] justify-center transition-all duration-200 ease-out"
           style={{
             minHeight: contentWrapperMinHeight,
             paddingTop: pagesLength === 1 ? 'auto' : `${CONTAINER_PAD}px`,
             alignItems: pagesLength === 1 ? 'center' : 'flex-start',
             transform: `scale(${zoomLevel})`,
             transformOrigin: 'center center',
+            willChange: 'transform',
+            touchAction: 'pan-x pan-y',
+            contain: 'content',
           }}>
           {children}
         </div>
