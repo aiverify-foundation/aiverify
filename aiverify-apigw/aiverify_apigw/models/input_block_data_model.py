@@ -18,6 +18,7 @@ class InputBlockDataModel(BaseORMModel):
     gid: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
     cid: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
     inputblock_id: Mapped[int] = mapped_column(ForeignKey("inputblock.id"))
+    group: Mapped[str] = mapped_column(String(128), nullable=False)
     inputblock: Mapped["InputBlockModel"] = relationship()
     data: Mapped[bytes]  # serialized json, output from input block save
     user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("user.id"))

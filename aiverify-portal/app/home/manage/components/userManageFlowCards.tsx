@@ -82,6 +82,32 @@ export function UserManageFlowCards() {
             </Card.Content>
           </Card>
         </Link>
+        <Link href="/inputs">
+          <Card
+            size="md"
+            enableTiltEffect={true}
+            tiltSpeed={200}
+            tiltRotation={5}
+            enableTiltGlare={true}
+            tiltMaxGlare={0.3}
+            className="bg-secondary-500 !bg-none">
+            <Card.Content className="flex flex-col justify-between p-6">
+              <Icon
+                name={IconName.File}
+                size={50}
+                color="white"
+              />
+              <div>
+                <p className="text-shadow-sm tracking-wide">
+                  Manage user inputs
+                </p>
+                <h2 className="text-shadow-sm text-2xl font-bold tracking-wide">
+                  User Inputs
+                </h2>
+              </div>
+            </Card.Content>
+          </Card>
+        </Link>
         <Link href="/plugins">
           <Card
             size="md"
