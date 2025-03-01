@@ -2,7 +2,10 @@ import { getMDXComponent, MDXContentProps } from 'mdx-bundler/client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import React from 'react';
 import { Layout } from 'react-grid-layout';
-import { WidgetAlgoAndResultIdentifier } from '@/app/canvas/components/hooks/pagesDesignReducer';
+import {
+  WidgetAlgoAndResultIdentifier,
+  WidgetInputBlockIdentifier,
+} from '@/app/canvas/components/hooks/pagesDesignReducer';
 import {
   ArtifactsMapping,
   InputBlockDataMapping,
@@ -17,11 +20,19 @@ import {
   InputBlockData,
   Plugin,
   InputBlock,
+  InputBlockDataPayload,
 } from '@/app/types';
 import { WidgetPropertiesDrawer } from './drawers/widgetPropertiesDrawer';
 import { GridItemContextMenu } from './gridItemContextMenu';
 import { editorInputClassName } from './hocAddTextEditFuncitonality';
 import { WidgetErrorBoundary } from './widgetErrorBoundary';
+
+/*
+  Refer to React.memo code block below for more details on the memoization logic.
+  This component will only re-render if the memo logic detects a change.
+  This is to prevent unnecessary re-renders and improve performance.
+*/
+
 export const gridItemRootClassName = 'grid-item-root';
 type requiredStyles =
   `grid-item-root relative h-auto w-full min-h-full${string}`; // strictly required styles
@@ -39,11 +50,14 @@ type GridItemComponentProps = {
   /** Test results used by this widget, linking algorithm CIDs to result IDs */
   testResultsUsed?: WidgetAlgoAndResultIdentifier[];
 
+  /** Input block datas used by this widget, linking input block CIDs to input block IDs */
+  inputBlockDatasUsed?: WidgetInputBlockIdentifier[];
+
   /** All test results available in the system that widgets can access */
   allTestResultsOnSystem: ParsedTestResults[];
 
-  /** All input blocks available in the system that widgets can access */
-  allInputBlocksOnSystem: InputBlock[];
+  /** All input block datas available in the system that widgets can access */
+  allInputBlockDatasOnSystem: InputBlockData[];
 
   /** Optional data from input blocks that the widget might need */
   inputBlockData?: unknown;
@@ -80,8 +94,8 @@ type MdxComponentProps = MDXContentProps & {
   id: string;
   properties: Record<string, unknown>;
   testResult: TestResultData;
-  inputBlockData: InputBlockData;
-  getIBData: (cid: string) => InputBlockData;
+  inputBlockData: InputBlockDataPayload;
+  getIBData: (cid: string) => InputBlockDataPayload;
   getResults: (cid: string) => TestResultData;
   width?: number;
   height?: number;
@@ -93,11 +107,13 @@ const itemStyle: requiredStyles =
 function GridItemMain({
   allAvalaiblePlugins,
   allTestResultsOnSystem,
+  allInputBlockDatasOnSystem,
   layout,
   widget,
   isDragging,
   isResizing,
   testResultsUsed,
+  inputBlockDatasUsed,
   onDeleteClick,
   onEditClick,
   onInfoClick,
@@ -262,20 +278,44 @@ function GridItemMain({
   }, [testResultsUsed]);
 
   /**
-   * Extracts mock input data from the widget's configuration
-   * Used when real input block data is not available
+   * Prepares input block data for the widget to consume
+   * Maps input block IDs to their corresponding data or mock data
+   * If no input block data is found, falls back to mock data
    */
-  const mockInputs = useMemo(() => {
-    if (widget.mockdata && widget.mockdata.length > 0) {
-      return widget.mockdata.reduce<InputBlockDataMapping>((acc, mock) => {
-        if (mock.type === 'InputBlock') {
-          acc[`${widget.gid}:${mock.cid}`] = mock.data;
+  const inputBlocksWidgetData = useMemo(() => {
+    if (inputBlockDatasUsed && inputBlockDatasUsed.length > 0) {
+      return inputBlockDatasUsed.reduce<InputBlockDataMapping>((acc, data) => {
+        if (data.inputBlockDataId !== undefined) {
+          const inputBlockData = allInputBlockDatasOnSystem.find(
+            (ib) => ib.id === data.inputBlockDataId
+          );
+          if (inputBlockData && inputBlockData.data) {
+            acc[`${widget.gid}:${data.cid}`] = inputBlockData.data;
+          } else {
+            const mockData = findMockDataByTypeAndCid(
+              widget.mockdata || [],
+              'InputBlock',
+              data.cid
+            );
+            if (mockData && mockData.data) {
+              acc[`${widget.gid}:${data.cid}`] = mockData.data;
+            }
+          }
+        } else {
+          const mockData = findMockDataByTypeAndCid(
+            widget.mockdata || [],
+            'InputBlock',
+            data.cid
+          );
+          if (mockData && mockData.data) {
+            acc[`${widget.gid}:${data.cid}`] = mockData.data;
+          }
         }
         return acc;
       }, {});
     }
     return {};
-  }, [widget, widget.mdx]);
+  }, [inputBlockDatasUsed]);
 
   /**
    * Sets up a ResizeObserver to track the widget's dimensions
@@ -500,7 +540,8 @@ function GridItemMain({
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}>
         {isResizing || isDragging ? (
-          // Show a placeholder during resize to improve performance
+          // Show a placeholder during resize and dragging for better ux. Resizing charts is laggy
+          // because of observer responsiveness.
           <div className="h-auto w-full bg-gray-100" />
         ) : (
           // Render the actual widget content with error boundary protection
@@ -510,10 +551,16 @@ function GridItemMain({
               properties={properties}
               artifacts={widgetArtifacts}
               testResult={testResultWidgetData}
-              inputBlockData={mockInputs}
-              getIBData={(cid) => mockInputs[`${widget.gid}:${cid}`]}
-              getResults={(cid) => testResultWidgetData[`${widget.gid}:${cid}`]}
-              getArtifacts={(cid) => widgetArtifacts[`${widget.gid}:${cid}`]}
+              inputBlockData={inputBlocksWidgetData}
+              getIBData={(cid: string) =>
+                inputBlocksWidgetData[`${widget.gid}:${cid}`]
+              }
+              getResults={(cid: string) =>
+                testResultWidgetData[`${widget.gid}:${cid}`]
+              }
+              getArtifacts={(cid: string) =>
+                widgetArtifacts[`${widget.gid}:${cid}`]
+              }
               width={dimensions.width}
               height={dimensions.height}
             />
@@ -535,7 +582,9 @@ export const GridItemComponent = React.memo(
       prevProps.isResizing === nextProps.isResizing &&
       prevProps.layout === nextProps.layout &&
       JSON.stringify(prevProps.testResultsUsed) ===
-        JSON.stringify(nextProps.testResultsUsed)
+        JSON.stringify(nextProps.testResultsUsed) &&
+      JSON.stringify(prevProps.inputBlockDatasUsed) ===
+        JSON.stringify(nextProps.inputBlockDatasUsed)
     );
   }
 );

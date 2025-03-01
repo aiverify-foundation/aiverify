@@ -18,7 +18,7 @@ import {
   PluginForGridLayout,
   WidgetOnGridLayout,
 } from '@/app/canvas/types';
-import { findInputBlockDatasByGidAndCid } from '@/app/canvas/utils/findInputBlockDatasByGidAndCid';
+import { findInputBlockDatasByGidCidAndGroup } from '@/app/canvas/utils/findInputBlockDatasByGidCidAndGroup';
 import { findTestResultByAlgoGidAndCid } from '@/app/canvas/utils/findTestResultByAlgoGidAndCid';
 import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPluginsById';
 import { getWidgetAlgosFromPlugins } from '@/app/canvas/utils/getWidgetAlgosFromPlugins';
@@ -150,8 +150,6 @@ function Designer(props: DesignerProps) {
     disablePreviousButton = false,
     pageNavigationMode = 'multi',
   } = props;
-
-  console.log(allInputBlockDatasOnSystem);
 
   // Reference to the canvas element for positioning and measurements
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -468,21 +466,23 @@ function Designer(props: DesignerProps) {
             widgetWithGridItemId
           );
 
-          // Get input block datas associated with each input block
-          const inputBlockDatas = inputBlocks.flatMap((inputBlock) =>
-            findInputBlockDatasByGidAndCid(
-              allInputBlockDatasOnSystem,
-              inputBlock.gid,
-              inputBlock.cid
-            )
-          );
-
+          // Map input block datas to input blocks based on matching gid, cid and group
           const gridItemToInputBlockDatasMap: WidgetInputBlockIdentifier[] =
-            inputBlockDatas.map((inputBlockData) => ({
-              gid: inputBlockData.gid,
-              cid: inputBlockData.cid,
-              inputBlockDataId: inputBlockData.id,
-            }));
+            inputBlocks.map((inputBlock) => {
+              // Find matching input block data for this input block by gid, cid and group
+              const matchSelectedInputBlockData =
+                findInputBlockDatasByGidCidAndGroup(
+                  selectedInputBlockDatas,
+                  inputBlock.gid,
+                  inputBlock.cid,
+                  inputBlock.group
+                );
+              return {
+                gid: inputBlock.gid,
+                cid: inputBlock.cid,
+                inputBlockDataId: matchSelectedInputBlockData?.id,
+              };
+            });
 
           // Dispatch action to add the widget to the canvas state
           dispatch({
@@ -916,6 +916,15 @@ function Designer(props: DesignerProps) {
       }
     : undefined;
 
+  /*
+    The pages section has 3 critical nested div elements:
+    - The free form draggable area
+      - This area takes up the entire width of the screen and full height below page header.
+    - The content area (contentWrapper within freeFormDraggableArea component)
+      - This is a container wrapping the main content. It has large overflowing excess width and height to allow drag scrolling.
+    - The pages wrapper (pagesContentWrapper defined below as a child of freeFormDraggableArea)
+      - This is a container wrapping all the pages.
+  */
   const pagesSection = (
     <FreeFormDraggableArea
       ref={freeFormAreaRef}
@@ -1029,7 +1038,10 @@ function Designer(props: DesignerProps) {
                         )}>
                         <GridItemComponent
                           allAvalaiblePlugins={allPluginsWithMdx}
-                          allInputBlocksOnSystem={[]} // TODO: Add input blocks
+                          allInputBlockDatasOnSystem={
+                            allInputBlockDatasOnSystem
+                          }
+                          allTestResultsOnSystem={allTestResultsOnSystem}
                           widget={widget}
                           onDeleteClick={handleDeleteGridItem(
                             pageIndex,
@@ -1047,7 +1059,11 @@ function Designer(props: DesignerProps) {
                           testResultsUsed={
                             state.gridItemToAlgosMap[widget.gridItemId]
                           }
-                          allTestResultsOnSystem={allTestResultsOnSystem}
+                          inputBlockDatasUsed={
+                            state.gridItemToInputBlockDatasMap[
+                              widget.gridItemId
+                            ]
+                          }
                           layout={state.layouts[pageIndex][widgetIndex]}
                         />
                       </div>
@@ -1062,51 +1078,26 @@ function Designer(props: DesignerProps) {
     </FreeFormDraggableArea>
   );
 
-  const testSelector = (
+  const dataDrawers = (
     <section
       className={cn(
-        'fixed top-[90px] z-10 flex flex-col gap-4',
+        'fixed top-[90px] z-10 flex flex-col items-start gap-4',
         isPanelOpen ? 'left-[340px]' : 'left-[100px]'
       )}>
+      <h4 className="text-md font-bold text-gray-500">Data used:</h4>
       <TestResultsDrawer
         allTestResultsOnSystem={allTestResultsOnSystem}
         selectedTestResultsFromUrlParams={selectedTestResults}
-        onOkClick={handleSelectUploadedTestResults}
+        onCheckboxClick={handleSelectUploadedTestResults}
       />
-    </section>
-  );
-
-  const inputBlockSelector = (
-    <section
-      className={cn(
-        'fixed top-[150px] z-10 flex flex-col gap-4',
-        isPanelOpen ? 'left-[340px]' : 'left-[100px]'
-      )}>
       <InputBlockDatasDrawer
         allInputBlockDatasOnSystem={allInputBlockDatasOnSystem}
         selectedInputBlockDatasFromUrlParams={selectedInputBlockDatas}
-        onOkClick={handleSelectInputBlockDatas}
+        onCheckboxClick={handleSelectInputBlockDatas}
       />
     </section>
   );
 
-  // console.log('state', state);
-  // console.log('plugins', allPluginsWithMdx);
-
-  /*
-    Designer component has 3 main sections:
-    - The plugins panel section
-    - The controls section
-    - The design section
-
-    The design section has 3 key nested areas (nested divs):
-    - The free form draggable area
-      - This area is the largest area and takes up the entire width of the screen and full height below page header.
-    - The content area
-      - This is a container wrapping the main content. It has large overflowing excess width and height to allow dragging and scrolling.
-    - The pages wrapper
-      - This is a container wrapping all the pages.
-  */
   console.log('state', state);
   return (
     <React.Fragment>
@@ -1120,8 +1111,7 @@ function Designer(props: DesignerProps) {
       ) : null}
       <main className="relative h-full w-full">
         {disabled ? null : pluginsPanelSection}
-        {disabled ? null : testSelector}
-        {disabled ? null : inputBlockSelector}
+        {disabled ? null : dataDrawers}
         {mainControlsSection}
         {pagesSection}
       </main>
