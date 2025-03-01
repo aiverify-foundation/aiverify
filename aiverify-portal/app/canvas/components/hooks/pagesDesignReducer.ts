@@ -553,18 +553,24 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
 
     case 'UPDATE_ALGO_TRACKER': {
       const clonedAlgosMap = { ...state.gridItemToAlgosMap };
-      action.gridItemAlgosMap.forEach((algoMap) => {
-        Object.keys(clonedAlgosMap).forEach((key) => {
-          clonedAlgosMap[key] = clonedAlgosMap[key].map((existing) =>
-            existing.gid === algoMap.gid && existing.cid === algoMap.cid
-              ? {
-                  ...existing,
-                  testResultId: algoMap.testResultId,
-                }
-              : existing
+
+      // Iterate through each grid item in the cloned map
+      Object.keys(clonedAlgosMap).forEach((key) => {
+        // Update each algorithm reference in this grid item
+        clonedAlgosMap[key] = clonedAlgosMap[key].map((existing) => {
+          // Look for a matching algorithm in the action's map
+          const matchingAlgo = action.gridItemAlgosMap.find(
+            (algoMap) =>
+              algoMap.gid === existing.gid && algoMap.cid === existing.cid
           );
+
+          // If found, update with the new testResultId, otherwise reset to undefined
+          return matchingAlgo
+            ? { ...existing, testResultId: matchingAlgo.testResultId }
+            : { ...existing, testResultId: undefined };
         });
       });
+
       return { ...state, gridItemToAlgosMap: clonedAlgosMap };
     }
 
@@ -572,20 +578,30 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       const clonedInputBlockDatasMap = {
         ...state.gridItemToInputBlockDatasMap,
       };
-      action.gridItemInputBlockDatasMap.forEach((inputBlockDataMap) => {
-        Object.keys(clonedInputBlockDatasMap).forEach((key) => {
-          clonedInputBlockDatasMap[key] = clonedInputBlockDatasMap[key].map(
-            (existing) =>
-              existing.gid === inputBlockDataMap.gid &&
-              existing.cid === inputBlockDataMap.cid
-                ? {
-                    ...existing,
-                    inputBlockDataId: inputBlockDataMap.inputBlockDataId,
-                  }
-                : existing
-          );
-        });
+
+      // Iterate through each grid item in the cloned map
+      Object.keys(clonedInputBlockDatasMap).forEach((key) => {
+        // Update each input block reference in this grid item
+        clonedInputBlockDatasMap[key] = clonedInputBlockDatasMap[key].map(
+          (existing) => {
+            // Look for a matching input block in the action's map
+            const matchingInputBlock = action.gridItemInputBlockDatasMap.find(
+              (inputBlockMap) =>
+                inputBlockMap.gid === existing.gid &&
+                inputBlockMap.cid === existing.cid
+            );
+
+            // If found, update with the new inputBlockDataId, otherwise reset to undefined
+            return matchingInputBlock
+              ? {
+                  ...existing,
+                  inputBlockDataId: matchingInputBlock.inputBlockDataId,
+                }
+              : { ...existing, inputBlockDataId: undefined };
+          }
+        );
       });
+
       return {
         ...state,
         gridItemToInputBlockDatasMap: clonedInputBlockDatasMap,
