@@ -22,7 +22,7 @@ function PageNumber({
   return (
     <div
       className={cn(
-        'absolute top-0 m-2 flex origin-top-right flex-col text-xs text-gray-500',
+        'absolute top-0 m-2 flex origin-top-right select-none flex-col text-xs text-gray-500',
         className
       )}
       style={{
