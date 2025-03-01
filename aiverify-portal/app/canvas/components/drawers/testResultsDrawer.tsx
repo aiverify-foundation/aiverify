@@ -14,13 +14,12 @@ import {
 } from '@/lib/components/drawer';
 import { Drawer } from '@/lib/components/drawer';
 import { cn } from '@/lib/utils/twmerge';
-import { SelectedTestResults } from './selectedTestResult';
 
 type TestResultsDrawerProps = {
   className?: string;
   allTestResultsOnSystem: ParsedTestResults[];
   selectedTestResultsFromUrlParams: ParsedTestResults[];
-  onOkClick: (selectedResults: ParsedTestResults[]) => void;
+  onCheckboxClick: (selectedTestResults: ParsedTestResults[]) => void;
 };
 
 function TestResultsDrawer(props: TestResultsDrawerProps) {
@@ -28,26 +27,47 @@ function TestResultsDrawer(props: TestResultsDrawerProps) {
     allTestResultsOnSystem,
     selectedTestResultsFromUrlParams,
     className,
-    onOkClick,
+    onCheckboxClick,
   } = props;
   const [selectedTestResults, setSelectedTestResults] = useState<
     ParsedTestResults[]
   >(selectedTestResultsFromUrlParams);
 
+  function handleCheckboxClick(result: ParsedTestResults) {
+    return () => {
+      const updatedSelectedTestResults = selectedTestResults.includes(result)
+        ? selectedTestResults.filter((r) => r !== result)
+        : [...selectedTestResults, result];
+      setSelectedTestResults(updatedSelectedTestResults);
+      onCheckboxClick(updatedSelectedTestResults);
+    };
+  }
+
   return (
     <div className={cn('flex justify-center', className)}>
       <Drawer>
-        <div className="flex flex-col items-start gap-2">
-          <DrawerTrigger asChild>
-            <Button variant="white">
-              <RiArticleFill className="h-5 w-5 text-gray-500 hover:text-gray-900" />
-              &nbsp;Test results for this report
-            </Button>
-          </DrawerTrigger>
-          {selectedTestResults.length > 0 ? (
-            <SelectedTestResults results={selectedTestResults} />
-          ) : null}
-        </div>
+        <DrawerTrigger asChild>
+          <Button variant="white">
+            <div className="flex min-w-[150px] flex-col items-start">
+              <div className="flex items-center gap-1">
+                <RiArticleFill className="h-5 w-5 text-gray-500 hover:text-gray-900" />
+                &nbsp;Test results
+              </div>
+              <div
+                className={cn(
+                  'w-full text-xs',
+                  selectedTestResults.length > 0
+                    ? 'text-blue-500'
+                    : 'text-gray-500'
+                )}>
+                {selectedTestResults.length > 0
+                  ? selectedTestResults.length
+                  : 'none'}{' '}
+                selected
+              </div>
+            </div>
+          </Button>
+        </DrawerTrigger>
         <DrawerContent className="sm:max-w-lg">
           <DrawerHeader>
             <DrawerTitle>Populate widgets with test results</DrawerTitle>
@@ -69,13 +89,7 @@ function TestResultsDrawer(props: TestResultsDrawerProps) {
                       !selectedTestResults.includes(result) &&
                       selectedTestResults.some((r) => r.gid === result.gid)
                     }
-                    onChange={() => {
-                      setSelectedTestResults((prev) =>
-                        prev.includes(result)
-                          ? prev.filter((r) => r !== result)
-                          : [...prev, result]
-                      );
-                    }}
+                    onChange={handleCheckboxClick(result)}
                   />
                   <div className="flex flex-col">
                     <span className="text-sm font-medium text-gray-900">
@@ -94,14 +108,7 @@ function TestResultsDrawer(props: TestResultsDrawerProps) {
               <Button
                 className="mt-2 w-full sm:mt-0 sm:w-fit"
                 variant="secondary">
-                Go back
-              </Button>
-            </DrawerClose>
-            <DrawerClose asChild>
-              <Button
-                className="w-full sm:w-fit"
-                onClick={() => onOkClick(selectedTestResults)}>
-                Ok, use selected results
+                OK
               </Button>
             </DrawerClose>
           </DrawerFooter>

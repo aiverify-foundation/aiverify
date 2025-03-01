@@ -68,17 +68,18 @@ type TestResultData = Record<
   | boolean[]
   | object[]
 >;
-// type InputBlockData = Record<
-//   string,
-//   | string
-//   | number
-//   | boolean
-//   | object
-//   | string[]
-//   | number[]
-//   | boolean[]
-//   | object[]
-// >;
+
+type InputBlockDataPayload = Record<
+  string,
+  | string
+  | number
+  | boolean
+  | object
+  | string[]
+  | number[]
+  | boolean[]
+  | object[]
+>;
 
 type DataColumn = {
   name: string;
@@ -252,7 +253,7 @@ type InputBlock = {
   author: string | null;
   tags: string | null;
   description: string | null;
-  group: string | null;
+  group: string;
   groupNumber: string | null;
   width: string;
   fullScreen: boolean;
@@ -263,7 +264,7 @@ type InputBlockData = {
   cid: string;
   name: string;
   group: string;
-  data: Record<string, string | string[] | number | boolean | object>;
+  data: InputBlockDataPayload;
   id: number;
   created_at: string;
   updated_at: string;
@@ -303,6 +304,7 @@ export type {
   WidgetProperty,
   TestResultData,
   InputBlockData,
+  InputBlockDataPayload,
   InputBlock,
   FormState,
   DataColumn,

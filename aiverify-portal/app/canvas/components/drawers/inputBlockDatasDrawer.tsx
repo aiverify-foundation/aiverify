@@ -1,6 +1,5 @@
 import { RiDatabase2Fill } from '@remixicon/react';
 import { useState } from 'react';
-import { SelectedInputBlockDatas } from '@/app/canvas/components/drawers/selectedInputBlockDatas';
 import { InputBlockData } from '@/app/types';
 import { Button } from '@/lib/components/TremurButton';
 import {
@@ -20,7 +19,7 @@ type InputBlockDatasDrawerProps = {
   className?: string;
   allInputBlockDatasOnSystem: InputBlockData[];
   selectedInputBlockDatasFromUrlParams: InputBlockData[];
-  onOkClick: (selectedInputBlockDatas: InputBlockData[]) => void;
+  onCheckboxClick: (selectedInputBlockDatas: InputBlockData[]) => void;
 };
 
 function InputBlockDatasDrawer(props: InputBlockDatasDrawerProps) {
@@ -28,26 +27,49 @@ function InputBlockDatasDrawer(props: InputBlockDatasDrawerProps) {
     allInputBlockDatasOnSystem,
     selectedInputBlockDatasFromUrlParams,
     className,
-    onOkClick,
+    onCheckboxClick,
   } = props;
   const [selectedInputBlockDatas, setSelectedInputBlockDatas] = useState<
     InputBlockData[]
   >(selectedInputBlockDatasFromUrlParams);
 
+  function handleCheckboxClick(inputBlockData: InputBlockData) {
+    return () => {
+      const updatedSelectedInputBlockDatas = selectedInputBlockDatas.includes(
+        inputBlockData
+      )
+        ? selectedInputBlockDatas.filter((r) => r !== inputBlockData)
+        : [...selectedInputBlockDatas, inputBlockData];
+      setSelectedInputBlockDatas(updatedSelectedInputBlockDatas);
+      onCheckboxClick(updatedSelectedInputBlockDatas);
+    };
+  }
+
   return (
     <div className={cn('flex justify-center', className)}>
       <Drawer>
-        <div className="flex flex-col items-start gap-2">
-          <DrawerTrigger asChild>
-            <Button variant="white">
-              <RiDatabase2Fill className="h-5 w-5 text-gray-500 hover:text-gray-900" />
-              &nbsp;Input block data for this report
-            </Button>
-          </DrawerTrigger>
-          {selectedInputBlockDatas.length > 0 ? (
-            <SelectedInputBlockDatas results={selectedInputBlockDatas} />
-          ) : null}
-        </div>
+        <DrawerTrigger asChild>
+          <Button variant="white">
+            <div className="flex min-w-[150px] flex-col items-start">
+              <div className="flex items-center gap-1">
+                <RiDatabase2Fill className="h-5 w-5 text-gray-500 hover:text-gray-900" />
+                &nbsp;Input block data
+              </div>
+              <div
+                className={cn(
+                  'w-full text-xs',
+                  selectedInputBlockDatas.length > 0
+                    ? 'text-blue-500'
+                    : 'text-gray-500'
+                )}>
+                {selectedInputBlockDatas.length > 0
+                  ? selectedInputBlockDatas.length
+                  : 'none'}{' '}
+                selected
+              </div>
+            </div>
+          </Button>
+        </DrawerTrigger>
         <DrawerContent className="sm:max-w-lg">
           <DrawerHeader>
             <DrawerTitle>Populate widgets with input block data</DrawerTitle>
@@ -72,13 +94,7 @@ function InputBlockDatasDrawer(props: InputBlockDatasDrawerProps) {
                         (r) => r.gid === inputBlockData.gid
                       )
                     }
-                    onChange={() => {
-                      setSelectedInputBlockDatas((prev) =>
-                        prev.includes(inputBlockData)
-                          ? prev.filter((r) => r !== inputBlockData)
-                          : [...prev, inputBlockData]
-                      );
-                    }}
+                    onChange={handleCheckboxClick(inputBlockData)}
                   />
                   <div className="flex flex-col">
                     <span className="text-sm font-medium text-gray-900">
@@ -98,14 +114,7 @@ function InputBlockDatasDrawer(props: InputBlockDatasDrawerProps) {
               <Button
                 className="mt-2 w-full sm:mt-0 sm:w-fit"
                 variant="secondary">
-                Go back
-              </Button>
-            </DrawerClose>
-            <DrawerClose asChild>
-              <Button
-                className="w-full sm:w-fit"
-                onClick={() => onOkClick(selectedInputBlockDatas)}>
-                Ok, use selected input block data
+                OK
               </Button>
             </DrawerClose>
           </DrawerFooter>

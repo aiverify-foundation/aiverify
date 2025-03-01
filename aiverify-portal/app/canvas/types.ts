@@ -3,8 +3,8 @@ import {
   Widget,
   Plugin,
   TestResult,
-  InputBlockData,
   TestResultData,
+  InputBlockDataPayload,
 } from '@/app/types';
 
 type WidgetOnGridLayout = Widget & {
@@ -38,7 +38,7 @@ type ParsedTestResults = TestResult & {
 
 type TestResultDataMapping = Record<string, TestResultData>;
 type ArtifactsMapping = Record<string, string[]>;
-type InputBlockDataMapping = Record<string, InputBlockData>;
+type InputBlockDataMapping = Record<string, InputBlockDataPayload>;
 
 export type {
   WidgetOnGridLayout,
