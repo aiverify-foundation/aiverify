@@ -49,13 +49,11 @@ Use the `getResults` helper function to access algorithm results:
 ```mdx
 {
 props.getResults(cid) ? (
+
 <div>
-<p>Result: {JSON.stringify(props.getResults(cid).someValue)}</p>
+  <p>Result: {JSON.stringify(props.getResults(cid).someValue)}</p>
 </div>
-) : (
-<div>No data available</div>
-)
-}
+) : (<div>No data available</div>) }
 ```
 
 ### 4. Importing Components
@@ -136,15 +134,15 @@ setProcessedData(transformData(props.getResults(cid)));
 }, [props.getResults(cid)]);
 
 return (
+
 <div>
-{processedData ? (
-<div>Processed data: {JSON.stringify(processedData)}</div>
-) : (
-<div>Loading or no data...</div>
-)}
+  {processedData ? (
+    <div>Processed data: {JSON.stringify(processedData)}</div>
+  ) : (
+    <div>Loading or no data...</div>
+  )}
 </div>
-);
-};
+); };
 
 <MyWidget {...props} />
 ```
@@ -225,18 +223,15 @@ Here's an example of a widget that uses css grid to create containing lines char
 ```mdx
 return (
 
-{" "}
 <div
   className="chart-container"
   style={{
     display: "grid", // Creates a CSS grid layout
     gridTemplateColumns: "repeat(3, 1fr)", // Creates 3 equal-width columns
     gap: "20px", // Adds 20px spacing between grid items
-    height,
+    height, // Uses the height prop passed to the widget
   }}
 >
-  {" "}
-  // Uses the height prop passed to the widget
   {mydata.data.map((each_feature, index) => {
     return (
       <div key={`${id}-${index}`}>
@@ -263,3 +258,46 @@ return (
 ### 12. Using Keys in React Components
 
 When rendering lists of elements in React components within MDX files, always use unique key props. The widget receives an `id` prop which is unique per widget instance - use this to generate unique keys:
+
+````
+
+### 13. Handling Page Breaks for Print Mode
+
+When creating widgets that need to be printer-friendly, it's important to control how content breaks across pages. Use these CSS properties to manage page breaks:
+
+```mdx
+<div
+  style={{
+    pageBreakInside: "avoid", // Prevents the element from being split across pages (older browsers)
+    breakInside: "avoid", // Modern alternative to pageBreakInside
+  }}
+>
+  Content that should stay together on the same page when printed
+</div>
+````
+
+For multi-column layouts or grid containers that should remain intact:
+
+```mdx
+<div
+  className="chart-container"
+  style={{
+    display: "grid",
+    gridTemplateColumns: "repeat(3, 1fr)",
+    gap: "5px",
+    pageBreakInside: "avoid", // Prevents the grid from breaking across pages
+    breakInside: "avoid", // Modern alternative
+  }}
+>
+  {/* Grid content */}
+</div>
+```
+
+Other useful print-related CSS properties:
+
+- `pageBreakBefore: "always"` / `breakBefore: "page"`: Forces a page break before the element
+- `pageBreakAfter: "always"` / `breakAfter: "page"`: Forces a page break after the element
+- `orphans: 3`: Minimum number of lines that must be left at the bottom of a page
+- `widows: 3`: Minimum number of lines that must appear at the top of a page
+
+For complex widgets with multiple sections, consider wrapping each logical section in a container with appropriate page break controls.
