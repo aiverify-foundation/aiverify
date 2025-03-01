@@ -18,7 +18,7 @@ import {
   PluginForGridLayout,
   WidgetOnGridLayout,
 } from '@/app/canvas/types';
-import { findInputBlockDatasByGidCidAndGroup } from '@/app/canvas/utils/findInputBlockDatasByGidCidAndGroup';
+import { findInputBlockDataByGidAndCid } from '@/app/canvas/utils/findInputBlockDataByGidAndCid';
 import { findTestResultByAlgoGidAndCid } from '@/app/canvas/utils/findTestResultByAlgoGidAndCid';
 import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPluginsById';
 import { getWidgetAlgosFromPlugins } from '@/app/canvas/utils/getWidgetAlgosFromPlugins';
@@ -500,14 +500,12 @@ function Designer(props: DesignerProps) {
           // Map input block datas to input blocks based on matching gid, cid and group
           const gridItemToInputBlockDatasMap: WidgetInputBlockIdentifier[] =
             inputBlocks.map((inputBlock) => {
-              // Find matching input block data for this input block by gid, cid and group
-              const matchSelectedInputBlockData =
-                findInputBlockDatasByGidCidAndGroup(
-                  selectedInputBlockDatas,
-                  inputBlock.gid,
-                  inputBlock.cid,
-                  inputBlock.group
-                );
+              // Find matching input block data for this input block by gid, cid
+              const matchSelectedInputBlockData = findInputBlockDataByGidAndCid(
+                selectedInputBlockDatas,
+                inputBlock.gid,
+                inputBlock.cid
+              );
               return {
                 gid: inputBlock.gid,
                 cid: inputBlock.cid,
