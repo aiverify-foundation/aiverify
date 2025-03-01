@@ -264,13 +264,15 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       );
 
       // Clean up inputBlocksOnReport
-      const allRemainingWidgets = state.widgets.flat();
+      const allRemainingInputBlocks = Object.values(
+        clonedInputBlockDatasMap
+      ).flat();
       const newInputBlocksOnReport = state.inputBlocksOnReport.filter(
         (inputBlock) =>
-          allRemainingWidgets.some((widget) =>
-            widget.dependencies.some(
-              (dep) => dep.gid === inputBlock.gid && dep.cid === inputBlock.cid
-            )
+          allRemainingInputBlocks.some(
+            (remaining) =>
+              remaining.gid === inputBlock.gid &&
+              remaining.cid === inputBlock.cid
           )
       );
 
@@ -429,13 +431,15 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       );
 
       // Clean up inputBlocksOnReport
-      const allRemainingWidgets = newWidgets.flat();
+      const allRemainingInputBlocks = Object.values(
+        clonedInputBlockDatasMap
+      ).flat();
       const newInputBlocksOnReport = state.inputBlocksOnReport.filter(
         (inputBlock) =>
-          allRemainingWidgets.some((widget) =>
-            widget.dependencies.some(
-              (dep) => dep.gid === inputBlock.gid && dep.cid === inputBlock.cid
-            )
+          allRemainingInputBlocks.some(
+            (remaining) =>
+              remaining.gid === inputBlock.gid &&
+              remaining.cid === inputBlock.cid
           )
       );
 
