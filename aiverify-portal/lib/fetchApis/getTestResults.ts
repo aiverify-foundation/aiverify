@@ -11,7 +11,7 @@ export async function getTestResults(opts?: Options): Promise<TestResult[]> {
   if (opts && opts.id != undefined) {
     requestUrl = `${endpointUrl}/${opts.id}`;
   }
-  const res = await fetch(requestUrl);
+  const res = await fetch(requestUrl); //{ cache: 'force-cache' }
 
   if (!res.ok) {
     const responseText = await res.text();
