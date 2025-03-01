@@ -1,5 +1,6 @@
 import { Layout } from 'react-grid-layout';
 import { WidgetOnGridLayout } from '@/app/canvas/types';
+import { debouncedSaveStateToDatabase } from '@/app/canvas/utils/saveStateToDatabase';
 import { Algorithm, InputBlock } from '@/app/types';
 import { findWidgetInsertPosition } from './utils/findWidgetInsertPosition';
 
@@ -144,6 +145,7 @@ type WidgetAction =
 
 function pagesDesignReducer(state: State, action: WidgetAction): State {
   const { layouts, widgets } = state;
+  let newState = state;
 
   switch (action.type) {
     case 'ADD_WIDGET_TO_CANVAS': {
@@ -214,7 +216,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         }
       });
 
-      return {
+      newState = {
         ...state,
         layouts: layouts.map((layout, i) =>
           i === action.pageIndex ? clonedPageLayouts : layout
@@ -227,6 +229,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         algorithmsOnReport: newAlgorithms,
         inputBlocksOnReport: newInputBlocks,
       };
+      break;
     }
 
     case 'DELETE_WIDGET_FROM_CANVAS': {
@@ -276,7 +279,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
           )
       );
 
-      return {
+      newState = {
         ...state,
         layouts: layouts.map((layout, i) =>
           i === action.pageIndex ? clonedPageLayouts : layout
@@ -289,6 +292,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         algorithmsOnReport: newAlgorithmsOnReport,
         inputBlocksOnReport: newInputBlocksOnReport,
       };
+      break;
     }
 
     case 'RESIZE_WIDGET': {
@@ -304,12 +308,13 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
 
       clonedPageLayouts[resizingIndex] = action.itemLayout;
 
-      return {
+      newState = {
         ...state,
         layouts: layouts.map((layout, i) =>
           i === action.pageIndex ? clonedPageLayouts : layout
         ),
       };
+      break;
     }
 
     case 'CHANGE_WIDGET_POSITION': {
@@ -335,7 +340,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       clonedPageWidgets.splice(newPosition, 0, widgetToMove);
       clonedPageLayouts[movingIndex] = action.itemLayout;
 
-      return {
+      newState = {
         ...state,
         layouts: layouts.map((layout, i) =>
           i === action.pageIndex ? clonedPageLayouts : layout
@@ -344,10 +349,11 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
           i === action.pageIndex ? clonedPageWidgets : widget
         ),
       };
+      break;
     }
 
     case 'ADD_NEW_PAGE':
-      return {
+      newState = {
         ...state,
         layouts: [...state.layouts, []],
         widgets: [...state.widgets, []],
@@ -355,12 +361,14 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         overflowParents: [...state.overflowParents, null],
         currentPage: state.layouts.length,
       };
+      break;
 
     case 'SET_CURRENT_PAGE':
-      return {
+      newState = {
         ...state,
         currentPage: action.pageIndex,
       };
+      break;
 
     case 'DELETE_PAGE': {
       const { pageIndex } = action;
@@ -445,7 +453,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
 
       const newCurrentPage = Math.min(state.currentPage, newLayouts.length - 1);
 
-      return {
+      newState = {
         ...state,
         layouts: newLayouts,
         widgets: newWidgets,
@@ -457,13 +465,15 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         algorithmsOnReport: newAlgorithmsOnReport,
         inputBlocksOnReport: newInputBlocksOnReport,
       };
+      break;
     }
 
     case 'TOGGLE_GRID':
-      return {
+      newState = {
         ...state,
         showGrid: !state.showGrid,
       };
+      break;
 
     case 'UPDATE_WIDGET': {
       const clonedPageWidgets = widgets[action.pageIndex].slice();
@@ -473,12 +483,13 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       if (widgetIndex >= 0) {
         clonedPageWidgets[widgetIndex] = action.widget;
       }
-      return {
+      newState = {
         ...state,
         widgets: widgets.map((widget, i) =>
           i === action.pageIndex ? clonedPageWidgets : widget
         ),
       };
+      break;
     }
 
     case 'ADD_OVERFLOW_PAGES': {
@@ -490,7 +501,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       const newPageTypes = new Array(count).fill('overflow');
       const newOverflowParents = new Array(count).fill(parentPageIndex);
 
-      return {
+      newState = {
         ...state,
         layouts: [
           ...state.layouts.slice(0, insertIndex),
@@ -513,6 +524,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
           ...state.overflowParents.slice(insertIndex),
         ],
       };
+      break;
     }
 
     case 'REMOVE_OVERFLOW_PAGES': {
@@ -530,7 +542,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       }, [] as number[]);
 
       // Remove the pages
-      return {
+      newState = {
         ...state,
         layouts: state.layouts.filter(
           (_, idx) => !indicesToRemove.includes(idx)
@@ -549,6 +561,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
             ? parentPageIndex
             : state.currentPage,
       };
+      break;
     }
 
     case 'UPDATE_ALGO_TRACKER': {
@@ -571,7 +584,8 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         });
       });
 
-      return { ...state, gridItemToAlgosMap: clonedAlgosMap };
+      newState = { ...state, gridItemToAlgosMap: clonedAlgosMap };
+      break;
     }
 
     case 'UPDATE_INPUT_BLOCK_TRACKER': {
@@ -602,15 +616,21 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         );
       });
 
-      return {
+      newState = {
         ...state,
         gridItemToInputBlockDatasMap: clonedInputBlockDatasMap,
       };
+      break;
     }
 
     default:
       return state;
   }
+
+  // Save state to database (debounced)
+  debouncedSaveStateToDatabase(newState);
+
+  return newState;
 }
 
 export { pagesDesignReducer, type WidgetAction };
