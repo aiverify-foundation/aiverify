@@ -1,13 +1,12 @@
 import { MDXContentProps } from 'mdx-bundler/client';
 import React from 'react';
 
-/** 
+/**
  * IMPORTANT: dataKeyName value is used to identify the data key in the properties object.
  * This key name must match the key name used in the mdx parser/bundler in aiverify-apigw-node
  * @see {@link /aiverify/aiverify-apigw-node/bundler.ts} for the correct value.
  */
 const dataKeyName = 'data-aivkey';
-
 
 export const editorInputClassName = 'editor-input';
 
@@ -19,10 +18,10 @@ export const editorInputClassName = 'editor-input';
  * - h1
  * - h2
  * - h3
- * 
+ *
  * @param WrappedComponent - The MDX component to wrap.
  * @returns A new component that adds text behavior to the MDX component.
- * 
+ *
  * @see {@link /app/canvas/components/editingOverlay.tsx} to see how this component is used.
  */
 
@@ -33,10 +32,11 @@ export const hocAddTextEditFunctionality = <P extends MDXContentProps>(
     const h1Ref = React.useRef<HTMLTextAreaElement>(null);
     const h2Ref = React.useRef<HTMLTextAreaElement>(null);
     const h3Ref = React.useRef<HTMLTextAreaElement>(null);
+    const pRef = React.useRef<HTMLTextAreaElement>(null);
 
     React.useEffect(() => {
       // Set the cursor to the end of the text area
-      [h1Ref, h2Ref, h3Ref].forEach(ref => {
+      [h1Ref, h2Ref, h3Ref, pRef].forEach((ref) => {
         if (ref.current) {
           const length = ref.current.value.length;
           ref.current.setSelectionRange(length, length);
@@ -44,91 +44,71 @@ export const hocAddTextEditFunctionality = <P extends MDXContentProps>(
       });
     }, []);
 
-    const handleTextAreaInput = (e: React.FormEvent<HTMLTextAreaElement>) => {
-      // Adjust the height of the text area to fit the content as the user types
-      const target = e.target as HTMLTextAreaElement;
-      target.style.height = 'auto';
-      target.style.height = `${target.scrollHeight}px`;
-    };
+    // Create a ref to capture the rendered output
+    const contentRef = React.useRef<HTMLDivElement>(null);
+
+    // Process the rendered content after mounting
+    React.useEffect(() => {
+      if (!contentRef.current) return;
+
+      // Find all elements with the data-aivkey attribute
+      const editableElements = contentRef.current.querySelectorAll(
+        `[${dataKeyName}]`
+      );
+
+      // Track the first textarea to give it focus
+      let firstTextarea: HTMLTextAreaElement | null = null;
+
+      editableElements.forEach((element) => {
+        const key = element.getAttribute(dataKeyName);
+        const content = element.textContent || '';
+        const tagName = element.tagName.toLowerCase();
+
+        // Create a textarea to replace the element
+        const textarea = document.createElement('textarea');
+        textarea.name = key || '';
+        textarea.value = content;
+        textarea.className = `input-${tagName} ${editorInputClassName}`;
+
+        // Add input handler for auto-resizing
+        textarea.addEventListener('input', (e) => {
+          const target = e.target as HTMLTextAreaElement;
+          target.style.height = 'auto';
+          target.style.height = `${target.scrollHeight}px`;
+        });
+
+        // Add click handler to prevent event propagation
+        textarea.addEventListener('click', (e) => {
+          e.stopPropagation();
+        });
+
+        // Replace the original element with the textarea
+        element.parentNode?.replaceChild(textarea, element);
+
+        // Auto-adjust height
+        textarea.style.height = 'auto';
+        textarea.style.height = `${textarea.scrollHeight}px`;
+
+        // Store the first textarea we find
+        if (!firstTextarea) {
+          firstTextarea = textarea;
+        }
+
+        // Set cursor position at the end of the text
+        const length = content.length;
+        textarea.setSelectionRange(length, length);
+      });
+
+      // Focus the first textarea if one exists
+      if (firstTextarea) {
+        (firstTextarea as HTMLTextAreaElement).focus();
+      }
+    }, []);
 
     return (
-      <WrappedComponent
-        {...props}
-        components={{
-          p: ({
-            children,
-            ...props
-          }: { children: React.ReactNode } & Record<string, string>) => {
-            if (dataKeyName in props) {
-              return (
-                <textarea
-                  name={props[dataKeyName]}
-                  defaultValue={children as string}
-                  className={`input-p ${editorInputClassName}`}
-                />
-              );
-            }
-            return <div {...props}>{children}</div>;
-          },
-          h1: ({
-            children,
-            ...props
-          }: { children: React.ReactNode } & Record<string, string>) => {
-            if (dataKeyName in props) {
-              return (
-                <textarea
-                  ref={h1Ref}
-                  autoFocus
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                  onInput={handleTextAreaInput}
-                  name={props[dataKeyName]}
-                  defaultValue={children as string}
-                  className={`input-h1 ${editorInputClassName}`}
-                />
-              );
-            }
-            return <h1 {...props}>{children}</h1>;
-          },
-          h2: ({
-            children,
-            ...props
-          }: { children: React.ReactNode } & Record<string, string>) => {
-            if (dataKeyName in props) {
-              return (
-                <textarea
-                  ref={h2Ref}
-                  autoFocus
-                  onInput={handleTextAreaInput}
-                  name={props[dataKeyName]}
-                  defaultValue={children as string}
-                  className={`input-h2 ${editorInputClassName}`}
-                />
-              );
-            }
-            return <h2 {...props}>{children}</h2>;
-          },
-          h3: ({
-            children,
-            ...props
-          }: { children: React.ReactNode } & Record<string, string>) => {
-            if (dataKeyName in props) {
-              return (
-                <textarea
-                  ref={h3Ref}
-                  autoFocus
-                  onInput={handleTextAreaInput}
-                  name={props[dataKeyName]}
-                  defaultValue={children as string}
-                  className={`input-h3 ${editorInputClassName}`}
-                />
-              );
-            }
-            return <h3 {...props}>{children}</h3>;
-          },
-        }}
-      />
+      <div ref={contentRef}>
+        <WrappedComponent {...props} />
+      </div>
     );
   };
 };
