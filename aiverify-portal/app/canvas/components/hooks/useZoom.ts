@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 // Amount to change zoom level by on each step
 const ZOOM_STEP = 0.15;
