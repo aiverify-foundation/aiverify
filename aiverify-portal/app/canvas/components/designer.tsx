@@ -1088,6 +1088,8 @@ function Designer(props: DesignerProps) {
                           onWidgetPropertiesClose={() =>
                             setSelectedGridItemId(null)
                           }
+                          dispatch={dispatch}
+                          pageIndex={pageIndex}
                           isDragging={draggingGridItemId === widget.gridItemId}
                           isResizing={resizingGridItemId === widget.gridItemId}
                           testResultsUsed={

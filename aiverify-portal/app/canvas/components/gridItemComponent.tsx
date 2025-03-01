@@ -5,6 +5,7 @@ import { Layout } from 'react-grid-layout';
 import {
   WidgetAlgoAndResultIdentifier,
   WidgetInputBlockIdentifier,
+  WidgetAction,
 } from '@/app/canvas/components/hooks/pagesDesignReducer';
 import {
   ArtifactsMapping,
@@ -88,6 +89,12 @@ type GridItemComponentProps = {
 
   /** Callback triggered when widget properties drawer is closed */
   onWidgetPropertiesClose: () => void;
+
+  /** Dispatch function for updating widget properties */
+  dispatch: React.Dispatch<WidgetAction>;
+
+  /** Index of the page this widget is on */
+  pageIndex: number;
 };
 
 type MdxComponentProps = MDXContentProps & {
@@ -118,6 +125,8 @@ function GridItemMain({
   onEditClick,
   onInfoClick,
   onWidgetPropertiesClose,
+  dispatch,
+  pageIndex,
 }: GridItemComponentProps) {
   /**
    * Controls visibility of the context menu that appears when hovering over a widget
@@ -554,6 +563,8 @@ function GridItemMain({
           setOpen={setShowWidgetProperties}
           onOkClick={() => setShowWidgetProperties(false)}
           onDeleteClick={onDeleteClick}
+          dispatch={dispatch}
+          pageIndex={pageIndex}
         />
       ) : null}
 
