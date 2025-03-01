@@ -869,7 +869,7 @@ function Designer(props: DesignerProps) {
   }, [layouts.length]);
 
   const mainControlsSection = (
-    <section className="fixed right-[100px] top-[120px] z-50 flex w-[50px] max-w-[50px] flex-col gap-4">
+    <section className="fixed right-[100px] top-[105px] z-50 flex w-[50px] max-w-[50px] flex-col gap-4">
       <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
         <button
           className="disabled:opacity-50"
