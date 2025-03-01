@@ -313,7 +313,7 @@ function Designer(props: DesignerProps) {
     return () => {
       debouncedScrollToNewPage.cancel(); // Clean up the debounce on unmount
     };
-  }, [layouts.length, zoomLevel]);
+  }, [layouts.length]);
 
   /**
    * Manages overflow pages based on content size
