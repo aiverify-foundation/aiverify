@@ -18,19 +18,62 @@ export type WidgetInputBlockIdentifier = {
 type WidgetGridItemId = string;
 
 export type State = {
-  layouts: Layout[][]; // 2d array - rows rerpresent pages, columns hold widget layout objects (react grid layout object)
-  widgets: WidgetOnGridLayout[][]; // 2d array - rows represent pages, columns holds widget objects
-  algorithmsOnReport: Algorithm[]; // Keeps track of all the algos/tests that's required by the report
-  inputBlocksOnReport: InputBlock[]; // Keeps track of all the input blocks that's required by the report
+  /**
+   * 2D array where each row represents a page and each column contains a widget's layout configuration.
+   * Layout objects are used by react-grid-layout to position widgets on the grid.
+   */
+  layouts: Layout[][];
+
+  /**
+   * 2D array where each row represents a page and each column contains a widget's configuration and content.
+   * Widgets contain the actual MDX code, properties, and metadata.
+   */
+  widgets: WidgetOnGridLayout[][];
+
+  /**
+   * Collection of all algorithms/tests referenced by widgets in the report.
+   * Used to track dependencies and ensure required data is available.
+   */
+  algorithmsOnReport: Algorithm[];
+
+  /**
+   * Collection of all input blocks referenced by widgets in the report.
+   * Used to track dependencies and ensure required data is available.
+   */
+  inputBlocksOnReport: InputBlock[];
+
+  /**
+   * Maps grid item IDs to their associated algorithms and test results.
+   * Enables widgets to access their required test data.
+   */
   gridItemToAlgosMap: Record<WidgetGridItemId, WidgetAlgoAndResultIdentifier[]>;
+
+  /**
+   * Maps grid item IDs to their associated input block and input block data.
+   * Enables widgets to access their required input data.
+   */
   gridItemToInputBlockDatasMap: Record<
     WidgetGridItemId,
     WidgetInputBlockIdentifier[]
   >;
-  currentPage: number; // Keeps track of the current page
-  showGrid: boolean; // Keeps track of the grid visibility
-  pageTypes: ('grid' | 'overflow')[]; // Track page types - 1D array of page types
-  overflowParents: Array<number | null>; // just track parent page index, null for grid pages [null,null,null,2,2]
+
+  /** Index of the currently active/visible page */
+  currentPage: number;
+
+  /** Controls visibility of the grid background */
+  showGrid: boolean;
+
+  /**
+   * Array indicating the type of each page ('grid' for normal pages, 'overflow' for content spillover)
+   */
+  pageTypes: ('grid' | 'overflow')[];
+
+  /**
+   * Array tracking parent page relationships for overflow pages.
+   * null indicates a normal grid page, number indicates the parent page index
+   * Example: [null, null, null, 2, 2] means pages 4 and 5 are overflow from page 3
+   */
+  overflowParents: Array<number | null>;
 };
 
 export const initialState: State = {
@@ -68,7 +111,7 @@ type WidgetAction =
       pageIndex: number;
     }
   | {
-      type: 'CHANGE_WIDGET_POSITION'; //TODO - review; I was using this for moving widgets across pages.
+      type: 'CHANGE_WIDGET_POSITION'; //TODO - review; was using this for moving widgets across pages.
       itemLayout: Layout;
       pageIndex: number;
     }
@@ -115,6 +158,9 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
 
       let clonedAlgosMap = state.gridItemToAlgosMap;
       let clonedInputBlockDatasMap = state.gridItemToInputBlockDatasMap;
+
+      // Update the algorithm mapping for the widget if provided, either by merging with existing
+      // algorithms or creating a new entry in the map for this widget
       if (action.gridItemAlgosMap && action.gridItemAlgosMap.length > 0) {
         clonedAlgosMap = { ...state.gridItemToAlgosMap };
         if (clonedAlgosMap[action.widget.gridItemId]) {
@@ -199,6 +245,14 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         delete clonedAlgosMap[widgetToDelete.gridItemId];
       }
 
+      // Clean up input block datas from map
+      const clonedInputBlockDatasMap = {
+        ...state.gridItemToInputBlockDatasMap,
+      };
+      if (widgetToDelete) {
+        delete clonedInputBlockDatasMap[widgetToDelete.gridItemId];
+      }
+
       // Clean up algorithmsOnReport
       const allRemainingAlgos = Object.values(clonedAlgosMap).flat();
       const newAlgorithmsOnReport = (state.algorithmsOnReport || []).filter(
@@ -229,6 +283,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
           i === action.pageIndex ? clonedPageWidgets : widget
         ),
         gridItemToAlgosMap: clonedAlgosMap,
+        gridItemToInputBlockDatasMap: clonedInputBlockDatasMap,
         algorithmsOnReport: newAlgorithmsOnReport,
         inputBlocksOnReport: newInputBlocksOnReport,
       };
