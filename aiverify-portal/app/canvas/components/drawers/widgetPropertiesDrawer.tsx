@@ -392,6 +392,9 @@ function WidgetPropertiesDrawer(props: WidgetPropertiesDrawerProps) {
             </DrawerClose>
           </DrawerFooter>
         </DrawerContent>
+        <div className="absolute bottom-0 right-0 z-20 bg-white text-xs text-gray-300">
+          {widget.gridItemId}
+        </div>
       </Drawer>
     </div>
   );
