@@ -5,7 +5,8 @@ import {
   RiSurveyLine,
   RiSettings4Line,
 } from '@remixicon/react';
-import React, { useEffect, useState } from 'react';
+import { debounce } from 'lodash';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Layout } from 'react-grid-layout';
 import { WidgetAction } from '@/app/canvas/components/hooks/pagesDesignReducer';
 import { ParsedTestResults, WidgetOnGridLayout } from '@/app/canvas/types';
@@ -79,30 +80,40 @@ function WidgetPropertiesDrawer(props: WidgetPropertiesDrawerProps) {
     }
   }, [widget.properties]);
 
+  // Create a debounced function to update the widget in the reducer
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedUpdateWidget = useCallback(
+    debounce((key: string, value: string) => {
+      if (widget.properties) {
+        const updatedProperties = widget.properties.map((prop) =>
+          prop.key === key ? { ...prop, value } : prop
+        );
+
+        const updatedWidget = {
+          ...widget,
+          properties: updatedProperties,
+        };
+
+        dispatch({
+          type: 'UPDATE_WIDGET',
+          widget: updatedWidget,
+          pageIndex,
+        });
+      }
+    }, 300),
+    [widget, dispatch, pageIndex]
+  );
+
   // Handle property value change
   const handlePropertyChange = (key: string, value: string) => {
+    // Update local state immediately for responsive UI
     setPropertyValues((prev) => ({
       ...prev,
       [key]: value,
     }));
 
-    // Update widget properties in the reducer state
-    if (widget.properties) {
-      const updatedProperties = widget.properties.map((prop) =>
-        prop.key === key ? { ...prop, value } : prop
-      );
-
-      const updatedWidget = {
-        ...widget,
-        properties: updatedProperties,
-      };
-
-      dispatch({
-        type: 'UPDATE_WIDGET',
-        widget: updatedWidget,
-        pageIndex,
-      });
-    }
+    // Debounce the actual dispatch to the reducer
+    debouncedUpdateWidget(key, value);
   };
 
   const parentPlugin = findPluginByGid(allAvailablePlugins, widget.gid);
