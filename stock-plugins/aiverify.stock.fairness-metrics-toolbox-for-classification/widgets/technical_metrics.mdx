@@ -20,7 +20,14 @@ export const GetAllMetrics = ({ id, results, width, height }) => {
   let metrics = Object.values(metrics_map);
 
   return (
-    <div style={{ width, height: 'auto', display: 'flex', gap: 5, flexDirection: 'column' }}>
+    <div
+      className="chart-container"
+      style={{
+        display: "grid", // Creates a CSS grid layout
+        gridTemplateColumns: "repeat(3, 1fr)", // Creates 3 equal-width columns
+        gap: "5px", // Adds 5px spacing between grid items
+      }}
+    >
       {metrics.map((metric, idx) =>
         metric == "Equal Selection Parity" || metric == "Disparate Impact" ? (
           <TechnicalInterpretationChart2
