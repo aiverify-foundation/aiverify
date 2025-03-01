@@ -13,13 +13,13 @@ import {
   TestResultDataMapping,
   WidgetOnGridLayout,
 } from '@/app/canvas/types';
+import { findInputBlockDataById } from '@/app/canvas/utils/findInputBlockDataById';
 import { findMockDataByTypeAndCid } from '@/app/canvas/utils/findMockDataByTypeAndCid';
 import { findTestResultById } from '@/app/canvas/utils/findTestResultById';
 import {
   TestResultData,
   InputBlockData,
   Plugin,
-  InputBlock,
   InputBlockDataPayload,
 } from '@/app/types';
 import { WidgetPropertiesDrawer } from './drawers/widgetPropertiesDrawer';
@@ -189,6 +189,29 @@ function GridItemMain({
     }
     return [];
   }, [testResultsUsed]);
+
+  /**
+   * Prepares the list of input block datas used by this widget for display in the properties drawer
+   * Filters the full input block datas list to only include those relevant to this widget
+   */
+  const inputBlockDatasListForDrawer = useMemo(() => {
+    // prepare list of input block datas that are used by this widget, for the widget properties drawer
+    if (inputBlockDatasUsed && inputBlockDatasUsed.length > 0) {
+      return inputBlockDatasUsed.reduce<InputBlockData[]>((acc, ibData) => {
+        if (ibData.inputBlockDataId !== undefined) {
+          const inputBlockData = findInputBlockDataById(
+            allInputBlockDatasOnSystem,
+            ibData.inputBlockDataId
+          );
+          if (inputBlockData) {
+            acc.push(inputBlockData);
+          }
+        }
+        return acc;
+      }, []);
+    }
+    return [];
+  }, [inputBlockDatasUsed]);
 
   /**
    * Prepares test result data for the widget to consume and display
@@ -526,6 +549,7 @@ function GridItemMain({
           allAvailablePlugins={allAvalaiblePlugins}
           widget={widget}
           testResultsUsed={testResultsListForDrawer}
+          inputBlocksDataUsed={inputBlockDatasListForDrawer}
           open={showWidgetProperties}
           setOpen={setShowWidgetProperties}
           onOkClick={() => setShowWidgetProperties(false)}
