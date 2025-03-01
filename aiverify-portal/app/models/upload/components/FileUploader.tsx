@@ -99,7 +99,7 @@ const FileUploader = () => {
   };
 
   return (
-    <div className="relative flex h-[calc(100vh-200px)] overflow-y-auto scrollbar-hidden">
+    <div className="relative flex h-full">
       {/* Modal Popup */}
       {isModalVisible && (
         <Modal
@@ -114,7 +114,7 @@ const FileUploader = () => {
       )}
 
       <div className="mt-6 w-full">
-        <div className="flex w-full flex-col">
+        <div className="flex w-full flex-col overflow-y-auto scrollbar-hidden">
           <div className="">
             <form
               onSubmit={handleSubmit}
@@ -178,10 +178,10 @@ const FileUploader = () => {
                 Selected Files:
               </h3>
               {/* Selected Files Section */}
-              {selectedFiles.length > 0 && (
-                <div className="mb-8 mt-8">
+              {selectedFiles && selectedFiles.length > 0 && (
+                <div className="mb-8 mt-8 pl-4 pr-6">
                   <div className="mt-4 max-h-64 overflow-y-auto rounded-lg border border-secondary-300 p-6">
-                    <ul className="list-inside list-disc text-white">
+                    <ul className="list-inside list-disc space-y-4 text-white">
                       {selectedFiles.map((file, index) => (
                         <li
                           key={index}
@@ -191,10 +191,16 @@ const FileUploader = () => {
                             onClick={() => handleRemoveFile(index)}
                             color="#FFFFFF"
                           />
-                          <span className="text-white">{file.name}</span>
-                          <div className="ml-4 flex items-center">
+                          <span
+                            className="text-white"
+                            style={{ marginTop: '0px', marginLeft: '0px' }}>
+                            {file.name}
+                          </span>
+                          <div
+                            className="ml-4 flex"
+                            style={{ marginTop: '0px', marginLeft: '0px' }}>
                             <label className="mr-2 font-medium text-white">
-                              Model Type:
+                              Model Type*:
                             </label>
                             <select
                               value={modelTypes[index]}
@@ -217,7 +223,7 @@ const FileUploader = () => {
                 </div>
               )}
 
-              <div className="mt-6 mt-auto flex items-center justify-end">
+              <div className="mb-6 mt-6 mt-auto flex items-center justify-end">
                 <Button
                   pill
                   size="sm"

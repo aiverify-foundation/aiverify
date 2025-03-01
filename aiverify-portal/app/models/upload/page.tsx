@@ -30,55 +30,13 @@ const UploadPage: React.FC<UploadPageProps> = () => {
     setSelectedMethod(''); // Reset to show the selection interface
   };
 
-  const renderSelectionOptions = () => (
-    <div className="relative flex h-full flex-col overflow-y-auto">
-      <div className="flex items-center">
-        <Link href="/models">
-          <Icon
-            name={IconName.ArrowLeft}
-            size={40}
-            color="#FFFFFF"
-          />
-        </Link>
-        <div className="mb-4 ml-3">
-          <h1 className="text-2xl font-bold text-white">Add New AI Model</h1>
-          <h3 className="text-white">
-            How would you like AI Verify to access the AI Model to be tested?
-          </h3>
-        </div>
-      </div>
-      <div className="flex flex-grow gap-6 p-8">
-        {renderOptionCard('file', 'Upload AI Model', [
-          'Supported frameworks: LightGBM, Scikit-learn, TensorFlow, XGBoost',
-          '*Compatible with tabular datasets only',
-          'How it works: AI Verify will run the testing dataset against the AI model uploaded to generate predictions.',
-        ])}
-        {renderOptionCard('pipeline', 'Upload Pipeline', [
-          'Supported frameworks: Scikit-learn Pipeline',
-          'Supported datasets: Tabular, Image',
-          'How it works: AI Verify will run technical tests using the uploaded test dataset and pipeline.',
-        ])}
-      </div>
-      <div className="mt-6 mt-auto flex items-center justify-end">
-        <Button
-          variant={ButtonVariant.PRIMARY}
-          className="mb-8"
-          size="sm"
-          onClick={handleNext}
-          disabled={!activeCard}
-          text="NEXT"
-        />
-      </div>
-    </div>
-  );
-
   const renderOptionCard = (
     method: string,
     title: string,
     descriptions: string[]
   ) => (
     <div
-      className={`flex h-[400px] flex-grow cursor-pointer flex-col rounded-lg border p-6 transition-all duration-200`}
+      className={`flex h-[350px] flex-grow cursor-pointer flex-col rounded-lg border p-6 transition-all duration-200`}
       style={{
         borderColor:
           activeCard === method
@@ -132,10 +90,52 @@ const UploadPage: React.FC<UploadPageProps> = () => {
     </div>
   );
 
+  const renderSelectionOptions = () => (
+    <div className="relative flex flex-col overflow-y-auto">
+      <div className="flex items-center">
+        <Link href="/models">
+          <Icon
+            name={IconName.ArrowLeft}
+            size={40}
+            color="#FFFFFF"
+          />
+        </Link>
+        <div className="ml-3">
+          <h1 className="text-2xl font-bold text-white">Add New AI Model</h1>
+          <h3 className="text-white">
+            How would you like AI Verify to access the AI Model to be tested?
+          </h3>
+        </div>
+      </div>
+      <div className="flex flex-grow items-center gap-10 p-6">
+        {renderOptionCard('file', 'Upload AI Model', [
+          'Supported frameworks: LightGBM, Scikit-learn, TensorFlow, XGBoost',
+          '*Compatible with tabular datasets only',
+          'How it works: AI Verify will run the testing dataset against the AI model uploaded to generate predictions.',
+        ])}
+        {renderOptionCard('pipeline', 'Upload Pipeline', [
+          'Supported frameworks: Scikit-learn Pipeline',
+          'Supported datasets: Tabular, Image',
+          'How it works: AI Verify will run technical tests using the uploaded test dataset and pipeline.',
+        ])}
+      </div>
+      <div className="mt-6 mt-auto flex items-center justify-end pr-6">
+        <Button
+          variant={ButtonVariant.PRIMARY}
+          className="mb-8"
+          size="sm"
+          onClick={handleNext}
+          disabled={!activeCard}
+          text="NEXT"
+        />
+      </div>
+    </div>
+  );
+
   return (
-    <div className="mt-6 flex h-[calc(100vh-150px)] rounded-2xl bg-secondary-950 pt-6 text-white">
+    <div className="mt-6 flex h-[calc(100vh-150px)] overflow-y-auto rounded-2xl bg-secondary-950 pt-6 text-white">
       <LayoutHeader />
-      <div className="mx-auto w-full p-6">
+      <div className="mx-auto h-full w-full p-2">
         {!selectedMethod ? renderSelectionOptions() : null}
         {selectedMethod === 'file' && <ModelUploader onBack={handleBack} />}
         {selectedMethod === 'pipeline' && (

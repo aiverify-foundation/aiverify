@@ -10,7 +10,7 @@ const ModelUploader = ({ onBack }: { onBack: () => void }) => {
   const [activeTab, setActiveTab] = useState<'file' | 'folder'>('file');
 
   return (
-    <div className="min-h-screen overflow-y-auto">
+    <div className="h-[calc(100%-2rem)] overflow-y-auto pl-6 pr-6">
       <div className="mb-2 flex items-center justify-between">
         <div className="flex items-center">
           <Icon
@@ -20,7 +20,7 @@ const ModelUploader = ({ onBack }: { onBack: () => void }) => {
             onClick={onBack}
           />
           <h1 className="ml-6 text-2xl font-semibold text-white">
-            Add New AI Model {'>'} Upload Model File
+            Add New AI Model {'>'} Upload Model
           </h1>
         </div>
         <div className="inline-flex p-1">
