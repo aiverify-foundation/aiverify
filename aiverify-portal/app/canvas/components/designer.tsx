@@ -86,6 +86,9 @@ type DesignerProps = {
   /** Pre-selected test results based on URL parameters */
   selectedTestResultsFromUrlParams?: ParsedTestResults[];
 
+  /** Pre-selected input block datas based on URL parameters */
+  selectedInputBlockDatasFromUrlParams?: InputBlockData[];
+
   /** When true, disables editing functionality (view-only mode) */
   disabled?: boolean;
 
@@ -145,6 +148,7 @@ function Designer(props: DesignerProps) {
     allTestResultsOnSystem = [],
     allInputBlockDatasOnSystem = [],
     selectedTestResultsFromUrlParams = [],
+    selectedInputBlockDatasFromUrlParams = [],
     disabled = false,
     disableNextButton = false,
     disablePreviousButton = false,
@@ -203,13 +207,40 @@ function Designer(props: DesignerProps) {
   // Currently selected input block datas to be applied to widgets
   const [selectedInputBlockDatas, setSelectedInputBlockDatas] = useState<
     InputBlockData[]
-  >([]);
+  >(selectedInputBlockDatasFromUrlParams);
+
+  // Initialize the input block data tracker with the selected input block datas from URL params
+  useEffect(() => {
+    if (selectedInputBlockDatasFromUrlParams.length > 0) {
+      dispatch({
+        type: 'UPDATE_INPUT_BLOCK_TRACKER',
+        gridItemInputBlockDatasMap: selectedInputBlockDatasFromUrlParams.map(
+          (inputBlockData) => ({
+            gid: inputBlockData.gid,
+            cid: inputBlockData.cid,
+            inputBlockDataId: inputBlockData.id,
+          })
+        ) as WidgetInputBlockIdentifier[],
+      });
+    }
+  }, [selectedInputBlockDatasFromUrlParams]);
+
+  // Initialize the test result tracker with the selected test results from URL params
+  useEffect(() => {
+    if (selectedTestResultsFromUrlParams.length > 0) {
+      dispatch({
+        type: 'UPDATE_ALGO_TRACKER',
+        gridItemAlgosMap: selectedTestResultsFromUrlParams.map((result) => ({
+          gid: result.gid,
+          cid: result.cid,
+          testResultId: result.id,
+        })),
+      });
+    }
+  }, [selectedTestResultsFromUrlParams]);
 
   // Drag-to-scroll functionality for navigating the canvas
-  const { isDraggingRef: isDraggingFreeFormAreaRef } = useDragToScroll(
-    freeFormAreaRef,
-    canvasRef
-  );
+  useDragToScroll(freeFormAreaRef, canvasRef);
 
   // Controls visibility of the plugins panel sidebar
   const [isPanelOpen, setIsPanelOpen] = useState(true);
@@ -271,7 +302,7 @@ function Designer(props: DesignerProps) {
         if (newPageElement) {
           // Add a temporary scroll margin
           newPageElement.style.scrollMarginTop = `${zoomLevel + 100}px`; // Adjust this value as needed
-          newPageElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          newPageElement.scrollIntoView({ block: 'start' });
           newPageElement.style.scrollMarginTop = ''; // remove the temp margin
         }
       }
@@ -677,7 +708,11 @@ function Designer(props: DesignerProps) {
       pageIndex,
     });
     const pageElement = document.getElementById(`page-${pageIndex}`);
-    pageElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (pageElement) {
+      pageElement.style.scrollMarginTop = `${zoomLevel + 100}px`; // Adjust this value as needed
+      pageElement.scrollIntoView({ block: 'start' });
+      pageElement.style.scrollMarginTop = ''; // remove the temp margin
+    }
   }
 
   /**

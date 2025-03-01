@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { InputBlockData } from '@/app/types';
 import { UserFlows } from '@/app/userFlowsEnum';
 import { getInputBlockDatas } from '@/lib/fetchApis/getInputBlockDatas';
 import {
@@ -15,13 +16,14 @@ type UrlSearchParams = {
     flow: UserFlows;
     projectId: string;
     testResultIds?: string;
-    templateId?: string; // TODO: Add templateId to the URL params and fetch the template from the database. This should be done after template saving has been implemented.
+    iBlockIds?: string;
+    templateIds?: string; // TODO: Add templateId to the URL params and fetch the template from the database. This should be done after template saving has been implemented.
   };
 };
 
 export default async function CanvasPage(props: UrlSearchParams) {
   const searchParams = await props.searchParams;
-  const { flow, projectId, testResultIds } = searchParams;
+  const { flow, projectId, testResultIds, iBlockIds } = searchParams;
   const result = await getProjects({ ids: [projectId] });
 
   if (!projectId || flow == undefined || 'message' in result) {
@@ -56,6 +58,14 @@ export default async function CanvasPage(props: UrlSearchParams) {
     );
   }
 
+  let selectedInputBlockDatasFromUrlParams: InputBlockData[] = [];
+  if (iBlockIds != undefined) {
+    const iBlockIdsArray = iBlockIds.split(',');
+    selectedInputBlockDatasFromUrlParams = inputBlockDatas.filter((data) =>
+      iBlockIdsArray.includes(data.id.toString())
+    );
+  }
+
   if ('message' in plugins) {
     throw new Error(plugins.message);
   }
@@ -74,6 +84,9 @@ export default async function CanvasPage(props: UrlSearchParams) {
       allTestResultsOnSystem={parsedTestResults}
       allInputBlockDatasOnSystem={inputBlockDatas}
       selectedTestResultsFromUrlParams={selectedTestResultsFromUrlParams}
+      selectedInputBlockDatasFromUrlParams={
+        selectedInputBlockDatasFromUrlParams
+      }
     />
   );
 }
