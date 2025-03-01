@@ -19,7 +19,7 @@ export async function getProjects(
   // If specific project IDs are provided, fetch each project individually
   if (opts?.ids?.length) {
     const fetchPromises = opts.ids.map((id) =>
-      fetch(`${endpointUrl}/${id}`, { cache: 'force-cache' }).then((response) =>
+      fetch(`${endpointUrl}/${id}`).then((response) =>
         processResponse<Project>(response)
       )
     );
@@ -44,6 +44,6 @@ export async function getProjects(
   }
 
   // If no options or IDs are provided, fetch all projects from the base endpoint
-  const response = await fetch(endpointUrl, { cache: 'force-cache' });
+  const response = await fetch(endpointUrl);
   return processResponse<Project[]>(response);
 }

@@ -7,10 +7,7 @@ export async function getWidgetMdxBundle(
   pluginId: string,
   widgetId: string
 ): Promise<ApiResult<MdxBundle>> {
-  const response = await fetch(
-    `${endpointUrl}/${pluginId}/bundle/${widgetId}`,
-    { cache: 'force-cache' }
-  );
+  const response = await fetch(`${endpointUrl}/${pluginId}/bundle/${widgetId}`);
   const result = await processResponse<MdxBundle>(response);
   if ('message' in result) {
     return result;
