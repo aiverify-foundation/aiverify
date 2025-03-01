@@ -15,7 +15,7 @@ export async function getInputBlockDatas(
   } else {
     requestUrl = `${endpointUrl}`;
   }
-  const res = await fetch(requestUrl, { cache: 'force-cache' }); //TODO - use invalidate caching or totally remove caching
+  const res = await fetch(requestUrl);
 
   if (!res.ok) {
     const responseText = await res.text();
