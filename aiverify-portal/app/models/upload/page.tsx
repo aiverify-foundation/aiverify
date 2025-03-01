@@ -36,7 +36,7 @@ const UploadPage: React.FC<UploadPageProps> = () => {
     descriptions: string[]
   ) => (
     <div
-      className={`flex h-[350px] flex-grow cursor-pointer flex-col rounded-lg border p-6 transition-all duration-200`}
+      className={`flex h-[350px] w-[50%] cursor-pointer flex-col rounded-lg border p-6 transition-all duration-200`}
       style={{
         borderColor:
           activeCard === method
@@ -107,7 +107,7 @@ const UploadPage: React.FC<UploadPageProps> = () => {
           </h3>
         </div>
       </div>
-      <div className="flex flex-grow items-center gap-10 p-6">
+      <div className="flex flex-grow items-center gap-10 p-10">
         {renderOptionCard('file', 'Upload AI Model', [
           'Supported frameworks: LightGBM, Scikit-learn, TensorFlow, XGBoost',
           '*Compatible with tabular datasets only',

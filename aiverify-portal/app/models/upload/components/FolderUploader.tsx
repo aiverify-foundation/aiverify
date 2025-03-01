@@ -97,7 +97,7 @@ const FolderUpload = ({}: { onBack: () => void }) => {
         </Modal>
       )}
 
-      <div className="mt-6 w-full">
+      <div className="w-full">
         <div className="flex w-full flex-col overflow-y-auto scrollbar-hidden">
           <form
             onSubmit={handleSubmit}
@@ -185,19 +185,23 @@ const FolderUpload = ({}: { onBack: () => void }) => {
               Selected Files:
             </h3>
             {selectedFiles && selectedFiles.length > 0 && (
-              <div className="mb-8 mt-8">
+              <div className="mb-8 mt-8 pl-4 pr-6">
                 <div className="mt-4 max-h-64 overflow-y-auto rounded-lg border-2 border-gray-400 p-6">
-                  <ul className="list-inside list-disc text-white">
-                    {Array.from(selectedFiles).map((file, index) => (
+                  <ul className="list-inside list-disc space-y-4 text-white">
+                    {selectedFiles.map((file, index) => (
                       <li
                         key={index}
-                        className="flex items-center space-x-20 space-y-4">
+                        className="flex items-center gap-8">
                         <Icon
                           name={IconName.Close}
                           onClick={() => handleRemoveFile(index)}
                           color="#FFFFFF"
                         />
-                        <span className="text-white">{file.name}</span>
+                        <span
+                          className="text-white"
+                          style={{ marginTop: '0px', marginLeft: '0px' }}>
+                          {file.name}
+                        </span>
                       </li>
                     ))}
                   </ul>

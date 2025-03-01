@@ -16,10 +16,9 @@ const ModelUploader = ({ onBack }: { onBack: () => void }) => {
           <Icon
             name={IconName.ArrowLeft}
             color="white"
-            size={30}
             onClick={onBack}
           />
-          <h1 className="ml-6 text-2xl font-semibold text-white">
+          <h1 className="ml-4 text-2xl font-semibold text-white">
             Add New AI Model {'>'} Upload Model
           </h1>
         </div>
