@@ -3,15 +3,17 @@ import {
   RiFlaskLine,
   RiSurveyFill,
   RiSurveyLine,
+  RiSettings4Line,
 } from '@remixicon/react';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Layout } from 'react-grid-layout';
+import { WidgetAction } from '@/app/canvas/components/hooks/pagesDesignReducer';
 import { ParsedTestResults, WidgetOnGridLayout } from '@/app/canvas/types';
 import { findAlgoFromPluginsById } from '@/app/canvas/utils/findAlgoFromPluginsById';
 import { findInputBlockFromPluginsById } from '@/app/canvas/utils/findInputBlockFromPluginsById';
 import { findPluginByGid } from '@/app/canvas/utils/findPluginByGid';
 import { findTestResultByAlgoGidAndCid } from '@/app/canvas/utils/findTestResultByAlgoGidAndCid';
-import { InputBlockData, Plugin } from '@/app/types';
+import { InputBlockData, Plugin, WidgetProperty } from '@/app/types';
 import { Button } from '@/lib/components/TremurButton';
 import {
   DrawerClose,
@@ -36,6 +38,8 @@ type WidgetPropertiesDrawerProps = {
   onOkClick: () => void;
   onDeleteClick: () => void;
   setOpen: (open: boolean) => void;
+  dispatch: React.Dispatch<WidgetAction>;
+  pageIndex: number;
 };
 
 function Divider({ className }: { className?: string }) {
@@ -54,7 +58,53 @@ function WidgetPropertiesDrawer(props: WidgetPropertiesDrawerProps) {
     onOkClick,
     onDeleteClick,
     setOpen,
+    dispatch,
+    pageIndex,
   } = props;
+
+  // State to track property values
+  const [propertyValues, setPropertyValues] = useState<Record<string, string>>(
+    {}
+  );
+
+  // Initialize property values from widget properties
+  useEffect(() => {
+    if (widget.properties && widget.properties.length > 0) {
+      const initialValues: Record<string, string> = {};
+      widget.properties.forEach((prop) => {
+        initialValues[prop.key] =
+          prop.value !== undefined ? prop.value : prop.default;
+      });
+      setPropertyValues(initialValues);
+    }
+  }, [widget.properties]);
+
+  // Handle property value change
+  const handlePropertyChange = (key: string, value: string) => {
+    setPropertyValues((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+
+    // Update widget properties in the reducer state
+    if (widget.properties) {
+      const updatedProperties = widget.properties.map((prop) =>
+        prop.key === key ? { ...prop, value } : prop
+      );
+
+      const updatedWidget = {
+        ...widget,
+        properties: updatedProperties,
+      };
+
+      dispatch({
+        type: 'UPDATE_WIDGET',
+        widget: updatedWidget,
+        pageIndex,
+      });
+    }
+  };
+
   const parentPlugin = findPluginByGid(allAvailablePlugins, widget.gid);
   const algos = widget.dependencies
     .map((dep) => {
@@ -86,7 +136,7 @@ function WidgetPropertiesDrawer(props: WidgetPropertiesDrawerProps) {
         <DrawerContent className="sm:max-w-lg">
           <DrawerHeader>
             <DrawerTitle className="text-gray-500">
-              Widget Properties
+              Widget Information
             </DrawerTitle>
             <DrawerDescription className="mt-1 py-2 text-sm">
               <span className="text-[1.1rem] font-semibold text-primary-800">
@@ -268,6 +318,47 @@ function WidgetPropertiesDrawer(props: WidgetPropertiesDrawerProps) {
                       ))}
                     </ul>
                   )}
+                </div>
+                <Divider />
+              </React.Fragment>
+            ) : null}
+
+            {/* Widget Properties Section */}
+            {widget.properties && widget.properties.length > 0 ? (
+              <React.Fragment>
+                <div className="mt-8 flex flex-col items-start gap-1 text-gray-500">
+                  <div className="flex items-center gap-2">
+                    <RiSettings4Line className="h-5 w-5 text-gray-500 hover:text-gray-900" />
+                    <h2 className="text-[0.9rem] font-semibold">
+                      Widget Custom Properties
+                    </h2>
+                  </div>
+                  <div className="w-full">
+                    {widget.properties.map((property: WidgetProperty) => (
+                      <div
+                        key={property.key}
+                        className="mb-4">
+                        <label
+                          htmlFor={`property-${property.key}`}
+                          className="mb-1 block text-[0.9rem] font-semibold text-gray-500">
+                          {property.key}
+                        </label>
+                        <p className="mb-2 text-[0.8rem] text-gray-400">
+                          {property.helper}
+                        </p>
+                        <input
+                          id={`property-${property.key}`}
+                          type="text"
+                          className="w-full rounded-md border border-gray-300 px-3 py-2 text-[0.9rem] text-gray-700 focus:border-primary-500 focus:outline-none"
+                          value={propertyValues[property.key] || ''}
+                          onChange={(e) =>
+                            handlePropertyChange(property.key, e.target.value)
+                          }
+                          placeholder={property.default}
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </React.Fragment>
             ) : null}
