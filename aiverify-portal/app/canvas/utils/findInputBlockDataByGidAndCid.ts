@@ -1,0 +1,21 @@
+import { InputBlockData } from '@/app/types';
+
+/**
+ * Finds input block data that matches the given gid and cid
+ * Used to map input block data to widgets based on their gid and cid identifiers
+ *
+ * @param inputBlockDatas - Array of input block data objects to search through
+ * @param gid - Global identifier to match
+ * @param cid - Component identifier to match
+ * @returns The matching input block data object, or undefined if no match found
+ */
+
+export function findInputBlockDataByGidAndCid(
+  inputBlockDatas: InputBlockData[],
+  gid: string,
+  cid: string
+): InputBlockData | undefined {
+  return inputBlockDatas.find(
+    (inputBlockData) => inputBlockData.gid === gid && inputBlockData.cid === cid
+  );
+}
