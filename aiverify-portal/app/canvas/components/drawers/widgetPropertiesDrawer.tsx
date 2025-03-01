@@ -153,28 +153,46 @@ function WidgetPropertiesDrawer(props: WidgetPropertiesDrawerProps) {
                                 Currently using mock data
                               </div>
                             ) : (
-                              <div className="flex flex-col items-start gap-2">
-                                <div className="flex flex-col items-start">
-                                  <div className="text-[0.8rem] text-blue-600">
-                                    {testResultForThisAlgo.name}
+                              <ul>
+                                <li
+                                  key={testResultForThisAlgo.id}
+                                  className="mb-1 flex flex-col items-start gap-1">
+                                  <div className="flex flex-col">
+                                    <div className="text-[0.8rem] text-blue-600">
+                                      <span className="font-semibold">ID:</span>{' '}
+                                      {testResultForThisAlgo.id}
+                                    </div>
+                                    <div className="text-[0.8rem] text-blue-600">
+                                      <span className="font-semibold">
+                                        Name:
+                                      </span>{' '}
+                                      {testResultForThisAlgo.name}
+                                    </div>
+                                    <div className="text-[0.8rem] text-blue-600">
+                                      <span className="font-semibold">
+                                        Created:
+                                      </span>{' '}
+                                      {new Date(
+                                        testResultForThisAlgo.created_at
+                                      ).toLocaleString()}
+                                    </div>
+                                    <div className="text-[0.8rem] text-blue-600">
+                                      <span className="font-semibold">
+                                        Updated:
+                                      </span>{' '}
+                                      {new Date(
+                                        testResultForThisAlgo.updated_at
+                                      ).toLocaleString()}
+                                    </div>
+                                    <div className="text-[0.8rem] text-blue-600">
+                                      <span className="font-semibold">
+                                        Version:
+                                      </span>{' '}
+                                      {testResultForThisAlgo.version}
+                                    </div>
                                   </div>
-                                  <div className="text-[0.8rem] text-blue-600">
-                                    Created at:{' '}
-                                    {new Date(
-                                      testResultForThisAlgo.created_at
-                                    ).toLocaleString()}
-                                  </div>
-                                  <div className="text-[0.8rem] text-blue-600">
-                                    Updated at:{' '}
-                                    {new Date(
-                                      testResultForThisAlgo.updated_at
-                                    ).toLocaleString()}
-                                  </div>
-                                  <div className="text-[0.8rem] text-blue-600">
-                                    Version: {testResultForThisAlgo.version}
-                                  </div>
-                                </div>
-                              </div>
+                                </li>
+                              </ul>
                             )}
                           </div>
                         </li>
@@ -216,11 +234,40 @@ function WidgetPropertiesDrawer(props: WidgetPropertiesDrawerProps) {
                       User Input Data
                     </h2>
                   </div>
-                  {!inputBlocksDataUsed ? (
+                  {!inputBlocksDataUsed || inputBlocksDataUsed.length === 0 ? (
                     <div className="mb-1 text-[0.8rem] text-blue-600">
                       Currently using mock data
                     </div>
-                  ) : null}
+                  ) : (
+                    <ul>
+                      {inputBlocksDataUsed.map((inputBlockData) => (
+                        <li
+                          key={inputBlockData.id}
+                          className="ml-2 mt-1 flex flex-col items-start gap-1 p-0 text-blue-600">
+                          <div className="flex flex-col">
+                            <div className="text-[0.8rem]">
+                              <span className="font-semibold">ID:</span>{' '}
+                              {inputBlockData.id}
+                            </div>
+                            <div className="text-[0.8rem]">
+                              <span className="font-semibold">Name:</span>{' '}
+                              {inputBlockData.name}
+                            </div>
+                            <div className="text-[0.8rem]">
+                              <span className="font-semibold">Group:</span>{' '}
+                              {inputBlockData.group}
+                            </div>
+                            <div className="text-[0.8rem]">
+                              <span className="font-semibold">Created:</span>{' '}
+                              {new Date(
+                                inputBlockData.created_at
+                              ).toLocaleString()}
+                            </div>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </React.Fragment>
             ) : null}
