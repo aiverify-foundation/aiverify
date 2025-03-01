@@ -399,6 +399,46 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         parent === null ? null : parent >= pageIndex ? parent - 1 : parent
       );
 
+      // Get all widgets that will be deleted
+      const widgetsToDelete = allIndicesToRemove.flatMap(
+        (pageIdx) => state.widgets[pageIdx] || []
+      );
+
+      // Clean up algos and input block datas maps
+      const clonedAlgosMap = { ...state.gridItemToAlgosMap };
+      const clonedInputBlockDatasMap = {
+        ...state.gridItemToInputBlockDatasMap,
+      };
+
+      // Remove entries for deleted widgets
+      widgetsToDelete.forEach((widget) => {
+        if (widget) {
+          delete clonedAlgosMap[widget.gridItemId];
+          delete clonedInputBlockDatasMap[widget.gridItemId];
+        }
+      });
+
+      // Clean up algorithmsOnReport
+      const allRemainingAlgos = Object.values(clonedAlgosMap).flat();
+      const newAlgorithmsOnReport = (state.algorithmsOnReport || []).filter(
+        (algo) =>
+          allRemainingAlgos.some(
+            (remaining) =>
+              remaining.gid === algo.gid && remaining.cid === algo.cid
+          )
+      );
+
+      // Clean up inputBlocksOnReport
+      const allRemainingWidgets = newWidgets.flat();
+      const newInputBlocksOnReport = state.inputBlocksOnReport.filter(
+        (inputBlock) =>
+          allRemainingWidgets.some((widget) =>
+            widget.dependencies.some(
+              (dep) => dep.gid === inputBlock.gid && dep.cid === inputBlock.cid
+            )
+          )
+      );
+
       const newCurrentPage = Math.min(state.currentPage, newLayouts.length - 1);
 
       return {
@@ -408,6 +448,10 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         pageTypes: newPageTypes,
         overflowParents: adjustedOverflowParents,
         currentPage: newCurrentPage,
+        gridItemToAlgosMap: clonedAlgosMap,
+        gridItemToInputBlockDatasMap: clonedInputBlockDatasMap,
+        algorithmsOnReport: newAlgorithmsOnReport,
+        inputBlocksOnReport: newInputBlocksOnReport,
       };
     }
 
