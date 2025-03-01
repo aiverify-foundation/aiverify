@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { ZipFileUploader } from './components/zipFileUploader';
 import { Button } from '@/lib/components/button';
 import { ButtonVariant } from '@/lib/components/button';
+import { ZipFileUploader } from './components/zipFileUploader';
 
 function UploadResultsPage() {
   return (

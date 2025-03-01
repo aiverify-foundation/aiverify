@@ -1,9 +1,9 @@
 // ResultsHeader.tsx
 'use client';
 
-import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 
 const ResultsHeader = () => {

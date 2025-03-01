@@ -1,5 +1,5 @@
-import type { FileUpload } from '@/app/results/upload/manual/components/types';
-import { FastApiError } from '@/app/types';
+import { PythonFastApiErrorDetail } from '@/app/errorTypes';
+import { FileUpload } from '@/app/results/upload/types';
 
 export async function createResult(data: {
   jsonData: object;
@@ -19,7 +19,7 @@ export async function createResult(data: {
   });
 
   if (!response.ok) {
-    const errorData: FastApiError = await response.json();
+    const errorData: PythonFastApiErrorDetail = await response.json();
     throw errorData;
   }
 

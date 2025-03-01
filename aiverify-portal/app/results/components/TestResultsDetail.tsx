@@ -16,6 +16,12 @@ type Props = {
   onUpdateResult?: (updatedResult: TestResult) => void;
 };
 
+type Artifact = {
+  name: string;
+  type: string | null;
+  data: Blob | string;
+};
+
 export default function TestResultDetail({ result, onUpdateResult }: Props) {
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<
@@ -23,8 +29,11 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
   >('testArguments');
   const [currentResult, setCurrentResult] = useState<TestResult | null>(result);
   const [modalOpen, setModalOpen] = useState(false); // State for modal
-  const [selectedArtifact, setSelectedArtifact] = useState<any>(null);
-  const [isDownloading, setIsDownloading] = useState(false);
+
+  const [selectedArtifact, setSelectedArtifact] = useState<Artifact | null>(
+    null
+  );
+  const [, setIsDownloading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
 
@@ -43,6 +52,7 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
         onUpdateResult({ ...currentResult, name: newName });
       }
     } catch (error) {
+      console.error('Failed to update result name:', error);
       setModalMessage('Failed to update the result name. Please try again.');
       setIsModalVisible(true);
     } finally {
@@ -127,7 +137,10 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
         blob = new Blob([JSON.stringify(jsonData, null, 2)], {
           type: 'application/json',
         });
-      } else if (selectedArtifact.type.startsWith('text/')) {
+      } else if (
+        selectedArtifact.type &&
+        selectedArtifact.type.startsWith('text/')
+      ) {
         // Handle text files
         blob = new Blob([selectedArtifact.data], { type: 'text/plain' });
       } else {
