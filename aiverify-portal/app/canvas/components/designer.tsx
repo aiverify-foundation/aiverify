@@ -825,13 +825,14 @@ function Designer(props: DesignerProps) {
 
     // Update selected input block datas and create mapping for input blocks
     setSelectedInputBlockDatas(inputBlockDatas);
+    const updatedInputBlockDatasMap = inputBlockDatas.map((inputBlockData) => ({
+      gid: inputBlockData.gid,
+      cid: inputBlockData.cid,
+      inputBlockDataId: inputBlockData.id,
+    })) as WidgetInputBlockIdentifier[];
     dispatch({
       type: 'UPDATE_INPUT_BLOCK_TRACKER',
-      gridItemInputBlockDatasMap: inputBlockDatas.map((inputBlockData) => ({
-        gid: inputBlockData.gid,
-        cid: inputBlockData.cid,
-        inputBlockDataId: inputBlockData.id,
-      })) as WidgetInputBlockIdentifier[],
+      gridItemInputBlockDatasMap: updatedInputBlockDatasMap,
     });
   }
 
