@@ -318,36 +318,42 @@ function Designer(props: DesignerProps) {
   /**
    * Manages overflow pages based on content size
    * Automatically adds or removes overflow pages when content exceeds page boundaries
-   * Checks if widgets on the current page need additional pages to display properly
+   * Checks if widgets on any page need additional pages to display properly
    */
   useEffect(() => {
     if (isInitialMount.current) return;
 
     // Debounce the overflow check to avoid excessive calculations
     const debouncedOverflowCheck = debounce(() => {
-      const { overflows, numOfRequiredPages } = isPageContentOverflow(
-        layouts[currentPage],
-        state.widgets[currentPage]
-      );
+      // Check all pages for overflow, not just the current page
+      layouts.forEach((layout, pageIndex) => {
+        // Skip overflow pages - we only check regular pages
+        if (state.pageTypes[pageIndex] === 'overflow') return;
 
-      // Count existing overflow pages for current page
-      const existingOverflowPages = state.pageTypes.filter(
-        (type, idx) =>
-          type === 'overflow' && state.overflowParents[idx] === currentPage
-      ).length;
+        const { overflows, numOfRequiredPages } = isPageContentOverflow(
+          layouts[pageIndex],
+          state.widgets[pageIndex]
+        );
 
-      if (overflows && existingOverflowPages < numOfRequiredPages - 1) {
-        dispatch({
-          type: 'ADD_OVERFLOW_PAGES',
-          parentPageIndex: currentPage,
-          count: numOfRequiredPages - 1 - existingOverflowPages,
-        });
-      } else if (!overflows && existingOverflowPages > 0) {
-        dispatch({
-          type: 'REMOVE_OVERFLOW_PAGES',
-          parentPageIndex: currentPage,
-        });
-      }
+        // Count existing overflow pages for this page
+        const existingOverflowPages = state.pageTypes.filter(
+          (type, idx) =>
+            type === 'overflow' && state.overflowParents[idx] === pageIndex
+        ).length;
+
+        if (overflows && existingOverflowPages < numOfRequiredPages - 1) {
+          dispatch({
+            type: 'ADD_OVERFLOW_PAGES',
+            parentPageIndex: pageIndex,
+            count: numOfRequiredPages - 1 - existingOverflowPages,
+          });
+        } else if (!overflows && existingOverflowPages > 0) {
+          dispatch({
+            type: 'REMOVE_OVERFLOW_PAGES',
+            parentPageIndex: pageIndex,
+          });
+        }
+      });
     }, 300); // 300ms debounce time
 
     debouncedOverflowCheck();
@@ -356,8 +362,8 @@ function Designer(props: DesignerProps) {
       debouncedOverflowCheck.cancel(); // Clean up the debounce on unmount
     };
   }, [
-    layouts[currentPage],
-    state.widgets[currentPage],
+    layouts, // Now depend on all layouts
+    state.widgets, // Now depend on all widgets
     state.pageTypes,
     state.overflowParents,
   ]);
@@ -1022,7 +1028,7 @@ function Designer(props: DesignerProps) {
                     height: A4_HEIGHT,
                     width: A4_WIDTH,
                   }}>
-                  <div className="text-sm text-gray-200">
+                  <div className="text-sm text-gray-200 print:hidden">
                     Overflow content from page {overflowParent + 1}
                   </div>
                 </div>
