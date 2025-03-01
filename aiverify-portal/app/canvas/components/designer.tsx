@@ -1081,10 +1081,10 @@ function Designer(props: DesignerProps) {
   const dataDrawers = (
     <section
       className={cn(
-        'fixed top-[90px] z-10 flex flex-col items-start gap-4',
+        'fixed top-[90px] z-10 flex flex-col items-start gap-2',
         isPanelOpen ? 'left-[340px]' : 'left-[100px]'
       )}>
-      <h4 className="text-md font-bold text-gray-500">Data used:</h4>
+      <h4 className="text-md font-semibold text-gray-800">Data In Use:</h4>
       <TestResultsDrawer
         allTestResultsOnSystem={allTestResultsOnSystem}
         selectedTestResultsFromUrlParams={selectedTestResults}
