@@ -124,20 +124,36 @@ const ModelList: React.FC<Props> = ({ models }) => {
     setLoading(true); // Start loading state
     try {
       const ids = Array.from(selectedRows);
-      await Promise.all(ids.map((id) => deleteModelMutation.mutateAsync(id)));
-      setTimeout(() => {
-        const updatedResults = results.filter(
-          (model) => !ids.includes(String(model.id))
+      const deleteResults = await Promise.all(
+        ids.map((id) => deleteModelMutation.mutateAsync(id))
+      );
+
+      // Check if any deletion failed
+      const failedDeletions = deleteResults.filter((result) => !result.success);
+
+      if (failedDeletions.length > 0) {
+        // Show the first error message if there are failures
+        setModalMessage(
+          failedDeletions[0].message || 'Failed to delete some models.'
         );
-        setResults(updatedResults); // Update the data with deleted models removed
-        setModalMessage('Models deleted successfully!');
-        setSelectedModel(null); // Deactivate the split pane view
-        setSelectedRows(new Set()); // Clear selection after successful deletion
-        setLoading(false); // End loading state
-      }, 1000);
+        setLoading(false);
+      } else {
+        setTimeout(() => {
+          const updatedResults = results.filter(
+            (model) => !ids.includes(String(model.id))
+          );
+          setResults(updatedResults); // Update the data with deleted models removed
+          setModalMessage('Models deleted successfully!');
+          setSelectedModel(null); // Deactivate the split pane view
+          setSelectedRows(new Set()); // Clear selection after successful deletion
+          setLoading(false); // End loading state
+        }, 1000);
+      }
     } catch (error) {
       console.error('Failed to delete models:', error);
-      setModalMessage('Failed to delete the models.');
+      setModalMessage(
+        error instanceof Error ? error.message : 'Failed to delete the models.'
+      );
       setLoading(false);
     }
   };
@@ -151,13 +167,13 @@ const ModelList: React.FC<Props> = ({ models }) => {
           ? () => setIsModalVisible(false)
           : () => {
               setIsModalVisible(false);
-              if (modalMessage === 'Plugin deleted successfully!') {
+              if (modalMessage.includes('deleted successfully')) {
                 setLoading(false);
               }
             }
       }
       enableScreenOverlay
-      heading={isConfirmation ? 'Confirm Deletion' : 'Result'}
+      heading={isConfirmation ? 'Confirm Deletion' : 'Deletion Status'}
       height={200}
       primaryBtnLabel={isConfirmation ? 'DELETE' : undefined}
       secondaryBtnLabel={isConfirmation ? 'CANCEL' : undefined}
