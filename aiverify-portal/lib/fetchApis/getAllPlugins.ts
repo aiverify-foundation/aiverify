@@ -1,8 +1,10 @@
 import { Plugin } from '@/app/plugins/utils/types';
 
+const endpointUrl = `${process.env.APIGW_HOST}/plugins`;
+
 // TODO: Remove this function and use the getPlugins function instead.
 export async function getAllPlugins(): Promise<Plugin[]> {
-  const res = await fetch(`http://127.0.0.1:4000/plugins/`, {
+  const res = await fetch(`${endpointUrl}/`, {
     cache: 'no-store',
   });
 
