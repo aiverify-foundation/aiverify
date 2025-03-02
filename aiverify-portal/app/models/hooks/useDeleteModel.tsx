@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { TestModel } from '@/app/models/utils/types';
-import { toErrorWithMessage } from '@/lib/utils/error-utils';
-import { processResponse, ApiResult } from '@/lib/utils/fetchRequestHelpers';
+import { processResponse } from '@/lib/utils/fetchRequestHelpers';
 
 // Delete Model Hook
 const deleteModel = async (
