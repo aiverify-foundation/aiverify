@@ -148,7 +148,7 @@ export default function TestResultsList({
             activeFilter={activeFilter}
             isSplitPaneActive={true}
           />
-          <div className="mt-2 flex-1 overflow-y-auto">
+          <div className="mt-2 flex-1 overflow-y-auto p-1 scrollbar-hidden">
             {filteredResults.map((result) => (
               <TestResultsCard
                 key={result.id}

@@ -38,7 +38,7 @@ export default async function ResultsPage(props: UrlSearchParams) {
 
   return (
     <div className="p-6">
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-1 flex items-center justify-between">
         <div className="flex items-center">
           <Icon
             name={IconName.Lightning}
