@@ -1,6 +1,7 @@
 'use client';
 
 import JSZip from 'jszip';
+import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import { TestResult } from '@/app/types';
 import { Button, ButtonVariant } from '@/lib/components/button';
@@ -36,6 +37,7 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
   const [, setIsDownloading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
     setCurrentResult(result);
@@ -252,186 +254,163 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
   }
 
   return (
-    <div className="h-full overflow-y-auto rounded-lg bg-secondary-950 p-6 text-white shadow-lg scrollbar-hidden">
-      {/* popup for name update and deleting */}
-      {isModalVisible && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <Modal
-            bgColor="var(--color-primary-500)"
-            textColor="white"
-            onCloseIconClick={() => setIsModalVisible(false)}
-            enableScreenOverlay
-            heading=""
-            height={150}>
-            <p>{modalMessage}</p>
-          </Modal>
-        </div>
-      )}
-      <div className="mb-4 border-b border-gray-700 pb-4">
-        <ResultsNameHeader
-          id={currentResult.id}
-          name={currentResult.name}
-          isSaving={isSaving}
-          onSave={handleSaveName}
-          onDelete={handleDelete}
-        />
+    <div className="h-full">
+      <div className="flex h-full flex-col overflow-hidden rounded-lg bg-secondary-950 p-6 text-white shadow-lg">
+        {/* popup for name update */}
+        {isModalVisible && modalMessage.includes('Name updated') && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <Modal
+              bgColor="var(--color-primary-500)"
+              textColor="white"
+              onCloseIconClick={() => {
+                setIsModalVisible(false);
+                router.refresh();
+              }}
+              enableScreenOverlay
+              heading="Name Update"
+              height={150}>
+              <p>{modalMessage}</p>
+            </Modal>
+          </div>
+        )}
 
-        <div className="space-y-1 text-sm">
-          <p>
-            <span className="font-semibold">Model File:</span>{' '}
-            {currentResult.testArguments.modelFile.split('/').pop()}
-          </p>
-          <p>
-            <span className="font-semibold">Model Type:</span>{' '}
-            {currentResult.testArguments.modelType}
-          </p>
-          <p>
-            <span className="font-semibold">Test Date:</span>{' '}
-            {new Date(currentResult.created_at).toLocaleString('en-GB')}
-          </p>
-          <p>
-            <span className="font-semibold">Test Dataset:</span>{' '}
-            {currentResult.testArguments.testDataset.split('/').pop()}
-          </p>
-          <p>
-            <span className="font-semibold">Ground Truth Dataset:</span>{' '}
-            {currentResult.testArguments.groundTruthDataset.split('/').pop()}
-          </p>
-          <p>
-            <span className="font-semibold">GID:</span> {currentResult.gid}
-          </p>
-          <p>
-            <span className="font-semibold">Version:</span>{' '}
-            {currentResult.version}
-          </p>
-          <p>
-            <span className="font-semibold">Duration:</span>{' '}
-            {currentResult.timeTaken}
-          </p>
-        </div>
-      </div>
+        {/* popup for deletion status */}
+        {isModalVisible && modalMessage.includes('delete') && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <Modal
+              bgColor="var(--color-primary-500)"
+              textColor="white"
+              onCloseIconClick={() => {
+                setIsModalVisible(false);
+                router.refresh();
+              }}
+              enableScreenOverlay
+              heading="Deletion Status"
+              height={150}>
+              <p>{modalMessage}</p>
+            </Modal>
+          </div>
+        )}
+        <div className="mb-4 border-b border-gray-700 pb-4">
+          <ResultsNameHeader
+            id={currentResult.id}
+            name={currentResult.name}
+            isSaving={isSaving}
+            onSave={handleSaveName}
+            onDelete={handleDelete}
+          />
 
-      <div>
-        <div className="mb-4 flex justify-start space-x-1">
-          <button
-            className={`rounded-t px-6 py-2 ${
-              activeTab === 'testArguments'
-                ? 'border-b-4 border-primary-500 bg-secondary-200 font-semibold text-secondary-950'
-                : 'bg-secondary-300 text-secondary-950'
-            }`}
-            onClick={() => setActiveTab('testArguments')}>
-            Algorithm Arguments
-          </button>
-          <button
-            className={`rounded-t px-6 py-2 ${
-              activeTab === 'outputArtifacts'
-                ? 'border-b-4 border-primary-500 bg-secondary-200 font-semibold text-secondary-950'
-                : 'bg-secondary-300 text-secondary-950'
-            }`}
-            onClick={() => setActiveTab('outputArtifacts')}>
-            Output & Artifacts
-          </button>
+          <div className="space-y-1 text-sm">
+            <p>
+              <span className="font-semibold">Model File:</span>{' '}
+              {currentResult.testArguments.modelFile.split('/').pop()}
+            </p>
+            <p>
+              <span className="font-semibold">Model Type:</span>{' '}
+              {currentResult.testArguments.modelType}
+            </p>
+            <p>
+              <span className="font-semibold">Test Date:</span>{' '}
+              {new Date(currentResult.created_at).toLocaleString('en-GB')}
+            </p>
+            <p>
+              <span className="font-semibold">Test Dataset:</span>{' '}
+              {currentResult.testArguments.testDataset.split('/').pop()}
+            </p>
+            <p>
+              <span className="font-semibold">Ground Truth Dataset:</span>{' '}
+              {currentResult.testArguments.groundTruthDataset.split('/').pop()}
+            </p>
+            <p>
+              <span className="font-semibold">GID:</span> {currentResult.gid}
+            </p>
+            <p>
+              <span className="font-semibold">Version:</span>{' '}
+              {currentResult.version}
+            </p>
+            <p>
+              <span className="font-semibold">Duration:</span>{' '}
+              {currentResult.timeTaken}
+            </p>
+          </div>
         </div>
 
-        <div className="rounded-b-lg shadow-inner">
-          {activeTab === 'testArguments' && (
-            <div className="rounded text-sm">
-              <h3 className="mb-2 text-lg font-semibold">
-                Algorithm Arguments
-              </h3>
-              <div className="max-h-64 overflow-y-auto">
-                <pre className="whitespace-pre-wrap break-words bg-secondary-800 p-4">
-                  {typeof currentResult.testArguments.algorithmArgs === 'string'
-                    ? JSON.stringify(
-                        JSON.parse(
-                          JSON.parse(currentResult.testArguments.algorithmArgs)
-                        ),
-                        null,
-                        2
-                      )
-                    : JSON.stringify(
-                        currentResult.testArguments.algorithmArgs,
-                        null,
-                        2
-                      )}
-                </pre>
-              </div>
-              <div className="mt-4 flex justify-end overflow-y-auto">
-                <Button
-                  pill
-                  textColor="white"
-                  variant={ButtonVariant.PRIMARY}
-                  size="sm"
-                  text="DOWNLOAD"
-                  color="primary-950"
-                  onClick={() => handleDownloadJson('algorithmArgs')}
-                />
-              </div>
-            </div>
-          )}
-          {activeTab === 'outputArtifacts' && (
-            <div>
-              <div className="mb-4 rounded text-sm">
-                <h3 className="mb-2 text-lg font-semibold">Outputs</h3>
+        <div>
+          <div className="mb-4 flex justify-start space-x-1">
+            <button
+              className={`rounded-t px-6 py-2 ${
+                activeTab === 'testArguments'
+                  ? 'border-b-4 border-primary-500 bg-secondary-200 font-semibold text-secondary-950'
+                  : 'bg-secondary-300 text-secondary-950'
+              }`}
+              onClick={() => setActiveTab('testArguments')}>
+              Algorithm Arguments
+            </button>
+            <button
+              className={`rounded-t px-6 py-2 ${
+                activeTab === 'outputArtifacts'
+                  ? 'border-b-4 border-primary-500 bg-secondary-200 font-semibold text-secondary-950'
+                  : 'bg-secondary-300 text-secondary-950'
+              }`}
+              onClick={() => setActiveTab('outputArtifacts')}>
+              Output & Artifacts
+            </button>
+          </div>
+
+          <div className="rounded-b-lg shadow-inner">
+            {activeTab === 'testArguments' && (
+              <div className="rounded text-sm">
+                <h3 className="mb-2 text-lg font-semibold">
+                  Algorithm Arguments
+                </h3>
                 <div className="max-h-64 overflow-y-auto">
-                  <pre className="whitespace-pre-wrap bg-secondary-800 p-4">
-                    {typeof currentResult.output === 'string'
+                  <pre className="whitespace-pre-wrap break-words bg-secondary-800 p-4">
+                    {typeof currentResult.testArguments.algorithmArgs ===
+                    'string'
                       ? JSON.stringify(
-                          JSON.parse(JSON.parse(currentResult.output)), // Double parse
+                          JSON.parse(
+                            JSON.parse(
+                              currentResult.testArguments.algorithmArgs
+                            )
+                          ),
                           null,
                           2
                         )
-                      : JSON.stringify(currentResult.output, null, 2)}
+                      : JSON.stringify(
+                          currentResult.testArguments.algorithmArgs,
+                          null,
+                          2
+                        )}
                   </pre>
                 </div>
+                <div className="mt-4 flex justify-end overflow-y-auto">
+                  <Button
+                    pill
+                    textColor="white"
+                    variant={ButtonVariant.PRIMARY}
+                    size="sm"
+                    text="DOWNLOAD"
+                    color="primary-950"
+                    onClick={() => handleDownloadJson('algorithmArgs')}
+                  />
+                </div>
               </div>
-              <div className="mt-4 flex justify-end">
-                <Button
-                  pill
-                  textColor="white"
-                  variant={ButtonVariant.PRIMARY}
-                  size="sm"
-                  text="DOWNLOAD"
-                  color="primary-950"
-                  onClick={() => handleDownloadJson('output')}
-                />
-              </div>
-              <div className="rounded text-sm">
-                <h3 className="mb-2 text-lg font-semibold">Artifacts</h3>
-                <div className="max-h-64 overflow-y-auto whitespace-pre-wrap bg-secondary-800 p-4">
-                  {Array.isArray(currentResult.artifacts) ? (
-                    <ul className="space-y-1 pl-6">
-                      {currentResult.artifacts.map((artifact, index) => (
-                        <li
-                          key={index}
-                          className="relative before:absolute before:left-[-1.5em] before:content-['•']">
-                          <Button
-                            variant={ButtonVariant.LINK}
-                            text={
-                              typeof artifact === 'string'
-                                ? artifact
-                                : JSON.stringify(artifact, null, 2)
-                            }
-                            size="md"
-                            width={10}
-                            textColor="var(--color-primary-500)"
-                            onClick={() =>
-                              handleArtifactClick({
-                                id: currentResult.id,
-                                name: artifact,
-                              })
-                            }
-                          />
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <pre>
-                      {typeof currentResult.artifacts === 'string'
-                        ? currentResult.artifacts // Display as is if it’s a string
-                        : JSON.stringify(currentResult.artifacts, null, 2)}
+            )}
+            {activeTab === 'outputArtifacts' && (
+              <div>
+                <div className="mb-4 rounded text-sm">
+                  <h3 className="mb-2 text-lg font-semibold">Outputs</h3>
+                  <div className="max-h-64 overflow-y-auto">
+                    <pre className="whitespace-pre-wrap bg-secondary-800 p-4">
+                      {typeof currentResult.output === 'string'
+                        ? JSON.stringify(
+                            JSON.parse(JSON.parse(currentResult.output)), // Double parse
+                            null,
+                            2
+                          )
+                        : JSON.stringify(currentResult.output, null, 2)}
                     </pre>
-                  )}
+                  </div>
                 </div>
                 <div className="mt-4 flex justify-end">
                   <Button
@@ -441,22 +420,71 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
                     size="sm"
                     text="DOWNLOAD"
                     color="primary-950"
-                    onClick={handleDownloadAllArtifacts}
+                    onClick={() => handleDownloadJson('output')}
                   />
                 </div>
+                <div className="rounded text-sm">
+                  <h3 className="mb-2 text-lg font-semibold">Artifacts</h3>
+                  <div className="max-h-64 overflow-y-auto whitespace-pre-wrap bg-secondary-800 p-4">
+                    {Array.isArray(currentResult.artifacts) ? (
+                      <ul className="space-y-1 pl-6">
+                        {currentResult.artifacts.map((artifact, index) => (
+                          <li
+                            key={index}
+                            className="relative before:absolute before:left-[-1.5em] before:content-['•']">
+                            <Button
+                              variant={ButtonVariant.LINK}
+                              text={
+                                typeof artifact === 'string'
+                                  ? artifact
+                                  : JSON.stringify(artifact, null, 2)
+                              }
+                              size="md"
+                              width={10}
+                              textColor="var(--color-primary-500)"
+                              onClick={() =>
+                                handleArtifactClick({
+                                  id: currentResult.id,
+                                  name: artifact,
+                                })
+                              }
+                            />
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <pre>
+                        {typeof currentResult.artifacts === 'string'
+                          ? currentResult.artifacts // Display as is if it’s a string
+                          : JSON.stringify(currentResult.artifacts, null, 2)}
+                      </pre>
+                    )}
+                  </div>
+                  <div className="mt-4 flex justify-end">
+                    <Button
+                      pill
+                      textColor="white"
+                      variant={ButtonVariant.PRIMARY}
+                      size="sm"
+                      text="DOWNLOAD"
+                      color="primary-950"
+                      onClick={handleDownloadAllArtifacts}
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
+        {selectedArtifact && modalOpen && (
+          <ArtifactModal
+            isOpen={modalOpen}
+            artifact={selectedArtifact}
+            onClose={closeModal}
+            onDownload={() => handleDownloadArtifact()}
+          />
+        )}
       </div>
-      {selectedArtifact && modalOpen && (
-        <ArtifactModal
-          isOpen={modalOpen}
-          artifact={selectedArtifact}
-          onClose={closeModal}
-          onDownload={() => handleDownloadArtifact()}
-        />
-      )}
     </div>
   );
 }
