@@ -14,6 +14,7 @@ interface DropdownProps {
   style?: string;
   selectedId?: string;
   onSelect?: (id: string) => void;
+  fullWidth?: boolean;
 }
 
 const Dropdown = ({
@@ -24,6 +25,7 @@ const Dropdown = ({
   style,
   selectedId,
   onSelect,
+  fullWidth = false,
 }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<DropdownItem | undefined>(
@@ -86,7 +88,7 @@ const Dropdown = ({
 
   // Calculate the max width for the button
   useEffect(() => {
-    if (measureRef.current) {
+    if (!fullWidth && measureRef.current) {
       const widths = data.map((item) => {
         measureRef.current!.textContent = item.name;
         return measureRef.current!.offsetWidth;
@@ -94,9 +96,9 @@ const Dropdown = ({
       const maxWidth = Math.max(...widths);
       setMaxWidth(maxWidth + 15);
     }
-  }, [data]);
+  }, [data, fullWidth]);
 
-  const dropdownClass = `absolute w-full min-w-[400px] overflow-y-auto py-3 rounded shadow-md z-10 border-secondary-300 bg-secondary-950 ${
+  const dropdownClass = `absolute w-full overflow-y-auto py-3 rounded shadow-md z-10 border-secondary-300 bg-secondary-950 ${
     dynamicPosition === 'bottom-right'
       ? 'top-full right-0 mt-2'
       : dynamicPosition === 'bottom-left'
@@ -109,7 +111,7 @@ const Dropdown = ({
   return (
     <div
       ref={dropdownRef}
-      className="relative">
+      className={`relative ${fullWidth ? 'w-full' : ''}`}>
       <span
         ref={measureRef}
         style={{
@@ -129,8 +131,8 @@ const Dropdown = ({
           selectedItem
             ? 'bg-secondary-950 text-white'
             : 'bg-secondary-950 text-white'
-        } ${style}`}
-        style={{ minWidth: maxWidth + 40 }}>
+        } ${style} ${fullWidth ? 'w-full' : ''}`}
+        style={fullWidth ? {} : { minWidth: maxWidth + 40 }}>
         <span>{selectedItem?.name || title}</span>
         <Icon
           name={isOpen ? IconName.WideArrowUp : IconName.WideArrowDown}

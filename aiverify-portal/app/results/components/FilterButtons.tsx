@@ -62,9 +62,9 @@ export default function ResultsFilters({
     // Vertical layout for split pane active
     <section className="flex flex-col space-y-4">
       {/* Filter and Sort */}
-      <div className="flex items-start space-x-3">
+      <div className="flex w-full space-x-3">
         {/* Filter Dropdown */}
-        <div>
+        <div className="w-1/2">
           <h4 className="text-left">Filter By</h4>
           <Dropdown
             id="filter-dropdown"
@@ -72,16 +72,18 @@ export default function ResultsFilters({
             data={filterOptions}
             selectedId={activeFilter}
             onSelect={(id) => onFilter(id)}
+            fullWidth={true}
           />
         </div>
 
         {/* Sort Dropdown */}
-        <div>
+        <div className="w-1/2">
           <h4 className="text-left">Sort By</h4>
           <Dropdown
             id="sort-dropdown"
             data={sortOptions}
             onSelect={(sortBy) => onSort(sortBy)}
+            fullWidth={true}
           />
         </div>
       </div>
