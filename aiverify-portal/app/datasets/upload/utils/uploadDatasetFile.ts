@@ -1,5 +1,5 @@
-import { ErrorWithMessage, PythonFastApiErrorDetail } from '@/app/errorTypes';
 import type { FileUpload } from '@/app/datasets/upload/types';
+import { ErrorWithMessage, PythonFastApiErrorDetail } from '@/app/errorTypes';
 import { parseFastAPIError } from '@/lib/utils/parseFastAPIError';
 
 export type UploadRequestPayload = {

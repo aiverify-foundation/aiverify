@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import React, { useImperativeHandle, useState } from 'react';
 import { FileUpload } from '@/app/datasets/upload/types';
 import { uploadDatasetFile } from '@/app/datasets/upload/utils/uploadDatasetFile';
@@ -8,7 +9,6 @@ import { ButtonVariant } from '@/lib/components/button';
 import { Button } from '@/lib/components/button';
 import { FileSelect } from '@/lib/components/fileSelect';
 import { cn } from '@/lib/utils/twmerge';
-import Link from 'next/link';
 
 export interface FileSelectorHandle {
   getFiles: () => FileUpload[];
