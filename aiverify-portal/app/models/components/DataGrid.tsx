@@ -168,7 +168,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
                     type="checkbox"
                     checked={selectedRows.has(getRowId(row))}
                     onChange={(e) => handleCheckboxChange(getRowId(row), e)}
-                    className="h-12 w-12 cursor-pointer"
+                    className="h-5 w-5 cursor-pointer"
                   />
                 </td>
               )}
