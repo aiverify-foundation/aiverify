@@ -20,7 +20,7 @@ class Pipeline:
             (PipeStageEum.DOWNLOAD, os.getenv("PIPELINE_DOWNLOAD", "apigw_download")),
             (PipeStageEum.PIPELINE_BUILD, os.getenv("PIPELINE_BUILD", "virtual_env")),
             (PipeStageEum.VALIDATE_INPUT, os.getenv("PIPELINE_VALIDATE_INPUT", "validate_input")),
-            # (PipeStageEum.PIPE_EXECUTE, os.getenv("PIPELINE_EXECUTE", "virtual_env_execute")),
+            (PipeStageEum.PIPELINE_EXECUTE, os.getenv("PIPELINE_EXECUTE", "virtual_env_execute")),
             # (PipeStageEum.VALIDATE_OUTPUT, os.getenv("PIPELINE_VALIDATE_OUTPUT", "validate_output")),
             # (PipeStageEum.UPLOAD, os.getenv("PIPELINE_UPLOAD", "apigw_upload")),
         ]
@@ -65,7 +65,7 @@ class Pipeline:
                 logger.error(f"Error in stage {stage.value}: {str(e)}")
                 raise e
 
-        logger.info(f"Pipeline run complete: {task_data.output}")
+        logger.info(f"Pipeline run complete")
         return task_data
 
     def teardown(self):

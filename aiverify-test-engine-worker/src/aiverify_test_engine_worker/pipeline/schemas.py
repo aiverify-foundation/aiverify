@@ -54,9 +54,11 @@ class PipelineData(BaseModel):
     algorithm_script_path: Path = Path()
     input_schema_path: Path = Path()
     output_schema_path: Path = Path()
+    data_path: Path = Path()
+    model_path: Path = Path()
+    ground_truth_path: Path|None = None
     to_build: bool = False # whether or not to run build
     intermediate_data: dict[str, Any] = {}
-    output: Optional[dict[str,Any]] = None # test results output
-    artifacts: Optional[List[str]] = None # list of artifact filenames
+    output_zip: Optional[Path] = None # test results output
     error_message: Optional[str] = None # error message on error
 

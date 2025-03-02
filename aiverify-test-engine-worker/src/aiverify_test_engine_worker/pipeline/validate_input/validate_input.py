@@ -40,7 +40,7 @@ class ValidateInput(Pipe):
             #             input_schema_path = algorithm_path.joinpath(subdir).joinpath(INPUT_SCHEMA_FILENAME)
             #             break
             # input_schema_path = FileCache.find_file_in_directory(algorithm_path, INPUT_SCHEMA_FILENAME, 2)
-            algo_script_path, input_schema_path, output_schema_path = validate_algorithm(algorithm_path)
+            algo_script_path, input_schema_path, output_schema_path, algo_meta = validate_algorithm(algorithm_path)
             task_data.algorithm_script_path = algo_script_path
             task_data.input_schema_path = input_schema_path
             task_data.output_schema_path = output_schema_path

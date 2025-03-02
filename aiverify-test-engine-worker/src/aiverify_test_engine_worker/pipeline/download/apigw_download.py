@@ -73,6 +73,7 @@ class ApigwDownload(Pipe):
             task_data.to_build = True  # run build after download
         else:
             # already in cache
+            task_data.to_build = False
             logger.debug(f"Algorithm {task_data.algorithm_id} already in cache")
 
         task_data.algorithm_path = algo_dir
@@ -108,10 +109,10 @@ class ApigwDownload(Pipe):
         logger.debug(f"Execute Download task {task_data}")
 
         self._download_algo(task_data)
-        self._download_model(task_data.task.modelFile, task_data.task.modelFileHash)
-        self._download_dataset(task_data.task.testDataset, task_data.task.testDatasetHash)
+        task_data.model_path = self._download_model(task_data.task.modelFile, task_data.task.modelFileHash)
+        task_data.data_path = self._download_dataset(task_data.task.testDataset, task_data.task.testDatasetHash)
         if task_data.task.groundTruthDataset:
-            self._download_dataset(task_data.task.groundTruthDataset, task_data.task.groundTruthDatasetHash)
+            task_data.ground_truth_path = self._download_dataset(task_data.task.groundTruthDataset, task_data.task.groundTruthDatasetHash)
 
         # data.intermediate_data[self.pipe_stage] = {
         #     "hello": "world"
