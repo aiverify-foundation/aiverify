@@ -1,8 +1,7 @@
 import os
 import importlib.util
 import inspect
-from typing import Dict, Type, List, Tuple
-from pathlib import Path
+from typing import List, Tuple
 from ..lib.logging import logger
 from .pipe import Pipe, PipeException
 from .schemas import PipelineData, PipeStageEum
@@ -19,9 +18,9 @@ class Pipeline:
         # Array of tuples representing stage-to-module mapping
         stage_mapping: List[Tuple[PipeStageEum, str]] = [
             (PipeStageEum.DOWNLOAD, os.getenv("PIPELINE_DOWNLOAD", "apigw_download")),
-            # (PipeStageEum.VALIDATE_INPUT, os.getenv("PIPELINE_VALIDATE_INPUT", "validate_input")),
-            # (PipeStageEum.PIPE_BUILD, os.getenv("PIPELINE_BUILD", "virtual_env")),
-            # (PipeStageEum.PIPE_EXECUTE, os.getenv("PIPELINE_EXECUTE", "python_execute")),
+            (PipeStageEum.PIPELINE_BUILD, os.getenv("PIPELINE_BUILD", "virtual_env")),
+            (PipeStageEum.VALIDATE_INPUT, os.getenv("PIPELINE_VALIDATE_INPUT", "validate_input")),
+            # (PipeStageEum.PIPE_EXECUTE, os.getenv("PIPELINE_EXECUTE", "virtual_env_execute")),
             # (PipeStageEum.VALIDATE_OUTPUT, os.getenv("PIPELINE_VALIDATE_OUTPUT", "validate_output")),
             # (PipeStageEum.UPLOAD, os.getenv("PIPELINE_UPLOAD", "apigw_upload")),
         ]
@@ -53,15 +52,20 @@ class Pipeline:
 
     def run(self, task_data: PipelineData) -> PipelineData:
         """Run the pipeline stages in sequence."""
+        algorithmId = f"{task_data.task.algorithmGID}_{task_data.task.algorithmCID}"
+        task_data.algorithm_id = algorithmId
+        logger.info(f"Running pipeline: {task_data}")
         for stage, pipe_instance in self.stages:
+            if stage == PipeStageEum.PIPELINE_BUILD and not task_data.to_build:
+                continue # only build when to_build set to True
             try:
                 # Execute the pipe instance
                 task_data = pipe_instance.execute(task_data)
             except PipeException as e:
-                print(f"Error in {stage.value}: {e}")
-                raise
+                logger.error(f"Error in stage {stage.value}: {str(e)}")
+                raise e
 
-        logger.debug(f"Run complete: {task_data}")
+        logger.info(f"Pipeline run complete: {task_data.output}")
         return task_data
 
     def teardown(self):

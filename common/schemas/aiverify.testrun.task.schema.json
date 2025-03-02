@@ -17,7 +17,11 @@
         "api"
       ]
     },
-    "algorithmId": {
+    "algorithmGID": {
+      "description": "Algorithm ID of the algorithm to run",
+      "type": "string"
+    },
+    "algorithmCID": {
       "description": "Algorithm ID of the algorithm to run",
       "type": "string"
     },

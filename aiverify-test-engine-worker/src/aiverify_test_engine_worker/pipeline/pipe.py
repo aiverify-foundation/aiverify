@@ -24,5 +24,5 @@ class Pipe(ABC):
         pass
 
     @abstractmethod
-    def execute(self, task: PipelineData) -> PipelineData:
+    def execute(self, task_data: PipelineData) -> PipelineData:
         pass

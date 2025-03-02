@@ -15,13 +15,21 @@ if __name__ == "__main__":
     task = TestRunTask(
         id="123",
         mode=ModeEnum.UPLOAD,
-        algorithmId="algo1",
-        algorithmArgs={"arg1": "value1"},
-        testDataset="dataset1",
-        modelFile="/tmp/data/modelfile"
+        algorithmGID="aiverify.stock.accumulated_local_effect",
+        algorithmCID="aiverfy_accumulated_local_effect",
+        # algorithmHash="fake",
+        algorithmArgs={},
+        modelFile="sample_bc_credit_sklearn_linear.LogisticRegression.sav",
+        testDataset="sample_bc_credit_data.sav",
+        groundTruthDataset="sample_bc_credit_data.sav",
+        groundTruth="default",
+        modelType="classification"
     )
     pipeline_data = PipelineData(task=task)
-    pipeline.run(pipeline_data)
+    try:
+        pipeline.run(pipeline_data)
+    except:
+        pass
 
     init_group()
     try:

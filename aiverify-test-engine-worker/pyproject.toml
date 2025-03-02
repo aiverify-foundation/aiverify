@@ -35,6 +35,7 @@ dependencies = [
 
 [tool.hatch.envs.default]
 post-install-commands = [
+  "pip install -e '../aiverify-test-engine[all]'",
 ]
 
 [tool.hatch.metadata]

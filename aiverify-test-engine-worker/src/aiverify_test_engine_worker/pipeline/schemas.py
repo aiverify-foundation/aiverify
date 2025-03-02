@@ -1,6 +1,7 @@
 from pydantic import BaseModel, model_validator
 from typing import Optional, Dict, Any, List
 from enum import StrEnum, auto
+from pathlib import Path
 
 class ModeEnum(StrEnum):
     UPLOAD = auto()
@@ -9,7 +10,8 @@ class ModeEnum(StrEnum):
 class TestRunTask(BaseModel):
     id: str
     mode: ModeEnum
-    algorithmId: str 
+    algorithmGID: str 
+    algorithmCID: str 
     algorithmHash: Optional[str] = None
     algorithmArgs: Dict[str, Any]
     testDataset: str
@@ -17,11 +19,11 @@ class TestRunTask(BaseModel):
     groundTruthDataset: Optional[str] = None
     groundTruthDatasetHash: Optional[str] = None
     groundTruth: Optional[str] = None
-    modelFile: Optional[str] = None
+    modelFile: str
     modelFileHash: Optional[str] = None
     apiSchema: Optional[Dict[str, Any]] = None
     apiConfig: Optional[Dict[str, Any]] = None
-    modelType: Optional[str] = None
+    modelType: str
 
     # @model_validator(mode='before')
     # @classmethod
@@ -39,15 +41,21 @@ class TestRunTask(BaseModel):
 
 class PipeStageEum(StrEnum):
     DOWNLOAD = auto()
+    PIPELINE_BUILD = auto()
     VALIDATE_INPUT = auto()
-    PIPE_BUILD = auto()
-    PIPE_EXECUTE = auto()
+    PIPELINE_EXECUTE = auto()
     VALIDATE_OUTPUT = auto()
     UPLOAD = auto()    
 
 class PipelineData(BaseModel):
     task: TestRunTask
-    intermediate_data: dict[PipeStageEum, Any] = {}
+    algorithm_path: Path = Path() # path to the algorithm folder
+    algorithm_id: str = "" # algorithm id
+    algorithm_script_path: Path = Path()
+    input_schema_path: Path = Path()
+    output_schema_path: Path = Path()
+    to_build: bool = False # whether or not to run build
+    intermediate_data: dict[str, Any] = {}
     output: Optional[dict[str,Any]] = None # test results output
     artifacts: Optional[List[str]] = None # list of artifact filenames
     error_message: Optional[str] = None # error message on error
