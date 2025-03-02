@@ -2,7 +2,6 @@ from ..pipe import Pipe, PipeException
 from ..schemas import PipelineData, PipeStageEum
 from ...lib.logging import logger
 
-from pathlib import Path
 import os
 import requests
 
