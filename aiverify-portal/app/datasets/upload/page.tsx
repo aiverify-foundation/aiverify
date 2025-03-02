@@ -1,7 +1,4 @@
-import Link from 'next/link';
 import { DatasetUploader } from './components/datasetUploader';
-import { Button } from '@/lib/components/button';
-import { ButtonVariant } from '@/lib/components/button';
 
 function UploadResultsPage() {
   return (
