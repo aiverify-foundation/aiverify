@@ -27,5 +27,5 @@ def init_group():
         #     count=1
         # )
         logger.info(f"Created STREAM {TASK_STREAM_NAME}")
-    except ResponseError as e:
+    except ResponseError:
         pass

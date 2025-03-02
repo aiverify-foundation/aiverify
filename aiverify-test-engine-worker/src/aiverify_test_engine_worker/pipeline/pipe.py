@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
 from .schemas import PipelineData, PipeStageEum
 
+
 class PipeException(Exception):
     pass
+
 
 class Pipe(ABC):
     def setup(self):

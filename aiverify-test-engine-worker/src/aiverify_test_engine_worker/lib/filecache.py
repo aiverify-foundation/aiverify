@@ -3,7 +3,6 @@ from pathlib import Path
 import shutil
 import hashlib
 import zipfile
-from typing import List
 
 from .logging import logger
 
@@ -30,7 +29,6 @@ def get_base_data_dir() -> Path:
         return mydir
     except Exception as e:
         logger.error(f"Unable to access data directory: {e}")
-        s3 = None
         raise InvalidFileCache(e)
 
 
@@ -132,6 +130,7 @@ class FileCache:
         with open(hash_path, 'w') as f:
             f.write(file_hash)
         return cache_path
+
 
 algo_cache = FileCache(subdir_name="algorithms")
 model_cache = FileCache(subdir_name="models")

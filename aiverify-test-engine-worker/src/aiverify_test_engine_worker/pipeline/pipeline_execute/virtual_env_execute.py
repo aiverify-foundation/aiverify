@@ -1,6 +1,5 @@
 from ..pipe import Pipe, PipeException
 from ..schemas import PipelineData, PipeStageEum
-from ...lib.filecache import algo_cache
 from ...lib.logging import logger
 
 import os
@@ -50,7 +49,7 @@ class VirtualEnvironmentExecute(Pipe):
             p = subprocess.run(cmds,
                                cwd=task_data.algorithm_path,
                                check=True, stdin=True, stdout=True,
-                               env={"PYTHONPATH":str(Path(__file__).parent.parent.parent.parent)}
+                               env={"PYTHONPATH": str(Path(__file__).parent.parent.parent.parent)}
                                )
             if p.returncode != 0:
                 raise PipeException(f"Error executing algorithm: {p.stderr}")

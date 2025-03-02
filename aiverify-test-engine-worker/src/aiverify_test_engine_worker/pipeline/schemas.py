@@ -1,17 +1,19 @@
 from pydantic import BaseModel, model_validator
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any
 from enum import StrEnum, auto
 from pathlib import Path
+
 
 class ModeEnum(StrEnum):
     UPLOAD = auto()
     API = auto()
 
+
 class TestRunTask(BaseModel):
     id: str
     mode: ModeEnum
-    algorithmGID: str 
-    algorithmCID: str 
+    algorithmGID: str
+    algorithmCID: str
     algorithmHash: Optional[str] = None
     algorithmArgs: Dict[str, Any]
     testDataset: str
@@ -37,7 +39,7 @@ class TestRunTask(BaseModel):
         if self.mode == ModeEnum.API and (not self.apiSchema or not self.apiConfig):
             raise ValueError("apiSchema and apiConfig are required when mode is API")
         return self
-    
+
 
 class PipeStageEum(StrEnum):
     DOWNLOAD = auto()
@@ -45,20 +47,20 @@ class PipeStageEum(StrEnum):
     VALIDATE_INPUT = auto()
     PIPELINE_EXECUTE = auto()
     VALIDATE_OUTPUT = auto()
-    UPLOAD = auto()    
+    UPLOAD = auto()
+
 
 class PipelineData(BaseModel):
     task: TestRunTask
-    algorithm_path: Path = Path() # path to the algorithm folder
-    algorithm_id: str = "" # algorithm id
+    algorithm_path: Path = Path()  # path to the algorithm folder
+    algorithm_id: str = ""  # algorithm id
     algorithm_script_path: Path = Path()
     input_schema_path: Path = Path()
     output_schema_path: Path = Path()
     data_path: Path = Path()
     model_path: Path = Path()
-    ground_truth_path: Path|None = None
-    to_build: bool = False # whether or not to run build
+    ground_truth_path: Path | None = None
+    to_build: bool = False  # whether or not to run build
     intermediate_data: dict[str, Any] = {}
-    output_zip: Optional[Path] = None # test results output
-    error_message: Optional[str] = None # error message on error
-
+    output_zip: Path = Path()  # test results output
+    error_message: Optional[str] = None  # error message on error

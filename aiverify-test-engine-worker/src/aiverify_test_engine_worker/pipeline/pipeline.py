@@ -6,8 +6,10 @@ from ..lib.logging import logger
 from .pipe import Pipe, PipeException
 from .schemas import PipelineData, PipeStageEum
 
+
 class PipelineException(Exception):
     pass
+
 
 class Pipeline:
     def __init__(self):
@@ -22,7 +24,7 @@ class Pipeline:
             (PipeStageEum.VALIDATE_INPUT, os.getenv("PIPELINE_VALIDATE_INPUT", "validate_input")),
             (PipeStageEum.PIPELINE_EXECUTE, os.getenv("PIPELINE_EXECUTE", "virtual_env_execute")),
             # (PipeStageEum.VALIDATE_OUTPUT, os.getenv("PIPELINE_VALIDATE_OUTPUT", "validate_output")),
-            # (PipeStageEum.UPLOAD, os.getenv("PIPELINE_UPLOAD", "apigw_upload")),
+            (PipeStageEum.UPLOAD, os.getenv("PIPELINE_UPLOAD", "apigw_upload")),
         ]
 
         stages = []
@@ -31,7 +33,7 @@ class Pipeline:
             logger.info(f"Loading module {stage.value}.{module_name}")
             module = importlib.import_module(f"aiverify_test_engine_worker.pipeline.{stage.value}.{module_name}")
             logger.debug(f"module: {module}")
-            pipe_class: type[Pipe]|None = None
+            pipe_class: type[Pipe] | None = None
             for name, obj in inspect.getmembers(module):
                 try:
                     if name != 'Pipe' and issubclass(obj, Pipe):
@@ -57,7 +59,7 @@ class Pipeline:
         logger.info(f"Running pipeline: {task_data}")
         for stage, pipe_instance in self.stages:
             if stage == PipeStageEum.PIPELINE_BUILD and not task_data.to_build:
-                continue # only build when to_build set to True
+                continue  # only build when to_build set to True
             try:
                 # Execute the pipe instance
                 task_data = pipe_instance.execute(task_data)

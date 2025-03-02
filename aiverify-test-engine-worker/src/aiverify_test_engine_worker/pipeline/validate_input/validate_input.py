@@ -1,6 +1,5 @@
 from ..pipe import Pipe, PipeException
 from ..schemas import PipelineData, PipeStageEum
-from ...lib.filecache import FileCache
 from ...lib.logging import logger
 from ...lib.algorithm_utils import validate_algorithm, AlgorithmValidationError
 
@@ -50,7 +49,7 @@ class ValidateInput(Pipe):
                 try:
                     schema = json.load(fp)
                     # logger.debug(f"schema: {schema}")
-                except json.JSONDecodeError as e:
+                except json.JSONDecodeError:
                     raise PipeException(f"Algorithm {task_data.algorithm_id} has invalid input schema")
                 try:
                     validate(task_data.task.algorithmArgs, schema)

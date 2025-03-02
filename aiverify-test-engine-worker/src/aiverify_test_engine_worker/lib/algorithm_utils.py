@@ -7,6 +7,7 @@ OUTPUT_SCHEMA_FILENAME = "output.schema.json"
 ALGO_CLASS_FILENAME = "algo.py"
 ALGO_META_FILENAME = "algo.meta.json"
 
+
 class AlgorithmValidationError(Exception):
     pass
 
@@ -35,5 +36,5 @@ def validate_algorithm(algo_path: Path):
     algo_meta_file = find_file_in_directory(algo_path, ALGO_META_FILENAME)
     if algo_meta_file is None:
         raise AlgorithmValidationError(f"Output schema file {ALGO_META_FILENAME} not found")
-    
+
     return (algo_script, input_schema_file, output_schema_file, algo_meta_file)

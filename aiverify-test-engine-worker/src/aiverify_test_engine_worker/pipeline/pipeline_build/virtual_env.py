@@ -4,9 +4,8 @@ from ...lib.filecache import algo_cache
 from ...lib.logging import logger
 
 import os
-import sys
-from pathlib import Path
 import subprocess
+
 
 class VirtualEnvironmentBuild(Pipe):
     @property
@@ -16,7 +15,7 @@ class VirtualEnvironmentBuild(Pipe):
     @property
     def pipe_name(self) -> str:
         return "virtual_environment_build"
-    
+
     def setup(self):
         self.python_bin = os.getenv("PYTHON", "python3")
 
