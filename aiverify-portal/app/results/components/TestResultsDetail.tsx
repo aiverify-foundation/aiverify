@@ -252,7 +252,7 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
   }
 
   return (
-    <div className="h-full overflow-y-auto rounded-lg bg-secondary-950 p-6 text-white shadow-lg">
+    <div className="h-full overflow-y-auto rounded-lg bg-secondary-950 p-6 text-white shadow-lg scrollbar-hidden">
       {/* popup for name update and deleting */}
       {isModalVisible && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -340,7 +340,7 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
                 Algorithm Arguments
               </h3>
               <div className="max-h-64 overflow-y-auto">
-                <pre className="whitespace-pre-wrap bg-secondary-800 p-4">
+                <pre className="whitespace-pre-wrap break-words bg-secondary-800 p-4">
                   {typeof currentResult.testArguments.algorithmArgs === 'string'
                     ? JSON.stringify(
                         JSON.parse(

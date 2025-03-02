@@ -157,6 +157,7 @@ export default function TestResultsList({
                 checked={selectedResultIds.includes(result.id)}
                 enableCheckbox={enableSelection}
                 onCheckboxChange={handleCheckboxChange(result.id)}
+                isSplitPaneActive={true}
               />
             ))}
           </div>
@@ -212,6 +213,7 @@ export default function TestResultsList({
             checked={selectedResultIds.includes(result.id)}
             enableCheckbox={enableSelection}
             onCheckboxChange={handleCheckboxChange(result.id)}
+            isSplitPaneActive={false}
           />
         ))}
       </div>

@@ -1,11 +1,25 @@
 import Link from 'next/link';
+import { IconName } from '@/lib/components/IconSVG';
 import { ButtonVariant } from '@/lib/components/button';
 import { Button } from '@/lib/components/button';
 import { UploaderContainer } from './components/uploaderContainer';
 
 function UploadResultsPage() {
   return (
-    <main className="h-screen w-full px-6">
+    <main className="h-screen w-full overflow-y-auto px-6 scrollbar-hidden">
+      <Link
+        href="/results"
+        className="mt-4 inline-block">
+        <Button
+          variant={ButtonVariant.OUTLINE}
+          size="sm"
+          text="Back to Results"
+          icon={IconName.ArrowLeft}
+          iconPosition="left"
+          textColor="white"
+        />
+      </Link>
+
       <div className="flex items-center justify-between">
         <h1 className="my-6 text-2xl font-bold tracking-wide">
           Enter Test Result and Add Supporting Files
