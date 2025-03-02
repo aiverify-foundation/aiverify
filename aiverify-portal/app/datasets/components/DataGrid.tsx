@@ -1,27 +1,28 @@
 'use client';
 
-import { cn } from '@/lib/utils/twmerge';
 import React, { useState } from 'react';
+import { Dataset } from '@/app/types';
+import { cn } from '@/lib/utils/twmerge';
 
-type Column<T> = {
-  field: keyof T;
+export type Column = {
+  field: keyof Dataset;
   headerName: string;
   sortable?: boolean;
   filterable?: boolean;
-  renderCell?: (row: T) => React.ReactNode;
+  renderCell?: (row: Dataset) => React.ReactNode;
 };
 
-type DataGridProps<T> = {
-  rows: T[];
-  highlightRow?: T;
-  columns: Column<T>[];
+type DataGridProps = {
+  rows: Dataset[];
+  highlightRow?: Dataset;
+  columns: Column[];
   pageSizeOptions: (number | 'All')[];
   checkboxSelection?: boolean;
-  onRowClick?: (row: T) => void;
+  onRowClick?: (row: Dataset) => void;
   onSelectionModelChange?: (selectedIds: string[]) => void;
 };
 
-export function DataGrid<T>({
+export function DataGrid({
   rows,
   columns,
   highlightRow,
@@ -29,17 +30,17 @@ export function DataGrid<T>({
   checkboxSelection,
   onRowClick,
   onSelectionModelChange,
-}: DataGridProps<T>) {
+}: DataGridProps) {
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState<number | 'All'>(
     pageSizeOptions.find((option) => typeof option === 'number') || 5
   );
-  const [sortField, setSortField] = useState<string | null>(null);
+  const [sortField, setSortField] = useState<keyof Dataset | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>(
     null
   );
-  const [filters, setFilters] = useState<{ [key: string]: string | null }>({});
+  const [filters, setFilters] = useState<{ [K in keyof Dataset]?: string }>({});
 
   const handleCheckboxChange = (
     id: string,
@@ -62,7 +63,7 @@ export function DataGrid<T>({
     }
   };
 
-  const handleHeaderClick = (field: string) => {
+  const handleHeaderClick = (field: keyof Dataset) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : null);
       if (!sortDirection) setSortField(null);
@@ -72,27 +73,39 @@ export function DataGrid<T>({
     }
   };
 
-  const handleFilterChange = (field: string, value: string) => {
+  const handleFilterChange = (field: keyof Dataset, value: string) => {
     setFilters((prevFilters) => ({
       ...prevFilters,
-      [field]: value || null,
+      [field]: value || undefined,
     }));
   };
 
   const sortedRows = React.useMemo(() => {
     if (!sortField || !sortDirection) return rows;
     return [...rows].sort((a, b) => {
-      if (a[sortField] < b[sortField]) return sortDirection === 'asc' ? -1 : 1;
-      if (a[sortField] > b[sortField]) return sortDirection === 'asc' ? 1 : -1;
+      const aValue = a[sortField];
+      const bValue = b[sortField];
+
+      if (aValue === null || aValue === undefined)
+        return sortDirection === 'asc' ? -1 : 1;
+      if (bValue === null || bValue === undefined)
+        return sortDirection === 'asc' ? 1 : -1;
+
+      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
       return 0;
     });
   }, [rows, sortField, sortDirection]);
 
   const filteredRows = React.useMemo(() => {
     return sortedRows.filter((row) =>
-      Object.entries(filters).every(([field, value]) =>
-        value ? String(row[field]).includes(value) : true
-      )
+      Object.entries(filters).every(([field, value]) => {
+        if (!value) return true;
+        const rowValue = row[field as keyof Dataset];
+        return rowValue !== null && rowValue !== undefined
+          ? String(rowValue).toLowerCase().includes(value.toLowerCase())
+          : false;
+      })
     );
   }, [sortedRows, filters]);
 
@@ -114,10 +127,10 @@ export function DataGrid<T>({
       <table className="w-full">
         <thead className="bg-secondary-950 text-white">
           <tr>
-            {checkboxSelection && <th className="px-4 py-2 text-center"></th>}
+            {checkboxSelection && <th className="px-4 py-2 text-center" />}
             {columns.map((col) => (
               <th
-                key={col.field}
+                key={String(col.field)}
                 className="relative cursor-pointer px-4 py-2 hover:bg-primary-600">
                 <div
                   onClick={() => col.sortable && handleHeaderClick(col.field)}
@@ -136,7 +149,14 @@ export function DataGrid<T>({
                       value={filters[col.field] || ''}>
                       <option value="">All</option>
                       {Array.from(
-                        new Set(rows.map((row) => row[col.field]))
+                        new Set(
+                          rows.map((row) => {
+                            const value = row[col.field];
+                            return value !== null && value !== undefined
+                              ? String(value)
+                              : '';
+                          })
+                        )
                       ).map((value) => (
                         <option
                           key={value}
@@ -168,15 +188,19 @@ export function DataGrid<T>({
                     type="checkbox"
                     checked={selectedRows.has(row.id)}
                     onChange={(e) => handleCheckboxChange(row.id, e)}
-                    className="h-12 w-12 cursor-pointer"
+                    className="h-5 w-5 cursor-pointer"
                   />
                 </td>
               )}
               {columns.map((col) => (
                 <td
-                  key={col.field}
+                  key={String(col.field)}
                   className="border-b border-secondary-500 px-4 py-3 text-white">
-                  {col.renderCell ? col.renderCell(row) : row[col.field]}
+                  {col.renderCell
+                    ? col.renderCell(row)
+                    : row[col.field] !== null && row[col.field] !== undefined
+                      ? String(row[col.field])
+                      : ''}
                 </td>
               ))}
             </tr>
@@ -187,7 +211,7 @@ export function DataGrid<T>({
       filteredRows.length > pageSizeOptions[0] ? (
         <div className="absolute bottom-4 left-0 right-0 flex items-center justify-between bg-secondary-950 px-5 py-2">
           <select
-            value={pageSize}
+            value={String(pageSize)}
             onChange={(e) => {
               const selectedValue = e.target.value;
               setPageSize(
@@ -198,8 +222,8 @@ export function DataGrid<T>({
             className="ml-2 rounded-lg border bg-white px-2 py-1 text-secondary-950">
             {pageSizeOptionsWithAll.map((size) => (
               <option
-                key={size}
-                value={size}>
+                key={String(size)}
+                value={String(size)}>
                 {size === 'All' ? 'All' : size}
               </option>
             ))}
