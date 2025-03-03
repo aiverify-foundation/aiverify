@@ -208,10 +208,6 @@ function GridItemMain({
     // prepare list of input block datas that are used by this widget, for the widget properties drawer
     if (inputBlockDatasUsed && inputBlockDatasUsed.length > 0) {
       return inputBlockDatasUsed.reduce<InputBlockData[]>((acc, ibData) => {
-        console.log("ibData", ibData)
-        console.log("acc", acc)
-        console.log("allInputBlockDatasOnSystem", allInputBlockDatasOnSystem)
-        console.log("inputBlockDatasUsed", inputBlockDatasUsed)
         if (ibData.inputBlockDataId !== undefined) {
           const inputBlockData = findInputBlockDataById(
             allInputBlockDatasOnSystem,
@@ -293,7 +289,6 @@ function GridItemMain({
             const artifactUrls = testResult.artifacts.map(artifactPath => 
               `${process.env.NEXT_PUBLIC_APIGW_HOST}/test_results/${result.testResultId}/artifacts/${artifactPath}`
             );
-            console.log("artifactUrls", artifactUrls)
             acc[`${widget.gid}:${result.cid}`] = artifactUrls;
           } else {
             const mockData = findMockDataByTypeAndCid(
@@ -650,8 +645,6 @@ function GridItemMain({
               }
               getArtifacts={(cid: string) => {
                 const urls = widgetArtifacts[`${widget.gid}:${cid}`];
-                console.log("widget gid and cid", widget.gid, cid)
-                console.log("urls", urls)
                 return Array.isArray(urls) ? urls : [];
               }}
               width={dimensions.width}
