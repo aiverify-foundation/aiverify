@@ -104,6 +104,7 @@ type MdxComponentProps = MDXContentProps & {
   inputBlockData: InputBlockDataPayload;
   getIBData: (cid: string) => InputBlockDataPayload;
   getResults: (cid: string) => TestResultData;
+  getArtifacts: (cid: string) => string[];
   width?: number;
   height?: number;
 };
@@ -282,7 +283,14 @@ function GridItemMain({
             result.testResultId
           );
           if (testResult && testResult.artifacts) {
-            acc[`${widget.gid}:${result.cid}`] = testResult.artifacts;
+            // Transform artifact paths into full URLs
+            console.log("host", process.env.NEXT_PUBLIC_APIGW_HOST)
+            console.log("testResult", testResult.artifacts)
+            const artifactUrls = testResult.artifacts.map(artifactPath => 
+              `${process.env.NEXT_PUBLIC_APIGW_HOST}/test_results/${result.testResultId}/artifacts/${artifactPath}`
+            );
+            console.log("artifactUrls", artifactUrls)
+            acc[`${widget.gid}:${result.cid}`] = artifactUrls;
           } else {
             const mockData = findMockDataByTypeAndCid(
               widget.mockdata || [],
@@ -593,9 +601,12 @@ function GridItemMain({
               getResults={(cid: string) =>
                 testResultWidgetData[`${widget.gid}:${cid}`]
               }
-              getArtifacts={(cid: string) =>
-                widgetArtifacts[`${widget.gid}:${cid}`]
-              }
+              getArtifacts={(cid: string) => {
+                const urls = widgetArtifacts[`${widget.gid}:${cid}`];
+                console.log("widget gid and cid", widget.gid, cid)
+                console.log("urls", urls)
+                return Array.isArray(urls) ? urls : [];
+              }}
               width={dimensions.width}
               height={dimensions.height}
             />
