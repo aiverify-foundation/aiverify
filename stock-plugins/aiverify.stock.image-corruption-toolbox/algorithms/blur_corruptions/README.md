@@ -47,15 +47,15 @@ If the algorithm runs successfully, the results of the test will be saved in an 
 
 ### Usage
 
-By default, **all** blur corruption functions are applied. You can use the `--include` flag to specify which functions to include.
+By default, **all** blur corruption functions are applied. You can use the `--corruptions` flag to specify which functions to run.
 
 ```sh
---include [FUNCTION_NAME ...]
+--corruptions [FUNCTION_NAME ...]
 ```
 
 ### Options
 
-- `all` -> Includes all blur corruption functions (default)
+- `all` -> Runs all blur corruption functions (default)
 - `gaussian_blur`
 - `glass_blur`
 - `defocus_blur`
@@ -80,7 +80,7 @@ python -m aiverify_blur_corruptions \
   --annotated_ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
   --set_seed 10 \
   --file_name_label file_name \
-  --include gaussian_blur defocus_blur
+  --corruptions gaussian_blur defocus_blur
 ```
 
 ## Customizing Parameters

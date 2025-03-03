@@ -53,11 +53,11 @@ def parse_input_args():
     )
     parser.add_argument("--file_name_label", default="", help="The label of the file name.")
     parser.add_argument(
-        "--include",
+        "--corruptions",
         nargs="+",
-        choices=["all"] + [name.lower() for name in blur.CORRUPTIONS],
+        choices=["all"] + [name.lower() for name in blur.CORRUPTION_FN],
         default=["all"],
-        help="Specify the name(s) of blur corruption function to include. Default: 'all'",
+        help="Specify the name(s) of blur corruption function to run. Default: 'all'",
     )
     parser.add_argument(
         "--gaussian_blur_sigma",
@@ -115,8 +115,14 @@ def invoke_aiverify_blur_corruptions_plugin():
     # Map string argument to ModelType enum
     model_type = ModelType[args.model_type]
 
+    if "all" in args.corruptions:
+        args.corruptions = list(blur.CORRUPTION_FN)
+    else:
+        # This step is required to (1) sanitize user input (2) make sure algorithm names are in correct format & order
+        args.corruptions = [name for name in blur.CORRUPTION_FN if name.lower() in args.corruptions]
+
     user_defined_params = {
-        "include": args.include,
+        "corruptions": args.corruptions,
         "gaussian_blur_sigma": args.gaussian_blur_sigma,
         "glass_blur_max_delta": args.glass_blur_max_delta,
         "defocus_blur_radius": args.defocus_blur_radius,

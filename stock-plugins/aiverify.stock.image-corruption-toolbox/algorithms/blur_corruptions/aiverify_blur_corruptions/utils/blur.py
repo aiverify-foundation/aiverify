@@ -140,7 +140,7 @@ def zoom_blur(img: np.ndarray, zoom_factor: float = 1.1) -> np.ndarray:
 
 DEFAULT_PARAMS["zoom_blur_zoom_factor"] = [1.00, 1.05, 1.10, 1.15, 1.20]
 
-CORRUPTIONS = {
+CORRUPTION_FN = {
     "Gaussian_Blur": gaussian_blur,
     "Glass_Blur": glass_blur,
     "Defocus_Blur": defocus_blur,

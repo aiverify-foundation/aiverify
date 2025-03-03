@@ -324,12 +324,6 @@ class Plugin(IAlgorithm):
         file_names = [Path(i).name for i in self._data.get_data()["image_directory"]]
         self._ordered_ground_truth = annotated_ground_truth.reindex(file_names)
 
-        # Select corruptions flagged by "include"
-        if "all" not in (includes := self._input_arguments["include"]):
-            corruption_fn = {k: v for k, v in blur.CORRUPTIONS.items() if k.lower() in includes}
-        else:
-            corruption_fn = blur.CORRUPTIONS
-
         # Initialise main image directory
         if Path(str(self._tmp_path)).exists():
             shutil.rmtree(str(self._tmp_path))
@@ -340,6 +334,7 @@ class Plugin(IAlgorithm):
         Path(str(self._save_path)).mkdir(parents=True, exist_ok=True)
 
         # Apply user defined parameters to default parameters
+        corruption_fn = {name: blur.CORRUPTION_FN[name] for name in self._input_arguments["corruptions"]}
         user_params = {k: v for k, v in self._input_arguments.items() if k in blur.DEFAULT_PARAMS and v is not None}
         parameters = copy.deepcopy(blur.DEFAULT_PARAMS)
         parameters.update(user_params)

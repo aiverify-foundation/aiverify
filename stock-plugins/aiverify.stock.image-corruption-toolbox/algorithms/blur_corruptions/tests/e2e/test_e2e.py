@@ -30,7 +30,7 @@ def test_aiverify_blur_corruptions_plugin(data_set):
         ),
         "file_name_label": "file_name",
         "set_seed": 10,
-        "include": ["horizontal_motion_blur", "zoom_blur"],
+        "corruptions": ["Horizontal_Motion_Blur", "Zoom_Blur"],
         "zoom_blur_zoom_factor": [1.0, 1.5, 2.0, 2.5, 3.0],
         "glass_blur_max_delta": [1, 3, 5],
     }
