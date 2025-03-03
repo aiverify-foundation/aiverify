@@ -282,6 +282,7 @@ class AlgoInit:
                 "set_seed": self._input_arguments["set_seed"],
                 "annotated_ground_truth_path": annotated_ground_truth_path,
                 "file_name_label": self._input_arguments.get("file_name_label", None),
+                "corruptions": self._input_arguments["corruptions"]
             },
             mode="upload",
         )
