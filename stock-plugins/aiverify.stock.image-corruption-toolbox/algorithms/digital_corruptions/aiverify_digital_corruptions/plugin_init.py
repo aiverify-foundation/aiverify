@@ -53,11 +53,11 @@ def parse_input_args():
     )
     parser.add_argument("--file_name_label", default="", help="The label of the file name.")
     parser.add_argument(
-        "--include",
+        "--corruptions",
         nargs="+",
-        choices=["all"] + [name.lower() for name in digital.CORRUPTIONS],
+        choices=["all"] + [name.lower() for name in digital.CORRUPTION_FN],
         default=["all"],
-        help="Specify the name(s) of digital corruption function to include. Default: 'all'",
+        help="Specify the name(s) of digital corruption function to run. Default: 'all'",
     )
     parser.add_argument(
         "--brightness_down_factor",
@@ -127,8 +127,14 @@ def invoke_aiverify_digital_corruptions_plugin():
     # Map string argument to ModelType enum
     model_type = ModelType[args.model_type]
 
+    if "all" in args.corruptions:
+        args.corruptions = list(digital.CORRUPTION_FN)
+    else:
+        # This step is required to (1) sanitize user input (2) make sure algorithm names are in correct format & order
+        args.corruptions = [name for name in digital.CORRUPTION_FN if name.lower() in args.corruptions]
+
     user_defined_params = {
-        "include": args.include,
+        "corruptions": args.corruptions,
         "brightness_down_factor": args.brightness_down_factor,
         "brightness_up_factor": args.brightness_up_factor,
         "contrast_down_factor": args.contrast_down_factor,

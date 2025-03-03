@@ -29,7 +29,7 @@
         "10",
         "--file_name_label",
         "file_name",
-        "--include",
+        "--corruptions",
         "contrast_down",
         "random_perspective",
         "--brightness_down_factor",

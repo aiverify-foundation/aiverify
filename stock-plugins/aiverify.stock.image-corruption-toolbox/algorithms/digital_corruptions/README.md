@@ -47,15 +47,15 @@ If the algorithm runs successfully, the results of the test will be saved in an 
 
 ### Usage
 
-By default, **all** digital corruption functions are applied. You can use the `--include` flag to specify which functions to include.
+By default, **all** digital corruption functions are applied. You can use the `--corruptions` flag to specify which functions to run.
 
 ```sh
---include [FUNCTION_NAME ...]
+--corruptions [FUNCTION_NAME ...]
 ```
 
 ### Options
 
-- `all` -> Includes all digital corruption functions (default)
+- `all` -> Runs all digital corruption functions (default)
 - `brightness_down`
 - `brightness_up`
 - `contrast_down`
@@ -82,7 +82,7 @@ python -m aiverify_digital_corruptions \
   --annotated_ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
   --set_seed 10 \
   --file_name_label file_name \
-  --include random_perspective jpeg_compression
+  --corruptions random_perspective jpeg_compression
 ```
 
 ## Customizing Parameters
