@@ -18,7 +18,7 @@ import {
   PluginForGridLayout,
   WidgetOnGridLayout,
 } from '@/app/canvas/types';
-import { findInputBlockDatasByGidAndCid } from '@/app/canvas/utils/findInputBlockDatasByGidAndCid';
+import { findInputBlockDataByGidAndCid } from '@/app/canvas/utils/findInputBlockDataByGidAndCid';
 import { findTestResultByAlgoGidAndCid } from '@/app/canvas/utils/findTestResultByAlgoGidAndCid';
 import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPluginsById';
 import { getWidgetAlgosFromPlugins } from '@/app/canvas/utils/getWidgetAlgosFromPlugins';
@@ -86,6 +86,9 @@ type DesignerProps = {
   /** Pre-selected test results based on URL parameters */
   selectedTestResultsFromUrlParams?: ParsedTestResults[];
 
+  /** Pre-selected input block datas based on URL parameters */
+  selectedInputBlockDatasFromUrlParams?: InputBlockData[];
+
   /** When true, disables editing functionality (view-only mode) */
   disabled?: boolean;
 
@@ -145,13 +148,12 @@ function Designer(props: DesignerProps) {
     allTestResultsOnSystem = [],
     allInputBlockDatasOnSystem = [],
     selectedTestResultsFromUrlParams = [],
+    selectedInputBlockDatasFromUrlParams = [],
     disabled = false,
     disableNextButton = false,
     disablePreviousButton = false,
     pageNavigationMode = 'multi',
   } = props;
-
-  console.log(allInputBlockDatasOnSystem);
 
   // Reference to the canvas element for positioning and measurements
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -205,13 +207,40 @@ function Designer(props: DesignerProps) {
   // Currently selected input block datas to be applied to widgets
   const [selectedInputBlockDatas, setSelectedInputBlockDatas] = useState<
     InputBlockData[]
-  >([]);
+  >(selectedInputBlockDatasFromUrlParams);
+
+  // Initialize the input block data tracker with the selected input block datas from URL params
+  useEffect(() => {
+    if (selectedInputBlockDatasFromUrlParams.length > 0) {
+      dispatch({
+        type: 'UPDATE_INPUT_BLOCK_TRACKER',
+        gridItemInputBlockDatasMap: selectedInputBlockDatasFromUrlParams.map(
+          (inputBlockData) => ({
+            gid: inputBlockData.gid,
+            cid: inputBlockData.cid,
+            inputBlockDataId: inputBlockData.id,
+          })
+        ) as WidgetInputBlockIdentifier[],
+      });
+    }
+  }, [selectedInputBlockDatasFromUrlParams]);
+
+  // Initialize the test result tracker with the selected test results from URL params
+  useEffect(() => {
+    if (selectedTestResultsFromUrlParams.length > 0) {
+      dispatch({
+        type: 'UPDATE_ALGO_TRACKER',
+        gridItemAlgosMap: selectedTestResultsFromUrlParams.map((result) => ({
+          gid: result.gid,
+          cid: result.cid,
+          testResultId: result.id,
+        })),
+      });
+    }
+  }, [selectedTestResultsFromUrlParams]);
 
   // Drag-to-scroll functionality for navigating the canvas
-  const { isDraggingRef: isDraggingFreeFormAreaRef } = useDragToScroll(
-    freeFormAreaRef,
-    canvasRef
-  );
+  useDragToScroll(freeFormAreaRef, canvasRef);
 
   // Controls visibility of the plugins panel sidebar
   const [isPanelOpen, setIsPanelOpen] = useState(true);
@@ -273,7 +302,7 @@ function Designer(props: DesignerProps) {
         if (newPageElement) {
           // Add a temporary scroll margin
           newPageElement.style.scrollMarginTop = `${zoomLevel + 100}px`; // Adjust this value as needed
-          newPageElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          newPageElement.scrollIntoView({ block: 'start' });
           newPageElement.style.scrollMarginTop = ''; // remove the temp margin
         }
       }
@@ -284,41 +313,47 @@ function Designer(props: DesignerProps) {
     return () => {
       debouncedScrollToNewPage.cancel(); // Clean up the debounce on unmount
     };
-  }, [layouts.length, zoomLevel]);
+  }, [layouts.length]);
 
   /**
    * Manages overflow pages based on content size
    * Automatically adds or removes overflow pages when content exceeds page boundaries
-   * Checks if widgets on the current page need additional pages to display properly
+   * Checks if widgets on any page need additional pages to display properly
    */
   useEffect(() => {
     if (isInitialMount.current) return;
 
     // Debounce the overflow check to avoid excessive calculations
     const debouncedOverflowCheck = debounce(() => {
-      const { overflows, numOfRequiredPages } = isPageContentOverflow(
-        layouts[currentPage],
-        state.widgets[currentPage]
-      );
+      // Check all pages for overflow, not just the current page
+      layouts.forEach((layout, pageIndex) => {
+        // Skip overflow pages - we only check regular pages
+        if (state.pageTypes[pageIndex] === 'overflow') return;
 
-      // Count existing overflow pages for current page
-      const existingOverflowPages = state.pageTypes.filter(
-        (type, idx) =>
-          type === 'overflow' && state.overflowParents[idx] === currentPage
-      ).length;
+        const { overflows, numOfRequiredPages } = isPageContentOverflow(
+          layouts[pageIndex],
+          state.widgets[pageIndex]
+        );
 
-      if (overflows && existingOverflowPages < numOfRequiredPages - 1) {
-        dispatch({
-          type: 'ADD_OVERFLOW_PAGES',
-          parentPageIndex: currentPage,
-          count: numOfRequiredPages - 1 - existingOverflowPages,
-        });
-      } else if (!overflows && existingOverflowPages > 0) {
-        dispatch({
-          type: 'REMOVE_OVERFLOW_PAGES',
-          parentPageIndex: currentPage,
-        });
-      }
+        // Count existing overflow pages for this page
+        const existingOverflowPages = state.pageTypes.filter(
+          (type, idx) =>
+            type === 'overflow' && state.overflowParents[idx] === pageIndex
+        ).length;
+
+        if (overflows && existingOverflowPages < numOfRequiredPages - 1) {
+          dispatch({
+            type: 'ADD_OVERFLOW_PAGES',
+            parentPageIndex: pageIndex,
+            count: numOfRequiredPages - 1 - existingOverflowPages,
+          });
+        } else if (!overflows && existingOverflowPages > 0) {
+          dispatch({
+            type: 'REMOVE_OVERFLOW_PAGES',
+            parentPageIndex: pageIndex,
+          });
+        }
+      });
     }, 300); // 300ms debounce time
 
     debouncedOverflowCheck();
@@ -327,8 +362,8 @@ function Designer(props: DesignerProps) {
       debouncedOverflowCheck.cancel(); // Clean up the debounce on unmount
     };
   }, [
-    layouts[currentPage],
-    state.widgets[currentPage],
+    layouts, // Now depend on all layouts
+    state.widgets, // Now depend on all widgets
     state.pageTypes,
     state.overflowParents,
   ]);
@@ -468,21 +503,21 @@ function Designer(props: DesignerProps) {
             widgetWithGridItemId
           );
 
-          // Get input block datas associated with each input block
-          const inputBlockDatas = inputBlocks.flatMap((inputBlock) =>
-            findInputBlockDatasByGidAndCid(
-              allInputBlockDatasOnSystem,
-              inputBlock.gid,
-              inputBlock.cid
-            )
-          );
-
+          // Map input block datas to input blocks based on matching gid, cid and group
           const gridItemToInputBlockDatasMap: WidgetInputBlockIdentifier[] =
-            inputBlockDatas.map((inputBlockData) => ({
-              gid: inputBlockData.gid,
-              cid: inputBlockData.cid,
-              inputBlockDataId: inputBlockData.id,
-            }));
+            inputBlocks.map((inputBlock) => {
+              // Find matching input block data for this input block by gid, cid
+              const matchSelectedInputBlockData = findInputBlockDataByGidAndCid(
+                selectedInputBlockDatas,
+                inputBlock.gid,
+                inputBlock.cid
+              );
+              return {
+                gid: inputBlock.gid,
+                cid: inputBlock.cid,
+                inputBlockDataId: matchSelectedInputBlockData?.id,
+              };
+            });
 
           // Dispatch action to add the widget to the canvas state
           dispatch({
@@ -677,7 +712,11 @@ function Designer(props: DesignerProps) {
       pageIndex,
     });
     const pageElement = document.getElementById(`page-${pageIndex}`);
-    pageElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (pageElement) {
+      pageElement.style.scrollMarginTop = `${zoomLevel + 100}px`; // Adjust this value as needed
+      pageElement.scrollIntoView({ block: 'start' });
+      pageElement.style.scrollMarginTop = ''; // remove the temp margin
+    }
   }
 
   /**
@@ -792,13 +831,14 @@ function Designer(props: DesignerProps) {
 
     // Update selected input block datas and create mapping for input blocks
     setSelectedInputBlockDatas(inputBlockDatas);
+    const updatedInputBlockDatasMap = inputBlockDatas.map((inputBlockData) => ({
+      gid: inputBlockData.gid,
+      cid: inputBlockData.cid,
+      inputBlockDataId: inputBlockData.id,
+    })) as WidgetInputBlockIdentifier[];
     dispatch({
       type: 'UPDATE_INPUT_BLOCK_TRACKER',
-      gridItemInputBlockDatasMap: inputBlockDatas.map((inputBlockData) => ({
-        gid: inputBlockData.gid,
-        cid: inputBlockData.cid,
-        inputBlockDataId: inputBlockData.id,
-      })) as WidgetInputBlockIdentifier[],
+      gridItemInputBlockDatasMap: updatedInputBlockDatasMap,
     });
   }
 
@@ -835,7 +875,7 @@ function Designer(props: DesignerProps) {
   }, [layouts.length]);
 
   const mainControlsSection = (
-    <section className="fixed right-[100px] top-[120px] z-50 flex w-[50px] max-w-[50px] flex-col gap-4">
+    <section className="fixed right-[100px] top-[105px] z-50 flex w-[50px] max-w-[50px] flex-col gap-4">
       <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
         <button
           className="disabled:opacity-50"
@@ -916,6 +956,15 @@ function Designer(props: DesignerProps) {
       }
     : undefined;
 
+  /*
+    The pages section has 3 critical nested div elements:
+    - The free form draggable area
+      - This area takes up the entire width of the screen and full height below page header.
+    - The content area (contentWrapper within freeFormDraggableArea component)
+      - This is a container wrapping the main content. It has large overflowing excess width and height to allow drag scrolling.
+    - The pages wrapper (pagesContentWrapper defined below as a child of freeFormDraggableArea)
+      - This is a container wrapping all the pages.
+  */
   const pagesSection = (
     <FreeFormDraggableArea
       ref={freeFormAreaRef}
@@ -979,7 +1028,7 @@ function Designer(props: DesignerProps) {
                     height: A4_HEIGHT,
                     width: A4_WIDTH,
                   }}>
-                  <div className="text-sm text-gray-200">
+                  <div className="text-sm text-gray-200 print:hidden">
                     Overflow content from page {overflowParent + 1}
                   </div>
                 </div>
@@ -1029,7 +1078,10 @@ function Designer(props: DesignerProps) {
                         )}>
                         <GridItemComponent
                           allAvalaiblePlugins={allPluginsWithMdx}
-                          allInputBlocksOnSystem={[]} // TODO: Add input blocks
+                          allInputBlockDatasOnSystem={
+                            allInputBlockDatasOnSystem
+                          }
+                          allTestResultsOnSystem={allTestResultsOnSystem}
                           widget={widget}
                           onDeleteClick={handleDeleteGridItem(
                             pageIndex,
@@ -1042,12 +1094,18 @@ function Designer(props: DesignerProps) {
                           onWidgetPropertiesClose={() =>
                             setSelectedGridItemId(null)
                           }
+                          dispatch={dispatch}
+                          pageIndex={pageIndex}
                           isDragging={draggingGridItemId === widget.gridItemId}
                           isResizing={resizingGridItemId === widget.gridItemId}
                           testResultsUsed={
                             state.gridItemToAlgosMap[widget.gridItemId]
                           }
-                          allTestResultsOnSystem={allTestResultsOnSystem}
+                          inputBlockDatasUsed={
+                            state.gridItemToInputBlockDatasMap[
+                              widget.gridItemId
+                            ]
+                          }
                           layout={state.layouts[pageIndex][widgetIndex]}
                         />
                       </div>
@@ -1062,51 +1120,26 @@ function Designer(props: DesignerProps) {
     </FreeFormDraggableArea>
   );
 
-  const testSelector = (
+  const dataDrawers = (
     <section
       className={cn(
-        'fixed top-[90px] z-10 flex flex-col gap-4',
+        'fixed top-[90px] z-10 flex flex-col items-start gap-2',
         isPanelOpen ? 'left-[340px]' : 'left-[100px]'
       )}>
+      <h4 className="text-md font-semibold text-gray-800">Data In Use:</h4>
       <TestResultsDrawer
         allTestResultsOnSystem={allTestResultsOnSystem}
         selectedTestResultsFromUrlParams={selectedTestResults}
-        onOkClick={handleSelectUploadedTestResults}
+        onCheckboxClick={handleSelectUploadedTestResults}
       />
-    </section>
-  );
-
-  const inputBlockSelector = (
-    <section
-      className={cn(
-        'fixed top-[150px] z-10 flex flex-col gap-4',
-        isPanelOpen ? 'left-[340px]' : 'left-[100px]'
-      )}>
       <InputBlockDatasDrawer
         allInputBlockDatasOnSystem={allInputBlockDatasOnSystem}
         selectedInputBlockDatasFromUrlParams={selectedInputBlockDatas}
-        onOkClick={handleSelectInputBlockDatas}
+        onCheckboxClick={handleSelectInputBlockDatas}
       />
     </section>
   );
 
-  // console.log('state', state);
-  // console.log('plugins', allPluginsWithMdx);
-
-  /*
-    Designer component has 3 main sections:
-    - The plugins panel section
-    - The controls section
-    - The design section
-
-    The design section has 3 key nested areas (nested divs):
-    - The free form draggable area
-      - This area is the largest area and takes up the entire width of the screen and full height below page header.
-    - The content area
-      - This is a container wrapping the main content. It has large overflowing excess width and height to allow dragging and scrolling.
-    - The pages wrapper
-      - This is a container wrapping all the pages.
-  */
   console.log('state', state);
   return (
     <React.Fragment>
@@ -1120,8 +1153,7 @@ function Designer(props: DesignerProps) {
       ) : null}
       <main className="relative h-full w-full">
         {disabled ? null : pluginsPanelSection}
-        {disabled ? null : testSelector}
-        {disabled ? null : inputBlockSelector}
+        {disabled ? null : dataDrawers}
         {mainControlsSection}
         {pagesSection}
       </main>

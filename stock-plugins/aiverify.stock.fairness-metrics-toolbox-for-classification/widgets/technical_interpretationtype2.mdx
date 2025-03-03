@@ -108,7 +108,13 @@ export const TechnicalInterpretationChart2 = ({ id, metric, data }) => {
 
   if (mydata.numLabels == 1) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 5, width: '40%', flexShrink: 0 }}>
+      <div style={{ 
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 5, width: '100%',
+        pageBreakInside: "avoid", // Prevents page breaks inside this element when printing
+        breakInside: "avoid", // Modern alternative to pageBreakInside
+       }}>
         <h4>{metric}</h4>
         {getSimpleContent(mydata.data)}
       </div>
@@ -116,7 +122,13 @@ export const TechnicalInterpretationChart2 = ({ id, metric, data }) => {
   }
   else {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 5, width: '40%', flexShrink: 0 }}>
+      <div style={{ 
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 5, width: '100%',
+        pageBreakInside: "avoid", // Prevents page breaks inside this element when printing
+        breakInside: "avoid", // Modern alternative to pageBreakInside
+       }}>
         <h4>{metric}</h4>
         {getContent(mydata.data)}
       </div>

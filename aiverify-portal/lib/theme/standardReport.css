@@ -37,15 +37,31 @@
     @apply h-full w-full;
   }
   .input-h1 {
-    @apply w-full text-4xl font-bold leading-normal text-black focus:outline-none;
+    @apply w-full text-4xl font-bold text-black focus:outline-none;
     @apply h-full resize-none overflow-hidden whitespace-pre-wrap;
+    @apply mb-1;
+    @apply shadow-inner;
+    @apply m-0 border-0 p-0;
   }
   .input-h2 {
     @apply w-full text-3xl font-bold text-black focus:outline-none;
     @apply h-full resize-none overflow-hidden whitespace-pre-wrap;
+    @apply mb-1;
+    @apply shadow-inner;
+    @apply m-0 border-0 p-0;
   }
   .input-h3 {
     @apply w-full text-2xl font-bold text-black focus:outline-none;
     @apply h-full resize-none overflow-hidden whitespace-pre-wrap;
+    @apply mb-1;
+    @apply shadow-inner;
+    @apply m-0 border-0 p-0;
+  }
+  .input-p {
+    @apply w-full text-base text-black focus:outline-none;
+    @apply h-full resize-none overflow-hidden whitespace-pre-wrap;
+    @apply mb-1;
+    @apply shadow-inner;
+    @apply m-0 border-0 p-0;
   }
 }
