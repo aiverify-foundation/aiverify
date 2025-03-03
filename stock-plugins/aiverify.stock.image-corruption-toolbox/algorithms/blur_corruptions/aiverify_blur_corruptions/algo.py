@@ -326,9 +326,9 @@ class Plugin(IAlgorithm):
 
         # Select corruptions flagged by "include"
         if "all" not in (includes := self._input_arguments["include"]):
-            corruptions = {k: v for k, v in blur.CORRUPTIONS.items() if k.lower() in includes}
+            corruption_fn = {k: v for k, v in blur.CORRUPTIONS.items() if k.lower() in includes}
         else:
-            corruptions = blur.CORRUPTIONS
+            corruption_fn = blur.CORRUPTIONS
 
         # Initialise main image directory
         if Path(str(self._tmp_path)).exists():
@@ -344,17 +344,17 @@ class Plugin(IAlgorithm):
         parameters = copy.deepcopy(blur.DEFAULT_PARAMS)
         parameters.update(user_params)
 
-        self._assess_robustness(corruptions, parameters)
+        self._assess_robustness(corruption_fn, parameters)
 
         # Update progress (For 100% completion)
         self._progress_inst.update(1)
 
-    def _assess_robustness(self, corruption_group: dict[str, list], parameters: dict[str, list]) -> None:
+    def _assess_robustness(self, corruption_fn: dict[str, list], parameters: dict[str, list]) -> None:
         """
         A method to get the accuracy results at different severity levels and formatted in the desired output schema
 
         Parameters:
-            corruption_group (dict): Dict of corruption functions in the corruption group
+            corruption_fn (dict): Mapping of corruption name to its corresponding function object
             parameters (dict): Dict of parameter values at different severity levels
         """
         image_df, _image_shapes = self._transform_to_numpy(self._data.get_data())
@@ -366,15 +366,14 @@ class Plugin(IAlgorithm):
         np.random.seed(seed)
         random_index = np.random.choice(len(image_df))
 
-        self._progress_inst.add_total(len(corruption_group))
+        self._progress_inst.add_total(len(corruption_fn))
 
-        for corruption in corruption_group:
+        for corruption in corruption_fn:
             individual_results = dict()
             accuracies = dict()
             display_info = dict()
 
             individual_results.update({"corruption_group": "Blur"})
-            corruption_fn = corruption_group[corruption]
             individual_results.update({"corruption_function": str(corruption)})
 
             # Assuming parameter key is in format <fn_name>_<kw_name>, e.g. "glass_blur_max_delta"
@@ -391,7 +390,7 @@ class Plugin(IAlgorithm):
             for severity, kwargs in enumerate(fn_kwargs):
                 if severity != 0:
                     corrupted_df = self._build_corrupted_dataframe(
-                        image_df, ground_truth, corruption_fn, kwargs, severity, corruption
+                        image_df, ground_truth, corruption_fn[corruption], kwargs, severity, corruption
                     )
                 else:
                     corrupted_df = self._build_corrupted_dataframe(
