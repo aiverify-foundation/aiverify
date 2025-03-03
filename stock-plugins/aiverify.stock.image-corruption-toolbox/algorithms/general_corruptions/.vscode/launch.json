@@ -29,7 +29,7 @@
         "10",
         "--file_name_label",
         "file_name",
-        "--include",
+        "--corruptions",
         "gaussian_noise",
         "salt_and_pepper_noise",
         "--salt_and_pepper_noise_amount",

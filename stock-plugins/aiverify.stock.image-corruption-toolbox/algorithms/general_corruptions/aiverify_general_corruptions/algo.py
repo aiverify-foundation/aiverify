@@ -323,12 +323,6 @@ class Plugin(IAlgorithm):
         file_names = [Path(i).name for i in self._data.get_data()["image_directory"]]
         self._ordered_ground_truth = annotated_ground_truth.reindex(file_names)
 
-        # Select corruptions flagged by "include"
-        if "all" not in (includes := self._input_arguments["include"]):
-            corruptions = {k: v for k, v in general.CORRUPTIONS.items() if k.lower() in includes}
-        else:
-            corruptions = general.CORRUPTIONS
-
         # Initialise main image directory
         if Path(str(self._tmp_path)).exists():
             shutil.rmtree(str(self._tmp_path))
@@ -339,21 +333,22 @@ class Plugin(IAlgorithm):
         Path(str(self._save_path)).mkdir(parents=True, exist_ok=True)
 
         # Apply user defined parameters to default parameters
+        corruption_fn = {name: general.CORRUPTION_FN[name] for name in self._input_arguments["corruptions"]}
         user_params = {k: v for k, v in self._input_arguments.items() if k in general.DEFAULT_PARAMS and v is not None}
         parameters = copy.deepcopy(general.DEFAULT_PARAMS)
         parameters.update(user_params)
 
-        self._assess_robustness(corruptions, parameters)
+        self._assess_robustness(corruption_fn, parameters)
 
         # Update progress (For 100% completion)
         self._progress_inst.update(1)
 
-    def _assess_robustness(self, corruption_group: dict[str, list], parameters: dict[str, list]) -> None:
+    def _assess_robustness(self, corruption_fn: dict[str, list], parameters: dict[str, list]) -> None:
         """
         A method to get the accuracy results at different severity levels and formatted in the desired output schema
 
         Parameters:
-            corruption_group (dict): Dict of corruption functions in the corruption group
+            corruption_fn (dict): Mapping of corruption name to its corresponding function object
             parameters (dict): Dict of parameter values at different severity levels
         """
         image_df, _image_shapes = self._transform_to_numpy(self._data.get_data())
@@ -365,15 +360,15 @@ class Plugin(IAlgorithm):
         np.random.seed(seed)
         random_index = np.random.choice(len(image_df))
 
-        self._progress_inst.add_total(len(corruption_group))
+        self._progress_inst.add_total(len(corruption_fn))
 
-        for corruption in corruption_group:
+        for corruption in corruption_fn:
             individual_results = dict()
+            severity_params = dict()
             accuracies = dict()
             display_info = dict()
 
             individual_results.update({"corruption_group": "General"})
-            corruption_fn = corruption_group[corruption]
             individual_results.update({"corruption_function": str(corruption)})
 
             # Assuming parameter key is in format <fn_name>_<kw_name>, e.g. "gaussian_noise_sigma"
@@ -390,18 +385,21 @@ class Plugin(IAlgorithm):
             for severity, kwargs in enumerate(fn_kwargs):
                 if severity != 0:
                     corrupted_df = self._build_corrupted_dataframe(
-                        image_df, ground_truth, corruption_fn, kwargs, severity, corruption
+                        image_df, ground_truth, corruption_fn[corruption], kwargs, severity, corruption
                     )
                 else:
                     corrupted_df = self._build_corrupted_dataframe(
                         image_df, ground_truth, None, kwargs, severity, corruption
                     )
+                severity_params.update({"severity" + str(severity): kwargs})
                 accuracy = self._get_accuracy(corrupted_df, ground_truth)
                 accuracies.update({"severity" + str(severity): accuracy})
 
                 random_display = self._get_rand_display(corrupted_df, ground_truth, corruption, severity, random_index)
                 display_info.update({"severity" + str(severity): random_display})
-            individual_results.update({"accuracy": accuracies, "display_info": display_info})
+            individual_results.update(
+                {"parameter": severity_params, "accuracy": accuracies, "display_info": display_info}
+            )
             combined_results.append(individual_results)
 
         self._progress_inst.update(1)

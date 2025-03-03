@@ -6,7 +6,7 @@
         "annotated_ground_truth_path",
         "file_name_label",
         "set_seed",
-        "include"
+        "corruptions"
     ],
     "properties": {
         "annotated_ground_truth_path": {
@@ -26,9 +26,9 @@
             "default": 10,
             "type": "integer"
         },
-        "include": {
-            "title": "Name(s) of general corruption to include",
-            "description": "Specify the name(s) of general corruption function to include. Default: 'all'",
+        "corruptions": {
+            "title": "Name(s) of general corruption to run",
+            "description": "Specify the name(s) of general corruption function to run. Default: 'all'",
             "type": "array",
             "items": {"type": "string"}
         },

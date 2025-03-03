@@ -60,7 +60,7 @@ def salt_and_pepper_noise(img: np.ndarray, amount: float = 0.2) -> np.ndarray:
 
 DEFAULT_PARAMS["salt_and_pepper_noise_amount"] = [0.1, 0.15, 0.2, 0.25, 0.3]
 
-CORRUPTIONS = {
+CORRUPTION_FN = {
     "Gaussian_Noise": gaussian_noise,
     "Poisson_Noise": poisson_noise,
     "Salt_and_Pepper_Noise": salt_and_pepper_noise,
