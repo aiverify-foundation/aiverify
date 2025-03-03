@@ -17,6 +17,7 @@ from aiverify_test_engine.utils.json_utils import (
 from aiverify_test_engine.utils.simple_progress import SimpleProgress
 
 from aiverify_environment_corruptions.algo import Plugin
+from aiverify_environment_corruptions.utils import environment
 
 
 def test_discover_plugin():
@@ -67,7 +68,7 @@ class ObjectTest:
             ),
             "file_name_label": "file_name",
             "set_seed": 10,
-            "include": ["all"],
+            "corruptions": list(environment.CORRUPTION_FN),
         }
         expected_exception = RuntimeError
         expected_exception_msg = "The algorithm has failed data validation"
@@ -497,9 +498,9 @@ def test_valid_run(get_data_instance_and_serializer_without_ground_truth):
     assert validate_status
 
 
-def test_include():
+def test_corruptions():
     test_object = ObjectTest()
-    test_object._input_args.update({"include": ["fog", "rain"]})
+    test_object._input_args.update({"corruptions": ["Fog", "Rain"]})
     test_plugin = Plugin(
         test_object._data_instance_and_serializer,
         test_object._model_instance_and_serializer,
@@ -520,7 +521,7 @@ def test_include():
 
     assert validate_status
     for data in results["results"]:
-        assert data["corruption_function"].lower() in test_object._input_args["include"]
+        assert data["corruption_function"] in test_object._input_args["corruptions"]
 
 
 def test_user_defined_params():

@@ -53,11 +53,11 @@ def parse_input_args():
     )
     parser.add_argument("--file_name_label", default="", help="The label of the file name.")
     parser.add_argument(
-        "--include",
+        "--corruptions",
         nargs="+",
-        choices=["all"] + [name.lower() for name in environment.CORRUPTIONS],
+        choices=["all"] + [name.lower() for name in environment.CORRUPTION_FN],
         default=["all"],
-        help="Specify the name(s) of environment corruption function to include. Default: 'all'",
+        help="Specify the name(s) of environment corruption function to run. Default: 'all'",
     )
     parser.add_argument(
         "--snow_intensity",
@@ -98,8 +98,14 @@ def invoke_aiverify_digital_corruptions_plugin():
     # Map string argument to ModelType enum
     model_type = ModelType[args.model_type]
 
+    if "all" in args.corruptions:
+        args.corruptions = list(environment.CORRUPTION_FN)
+    else:
+        # This step is required to (1) sanitize user input (2) make sure algorithm names are in correct format & order
+        args.corruptions = [name for name in environment.CORRUPTION_FN if name.lower() in args.corruptions]
+
     user_defined_params = {
-        "include": args.include,
+        "corruptions": args.corruptions,
         "snow_intensity": args.snow_intensity,
         "fog_intensity": args.fog_intensity,
         "rain_type": args.rain_type,

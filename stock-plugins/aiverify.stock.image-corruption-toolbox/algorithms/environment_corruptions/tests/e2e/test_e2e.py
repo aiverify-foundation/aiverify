@@ -30,7 +30,7 @@ def test_aiverify_environment_corruptions_plugin(data_set):
         ),
         "file_name_label": "file_name",
         "set_seed": 10,
-        "include": ["fog", "rain"],
+        "corruptions": ["Fog", "Rain"],
         "rain_type": ["drizzle", "heavy"],
         "snow_intensity": [0, 1, 2],
     }

@@ -65,7 +65,7 @@ def rain(img: np.ndarray, type: Literal["drizzle", "heavy", "torrential"] = "dri
 
 DEFAULT_PARAMS["rain_type"] = ["drizzle", "heavy", "torrential"]
 
-CORRUPTIONS = {
+CORRUPTION_FN = {
     "Snow": snow,
     "Fog": fog,
     "Rain": rain,
