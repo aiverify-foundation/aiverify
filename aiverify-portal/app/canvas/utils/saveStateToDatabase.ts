@@ -1,5 +1,52 @@
-import { debounce } from 'lodash';
+import { useUpdateProject, patchProject } from '@/lib/fetchApis/getProjects';
 import type { State } from '@/app/canvas/components/hooks/pagesDesignReducer';
+
+/**
+ * Gets the project ID from URL parameters
+ */
+const getProjectIdFromUrl = () => {
+  if (typeof window === 'undefined') return null;
+  const params = new URLSearchParams(window.location.search);
+  return params.get('projectId');
+};
+
+/**
+ * Transforms the state into the format expected by the API
+ */
+const transformStateForApi = (state: State) => {
+  // Extract test results and input blocks from the maps
+  const testResults = Object.values(state.gridItemToAlgosMap)
+    .flat()
+    .filter(item => item.testResultId !== undefined)
+    .map(item => item.testResultId);
+
+  const inputBlocks = Object.values(state.gridItemToInputBlockDatasMap)
+    .flat()
+    .filter(item => item.inputBlockDataId !== undefined)
+    .map(item => item.inputBlockDataId);
+
+  // Create pages array from layouts and widgets
+  const pages = state.layouts.map((layout: any, index: number) => ({
+    layouts: layout.map((item: any) => ({
+      ...item,
+      static: false, // Add the missing `static` field with a default value
+    })),
+    widgets: state.widgets[index] || [],
+    reportWidgets: [], // Required by schema
+    pageType: state.pageTypes[index] || 'grid',
+    overflowParent: state.overflowParents[index]
+  }));
+
+  // Return data matching ProjectPatchInput schema
+  return {
+    pages,
+    globalVars: [], // Required by ProjectTemplateMetaOptional
+    testResults: testResults.length > 0 ? testResults : undefined, // Optional field
+    inputBlocks: inputBlocks.length > 0 ? inputBlocks : undefined, // Optional field
+    projectInfo: undefined, // Optional field
+    testModelId: undefined // Optional field
+  };
+};
 
 /**
  * Saves the current state of the page design to storage
@@ -7,36 +54,35 @@ import type { State } from '@/app/canvas/components/hooks/pagesDesignReducer';
  *
  * @param state The current state of the pagesDesignReducer
  */
-const saveStateToDatabase = (state: State) => {
-  // Store in localStorage for now
-  try {
-    localStorage.setItem('pageDesignState', JSON.stringify(state));
-    console.log('State saved to localStorage');
-  } catch (error) {
-    console.error('Failed to save state to localStorage:', error);
+export const saveStateToDatabase = async (state: State) => {
+  // Save to localStorage as fallback
+  localStorage.setItem('pagesDesignState', JSON.stringify(state));
+
+  const projectId = getProjectIdFromUrl();
+  if (!projectId) {
+    console.error('No project ID found in URL parameters');
+    return;
   }
 
-  // TODO: Replace with actual API call
-  // The API call should:
-  // 1. Send the state to the backend
-  // 2. Handle authentication/authorization
-  // 3. Implement proper error handling and retry logic
-  // 4. Consider optimizing by only sending changed parts of the state
+  try {
+    const data = transformStateForApi(state);
+    const result = await patchProject(projectId, data);
+    
+    if ('message' in result) {
+      throw new Error(result.message);
+    }
 
-  // TODO: Further improvements:
-  // - Reduce the amount of data sent to the backend
-  // - Use IDs of objects instead of the objects themselves, then when receiving the state, replace the IDs with the actual objects
-  // - Send only the changed parts of the state
-  // - Send the state in a more efficient format (e.g., JSON)
-  // - Handle pagination if the state is too large to send in one go
-  // - Add proper error handling and retry logic
-  // - Implement proper logging
+    console.log('Successfully saved state to database');
+  } catch (error) {
+    console.error('Failed to save state to database:', error);
+  }
 };
 
-/**
- * Debounced version of saveStateToDatabase to prevent excessive saves
- * during rapid state changes
- */
-export const debouncedSaveStateToDatabase = debounce(saveStateToDatabase, 1000);
-
-export default saveStateToDatabase;
+// Debounce the save function to prevent too many saves during rapid state changes
+let saveTimeout: NodeJS.Timeout;
+export const debouncedSaveStateToDatabase = (state: State) => {
+  if (saveTimeout) {
+    clearTimeout(saveTimeout);
+  }
+  saveTimeout = setTimeout(() => saveStateToDatabase(state), 1000);
+};

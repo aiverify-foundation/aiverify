@@ -4,6 +4,10 @@ const nextConfig = {
   async rewrites() {
     return [
       {
+        source: '/api/projects/projects/:id',
+        destination: `${process.env.APIGW_HOST}/projects/projects/:id`,
+      },
+      {
         source: '/api/test_results/upload',
         destination: `${process.env.APIGW_HOST}/test_results/upload`,
       },
