@@ -365,6 +365,7 @@ class Plugin(IAlgorithm):
 
         for corruption in corruption_fn:
             individual_results = dict()
+            severity_params = dict()
             accuracies = dict()
             display_info = dict()
 
@@ -391,13 +392,16 @@ class Plugin(IAlgorithm):
                     corrupted_df = self._build_corrupted_dataframe(
                         image_df, ground_truth, None, kwargs, severity, corruption
                     )
+                severity_params.update({"severity" + str(severity): kwargs})
                 accuracy = self._get_accuracy(corrupted_df, ground_truth)
                 accuracies.update({"severity" + str(severity): accuracy})
 
                 random_display = self._get_rand_display(corrupted_df, ground_truth, corruption, severity, random_index)
                 display_info.update({"severity" + str(severity): random_display})
 
-            individual_results.update({"accuracy": accuracies, "display_info": display_info})
+            individual_results.update(
+                {"parameter": severity_params, "accuracy": accuracies, "display_info": display_info}
+            )
             combined_results.append(individual_results)
 
             self._progress_inst.update(1)

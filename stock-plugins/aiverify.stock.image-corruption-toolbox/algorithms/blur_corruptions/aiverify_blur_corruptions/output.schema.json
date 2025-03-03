@@ -28,6 +28,18 @@
                         "description": "Name of corruption algorithm",
                         "type": "string"
                     },
+                    "parameter": {
+                        "description": "Corruption algorithm parameter values at each level of severities",
+                        "items": {
+                            "type": "object",
+                            "minProperties": 1,
+                            "patternProperties": {
+                                "^severity": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
                     "accuracy": {
                         "description": "Accuracies starting from no corruption to higher levels of severities",
                         "items": {
