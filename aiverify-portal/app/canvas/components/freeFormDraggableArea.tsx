@@ -37,7 +37,7 @@ function FreeFormDraggableArea(props: FreeFormDraggableAreaProps) {
         onMouseLeave={onMouseLeave}>
         <div
           id="contentWrapper"
-          className="flex min-w-[3000px] justify-center transition-all duration-200 ease-out"
+          className="flex w-full justify-center transition-all duration-200 ease-out"
           style={{
             minHeight: contentWrapperMinHeight,
             paddingTop: pagesLength === 1 ? 'auto' : `${CONTAINER_PAD}px`,
@@ -47,6 +47,9 @@ function FreeFormDraggableArea(props: FreeFormDraggableAreaProps) {
             willChange: 'transform',
             touchAction: 'pan-x pan-y',
             contain: 'content',
+            width: '100%',
+            maxWidth: '100%',
+            overflow: 'hidden'
           }}>
           {children}
         </div>

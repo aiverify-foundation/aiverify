@@ -132,6 +132,7 @@ export default async function TemplateDesignerPage({ params }: Props) {
   console.log("mappedPages", mappedPages[0].reportWidgets[0]?.mdx);
 
   return (
+    <div className="h-screen w-full">
     <Designer
       flow={UserFlows.NewProjectWithExistingTemplate}
       project={{
@@ -157,5 +158,6 @@ export default async function TemplateDesignerPage({ params }: Props) {
       disabled={true}
       pageNavigationMode="multi"
     />
+    </div>
   );
 } 

@@ -27,6 +27,7 @@ import { WidgetPropertiesDrawer } from './drawers/widgetPropertiesDrawer';
 import { GridItemContextMenu } from './gridItemContextMenu';
 import { editorInputClassName } from './hocAddTextEditFuncitonality';
 import { WidgetErrorBoundary } from './widgetErrorBoundary';
+import { GRID_WIDTH, GRID_COLUMNS, GRID_ROW_HEIGHT } from './dimensionsConstants';
 
 /*
   Refer to React.memo code block below for more details on the memoization logic.
@@ -36,7 +37,7 @@ import { WidgetErrorBoundary } from './widgetErrorBoundary';
 
 export const gridItemRootClassName = 'grid-item-root';
 type requiredStyles =
-  `grid-item-root relative h-auto w-full min-h-full${string}`; // strictly required styles
+  `grid-item-root relative h-full w-full flex flex-col overflow-hidden${string}`; // strictly required styles
 
 type GridItemComponentProps = {
   /** Array of all available plugins in the system, used for finding dependencies and metadata */
@@ -110,7 +111,7 @@ type MdxComponentProps = MDXContentProps & {
 };
 
 const itemStyle: requiredStyles =
-  'grid-item-root relative h-auto w-full min-h-full';
+  'grid-item-root relative h-full w-full flex flex-col overflow-hidden';
 
 function GridItemMain({
   allAvalaiblePlugins,
@@ -167,9 +168,17 @@ function GridItemMain({
 
   /**
    * Stores the current width and height of the widget
-   * Updated by ResizeObserver when the widget's size changes
+   * Calculated from layout dimensions and grid constants
    */
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const dimensions = useMemo(() => {
+    const columnWidth = GRID_WIDTH / GRID_COLUMNS;
+    const rowHeight = GRID_ROW_HEIGHT;
+    
+    return {
+      width: layout.w * columnWidth,
+      height: layout.h * rowHeight
+    };
+  }, [layout.w, layout.h]);
 
   /**
    * Determines if the widget has editable properties
@@ -408,22 +417,6 @@ function GridItemMain({
   }, [inputBlockDatasUsed, allInputBlockDatasOnSystem, widget.gid, widget.mockdata]);
 
   /**
-   * Sets up a ResizeObserver to track the widget's dimensions
-   * Updates the dimensions state when the widget is resized
-   */
-  useEffect(() => {
-    if (!gridItemRef.current) return;
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      const { width, height } = entries[0].contentRect;
-      setDimensions({ width, height });
-    });
-
-    resizeObserver.observe(gridItemRef.current);
-    return () => resizeObserver.disconnect();
-  }, []);
-
-  /**
    * Cleanup function for the hide timeout
    * Ensures no memory leaks from lingering timeouts
    */
@@ -641,11 +634,14 @@ function GridItemMain({
       <div
         ref={gridItemRef}
         className={itemStyle}
+        style={{
+          width: dimensions.width,
+          height: dimensions.height
+        }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}>
         {isResizing || isDragging ? (
-          // Show a placeholder during resize and dragging for better ux. Resizing charts is laggy
-          // because of observer responsiveness.
+          // Show a placeholder during resize and dragging for better ux
           <div className="h-auto w-full bg-gray-100" />
         ) : (
           // Render the actual widget content with error boundary protection
