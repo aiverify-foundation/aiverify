@@ -1,9 +1,8 @@
 import argparse
 
-from aiverify_test_engine.plugins.enums.model_type import ModelType
-
 from aiverify_general_corruptions.algo_init import AlgoInit
 from aiverify_general_corruptions.utils import general
+from aiverify_test_engine.plugins.enums.model_type import ModelType
 
 parser = argparse.ArgumentParser(description="Run the plugin test with specified parameters.")
 
@@ -57,25 +56,29 @@ def parse_input_args():
         nargs="+",
         choices=["all"] + [name.lower() for name in general.CORRUPTION_FN],
         default=["all"],
-        help="Specify the name(s) of general corruption function to run. Default: 'all'",
+        help="Specify the name(s) of general corruption to run. Default: all",
     )
+
+    def get_default(k: str) -> str:
+        return " ".join([str(v) for v in general.DEFAULT_PARAMS[k]])
+
     parser.add_argument(
         "--gaussian_noise_sigma",
         nargs="+",
         type=float,
-        help="Customize the sigma value(s) for the Gaussian Noise corruption function.",
+        help=f"Gaussian Noise sigma. Default: {get_default('gaussian_noise_sigma')}",
     )
     parser.add_argument(
         "--poisson_noise_scale",
         nargs="+",
         type=float,
-        help="Customize the scale value(s) for the Poisson Noise corruption function.",
+        help=f"Poisson Noise scale. Default: {get_default('poisson_noise_scale')}",
     )
     parser.add_argument(
         "--salt_and_pepper_noise_amount",
         nargs="+",
         type=float,
-        help="Customize the amount value(s) for the Salt and Pepper Noise corruption function.",
+        help=f"Salt and Pepper Noise amount. Default: {get_default('salt_and_pepper_noise_amount')}",
     )
 
 
