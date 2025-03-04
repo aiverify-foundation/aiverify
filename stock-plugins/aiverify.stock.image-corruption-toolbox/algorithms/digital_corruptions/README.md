@@ -96,10 +96,22 @@ To fine-tune digital corruption parameters, use the [Digital Corruption Playgrou
 ✅ Apply custom values in the CLI using flags like:
 
 ```sh
---brightness_down_factor 0.1 0.2 0.3
-```
+#!/bin/bash
 
-After selecting the desired parameters, update your CLI command accordingly.
+root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files"
+
+python -m aiverify_digital_corruptions \
+  --data_path $root_path/data/raw_fashion_image_10 \
+  --model_path $root_path/pipeline/multiclass_classification_image_mnist_fashion \
+  --ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.**sav** \
+  --ground_truth label \
+  --model_type CLASSIFICATION \
+  --run_pipeline \
+  --annotated_ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
+  --set_seed 10 \
+  --file_name_label file_name \
+  --brightness_down_factor 0.1 0.2 0.3
+```
 
 ## Develop plugin locally
 

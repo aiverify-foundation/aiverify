@@ -1,9 +1,8 @@
 import argparse
 
-from aiverify_test_engine.plugins.enums.model_type import ModelType
-
 from aiverify_digital_corruptions.algo_init import AlgoInit
 from aiverify_digital_corruptions.utils import digital
+from aiverify_test_engine.plugins.enums.model_type import ModelType
 
 parser = argparse.ArgumentParser(description="Run the plugin test with specified parameters.")
 
@@ -57,55 +56,59 @@ def parse_input_args():
         nargs="+",
         choices=["all"] + [name.lower() for name in digital.CORRUPTION_FN],
         default=["all"],
-        help="Specify the name(s) of digital corruption function to run. Default: 'all'",
+        help="Specify the name(s) of digital corruption to run. Default: all",
     )
+
+    def get_default(k: str) -> str:
+        return " ".join([str(v) for v in digital.DEFAULT_PARAMS[k]])
+
     parser.add_argument(
         "--brightness_down_factor",
         nargs="+",
         type=float,
-        help="Customize the factor value(s) for the Brightness Down corruption function.",
+        help=f"Brightness Down factor. Default: {get_default('brightness_down_factor')}",
     )
     parser.add_argument(
         "--brightness_up_factor",
         nargs="+",
         type=float,
-        help="Customize the factor value(s) for the Brightness Up corruption function.",
+        help=f"Brightness Up factor. Default: {get_default('brightness_up_factor')}",
     )
     parser.add_argument(
         "--contrast_down_factor",
         nargs="+",
         type=float,
-        help="Customize the factor value(s) for the Contrast Down corruption function.",
+        help=f"Contrast Down factor. Default: {get_default('contrast_down_factor')}",
     )
     parser.add_argument(
         "--contrast_up_factor",
         nargs="+",
         type=float,
-        help="Customize the factor value(s) for the Contrast Up corruption function.",
+        help=f"Contrast Up factor. Default: {get_default('contrast_up_factor')}",
     )
     parser.add_argument(
         "--saturate_down_factor",
         nargs="+",
         type=float,
-        help="Customize the factor value(s) for the Saturate Down corruption function.",
+        help=f"Saturate Down factor. Default: {get_default('saturate_down_factor')}",
     )
     parser.add_argument(
         "--saturate_up_factor",
         nargs="+",
         type=float,
-        help="Customize the factor value(s) for the Saturate Up corruption function.",
+        help=f"Saturate Up factor. Default: {get_default('saturate_up_factor')}",
     )
     parser.add_argument(
         "--random_perspective_sigma",
         nargs="+",
         type=float,
-        help="Customize the sigma value(s) for the Random Perspective corruption function.",
+        help=f"Random Perspective sigma. Default: {get_default('random_perspective_sigma')}",
     )
     parser.add_argument(
         "--jpeg_compression_quality",
         nargs="+",
         type=int,
-        help="Customize the quality value(s) for the JPEG Compression corruption function.",
+        help=f"JPEG Compression quality. Default: {get_default('jpeg_compression_quality')}",
     )
 
 
