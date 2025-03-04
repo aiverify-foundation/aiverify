@@ -1,9 +1,8 @@
 import argparse
 
-from aiverify_test_engine.plugins.enums.model_type import ModelType
-
 from aiverify_blur_corruptions.algo_init import AlgoInit
 from aiverify_blur_corruptions.utils import blur
+from aiverify_test_engine.plugins.enums.model_type import ModelType
 
 parser = argparse.ArgumentParser(description="Run the plugin test with specified parameters.")
 
@@ -57,43 +56,47 @@ def parse_input_args():
         nargs="+",
         choices=["all"] + [name.lower() for name in blur.CORRUPTION_FN],
         default=["all"],
-        help="Specify the name(s) of blur corruption function to run. Default: 'all'",
+        help="Specify the name(s) of blur corruption to run. Default: all",
     )
+
+    def get_default(k: str) -> str:
+        return " ".join([str(v) for v in blur.DEFAULT_PARAMS[k]])
+
     parser.add_argument(
         "--gaussian_blur_sigma",
         nargs="+",
         type=float,
-        help="Customize the sigma value(s) for the Gaussian Blur corruption function.",
+        help=f"Gaussian Blur sigma. Default: {get_default('gaussian_blur_sigma')}",
     )
     parser.add_argument(
         "--glass_blur_max_delta",
         nargs="+",
         type=int,
-        help="Customize the max delta value(s) for the Glass Blur corruption function.",
+        help=f"Glass Blur max delta. Default: {get_default('glass_blur_max_delta')}",
     )
     parser.add_argument(
         "--defocus_blur_radius",
         nargs="+",
         type=int,
-        help="Customize the radius value(s) for the Defocus Blur corruption function.",
+        help=f"Defocus Blur radius. Default: {get_default('defocus_blur_radius')}",
     )
     parser.add_argument(
         "--horizontal_motion_blur_kernel_size",
         nargs="+",
         type=int,
-        help="Customize the kernel size value(s) for the Horizontal Motion Blur corruption function.",
+        help=f"Horizontal Motion Blur kernel size. Default: {get_default('horizontal_motion_blur_kernel_size')}",
     )
     parser.add_argument(
         "--vertical_motion_blur_kernel_size",
         nargs="+",
         type=int,
-        help="Customize the kernel size value(s) for the Vertical Motion Blur corruption function.",
+        help=f"Vertical Motion Blur kernel size. Default: {get_default('vertical_motion_blur_kernel_size')}",
     )
     parser.add_argument(
         "--zoom_blur_zoom_factor",
         nargs="+",
         type=float,
-        help="Customize the zoom factor value(s) for the Zoom Blur corruption function.",
+        help=f"Zoom Blur zoom factor. Default: {get_default('zoom_blur_zoom_factor')}",
     )
 
 
