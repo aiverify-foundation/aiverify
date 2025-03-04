@@ -1,9 +1,8 @@
 import argparse
 
-from aiverify_test_engine.plugins.enums.model_type import ModelType
-
 from aiverify_environment_corruptions.algo_init import AlgoInit
 from aiverify_environment_corruptions.utils import environment
+from aiverify_test_engine.plugins.enums.model_type import ModelType
 
 parser = argparse.ArgumentParser(description="Run the plugin test with specified parameters.")
 
@@ -57,26 +56,30 @@ def parse_input_args():
         nargs="+",
         choices=["all"] + [name.lower() for name in environment.CORRUPTION_FN],
         default=["all"],
-        help="Specify the name(s) of environment corruption function to run. Default: 'all'",
+        help="Specify the name(s) of environment corruption to run. Default: all",
     )
+
+    def get_default(k: str) -> str:
+        return " ".join([str(v) for v in environment.DEFAULT_PARAMS[k]])
+
     parser.add_argument(
         "--snow_intensity",
         nargs="+",
         type=float,
-        help="Customize the intensity value(s) for the Snow corruption function.",
+        help=f"Snow corruption intensity. Default: {get_default('snow_intensity')}",
     )
     parser.add_argument(
         "--fog_intensity",
         nargs="+",
         type=float,
-        help="Customize the intensity value(s) for the Fog corruption function.",
+        help=f"Fog corruption intensity. Default: {get_default('fog_intensity')}",
     )
     parser.add_argument(
         "--rain_type",
         nargs="+",
         type=str,
         choices=["drizzle", "heavy", "torrential"],
-        help="Customize the type(s) for the Rain corruption function.",
+        help=f"Rain corruption type. Default: {get_default('rain_type')}",
     )
 
 
