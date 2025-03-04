@@ -31,6 +31,7 @@ function TemplateCards({ templates, projectId, flow }: TemplateCardsProps) {
           <Card
             size="md"
             width={450}
+            height={250}
             className="!bg-none text-white text-shadow-sm [&&]:bg-secondary-900">
             <Card.Content className="flex flex-col gap-7 p-4">
               <h3 className="text-[1.2rem] font-bold">

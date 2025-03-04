@@ -57,7 +57,7 @@ export default async function TemplatesPage(props: UrlSearchParams) {
               ? `/project/usermenu?flow=${UserFlows.NewProjectWithNewTemplate}&projectId=${projectId}`
               : '/templates/new'
           }>
-          <Card className="min-h-[250px] max-w-lg cursor-pointer border-none bg-secondary-800 text-white hover:bg-secondary-700">
+          <Card className="min-h-[250px] w-[450px] cursor-pointer border-none bg-secondary-700 text-white hover:bg-secondary-700">
             <h3 className="mb-8 flex text-xl font-semibold text-white">
               <RiFileChartFill className="mr-2 h-8 w-8 text-primary-500" />{' '}
               Create New Report Template
