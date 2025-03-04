@@ -18,18 +18,15 @@ type UrlSearchParams = {
 export default async function TemplatesPage(props: UrlSearchParams) {
   const params = await props.searchParams;
   const { projectId, flow } = params;
-  if (flow == undefined) {
-    console.log('flow id is required');
-    notFound();
-  }
 
-  if (flow == UserFlows.NewProject && projectId == undefined) {
-    notFound();
-  }
-
-  const result = await getProjects({ ids: [projectId as string] });
-  if ('message' in result) {
-    notFound();
+  let project;
+  if (flow === UserFlows.NewProject && projectId) {
+    const result = await getProjects({ ids: [projectId] });
+    if ('message' in result || result.data.length === 0) {
+      console.log(`project id not found: ${projectId}`);
+      notFound();
+    }
+    project = result.data[0];
   }
 
   const response = await fetchTemplates();
@@ -41,15 +38,25 @@ export default async function TemplatesPage(props: UrlSearchParams) {
   return (
     <main className="w-full px-6">
       <h1 className="mb-0 mt-6 text-2xl font-bold tracking-wide">
-        Select A Report Template
+        {flow === UserFlows.NewProject && project ? (
+          `Select A Report Template for ${project.projectInfo.name}`
+        ) : (
+          'Report Templates'
+        )}
       </h1>
       <p className="mb-[80px] text-secondary-300">
-        Select a template or start with an empty canvas.
+        {flow === UserFlows.NewProject && project
+          ? 'Select a template or start with an empty canvas.'
+          : 'Browse and manage report templates.'}
       </p>
       {templates.length > 1 ? <TemplateFilters /> : null}
       <section className="mt-6 flex flex-wrap gap-6">
         <Link
-          href={`/project/usermenu?flow=${UserFlows.NewProjectWithNewTemplate}&projectId=${projectId}`}>
+          href={
+            flow === UserFlows.NewProject && projectId
+              ? `/project/usermenu?flow=${UserFlows.NewProjectWithNewTemplate}&projectId=${projectId}`
+              : '/templates/new'
+          }>
           <Card className="min-h-[250px] max-w-lg cursor-pointer border-none bg-secondary-800 text-white hover:bg-secondary-700">
             <h3 className="mb-8 flex text-xl font-semibold text-white">
               <RiFileChartFill className="mr-2 h-8 w-8 text-primary-500" />{' '}
@@ -62,7 +69,7 @@ export default async function TemplatesPage(props: UrlSearchParams) {
             </p>
           </Card>
         </Link>
-        <TemplateCards templates={templates} />
+        <TemplateCards templates={templates} projectId={projectId} flow={flow} />
       </section>
     </main>
   );
