@@ -636,8 +636,8 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
 
     case 'INITIALIZE_WITH_TEMPLATE': {
       const {
-        layouts,
-        widgets,
+        layouts: templateLayouts,
+        widgets: templateWidgets,
         algorithmsOnReport,
         inputBlocksOnReport,
         gridItemToAlgosMap,
@@ -646,16 +646,52 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         overflowParents,
       } = action;
 
+      // Validate input arrays
+      if (!Array.isArray(templateLayouts) || !Array.isArray(templateWidgets)) {
+        console.error('Invalid template data: layouts or widgets are not arrays');
+        return state;
+      }
+
+      // Process each page's layouts and widgets to ensure proper positioning
+      const processedLayouts = templateLayouts.map((pageLayouts, pageIndex) => {
+        if (!Array.isArray(pageLayouts) || !Array.isArray(templateWidgets[pageIndex])) {
+          console.error(`Invalid page data at index ${pageIndex}`);
+          return [];
+        }
+
+        const sortedLayouts: Layout[] = [];
+        const sortedWidgets = templateWidgets[pageIndex].filter(widget => 
+          widget && widget.gridItemId // Filter out invalid widgets
+        );
+
+        // Position each widget using findWidgetInsertPosition
+        pageLayouts.forEach((layout, idx) => {
+          if (!layout || !sortedWidgets[idx]) return; // Skip invalid layouts/widgets
+
+          const insertPosition = findWidgetInsertPosition(sortedLayouts, layout);
+          sortedLayouts.splice(insertPosition, 0, layout);
+          
+          // Move the corresponding widget to match the layout position
+          if (idx !== insertPosition) {
+            const [widget] = sortedWidgets.splice(idx, 1);
+            sortedWidgets.splice(insertPosition, 0, widget);
+          }
+        });
+
+        templateWidgets[pageIndex] = sortedWidgets;
+        return sortedLayouts;
+      });
+
       newState = {
         ...state,
-        layouts,
-        widgets,
-        algorithmsOnReport,
-        inputBlocksOnReport,
-        gridItemToAlgosMap,
-        gridItemToInputBlockDatasMap,
-        pageTypes,
-        overflowParents,
+        layouts: processedLayouts,
+        widgets: templateWidgets,
+        algorithmsOnReport: algorithmsOnReport || [],
+        inputBlocksOnReport: inputBlocksOnReport || [],
+        gridItemToAlgosMap: gridItemToAlgosMap || {},
+        gridItemToInputBlockDatasMap: gridItemToInputBlockDatasMap || {},
+        pageTypes: pageTypes || ['grid'],
+        overflowParents: overflowParents || [null],
       };
       break;
     }

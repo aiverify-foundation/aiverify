@@ -58,19 +58,29 @@ const transformStateForApi = (state: State) => {
  * @param state The current state of the pagesDesignReducer
  */
 export const saveStateToDatabase = async (state: State) => {
-  // Save to localStorage as fallback
-  localStorage.setItem('pagesDesignState', JSON.stringify(state));
+  // Always save to localStorage as it's needed for the designer
+  try {
+    localStorage.setItem('pagesDesignState', JSON.stringify(state));
+    console.log('Saved state to localStorage:', {
+      layouts: state.layouts.map(l => l.map(item => ({ i: item.i, w: item.w, h: item.h }))),
+      pathname: window.location.pathname
+    });
+  } catch (error) {
+    console.error('Failed to save to localStorage:', error);
+  }
 
   const { projectId, flow } = getProjectIdAndFlowFromUrl();
   
-  // If we're in a template flow, don't try to save to database
-  if (flow?.includes('Template')) {
-    console.log('Template flow detected, skipping database save');
-    return;
-  }
-
-  if (!projectId) {
-    console.error('No project ID found in URL parameters');
+  // Check if we're in a template flow by checking if the URL contains /templates/
+  const isTemplateFlow = window.location.pathname.includes('/templates/');
+  
+  // If we're in a template flow or no project ID, don't try to save to database
+  if (isTemplateFlow || !projectId) {
+    console.log('Template flow or no project ID detected, skipping database save', {
+      isTemplateFlow,
+      projectId,
+      pathname: window.location.pathname
+    });
     return;
   }
 
@@ -91,6 +101,32 @@ export const saveStateToDatabase = async (state: State) => {
 // Debounce the save function to prevent too many saves during rapid state changes
 let saveTimeout: NodeJS.Timeout;
 export const debouncedSaveStateToDatabase = (state: State) => {
+  // Always save to localStorage immediately
+  try {
+    localStorage.setItem('pagesDesignState', JSON.stringify(state));
+    console.log('Saved state to localStorage (debounced):', {
+      layouts: state.layouts.map(l => l.map(item => ({ i: item.i, w: item.w, h: item.h }))),
+      pathname: window.location.pathname
+    });
+  } catch (error) {
+    console.error('Failed to save to localStorage:', error);
+  }
+
+  const { projectId, flow } = getProjectIdAndFlowFromUrl();
+  
+  // Check if we're in a template flow by checking if the URL contains /templates/
+  const isTemplateFlow = window.location.pathname.includes('/templates/');
+  
+  // Don't even start the debounce timer if we're in a template flow or no project ID
+  if (isTemplateFlow || !projectId) {
+    console.log('Template flow or no project ID detected, skipping debounced save', {
+      isTemplateFlow,
+      projectId,
+      pathname: window.location.pathname
+    });
+    return;
+  }
+
   if (saveTimeout) {
     clearTimeout(saveTimeout);
   }

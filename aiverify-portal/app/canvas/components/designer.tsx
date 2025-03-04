@@ -114,7 +114,9 @@ const criticalGridItemWrapperClass = 'grid-comp-wrapper'; // class for the grid 
 const gridItemDivRequiredStyles: GridItemDivRequiredStyles = `${criticalGridItemWrapperClass} relative group z-10
   hover:outline hover:outline-2 
   hover:outline-blue-500 hover:outline-offset-2
-  active:outline-none`;
+  active:outline-none
+  w-full h-full
+  [&>.react-grid-item]:w-full [&>.react-grid-item]:h-full`;
 
 const widgetItemSchema = z.object({
   gridItemId: z.string().optional(),
@@ -141,16 +143,7 @@ function createGridItemId(widget: Widget, pageIndex: number) {
   return `${widget.gid}-${widget.cid}-p${pageIndex}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
-type Layout = {
-  i: string;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  minW?: number;
-  maxW?: number;
-  minH?: number;
-  maxH?: number;
+type Layout = GridLayoutType & {
   widget?: WidgetOnGridLayout;
 };
 
@@ -269,17 +262,48 @@ function Designer(props: DesignerProps) {
   useEffect(() => {
     if (project.pages && project.pages.length > 0) {
       // Convert template pages to layouts and widgets
-      const layouts: Layout[][] = (project as Project).pages.map((page) => 
-        page.layouts.map((layout) => ({
-          ...layout,
-          i: layout.i || (layout.widget ? createGridItemId(layout.widget, 0) : ''),
-        }))
+      console.log("proj given before", project)
+      
+      // Process each page's widgets similar to handleWidgetDrop
+      const layouts: Layout[][] = (project as Project).pages.map((page, pageIndex) => 
+        page.reportWidgets.map((widget) => {
+          // Create a unique grid item ID
+          const gridItemId = widget.gridItemId || createGridItemId(widget, pageIndex);
+          
+          // Get the widget's size properties
+          const { minW, minH, maxH, maxW } = widget.widgetSize;
+          
+          // Find the corresponding layout for this widget
+          const existingLayout = page.layouts.find(l => l.i === gridItemId) || {
+            x: 0,
+            y: 0,
+          };
+
+          // Create the layout item with proper sizing
+          const itemLayout = {
+            ...existingLayout,
+            i: gridItemId,
+            w: maxW,
+            h: minH,
+            minW,
+            minH,
+            maxW,
+            maxH,
+            static: false,
+            isDraggable: true,
+            isResizable: true,
+            isBounded: true,
+          };
+
+          console.log("Created layout for widget:", itemLayout);
+          return itemLayout;
+        })
       );
 
-      const widgets: WidgetOnGridLayout[][] = (project as Project).pages.map((page) => 
+      const widgets: WidgetOnGridLayout[][] = (project as Project).pages.map((page, pageIndex) => 
         page.reportWidgets.map((widget) => ({
           ...widget,
-          gridItemId: widget.gridItemId || createGridItemId(widget, 0),
+          gridItemId: widget.gridItemId || createGridItemId(widget, pageIndex),
         }))
       );
 
@@ -1142,11 +1166,10 @@ function Designer(props: DesignerProps) {
                   onResizeStop={handleGridItemResizeStop(pageIndex)}
                   onResizeStart={handleGridItemResizeStart}
                   preventCollision
-                  isResizable={true}
-                  isDroppable={true}
-                  isDraggable={true}
+                  isResizable={!disabled}
+                  isDroppable={!disabled}
+                  isDraggable={!disabled}
                   isBounded={true}
-                  allowOverlap={false}
                   useCSSTransforms={!isInitialMount.current}
                   resizeHandle={<ResizeHandle />}
                   resizeHandles={['sw', 'nw', 'se', 'ne']}
@@ -1156,8 +1179,9 @@ function Designer(props: DesignerProps) {
                     margin: `${A4_MARGIN}px`,
                   }}
                   className="[&>*]:text-inherit"
-                  droppingItem={droppingItemPlaceholder}>
+                  droppingItem={droppingItemPlaceholder}>  
                   {state.widgets[pageIndex].map((widget, widgetIndex) => {
+                    console.log("mapping widgets", widget, widgetIndex)
                     if (!widget.gridItemId) return null;
                     return (
                       <div

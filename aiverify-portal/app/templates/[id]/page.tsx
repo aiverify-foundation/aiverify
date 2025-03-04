@@ -116,16 +116,18 @@ export default async function TemplateDesignerPage({ params }: Props) {
     // Map layouts to include the correct gridItemId
     const mappedLayouts = page.layouts.map(layout => {
       const widget = mappedWidgets.find(w => w && w.gridItemId === layout.i);
+      if (!widget) return layout;
+
       return {
         ...layout,
-        i: widget?.gridItemId || layout.i
+        i: widget.gridItemId
       };
     });
 
     return {
       ...page,
       layouts: mappedLayouts,
-      reportWidgets: mappedWidgets // Changed from widgets to reportWidgets to match the template structure
+      reportWidgets: mappedWidgets
     };
   });
 
