@@ -175,7 +175,15 @@ function GridItemMain({
    * Determines if the widget has editable properties
    * Controls whether the edit button is shown in the context menu
    */
-  const enableEditing = widget.properties && widget.properties.length > 0;
+  const enableEditing = useMemo(() => {
+    if (Array.isArray(widget.properties)) {
+      return widget.properties.length > 0;
+    }
+    if (typeof widget.properties === 'object' && widget.properties !== null) {
+      return Object.keys(widget.properties).length > 0;
+    }
+    return false;
+  }, [widget.properties]);
 
   /**
    * Prepares the list of test results used by this widget for display in the properties drawer
@@ -572,12 +580,23 @@ function GridItemMain({
    */
   const properties = useMemo(() => {
     if (!widget.properties) return {};
-    return widget.properties.reduce((props, property) => {
-      return {
-        ...props,
-        [property.key]: property.value || property.default || property.helper,
-      };
-    }, {});
+    
+    // If properties is already an object, return it directly
+    if (typeof widget.properties === 'object' && !Array.isArray(widget.properties)) {
+      return widget.properties;
+    }
+    
+    // If properties is an array, reduce it to an object
+    if (Array.isArray(widget.properties)) {
+      return widget.properties.reduce((props, property) => {
+        return {
+          ...props,
+          [property.key]: property.value || property.default || property.helper,
+        };
+      }, {});
+    }
+    
+    return {};
   }, [widget.properties]);
 
   return (

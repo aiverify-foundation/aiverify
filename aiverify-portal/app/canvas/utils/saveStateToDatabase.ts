@@ -2,12 +2,15 @@ import { useUpdateProject, patchProject } from '@/lib/fetchApis/getProjects';
 import type { State } from '@/app/canvas/components/hooks/pagesDesignReducer';
 
 /**
- * Gets the project ID from URL parameters
+ * Gets the project ID and flow from URL parameters
  */
-const getProjectIdFromUrl = () => {
-  if (typeof window === 'undefined') return null;
+const getProjectIdAndFlowFromUrl = () => {
+  if (typeof window === 'undefined') return { projectId: null, flow: null };
   const params = new URLSearchParams(window.location.search);
-  return params.get('projectId');
+  return {
+    projectId: params.get('projectId'),
+    flow: params.get('flow')
+  };
 };
 
 /**
@@ -58,7 +61,14 @@ export const saveStateToDatabase = async (state: State) => {
   // Save to localStorage as fallback
   localStorage.setItem('pagesDesignState', JSON.stringify(state));
 
-  const projectId = getProjectIdFromUrl();
+  const { projectId, flow } = getProjectIdAndFlowFromUrl();
+  
+  // If we're in a template flow, don't try to save to database
+  if (flow?.includes('Template')) {
+    console.log('Template flow detected, skipping database save');
+    return;
+  }
+
   if (!projectId) {
     console.error('No project ID found in URL parameters');
     return;

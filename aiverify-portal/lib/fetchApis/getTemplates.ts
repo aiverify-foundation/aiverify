@@ -16,7 +16,23 @@ export async function fetchTemplates(
     requestUrl = `${endpointUrl}/${opts.id}`;
   }
   const response = await fetch(requestUrl);
-  const result = await processResponse<ReportTemplate[]>(response);
+  const result = await processResponse<ReportTemplate | ReportTemplate[]>(response);
 
-  return result;
+  if (!('data' in result)) {
+    return result;
+  }
+
+  // If we have data and an ID was provided, wrap the single template in an array
+  if (opts?.id != undefined) {
+    return {
+      ...result,
+      data: [result.data as ReportTemplate]
+    };
+  }
+
+  // If no ID was provided, ensure we have an array
+  return {
+    ...result,
+    data: Array.isArray(result.data) ? result.data : [result.data as ReportTemplate]
+  };
 }

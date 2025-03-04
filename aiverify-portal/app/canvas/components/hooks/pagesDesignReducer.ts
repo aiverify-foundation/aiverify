@@ -141,6 +141,17 @@ type WidgetAction =
   | {
       type: 'UPDATE_INPUT_BLOCK_TRACKER';
       gridItemInputBlockDatasMap: WidgetInputBlockIdentifier[];
+    }
+  | {
+      type: 'INITIALIZE_WITH_TEMPLATE';
+      layouts: Layout[][];
+      widgets: WidgetOnGridLayout[][];
+      algorithmsOnReport: Algorithm[];
+      inputBlocksOnReport: InputBlock[];
+      gridItemToAlgosMap: Record<WidgetGridItemId, WidgetAlgoAndResultIdentifier[]>;
+      gridItemToInputBlockDatasMap: Record<WidgetGridItemId, WidgetInputBlockIdentifier[]>;
+      pageTypes: ('grid' | 'overflow')[];
+      overflowParents: Array<number | null>;
     };
 
 function pagesDesignReducer(state: State, action: WidgetAction): State {
@@ -619,6 +630,32 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       newState = {
         ...state,
         gridItemToInputBlockDatasMap: clonedInputBlockDatasMap,
+      };
+      break;
+    }
+
+    case 'INITIALIZE_WITH_TEMPLATE': {
+      const {
+        layouts,
+        widgets,
+        algorithmsOnReport,
+        inputBlocksOnReport,
+        gridItemToAlgosMap,
+        gridItemToInputBlockDatasMap,
+        pageTypes,
+        overflowParents,
+      } = action;
+
+      newState = {
+        ...state,
+        layouts,
+        widgets,
+        algorithmsOnReport,
+        inputBlocksOnReport,
+        gridItemToAlgosMap,
+        gridItemToInputBlockDatasMap,
+        pageTypes,
+        overflowParents,
       };
       break;
     }

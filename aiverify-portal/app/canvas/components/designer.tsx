@@ -11,7 +11,7 @@ import { debounce } from 'lodash';
 import Link from 'next/link';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useReducer } from 'react';
-import GridLayout, { Layout } from 'react-grid-layout';
+import GridLayout, { Layout as GridLayoutType } from 'react-grid-layout';
 import { z } from 'zod';
 import {
   ParsedTestResults,
@@ -63,6 +63,7 @@ import { PageNumber } from './pageNumber';
 import { PluginsPanel } from './pluginsPanel';
 import { ResizeHandle } from './resizeHandle';
 import { ZoomControl } from './zoomControl';
+import { Algorithm, InputBlock } from '@/app/types';
 
 type GridItemDivRequiredStyles =
   `grid-comp-wrapper relative group z-10${string}`; // mandatory to have relative and group
@@ -140,6 +141,29 @@ function createGridItemId(widget: Widget, pageIndex: number) {
   return `${widget.gid}-${widget.cid}-p${pageIndex}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
+type Layout = {
+  i: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  minW?: number;
+  maxW?: number;
+  minH?: number;
+  maxH?: number;
+  widget?: WidgetOnGridLayout;
+};
+
+type ProjectPage = {
+  layouts: Layout[];
+  reportWidgets: WidgetOnGridLayout[];
+};
+
+type Project = {
+  pages: ProjectPage[];
+  // ... other project properties
+};
+
 function Designer(props: DesignerProps) {
   const {
     flow,
@@ -154,6 +178,8 @@ function Designer(props: DesignerProps) {
     disablePreviousButton = false,
     pageNavigationMode = 'multi',
   } = props;
+
+  console.log("allPluginsWithMdx", allPluginsWithMdx);
 
   // Reference to the canvas element for positioning and measurements
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -238,6 +264,76 @@ function Designer(props: DesignerProps) {
       });
     }
   }, [selectedTestResultsFromUrlParams]);
+
+  // Initialize the state with template data
+  useEffect(() => {
+    if (project.pages && project.pages.length > 0) {
+      // Convert template pages to layouts and widgets
+      const layouts: Layout[][] = (project as Project).pages.map((page) => 
+        page.layouts.map((layout) => ({
+          ...layout,
+          i: layout.i || (layout.widget ? createGridItemId(layout.widget, 0) : ''),
+        }))
+      );
+
+      const widgets: WidgetOnGridLayout[][] = (project as Project).pages.map((page) => 
+        page.reportWidgets.map((widget) => ({
+          ...widget,
+          gridItemId: widget.gridItemId || createGridItemId(widget, 0),
+        }))
+      );
+
+      // Initialize page types and overflow parents
+      const pageTypes: ('grid' | 'overflow')[] = (project as Project).pages.map(() => 'grid');
+      const overflowParents: Array<number | null> = (project as Project).pages.map(() => null);
+
+      // Initialize algorithms and input blocks
+      const algorithmsOnReport: Algorithm[] = [];
+      const inputBlocksOnReport: InputBlock[] = [];
+      const gridItemToAlgosMap: Record<string, WidgetAlgoAndResultIdentifier[]> = {};
+      const gridItemToInputBlockDatasMap: Record<string, WidgetInputBlockIdentifier[]> = {};
+
+      // Process each widget to collect algorithms and input blocks
+      (project as Project).pages.forEach((page, pageIndex) => {
+        page.reportWidgets.forEach((widget) => {
+          const gridItemId = widget.gridItemId || createGridItemId(widget, pageIndex);
+          
+          // Collect algorithms
+          const algos = getWidgetAlgosFromPlugins(allPluginsWithMdx, widget);
+          algorithmsOnReport.push(...algos);
+          
+          // Collect input blocks
+          const inputBlocks = getWidgetInputBlocksFromPlugins(allPluginsWithMdx, widget);
+          inputBlocksOnReport.push(...inputBlocks);
+
+          // Map algorithms to grid items
+          gridItemToAlgosMap[gridItemId] = algos.map((algo) => ({
+            gid: algo.gid,
+            cid: algo.cid,
+          }));
+
+          // Map input blocks to grid items
+          gridItemToInputBlockDatasMap[gridItemId] = inputBlocks.map((inputBlock) => ({
+            gid: inputBlock.gid,
+            cid: inputBlock.cid,
+          }));
+        });
+      });
+
+      // Dispatch initialization action
+      dispatch({
+        type: 'INITIALIZE_WITH_TEMPLATE',
+        layouts,
+        widgets,
+        algorithmsOnReport,
+        inputBlocksOnReport,
+        gridItemToAlgosMap,
+        gridItemToInputBlockDatasMap,
+        pageTypes,
+        overflowParents,
+      });
+    }
+  }, [project.pages, allPluginsWithMdx]);
 
   // Drag-to-scroll functionality for navigating the canvas
   useDragToScroll(freeFormAreaRef, canvasRef);
