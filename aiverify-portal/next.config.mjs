@@ -31,6 +31,26 @@ const nextConfig = {
         source: '/api/plugins/:id',
         destination: `${process.env.APIGW_HOST}/plugins/:id`,
       },
+      {
+        source: '/api/plugins/:gid/bundle/:cid',
+        destination: `${process.env.APIGW_HOST}/plugins/:gid/bundle/:cid`,
+      },
+      {
+        source: '/api/plugins/:gid/summary/:cid',
+        destination: `${process.env.APIGW_HOST}/plugins/:gid/summary/:cid`,
+      },
+      {
+        source: '/api/plugins/:gid/input_blocks',
+        destination: `${process.env.APIGW_HOST}/plugins/:gid/input_blocks`,
+      },
+      {
+        source: '/api/input_block_data/:id',
+        destination: `${process.env.APIGW_HOST}/input_block_data/:id`,
+      },
+      {
+        source: '/api/input_block_data',
+        destination: `${process.env.APIGW_HOST}/input_block_data/`,
+      },
     ];
   },
 };

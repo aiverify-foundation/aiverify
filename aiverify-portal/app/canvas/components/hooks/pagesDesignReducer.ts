@@ -1,26 +1,80 @@
 import { Layout } from 'react-grid-layout';
 import { WidgetOnGridLayout } from '@/app/canvas/types';
+import { debouncedSaveStateToDatabase } from '@/app/canvas/utils/saveStateToDatabase';
 import { Algorithm, InputBlock } from '@/app/types';
 import { findWidgetInsertPosition } from './utils/findWidgetInsertPosition';
 
 export type WidgetAlgoAndResultIdentifier = {
   gid: string;
   cid: string;
-  testResultsCreatedAt?: string;
+  testResultId?: number;
+};
+
+export type WidgetInputBlockIdentifier = {
+  gid: string;
+  cid: string;
+  inputBlockDataId?: number;
 };
 
 type WidgetGridItemId = string;
 
 export type State = {
-  layouts: Layout[][]; // 2d array - rows rerpresent pages, columns hold widget layout objects (react grid layout object)
-  widgets: WidgetOnGridLayout[][]; // 2d array - rows represent pages, columns holds widget objects
-  algorithmsOnReport: Algorithm[]; // Keeps track of all the algos/tests that's required by the report
-  inputBlocksOnReport: InputBlock[]; // Keeps track of all the input blocks that's required by the report
+  /**
+   * 2D array where each row represents a page and each column contains a widget's layout configuration.
+   * Layout objects are used by react-grid-layout to position widgets on the grid.
+   */
+  layouts: Layout[][];
+
+  /**
+   * 2D array where each row represents a page and each column contains a widget's configuration and content.
+   * Widgets contain the actual MDX code, properties, and metadata.
+   */
+  widgets: WidgetOnGridLayout[][];
+
+  /**
+   * Collection of all algorithms/tests referenced by widgets in the report.
+   * Used to track dependencies and ensure required data is available.
+   */
+  algorithmsOnReport: Algorithm[];
+
+  /**
+   * Collection of all input blocks referenced by widgets in the report.
+   * Used to track dependencies and ensure required data is available.
+   */
+  inputBlocksOnReport: InputBlock[];
+
+  /**
+   * Maps grid item IDs to their associated algorithms and test results.
+   * Enables widgets to access their required test data.
+   */
   gridItemToAlgosMap: Record<WidgetGridItemId, WidgetAlgoAndResultIdentifier[]>;
-  currentPage: number; // Keeps track of the current page
-  showGrid: boolean; // Keeps track of the grid visibility
-  pageTypes: ('grid' | 'overflow')[]; // Track page types - 1D array of page types
-  overflowParents: Array<number | null>; // just track parent page index, null for grid pages [null,null,null,2,2]
+
+  /**
+   * Maps grid item IDs to their associated input block and input block data.
+   * Enables widgets to access their required input data.
+   */
+  gridItemToInputBlockDatasMap: Record<
+    WidgetGridItemId,
+    WidgetInputBlockIdentifier[]
+  >;
+
+  /** Index of the currently active/visible page */
+  currentPage: number;
+
+  /** Controls visibility of the grid background */
+  showGrid: boolean;
+
+  /**
+   * Array indicating the type of each page ('grid' for normal pages, 'overflow' for content spillover)
+   */
+  pageTypes: ('grid' | 'overflow')[];
+
+  /**
+   * Array tracking parent page relationships for overflow pages.
+   * null indicates a normal grid page, number indicates the parent page index
+   * Example: [null, null, null, 2, 2] means pages 4 and 5 are overflow from page 3
+   */
+  overflowParents: Array<number | null>;
 };
 
 export const initialState: State = {
@@ -28,6 +82,7 @@ export const initialState: State = {
   widgets: [[]],
   algorithmsOnReport: [],
   gridItemToAlgosMap: {},
+  gridItemToInputBlockDatasMap: {},
   currentPage: 0,
   showGrid: true,
   pageTypes: ['grid'],
@@ -41,6 +96,7 @@ type WidgetAction =
       itemLayout: Layout;
       widget: WidgetOnGridLayout;
       gridItemAlgosMap: WidgetAlgoAndResultIdentifier[] | undefined;
+      gridItemInputBlockDatasMap: WidgetInputBlockIdentifier[] | undefined;
       algorithms: Algorithm[];
       inputBlocks: InputBlock[];
       pageIndex: number;
@@ -56,7 +112,7 @@ type WidgetAction =
       pageIndex: number;
     }
   | {
-      type: 'CHANGE_WIDGET_POSITION'; //TODO - review; I was using this for moving widgets across pages.
+      type: 'CHANGE_WIDGET_POSITION'; //TODO - review; was using this for moving widgets across pages.
       itemLayout: Layout;
       pageIndex: number;
     }
@@ -81,10 +137,15 @@ type WidgetAction =
   | {
       type: 'UPDATE_ALGO_TRACKER';
       gridItemAlgosMap: WidgetAlgoAndResultIdentifier[];
+    }
+  | {
+      type: 'UPDATE_INPUT_BLOCK_TRACKER';
+      gridItemInputBlockDatasMap: WidgetInputBlockIdentifier[];
     };
 
 function pagesDesignReducer(state: State, action: WidgetAction): State {
   const { layouts, widgets } = state;
+  let newState = state;
 
   switch (action.type) {
     case 'ADD_WIDGET_TO_CANVAS': {
@@ -98,6 +159,10 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       clonedPageWidgets.splice(insertPosition, 0, action.widget);
 
       let clonedAlgosMap = state.gridItemToAlgosMap;
+      let clonedInputBlockDatasMap = state.gridItemToInputBlockDatasMap;
+
+      // Update the algorithm mapping for the widget if provided, either by merging with existing
+      // algorithms or creating a new entry in the map for this widget
       if (action.gridItemAlgosMap && action.gridItemAlgosMap.length > 0) {
         clonedAlgosMap = { ...state.gridItemToAlgosMap };
         if (clonedAlgosMap[action.widget.gridItemId]) {
@@ -111,6 +176,21 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         }
       }
 
+      if (
+        action.gridItemInputBlockDatasMap &&
+        action.gridItemInputBlockDatasMap.length > 0
+      ) {
+        clonedInputBlockDatasMap = { ...state.gridItemToInputBlockDatasMap };
+        if (clonedInputBlockDatasMap[action.widget.gridItemId]) {
+          clonedInputBlockDatasMap[action.widget.gridItemId] = [
+            ...clonedInputBlockDatasMap[action.widget.gridItemId],
+            ...action.gridItemInputBlockDatasMap,
+          ];
+        } else {
+          clonedInputBlockDatasMap[action.widget.gridItemId] =
+            action.gridItemInputBlockDatasMap.slice();
+        }
+      }
       // Update algorithms list without duplicates
       const newAlgorithms = [...state.algorithmsOnReport];
       action.algorithms.forEach((algo) => {
@@ -136,7 +216,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         }
       });
 
-      return {
+      newState = {
         ...state,
         layouts: layouts.map((layout, i) =>
           i === action.pageIndex ? clonedPageLayouts : layout
@@ -145,9 +225,11 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
           i === action.pageIndex ? clonedPageWidgets : widget
         ),
         gridItemToAlgosMap: clonedAlgosMap,
+        gridItemToInputBlockDatasMap: clonedInputBlockDatasMap,
         algorithmsOnReport: newAlgorithms,
         inputBlocksOnReport: newInputBlocks,
       };
+      break;
     }
 
     case 'DELETE_WIDGET_FROM_CANVAS': {
@@ -166,6 +248,14 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         delete clonedAlgosMap[widgetToDelete.gridItemId];
       }
 
+      // Clean up input block datas from map
+      const clonedInputBlockDatasMap = {
+        ...state.gridItemToInputBlockDatasMap,
+      };
+      if (widgetToDelete) {
+        delete clonedInputBlockDatasMap[widgetToDelete.gridItemId];
+      }
+
       // Clean up algorithmsOnReport
       const allRemainingAlgos = Object.values(clonedAlgosMap).flat();
       const newAlgorithmsOnReport = (state.algorithmsOnReport || []).filter(
@@ -177,17 +267,19 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       );
 
       // Clean up inputBlocksOnReport
-      const allRemainingWidgets = state.widgets.flat();
+      const allRemainingInputBlocks = Object.values(
+        clonedInputBlockDatasMap
+      ).flat();
       const newInputBlocksOnReport = state.inputBlocksOnReport.filter(
         (inputBlock) =>
-          allRemainingWidgets.some((widget) =>
-            widget.dependencies.some(
-              (dep) => dep.gid === inputBlock.gid && dep.cid === inputBlock.cid
-            )
+          allRemainingInputBlocks.some(
+            (remaining) =>
+              remaining.gid === inputBlock.gid &&
+              remaining.cid === inputBlock.cid
           )
       );
 
-      return {
+      newState = {
         ...state,
         layouts: layouts.map((layout, i) =>
           i === action.pageIndex ? clonedPageLayouts : layout
@@ -196,9 +288,11 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
           i === action.pageIndex ? clonedPageWidgets : widget
         ),
         gridItemToAlgosMap: clonedAlgosMap,
+        gridItemToInputBlockDatasMap: clonedInputBlockDatasMap,
         algorithmsOnReport: newAlgorithmsOnReport,
         inputBlocksOnReport: newInputBlocksOnReport,
       };
+      break;
     }
 
     case 'RESIZE_WIDGET': {
@@ -214,12 +308,13 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
 
       clonedPageLayouts[resizingIndex] = action.itemLayout;
 
-      return {
+      newState = {
         ...state,
         layouts: layouts.map((layout, i) =>
           i === action.pageIndex ? clonedPageLayouts : layout
         ),
       };
+      break;
     }
 
     case 'CHANGE_WIDGET_POSITION': {
@@ -245,7 +340,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       clonedPageWidgets.splice(newPosition, 0, widgetToMove);
       clonedPageLayouts[movingIndex] = action.itemLayout;
 
-      return {
+      newState = {
         ...state,
         layouts: layouts.map((layout, i) =>
           i === action.pageIndex ? clonedPageLayouts : layout
@@ -254,10 +349,11 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
           i === action.pageIndex ? clonedPageWidgets : widget
         ),
       };
+      break;
     }
 
     case 'ADD_NEW_PAGE':
-      return {
+      newState = {
         ...state,
         layouts: [...state.layouts, []],
         widgets: [...state.widgets, []],
@@ -265,12 +361,14 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         overflowParents: [...state.overflowParents, null],
         currentPage: state.layouts.length,
       };
+      break;
 
     case 'SET_CURRENT_PAGE':
-      return {
+      newState = {
         ...state,
         currentPage: action.pageIndex,
       };
+      break;
 
     case 'DELETE_PAGE': {
       const { pageIndex } = action;
@@ -311,23 +409,71 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         parent === null ? null : parent >= pageIndex ? parent - 1 : parent
       );
 
+      // Get all widgets that will be deleted
+      const widgetsToDelete = allIndicesToRemove.flatMap(
+        (pageIdx) => state.widgets[pageIdx] || []
+      );
+
+      // Clean up algos and input block datas maps
+      const clonedAlgosMap = { ...state.gridItemToAlgosMap };
+      const clonedInputBlockDatasMap = {
+        ...state.gridItemToInputBlockDatasMap,
+      };
+
+      // Remove entries for deleted widgets
+      widgetsToDelete.forEach((widget) => {
+        if (widget) {
+          delete clonedAlgosMap[widget.gridItemId];
+          delete clonedInputBlockDatasMap[widget.gridItemId];
+        }
+      });
+
+      // Clean up algorithmsOnReport
+      const allRemainingAlgos = Object.values(clonedAlgosMap).flat();
+      const newAlgorithmsOnReport = (state.algorithmsOnReport || []).filter(
+        (algo) =>
+          allRemainingAlgos.some(
+            (remaining) =>
+              remaining.gid === algo.gid && remaining.cid === algo.cid
+          )
+      );
+
+      // Clean up inputBlocksOnReport
+      const allRemainingInputBlocks = Object.values(
+        clonedInputBlockDatasMap
+      ).flat();
+      const newInputBlocksOnReport = state.inputBlocksOnReport.filter(
+        (inputBlock) =>
+          allRemainingInputBlocks.some(
+            (remaining) =>
+              remaining.gid === inputBlock.gid &&
+              remaining.cid === inputBlock.cid
+          )
+      );
+
       const newCurrentPage = Math.min(state.currentPage, newLayouts.length - 1);
 
-      return {
+      newState = {
         ...state,
         layouts: newLayouts,
         widgets: newWidgets,
         pageTypes: newPageTypes,
         overflowParents: adjustedOverflowParents,
         currentPage: newCurrentPage,
+        gridItemToAlgosMap: clonedAlgosMap,
+        gridItemToInputBlockDatasMap: clonedInputBlockDatasMap,
+        algorithmsOnReport: newAlgorithmsOnReport,
+        inputBlocksOnReport: newInputBlocksOnReport,
       };
+      break;
     }
 
     case 'TOGGLE_GRID':
-      return {
+      newState = {
         ...state,
         showGrid: !state.showGrid,
       };
+      break;
 
     case 'UPDATE_WIDGET': {
       const clonedPageWidgets = widgets[action.pageIndex].slice();
@@ -337,12 +483,13 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       if (widgetIndex >= 0) {
         clonedPageWidgets[widgetIndex] = action.widget;
       }
-      return {
+      newState = {
         ...state,
         widgets: widgets.map((widget, i) =>
           i === action.pageIndex ? clonedPageWidgets : widget
         ),
       };
+      break;
     }
 
     case 'ADD_OVERFLOW_PAGES': {
@@ -354,7 +501,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       const newPageTypes = new Array(count).fill('overflow');
       const newOverflowParents = new Array(count).fill(parentPageIndex);
 
-      return {
+      newState = {
         ...state,
         layouts: [
           ...state.layouts.slice(0, insertIndex),
@@ -377,6 +524,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
           ...state.overflowParents.slice(insertIndex),
         ],
       };
+      break;
     }
 
     case 'REMOVE_OVERFLOW_PAGES': {
@@ -394,7 +542,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       }, [] as number[]);
 
       // Remove the pages
-      return {
+      newState = {
         ...state,
         layouts: state.layouts.filter(
           (_, idx) => !indicesToRemove.includes(idx)
@@ -413,28 +561,76 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
             ? parentPageIndex
             : state.currentPage,
       };
+      break;
     }
 
     case 'UPDATE_ALGO_TRACKER': {
       const clonedAlgosMap = { ...state.gridItemToAlgosMap };
-      action.gridItemAlgosMap.forEach((algoMap) => {
-        Object.keys(clonedAlgosMap).forEach((key) => {
-          clonedAlgosMap[key] = clonedAlgosMap[key].map((existing) =>
-            existing.gid === algoMap.gid && existing.cid === algoMap.cid
-              ? {
-                  ...existing,
-                  testResultsCreatedAt: algoMap.testResultsCreatedAt,
-                }
-              : existing
+
+      // Iterate through each grid item in the cloned map
+      Object.keys(clonedAlgosMap).forEach((key) => {
+        // Update each algorithm reference in this grid item
+        clonedAlgosMap[key] = clonedAlgosMap[key].map((existing) => {
+          // Look for a matching algorithm in the action's map
+          const matchingAlgo = action.gridItemAlgosMap.find(
+            (algoMap) =>
+              algoMap.gid === existing.gid && algoMap.cid === existing.cid
           );
+
+          // If found, update with the new testResultId, otherwise reset to undefined
+          return matchingAlgo
+            ? { ...existing, testResultId: matchingAlgo.testResultId }
+            : { ...existing, testResultId: undefined };
         });
       });
-      return { ...state, gridItemToAlgosMap: clonedAlgosMap };
+
+      newState = { ...state, gridItemToAlgosMap: clonedAlgosMap };
+      break;
+    }
+
+    case 'UPDATE_INPUT_BLOCK_TRACKER': {
+      const clonedInputBlockDatasMap = {
+        ...state.gridItemToInputBlockDatasMap,
+      };
+
+      // Iterate through each grid item in the cloned map
+      Object.keys(clonedInputBlockDatasMap).forEach((key) => {
+        // Update each input block reference in this grid item
+        clonedInputBlockDatasMap[key] = clonedInputBlockDatasMap[key].map(
+          (existing) => {
+            // Look for a matching input block in the action's map
+            const matchingInputBlock = action.gridItemInputBlockDatasMap.find(
+              (inputBlockMap) =>
+                inputBlockMap.gid === existing.gid &&
+                inputBlockMap.cid === existing.cid
+            );
+
+            // If found, update with the new inputBlockDataId, otherwise reset to undefined
+            return matchingInputBlock
+              ? {
+                  ...existing,
+                  inputBlockDataId: matchingInputBlock.inputBlockDataId,
+                }
+              : { ...existing, inputBlockDataId: undefined };
+          }
+        );
+      });
+
+      newState = {
+        ...state,
+        gridItemToInputBlockDatasMap: clonedInputBlockDatasMap,
+      };
+      break;
     }
 
     default:
       return state;
   }
+
+  // Save state to database (debounced)
+  debouncedSaveStateToDatabase(newState);
+
+  return newState;
 }
 
 export { pagesDesignReducer, type WidgetAction };

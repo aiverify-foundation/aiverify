@@ -1,31 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { LineChart } from 'aiverify-shared-library/charts'
 
-export const CorruptionLineChart = ({ data, corruption_function, getContainerObserver }) => {
+export const CorruptionLineChart = ({ data, corruption_function, width, height  }) => {
   const [mydata, setmydata] = useState({
     datas: [],
     dataKeys: [],
   });
 
-  const [ container, setContainer ] = useState({
-    width: 0,
-    height: 0,
-  })
-
   const wrapperStyle = {
     fontSize: "12px"
   }
-
-  useEffect(() => {
-    if (getContainerObserver) {
-      getContainerObserver((width, height) => {
-        setContainer({
-          width,
-          height
-        })
-      })
-    }
-  },[getContainerObserver])
 
   useEffect(() => {
     if (!data)
@@ -54,14 +38,16 @@ export const CorruptionLineChart = ({ data, corruption_function, getContainerObs
   }, [data])
 
   return (
-    <div style={{ width: container.width, height: container.height, padding: 10, display: "flex", flexDirection: "column" }}>
-      <h4>{corruption_function}</h4>
-      <LineChart
-        data={mydata.datas}
-        xAxisDataKey="name"
-        lines={mydata.dataKeys}
-        yAxisProps={{ label: { value: 'Accuracy', angle: -90, position: 'insideLeft' } }}
-      />
+    <div style={{ width, height, padding: 10, display: "flex", flexDirection: "column" }}>
+      <h4 style={{ textAlign: "center" }}>{corruption_function}</h4>
+      <div style={{ height: "calc(100% - 40px)" }}>
+        <LineChart
+          data={mydata.datas}
+          xAxisDataKey="name"
+          lines={mydata.dataKeys}
+          yAxisProps={{ label: { value: 'Accuracy', angle: -90, position: 'insideLeft' } }}
+        />
+      </div>
     </div>
   )
 }

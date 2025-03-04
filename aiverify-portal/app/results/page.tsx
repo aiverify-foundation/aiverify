@@ -3,7 +3,7 @@ import React from 'react';
 import { ProjectInfo } from '@/app/types';
 import { UserFlows } from '@/app/userFlowsEnum';
 import { Icon, IconName } from '@/lib/components/IconSVG';
-import { fetchProjects } from '@/lib/fetchApis/getProjects';
+import { getProjects } from '@/lib/fetchApis/getProjects';
 import { getTestResults } from '@/lib/fetchApis/getTestResults';
 import ActionButtons from './components/ActionButton';
 import TestResultsList from './components/TestResultsList';
@@ -22,7 +22,7 @@ export default async function ResultsPage(props: UrlSearchParams) {
   let project: ProjectInfo | undefined;
 
   if (flow != undefined && projectId != undefined) {
-    const result = await fetchProjects({ ids: [projectId] });
+    const result = await getProjects({ ids: [projectId] });
     if ('message' in result || result.data.length === 0) {
       console.log(`project id not found: ${projectId}`);
       notFound();

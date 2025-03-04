@@ -92,7 +92,7 @@ export const TechnicalInterpretationChart = ({ id, metric, data }) => {
   }, [metric, data])
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 5, width: '40%', flexShrink: 0 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 5, width: '100%'}}>
       <h4>{metric}</h4>
       {getContent(mydata.data)}
     </div>

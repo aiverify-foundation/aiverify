@@ -15,7 +15,7 @@ export async function fetchTemplates(
   if (opts && opts.id != undefined) {
     requestUrl = `${endpointUrl}/${opts.id}`;
   }
-  const response = await fetch(requestUrl, { cache: 'force-cache' });
+  const response = await fetch(requestUrl);
   const result = await processResponse<ReportTemplate[]>(response);
 
   return result;

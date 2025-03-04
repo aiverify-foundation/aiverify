@@ -69,7 +69,7 @@ export async function populatePluginsMdxBundles(
 export async function getPlugins(
   options: Options = { groupByPluginId: false }
 ): Promise<ApiResult<Record<string, Plugin> | Plugin[]> | ErrorWithMessage> {
-  const response = await fetch(endpointUrl, { cache: 'force-cache' });
+  const response = await fetch(endpointUrl);
   const result = await processResponse<Plugin[]>(response);
   if ('message' in result) {
     return result;
