@@ -37,7 +37,7 @@ import { GRID_WIDTH, GRID_COLUMNS, GRID_ROW_HEIGHT } from './dimensionsConstants
 
 export const gridItemRootClassName = 'grid-item-root';
 type requiredStyles =
-  `grid-item-root relative h-auto w-full min-h-full${string}`; // strictly required styles
+  `grid-item-root relative h-full w-full flex flex-col${string}`; // strictly required styles
 
 type GridItemComponentProps = {
   /** Array of all available plugins in the system, used for finding dependencies and metadata */
@@ -111,7 +111,7 @@ type MdxComponentProps = MDXContentProps & {
 };
 
 const itemStyle: requiredStyles =
-  'grid-item-root relative h-auto w-full min-h-full';
+  'grid-item-root relative h-full w-full flex flex-col';
 
 function GridItemMain({
   allAvalaiblePlugins,
@@ -173,6 +173,7 @@ function GridItemMain({
   const dimensions = useMemo(() => {
     const columnWidth = GRID_WIDTH / GRID_COLUMNS;
     const rowHeight = GRID_ROW_HEIGHT;
+    console.log("layout dim w n h", layout)
     
     return {
       width: layout.w * columnWidth,

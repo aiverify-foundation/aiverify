@@ -58,7 +58,7 @@ const transformStateForApi = (state: State) => {
  * @param state The current state of the pagesDesignReducer
  */
 export const saveStateToDatabase = async (state: State) => {
-  // Always save to localStorage as it's needed for the designer
+  // Try to save to localStorage first, fall back to sessionStorage if quota is exceeded
   try {
     localStorage.setItem('pagesDesignState', JSON.stringify(state));
     console.log('Saved state to localStorage:', {
@@ -66,7 +66,17 @@ export const saveStateToDatabase = async (state: State) => {
       pathname: window.location.pathname
     });
   } catch (error) {
-    console.error('Failed to save to localStorage:', error);
+    if (error instanceof Error && error.name === 'QuotaExceededError') {
+      try {
+        // Fall back to sessionStorage
+        sessionStorage.setItem('pagesDesignState', JSON.stringify(state));
+        console.log('Quota exceeded, saved state to sessionStorage instead');
+      } catch (fallbackError) {
+        console.error('Failed to save to both localStorage and sessionStorage:', fallbackError);
+      }
+    } else {
+      console.error('Failed to save to localStorage:', error);
+    }
   }
 
   const { projectId, flow } = getProjectIdAndFlowFromUrl();
@@ -101,7 +111,7 @@ export const saveStateToDatabase = async (state: State) => {
 // Debounce the save function to prevent too many saves during rapid state changes
 let saveTimeout: NodeJS.Timeout;
 export const debouncedSaveStateToDatabase = (state: State) => {
-  // Always save to localStorage immediately
+  // Try to save to localStorage first, fall back to sessionStorage if quota is exceeded
   try {
     localStorage.setItem('pagesDesignState', JSON.stringify(state));
     console.log('Saved state to localStorage (debounced):', {
@@ -109,7 +119,17 @@ export const debouncedSaveStateToDatabase = (state: State) => {
       pathname: window.location.pathname
     });
   } catch (error) {
-    console.error('Failed to save to localStorage:', error);
+    if (error instanceof Error && error.name === 'QuotaExceededError') {
+      try {
+        // Fall back to sessionStorage
+        sessionStorage.setItem('pagesDesignState', JSON.stringify(state));
+        console.log('Quota exceeded, saved state to sessionStorage instead (debounced)');
+      } catch (fallbackError) {
+        console.error('Failed to save to both localStorage and sessionStorage:', fallbackError);
+      }
+    } else {
+      console.error('Failed to save to localStorage:', error);
+    }
   }
 
   const { projectId, flow } = getProjectIdAndFlowFromUrl();

@@ -272,19 +272,19 @@ function Designer(props: DesignerProps) {
           
           // Get the widget's size properties
           const { minW, minH, maxH, maxW } = widget.widgetSize;
+          console.log("widget size creation", widget.widgetSize)
           
           // Find the corresponding layout for this widget
-          const existingLayout = page.layouts.find(l => l.i === gridItemId) || {
+          const existingLayout = page.layouts[page.reportWidgets.indexOf(widget)] || {
             x: 0,
             y: 0,
           };
+          console.log("existing layout creation", existingLayout)
 
           // Create the layout item with proper sizing
           const itemLayout = {
             ...existingLayout,
             i: gridItemId,
-            w: maxW,
-            h: minH,
             minW,
             minH,
             maxW,
