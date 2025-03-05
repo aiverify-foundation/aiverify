@@ -37,7 +37,7 @@ import { GRID_WIDTH, GRID_COLUMNS, GRID_ROW_HEIGHT } from './dimensionsConstants
 
 export const gridItemRootClassName = 'grid-item-root';
 type requiredStyles =
-  `grid-item-root relative h-full w-full flex flex-col overflow-hidden${string}`; // strictly required styles
+  `grid-item-root relative h-auto w-full min-h-full${string}`; // strictly required styles
 
 type GridItemComponentProps = {
   /** Array of all available plugins in the system, used for finding dependencies and metadata */
@@ -111,7 +111,7 @@ type MdxComponentProps = MDXContentProps & {
 };
 
 const itemStyle: requiredStyles =
-  'grid-item-root relative h-full w-full flex flex-col overflow-hidden';
+  'grid-item-root relative h-auto w-full min-h-full';
 
 function GridItemMain({
   allAvalaiblePlugins,
