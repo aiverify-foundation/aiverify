@@ -341,81 +341,38 @@ function GridItemMain({
    */
   const inputBlocksWidgetData = useMemo(() => {
     if (inputBlockDatasUsed && inputBlockDatasUsed.length > 0) {
-      // Group input block datas by their type (process checklist or fairness tree)
-      const groupedData = inputBlockDatasUsed.reduce<{
-        processChecklists: { [key: string]: InputBlockData[] };
-        fairnessTrees: { [key: string]: InputBlockData[] };
-      }>((acc, data) => {
+      return inputBlockDatasUsed.reduce<InputBlockDataMapping>((acc, data) => {
         if (data.inputBlockDataId !== undefined) {
           const inputBlockData = allInputBlockDatasOnSystem.find(
             (ib) => ib.id === data.inputBlockDataId
           );
-          if (inputBlockData) {
-            // Check if it's a process checklist (has group property)
-            if (inputBlockData.group) {
-              // Group by gid and group only (ignoring cid)
-              const key = `${inputBlockData.gid}:${inputBlockData.group}`;
-              if (!acc.processChecklists[key]) {
-                acc.processChecklists[key] = [];
-              }
-              acc.processChecklists[key].push(inputBlockData);
-            } else {
-              // For fairness trees, group by gid and cid since they share same gid/cid
-              const key = `${inputBlockData.gid}:${inputBlockData.cid}`;
-              if (!acc.fairnessTrees[key]) {
-                acc.fairnessTrees[key] = [];
-              }
-              acc.fairnessTrees[key].push(inputBlockData);
+          if (inputBlockData && inputBlockData.data) {
+            acc[`${widget.gid}:${data.cid}`] = inputBlockData.data;
+          } else {
+            const mockData = findMockDataByTypeAndCid(
+              widget.mockdata || [],
+              'InputBlock',
+              data.cid
+            );
+            if (mockData && mockData.data) {
+              acc[`${widget.gid}:${data.cid}`] = mockData.data;
             }
+          }
+        } else {
+          const mockData = findMockDataByTypeAndCid(
+            widget.mockdata || [],
+            'InputBlock',
+            data.cid
+          );
+          if (mockData && mockData.data) {
+            acc[`${widget.gid}:${data.cid}`] = mockData.data;
           }
         }
         return acc;
-      }, { processChecklists: {}, fairnessTrees: {} });
-
-      // Convert grouped data into a mapping
-      const result: InputBlockDataMapping = {};
-
-      // Add one fairness tree if available
-      const fairnessTreeGroups = Object.values(groupedData.fairnessTrees);
-      if (fairnessTreeGroups.length > 0) {
-        // Take the first fairness tree from the first group
-        const fairnessTree = fairnessTreeGroups[0][0];
-        result[`${widget.gid}:${fairnessTree.cid}`] = fairnessTree.data;
-      } else {
-        // Fallback to mock data for fairness tree
-        const mockData = findMockDataByTypeAndCid(
-          widget.mockdata || [],
-          'InputBlock',
-          'fairness_tree'
-        );
-        if (mockData && mockData.data) {
-          result[`${widget.gid}:fairness_tree`] = mockData.data;
-        }
-      }
-
-      // Add one group of process checklists if available
-      const checklistGroups = Object.values(groupedData.processChecklists);
-      if (checklistGroups.length > 0) {
-        // Take the first group of checklists (should contain all 12 checklists)
-        checklistGroups[0].forEach(checklist => {
-          result[`${widget.gid}:${checklist.cid}`] = checklist.data;
-        });
-      } else {
-        // Fallback to mock data for process checklists
-        const mockData = findMockDataByTypeAndCid(
-          widget.mockdata || [],
-          'InputBlock',
-          'explainability_process_checklist'
-        );
-        if (mockData && mockData.data) {
-          result[`${widget.gid}:explainability_process_checklist`] = mockData.data;
-        }
-      }
-
-      return result;
+      }, {});
     }
     return {};
-  }, [inputBlockDatasUsed, allInputBlockDatasOnSystem, widget.gid, widget.mockdata]);
+  }, [inputBlockDatasUsed]);
 
   /**
    * Cleanup function for the hide timeout
