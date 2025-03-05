@@ -100,6 +100,7 @@ def load_plugin_manager():
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Execute algorithm with specified parameters.")
 
+    parser.add_argument("--test_run_id", type=str, help="Test run identifier")
     parser.add_argument("--algo_path", required=True, type=Path, help="Path to the algorithm file.")
     parser.add_argument("--data_path", required=True, type=Path, help="Path to the data file.")
     parser.add_argument("--model_path", required=True, type=Path, help="Path to the model file.")
@@ -168,6 +169,8 @@ def progress_callback(completion_value: int):
 def run():
 
     args = parse_arguments()
+    print(args)
+    print(f"CHECK {args.test_run_id}")
     # print(f"Executing algorithm {args.algo_path}")
     algo_script, plugin_class, input_schema, output_schema, algo_meta = load_algorithm_class(args.algo_path)
     algo_src_path = algo_script.parent.absolute()
@@ -316,6 +319,13 @@ def run():
             algo_init_instance._start_time = start_time
             algo_init_instance._time_taken = time_taken
             algo_init_instance._generate_output_file(results, json_file_path)
+            if args.test_run_id:
+                with open(json_file_path, "r") as fp:
+                    output_dict = json.load(fp)
+                output_dict["testRunId"] = args.test_run_id
+                output_json = json.dumps(output_dict)
+                with open(json_file_path, "w") as fp:
+                    fp.write(output_json)
             output_generated = True
         except:
             pass
@@ -346,7 +356,10 @@ def run():
             artifacts=None,
         )
         # logger.debug(f"output: {type(output)} {output}")
-        output_json = output.json(exclude_none=True)
+        output_dict = output.model_dump()
+        if args.test_run_id:
+            output_dict["testRunId"] = args.test_run_id
+        output_json = json.dumps(output_dict)
         if validate_test_result_schema(json.loads(output_json)) is True:
             with open(json_file_path, "w") as json_file:
                 json_file.write(output_json)

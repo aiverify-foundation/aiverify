@@ -32,6 +32,7 @@ class VirtualEnvironmentExecute(Pipe):
             cmds = [
                 str(python_executable.absolute()),
                 self.algo_execute,
+                "--test_run_id", task_data.task.id,
                 "--algo_path", str(task_data.algorithm_path.absolute()),
                 "--data_path", str(task_data.data_path.absolute()),
                 "--model_path", str(task_data.model_path.absolute()),
