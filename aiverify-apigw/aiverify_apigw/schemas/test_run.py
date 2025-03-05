@@ -38,8 +38,9 @@ class TestRunInput(BaseModel):
 class TestRunOutput(TestRunInput):
     id: str # Test run unique identifier
     status: TestRunStatus = Field(description="Status of the test run")
+    progress: int = Field(default=0, ge=0, le=100)
     testResult: Optional[TestResultOutput] # only when status is success
-    errorMessage: Optional[str] # only when status is error
+    errorMessages: Optional[str] # only when status is error
 
     @classmethod
     def from_model(cls, test_run: TestRunModel) -> "TestRunOutput":
@@ -54,6 +55,13 @@ class TestRunOutput(TestRunInput):
             groundTruth=test_run.ground_truth,
             modelFilename=test_run.model.filename if test_run.model.filename else "", # filename should never be None
             status=test_run.status,
-            testResult=TestResultOutput.from_model(test_run.test_result) if test_run.status == TestRunStatus.Success else None,
-            errorMessage=test_run.error_messages if test_run.status == TestRunStatus.Error else None
+            progress=test_run.progress,
+            testResult=TestResultOutput.from_model(test_run.test_result) if test_run.status == TestRunStatus.Success and test_run.test_result else None,
+            errorMessages=test_run.error_messages if test_run.status == TestRunStatus.Error else None
         )
+
+
+class TestRunStatusUpdate(BaseModel):
+    status: Optional[TestRunStatus] = None
+    progress: Optional[int] = Field(default=None, ge=0, le=100)
+    errorMessages: Optional[str] = None

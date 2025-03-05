@@ -5,12 +5,13 @@ from sqlalchemy.orm import Session
 import valkey
 import json
 from uuid import UUID
+from typing import List
 
 from ..lib.logging import logger
 from ..lib.database import get_db_session
 from ..lib.constants import TestModelMode, TestRunStatus
 from ..lib.utils import validate_json_schema
-from ..schemas import TestRunInput, TestRunOutput
+from ..schemas import TestRunInput, TestRunOutput, TestRunStatusUpdate
 from ..models import TestRunModel, TestModelModel, AlgorithmModel, TestDatasetModel
 
 router = APIRouter(prefix="/test_runs", tags=["test_run"])
@@ -63,7 +64,7 @@ async def server_active() -> bool:
     return _check_server_active()
 
 
-@router.post("/run_test")
+@router.post("/run_test", response_model=TestRunOutput)
 async def run_test(input_data: TestRunInput, session: Session = Depends(get_db_session)) -> TestRunOutput:
     logger.debug(f"run_test input_data: {input_data}")
     if not _check_server_active():
@@ -123,7 +124,7 @@ async def run_test(input_data: TestRunInput, session: Session = Depends(get_db_s
         updated_at=now
     )
     session.add(test_run)
-    session.commit()
+    session.flush()
     logger.info(f"New test run created with ID: {test_run.id}")
 
     # create new task for task queue
@@ -149,9 +150,19 @@ async def run_test(input_data: TestRunInput, session: Session = Depends(get_db_s
     task_str = json.dumps(task)
     logger.debug(f"Add new Task: {task_str}")
 
-    client.xadd(TASK_STREAM_NAME, fields={"task": task_str})
+    resp = client.xadd(TASK_STREAM_NAME, fields={"task": task_str}) # type: ignore
+    test_run.job_id = resp # type: ignore
+    logger.debug(f"XADD response {test_run.job_id}")
+
+    session.commit()
 
     return TestRunOutput.from_model(test_run)
+
+
+@router.get("/", response_model=List[TestRunOutput])
+def list_test_runs(session: Session = Depends(get_db_session)) -> List[TestRunOutput]:
+    test_runs = session.query(TestRunModel).all()
+    return [TestRunOutput.from_model(test_run) for test_run in test_runs]
 
 
 @router.get("/{test_run_id}", response_model=TestRunOutput)
@@ -160,3 +171,66 @@ def get_test_run(test_run_id: str, session: Session = Depends(get_db_session)) -
     if not test_run:
         raise HTTPException(status_code=404, detail="Test run not found")
     return TestRunOutput.from_model(test_run)
+
+
+@router.patch("/{test_run_id}", response_model=TestRunOutput)
+def update_test_run_status(
+    test_run_id: str,
+    status_update: TestRunStatusUpdate,
+    session: Session = Depends(get_db_session)
+) -> TestRunOutput:
+    test_run = session.query(TestRunModel).filter(TestRunModel.id == UUID(test_run_id)).first()
+    if not test_run:
+        raise HTTPException(status_code=404, detail="Test run not found")
+    
+    if test_run.status != TestRunStatus.Pending: # can only update when status is pending
+        raise HTTPException(status_code=400, detail=f"Test run status is not pending")
+
+    # Update the status and progress of the test run
+    if status_update.status:
+        test_run.status = status_update.status
+    if status_update.progress:
+        test_run.progress = status_update.progress
+    if status_update.errorMessages:
+        test_run.error_messages = status_update.errorMessages
+    test_run.updated_at = datetime.now(timezone.utc)
+
+    session.commit()
+    logger.debug(f"Test run {test_run_id} updated with status: {test_run.status} and progress: {test_run.progress}")
+
+    return TestRunOutput.from_model(test_run)
+
+
+@router.post("/{test_run_id}/cancel", response_model=TestRunOutput)
+def cancel_test_run(test_run_id: str, session: Session = Depends(get_db_session)) -> TestRunOutput:
+    test_run = session.query(TestRunModel).filter(TestRunModel.id == UUID(test_run_id)).first()
+    if not test_run:
+        raise HTTPException(status_code=404, detail="Test run not found")
+    
+    if test_run.status != TestRunStatus.Pending:
+        raise HTTPException(status_code=400, detail="Only pending test runs can be cancelled")
+    
+    if test_run.job_id:
+        client.xdel(TASK_STREAM_NAME, test_run.job_id)
+
+    test_run.status = TestRunStatus.Cancelled
+    test_run.updated_at = datetime.now(timezone.utc)
+
+    session.commit()
+    logger.debug(f"Test run {test_run_id} cancelled")
+
+    return TestRunOutput.from_model(test_run)
+
+
+@router.delete("/{test_run_id}", response_model=None, status_code=204)
+def delete_test_run(test_run_id: str, session: Session = Depends(get_db_session)) -> None:
+    test_run = session.query(TestRunModel).filter(TestRunModel.id == UUID(test_run_id)).first()
+    if not test_run:
+        raise HTTPException(status_code=404, detail="Test run not found")
+    
+    if test_run.status == TestRunStatus.Pending:
+        raise HTTPException(status_code=400, detail=f"Pending test runs cannot be deleted. Cancel the test run instead")
+    
+    session.delete(test_run)
+    session.commit()
+    logger.debug(f"Test run {test_run_id} deleted")

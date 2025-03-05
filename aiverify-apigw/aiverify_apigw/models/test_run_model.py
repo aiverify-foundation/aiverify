@@ -18,6 +18,7 @@ class TestRunModel(BaseORMModel):
     __tablename__ = "test_run"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    job_id: Mapped[Optional[bytes]] # task id in queue
     user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("user.id"))
     user: Mapped[Optional["UserModel"]] = relationship()
     status: Mapped[TestRunStatus] = mapped_column(default=TestRunStatus.Pending, index=True, nullable=False)
@@ -33,6 +34,7 @@ class TestRunModel(BaseORMModel):
     ground_truth: Mapped[Optional[str]]  # only if has ground truth dataset
     test_result_id: Mapped[Optional[int]] = mapped_column(ForeignKey("test_result.id"))
     test_result: Mapped["TestResultModel"] = relationship()
+    progress: Mapped[int] = mapped_column(default=0)
     error_messages: Mapped[Optional[str]]
     created_at: Mapped[Optional[datetime]]
     updated_at: Mapped[Optional[datetime]]
