@@ -48,6 +48,7 @@ class PipeStageEum(StrEnum):
     PIPELINE_EXECUTE = auto()
     VALIDATE_OUTPUT = auto()
     UPLOAD = auto()
+    PIPELINE_ERROR = auto()
 
 
 class PipelineData(BaseModel):
