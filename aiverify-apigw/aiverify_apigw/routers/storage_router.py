@@ -1,6 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends, Response
-from sqlalchemy.orm import Session
-from pathlib import Path, PurePath
+from fastapi import APIRouter, HTTPException, Response
 
 from ..lib.logging import logger
 from ..lib.file_utils import check_valid_filename
