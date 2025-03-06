@@ -20,6 +20,7 @@ class VirtualEnvironmentExecute(Pipe):
     def setup(self):
         self.python_bin = os.getenv("PYTHON", "python3")
         self.algo_execute = Path(__file__).parent.joinpath("algo_execute.py")
+        self.apigw_url = os.getenv("APIGW_URL", "http://127.0.0.1:4000")
 
     def execute(self, task_data: PipelineData) -> PipelineData:
         logger.info(f"Executing algorithm using venv under {task_data.algorithm_path}")
@@ -38,6 +39,7 @@ class VirtualEnvironmentExecute(Pipe):
                 "--model_path", str(task_data.model_path.absolute()),
                 "--model_type", task_data.task.modelType.lower(),
                 "--algorithm_args", json.dumps(task_data.task.algorithmArgs),
+                "--apigw_url", self.apigw_url,
             ]
             if task_data.ground_truth_path:
                 cmds.extend([
@@ -54,7 +56,7 @@ class VirtualEnvironmentExecute(Pipe):
                                )
             if p.returncode != 0:
                 raise PipeException(f"Error executing algorithm: {p.stderr}")
-            logger.debug(p.stdout)  # log the stdout as debug
+            # logger.debug(p.stdout)  # log the stdout as debug
 
             task_data.output_zip = task_data.algorithm_path.joinpath("output.zip")
             if not task_data.output_zip.exists():

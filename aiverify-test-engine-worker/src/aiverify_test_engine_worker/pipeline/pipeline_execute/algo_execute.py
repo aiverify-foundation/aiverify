@@ -122,6 +122,7 @@ def parse_arguments():
         required=True,
         help="JSON string of arguments for the algorithm."
     )
+    parser.add_argument("--apigw_url", type=str, help="URL of apigw to report updates")
     parser.add_argument(
         "-v", "--verbose",
         action="count",
@@ -153,24 +154,45 @@ def parse_arguments():
     # convert to ModelType
     args.model_type = ModelType[args.model_type.upper()]
 
+    if args.apigw_url:
+        ProcessCallback.apigw_url = args.apigw_url
+
     return args
 
 
-def progress_callback(completion_value: int):
-    """
-    A callback function to print the current progress completion
+class ProcessCallback:
+    apigw_url: str | None = None
 
-    Args:
-        completion_value (int): Current progress completion
-    """
-    logger.info(f"[Accumulate Local Effect Test] Progress Update: {completion_value}")
+    def __init__(self, test_run_id) -> None:
+        self.test_run_id = test_run_id
+
+    # @classmethod
+    def progress_callback(self, completion_value: int):
+        """
+        A callback function to print the current progress completion
+
+        Args:
+            completion_value (int): Current progress completion
+        """
+        logger.info(f"[Accumulate Local Effect Test] Progress Update: {completion_value}")
+        if not self.__class__.apigw_url:
+            logger.error("API Gateway URL is not set.")
+            return
+
+        import requests
+        url = f"{self.__class__.apigw_url}/{self.test_run_id}/"
+        payload = {"progress": completion_value}
+
+        try:
+            requests.patch(url, json=payload)
+            # logger.debug(f"Progress reported successfully: {completion_value}")
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Failed to report progress: {e}")
 
 
 def run():
 
     args = parse_arguments()
-    print(args)
-    print(f"CHECK {args.test_run_id}")
     # print(f"Executing algorithm {args.algo_path}")
     algo_script, plugin_class, input_schema, output_schema, algo_meta = load_algorithm_class(args.algo_path)
     algo_src_path = algo_script.parent.absolute()
@@ -262,7 +284,8 @@ def run():
     input_arguments["ground_truth"] = args.ground_truth
     input_arguments["model_type"] = args.model_type
     input_arguments["logger"] = logger
-    input_arguments["progress_callback"] = progress_callback
+    callback = ProcessCallback(args.test_run_id)
+    input_arguments["progress_callback"] = callback.progress_callback
     input_arguments["project_base_path"] = algo_src_path
 
     logger.debug(f"input_arguments: {input_arguments}")
