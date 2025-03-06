@@ -1,5 +1,6 @@
-import { useUpdateProject, patchProject } from '@/lib/fetchApis/getProjects';
 import type { State } from '@/app/canvas/components/hooks/pagesDesignReducer';
+import { patchProject } from '@/lib/fetchApis/getProjects';
+import { transformStateToProjectInput } from './transformStateToProjectInput';
 
 /**
  * Gets the project ID and flow from URL parameters
@@ -9,45 +10,7 @@ const getProjectIdAndFlowFromUrl = () => {
   const params = new URLSearchParams(window.location.search);
   return {
     projectId: params.get('projectId'),
-    flow: params.get('flow')
-  };
-};
-
-/**
- * Transforms the state into the format expected by the API
- */
-const transformStateForApi = (state: State) => {
-  // Extract test results and input blocks from the maps
-  const testResults = Object.values(state.gridItemToAlgosMap)
-    .flat()
-    .filter(item => item.testResultId !== undefined)
-    .map(item => item.testResultId);
-
-  const inputBlocks = Object.values(state.gridItemToInputBlockDatasMap)
-    .flat()
-    .filter(item => item.inputBlockDataId !== undefined)
-    .map(item => item.inputBlockDataId);
-
-  // Create pages array from layouts and widgets
-  const pages = state.layouts.map((layout: any, index: number) => ({
-    layouts: layout.map((item: any) => ({
-      ...item,
-      static: false, // Add the missing `static` field with a default value
-    })),
-    widgets: state.widgets[index] || [],
-    reportWidgets: [], // Required by schema
-    pageType: state.pageTypes[index] || 'grid',
-    overflowParent: state.overflowParents[index]
-  }));
-
-  // Return data matching ProjectPatchInput schema
-  return {
-    pages,
-    globalVars: [], // Required by ProjectTemplateMetaOptional
-    testResults: testResults.length > 0 ? testResults : undefined, // Optional field
-    inputBlocks: inputBlocks.length > 0 ? inputBlocks : undefined, // Optional field
-    projectInfo: undefined, // Optional field
-    testModelId: undefined // Optional field
+    flow: params.get('flow'),
   };
 };
 
@@ -62,8 +25,10 @@ export const saveStateToDatabase = async (state: State) => {
   try {
     localStorage.setItem('pagesDesignState', JSON.stringify(state));
     console.log('Saved state to localStorage:', {
-      layouts: state.layouts.map(l => l.map(item => ({ i: item.i, w: item.w, h: item.h }))),
-      pathname: window.location.pathname
+      layouts: state.layouts.map((l) =>
+        l.map((item) => ({ i: item.i, w: item.w, h: item.h }))
+      ),
+      pathname: window.location.pathname,
     });
   } catch (error) {
     if (error instanceof Error && error.name === 'QuotaExceededError') {
@@ -72,32 +37,44 @@ export const saveStateToDatabase = async (state: State) => {
         sessionStorage.setItem('pagesDesignState', JSON.stringify(state));
         console.log('Quota exceeded, saved state to sessionStorage instead');
       } catch (fallbackError) {
-        console.error('Failed to save to both localStorage and sessionStorage:', fallbackError);
+        console.error(
+          'Failed to save to both localStorage and sessionStorage:',
+          fallbackError
+        );
       }
     } else {
       console.error('Failed to save to localStorage:', error);
     }
   }
 
-  const { projectId, flow } = getProjectIdAndFlowFromUrl();
-  
+  const { projectId } = getProjectIdAndFlowFromUrl();
+
   // Check if we're in a template flow by checking if the URL contains /templates/
   const isTemplateFlow = window.location.pathname.includes('/templates/');
-  
+
   // If we're in a template flow or no project ID, don't try to save to database
   if (isTemplateFlow || !projectId) {
-    console.log('Template flow or no project ID detected, skipping database save', {
-      isTemplateFlow,
-      projectId,
-      pathname: window.location.pathname
-    });
+    console.log(
+      'Template flow or no project ID detected, skipping database save',
+      {
+        isTemplateFlow,
+        projectId,
+        pathname: window.location.pathname,
+      }
+    );
     return;
   }
 
   try {
-    const data = transformStateForApi(state);
+    // Transform state to project input format
+    const data = transformStateToProjectInput(state, {
+      name: '', // These fields will be populated from the API
+      description: '',
+      reportTitle: '',
+      company: '',
+    });
     const result = await patchProject(projectId, data);
-    
+
     if ('message' in result) {
       throw new Error(result.message);
     }
@@ -115,35 +92,45 @@ export const debouncedSaveStateToDatabase = (state: State) => {
   try {
     localStorage.setItem('pagesDesignState', JSON.stringify(state));
     console.log('Saved state to localStorage (debounced):', {
-      layouts: state.layouts.map(l => l.map(item => ({ i: item.i, w: item.w, h: item.h }))),
-      pathname: window.location.pathname
+      layouts: state.layouts.map((l) =>
+        l.map((item) => ({ i: item.i, w: item.w, h: item.h }))
+      ),
+      pathname: window.location.pathname,
     });
   } catch (error) {
     if (error instanceof Error && error.name === 'QuotaExceededError') {
       try {
         // Fall back to sessionStorage
         sessionStorage.setItem('pagesDesignState', JSON.stringify(state));
-        console.log('Quota exceeded, saved state to sessionStorage instead (debounced)');
+        console.log(
+          'Quota exceeded, saved state to sessionStorage instead (debounced)'
+        );
       } catch (fallbackError) {
-        console.error('Failed to save to both localStorage and sessionStorage:', fallbackError);
+        console.error(
+          'Failed to save to both localStorage and sessionStorage:',
+          fallbackError
+        );
       }
     } else {
       console.error('Failed to save to localStorage:', error);
     }
   }
 
-  const { projectId, flow } = getProjectIdAndFlowFromUrl();
-  
+  const { projectId } = getProjectIdAndFlowFromUrl();
+
   // Check if we're in a template flow by checking if the URL contains /templates/
   const isTemplateFlow = window.location.pathname.includes('/templates/');
-  
+
   // Don't even start the debounce timer if we're in a template flow or no project ID
   if (isTemplateFlow || !projectId) {
-    console.log('Template flow or no project ID detected, skipping debounced save', {
-      isTemplateFlow,
-      projectId,
-      pathname: window.location.pathname
-    });
+    console.log(
+      'Template flow or no project ID detected, skipping debounced save',
+      {
+        isTemplateFlow,
+        projectId,
+        pathname: window.location.pathname,
+      }
+    );
     return;
   }
 
