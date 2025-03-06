@@ -1,0 +1,22 @@
+{/* Return summary of data */}
+export const summary= (data) => {
+	if (!data)
+		return "No data";
+  if (data["metrics"] && data["metrics"].length > 0) {
+		return "Metrics: " + data["metrics"].join(",")
+	} else {
+		return "No metrics selected";
+	}
+}
+
+{/* Return progress in percentage (0-100) */}
+export const progress = (data) => {
+	if (!data)
+		return 0;
+  return (data["metrics"] && data["metrics"].length > 0)?100:0;
+}
+
+{/* Validate data. Return false will block report generation until validated */}
+export const validate = (data) => {
+  return (data["metrics"] && data["metrics"].length > 0);
+}

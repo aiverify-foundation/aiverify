@@ -1,0 +1,82 @@
+{
+	"nodes": [
+		{ "data":{ "id": "n1.1", "type": "outcome",
+			"stext": "1.1 Equal % of [sensitiveFeature] receiving the [favourableOutcomeName] regardless of whether they are supposed to",
+			"gqn": ["Are qualifications necessary for an individual to be given the [favourableOutcomeName]?","What are the negative implications if [unqualified] does not receive the [favourableOutcomeName]? Do they outweigh the necessity of giving the [favourableOutcomeName] based on qualifications?"]
+		} },
+		{ "data":{ "id": "n2", "type": "question",
+			"stext": "Are the number of [sensitiveFeature] within 10% of each other?",
+			"gqn": ["What is the percentage difference of the group sizes?"]
+		} },
+		{ "data":{ "id": "n2.1", "type": "metric", "text": "Equal Parity" } },
+		{ "data":{ "id": "n2.2", "type": "metric", "text": "Disparate Impact" } },
+		{ "data":{ "id": "n1.2", "type": "outcome",
+			"stext": "1.2 Equal % of [sensitiveFeature] NOT receiving what they are supposed to (wrong prediction)",
+			"gqn": ["What are the lost opportunities or harm inflicted on various parties such as the individual, society, and business, due to [qualified] not receiving the [favourableOutcomeName]?","What are the benefits of [unqualified] receiving the [favourableOutcomeName] and the resulting negative implications on the other parties, such as the society and business?"]
+		} },
+		{ "data":{ "id": "n3", "type": "question",
+			"text": "Whose impact are you more concerned about?",
+			"gqn": ["Weigh the benefit and harm of the various parties involved, such as individual, society, and business."]
+		} },
+		{ "data":{ "id": "n5.1", "type": "question",
+			"text": "Does your final decision depend heavily on the AI predictions?",
+			"gqn": ["Do the model's predictions have significant impact on the final decision? Human in-, over-, or out-of-the-loop?"]
+		} },
+		{ "data":{ "id": "n5.1.1", "type": "metric", "text": "False Negative Rate Parity" } },
+		{ "data":{ "id": "n5.1.2", "type": "metric", "text": "False Omission Rate Parity" } },
+		{ "data":{ "id": "n5.2", "type": "question",
+			"text": "Does your final decision depend heavily on the AI predictions?",
+			"gqn": ["Do the model's predictions have significant impact on the final decision? Human in-, over-, or out-of-the-loop?"]
+		} },
+		{ "data":{ "id": "n5.2.1", "type": "metric", "text": "False Positive Rate Parity" } },
+		{ "data":{ "id": "n5.2.2", "type": "metric", "text": "False Discovery Rate Parity"} },
+		{ "data":{ "id": "n1.3", "type": "outcome",
+			"stext": "1.3 Equal % of [sensitiveFeature] receiving what they are supposed to (correct prediction)",
+			"gqn": ["What are the factors that make giving [qualified] the [favourableOutcomeName] correctly crucial?",
+				"What are the factors that make rejecting [unqualified] of the [favourableOutcomeName] correctly crucial? Consider the objectives or limiting factors faced by the business and the consequences of not receiving [favourableOutcomeName]."]
+		} },
+		{ "data":{ "id": "n4", "type": "question",
+			"text": "Whose impact is more important to you?",
+			"gqn": ["Weigh the benefit and harm of the various parties involved, such as individual, society, and business."]
+		} },
+		{ "data":{ "id": "n6.1", "type": "question",
+			"text": "Does your final decision depend heavily on the AI predictions?",
+			"gqn": ["Do the model's predictions have significant impact on the final decision? Human in-, over-, or out-of-the-loop?"]
+		} },
+		{ "data":{ "id": "n6.1.1", "type": "metric", "text": "True Positive Rate Parity / Equal Opportunity" } },
+		{ "data":{ "id": "n6.1.2", "type": "metric", "text": "Positive Predictive Value Parity" } },
+		{ "data":{ "id": "n6.2", "type": "question",
+			"text": "Does your final decision depend heavily on the AI predictions?",
+			"gqn": ["Do the model's predictions have significant impact on the final decision? Human in-, over-, or out-of-the-loop?"]
+		} },
+		{ "data":{ "id": "n6.2.1", "type": "metric", "text": "True Negative Rate Parity" } },
+		{ "data":{ "id": "n6.2.2", "type": "metric", "text": "Negative Predictive Value Parity" } }
+	],
+	"edges": [
+		{ "data": { "id": "n1.1-n2", "source": "n1.1", "target": "n2" } },
+		{ "data": { "id": "n2-n2.1", "source": "n2", "target": "n2.1","text": "No" } },
+		{ "data": { "id": "n2-n2.2", "source": "n2", "target": "n2.2", "text": "Yes" } },
+		{ "data": { "id": "n1.2-n3", "source": "n1.2", "target": "n3" } },
+		{ "data": { "id": "n3-n5.1", "source": "n3", "target": "n5.1",
+			"stext": "[qualified] NOT receiving the [favourableOutcomeName]"
+		} },
+		{ "data": { "id": "n5.1-n5.1.1", "source": "n5.1", "target": "n5.1.1", "text": "No" } },
+		{ "data": { "id": "n5.1-n5.1.2", "source": "n5.1", "target": "n5.1.2", "text": "Yes" } },
+		{ "data": { "id": "n3-n5.2", "source": "n3", "target": "n5.2",
+			"stext": "[unqualified] receiving the [favourableOutcomeName]"
+		} },
+		{ "data": { "id": "n5.2-n5.2.1", "source": "n5.2", "target": "n5.2.1", "text": "No" } },
+		{ "data": { "id": "n5.2-n5.2.2", "source": "n5.2", "target": "n5.2.2", "text": "Yes" } },
+		{ "data": { "id": "n1.3-n4", "source": "n1.3", "target": "n4" } },
+		{ "data": { "id": "n4-n6.1", "source": "n4", "target": "n6.1",
+			"stext": "[qualified] receiving the [favourableOutcomeName]"
+		} },
+		{ "data": { "id": "n6.1-n6.1.1", "source": "n6.1", "target": "n6.1.1", "text": "No" } },
+		{ "data": { "id": "n6.1-n6.1.2", "source": "n6.1", "target": "n6.1.2", "text": "Yes" } },
+		{ "data": { "id": "n4-n6.2", "source": "n4", "target": "n6.2",
+			"stext": "[unqualified] NOT receiving the [favourableOutcomeName]"
+		} },
+		{ "data": { "id": "n6.2-n6.2.1", "source": "n6.2", "target": "n6.2.1", "text": "No" } },
+		{ "data": { "id": "n6.2-n6.2.2", "source": "n6.2", "target": "n6.2.2", "text": "Yes" } }
+	]
+}

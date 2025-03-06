@@ -1,0 +1,11 @@
+{
+  "cid": "introduction",
+  "widgetSize": {
+    "minW": 4,
+    "minH": 2,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "description": "To provide an introduction to SHAP",
+  "name": "Introduction"
+}

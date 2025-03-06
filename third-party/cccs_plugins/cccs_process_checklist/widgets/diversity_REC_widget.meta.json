@@ -1,0 +1,24 @@
+{
+  "cid": "diversity_REC_widget",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 1,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Diversity - Recommendation",
+  "description": "This widget is used to show the results of the report.",
+  "dynamicHeight": true,
+  "dependencies": [
+    {
+      "cid": "diversity"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "InputBlock",
+      "cid": "diversity",
+      "datapath": "diversity.sample.json"
+    }
+  ]
+}

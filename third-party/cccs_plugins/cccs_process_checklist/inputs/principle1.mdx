@@ -1,0 +1,109 @@
+{/* Input Block Page */}
+<div className="aiv-panel">
+  <h2>la la la la</h2>
+</div>
+<br/>
+<h3 className="c-secondary">Testable Criteria 2.1.0: Restricting of Essential Inputs</h3>
+<b>Outcome: AI companies should not be restricting data or resources which are essential to the development of AI models from other competing AI model developers.</b>
+
+<table>
+  <tbody>
+    <tr>
+      <th style={{padding: "10px"}}>No.</th>
+      <th>Question</th>
+      <th>Relation to Outcome</th>
+      <th>Response</th>
+      <th>Elaboration</th>
+    </tr>
+    <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>2.1.1</td>
+      <td style={{paddingBottom: "15px"}}>Does the AI company ensure that it do not use its leading position in one market to unduly restrict access to data or resources for competing AI model developers in other markets?</td>
+      <td style={{paddingBottom: "15px"}}>Checks if the AI company has leveraged its dominance in one market to unfairly limit access to data or resources for competing AI model developers in other markets.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select id="2_1_1" value={props.data["2_1_1"]} onChange={(e)=>props.onChangeData("2_1_1",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="2_1_1_e" value={props.data["2_1_1_e"]} onChange={(e)=>props.onChangeData("2_1_1_e",e.target.value)} />
+      </td>
+    </tr>
+    <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>2.1.2</td>
+      <td style={{paddingBottom: "15px"}}>Does the AI company conduct regular assessments to evaluate its data access policies to allow competing AI model developers or new entrants to compete fairly?</td>
+      <td style={{paddingBottom: "15px"}}>Regular assessments of data access policies ensures that there are no unfair limitations to data or resources for developers in other markets.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select id="2_1_2" value={props.data["2_1_2"]} onChange={(e)=>props.onChangeData("2_1_2",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="2_1_2_e" value={props.data["2_1_2_e"]} onChange={(e)=>props.onChangeData("2_1_2_e",e.target.value)} />
+      </td>
+    </tr>
+    <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>2.1.3</td>
+      <td style={{paddingBottom: "15px"}}>Does the AI developer ensure that there are no exclusive agreements with downstream deployers which may potentially restrict new developers from operating at a viable scale and discourage market entry?</td>
+      <td style={{paddingBottom: "15px"}}>Checks whether a dominant AI developer has exclusive dealings with deployers downstream that may deter entry of new AI developers.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select id="2_1_3" value={props.data["2_1_3"]} onChange={(e)=>props.onChangeData("2_1_3",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="2_1_3_e" value={props.data["2_1_3_e"]} onChange={(e)=>props.onChangeData("2_1_3_e",e.target.value)} />
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 className="c-secondary">Testable Criteria 2.2.0: Restricting Access of AI Products and Services</h3>
+<b>Outcome: AI companies should not be restricting access to its products and services</b>
+
+<table>
+  <tbody>
+    <tr>
+      <th style={{padding: "10px"}}>No.</th>
+      <th>Question</th>
+      <th>Relation to Outcome</th>
+      <th>Response</th>
+      <th>Elaboration</th>
+    </tr>
+    <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>2.2.1</td>
+      <td style={{paddingBottom: "15px"}}>Does the AI company ensure non-discriminatory access to its AI products and services for downstream deployers and consumers?</td>
+      <td style={{paddingBottom: "15px"}}>Ensure that the AI company maintains non-discriminatory access to its AI products and services.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select id="2_2_1" value={props.data["2_2_1"]} onChange={(e)=>props.onChangeData("2_2_1",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="2_2_1_e" value={props.data["2_2_1_e"]} onChange={(e)=>props.onChangeData("2_2_1_e",e.target.value)} />
+      </td>
+    </tr>
+    <tr>
+      <td colspan="5">
+        <h3 className="c-secondary">Summary Justification</h3>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="5">
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={8} cols={153} type="" id="2_summary" value={props.data["2_summary"]} onChange={(e)=>props.onChangeData("2_summary",e.target.value)} />
+      </td>
+    </tr>
+  </tbody>
+</table>
+

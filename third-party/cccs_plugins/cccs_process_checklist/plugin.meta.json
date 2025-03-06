@@ -1,0 +1,7 @@
+{
+  "gid": "my_plugin",
+  "name": "CCCS Process Checklist",
+  "version": "1.0.0",
+  "description": "Plugin to install Process Checklist created by CCCS.",
+  "author": "CCCS"
+}

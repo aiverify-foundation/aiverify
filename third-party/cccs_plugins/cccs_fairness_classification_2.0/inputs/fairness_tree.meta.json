@@ -1,0 +1,6 @@
+{
+  "cid": "fairness_tree",
+  "name": "Fairness Tree",
+  "description": "The fairness tree guides the user to select the most appropriate fairness metric(s).",
+  "fullScreen": true
+}

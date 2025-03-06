@@ -1,0 +1,23 @@
+{
+  "cid": "technical_metrics",
+  "name": "Fairness Metrics (All)",
+  "description": "To generate all fairness metrics",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 34,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "dependencies": [
+    {
+      "cid": "fairness_metrics_toolbox_for_classification"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "Algorithm",
+      "cid": "fairness_metrics_toolbox_for_classification",
+      "datapath": "fmt.output.sample.json" 
+    }
+  ]
+}

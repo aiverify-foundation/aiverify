@@ -1,0 +1,279 @@
+export const ib_cid = "pro_competitive_algo"
+
+<div className="aiv-panel">
+  <h2>User Responses: Pro-Competitive Algorithms (Competition)</h2>
+</div>
+<br/>
+<h2 className="c-primary">Testable Criteria 1.1.0: Algorithmic Collusion</h2>
+<h3>Outcome: AI Model should not be recommending pricing strategies solely based on another company's business model.</h3><br/>
+
+<table style={{border:"1px solid black", borderCollapse:"collapse"}}>
+  <tr>
+    <td style={{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">1.1.1\) Question</b><br/>
+      Do the pricing strategies of the AI model rely on other factors or practices that are not derived from business models or decisions of other companies?
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Relation to Outcome</b><br/>
+      The AI company's algorithm should not be designed to coordinate changes with other competitors and/or facilitating any anti-competitive agreements.
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Response</b><br/>
+      {(props.getIBData(ib_cid)["1_1_1"])}
+    </td>
+  </tr>
+  <tr>
+    <td style={{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px", paddingTop: "10px", paddingBottom: "10px"}} colspan="3">
+      <b className="c-secondary">Elaboration</b><br/>
+      {(props.getIBData(ib_cid)["1_1_1_e"])}
+    </td>
+  </tr>
+</table>
+
+<br/>
+
+<table style={{border:"1px solid black", borderCollapse:"collapse"}}>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">1.1.2\) Question</b><br/>
+      Does the AI model undergo regular audits and reviews to detect and prevent instances of coordination with other competitors such as solely relying on factors derived from business models or decisions of other companies that could be indicative of collusive behavior?
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Relation to Outcome</b><br/>
+      Regular audits and reviews of the AI model help to detect and prevent instances where the AI model is facilitating coordination with other competitors.
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Response</b><br/>
+      {(props.getIBData(ib_cid)["1_1_2"])}
+    </td>
+  </tr>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px", paddingTop: "10px", paddingBottom: "10px"}} colspan="3">
+      <b className="c-secondary">Elaboration</b><br/>
+      {(props.getIBData(ib_cid)["1_1_2_e"])}
+    </td>
+  </tr>
+</table>
+
+<br/>
+
+<table style={{border:"1px solid black", borderCollapse:"collapse"}}>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">1.1.3\) Question</b><br/>
+      Are there clear protocols for addressing any detected issues that may be related to algorithmic collusion?
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Relation to Outcome</b><br/>
+      Clear protocols to be put in place for addressing potential algorithmic collusion behavior.
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Response</b><br/>
+      {(props.getIBData(ib_cid)["1_1_3"])}
+    </td>
+  </tr>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px", paddingTop: "10px", paddingBottom: "10px"}} colspan="3">
+      <b className="c-secondary">Elaboration</b><br/>
+      {(props.getIBData(ib_cid)["1_1_3_e"])}
+    </td>
+  </tr>
+</table>
+
+<br/>
+
+<table style={{border:"1px solid black", borderCollapse:"collapse"}}>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">1.1.4\) Question</b><br/>
+      Are there safeguards in place to ensure that there is no leakage or sharing of AI model parameters with other competitors?
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Relation to Outcome</b><br/>
+      Prevent the leakage or sharing of commercially sensitive model parameters to competitors.
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Response</b><br/>
+      {(props.getIBData(ib_cid)["1_1_4"])}
+    </td>
+  </tr>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px", paddingTop: "10px", paddingBottom: "10px"}} colspan="3">
+      <b className="c-secondary">Elaboration</b><br/>
+      {(props.getIBData(ib_cid)["1_1_4_e"])}
+    </td>
+  </tr>
+</table>
+
+<br/>
+<h2 className="c-primary">Testable Criteria 1.2.0: Algorithmic Exclusion and Predation</h2>
+<h3>Outcome: AI Model should not be recommending pricing strategies that result in exlusion or predation.</h3><br/>
+
+<table style={{border:"1px solid black", borderCollapse:"collapse"}}>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">1.2.1\) Question</b><br/>
+      Are the AI model's pricing algorithms transparent and traceable to identify instances of below-cost* pricing that could be considered predatory if the company considers itself to be dominant?
+      <br />
+      _*Price below average variable cost by a dominant company is likely to be predatory. Companies that are not dominant, or pricing above average total cost, are unlikely to be engaging in predatory behaviour._
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Relation to Outcome</b><br/>
+      Below-cost pricing by a dominant market player could be anti-competitive and harm competition.
+      <br />Transparency and traceability in the AI model's pricing algorithms to identify instances of below-cost pricing can ensure that pricing strategies are not predatory.
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Response</b><br/>
+      {(props.getIBData(ib_cid)["1_2_1"])}
+    </td>
+  </tr>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px", paddingTop: "10px", paddingBottom: "10px"}} colspan="3">
+      <b className="c-secondary">Elaboration</b><br/>
+      {(props.getIBData(ib_cid)["1_2_1_e"])}
+    </td>
+  </tr>
+</table>
+
+<br/>
+
+<table style={{border:"1px solid black", borderCollapse:"collapse"}}>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">1.2.2\) Question</b><br/>
+      Does the AI model undergo regular audits and reviews to detect and prevent instances of below-cost* pricing that could be indicative of predatory behavior if the company considers itself to be dominant?
+      <br />
+      _*Price below average variable cost by a dominant company is likely to be predatory. Companies that are not dominant, or pricing above average total cost, are unlikely to be engaging in predatory behaviour._
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Relation to Outcome</b><br/>
+      Below-cost pricing by a dominant market player could be anti-competitive and harm competition.
+      <br />Regular audits and reviews of the AI model help detect and prevent instances of below-cost pricing.
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Response</b><br/>
+      {(props.getIBData(ib_cid)["1_2_2"])}
+    </td>
+  </tr>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px", paddingTop: "10px", paddingBottom: "10px"}} colspan="3">
+      <b className="c-secondary">Elaboration</b><br/>
+      {(props.getIBData(ib_cid)["1_2_2_e"])}
+    </td>
+  </tr>
+</table>
+
+<br/>
+
+<table style={{border:"1px solid black", borderCollapse:"collapse"}}>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">1.2.3\) Question</b><br/>
+      Does the AI model's pricing algorithm consider relevant cost factors and market conditions to avoid setting prices below the company’s cost*, which could be considered predatory if the company considers itself to be dominant? 
+      <br />
+      _*Price below average variable cost by a dominant company is likely to be predatory. Companies that are not dominant, or pricing above average total cost, are unlikely to be engaging in predatory behaviour._
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Relation to Outcome</b><br/>
+      Below-cost pricing by a dominant market player could be anti-competitive and harm competition.
+      <br />Considering relevant cost factors and market conditions in the AI model's pricing algorithm helps avoid setting prices below a reasonable cost threshold.
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Response</b><br/>
+      {(props.getIBData(ib_cid)["1_2_3"])}
+    </td>
+  </tr>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px", paddingTop: "10px", paddingBottom: "10px"}} colspan="3">
+      <b className="c-secondary">Elaboration</b><br/>
+      {(props.getIBData(ib_cid)["1_2_3_e"])}
+    </td>
+  </tr>
+</table>
+
+<br/>
+
+<table style={{border:"1px solid black", borderCollapse:"collapse"}}>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">1.2.4\) Question</b><br/>
+      If the company considers itself to be dominant, are there processes in place to monitor and address any feedback or complaints related to predatory/below-cost* pricing that may be linked to the AI model's algorithmic decisions?
+      <br />
+      _*Price below average variable cost by a dominant company is likely to be predatory. Companies that are not dominant, or pricing above average total cost, are unlikely to be engaging in predatory behaviour._
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Relation to Outcome</b><br/>
+      Below-cost pricing by a dominant market player could be anti-competitive and harm competition.
+      <br />Monitoring and addressing feedback ensure accountability and responsiveness to any predatory behavior.
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Response</b><br/>
+      {(props.getIBData(ib_cid)["1_2_4"])}
+    </td>
+  </tr>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px", paddingTop: "10px", paddingBottom: "10px"}} colspan="3">
+      <b className="c-secondary">Elaboration</b><br/>
+      {(props.getIBData(ib_cid)["1_2_4_e"])}
+    </td>
+  </tr>
+</table>
+
+<br/>
+
+<table style={{border:"1px solid black", borderCollapse:"collapse"}}>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">1.2.5\) Question</b><br/>
+      If the company considers itself to be dominant, does the AI company ensure that the AI model does not have loyalty-inducing algorithms that could have potential lock-in effects which may limit choices of downstream deployers and users, and discourage market entry for new developers?
+      <br />
+      _Examples of loyalty-inducing algorithms could include price discounts based on volume of purchase or years of subscription._
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Relation to Outcome</b><br/>
+      Checks whether a dominant AI developer has developed a model with loyalty inducing algorithms that may deter entry of new AI developers and harm competition if the company has a dominant market position.
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Response</b><br/>
+      {(props.getIBData(ib_cid)["1_2_5"])}
+    </td>
+  </tr>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px", paddingTop: "10px", paddingBottom: "10px"}} colspan="3">
+      <b className="c-secondary">Elaboration</b><br/>
+      {(props.getIBData(ib_cid)["1_2_5_e"])}
+    </td>
+  </tr>
+</table>
+
+<br/>
+{/*
+<table style={{border:"1px solid black", borderCollapse:"collapse"}}>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">1.2.6\) Question</b><br/>
+      Does the AI company ensure that the AI model does not have loyalty-inducing algorithms that could have potential lock-in effects which may limit choices of downstream deployers and users, and discourage market entry for new developers?
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Relation to Outcome</b><br/>
+      Checks whether a dominant AI developer has developed a model with loyalty inducing algorithms that may deter entry of new AI developers.
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Response</b><br/>
+      {(props.getIBData(ib_cid)["1_2_6"])}
+    </td>
+  </tr>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px", paddingTop: "10px", paddingBottom: "10px"}} colspan="3">
+      <b className="c-secondary">Elaboration</b><br/>
+      {(props.getIBData(ib_cid)["1_2_6_e"])}
+    </td>
+  </tr>
+</table>
+
+<br/>
+*/}
+<div style={{border:"1px solid black", padding: "0px 15px 0px", paddingTop: "10px", paddingBottom: "10px"}}>
+  <b className="c-secondary">Summary Justification</b><br/>
+  {(props.getIBData(ib_cid)["1_summary"])}
+</div>
