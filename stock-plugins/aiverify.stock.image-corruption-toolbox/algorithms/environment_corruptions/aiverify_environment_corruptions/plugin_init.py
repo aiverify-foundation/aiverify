@@ -1,6 +1,7 @@
 import argparse
 
 from aiverify_environment_corruptions.algo_init import AlgoInit
+from aiverify_environment_corruptions.utils import environment
 from aiverify_test_engine.plugins.enums.model_type import ModelType
 
 parser = argparse.ArgumentParser(description="Run the plugin test with specified parameters.")
@@ -50,6 +51,36 @@ def parse_input_args():
         help="Path to the annotated labels file.",
     )
     parser.add_argument("--file_name_label", default="", help="The label of the file name.")
+    parser.add_argument(
+        "--corruptions",
+        nargs="+",
+        choices=["all"] + [name.lower() for name in environment.CORRUPTION_FN],
+        default=["all"],
+        help="Specify the name(s) of environment corruption to run. Default: all",
+    )
+
+    def get_default(k: str) -> str:
+        return " ".join([str(v) for v in environment.DEFAULT_PARAMS[k]])
+
+    parser.add_argument(
+        "--snow_intensity",
+        nargs="+",
+        type=float,
+        help=f"Snow corruption intensity. Default: {get_default('snow_intensity')}",
+    )
+    parser.add_argument(
+        "--fog_intensity",
+        nargs="+",
+        type=float,
+        help=f"Fog corruption intensity. Default: {get_default('fog_intensity')}",
+    )
+    parser.add_argument(
+        "--rain_type",
+        nargs="+",
+        type=str,
+        choices=["drizzle", "heavy", "torrential"],
+        help=f"Rain corruption type. Default: {get_default('rain_type')}",
+    )
 
 
 def invoke_aiverify_digital_corruptions_plugin():
@@ -70,10 +101,24 @@ def invoke_aiverify_digital_corruptions_plugin():
     # Map string argument to ModelType enum
     model_type = ModelType[args.model_type]
 
+    if "all" in args.corruptions:
+        args.corruptions = list(environment.CORRUPTION_FN)
+    else:
+        # This step is required to (1) sanitize user input (2) make sure algorithm names are in correct format & order
+        args.corruptions = [name for name in environment.CORRUPTION_FN if name.lower() in args.corruptions]
+
+    user_defined_params = {
+        "corruptions": args.corruptions,
+        "snow_intensity": args.snow_intensity,
+        "fog_intensity": args.fog_intensity,
+        "rain_type": args.rain_type,
+    }
+
     plugin_argument_values = {
         "set_seed": args.set_seed,
         "annotated_ground_truth_path": args.annotated_ground_truth_path,
         "file_name_label": args.file_name_label,
+        **user_defined_params,
     }
 
     print("*" * 20)
@@ -89,7 +134,8 @@ def invoke_aiverify_digital_corruptions_plugin():
         f"Core Modules Path: {args.core_modules_path}\n"
         f"Seed Value: {args.set_seed}\n"
         f"Annotated Ground Truth Path: {args.annotated_ground_truth_path}\n"
-        f"File Name Label: {args.file_name_label}"
+        f"File Name Label: {args.file_name_label}\n"
+        f"User Defined Parameters: {user_defined_params}"
     )
     print("*" * 20)
 

@@ -1,0 +1,51 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "blur-corruption",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/aiverify_blur_corruptions/plugin_init.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/../../../user_defined_files",
+      "args": [
+        "--data_path",
+        "data/raw_fashion_image_10",
+        "--model_path",
+        "pipeline/multiclass_classification_image_mnist_fashion",
+        "--ground_truth_path",
+        "data/pickle_pandas_fashion_mnist_annotated_labels_10.sav",
+        "--ground_truth",
+        "label",
+        "--model_type",
+        "CLASSIFICATION",
+        "--run_pipeline",
+        "--annotated_ground_truth_path",
+        "data/pickle_pandas_fashion_mnist_annotated_labels_10.sav",
+        "--set_seed",
+        "10",
+        "--file_name_label",
+        "file_name",
+        "--corruptions",
+        "horizontal_motion_blur",
+        "zoom_blur",
+        "--horizontal",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "--vertical",
+        "1",
+        "3",
+        "5",
+        "--zoom",
+        "6"
+      ],
+      "justMyCode": false
+    }
+  ]
+}

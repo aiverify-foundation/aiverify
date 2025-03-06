@@ -3,7 +3,6 @@ import logging
 from pathlib import Path
 
 import pytest
-from aiverify_environment_corruptions.algo import Plugin
 from aiverify_test_engine.interfaces.idata import IData
 from aiverify_test_engine.interfaces.ipipeline import IPipeline
 from aiverify_test_engine.plugins.enums.model_type import ModelType
@@ -16,6 +15,9 @@ from aiverify_test_engine.utils.json_utils import (
     validate_json,
 )
 from aiverify_test_engine.utils.simple_progress import SimpleProgress
+
+from aiverify_environment_corruptions.algo import Plugin
+from aiverify_environment_corruptions.utils import environment
 
 
 def test_discover_plugin():
@@ -66,6 +68,7 @@ class ObjectTest:
             ),
             "file_name_label": "file_name",
             "set_seed": 10,
+            "corruptions": list(environment.CORRUPTION_FN),
         }
         expected_exception = RuntimeError
         expected_exception_msg = "The algorithm has failed data validation"
@@ -493,3 +496,56 @@ def test_valid_run(get_data_instance_and_serializer_without_ground_truth):
     )
 
     assert validate_status
+
+
+def test_corruptions():
+    test_object = ObjectTest()
+    test_object._input_args.update({"corruptions": ["Fog", "Rain"]})
+    test_plugin = Plugin(
+        test_object._data_instance_and_serializer,
+        test_object._model_instance_and_serializer,
+        test_object._ground_truth_instance_and_serializer,
+        test_object._data_instance_and_serializer[0],
+        test_object._model_instance_and_serializer[0],
+        **test_object._input_args,
+    )
+    test_plugin.generate()
+    results = remove_numpy_formats(test_plugin.get_results())
+
+    validate_status = validate_json(
+        results,
+        load_schema_file(
+            str(Path(__file__).parent.parent.parent / "aiverify_environment_corruptions" / "output.schema.json")
+        ),
+    )
+
+    assert validate_status
+    for data in results["results"]:
+        assert data["corruption_function"] in test_object._input_args["corruptions"]
+
+
+def test_user_defined_params():
+    test_object = ObjectTest()
+    test_object._input_args.update({"rain_type": ["drizzle", "heavy"]})
+    test_plugin = Plugin(
+        test_object._data_instance_and_serializer,
+        test_object._model_instance_and_serializer,
+        test_object._ground_truth_instance_and_serializer,
+        test_object._data_instance_and_serializer[0],
+        test_object._model_instance_and_serializer[0],
+        **test_object._input_args,
+    )
+    test_plugin.generate()
+    results = remove_numpy_formats(test_plugin.get_results())
+
+    validate_status = validate_json(
+        results,
+        load_schema_file(
+            str(Path(__file__).parent.parent.parent / "aiverify_environment_corruptions" / "output.schema.json")
+        ),
+    )
+
+    assert validate_status
+    for data in results["results"]:
+        if data["corruption_function"] == "Rain":
+            assert len(data["accuracy"]) == 3
