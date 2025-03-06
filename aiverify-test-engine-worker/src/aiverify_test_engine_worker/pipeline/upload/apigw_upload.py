@@ -21,7 +21,7 @@ class ApigwDownload(Pipe):
 
     def execute(self, task_data: PipelineData) -> PipelineData:
         # Implementation of the download logic
-        logger.debug(f"Execute Download task {task_data}")
+        logger.debug(f"Execute Upload task {task_data}")
 
         # Define the upload URL
         upload_url = f"{self.apigw_url}/test_results/upload_zip"
