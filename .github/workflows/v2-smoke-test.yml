@@ -1,6 +1,6 @@
 # Smoke Test
 
-name: Smoke Test
+name: v2 Smoke Test
 
 on:
   # Runs when a pull request review is being submitted
