@@ -28,7 +28,7 @@ class VirtualEnvironmentBuild(Pipe):
             # Create virtual environment
             venv_path = algorithm_path.joinpath('.venv')
             if not venv_path.exists():
-                subprocess.run([self.python_bin, '-m', 'venv', str(venv_path)], check=True)
+                subprocess.run([self.python_bin, '-m', 'venv', "--system-site-packages", str(venv_path)], check=True)
 
             # Get the appropriate pip executable for the virtual environment
             venv_bin = venv_path.joinpath("bin")
