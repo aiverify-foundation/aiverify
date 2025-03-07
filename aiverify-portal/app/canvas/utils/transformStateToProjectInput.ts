@@ -13,7 +13,7 @@ interface ProjectPatchInput {
     reportWidgets: {
       widgetGID: string;
       key: string;
-      properties: WidgetProperty[] | null;
+      properties: Record<string, string> | null;
     }[];
   }[];
 }
@@ -43,9 +43,17 @@ export function transformStateToProjectInput(state: {
         }) as Layout
     ),
     reportWidgets: state.widgets[pageIndex].map((widget) => ({
+      ...widget,
       widgetGID: widget.gid + ':' + widget.cid,
       key: widget.gridItemId,
-      properties: widget.properties,
+      properties:
+        widget.properties?.reduce<Record<string, string>>((acc, property) => {
+          acc[property.key] = property.value ?? '';
+          return acc;
+        }, {}) ?? {},
+      tags: widget.tags ?? null,
+      dependencies: widget.dependencies ?? [],
+      mockdata: widget.mockdata ?? null,
     })),
   }));
   return {

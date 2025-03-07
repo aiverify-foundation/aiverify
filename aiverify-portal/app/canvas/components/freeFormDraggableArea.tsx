@@ -32,6 +32,14 @@ function FreeFormDraggableArea(props: FreeFormDraggableAreaProps) {
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
   const handleMouseDown = (e: MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (
+      target.closest('.react-grid-item') ||
+      target.closest('.grid-comp-wrapper')
+    ) {
+      return;
+    }
+
     setIsDragging(true);
     setDragStart({
       x: e.clientX - position.x,
