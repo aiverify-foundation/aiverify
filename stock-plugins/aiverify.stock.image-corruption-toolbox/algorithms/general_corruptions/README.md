@@ -1,13 +1,16 @@
 # Algorithm - General Corruptions
 
 ## Description
-* Robustness with general corruptions
+
+- Robustness with general corruptions
 
 ## License
-* Licensed under Apache Software License 2.0
 
-## Developers:
-* AI Verify
+- Licensed under Apache Software License 2.0
+
+## Developers
+
+- AI Verify
 
 ## Installation
 
@@ -17,7 +20,7 @@ Each test algorithm can now be installed via pip and run individually.
 pip install aiverify-general-corruptions==2.0.0a1
 ```
 
-## Example Usage:
+## Example Usage
 
 Run the following bash script to execute the plugin
 
@@ -40,6 +43,71 @@ python -m aiverify_general_corruptions \
 
 If the algorithm runs successfully, the results of the test will be saved in an `output` folder.
 
+## Including Specific General Corruptions
+
+### Usage
+
+By default, **all** general corruption functions are applied. You can use the `--corruptions` flag to specify which functions to run.
+
+```sh
+--corruptions [FUNCTION_NAME ...]
+```
+
+### Options
+
+- `all` -> Runs all general corruption functions (default)
+- `gaussian_noise`
+- `poisson_noise`
+- `salt_and_pepper_noise`
+
+### Example: Applying only Gaussian Noise and Poisson Noise corruptions
+
+```sh
+#!/bin/bash
+
+root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files"
+
+python -m aiverify_general_corruptions \
+  --data_path $root_path/data/raw_fashion_image_10 \
+  --model_path $root_path/pipeline/multiclass_classification_image_mnist_fashion \
+  --ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.**sav** \
+  --ground_truth label \
+  --model_type CLASSIFICATION \
+  --run_pipeline \
+  --annotated_ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
+  --set_seed 10 \
+  --file_name_label file_name \
+  --corruptions gaussian_noise poisson_noise
+```
+
+## Customizing Parameters
+
+To fine-tune general corruption parameters, use the [General Corruption Playground Notebook](./playground.ipynb). This notebook allows you to:
+
+✅ Visualize the effects of different general corruption functions.
+
+✅ Experiment with different parameter values.
+
+✅ Apply custom values in the CLI using flags like:
+
+```sh
+#!/bin/bash
+
+root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files"
+
+python -m aiverify_general_corruptions \
+  --data_path $root_path/data/raw_fashion_image_10 \
+  --model_path $root_path/pipeline/multiclass_classification_image_mnist_fashion \
+  --ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.**sav** \
+  --ground_truth label \
+  --model_type CLASSIFICATION \
+  --run_pipeline \
+  --annotated_ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
+  --set_seed 10 \
+  --file_name_label file_name \
+  --gaussian_noise_sigma 0.1 0.2 0.3
+```
+
 ## Develop plugin locally
 
 Execute the below bash script in the project root
@@ -51,22 +119,22 @@ Execute the below bash script in the project root
 python -m venv .venv
 source .venv/bin/activate
 
-# execute plugin
+# install plugin
 cd aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/general_corruptions/
-
-# install aiverify-test-engine 
-pip install -e '.[dev]'
+pip install -e .
 
 python -m aiverify_general_corruptions --data_path  <data_path> --model_path <model_path> --ground_truth_path <ground_truth_path> --ground_truth <str> --model_type CLASSIFICATION --run_pipeline --set_seed <int> --annotated_ground_truth_path <annotated_file_path> --file_name_label <str>
 ```
 
 ## Build Plugin
+
 ```sh
 cd aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/general_corruptions/
 hatch build
 ```
-## Tests
-### Pytest is used as the testing framework.
+
+### Tests
+
 Run the following steps to execute the unit and integration tests inside the `tests/` folder
 
 ```sh
@@ -75,12 +143,15 @@ pytest .
 ```
 
 ## Run using Docker
+
 In the aiverify root directory, run the below command to build the docker image
+
 ```sh
 docker build -t aiverify-general-corruptions:v2.0.0a1 -f stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/general_corruptions/Dockerfile .
 ```
 
 Run the below bash script to run the algorithm
+
 ```sh
 #!/bin/bash
 docker run \
@@ -97,11 +168,13 @@ docker run \
   --set_seed 10 \
   --file_name_label file_name
 ```
+
 If the algorithm runs successfully, the results of the test will be saved in an `output` folder in the algorithm directory.
 
-## Tests
-### Pytest is used as the testing framework.
+### Tests
+
 Run the following steps to execute the unit and integration tests inside the `tests/` folder
+
 ```sh
 docker run --entrypoint python3 aiverify-general-corruptions:v2.0.0a1 -m pytest .
 ```
