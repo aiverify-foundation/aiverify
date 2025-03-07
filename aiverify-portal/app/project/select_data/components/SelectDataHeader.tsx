@@ -5,48 +5,29 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 
-interface LayoutHeaderProps {
-  projectId?: string | null;
-  onBack?: () => void;
+interface SelectDataHeaderProps {
+  updatedAt: string;
 }
 
-const LayoutHeader: React.FC<LayoutHeaderProps> = ({ projectId, onBack }) => {
+const SelectDataHeader = ({ updatedAt }: SelectDataHeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const isProjectFlow = !!projectId;
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
     <header className="fixed left-0 right-0 top-0 z-50 flex h-16 items-center border-b border-primary-700 bg-primary-950 px-6 backdrop-blur-sm">
-      {/* Left Navigation */}
-      <div className="flex items-center">
-        {isProjectFlow ? (
-          <button
-            onClick={onBack}
-            className="flex items-center gap-2 text-white hover:text-primary-300">
-            <Icon
-              name={IconName.ArrowLeft}
-              size={30}
-              color="currentColor"
-            />
-            <span className="text-lg font-semibold text-white">
-              Back to Project
-            </span>
-          </button>
-        ) : (
-          <div
-            className="relative flex cursor-pointer items-center"
-            onClick={toggleMenu}>
-            <Icon
-              name={IconName.BurgerMenu}
-              svgClassName="fill-white dark:fill-white"
-            />
-          </div>
-        )}
+      {/* Burger Icon */}
+      <div
+        className="relative flex cursor-pointer items-center"
+        onClick={toggleMenu}>
+        <Icon
+          name={IconName.BurgerMenu}
+          svgClassName="fill-white dark:fill-white"
+        />
       </div>
 
       {/* Menu Dropdown */}
-      {!isProjectFlow && isMenuOpen && (
+      {isMenuOpen && (
         <div className="w-50 absolute left-6 top-20 z-[100] rounded-md bg-secondary-950 p-4 text-white shadow-lg">
           <ul>
             <li className="border-b border-secondary-300 py-2">
@@ -88,8 +69,8 @@ const LayoutHeader: React.FC<LayoutHeaderProps> = ({ projectId, onBack }) => {
         </div>
       )}
 
-      {/* Center: Logo */}
-      <div className="flex flex-grow items-center justify-center">
+      {/* Center: Logo and Project Info */}
+      <div className="flex flex-grow items-center justify-center gap-4">
         <Link href="/home">
           <Image
             src="/aiverify-logo-white.svg"
@@ -98,6 +79,9 @@ const LayoutHeader: React.FC<LayoutHeaderProps> = ({ projectId, onBack }) => {
             height={40}
           />
         </Link>
+        <span className="text-sm text-gray-400">
+          Autosaved at {new Date(updatedAt).toLocaleString()}
+        </span>
       </div>
 
       {/* Right: Bell Icon */}
@@ -111,4 +95,4 @@ const LayoutHeader: React.FC<LayoutHeaderProps> = ({ projectId, onBack }) => {
   );
 };
 
-export default LayoutHeader;
+export default SelectDataHeader;

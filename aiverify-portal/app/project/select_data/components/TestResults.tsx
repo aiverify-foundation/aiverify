@@ -1,121 +1,107 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Algorithm } from '@/app/types';
-import { TestResult } from '@/app/types';
-import { getTestResults } from '@/lib/fetchApis/getTestResults';
+import Link from 'next/link';
+import { useState } from 'react';
+import { TestModel } from '@/app/models/utils/types';
+import { Algorithm, TestResult } from '@/app/types';
+import { UserFlows } from '@/app/userFlowsEnum';
+import { Button, ButtonVariant } from '@/lib/components/button';
 
 interface TestResultsProps {
-  projectId?: string | null;
+  projectId: string;
   requiredAlgorithms: Algorithm[];
   onTestResultsChange: (
     testResults: Array<{ gid: string; cid: string; id: number }>
   ) => void;
+  allTestResults: TestResult[];
+  selectedModel?: TestModel;
 }
 
 export default function TestResults({
   projectId,
   requiredAlgorithms,
   onTestResultsChange,
+  allTestResults,
+  selectedModel,
 }: TestResultsProps) {
-  const [allTestResults, setAllTestResults] = useState<TestResult[]>([]);
-  const [selectedTestResults, setSelectedTestResults] = useState<{
-    [key: string]: TestResult | null;
-  }>({});
+  const [selectedTestResults, setSelectedTestResults] = useState<
+    Array<{ gid: string; cid: string; id: number }>
+  >([]);
 
-  // Fetch all test results on mount
-  useEffect(() => {
-    async function fetchTestResults() {
-      try {
-        const results = await getTestResults();
-        setAllTestResults(results);
-      } catch (error) {
-        console.error('Failed to fetch test results:', error);
-      }
-    }
-    fetchTestResults();
-  }, []);
-
-  // Update parent component when selections change
-  useEffect(() => {
-    const selectedResults = Object.values(selectedTestResults)
-      .filter((result): result is TestResult => result !== null)
-      .map((result) => ({
-        gid: result.gid,
-        cid: result.cid,
-        id: result.id,
-      }));
-    onTestResultsChange(selectedResults);
-  }, [selectedTestResults, onTestResultsChange]);
-
-  // Get test results for a specific algorithm
   const getTestResultsForAlgorithm = (algorithm: Algorithm) => {
     return allTestResults.filter(
-      (result) => result.gid === algorithm.gid && result.cid === algorithm.cid
+      (result) =>
+        result.gid === algorithm.gid &&
+        result.cid === algorithm.cid &&
+        (!selectedModel ||
+          result.testArguments.modelFile === selectedModel.name)
     );
   };
 
   const handleTestResultChange = (
     algorithm: Algorithm,
-    testResultId: string
+    testResultId: number | undefined
   ) => {
-    const key = `${algorithm.gid}-${algorithm.cid}`;
-    if (!testResultId) {
-      setSelectedTestResults((prev) => ({
-        ...prev,
-        [key]: null,
-      }));
-      return;
-    }
-
-    const selectedResult = allTestResults.find(
-      (result) => result.id === parseInt(testResultId)
+    const newSelectedTestResults = selectedTestResults.filter(
+      (result) => result.gid !== algorithm.gid || result.cid !== algorithm.cid
     );
 
-    setSelectedTestResults((prev) => ({
-      ...prev,
-      [key]: selectedResult || null,
-    }));
+    if (testResultId !== undefined) {
+      const testResult = allTestResults.find(
+        (result) => result.id === testResultId
+      );
+      if (testResult) {
+        newSelectedTestResults.push({
+          gid: testResult.gid,
+          cid: testResult.cid,
+          id: testResult.id,
+        });
+      }
+    }
+
+    setSelectedTestResults(newSelectedTestResults);
+    onTestResultsChange(newSelectedTestResults);
   };
 
   return (
-    <div className="rounded-lg bg-[#2D3142] p-6">
+    <div className="rounded-lg border border-secondary-500 bg-secondary-950 p-5">
       <div className="mb-4 flex items-start justify-between">
         <div>
           <h2 className="mb-2 text-xl font-semibold text-white">
             Test Results
           </h2>
           <p className="text-sm text-gray-400">
-            Upload test results or select existing test results.
+            Select test results for each required algorithm. Only test results
+            matching the selected model will be shown.
           </p>
         </div>
-        <button
-          className="rounded bg-[#4B5563] px-4 py-2 text-sm text-gray-300 hover:bg-[#374151]"
-          onClick={() => {}}>
-          UPLOAD TEST RESULTS
-        </button>
       </div>
 
       <div className="space-y-4">
         {requiredAlgorithms.map((algorithm) => {
-          const key = `${algorithm.gid}-${algorithm.cid}`;
-          const availableResults = getTestResultsForAlgorithm(algorithm);
-          const selectedResult = selectedTestResults[key];
+          const testResults = getTestResultsForAlgorithm(algorithm);
+          const selectedTestResult = selectedTestResults.find(
+            (result) =>
+              result.gid === algorithm.gid && result.cid === algorithm.cid
+          );
 
           return (
             <div
-              key={key}
+              key={`${algorithm.gid}-${algorithm.cid}`}
               className="flex items-center justify-between gap-4">
               <label className="w-64 text-white">{algorithm.name}</label>
               <div className="relative flex-1">
                 <select
-                  value={selectedResult?.id || ''}
+                  className="w-full cursor-pointer appearance-none rounded bg-secondary-900 p-3 pr-10 text-white"
+                  value={selectedTestResult?.id || ''}
                   onChange={(e) =>
-                    handleTestResultChange(algorithm, e.target.value)
-                  }
-                  className="w-full cursor-pointer appearance-none rounded bg-[#1F2937] p-3 pr-10 text-gray-300">
+                    handleTestResultChange(
+                      algorithm,
+                      e.target.value ? Number(e.target.value) : undefined
+                    )
+                  }>
                   <option value="">Choose Test Results</option>
-                  {availableResults.map((result) => (
+                  {testResults.map((result) => (
                     <option
                       key={result.id}
                       value={result.id}>
@@ -132,14 +118,31 @@ export default function TestResults({
                   </svg>
                 </div>
               </div>
-              <button
-                className="w-32 rounded bg-[#4B5563] px-4 py-2 text-sm text-gray-300 hover:bg-[#374151]"
-                onClick={() => {}}>
-                RUN TESTS
-              </button>
+              <Button
+                variant={ButtonVariant.OUTLINE}
+                hoverColor="var(--color-primary-500)"
+                textColor="white"
+                text="RUN TESTS"
+                size="xs"
+                pill
+                onClick={() => {}}
+              />
             </div>
           );
         })}
+      </div>
+      <div className="mt-4 flex justify-end">
+        <Link
+          href={`/results/upload?flow=${UserFlows.NewProject}&projectId=${projectId}`}>
+          <Button
+            variant={ButtonVariant.OUTLINE}
+            hoverColor="var(--color-primary-500)"
+            textColor="white"
+            text="UPLOAD TEST RESULTS"
+            size="xs"
+            pill
+          />
+        </Link>
       </div>
     </div>
   );

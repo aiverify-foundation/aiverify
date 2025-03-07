@@ -36,7 +36,7 @@ function TemplateCards({ templates, projectId, flow }: TemplateCardsProps) {
         });
         // Navigate to template with existing template flow
         router.push(
-          `/project/usermenu?flow=${UserFlows.NewProjectWithExistingTemplate}&projectId=${projectId}`
+          `/project/select_data/?flow=${UserFlows.NewProjectWithExistingTemplate}&projectId=${projectId}`
         );
       } catch (error) {
         console.error('Error selecting template:', error);

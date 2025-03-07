@@ -1,246 +1,95 @@
-'use client';
+import { notFound } from 'next/navigation';
+import {
+  transformProjectOutputToState,
+  ProjectOutput,
+} from '@/app/canvas/utils/transformProjectOutputToState';
+import { getAllChecklists } from '@/lib/fetchApis/getAllChecklists';
+import { getAllFairnessTrees } from '@/lib/fetchApis/getAllFairnessTrees';
+import { getTestModels } from '@/lib/fetchApis/getAllModels';
+import { getPlugins } from '@/lib/fetchApis/getPlugins';
+import { populatePluginsMdxBundles } from '@/lib/fetchApis/getPlugins';
+import { getProjects } from '@/lib/fetchApis/getProjects';
+import { getTestResults } from '@/lib/fetchApis/getTestResults';
+import ClientSelectData from './components/ClientSelectData';
+import SelectDataHeader from './components/SelectDataHeader';
+export default async function SelectDataPage({
+  searchParams,
+}: {
+  searchParams: { projectId?: string };
+}) {
+  const projectId = searchParams.projectId;
 
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { Algorithm, InputBlock, ProjectData } from '@/app/types';
-import ModelSelection from './components/ModelSelection';
-import TestResults from './components/TestResults';
-import UserInputs from './components/UserInputs';
-
-async function updateProjectData(
-  projectId: string,
-  data: Partial<ProjectData>
-) {
-  const response = await fetch(`/api/projects/${projectId}`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to update project data');
+  if (!projectId) {
+    notFound();
   }
 
-  return response.json();
-}
+  // get all data
+  const result = await getProjects({ ids: [projectId] });
 
-export default function SelectDataPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const projectId = searchParams.get('projectId');
-  const templateId = searchParams.get('templateId');
+  if ('message' in result || !result.data || result.data.length === 0) {
+    notFound();
+  }
 
-  const [requiredAlgorithms, setRequiredAlgorithms] = useState<Algorithm[]>([]);
-  const [requiredInputBlocks, setRequiredInputBlocks] = useState<InputBlock[]>(
-    []
+  const project = result.data[0] as ProjectOutput;
+  const allModels = await getTestModels();
+  const allTestResults = await getTestResults();
+  const allChecklists = await getAllChecklists();
+  const allFairnessTrees = await getAllFairnessTrees();
+  console.log('allfairnessTrees', allFairnessTrees);
+
+  const plugins = await getPlugins({ groupByPluginId: false });
+
+  if ('message' in plugins || !plugins.data || !Array.isArray(plugins.data)) {
+    notFound();
+  }
+
+  const pluginsWithMdx = await populatePluginsMdxBundles(plugins.data);
+
+  // Transform project data to get required algorithms and input blocks
+  const transformedProject = transformProjectOutputToState(
+    project,
+    pluginsWithMdx
   );
-  const [projectData, setProjectData] = useState<ProjectData>({
-    testModelId: undefined,
-    inputBlocks: [],
-    testResults: [],
-  });
-
-  // Fetch required algorithms and input blocks based on template
-  useEffect(() => {
-    if (!projectId || !templateId) return;
-
-    // This would be replaced with actual API calls to get the required algorithms and input blocks
-    // For now, we'll use mock data
-    setRequiredAlgorithms([
-      {
-        cid: 'aiverify_general_corruptions',
-        gid: 'aiverify.stock.image_corruption_toolbox',
-        name: 'Image Corruption Test',
-        modelType: ['classification'],
-        version: '0.9.0',
-        author: 'AI Verify',
-        description: 'Tests image model robustness against corruptions',
-        tags: ['computer vision', 'robustness'],
-        requireGroundTruth: true,
-        language: 'python',
-        script: 'corruption_test.py',
-        module_name: 'corruption_test',
-        inputSchema: {
-          title: 'Input Schema',
-          description: 'Input schema for corruption test',
-          type: 'object',
-          required: [],
-          properties: {},
-        },
-        outputSchema: {
-          title: 'Output Schema',
-          description: 'Output schema for corruption test',
-          type: 'object',
-          required: [],
-          minProperties: 0,
-          properties: {
-            feature_names: {
-              type: 'array',
-              description: 'Feature names',
-              minItems: 0,
-              items: {
-                type: 'string',
-              },
-            },
-            results: {
-              title: 'Results',
-              description: 'Test results',
-              type: 'array',
-              minItems: 0,
-              items: {
-                description: 'Result item',
-                type: 'object',
-                required: [],
-                minProperties: 0,
-                properties: {
-                  indices: {
-                    title: 'Indices',
-                    type: 'array',
-                    minItems: 0,
-                    items: {
-                      type: 'number',
-                    },
-                  },
-                  ale: {
-                    title: 'ALE',
-                    type: 'array',
-                    minItems: 0,
-                    items: {
-                      type: 'number',
-                    },
-                  },
-                  size: {
-                    title: 'Size',
-                    type: 'array',
-                    minItems: 0,
-                    items: {
-                      type: 'number',
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-        zip_hash: 'abc123',
-      },
-    ]);
-
-    setRequiredInputBlocks([
-      {
-        cid: 'checklist',
-        gid: 'aiverify.stock.process_checklist',
-        name: 'Process Checklist',
-        version: '0.9.0',
-        author: 'AI Verify',
-        tags: 'process,checklist',
-        description: 'AI Verify process checklist',
-        group: 'Default',
-        groupNumber: '1',
-        width: 'full',
-        fullScreen: false,
-      },
-    ]);
-  }, [projectId, templateId]);
-
-  const handleModelChange = async (modelId: string | undefined) => {
-    if (!projectId) return;
-
-    try {
-      const newData = { ...projectData, testModelId: modelId };
-      await updateProjectData(projectId, newData);
-      setProjectData(newData);
-    } catch (error) {
-      console.error('Failed to update model:', error);
-    }
-  };
-
-  const handleTestResultsChange = async (
-    testResults: Array<{ gid: string; cid: string; id: number }>
-  ) => {
-    if (!projectId) return;
-
-    try {
-      const newData = { ...projectData, testResults };
-      await updateProjectData(projectId, newData);
-      setProjectData(newData);
-    } catch (error) {
-      console.error('Failed to update test results:', error);
-    }
-  };
-
-  const handleInputBlocksChange = async (
-    inputBlocks: Array<{ gid: string; cid: string; id: number }>
-  ) => {
-    if (!projectId) return;
-
-    try {
-      const newData = { ...projectData, inputBlocks };
-      await updateProjectData(projectId, newData);
-      setProjectData(newData);
-    } catch (error) {
-      console.error('Failed to update input blocks:', error);
-    }
-  };
-
-  const handleNext = () => {
-    if (!projectId || !templateId) return;
-
-    // Construct the URL with all selected data
-    const params = new URLSearchParams({
-      projectId,
-      templateId,
-      ...(projectData.testModelId && { modelId: projectData.testModelId }),
-      ...(projectData.testResults.length && {
-        testResultIds: projectData.testResults.map((r) => r.id).join(','),
-      }),
-      ...(projectData.inputBlocks.length && {
-        iBlockIds: projectData.inputBlocks.map((b) => b.id).join(','),
-      }),
-    });
-
-    router.push(`/canvas?${params.toString()}`);
-  };
+  const requiredAlgorithms = transformedProject.algorithmsOnReport;
+  const requiredInputBlocks = transformedProject.inputBlocksOnReport;
 
   return (
-    <div className="flex flex-col gap-6 p-6">
-      <div>
-        <h1 className="mb-2 text-2xl font-semibold">
-          Select the Model, Test Results and User Input
-        </h1>
-        <p className="text-gray-500">
-          Please select the AI Model, Test Result(s) and User Input(s) required
-          for report generation.
-        </p>
+    <>
+      <SelectDataHeader updatedAt={project.updated_at} />
+      <div className="flex">
+        <div
+          className="flex-shrink-0 flex-grow basis-1/5"
+          role="region"
+          aria-label="Left pane content">
+          <div className="rounded-lg bg-secondary-950 p-6">
+            <div className="space-y-4">
+              <div>
+                <h2 className="mb-2 text-lg font-semibold text-white">
+                  {project.projectInfo.name}
+                </h2>
+                <p className="text-gray-300">
+                  {project.projectInfo.description}
+                </p>
+                <p className="text-gray-300">{project.projectInfo.company}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          className="flex-shrink-0 flex-grow basis-4/5 overflow-y-auto pl-6 pr-6"
+          role="region"
+          aria-label="Right pane content">
+          <ClientSelectData
+            projectId={projectId}
+            requiredAlgorithms={requiredAlgorithms}
+            requiredInputBlocks={requiredInputBlocks}
+            allModels={allModels}
+            allTestResults={allTestResults}
+            allChecklists={allChecklists}
+            allFairnessTrees={allFairnessTrees}
+          />
+        </div>
       </div>
-
-      <div className="space-y-6">
-        <ModelSelection
-          projectId={projectId}
-          selectedModelId={projectData.testModelId}
-          onModelChange={handleModelChange}
-        />
-        <TestResults
-          projectId={projectId}
-          requiredAlgorithms={requiredAlgorithms}
-          onTestResultsChange={handleTestResultsChange}
-        />
-        <UserInputs
-          projectId={projectId}
-          requiredInputBlocks={requiredInputBlocks}
-          onInputBlocksChange={handleInputBlocksChange}
-        />
-      </div>
-
-      <div className="flex justify-end">
-        <button
-          onClick={handleNext}
-          className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
-          Next
-        </button>
-      </div>
-    </div>
+    </>
   );
 }

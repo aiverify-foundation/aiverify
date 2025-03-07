@@ -1,17 +1,19 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { InputBlock } from '@/app/inputs/utils/types';
-import { Checklist } from '@/app/inputs/utils/types';
+import Link from 'next/link';
+import { useState } from 'react';
+import { InputBlock, Checklist, FairnessTree } from '@/app/inputs/utils/types';
 import { InputBlock as ProjectInputBlock } from '@/app/types';
-import { getAllChecklists } from '@/lib/fetchApis/getAllChecklists';
+import { Button, ButtonVariant } from '@/lib/components/button';
 
 interface UserInputsProps {
   projectId?: string | null;
-  requiredInputBlocks: InputBlock[];
+  requiredInputBlocks: ProjectInputBlock[];
   onInputBlocksChange: (
     inputBlocks: Array<{ gid: string; cid: string; id: number }>
   ) => void;
+  allChecklists: Checklist[];
+  allFairnessTrees: FairnessTree[];
 }
 
 interface GroupedChecklists {
@@ -22,25 +24,13 @@ export default function UserInputs({
   projectId,
   requiredInputBlocks,
   onInputBlocksChange,
+  allChecklists,
+  allFairnessTrees,
 }: UserInputsProps) {
-  const [allChecklists, setAllChecklists] = useState<Checklist[]>([]);
   const [selectedGroups, setSelectedGroups] = useState<Set<string>>(new Set());
   const [selectedInputBlocks, setSelectedInputBlocks] = useState<{
-    [key: string]: (Checklist | InputBlock) | null;
+    [key: string]: (Checklist | ProjectInputBlock) | null;
   }>({});
-
-  // Fetch all checklists on mount
-  useEffect(() => {
-    async function fetchChecklists() {
-      try {
-        const checklists = await getAllChecklists();
-        setAllChecklists(checklists);
-      } catch (error) {
-        console.error('Failed to fetch checklists:', error);
-      }
-    }
-    fetchChecklists();
-  }, []);
 
   // Group checklists by group name
   const groupedChecklists = allChecklists.reduce((groups, checklist) => {
@@ -51,6 +41,17 @@ export default function UserInputs({
     groups[groupName].push(checklist);
     return groups;
   }, {} as GroupedChecklists);
+
+  const updateParentWithSelectedBlocks = () => {
+    const selectedBlocks = Object.values(selectedInputBlocks)
+      .filter((block): block is InputBlock => block !== null)
+      .map((block) => ({
+        gid: block.gid,
+        cid: block.cid,
+        id: block.id,
+      }));
+    onInputBlocksChange(selectedBlocks);
+  };
 
   // Handle checklist group selection
   const handleGroupSelection = (groupName: string) => {
@@ -79,13 +80,14 @@ export default function UserInputs({
         }));
       });
     }
-
+    console.log('newSelectedGroups', newSelectedGroups);
     setSelectedGroups(newSelectedGroups);
+    updateParentWithSelectedBlocks();
   };
 
   // Handle other input block selection
   const handleInputBlockChange = (
-    inputBlock: InputBlock,
+    inputBlock: ProjectInputBlock,
     selected: boolean
   ) => {
     const key = `${inputBlock.gid}-${inputBlock.cid}`;
@@ -93,22 +95,16 @@ export default function UserInputs({
       ...prev,
       [key]: selected ? inputBlock : null,
     }));
+    console.log('selectedInputBlocks', selectedInputBlocks);
+    updateParentWithSelectedBlocks();
   };
 
-  // Update parent component when selections change
-  useEffect(() => {
-    const selectedBlocks = Object.values(selectedInputBlocks)
-      .filter((block): block is Checklist | InputBlock => block !== null)
-      .map((block) => ({
-        gid: block.gid,
-        cid: block.cid,
-        id: 1, // You might need to adjust this based on your requirements
-      }));
-    onInputBlocksChange(selectedBlocks);
-  }, [selectedInputBlocks, onInputBlocksChange]);
+  const getInputBlocksForList = (gid: string) => {
+    return allFairnessTrees.filter((block) => block.gid === gid);
+  };
 
   return (
-    <div className="rounded-lg bg-[#2D3142] p-6">
+    <div className="rounded-lg border border-secondary-500 bg-secondary-950 p-6">
       <div>
         <h2 className="mb-2 text-xl font-semibold text-white">User Inputs</h2>
         <p className="mb-6 text-sm text-gray-400">
@@ -118,20 +114,18 @@ export default function UserInputs({
 
       <div className="space-y-4">
         {/* Process Checklists */}
-        {Object.entries(groupedChecklists).map(([groupName, checklists]) => (
+        {Object.entries(groupedChecklists).map(([groupName]) => (
           <div
             key={groupName}
             className="flex items-center justify-between gap-4">
-            <label className="w-64 text-white">{groupName}</label>
+            <label className="w-64 text-white">Process Checklists</label>
             <div className="relative flex-1">
               <select
                 value={selectedGroups.has(groupName) ? groupName : ''}
                 onChange={() => handleGroupSelection(groupName)}
-                className="w-full cursor-pointer appearance-none rounded bg-[#1F2937] p-3 pr-10 text-gray-300">
+                className="w-full cursor-pointer appearance-none rounded bg-secondary-900 p-3 pr-10 text-gray-300">
                 <option value="">Choose User Input</option>
-                <option value={groupName}>
-                  {checklists.length} checklists
-                </option>
+                <option value={groupName}>{groupName}</option>
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
                 <svg
@@ -141,11 +135,17 @@ export default function UserInputs({
                 </svg>
               </div>
             </div>
-            <button
-              className="w-32 rounded bg-[#4B5563] px-4 py-2 text-sm text-gray-300 hover:bg-[#374151]"
-              onClick={() => {}}>
-              ADD INPUT
-            </button>
+            <Link
+              href={`/inputs/checklists/upload${projectId ? `?projectId=${projectId}` : ''}`}>
+              <Button
+                variant={ButtonVariant.OUTLINE}
+                hoverColor="var(--color-primary-500)"
+                textColor="white"
+                text="ADD INPUT"
+                size="xs"
+                pill
+              />
+            </Link>
           </div>
         ))}
 
@@ -154,7 +154,9 @@ export default function UserInputs({
           .filter((block) => block.gid !== 'aiverify.stock.process_checklist')
           .map((inputBlock) => {
             const key = `${inputBlock.gid}-${inputBlock.cid}`;
+            const availableTrees = getInputBlocksForList(inputBlock.gid);
             const isSelected = !!selectedInputBlocks[key];
+            console.log('inputblock', inputBlock);
 
             return (
               <div
@@ -170,9 +172,15 @@ export default function UserInputs({
                         e.target.value === 'selected'
                       )
                     }
-                    className="w-full cursor-pointer appearance-none rounded bg-[#1F2937] p-3 pr-10 text-gray-300">
+                    className="w-full cursor-pointer appearance-none rounded bg-secondary-900 p-3 pr-10 text-gray-300">
                     <option value="">Choose User Input</option>
-                    <option value="selected">Select this input</option>
+                    {availableTrees.map((tree) => (
+                      <option
+                        key={tree.id}
+                        value={tree.id}>
+                        {tree.name}
+                      </option>
+                    ))}
                   </select>
                   <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
                     <svg
@@ -182,11 +190,17 @@ export default function UserInputs({
                     </svg>
                   </div>
                 </div>
-                <button
-                  className="w-32 rounded bg-[#4B5563] px-4 py-2 text-sm text-gray-300 hover:bg-[#374151]"
-                  onClick={() => {}}>
-                  ADD INPUT
-                </button>
+                <Link
+                  href={`/inputs/checklists/upload${projectId ? `?projectId=${projectId}` : ''}`}>
+                  <Button
+                    variant={ButtonVariant.OUTLINE}
+                    hoverColor="var(--color-primary-500)"
+                    textColor="white"
+                    text="ADD INPUT"
+                    size="xs"
+                    pill
+                  />
+                </Link>
               </div>
             );
           })}

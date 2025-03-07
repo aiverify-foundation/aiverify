@@ -1,70 +1,42 @@
-'use client';
-
-import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { TestModel } from '@/app/models/utils/types';
+import { Button, ButtonVariant } from '@/lib/components/button';
 
 interface ModelSelectionProps {
   projectId?: string | null;
   selectedModelId?: string;
-  onModelChange: (modelId: string | undefined) => void;
-}
-
-interface Model {
-  id: string;
-  name: string;
-  created_at: string;
+  onModelChange: (modelId: string) => void;
+  models: TestModel[];
 }
 
 export default function ModelSelection({
-  projectId,
   selectedModelId,
   onModelChange,
+  models,
+  projectId,
 }: ModelSelectionProps) {
-  const [models, setModels] = useState<Model[]>([]);
-
-  // Fetch models on mount
-  useEffect(() => {
-    async function fetchModels() {
-      try {
-        const response = await fetch('/api/models');
-        if (!response.ok) {
-          throw new Error('Failed to fetch models');
-        }
-        const data = await response.json();
-        setModels(data);
-      } catch (error) {
-        console.error('Failed to fetch models:', error);
-      }
-    }
-    fetchModels();
-  }, []);
-
   return (
-    <div className="rounded-lg bg-[#2D3142] p-6">
+    <div className="rounded-lg border border-secondary-500 bg-secondary-950 p-5">
       <div className="mb-4 flex items-start justify-between">
         <div>
           <h2 className="mb-2 text-xl font-semibold text-white">AI Model</h2>
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-white">
             Upload new AI Model or select existing AI Model.
           </p>
         </div>
-        <button
-          className="rounded bg-[#4B5563] px-4 py-2 text-sm text-gray-300 hover:bg-[#374151]"
-          onClick={() => {}}>
-          ADD NEW AI MODEL
-        </button>
       </div>
 
       <div className="relative">
         <select
           value={selectedModelId || ''}
-          onChange={(e) => onModelChange(e.target.value || undefined)}
-          className="w-full cursor-pointer appearance-none rounded bg-[#1F2937] p-3 pr-10 text-gray-300">
+          onChange={(e) => onModelChange(e.target.value)}
+          className="w-full cursor-pointer appearance-none rounded bg-secondary-900 p-3 pr-10 text-white">
           <option value="">Choose Model</option>
           {models.map((model) => (
             <option
               key={model.id}
               value={model.id}>
-              {model.name} - {new Date(model.created_at).toLocaleDateString()}
+              {model.name}
             </option>
           ))}
         </select>
@@ -75,6 +47,19 @@ export default function ModelSelection({
             <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
           </svg>
         </div>
+      </div>
+      <div className="mt-4 flex justify-end">
+        <Link
+          href={`/models/upload${projectId ? `?projectId=${projectId}` : ''}`}>
+          <Button
+            variant={ButtonVariant.OUTLINE}
+            textColor="white"
+            hoverColor="var(--color-primary-500)"
+            text="ADD NEW AI MODEL"
+            size="xs"
+            pill
+          />
+        </Link>
       </div>
     </div>
   );

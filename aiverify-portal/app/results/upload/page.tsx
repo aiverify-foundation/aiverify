@@ -1,22 +1,20 @@
 'use client';
 
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import React, { useState } from 'react';
-import LayoutHeader from '@/app/models/components/LayoutHeader';
-import ModelUploader from '@/app/models/upload/components/ModelUploader';
+import LayoutHeader from '@/app/results/components/LayoutHeader';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import { Button, ButtonVariant } from '@/lib/components/button';
-import PipelineUploader from './components/PipelineUploader';
 
 type UploadPageProps = {
   onBack?: () => void;
 };
 
 const UploadPage: React.FC<UploadPageProps> = () => {
-  const [selectedMethod, setSelectedMethod] = useState('');
   const [activeCard, setActiveCard] = useState<string>('');
   const searchParams = useSearchParams();
+  const router = useRouter();
   const projectId = searchParams.get('projectId');
   const isProjectFlow = !!projectId;
 
@@ -26,7 +24,9 @@ const UploadPage: React.FC<UploadPageProps> = () => {
 
   const handleNext = () => {
     if (activeCard) {
-      setSelectedMethod(activeCard);
+      const baseUrl = `/results/upload/${activeCard}`;
+      const url = isProjectFlow ? `${baseUrl}?projectId=${projectId}` : baseUrl;
+      router.push(url);
     }
   };
 
@@ -34,10 +34,6 @@ const UploadPage: React.FC<UploadPageProps> = () => {
     if (isProjectFlow) {
       window.history.back();
     }
-  };
-
-  const handleBack = () => {
-    setSelectedMethod('');
   };
 
   const renderOptionCard = (
@@ -103,34 +99,23 @@ const UploadPage: React.FC<UploadPageProps> = () => {
   const renderSelectionOptions = () => (
     <div className="relative flex flex-col overflow-y-auto">
       <div className="flex items-center">
-        {!isProjectFlow ? (
-          <Link href="/models">
-            <Icon
-              name={IconName.ArrowLeft}
-              size={40}
-              color="#FFFFFF"
-            />
-          </Link>
-        ) : (
-          <div className="h-10 w-10" />
-        )}
-        <div className="ml-3">
-          <h1 className="text-2xl font-bold text-white">Add New AI Model</h1>
+        <div className="pl-10">
+          <h1 className="text-2xl font-bold text-white">Upload Test Results</h1>
           <h3 className="text-white">
-            How would you like AI Verify to access the AI Model to be tested?
+            How would you like to upload your test results?
           </h3>
         </div>
       </div>
       <div className="flex flex-grow items-center gap-10 p-10">
-        {renderOptionCard('file', 'Upload AI Model', [
-          'Supported frameworks: LightGBM, Scikit-learn, TensorFlow, XGBoost',
-          '*Compatible with tabular datasets only',
-          'How it works: AI Verify will run the testing dataset against the AI model uploaded to generate predictions.',
+        {renderOptionCard('zipfile', 'Upload Zip File', [
+          'Supported format: ZIP',
+          '*Contains test results exported from another AI Verify instance',
+          'How it works: AI Verify will import the test results from the ZIP file.',
         ])}
-        {renderOptionCard('pipeline', 'Upload Pipeline', [
-          'Supported frameworks: Scikit-learn Pipeline',
-          'Supported datasets: Tabular, Image',
-          'How it works: AI Verify will run technical tests using the uploaded test dataset and pipeline.',
+        {renderOptionCard('manual', 'Manual Upload', [
+          'Supported formats: CSV, JSON',
+          'Supported test types: All test types',
+          'How it works: AI Verify will process the uploaded files as test results.',
         ])}
       </div>
       <div className="mt-6 mt-auto flex items-center justify-end pr-6">
@@ -153,11 +138,7 @@ const UploadPage: React.FC<UploadPageProps> = () => {
         onBack={handleBackProject}
       />
       <div className="mx-auto h-full w-full p-2">
-        {!selectedMethod ? renderSelectionOptions() : null}
-        {selectedMethod === 'file' && <ModelUploader onBack={handleBack} />}
-        {selectedMethod === 'pipeline' && (
-          <PipelineUploader onBack={handleBack} />
-        )}
+        {renderSelectionOptions()}
       </div>
     </div>
   );
