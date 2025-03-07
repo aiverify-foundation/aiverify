@@ -1,3 +1,5 @@
+'use client';
+
 import { getMDXComponent } from 'mdx-bundler/client';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
@@ -19,7 +21,7 @@ type EditingOverlayProps = {
  * There is a background overlay that is used to close the overlay when the user clicks outside of it.
  * The modal renders a form that contains the widget properties. It is rendered directly above the widget.
  * The form is submitted when the user clicks outside of it.
- * 
+ *
  * @see {@link /app/canvas/components/hocAddTextEditFuncitonality.tsx} to see which components are editable.
  */
 
@@ -64,7 +66,6 @@ function EditingOverlay({
     }, {});
   }, [widget, widget.properties]);
 
-
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!widget.properties) return;
@@ -74,7 +75,7 @@ function EditingOverlay({
       ...widget,
       properties: widget.properties?.map((prop) => ({
         ...prop,
-        value: values[prop.key] as string || prop.value,
+        value: (values[prop.key] as string) || prop.value,
       })),
     };
 
@@ -88,7 +89,8 @@ function EditingOverlay({
     }
   };
 
-  const editingOverlayRequiredStyles: EditingOverlayRequiredStyles = 'editing-overlay fixed inset-0 z-40 bg-transparent';
+  const editingOverlayRequiredStyles: EditingOverlayRequiredStyles =
+    'editing-overlay fixed inset-0 z-40 bg-transparent';
 
   return createPortal(
     <div

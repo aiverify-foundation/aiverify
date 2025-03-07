@@ -1,3 +1,5 @@
+'use client';
+
 import { MDXContentProps } from 'mdx-bundler/client';
 import React from 'react';
 

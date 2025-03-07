@@ -148,8 +148,14 @@ type WidgetAction =
       widgets: WidgetOnGridLayout[][];
       algorithmsOnReport: Algorithm[];
       inputBlocksOnReport: InputBlock[];
-      gridItemToAlgosMap: Record<WidgetGridItemId, WidgetAlgoAndResultIdentifier[]>;
-      gridItemToInputBlockDatasMap: Record<WidgetGridItemId, WidgetInputBlockIdentifier[]>;
+      gridItemToAlgosMap: Record<
+        WidgetGridItemId,
+        WidgetAlgoAndResultIdentifier[]
+      >;
+      gridItemToInputBlockDatasMap: Record<
+        WidgetGridItemId,
+        WidgetInputBlockIdentifier[]
+      >;
       pageTypes: ('grid' | 'overflow')[];
       overflowParents: Array<number | null>;
     };
@@ -648,29 +654,37 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
 
       // Validate input arrays
       if (!Array.isArray(templateLayouts) || !Array.isArray(templateWidgets)) {
-        console.error('Invalid template data: layouts or widgets are not arrays');
+        console.error(
+          'Invalid template data: layouts or widgets are not arrays'
+        );
         return state;
       }
 
       // Process each page's layouts and widgets to ensure proper positioning
       const processedLayouts = templateLayouts.map((pageLayouts, pageIndex) => {
-        if (!Array.isArray(pageLayouts) || !Array.isArray(templateWidgets[pageIndex])) {
+        if (
+          !Array.isArray(pageLayouts) ||
+          !Array.isArray(templateWidgets[pageIndex])
+        ) {
           console.error(`Invalid page data at index ${pageIndex}`);
           return [];
         }
 
         const sortedLayouts: Layout[] = [];
-        const sortedWidgets = templateWidgets[pageIndex].filter(widget => 
-          widget && widget.gridItemId // Filter out invalid widgets
+        const sortedWidgets = templateWidgets[pageIndex].filter(
+          (widget) => widget && widget.gridItemId // Filter out invalid widgets
         );
 
         // Position each widget using findWidgetInsertPosition
         pageLayouts.forEach((layout, idx) => {
           if (!layout || !sortedWidgets[idx]) return; // Skip invalid layouts/widgets
 
-          const insertPosition = findWidgetInsertPosition(sortedLayouts, layout);
+          const insertPosition = findWidgetInsertPosition(
+            sortedLayouts,
+            layout
+          );
           sortedLayouts.splice(insertPosition, 0, layout);
-          
+
           // Move the corresponding widget to match the layout position
           if (idx !== insertPosition) {
             const [widget] = sortedWidgets.splice(idx, 1);
@@ -701,6 +715,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
   }
 
   // Save state to database (debounced)
+  console.log('saving hereee', newState);
   debouncedSaveStateToDatabase(newState);
 
   return newState;

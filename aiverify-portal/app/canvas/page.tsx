@@ -1,4 +1,8 @@
 import { notFound } from 'next/navigation';
+import {
+  transformProjectOutputToState,
+  ProjectOutput,
+} from '@/app/canvas/utils/transformProjectOutputToState';
 import { InputBlockData } from '@/app/types';
 import { UserFlows } from '@/app/userFlowsEnum';
 import { getInputBlockDatas } from '@/lib/fetchApis/getInputBlockDatas';
@@ -9,6 +13,7 @@ import {
 import { getProjects } from '@/lib/fetchApis/getProjects';
 import { getTestResults } from '@/lib/fetchApis/getTestResults';
 import { Designer } from './components/designer';
+import { State } from './components/hooks/pagesDesignReducer';
 import { ParsedTestResults } from './types';
 
 type UrlSearchParams = {
@@ -30,7 +35,8 @@ export default async function CanvasPage(props: UrlSearchParams) {
     notFound();
   }
 
-  const project = result.data[0];
+  const project = result.data[0] as ProjectOutput;
+  console.log('project', project);
   const plugins = await getPlugins({ groupByPluginId: false });
   const testResults = await getTestResults();
   const inputBlockDatas = await getInputBlockDatas();
@@ -76,10 +82,32 @@ export default async function CanvasPage(props: UrlSearchParams) {
 
   const pluginsWithMdx = await populatePluginsMdxBundles(plugins.data);
 
+  // Initialize state with error handling for storage quota
+  let initialState: State;
+  try {
+    initialState = transformProjectOutputToState(project, pluginsWithMdx);
+  } catch (error) {
+    console.error('Failed to initialize state:', error);
+    // If we hit a storage quota error, try to initialize with minimal data
+    initialState = {
+      layouts: [[]],
+      widgets: [[]],
+      algorithmsOnReport: [],
+      inputBlocksOnReport: [],
+      gridItemToAlgosMap: {},
+      gridItemToInputBlockDatasMap: {},
+      currentPage: 0,
+      showGrid: true,
+      pageTypes: ['grid' as const],
+      overflowParents: [null],
+    };
+  }
+  console.log('initialState', initialState);
   return (
     <Designer
       flow={flow}
       project={project}
+      initialState={initialState}
       allPluginsWithMdx={pluginsWithMdx}
       allTestResultsOnSystem={parsedTestResults}
       allInputBlockDatasOnSystem={inputBlockDatas}
@@ -87,6 +115,7 @@ export default async function CanvasPage(props: UrlSearchParams) {
       selectedInputBlockDatasFromUrlParams={
         selectedInputBlockDatasFromUrlParams
       }
+      pageNavigationMode="multi"
     />
   );
 }

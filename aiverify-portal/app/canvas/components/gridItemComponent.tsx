@@ -1,3 +1,5 @@
+'use client';
+
 import { getMDXComponent, MDXContentProps } from 'mdx-bundler/client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import React from 'react';
@@ -23,11 +25,15 @@ import {
   Plugin,
   InputBlockDataPayload,
 } from '@/app/types';
+import {
+  GRID_WIDTH,
+  GRID_COLUMNS,
+  GRID_ROW_HEIGHT,
+} from './dimensionsConstants';
 import { WidgetPropertiesDrawer } from './drawers/widgetPropertiesDrawer';
 import { GridItemContextMenu } from './gridItemContextMenu';
 import { editorInputClassName } from './hocAddTextEditFuncitonality';
 import { WidgetErrorBoundary } from './widgetErrorBoundary';
-import { GRID_WIDTH, GRID_COLUMNS, GRID_ROW_HEIGHT } from './dimensionsConstants';
 
 /*
   Refer to React.memo code block below for more details on the memoization logic.
@@ -173,11 +179,11 @@ function GridItemMain({
   const dimensions = useMemo(() => {
     const columnWidth = GRID_WIDTH / GRID_COLUMNS;
     const rowHeight = GRID_ROW_HEIGHT;
-    console.log("layout dim w n h", layout)
-    
+    console.log('layout dim w n h', layout);
+
     return {
       width: layout.w * columnWidth,
-      height: layout.h * rowHeight
+      height: layout.h * rowHeight,
     };
   }, [layout.w, layout.h]);
 
@@ -302,10 +308,11 @@ function GridItemMain({
           );
           if (testResult && testResult.artifacts) {
             // Transform artifact paths into full URLs
-            console.log("host", process.env.NEXT_PUBLIC_APIGW_HOST)
-            console.log("testResult", testResult.artifacts)
-            const artifactUrls = testResult.artifacts.map(artifactPath => 
-              `${process.env.NEXT_PUBLIC_APIGW_HOST}/test_results/${result.testResultId}/artifacts/${artifactPath}`
+            console.log('host', process.env.NEXT_PUBLIC_APIGW_HOST);
+            console.log('testResult', testResult.artifacts);
+            const artifactUrls = testResult.artifacts.map(
+              (artifactPath) =>
+                `${process.env.NEXT_PUBLIC_APIGW_HOST}/test_results/${result.testResultId}/artifacts/${artifactPath}`
             );
             acc[`${widget.gid}:${result.cid}`] = artifactUrls;
           } else {
@@ -531,12 +538,15 @@ function GridItemMain({
    */
   const properties = useMemo(() => {
     if (!widget.properties) return {};
-    
+
     // If properties is already an object, return it directly
-    if (typeof widget.properties === 'object' && !Array.isArray(widget.properties)) {
+    if (
+      typeof widget.properties === 'object' &&
+      !Array.isArray(widget.properties)
+    ) {
       return widget.properties;
     }
-    
+
     // If properties is an array, reduce it to an object
     if (Array.isArray(widget.properties)) {
       return widget.properties.reduce((props, property) => {
@@ -546,7 +556,7 @@ function GridItemMain({
         };
       }, {});
     }
-    
+
     return {};
   }, [widget.properties]);
 
@@ -594,7 +604,7 @@ function GridItemMain({
         className={itemStyle}
         style={{
           width: dimensions.width,
-          height: dimensions.height
+          height: dimensions.height,
         }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}>

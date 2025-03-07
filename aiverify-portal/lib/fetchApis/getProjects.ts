@@ -1,7 +1,8 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { ProjectOutput } from '@/app/canvas/utils/transformProjectOutputToState';
 import { ErrorWithMessage } from '@/app/errorTypes';
 import { Project } from '@/app/types';
 import { ApiResult, processResponse } from '@/lib/utils/fetchRequestHelpers';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 const endpointUrl = `${process.env.APIGW_HOST}/projects`;
 
@@ -16,12 +17,12 @@ type Options = {
  */
 export async function getProjects(
   opts?: Options
-): Promise<ApiResult<Project[]> | ErrorWithMessage> {
+): Promise<ApiResult<ProjectOutput[]> | ErrorWithMessage> {
   // If specific project IDs are provided, fetch each project individually
   if (opts?.ids?.length) {
     const fetchPromises = opts.ids.map((id) =>
       fetch(`${endpointUrl}/${id}`).then((response) =>
-        processResponse<Project>(response)
+        processResponse<ProjectOutput>(response)
       )
     );
 
@@ -46,7 +47,7 @@ export async function getProjects(
 
   // If no options or IDs are provided, fetch all projects from the base endpoint
   const response = await fetch(endpointUrl);
-  return processResponse<Project[]>(response);
+  return processResponse<ProjectOutput[]>(response);
 }
 
 /**
@@ -64,9 +65,14 @@ export function useProjects(opts?: Options) {
  */
 export function useUpdateProject() {
   const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: async ({ projectId, data }: { projectId: string; data: any }) => {
+    mutationFn: async ({
+      projectId,
+      data,
+    }: {
+      projectId: string;
+      data: Partial<Project>;
+    }) => {
       console.log('data useUpdateProject', data);
       const response = await fetch(`/api/projects/projects/${projectId}`, {
         method: 'PATCH',
@@ -88,7 +94,7 @@ export function useUpdateProject() {
 // For backward compatibility
 export async function patchProject(
   projectId: string,
-  data: any
+  data: Partial<Project>
 ): Promise<ApiResult<Project> | ErrorWithMessage> {
   console.log('data patchProject', data);
   const response = await fetch(`/api/projects/projects/${projectId}`, {

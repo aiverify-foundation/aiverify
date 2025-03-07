@@ -1,7 +1,7 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ErrorWithMessage } from '@/app/errorTypes';
 import { ReportTemplate } from '@/app/templates/types';
 import { ApiResult, processResponse } from '@/lib/utils/fetchRequestHelpers';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 const endpointUrl = `${process.env.APIGW_HOST}/project_templates`;
 
@@ -17,7 +17,9 @@ export async function fetchTemplates(
     requestUrl = `${endpointUrl}/${opts.id}`;
   }
   const response = await fetch(requestUrl);
-  const result = await processResponse<ReportTemplate | ReportTemplate[]>(response);
+  const result = await processResponse<ReportTemplate | ReportTemplate[]>(
+    response
+  );
 
   if (!('data' in result)) {
     return result;
@@ -27,14 +29,16 @@ export async function fetchTemplates(
   if (opts?.id != undefined) {
     return {
       ...result,
-      data: [result.data as ReportTemplate]
+      data: [result.data as ReportTemplate],
     };
   }
 
   // If no ID was provided, ensure we have an array
   return {
     ...result,
-    data: Array.isArray(result.data) ? result.data : [result.data as ReportTemplate]
+    data: Array.isArray(result.data)
+      ? result.data
+      : [result.data as ReportTemplate],
   };
 }
 
@@ -45,7 +49,13 @@ export function useUpdateTemplate() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ templateId, data }: { templateId: number; data: any }) => {
+    mutationFn: async ({
+      templateId,
+      data,
+    }: {
+      templateId: number;
+      data: Partial<ReportTemplate>;
+    }) => {
       const response = await fetch(`/api/project_templates/${templateId}`, {
         method: 'PATCH',
         headers: {
@@ -71,7 +81,7 @@ export function useUpdateTemplate() {
  */
 export async function patchTemplate(
   templateId: number,
-  data: any
+  data: Partial<ReportTemplate>
 ): Promise<ApiResult<ReportTemplate> | ErrorWithMessage> {
   const response = await fetch(`/api/project_templates/${templateId}`, {
     method: 'PATCH',

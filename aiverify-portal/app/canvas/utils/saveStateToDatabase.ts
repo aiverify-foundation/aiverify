@@ -1,11 +1,12 @@
 import type { State } from '@/app/canvas/components/hooks/pagesDesignReducer';
 import { patchProject } from '@/lib/fetchApis/getProjects';
+import { saveStateToSessionStorage } from './sessionStorage';
 import { transformStateToProjectInput } from './transformStateToProjectInput';
 
 /**
  * Gets the project ID and flow from URL parameters
  */
-const getProjectIdAndFlowFromUrl = () => {
+export const getProjectIdAndFlowFromUrl = () => {
   if (typeof window === 'undefined') return { projectId: null, flow: null };
   const params = new URLSearchParams(window.location.search);
   return {
@@ -21,7 +22,11 @@ const getProjectIdAndFlowFromUrl = () => {
  * @param state The current state of the pagesDesignReducer
  */
 export const saveStateToDatabase = async (state: State) => {
-  // Try to save to localStorage first, fall back to sessionStorage if quota is exceeded
+  console.log('saving state to database', state);
+  // Save to session storage first
+  saveStateToSessionStorage(state);
+
+  // Try to save to localStorage as backup
   try {
     localStorage.setItem('pagesDesignState', JSON.stringify(state));
     console.log('Saved state to localStorage:', {
@@ -31,20 +36,7 @@ export const saveStateToDatabase = async (state: State) => {
       pathname: window.location.pathname,
     });
   } catch (error) {
-    if (error instanceof Error && error.name === 'QuotaExceededError') {
-      try {
-        // Fall back to sessionStorage
-        sessionStorage.setItem('pagesDesignState', JSON.stringify(state));
-        console.log('Quota exceeded, saved state to sessionStorage instead');
-      } catch (fallbackError) {
-        console.error(
-          'Failed to save to both localStorage and sessionStorage:',
-          fallbackError
-        );
-      }
-    } else {
-      console.error('Failed to save to localStorage:', error);
-    }
+    console.error('Failed to save to localStorage:', error);
   }
 
   const { projectId } = getProjectIdAndFlowFromUrl();
@@ -67,12 +59,7 @@ export const saveStateToDatabase = async (state: State) => {
 
   try {
     // Transform state to project input format
-    const data = transformStateToProjectInput(state, {
-      name: '', // These fields will be populated from the API
-      description: '',
-      reportTitle: '',
-      company: '',
-    });
+    const data = transformStateToProjectInput(state);
     const result = await patchProject(projectId, data);
 
     if ('message' in result) {
@@ -88,7 +75,10 @@ export const saveStateToDatabase = async (state: State) => {
 // Debounce the save function to prevent too many saves during rapid state changes
 let saveTimeout: NodeJS.Timeout;
 export const debouncedSaveStateToDatabase = (state: State) => {
-  // Try to save to localStorage first, fall back to sessionStorage if quota is exceeded
+  // Save to session storage first
+  saveStateToSessionStorage(state);
+
+  // Try to save to localStorage as backup
   try {
     localStorage.setItem('pagesDesignState', JSON.stringify(state));
     console.log('Saved state to localStorage (debounced):', {
@@ -98,22 +88,7 @@ export const debouncedSaveStateToDatabase = (state: State) => {
       pathname: window.location.pathname,
     });
   } catch (error) {
-    if (error instanceof Error && error.name === 'QuotaExceededError') {
-      try {
-        // Fall back to sessionStorage
-        sessionStorage.setItem('pagesDesignState', JSON.stringify(state));
-        console.log(
-          'Quota exceeded, saved state to sessionStorage instead (debounced)'
-        );
-      } catch (fallbackError) {
-        console.error(
-          'Failed to save to both localStorage and sessionStorage:',
-          fallbackError
-        );
-      }
-    } else {
-      console.error('Failed to save to localStorage:', error);
-    }
+    console.error('Failed to save to localStorage:', error);
   }
 
   const { projectId } = getProjectIdAndFlowFromUrl();

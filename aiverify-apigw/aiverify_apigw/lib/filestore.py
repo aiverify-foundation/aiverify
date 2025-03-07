@@ -1,3 +1,10 @@
+from .file_utils import compute_file_hash
+from .logging import logger
+from .s3 import MyS3
+from typing import Any
+import json
+import io
+from urllib.parse import urljoin
 import os
 import shutil
 from pathlib import Path
@@ -7,14 +14,6 @@ from zipfile import ZipFile
 
 urllib.parse.uses_relative.append("s3")
 urllib.parse.uses_netloc.append("s3")
-from urllib.parse import urljoin
-import io
-import json
-from typing import Any
-
-from .s3 import MyS3
-from .logging import logger
-from .file_utils import compute_file_hash
 
 
 s3 = None
@@ -56,7 +55,8 @@ def get_base_data_dir() -> Path | str:
             else:
                 mydir = Path(os.environ["APIGW_DATA_DIR"])
         else:
-            mydir = Path(__file__).parent.parent.parent.joinpath("data").resolve()
+            mydir = Path(__file__).parent.parent.parent.joinpath(
+                "data").resolve()
         # create directories if no exists
         if isinstance(mydir, Path):
             logger.info(f"Using local data path: {mydir}")
@@ -71,16 +71,20 @@ def get_base_data_dir() -> Path | str:
 
 base_data_dir = get_base_data_dir()
 base_plugin_dir = (
-    base_data_dir.joinpath("plugin") if isinstance(base_data_dir, Path) else urljoin(base_data_dir, "plugin/")
+    base_data_dir.joinpath("plugin") if isinstance(
+        base_data_dir, Path) else urljoin(base_data_dir, "plugin/")
 )
 base_artifacts_dir = (
-    base_data_dir.joinpath("artifacts") if isinstance(base_data_dir, Path) else urljoin(base_data_dir, "artifacts/")
+    base_data_dir.joinpath("artifacts") if isinstance(
+        base_data_dir, Path) else urljoin(base_data_dir, "artifacts/")
 )
 base_models_dir = (
-    base_data_dir.joinpath("models") if isinstance(base_data_dir, Path) else urljoin(base_data_dir, "models/")
+    base_data_dir.joinpath("models") if isinstance(
+        base_data_dir, Path) else urljoin(base_data_dir, "models/")
 )
 base_dataset_dir = (
-    base_data_dir.joinpath("datasets") if isinstance(base_data_dir, Path) else urljoin(base_data_dir, "datasets/")
+    base_data_dir.joinpath("datasets") if isinstance(
+        base_data_dir, Path) else urljoin(base_data_dir, "datasets/")
 )
 
 
@@ -226,7 +230,8 @@ def save_mdx_bundles(gid: str, source_dir: Path):
         shutil.copytree(source_dir, bundler_folder, dirs_exist_ok=True)
     elif s3 is not None:
         if s3.check_s3_prefix_exists(bundler_folder):
-            s3.delete_objects_under_prefix(bundler_folder)  # if prefix exists, delete
+            s3.delete_objects_under_prefix(
+                bundler_folder)  # if prefix exists, delete
         # s3.upload_directory_to_s3(source_dir, folder)
         s3.upload_directory_to_s3(source_dir, bundler_folder)
 
@@ -266,7 +271,8 @@ def unzip_plugin(gid: str, target_dir: Path):
             with ZipFile(zip_path, 'r') as zip_ref:
                 zip_ref.extractall(target_dir)
         else:
-            raise FileStoreError(f"Zip file {zip_path} does not exist or is not a file")
+            raise FileStoreError(
+                f"Zip file {zip_path} does not exist or is not a file")
     elif s3 is not None:
         zip_data = s3.get_object(urljoin(folder, zip_filename))
         with ZipFile(io.BytesIO(zip_data), 'r') as zip_ref:
@@ -280,10 +286,12 @@ def backup_plugin(gid: str, target_dir: Path):
         shutil.rmtree(target_dir)
     if isinstance(folder, Path):
         target_dir.mkdir(parents=True, exist_ok=True)
-        shutil.copytree(folder, target_dir, dirs_exist_ok=True, ignore=plugin_ignore_patten)
+        shutil.copytree(folder, target_dir, dirs_exist_ok=True,
+                        ignore=plugin_ignore_patten)
     elif s3 is not None:
         # folder is s3 prefix
-        s3.download_directory_from_s3(prefix=folder, target_directory=target_dir)
+        s3.download_directory_from_s3(
+            prefix=folder, target_directory=target_dir)
 
 
 def _get_zip(folder: Path | str, zip_filename: str) -> bytes:
@@ -418,14 +426,16 @@ def get_artifact(test_result_id: str, filename: str):
         return data
 
 
-def get_model_path(filename: str, subfolder: str | None=None):
+def get_model_path(filename: str, subfolder: str | None = None):
     if isinstance(base_models_dir, Path):
-        folder = base_models_dir.joinpath(subfolder) if subfolder else base_models_dir
+        folder = base_models_dir.joinpath(
+            subfolder) if subfolder else base_models_dir
         if not folder.exists():
             folder.mkdir(parents=True, exist_ok=True)
         return folder.joinpath(filename)
     else:
-        folder = urljoin(base_models_dir, f"{subfolder}/") if subfolder else base_models_dir
+        folder = urljoin(
+            base_models_dir, f"{subfolder}/") if subfolder else base_models_dir
         return urljoin(folder, filename)
 
 
@@ -496,8 +506,10 @@ def delete_test_model(filename: str):
             return
         if model_path.is_dir():
             shutil.rmtree(model_path, ignore_errors=True)
-            model_path.parent.joinpath(f"{model_path.name}.zip").unlink(missing_ok=True)
-            model_path.parent.joinpath(f"{model_path}.hash").unlink(missing_ok=True)
+            model_path.parent.joinpath(
+                f"{model_path.name}.zip").unlink(missing_ok=True)
+            model_path.parent.joinpath(
+                f"{model_path}.hash").unlink(missing_ok=True)
         else:
             model_path.unlink()
     elif s3 is not None:
@@ -509,14 +521,16 @@ def delete_test_model(filename: str):
             s3.delete_object(model_path)
 
 
-def get_dataset_path(filename: str, subfolder: str | None=None):
+def get_dataset_path(filename: str, subfolder: str | None = None):
     if isinstance(base_dataset_dir, Path):
-        folder = base_dataset_dir.joinpath(subfolder) if subfolder else base_dataset_dir
+        folder = base_dataset_dir.joinpath(
+            subfolder) if subfolder else base_dataset_dir
         if not folder.exists():
             folder.mkdir(parents=True, exist_ok=True)
         return folder.joinpath(filename)
     else:
-        folder = urljoin(base_dataset_dir, f"{subfolder}/") if subfolder else base_dataset_dir
+        folder = urljoin(base_dataset_dir,
+                         f"{subfolder}/") if subfolder else base_dataset_dir
         return urljoin(folder, filename)
 
 
@@ -547,7 +561,7 @@ def save_test_dataset(source_path: Path) -> str:
         elif s3 is not None:
             s3.upload_file(source_path.as_posix(), target_path)
         return filehash
-    
+
 
 def get_test_dataset(filename: str):
     dataset_path = get_dataset_path(filename)
@@ -587,8 +601,10 @@ def delete_test_dataset(filename: str):
             return
         if dataset_path.is_dir():
             shutil.rmtree(dataset_path, ignore_errors=True)
-            dataset_path.parent.joinpath(f"{dataset_path.name}.zip").unlink(missing_ok=True)
-            dataset_path.parent.joinpath(f"{dataset_path}.hash").unlink(missing_ok=True)
+            dataset_path.parent.joinpath(
+                f"{dataset_path.name}.zip").unlink(missing_ok=True)
+            dataset_path.parent.joinpath(
+                f"{dataset_path}.hash").unlink(missing_ok=True)
         else:
             dataset_path.unlink()
     elif s3 is not None:

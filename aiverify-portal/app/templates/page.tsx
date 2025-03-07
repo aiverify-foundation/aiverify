@@ -38,11 +38,9 @@ export default async function TemplatesPage(props: UrlSearchParams) {
   return (
     <main className="w-full px-6">
       <h1 className="mb-0 mt-6 text-2xl font-bold tracking-wide">
-        {flow === UserFlows.NewProject && project ? (
-          `Select A Report Template for ${project.projectInfo.name}`
-        ) : (
-          'Report Templates'
-        )}
+        {flow === UserFlows.NewProject && project
+          ? `Select A Report Template for ${project.projectInfo.name}`
+          : 'Report Templates'}
       </h1>
       <p className="mb-[80px] text-secondary-300">
         {flow === UserFlows.NewProject && project
@@ -69,7 +67,11 @@ export default async function TemplatesPage(props: UrlSearchParams) {
             </p>
           </Card>
         </Link>
-        <TemplateCards templates={templates} projectId={projectId} flow={flow} />
+        <TemplateCards
+          templates={templates}
+          projectId={projectId}
+          flow={flow}
+        />
       </section>
     </main>
   );
