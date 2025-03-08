@@ -1,350 +1,168 @@
 'use client';
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import React, { useState } from 'react';
+import LayoutHeader from '@/app/inputs/checklists/components/LayoutHeader';
+import { Icon, IconName } from '@/lib/components/IconSVG';
+import { Button, ButtonVariant } from '@/lib/components/button';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import React, { useEffect, useState, useRef, JSX } from 'react';
-import {
-  ChecklistsProvider,
-  useChecklists,
-} from '@/app/inputs/checklists/upload/context/ChecklistsContext';
-import { useChecklistSubmission } from '@/app/inputs/checklists/upload/hooks/useUploadSubmission';
-import { ChevronLeftIcon } from '@/app/inputs/utils/icons';
-import { Modal } from '@/lib/components/modal';
-import GroupDetail from './components/GroupDetail';
-import { GroupNameInput } from './components/GroupNameInput';
-import ProgressBar from './components/ProgressSidebar';
-import SplitPane from './components/SplitPane';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+type UploadPageProps = {
+  onBack?: () => void;
+};
 
-const INACTIVITY_TIMEOUT = 10 * 60 * 1000; //10 mins of inactivity
-const MODAL_SHOWN_KEY = 'continueModalShown';
-const LAST_ACTIVE_TIME_KEY = 'lastActiveTime';
-const LAST_PATH_KEY = 'lastPath';
+const UploadPage: React.FC<UploadPageProps> = () => {
+  const [activeCard, setActiveCard] = useState<string>('');
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const projectId = searchParams.get('projectId');
+  const flow = searchParams.get('flow');
+  const isProjectFlow = !!projectId;
 
-interface ValidationError {
-  type: string;
-  loc: string[];
-  msg: string;
-  input: string;
-}
+  const handleMethodSelect = (method: string) => {
+    setActiveCard(method);
+  };
 
-interface SubmissionError {
-  message: string;
-  details?: string | ValidationError[];
-  statusCode?: number;
-}
+  const handleNext = () => {
+    if (activeCard) {
+      const baseUrl = `/inputs/checklists/upload/${activeCard}`;
+      const url = isProjectFlow
+        ? `${baseUrl}?flow=${flow}&projectId=${projectId}`
+        : baseUrl;
+      router.push(url);
+    }
+  };
 
-function ErrorMessage({ error }: { error: SubmissionError | null }) {
-  if (!error) return null;
+  const handleBackProject = () => {
+    if (isProjectFlow) {
+      window.history.back();
+    }
+  };
 
-  // Handle validation errors (422)
-  if (error.statusCode === 422 && Array.isArray(error.details)) {
-    return (
-      <div>
-        <p className="font-semibold">Validation Error:</p>
-        <ul className="list-disc pl-4">
-          {(error.details as ValidationError[]).map((err, index) => (
-            <li key={index}>
-              {err.msg} (at {err.loc.join('.')})
-            </li>
-          ))}
-        </ul>
+  const renderOptionCard = (
+    method: string,
+    title: string,
+    descriptions: string[]
+  ) => (
+    <div
+      className={`flex h-[350px] w-[50%] cursor-pointer flex-col rounded-lg border p-6 transition-all duration-200`}
+      style={{
+        borderColor:
+          activeCard === method
+            ? 'var(--color-primary-600)'
+            : 'var(--color-secondary-300)',
+        backgroundColor:
+          activeCard === method
+            ? 'var(--color-primary-600)'
+            : 'var(--color-secondary-950)',
+      }}
+      onClick={() => handleMethodSelect(method)}>
+      <div className="mb-4 flex items-center gap-3">
+        <div
+          className={`flex h-5 w-5 items-center justify-center rounded-full border ${activeCard === method ? 'border-purple-400' : 'border-zinc-700'}`}>
+          {activeCard === method && (
+            <div className="h-2.5 w-2.5 rounded-full bg-purple-400" />
+          )}
+        </div>
+        <Icon
+          name={IconName.Folder}
+          size={20}
+          color={activeCard === method ? '#C084FC' : '#A1A1AA'}
+        />
+        <h2 className="text-xl font-semibold text-white">{title}</h2>
       </div>
-    );
-  }
+      {descriptions.map((desc, index) => {
+        const isNote = desc.startsWith('*');
+        const [sectionTitle, content] = desc.split(': ');
 
-  // Handle duplicate checklist error (500)
-  if (
-    error.statusCode === 500 &&
-    typeof error.message === 'string' &&
-    error.message.includes('already exists')
-  ) {
-    const match = error.message.match(/group '(.*?)' already exists/);
-    const groupName = match ? match[1] : 'Unknown group';
-    return (
-      <div>
-        <p>
-          `{groupName}` already exists. Please modify the group name and try
-          again.
-        </p>
-      </div>
-    );
-  }
+        if (content) {
+          return (
+            <div
+              key={index}
+              className="mt-4">
+              <h3 className="text-sm font-medium text-zinc-400">
+                {sectionTitle}
+              </h3>
+              <p className="mt-1 text-sm text-white">{content}</p>
+            </div>
+          );
+        }
 
-  // Default error message
-  return (
-    <div>
-      <p>{error.message}</p>
-      {error.details && typeof error.details === 'string' && (
-        <p className="mt-1 text-sm">{error.details}</p>
-      )}
+        return (
+          <p
+            key={index}
+            className={`mt-2 text-sm ${isNote ? 'text-zinc-400' : 'text-white'}`}>
+            {desc}
+          </p>
+        );
+      })}
     </div>
   );
-}
 
-function useInactivityCheck() {
-  const [showModal, setShowModal] = useState(false);
-  const pathname = usePathname();
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const prevPathnameRef = useRef<string>('');
-
-  const isUploadPath = (path: string) =>
-    path === '/inputs/checklists/upload' ||
-    path.startsWith('/inputs/checklists/upload/');
-
-  const resetInactivityTimer = () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-
-    sessionStorage.setItem(LAST_ACTIVE_TIME_KEY, Date.now().toString());
-
-    timerRef.current = setTimeout(() => {
-      if (isUploadPath(pathname)) {
-        setShowModal(true);
-        sessionStorage.setItem(MODAL_SHOWN_KEY, 'true');
-      }
-    }, INACTIVITY_TIMEOUT);
-  };
-
-  useEffect(() => {
-    const lastPath = sessionStorage.getItem(LAST_PATH_KEY) || '';
-    const modalShown = sessionStorage.getItem(MODAL_SHOWN_KEY);
-    const lastActiveTime = sessionStorage.getItem(LAST_ACTIVE_TIME_KEY);
-
-    sessionStorage.setItem(LAST_PATH_KEY, pathname);
-    prevPathnameRef.current = pathname;
-
-    if (
-      lastPath !== '/inputs/checklists/upload' &&
-      isUploadPath(pathname) &&
-      !pathname.startsWith('/inputs/checklists/upload/')
-    ) {
-      const existingData = sessionStorage.getItem('checklistData');
-      if (existingData && !modalShown) {
-        setShowModal(true);
-        sessionStorage.setItem(MODAL_SHOWN_KEY, 'true');
-      }
-    }
-
-    if (lastActiveTime && isUploadPath(pathname)) {
-      const timeDiff = Date.now() - parseInt(lastActiveTime);
-      if (timeDiff >= INACTIVITY_TIMEOUT && !modalShown) {
-        setShowModal(true);
-        sessionStorage.setItem(MODAL_SHOWN_KEY, 'true');
-      }
-    }
-
-    if (isUploadPath(pathname)) {
-      const events = [
-        'mousedown',
-        'keydown',
-        'scroll',
-        'mousemove',
-        'touchstart',
-      ];
-      const handleActivity = () => resetInactivityTimer();
-
-      events.forEach((event) => {
-        document.addEventListener(event, handleActivity);
-      });
-
-      resetInactivityTimer();
-
-      return () => {
-        if (timerRef.current) {
-          clearTimeout(timerRef.current);
-        }
-        events.forEach((event) => {
-          document.removeEventListener(event, handleActivity);
-        });
-      };
-    }
-  }, [pathname]);
-
-  useEffect(() => {
-    return () => {
-      if (!isUploadPath(pathname)) {
-        sessionStorage.removeItem(MODAL_SHOWN_KEY);
-      }
-    };
-  }, [pathname]);
-
-  return { showModal, setShowModal };
-}
-
-function ChecklistsPageContent() {
-  const {
-    checkForExistingData,
-    clearAllChecklists,
-    clearGroupName,
-    isLoading,
-    error,
-    groupName,
-    checklists,
-  } = useChecklists();
-  const { showModal, setShowModal } = useInactivityCheck();
-  const [showSaveError, setShowSaveError] = useState(false);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [modalMessage, setModalMessage] = useState<JSX.Element | string | null>(
-    null
-  );
-  const router = useRouter();
-
-  // Use the submission hook
-  const { submitChecklist } = useChecklistSubmission();
-
-  // Save logic using mutation
-  const saveAllChecklists = async () => {
-    if (!groupName.trim()) {
-      setShowSaveError(true);
-      return;
-    }
-
-    setShowSaveError(false);
-
-    // Iterate through all checklists to prepare data
-    try {
-      const checklistSubmissions = checklists.map((checklist) => {
-        const formattedChecklist = {
-          cid: checklist.cid,
-          data: checklist.data, // Ensure the data object is properly structured
-          gid: 'aiverify.stock.process_checklist',
-          name: checklist.name,
-          group: groupName,
-        };
-
-        // Convert to JSON string and back to ensure proper quotes
-        return JSON.parse(JSON.stringify(formattedChecklist));
-      });
-
-      for (const checklist of checklistSubmissions) {
-        await submitChecklist(checklist);
-      }
-      console.log('here');
-      setModalMessage('Checklists saved successfully');
-      setIsModalVisible(true);
-      clearAllChecklists();
-      clearGroupName();
-    } catch (error) {
-      setModalMessage(<ErrorMessage error={error as SubmissionError} />);
-      setIsModalVisible(true);
-    }
-  };
-
-  const handleNewSet = async () => {
-    sessionStorage.removeItem('checklistData');
-    sessionStorage.removeItem('groupName');
-    sessionStorage.removeItem(MODAL_SHOWN_KEY);
-    sessionStorage.removeItem(LAST_ACTIVE_TIME_KEY);
-
-    clearAllChecklists();
-    clearGroupName();
-    setShowModal(false);
-    router.refresh();
-  };
-
-  const handleBack = () => {
-    router.push('/inputs/checklists/');
-  };
-
-  const closeModal = () => {
-    setIsModalVisible(false);
-    router.push('/inputs/checklists/');
-  };
-
-  return (
-    <div className="flex h-[calc(100vh-50px)] flex-col px-4 py-6">
-      {/* Breadcrumb navigation */}
-      <div className="flex">
-        <div className="mr-8">
-          <div
-            className="mr-8 cursor-pointer"
-            onClick={handleBack}>
-            <ChevronLeftIcon
-              size={35}
-              color="#FFFFFF"
-            />
-          </div>
-        </div>
-        <div className="ml-3 items-end">
-          <nav className="breadcrumbs mb-6 text-sm">
-            <span className="bold text-2xl text-white hover:underline">
-              <Link href={`/inputs/checklists/`}>Checklists</Link>
-            </span>
-            <span className="mx-2 text-2xl text-white">/</span>
-            <span className="bold text-2xl text-white hover:underline">
-              Add New Checklists
-            </span>
-          </nav>
+  const renderSelectionOptions = () => (
+    <div className="relative flex flex-col overflow-y-auto">
+      <div className="flex items-center">
+        <div className="pl-10">
+          {!flow ? (
+            <Link
+              href={`/inputs/checklists?projectId=${projectId}&flow=${flow}`}
+              className="flex items-center gap-2 text-white hover:text-primary-300">
+              <Icon
+                name={IconName.ArrowLeft}
+                size={30}
+                color="currentColor"
+              />
+              <h1 className="text-3xl font-bold text-white">
+                Add New Checklist
+              </h1>
+            </Link>
+          ) : (
+            <h1 className="text-3xl font-bold text-white">Add New Checklist</h1>
+          )}
+          <h3 className="text-white">
+            How would you like to create your checklist?
+          </h3>
         </div>
       </div>
-
-      {showSaveError && (
-        <div className="mb-4 rounded bg-red-100 p-3 text-red-700">
-          Please enter a group name before saving.
-        </div>
-      )}
-      <div className="w-full flex-1 overflow-y-auto rounded bg-secondary-950 p-6 scrollbar-hidden">
-        <GroupNameInput />
-        <SplitPane
-          leftPane={<ProgressBar />}
-          rightPane={<GroupDetail />}
+      <div className="flex flex-grow items-center gap-10 p-10">
+        {renderOptionCard('manual', 'Manual Entry', [
+          'Create checklist items one by one',
+          'Full control over checklist structure',
+          'Interactive form-based entry',
+          '*Best for creating new checklists from scratch',
+        ])}
+        {renderOptionCard('excel', 'Excel Upload', [
+          'Upload pre-formatted Excel files',
+          'Bulk import of checklist items',
+          'Template-based approach',
+          '*Best for importing existing checklists',
+        ])}
+      </div>
+      <div className="mt-6 mt-auto flex items-center justify-end pr-6">
+        <Button
+          variant={ButtonVariant.PRIMARY}
+          className="mb-8"
+          size="sm"
+          onClick={handleNext}
+          disabled={!activeCard}
+          text="NEXT"
         />
       </div>
-      <div className="mt-4 flex flex-col gap-4">
-        {error && <ErrorMessage error={error} />}
-        <div className="flex items-center justify-end">
-          <button
-            onClick={saveAllChecklists}
-            disabled={isLoading}
-            className={`rounded px-4 py-2 text-white transition-all duration-200 ${isLoading ? 'cursor-not-allowed bg-primary-500 opacity-70' : 'bg-primary-700 hover:bg-primary-600'}`}>
-            {isLoading ? 'Saving...' : 'Save All Changes'}
-          </button>
-        </div>
-      </div>
-      {showModal && checkForExistingData() && (
-        <Modal
-          heading="Continue Previous Work?"
-          onCloseIconClick={() => setShowModal(false)}
-          primaryBtnLabel="Continue"
-          secondaryBtnLabel="Start New"
-          onPrimaryBtnClick={() => setShowModal(false)}
-          onSecondaryBtnClick={handleNewSet}
-          enableScreenOverlay>
-          <p className="text-center text-lg">
-            Would you like to continue where you left off or start a new set of
-            checklists?
-          </p>
-        </Modal>
-      )}
-      {isModalVisible && (
-        <Modal
-          heading="Upload Status"
-          onCloseIconClick={closeModal}
-          enableScreenOverlay>
-          {modalMessage}
-        </Modal>
-      )}
     </div>
   );
-}
 
-export default function ChecklistsPage() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ChecklistsProvider>
-        <ChecklistsPageContent />
-      </ChecklistsProvider>
-    </QueryClientProvider>
+    <>
+      <LayoutHeader
+        projectId={projectId}
+        onBack={handleBackProject}
+      />
+      <div className="mt-6 flex h-[calc(100vh-150px)] overflow-y-auto rounded-2xl bg-secondary-950 p-6 text-white">
+        <div className="mx-auto h-full w-full">{renderSelectionOptions()}</div>
+      </div>
+    </>
   );
-}
+};
+
+export default UploadPage;
