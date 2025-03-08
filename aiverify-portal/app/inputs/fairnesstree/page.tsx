@@ -1,52 +1,43 @@
-import Link from 'next/link';
-import { QueryProvider } from '@/app/inputs/fairnesstree/components/QueryProvider';
-import { ChevronLeftIcon } from '@/app/inputs/utils/icons';
-import { Icon, IconName } from '@/lib/components/IconSVG';
+import React from 'react';
 import { getAllFairnessTrees } from '@/lib/fetchApis/getAllFairnessTrees';
-import ActionButtons from './components/ActionButtons';
-import FairnessTreeHydration from './components/FairnessTreeHydration';
-import { FairnessTreeProvider } from './context/FairnessTreeContext';
+import { StandaloneView } from './components/StandaloneView';
+import { FairnessTreeModalContent } from './components/ModalView';
 
-export default async function FairnessTreePage() {
-  const trees = await getAllFairnessTrees();
-
-  return (
-    <QueryProvider>
-      <FairnessTreeProvider>
-        <div className="p-6">
-          <div className="mb-1 flex items-center justify-between">
-            {/* Left section: Icon + Text */}
-            <div className="flex items-center">
-              <Icon
-                name={IconName.File}
-                size={40}
-                color="#FFFFFF"
-              />
-              <div className="ml-3">
-                <div className="flex">
-                  <Link href="/inputs/">
-                    <h1 className="text-2xl font-bold text-white hover:underline">
-                      User Inputs
-                    </h1>
-                  </Link>
-                  <ChevronLeftIcon
-                    size={28}
-                    color="#FFFFFF"
-                  />
-                  <h1 className="text-2xl font-bold text-white">
-                    Fairness Trees
-                  </h1>
-                </div>
-                <h3 className="text-white">
-                  Manage and view Fairness Trees for Fairness Classification
-                </h3>
-              </div>
-            </div>
-            <ActionButtons />
-          </div>
-          <FairnessTreeHydration initialTrees={trees} />
-        </div>
-      </FairnessTreeProvider>
-    </QueryProvider>
-  );
+interface PageProps {
+  searchParams: {
+    gid?: string;
+    cid?: string;
+    projectId?: string;
+    flow?: string;
+  };
 }
+
+export default async function FairnessTreePage({ searchParams }: PageProps) {
+  const gid =
+    searchParams.gid ||
+    'aiverify.stock.fairness_metrics_toolbox_for_classification';
+  const cid = searchParams.cid || 'fairness_tree';
+  const projectId = searchParams.projectId;
+  const flow = searchParams.flow;
+
+  // Only fetch trees if we're not in project flow
+  const trees = !projectId ? await getAllFairnessTrees() : [];
+
+  // If we're in project flow, render the modal version
+  if (projectId && flow) {
+    return (
+      <FairnessTreeModalContent
+        gid={gid}
+        cid={cid}
+        projectId={projectId}
+        flow={flow}
+      />
+    );
+  }
+
+  // Otherwise, render the standalone version
+  return <StandaloneView initialTrees={trees} />;
+}
+
+// Re-export the modal wrapper for use in other components
+export { FairnessTreeModalWrapper } from './components/ModalView';
