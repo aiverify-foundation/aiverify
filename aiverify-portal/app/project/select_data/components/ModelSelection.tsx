@@ -7,6 +7,7 @@ interface ModelSelectionProps {
   selectedModelId?: string;
   onModelChange: (modelId: string) => void;
   models: TestModel[];
+  flow: string;
 }
 
 export default function ModelSelection({
@@ -14,6 +15,7 @@ export default function ModelSelection({
   onModelChange,
   models,
   projectId,
+  flow,
 }: ModelSelectionProps) {
   return (
     <div className="rounded-lg border border-secondary-500 bg-secondary-950 p-5">
@@ -50,7 +52,7 @@ export default function ModelSelection({
       </div>
       <div className="mt-4 flex justify-end">
         <Link
-          href={`/models/upload${projectId ? `?projectId=${projectId}` : ''}`}>
+          href={`/models/upload?flow=${flow}&${projectId ? `?projectId=${projectId}` : ''}`}>
           <Button
             variant={ButtonVariant.OUTLINE}
             textColor="white"

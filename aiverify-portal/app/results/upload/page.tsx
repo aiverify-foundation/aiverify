@@ -16,6 +16,7 @@ const UploadPage: React.FC<UploadPageProps> = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const projectId = searchParams.get('projectId');
+  const flow = searchParams.get('flow');
   const isProjectFlow = !!projectId;
 
   const handleMethodSelect = (method: string) => {
@@ -25,7 +26,9 @@ const UploadPage: React.FC<UploadPageProps> = () => {
   const handleNext = () => {
     if (activeCard) {
       const baseUrl = `/results/upload/${activeCard}`;
-      const url = isProjectFlow ? `${baseUrl}?projectId=${projectId}` : baseUrl;
+      const url = isProjectFlow
+        ? `${baseUrl}?flow=${flow}&projectId=${projectId}`
+        : baseUrl;
       router.push(url);
     }
   };

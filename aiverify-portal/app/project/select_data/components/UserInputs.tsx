@@ -14,6 +14,7 @@ interface UserInputsProps {
   ) => void;
   allChecklists: Checklist[];
   allFairnessTrees: FairnessTree[];
+  flow: string;
 }
 
 interface GroupedChecklists {
@@ -26,6 +27,7 @@ export default function UserInputs({
   onInputBlocksChange,
   allChecklists,
   allFairnessTrees,
+  flow,
 }: UserInputsProps) {
   const [selectedGroups, setSelectedGroups] = useState<Set<string>>(new Set());
   const [selectedInputBlocks, setSelectedInputBlocks] = useState<{
@@ -136,7 +138,7 @@ export default function UserInputs({
               </div>
             </div>
             <Link
-              href={`/inputs/checklists/upload${projectId ? `?projectId=${projectId}` : ''}`}>
+              href={`/inputs/checklists/upload?flow=${flow}${projectId ? `&projectId=${projectId}` : ''}`}>
               <Button
                 variant={ButtonVariant.OUTLINE}
                 hoverColor="var(--color-primary-500)"

@@ -15,6 +15,7 @@ interface TestResultsProps {
   ) => void;
   allTestResults: TestResult[];
   selectedModel?: TestModel;
+  flow: string;
 }
 
 export default function TestResults({
@@ -23,6 +24,7 @@ export default function TestResults({
   onTestResultsChange,
   allTestResults,
   selectedModel,
+  flow,
 }: TestResultsProps) {
   const [selectedTestResults, setSelectedTestResults] = useState<
     Array<{ gid: string; cid: string; id: number }>
@@ -132,8 +134,7 @@ export default function TestResults({
         })}
       </div>
       <div className="mt-4 flex justify-end">
-        <Link
-          href={`/results/upload?flow=${UserFlows.NewProject}&projectId=${projectId}`}>
+        <Link href={`/results/upload?flow=${flow}&projectId=${projectId}`}>
           <Button
             variant={ButtonVariant.OUTLINE}
             hoverColor="var(--color-primary-500)"

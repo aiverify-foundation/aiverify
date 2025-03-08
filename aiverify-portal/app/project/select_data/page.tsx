@@ -15,11 +15,12 @@ import SelectDataHeader from './components/SelectDataHeader';
 export default async function SelectDataPage({
   searchParams,
 }: {
-  searchParams: { projectId?: string };
+  searchParams: { projectId?: string; flow?: string };
 }) {
   const projectId = searchParams.projectId;
+  const flow = searchParams.flow;
 
-  if (!projectId) {
+  if (!projectId || !flow) {
     notFound();
   }
 
@@ -87,6 +88,7 @@ export default async function SelectDataPage({
             allTestResults={allTestResults}
             allChecklists={allChecklists}
             allFairnessTrees={allFairnessTrees}
+            flow={flow}
           />
         </div>
       </div>

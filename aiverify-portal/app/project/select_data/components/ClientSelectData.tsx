@@ -18,6 +18,7 @@ interface ClientSelectDataProps {
   allTestResults: TestResult[];
   allChecklists: Checklist[];
   allFairnessTrees: FairnessTree[];
+  flow: string;
 }
 
 export type SelectedTestResult = {
@@ -40,6 +41,7 @@ export default function ClientSelectData({
   allTestResults,
   allChecklists,
   allFairnessTrees,
+  flow,
 }: ClientSelectDataProps) {
   // State for model selection
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>();
@@ -118,12 +120,14 @@ export default function ClientSelectData({
       <div className="space-y-6">
         <ModelSelection
           projectId={projectId}
+          flow={flow}
           selectedModelId={selectedModelId}
           onModelChange={handleModelChange}
           models={allModels}
         />
         <TestResults
           projectId={projectId}
+          flow={flow}
           requiredAlgorithms={requiredAlgorithms}
           onTestResultsChange={handleTestResultsChange}
           allTestResults={allTestResults}
@@ -131,6 +135,7 @@ export default function ClientSelectData({
         />
         <UserInputs
           projectId={projectId}
+          flow={flow}
           requiredInputBlocks={requiredInputBlocks}
           onInputBlocksChange={handleInputBlocksChange}
           allChecklists={allChecklists}
