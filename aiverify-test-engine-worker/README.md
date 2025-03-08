@@ -171,7 +171,8 @@ pytest tests
 To build test-engine-worker docker image, go to the `aiverify` root folder and run:
 ```
 cd ..
-docker buildx build -t aiverify-test-engine-worker -f aiverify-test-engine-worker/Dockerfile .
+docker buildx build -t aiverify-test-engine-worker-base -f aiverify-test-engine-worker/Dockerfile --target aiverify-test-engine-worker-base .
+docker buildx build -t aiverify-test-engine-worker -f aiverify-test-engine-worker/Dockerfile --target venv-build .
 cd aiverify-test-engine-worker
 ```
 

@@ -1,7 +1,7 @@
 from ..pipe import Pipe, PipeException
 from ..schemas import PipelineData, PipeStageEum
 from ...lib.logging import logger
-from ...lib.algorithm_utils import validate_algorithm, AlgorithmValidationError
+from ..scripts.algorithm_utils import validate_algorithm, AlgorithmValidationError
 
 import os
 import json

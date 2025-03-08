@@ -8,7 +8,7 @@ import time
 import copy
 from zipfile import ZipFile
 from typing import Dict
-from aiverify_test_engine_worker.lib.algorithm_utils import validate_algorithm
+from .algorithm_utils import validate_algorithm
 import logging
 from datetime import datetime
 logging.basicConfig(format='%(levelname)-8s [%(filename)s:%(lineno)d] %(message)s')
@@ -25,7 +25,7 @@ from aiverify_test_engine.plugins.enums.model_type import ModelType
 from aiverify_test_engine.utils.json_utils import (
     remove_numpy_formats,
     validate_json,
-    validate_test_result_schema,
+    # validate_test_result_schema,
 )
 
 
@@ -123,6 +123,7 @@ def parse_arguments():
         help="JSON string of arguments for the algorithm."
     )
     parser.add_argument("--apigw_url", type=str, help="URL of apigw to report updates")
+    parser.add_argument("--output_zip", type=Path, help="Path to output zip file, default saved under algo_path")
     parser.add_argument(
         "-v", "--verbose",
         action="count",
@@ -176,7 +177,7 @@ class ProcessCallback:
         """
         logger.info(f"[Accumulate Local Effect Test] Progress Update: {completion_value}")
         if not self.__class__.apigw_url:
-            logger.error("API Gateway URL is not set.")
+            # logger.error("API Gateway URL is not set.")
             return
 
         import requests
@@ -350,7 +351,8 @@ def run():
                 with open(json_file_path, "w") as fp:
                     fp.write(output_json)
             output_generated = True
-        except:
+        except Exception as e:
+            logger.error(f"Error generating result using AlgoInit class: {e}")
             pass
 
     if not output_generated:
@@ -380,16 +382,18 @@ def run():
         )
         # logger.debug(f"output: {type(output)} {output}")
         output_dict = output.model_dump()
+        # logger.debug(f"output_dict: {json.dumps(output_dict, indent=2, default=str)}")
+        # if validate_test_result_schema(output_dict) is False:
+        #     raise RuntimeError("Failed test result schema validation")
         if args.test_run_id:
             output_dict["testRunId"] = args.test_run_id
-        output_json = json.dumps(output_dict)
-        if validate_test_result_schema(json.loads(output_json)) is True:
-            with open(json_file_path, "w") as json_file:
-                json_file.write(output_json)
-        else:
-            raise RuntimeError("Failed test result schema validation")
+        output_json = json.dumps(output_dict, default=str)
+        with open(json_file_path, "w") as json_file:
+            json_file.write(output_json)
 
-    output_zip_path = args.algo_path.joinpath("output.zip")
+    output_zip_path: Path = args.output_zip if args.output_zip else args.algo_path.joinpath("output.zip")
+
+    output_zip_path.parent.mkdir(parents=True, exist_ok=True)
 
     # Create a zip file of all files in the output_folder
     with ZipFile(output_zip_path, "w") as zipf:

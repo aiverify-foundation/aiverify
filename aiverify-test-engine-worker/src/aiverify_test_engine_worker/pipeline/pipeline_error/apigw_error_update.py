@@ -6,7 +6,7 @@ import os
 import requests
 
 
-class ApigwDownload(Pipe):
+class ApigwErrorUpdate(Pipe):
     @property
     def pipe_stage(self) -> PipeStageEum:
         return PipeStageEum.PIPELINE_ERROR
@@ -21,7 +21,7 @@ class ApigwDownload(Pipe):
 
     def execute(self, task_data: PipelineData) -> PipelineData:
         # Implementation of the download logic
-        logger.debug(f"Execute Download task {task_data}")
+        logger.debug(f"Update Pipeline error to API GW")
 
         # Define the upload URL
         update_url = f"{self.apigw_url}/test_runs/{task_data.task.id}"
@@ -30,6 +30,7 @@ class ApigwDownload(Pipe):
             "status": "error",
             "errorMessages": task_data.error_message
         }
-        requests.post(update_url, json=update_obj)
+        logger.debug(f"Post error to {update_url}: {update_obj}")
+        requests.patch(update_url, json=update_obj)
 
         return task_data
