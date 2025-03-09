@@ -84,6 +84,10 @@ const nextConfig = {
         destination: `${process.env.APIGW_HOST}/test_models/modelapi`,
       },
       {
+        source: '/api/project_templates',
+        destination: `${process.env.APIGW_HOST}/project_templates/`,
+      },
+      {
         source: '/api/project_templates/:id',
         destination: `${process.env.APIGW_HOST}/project_templates/:id`,
       },

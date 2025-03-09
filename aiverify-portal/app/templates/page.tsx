@@ -4,7 +4,12 @@ import { notFound } from 'next/navigation';
 import { UserFlows } from '@/app/userFlowsEnum';
 import { Card } from '@/lib/components/TremurCard';
 import { getProjects } from '@/lib/fetchApis/getProjects';
-import { fetchTemplates } from '@/lib/fetchApis/getTemplates';
+import {
+  fetchTemplates,
+  useCreateTemplate,
+} from '@/lib/fetchApis/getTemplates';
+import { CreateTemplateCard } from './components/CreateTemplateCard';
+import { QueryProvider } from './components/QueryProvider';
 import { TemplateCards } from './components/templateCards';
 import { TemplateFilters } from './components/templateFilters';
 
@@ -49,24 +54,12 @@ export default async function TemplatesPage(props: UrlSearchParams) {
       </p>
       {templates.length > 1 ? <TemplateFilters /> : null}
       <section className="mt-6 flex flex-wrap gap-6">
-        <Link
-          href={
-            flow === UserFlows.NewProject && projectId
-              ? `/canvas?flow=${UserFlows.NewProjectWithNewTemplate}&projectId=${projectId}&mode=edit`
-              : '/templates/new'
-          }>
-          <Card className="min-h-[250px] w-[450px] cursor-pointer border-none bg-secondary-700 text-white hover:bg-secondary-700">
-            <h3 className="mb-8 flex text-xl font-semibold text-white">
-              <RiFileChartFill className="mr-2 h-8 w-8 text-primary-500" />{' '}
-              Create New Report Template
-            </h3>
-            <p className="leading-6 text-white">
-              Start from scratch and design your own template. Drag widgets from
-              the sidebar and drop them onto the canvas to build your custom
-              report.
-            </p>
-          </Card>
-        </Link>
+        <QueryProvider>
+          <CreateTemplateCard
+            projectId={projectId}
+            flow={flow}
+          />
+        </QueryProvider>
         <TemplateCards
           templates={templates}
           projectId={projectId}

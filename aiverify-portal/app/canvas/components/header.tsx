@@ -5,9 +5,11 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import { Project } from '@/app/types';
+import { ProjectOutput } from '@/app/canvas/utils/transformProjectOutputToState';
+import { TemplateOutput } from '@/app/canvas/utils/transformTemplateOutputToState';
 
 type CanvasHeaderProps = {
-  project?: Project;
+  project?: ProjectOutput | TemplateOutput;
 };
 
 const CanvasHeader = ({ project }: CanvasHeaderProps) => {

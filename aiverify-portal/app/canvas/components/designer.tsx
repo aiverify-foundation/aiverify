@@ -29,6 +29,7 @@ import { getWidgetInputBlocksFromPlugins } from '@/app/canvas/utils/getWidgetInp
 import { isPageContentOverflow } from '@/app/canvas/utils/isPageContentOverflow';
 import { populateInitialWidgetResult } from '@/app/canvas/utils/populateInitialWidgetResult';
 import { ProjectOutput } from '@/app/canvas/utils/transformProjectOutputToState';
+import { TemplateOutput } from '@/app/canvas/utils/transformTemplateOutputToState';
 import {
   InputBlockData,
   Widget,
@@ -78,6 +79,8 @@ import { ZoomControl } from './zoomControl';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CanvasHeader } from './header';
 import { Modal } from '@/lib/components/modal';
+import { debouncedSaveStateToDatabase } from '@/app/canvas/utils/saveStateToDatabase';
+import { debouncedSaveTemplateToDatabase } from '@/app/canvas/utils/saveTemplateToDatabase';
 
 type GridItemDivRequiredStyles =
   `grid-comp-wrapper relative group z-10${string}`; // mandatory to have relative and group
@@ -95,8 +98,8 @@ type DesignerProps = {
   /** Identifies the user flow/journey context in which the designer is being used */
   flow: UserFlows;
 
-  /** Contains information about the current project including pages, global vars, and other data */
-  project: Project;
+  /** Contains information about the current project or template including pages, global vars, and other data */
+  project: ProjectOutput | TemplateOutput;
 
   /** Initial state for the canvas */
   initialState: State;
@@ -127,6 +130,9 @@ type DesignerProps = {
 
   /** Controls the page navigation mode: 'multi' shows all pages at once, 'single' shows only one page */
   pageNavigationMode?: 'multi' | 'single';
+
+  /** Whether this is a template view or project view */
+  isTemplate?: boolean;
 };
 
 type EventDataTransfer = Event & {
@@ -183,6 +189,7 @@ function Designer(props: DesignerProps) {
     disableNextButton = false,
     disablePreviousButton = false,
     pageNavigationMode = 'multi',
+    isTemplate = false,
   } = props;
 
   const router = useRouter();
@@ -1280,6 +1287,20 @@ function Designer(props: DesignerProps) {
       );
     }
   };
+
+  // Inside the Designer component, update the save function:
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    const debouncedSave = isTemplate
+      ? debouncedSaveTemplateToDatabase
+      : debouncedSaveStateToDatabase;
+
+    debouncedSave(state);
+  }, [state, isTemplate]);
 
   return (
     <React.Fragment>
