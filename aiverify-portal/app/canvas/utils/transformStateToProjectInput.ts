@@ -9,11 +9,26 @@ import { Algorithm, InputBlock, WidgetProperty, MockData } from '@/app/types';
 interface ProjectPatchInput {
   id?: number;
   pages: {
-    layouts: Layout[];
+    layouts: {
+      i: string;
+      x: number;
+      y: number;
+      w: number;
+      h: number;
+      maxW?: number;
+      maxH?: number;
+      minW?: number;
+      minH?: number;
+      isDraggable?: boolean;
+      isResizable?: boolean;
+      resizeHandles?: string[];
+      isBounded?: boolean;
+      static?: boolean;
+    }[];
     reportWidgets: {
       widgetGID: string;
       key: string;
-      properties: Record<string, string> | null;
+      properties: Record<string, string>;
     }[];
   }[];
 }
@@ -27,35 +42,33 @@ export function transformStateToProjectInput(state: {
   // Extract test results and input blocks from state
   // Construct pages array from layouts and widgets
   const pages = state.layouts.map((pageLayouts, pageIndex) => ({
-    layouts: pageLayouts.map(
-      (layout) =>
-        ({
-          ...layout,
-          maxW: layout.maxW ?? 12,
-          maxH: layout.maxH ?? 36,
-          minW: layout.minW ?? 1,
-          minH: layout.minH ?? 1,
-          isDraggable: true,
-          isResizable: true,
-          resizeHandles: ['se'],
-          isBounded: true,
-          static: false,
-        }) as Layout
-    ),
+    layouts: pageLayouts.map((layout) => ({
+      i: layout.i,
+      x: layout.x,
+      y: layout.y,
+      w: layout.w,
+      h: layout.h,
+      maxW: layout.maxW ?? 12,
+      maxH: layout.maxH ?? 36,
+      minW: layout.minW ?? 1,
+      minH: layout.minH ?? 1,
+      isDraggable: true,
+      isResizable: true,
+      resizeHandles: ['se'],
+      isBounded: true,
+      static: false,
+    })),
     reportWidgets: state.widgets[pageIndex].map((widget) => ({
-      ...widget,
       widgetGID: widget.gid + ':' + widget.cid,
       key: widget.gridItemId,
       properties:
         widget.properties?.reduce<Record<string, string>>((acc, property) => {
           acc[property.key] = property.value ?? '';
           return acc;
-        }, {}) ?? {},
-      tags: widget.tags ?? null,
-      dependencies: widget.dependencies ?? [],
-      mockdata: widget.mockdata ?? null,
+        }, {}) || {},
     })),
   }));
+
   return {
     pages,
   };
