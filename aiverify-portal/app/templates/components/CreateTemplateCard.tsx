@@ -33,6 +33,8 @@ export function CreateTemplateCard({
           className="bg-secondary-800"
           textColor="#FFFFFF"
           enableScreenOverlay
+          width={600}
+          height={400}
           onCloseIconClick={() => setShowForm(false)}>
           <NewTemplateForm onCancel={() => setShowForm(false)} />
         </Modal>

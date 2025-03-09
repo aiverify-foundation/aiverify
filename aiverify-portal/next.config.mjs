@@ -99,6 +99,10 @@ const nextConfig = {
         source: '/api/project_templates/export/:id',
         destination: `${process.env.APIGW_HOST}/project_templates/export/:id`,
       },
+      {
+        source: '/api/project_templates/clone/:id',
+        destination: `${process.env.APIGW_HOST}/project_templates/clone/:id`,
+      },
     ];
   },
 };

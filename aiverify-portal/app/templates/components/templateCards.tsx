@@ -6,8 +6,15 @@ import { UserFlows } from '@/app/userFlowsEnum';
 import { IconName } from '@/lib/components/IconSVG';
 import { Icon } from '@/lib/components/IconSVG';
 import { Card } from '@/lib/components/card/card';
+import { Modal } from '@/lib/components/modal';
 import { patchProject } from '@/lib/fetchApis/getProjects';
-import { RiDeleteBinFill, RiEyeFill, RiPencilFill } from '@remixicon/react';
+import {
+  RiDeleteBinFill,
+  RiEyeFill,
+  RiFileCopy2Line,
+  RiFileCopyLine,
+  RiPencilFill,
+} from '@remixicon/react';
 
 type TemplateCardsProps = {
   templates: ReportTemplate[];
@@ -19,6 +26,9 @@ function TemplateCards({ templates, projectId, flow }: TemplateCardsProps) {
   const router = useRouter();
   const [selectedTemplate, setSelectedTemplate] =
     useState<ReportTemplate | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleNewProjectWithTemplate = async (template: ReportTemplate) => {
     if (!projectId) return;
@@ -65,17 +75,95 @@ function TemplateCards({ templates, projectId, flow }: TemplateCardsProps) {
     );
   };
 
+  const handleCloneTemplate = async (
+    template: ReportTemplate,
+    e: React.MouseEvent
+  ) => {
+    e.stopPropagation();
+    try {
+      const response = await fetch(
+        `/api/project_templates/clone/${template.id}`,
+        {
+          method: 'POST',
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to clone template');
+      }
+
+      const clonedTemplate = await response.json();
+      // Refresh the page to show the new template
+      router.refresh();
+    } catch (error) {
+      console.error('Error cloning template:', error);
+      setError(
+        error instanceof Error ? error.message : 'Failed to clone template'
+      );
+    }
+  };
+
   const handleDeleteTemplate = async (
     template: ReportTemplate,
     e: React.MouseEvent
   ) => {
     e.stopPropagation();
-    // TODO: Implement template deletion
-    console.log('Delete template:', template.id);
+    setSelectedTemplate(template);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!selectedTemplate) return;
+
+    setIsDeleting(true);
+    try {
+      const response = await fetch(
+        `/api/project_templates/${selectedTemplate.id}`,
+        {
+          method: 'DELETE',
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to delete template');
+      }
+
+      // Close modal and refresh the page
+      setShowDeleteModal(false);
+      router.refresh();
+    } catch (error) {
+      console.error('Error deleting template:', error);
+      setError(
+        error instanceof Error ? error.message : 'Failed to delete template'
+      );
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
     <React.Fragment>
+      {showDeleteModal && selectedTemplate && (
+        <Modal
+          heading="Delete Template"
+          className="bg-secondary-800"
+          textColor="#FFFFFF"
+          enableScreenOverlay
+          primaryBtnLabel={isDeleting ? 'Deleting...' : 'Delete'}
+          secondaryBtnLabel="Cancel"
+          onCloseIconClick={() => setShowDeleteModal(false)}
+          onPrimaryBtnClick={confirmDelete}
+          onSecondaryBtnClick={() => setShowDeleteModal(false)}>
+          <div className="flex flex-col gap-4">
+            <p>
+              Are you sure you want to delete template "
+              {selectedTemplate.projectInfo.name}"?
+            </p>
+            {error && <p className="text-red-500">{error}</p>}
+          </div>
+        </Modal>
+      )}
+
       {templates.map((template) => (
         <Card
           key={template.id}
@@ -107,6 +195,14 @@ function TemplateCards({ templates, projectId, flow }: TemplateCardsProps) {
               onClick={(e) => handleEditTemplate(template, e)}
               className="transition-colors hover:fill-primary-100">
               <RiPencilFill
+                size={27}
+                className="fill-primary-300 dark:fill-primary-300"
+              />
+            </button>
+            <button
+              onClick={(e) => handleCloneTemplate(template, e)}
+              className="transition-colors hover:fill-primary-100">
+              <RiFileCopyLine
                 size={27}
                 className="fill-primary-300 dark:fill-primary-300"
               />

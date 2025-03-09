@@ -27,8 +27,8 @@ function Modal(props: ModalProps) {
   const {
     top,
     left,
-    width = 600,
-    height = 400,
+    width = 500,
+    height = 300,
     headingColor,
     heading,
     hideCloseIcon = false,
