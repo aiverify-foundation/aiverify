@@ -52,7 +52,12 @@ const ChecklistDetail: React.FC<ChecklistDetailProps> = ({ id }) => {
     [checklist, localData, id, updateChecklistData]
   );
 
-  const { data: mdxBundle } = useMDXBundle(checklist?.gid, checklist?.cid);
+  console.log('checklist used for mdx bundle', checklist);
+  const {
+    data: mdxBundle,
+    isLoading: isLoadingMDX,
+    error: mdxError,
+  } = useMDXBundle(checklist?.gid, checklist?.cid);
 
   const MDXComponent = useMemo(() => {
     if (!mdxBundle?.code) return null;

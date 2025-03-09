@@ -9,6 +9,10 @@ import { patchProject } from '@/lib/fetchApis/getProjects';
 import ModelSelection from './ModelSelection';
 import TestResults from './TestResults';
 import UserInputs from './UserInputs';
+import { Button } from '@/lib/components/TremurButton';
+import Link from 'next/link';
+import { RiArrowLeftLine, RiArrowRightLine } from '@remixicon/react';
+import { UserFlows } from '@/app/userFlowsEnum';
 
 interface ClientSelectDataProps {
   projectId: string;
@@ -81,8 +85,11 @@ export default function ClientSelectData({
         inputBlocks: selectedInputBlocks,
       });
 
+      const flow = UserFlows.NewProjectWithNewTemplateAndResults;
+
       // Construct the URL with all selected data
       const params = new URLSearchParams({
+        flow,
         projectId,
         ...(selectedModelId && { modelId: selectedModelId }),
         ...(selectedTestResults.length && {
@@ -100,10 +107,23 @@ export default function ClientSelectData({
     }
   };
 
+  let backButtonLink = `/templates?flow=${flow}&=projectId=${projectId}`;
+  if (flow === UserFlows.NewProjectWithNewTemplate) {
+    backButtonLink = `/canvas?flow=${flow}&projectId=${projectId}`;
+  } else {
+    backButtonLink = `/templates?flow=${flow}&projectId=${projectId}`;
+  }
+  console.log('backButtonLink', backButtonLink);
+
   // Get the selected model object
   const selectedModel = selectedModelId
     ? allModels.find((model) => model.id.toString() === selectedModelId)
     : undefined;
+
+  console.log('selectedModel', selectedModel);
+  console.log('selectedModelId', selectedModelId);
+  console.log('selectedTestResults', selectedTestResults);
+  console.log('selectedInputBlocks', selectedInputBlocks);
 
   return (
     <div className="flex max-w-[1000px] flex-col gap-6">
@@ -143,12 +163,24 @@ export default function ClientSelectData({
         />
       </div>
 
-      <div className="flex justify-end">
-        <button
-          onClick={handleNext}
-          className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
-          Next
-        </button>
+      <div className="flex justify-between">
+        <Link href={backButtonLink}>
+          <Button
+            className="w-[130px] gap-4 p-2 text-white"
+            variant="secondary">
+            <RiArrowLeftLine /> Back
+          </Button>
+        </Link>
+        {selectedModelId &&
+          selectedTestResults.length > 0 &&
+          selectedInputBlocks.length > 0 && (
+            <Button
+              className="w-[130px] gap-4 p-2 text-white"
+              variant="secondary"
+              onClick={handleNext}>
+              Next <RiArrowRightLine />
+            </Button>
+          )}
       </div>
     </div>
   );

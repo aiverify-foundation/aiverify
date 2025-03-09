@@ -30,9 +30,9 @@ export default function UserInputs({
   allFairnessTrees,
   flow,
 }: UserInputsProps) {
-  const [selectedGroups, setSelectedGroups] = useState<Set<string>>(new Set());
-  const [selectedInputBlocks, setSelectedInputBlocks] = useState<{
-    [key: string]: (Checklist | ProjectInputBlock) | null;
+  const [selectedGroup, setSelectedGroup] = useState<string>('');
+  const [selectedFairnessTrees, setSelectedFairnessTrees] = useState<{
+    [key: string]: string;
   }>({});
   const [showFairnessTreeModal, setShowFairnessTreeModal] = useState(false);
   const [currentFairnessTree, setCurrentFairnessTree] = useState<{
@@ -50,59 +50,54 @@ export default function UserInputs({
     return groups;
   }, {} as GroupedChecklists);
 
-  const updateParentWithSelectedBlocks = () => {
-    const selectedBlocks = Object.values(selectedInputBlocks)
-      .filter((block): block is InputBlock => block !== null)
-      .map((block) => ({
-        gid: block.gid,
-        cid: block.cid,
-        id: block.id,
-      }));
+  // Update parent with all selected blocks
+  const updateParentWithSelectedBlocks = (
+    newGroup: string,
+    newFairnessTrees: { [key: string]: string } = selectedFairnessTrees
+  ) => {
+    let selectedBlocks: Array<{ gid: string; cid: string; id: number }> = [];
+
+    // Add selected checklists
+    if (newGroup && groupedChecklists[newGroup]) {
+      selectedBlocks = [...selectedBlocks, ...groupedChecklists[newGroup]];
+    }
+
+    // Add selected fairness trees
+    Object.entries(newFairnessTrees).forEach(([key, treeId]) => {
+      if (treeId) {
+        const [gid, cid] = key.split('-');
+        const tree = allFairnessTrees.find((t) => t.id?.toString() === treeId);
+        if (tree?.id) {
+          selectedBlocks.push({
+            gid,
+            cid,
+            id: tree.id,
+          });
+        }
+      }
+    });
+
     onInputBlocksChange(selectedBlocks);
   };
 
   // Handle checklist group selection
   const handleGroupSelection = (groupName: string) => {
-    const newSelectedGroups = new Set(selectedGroups);
-    const groupChecklists = groupedChecklists[groupName];
-
-    if (selectedGroups.has(groupName)) {
-      newSelectedGroups.delete(groupName);
-      // Remove all checklists from this group from selected input blocks
-      groupChecklists.forEach((checklist) => {
-        const key = `${checklist.gid}-${checklist.cid}`;
-        setSelectedInputBlocks((prev) => {
-          const newState = { ...prev };
-          delete newState[key];
-          return newState;
-        });
-      });
-    } else {
-      newSelectedGroups.add(groupName);
-      // Add all checklists from this group to selected input blocks
-      groupChecklists.forEach((checklist) => {
-        const key = `${checklist.gid}-${checklist.cid}`;
-        setSelectedInputBlocks((prev) => ({
-          ...prev,
-          [key]: checklist,
-        }));
-      });
-    }
-    setSelectedGroups(newSelectedGroups);
-    updateParentWithSelectedBlocks();
+    setSelectedGroup(groupName);
+    updateParentWithSelectedBlocks(groupName);
   };
 
-  // Handle other input block selection
-  const handleInputBlockChange = (
+  // Handle fairness tree selection
+  const handleFairnessTreeSelection = (
     inputBlock: ProjectInputBlock,
-    selected: boolean
+    treeId: string
   ) => {
     const key = `${inputBlock.gid}-${inputBlock.cid}`;
-    setSelectedInputBlocks((prev) => ({
-      ...prev,
-      [key]: selected ? inputBlock : null,
-    }));
-    updateParentWithSelectedBlocks();
+    const newFairnessTrees = {
+      ...selectedFairnessTrees,
+      [key]: treeId,
+    };
+    setSelectedFairnessTrees(newFairnessTrees);
+    updateParentWithSelectedBlocks(selectedGroup, newFairnessTrees);
   };
 
   const getInputBlocksForList = (gid: string) => {
@@ -132,7 +127,7 @@ export default function UserInputs({
           <label className="w-64 text-white">Process Checklists</label>
           <div className="relative flex-1">
             <select
-              value={Array.from(selectedGroups)[0] || ''}
+              value={selectedGroup}
               onChange={(e) => handleGroupSelection(e.target.value)}
               className="w-full cursor-pointer appearance-none rounded bg-secondary-900 p-3 pr-10 text-gray-300">
               <option value="">Choose User Input</option>
@@ -165,13 +160,13 @@ export default function UserInputs({
           </Link>
         </div>
 
-        {/* Other Input Blocks */}
+        {/* Other Input Blocks (Fairness Trees) */}
         {requiredInputBlocks
           .filter((block) => block.gid !== 'aiverify.stock.process_checklist')
           .map((inputBlock) => {
             const key = `${inputBlock.gid}-${inputBlock.cid}`;
             const availableTrees = getInputBlocksForList(inputBlock.gid);
-            const isSelected = !!selectedInputBlocks[key];
+            const selectedTreeId = selectedFairnessTrees[key] || '';
 
             return (
               <div
@@ -180,19 +175,16 @@ export default function UserInputs({
                 <label className="w-64 text-white">{inputBlock.name}</label>
                 <div className="relative flex-1">
                   <select
-                    value={isSelected ? 'selected' : ''}
+                    value={selectedTreeId}
                     onChange={(e) =>
-                      handleInputBlockChange(
-                        inputBlock,
-                        e.target.value === 'selected'
-                      )
+                      handleFairnessTreeSelection(inputBlock, e.target.value)
                     }
                     className="w-full cursor-pointer appearance-none rounded bg-secondary-900 p-3 pr-10 text-gray-300">
                     <option value="">Choose User Input</option>
                     {availableTrees.map((tree) => (
                       <option
                         key={tree.id}
-                        value={tree.id}>
+                        value={tree.id?.toString() || ''}>
                         {tree.name}
                       </option>
                     ))}

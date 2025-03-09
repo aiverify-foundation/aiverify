@@ -181,6 +181,7 @@ function Designer(props: DesignerProps) {
 
   // All hooks must be called before any conditional returns
   console.log('project', project);
+  console.log('flow', flow);
   const canvasState = useCanvasState(initialState);
   console.log('initialState', canvasState);
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -673,13 +674,7 @@ function Designer(props: DesignerProps) {
     updatedBackFlow = UserFlows.NewProjectWithNewTemplate;
   }
 
-  let backButtonLink = `/results?flow=${updatedBackFlow}&projectId=${project?.id}`;
-  if (
-    flow === UserFlows.NewProjectWithExistingTemplateAndRunNewTests ||
-    flow === UserFlows.NewProjectWithNewTemplateAndRunNewTests
-  ) {
-    backButtonLink = `/project/usermenu?flow=${flow}&projectId=${project?.id}`;
-  }
+  let backButtonLink = `/project/select_data?flow=${updatedBackFlow}&projectId=${project?.id}`;
 
   /**
    * Handles the start of a resize operation on a grid item
@@ -1207,7 +1202,7 @@ function Designer(props: DesignerProps) {
       );
     } else if (flow === UserFlows.NewProjectWithNewTemplate) {
       canvasState.navigateToNextStep(
-        `/results?flow=${UserFlows.NewProjectWithNewTemplateAndResults}&projectId=${project?.id}`
+        `/project/select_data?flow=${UserFlows.NewProjectWithNewTemplate}&projectId=${project?.id}`
       );
     } else if (flow === UserFlows.NewProjectWithExistingTemplateAndResults) {
       canvasState.navigateToNextStep(
@@ -1238,9 +1233,8 @@ function Designer(props: DesignerProps) {
       </main>
       <section className="fixed bottom-[-10] right-[200px] h-[100px] bg-transparent">
         <div className="flex items-center justify-center gap-4">
-          {flow !== undefined &&
-          flow !== UserFlows.EditExistingProject &&
-          !disablePreviousButton ? (
+          {flow === UserFlows.NewProjectWithExistingTemplateAndResults ||
+          flow === UserFlows.NewProjectWithNewTemplateAndResults ? (
             <Link href={backButtonLink}>
               <Button
                 className="w-[130px] gap-4 p-2 text-white"
@@ -1249,7 +1243,7 @@ function Designer(props: DesignerProps) {
               </Button>
             </Link>
           ) : null}
-          {!disableNextButton ? (
+          {flow === UserFlows.NewProjectWithNewTemplate ? (
             <Button
               className="w-[130px] gap-4 p-2 text-white"
               onClick={handleNextClick}>

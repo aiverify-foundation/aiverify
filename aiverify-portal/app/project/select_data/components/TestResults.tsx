@@ -107,7 +107,7 @@ export default function TestResults({
                     <option
                       key={result.id}
                       value={result.id}>
-                      Test Result #{result.id} -{' '}
+                      {result.name} -{' '}
                       {new Date(result.created_at).toLocaleDateString()}
                     </option>
                   ))}
