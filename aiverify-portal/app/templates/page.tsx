@@ -52,7 +52,7 @@ export default async function TemplatesPage(props: UrlSearchParams) {
         <Link
           href={
             flow === UserFlows.NewProject && projectId
-              ? `/canvas?flow=${UserFlows.NewProjectWithNewTemplate}&projectId=${projectId}`
+              ? `/canvas?flow=${UserFlows.NewProjectWithNewTemplate}&projectId=${projectId}&mode=edit`
               : '/templates/new'
           }>
           <Card className="min-h-[250px] w-[450px] cursor-pointer border-none bg-secondary-700 text-white hover:bg-secondary-700">

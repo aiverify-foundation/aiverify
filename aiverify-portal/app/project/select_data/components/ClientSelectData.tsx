@@ -88,19 +88,21 @@ export default function ClientSelectData({
       const flow = UserFlows.NewProjectWithNewTemplateAndResults;
 
       // Construct the URL with all selected data
-      const params = new URLSearchParams({
-        flow,
-        projectId,
-        ...(selectedModelId && { modelId: selectedModelId }),
-        ...(selectedTestResults.length && {
-          testResultIds: selectedTestResults.map((r) => r.id).join(','),
-        }),
-        ...(selectedInputBlocks.length && {
-          iBlockIds: selectedInputBlocks.map((b) => b.id).join(','),
-        }),
-      });
+      const queryString = [
+        `flow=${encodeURIComponent(flow)}`,
+        `projectId=${encodeURIComponent(projectId)}`,
+        ...(selectedModelId
+          ? [`modelId=${encodeURIComponent(selectedModelId)}`]
+          : []),
+        ...(selectedTestResults.length
+          ? [`testResultIds=${selectedTestResults.map((r) => r.id).join(',')}`]
+          : []),
+        ...(selectedInputBlocks.length
+          ? [`iBlockIds=${selectedInputBlocks.map((b) => b.id).join(',')}`]
+          : []),
+      ].join('&');
 
-      window.location.href = `/canvas?${params.toString()}`;
+      window.location.href = `/canvas?${queryString}&mode=view`;
     } catch (error) {
       console.error('Failed to update project:', error);
       // You might want to show an error message to the user here

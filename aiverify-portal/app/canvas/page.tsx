@@ -22,13 +22,20 @@ type UrlSearchParams = {
     projectId: string;
     testResultIds?: string;
     iBlockIds?: string;
-    templateIds?: string; // TODO: Add templateId to the URL params and fetch the template from the database. This should be done after template saving has been implemented.
+    templateIds?: string;
+    mode?: 'view' | 'edit';
   };
 };
 
 export default async function CanvasPage(props: UrlSearchParams) {
   const searchParams = await props.searchParams;
-  const { flow, projectId, testResultIds, iBlockIds } = searchParams;
+  const {
+    flow,
+    projectId,
+    testResultIds,
+    iBlockIds,
+    mode = 'edit',
+  } = searchParams;
   const result = await getProjects({ ids: [projectId] });
 
   if (!projectId || flow == undefined || 'message' in result) {
@@ -116,6 +123,7 @@ export default async function CanvasPage(props: UrlSearchParams) {
         selectedInputBlockDatasFromUrlParams
       }
       pageNavigationMode="multi"
+      disabled={mode === 'view'}
     />
   );
 }

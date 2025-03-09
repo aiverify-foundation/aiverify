@@ -6,6 +6,9 @@ import {
   RiArrowLeftLine,
   RiArrowRightLine,
   RiPrinterLine,
+  RiEditLine,
+  RiEyeLine,
+  RiSaveLine,
 } from '@remixicon/react';
 import { debounce } from 'lodash';
 import Link from 'next/link';
@@ -72,6 +75,9 @@ import { PageNumber } from './pageNumber';
 import { PluginsPanel } from './pluginsPanel';
 import { ResizeHandle } from './resizeHandle';
 import { ZoomControl } from './zoomControl';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { CanvasHeader } from './header';
+import { Modal } from '@/lib/components/modal';
 
 type GridItemDivRequiredStyles =
   `grid-comp-wrapper relative group z-10${string}`; // mandatory to have relative and group
@@ -179,6 +185,9 @@ function Designer(props: DesignerProps) {
     pageNavigationMode = 'multi',
   } = props;
 
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   // All hooks must be called before any conditional returns
   console.log('project', project);
   console.log('flow', flow);
@@ -212,6 +221,10 @@ function Designer(props: DesignerProps) {
   >(selectedInputBlockDatasFromUrlParams);
   const [isPanelOpen, setIsPanelOpen] = useState(true);
   const canvasPrint = usePrintable({ printableId: pagesContentWrapperId });
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'success' | 'error' | null>(
+    null
+  );
 
   // Calculate the minimum height required for the content wrapper
   const contentWrapperMinHeight = useMemo(() => {
@@ -924,6 +937,39 @@ function Designer(props: DesignerProps) {
     });
   }
 
+  // Add function to toggle mode
+  const toggleMode = () => {
+    const currentMode = searchParams.get('mode') || 'edit';
+    const newMode = currentMode === 'edit' ? 'view' : 'edit';
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('mode', newMode);
+
+    router.push(`?${params.toString()}`);
+  };
+
+  // Add save as template function
+  const handleSaveAsTemplate = async () => {
+    try {
+      const response = await fetch(
+        `/api/projects/saveProjectAsTemplate/${project.id}`,
+        {
+          method: 'POST',
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to save template');
+      }
+
+      setSaveStatus('success');
+    } catch (error) {
+      console.error('Error saving template:', error);
+      setSaveStatus('error');
+    }
+    setShowSaveModal(true);
+  };
+
   const mainControlsSection = (
     <section className="fixed right-[100px] top-[105px] z-50 flex w-[50px] max-w-[50px] flex-col gap-4">
       <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
@@ -932,6 +978,26 @@ function Designer(props: DesignerProps) {
           title="Print"
           onClick={canvasPrint.print}>
           <RiPrinterLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
+        </button>
+      </div>
+      <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
+        <button
+          className="disabled:opacity-50"
+          title="Save as Template"
+          onClick={handleSaveAsTemplate}>
+          <RiSaveLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
+        </button>
+      </div>
+      <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
+        <button
+          className="disabled:opacity-50"
+          title={disabled ? 'Switch to Edit Mode' : 'Switch to View Mode'}
+          onClick={toggleMode}>
+          {disabled ? (
+            <RiEditLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
+          ) : (
+            <RiEyeLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
+          )}
         </button>
       </div>
       {!disabled ? (
@@ -1225,6 +1291,7 @@ function Designer(props: DesignerProps) {
           onClose={handleEditClose}
         />
       ) : null}
+      <CanvasHeader project={project} />
       <main className="relative h-full w-full">
         {disabled ? null : pluginsPanelSection}
         {disabled ? null : dataDrawers}
@@ -1252,6 +1319,23 @@ function Designer(props: DesignerProps) {
           ) : null}
         </div>
       </section>
+      {showSaveModal ? (
+        <Modal
+          heading={saveStatus === 'success' ? 'Success!' : 'Error'}
+          enableScreenOverlay={true}
+          onCloseIconClick={() => {
+            setShowSaveModal(false);
+            setSaveStatus(null);
+          }}>
+          <div className="flex h-full flex-col justify-between">
+            <p className="text-white">
+              {saveStatus === 'success'
+                ? 'Project has been successfully saved as a template.'
+                : 'Failed to save project as template. Please try again.'}
+            </p>
+          </div>
+        </Modal>
+      ) : null}
     </React.Fragment>
   );
 }
