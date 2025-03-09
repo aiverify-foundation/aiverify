@@ -23,20 +23,33 @@ export const getProjectIdAndFlowFromUrl = () => {
  */
 export const saveStateToDatabase = async (state: State) => {
   console.log('saving state to database', state);
-  // Save to session storage first
+  // Save minimal reference to session storage
   saveStateToSessionStorage(state);
 
-  // Try to save to localStorage as backup
+  // Try to save minimal state to localStorage as backup
   try {
-    localStorage.setItem('pagesDesignState', JSON.stringify(state));
-    console.log('Saved state to localStorage:', {
-      layouts: state.layouts.map((l) =>
-        l.map((item) => ({ i: item.i, w: item.w, h: item.h }))
+    const minimalState = {
+      timestamp: Date.now(),
+      projectId: getProjectIdAndFlowFromUrl().projectId,
+      layouts: state.layouts.map((layout) =>
+        layout.map((item) => ({
+          i: item.i,
+          x: item.x,
+          y: item.y,
+          w: item.w,
+          h: item.h,
+        }))
       ),
-      pathname: window.location.pathname,
-    });
+      lastModified: new Date().toISOString(),
+    };
+
+    localStorage.setItem(
+      'pagesDesignState_minimal',
+      JSON.stringify(minimalState)
+    );
+    console.log('Saved minimal state to localStorage');
   } catch (error) {
-    console.error('Failed to save to localStorage:', error);
+    console.warn('Failed to save minimal state to localStorage:', error);
   }
 
   const { projectId } = getProjectIdAndFlowFromUrl();
@@ -75,20 +88,33 @@ export const saveStateToDatabase = async (state: State) => {
 // Debounce the save function to prevent too many saves during rapid state changes
 let saveTimeout: NodeJS.Timeout;
 export const debouncedSaveStateToDatabase = (state: State) => {
-  // Save to session storage first
+  // Save minimal reference to session storage
   saveStateToSessionStorage(state);
 
-  // Try to save to localStorage as backup
+  // Try to save minimal state to localStorage as backup
   try {
-    localStorage.setItem('pagesDesignState', JSON.stringify(state));
-    console.log('Saved state to localStorage (debounced):', {
-      layouts: state.layouts.map((l) =>
-        l.map((item) => ({ i: item.i, w: item.w, h: item.h }))
+    const minimalState = {
+      timestamp: Date.now(),
+      projectId: getProjectIdAndFlowFromUrl().projectId,
+      layouts: state.layouts.map((layout) =>
+        layout.map((item) => ({
+          i: item.i,
+          x: item.x,
+          y: item.y,
+          w: item.w,
+          h: item.h,
+        }))
       ),
-      pathname: window.location.pathname,
-    });
+      lastModified: new Date().toISOString(),
+    };
+
+    localStorage.setItem(
+      'pagesDesignState_minimal',
+      JSON.stringify(minimalState)
+    );
+    console.log('Saved minimal state to localStorage (debounced)');
   } catch (error) {
-    console.error('Failed to save to localStorage:', error);
+    console.warn('Failed to save minimal state to localStorage:', error);
   }
 
   const { projectId } = getProjectIdAndFlowFromUrl();

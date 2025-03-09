@@ -78,12 +78,15 @@ export default function ClientSelectData({
     if (!projectId) return;
 
     try {
-      // Send all changes in a single patch request
-      await patchProject(projectId, {
+      // Transform the data to only include IDs
+      const transformedData = {
         testModelId: selectedModelId,
-        testResults: selectedTestResults,
-        inputBlocks: selectedInputBlocks,
-      });
+        testResults: selectedTestResults.map((result) => result.id),
+        inputBlocks: selectedInputBlocks.map((block) => block.id),
+      };
+
+      // Send all changes in a single patch request
+      await patchProject(projectId, transformedData);
 
       const flow = UserFlows.NewProjectWithNewTemplateAndResults;
 

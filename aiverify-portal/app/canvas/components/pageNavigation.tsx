@@ -45,7 +45,7 @@ function PageNavigation({
     // For more than 9 pages, we'll show 9 items including one set of dots
     if (currentPage < 6) {
       // When current page is in first half, show 1,2,3,4,5,6,7,...,lastPage
-      for (let i = 0; i < 7; i++) {
+      for (let i = 0; i < 5; i++) {
         pages.push(i);
       }
       pages.push(-1); // dots
