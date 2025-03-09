@@ -9,6 +9,7 @@ import {
   RiEditLine,
   RiEyeLine,
   RiSaveLine,
+  RiDownloadLine,
 } from '@remixicon/react';
 import { debounce } from 'lodash';
 import Link from 'next/link';
@@ -987,14 +988,65 @@ function Designer(props: DesignerProps) {
           <RiPrinterLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
         </button>
       </div>
-      <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
-        <button
-          className="disabled:opacity-50"
-          title="Save as Template"
-          onClick={handleSaveAsTemplate}>
-          <RiSaveLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
-        </button>
-      </div>
+      {!isTemplate && (
+        <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
+          <button
+            className="disabled:opacity-50"
+            title="Save as Template"
+            onClick={handleSaveAsTemplate}>
+            <RiSaveLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
+          </button>
+        </div>
+      )}
+      {isTemplate && (
+        <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
+          <button
+            className="disabled:opacity-50"
+            title="Export Template"
+            onClick={async () => {
+              try {
+                const response = await fetch(
+                  `/api/project_templates/export/${project.id}`,
+                  {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      name: project.projectInfo.name,
+                      description: project.projectInfo.description,
+                      cid: `${project.projectInfo.name}-${project.id}`,
+                    }),
+                  }
+                );
+                if (!response.ok) throw new Error('Export failed');
+
+                // Get filename from content-disposition header or use default
+                const contentDisposition = response.headers.get(
+                  'content-disposition'
+                );
+                const filename = contentDisposition
+                  ? contentDisposition.split('filename=')[1]
+                  : 'template.zip';
+
+                // Create blob from response and trigger download
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+              } catch (error) {
+                console.error('Failed to export template:', error);
+              }
+            }}>
+            <RiDownloadLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
+          </button>
+        </div>
+      )}
       <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
         <button
           className="disabled:opacity-50"
@@ -1245,7 +1297,7 @@ function Designer(props: DesignerProps) {
     </FreeFormDraggableArea>
   );
 
-  const dataDrawers = (
+  const dataDrawers = !isTemplate && (
     <section
       className={cn(
         'fixed top-[90px] z-10 flex flex-col items-start gap-2',

@@ -79,24 +79,14 @@ export function useUpdateTemplate() {
 export function useCreateTemplate() {
   const queryClient = useQueryClient();
 
-  const emptyTemplate: Partial<ReportTemplate> = {
-    globalVars: [],
-    pages: [],
-    projectInfo: {
-      name: '',
-      description: '',
-    },
-    fromPlugin: false,
-  };
-
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async (data: Partial<ReportTemplate>) => {
       const response = await fetch('/api/project_templates', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(emptyTemplate),
+        body: JSON.stringify(data),
       });
 
       const result = await processResponse<ReportTemplate>(response);

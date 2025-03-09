@@ -95,6 +95,10 @@ const nextConfig = {
         source: '/api/projects/saveProjectAsTemplate/:id',
         destination: `${process.env.APIGW_HOST}/projects/saveProjectAsTemplate/:id`,
       },
+      {
+        source: '/api/project_templates/export/:id',
+        destination: `${process.env.APIGW_HOST}/project_templates/export/:id`,
+      },
     ];
   },
 };
