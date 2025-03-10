@@ -112,6 +112,11 @@ type MdxComponentProps = MDXContentProps & {
   getIBData: (cid: string) => InputBlockDataPayload;
   getResults: (cid: string) => TestResultData;
   getArtifacts: (cid: string) => string[];
+  getArtifactURL: (
+    algo_gid: string | null,
+    algo_cid: string,
+    pathname: string
+  ) => string;
   width?: number;
   height?: number;
 };
@@ -629,6 +634,19 @@ function GridItemMain({
               getArtifacts={(cid: string) => {
                 const urls = widgetArtifacts[`${widget.gid}:${cid}`];
                 return Array.isArray(urls) ? urls : [];
+              }}
+              getArtifactURL={(
+                algo_gid: string | null,
+                algo_cid: string,
+                pathname: string
+              ) => {
+                const gid = algo_gid || widget.gid;
+                const urls = widgetArtifacts[`${gid}:${algo_cid}`];
+                if (!Array.isArray(urls)) return '';
+
+                // Find the URL that matches the pathname
+                const matchingUrl = urls.find((url) => url.endsWith(pathname));
+                return matchingUrl || '';
               }}
               width={dimensions.width}
               height={dimensions.height}
