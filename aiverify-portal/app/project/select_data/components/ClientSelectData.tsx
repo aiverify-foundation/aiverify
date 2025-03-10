@@ -23,6 +23,9 @@ interface ClientSelectDataProps {
   allChecklists: Checklist[];
   allFairnessTrees: FairnessTree[];
   flow: string;
+  initialModelId?: string;
+  initialTestResults?: { id: number; gid: string; cid: string }[];
+  initialInputBlocks?: { id: number; gid: string; cid: string }[];
 }
 
 export type SelectedTestResult = {
@@ -46,19 +49,48 @@ export default function ClientSelectData({
   allChecklists,
   allFairnessTrees,
   flow,
+  initialModelId,
+  initialTestResults = [],
+  initialInputBlocks = [],
 }: ClientSelectDataProps) {
+  console.log('ClientSelectData received props:', {
+    initialModelId,
+    initialTestResults,
+    initialInputBlocks,
+  });
+
   // State for model selection
-  const [selectedModelId, setSelectedModelId] = useState<string | undefined>();
+  const [selectedModelId, setSelectedModelId] = useState<string | undefined>(
+    initialModelId
+  );
 
   // State for test results selection
   const [selectedTestResults, setSelectedTestResults] = useState<
     SelectedTestResult[]
-  >([]);
+  >(
+    initialTestResults.map((result) => ({
+      gid: result.gid,
+      cid: result.cid,
+      id: result.id,
+    }))
+  );
 
   // State for input blocks selection
   const [selectedInputBlocks, setSelectedInputBlocks] = useState<
     SelectedInputBlock[]
-  >([]);
+  >(
+    initialInputBlocks.map((block) => ({
+      gid: block.gid,
+      cid: block.cid,
+      id: block.id,
+    }))
+  );
+
+  console.log('ClientSelectData initialized states:', {
+    selectedModelId,
+    selectedTestResults,
+    selectedInputBlocks,
+  });
 
   const handleModelChange = (modelId: string | undefined) => {
     setSelectedModelId(modelId);
@@ -176,16 +208,12 @@ export default function ClientSelectData({
             <RiArrowLeftLine /> Back
           </Button>
         </Link>
-        {selectedModelId &&
-          selectedTestResults.length > 0 &&
-          selectedInputBlocks.length > 0 && (
-            <Button
-              className="w-[130px] gap-4 p-2 text-white"
-              variant="secondary"
-              onClick={handleNext}>
-              Next <RiArrowRightLine />
-            </Button>
-          )}
+        <Button
+          className="w-[130px] gap-4 p-2 text-white"
+          variant="secondary"
+          onClick={handleNext}>
+          Next <RiArrowRightLine />
+        </Button>
       </div>
     </div>
   );

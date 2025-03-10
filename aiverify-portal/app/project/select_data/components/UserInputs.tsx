@@ -30,10 +30,48 @@ export default function UserInputs({
   allFairnessTrees,
   flow,
 }: UserInputsProps) {
-  const [selectedGroup, setSelectedGroup] = useState<string>('');
+  // Find the group name from the first checklist that matches any of our input blocks
+  const initialGroup = (() => {
+    const checklistBlock = requiredInputBlocks.find(
+      (block) => block.gid === 'aiverify.stock.process_checklist'
+    );
+    if (checklistBlock) {
+      const matchingChecklist = allChecklists.find(
+        (checklist) =>
+          checklist.gid === checklistBlock.gid &&
+          checklist.cid === checklistBlock.cid
+      );
+      return matchingChecklist?.group || '';
+    }
+    return '';
+  })();
+
+  const [selectedGroup, setSelectedGroup] = useState<string>(initialGroup);
+
+  // Initialize fairness trees based on required input blocks
+  const initialFairnessTrees = (() => {
+    const fairnessBlocks = requiredInputBlocks.filter(
+      (block) => block.gid !== 'aiverify.stock.process_checklist'
+    );
+
+    return fairnessBlocks.reduce(
+      (acc, block) => {
+        const matchingTree = allFairnessTrees.find(
+          (tree) => tree.gid === block.gid && tree.cid === block.cid
+        );
+        if (matchingTree?.id) {
+          acc[`${block.gid}-${block.cid}`] = matchingTree.id.toString();
+        }
+        return acc;
+      },
+      {} as { [key: string]: string }
+    );
+  })();
+
   const [selectedFairnessTrees, setSelectedFairnessTrees] = useState<{
     [key: string]: string;
-  }>({});
+  }>(initialFairnessTrees);
+
   const [showFairnessTreeModal, setShowFairnessTreeModal] = useState(false);
   const [currentFairnessTree, setCurrentFairnessTree] = useState<{
     gid: string;

@@ -5,7 +5,7 @@ import { Button, ButtonVariant } from '@/lib/components/button';
 interface ModelSelectionProps {
   projectId?: string | null;
   selectedModelId?: string;
-  onModelChange: (modelId: string) => void;
+  onModelChange: (modelId: string | undefined) => void;
   models: TestModel[];
   flow: string;
 }
@@ -31,7 +31,7 @@ export default function ModelSelection({
       <div className="relative">
         <select
           value={selectedModelId || ''}
-          onChange={(e) => onModelChange(e.target.value)}
+          onChange={(e) => onModelChange(e.target.value || undefined)}
           className="w-full cursor-pointer appearance-none rounded bg-secondary-900 p-3 pr-10 text-white">
           <option value="">Choose Model</option>
           {models.map((model) => (
@@ -52,7 +52,7 @@ export default function ModelSelection({
       </div>
       <div className="mt-4 flex justify-end">
         <Link
-          href={`/models/upload?flow=${flow}&${projectId ? `?projectId=${projectId}` : ''}`}>
+          href={`/models/upload?flow=${flow}${projectId ? `&projectId=${projectId}` : ''}`}>
           <Button
             variant={ButtonVariant.OUTLINE}
             textColor="white"

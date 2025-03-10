@@ -36,7 +36,12 @@ export default async function SelectDataPage({
   const allTestResults = await getTestResults();
   const allChecklists = await getAllChecklists();
   const allFairnessTrees = await getAllFairnessTrees();
-  console.log('allfairnessTrees', allFairnessTrees);
+
+  console.log('Project data:', {
+    testModelId: project.testModelId,
+    testResults: project.testResults,
+    inputBlocks: project.inputBlocks,
+  });
 
   const plugins = await getPlugins({ groupByPluginId: false });
 
@@ -53,6 +58,29 @@ export default async function SelectDataPage({
   );
   const requiredAlgorithms = transformedProject.algorithmsOnReport;
   const requiredInputBlocks = transformedProject.inputBlocksOnReport;
+
+  // Ensure we have the correct data types
+  const initialModelId = project.testModelId?.toString();
+  const initialTestResults = Array.isArray(project.testResults)
+    ? project.testResults.map((result) => ({
+        id: typeof result.id === 'number' ? result.id : parseInt(result.id),
+        gid: result.gid,
+        cid: result.cid,
+      }))
+    : [];
+  const initialInputBlocks = Array.isArray(project.inputBlocks)
+    ? project.inputBlocks.map((block) => ({
+        id: typeof block.id === 'number' ? block.id : parseInt(block.id),
+        gid: block.gid,
+        cid: block.cid,
+      }))
+    : [];
+
+  console.log('Transformed data:', {
+    initialModelId,
+    initialTestResults,
+    initialInputBlocks,
+  });
 
   return (
     <>
@@ -89,6 +117,9 @@ export default async function SelectDataPage({
             allChecklists={allChecklists}
             allFairnessTrees={allFairnessTrees}
             flow={flow}
+            initialModelId={initialModelId}
+            initialTestResults={initialTestResults}
+            initialInputBlocks={initialInputBlocks}
           />
         </div>
       </div>

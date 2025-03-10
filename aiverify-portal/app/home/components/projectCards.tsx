@@ -75,7 +75,7 @@ function ProjectCards({ projects: initialProjects }: ProjectCardsProps) {
               />
             </Link>
             <Link
-              href={`/canvas?flow=${UserFlows.EditExistingProject}&projectId=${project.id}&modelId=${project.testModelId}&testResultIds=${(project.testResults as { id: number }[]).map((result) => result.id).join(',')}&iBlockIds=${(project.inputBlocks as { id: number }[]).map((block) => block.id).join(',')}&mode=edit`}>
+              href={`/project/select_data?flow=${UserFlows.EditExistingProject}&projectId=${project.id}`}>
               <RiPencilFill
                 size={27}
                 className="fill-primary-300 dark:fill-primary-300"
