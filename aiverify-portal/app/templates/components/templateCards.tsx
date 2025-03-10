@@ -1,20 +1,17 @@
 'use client';
+import {
+  RiDeleteBinFill,
+  RiEyeFill,
+  RiFileCopyLine,
+  RiPencilFill,
+} from '@remixicon/react';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { ReportTemplate } from '@/app/templates/types';
 import { UserFlows } from '@/app/userFlowsEnum';
-import { IconName } from '@/lib/components/IconSVG';
-import { Icon } from '@/lib/components/IconSVG';
 import { Card } from '@/lib/components/card/card';
 import { Modal } from '@/lib/components/modal';
 import { patchProject } from '@/lib/fetchApis/getProjects';
-import {
-  RiDeleteBinFill,
-  RiEyeFill,
-  RiFileCopy2Line,
-  RiFileCopyLine,
-  RiPencilFill,
-} from '@remixicon/react';
 
 type TemplateCardsProps = {
   templates: ReportTemplate[];
@@ -92,7 +89,6 @@ function TemplateCards({ templates, projectId, flow }: TemplateCardsProps) {
         throw new Error('Failed to clone template');
       }
 
-      const clonedTemplate = await response.json();
       // Refresh the page to show the new template
       router.refresh();
     } catch (error) {
@@ -156,8 +152,8 @@ function TemplateCards({ templates, projectId, flow }: TemplateCardsProps) {
           onSecondaryBtnClick={() => setShowDeleteModal(false)}>
           <div className="flex flex-col gap-4">
             <p>
-              Are you sure you want to delete template "
-              {selectedTemplate.projectInfo.name}"?
+              Are you sure you want to delete template &quot;
+              {selectedTemplate.projectInfo.name}&quot;?
             </p>
             {error && <p className="text-red-500">{error}</p>}
           </div>

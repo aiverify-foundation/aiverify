@@ -7,7 +7,7 @@ import { WidgetOnGridLayout, PluginForGridLayout } from '@/app/canvas/types';
 import { findWidgetFromPluginsById } from '@/app/canvas/utils/findWidgetFromPluginsById';
 import { getWidgetAlgosFromPlugins } from '@/app/canvas/utils/getWidgetAlgosFromPlugins';
 import { getWidgetInputBlocksFromPlugins } from '@/app/canvas/utils/getWidgetInputBlocksFromPlugins';
-import { WidgetProperty, Algorithm, InputBlock } from '@/app/types';
+import { Algorithm, InputBlock } from '@/app/types';
 
 type ResizeHandle = 's' | 'w' | 'e' | 'n' | 'sw' | 'nw' | 'se' | 'ne';
 
@@ -259,7 +259,7 @@ export function transformTemplateOutputToState(
   const overflowParents: Array<number | null> = [];
   const MAX_GRID_HEIGHT = 36;
 
-  template.pages.forEach((page, pageIndex) => {
+  template.pages.forEach((page) => {
     const totalHeight = page.layouts.reduce((sum, layout) => sum + layout.h, 0);
 
     if (totalHeight > MAX_GRID_HEIGHT) {

@@ -16,11 +16,13 @@ export function getWidgetInputBlocksFromPlugins(
 
   // Handle template widget structure
   if ('widgetGID' in widget) {
-    const templateWidget = widget as any;
-    const [gid, cid] = templateWidget.widgetGID.split(':');
-    
+    interface TemplateWidget extends WidgetOnGridLayout {
+      widgetGID: string;
+    }
+    const templateWidget = widget as TemplateWidget;
+    const [gid] = templateWidget.widgetGID.split(':');
+
     const plugin = pluginsWithMdx.find((p) => p.gid === gid);
-    
     if (!plugin) {
       console.log('No plugin found for gid:', gid);
       return inputBlocks;
@@ -30,7 +32,7 @@ export function getWidgetInputBlocksFromPlugins(
     if (plugin.input_blocks) {
       inputBlocks.push(...plugin.input_blocks);
     }
-    
+
     return inputBlocks;
   }
 

@@ -7,8 +7,8 @@ import {
   transformTemplateOutputToState,
   TemplateOutput,
 } from '@/app/canvas/utils/transformTemplateOutputToState';
-import { InputBlockData, Project } from '@/app/types';
 import { ReportTemplate, Page, Layout } from '@/app/templates/types';
+import { InputBlockData } from '@/app/types';
 import { UserFlows } from '@/app/userFlowsEnum';
 import { getInputBlockDatas } from '@/lib/fetchApis/getInputBlockDatas';
 import {

@@ -2,7 +2,6 @@ import { ProjectOutput } from '@/app/canvas/utils/transformProjectOutputToState'
 
 export default function SelectDataLayout({
   children,
-  project,
 }: {
   children: React.ReactNode;
   project: ProjectOutput;

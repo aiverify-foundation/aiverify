@@ -1,12 +1,10 @@
 'use client';
-import React, { useState } from 'react';
-import { Project } from '@/app/types';
-import { IconName } from '@/lib/components/IconSVG';
-import { Icon } from '@/lib/components/IconSVG';
-import { Card } from '@/lib/components/card/card';
 import { RiDeleteBinLine, RiEyeLine, RiPencilFill } from '@remixicon/react';
 import Link from 'next/link';
+import React, { useState } from 'react';
+import { Project } from '@/app/types';
 import { UserFlows } from '@/app/userFlowsEnum';
+import { Card } from '@/lib/components/card/card';
 import { Modal } from '@/lib/components/modal/modal';
 
 type ProjectCardsProps = {
@@ -106,8 +104,9 @@ function ProjectCards({ projects: initialProjects }: ProjectCardsProps) {
           secondaryBtnLabel="Cancel"
           onPrimaryBtnClick={() => handleDelete(projectToDelete)}
           onSecondaryBtnClick={() => setProjectToDelete(null)}>
-          Are you sure you want to delete project "
-          {projectToDelete.projectInfo.name}"? This action cannot be undone.
+          Are you sure you want to delete project &quot;
+          {projectToDelete.projectInfo.name}&quot;? This action cannot be
+          undone.
         </Modal>
       )}
 

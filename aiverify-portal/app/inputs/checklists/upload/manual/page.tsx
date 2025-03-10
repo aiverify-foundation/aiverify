@@ -1,8 +1,7 @@
 'use client';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import Link from 'next/link';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useState, useRef, JSX } from 'react';
 import {
   ChecklistsProvider,
@@ -15,8 +14,6 @@ import GroupDetail from './components/GroupDetail';
 import { GroupNameInput } from './components/GroupNameInput';
 import ProgressBar from './components/ProgressSidebar';
 import SplitPane from './components/SplitPane';
-import { IconName } from '@/lib/components/IconSVG';
-import { Icon } from '@/lib/components/IconSVG';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -201,9 +198,6 @@ function ChecklistsPageContent() {
     null
   );
   const router = useRouter();
-  const urlParams = useSearchParams();
-  const projectId = urlParams.get('projectId');
-  const flow = urlParams.get('flow');
 
   // Use the submission hook
   const { submitChecklist } = useChecklistSubmission();

@@ -1,7 +1,7 @@
 import React from 'react';
 import { getAllFairnessTrees } from '@/lib/fetchApis/getAllFairnessTrees';
-import { StandaloneView } from './components/StandaloneView';
 import { FairnessTreeModalContent } from './components/ModalView';
+import { StandaloneView } from './components/StandaloneView';
 
 interface PageProps {
   searchParams: {

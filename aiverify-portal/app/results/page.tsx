@@ -1,4 +1,3 @@
-import { notFound } from 'next/navigation';
 import React from 'react';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import { getTestResults } from '@/lib/fetchApis/getTestResults';

@@ -4,7 +4,6 @@ import {
   WidgetInputBlockIdentifier,
 } from '@/app/canvas/components/hooks/pagesDesignReducer';
 import { WidgetOnGridLayout } from '@/app/canvas/types';
-import { Algorithm, InputBlock, WidgetProperty, MockData } from '@/app/types';
 
 interface ProjectPatchInput {
   id?: number;

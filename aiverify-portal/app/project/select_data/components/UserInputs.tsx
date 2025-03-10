@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { FairnessTreeModalWrapper } from '@/app/inputs/fairnesstree/page';
-import { InputBlock, Checklist, FairnessTree } from '@/app/inputs/utils/types';
+import { Checklist, FairnessTree } from '@/app/inputs/utils/types';
 import { InputBlock as ProjectInputBlock } from '@/app/types';
 import { Button, ButtonVariant } from '@/lib/components/button';
 

@@ -1,13 +1,7 @@
-import { RiFileChartFill } from '@remixicon/react';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { UserFlows } from '@/app/userFlowsEnum';
-import { Card } from '@/lib/components/TremurCard';
 import { getProjects } from '@/lib/fetchApis/getProjects';
-import {
-  fetchTemplates,
-  useCreateTemplate,
-} from '@/lib/fetchApis/getTemplates';
+import { fetchTemplates } from '@/lib/fetchApis/getTemplates';
 import { CreateTemplateCard } from './components/CreateTemplateCard';
 import { QueryProvider } from './components/QueryProvider';
 import { TemplateCards } from './components/templateCards';

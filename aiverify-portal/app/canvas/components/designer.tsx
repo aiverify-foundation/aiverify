@@ -13,8 +13,8 @@ import {
 } from '@remixicon/react';
 import { debounce } from 'lodash';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useReducer } from 'react';
 import GridLayout, { Layout as GridLayoutType } from 'react-grid-layout';
 import { z } from 'zod';
 import {
@@ -29,18 +29,14 @@ import { getWidgetAlgosFromPlugins } from '@/app/canvas/utils/getWidgetAlgosFrom
 import { getWidgetInputBlocksFromPlugins } from '@/app/canvas/utils/getWidgetInputBlocksFromPlugins';
 import { isPageContentOverflow } from '@/app/canvas/utils/isPageContentOverflow';
 import { populateInitialWidgetResult } from '@/app/canvas/utils/populateInitialWidgetResult';
+import { debouncedSaveStateToDatabase } from '@/app/canvas/utils/saveStateToDatabase';
+import { debouncedSaveTemplateToDatabase } from '@/app/canvas/utils/saveTemplateToDatabase';
 import { ProjectOutput } from '@/app/canvas/utils/transformProjectOutputToState';
 import { TemplateOutput } from '@/app/canvas/utils/transformTemplateOutputToState';
-import {
-  InputBlockData,
-  Widget,
-  Project,
-  ProjectInfo,
-  Algorithm,
-  InputBlock,
-} from '@/app/types';
+import { InputBlockData, Widget } from '@/app/types';
 import { UserFlows } from '@/app/userFlowsEnum';
 import { Button } from '@/lib/components/TremurButton';
+import { Modal } from '@/lib/components/modal';
 import { cn } from '@/lib/utils/twmerge';
 import {
   A4_MARGIN,
@@ -61,10 +57,9 @@ import { EditingOverlay } from './editingOverlay';
 import { FreeFormDraggableArea } from './freeFormDraggableArea';
 import { GridItemComponent } from './gridItemComponent';
 import { GridLines } from './gridLines';
+import { CanvasHeader } from './header';
 import {
   State,
-  pagesDesignReducer,
-  initialState,
   WidgetAlgoAndResultIdentifier,
   WidgetInputBlockIdentifier,
 } from './hooks/pagesDesignReducer';
@@ -77,22 +72,12 @@ import { PageNumber } from './pageNumber';
 import { PluginsPanel } from './pluginsPanel';
 import { ResizeHandle } from './resizeHandle';
 import { ZoomControl } from './zoomControl';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { CanvasHeader } from './header';
-import { Modal } from '@/lib/components/modal';
-import { debouncedSaveStateToDatabase } from '@/app/canvas/utils/saveStateToDatabase';
-import { debouncedSaveTemplateToDatabase } from '@/app/canvas/utils/saveTemplateToDatabase';
 
 type GridItemDivRequiredStyles =
   `grid-comp-wrapper relative group z-10${string}`; // mandatory to have relative and group
 
 type Layout = GridLayoutType & {
   widget?: WidgetOnGridLayout;
-};
-
-type ProjectPage = {
-  layouts: Layout[];
-  reportWidgets: WidgetOnGridLayout[];
 };
 
 type DesignerProps = {
@@ -187,8 +172,6 @@ function Designer(props: DesignerProps) {
     selectedTestResultsFromUrlParams = [],
     selectedInputBlockDatasFromUrlParams = [],
     disabled = false,
-    disableNextButton = false,
-    disablePreviousButton = false,
     pageNavigationMode = 'multi',
     isTemplate = false,
   } = props;
@@ -695,7 +678,7 @@ function Designer(props: DesignerProps) {
     updatedBackFlow = UserFlows.NewProjectWithNewTemplate;
   }
 
-  let backButtonLink = `/project/select_data?flow=${updatedBackFlow}&projectId=${project?.id}`;
+  const backButtonLink = `/project/select_data?flow=${updatedBackFlow}&projectId=${project?.id}`;
 
   /**
    * Handles the start of a resize operation on a grid item

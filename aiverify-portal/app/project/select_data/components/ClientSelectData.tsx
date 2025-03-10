@@ -1,18 +1,18 @@
 'use client';
 
+import { RiArrowLeftLine, RiArrowRightLine } from '@remixicon/react';
+import Link from 'next/link';
 import { useState } from 'react';
 import { Checklist, FairnessTree } from '@/app/inputs/utils/types';
 import { TestModel } from '@/app/models/utils/types';
 import { Algorithm, InputBlock } from '@/app/types';
 import { TestResult } from '@/app/types';
+import { UserFlows } from '@/app/userFlowsEnum';
+import { Button } from '@/lib/components/TremurButton';
 import { patchProject } from '@/lib/fetchApis/getProjects';
 import ModelSelection from './ModelSelection';
 import TestResults from './TestResults';
 import UserInputs from './UserInputs';
-import { Button } from '@/lib/components/TremurButton';
-import Link from 'next/link';
-import { RiArrowLeftLine, RiArrowRightLine } from '@remixicon/react';
-import { UserFlows } from '@/app/userFlowsEnum';
 
 interface ClientSelectDataProps {
   projectId: string;

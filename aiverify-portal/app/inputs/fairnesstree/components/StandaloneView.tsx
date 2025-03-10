@@ -3,12 +3,12 @@
 import Link from 'next/link';
 import React from 'react';
 import { QueryProvider } from '@/app/inputs/fairnesstree/components/QueryProvider';
+import { FairnessTreeProvider } from '@/app/inputs/fairnesstree/context/FairnessTreeContext';
 import { ChevronLeftIcon } from '@/app/inputs/utils/icons';
-import { Icon, IconName } from '@/lib/components/IconSVG';
 import { FairnessTree } from '@/app/inputs/utils/types';
+import { Icon, IconName } from '@/lib/components/IconSVG';
 import ActionButtons from './ActionButtons';
 import FairnessTreeHydration from './FairnessTreeHydration';
-import { FairnessTreeProvider } from '../context/FairnessTreeContext';
 
 interface StandaloneViewProps {
   initialTrees: FairnessTree[];

@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { TestModel } from '@/app/models/utils/types';
 import { Algorithm, TestResult } from '@/app/types';
-import { UserFlows } from '@/app/userFlowsEnum';
 import { Button, ButtonVariant } from '@/lib/components/button';
 
 interface TestResultsProps {
