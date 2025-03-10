@@ -28,18 +28,24 @@ const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
   const editGroupMutation = useEditGroup();
   const deleteGroupMutation = useDeleteGroup();
 
-  // Retrieve the group name from localStorage when the component mounts
+  // Update the localStorage key to be unique per group
+  const storageKey = `groupName_${initialGroupName}`;
+
+  // Update the localStorage retrieval
   useEffect(() => {
-    const storedGroupName = localStorage.getItem('groupName');
+    const storedGroupName = localStorage.getItem(storageKey);
     if (storedGroupName) {
       setGroupName(storedGroupName);
     }
-  }, []);
+  }, [storageKey]);
 
-  // Store the group name in localStorage whenever it changes
+  // Update the localStorage save
   useEffect(() => {
-    localStorage.setItem('groupName', groupName);
-  }, [groupName]);
+    if (groupName !== initialGroupName) {
+      // Only store if it's different from initial
+      localStorage.setItem(storageKey, groupName);
+    }
+  }, [groupName, storageKey, initialGroupName]);
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -49,6 +55,7 @@ const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
     setIsDeleteModalVisible(true);
   };
 
+  // Update the delete handler to remove the correct storage key
   const handleDeleteConfirm = useCallback(() => {
     deleteGroupMutation.mutate({ groupName, checklists });
     setIsDeleteModalVisible(false);
@@ -56,7 +63,7 @@ const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
     setChecklists(
       checklists.filter((checklist) => checklist.group !== groupName)
     );
-    localStorage.removeItem('groupName'); // Remove the group name from localStorage when deleted
+    localStorage.removeItem(storageKey); // Remove the specific group name
     router.push('/inputs/checklists');
   }, [
     deleteGroupMutation,
@@ -65,6 +72,7 @@ const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
     setSelectedGroup,
     setChecklists,
     router,
+    storageKey,
   ]);
 
   const handleDeleteCancel = () => {
@@ -190,7 +198,7 @@ const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
           </button>
         </form>
       ) : (
-        <h1 className="text-3xl font-bold">{groupName}</h1>
+        <h1 className="text-3xl font-bold">{initialGroupName}</h1>
       )}
 
       <div className="flex justify-between gap-2">

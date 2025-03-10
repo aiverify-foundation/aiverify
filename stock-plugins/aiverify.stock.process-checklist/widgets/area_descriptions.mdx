@@ -46,24 +46,25 @@ export const MyAreaDescriptions = ({ props }) => {
   }, [props])
 
   return (
-    <div>
+    <div style={{ width: props.width, height: props.height, padding: "10px" }}>
     {data && data.areaSlice.map((area, index) => (
-      <div key={`area-desc-${area}`}>
+      <div key={`area-desc-${area}-${index}`}>
         <MyHR />
         {area.id === 'others'?
         <>
-          {area.principles.map(principle => (
-          <>
-            <div className="c-primary" style={styles.area}><b>{principle.principle}</b></div>
+          {area.principles.map((principle, index) => (
+          <React.Fragment key={`principle-fragment-${principle.principle}-${index}`}>
+            <div 
+              className="c-primary" 
+              style={styles.area}><b>{principle.principle}</b></div>
             <div style={styles.paragraph}>
               <div 
-                key={`area-principle-desc-${principle.principle}`}
                 style={styles.principle}
               >
                 <span>{principle.short_description}</span>
               </div>
             </div>
-          </>
+          </React.Fragment>
           ))}
         </> : <>
           <div className="c-primary" style={styles.area}><b>Area {data.startIndex+index+1}:</b> {area.short_description}</div>

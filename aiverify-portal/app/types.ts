@@ -311,3 +311,17 @@ export type {
   ProjectInfo,
   MockData,
 };
+
+export interface ProjectData {
+  testModelId?: string;
+  inputBlocks: Array<{
+    gid: string;
+    cid: string;
+    id: number;
+  }>;
+  testResults: Array<{
+    gid: string;
+    cid: string;
+    id: number;
+  }>;
+}

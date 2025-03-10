@@ -11,10 +11,21 @@ import {
   zoom_blur_images,
 } from "./blur-corruption-images.js";
 
-<DisplayImages
-  id={props.id}
-  images={gaussian_blur_images}
-  data={props.getResults(algo_cid).results}
-  corruption_index={0}
-  corruption_name="Blur: Gaussian Blur"
-/>
+export const GaussianSamples = (props) => {
+  const artifactUrls = props.getArtifacts(algo_cid);
+  const gaussianUrls = artifactUrls.length > 0 
+    ? artifactUrls.filter(url => url.includes('Gaussian_Blur'))
+    : gaussian_blur_images;
+
+  return (
+    <DisplayImages
+      id={props.id}
+      images={gaussianUrls}
+      data={props.getResults(algo_cid).results}
+      corruption_index={1}
+      corruption_name="Blur: Gaussian Blur"
+    />
+  );
+}
+
+<GaussianSamples {...props} />

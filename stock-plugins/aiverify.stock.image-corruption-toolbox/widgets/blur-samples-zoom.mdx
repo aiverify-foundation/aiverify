@@ -11,10 +11,21 @@ import {
   zoom_blur_images,
 } from "./blur-corruption-images.js";
 
-<DisplayImages
-  id={props.id}
-  images={zoom_blur_images}
-  data={props.getResults(algo_cid).results}
-  corruption_index={5}
-  corruption_name="Blur: Zoom Blur"
-/>
+export const ZoomSamples = (props) => {
+  const artifactUrls = props.getArtifacts(algo_cid);
+  const zoomUrls = artifactUrls.length > 0 
+    ? artifactUrls.filter(url => url.includes('Zoom_Blur'))
+    : zoom_blur_images;
+
+  return (
+    <DisplayImages
+      id={props.id}
+      images={zoomUrls}
+      data={props.getResults(algo_cid).results}
+      corruption_index={5}
+      corruption_name="Blur: Zoom Blur"
+    />
+  );
+}
+
+<ZoomSamples {...props} />

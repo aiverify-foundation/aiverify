@@ -41,6 +41,26 @@ const ChecklistMDX: React.FC<{ checklist: Checklist }> = ({ checklist }) => {
     }
   }, [mdxSummaryBundle]);
 
+  // Memoize the rendered content based on both MDXComponent and checklist data
+  const renderedContent = useMemo(() => {
+    if (!MDXComponent) return null;
+
+    return (
+      <div className="mdx-content">
+        {MDXComponent.summary && (
+          <div className="mt-4 text-sm text-gray-400">
+            {MDXComponent.summary(checklist.data)}
+          </div>
+        )}
+        {MDXComponent.progress && (
+          <div className="mt-4 text-sm text-gray-400">
+            {MDXComponent.progress(checklist.data)}%
+          </div>
+        )}
+      </div>
+    );
+  }, [MDXComponent, checklist.data]);
+
   if (isLoading) {
     return <div className="text-sm text-gray-400">Loading...</div>;
   }
@@ -53,20 +73,7 @@ const ChecklistMDX: React.FC<{ checklist: Checklist }> = ({ checklist }) => {
     return <div className="text-sm text-gray-400">No content available</div>;
   }
 
-  return (
-    <div className="mdx-content">
-      {MDXComponent.summary && (
-        <div className="mt-4 text-sm text-gray-400">
-          {MDXComponent.summary(checklist.data)}
-        </div>
-      )}
-      {MDXComponent.progress && (
-        <div className="mt-4 text-sm text-gray-400">
-          {MDXComponent.progress(checklist.data)}%
-        </div>
-      )}
-    </div>
-  );
+  return renderedContent;
 };
 
 const GroupDetail: React.FC<{

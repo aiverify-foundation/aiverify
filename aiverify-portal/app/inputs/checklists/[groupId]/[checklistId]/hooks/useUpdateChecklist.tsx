@@ -1,5 +1,6 @@
 // hooks/useUpdateChecklist.ts
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useChecklists } from '@/app/inputs/context/ChecklistsContext';
 
 const updateChecklist = async (variables: {
   id: string;
@@ -24,6 +25,9 @@ const updateChecklist = async (variables: {
 
 // Define the custom hook
 const useUpdateChecklist = () => {
+  const { checklists, setChecklists } = useChecklists();
+  const queryClient = useQueryClient();
+
   return useMutation<
     unknown,
     Error,
@@ -33,9 +37,24 @@ const useUpdateChecklist = () => {
     },
     unknown
   >({
-    mutationFn: updateChecklist, // Mutation function accepts 'variables' and 'context'
-    onSuccess: (data) => {
-      console.log('Checklist updated successfully:', data);
+    mutationFn: updateChecklist,
+    onSuccess: (_, variables) => {
+      // Update the checklist in the context
+      const updatedChecklists = checklists.map((checklist) =>
+        checklist.id === parseInt(variables.id)
+          ? {
+              ...checklist,
+              data: variables.data.data,
+              updated_at: new Date().toISOString(),
+            }
+          : checklist
+      );
+      setChecklists(updatedChecklists);
+
+      // Invalidate relevant queries
+      queryClient.invalidateQueries({ queryKey: ['checklist', variables.id] }); // Invalidate individual checklist query
+      queryClient.invalidateQueries({ queryKey: ['mdx-bundle'] }); // Invalidate MDX bundle queries
+      queryClient.invalidateQueries({ queryKey: ['mdx-summary-bundle'] }); // Invalidate MDX summary bundle queries
     },
     onError: (error) => {
       console.error('Error updating checklist:', error);

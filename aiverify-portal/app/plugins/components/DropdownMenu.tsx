@@ -161,7 +161,6 @@ const Dropdown = ({
           <ul
             role="presentation"
             aria-labelledby={id}
-            aria-orientation="vertical"
             className="leading-10">
             {data?.map((item) => (
               <li
