@@ -48,8 +48,6 @@ export default function ModelsFilters({
             inputStyles={{
               paddingLeft: 40,
               height: '40px',
-              backgroundColor: 'var(--color-transparent)',
-              color: '#FFFFFF',
             }}
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
@@ -64,7 +62,7 @@ export default function ModelsFilters({
               left: 10,
               transform: 'translateY(-50%)',
             }}
-            svgClassName="fill-white dark:fill-white"
+            svgClassName="fill-secondary-800 dark:fill-secondary-800"
           />
           {/* Clear Search Icon */}
           {searchQuery && (
@@ -78,7 +76,7 @@ export default function ModelsFilters({
                 transform: 'translateY(-50%)',
                 cursor: 'pointer',
               }}
-              color="white"
+              svgClassName="fill-secondary-800 dark:fill-secondary-800"
               onClick={() => handleSearchChange('')}
             />
           )}

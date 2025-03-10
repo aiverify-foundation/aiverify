@@ -1,15 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
-import { toErrorWithMessage } from '@/lib/utils/error-utils';
-import { processResponse } from '@/lib/utils/http-requests';
 
 const fetchModelData = async (
   id: string
 ): Promise<{ blob: Blob; filename: string }> => {
   const response = await fetch(`/api/test_models/download/${id}`);
-  const result = await processResponse<Response>(response);
 
-  if (result instanceof Error) {
-    throw toErrorWithMessage(result);
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
   }
 
   const contentDisposition = response.headers.get('Content-Disposition');

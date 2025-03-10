@@ -26,17 +26,37 @@ const ModelDetail: React.FC<Props> = ({ model }) => {
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState('');
   const [feedbackSuccess, setFeedbackSuccess] = useState(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
 
   // Correct hook for fetching API data
   const fetchModelAPIDataHook = useModelAPIData();
 
   // Correct hook for fetching model data
-  const { data: modelDataHook } = useModelData(String(model.id));
+  const {
+    data: modelDataHook,
+    isLoading,
+    error,
+  } = useModelData(String(model.id));
 
   // Update editedModel when model changes
   useEffect(() => {
     setEditedModel(model);
   }, [model]);
+
+  useEffect(() => {
+    if (modelDataHook) {
+      setModelData(modelDataHook);
+      setDownloadError(null);
+    }
+  }, [modelDataHook]);
+
+  useEffect(() => {
+    if (error) {
+      setDownloadError(
+        error instanceof Error ? error.message : 'Failed to download model'
+      );
+    }
+  }, [error]);
 
   const fetchModelAPIData = async () => {
     try {
@@ -51,26 +71,27 @@ const ModelDetail: React.FC<Props> = ({ model }) => {
     }
   };
 
-  useEffect(() => {
-    if (modelDataHook) {
-      setModelData(modelDataHook);
-    }
-  }, [modelDataHook]);
-
   const handleDownload = async () => {
-    if (!modelData) {
-      return;
-    }
+    try {
+      if (!modelData) {
+        setDownloadError('Model data not available');
+        return;
+      }
 
-    const { blob, filename } = modelData;
-    const fileURL = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = fileURL;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(fileURL);
+      const { blob, filename } = modelData;
+      const fileURL = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = fileURL;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(fileURL);
+    } catch (err) {
+      setDownloadError(
+        err instanceof Error ? err.message : 'Failed to download model'
+      );
+    }
   };
 
   const handleDownloadJson = (
@@ -236,16 +257,22 @@ const ModelDetail: React.FC<Props> = ({ model }) => {
           />
         )}
 
-        {!model.modelAPI && (
-          <Button
-            pill
-            textColor="white"
-            variant={ButtonVariant.PRIMARY}
-            size="sm"
-            text="DOWNLOAD MODEL FILE"
-            color="primary-950"
-            onClick={handleDownload}
-          />
+        {!model.modelAPI && model.zip_hash && (
+          <>
+            <Button
+              pill
+              textColor="white"
+              variant={ButtonVariant.PRIMARY}
+              size="sm"
+              text={isLoading ? 'LOADING...' : 'DOWNLOAD MODEL FILE'}
+              color="primary-950"
+              onClick={handleDownload}
+              disabled={isLoading}
+            />
+            {downloadError && (
+              <div className="ml-4 text-sm text-red-500">{downloadError}</div>
+            )}
+          </>
         )}
       </div>
       {isModalOpen && (
@@ -262,8 +289,8 @@ const ModelDetail: React.FC<Props> = ({ model }) => {
             onPrimaryBtnClick={handleSaveChanges} // Handle saving edits
             onSecondaryBtnClick={() => handleCloseModal()} // Close the modal
           >
-            <div className="max-h-[470px] overflow-y-auto">
-              <form>
+            <div className="">
+              <form className="h-full">
                 {/* Edit Model Name */}
                 <div className="mb-4">
                   <label className="mb-2 block">Model Name</label>
