@@ -61,17 +61,17 @@ jobs:
           source .venv/bin/activate
           pip install -e .
           cd ${GITHUB_WORKSPACE}
-          echo "root_path=${GITHUB_WORKSPACE}/stock-plugins/user_defined_files" >> "$GITHUB_ENV"
+          echo "ROOT_PATH=${GITHUB_WORKSPACE}/stock-plugins/user_defined_files" >> "$GITHUB_ENV"
           cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions/
           pip install -e .
           python -m aiverify_digital_corruptions \
-            --data_path $root_path/data/raw_fashion_image_10 \
-            --model_path $root_path/pipeline/multiclass_classification_image_mnist_fashion \
-            --ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
+            --data_path ${{ env.ROOT_PATH }}/data/raw_fashion_image_10 \
+            --model_path ${{ env.ROOT_PATH }}/pipeline/multiclass_classification_image_mnist_fashion \
+            --ground_truth_path ${{ env.ROOT_PATH }}/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
             --ground_truth label \
             --model_type CLASSIFICATION \
             --run_pipeline \
-            --annotated_ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
+            --annotated_ground_truth_path ${{ env.ROOT_PATH }}/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
             --set_seed 10 \
             --file_name_label file_name
           cd output
@@ -87,9 +87,9 @@ jobs:
           source .venv/bin/activate
           pip install -e .
           python -m aiverify_fairness_metrics_toolbox_for_classification \
-            --data_path $root_path/data/sample_mc_pipeline_toxic_data.sav \
-            --model_path $root_path/pipeline/mc_tabular_toxic \
-            --ground_truth_path $root_path/data/sample_mc_pipeline_toxic_ytest_data.sav \
+            --data_path ${{ env.ROOT_PATH }}/data/sample_mc_pipeline_toxic_data.sav \
+            --model_path ${{ env.ROOT_PATH }}/pipeline/mc_tabular_toxic \
+            --ground_truth_path ${{ env.ROOT_PATH }}/data/sample_mc_pipeline_toxic_ytest_data.sav \
             --ground_truth toxic \
             --model_type CLASSIFICATION \
             --run_pipeline \
