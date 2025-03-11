@@ -33,7 +33,7 @@ jobs:
     #  Run only when PR is approved
     if: (github.event_name == 'pull_request' && github.event.pull_request.assignee != null) || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
 
     steps:
       - name: Checkout Code
@@ -81,7 +81,7 @@ jobs:
       - name: Create Zip Test Results using FMTC Toolbox
         run: |
           cd stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification/
-          ython3 -m venv .venv
+          python3 -m venv .venv
           source .venv/bin/activate
           pip install -e .
           python -m aiverify_fairness_metrics_toolbox_for_classification \
@@ -117,7 +117,7 @@ jobs:
       - name: Run Smoke Test
         run: |
           cd smoke-testing
-          ENDPOINT=http://127.0.0.1:3000 npx playwright test/03-smoke.spec.js
+          ENDPOINT=http://127.0.0.1:3000 npx playwright test tests/03-smoke.spec.js
 
       - name: Upload Playwright Traces
         if: always()
