@@ -54,6 +54,10 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Set ROOT_PATH Variable
+        run: |
+          echo "ROOT_PATH=${{ github.workspace }}/stock-plugins/user_defined_files" >> $GITHUB_ENV
+
       - name: Create Zip Test Results using Digital Corruption
         run: |
           cd aiverify-test-engine
@@ -61,13 +65,11 @@ jobs:
           source .venv/bin/activate
           pip install -e .
           cd ${GITHUB_WORKSPACE}
-          echo "Test"
-          echo "ROOT_PATH=${{ github.workspace }}/stock-plugins/user_defined_files" >> $GITHUB_ENV
           cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions/
           pip install -e .
           python -m aiverify_digital_corruptions \
-            --data_path $ROOT_PATH/data/raw_fashion_image_10 \
-            --model_path $ROOT_PATH/pipeline/multiclass_classification_image_mnist_fashion \
+            --data_path ${{ env.ROOT_PATH }}/data/raw_fashion_image_10 \
+            --model_path ${{ env.ROOT_PATH }}/multiclass_classification_image_mnist_fashion \
             --ground_truth_path ${{ env.ROOT_PATH }}/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
             --ground_truth label \
             --model_type CLASSIFICATION \
