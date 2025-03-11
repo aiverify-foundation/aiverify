@@ -80,14 +80,11 @@ jobs:
           cd output
           zip -r digital-corruptions.zip .
           cp digital-corruptions.zip ${GITHUB_WORKSPACE}/smoke-testing/fixtures/
-          deactivate
           cd ${GITHUB_WORKSPACE}
 
       - name: Create Zip Test Results using FMTC Toolbox
         run: |
           cd stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification/
-          python3 -m venv .venv
-          source .venv/bin/activate
           pip install -e .
           python -m aiverify_fairness_metrics_toolbox_for_classification \
             --data_path ${{ env.ROOT_PATH }}/data/sample_mc_pipeline_toxic_data.sav \
