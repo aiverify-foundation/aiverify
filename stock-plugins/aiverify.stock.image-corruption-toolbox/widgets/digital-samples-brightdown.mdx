@@ -12,10 +12,21 @@ import {
   compression_images,
 } from "./digital-corruption-images.js";
 
-<DisplayImages
-  id={props.id}
-  images={brightness_down_images}
-  data={props.getResults(algo_cid).results}
-  corruption_index={0}
-  corruption_name="Digital: Brightness Down"
-/>
+export const BrightnessDownSamples = (props) => {
+  const artifactUrls = props.getArtifacts(algo_cid);
+  const brightnessDownUrls = artifactUrls.length > 0 
+    ? artifactUrls.filter(url => url.includes('Brightness_Down'))
+    : brightness_down_images;
+
+  return (
+    <DisplayImages
+      id={props.id}
+      images={brightnessDownUrls}
+      data={props.getResults(algo_cid).results}
+      corruption_index={0}
+      corruption_name="Digital: Brightness Down"
+    />
+  );
+}
+
+<BrightnessDownSamples {...props} />

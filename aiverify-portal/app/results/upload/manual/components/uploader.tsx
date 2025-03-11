@@ -123,29 +123,31 @@ export function Uploader({ className }: { className?: string }) {
         </Modal>
       ) : null}
       <section className={cn('flex gap-4', className)}>
-        <div className="flex w-[75%] flex-col justify-between">
-          <JsonEditor
-            className="h-[600px]"
-            onChange={debouncedHandleEditorChange}
-            onSyntaxError={debouncedHandleSyntaxError}
-            ref={editorRef}
-          />
+        <div className="flex w-full flex-col justify-between">
+          <div className="flex gap-4">
+            <JsonEditor
+              className="h-[550px] flex-1"
+              onChange={debouncedHandleEditorChange}
+              onSyntaxError={debouncedHandleSyntaxError}
+              ref={editorRef}
+            />
+            <FileSelector
+              onFilesUpdated={handleAddTestArtifact}
+              className="w-[400px]"
+              ref={fileSelectorRef}
+            />
+          </div>
+
           <div className="flex justify-end">
             <Button
               variant={ButtonVariant.PRIMARY}
               size="md"
               text="Upload"
-              className="mt-8"
               onClick={handleUploadClick}
               disabled={disableUpload}
             />
           </div>
         </div>
-        <FileSelector
-          onFilesUpdated={handleAddTestArtifact}
-          className="w-[25%]"
-          ref={fileSelectorRef}
-        />
       </section>
     </React.Fragment>
   );

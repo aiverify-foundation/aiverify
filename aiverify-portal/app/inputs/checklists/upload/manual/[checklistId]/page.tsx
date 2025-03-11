@@ -154,7 +154,7 @@ export default function ChecklistDetailPage() {
   };
 
   const handleBack = () => {
-    router.push('/inputs/checklists/upload');
+    router.push('/inputs/checklists/upload/manual');
   };
 
   const handleClearFields = () => {

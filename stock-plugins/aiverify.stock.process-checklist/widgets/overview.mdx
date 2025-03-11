@@ -60,8 +60,8 @@ export const PrincipleCell = ({ areaId }) => {
   const area = areaByID[areaId];
   return (
     <td style={{...styles.tdEvenRow, width:'25%' }}>
-      {area.principles.map(principle => (
-        <div key={`overview-principle-${principle}`} style={{ marginBottom:'8px' }}>
+      {area.principles.map((principle, index) => (
+        <div key={`overview-principle-${principle}=${index}`} style={{ marginBottom:'8px' }}>
           <span style={{ ...styles.principle }}>
             {principle.name}
             {principle.hasTechnicalTests && <sup>+</sup>}
@@ -77,15 +77,15 @@ export const PrincipleCell1 = ({ principle }) => {
   // const area = areaByID[areaId];
   const p = getPrincipleConfig(principle);
   return (
-    <td colspan='4' style={{ ...styles.tdEvenRow }}>
+    <td colSpan='4' style={{ ...styles.tdEvenRow }}>
       <span style={{...styles.principle, display:'inline'}}>{principle}</span> | {p.principle.short_description}
     </td>
   )
 }
 
-<table style={styles.tblStyle} cellPa>
+<table style={styles.tblStyle} cellPadding={10}>
   <tr style={{ verticalAlign:'center' }}>
-    <td colspan='4' style={styles.tdOddRow}>
+    <td colSpan='4' style={styles.tdOddRow}>
       <AreaCell areaId="transparency" />
     </td>
   </tr>

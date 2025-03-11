@@ -8,6 +8,7 @@ type Props = {
   checked?: boolean;
   onCheckboxChange?: (checked: boolean) => void;
   onClick?: () => void;
+  isSplitPaneActive?: boolean;
 };
 
 export default function TestResultsCard({
@@ -16,6 +17,7 @@ export default function TestResultsCard({
   checked = false,
   onCheckboxChange,
   onClick,
+  isSplitPaneActive = false,
 }: Props) {
   const fileName = result.testArguments.modelFile.substring(
     result.testArguments.modelFile.lastIndexOf('/') + 1
@@ -59,33 +61,40 @@ export default function TestResultsCard({
             <h3 className="mb-2 text-lg font-semibold text-white">
               {result.name}
             </h3>
-            <div className="grid grid-cols-1 gap-y-2 text-sm text-gray-400 sm:grid-cols-2">
+            <div
+              className={`grid grid-cols-1 gap-y-2 text-sm text-gray-400 ${isSplitPaneActive ? '' : 'sm:grid-cols-2'}`}>
               <div>
                 <span className="font-semibold text-white">Model File:</span>{' '}
-                {fileName}
+                <span className="break-words text-white">{fileName}</span>
               </div>
               <div>
                 <span className="font-semibold text-white">Model Type:</span>{' '}
-                {result.testArguments.modelType}
+                <span className="break-words text-white">
+                  {result.testArguments.modelType}
+                </span>
               </div>
               <div>
                 <span className="font-semibold text-white">
                   Model Test Dataset:
                 </span>{' '}
-                {testDatasetName}
+                <span className="break-words text-white">
+                  {testDatasetName}
+                </span>
               </div>
               <div>
                 <span className="font-semibold text-white">Test Date:</span>{' '}
-                {new Date(result.created_at).toLocaleString('en-US', {
-                  month: '2-digit',
-                  day: '2-digit',
-                  year: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  second: '2-digit',
-                  hour12: false,
-                  timeZone: 'Asia/Singapore',
-                })}
+                <span className="break-words text-white">
+                  {new Date(result.created_at).toLocaleString('en-US', {
+                    month: '2-digit',
+                    day: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false,
+                    timeZone: 'Asia/Singapore',
+                  })}
+                </span>
               </div>
             </div>
           </div>

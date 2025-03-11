@@ -116,11 +116,13 @@ const FairnessTreeGroupList: React.FC<GroupListProps> = ({ trees }) => {
       switch (sortBy) {
         case 'date-asc':
           return (
-            new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime()
+            new Date(a.updated_at || '').getTime() -
+            new Date(b.updated_at || '').getTime()
           );
         case 'date-desc':
           return (
-            new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+            new Date(b.updated_at || '').getTime() -
+            new Date(a.updated_at || '').getTime()
           );
         case 'name':
           return a.name.localeCompare(b.name);
@@ -166,7 +168,7 @@ const FairnessTreeGroupList: React.FC<GroupListProps> = ({ trees }) => {
               </div>
               <div className="text-sm text-gray-500">
                 Last updated:{' '}
-                {new Date(tree.updated_at).toLocaleDateString('en-GB')}
+                {new Date(tree.updated_at || '').toLocaleDateString('en-GB')}
               </div>
               <FairnessTreeSummaryMDX tree={tree} />
             </div>

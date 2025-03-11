@@ -6,12 +6,16 @@ import {
   RiArrowLeftLine,
   RiArrowRightLine,
   RiPrinterLine,
+  RiEditLine,
+  RiEyeLine,
+  RiSaveLine,
+  RiDownloadLine,
 } from '@remixicon/react';
 import { debounce } from 'lodash';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useReducer } from 'react';
-import GridLayout, { Layout } from 'react-grid-layout';
+import GridLayout, { Layout as GridLayoutType } from 'react-grid-layout';
 import { z } from 'zod';
 import {
   ParsedTestResults,
@@ -25,10 +29,14 @@ import { getWidgetAlgosFromPlugins } from '@/app/canvas/utils/getWidgetAlgosFrom
 import { getWidgetInputBlocksFromPlugins } from '@/app/canvas/utils/getWidgetInputBlocksFromPlugins';
 import { isPageContentOverflow } from '@/app/canvas/utils/isPageContentOverflow';
 import { populateInitialWidgetResult } from '@/app/canvas/utils/populateInitialWidgetResult';
+import { debouncedSaveStateToDatabase } from '@/app/canvas/utils/saveStateToDatabase';
+import { debouncedSaveTemplateToDatabase } from '@/app/canvas/utils/saveTemplateToDatabase';
+import { ProjectOutput } from '@/app/canvas/utils/transformProjectOutputToState';
+import { TemplateOutput } from '@/app/canvas/utils/transformTemplateOutputToState';
 import { InputBlockData, Widget } from '@/app/types';
-import { ProjectInfo } from '@/app/types';
 import { UserFlows } from '@/app/userFlowsEnum';
 import { Button } from '@/lib/components/TremurButton';
+import { Modal } from '@/lib/components/modal';
 import { cn } from '@/lib/utils/twmerge';
 import {
   A4_MARGIN,
@@ -49,12 +57,13 @@ import { EditingOverlay } from './editingOverlay';
 import { FreeFormDraggableArea } from './freeFormDraggableArea';
 import { GridItemComponent } from './gridItemComponent';
 import { GridLines } from './gridLines';
+import { CanvasHeader } from './header';
 import {
-  pagesDesignReducer,
-  initialState,
+  State,
   WidgetAlgoAndResultIdentifier,
   WidgetInputBlockIdentifier,
 } from './hooks/pagesDesignReducer';
+import { useCanvasState } from './hooks/useCanvasState';
 import { useDragToScroll } from './hooks/useDragToScroll';
 import { usePrintable } from './hooks/usePrintable';
 import { useZoom } from './hooks/useZoom';
@@ -67,12 +76,19 @@ import { ZoomControl } from './zoomControl';
 type GridItemDivRequiredStyles =
   `grid-comp-wrapper relative group z-10${string}`; // mandatory to have relative and group
 
+type Layout = GridLayoutType & {
+  widget?: WidgetOnGridLayout;
+};
+
 type DesignerProps = {
   /** Identifies the user flow/journey context in which the designer is being used */
   flow: UserFlows;
 
-  /** Contains information about the current project including id, name, and description */
-  project: ProjectInfo;
+  /** Contains information about the current project or template including pages, global vars, and other data */
+  project: ProjectOutput | TemplateOutput;
+
+  /** Initial state for the canvas */
+  initialState: State;
 
   /** Collection of all available plugins with their MDX source code that can be used in the designer */
   allPluginsWithMdx: PluginForGridLayout[];
@@ -100,6 +116,9 @@ type DesignerProps = {
 
   /** Controls the page navigation mode: 'multi' shows all pages at once, 'single' shows only one page */
   pageNavigationMode?: 'multi' | 'single';
+
+  /** Whether this is a template view or project view */
+  isTemplate?: boolean;
 };
 
 type EventDataTransfer = Event & {
@@ -113,7 +132,9 @@ const criticalGridItemWrapperClass = 'grid-comp-wrapper'; // class for the grid 
 const gridItemDivRequiredStyles: GridItemDivRequiredStyles = `${criticalGridItemWrapperClass} relative group z-10
   hover:outline hover:outline-2 
   hover:outline-blue-500 hover:outline-offset-2
-  active:outline-none`;
+  active:outline-none
+  w-full h-full
+  [&>.react-grid-item]:w-full [&>.react-grid-item]:h-full`;
 
 const widgetItemSchema = z.object({
   gridItemId: z.string().optional(),
@@ -144,259 +165,75 @@ function Designer(props: DesignerProps) {
   const {
     flow,
     project,
+    initialState,
     allPluginsWithMdx,
     allTestResultsOnSystem = [],
     allInputBlockDatasOnSystem = [],
     selectedTestResultsFromUrlParams = [],
     selectedInputBlockDatasFromUrlParams = [],
     disabled = false,
-    disableNextButton = false,
-    disablePreviousButton = false,
     pageNavigationMode = 'multi',
+    isTemplate = false,
   } = props;
 
-  // Reference to the canvas element for positioning and measurements
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // All hooks must be called before any conditional returns
+  console.log('project', project);
+  console.log('flow', flow);
+  const canvasState = useCanvasState(initialState);
+  console.log('initialState', canvasState);
   const canvasRef = useRef<HTMLDivElement>(null);
-
-  // Flag to track initial component mount for initialization logic
   const isInitialMount = useRef(true);
-
-  // Reference to the draggable area that contains all pages
   const freeFormAreaRef = useRef<HTMLDivElement>(null);
-
-  // Main state management using reducer pattern for complex canvas state
-  const [state, dispatch] = useReducer(pagesDesignReducer, initialState);
-
-  // Destructured values from the main state for convenient access
+  const { state, dispatch } = canvasState;
   const { layouts, currentPage, showGrid } = state;
-
-  // Tracks the widget currently being dragged from the plugins panel
   const [newDraggedWidget, setNewDraggedWidget] = useState<Widget | null>(null);
-
-  // Tracks the ID of a grid item currently being dragged within the canvas
   const [draggingGridItemId, setDraggingGridItemId] = useState<string | null>(
     null
   );
-
-  // Tracks the ID of a grid item currently being resized
   const [resizingGridItemId, setResizingGridItemId] = useState<string | null>(
     null
   );
-
-  // Tracks the ID of the currently selected grid item for highlighting
   const [selectedGridItemId, setSelectedGridItemId] = useState<string | null>(
     null
   );
-
-  // Stores the widget and its HTML element when being edited
   const [editingGridItem, setEditingGridItem] = useState<
     [WidgetOnGridLayout, HTMLDivElement] | null
   >(null);
-
-  // Tracks which page contains the widget being edited
   const [editingPageIndex, setEditingPageIndex] = useState<number | null>(null);
-
-  // Zoom functionality for the canvas view
   const { zoomLevel, resetZoom, zoomIn, zoomOut } = useZoom();
-
-  // Currently selected test results to be applied to widgets
   const [selectedTestResults, setSelectedTestResults] = useState<
     ParsedTestResults[]
   >(selectedTestResultsFromUrlParams);
-
-  // Currently selected input block datas to be applied to widgets
   const [selectedInputBlockDatas, setSelectedInputBlockDatas] = useState<
     InputBlockData[]
   >(selectedInputBlockDatasFromUrlParams);
-
-  // Initialize the input block data tracker with the selected input block datas from URL params
-  useEffect(() => {
-    if (selectedInputBlockDatasFromUrlParams.length > 0) {
-      dispatch({
-        type: 'UPDATE_INPUT_BLOCK_TRACKER',
-        gridItemInputBlockDatasMap: selectedInputBlockDatasFromUrlParams.map(
-          (inputBlockData) => ({
-            gid: inputBlockData.gid,
-            cid: inputBlockData.cid,
-            inputBlockDataId: inputBlockData.id,
-          })
-        ) as WidgetInputBlockIdentifier[],
-      });
-    }
-  }, [selectedInputBlockDatasFromUrlParams]);
-
-  // Initialize the test result tracker with the selected test results from URL params
-  useEffect(() => {
-    if (selectedTestResultsFromUrlParams.length > 0) {
-      dispatch({
-        type: 'UPDATE_ALGO_TRACKER',
-        gridItemAlgosMap: selectedTestResultsFromUrlParams.map((result) => ({
-          gid: result.gid,
-          cid: result.cid,
-          testResultId: result.id,
-        })),
-      });
-    }
-  }, [selectedTestResultsFromUrlParams]);
-
-  // Drag-to-scroll functionality for navigating the canvas
-  useDragToScroll(freeFormAreaRef, canvasRef);
-
-  // Controls visibility of the plugins panel sidebar
   const [isPanelOpen, setIsPanelOpen] = useState(true);
-
-  // Printing functionality for the canvas content
   const canvasPrint = usePrintable({ printableId: pagesContentWrapperId });
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'success' | 'error' | null>(
+    null
+  );
 
-  // Determines the back button link based on the current user flow
-  let updatedBackFlow = flow;
-  if (flow === UserFlows.NewProjectWithExistingTemplateAndResults) {
-    updatedBackFlow = UserFlows.NewProjectWithExistingTemplate;
-  } else if (flow === UserFlows.NewProjectWithNewTemplateAndResults) {
-    updatedBackFlow = UserFlows.NewProjectWithNewTemplate;
-  }
+  // Calculate the minimum height required for the content wrapper
+  const contentWrapperMinHeight = useMemo(() => {
+    const totalPagesHeight = layouts.length * GRID_HEIGHT;
+    const containerPadding = CONTAINER_PAD + CONTAINER_PAD;
+    const totalHeight = totalPagesHeight + containerPadding;
 
-  let backButtonLink = `/results?flow=${updatedBackFlow}&projectId=${project?.id}`;
-  if (
-    flow === UserFlows.NewProjectWithExistingTemplateAndRunNewTests ||
-    flow === UserFlows.NewProjectWithNewTemplateAndRunNewTests
-  ) {
-    backButtonLink = `/project/usermenu?flow=${flow}&projectId=${project?.id}`;
-  }
-
-  /**
-   * Centers the free form area horizontally on initial load
-   * This ensures the canvas is properly positioned in the viewport when first rendered
-   */
-  useEffect(() => {
-    // position free form area horizontal - centered. Then flag initial mount as done.
-    if (freeFormAreaRef.current) {
-      const totalWidth = freeFormAreaRef.current.scrollWidth;
-      const viewportWidth = freeFormAreaRef.current.clientWidth;
-      freeFormAreaRef.current.scrollLeft = (totalWidth - viewportWidth) / 2;
-      if (isInitialMount.current) {
-        isInitialMount.current = false;
-        return;
-      }
-    }
-  }, []);
-
-  /**
-   * Scrolls to newly added pages when layouts change
-   * When a new page is added, this automatically scrolls the view to show that page
-   * Uses a temporary scroll margin to account for zoom level
-   */
-  useEffect(() => {
-    // Skip on initial mount
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
+    if (layouts.length === 1 && freeFormAreaRef.current) {
+      const viewportHeight = freeFormAreaRef.current.clientHeight;
+      return Math.max(viewportHeight, totalHeight);
     }
 
-    // Debounce the scroll to new page functionality
-    const debouncedScrollToNewPage = debounce(() => {
-      if (layouts.length > 0) {
-        const newPageElement = document.getElementById(
-          `page-${layouts.length - 1}`
-        );
-        if (newPageElement) {
-          // Add a temporary scroll margin
-          newPageElement.style.scrollMarginTop = `${zoomLevel + 100}px`; // Adjust this value as needed
-          newPageElement.scrollIntoView({ block: 'start' });
-          newPageElement.style.scrollMarginTop = ''; // remove the temp margin
-        }
-      }
-    }, 200); // 200ms debounce time
-
-    debouncedScrollToNewPage();
-
-    return () => {
-      debouncedScrollToNewPage.cancel(); // Clean up the debounce on unmount
-    };
+    return totalHeight;
   }, [layouts.length]);
 
-  /**
-   * Manages overflow pages based on content size
-   * Automatically adds or removes overflow pages when content exceeds page boundaries
-   * Checks if widgets on any page need additional pages to display properly
-   */
-  useEffect(() => {
-    if (isInitialMount.current) return;
-
-    // Debounce the overflow check to avoid excessive calculations
-    const debouncedOverflowCheck = debounce(() => {
-      // Check all pages for overflow, not just the current page
-      layouts.forEach((layout, pageIndex) => {
-        // Skip overflow pages - we only check regular pages
-        if (state.pageTypes[pageIndex] === 'overflow') return;
-
-        const { overflows, numOfRequiredPages } = isPageContentOverflow(
-          layouts[pageIndex],
-          state.widgets[pageIndex]
-        );
-
-        // Count existing overflow pages for this page
-        const existingOverflowPages = state.pageTypes.filter(
-          (type, idx) =>
-            type === 'overflow' && state.overflowParents[idx] === pageIndex
-        ).length;
-
-        if (overflows && existingOverflowPages < numOfRequiredPages - 1) {
-          dispatch({
-            type: 'ADD_OVERFLOW_PAGES',
-            parentPageIndex: pageIndex,
-            count: numOfRequiredPages - 1 - existingOverflowPages,
-          });
-        } else if (!overflows && existingOverflowPages > 0) {
-          dispatch({
-            type: 'REMOVE_OVERFLOW_PAGES',
-            parentPageIndex: pageIndex,
-          });
-        }
-      });
-    }, 300); // 300ms debounce time
-
-    debouncedOverflowCheck();
-
-    return () => {
-      debouncedOverflowCheck.cancel(); // Clean up the debounce on unmount
-    };
-  }, [
-    layouts, // Now depend on all layouts
-    state.widgets, // Now depend on all widgets
-    state.pageTypes,
-    state.overflowParents,
-  ]);
-
-  /**
-   * Handles deselection of grid items when clicking outside
-   * When user clicks anywhere outside a grid item, this clears the current selection
-   * Sets up and cleans up the document-level click event listener
-   */
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      const target = e.target as HTMLElement;
-      if (!target.closest(`.${criticalGridItemWrapperClass}`)) {
-        // All grid items have <criticalGridItemWrapperClass> class
-        // if the target is not a grid item, clear the selected grid item id
-        setSelectedGridItemId(null);
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  /**
-   * Handles dropping a widget onto the canvas grid
-   * Creates a new widget instance at the drop location with proper sizing and configuration
-   *
-   * @param pageIndex - The page where the widget is being dropped
-   * @returns A callback function that processes the drop event
-   */
+  // Create a memoized handler for widget drops
   const handleWidgetDrop = useMemo(() => {
     return (pageIndex: number) => {
-      // Return a function that captures the event data immediately
       return (_layout: Layout[], item: Layout, e: EventDataTransfer) => {
         // Capture the data from the event immediately
         let jsonData: string;
@@ -479,11 +316,9 @@ function Designer(props: DesignerProps) {
           };
 
           // Get algorithms associated with this widget and map them to test results
-          // This connects the widget to any relevant test data that should be displayed
           const algos = getWidgetAlgosFromPlugins(allPluginsWithMdx, widget);
           const gridItemToAlgosMap: WidgetAlgoAndResultIdentifier[] = algos.map(
             (algo) => {
-              // Find matching test results for this algorithm by gid and cid
               const matchSelectedResult = findTestResultByAlgoGidAndCid(
                 selectedTestResults,
                 algo.gid,
@@ -506,7 +341,6 @@ function Designer(props: DesignerProps) {
           // Map input block datas to input blocks based on matching gid, cid and group
           const gridItemToInputBlockDatasMap: WidgetInputBlockIdentifier[] =
             inputBlocks.map((inputBlock) => {
-              // Find matching input block data for this input block by gid, cid
               const matchSelectedInputBlockData = findInputBlockDataByGidAndCid(
                 selectedInputBlockDatas,
                 inputBlock.gid,
@@ -536,70 +370,9 @@ function Designer(props: DesignerProps) {
         processDroppedWidget();
       };
     };
-  }, [allPluginsWithMdx, selectedTestResults]);
+  }, [allPluginsWithMdx, selectedTestResults, selectedInputBlockDatas]);
 
-  /**
-   * Handles the start of a resize operation on a grid item
-   * Tracks which item is being resized to manage UI state
-   */
-  const handleGridItemResizeStart = (
-    _layouts: Layout[],
-    _: Layout,
-    itemLayout: Layout
-  ) => {
-    console.log(
-      `[handleGridItemResizeStart] Starting resize of item ${itemLayout.i}`
-    );
-    const { i } = itemLayout;
-    setResizingGridItemId(i);
-  };
-
-  /**
-   * Handles the completion of a resize operation
-   * Updates the widget's dimensions in the state
-   *
-   * @param pageIndex - The page containing the resized widget
-   * @returns A callback function that processes the resize completion
-   */
-  const handleGridItemResizeStop = useMemo(() => {
-    return (pageIndex: number) => {
-      return (_layouts: Layout[], _: Layout, itemLayout: Layout) => {
-        console.log(
-          `[handleGridItemResizeStop] Finished resizing item ${itemLayout.i} to w:${itemLayout.w}, h:${itemLayout.h}`
-        );
-        setResizingGridItemId(null);
-        const { x, y, w, h, minW, minH, maxW, maxH, i } = itemLayout;
-        dispatch({
-          type: 'RESIZE_WIDGET',
-          itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
-          pageIndex,
-        });
-      };
-    };
-  }, []);
-
-  /**
-   * Handles the start of a drag operation on a grid item
-   * Tracks which item is being dragged to manage UI state
-   */
-  const handleGridItemDragStart = (
-    _layouts: Layout[],
-    _: Layout,
-    itemLayout: Layout
-  ) => {
-    console.log(
-      `[handleGridItemDragStart] Starting drag of item ${itemLayout.i}`
-    );
-    setDraggingGridItemId(itemLayout.i);
-  };
-
-  /**
-   * Handles the completion of a drag operation
-   * Updates the widget's position in the state if it has changed
-   *
-   * @param pageIndex - The page containing the dragged widget
-   * @returns A callback function that processes the drag completion
-   */
+  // Create a memoized handler for grid item drag stop
   const handleGridItemDragStop = useMemo(() => {
     return (pageIndex: number) => {
       return (_layouts: Layout[], oldItem: Layout, newItem: Layout) => {
@@ -624,6 +397,319 @@ function Designer(props: DesignerProps) {
       };
     };
   }, []);
+
+  // Create a memoized handler for grid item resize stop
+  const handleGridItemResizeStop = useMemo(() => {
+    return (pageIndex: number) => {
+      return (_layouts: Layout[], _: Layout, itemLayout: Layout) => {
+        console.log(
+          `[handleGridItemResizeStop] Finished resizing item ${itemLayout.i} to w:${itemLayout.w}, h:${itemLayout.h}`
+        );
+        setResizingGridItemId(null);
+        const { x, y, w, h, minW, minH, maxW, maxH, i } = itemLayout;
+        dispatch({
+          type: 'RESIZE_WIDGET',
+          itemLayout: { x, y, w, h, minW, minH, maxW, maxH, i },
+          pageIndex,
+        });
+      };
+    };
+  }, []);
+
+  // Initialize the input block data tracker with the selected input block datas from URL params
+  useEffect(() => {
+    if (selectedInputBlockDatasFromUrlParams.length > 0) {
+      dispatch({
+        type: 'UPDATE_INPUT_BLOCK_TRACKER',
+        gridItemInputBlockDatasMap: selectedInputBlockDatasFromUrlParams.map(
+          (inputBlockData) => ({
+            gid: inputBlockData.gid,
+            cid: inputBlockData.cid,
+            inputBlockDataId: inputBlockData.id,
+          })
+        ) as WidgetInputBlockIdentifier[],
+      });
+    }
+  }, [selectedInputBlockDatasFromUrlParams]);
+
+  // Initialize the test result tracker with the selected test results from URL params
+  useEffect(() => {
+    if (selectedTestResultsFromUrlParams.length > 0) {
+      dispatch({
+        type: 'UPDATE_ALGO_TRACKER',
+        gridItemAlgosMap: selectedTestResultsFromUrlParams.map((result) => ({
+          gid: result.gid,
+          cid: result.cid,
+          testResultId: result.id,
+        })),
+      });
+    }
+  }, [selectedTestResultsFromUrlParams]);
+
+  // Initialize the state with template data
+  /* useEffect(() => {
+    if (project.pages && project.pages.length > 0) {
+      // Convert template pages to layouts and widgets
+      console.log('proj given before', project);
+
+      // Process each page's widgets similar to handleWidgetDrop
+      const layouts: Layout[][] = (
+        (project as Project).pages as ProjectPage[]
+      ).map((page: ProjectPage, pageIndex: number) =>
+        page.reportWidgets.map((widget: WidgetOnGridLayout) => {
+          // Create a unique grid item ID
+          const gridItemId =
+            widget.gridItemId || createGridItemId(widget, pageIndex);
+
+          // Get the widget's size properties
+          const { minW, minH, maxH, maxW } = widget.widgetSize;
+          console.log('widget size creation', widget.widgetSize);
+
+          // Find the corresponding layout for this widget
+          const existingLayout = page.layouts[
+            page.reportWidgets.indexOf(widget)
+          ] || {
+            x: 0,
+            y: 0,
+          };
+          console.log('existing layout creation', existingLayout);
+
+          // Create the layout item with proper sizing
+          const itemLayout = {
+            ...existingLayout,
+            i: gridItemId,
+            minW,
+            minH,
+            maxW,
+            maxH,
+            static: false,
+            isDraggable: true,
+            isResizable: true,
+            isBounded: true,
+          };
+
+          console.log('Created layout for widget:', itemLayout);
+          return itemLayout;
+        })
+      );
+
+      const widgets: WidgetOnGridLayout[][] = (
+        (project as Project).pages as ProjectPage[]
+      ).map((page: ProjectPage, pageIndex: number) =>
+        page.reportWidgets.map((widget: WidgetOnGridLayout) => ({
+          ...widget,
+          gridItemId: widget.gridItemId || createGridItemId(widget, pageIndex),
+        }))
+      );
+
+      // Initialize page types and overflow parents
+      const pageTypes: ('grid' | 'overflow')[] = (project as Project).pages.map(
+        () => 'grid'
+      );
+      const overflowParents: Array<number | null> = (
+        project as Project
+      ).pages.map(() => null);
+
+      // Initialize algorithms and input blocks
+      const algorithmsOnReport: Algorithm[] = [];
+      const inputBlocksOnReport: InputBlock[] = [];
+      const gridItemToAlgosMap: Record<
+        string,
+        WidgetAlgoAndResultIdentifier[]
+      > = {};
+      const gridItemToInputBlockDatasMap: Record<
+        string,
+        WidgetInputBlockIdentifier[]
+      > = {};
+
+      // Process each widget to collect algorithms and input blocks
+      ((project as Project).pages as ProjectPage[]).forEach(
+        (page: ProjectPage, pageIndex: number) => {
+          page.reportWidgets.forEach((widget: WidgetOnGridLayout) => {
+            const gridItemId =
+              widget.gridItemId || createGridItemId(widget, pageIndex);
+
+            // Collect algorithms
+            const algos = getWidgetAlgosFromPlugins(allPluginsWithMdx, widget);
+            algorithmsOnReport.push(...algos);
+
+            // Collect input blocks
+            const inputBlocks = getWidgetInputBlocksFromPlugins(
+              allPluginsWithMdx,
+              widget
+            );
+            inputBlocksOnReport.push(...inputBlocks);
+
+            // Map algorithms to grid items
+            gridItemToAlgosMap[gridItemId] = algos.map((algo) => ({
+              gid: algo.gid,
+              cid: algo.cid,
+            }));
+
+            // Map input blocks to grid items
+            gridItemToInputBlockDatasMap[gridItemId] = inputBlocks.map(
+              (inputBlock) => ({
+                gid: inputBlock.gid,
+                cid: inputBlock.cid,
+              })
+            );
+          });
+        }
+      );
+
+      // Dispatch initialization action
+      dispatch({
+        type: 'INITIALIZE_WITH_TEMPLATE',
+        layouts,
+        widgets,
+        algorithmsOnReport,
+        inputBlocksOnReport,
+        gridItemToAlgosMap,
+        gridItemToInputBlockDatasMap,
+        pageTypes,
+        overflowParents,
+      });
+    }
+  }, [project.pages, allPluginsWithMdx]); */
+
+  // Drag-to-scroll functionality for navigating the canvas
+  useDragToScroll(freeFormAreaRef, canvasRef);
+
+  // Centers the free form area horizontally on initial load
+  useEffect(() => {
+    if (freeFormAreaRef.current) {
+      const totalWidth = freeFormAreaRef.current.scrollWidth;
+      const viewportWidth = freeFormAreaRef.current.clientWidth;
+      freeFormAreaRef.current.scrollLeft = (totalWidth - viewportWidth) / 2;
+      if (isInitialMount.current) {
+        isInitialMount.current = false;
+        return;
+      }
+    }
+  }, []);
+
+  // Scrolls to newly added pages when layouts change
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    const debouncedScrollToNewPage = debounce(() => {
+      if (layouts.length > 0) {
+        const newPageElement = document.getElementById(
+          `page-${layouts.length - 1}`
+        );
+        if (newPageElement) {
+          newPageElement.style.scrollMarginTop = `${zoomLevel + 100}px`;
+          newPageElement.scrollIntoView({ block: 'start' });
+          newPageElement.style.scrollMarginTop = '';
+        }
+      }
+    }, 200);
+
+    debouncedScrollToNewPage();
+
+    return () => {
+      debouncedScrollToNewPage.cancel();
+    };
+  }, [layouts.length, zoomLevel]);
+
+  // Manages overflow pages based on content size
+  useEffect(() => {
+    if (isInitialMount.current) return;
+
+    const debouncedOverflowCheck = debounce(() => {
+      layouts.forEach((layout, pageIndex) => {
+        if (state.pageTypes[pageIndex] === 'overflow') return;
+
+        const { overflows, numOfRequiredPages } = isPageContentOverflow(
+          layouts[pageIndex],
+          state.widgets[pageIndex]
+        );
+
+        const existingOverflowPages = state.pageTypes.filter(
+          (type, idx) =>
+            type === 'overflow' && state.overflowParents[idx] === pageIndex
+        ).length;
+
+        if (overflows && existingOverflowPages < numOfRequiredPages - 1) {
+          dispatch({
+            type: 'ADD_OVERFLOW_PAGES',
+            parentPageIndex: pageIndex,
+            count: numOfRequiredPages - 1 - existingOverflowPages,
+          });
+        } else if (!overflows && existingOverflowPages > 0) {
+          dispatch({
+            type: 'REMOVE_OVERFLOW_PAGES',
+            parentPageIndex: pageIndex,
+          });
+        }
+      });
+    }, 300);
+
+    debouncedOverflowCheck();
+
+    return () => {
+      debouncedOverflowCheck.cancel();
+    };
+  }, [layouts, state.widgets, state.pageTypes, state.overflowParents]);
+
+  // Handles deselection of grid items when clicking outside
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      const target = e.target as HTMLElement;
+      if (!target.closest(`.${criticalGridItemWrapperClass}`)) {
+        setSelectedGridItemId(null);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  console.log('allPluginsWithMdx', allPluginsWithMdx);
+
+  // Determines the back button link based on the current user flow
+  let updatedBackFlow = flow;
+  if (flow === UserFlows.NewProjectWithExistingTemplateAndResults) {
+    updatedBackFlow = UserFlows.NewProjectWithExistingTemplate;
+  } else if (flow === UserFlows.NewProjectWithNewTemplateAndResults) {
+    updatedBackFlow = UserFlows.NewProjectWithNewTemplate;
+  }
+
+  const backButtonLink = `/project/select_data?flow=${updatedBackFlow}&projectId=${project?.id}`;
+
+  /**
+   * Handles the start of a resize operation on a grid item
+   * Tracks which item is being resized to manage UI state
+   */
+  const handleGridItemResizeStart = (
+    _layouts: Layout[],
+    _: Layout,
+    itemLayout: Layout
+  ) => {
+    console.log(
+      `[handleGridItemResizeStart] Starting resize of item ${itemLayout.i}`
+    );
+    const { i } = itemLayout;
+    setResizingGridItemId(i);
+  };
+
+  /**
+   * Handles the start of a drag operation on a grid item
+   * Tracks which item is being dragged to manage UI state
+   */
+  const handleGridItemDragStart = (
+    _layouts: Layout[],
+    _: Layout,
+    itemLayout: Layout
+  ) => {
+    console.log(
+      `[handleGridItemDragStart] Starting drag of item ${itemLayout.i}`
+    );
+    setDraggingGridItemId(itemLayout.i);
+  };
 
   /**
    * Creates a handler function to delete a specific widget
@@ -842,37 +928,38 @@ function Designer(props: DesignerProps) {
     });
   }
 
-  /**
-   * Calculates the minimum height required for the content wrapper
-   * This ensures proper scrolling and display of all pages in the canvas
-   *
-   * The calculation works as follows:
-   * 1. Computes total height needed for all pages (pages × page height)
-   * 2. Adds container padding (top and bottom)
-   * 3. For single-page layouts, ensures the height is at least as tall as the viewport
-   *    to prevent unnecessary scrollbars while still allowing content to expand
-   *
-   * This value is recalculated whenever the number of pages changes
-   */
-  const contentWrapperMinHeight = useMemo(() => {
-    // Calculate height needed for all pages
-    const totalPagesHeight = layouts.length * GRID_HEIGHT;
+  // Add function to toggle mode
+  const toggleMode = () => {
+    const currentMode = searchParams.get('mode') || 'edit';
+    const newMode = currentMode === 'edit' ? 'view' : 'edit';
 
-    // Account for padding at top and bottom of container
-    const containerPadding = CONTAINER_PAD + CONTAINER_PAD;
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('mode', newMode);
 
-    // Total height needed for all content
-    const totalHeight = totalPagesHeight + containerPadding;
+    router.push(`?${params.toString()}`);
+  };
 
-    // Special case for single page: ensure it fills at least the viewport height
-    // This prevents unnecessary scrolling while still allowing content to expand
-    if (layouts.length === 1 && freeFormAreaRef.current) {
-      const viewportHeight = freeFormAreaRef.current.clientHeight;
-      return Math.max(viewportHeight, totalHeight);
+  // Add save as template function
+  const handleSaveAsTemplate = async () => {
+    try {
+      const response = await fetch(
+        `/api/projects/saveProjectAsTemplate/${project.id}`,
+        {
+          method: 'POST',
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to save template');
+      }
+
+      setSaveStatus('success');
+    } catch (error) {
+      console.error('Error saving template:', error);
+      setSaveStatus('error');
     }
-
-    return totalHeight;
-  }, [layouts.length]);
+    setShowSaveModal(true);
+  };
 
   const mainControlsSection = (
     <section className="fixed right-[100px] top-[105px] z-50 flex w-[50px] max-w-[50px] flex-col gap-4">
@@ -882,6 +969,77 @@ function Designer(props: DesignerProps) {
           title="Print"
           onClick={canvasPrint.print}>
           <RiPrinterLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
+        </button>
+      </div>
+      {!isTemplate && (
+        <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
+          <button
+            className="disabled:opacity-50"
+            title="Save as Template"
+            onClick={handleSaveAsTemplate}>
+            <RiSaveLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
+          </button>
+        </div>
+      )}
+      {isTemplate && (
+        <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
+          <button
+            className="disabled:opacity-50"
+            title="Export Template"
+            onClick={async () => {
+              try {
+                const response = await fetch(
+                  `/api/project_templates/export/${project.id}`,
+                  {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      name: project.projectInfo.name,
+                      description: project.projectInfo.description,
+                      cid: `${project.projectInfo.name}-${project.id}`,
+                    }),
+                  }
+                );
+                if (!response.ok) throw new Error('Export failed');
+
+                // Get filename from content-disposition header or use default
+                const contentDisposition = response.headers.get(
+                  'content-disposition'
+                );
+                const filename = contentDisposition
+                  ? contentDisposition.split('filename=')[1]
+                  : 'template.zip';
+
+                // Create blob from response and trigger download
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+              } catch (error) {
+                console.error('Failed to export template:', error);
+              }
+            }}>
+            <RiDownloadLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
+          </button>
+        </div>
+      )}
+      <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
+        <button
+          className="disabled:opacity-50"
+          title={disabled ? 'Switch to Edit Mode' : 'Switch to View Mode'}
+          onClick={toggleMode}>
+          {disabled ? (
+            <RiEditLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
+          ) : (
+            <RiEyeLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
+          )}
         </button>
       </div>
       {!disabled ? (
@@ -936,7 +1094,9 @@ function Designer(props: DesignerProps) {
 
       <div className={cn('h-full p-4 pr-2', !isPanelOpen && 'hidden')}>
         <h4 className="mb-0 text-lg font-bold">{project.projectInfo.name}</h4>
-        <p className="text-sm text-white">{project.projectInfo.description}</p>
+        <p className="text-sm text-gray-500">
+          {project.projectInfo.description}
+        </p>
         <PluginsPanel
           plugins={allPluginsWithMdx}
           className="custom-scrollbar w-full overflow-auto pr-[10px] pt-[50px]"
@@ -1046,11 +1206,10 @@ function Designer(props: DesignerProps) {
                   onResizeStop={handleGridItemResizeStop(pageIndex)}
                   onResizeStart={handleGridItemResizeStart}
                   preventCollision
-                  isResizable={true}
-                  isDroppable={true}
-                  isDraggable={true}
+                  isResizable={!disabled}
+                  isDroppable={!disabled}
+                  isDraggable={!disabled}
                   isBounded={true}
-                  allowOverlap={false}
                   useCSSTransforms={!isInitialMount.current}
                   resizeHandle={<ResizeHandle />}
                   resizeHandles={['sw', 'nw', 'se', 'ne']}
@@ -1062,6 +1221,7 @@ function Designer(props: DesignerProps) {
                   className="[&>*]:text-inherit"
                   droppingItem={droppingItemPlaceholder}>
                   {state.widgets[pageIndex].map((widget, widgetIndex) => {
+                    console.log('mapping widgets', widget, widgetIndex);
                     if (!widget.gridItemId) return null;
                     return (
                       <div
@@ -1120,7 +1280,7 @@ function Designer(props: DesignerProps) {
     </FreeFormDraggableArea>
   );
 
-  const dataDrawers = (
+  const dataDrawers = !isTemplate && (
     <section
       className={cn(
         'fixed top-[90px] z-10 flex flex-col items-start gap-2',
@@ -1141,6 +1301,42 @@ function Designer(props: DesignerProps) {
   );
 
   console.log('state', state);
+
+  // Update the Next button to use navigateToNextStep
+  const handleNextClick = () => {
+    if (flow === UserFlows.NewProjectWithExistingTemplate) {
+      canvasState.navigateToNextStep(
+        `/results?flow=${UserFlows.NewProjectWithExistingTemplateAndResults}&projectId=${project?.id}`
+      );
+    } else if (flow === UserFlows.NewProjectWithNewTemplate) {
+      canvasState.navigateToNextStep(
+        `/project/select_data?flow=${UserFlows.NewProjectWithNewTemplate}&projectId=${project?.id}`
+      );
+    } else if (flow === UserFlows.NewProjectWithExistingTemplateAndResults) {
+      canvasState.navigateToNextStep(
+        `/project/usermenu?flow=${UserFlows.NewProjectWithExistingTemplateAndRunNewTests}&projectId=${project?.id}`
+      );
+    } else if (flow === UserFlows.NewProjectWithNewTemplateAndResults) {
+      canvasState.navigateToNextStep(
+        `/project/usermenu?flow=${UserFlows.NewProjectWithNewTemplateAndRunNewTests}&projectId=${project?.id}`
+      );
+    }
+  };
+
+  // Inside the Designer component, update the save function:
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    const debouncedSave = isTemplate
+      ? debouncedSaveTemplateToDatabase
+      : debouncedSaveStateToDatabase;
+
+    debouncedSave(state);
+  }, [state, isTemplate]);
+
   return (
     <React.Fragment>
       {editingGridItem && editingPageIndex != null ? (
@@ -1151,6 +1347,7 @@ function Designer(props: DesignerProps) {
           onClose={handleEditClose}
         />
       ) : null}
+      <CanvasHeader project={project} />
       <main className="relative h-full w-full">
         {disabled ? null : pluginsPanelSection}
         {disabled ? null : dataDrawers}
@@ -1159,9 +1356,8 @@ function Designer(props: DesignerProps) {
       </main>
       <section className="fixed bottom-[-10] right-[200px] h-[100px] bg-transparent">
         <div className="flex items-center justify-center gap-4">
-          {flow !== undefined &&
-          flow !== UserFlows.EditExistingProject &&
-          !disablePreviousButton ? (
+          {flow === UserFlows.NewProjectWithExistingTemplateAndResults ||
+          flow === UserFlows.NewProjectWithNewTemplateAndResults ? (
             <Link href={backButtonLink}>
               <Button
                 className="w-[130px] gap-4 p-2 text-white"
@@ -1170,13 +1366,32 @@ function Designer(props: DesignerProps) {
               </Button>
             </Link>
           ) : null}
-          {!disableNextButton ? (
-            <Button className="w-[130px] gap-4 p-2 text-white">
+          {flow === UserFlows.NewProjectWithNewTemplate ? (
+            <Button
+              className="w-[130px] gap-4 p-2 text-white"
+              onClick={handleNextClick}>
               Next <RiArrowRightLine />
             </Button>
           ) : null}
         </div>
       </section>
+      {showSaveModal ? (
+        <Modal
+          heading={saveStatus === 'success' ? 'Success!' : 'Error'}
+          enableScreenOverlay={true}
+          onCloseIconClick={() => {
+            setShowSaveModal(false);
+            setSaveStatus(null);
+          }}>
+          <div className="flex h-full flex-col justify-between">
+            <p className="text-white">
+              {saveStatus === 'success'
+                ? 'Project has been successfully saved as a template.'
+                : 'Failed to save project as template. Please try again.'}
+            </p>
+          </div>
+        </Modal>
+      ) : null}
     </React.Fragment>
   );
 }

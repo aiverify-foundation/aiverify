@@ -108,7 +108,7 @@ const GroupDetail: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleChecklistClick = (checklist: any) => {
     setSelectedChecklist(checklist);
-    router.push(`/inputs/checklists/upload/${checklist.cid}`);
+    router.push(`/inputs/checklists/upload/manual/${checklist.cid}`);
     router.refresh();
   };
 

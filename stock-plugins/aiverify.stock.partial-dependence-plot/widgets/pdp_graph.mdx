@@ -2,13 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { MultipleLineChart } from "./pdplinechart.mdx";
 
 
-export const gid = "aiverify.stock.partial_dependence_plot:partial_dependence_plot"
+export const cid = "partial_dependence_plot"
 
 
-{props.result[gid]?(
+{props.getResults(cid)?(
   <>
-    <div style={{ width:props.container.width, height:"200px" }}>
-      <MultipleLineChart results={props.result[gid].results} feature_names={props.result[gid].feature_names}/>
+    <div style={{ width: props.width, height: props.height }}>
+      <MultipleLineChart
+        id={props.id}
+        results={props.getResults(cid).results}
+        feature_names={props.getResults(cid).feature_names}
+        height={props.height}/>
     </div>
   </>
 ):(

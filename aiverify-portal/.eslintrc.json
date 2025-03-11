@@ -2,7 +2,8 @@
   "extends": [
     "next/core-web-vitals",
     "plugin:@typescript-eslint/recommended",
-    "prettier"], // prettier - ensure eslint lint does not do formatting-related rules
+    "prettier"
+  ], // prettier - ensure eslint lint does not do formatting-related rules
   "parser": "@typescript-eslint/parser",
   "plugins": ["@typescript-eslint"],
   "root": true,
@@ -12,7 +13,19 @@
     "react/self-closing-comp": "error",
     "react/jsx-max-props-per-line": [2, { "maximum": 1, "when": "multiline" }],
     "prefer-const": "error",
-    "@typescript-eslint/no-empty-function": "error",
+    "@typescript-eslint/no-empty-function": [
+      "error",
+      { "allow": ["arrowFunctions", "functions"] }
+    ],
+    "@typescript-eslint/no-unused-expressions": [
+      "error",
+      {
+        "allowShortCircuit": true,
+        "allowTernary": true,
+        "allowTaggedTemplates": true
+      }
+    ],
+    "no-html-link-for-pages": ["off"],
     "@typescript-eslint/ban-ts-comment": "warn",
     "@typescript-eslint/no-inferrable-types": "error",
     "@typescript-eslint/no-unused-vars": [
@@ -22,7 +35,15 @@
     "import/order": [
       "warn",
       {
-        "groups": ["builtin", "external", "parent", "sibling", "index", "object", "type"],
+        "groups": [
+          "builtin",
+          "external",
+          "parent",
+          "sibling",
+          "index",
+          "object",
+          "type"
+        ],
         "pathGroups": [
           {
             "pattern": "@/**/**",
