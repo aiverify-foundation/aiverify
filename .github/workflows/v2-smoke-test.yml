@@ -56,11 +56,13 @@ jobs:
 
       - name: Create Zip Test Results using Digital Corruption
         run: |
-          echo ${GITHUB_WORKSPACE}
-          echo "root_path=${GITHUB_WORKSPACE}/aiverify/stock-plugins/user_defined_files" >> "$GITHUB_ENV"
-          cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions/
+          cd aiverify-test-engine
           python3 -m venv .venv
           source .venv/bin/activate
+          pip install -e .
+          cd ${GITHUB_WORKSPACE}
+          echo "root_path=${GITHUB_WORKSPACE}/stock-plugins/user_defined_files" >> "$GITHUB_ENV"
+          cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions/
           pip install -e .
           python -m aiverify_digital_corruptions \
             --data_path $root_path/data/raw_fashion_image_10 \
@@ -74,9 +76,9 @@ jobs:
             --file_name_label file_name
           cd output
           zip -r digital-corruptions.zip .
-          cp digital-corruptions.zip ${GITHUB_WORKSPACE}/aiverify/smoke-testing/fixtures/
+          cp digital-corruptions.zip ${GITHUB_WORKSPACE}/smoke-testing/fixtures/
           deactivate
-          cd ${GITHUB_WORKSPACE}/aiverify/
+          cd ${GITHUB_WORKSPACE}
 
       - name: Create Zip Test Results using FMTC Toolbox
         run: |
@@ -92,9 +94,9 @@ jobs:
             --model_type CLASSIFICATION \
             --run_pipeline \
             --sensitive_features_list gender
-          cp results.json ${GITHUB_WORKSPACE}/aiverify/smoke-testing/fixtures/
+          cp results.json ${GITHUB_WORKSPACE}/smoke-testing/fixtures/
           deactivate
-          cd ${GITHUB_WORKSPACE}/aiverify/
+          cd ${GITHUB_WORKSPACE}
 
       - name: Install APIGW & Start APIGW
         run: |
@@ -105,14 +107,14 @@ jobs:
           cd aiverify-apigw
           pip install .[all]
           python3 -m aiverify_apigw &
-          cd ${GITHUB_WORKSPACE}/aiverify/
+          cd ${GITHUB_WORKSPACE}
 
       - name: Install PORTAL
         run: |
           cd aiverify-portal
           npm install
           npm run dev &
-          cd ${GITHUB_WORKSPACE}/aiverify/
+          cd ${GITHUB_WORKSPACE}
 
       - name: Run Smoke Test
         run: |
@@ -125,4 +127,4 @@ jobs:
         with:
           name: playwright-trace-v2.0-smoke-testing-${{ github.run_id }}
           path: |
-            ${GITHUB_WORKSPACE}/aiverify/smoke-testing/test-results/
+            ${GITHUB_WORKSPACE}/smoke-testing/test-results/
