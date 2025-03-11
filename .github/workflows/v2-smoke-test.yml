@@ -1,0 +1,128 @@
+# Smoke Test
+
+name: v2 Smoke Test
+
+on:
+  # Runs when a pull request review is being submitted
+  pull_request:
+    types: [ assigned, synchronize ]
+    branches:
+      - 'v2.x'
+
+  # Run this workflow manually from Actions tab
+  workflow_dispatch:
+    inputs:
+      branch_to_test:
+        description: 'Branch or tag to run test'
+        required: true
+        default: 'v2.x'
+        type: string
+
+  push:
+    branches: [ v2.x ]
+
+# Allow one concurrent deployment
+concurrency:
+  group: ${{ github.repository }}-${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+
+  smoke-test:
+
+    #  Run only when PR is approved
+    if: (github.event_name == 'pull_request' && github.event.pull_request.assignee != null) || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: v2.x
+          repository: aiverify-foundation/aiverify
+
+      - name: Checkout Smoke Test Code
+        uses: actions/checkout@v4
+        with:
+          ref: v2.x
+          repository: aiverify-foundation/smoke-testing
+          path: smoke-testing
+    
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Create Zip Test Results using Digital Corruption
+        run: |
+          echo ${GITHUB_WORKSPACE}
+          echo "root_path=${GITHUB_WORKSPACE}/aiverify/stock-plugins/user_defined_files" >> "$GITHUB_ENV"
+          cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions/
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install -e .
+          python -m aiverify_digital_corruptions \
+            --data_path $root_path/data/raw_fashion_image_10 \
+            --model_path $root_path/pipeline/multiclass_classification_image_mnist_fashion \
+            --ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
+            --ground_truth label \
+            --model_type CLASSIFICATION \
+            --run_pipeline \
+            --annotated_ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
+            --set_seed 10 \
+            --file_name_label file_name
+          cd output
+          zip -r digital-corruptions.zip .
+          cp digital-corruptions.zip ${GITHUB_WORKSPACE}/aiverify/smoke-testing/fixtures/
+          deactivate
+          cd ${GITHUB_WORKSPACE}/aiverify/
+
+      - name: Create Zip Test Results using FMTC Toolbox
+        run: |
+          cd stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification/
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install -e .
+          python -m aiverify_fairness_metrics_toolbox_for_classification \
+            --data_path $root_path/data/sample_mc_pipeline_toxic_data.sav \
+            --model_path $root_path/pipeline/mc_tabular_toxic \
+            --ground_truth_path $root_path/data/sample_mc_pipeline_toxic_ytest_data.sav \
+            --ground_truth toxic \
+            --model_type CLASSIFICATION \
+            --run_pipeline \
+            --sensitive_features_list gender
+          cp results.json ${GITHUB_WORKSPACE}/aiverify/smoke-testing/fixtures/
+          deactivate
+          cd ${GITHUB_WORKSPACE}/aiverify/
+
+      - name: Install APIGW & Start APIGW
+        run: |
+          touch .env 
+          echo "APIGW_LOG_LEVEL=info" >> .env
+          python3 -m venv .venv
+          source .venv/bin/activate
+          cd aiverify-apigw
+          pip install .[all]
+          python3 -m aiverify_apigw &
+          cd ${GITHUB_WORKSPACE}/aiverify/
+
+      - name: Install PORTAL
+        run: |
+          cd aiverify-portal
+          npm install
+          npm run dev &
+          cd ${GITHUB_WORKSPACE}/aiverify/
+
+      - name: Run Smoke Test
+        run: |
+          cd smoke-testing
+          ENDPOINT=http://127.0.0.1:3000 npx playwright test tests/03-smoke.spec.js
+
+      - name: Upload Playwright Traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-trace-v2.0-smoke-testing-${{ github.run_id }}
+          path: |
+            ${GITHUB_WORKSPACE}/aiverify/smoke-testing/test-results/
