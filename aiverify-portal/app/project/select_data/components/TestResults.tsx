@@ -15,6 +15,7 @@ interface TestResultsProps {
   allTestResults: TestResult[];
   selectedModel?: TestModel;
   flow: string;
+  initialTestResults?: Array<{ gid: string; cid: string; id: number }>;
 }
 
 export default function TestResults({
@@ -24,22 +25,12 @@ export default function TestResults({
   allTestResults,
   selectedModel,
   flow,
+  initialTestResults = [],
 }: TestResultsProps) {
-  const [selectedTestResults, setSelectedTestResults] = useState<
-    Array<{ gid: string; cid: string; id: number }>
-  >(() => {
-    // Find test results that match the required algorithms
-    const matchingResults = allTestResults.filter((result) =>
-      requiredAlgorithms.some(
-        (algo) => algo.gid === result.gid && algo.cid === result.cid
-      )
+  const [selectedTestResults, setSelectedTestResults] =
+    useState<Array<{ gid: string; cid: string; id: number }>>(
+      initialTestResults
     );
-    return matchingResults.map((result) => ({
-      gid: result.gid,
-      cid: result.cid,
-      id: result.id,
-    }));
-  });
 
   const getTestResultsForAlgorithm = (algorithm: Algorithm) => {
     return allTestResults.filter(

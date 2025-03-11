@@ -16,6 +16,7 @@ interface UserInputsProps {
   allChecklists: Checklist[];
   allFairnessTrees: FairnessTree[];
   flow: string;
+  initialInputBlocks?: Array<{ gid: string; cid: string; id: number }>;
 }
 
 interface GroupedChecklists {
@@ -29,17 +30,16 @@ export default function UserInputs({
   allChecklists,
   allFairnessTrees,
   flow,
+  initialInputBlocks = [],
 }: UserInputsProps) {
-  // Find the group name from the first checklist that matches any of our input blocks
+  // Initialize selectedGroup based on initialInputBlocks
   const initialGroup = (() => {
-    const checklistBlock = requiredInputBlocks.find(
+    const checklistBlock = initialInputBlocks.find(
       (block) => block.gid === 'aiverify.stock.process_checklist'
     );
     if (checklistBlock) {
       const matchingChecklist = allChecklists.find(
-        (checklist) =>
-          checklist.gid === checklistBlock.gid &&
-          checklist.cid === checklistBlock.cid
+        (checklist) => checklist.id === checklistBlock.id
       );
       return matchingChecklist?.group || '';
     }
@@ -48,16 +48,16 @@ export default function UserInputs({
 
   const [selectedGroup, setSelectedGroup] = useState<string>(initialGroup);
 
-  // Initialize fairness trees based on required input blocks
+  // Initialize fairness trees based on initialInputBlocks
   const initialFairnessTrees = (() => {
-    const fairnessBlocks = requiredInputBlocks.filter(
+    const fairnessBlocks = initialInputBlocks.filter(
       (block) => block.gid !== 'aiverify.stock.process_checklist'
     );
 
     return fairnessBlocks.reduce(
       (acc, block) => {
         const matchingTree = allFairnessTrees.find(
-          (tree) => tree.gid === block.gid && tree.cid === block.cid
+          (tree) => tree.id === block.id
         );
         if (matchingTree?.id) {
           acc[`${block.gid}-${block.cid}`] = matchingTree.id.toString();

@@ -189,6 +189,7 @@ export default function ClientSelectData({
           onTestResultsChange={handleTestResultsChange}
           allTestResults={allTestResults}
           selectedModel={selectedModel}
+          initialTestResults={initialTestResults}
         />
         <UserInputs
           projectId={projectId}
@@ -197,6 +198,7 @@ export default function ClientSelectData({
           onInputBlocksChange={handleInputBlocksChange}
           allChecklists={allChecklists}
           allFairnessTrees={allFairnessTrees}
+          initialInputBlocks={initialInputBlocks}
         />
       </div>
 
