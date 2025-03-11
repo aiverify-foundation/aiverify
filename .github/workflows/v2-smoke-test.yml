@@ -99,7 +99,7 @@ jobs:
             --model_type CLASSIFICATION \
             --run_pipeline \
             --sensitive_features_list gender
-          cp results.json ${GITHUB_WORKSPACE}/smoke-testing/fixtures/
+          cp output/results.json ${GITHUB_WORKSPACE}/smoke-testing/fixtures/
           deactivate
           cd ${GITHUB_WORKSPACE}
 
