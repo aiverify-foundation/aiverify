@@ -11,10 +11,21 @@ import {
   zoom_blur_images,
 } from "./blur-corruption-images.js";
 
-<DisplayImages
-  id={props.id}
-  images={vmotion_blur_images}
-  data={props.getResults(algo_cid).results}
-  corruption_index={4}
-  corruption_name="Blur: Vertical Motion Blur"
-/>
+export const VMotionSamples = (props) => {
+  const artifactUrls = props.getArtifacts(algo_cid);
+  const vmotionUrls = artifactUrls.length > 0 
+    ? artifactUrls.filter(url => url.includes('Vertical_Motion_Blur'))
+    : vmotion_blur_images;
+
+  return (
+    <DisplayImages
+      id={props.id}
+      images={vmotionUrls}
+      data={props.getResults(algo_cid).results}
+      corruption_index={4}
+      corruption_name="Blur: Vertical Motion Blur"
+    />
+  );
+}
+
+<VMotionSamples {...props} />

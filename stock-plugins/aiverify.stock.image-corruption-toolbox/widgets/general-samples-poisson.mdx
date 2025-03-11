@@ -8,10 +8,21 @@ import {
   snp_general_images,
 } from "./general-corruption-images.js";
 
-<DisplayImages
-  id={props.id}
-  images={poisson_general_images}
-  data={props.getResults(algo_cid).results}
-  corruption_index={1}
-  corruption_name="General: Poisson Noise"
-/>
+export const PoissonSamples = (props) => {
+  const artifactUrls = props.getArtifacts(algo_cid);
+  const poissonUrls = artifactUrls.length > 0 
+    ? artifactUrls.filter(url => url.includes('Poisson_Noise'))
+    : poisson_general_images;
+
+  return (
+    <DisplayImages
+      id={props.id}
+      images={poissonUrls}
+      data={props.getResults(algo_cid).results}
+      corruption_index={1}
+      corruption_name="General: Poisson Noise"
+    />
+  );
+}
+
+<PoissonSamples {...props} />

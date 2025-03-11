@@ -14,7 +14,6 @@ import { Skeleton } from '@/app/inputs/checklists/[groupId]/[checklistId]/utils/
 import type { MDXProps } from '@/app/inputs/checklists/[groupId]/[checklistId]/utils/types';
 import { Modal } from '@/lib/components/modal';
 import styles from './ChecklistDetail.module.css';
-
 interface ChecklistDetailProps {
   id: string;
 }

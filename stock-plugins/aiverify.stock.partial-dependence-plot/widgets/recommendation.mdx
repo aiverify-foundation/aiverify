@@ -1,9 +1,10 @@
-<div>
-    <span>
-    <b>Recommendation(s)</b>
-    </span>
+export const cid = "recommendation";
 
-    <span>
-    You may consider removing features with flat trends. Removing unimportant features may increase accuracy of the model, decrease computational cost, and decrease the possibility of data leakage.
-    </span>
+<div style={{ width: props.width, height: props.height, padding: "10px" }}>
+  <div style={{ fontWeight: "bold", marginBottom: "5px" }}>
+    {props.properties.title || "Recommendation(s)"}
+  </div>
+  <div>
+    {props.properties.recommendationText || "You may consider removing features with flat trends. Removing unimportant features may increase accuracy of the model, decrease computational cost, and decrease the possibility of data leakage."}
+  </div>
 </div>

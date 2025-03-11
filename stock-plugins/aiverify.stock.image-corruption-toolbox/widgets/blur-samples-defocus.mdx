@@ -11,10 +11,21 @@ import {
   zoom_blur_images,
 } from "./blur-corruption-images.js";
 
-<DisplayImages
-  id={props.id}
-  images={defocus_blur_images}
-  data={props.getResults(algo_cid).results}
-  corruption_index={2}
-  corruption_name="Blur: Defocus Blur"
-/>
+export const DefocusSamples = (props) => {
+  const artifactUrls = props.getArtifacts(algo_cid);
+  const defocusUrls = artifactUrls.length > 0 
+    ? artifactUrls.filter(url => url.includes('Defocus_Blur'))
+    : defocus_blur_images;
+
+  return (
+    <DisplayImages
+      id={props.id}
+      images={defocusUrls}
+      data={props.getResults(algo_cid).results}
+      corruption_index={1}
+      corruption_name="Blur: Defocus Blur"
+    />
+  );
+}
+
+<DefocusSamples {...props} />

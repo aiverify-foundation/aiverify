@@ -65,6 +65,20 @@ const LayoutHeader = () => {
                 Data
               </Link>
             </li>
+            <li className="border-b border-secondary-300 py-2">
+              <Link
+                href="/results"
+                className="block hover:text-secondary-300">
+                Results
+              </Link>
+            </li>
+            <li className="border-b border-secondary-300 py-2">
+              <Link
+                href="/inputs"
+                className="block hover:text-secondary-300">
+                Inputs
+              </Link>
+            </li>
             <li
               className="border-b border-secondary-300 py-2"
               role="menuitem">
