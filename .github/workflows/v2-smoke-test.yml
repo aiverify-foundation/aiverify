@@ -124,6 +124,8 @@ jobs:
       - name: Run Smoke Test
         run: |
           cd smoke-testing
+          npm install
+          npx playwright install --with-deps
           ENDPOINT=http://127.0.0.1:3000 npx playwright test tests/03-smoke.spec.js
 
       - name: Upload Playwright Traces
