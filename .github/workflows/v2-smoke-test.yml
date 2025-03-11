@@ -61,7 +61,7 @@ jobs:
           source .venv/bin/activate
           pip install -e .
           cd ${GITHUB_WORKSPACE}
-          echo "ROOT_PATH=${GITHUB_WORKSPACE}/stock-plugins/user_defined_files" >> "$GITHUB_ENV"
+          echo "ROOT_PATH=${GITHUB_WORKSPACE}/stock-plugins/user_defined_files" >> $GITHUB_ENV
           cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions/
           pip install -e .
           python -m aiverify_digital_corruptions \
