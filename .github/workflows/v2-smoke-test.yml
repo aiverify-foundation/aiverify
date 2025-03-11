@@ -84,6 +84,11 @@ jobs:
 
       - name: Create Zip Test Results using FMTC Toolbox
         run: |
+          cd aiverify-test-engine
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install -e .
+          cd ${GITHUB_WORKSPACE}
           cd stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification/
           pip install -e .
           python -m aiverify_fairness_metrics_toolbox_for_classification \
