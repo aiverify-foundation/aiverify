@@ -8,10 +8,21 @@ import {
   snp_general_images,
 } from "./general-corruption-images.js";
 
-<DisplayImages
-  id={props.id}
-  images={snp_general_images}
-  data={props.getResults(algo_cid).results}
-  corruption_index={2}
-  corruption_name="General: Salt and Pepper Noise"
-/>
+export const SNPSamples = (props) => {
+  const artifactUrls = props.getArtifacts(algo_cid);
+  const snpUrls = artifactUrls.length > 0 
+    ? artifactUrls.filter(url => url.includes('Salt_and_Pepper_Noise'))
+    : snp_general_images;
+
+  return (
+    <DisplayImages
+      id={props.id}
+      images={snpUrls}
+      data={props.getResults(algo_cid).results}
+      corruption_index={2}
+      corruption_name="General: Salt and Pepper Noise"
+    />
+  );
+}
+
+<SNPSamples {...props} />

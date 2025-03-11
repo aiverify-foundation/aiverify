@@ -1,3 +1,5 @@
+'use client';
+
 import { getMDXComponent, MDXContentProps } from 'mdx-bundler/client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import React from 'react';
@@ -23,6 +25,11 @@ import {
   Plugin,
   InputBlockDataPayload,
 } from '@/app/types';
+import {
+  GRID_WIDTH,
+  GRID_COLUMNS,
+  GRID_ROW_HEIGHT,
+} from './dimensionsConstants';
 import { WidgetPropertiesDrawer } from './drawers/widgetPropertiesDrawer';
 import { GridItemContextMenu } from './gridItemContextMenu';
 import { editorInputClassName } from './hocAddTextEditFuncitonality';
@@ -36,7 +43,7 @@ import { WidgetErrorBoundary } from './widgetErrorBoundary';
 
 export const gridItemRootClassName = 'grid-item-root';
 type requiredStyles =
-  `grid-item-root relative h-auto w-full min-h-full${string}`; // strictly required styles
+  `grid-item-root relative h-full w-full flex flex-col${string}`; // strictly required styles
 
 type GridItemComponentProps = {
   /** Array of all available plugins in the system, used for finding dependencies and metadata */
@@ -104,12 +111,18 @@ type MdxComponentProps = MDXContentProps & {
   inputBlockData: InputBlockDataPayload;
   getIBData: (cid: string) => InputBlockDataPayload;
   getResults: (cid: string) => TestResultData;
+  getArtifacts: (cid: string) => string[];
+  getArtifactURL: (
+    algo_gid: string | null,
+    algo_cid: string,
+    pathname: string
+  ) => string;
   width?: number;
   height?: number;
 };
 
 const itemStyle: requiredStyles =
-  'grid-item-root relative h-auto w-full min-h-full';
+  'grid-item-root relative h-full w-full flex flex-col';
 
 function GridItemMain({
   allAvalaiblePlugins,
@@ -166,15 +179,32 @@ function GridItemMain({
 
   /**
    * Stores the current width and height of the widget
-   * Updated by ResizeObserver when the widget's size changes
+   * Calculated from layout dimensions and grid constants
    */
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const dimensions = useMemo(() => {
+    const columnWidth = GRID_WIDTH / GRID_COLUMNS;
+    const rowHeight = GRID_ROW_HEIGHT;
+    console.log('layout dim w n h', layout);
+
+    return {
+      width: layout.w * columnWidth,
+      height: layout.h * rowHeight,
+    };
+  }, [layout.w, layout.h]);
 
   /**
    * Determines if the widget has editable properties
    * Controls whether the edit button is shown in the context menu
    */
-  const enableEditing = widget.properties && widget.properties.length > 0;
+  const enableEditing = useMemo(() => {
+    if (Array.isArray(widget.properties)) {
+      return widget.properties.length > 0;
+    }
+    if (typeof widget.properties === 'object' && widget.properties !== null) {
+      return Object.keys(widget.properties).length > 0;
+    }
+    return false;
+  }, [widget.properties]);
 
   /**
    * Prepares the list of test results used by this widget for display in the properties drawer
@@ -282,7 +312,14 @@ function GridItemMain({
             result.testResultId
           );
           if (testResult && testResult.artifacts) {
-            acc[`${widget.gid}:${result.cid}`] = testResult.artifacts;
+            // Transform artifact paths into full URLs
+            console.log('host', process.env.NEXT_PUBLIC_APIGW_HOST);
+            console.log('testResult', testResult.artifacts);
+            const artifactUrls = testResult.artifacts.map(
+              (artifactPath) =>
+                `${process.env.NEXT_PUBLIC_APIGW_HOST}/test_results/${result.testResultId}/artifacts/${artifactPath}`
+            );
+            acc[`${widget.gid}:${result.cid}`] = artifactUrls;
           } else {
             const mockData = findMockDataByTypeAndCid(
               widget.mockdata || [],
@@ -348,22 +385,6 @@ function GridItemMain({
     }
     return {};
   }, [inputBlockDatasUsed]);
-
-  /**
-   * Sets up a ResizeObserver to track the widget's dimensions
-   * Updates the dimensions state when the widget is resized
-   */
-  useEffect(() => {
-    if (!gridItemRef.current) return;
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      const { width, height } = entries[0].contentRect;
-      setDimensions({ width, height });
-    });
-
-    resizeObserver.observe(gridItemRef.current);
-    return () => resizeObserver.disconnect();
-  }, []);
 
   /**
    * Cleanup function for the hide timeout
@@ -522,12 +543,26 @@ function GridItemMain({
    */
   const properties = useMemo(() => {
     if (!widget.properties) return {};
-    return widget.properties.reduce((props, property) => {
-      return {
-        ...props,
-        [property.key]: property.value || property.default || property.helper,
-      };
-    }, {});
+
+    // If properties is already an object, return it directly
+    if (
+      typeof widget.properties === 'object' &&
+      !Array.isArray(widget.properties)
+    ) {
+      return widget.properties;
+    }
+
+    // If properties is an array, reduce it to an object
+    if (Array.isArray(widget.properties)) {
+      return widget.properties.reduce((props, property) => {
+        return {
+          ...props,
+          [property.key]: property.value || property.default || property.helper,
+        };
+      }, {});
+    }
+
+    return {};
   }, [widget.properties]);
 
   return (
@@ -572,11 +607,14 @@ function GridItemMain({
       <div
         ref={gridItemRef}
         className={itemStyle}
+        style={{
+          width: dimensions.width,
+          height: dimensions.height,
+        }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}>
         {isResizing || isDragging ? (
-          // Show a placeholder during resize and dragging for better ux. Resizing charts is laggy
-          // because of observer responsiveness.
+          // Show a placeholder during resize and dragging for better ux
           <div className="h-auto w-full bg-gray-100" />
         ) : (
           // Render the actual widget content with error boundary protection
@@ -593,9 +631,23 @@ function GridItemMain({
               getResults={(cid: string) =>
                 testResultWidgetData[`${widget.gid}:${cid}`]
               }
-              getArtifacts={(cid: string) =>
-                widgetArtifacts[`${widget.gid}:${cid}`]
-              }
+              getArtifacts={(cid: string) => {
+                const urls = widgetArtifacts[`${widget.gid}:${cid}`];
+                return Array.isArray(urls) ? urls : [];
+              }}
+              getArtifactURL={(
+                algo_gid: string | null,
+                algo_cid: string,
+                pathname: string
+              ) => {
+                const gid = algo_gid || widget.gid;
+                const urls = widgetArtifacts[`${gid}:${algo_cid}`];
+                if (!Array.isArray(urls)) return '';
+
+                // Find the URL that matches the pathname
+                const matchingUrl = urls.find((url) => url.endsWith(pathname));
+                return matchingUrl || '';
+              }}
               width={dimensions.width}
               height={dimensions.height}
             />

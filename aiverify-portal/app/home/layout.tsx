@@ -1,8 +1,8 @@
+import Image from 'next/image';
 import React from 'react';
 import { ReactNode } from 'react';
-import Image from 'next/image';
 import { Icon, IconName } from '@/lib/components/IconSVG';
-import '../globals.css';
+import '@/app/globals.css';
 
 type LayoutProps = {
   children: ReactNode;
@@ -11,15 +11,16 @@ type LayoutProps = {
 const HomeLayout = ({ children }: LayoutProps) => {
   return (
     <div>
-      <header className="bg-primary-950/100 fixed top-0 left-0 right-0 z-50 flex h-16 items-center px-6 border-b border-primary-700 backdrop-blur-sm">
-        <div className="flex items-center justify-center flex-grow">
-            <div className="text-center">
+      <header className="bg-primary-950/100 fixed left-0 right-0 top-0 z-50 flex h-16 items-center border-b border-primary-700 px-6 backdrop-blur-sm">
+        <div className="flex flex-grow items-center justify-center">
+          <div className="text-center">
             <Image
-                src="/aiverify-logo-white.svg"
-                alt="AI Verify"
-                width={250} height={40}
+              src="/aiverify-logo-white.svg"
+              alt="AI Verify"
+              width={250}
+              height={40}
             />
-            </div>
+          </div>
         </div>
 
         {/* Right: Bell Icon */}
@@ -30,9 +31,9 @@ const HomeLayout = ({ children }: LayoutProps) => {
           />
         </div>
       </header>
-        <main className="mx-auto px-4 pt-[64px] sm:px-6 lg:max-w-[1520px] lg:px-8 xl:max-w-[1720px] xl:px-12">
-          {children}
-        </main>
+      <main className="mx-auto px-4 pt-[64px] sm:px-6 lg:max-w-[1520px] lg:px-8 xl:max-w-[1720px] xl:px-12">
+        {children}
+      </main>
     </div>
   );
 };

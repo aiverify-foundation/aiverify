@@ -1,8 +1,8 @@
+import Link from 'next/link';
+import { ChecklistsProvider } from '@/app/inputs/context/ChecklistsContext';
+import { ScaleIcon } from '@/app/inputs/utils/icons';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import { Card } from '@/lib/components/card/card';
-import Link from 'next/link';
-import { ScaleIcon } from '@/app/inputs/utils/icons';
-import { ChecklistsProvider } from '@/app/inputs/context/ChecklistsContext';
 
 export default async function InputsPage() {
   return (

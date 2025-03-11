@@ -3,23 +3,51 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import { ProjectOutput } from '@/app/canvas/utils/transformProjectOutputToState';
+import { TemplateOutput } from '@/app/canvas/utils/transformTemplateOutputToState';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 
-const CanvasHeader = () => {
+type CanvasHeaderProps = {
+  project?: ProjectOutput | TemplateOutput;
+};
+
+const CanvasHeader = ({ project }: CanvasHeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
+  // Format the timestamp
+  const formatTimestamp = (timestamp: string) => {
+    // Create a date object and format it for Singapore timezone
+    const date = new Date(timestamp);
+    return date.toLocaleString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
+      timeZone: 'Asia/Singapore',
+    });
+  };
+
   return (
     <header className="fixed left-0 right-0 top-0 z-50 flex h-16 items-center border-b border-primary-700 bg-primary-950 px-6 backdrop-blur-sm">
-      {/* Burger Icon */}
-      <div
-        className="relative flex cursor-pointer items-center"
-        onClick={toggleMenu}>
-        <Icon
-          name={IconName.BurgerMenu}
-          svgClassName="fill-white dark:fill-white"
-        />
+      {/* Burger Icon and Autosave */}
+      <div className="flex items-center gap-4">
+        <div
+          className="relative flex cursor-pointer items-center"
+          onClick={toggleMenu}>
+          <Icon
+            name={IconName.BurgerMenu}
+            svgClassName="fill-white dark:fill-white"
+          />
+        </div>
+        {project?.updated_at && (
+          <span className="text-sm text-gray-400">
+            Autosaved at {formatTimestamp(project.updated_at)}
+          </span>
+        )}
       </div>
 
       {/* Menu Dropdown */}
@@ -45,6 +73,20 @@ const CanvasHeader = () => {
                 href="/data"
                 className="block hover:text-secondary-300">
                 Data
+              </Link>
+            </li>
+            <li className="border-b border-secondary-300 py-2">
+              <Link
+                href="/results"
+                className="block hover:text-secondary-300">
+                Results
+              </Link>
+            </li>
+            <li className="border-b border-secondary-300 py-2">
+              <Link
+                href="/inputs"
+                className="block hover:text-secondary-300">
+                Inputs
               </Link>
             </li>
             <li className="border-b border-secondary-300 py-2">

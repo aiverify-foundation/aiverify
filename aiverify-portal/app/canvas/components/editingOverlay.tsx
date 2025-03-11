@@ -1,5 +1,7 @@
+'use client';
+
 import { getMDXComponent } from 'mdx-bundler/client';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { WidgetOnGridLayout } from '@/app/canvas/types';
 import { hocAddTextEditFunctionality } from './hocAddTextEditFuncitonality';
@@ -19,7 +21,7 @@ type EditingOverlayProps = {
  * There is a background overlay that is used to close the overlay when the user clicks outside of it.
  * The modal renders a form that contains the widget properties. It is rendered directly above the widget.
  * The form is submitted when the user clicks outside of it.
- * 
+ *
  * @see {@link /app/canvas/components/hocAddTextEditFuncitonality.tsx} to see which components are editable.
  */
 
@@ -29,6 +31,21 @@ function EditingOverlay({
   onClose,
 }: EditingOverlayProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
+  const [propertyValues, setPropertyValues] = useState<Record<string, string>>(
+    {}
+  );
+
+  // Initialize property values from widget properties
+  useEffect(() => {
+    if (widget.properties && widget.properties.length > 0) {
+      const initialValues: Record<string, string> = {};
+      widget.properties.forEach((prop) => {
+        initialValues[prop.key] =
+          prop.value !== undefined ? prop.value : prop.default || '';
+      });
+      setPropertyValues(initialValues);
+    }
+  }, [widget.properties]);
 
   useEffect(() => {
     // get the original element's bounding client rect for positioning and sizing the editing overlay
@@ -59,22 +76,24 @@ function EditingOverlay({
     return widget.properties.reduce((props, property) => {
       return {
         ...props,
-        [property.key]: property.value || property.default || property.helper,
+        [property.key]:
+          propertyValues[property.key] ||
+          property.value ||
+          property.default ||
+          property.helper,
       };
     }, {});
-  }, [widget, widget.properties]);
-
+  }, [widget.properties, propertyValues]);
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!widget.properties) return;
-    const formData = new FormData(e.target as HTMLFormElement);
-    const values = Object.fromEntries(formData);
+
     const updatedWidget: WidgetOnGridLayout = {
       ...widget,
-      properties: widget.properties?.map((prop) => ({
+      properties: widget.properties.map((prop) => ({
         ...prop,
-        value: values[prop.key] as string || prop.value,
+        value: propertyValues[prop.key] || prop.value,
       })),
     };
 
@@ -88,7 +107,15 @@ function EditingOverlay({
     }
   };
 
-  const editingOverlayRequiredStyles: EditingOverlayRequiredStyles = 'editing-overlay fixed inset-0 z-40 bg-transparent';
+  const handlePropertyChange = (key: string, value: string) => {
+    setPropertyValues((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
+  const editingOverlayRequiredStyles: EditingOverlayRequiredStyles =
+    'editing-overlay fixed inset-0 z-40 bg-transparent';
 
   return createPortal(
     <div
@@ -96,11 +123,12 @@ function EditingOverlay({
       onClick={handleBackgroundClick}>
       <div
         ref={overlayRef}
-        className="fixed z-50 border border-blue-500 bg-white">
+        className="fixed z-50 border border-blue-500 bg-white text-black">
         <form onSubmit={handleFormSubmit}>
           <EditableMDXComponent
             properties={properties}
             frontmatter={widget.mdx.frontmatter}
+            onPropertyChange={handlePropertyChange}
           />
         </form>
       </div>

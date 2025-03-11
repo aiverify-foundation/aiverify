@@ -10,12 +10,7 @@ import {
 type WidgetOnGridLayout = Widget & {
   mdx: MdxBundle;
   gridItemId: string;
-  testResultCompositeId: {
-    // TODO: review - probably redundant
-    pluginGid: string;
-    algoCid: string;
-    timeCreated: string;
-  } | null;
+  result?: unknown; // TODO: review
 };
 
 type PluginForGridLayout = Omit<Plugin, 'widgets'> & {
@@ -48,3 +43,5 @@ export type {
   InputBlockDataMapping,
   ArtifactsMapping,
 };
+
+export type { MdxBundle };
