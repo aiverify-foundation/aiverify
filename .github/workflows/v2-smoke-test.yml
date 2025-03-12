@@ -110,21 +110,21 @@ jobs:
           python3 -m venv .venv
           source .venv/bin/activate
           cd aiverify-apigw
-          pip install .[all]
+          pip install -e .
           python3 -m aiverify_apigw &
           cd ${GITHUB_WORKSPACE}
 
       - name: Install PORTAL
         run: |
           cd aiverify-portal
-          npm install
+          npm ci
           npm run dev &
           cd ${GITHUB_WORKSPACE}
 
       - name: Install Portal & Run Smoke Test
         run: |
           cd smoke-testing
-          npm install
+          npm ci
           npx playwright install --with-deps
           URL=http://127.0.0.1:3000 npx playwright test tests/03-smoke.spec.js
 
