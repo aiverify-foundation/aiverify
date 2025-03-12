@@ -103,14 +103,19 @@ jobs:
           deactivate
           cd ${GITHUB_WORKSPACE}
 
+      - name: Install AI Verify Shared Library
+        run: |
+          cd aiverify-shared-library
+          npm ci
+          npm run build -y
+          cd ${GITHUB_WORKSPACE}
+
       - name: Install APIGW & Start APIGW
         run: |
-          touch .env 
-          echo "APIGW_LOG_LEVEL=info" >> .env
           cd aiverify-apigw
-          python3 -m venv .venv
-          source .venv/bin/activate
-          bash install-amd64.sh
+          hatch shell
+          sh ./install-amd64.sh
+          npm link aiverify-shared-library
           python3 -m aiverify_apigw &
           cd ${GITHUB_WORKSPACE}
 
