@@ -113,6 +113,7 @@ jobs:
       - name: Install APIGW & Start APIGW
         run: |
           cd aiverify-apigw
+          pip install hatch
           hatch shell
           sh ./install-amd64.sh
           npm link aiverify-shared-library
