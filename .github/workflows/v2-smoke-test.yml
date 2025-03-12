@@ -58,6 +58,30 @@ jobs:
         run: |
           echo "ROOT_PATH=${{ github.workspace }}/stock-plugins/user_defined_files" >> $GITHUB_ENV
 
+      - name: Install AI Verify Shared Library
+        run: |
+          cd aiverify-shared-library
+          npm ci
+          npm run build -y
+          cd ${GITHUB_WORKSPACE}
+
+      - name: Install APIGW & Start APIGW
+        run: |
+          cd aiverify-apigw
+          pip install hatch
+          hatch shell &
+          sh ./install-amd64.sh
+          python3 -m aiverify_apigw &
+          cd ${GITHUB_WORKSPACE}
+
+      - name: Install PORTAL
+        run: |
+          # npm install aiverify-shared-library
+          cd aiverify-portal
+          npm ci
+          npm run dev &
+          cd ${GITHUB_WORKSPACE}
+
       - name: Create Zip Test Results using Digital Corruption
         run: |
           cd aiverify-test-engine
@@ -101,30 +125,6 @@ jobs:
             --sensitive_features_list gender
           cp output/results.json ${GITHUB_WORKSPACE}/smoke-testing/fixtures/
           deactivate
-          cd ${GITHUB_WORKSPACE}
-
-      - name: Install AI Verify Shared Library
-        run: |
-          cd aiverify-shared-library
-          npm ci
-          npm run build -y
-          cd ${GITHUB_WORKSPACE}
-
-      - name: Install APIGW & Start APIGW
-        run: |
-          cd aiverify-apigw
-          pip install hatch
-          hatch shell &
-          sh ./install-amd64.sh
-          python3 -m aiverify_apigw &
-          cd ${GITHUB_WORKSPACE}
-
-      - name: Install PORTAL
-        run: |
-          npm install aiverify-shared-library
-          cd aiverify-portal
-          npm ci
-          npm run dev &
           cd ${GITHUB_WORKSPACE}
 
       - name: Run Smoke Test
