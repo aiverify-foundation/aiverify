@@ -107,10 +107,10 @@ jobs:
         run: |
           touch .env 
           echo "APIGW_LOG_LEVEL=info" >> .env
+          cd aiverify-apigw
           python3 -m venv .venv
           source .venv/bin/activate
-          cd aiverify-apigw
-          pip install -e .
+          bash install-amd64.sh
           python3 -m aiverify_apigw &
           cd ${GITHUB_WORKSPACE}
 
