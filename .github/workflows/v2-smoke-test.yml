@@ -144,4 +144,4 @@ jobs:
         with:
           name: playwright-trace-v2.0-smoke-testing-${{ github.run_id }}
           path: |
-            ${GITHUB_WORKSPACE}/smoke-testing/test-results/
+            ${{ github.workspace }}/smoke-testing/test-results/
