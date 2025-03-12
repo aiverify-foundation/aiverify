@@ -62,7 +62,7 @@ jobs:
         run: |
           cd aiverify-shared-library
           npm ci
-          npm run build -y
+          npm run build
           cd ${GITHUB_WORKSPACE}
 
       - name: Install APIGW & Start APIGW
@@ -73,12 +73,12 @@ jobs:
           pip install hatch
           hatch shell &
           sh ./install-amd64.sh
+          npm link aiverify-shared-library
           python3 -m aiverify_apigw &
           cd ${GITHUB_WORKSPACE}
 
       - name: Install PORTAL
         run: |
-          # npm install aiverify-shared-library
           cd aiverify-portal
           touch .env
           echo "APIGW_HOST=http://localhost:4000" >> .env
