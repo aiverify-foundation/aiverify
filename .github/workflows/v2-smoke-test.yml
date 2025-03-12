@@ -114,8 +114,8 @@ jobs:
         run: |
           cd aiverify-apigw
           pip install hatch
-          hatch shell
-          # bash ./install-amd64.sh
+          hatch shell &
+          sh ./install-amd64.sh
           npm link aiverify-shared-library
           python3 -m aiverify_apigw &
           cd ${GITHUB_WORKSPACE}
