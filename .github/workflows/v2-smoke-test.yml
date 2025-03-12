@@ -115,7 +115,7 @@ jobs:
           cd aiverify-apigw
           pip install hatch
           hatch shell
-          sh ./install-amd64.sh
+          bash ./install-amd64.sh
           npm link aiverify-shared-library
           python3 -m aiverify_apigw &
           cd ${GITHUB_WORKSPACE}
@@ -127,7 +127,7 @@ jobs:
           npm run dev &
           cd ${GITHUB_WORKSPACE}
 
-      - name: Install Portal & Run Smoke Test
+      - name: Run Smoke Test
         run: |
           cd smoke-testing
           npm ci
