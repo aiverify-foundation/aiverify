@@ -68,6 +68,9 @@ jobs:
       - name: Install APIGW & Start APIGW
         run: |
           cd aiverify-apigw
+          touch .env
+          echo "MONGODB_URI=mongodb://localhost:27017 \ DB_NAME=aiverify \PORT=4000" >> .env
+          cat .env
           pip install hatch
           hatch shell &
           sh ./install-amd64.sh
@@ -78,6 +81,9 @@ jobs:
         run: |
           # npm install aiverify-shared-library
           cd aiverify-portal
+          touch .env
+          echo "APIGW_HOST=http://localhost:4000" >> .env
+          cat .env
           npm ci
           npm run dev &
           cd ${GITHUB_WORKSPACE}
