@@ -116,12 +116,12 @@ jobs:
           pip install hatch
           hatch shell &
           sh ./install-amd64.sh
-          npm link aiverify-shared-library
           python3 -m aiverify_apigw &
           cd ${GITHUB_WORKSPACE}
 
       - name: Install PORTAL
         run: |
+          npm install aiverify-shared-library
           cd aiverify-portal
           npm ci
           npm run dev &
