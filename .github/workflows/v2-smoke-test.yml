@@ -114,23 +114,19 @@ jobs:
           python3 -m aiverify_apigw &
           cd ${GITHUB_WORKSPACE}
 
-      # - name: Install PORTAL
-      #   run: |
-      #     cd aiverify-portal
-      #     npm install
-      #     npm run dev &
-      #     cd ${GITHUB_WORKSPACE}
-
-      - name: Install Portal & Run Smoke Test
+      - name: Install PORTAL
         run: |
           cd aiverify-portal
           npm install
           npm run dev &
           cd ${GITHUB_WORKSPACE}
+
+      - name: Install Portal & Run Smoke Test
+        run: |
           cd smoke-testing
           npm install
           npx playwright install --with-deps
-          URL=http://localhost:3000 npx playwright test tests/03-smoke.spec.js
+          URL=http://127.0.0.1:3000 npx playwright test tests/03-smoke.spec.js
 
       - name: Upload Playwright Traces
         if: always()
