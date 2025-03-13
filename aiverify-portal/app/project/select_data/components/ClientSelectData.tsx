@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Checklist, FairnessTree } from '@/app/inputs/utils/types';
 import { TestModel } from '@/app/models/utils/types';
-import { Algorithm, InputBlock } from '@/app/types';
+import { Algorithm, InputBlock, InputBlockData } from '@/app/types';
 import { TestResult } from '@/app/types';
 import { UserFlows } from '@/app/userFlowsEnum';
 import { Button } from '@/lib/components/TremurButton';
@@ -22,6 +22,7 @@ interface ClientSelectDataProps {
   allTestResults: TestResult[];
   allChecklists: Checklist[];
   allFairnessTrees: FairnessTree[];
+  allInputBlockDatas: InputBlockData[];
   flow: string;
   initialModelId?: string;
   initialTestResults?: { id: number; gid: string; cid: string }[];
@@ -48,6 +49,7 @@ export default function ClientSelectData({
   allTestResults,
   allChecklists,
   allFairnessTrees,
+  allInputBlockDatas,
   flow,
   initialModelId,
   initialTestResults = [],
@@ -198,6 +200,7 @@ export default function ClientSelectData({
           onInputBlocksChange={handleInputBlocksChange}
           allChecklists={allChecklists}
           allFairnessTrees={allFairnessTrees}
+          allInputBlockDatas={allInputBlockDatas}
           initialInputBlocks={initialInputBlocks}
         />
       </div>

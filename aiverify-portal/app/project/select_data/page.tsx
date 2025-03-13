@@ -6,12 +6,14 @@ import {
 import { getAllChecklists } from '@/lib/fetchApis/getAllChecklists';
 import { getAllFairnessTrees } from '@/lib/fetchApis/getAllFairnessTrees';
 import { getTestModels } from '@/lib/fetchApis/getAllModels';
+import { getInputBlockDatas } from '@/lib/fetchApis/getInputBlockDatas';
 import { getPlugins } from '@/lib/fetchApis/getPlugins';
 import { populatePluginsMdxBundles } from '@/lib/fetchApis/getPlugins';
 import { getProjects } from '@/lib/fetchApis/getProjects';
 import { getTestResults } from '@/lib/fetchApis/getTestResults';
 import ClientSelectData from './components/ClientSelectData';
 import SelectDataHeader from './components/SelectDataHeader';
+
 export default async function SelectDataPage({
   searchParams,
 }: {
@@ -36,6 +38,7 @@ export default async function SelectDataPage({
   const allTestResults = await getTestResults();
   const allChecklists = await getAllChecklists();
   const allFairnessTrees = await getAllFairnessTrees();
+  const allInputBlockDatas = await getInputBlockDatas();
 
   console.log('Project data:', {
     testModelId: project.testModelId,
@@ -116,6 +119,7 @@ export default async function SelectDataPage({
             allTestResults={allTestResults}
             allChecklists={allChecklists}
             allFairnessTrees={allFairnessTrees}
+            allInputBlockDatas={allInputBlockDatas}
             flow={flow}
             initialModelId={initialModelId}
             initialTestResults={initialTestResults}

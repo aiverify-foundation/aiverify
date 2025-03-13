@@ -245,19 +245,20 @@ type Widget = {
   gid: string;
 };
 
-type InputBlock = {
-  cid: string;
+export interface InputBlock {
   gid: string;
+  cid: string;
   name: string;
-  version: string | null;
-  author: string | null;
-  tags: string | null;
-  description: string | null;
-  group: string;
-  groupNumber: string | null;
-  width: string;
-  fullScreen: boolean;
-};
+  description: string;
+  group?: string;
+  width?: string;
+  mdxContent?: string;
+  version?: string | null;
+  author?: string | null;
+  tags?: string | null;
+  groupNumber?: string | null;
+  fullScreen?: boolean;
+}
 
 type InputBlockData = {
   gid: string;
@@ -305,7 +306,6 @@ export type {
   TestResultData,
   InputBlockData,
   InputBlockDataPayload,
-  InputBlock,
   FormState,
   DataColumn,
   ProjectInfo,
