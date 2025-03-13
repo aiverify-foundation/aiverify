@@ -36,7 +36,7 @@ const UploadPage: React.FC<UploadPageProps> = () => {
 
   const handleBackProject = () => {
     if (isProjectFlow) {
-      window.history.back();
+      router.push(`/project/select_data?flow=${flow}&projectId=${projectId}`);
     }
   };
 

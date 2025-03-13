@@ -151,10 +151,16 @@ export default function ChecklistDetailPage() {
 
   const handleBack = () => {
     if (isProjectFlow) {
-      router.push(`/project/select_data?flow=${flow}&projectId=${projectId}`);
+      router.push(
+        `/inputs/checklists/upload/manual?flow=${flow}&projectId=${projectId}`
+      );
     } else {
       router.push('/inputs/checklists/upload/manual');
     }
+  };
+
+  const handleProjectBack = () => {
+    router.push(`/project/select_data?flow=${flow}&projectId=${projectId}`);
   };
 
   const handleNewSet = async () => {
@@ -197,7 +203,7 @@ export default function ChecklistDetailPage() {
         <div className="mx-auto h-[calc(100vh-200px)] px-4 py-6">
           <LayoutHeader
             projectId={projectId}
-            onBack={handleBack}
+            onBack={handleProjectBack}
           />
           {/* Breadcrumb navigation */}
           <div className="flex">
