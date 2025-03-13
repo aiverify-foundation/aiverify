@@ -30,7 +30,7 @@ const ActionButtons: React.FC = () => {
           }}
           onSecondaryBtnClick={() => {
             setIsModalOpen(false);
-            window.location.href = '/inputs/checklists/upload';
+            window.location.href = '/inputs/checklists/upload/manual';
           }}>
           <p className="text-primary-100">
             Choose an option to add checklists:

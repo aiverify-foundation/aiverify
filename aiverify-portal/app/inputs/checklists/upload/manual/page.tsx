@@ -260,10 +260,16 @@ function ChecklistsPageContent() {
 
   const handleBack = () => {
     if (isProjectFlow) {
-      router.push(`/project/select_data?flow=${flow}&projectId=${projectId}`);
+      router.push(
+        `/inputs/checklists/upload?flow=${flow}&projectId=${projectId}`
+      );
     } else {
-      router.push('/inputs/checklists/upload');
+      router.push('/inputs/checklists');
     }
+  };
+
+  const handleProjectBack = () => {
+    router.push(`/project/select_data?flow=${flow}&projectId=${projectId}`);
   };
 
   const closeModal = () => {
@@ -277,7 +283,7 @@ function ChecklistsPageContent() {
     <div className="flex h-[calc(100vh-50px)] flex-col px-4 py-6">
       <LayoutHeader
         projectId={projectId}
-        onBack={handleBack}
+        onBack={handleProjectBack}
       />
       {/* Breadcrumb navigation */}
       <div className="flex">

@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 import * as ReactJSXRuntime from 'react/jsx-runtime';
 import { useMDXSummaryBundle } from '@/app/inputs/checklists/[groupId]/hooks/useMDXSummaryBundle';
 import { useChecklists } from '@/app/inputs/checklists/upload/context/ChecklistsContext';
+import { Checklist, InputBlock } from '@/app/inputs/utils/types';
 import { Card } from '@/lib/components/card/card';
 
 //todo: replace any type
@@ -102,11 +103,10 @@ const ChecklistMDX: React.FC<ChecklistMDXProps> = ({ checklist }) => {
 };
 
 const GroupDetail: React.FC = () => {
-  const { checklists, setSelectedChecklist } = useChecklists();
+  const { checklists } = useChecklists();
   const router = useRouter();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleChecklistClick = (checklist: any) => {
+  const handleChecklistClick = (checklist: Checklist) => {
     const searchParams = new URLSearchParams(window.location.search);
     const flow = searchParams.get('flow');
     const projectId = searchParams.get('projectId');
@@ -134,7 +134,9 @@ const GroupDetail: React.FC = () => {
           }}
           cardColor="var(--color-secondary-950)"
           enableTiltEffect={false}
-          onClick={() => handleChecklistClick(checklist)}>
+          onClick={() =>
+            handleChecklistClick(checklist as unknown as InputBlock)
+          }>
           <div className="flex w-full flex-col gap-2">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-medium transition-colors duration-200 group-hover:text-primary-400">
