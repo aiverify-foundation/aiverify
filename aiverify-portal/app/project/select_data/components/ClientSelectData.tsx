@@ -206,15 +206,17 @@ export default function ClientSelectData({
       </div>
 
       <div className="flex justify-between">
-        <Link href={backButtonLink}>
-          <Button
-            className="w-[130px] gap-4 p-2 text-white"
-            variant="secondary">
-            <RiArrowLeftLine /> Back
-          </Button>
-        </Link>
+        {flow !== UserFlows.NewProjectWithNewTemplateAndResults && (
+          <Link href={backButtonLink}>
+            <Button
+              className="w-[130px] gap-4 p-2 text-white"
+              variant="secondary">
+              <RiArrowLeftLine /> Back
+            </Button>
+          </Link>
+        )}
         <Button
-          className="w-[130px] gap-4 p-2 text-white"
+          className={`w-[130px] gap-4 p-2 text-white ${flow === UserFlows.NewProjectWithNewTemplateAndResults ? 'ml-auto' : 'w-[130px]'}`}
           variant="secondary"
           onClick={handleNext}>
           Next <RiArrowRightLine />

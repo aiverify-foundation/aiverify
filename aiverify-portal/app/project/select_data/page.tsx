@@ -3,6 +3,7 @@ import {
   transformProjectOutputToState,
   ProjectOutput,
 } from '@/app/canvas/utils/transformProjectOutputToState';
+import { UserFlows } from '@/app/userFlowsEnum';
 import { getAllChecklists } from '@/lib/fetchApis/getAllChecklists';
 import { getAllFairnessTrees } from '@/lib/fetchApis/getAllFairnessTrees';
 import { getTestModels } from '@/lib/fetchApis/getAllModels';
@@ -120,7 +121,11 @@ export default async function SelectDataPage({
             allChecklists={allChecklists}
             allFairnessTrees={allFairnessTrees}
             allInputBlockDatas={allInputBlockDatas}
-            flow={flow}
+            flow={
+              flow === UserFlows.EditExistingProject
+                ? UserFlows.NewProjectWithNewTemplateAndResults
+                : flow
+            }
             initialModelId={initialModelId}
             initialTestResults={initialTestResults}
             initialInputBlocks={initialInputBlocks}
