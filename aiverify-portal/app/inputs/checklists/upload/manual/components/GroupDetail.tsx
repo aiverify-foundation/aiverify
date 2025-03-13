@@ -107,9 +107,16 @@ const GroupDetail: React.FC = () => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleChecklistClick = (checklist: any) => {
-    setSelectedChecklist(checklist);
-    router.push(`/inputs/checklists/upload/manual/${checklist.cid}`);
-    router.refresh();
+    const searchParams = new URLSearchParams(window.location.search);
+    const flow = searchParams.get('flow');
+    const projectId = searchParams.get('projectId');
+
+    let checklistUrl = `/inputs/checklists/upload/manual/${checklist.cid}`;
+    if (flow && projectId) {
+      checklistUrl += `?flow=${flow}&projectId=${projectId}`;
+    }
+
+    router.push(checklistUrl);
   };
 
   return (
