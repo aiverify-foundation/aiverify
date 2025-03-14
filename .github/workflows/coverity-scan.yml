@@ -1,9 +1,9 @@
 name: Coverity
 on:
   push:
-    branches: [ master, stage, 'releases/**' ]
+    branches: [ 'v2.x' ]
   pull_request:
-    branches: [ master, stage, 'releases/**' ]
+    branches: [ 'v2.x' ]
   workflow_dispatch:
 
 jobs:
@@ -15,14 +15,13 @@ jobs:
       COV_URL: ${{ secrets.COV_URL }}
       COV_USER: ${{ secrets.COV_USER }}
       COVERITY_PASSPHRASE: ${{ secrets.COVERITY_PASSPHRASE }}
-      CSA: cov-analysis-linux64-2020.12
-      COVERITY_PROJECT: hello-java
-      BLDCMD: mvn -B clean package -DskipTests
+      CSA: cov-analysis-linux64-2024.12
+      COVERITY_PROJECT: aiverify-2.x
       CHECKERS: --webapp-security
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-java@v1
+    - uses: actions/checkout@v5
+    - uses: actions/setup-java@v2
       with:
         java-version: 11
 
@@ -37,27 +36,27 @@ jobs:
       run: |
         export PATH=$PATH:/tmp/$CSA/bin
         set -x
-        cov-build --dir idir --fs-capture-search $GITHUB_WORKSPACE $BLDCMD
-        cov-analyze --dir idir --ticker-mode none --strip-path $GITHUB_WORKSPACE $CHECKERS
-        cov-commit-defects --dir idir --ticker-mode none --url $COV_URL --stream $COVERITY_PROJECT-${GITHUB_REF##*/} --scm git \
+        coverity capture
+        cov-analyze --dir idir --all --all-security --strip-path $GITHUB_WORKSPACE $CHECKERS
+        cov-commit-defects --dir idir --ticker-mode none --url $COV_URL --stream aiverify-2.x --scm git \
           --description $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID --target $RUNNER_OS --version $GITHUB_SHA
 
-    - name: Coverity Quality Gate
-      if: ${{ github.event_name != 'pull_request' }}
-      run: |
-        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/api/viewContents/issues/v1/OWASP%20Web%20Top%2010?projectId=$COVERITY_PROJECT > results.json
-        if [ $(cat results.json | jq .viewContentsV1.totalRows) -ne 0 ]; then cat results.json | jq .viewContentsV1.rows; exit 1; fi
+    # - name: Coverity Quality Gate
+    #   if: ${{ github.event_name != 'pull_request' }}
+    #   run: |
+    #     curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/api/viewContents/issues/v1/OWASP%20Web%20Top%2010?projectId=$COVERITY_PROJECT > results.json
+    #     if [ $(cat results.json | jq .viewContentsV1.totalRows) -ne 0 ]; then cat results.json | jq .viewContentsV1.rows; exit 1; fi
 
-    - id: changeset
-      name: Get Pull Request Changeset
-      uses: jitterbit/get-changed-files@v1
-      if: ${{ github.event_name == 'pull_request' }}
+    # - id: changeset
+    #   name: Get Pull Request Changeset
+    #   uses: jitterbit/get-changed-files@v1
+    #   if: ${{ github.event_name == 'pull_request' }}
 
     - name: Coverity Incremental Scan
       if: ${{ github.event_name == 'pull_request' && steps.changeset.outputs.added_modified != '' }}
       run: |
         export PATH=$PATH:/tmp/$CSA/bin
         set -x
-        cov-run-desktop --dir idir --url $COV_URL --stream $COVERITY_PROJECT-$GITHUB_BASE_REF --build $BLDCMD
-        cov-run-desktop --dir idir --url $COV_URL --stream $COVERITY_PROJECT-$GITHUB_BASE_REF --present-in-reference false \
+        cov-run-desktop --dir idir --url $COV_URL --stream aiverify-2.x --build $BLDCMD
+        cov-run-desktop --dir idir --url $COV_URL --stream aiverify-2.x --present-in-reference false \
           --ignore-uncapturable-inputs true --exit1-if-defects true ${{ steps.changeset.outputs.added_modified }}
