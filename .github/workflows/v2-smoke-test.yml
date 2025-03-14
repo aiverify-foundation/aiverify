@@ -63,6 +63,7 @@ jobs:
           cd aiverify-shared-library
           npm ci
           npm run build
+          sudo npm link
           cd ${GITHUB_WORKSPACE}
 
       - name: Install APIGW & Start APIGW
@@ -73,7 +74,9 @@ jobs:
           pip install hatch
           hatch shell &
           sh ./install-amd64.sh
+          cd aiverify-apigw-node
           npm link aiverify-shared-library
+          cd ../
           python3 -m aiverify_apigw &
           cd ${GITHUB_WORKSPACE}
 
