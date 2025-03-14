@@ -70,7 +70,7 @@ jobs:
         run: |
           cd aiverify-apigw
           touch .env
-          echo "MONGODB_URI=mongodb://localhost:27017 \ DB_NAME=aiverify \ PORT=4000" >> .env
+          echo "MONGODB_URI=mongodb://127.0.0.1:27017 \ DB_NAME=aiverify \ PORT=4000" >> .env
           pip install hatch
           hatch shell &
           sh ./install-amd64.sh
