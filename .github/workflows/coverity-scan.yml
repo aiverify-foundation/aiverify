@@ -1,10 +1,19 @@
 name: Coverity
+
 on:
   push:
     branches: [ 'v2.x' ]
   pull_request:
-    branches: [ 'v2.x' ]
+    types: [ assigned, synchronize ]
+    branches:
+      - 'v2.x'
   workflow_dispatch:
+    inputs:
+      branch_to_test:
+        description: 'Branch or tag to run test'
+        required: true
+        default: 'v2.x'
+        type: string
 
 jobs:
   Coverity:
