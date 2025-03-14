@@ -30,7 +30,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - uses: actions/setup-java@v2
+    - uses: actions/setup-java@v1
       with:
         java-version: 11
 
@@ -61,11 +61,11 @@ jobs:
     #   uses: jitterbit/get-changed-files@v1
     #   if: ${{ github.event_name == 'pull_request' }}
 
-    - name: Coverity Incremental Scan
-      if: ${{ github.event_name == 'pull_request' && steps.changeset.outputs.added_modified != '' }}
-      run: |
-        export PATH=$PATH:/tmp/$CSA/bin
-        set -x
-        cov-run-desktop --dir idir --url $COV_URL --stream aiverify-2.x --build $BLDCMD
-        cov-run-desktop --dir idir --url $COV_URL --stream aiverify-2.x --present-in-reference false \
-          --ignore-uncapturable-inputs true --exit1-if-defects true ${{ steps.changeset.outputs.added_modified }}
+    # - name: Coverity Incremental Scan
+    #   if: ${{ github.event_name == 'pull_request' && steps.changeset.outputs.added_modified != '' }}
+    #   run: |
+    #     export PATH=$PATH:/tmp/$CSA/bin
+    #     set -x
+    #     cov-run-desktop --dir idir --url $COV_URL --stream aiverify-2.x --build $BLDCMD
+    #     cov-run-desktop --dir idir --url $COV_URL --stream aiverify-2.x --present-in-reference false \
+    #       --ignore-uncapturable-inputs true --exit1-if-defects true ${{ steps.changeset.outputs.added_modified }}
