@@ -163,6 +163,8 @@ export default async function CanvasPage(props: UrlSearchParams) {
     };
   }
 
+  console.log('initialState', initialState);
+
   return (
     <Designer
       flow={flow}

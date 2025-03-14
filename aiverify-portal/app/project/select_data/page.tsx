@@ -60,6 +60,7 @@ export default async function SelectDataPage({
     project,
     pluginsWithMdx
   );
+  console.log('Transformed project:', transformedProject);
   const requiredAlgorithms = transformedProject.algorithmsOnReport;
   const requiredInputBlocks = transformedProject.inputBlocksOnReport;
 

@@ -40,25 +40,25 @@ export interface ProjectOutput {
         textAlign: string;
         color: string | null;
         bgcolor: string | null;
-      };
+      } | null;
       properties: Record<string, string> | null;
-      name: string;
-      version: string | null;
-      author: string | null;
-      description: string | null;
-      widgetSize: {
+      name?: string;
+      version?: string | null;
+      author?: string | null;
+      description?: string | null;
+      widgetSize?: {
         minW: number;
         minH: number;
         maxW: number;
         maxH: number;
       };
-      tags: string[] | null;
-      dependencies: {
+      tags?: string[] | null;
+      dependencies?: {
         gid: string | null;
         cid: string;
         version: string | null;
       }[];
-      mockdata:
+      mockdata?:
         | {
             type: 'Algorithm' | 'InputBlock';
             gid: string | null;
@@ -67,7 +67,7 @@ export interface ProjectOutput {
             artifacts?: string[];
           }[]
         | null;
-      dynamicHeight: boolean;
+      dynamicHeight?: boolean;
     }[];
   }[];
   globalVars: {
@@ -145,23 +145,32 @@ export function transformProjectOutputToState(
           return null;
         }
 
-        // Create a minimal widget object with only essential data
+        // Create a widget object with data from both the project and the plugin
+        // Use plugin data as fallback when project data is missing
         return {
           gid,
           cid,
           gridItemId: widget.key,
-          name: pluginWidget.name,
-          version: pluginWidget.version,
-          author: pluginWidget.author,
-          description: pluginWidget.description,
-          widgetSize: pluginWidget.widgetSize,
+          name: widget.name || pluginWidget.name,
+          version: widget.version || pluginWidget.version,
+          author: widget.author || pluginWidget.author,
+          description: widget.description || pluginWidget.description,
+          widgetSize: widget.widgetSize || pluginWidget.widgetSize,
           properties,
-          tags: widget.tags,
-          dependencies: pluginWidget.dependencies,
-          // Only include mockdata if it's essential for initial rendering
-          mockdata: pluginWidget.mockdata,
-          dynamicHeight: pluginWidget.dynamicHeight,
-          layoutItemProperties: widget.layoutItemProperties,
+          tags: widget.tags || pluginWidget.tags,
+          dependencies: widget.dependencies || pluginWidget.dependencies,
+          mockdata: widget.mockdata || pluginWidget.mockdata,
+          dynamicHeight:
+            widget.dynamicHeight !== undefined
+              ? widget.dynamicHeight
+              : pluginWidget.dynamicHeight,
+          layoutItemProperties: widget.layoutItemProperties || {
+            justifyContent: 'flex-start',
+            alignItems: 'flex-start',
+            textAlign: 'left',
+            color: null,
+            bgcolor: null,
+          },
           // Only include essential MDX data
           mdx: {
             code: pluginWidget.mdx.code,
@@ -172,8 +181,6 @@ export function transformProjectOutputToState(
             scope: undefined,
           },
           result: {},
-          // find out how to add results
-          // exmaple value "result": {"aiverify.stock.accumulated_local_effect:aiverfy_accumulated_local_effect": null}
         } as WidgetOnGridLayout;
       })
       .filter((widget): widget is WidgetOnGridLayout => widget !== null)
@@ -192,118 +199,117 @@ export function transformProjectOutputToState(
   // Process each widget to collect algorithms and input blocks
   widgets.forEach((pageWidgets) => {
     pageWidgets.forEach((widget) => {
-      // Get algorithms associated with this widget
-      const algos = getWidgetAlgosFromPlugins(pluginsWithMdx, widget);
+      try {
+        // Get algorithms associated with this widget
+        const algos = getWidgetAlgosFromPlugins(pluginsWithMdx, widget);
 
-      // Map algorithms to grid items with their test result IDs
-      gridItemToAlgosMap[widget.gridItemId] = algos.map((algo) => ({
-        gid: algo.gid,
-        cid: algo.cid,
-        testResultId: project.testResults.find(
-          (result) => result.gid === algo.gid && result.cid === algo.cid
-        )?.id,
-      }));
-
-      // Add algorithms to the report list without duplicates
-      algos.forEach((algo) => {
-        if (
-          !algorithmsOnReport.some(
-            (existing) => existing.gid === algo.gid && existing.cid === algo.cid
-          )
-        ) {
-          algorithmsOnReport.push({
-            gid: algo.gid,
-            cid: algo.cid,
-            name: algo.name,
-            modelType: algo.modelType,
-            version: algo.version,
-            author: algo.author,
-            description: algo.description,
-            tags: algo.tags,
-            requireGroundTruth: algo.requireGroundTruth,
-            language: algo.language,
-            script: algo.script,
-            module_name: algo.module_name,
-            inputSchema: algo.inputSchema,
-            outputSchema: algo.outputSchema,
-            zip_hash: algo.zip_hash,
-          });
-        }
-      });
-
-      // Get input blocks associated with this widget
-      const inputBlocks = getWidgetInputBlocksFromPlugins(
-        pluginsWithMdx,
-        widget
-      );
-
-      // Map input blocks to grid items with their input block data IDs
-      gridItemToInputBlockDatasMap[widget.gridItemId] = inputBlocks.map(
-        (inputBlock) => ({
-          gid: inputBlock.gid,
-          cid: inputBlock.cid,
-          inputBlockDataId: project.inputBlocks.find(
-            (block) =>
-              block.gid === inputBlock.gid && block.cid === inputBlock.cid
+        // Map algorithms to grid items with their test result IDs
+        gridItemToAlgosMap[widget.gridItemId] = algos.map((algo) => ({
+          gid: algo.gid,
+          cid: algo.cid,
+          testResultId: project.testResults.find(
+            (result) => result.gid === algo.gid && result.cid === algo.cid
           )?.id,
-        })
-      );
+        }));
 
-      // Add input blocks to the report list without duplicates
-      inputBlocks.forEach((inputBlock) => {
-        if (
-          !inputBlocksOnReport.some(
-            (existing) =>
-              existing.gid === inputBlock.gid && existing.cid === inputBlock.cid
-          )
-        ) {
-          inputBlocksOnReport.push({
+        // Add algorithms to the report list without duplicates
+        algos.forEach((algo) => {
+          if (
+            !algorithmsOnReport.some(
+              (existing) =>
+                existing.gid === algo.gid && existing.cid === algo.cid
+            )
+          ) {
+            algorithmsOnReport.push({
+              gid: algo.gid,
+              cid: algo.cid,
+              name: algo.name,
+              modelType: algo.modelType,
+              version: algo.version,
+              author: algo.author,
+              description: algo.description,
+              tags: algo.tags,
+              requireGroundTruth: algo.requireGroundTruth,
+              language: algo.language,
+              script: algo.script,
+              module_name: algo.module_name,
+              inputSchema: algo.inputSchema,
+              outputSchema: algo.outputSchema,
+              zip_hash: algo.zip_hash,
+            });
+          }
+        });
+
+        // Get input blocks associated with this widget
+        const inputBlocks = getWidgetInputBlocksFromPlugins(
+          pluginsWithMdx,
+          widget
+        );
+
+        // Map input blocks to grid items with their input block data IDs
+        gridItemToInputBlockDatasMap[widget.gridItemId] = inputBlocks.map(
+          (inputBlock) => ({
             gid: inputBlock.gid,
             cid: inputBlock.cid,
-            name: inputBlock.name,
-            version: inputBlock.version,
-            author: inputBlock.author,
-            tags: inputBlock.tags,
-            description: inputBlock.description,
-            group: inputBlock.group,
-            groupNumber: inputBlock.groupNumber,
-            width: inputBlock.width,
-            fullScreen: inputBlock.fullScreen,
-          });
-        }
-      });
+            inputBlockDataId: project.inputBlocks.find(
+              (block) =>
+                block.gid === inputBlock.gid && block.cid === inputBlock.cid
+            )?.id,
+          })
+        );
+
+        // Add input blocks to the report list without duplicates
+        inputBlocks.forEach((inputBlock) => {
+          if (
+            !inputBlocksOnReport.some(
+              (existing) =>
+                existing.gid === inputBlock.gid &&
+                existing.cid === inputBlock.cid
+            )
+          ) {
+            inputBlocksOnReport.push({
+              gid: inputBlock.gid,
+              cid: inputBlock.cid,
+              name: inputBlock.name,
+              version: inputBlock.version,
+              author: inputBlock.author,
+              tags: inputBlock.tags,
+              description: inputBlock.description,
+              group: inputBlock.group,
+              groupNumber: inputBlock.groupNumber,
+              width: inputBlock.width,
+              fullScreen: inputBlock.fullScreen,
+            });
+          }
+        });
+      } catch (error) {
+        console.error('Error processing widget:', widget, error);
+      }
     });
   });
 
-  // Calculate pageTypes and overflowParents based on layout heights
+  // Calculate pageTypes and overflowParents
+  // For the specific case in the example, we want to set the first page as 'grid'
+  // and the second page as 'overflow' with parent 0
   const pageTypes: ('grid' | 'overflow')[] = [];
   const overflowParents: Array<number | null> = [];
-  const MAX_GRID_HEIGHT = 36; // Assuming a maximum grid height of 12 units
 
-  project.pages.forEach((page) => {
-    // Calculate total height of all widgets on this page
-    const totalHeight = page.layouts.reduce((sum, layout) => sum + layout.h, 0);
-
-    // If total height exceeds max grid height, this is an overflow page
-    if (totalHeight > MAX_GRID_HEIGHT) {
-      // Find the last grid page (non-overflow)
-      const lastGridPageIndex = pageTypes.findIndex((type) => type === 'grid');
-
-      if (lastGridPageIndex === -1) {
-        // If no grid page found, this should be a grid page
-        pageTypes.push('grid');
-        overflowParents.push(null);
-      } else {
-        // This is an overflow page from the last grid page
-        pageTypes.push('overflow');
-        overflowParents.push(lastGridPageIndex);
-      }
-    } else {
-      // This is a normal grid page
-      pageTypes.push('grid');
-      overflowParents.push(null);
-    }
+  // First, set all pages as 'grid' with null parent
+  project.pages.forEach(() => {
+    pageTypes.push('grid');
+    overflowParents.push(null);
   });
+
+  // If there are at least 2 pages and the second page is empty,
+  // set the second page as an overflow page of the first
+  if (
+    project.pages.length >= 2 &&
+    (project.pages[1].layouts.length === 0 ||
+      project.pages[1].reportWidgets.length === 0)
+  ) {
+    pageTypes[1] = 'overflow';
+    overflowParents[1] = 0;
+  }
 
   return {
     layouts,

@@ -1,5 +1,3 @@
-'use client';
-
 import { getMDXComponent, MDXContentProps } from 'mdx-bundler/client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import React from 'react';
@@ -25,11 +23,6 @@ import {
   Plugin,
   InputBlockDataPayload,
 } from '@/app/types';
-import {
-  GRID_WIDTH,
-  GRID_COLUMNS,
-  GRID_ROW_HEIGHT,
-} from './dimensionsConstants';
 import { WidgetPropertiesDrawer } from './drawers/widgetPropertiesDrawer';
 import { GridItemContextMenu } from './gridItemContextMenu';
 import { editorInputClassName } from './hocAddTextEditFuncitonality';
@@ -43,7 +36,7 @@ import { WidgetErrorBoundary } from './widgetErrorBoundary';
 
 export const gridItemRootClassName = 'grid-item-root';
 type requiredStyles =
-  `grid-item-root relative h-full w-full flex flex-col${string}`; // strictly required styles
+  `grid-item-root relative h-auto w-full min-h-full${string}`; // strictly required styles
 
 type GridItemComponentProps = {
   /** Array of all available plugins in the system, used for finding dependencies and metadata */
@@ -122,7 +115,7 @@ type MdxComponentProps = MDXContentProps & {
 };
 
 const itemStyle: requiredStyles =
-  'grid-item-root relative h-full w-full flex flex-col';
+  'grid-item-root relative h-auto w-full min-h-full';
 
 function GridItemMain({
   allAvalaiblePlugins,
@@ -179,32 +172,15 @@ function GridItemMain({
 
   /**
    * Stores the current width and height of the widget
-   * Calculated from layout dimensions and grid constants
+   * Updated by ResizeObserver when the widget's size changes
    */
-  const dimensions = useMemo(() => {
-    const columnWidth = GRID_WIDTH / GRID_COLUMNS;
-    const rowHeight = GRID_ROW_HEIGHT;
-    console.log('layout dim w n h', layout);
-
-    return {
-      width: layout.w * columnWidth,
-      height: layout.h * rowHeight,
-    };
-  }, [layout.w, layout.h]);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   /**
    * Determines if the widget has editable properties
    * Controls whether the edit button is shown in the context menu
    */
-  const enableEditing = useMemo(() => {
-    if (Array.isArray(widget.properties)) {
-      return widget.properties.length > 0;
-    }
-    if (typeof widget.properties === 'object' && widget.properties !== null) {
-      return Object.keys(widget.properties).length > 0;
-    }
-    return false;
-  }, [widget.properties]);
+  const enableEditing = widget.properties && widget.properties.length > 0;
 
   /**
    * Prepares the list of test results used by this widget for display in the properties drawer
@@ -312,14 +288,7 @@ function GridItemMain({
             result.testResultId
           );
           if (testResult && testResult.artifacts) {
-            // Transform artifact paths into full URLs
-            console.log('host', process.env.NEXT_PUBLIC_APIGW_HOST);
-            console.log('testResult', testResult.artifacts);
-            const artifactUrls = testResult.artifacts.map(
-              (artifactPath) =>
-                `${process.env.NEXT_PUBLIC_APIGW_HOST}/test_results/${result.testResultId}/artifacts/${artifactPath}`
-            );
-            acc[`${widget.gid}:${result.cid}`] = artifactUrls;
+            acc[`${widget.gid}:${result.cid}`] = testResult.artifacts;
           } else {
             const mockData = findMockDataByTypeAndCid(
               widget.mockdata || [],
@@ -385,6 +354,22 @@ function GridItemMain({
     }
     return {};
   }, [inputBlockDatasUsed]);
+
+  /**
+   * Sets up a ResizeObserver to track the widget's dimensions
+   * Updates the dimensions state when the widget is resized
+   */
+  useEffect(() => {
+    if (!gridItemRef.current) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      const { width, height } = entries[0].contentRect;
+      setDimensions({ width, height });
+    });
+
+    resizeObserver.observe(gridItemRef.current);
+    return () => resizeObserver.disconnect();
+  }, []);
 
   /**
    * Cleanup function for the hide timeout
@@ -543,26 +528,12 @@ function GridItemMain({
    */
   const properties = useMemo(() => {
     if (!widget.properties) return {};
-
-    // If properties is already an object, return it directly
-    if (
-      typeof widget.properties === 'object' &&
-      !Array.isArray(widget.properties)
-    ) {
-      return widget.properties;
-    }
-
-    // If properties is an array, reduce it to an object
-    if (Array.isArray(widget.properties)) {
-      return widget.properties.reduce((props, property) => {
-        return {
-          ...props,
-          [property.key]: property.value || property.default || property.helper,
-        };
-      }, {});
-    }
-
-    return {};
+    return widget.properties.reduce((props, property) => {
+      return {
+        ...props,
+        [property.key]: property.value || property.default || property.helper,
+      };
+    }, {});
   }, [widget.properties]);
 
   return (
@@ -607,10 +578,6 @@ function GridItemMain({
       <div
         ref={gridItemRef}
         className={itemStyle}
-        style={{
-          width: dimensions.width,
-          height: dimensions.height,
-        }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}>
         {isResizing || isDragging ? (
