@@ -75,7 +75,7 @@ jobs:
           hatch shell &
           sh ./install-amd64.sh
           cd aiverify-apigw-node
-          npm link aiverify-shared-library
+          sudo npm link aiverify-shared-library
           cd ../
           python3 -m aiverify_apigw &
           cd ${GITHUB_WORKSPACE}
