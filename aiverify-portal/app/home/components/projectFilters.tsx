@@ -8,7 +8,7 @@ import { TextInput } from '@/lib/components/textInput';
 export function ProjectsFilters({ className }: { className?: string }) {
   return (
     <section className={`flex flex-col gap-6 ${className}`}>
-      <h2 className="text-xl font-bold tracking-wide">You Projects</h2>
+      <h2 className="text-xl font-bold tracking-wide">My Projects</h2>
       <div className="flex items-center justify-between">
         <div className="flex gap-2">
           <div className="relative w-[400px] gap-2">
