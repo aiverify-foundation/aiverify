@@ -25,7 +25,7 @@ import {
 } from '@/app/types';
 import { WidgetPropertiesDrawer } from './drawers/widgetPropertiesDrawer';
 import { GridItemContextMenu } from './gridItemContextMenu';
-import { editorInputClassName } from './hocAddTextEditFuncitonality';
+import { editorInputClassName } from './hocAddTextEditFunctionality';
 import { WidgetErrorBoundary } from './widgetErrorBoundary';
 
 /*
