@@ -4197,8 +4197,12 @@ class Fairness:
         model_objects = []
         for i in range(len(self.model_params)):
             model_param = copy.copy(self.model_params[i])
-            model_obj = getattr(model_param, "model_object")
-            setattr(model_param, "model_object", deepcopy(model_obj))
+            model_obj = getattr(model_param, "model_object", None)
+            if hasattr(model_param, 'model_objects') and model_param.model_objects:
+                model_object = model_param.model_objects.pop(0)
+            else:
+                model_object = deepcopy(model_obj)
+            setattr(model_param, "model_object", model_object)
             model_objects.append(model_param.model_object)
         return model_objects
 
