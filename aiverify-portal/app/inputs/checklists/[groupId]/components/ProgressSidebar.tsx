@@ -9,6 +9,22 @@ import {
 import { useChecklists } from '@/app/inputs/context/ChecklistsContext';
 import { Checklist } from '@/app/inputs/utils/types';
 
+// Define the order of principles based on their groupNumber in meta.json
+const PRINCIPLE_ORDER: { [key: string]: number } = {
+  transparency_process_checklist: 1,
+  explainability_process_checklist: 2,
+  reproducibility_process_checklist: 3,
+  safety_process_checklist: 4,
+  security_process_checklist: 5,
+  robustness_process_checklist: 6,
+  fairness_process_checklist: 7,
+  data_governance_process_checklist: 8,
+  accountability_process_checklist: 9,
+  human_agency_oversight_process_checklist: 10,
+  inclusive_growth_process_checklist: 11,
+  organisational_considerations_process_checklist: 12,
+};
+
 // Separate component for individual checklist progress
 const ChecklistProgressItem: React.FC<{ checklist: Checklist }> = ({
   checklist,
@@ -71,13 +87,20 @@ const ChecklistProgressItem: React.FC<{ checklist: Checklist }> = ({
 const ProgressBar: React.FC<{ groupName: string }> = ({ groupName }) => {
   const { checklists } = useChecklists();
 
-  const groupChecklists = useMemo(
-    () =>
-      checklists.filter(
-        (checklist) => checklist.group.toLowerCase() === groupName.toLowerCase()
-      ),
-    [checklists, groupName]
-  );
+  const groupChecklists = useMemo(() => {
+    // Filter checklists by group name
+    const filtered = checklists.filter(
+      (checklist) => checklist.group.toLowerCase() === groupName.toLowerCase()
+    );
+
+    // Sort by the predefined order based on cid
+    return filtered.sort((a, b) => {
+      const aOrder = PRINCIPLE_ORDER[a.cid] || Infinity;
+      const bOrder = PRINCIPLE_ORDER[b.cid] || Infinity;
+
+      return aOrder - bOrder;
+    });
+  }, [checklists, groupName]);
 
   return (
     <div className="mt-6 rounded border border-secondary-300 bg-secondary-950 p-4">

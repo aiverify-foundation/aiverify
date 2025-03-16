@@ -7,6 +7,22 @@ import { useChecklists } from '@/app/inputs/context/ChecklistsContext';
 import { Checklist } from '@/app/inputs/utils/types';
 import { Card } from '@/lib/components/card/card';
 
+// Define the order of principles based on their groupNumber in meta.json
+const PRINCIPLE_ORDER: { [key: string]: number } = {
+  transparency_process_checklist: 1,
+  explainability_process_checklist: 2,
+  reproducibility_process_checklist: 3,
+  safety_process_checklist: 4,
+  security_process_checklist: 5,
+  robustness_process_checklist: 6,
+  fairness_process_checklist: 7,
+  data_governance_process_checklist: 8,
+  accountability_process_checklist: 9,
+  human_agency_oversight_process_checklist: 10,
+  inclusive_growth_process_checklist: 11,
+  organisational_considerations_process_checklist: 12,
+};
+
 const ChecklistMDX: React.FC<{ checklist: Checklist }> = ({ checklist }) => {
   const {
     data: mdxSummaryBundle,
@@ -83,6 +99,16 @@ const GroupDetail: React.FC<{
   const { setSelectedChecklist } = useChecklists();
   const router = useRouter();
 
+  // Sort checklists by the predefined order based on cid
+  const sortedChecklists = useMemo(() => {
+    return [...groupChecklists].sort((a, b) => {
+      const aOrder = PRINCIPLE_ORDER[a.cid] || Infinity;
+      const bOrder = PRINCIPLE_ORDER[b.cid] || Infinity;
+
+      return aOrder - bOrder;
+    });
+  }, [groupChecklists]);
+
   const handleChecklistClick = (checklistId: number) => {
     const selectedChecklist = groupChecklists.find(
       (checklist) => checklist.id === checklistId
@@ -95,7 +121,7 @@ const GroupDetail: React.FC<{
 
   return (
     <div className="flex h-full flex-col gap-4 overflow-y-auto bg-secondary-950 p-1 scrollbar-hidden">
-      {groupChecklists.map((checklist) => (
+      {sortedChecklists.map((checklist) => (
         <Card
           key={checklist.id}
           size="md"

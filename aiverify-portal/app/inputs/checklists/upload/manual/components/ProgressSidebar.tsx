@@ -9,10 +9,36 @@ import {
 } from '@/app/inputs/checklists/[groupId]/utils/icons';
 import { useChecklists } from '@/app/inputs/checklists/upload/context/ChecklistsContext';
 
+// Define the order of principles based on their groupNumber in meta.json
+const PRINCIPLE_ORDER: { [key: string]: number } = {
+  transparency_process_checklist: 1,
+  explainability_process_checklist: 2,
+  reproducibility_process_checklist: 3,
+  safety_process_checklist: 4,
+  security_process_checklist: 5,
+  robustness_process_checklist: 6,
+  fairness_process_checklist: 7,
+  data_governance_process_checklist: 8,
+  accountability_process_checklist: 9,
+  human_agency_oversight_process_checklist: 10,
+  inclusive_growth_process_checklist: 11,
+  organisational_considerations_process_checklist: 12,
+};
+
 // need to check back on eslint for usemdxbundle and usememo in callback
 
 const ProgressBar: React.FC = () => {
   const { checklists } = useChecklists();
+
+  // Sort checklists by the predefined order
+  const sortedChecklists = useMemo(() => {
+    return [...checklists].sort((a, b) => {
+      const aOrder = PRINCIPLE_ORDER[a.cid] || Infinity;
+      const bOrder = PRINCIPLE_ORDER[b.cid] || Infinity;
+
+      return aOrder - bOrder;
+    });
+  }, [checklists]);
 
   const calculateOverallProgress = () => {
     let totalProgress = 0;
@@ -54,7 +80,7 @@ const ProgressBar: React.FC = () => {
 
       {/* Individual Checklist Progress */}
       <div className="space-y-3">
-        {checklists.map((checklist) => {
+        {sortedChecklists.map((checklist) => {
           const { data: mdxSummaryBundle } = useMDXSummaryBundle(
             checklist.gid,
             checklist.cid

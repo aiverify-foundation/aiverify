@@ -13,6 +13,7 @@ export type InputBlock = {
   id: number; // Unique ID for the checklist
   created_at: string; // Timestamp of creation
   updated_at: string; // Timestamp of last update
+  groupNumber?: number; // Group number for ordering
 };
 
 export type Checklist = InputBlock;
