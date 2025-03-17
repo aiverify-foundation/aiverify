@@ -102,13 +102,13 @@ type MdxComponentProps = MDXContentProps & {
   properties: Record<string, unknown>;
   testResult: TestResultData;
   inputBlockData: InputBlockDataPayload;
-  getIBData: (cid: string) => InputBlockDataPayload;
-  getResults: (cid: string) => TestResultData;
-  getArtifacts: (cid: string) => string[];
+  getIBData: (algo_cid: string, algo_gid: string | null) => InputBlockDataPayload;
+  getResults: (algo_cid: string, algo_gid: string | null) => TestResultData;
+  getArtifacts: (gid: string, cid: string) => string[];
   getArtifactURL: (
-    algo_gid: string | null,
     algo_cid: string,
-    pathname: string
+    pathname: string,
+    algo_gid: string | null
   ) => string;
   width?: number;
   height?: number;
@@ -288,7 +288,11 @@ function GridItemMain({
             result.testResultId
           );
           if (testResult && testResult.artifacts) {
-            acc[`${widget.gid}:${result.cid}`] = testResult.artifacts;
+            const artifactUrls = testResult.artifacts.map(
+              (artifactPath) =>
+                `${process.env.NEXT_PUBLIC_APIGW_HOST}/test_results/${result.testResultId}/artifacts/${artifactPath}`
+            );
+            acc[`${widget.gid}:${result.cid}`] = artifactUrls;
           } else {
             const mockData = findMockDataByTypeAndCid(
               widget.mockdata || [],
@@ -592,20 +596,29 @@ function GridItemMain({
               artifacts={widgetArtifacts}
               testResult={testResultWidgetData}
               inputBlockData={inputBlocksWidgetData}
-              getIBData={(cid: string) =>
-                inputBlocksWidgetData[`${widget.gid}:${cid}`]
-              }
-              getResults={(cid: string) =>
-                testResultWidgetData[`${widget.gid}:${cid}`]
-              }
-              getArtifacts={(cid: string) => {
-                const urls = widgetArtifacts[`${widget.gid}:${cid}`];
+              getIBData={(
+                algo_cid: string, 
+                algo_gid: string | null
+              ) => {
+                const gid = algo_gid || widget.gid;
+                return inputBlocksWidgetData[`${gid}:${algo_cid}`];
+              }}
+              getResults={(
+                algo_cid: string,
+                algo_gid: string | null // change to cid, gid
+              ) => {
+                const gid = algo_gid || widget.gid;
+                return testResultWidgetData[`${gid}:${algo_cid}`];
+              }}
+              getArtifacts={(gid: string, cid: string) => {
+                const urls = widgetArtifacts[`${gid}:${cid}`];
                 return Array.isArray(urls) ? urls : [];
               }}
               getArtifactURL={(
-                algo_gid: string | null,
+                // change to cid, pathname, gid. gid can be null, if null then use widget.gid
                 algo_cid: string,
-                pathname: string
+                pathname: string,
+                algo_gid: string | null
               ) => {
                 const gid = algo_gid || widget.gid;
                 const urls = widgetArtifacts[`${gid}:${algo_cid}`];

@@ -9,15 +9,30 @@ import {
 } from "./general-corruption-images.js";
 
 export const PoissonSamples = (props) => {
-  const artifactUrls = props.getArtifacts(algo_cid);
-  const poissonUrls = artifactUrls.length > 0 
-    ? artifactUrls.filter(url => url.includes('Poisson_Noise'))
-    : poisson_general_images;
+  // Create an array of URLs for the different severity levels (0-5)
+  const poissonUrls = [];
+  
+  // Try to get images from artifacts first
+  for (let i = 0; i <= 5; i++) {
+    const artifactURL = props.getArtifactURL(
+      algo_cid,
+      `temp/Poisson_Noise/severity${i}/9.png`,
+      null
+    );
+    
+    // If URL exists, add it to the array, otherwise use default images
+    if (artifactURL) {
+      poissonUrls.push(artifactURL);
+    }
+  }
+  
+  // If no artifacts were found, use the default images
+  const imagesToUse = poissonUrls.length === 6 ? poissonUrls : poisson_general_images;
 
   return (
     <DisplayImages
       id={props.id}
-      images={poissonUrls}
+      images={imagesToUse}
       data={props.getResults(algo_cid).results}
       corruption_index={1}
       corruption_name="General: Poisson Noise"
