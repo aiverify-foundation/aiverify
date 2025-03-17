@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { BarChart } from 'aiverify-shared-library/charts'
 
-export const algo_cid = "shap_toolbox"
+export const algo_cid = "aiverify_shap_toolbox"
 
 export const MyChart = ({ results, featureNames, properties }) => {
   const [ data, setData ] = useState([]);
@@ -131,7 +131,7 @@ export const MyChart = ({ results, featureNames, properties }) => {
 
 {props.getResults(algo_cid)?(
   <>
-    <div style={{ width:props.container.width, height:"100%" }}>
+    <div style={{ width:props.width, height:"100%" }}>
       <MyChart results={props.getResults(algo_cid).results} featureNames={props.getResults(algo_cid).feature_names} properties={props.properties} />
     </div>
   </>
