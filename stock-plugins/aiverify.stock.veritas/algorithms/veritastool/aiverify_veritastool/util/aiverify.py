@@ -14,6 +14,7 @@ from aiverify_test_engine.utils.json_utils import (
     validate_test_result_schema,
 )
 from aiverify_veritastool.util.schema import ModelArtifact, parse_model_artifact_json
+from aiverify_veritastool.util.report_plots import generate_veritas_images
 
 
 def save_base64_image(base64_str: str, output_dir: Path, image_name: str) -> str:
@@ -305,9 +306,25 @@ def convert_veritas_artifact_to_aiverify(
     output_dir = Path(output_dir) if output_dir is not None else Path.cwd() / "output"
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Process results to extract images
+    # Process results to extract images from base64 strings
     processed_results = process_dict(results, output_dir)
-    artifacts = processed_results.pop("artifacts", []) if "artifacts" in processed_results else None
+
+    # Generate visualization images from the model artifact
+    visualization_images, report_plots_structure = generate_veritas_images(results, output_dir)
+
+    # Combine artifacts from processed_results and visualization_images
+    artifacts = processed_results.pop("artifacts", []) if "artifacts" in processed_results else []
+    artifacts.extend(visualization_images)
+
+    # Add report_plots structure to the output results
+    for section, data in report_plots_structure.items():
+        if section in processed_results:
+            if processed_results[section] is None:
+                processed_results[section] = data
+            else:
+                processed_results[section].update(data)
+        else:
+            processed_results[section] = data
 
     # Create the output result
     startTime = datetime.now().isoformat()

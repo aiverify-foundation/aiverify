@@ -1,20 +1,15 @@
-# Core Packages
-import json
-import os
 import re
-import sys
-import zipfile
-
-# Third Party
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+from pathlib import Path
+from typing import Dict, List, Any
 
-from waterfall import waterfall
+from aiverify_veritastool.util.waterfall import waterfall
 
 
-# plot perf_dynamic
 def plot_perf_dynamic(threshold, perf, selection_rate, zf_name):
+    """Plot performance dynamics chart."""
     fig, ax1 = plt.subplots(figsize=(8, 4))
     color = "tab:red"
     ax1.set_xlabel("Threshold")
@@ -30,22 +25,20 @@ def plot_perf_dynamic(threshold, perf, selection_rate, zf_name):
     fig.tight_layout()  # otherwise the right y-label is slightly clipped
     filename = zf_name + "_" + "performanceLineChart" + ".png"
     plt.savefig(filename)
-    image_file_list.append(filename)
     plt.close()
+    return filename
 
 
-# plot piechart
 def plot_piechart(data1, label, zf_name, key):
+    """Plot pie chart for distribution data."""
     plt.figure(figsize=(6, 6))
     cmap = sns.diverging_palette(220, 10, as_cmap=True)
     plt.pie(
         data1,
         textprops={"fontsize": 14, "color": "black"},
-        # explode=[0.02, 0.02],
         explode=None,
         normalize=True,
         labels=label,
-        # colors=['#437694', '#D7E5ED'],
         colors=cmap(np.linspace(0, 1, len(data1))),
         autopct="%.2f%%",
         pctdistance=0.6,
@@ -61,11 +54,11 @@ def plot_piechart(data1, label, zf_name, key):
         filename = zf_name + "_" + "classDistributionPieChart" + ".png"
     plt.savefig(filename)
     plt.close()
-    image_file_list.append(filename)
+    return filename
 
 
-# Calibration curve
 def plot_calibration(bin_true_prob, bin_pred_prob, zf_name):
+    """Plot calibration curve."""
     plt.figure(figsize=(7, 7))
     ax1 = plt.subplot2grid((3, 1), (0, 0), rowspan=2)
 
@@ -81,11 +74,11 @@ def plot_calibration(bin_true_prob, bin_pred_prob, zf_name):
     filename = zf_name + "_" + "calibrationCurveLineChart" + ".png"
     plt.savefig(filename)
     plt.close()
-    image_file_list.append(filename)
+    return filename
 
 
-# plot heatmap
 def plot_heatmap(corr_values, feature_names, zf_name):
+    """Plot correlation heatmap."""
     plt.figure(figsize=(9, 8))
     ax = sns.heatmap(
         corr_values, vmin=-1, vmax=1, center=0, cmap=sns.diverging_palette(20, 220, n=200), square=True, annot=True
@@ -95,16 +88,18 @@ def plot_heatmap(corr_values, feature_names, zf_name):
     filename = zf_name + "_" + "correlationHeatMapChart" + ".png"
     plt.savefig(filename)
     plt.close()
-    image_file_list.append(filename)
+    return filename
 
 
-# plot heatmap
 def plot_weighted_confusion_matrix(matrix, name1, name2, zf_name):
+    """Plot weighted confusion matrix."""
     if matrix is None:
-        return
-    else:
-        if matrix["tn"] is None or matrix["fp"] or matrix["fn"] is None or matrix["tp"] is None:
-            return
+        return None
+
+    # Check if any key values are None
+    required_keys = ["tn", "fp", "fn", "tp"]
+    if any(matrix.get(key) is None for key in required_keys):
+        return None
 
     sub_list1 = []
     sub_list2 = []
@@ -117,8 +112,6 @@ def plot_weighted_confusion_matrix(matrix, name1, name2, zf_name):
     weighted_confusion_matrix_list.append(sub_list2)
 
     # plot weighted_confusion_matrix
-    print(str(matrix))
-    print("values: ---------- ", str(weighted_confusion_matrix_list))
     ax = sns.heatmap(
         weighted_confusion_matrix_list, fmt=".20g", cmap=sns.diverging_palette(20, 220, n=5000), square=True, annot=True
     )
@@ -129,63 +122,113 @@ def plot_weighted_confusion_matrix(matrix, name1, name2, zf_name):
     filename = zf_name + "_" + "weightedConfusionHeatMapChart" + ".png"
     plt.savefig(filename)
     plt.close()
-    image_file_list.append(filename)
+    return filename
 
 
-# Plot contour
-def plot_contour(zf_name, key, fair_metric_name, perf_metric_name):
+def plot_contour(zf_name, key, fair_metric_name, perf_metric_name, th_a, th_b, perf, fair, best_th):
+    """Plot contour for fairness vs performance tradeoffs."""
     plt.figure(figsize=(9, 8))
-    #     plt.title('Fairness vs. Performance Tradeoffs', fontsize=18)
     plt.xlabel(key + " Threshold Privileged", fontsize=16)
     plt.ylabel(key + " Threshold Unprivileged", fontsize=16)
     plt.xlim(np.min(th_a), np.max(th_a))
     plt.ylim(np.min(th_b), np.max(th_b))
 
-    bal_acc_lns = plt.contourf(th_a, th_b, perf, levels=20)  # gender_metrics_split_sweep.bal_acc => perf
+    # Performance contour
+    bal_acc_lns = plt.contourf(th_a, th_b, perf, levels=20)
 
-    eo_lns = plt.contour(th_a, th_b, fair, colors="white", levels=10)  # gender_metrics_split_sweep.equal_opp => fair
-    eo_lns.collections[-1].set_label(fair_metric_name)
-
+    # Performance colorbar
     cbar = plt.colorbar(bal_acc_lns)
     cbar.set_label("Model Performance (" + perf_metric_name + ")", fontsize=14)
-    plt.clabel(eo_lns, inline=1, fmt="%1.2f", fontsize=14)
 
+    # Fairness contour - completely separate from other plotting operations
+    has_fairness_contour = False
+    try:
+        # Store the contour object specifically
+        fairness_contour = plt.contour(th_a, th_b, fair, colors="white", levels=10)
+
+        # Only try to label if contours were created
+        if fairness_contour.collections:
+            plt.clabel(fairness_contour, inline=1, fmt="%1.2f", fontsize=14)
+            has_fairness_contour = True
+    except Exception:
+        # Catch any exception that might occur during contour creation or labeling
+        pass
+
+    # Calculate best points
     idx1 = np.unravel_index(perf.argmax(), perf.shape)
     best_th_a, best_th_b = th_a[idx1[1]], th_b[idx1[0]]
 
+    # Handle constrained points
     constrained_bal_acc = np.copy(perf)
-    constrained_bal_acc[np.where(fair <= -0.000)] = 0
-    idx2 = np.unravel_index(constrained_bal_acc.argmax(), constrained_bal_acc.shape)
-    best_con_th_a, best_con_th_b = th_a[idx1[1]], th_b[idx1[0]]
-    best_con_th_a, best_con_th_b = th_a[idx2[1]], th_b[idx2[0]]
-    # Mark maximums
-    # plt.plot([0, 1], [0, 1], c='gray', ls=':', label='single threshold')
-    plt.scatter(best_th_a, best_th_b, c="b", marker="d", s=100, label="max" + " " + perf_metric_name, zorder=2)
-    plt.scatter(best_th, best_th, c="r", marker="x", s=100, label="single TH" + " " + perf_metric_name, zorder=2)
-    plt.scatter(
-        best_con_th_a,
-        best_con_th_b,
-        c="purple",
-        marker="*",
-        s=100,
-        label=fair_metric_name + " " + perf_metric_name,
-        zorder=2,
-    )
-    lgnd = plt.legend(framealpha=0.3, facecolor="black", fontsize=12, loc="upper right")
+    try:
+        constrained_bal_acc[np.where(fair <= -0.000)] = 0
+    except Exception:
+        # If fair array has issues, just use the unconstrained version
+        pass
+
+    # Only calculate constrained best point if there are valid points
+    has_constrained_point = np.max(constrained_bal_acc) > 0
+    if has_constrained_point:
+        idx2 = np.unravel_index(constrained_bal_acc.argmax(), constrained_bal_acc.shape)
+        best_con_th_a, best_con_th_b = th_a[idx2[1]], th_b[idx2[0]]
+
+    # Plot the points
+    plt.scatter(best_th_a, best_th_b, c="b", marker="d", s=100, zorder=2)
+    plt.scatter(best_th, best_th, c="r", marker="x", s=100, zorder=2)
+
+    if has_constrained_point:
+        plt.scatter(best_con_th_a, best_con_th_b, c="purple", marker="*", s=100, zorder=2)
+
+    # Create legend manually with plt.Line2D objects
+    legend_elements = [
+        plt.Line2D(
+            [0], [0], marker="d", color="w", markerfacecolor="b", markersize=10, label="max " + perf_metric_name
+        ),
+        plt.Line2D(
+            [0], [0], marker="x", color="w", markerfacecolor="r", markersize=10, label="single TH " + perf_metric_name
+        ),
+    ]
+
+    if has_constrained_point:
+        legend_elements.append(
+            plt.Line2D(
+                [0],
+                [0],
+                marker="*",
+                color="w",
+                markerfacecolor="purple",
+                markersize=10,
+                label=fair_metric_name + " " + perf_metric_name,
+            )
+        )
+
+    if has_fairness_contour:
+        # Create a white line for fairness contour in the legend
+        legend_elements.append(plt.Line2D([0], [0], color="white", lw=2, label=fair_metric_name))
+
+    # Create legend with custom elements
+    lgnd = plt.legend(handles=legend_elements, framealpha=0.3, facecolor="black", fontsize=12, loc="upper right")
+
+    # Set legend text color
     for text in lgnd.get_texts():
         text.set_color("white")
+
+    # Save and close
     filename = zf_name + "_" + "featureTradeoffContourMap" + "_" + key + ".png"
     plt.savefig(filename)
     plt.close()
-    image_file_list.append(filename)
+
+    return filename
 
 
 def plot_permutation_importance(zf_name, feature_score_list, title=None, footnote=None):
+    """Plot permutation importance chart."""
     features = []
     importance = []
     for feature_score in feature_score_list:
         features.append(feature_score["feature"])
         importance.append(feature_score["score"])
+    features = list(reversed(features))  # Ensure features and importance are in the same order
     importance = list(reversed(importance))
     plt.figure(figsize=(15, 10))
     plt.xticks(fontsize=18)
@@ -201,10 +244,11 @@ def plot_permutation_importance(zf_name, feature_score_list, title=None, footnot
     filename = zf_name + "_permutationImportance.png"
     plt.savefig(filename)
     plt.close()
-    image_file_list.append(filename)
+    return filename
 
 
 def plot_waterfall(zf_name, model_id, local_interpretability_id, local_interpretability):
+    """Plot waterfall chart for local interpretability."""
     efx = local_interpretability["efx"]
     fx = local_interpretability["fx"]
 
@@ -219,99 +263,231 @@ def plot_waterfall(zf_name, model_id, local_interpretability_id, local_interpret
     waterfall_filename = txt.format(model_id=model_id, local_interpretability_id=local_interpretability_id)
 
     waterfall(efx, fx, shap_values, feature_values, feature_names, waterfall_filename, max_display=10, show=False)
-    image_file_list.append(waterfall_filename)
+    return waterfall_filename
 
 
-############################ begin ############################
+def generate_veritas_images(jsonObject: Dict[str, Any], output_dir: Path) -> tuple[List[str], Dict[str, Any]]:
+    """
+    Generate images from Veritas JSON data and save them to output directory.
 
-image_file_list = []
+    Parameters
+    ----------
+    jsonObject : Dict[str, Any]
+        Veritas model artifact data
+    output_dir : Path
+        Directory to save images
 
-# load JSON file
-filename = sys.argv[1]
-with zipfile.ZipFile(filename, "r") as zf:
-    jsonObject = json.load(zf.open(zf.namelist()[0]))
-    image_dir = os.path.dirname(os.path.dirname(zf.filename)) + "/image/"
-    basename = os.path.basename(zf.filename).split(".")[0]
-    image_prefix = image_dir + basename
-    zf_name = image_prefix
+    Returns
+    -------
+    tuple[List[str], Dict[str, Any]]
+        - List of image file paths
+        - Dictionary with report_plots structure to be added to the JSON output
+    """
+    # Create images directory
+    image_dir = output_dir / "images"
+    image_dir.mkdir(exist_ok=True)
 
-fairness = jsonObject["fairness"]
-transparency = jsonObject["transparency"]
+    # Path prefix for image files
+    image_prefix = str(image_dir / "veritas")
 
+    # Create a dictionary to store image paths by category
+    image_files = {
+        "fairness": {
+            "report_plots": {
+                "calibration": [],
+                "correlation": [],
+                "distribution": [],
+                "confusion_matrix": [],
+                "performance": [],
+                "features": {},
+            }
+        },
+        "transparency": {"report_plots": {"permutation_importance": [], "waterfall": []}},
+    }
 
-fairness_init = fairness["fairness_init"]
-fair_metric_name = fairness_init["fair_metric_name"]
-perf_metric_name = fairness_init["perf_metric_name"]
-fair_metric_name = re.sub("_", " ", fair_metric_name)
-perf_metric_name = re.sub("_", " ", perf_metric_name)
+    # Create a dictionary for the output JSON structure
+    report_plots_structure = {
+        "fairness": {
+            "report_plots": {
+                "calibration": [],
+                "correlation": [],
+                "distribution": [],
+                "confusion_matrix": [],
+                "performance": [],
+                "features": {},
+            }
+        },
+        "transparency": {"report_plots": {"permutation_importance": [], "waterfall": []}},
+    }
 
-calibration_curve = fairness["calibration_curve"]
-correlation_matrix = fairness["correlation_matrix"]
-class_distribution = fairness["class_distribution"]
-class_distribution_list = []
-class_distribution_label = []
-if class_distribution is not None:
-    for key in class_distribution:
-        class_distribution_list.append(class_distribution[key])
-        class_distribution_label.append(key)
-weighted_confusion_matrix = fairness["weighted_confusion_matrix"]
+    fairness = jsonObject.get("fairness", {})
+    transparency = jsonObject.get("transparency", {})
 
-plot_weighted_confusion_matrix(weighted_confusion_matrix, ["Negative", "Positive"], ["Negative", "Positive"], zf_name)
-perf_dynamic = fairness["perf_dynamic"]
-# plot_weighted_confusion_matrix(weighted_confusion_matrix_list, ['Negative', 'Positive'], ['Negative', 'Positive'], zf_name)
+    if not fairness:
+        return []  # Return empty list if there's no fairness data
 
-# plot class distribution
-plot_piechart(class_distribution_list, class_distribution_label, zf_name, None)
+    fairness_init = fairness.get("fairness_init", {})
+    fair_metric_name = fairness_init.get("fair_metric_name", "")
+    perf_metric_name = fairness_init.get("perf_metric_name", "")
+    fair_metric_name = re.sub("_", " ", fair_metric_name)
+    perf_metric_name = re.sub("_", " ", perf_metric_name)
 
-# plot calibration
-if calibration_curve:
-    plot_calibration(calibration_curve["prob_true"], calibration_curve["prob_pred"], zf_name)
+    # Process calibration curve
+    calibration_curve = fairness.get("calibration_curve")
+    if calibration_curve:
+        img_path = plot_calibration(calibration_curve["prob_true"], calibration_curve["prob_pred"], image_prefix)
+        if img_path:
+            image_files["fairness"]["report_plots"]["calibration"].append(img_path)
+            # Store relative path for the report_plots structure
+            relative_path = str(Path(img_path).relative_to(output_dir))
+            report_plots_structure["fairness"]["report_plots"]["calibration"].append(relative_path)
 
-# plot corr_values heatmap
-if correlation_matrix:
-    plot_heatmap(correlation_matrix["corr_values"], correlation_matrix["feature_names"], zf_name)
+    # Process correlation matrix
+    correlation_matrix = fairness.get("correlation_matrix")
+    if correlation_matrix:
+        img_path = plot_heatmap(correlation_matrix["corr_values"], correlation_matrix["feature_names"], image_prefix)
+        if img_path:
+            image_files["fairness"]["report_plots"]["correlation"].append(img_path)
+            relative_path = str(Path(img_path).relative_to(output_dir))
+            report_plots_structure["fairness"]["report_plots"]["correlation"].append(relative_path)
 
-# plot perf dynamic
-if perf_dynamic is not None:
-    plot_perf_dynamic(perf_dynamic["threshold"], perf_dynamic["perf"], perf_dynamic["selection_rate"], zf_name)
-# features
-features_dict = fairness["features"]
-if features_dict is not None:
-    for key in features_dict:
-        feature = features_dict[key]
-        tradeoff = feature["tradeoff"]
-        if tradeoff is None:
-            continue
-        fair_metric_name = tradeoff["fair_metric_name"]
-        perf_metric_name = tradeoff["perf_metric_name"]
-        fair_metric_name = re.sub("_", " ", fair_metric_name)
-        perf_metric_name = re.sub("_", " ", perf_metric_name)
-        th_a = tradeoff["th_x"]
-        th_b = tradeoff["th_y"]
-        perf = np.array(tradeoff["perf"])
-        fair = np.array(tradeoff["fair"])
-        best_th = tradeoff["max_perf_single_th"][0]
-        feature_distribution_list = []
-        feature_distribution_label = []
-        for k in feature["feature_distribution"]:
-            feature_distribution_list.append(features_dict[key]["feature_distribution"][k])
-            feature_distribution_label.append(k)
-        # plot feature_distribution
-        plot_piechart(feature_distribution_list, feature_distribution_label, zf_name, key)
-        # plot contour
-        # plot_contour(zf_name, key, fair_metric_name, perf_metric_name)
+    # Process class distribution
+    class_distribution = fairness.get("class_distribution")
+    if class_distribution:
+        class_distribution_list = []
+        class_distribution_label = []
+        for key in class_distribution:
+            class_distribution_list.append(class_distribution[key])
+            class_distribution_label.append(key)
+        img_path = plot_piechart(class_distribution_list, class_distribution_label, image_prefix, None)
+        if img_path:
+            image_files["fairness"]["report_plots"]["distribution"].append(img_path)
+            relative_path = str(Path(img_path).relative_to(output_dir))
+            report_plots_structure["fairness"]["report_plots"]["distribution"].append(relative_path)
 
-# transparency
-if transparency is not None:
-    permutation = transparency["permutation"]
-    if permutation is not None and permutation["score"] is not None:
-        plot_permutation_importance(zf_name, permutation["score"], permutation["title"], permutation["footnote"])
+    # Process weighted confusion matrix
+    weighted_confusion_matrix = fairness.get("weighted_confusion_matrix")
+    if weighted_confusion_matrix:
+        img_path = plot_weighted_confusion_matrix(
+            weighted_confusion_matrix, ["Negative", "Positive"], ["Negative", "Positive"], image_prefix
+        )
+        if img_path:
+            image_files["fairness"]["report_plots"]["confusion_matrix"].append(img_path)
+            relative_path = str(Path(img_path).relative_to(output_dir))
+            report_plots_structure["fairness"]["report_plots"]["confusion_matrix"].append(relative_path)
 
-    model_list = transparency["model_list"]
-    seq = 0
-    for model in model_list:
-        for local_interpretability in model["local_interpretability"]:
-            plot_waterfall(zf_name, model["id"], local_interpretability["id"], local_interpretability)
-            seq += 1
+    # Process performance dynamics
+    perf_dynamic = fairness.get("perf_dynamic")
+    if perf_dynamic:
+        img_path = plot_perf_dynamic(
+            perf_dynamic["threshold"], perf_dynamic["perf"], perf_dynamic["selection_rate"], image_prefix
+        )
+        if img_path:
+            image_files["fairness"]["report_plots"]["performance"].append(img_path)
+            relative_path = str(Path(img_path).relative_to(output_dir))
+            report_plots_structure["fairness"]["report_plots"]["performance"].append(relative_path)
 
-print(json.dumps(image_file_list))
+    # Process features
+    features_dict = fairness.get("features")
+    if features_dict:
+        for key in features_dict:
+            feature = features_dict[key]
+
+            # Initialize feature entry in the dictionary
+            if key not in image_files["fairness"]["report_plots"]["features"]:
+                image_files["fairness"]["report_plots"]["features"][key] = {"distribution": [], "tradeoff": []}
+
+            # Initialize feature entry in the report_plots structure
+            if key not in report_plots_structure["fairness"]["report_plots"]["features"]:
+                report_plots_structure["fairness"]["report_plots"]["features"][key] = {
+                    "distribution": [],
+                    "tradeoff": [],
+                }
+
+            # Plot feature distribution
+            feature_distribution = feature.get("feature_distribution")
+            if feature_distribution:
+                feature_distribution_list = []
+                feature_distribution_label = []
+                for k in feature_distribution:
+                    feature_distribution_list.append(feature_distribution[k])
+                    feature_distribution_label.append(k)
+
+                img_path = plot_piechart(feature_distribution_list, feature_distribution_label, image_prefix, key)
+                if img_path:
+                    image_files["fairness"]["report_plots"]["features"][key]["distribution"].append(img_path)
+                    relative_path = str(Path(img_path).relative_to(output_dir))
+                    report_plots_structure["fairness"]["report_plots"]["features"][key]["distribution"].append(
+                        relative_path
+                    )
+
+            # Plot tradeoff contour
+            tradeoff = feature.get("tradeoff")
+            if tradeoff:
+                fair_metric_name = tradeoff.get("fair_metric_name", "")
+                perf_metric_name = tradeoff.get("perf_metric_name", "")
+                fair_metric_name = re.sub("_", " ", fair_metric_name)
+                perf_metric_name = re.sub("_", " ", perf_metric_name)
+
+                th_a = tradeoff.get("th_x")
+                th_b = tradeoff.get("th_y")
+                perf = np.array(tradeoff.get("perf", []))
+                fair = np.array(tradeoff.get("fair", []))
+                best_th = tradeoff.get("max_perf_single_th", [0])[0]
+
+                if th_a and th_b and perf.size > 0 and fair.size > 0:
+                    img_path = plot_contour(
+                        image_prefix, key, fair_metric_name, perf_metric_name, th_a, th_b, perf, fair, best_th
+                    )
+                    if img_path:
+                        image_files["fairness"]["report_plots"]["features"][key]["tradeoff"].append(img_path)
+                        relative_path = str(Path(img_path).relative_to(output_dir))
+                        report_plots_structure["fairness"]["report_plots"]["features"][key]["tradeoff"].append(
+                            relative_path
+                        )
+
+    # Process transparency
+    if transparency:
+        # Plot permutation importance
+        permutation = transparency.get("permutation")
+        if permutation and permutation.get("score"):
+            img_path = plot_permutation_importance(
+                image_prefix, permutation["score"], permutation.get("title"), permutation.get("footnote")
+            )
+            if img_path:
+                image_files["transparency"]["report_plots"]["permutation_importance"].append(img_path)
+                relative_path = str(Path(img_path).relative_to(output_dir))
+                report_plots_structure["transparency"]["report_plots"]["permutation_importance"].append(relative_path)
+
+        # Plot waterfall charts
+        model_list = transparency.get("model_list", [])
+        for model in model_list:
+            for local_interpretability in model.get("local_interpretability", []):
+                img_path = plot_waterfall(
+                    image_prefix, model["id"], local_interpretability["id"], local_interpretability
+                )
+                if img_path:
+                    image_files["transparency"]["report_plots"]["waterfall"].append(img_path)
+                    relative_path = str(Path(img_path).relative_to(output_dir))
+                    report_plots_structure["transparency"]["report_plots"]["waterfall"].append(relative_path)
+
+    # Flatten the nested dictionary and convert image paths to be relative to output_dir
+    flattened_image_files = []
+
+    # Add fairness images
+    for category in image_files["fairness"]["report_plots"]:
+        if category == "features":
+            for feature_key, feature_data in image_files["fairness"]["report_plots"]["features"].items():
+                for subcategory in feature_data:
+                    for path in feature_data[subcategory]:
+                        flattened_image_files.append(str(Path(path).relative_to(output_dir)))
+        else:
+            for path in image_files["fairness"]["report_plots"][category]:
+                flattened_image_files.append(str(Path(path).relative_to(output_dir)))
+
+    # Add transparency images
+    for category in image_files["transparency"]["report_plots"]:
+        for path in image_files["transparency"]["report_plots"][category]:
+            flattened_image_files.append(str(Path(path).relative_to(output_dir)))
+
+    return flattened_image_files, report_plots_structure

@@ -25,6 +25,7 @@ from aiverify_test_engine.interfaces.itestresult import ITestArguments, ITestRes
 from aiverify_test_engine.plugins.enums.model_type import ModelType
 from aiverify_test_engine.plugins.enums.plugin_type import PluginType
 from aiverify_test_engine.plugins.plugins_manager import PluginManager
+from aiverify_veritastool.util.aiverify import generate_veritas_images
 from aiverify_test_engine.utils.json_utils import (
     load_schema_file,
     validate_json,
@@ -389,7 +390,22 @@ class AlgoInit:
                 },
                 mode="upload",
             )
+            output_dir = output_path.parent
+            output_dir.mkdir(parents=True, exist_ok=True)
+            visualization_images, report_plots_structure = generate_veritas_images(results, output_dir)
             artifacts = results.pop("artifacts", []) if "artifacts" in results else None
+            artifacts.extend(visualization_images)
+
+            # Add report_plots structure to the output results
+            for section, data in report_plots_structure.items():
+                if section in results:
+                    if results[section] is None:
+                        results[section] = data
+                    else:
+                        results[section].update(data)
+                else:
+                    results[section] = data
+
             output = ITestResult(
                 gid=meta_file["gid"],
                 cid=meta_file["cid"],
