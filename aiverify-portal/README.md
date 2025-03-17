@@ -30,6 +30,7 @@ First, set up the shared library as it's a dependency for other components:
 cd aiverify-shared-library
 npm install
 npm run build
+npm link
 ```
 
 ### 2. Setting up aiverify-apigw (Backend)
@@ -49,6 +50,7 @@ sh ./install-arm64.sh
 sh ./install-amd64.sh
 
 # Link shared library
+cd aiverify-apigw-node
 npm link aiverify-shared-library
 
 # Start the backend server
