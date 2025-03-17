@@ -96,8 +96,24 @@ export default function ClientSelectData({
 
   const handleModelChange = (modelId: string | undefined) => {
     setSelectedModelId(modelId);
-    // Clear test results when model changes
-    setSelectedTestResults([]);
+    
+    // Instead of clearing all test results, filter out those that don't match the new model
+    if (modelId) {
+      const selectedModel = allModels.find((model) => model.id.toString() === modelId);
+      if (selectedModel) {
+        const validTestResults = selectedTestResults.filter(result => {
+          const testResult = allTestResults.find(tr => tr.id === result.id);
+          return testResult && testResult.testArguments.modelFile === selectedModel.name;
+        });
+        setSelectedTestResults(validTestResults);
+      } else {
+        // If no model is found, clear the test results
+        setSelectedTestResults([]);
+      }
+    } else {
+      // If no model is selected, clear the test results
+      setSelectedTestResults([]);
+    }
   };
 
   const handleTestResultsChange = (testResults: SelectedTestResult[]) => {

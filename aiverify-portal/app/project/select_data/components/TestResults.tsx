@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { TestModel } from '@/app/models/utils/types';
 import { Algorithm, TestResult } from '@/app/types';
 import { Button, ButtonVariant } from '@/lib/components/button';
@@ -31,6 +31,28 @@ export default function TestResults({
     useState<Array<{ gid: string; cid: string; id: number }>>(
       initialTestResults
     );
+
+  // Update internal state when parent component clears selections
+  useEffect(() => {
+    setSelectedTestResults(initialTestResults);
+  }, [initialTestResults]);
+
+  // Also reset selections when model changes
+  useEffect(() => {
+    if (selectedModel) {
+      // Filter out test results that don't match the selected model
+      const validTestResults = selectedTestResults.filter(result => {
+        const testResult = allTestResults.find(tr => tr.id === result.id);
+        return testResult && testResult.testArguments.modelFile === selectedModel.name;
+      });
+      
+      // Only update if there's a change to avoid infinite loops
+      if (validTestResults.length !== selectedTestResults.length) {
+        setSelectedTestResults(validTestResults);
+        onTestResultsChange(validTestResults);
+      }
+    }
+  }, [selectedModel, allTestResults]);
 
   const getTestResultsForAlgorithm = (algorithm: Algorithm) => {
     return allTestResults.filter(
