@@ -82,7 +82,7 @@ const ExcelUploader = () => {
 
   return (
     <div
-      className="relative mb-8 flex h-[calc(100vh-200px)] overflow-y-auto rounded-lg bg-secondary-950 pl-10 scrollbar-hidden"
+      className="relative mb-8 flex h-[calc(100vh-100px)] overflow-y-auto rounded-lg bg-secondary-950 pl-10 scrollbar-hidden"
       role="region"
       aria-label="Excel uploader container">
       {/* Upload Popup */}
@@ -102,7 +102,7 @@ const ExcelUploader = () => {
           </Modal>
         </div>
       )}
-      <div className="mt-6 w-full p-8">
+      <div className="mt-6 w-full">
         <div
           className="mb-8 flex items-center justify-between"
           role="banner"

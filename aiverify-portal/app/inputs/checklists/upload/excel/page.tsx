@@ -17,12 +17,12 @@ const UploadPage: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="mt-6 flex h-screen flex-col">
       <LayoutHeader
         projectId={projectId}
         onBack={handleBackToProject}
       />
-      <div className="flex-1 p-6">
+      <div className="flex-1">
         <ExcelUploader />
       </div>
     </div>

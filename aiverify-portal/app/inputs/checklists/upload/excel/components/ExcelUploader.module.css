@@ -19,7 +19,7 @@
   justify-content: center;
   border: 3px dashed var(--color-primary-400);
   border-radius: 4px;
-  padding: 70px;
+  padding: 10px;
   cursor: pointer;
   white-space: nowrap;
   background-color: var(--color-secondary-900);
