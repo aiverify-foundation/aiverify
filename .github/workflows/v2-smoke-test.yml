@@ -106,10 +106,17 @@ jobs:
           cd output
           zip -r digital_corruptions.zip .
           cp digital_corruptions.zip ${GITHUB_WORKSPACE}/smoke-testing/fixtures/
+          deactivate
+          rm -f .venv2
           cd ${GITHUB_WORKSPACE}
 
       - name: Create Zip Test Results using FMTC Toolbox
         run: |
+          cd aiverify-test-engine
+          python -m venv .venv2
+          source .venv2/bin/activate
+          pip install -e .
+          cd ${GITHUB_WORKSPACE}
           cd stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification/
           pip install -e .
           python -m aiverify_fairness_metrics_toolbox_for_classification \
@@ -122,6 +129,7 @@ jobs:
             --sensitive_features_list gender
           cp output/results.json ${GITHUB_WORKSPACE}/smoke-testing/fixtures/
           deactivate
+          rm -rf .venv2
           cd ${GITHUB_WORKSPACE}
 
       - name: Install PORTAL
