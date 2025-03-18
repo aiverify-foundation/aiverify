@@ -1,5 +1,5 @@
-# target base image
-FROM python:3.11 as aiverify-test-engine-worker-base
+# target build base image
+FROM python:3.11 AS aiverify-test-engine-worker-base
 ARG TARGETARCH
 
 # Combine all apt-get installations into a single layer with cleanup
@@ -15,6 +15,7 @@ RUN apt-get update && \
     pkg-config && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+# add additional system libraries as necessary
 
 ENV PYTHONUNBUFFERED=1
 ENV PIP_NO_CACHE_DIR=1
@@ -28,15 +29,16 @@ COPY aiverify-test-engine/ ./aiverify-test-engine/
 COPY aiverify-test-engine-worker/install-arm64.sh ./aiverify-test-engine/install-arm64.sh
 COPY aiverify-test-engine-worker/install-amd64.sh ./aiverify-test-engine/install-amd64.sh
  
-
 WORKDIR /app/aiverify-test-engine
 
 RUN echo "Building base image on target archiecture $TARGETARCH"
 RUN sh install-${TARGETARCH}.sh
 # RUN pip install pydantic>=2.0.0
 
-# target venv-build
-FROM aiverify-test-engine-worker-base as venv-build
+# add additional env as necessary
+
+# target build and run using venv
+FROM aiverify-test-engine-worker-base AS venv-build
 
 WORKDIR /app
 

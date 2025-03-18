@@ -64,7 +64,7 @@ class VirtualEnvironmentExecute(Pipe):
                 # Run the algorithm
                 p = subprocess.run(cmds,
                                    #    cwd=task_data.algorithm_path,
-                                   check=True, stdin=True, stdout=True,
+                                   check=True, capture_output=True,
                                    )
                 if p.returncode != 0:
                     raise PipeException(f"Error executing algorithm: {p.stderr}")
