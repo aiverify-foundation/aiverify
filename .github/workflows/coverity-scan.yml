@@ -1,12 +1,12 @@
 name: v2 Coverity Scan
 
 on:
-  push:
-    branches: [ 'v2.x' ]
+  
   pull_request:
     types: [ assigned, synchronize ]
     branches:
       - 'v2.x'
+
   workflow_dispatch:
     inputs:
       branch_to_test:
@@ -14,10 +14,13 @@ on:
         required: true
         default: 'v2.x'
         type: string
+  
+  push:
+    branches: [ 'v2.x' ]
 
 jobs:
   Coverity:
-
+    if: (github.event_name == 'pull_request' && github.event.pull_request.assignee != null) || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
     runs-on: ubuntu-latest
 
     env:
@@ -41,7 +44,6 @@ jobs:
         /tmp/$CSA/bin/cov-configure --java
 
     - name: Coverity Full Scan
-      if: ${{ github.event_name != 'pull_request' }}
       run: |
         export PATH=$PATH:/tmp/$CSA/bin
         set -x
