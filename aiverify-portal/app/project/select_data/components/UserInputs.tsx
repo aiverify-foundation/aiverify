@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 import { useState } from 'react';
 import { useMDXBundle } from '@/app/inputs/checklists/[groupId]/[checklistId]/hooks/useMDXBundle';
@@ -9,7 +10,6 @@ import { Checklist, FairnessTree } from '@/app/inputs/utils/types';
 import { InputBlockData, InputBlock as ProjectInputBlock } from '@/app/types';
 import { Button, ButtonVariant } from '@/lib/components/button';
 import PluginInputModal from './PluginInputModal';
-
 interface UserInputsProps {
   projectId?: string | null;
   requiredInputBlocks: ProjectInputBlock[];
@@ -52,6 +52,7 @@ export default function UserInputs({
   })();
 
   const [selectedGroup, setSelectedGroup] = useState<string>(initialGroup);
+  const router = useRouter();
 
   // Initialize fairness trees based on initialInputBlocks
   const initialFairnessTrees = (() => {
@@ -439,7 +440,10 @@ export default function UserInputs({
 
       <PluginInputModal
         isOpen={!!selectedPlugin}
-        onClose={() => setSelectedPlugin(null)}
+        onClose={() => {
+          setSelectedPlugin(null);
+          router.refresh();
+        }}
         pluginName={selectedPlugin?.name || ''}
         inputBlockName={selectedPlugin?.inputBlock || ''}
         mdxContent={mdxBundle?.code || ''}

@@ -1,4 +1,5 @@
 import { MDXProvider } from '@mdx-js/react';
+import { RiInformationLine } from '@remixicon/react';
 import dynamic from 'next/dynamic';
 import React from 'react';
 import * as ReactJSXRuntime from 'react/jsx-runtime';
@@ -30,6 +31,7 @@ export default function PluginInputModal({
   const [formData, setFormData] = React.useState<Record<string, unknown>>({});
   const [error, setError] = React.useState<string>('');
   const [isLoading, setIsLoading] = React.useState(false);
+  const [customName, setCustomName] = React.useState<string>('');
 
   const MDXComponent = React.useMemo(() => {
     if (!mdxContent) return null;
@@ -64,6 +66,12 @@ export default function PluginInputModal({
     setError('');
     setIsLoading(true);
 
+    if (!customName.trim()) {
+      setError('Please provide a unique name for this input block');
+      setIsLoading(false);
+      return;
+    }
+
     try {
       // Validate JSON data if present
       if (formData.data) {
@@ -86,6 +94,9 @@ export default function PluginInputModal({
         });
       }
 
+      // Generate a unique group ID using timestamp and random characters
+      const uniqueGroup = `${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
+
       // Make POST request to /api/input_block_data
       const response = await fetch('/api/input_block_data', {
         method: 'POST',
@@ -95,6 +106,8 @@ export default function PluginInputModal({
         body: JSON.stringify({
           gid,
           cid,
+          group: uniqueGroup,
+          name: customName.trim(), // Use the custom name instead of inputBlockName
           data: formData,
         }),
       });
@@ -127,6 +140,30 @@ export default function PluginInputModal({
       width={'calc(100% - 200px)'}
       height={'calc(100% - 100px)'}>
       <div className="flex h-[calc(100%-4rem)] flex-col justify-between">
+        {/* Custom name input field with tooltip */}
+        <div className="mb-6">
+          <div className="flex items-center mb-2">
+            <label htmlFor="custom-name" className="text-white font-medium">
+              Input Block Name
+            </label>
+            <div className="relative ml-2 group">
+              <RiInformationLine className="text-gray-400 hover:text-white cursor-help" />
+              <div className="absolute left-full ml-2 top-0 w-64 bg-gray-800 p-2 rounded shadow-lg text-xs text-white opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+                Give your input block a unique name to identify it by
+              </div>
+            </div>
+          </div>
+          <input
+            id="custom-name"
+            type="text"
+            className="w-full p-3 bg-secondary-900 text-white rounded border border-secondary-700 focus:outline-none focus:border-primary-500"
+            placeholder="Enter a unique name for this input block"
+            value={customName}
+            onChange={(e) => setCustomName(e.target.value)}
+            required
+          />
+        </div>
+        
         <MDXProvider>
           <div className="prose prose-invert max-w-none overflow-y-auto">
             {MDXComponent && (
