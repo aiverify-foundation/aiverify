@@ -61,9 +61,9 @@ jobs:
       - name: Install AI Verify Shared Library
         run: |
           cd aiverify-shared-library
-          npm ci
+          npm install
           npm run build
-          sudo npm link
+          npm link
           cd ${GITHUB_WORKSPACE}
 
       - name: Install APIGW & Start APIGW
@@ -75,7 +75,7 @@ jobs:
           hatch shell &
           sh ./install-amd64.sh
           cd aiverify-apigw-node
-          sudo npm link aiverify-shared-library
+          npm link aiverify-shared-library
           cd ../
           python3 -m aiverify_apigw &
           cd ${GITHUB_WORKSPACE}
@@ -85,7 +85,7 @@ jobs:
           cd aiverify-portal
           touch .env
           echo "APIGW_HOST=http://127.0.0.1:4000" >> .env
-          npm ci
+          npm install
           npm run dev &
           cd ${GITHUB_WORKSPACE}
 
@@ -111,6 +111,7 @@ jobs:
           cd output
           zip -r digital_corruptions.zip .
           cp digital_corruptions.zip ${GITHUB_WORKSPACE}/smoke-testing/fixtures/
+          deactivate
           cd ${GITHUB_WORKSPACE}
 
       - name: Create Zip Test Results using FMTC Toolbox
