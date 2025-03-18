@@ -1182,7 +1182,7 @@ function Designer(props: DesignerProps) {
     </FreeFormDraggableArea>
   );
 
-  const dataDrawers = !isTemplate && (
+  const dataDrawers = !isTemplate && disabled && (
     <section
       className={cn(
         'fixed top-[90px] z-10 flex flex-col items-start gap-2',
