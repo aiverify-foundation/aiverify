@@ -47,8 +47,8 @@ jobs:
         # /tmp/$CSA/bin/cov-configure --java
 
         curl -LO $CSA_URL
-        ls
         unzip bridge-cli-linux64
+        ./bridge-cli
 
         bridge-cli --stage connect \ 
           coverity.connect.url=$COV_URL \
