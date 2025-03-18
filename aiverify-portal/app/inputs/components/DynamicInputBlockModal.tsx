@@ -2,13 +2,13 @@
 
 import { RiInformationLine } from '@remixicon/react';
 import { getMDXComponent } from 'mdx-bundler/client';
+import { useRouter } from 'next/navigation';
 import React, { useState, useMemo, useEffect } from 'react';
 import * as ReactJSXRuntime from 'react/jsx-runtime';
 import { useMDXBundle } from '@/app/inputs/hooks/useMDXBundle';
 import { useMDXSummaryBundle } from '@/app/inputs/hooks/useMDXSummaryBundle';
 import { useSubmitInputBlockData } from '@/app/inputs/hooks/useSubmitInputBlockData';
 import { InputBlockDataPayload } from '@/app/types';
-import { Icon, IconName } from '@/lib/components/IconSVG';
 import { Modal } from '@/lib/components/modal';
 
 // Message Modal Component for Success/Error messages
@@ -25,7 +25,6 @@ const MessageModal = ({
   onClose,
   title,
   message,
-  type,
 }: MessageModalProps) => {
   if (!isOpen) return null;
 
@@ -34,29 +33,9 @@ const MessageModal = ({
       heading={title}
       enableScreenOverlay={true}
       onCloseIconClick={onClose}
-      onPrimaryBtnClick={onClose}
-      primaryBtnLabel="Close"
       width="500px"
-      height="auto">
-      <div className="flex flex-col items-center justify-center py-6">
-        <div
-          className={`mb-4 rounded-full p-4 ${type === 'success' ? 'bg-green-900' : 'bg-red-900'}`}>
-          {type === 'success' ? (
-            <Icon
-              name={IconName.CheckList}
-              size={30}
-              color="white"
-            />
-          ) : (
-            <Icon
-              name={IconName.Warning}
-              size={30}
-              color="white"
-            />
-          )}
-        </div>
-        <p className="text-center text-white">{message}</p>
-      </div>
+      height="200px">
+      <p className="text-white">{message}</p>
     </Modal>
   );
 };
@@ -84,6 +63,7 @@ export const DynamicInputBlockModal: React.FC<DynamicInputBlockModalProps> = ({
   } = useMDXSummaryBundle(gid, cid);
 
   const { submitInputBlockData, isSubmitting } = useSubmitInputBlockData();
+  const router = useRouter();
 
   const [formData, setFormData] = useState<Record<string, unknown>>({});
   const [customName, setCustomName] = useState<string>('');
@@ -255,6 +235,7 @@ export const DynamicInputBlockModal: React.FC<DynamicInputBlockModalProps> = ({
     if (messageModalProps.type === 'success') {
       // Only close the main modal if it was a success message
       onClose();
+      router.push(`/inputs/${gid}/${cid}`);
     }
   };
 
@@ -286,15 +267,8 @@ export const DynamicInputBlockModal: React.FC<DynamicInputBlockModalProps> = ({
         primaryBtnLabel="Close"
         width="500px"
         height="auto">
-        <div className="flex flex-col items-center justify-center py-6">
-          <div className="mb-4 rounded-full bg-red-900 p-4">
-            <Icon
-              name={IconName.Warning}
-              size={30}
-              color="white"
-            />
-          </div>
-          <p className="text-center text-white">
+        <div className="flex flex-col py-6">
+          <p className="text-white">
             Error loading content: {(error || summaryError)?.message}
           </p>
         </div>
