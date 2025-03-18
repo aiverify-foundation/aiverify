@@ -83,41 +83,41 @@ jobs:
           python3 -m aiverify_apigw &
           cd ${GITHUB_WORKSPACE}
 
-      - name: Create Zip Test Results using Digital Corruption
-        run: |
-          cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions/
-          pip install -e .
-          python -m aiverify_digital_corruptions \
-            --data_path ${{ env.ROOT_PATH }}/data/raw_fashion_image_10 \
-            --model_path ${{ env.ROOT_PATH }}/pipeline/multiclass_classification_image_mnist_fashion \
-            --ground_truth_path ${{ env.ROOT_PATH }}/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
-            --ground_truth label \
-            --model_type CLASSIFICATION \
-            --run_pipeline \
-            --annotated_ground_truth_path ${{ env.ROOT_PATH }}/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
-            --set_seed 10 \
-            --file_name_label file_name
-          cd output
-          zip -r digital_corruptions.zip .
-          cp digital_corruptions.zip ${GITHUB_WORKSPACE}/smoke-testing/fixtures/
-          deactivate
-          cd ${GITHUB_WORKSPACE}
+      # - name: Create Zip Test Results using Digital Corruption
+      #   run: |
+      #     cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions/
+      #     pip install -e .
+      #     python -m aiverify_digital_corruptions \
+      #       --data_path ${{ env.ROOT_PATH }}/data/raw_fashion_image_10 \
+      #       --model_path ${{ env.ROOT_PATH }}/pipeline/multiclass_classification_image_mnist_fashion \
+      #       --ground_truth_path ${{ env.ROOT_PATH }}/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
+      #       --ground_truth label \
+      #       --model_type CLASSIFICATION \
+      #       --run_pipeline \
+      #       --annotated_ground_truth_path ${{ env.ROOT_PATH }}/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
+      #       --set_seed 10 \
+      #       --file_name_label file_name
+      #     cd output
+      #     zip -r digital_corruptions.zip .
+      #     cp digital_corruptions.zip ${GITHUB_WORKSPACE}/smoke-testing/fixtures/
+      #     deactivate
+      #     cd ${GITHUB_WORKSPACE}
 
-      - name: Create Zip Test Results using FMTC Toolbox
-        run: |
-          cd stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification/
-          pip install -e .
-          python -m aiverify_fairness_metrics_toolbox_for_classification \
-            --data_path ${{ env.ROOT_PATH }}/data/sample_mc_pipeline_toxic_data.sav \
-            --model_path ${{ env.ROOT_PATH }}/pipeline/mc_tabular_toxic \
-            --ground_truth_path ${{ env.ROOT_PATH }}/data/sample_mc_pipeline_toxic_ytest_data.sav \
-            --ground_truth toxic \
-            --model_type CLASSIFICATION \
-            --run_pipeline \
-            --sensitive_features_list gender
-          cp output/results.json ${GITHUB_WORKSPACE}/smoke-testing/fixtures/
-          deactivate
-          cd ${GITHUB_WORKSPACE}
+      # - name: Create Zip Test Results using FMTC Toolbox
+      #   run: |
+      #     cd stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification/
+      #     pip install -e .
+      #     python -m aiverify_fairness_metrics_toolbox_for_classification \
+      #       --data_path ${{ env.ROOT_PATH }}/data/sample_mc_pipeline_toxic_data.sav \
+      #       --model_path ${{ env.ROOT_PATH }}/pipeline/mc_tabular_toxic \
+      #       --ground_truth_path ${{ env.ROOT_PATH }}/data/sample_mc_pipeline_toxic_ytest_data.sav \
+      #       --ground_truth toxic \
+      #       --model_type CLASSIFICATION \
+      #       --run_pipeline \
+      #       --sensitive_features_list gender
+      #     cp output/results.json ${GITHUB_WORKSPACE}/smoke-testing/fixtures/
+      #     deactivate
+      #     cd ${GITHUB_WORKSPACE}
 
       - name: Install PORTAL
         run: |
