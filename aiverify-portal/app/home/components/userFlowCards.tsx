@@ -6,11 +6,13 @@ import { Card } from '@/lib/components/card/card';
 
 export function UserFlowCards() {
   return (
-    <section className="flex w-full justify-center">
+    <section className="flex w-full justify-start">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         <Link href="/project/new">
           <Card
-            size="md"
+            size="sm"
+            width={320}
+            height={320*0.6}
             enableTiltEffect={true}
             tiltSpeed={200}
             tiltRotation={5}
@@ -37,6 +39,8 @@ export function UserFlowCards() {
         <Link href="/home/manage">
           <Card
             size="md"
+            width={320}
+            height={320*0.6}
             enableTiltEffect={true}
             tiltSpeed={200}
             tiltRotation={5}
