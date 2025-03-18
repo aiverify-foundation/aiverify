@@ -1,16 +1,17 @@
 from __future__ import annotations
 
-from typing import Any, List, Tuple
+from typing import Any, Tuple
 
-from aiverify_test_engine.interfaces.imodel import IModel
-from aiverify_test_engine.plugins.enums.model_plugin_type import ModelPluginType
-from aiverify_test_engine.plugins.enums.plugin_type import PluginType
-from aiverify_test_engine.plugins.metadata.plugin_metadata import PluginMetadata
 import numpy as np
 import pandas as pd
 import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader, TensorDataset
+
+from aiverify_test_engine.interfaces.imodel import IModel
+from aiverify_test_engine.plugins.enums.model_plugin_type import ModelPluginType
+from aiverify_test_engine.plugins.enums.plugin_type import PluginType
+from aiverify_test_engine.plugins.metadata.plugin_metadata import PluginMetadata
 
 
 # NOTE: Do not change the class name, else the plugin cannot be read by the system
@@ -23,10 +24,6 @@ class Plugin(IModel):
     # Some information on plugin
     _model: Any = None
     _model_algorithm: str = ""
-    _supported_algorithms: List = [
-        "torch.nn.Sequential",
-        "torch.nn.modules.container.Sequential",
-    ]
     _name: str = "pytorchmodel"
     _description: str = "pytorchmodel supports detecting pytorch models"
     _version: str = "0.9.0"
@@ -285,14 +282,7 @@ class Plugin(IModel):
             Tuple[bool, str]: true if model is supported, str will store the support
             algo name
         """
-        model_algorithm = ""
-        is_success = False
-
-        module_type_name = f"{type(model).__module__}.{type(model).__name__}"
-
-        for supported_algo in self._supported_algorithms:
-            if supported_algo == module_type_name:
-                model_algorithm = supported_algo
-                is_success = True
+        is_success = isinstance(model, torch.nn.Module)
+        model_algorithm = f"{type(model).__module__}.{type(model).__name__}"
 
         return is_success, model_algorithm
