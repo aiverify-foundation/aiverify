@@ -28,6 +28,7 @@ jobs:
       COV_USER: ${{ secrets.COV_USER }}
       COVERITY_PASSPHRASE: ${{ secrets.COVERITY_PASSPHRASE }}
       CSA_URL: ${{ secrets.CSA_URL }}
+      CSA: cov-analysis-linux64-2024.12
       COVERITY_PROJECT: aiverify-2.x
       COVERITY_STREAM: aiverify-2.x
       COVERITY_VIEW: Branch View
@@ -42,27 +43,27 @@ jobs:
     - name: Coverity Download
       run: |
         
-        # curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/downloadFile.htm?fn=$CSA.tar.gz | tar -C /tmp -xzf -
-        # curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o /tmp/$CSA/bin/license.dat $COV_URL/downloadFile.htm?fn=license.dat
-        # /tmp/$CSA/bin/cov-configure --java
+        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/downloadFile.htm?fn=$CSA.tar.gz | tar -C /tmp -xzf -
+        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o /tmp/$CSA/bin/license.dat $COV_URL/downloadFile.htm?fn=license.dat
+        /tmp/$CSA/bin/cov-configure --java
 
-        curl -LO $CSA_URL
-        unzip bridge-cli-linux64
+        # curl -LO $CSA_URL
+        # unzip bridge-cli-linux64
 
-        ./bridge-cli --stage connect \ 
-          coverity.connect.url=$COV_URL \
-          coverity.connect.project.name=$COVERITY_PROJECT \ 
-          coverity.connect.stream.name=$COVERITY_STREAM \ 
-          coverity.connect.policy.view=$COVERITY_VIEW
+        # ./bridge-cli --stage connect \ 
+        #   coverity.connect.url=$COV_URL \
+        #   coverity.connect.project.name=$COVERITY_PROJECT \ 
+        #   coverity.connect.stream.name=$COVERITY_STREAM \ 
+        #   coverity.connect.policy.view=$COVERITY_VIEW
 
-    # - name: Coverity Full Scan
-    #   run: |
-    #     export PATH=$PATH:/tmp/$CSA/bin
-    #     set -x
-    #     coverity capture
-    #     cov-analyze --dir idir --all --all-security --strip-path $GITHUB_WORKSPACE $CHECKERS
-    #     cov-commit-defects --dir idir --ticker-mode none --url $COV_URL --stream aiverify-2.x --scm git \
-    #       --description $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID --target $RUNNER_OS --version $GITHUB_SHA
+    - name: Coverity Full Scan
+      run: |
+        export PATH=$PATH:/tmp/$CSA/bin
+        set -x
+        coverity capture
+        cov-analyze --dir idir --all --all-security --strip-path $GITHUB_WORKSPACE $CHECKERS
+        cov-commit-defects --dir idir --ticker-mode none --url $COV_URL --stream aiverify-2.x --scm git \
+          --description $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID --target $RUNNER_OS --version $GITHUB_SHA
 
     # - name: Coverity Quality Gate
     #   if: ${{ github.event_name != 'pull_request' }}
