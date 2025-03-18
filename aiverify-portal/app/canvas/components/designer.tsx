@@ -180,10 +180,7 @@ function Designer(props: DesignerProps) {
   const searchParams = useSearchParams();
 
   // All hooks must be called before any conditional returns
-  console.log('project', project);
-  console.log('flow', flow);
   const canvasState = useCanvasState(initialState);
-  console.log('initialState', canvasState);
   const canvasRef = useRef<HTMLDivElement>(null);
   const isInitialMount = useRef(true);
   const freeFormAreaRef = useRef<HTMLDivElement>(null);
@@ -446,132 +443,6 @@ function Designer(props: DesignerProps) {
     }
   }, [selectedTestResultsFromUrlParams]);
 
-  // Initialize the state with template data
-  /* useEffect(() => {
-    if (project.pages && project.pages.length > 0) {
-      // Convert template pages to layouts and widgets
-      console.log('proj given before', project);
-
-      // Process each page's widgets similar to handleWidgetDrop
-      const layouts: Layout[][] = (
-        (project as Project).pages as ProjectPage[]
-      ).map((page: ProjectPage, pageIndex: number) =>
-        page.reportWidgets.map((widget: WidgetOnGridLayout) => {
-          // Create a unique grid item ID
-          const gridItemId =
-            widget.gridItemId || createGridItemId(widget, pageIndex);
-
-          // Get the widget's size properties
-          const { minW, minH, maxH, maxW } = widget.widgetSize;
-          console.log('widget size creation', widget.widgetSize);
-
-          // Find the corresponding layout for this widget
-          const existingLayout = page.layouts[
-            page.reportWidgets.indexOf(widget)
-          ] || {
-            x: 0,
-            y: 0,
-          };
-          console.log('existing layout creation', existingLayout);
-
-          // Create the layout item with proper sizing
-          const itemLayout = {
-            ...existingLayout,
-            i: gridItemId,
-            minW,
-            minH,
-            maxW,
-            maxH,
-            static: false,
-            isDraggable: true,
-            isResizable: true,
-            isBounded: true,
-          };
-
-          console.log('Created layout for widget:', itemLayout);
-          return itemLayout;
-        })
-      );
-
-      const widgets: WidgetOnGridLayout[][] = (
-        (project as Project).pages as ProjectPage[]
-      ).map((page: ProjectPage, pageIndex: number) =>
-        page.reportWidgets.map((widget: WidgetOnGridLayout) => ({
-          ...widget,
-          gridItemId: widget.gridItemId || createGridItemId(widget, pageIndex),
-        }))
-      );
-
-      // Initialize page types and overflow parents
-      const pageTypes: ('grid' | 'overflow')[] = (project as Project).pages.map(
-        () => 'grid'
-      );
-      const overflowParents: Array<number | null> = (
-        project as Project
-      ).pages.map(() => null);
-
-      // Initialize algorithms and input blocks
-      const algorithmsOnReport: Algorithm[] = [];
-      const inputBlocksOnReport: InputBlock[] = [];
-      const gridItemToAlgosMap: Record<
-        string,
-        WidgetAlgoAndResultIdentifier[]
-      > = {};
-      const gridItemToInputBlockDatasMap: Record<
-        string,
-        WidgetInputBlockIdentifier[]
-      > = {};
-
-      // Process each widget to collect algorithms and input blocks
-      ((project as Project).pages as ProjectPage[]).forEach(
-        (page: ProjectPage, pageIndex: number) => {
-          page.reportWidgets.forEach((widget: WidgetOnGridLayout) => {
-            const gridItemId =
-              widget.gridItemId || createGridItemId(widget, pageIndex);
-
-            // Collect algorithms
-            const algos = getWidgetAlgosFromPlugins(allPluginsWithMdx, widget);
-            algorithmsOnReport.push(...algos);
-
-            // Collect input blocks
-            const inputBlocks = getWidgetInputBlocksFromPlugins(
-              allPluginsWithMdx,
-              widget
-            );
-            inputBlocksOnReport.push(...inputBlocks);
-
-            // Map algorithms to grid items
-            gridItemToAlgosMap[gridItemId] = algos.map((algo) => ({
-              gid: algo.gid,
-              cid: algo.cid,
-            }));
-
-            // Map input blocks to grid items
-            gridItemToInputBlockDatasMap[gridItemId] = inputBlocks.map(
-              (inputBlock) => ({
-                gid: inputBlock.gid,
-                cid: inputBlock.cid,
-              })
-            );
-          });
-        }
-      );
-
-      // Dispatch initialization action
-      dispatch({
-        type: 'INITIALIZE_WITH_TEMPLATE',
-        layouts,
-        widgets,
-        algorithmsOnReport,
-        inputBlocksOnReport,
-        gridItemToAlgosMap,
-        gridItemToInputBlockDatasMap,
-        pageTypes,
-        overflowParents,
-      });
-    }
-  }, [project.pages, allPluginsWithMdx]); */
-
   // Drag-to-scroll functionality for navigating the canvas
   useDragToScroll(freeFormAreaRef, canvasRef);
 
@@ -615,86 +486,68 @@ function Designer(props: DesignerProps) {
     };
   }, [layouts.length, zoomLevel]);
 
-  useEffect(() => {
-    if (isInitialMount.current) return;
-
-    const debouncedOverflowUpdate = debounce(() => {
-      layouts.forEach((layout, pageIndex) => {
-        if (state.pageTypes[pageIndex] === 'overflow') return;
-
-        const { numOfRequiredPages } = isPageContentOverflow(
-          layouts[pageIndex],
-          state.widgets[pageIndex]
-        );
-
-        // New logic to convert pages to 'overflow'
-        if (numOfRequiredPages > 1) {
-          for (let i = 1; i < numOfRequiredPages; i++) {
-            const overflowPageIndex = pageIndex + i;
-            if (overflowPageIndex < state.pageTypes.length) {
-              state.pageTypes[overflowPageIndex] = 'overflow';
-              state.overflowParents[overflowPageIndex] = pageIndex;
-            }
-          }
-        }
-
-        dispatch({
-          type: 'CONVERT_PAGES_TO_OVERFLOW',
-          pageTypes: state.pageTypes,
-          overflowParents: state.overflowParents,
-        });
-      });
-    }, 300);
-
-    debouncedOverflowUpdate();
-
-    return () => {
-      debouncedOverflowUpdate.cancel();
-    };
-  }, [layouts, state.widgets, state.pageTypes, state.overflowParents]);
-
   // Manages overflow pages based on content size
   useEffect(() => {
     if (isInitialMount.current) return;
 
     const debouncedOverflowCheck = debounce(() => {
+      // Create copies of state arrays to avoid direct mutation
+      const newPageTypes = [...state.pageTypes];
+      const newOverflowParents = [...state.overflowParents];
+      let stateChanged = false;
+
       layouts.forEach((layout, pageIndex) => {
-        if (state.pageTypes[pageIndex] === 'overflow') return;
+        if (newPageTypes[pageIndex] === 'overflow') return;
 
         const { overflows, numOfRequiredPages } = isPageContentOverflow(
           layouts[pageIndex],
           state.widgets[pageIndex]
         );
 
-        // New logic to convert pages to 'overflow'
+        // Convert required pages to overflow
         if (numOfRequiredPages > 1) {
           for (let i = 1; i < numOfRequiredPages; i++) {
             const overflowPageIndex = pageIndex + i;
-            if (overflowPageIndex < state.pageTypes.length) {
-              state.pageTypes[overflowPageIndex] = 'overflow';
-              state.overflowParents[overflowPageIndex] = pageIndex;
+            if (overflowPageIndex < newPageTypes.length) {
+              newPageTypes[overflowPageIndex] = 'overflow';
+              newOverflowParents[overflowPageIndex] = pageIndex;
+              stateChanged = true;
             }
           }
         }
 
-        const existingOverflowPages = state.pageTypes.filter(
+        const existingOverflowPages = newPageTypes.filter(
           (type, idx) =>
-            type === 'overflow' && state.overflowParents[idx] === pageIndex
+            type === 'overflow' && newOverflowParents[idx] === pageIndex
         ).length;
 
         if (overflows && existingOverflowPages < numOfRequiredPages - 1) {
-          dispatch({
-            type: 'ADD_OVERFLOW_PAGES',
-            parentPageIndex: pageIndex,
-            count: numOfRequiredPages - 1 - existingOverflowPages,
-          });
+          // Don't modify state directly here, just queue the dispatch
+          setTimeout(() => {
+            dispatch({
+              type: 'ADD_OVERFLOW_PAGES',
+              parentPageIndex: pageIndex,
+              count: numOfRequiredPages - 1 - existingOverflowPages,
+            });
+          }, 0);
         } else if (!overflows && existingOverflowPages > 0) {
-          dispatch({
-            type: 'REMOVE_OVERFLOW_PAGES',
-            parentPageIndex: pageIndex,
-          });
+          setTimeout(() => {
+            dispatch({
+              type: 'REMOVE_OVERFLOW_PAGES',
+              parentPageIndex: pageIndex,
+            });
+          }, 0);
         }
       });
+
+      // Only dispatch state update if changes were made
+      if (stateChanged) {
+        dispatch({
+          type: 'CONVERT_PAGES_TO_OVERFLOW',
+          pageTypes: newPageTypes,
+          overflowParents: newOverflowParents,
+        });
+      }
     }, 300);
 
     debouncedOverflowCheck();
