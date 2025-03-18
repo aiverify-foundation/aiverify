@@ -25,12 +25,16 @@ const SELECT_TEXT_COLOR = "#f9f9f9";
 cytoscape("core", "resetGraph", function () {
   // @ts-ignore
   let cy = this;
-  // cy.elements().classes([]);
-  let outcomes = cy.nodes('[type = "outcome"]');
-  // outcomes.successors().classes([])
-  outcomes.successors("node").removeClass("highlight");
-  outcomes.successors("edge").removeClass("edge-selected");
-  // cy.reset();
+  // Remove highlight classes from all nodes and edges
+  cy.nodes().removeClass("highlight");
+  cy.edges().removeClass("edge-selected");
+
+  // Only retain highlights for outcome nodes that are specifically chosen
+  let outcomes = cy.nodes('[type = "outcome"]').filter(".highlight");
+
+  // Don't remove highlights from outcomes
+  outcomes.addClass("highlight");
+
   cy.fit(cy.nodes(), "10px");
   return cy;
 });
@@ -144,7 +148,7 @@ export default function DecisionTreeGraph({
 
   const style: cytoscape.Stylesheet[] = [
     {
-      selector: "node(text)", // default node style
+      selector: "node",
       style: {
         "text-wrap": "wrap",
         width: "340px",
@@ -369,4 +373,3 @@ export default function DecisionTreeGraph({
     />
   );
 }
-

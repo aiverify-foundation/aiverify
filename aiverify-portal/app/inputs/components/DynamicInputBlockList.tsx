@@ -6,6 +6,8 @@ import { useState, useMemo } from 'react';
 import ChecklistsFilters from '@/app/inputs/components/FilterButtons';
 import { InputBlock, InputBlockData } from '@/app/types';
 import { Icon, IconName } from '@/lib/components/IconSVG';
+import { ButtonVariant } from '@/lib/components/button';
+import { Button } from '@/lib/components/button';
 import { Card } from '@/lib/components/card/card';
 import { DynamicInputBlockModal } from './DynamicInputBlockModal';
 
@@ -88,11 +90,14 @@ export const DynamicInputBlockList: React.FC<DynamicInputBlockListProps> = ({
             <h3 className="text-white">{description}</h3>
           </div>
         </div>
-        <button
+        <Button
+          pill
+          textColor="white"
+          variant={ButtonVariant.OUTLINE}
+          size="sm"
+          text="ADD NEW INPUT"
           onClick={() => setShowAddModal(true)}
-          className="rounded bg-primary-700 px-4 py-2 text-white transition-colors hover:bg-primary-600">
-          Add New {title}
-        </button>
+        />
       </div>
 
       <div className="mt-6 flex h-full flex-col">
