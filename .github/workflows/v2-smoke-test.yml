@@ -80,7 +80,8 @@ jobs:
           npm install
           npm link aiverify-shared-library
           cd ../
-          python3 -m aiverify_apigw &
+          python3 -m aiverify_apigw > output.log 2>&1 &
+          sleep 180
           cd ${GITHUB_WORKSPACE}
 
       # - name: Create Zip Test Results using Digital Corruption
@@ -142,3 +143,7 @@ jobs:
           name: playwright-trace-v2.0-smoke-testing-${{ github.run_id }}
           path: |
             ${{ github.workspace }}/smoke-testing/test-results/
+
+      - name: APIGW Logs
+        run: |
+          cat {GITHUB_WORKSPACE}/aiverify-apigw/output.log
