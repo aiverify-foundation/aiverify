@@ -86,6 +86,11 @@ jobs:
 
       - name: Create Zip Test Results using Digital Corruption
         run: |
+          cd aiverify-test-engine
+          python -m venv .venv2
+          source .venv2/bin/activate
+          pip install -e .
+          cd {GITHUB_WORKSPACE}
           cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions/
           pip install -e .
           python -m aiverify_digital_corruptions \
@@ -101,7 +106,6 @@ jobs:
           cd output
           zip -r digital_corruptions.zip .
           cp digital_corruptions.zip ${GITHUB_WORKSPACE}/smoke-testing/fixtures/
-          deactivate
           cd ${GITHUB_WORKSPACE}
 
       - name: Create Zip Test Results using FMTC Toolbox
