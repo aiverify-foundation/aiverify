@@ -300,17 +300,6 @@ export function transformProjectOutputToState(
     overflowParents.push(null);
   });
 
-  // If there are at least 2 pages and the second page is empty,
-  // set the second page as an overflow page of the first
-  if (
-    project.pages.length >= 2 &&
-    (project.pages[1].layouts.length === 0 ||
-      project.pages[1].reportWidgets.length === 0)
-  ) {
-    pageTypes[1] = 'overflow';
-    overflowParents[1] = 0;
-  }
-
   return {
     layouts,
     widgets,

@@ -615,6 +615,44 @@ function Designer(props: DesignerProps) {
     };
   }, [layouts.length, zoomLevel]);
 
+  useEffect(() => {
+    if (isInitialMount.current) return;
+
+    const debouncedOverflowUpdate = debounce(() => {
+      layouts.forEach((layout, pageIndex) => {
+        if (state.pageTypes[pageIndex] === 'overflow') return;
+
+        const { numOfRequiredPages } = isPageContentOverflow(
+          layouts[pageIndex],
+          state.widgets[pageIndex]
+        );
+
+        // New logic to convert pages to 'overflow'
+        if (numOfRequiredPages > 1) {
+          for (let i = 1; i < numOfRequiredPages; i++) {
+            const overflowPageIndex = pageIndex + i;
+            if (overflowPageIndex < state.pageTypes.length) {
+              state.pageTypes[overflowPageIndex] = 'overflow';
+              state.overflowParents[overflowPageIndex] = pageIndex;
+            }
+          }
+        }
+
+        dispatch({
+          type: 'CONVERT_PAGES_TO_OVERFLOW',
+          pageTypes: state.pageTypes,
+          overflowParents: state.overflowParents,
+        });
+      });
+    }, 300);
+
+    debouncedOverflowUpdate();
+
+    return () => {
+      debouncedOverflowUpdate.cancel();
+    };
+  }, [layouts, state.widgets, state.pageTypes, state.overflowParents]);
+
   // Manages overflow pages based on content size
   useEffect(() => {
     if (isInitialMount.current) return;
@@ -627,6 +665,17 @@ function Designer(props: DesignerProps) {
           layouts[pageIndex],
           state.widgets[pageIndex]
         );
+
+        // New logic to convert pages to 'overflow'
+        if (numOfRequiredPages > 1) {
+          for (let i = 1; i < numOfRequiredPages; i++) {
+            const overflowPageIndex = pageIndex + i;
+            if (overflowPageIndex < state.pageTypes.length) {
+              state.pageTypes[overflowPageIndex] = 'overflow';
+              state.overflowParents[overflowPageIndex] = pageIndex;
+            }
+          }
+        }
 
         const existingOverflowPages = state.pageTypes.filter(
           (type, idx) =>

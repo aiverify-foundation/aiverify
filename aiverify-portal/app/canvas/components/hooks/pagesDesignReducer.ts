@@ -143,19 +143,7 @@ type WidgetAction =
       gridItemInputBlockDatasMap: WidgetInputBlockIdentifier[];
     }
   | {
-      type: 'INITIALIZE_WITH_TEMPLATE';
-      layouts: Layout[][];
-      widgets: WidgetOnGridLayout[][];
-      algorithmsOnReport: Algorithm[];
-      inputBlocksOnReport: InputBlock[];
-      gridItemToAlgosMap: Record<
-        WidgetGridItemId,
-        WidgetAlgoAndResultIdentifier[]
-      >;
-      gridItemToInputBlockDatasMap: Record<
-        WidgetGridItemId,
-        WidgetInputBlockIdentifier[]
-      >;
+      type: 'CONVERT_PAGES_TO_OVERFLOW';
       pageTypes: ('grid' | 'overflow')[];
       overflowParents: Array<number | null>;
     };
@@ -639,75 +627,13 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       };
       break;
     }
-
-    case 'INITIALIZE_WITH_TEMPLATE': {
-      const {
-        layouts: templateLayouts,
-        widgets: templateWidgets,
-        algorithmsOnReport,
-        inputBlocksOnReport,
-        gridItemToAlgosMap,
-        gridItemToInputBlockDatasMap,
+    case 'CONVERT_PAGES_TO_OVERFLOW': {
+      const { pageTypes, overflowParents } = action;
+      return {
+        ...state,
         pageTypes,
         overflowParents,
-      } = action;
-
-      // Validate input arrays
-      if (!Array.isArray(templateLayouts) || !Array.isArray(templateWidgets)) {
-        console.error(
-          'Invalid template data: layouts or widgets are not arrays'
-        );
-        return state;
-      }
-
-      // Process each page's layouts and widgets to ensure proper positioning
-      const processedLayouts = templateLayouts.map((pageLayouts, pageIndex) => {
-        if (
-          !Array.isArray(pageLayouts) ||
-          !Array.isArray(templateWidgets[pageIndex])
-        ) {
-          console.error(`Invalid page data at index ${pageIndex}`);
-          return [];
-        }
-
-        const sortedLayouts: Layout[] = [];
-        const sortedWidgets = templateWidgets[pageIndex].filter(
-          (widget) => widget && widget.gridItemId // Filter out invalid widgets
-        );
-
-        // Position each widget using findWidgetInsertPosition
-        pageLayouts.forEach((layout, idx) => {
-          if (!layout || !sortedWidgets[idx]) return; // Skip invalid layouts/widgets
-
-          const insertPosition = findWidgetInsertPosition(
-            sortedLayouts,
-            layout
-          );
-          sortedLayouts.splice(insertPosition, 0, layout);
-
-          // Move the corresponding widget to match the layout position
-          if (idx !== insertPosition) {
-            const [widget] = sortedWidgets.splice(idx, 1);
-            sortedWidgets.splice(insertPosition, 0, widget);
-          }
-        });
-
-        templateWidgets[pageIndex] = sortedWidgets;
-        return sortedLayouts;
-      });
-
-      newState = {
-        ...state,
-        layouts: processedLayouts,
-        widgets: templateWidgets,
-        algorithmsOnReport: algorithmsOnReport || [],
-        inputBlocksOnReport: inputBlocksOnReport || [],
-        gridItemToAlgosMap: gridItemToAlgosMap || {},
-        gridItemToInputBlockDatasMap: gridItemToInputBlockDatasMap || {},
-        pageTypes: pageTypes || ['grid'],
-        overflowParents: overflowParents || [null],
       };
-      break;
     }
 
     default:
@@ -715,7 +641,6 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
   }
 
   // Save state to database (debounced)
-  console.log('saving hereee', newState);
   debouncedSaveStateToDatabase(newState);
 
   return newState;
