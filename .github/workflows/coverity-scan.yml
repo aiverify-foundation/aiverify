@@ -48,9 +48,8 @@ jobs:
 
         curl -LO $CSA_URL
         unzip bridge-cli-linux64
-        ./bridge-cli
 
-        bridge-cli --stage connect \ 
+        ./bridge-cli --stage connect \ 
           coverity.connect.url=$COV_URL \
           coverity.connect.project.name=$COVERITY_PROJECT \ 
           coverity.connect.stream.name=$COVERITY_STREAM \ 
