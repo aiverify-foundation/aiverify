@@ -90,7 +90,7 @@ jobs:
           python -m venv .venv2
           source .venv2/bin/activate
           pip install -e .
-          cd {GITHUB_WORKSPACE}
+          cd ${GITHUB_WORKSPACE}
           cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions/
           pip install -e .
           python -m aiverify_digital_corruptions \
@@ -151,4 +151,4 @@ jobs:
       - name: APIGW Logs
         if: always()
         run: |
-          cat {GITHUB_WORKSPACE}/aiverify-apigw/output.log
+          cat ${GITHUB_WORKSPACE}/aiverify-apigw/output.log
