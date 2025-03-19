@@ -11,7 +11,7 @@ export const Recommendation = ({ data02 }) => {
   const naCount = data02.find(item => item.name === 'Not Applicable')?.value || 0; 
 
   let recommendation;
-  if (noCount >= 1 || naCount >= 1) {
+  if (noCount >= 1) {
     //Failed Test
     recommendation = "For the market to be more competitive, developers should be able to gain access, on reasonable terms, to key inputs they need to develop and deploy AI models. The company should avoid restricting competitors' access to data or resources for the development of their AI models and allow non-discriminatory access to its AI products and services. If the company considers itself to be dominant, it should review its practices to avoid potentially infringing Section 47 of the Competition Act, which prohibits the abuse of a dominant market position that is not based on fair competition and perpetuates the dominant position of the business.";
   } else {

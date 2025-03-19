@@ -11,7 +11,7 @@ export const Recommendation = ({ data02 }) => {
   const naCount = data02.find(item => item.name === 'Not Applicable')?.value || 0; 
 
   let recommendation;
-  if (noCount >= 1 || naCount >= 1) {
+  if (noCount >= 1) {
     //Failed Test
     recommendation = "Having sufficient diversity in the market in relation to AI models being developed, how they are released to consumers and businesses, and the business models that Companies employ can help to increase innovation and competition in the market to the benefit of consumers. If the company does not offer a diverse range of business models, the company can consider offering a both open-source and closed-source options to provide consumers with diverse product offerings and drive innovation. If the company already offers open-source options, it should consider increasing engagement efforts with the open-source community to bolster development efforts and ensure that the open-source models are made accessible in a non-discriminatory manner.";
   } else {

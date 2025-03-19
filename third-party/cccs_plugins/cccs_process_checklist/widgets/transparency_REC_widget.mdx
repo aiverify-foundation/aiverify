@@ -11,7 +11,7 @@ export const Recommendation = ({ data02 }) => {
   const naCount = data02.find(item => item.name === 'Not Applicable')?.value || 0; 
 
   let recommendation;
-  if (noCount >= 1 || naCount >= 1) {
+  if (noCount >= 1) {
     //Failed Test
     recommendation = "The market would trend towards positive outcomes if models were themselves reliable and accurate, and if consumers had the right information about them to make informed decisions. In cases where AI models have limitations, users should be appropriately informed about these constraints. The company should ensure performance claims are verifiable and clearly state specific metrics, allowing consumers to understand features, capabilities, and limitations. Consumers should be informed about the AI model's accuracy in its output so that consumers can make informed choices when using the model. If the company is making false or misleading claims or fail to disclose any limitations, the company could potentially be infringing the Consumer Protection (Fair Trading) Act.";
   } else {

@@ -11,7 +11,7 @@ export const Recommendation = ({ data02 }) => {
   const naCount = data02.find(item => item.name === 'Not Applicable')?.value || 0; 
 
   let recommendation;
-  if (noCount >= 1 || naCount >= 1) {
+  if (noCount >= 1) {
     //Failed Test
     recommendation = "The company's AI algorithm may be engaging in algorithmic collusion if the algorithm is designed to coordinate changes with other competitors and/or facilitate anti-competitive agreements. To avoid potentially infringing Section 34 of the Competition Act, which prohibits agreements that prevent, restrict, or distort competition within Singapore, the company should review and consider incorporating a more diverse set of factors or practices that are not derived from other companies' business models or decisions. Additionally, the company's AI algorithm could be engaging in algorithmic exclusion or predation through the implementation of below-cost pricing or loyalty-inducing algorithms. If the company considers itself to be dominant, it should review the AI algorithm for any instances of below-cost pricing or loyalty-inducing tendencies to avoid potentially infringing Section 47 of the Competition Act, which prohibits the abuse of dominant market position that is not based on fair competition and perpetuates the dominant position of the business.";
   } else {

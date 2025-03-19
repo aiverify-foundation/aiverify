@@ -11,7 +11,7 @@ export const Recommendation = ({ data02 }) => {
   const naCount = data02.find(item => item.name === 'Not Applicable')?.value || 0; 
 
   let recommendation;
-  if (noCount >= 1 || naCount >= 1) {
+  if (noCount >= 1) {
     //Failed Test
     recommendation = "The market would trend towards positive outcomes if the AI models were more accurate (e.g. reducing hallucinations where models are producing inaccurate or misleading results and predictions are replicable with the same input). When AI models produce inaccurate or misleading results, it could create issues for output reliability and consumer trust.\n\n\nThe company should ensure that mechanisms are in place to maintain accuracy and reduce misleading information. Additionally, the company can consider improving model reliability and accuracy, keeping documentation for all model versions, and maintaining consistent data cleaning procedures. The model should also produce consistent results with the same input. Some examples of good practices can include (i) allowing the model's output to cite a particular source in its output if it is responding to a query, (ii) allowing users to verify a response or (iii) provide links to sources in its response.";
   } else {

@@ -11,7 +11,7 @@ export const Recommendation = ({ data02 }) => {
   const naCount = data02.find(item => item.name === 'Not Applicable')?.value || 0; 
 
   let recommendation;
-  if (noCount >= 1 || naCount >= 1) {
+  if (noCount >= 1) {
     //Failed Test
     recommendation = "The market would trend towards positive outcomes such as the bolstering of innovation and competitive dynamics, if there were mechanisms to determine the proper allocation of accountability and responsibility. Proper allocation of accountability will also incentivise firms to improve consumer outcomes, and consumers may more easily seek redress when things go wrong, leading to consumer confidence, trust and adoption. The company should take proactive responsibility for what they control in the value chain and take positive action necessary to ensure consumers are adequately protected and ensure the development of a competitive market that gains the trust and confidence of consumers and businesses.";
   } else {

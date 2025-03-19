@@ -11,7 +11,7 @@ export const Recommendation = ({ data02 }) => {
   const naCount = data02.find(item => item.name === 'Not Applicable')?.value || 0; 
 
   let recommendation;
-  if (noCount >= 1 || naCount >= 1) {
+  if (noCount >= 1) {
     //Failed Test
     recommendation = "The market will tend to more positive outcomes if the AI systems are interoperable with one another and there are no/little barriers introduced by developers or deployers to impede users from uploading/downloading, extracting and porting their information to rival services. For the market to be more competitive, the best products and services should win out and not be restricted by anti-competitive tying or bundling. Additionally, vertical integration and partnerships should not be a means of insulating firms from competition. The company could consider increasing the interoperability of its AI system such that users may easily switch or multi-home to benefit from the diversity in AI model offerings. The company should avoid engaging in tying/bundling or implementing high switching cost for its customers. If the company considers itself to be dominant, it should review the AI algorithm to avoid potentially infringing Section 47 of the Competition Act, which prohibits the abuse of a dominant market position that is not based on fair competition and perpetuates the dominant position of the business.";
   } else {
