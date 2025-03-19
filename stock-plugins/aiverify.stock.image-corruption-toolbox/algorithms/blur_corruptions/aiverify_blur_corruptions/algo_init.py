@@ -92,7 +92,7 @@ class AlgoInit:
         self._ground_truth_instance: Union[None, IData] = None
         self._ground_truth_serializer_instance: Union[None, ISerializer] = None
 
-        self._logger_instance: Union[None, logging] = None
+        self._logger_instance: Union[None, logging.Logger] = None
 
     @time_class_method
     def run(self) -> None:
