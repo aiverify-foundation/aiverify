@@ -246,6 +246,9 @@ function Designer(props: DesignerProps) {
           console.log(
             `[handleWidgetDrop] Dropping widget at page ${pageIndex}, position: (${item.x}, ${item.y})`
           );
+          console.log(
+            `[handleWidgetDrop] Timestamp: ${new Date().toISOString()}`
+          );
           setDraggingGridItemId(null);
 
           // Parse the JSON data we captured earlier
@@ -548,7 +551,7 @@ function Designer(props: DesignerProps) {
           overflowParents: newOverflowParents,
         });
       }
-    }, 300);
+    }, 1000);
 
     debouncedOverflowCheck();
 
