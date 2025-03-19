@@ -1,0 +1,24 @@
+{
+  "cid": "transparency_REC_widget",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 1,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Transparency - Recommendation",
+  "description": "This widget is used to show the results of the report.",
+  "dynamicHeight": true,
+  "dependencies": [
+    {
+      "cid": "transparency"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "InputBlock",
+      "cid": "transparency",
+      "datapath": "transparency.sample.json"
+    }
+  ]
+}
