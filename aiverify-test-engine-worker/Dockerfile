@@ -1,5 +1,5 @@
 # target build base image
-FROM python:3.11 AS aiverify-test-engine-worker-base
+FROM python:3.11-slim AS aiverify-test-engine-worker-base
 ARG TARGETARCH
 
 # Combine all apt-get installations into a single layer with cleanup
