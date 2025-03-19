@@ -21,7 +21,7 @@ class VirtualEnvironmentExecute(Pipe):
     def setup(self):
         self.kubectl_bin = os.getenv("KUBECTL", "kubectl")
         self.algo_execute = Path(__file__).parent.joinpath("algo_execute.py")
-        self.apigw_url = os.getenv("KUBECTL_APIGW_URL", "http://host.docker.internal:4000")
+        self.apigw_url = os.getenv("DOCKER_APIGW_URL", "http://host.docker.internal:4000")
         self.extra_args = os.getenv("DOCKER_RUN_EXTRA_ARGS", "--namespace=default")
         registry = os.getenv("KUBECTL_REGISTRY", None)
         if registry is None:
