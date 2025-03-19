@@ -1,13 +1,16 @@
-<div style={{width:"100%"}}>
-  <h3 class="c-primary">Partial Dependence Plot</h3>
-  <i>Partial dependence plot (PDP)</i> calculate how your features affect your predictions based on their respective feature values.
+export const cid = "introduction";
 
+<div style={{ width: props.width, height: props.height, padding: "10px" }}>
+  <h3>{props.properties.title || "Partial Dependence Plot"}</h3>
   <p>
-    <b>How to read?</b>
+    <i>{props.properties.subtitle || "Partial dependence plot (PDP)"}</i> calculate how your features affect your predictions based on their respective feature values.
   </p>
 
   <p>
-    An increasing trend indicates that a higher feature value positively affect your predictions, while a decreasing trend indicates a lower feature value negatively affect your predictions. A flat trend indicates that the feature value might not be important for your model.
+    <b>{props.properties.howToReadTitle || "How to read?"}</b>
+  </p>
 
+  <p>
+    {props.properties.howToReadText || "An increasing trend indicates that a higher feature value positively affect your predictions, while a decreasing trend indicates a lower feature value negatively affect your predictions. A flat trend indicates that the feature value might not be important for your model."}
   </p>
 </div>

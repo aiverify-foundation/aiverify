@@ -5,11 +5,8 @@ import { MetricBarChart } from './metricbarchart.mdx';
 import { MetricBarChart2 } from './metricbarchart2.mdx';
 
 
-export const GetChart = ({ data, getContainerObserver, results }) => {
-  const [ container, setContainer ] = useState({
-    width: 0,
-    height: 0,
-  })
+export const MetricsChart = ({ id, data, results, width, height }) => {
+
   let metrics_map = {
     'False Negative Rate Parity': "False Negative Rate",
     "False Positive Rate Parity": "False Positive Rate",
@@ -22,49 +19,32 @@ export const GetChart = ({ data, getContainerObserver, results }) => {
     "Equal Parity": "Equal Selection Parity",
     "Disparate Impact": "Disparate Impact",
   };
-  let content = [];
-  let metrics = data.metrics
 
-  useEffect(() => {
-    if (getContainerObserver) {
-      getContainerObserver((width, height) => {
-        setContainer({
-          width,
-          height
-        })
-      })
-    }
-  },[getContainerObserver])
-
-  for (var i = 0; i < metrics.length; i++) {
-    // Special graph as they have more than 2 subgroups
-    if (metrics[i] == "Equal Parity" || metrics[i] == "Disparate Impact"){
-      content.push(<MetricBarChart2
-        metric={metrics_map[metrics[i]]}
-        width={container.width}
-        height={container.height / metrics.length}
-        // height={container.height / metrics.length}
-        data={results}
-      />)
-    }
-    else{
-      content.push(<MetricBarChart
-        metric={metrics_map[metrics[i]]}
-        width={container.width}
-        height={container.height / metrics.length}
-        // height={container.height / / metrics.length}
-        data={results}
-      />)
-      }
-    }
   return (
-    <div style={{ width:container.width, height:container.height }}>{content}</div>
+      data.metrics.map(metric => 
+        metric == "Equal Parity" || metric == "Disparate Impact" ?
+          <MetricBarChart2
+            key={`${id}-${metric}`}
+            metric={metrics_map[metric]}
+            width={width}
+            height={height / data.metrics.length}
+            data={results}
+          /> : <MetricBarChart
+            key={`${id}-${metric}`}
+            metric={metrics_map[metric]}
+            width={width}
+            height={height / data.metrics.length}
+            data={results}
+          />
+      )
   )
 }
 
 
-<GetChart
+<MetricsChart
+  id={props.id}
   data={props.getIBData(ib_cid)}
-  getContainerObserver={props.getContainerObserver}
   results={props.getResults(cid)}
+  width={props.width}
+  height={props.height}
 />

@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { MultipleLineChart } from "./alelinechart.mdx";
 
+export const cid = "aiverfy_accumulated_local_effect"
 
-export const gid = "aiverify.stock.accumulated_local_effect:accumulated_local_effect"
-
-
-{props.result[gid]?(
-  <>
-    <div style={{ width:props.container.width, height:"200px" }}>
-      <MultipleLineChart results={props.result[gid].results} feature_names={props.result[gid].feature_names}/>
-    </div>
-  </>
+{props.getResults(cid) ? (
+  <div style={{ width: props.width, height: props.height }}>
+    <MultipleLineChart
+      id={props.id}
+      results={props.getResults(cid).results}
+      feature_names={props.getResults(cid).feature_names}
+      height={props.height}/>
+  </div>
 ):(
   <div>No data</div>
 )}

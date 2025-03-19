@@ -5,6 +5,7 @@ import { MetricBarChart } from "./metricbarchart.mdx";
 <MetricBarChart
   metric="r2"
   metric_name="R2 Score Parity"
-  getContainerObserver={props.getContainerObserver}
   data={props.getResults(cid)}
+  width={props.width}
+  height={props.height}
 />

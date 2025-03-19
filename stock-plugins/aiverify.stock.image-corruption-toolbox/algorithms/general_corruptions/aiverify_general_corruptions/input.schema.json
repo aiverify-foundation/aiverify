@@ -5,7 +5,8 @@
     "required": [
         "annotated_ground_truth_path",
         "file_name_label",
-        "set_seed"
+        "set_seed",
+        "corruptions"
     ],
     "properties": {
         "annotated_ground_truth_path": {
@@ -24,6 +25,30 @@
             "description": "Change to a specific seed for random selection the sample data for display if desired",
             "default": 10,
             "type": "integer"
+        },
+        "corruptions": {
+            "title": "Name(s) of general corruption to run",
+            "description": "Specify the name(s) of general corruption function to run. Default: 'all'",
+            "type": "array",
+            "items": {"type": "string"}
+        },
+        "gaussian_noise_sigma": {
+            "title": "Gaussian Noise sigma value(s)",
+            "description": "Customize the sigma value(s) for the Gaussian Noise corruption function",
+            "type": ["array", "null"],
+            "items": {"type": "number"}
+        },
+        "poisson_noise_scale": {
+            "title": "Poisson Noise scale value(s)",
+            "description": "Customize the scale value(s) for the Poisson Noise corruption function",
+            "type": ["array", "null"],
+            "items": {"type": "number"}
+        },
+        "salt_and_pepper_noise_amount": {
+            "title": "Salt and Pepper Noise amount value(s)",
+            "description": "Customize the amount value(s) for the Salt and Pepper Noise corruption function",
+            "type": ["array", "null"],
+            "items": {"type": "number"}
         }
     }
 }

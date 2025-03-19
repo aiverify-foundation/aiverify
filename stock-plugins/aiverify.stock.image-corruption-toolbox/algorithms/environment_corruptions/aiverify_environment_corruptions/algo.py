@@ -1,14 +1,12 @@
-import collections
+import copy
 import logging
 import pickle
 import shutil
-from collections import OrderedDict
 from pathlib import Path, PurePath
 from typing import Dict, List, Tuple, Union
 
 import numpy as np
 import pandas as pd
-from aiverify_environment_corruptions.utils import environment
 from aiverify_test_engine.interfaces.ialgorithm import IAlgorithm
 from aiverify_test_engine.interfaces.idata import IData
 from aiverify_test_engine.interfaces.imodel import IModel
@@ -21,6 +19,8 @@ from aiverify_test_engine.utils.json_utils import load_schema_file, validate_jso
 from aiverify_test_engine.utils.simple_progress import SimpleProgress
 from PIL import Image
 from sklearn.metrics import accuracy_score
+
+from aiverify_environment_corruptions.utils import environment
 
 
 # =====================================================================================
@@ -322,15 +322,7 @@ class Plugin(IAlgorithm):
         file_names = [Path(i).name for i in self._data.get_data()["image_directory"]]
         self._ordered_ground_truth = annotated_ground_truth.reindex(file_names)
 
-        envt_corruptions = collections.OrderedDict(
-            {
-                "Fog": environment.fog,
-                "Snow": environment.snow,
-                "Rain": environment.add_rain,
-            }
-        )
-
-        # initialise main image directory
+        # Initialise main image directory
         if Path(str(self._tmp_path)).exists():
             shutil.rmtree(str(self._tmp_path))
         Path(str(self._tmp_path)).mkdir(parents=True, exist_ok=True)
@@ -339,24 +331,26 @@ class Plugin(IAlgorithm):
             shutil.rmtree(str(self._save_path))
         Path(str(self._save_path)).mkdir(parents=True, exist_ok=True)
 
-        # assumption that there are a fixed 5 levels of severity for robustness investigation
-        severities = [0, 1, 2, 3, 4, 5]
+        # Apply user defined parameters to default parameters
+        corruption_fn = {name: environment.CORRUPTION_FN[name] for name in self._input_arguments["corruptions"]}
+        user_params = {
+            k: v for k, v in self._input_arguments.items() if k in environment.DEFAULT_PARAMS and v is not None
+        }
+        parameters = copy.deepcopy(environment.DEFAULT_PARAMS)
+        parameters.update(user_params)
 
-        self._assess_robustness(envt_corruptions, severities)
+        self._assess_robustness(corruption_fn, parameters)
 
         # Update progress (For 100% completion)
         self._progress_inst.update(1)
 
-    def _assess_robustness(self, corruption_group: OrderedDict, severities: list):
+    def _assess_robustness(self, corruption_fn: dict[str, list], parameters: dict[str, list]) -> None:
         """
         A method to get the accuracy results at different severity levels and formatted in the desired output schema
 
         Parameters:
-            corruption_group (OrderedDict): OrderedDict of corruption functions in the corruption group
-            severities (list): List of severities
-
-        Returns:
-            dict: formatted results
+            corruption_fn (dict): Mapping of corruption name to its corresponding function object
+            parameters (dict): Dict of parameter values at different severity levels
         """
         image_df, _image_shapes = self._transform_to_numpy(self._data.get_data())
         ground_truth = self._ordered_ground_truth
@@ -367,33 +361,47 @@ class Plugin(IAlgorithm):
         np.random.seed(seed)
         random_index = np.random.choice(len(image_df))
 
-        self._progress_inst.add_total(len(corruption_group))
+        self._progress_inst.add_total(len(corruption_fn))
 
-        for corruption in corruption_group:
+        for corruption in corruption_fn:
             individual_results = dict()
+            severity_params = dict()
             accuracies = dict()
             display_info = dict()
 
             individual_results.update({"corruption_group": "Environment"})
-            corruption_fn = corruption_group[corruption]
             individual_results.update({"corruption_function": str(corruption)})
 
+            # Assuming parameter key is in format <fn_name>_<kw_name>, e.g. "snow_intensity"
+            fn_name = f"{corruption.lower()}_"
+            # Perform: (1) Filter relevant parameters (2) Strip function name from key (3) Prepend a dummy value
+            fn_params = {k.removeprefix(fn_name): [None] + v for k, v in parameters.items() if k.startswith(fn_name)}
+            # Reshape a dict of values into a list of kwargs
+            try:
+                fn_kwargs = [dict(zip(fn_params, values)) for values in zip(*fn_params.values(), strict=True)]
+            except ValueError:
+                raise ValueError(f"Number of values must be the same for all parameters! Got: {fn_params}")
+
             # updating model accuracies using corrupted test dataset
-            for i in severities:
-                fn_params = i
-                if i != 0:
+            for severity, kwargs in enumerate(fn_kwargs):
+                if severity != 0:
                     corrupted_df = self._build_corrupted_dataframe(
-                        image_df, ground_truth, corruption_fn, fn_params, corruption
+                        image_df, ground_truth, corruption_fn[corruption], kwargs, severity, corruption
                     )
                 else:
-                    corrupted_df = self._build_corrupted_dataframe(image_df, ground_truth, None, fn_params, corruption)
+                    corrupted_df = self._build_corrupted_dataframe(
+                        image_df, ground_truth, None, kwargs, severity, corruption
+                    )
+                severity_params.update({"severity" + str(severity): kwargs})
                 accuracy = self._get_accuracy(corrupted_df, ground_truth)
-                accuracies.update({"severity" + str(i): accuracy})
+                accuracies.update({"severity" + str(severity): accuracy})
 
-                random_display = self._get_rand_display(corrupted_df, ground_truth, corruption, i, random_index)
-                display_info.update({"severity" + str(i): random_display})
+                random_display = self._get_rand_display(corrupted_df, ground_truth, corruption, severity, random_index)
+                display_info.update({"severity" + str(severity): random_display})
 
-            individual_results.update({"accuracy": accuracies, "display_info": display_info})
+            individual_results.update(
+                {"parameter": severity_params, "accuracy": accuracies, "display_info": display_info}
+            )
             combined_results.append(individual_results)
 
             self._progress_inst.update(1)
@@ -482,6 +490,7 @@ class Plugin(IAlgorithm):
         data: pd.Series,
         labels: str,
         noise_fn: callable,
+        fn_kwargs: dict,
         severity: int,
         corruption: str,
     ) -> pd.DataFrame:
@@ -492,6 +501,7 @@ class Plugin(IAlgorithm):
             data (Series): Pandas Series containing all the original images
             labels (str): Image column name from input schema
             noise_fn (callable): Corruption function to be used
+            fn_kwargs (dict): Kwargs of corruption function
             severity (int): Severity of corruption function
             corruption (str): Name of corruption function
 
@@ -503,7 +513,7 @@ class Plugin(IAlgorithm):
 
         for index, img in enumerate(data_array):
             if noise_fn is not None:
-                corrupted_image = noise_fn(img, severity)
+                corrupted_image = noise_fn(img, **fn_kwargs)
                 corrupted_list.append(corrupted_image)
             else:
                 corrupted_list.append(img)

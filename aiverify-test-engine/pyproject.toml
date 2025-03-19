@@ -13,7 +13,6 @@ dependencies = [
     "scipy==1.14.1",
     "httpx==0.26.0",
     "openapi-schema-validator==0.6.2",
-    "aiopenapi3==0.2.1",
     "aiometer==0.5.0",
     "async-timeout==4.0.3",
     "attrs==23.2.0",
@@ -23,6 +22,7 @@ dependencies = [
     "rpds-py==0.17.1",
     "setuptools==75.1.0",
     "requests==2.32.3",
+    "pydantic==2.*",
 ]
 readme = "README.md"
 requires-python = ">=3.10,<3.12"
@@ -40,7 +40,9 @@ tensorflow = ["tensorflow==2.14.0"]
 
 gbm = ["lightgbm==4.5.0", "xgboost==2.1.1"]
 
-all = ["aiverify-test-engine[tensorflow]", "aiverify-test-engine[gbm]"]
+pytorch = ["torch>=2.0", "torchvision>=0.15.0"]
+
+all = ["aiverify-test-engine[tensorflow]", "aiverify-test-engine[gbm]", "aiverify-test-engine[pytorch]"]
 
 dev = [
     "aiverify-test-engine[all]",

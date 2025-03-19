@@ -1,15 +1,8 @@
 import React, { useEffect, useState } from 'react';
 
-export const InterpretationChart = ({ metric, metric_name, container, data, parity }) => {
-  const [ mydata, setmydata ] = useState({
-    data: [],
-    bars: [],
-  });
-
-  let error = "";
+export const InterpretationChart = ({ metric, metric_name, data, parity }) => {
   let max_group = "";
   let min_group = "";
-
   let max = 0;
   let min = 0;
 

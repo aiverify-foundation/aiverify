@@ -1,6 +1,7 @@
 import argparse
 
 from aiverify_general_corruptions.algo_init import AlgoInit
+from aiverify_general_corruptions.utils import general
 from aiverify_test_engine.plugins.enums.model_type import ModelType
 
 parser = argparse.ArgumentParser(description="Run the plugin test with specified parameters.")
@@ -50,6 +51,35 @@ def parse_input_args():
         help="Path to the annotated labels file.",
     )
     parser.add_argument("--file_name_label", default="", help="The label of the file name.")
+    parser.add_argument(
+        "--corruptions",
+        nargs="+",
+        choices=["all"] + [name.lower() for name in general.CORRUPTION_FN],
+        default=["all"],
+        help="Specify the name(s) of general corruption to run. Default: all",
+    )
+
+    def get_default(k: str) -> str:
+        return " ".join([str(v) for v in general.DEFAULT_PARAMS[k]])
+
+    parser.add_argument(
+        "--gaussian_noise_sigma",
+        nargs="+",
+        type=float,
+        help=f"Gaussian Noise sigma. Default: {get_default('gaussian_noise_sigma')}",
+    )
+    parser.add_argument(
+        "--poisson_noise_scale",
+        nargs="+",
+        type=float,
+        help=f"Poisson Noise scale. Default: {get_default('poisson_noise_scale')}",
+    )
+    parser.add_argument(
+        "--salt_and_pepper_noise_amount",
+        nargs="+",
+        type=float,
+        help=f"Salt and Pepper Noise amount. Default: {get_default('salt_and_pepper_noise_amount')}",
+    )
 
 
 def invoke_aiverify_general_corruptions_plugin():
@@ -70,10 +100,24 @@ def invoke_aiverify_general_corruptions_plugin():
     # Map string argument to ModelType enum
     model_type = ModelType[args.model_type]
 
+    if "all" in args.corruptions:
+        args.corruptions = list(general.CORRUPTION_FN)
+    else:
+        # This step is required to (1) sanitize user input (2) make sure algorithm names are in correct format & order
+        args.corruptions = [name for name in general.CORRUPTION_FN if name.lower() in args.corruptions]
+
+    user_defined_params = {
+        "corruptions": args.corruptions,
+        "gaussian_noise_sigma": args.gaussian_noise_sigma,
+        "poisson_noise_scale": args.poisson_noise_scale,
+        "salt_and_pepper_noise_amount": args.salt_and_pepper_noise_amount,
+    }
+
     plugin_argument_values = {
         "set_seed": args.set_seed,
         "annotated_ground_truth_path": args.annotated_ground_truth_path,
         "file_name_label": args.file_name_label,
+        **user_defined_params,
     }
 
     print("*" * 20)
@@ -89,7 +133,8 @@ def invoke_aiverify_general_corruptions_plugin():
         f"Core Modules Path: {args.core_modules_path}\n"
         f"Seed Value: {args.set_seed}\n"
         f"Annotated Ground Truth Path: {args.annotated_ground_truth_path}\n"
-        f"File Name Label: {args.file_name_label}"
+        f"File Name Label: {args.file_name_label}\n"
+        f"User Defined Parameters: {user_defined_params}"
     )
     print("*" * 20)
 

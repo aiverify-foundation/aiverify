@@ -1,0 +1,67 @@
+/*
+ * This is the standard report theme.
+ * It is used to style the report pages and the widgets.
+ * It is also used to style the editing overlay.
+ */
+
+#printableContent {
+  .standard-report-page {
+    @apply text-base;
+    h1 {
+      @apply mb-1 text-4xl font-bold;
+    }
+    h2 {
+      @apply mb-1 text-3xl font-bold;
+    }
+    h3 {
+      @apply mb-1 text-2xl font-bold;
+    }
+    p {
+    }
+    ul {
+      @apply list-disc p-4 pl-5;
+    }
+    ol {
+      @apply list-decimal pl-5;
+    }
+    .chart-container {
+      width: 100%;
+    }
+    .chart-bar {
+    }
+  }
+}
+
+.editing-overlay {
+  form {
+    @apply h-full w-full;
+  }
+  .input-h1 {
+    @apply w-full text-4xl font-bold text-black focus:outline-none;
+    @apply h-full resize-none overflow-hidden whitespace-pre-wrap;
+    @apply mb-1;
+    @apply shadow-inner;
+    @apply m-0 border-0 p-0;
+  }
+  .input-h2 {
+    @apply w-full text-3xl font-bold text-black focus:outline-none;
+    @apply h-full resize-none overflow-hidden whitespace-pre-wrap;
+    @apply mb-1;
+    @apply shadow-inner;
+    @apply m-0 border-0 p-0;
+  }
+  .input-h3 {
+    @apply w-full text-2xl font-bold text-black focus:outline-none;
+    @apply h-full resize-none overflow-hidden whitespace-pre-wrap;
+    @apply mb-1;
+    @apply shadow-inner;
+    @apply m-0 border-0 p-0;
+  }
+  .input-p {
+    @apply w-full text-base text-black focus:outline-none;
+    @apply h-full resize-none overflow-hidden whitespace-pre-wrap;
+    @apply mb-1;
+    @apply shadow-inner;
+    @apply m-0 border-0 p-0;
+  }
+}

@@ -1,4 +1,4 @@
-import { ErrorWithMessage, toErrorWithMessage } from './error-utils';
+import { ErrorWithMessage, toErrorWithMessage } from '@/lib/utils/error-utils';
 
 type ApiResult<T> = {
   status: number;

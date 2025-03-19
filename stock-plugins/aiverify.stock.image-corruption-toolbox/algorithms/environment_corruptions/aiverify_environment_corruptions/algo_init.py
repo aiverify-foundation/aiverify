@@ -8,7 +8,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, Tuple, Union
 
-from aiverify_environment_corruptions.algo import Plugin
 from aiverify_test_engine.interfaces.idata import IData
 from aiverify_test_engine.interfaces.imodel import IModel
 from aiverify_test_engine.interfaces.ipipeline import IPipeline
@@ -25,6 +24,8 @@ from aiverify_test_engine.utils.json_utils import (
 )
 from aiverify_test_engine.utils.time import time_class_method
 from aiverify_test_engine.utils.url_utils import get_absolute_path
+
+from aiverify_environment_corruptions.algo import Plugin
 
 
 # =====================================================================================
@@ -282,6 +283,7 @@ class AlgoInit:
                 "set_seed": self._input_arguments["set_seed"],
                 "annotated_labels_path": annotated_ground_truth_path,
                 "file_name_label": self._input_arguments.get("file_name_label", None),
+                "corruptions": self._input_arguments["corruptions"],
             },
             mode="upload",
         )
@@ -298,7 +300,7 @@ class AlgoInit:
             artifacts=self._populate_all_image_urls(results),
         )
 
-        output_json = output.json(exclude_none=True, indent=4)
+        output_json = output.model_dump_json(exclude_none=True, indent=4)
         if validate_test_result_schema(json.loads(output_json)) is True:
             with open(output_path, "w") as json_file:
                 json_file.write(output_json)

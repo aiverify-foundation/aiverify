@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-export const InterpretationChart2 = ({ metric, container, data }) => {
+export const InterpretationChart2 = ({ metric, data }) => {
   const [mydata, setmydata] = useState({
     data: [],
     numLabels: 0,
@@ -10,7 +10,11 @@ export const InterpretationChart2 = ({ metric, container, data }) => {
     let content = [];
     for (let oc in display) {
       const item = display[oc]
-      content.push(<li>For {item.outputClass}, the smallest parity is {Math.round(item.minValue * 1000 + Number.EPSILON) / 1000} (between {item.minName}) and maximum parity is {Math.round(item.maxValue * 1000 + Number.EPSILON) / 1000} (between {item.maxName})</li>)
+      content.push(
+        <li key={`${item.outputClass}-${item.minName}-${item.maxName}`}>
+          For {item.outputClass}, the smallest parity is {Math.round(item.minValue * 1000 + Number.EPSILON) / 1000} (between {item.minName}) and maximum parity is {Math.round(item.maxValue * 1000 + Number.EPSILON) / 1000} (between {item.maxName})
+        </li>
+      )
     }
     return content;
   }
@@ -19,7 +23,11 @@ export const InterpretationChart2 = ({ metric, container, data }) => {
     let content = [];
     for (let oc in display) {
       const item = display[oc]
-      content.push(<li>For {item.outputClass}, the parity between the two subgroups ({item.groups}) is {Math.round(item.parity * 1000 + Number.EPSILON) / 1000}.</li>)
+      content.push(
+        <li key={`${item.outputClass}-${item.groups}`}>
+          For {item.outputClass}, the parity between the two subgroups ({item.groups}) is {Math.round(item.parity * 1000 + Number.EPSILON) / 1000}.
+        </li>
+      )
     }
     return content;
   }

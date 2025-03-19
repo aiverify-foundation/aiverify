@@ -4,7 +4,7 @@
   "description": "To generate all fairness metrics",
   "widgetSize": {
     "minW": 12,
-    "minH": 15,
+    "minH": 34,
     "maxW": 12,
     "maxH": 36
   },

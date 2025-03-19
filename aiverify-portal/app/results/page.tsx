@@ -1,6 +1,6 @@
-// portal/app/results/page.tsx
+import React from 'react';
 import { Icon, IconName } from '@/lib/components/IconSVG';
-import { getTestResults } from '@/lib/fetchApis/getAllTestResults';
+import { getTestResults } from '@/lib/fetchApis/getTestResults';
 import ActionButtons from './components/ActionButton';
 import TestResultsList from './components/TestResultsList';
 
@@ -10,7 +10,6 @@ export default async function ResultsPage() {
   return (
     <div className="p-6">
       <div className="mb-1 flex items-center justify-between">
-        {/* Left section: Icon + Text */}
         <div className="flex items-center">
           <Icon
             name={IconName.Lightning}
@@ -22,7 +21,6 @@ export default async function ResultsPage() {
             <h3 className="text-white">View and manage test results</h3>
           </div>
         </div>
-
         <ActionButtons />
       </div>
       <TestResultsList testResults={testResults} />

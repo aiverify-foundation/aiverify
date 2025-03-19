@@ -16,11 +16,11 @@ dependencies = [
     "ipywidgets==8.0.4",
     "ipython == 8.11.0",
     "matplotlib==3.7.1",
-    "tqdm==4.65.0",
     "phik==0.12.4",
     "shap==0.46.0",
     "matplotlib-inline==0.1.6",
-    "Jinja2==3.1.2",
+    "tqdm>=4.67.1",
+    "Jinja2>=3.1.5",
     "aiverify-test-engine>=2.0.0a2",
 ]
 requires-python = ">=3.10,<3.12"

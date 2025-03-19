@@ -2,7 +2,7 @@ export type PythonFastApiErrorDetail = {
   detail: string;
 };
 
-type ApiError = {
+type PythonFastApiError = {
   status: number;
   data: PythonFastApiErrorDetail;
 };
@@ -11,7 +11,9 @@ export type ErrorWithMessage = Error & {
   message: string;
 };
 
-export function isApiError(error: unknown): error is ApiError {
+export function isPythonFastApiError(
+  error: unknown
+): error is PythonFastApiError {
   if (typeof error !== 'object') {
     return false;
   }
@@ -41,7 +43,7 @@ export function isErrorWithMessage(error: unknown): error is ErrorWithMessage {
 }
 
 export function toErrorWithMessage(maybeError: unknown): ErrorWithMessage {
-  if (isApiError(maybeError)) {
+  if (isPythonFastApiError(maybeError)) {
     return new Error(maybeError.data.detail);
   }
 
