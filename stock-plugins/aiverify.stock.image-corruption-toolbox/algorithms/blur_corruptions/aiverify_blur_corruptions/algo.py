@@ -1,9 +1,8 @@
 import copy
 import logging
-import pickle
 import shutil
 from pathlib import Path, PurePath
-from typing import Dict, List, Tuple, Union
+from typing import Callable, Dict, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -38,13 +37,12 @@ class Plugin(IAlgorithm):
     """
 
     # Some information on plugin
-    _name: str = "Blur Corruptions"
-    _description: str = "Robustness plugin with blur corruptions"
-    _version: str = "0.9.0"
-    _metadata: PluginMetadata = PluginMetadata(_name, _description, _version)
-    _plugin_type: PluginType = PluginType.ALGORITHM
-    _requires_ground_truth: bool = True
-    _supported_algorithm_model_type: List = [ModelType.CLASSIFICATION]
+    _name = "Blur Corruptions"
+    _description = "Robustness plugin with blur corruptions"
+    _version = "0.9.0"
+    _metadata = PluginMetadata(_name, _description, _version)
+    _plugin_type = PluginType.ALGORITHM
+    _supported_algorithm_model_type = [ModelType.CLASSIFICATION]
 
     @staticmethod
     def get_metadata() -> PluginMetadata:
@@ -70,68 +68,38 @@ class Plugin(IAlgorithm):
         self,
         data_instance_and_serializer: Tuple[IData, ISerializer],
         model_instance_and_serializer: Tuple[IModel, ISerializer],
-        ground_truth_instance_and_serializer: Tuple[IData, ISerializer],
-        initial_data_instance: Union[IData, None],
-        initial_model_instance: Union[IModel, IPipeline, None],
-        **kwargs,
+        ground_truth_instance_and_serializer: Tuple[Optional[IData], Optional[ISerializer]],
+        model_type: ModelType,
+        requires_ground_truth: bool,
+        user_defined_params: dict,
+        logger: logging.Logger,
+        progress_callback: Callable,
+        base_path: Path,
+        ground_truth: Optional[str] = None,
+        file_name_label: Optional[str] = None,
+        set_seed: Optional[int] = None,
     ):
-        self._initial_data_instance = initial_data_instance
-        self._initial_model_instance = initial_model_instance
+        # Store the input arguments as private vars
+        self._data_instance, _ = data_instance_and_serializer
+        self._model_instance, _ = model_instance_and_serializer
+        self._ground_truth_instance, _ = ground_truth_instance_and_serializer
+        self._model_type = model_type
+        self._requires_ground_truth = requires_ground_truth
+        self._user_defined_params = user_defined_params
+        self._logger = logger
+        self._progress_inst = SimpleProgress(1, 0, progress_callback)
+        self._base_path = base_path
 
-        # Look for kwargs values for log_instance, progress_callback and base path
-        self._logger = kwargs.get("logger", None)
-        self._progress_inst = SimpleProgress(1, 0, kwargs.get("progress_callback", None))
-
-        # Check if data and model are tuples and if the tuples contain 2 items
-        if not isinstance(data_instance_and_serializer, Tuple) or len(data_instance_and_serializer) != 2:
-            self.add_to_log(
-                logging.ERROR,
-                f"The algorithm has failed data validation: {data_instance_and_serializer}",
-            )
-            raise RuntimeError("The algorithm has failed data validation")
-
-        if not isinstance(model_instance_and_serializer, Tuple) or len(model_instance_and_serializer) != 2:
-            self.add_to_log(
-                logging.ERROR,
-                f"The algorithm has failed model validation: {model_instance_and_serializer}",
-            )
-            raise RuntimeError("The algorithm has failed model validation")
-
-        self._data_instance = data_instance_and_serializer[0]
-        self._model_instance = model_instance_and_serializer[0]
-        self._model_type = kwargs.get("model_type")
-
-        if Plugin._requires_ground_truth:
-            # Check if ground truth instance is tuple and if the tuple contains 2 items
-            if (
-                not isinstance(ground_truth_instance_and_serializer, Tuple)
-                or len(ground_truth_instance_and_serializer) != 2
-            ):
-                self.add_to_log(
-                    logging.ERROR,
-                    f"The algorithm has failed ground truth data validation: \
-                        {ground_truth_instance_and_serializer}",
-                )
-                raise RuntimeError("The algorithm has failed ground truth data validation")
-            self._requires_ground_truth = True
-            self._ground_truth_instance = ground_truth_instance_and_serializer[0]
-            self._ground_truth_serializer = ground_truth_instance_and_serializer[1]
-            self._ground_truth = kwargs.get("ground_truth")
-
-        else:
-            self._ground_truth_instance = None
-            self._ground_truth = ""
-
-        self._base_path = kwargs.get("project_base_path", Path().absolute())
+        # Store the input parameters defined in the input schema
+        self.annotated_ground_truth_path = self._ground_truth = ground_truth
+        self.file_name_label = file_name_label
+        self.set_seed = set_seed
+        self.corruptions = user_defined_params["corruptions"]
 
         # Perform setup for this plug-in
         self.setup()
 
-        # Other variables
-        self._data = None
-        self._results = {"results": [0]}
-        self._ordered_ground_truth = None
-        # write all output to the output folder
+        # Write all output to the output folder
         output_folder = Path.cwd() / "output"
         output_folder.mkdir(parents=True, exist_ok=True)
         self._tmp_path = output_folder / "temp"
@@ -140,18 +108,18 @@ class Plugin(IAlgorithm):
         # Algorithm input schema defined in input.schema.json
         # By defining the input schema, it allows the front-end to know what algorithm input params is
         # required by this plugin. This allows this algorithm plug-in to receive the arguments values it requires.
-        current_file_dir = Path(__file__).parent
-        self._input_schema = load_schema_file(str(current_file_dir / "input.schema.json"))
+        self._input_schema = load_schema_file(str(Path(__file__).parent / "input.schema.json"))
 
         # Algorithm output schema defined in output.schema.json
         # By defining the output schema, this plug-in validates the result with the output schema.
         # This allows the result to be validated against the schema before passing it to the front-end for display.
-        self._output_schema = load_schema_file(str(current_file_dir / "output.schema.json"))
+        self._output_schema = load_schema_file(str(Path(__file__).parent / "output.schema.json"))
 
         # Retrieve the input parameters defined in the input schema and store them
         self._input_arguments = dict()
-        for key in self._input_schema.get("properties").keys():
-            self._input_arguments.update({key: kwargs.get(key)})
+        variables = {**vars(self), **self._user_defined_params}
+        for key in self._input_schema.get("properties", ()):
+            self._input_arguments.update({key: variables[key]})
 
         # Perform validation on input argument schema
         if not validate_json(self._input_arguments, self._input_schema):
@@ -311,27 +279,19 @@ class Plugin(IAlgorithm):
         """
         A method to generate the algorithm results with the provided data, model, ground truth information.
         """
-        # Retrieve data information
-        self._model = self._initial_model_instance
-        self._data = self._initial_data_instance
-        self._data_labels = list(self._initial_data_instance.read_labels().keys())
-
-        annotated_ground_truth_path = self._input_arguments.get("annotated_ground_truth_path", "")
-
-        annotated_ground_truth = pickle.load(open(annotated_ground_truth_path, "rb")).set_index(
-            self._input_arguments.get("file_name_label")
-        )
-        file_names = [Path(i).name for i in self._data.get_data()["image_directory"]]
-        self._ordered_ground_truth = annotated_ground_truth.reindex(file_names)
+        # Sort ground truth based on file name
+        file_names = [Path(i).name for i in self._data_instance.get_data()["image_directory"]]
+        df: pd.DataFrame = self._ground_truth_instance.get_data()
+        self._ordered_ground_truth = df.set_index(self._input_arguments["file_name_label"]).reindex(file_names)
 
         # Initialise main image directory
-        if Path(str(self._tmp_path)).exists():
-            shutil.rmtree(str(self._tmp_path))
-        Path(str(self._tmp_path)).mkdir(parents=True, exist_ok=True)
+        if self._tmp_path.exists():
+            shutil.rmtree(self._tmp_path)
+        self._tmp_path.mkdir(parents=True, exist_ok=True)
 
-        if Path(str(self._save_path)).exists():
-            shutil.rmtree(str(self._save_path))
-        Path(str(self._save_path)).mkdir(parents=True, exist_ok=True)
+        if self._save_path.exists():
+            shutil.rmtree(self._save_path)
+        self._save_path.mkdir(parents=True, exist_ok=True)
 
         # Apply user defined parameters to default parameters
         corruption_fn = {name: blur.CORRUPTION_FN[name] for name in self._input_arguments["corruptions"]}
@@ -344,7 +304,7 @@ class Plugin(IAlgorithm):
         # Update progress (For 100% completion)
         self._progress_inst.update(1)
 
-    def _assess_robustness(self, corruption_fn: dict[str, list], parameters: dict[str, list]) -> None:
+    def _assess_robustness(self, corruption_fn: dict[str, Callable], parameters: dict[str, list]) -> None:
         """
         A method to get the accuracy results at different severity levels and formatted in the desired output schema
 
@@ -352,12 +312,12 @@ class Plugin(IAlgorithm):
             corruption_fn (dict): Mapping of corruption name to its corresponding function object
             parameters (dict): Dict of parameter values at different severity levels
         """
-        image_df, _image_shapes = self._transform_to_numpy(self._data.get_data())
-        ground_truth = self._ordered_ground_truth
+        image_df, _ = self._transform_to_numpy(self._data_instance.get_data())
+        ground_truth_df = self._ordered_ground_truth
         combined_results = []
         output_results = dict()
 
-        seed = self._input_arguments.get("set_seed")
+        seed = self._input_arguments["set_seed"]
         np.random.seed(seed)
         random_index = np.random.choice(len(image_df))
 
@@ -384,19 +344,21 @@ class Plugin(IAlgorithm):
 
             # updating model accuracies using corrupted test dataset
             for severity, kwargs in enumerate(fn_kwargs):
-                if severity != 0:
+                if severity > 0:
                     corrupted_df = self._build_corrupted_dataframe(
-                        image_df, ground_truth, corruption_fn[corruption], kwargs, severity, corruption
+                        image_df, ground_truth_df, corruption_fn[corruption], kwargs, severity, corruption
                     )
                 else:
                     corrupted_df = self._build_corrupted_dataframe(
-                        image_df, ground_truth, None, kwargs, severity, corruption
+                        image_df, ground_truth_df, None, kwargs, severity, corruption
                     )
                 severity_params.update({"severity" + str(severity): kwargs})
-                accuracy = self._get_accuracy(corrupted_df, ground_truth)
+                accuracy = self._get_accuracy(corrupted_df, ground_truth_df)
                 accuracies.update({"severity" + str(severity): accuracy})
 
-                random_display = self._get_rand_display(corrupted_df, ground_truth, corruption, severity, random_index)
+                random_display = self._get_rand_display(
+                    corrupted_df, ground_truth_df, corruption, severity, random_index
+                )
                 display_info.update({"severity" + str(severity): random_display})
 
             individual_results.update(
@@ -440,7 +402,7 @@ class Plugin(IAlgorithm):
         Returns:
             np.float64: accuracy score
         """
-        predictions = self._model.predict(images)
+        predictions = self._model_instance.predict(images["image_directory"])
         accuracy = accuracy_score(labels, predictions)
 
         return accuracy
@@ -466,14 +428,13 @@ class Plugin(IAlgorithm):
         Returns:
             np.float64: accuracy score
         """
-        predictions = self._model.predict(images)
-        labels = np.array(labels[self._ground_truth])
+        predictions = self._model_instance.predict(images["image_directory"])
 
         random_pred = predictions[index]
-        random_actual = labels[index]
+        random_actual = labels.loc[index, self._ground_truth]
 
         image_name = str(severity) + ".png"
-        image_path = images["image_directory"].iloc[index]
+        image_path = images.loc[index, "image_directory"]
         image_relative_path = str(Path(image_path).relative_to(Path().absolute()))
         image_relative_path = image_relative_path.replace("output/", "", 1)
 
@@ -488,8 +449,8 @@ class Plugin(IAlgorithm):
     def _build_corrupted_dataframe(
         self,
         data: pd.Series,
-        labels: str,
-        noise_fn: callable,
+        labels: pd.DataFrame,
+        noise_fn: Optional[Callable],
         fn_kwargs: dict,
         severity: int,
         corruption: str,
@@ -500,7 +461,7 @@ class Plugin(IAlgorithm):
         Args:
             data (Series): Pandas Series containing all the original images
             labels (str): Image column name from input schema
-            noise_fn (callable): Corruption function to be used
+            noise_fn (Callable): Corruption function to be used
             fn_kwargs (dict): Kwargs of corruption function
             severity (int): Severity of corruption function
             corruption (str): Name of corruption function
@@ -509,20 +470,19 @@ class Plugin(IAlgorithm):
             pd.DataFrame: Corrupted images in pandas DataFrame in col1 and ground truth labels
         """
         corrupted_list = []
-        data_array = np.array(data)
 
-        for index, img in enumerate(data_array):
+        for img in data:
             if noise_fn is not None:
                 corrupted_image = noise_fn(img, **fn_kwargs)
                 corrupted_list.append(corrupted_image)
             else:
                 corrupted_list.append(img)
-        images_df = self._transform_to_dir_df(corrupted_list, Path(corruption).joinpath("severity" + str(severity)))
+        images_df = self._transform_to_dir_df(corrupted_list, str(Path(corruption) / ("severity" + str(severity))))
 
         corrupted_df = pd.concat([images_df, labels.reset_index(drop=True, inplace=True)], axis=1)
         return corrupted_df
 
-    def _transform_to_dir_df(self, data_np: np.ndarray, subfolder_name: str) -> pd.DataFrame:
+    def _transform_to_dir_df(self, data_np: list[np.ndarray], subfolder_name: str) -> pd.DataFrame:
         """
         A method to convert images in np.array form into saved images in directories for the model pipeline
 
