@@ -24,6 +24,9 @@ class VirtualEnvironmentExecute(Pipe):
         self.docker_bin = os.getenv("DOCKER", "docker")
         self.algo_execute = Path(__file__).parent.joinpath("algo_execute.py")
         self.apigw_url = os.getenv("DOCKER_APIGW_URL", "http://host.docker.internal:4000")
+        self.docker_registry = os.getenv("DOCKER_REGISTRY", None)
+        if self.docker_registry and len(self.docker_registry) == 0:
+            self.docker_registry = None
 
     def execute(self, task_data: PipelineData) -> PipelineData:
         logger.info(f"Executing algorithm using docker run under {task_data.algorithm_path}")
@@ -32,6 +35,8 @@ class VirtualEnvironmentExecute(Pipe):
             # if output_folder.exists():
             #     shutil.rmtree(output_folder)
             tag = f"{task_data.task.algorithmCID}:{task_data.task.algorithmHash[:128] if task_data.task.algorithmHash else 'latest'}"
+            if self.docker_registry:
+                tag = f"{self.docker_registry}/{tag}"
 
             with tempfile.TemporaryDirectory() as tmpdirname:
                 output_folder = Path(tmpdirname)
@@ -46,7 +51,8 @@ class VirtualEnvironmentExecute(Pipe):
                     "-v", f"{base_data_dir.absolute().as_posix()}:/app/data",
                     tag,
                     "--test_run_id", task_data.task.id,
-                    "--algo_path", f"/app/data/{task_data.algorithm_path.parent.name}/{task_data.algorithm_path.name}",
+                    # "--algo_path", f"/app/data/{task_data.algorithm_path.parent.name}/{task_data.algorithm_path.name}",
+                    "--algo_path", f"/app/algo",
                     "--data_path", f"/app/data/{task_data.data_path.parent.name}/{task_data.data_path.name}",
                     "--model_path", f"/app/data/{task_data.model_path.parent.name}/{task_data.model_path.name}",
                     "--model_type", task_data.task.modelType.lower(),
@@ -60,6 +66,7 @@ class VirtualEnvironmentExecute(Pipe):
                         "--ground_truth", task_data.task.groundTruth
                     ])
                 logger.debug(f"cmds: {cmds}")
+                print(" ".join(cmds))
 
                 # Run the algorithm
                 p = subprocess.run(cmds,
