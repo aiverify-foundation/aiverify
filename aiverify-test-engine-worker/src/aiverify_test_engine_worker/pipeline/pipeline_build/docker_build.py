@@ -24,7 +24,40 @@ class VirtualEnvironmentBuild(Pipe):
         self.docker_registry = os.getenv("DOCKER_REGISTRY", None)
         if self.docker_registry and len(self.docker_registry) == 0:
             self.docker_registry = None
-        # TODO: build base image if doesn't exists
+        self._check_and_build_base_image()
+
+    def _check_and_build_base_image(self):
+        # check if base image exists
+        cmds = [
+            self.docker_bin,
+            "image", "inspect",
+            self.base_image
+        ]
+        logger.debug(f"docker image inspect cmds: {cmds}")
+        p = subprocess.run(cmds, check=False)
+        if p.returncode == 0:  # image exists
+            logger.debug(f"Image {self.base_image} exists, no need to build again")
+            return
+
+        # if not exists, build
+        logger.info(f"Building base image {self.base_image}..")
+        root_dir = Path(__file__).parent.parent.parent.parent.parent.parent
+        logger.debug(f"root_dir {root_dir.as_posix()}")
+        if not root_dir.joinpath("aiverify-test-engine-worker").joinpath("Dockerfile").exists():
+            raise PipeException("Dockerfile does not exist, unable to build")
+        cmds = [
+            self.docker_bin,
+            "buildx", "build",
+            "-t", self.base_image,
+            "-f", "aiverify-test-engine-worker/Dockerfile",
+            "--rm",
+            "--target", "aiverify-test-engine-worker-base",
+            "."
+        ]
+        logger.debug(f"docker image inspect cmds: {cmds}")
+        p = subprocess.run(cmds, check=False, cwd=root_dir)
+        if p.returncode != 0:  # build error
+            raise PipeException(f"Unable to build base image {self.base_image}: {str(p.stderr)}")
 
     def execute(self, task_data: PipelineData) -> PipelineData:
         logger.info(f"Building algorithm using docker under {task_data.algorithm_path}")
@@ -46,6 +79,8 @@ class VirtualEnvironmentBuild(Pipe):
                 if p.returncode == 0:  # image exists
                     logger.debug(f"Image {remote_tag} exists, no need to build again")
                     return task_data
+
+            # TODO: build base image if doesn't exists
 
             # Create virtual environment
             dockerfile_path = algorithm_path.joinpath('Dockerfile.worker')
