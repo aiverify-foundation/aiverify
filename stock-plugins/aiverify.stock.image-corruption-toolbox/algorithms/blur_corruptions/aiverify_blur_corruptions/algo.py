@@ -119,7 +119,7 @@ class Plugin(IAlgorithm):
         self._input_arguments = dict()
         variables = {**vars(self), **self._user_defined_params}
         for key in self._input_schema.get("properties", ()):
-            self._input_arguments.update({key: variables[key]})
+            self._input_arguments.update({key: variables.get(key)})
 
         # Perform validation on input argument schema
         if not validate_json(self._input_arguments, self._input_schema):
