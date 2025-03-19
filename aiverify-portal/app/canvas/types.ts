@@ -3,19 +3,14 @@ import {
   Widget,
   Plugin,
   TestResult,
-  InputBlockData,
   TestResultData,
+  InputBlockDataPayload,
 } from '@/app/types';
 
 type WidgetOnGridLayout = Widget & {
   mdx: MdxBundle;
   gridItemId: string;
-  testResultCompositeId: {
-    // TODO: review - probably redundant
-    pluginGid: string;
-    algoCid: string;
-    timeCreated: string;
-  } | null;
+  result?: unknown; // TODO: review
 };
 
 type PluginForGridLayout = Omit<Plugin, 'widgets'> & {
@@ -37,7 +32,8 @@ type ParsedTestResults = TestResult & {
 };
 
 type TestResultDataMapping = Record<string, TestResultData>;
-type InputBlockDataMapping = Record<string, InputBlockData>;
+type ArtifactsMapping = Record<string, string[]>;
+type InputBlockDataMapping = Record<string, InputBlockDataPayload>;
 
 export type {
   WidgetOnGridLayout,
@@ -45,4 +41,7 @@ export type {
   ParsedTestResults,
   TestResultDataMapping,
   InputBlockDataMapping,
+  ArtifactsMapping,
 };
+
+export type { MdxBundle };

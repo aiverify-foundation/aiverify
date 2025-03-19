@@ -1,5 +1,7 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { ProjectOutput } from '@/app/canvas/utils/transformProjectOutputToState';
 import { ErrorWithMessage } from '@/app/errorTypes';
-import { ProjectInfo } from '@/app/types';
+import { Project } from '@/app/types';
 import { ApiResult, processResponse } from '@/lib/utils/fetchRequestHelpers';
 
 const endpointUrl = `${process.env.APIGW_HOST}/projects`;
@@ -13,13 +15,14 @@ type Options = {
  * @param opts - Options object containing an array of project IDs. If no IDs are provided, all projects will be fetched.
  * @returns A promise resolving to an ApiResult containing an array of ProjectInfo objects, or an ErrorWithMessage if an error occurs.
  */
-export async function fetchProjects(
+export async function getProjects(
   opts?: Options
-): Promise<ApiResult<ProjectInfo[]> | ErrorWithMessage> {
+): Promise<ApiResult<ProjectOutput[]> | ErrorWithMessage> {
+  // If specific project IDs are provided, fetch each project individually
   if (opts?.ids?.length) {
     const fetchPromises = opts.ids.map((id) =>
-      fetch(`${endpointUrl}/${id}`, { cache: 'force-cache' }).then((response) =>
-        processResponse<ProjectInfo>(response)
+      fetch(`${endpointUrl}/${id}`).then((response) =>
+        processResponse<ProjectOutput>(response)
       )
     );
 
@@ -42,6 +45,65 @@ export async function fetchProjects(
     };
   }
 
-  const response = await fetch(endpointUrl, { cache: 'force-cache' });
-  return processResponse<ProjectInfo[]>(response);
+  // If no options or IDs are provided, fetch all projects from the base endpoint
+  const response = await fetch(endpointUrl);
+  return processResponse<ProjectOutput[]>(response);
+}
+
+/**
+ * Hook to fetch projects
+ */
+export function useProjects(opts?: Options) {
+  return useQuery({
+    queryKey: ['projects', opts?.ids],
+    queryFn: () => getProjects(opts),
+  });
+}
+
+/**
+ * Hook to update a project
+ */
+export function useUpdateProject() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      projectId,
+      data,
+    }: {
+      projectId: string;
+      data: Partial<Project>;
+    }) => {
+      console.log('data useUpdateProject', data);
+      const response = await fetch(`/api/projects/projects/${projectId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      return processResponse<Project>(response);
+    },
+    onSuccess: () => {
+      // Invalidate and refetch projects query
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+    },
+  });
+}
+
+// For backward compatibility
+export async function patchProject(
+  projectId: string,
+  data: Partial<Project>
+): Promise<ApiResult<Project> | ErrorWithMessage> {
+  console.log('data patchProject', data);
+  const response = await fetch(`/api/projects/projects/${projectId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  return processResponse<Project>(response);
 }

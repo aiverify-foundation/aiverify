@@ -1,0 +1,23 @@
+.alert {
+  position: relative;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.default {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  color: #212529;
+}
+
+.destructive {
+  background-color: #fff5f5;
+  border: 1px solid #feb2b2;
+  color: #c53030;
+}
+
+.alertDescription {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}

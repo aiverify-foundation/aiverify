@@ -1,10 +1,19 @@
 type Project = {
-  id: string;
-  name: string;
-  description: string;
-  createdAt: string;
-  model: string;
-  status: string;
+  globalVars: unknown[];
+  pages: unknown[];
+  id: number;
+  templateId: string | null;
+  projectInfo: {
+    name: string;
+    description: string;
+    reportTitle: string;
+    company: string;
+  };
+  testModelId: string | null;
+  inputBlocks: unknown[];
+  testResults: unknown[];
+  created_at: string;
+  updated_at: string;
 };
 
 type ProjectInfo = {
@@ -42,7 +51,7 @@ type TestResult = {
     modelFile: string;
   };
   output: string;
-  artifacts: unknown[];
+  artifacts?: string[];
   name: string;
   created_at: string;
   updated_at: string;
@@ -59,7 +68,8 @@ type TestResultData = Record<
   | boolean[]
   | object[]
 >;
-type InputBlockData = Record<
+
+type InputBlockDataPayload = Record<
   string,
   | string
   | number
@@ -208,6 +218,7 @@ type MockData = {
     | boolean[]
     | object[]
   >;
+  artifacts?: string[];
 };
 
 type Widget = {
@@ -242,10 +253,21 @@ type InputBlock = {
   author: string | null;
   tags: string | null;
   description: string | null;
-  group: string | null;
+  group: string;
   groupNumber: string | null;
   width: string;
   fullScreen: boolean;
+};
+
+type InputBlockData = {
+  gid: string;
+  cid: string;
+  name: string;
+  group: string;
+  data: InputBlockDataPayload;
+  id: number;
+  created_at: string;
+  updated_at: string;
 };
 
 type Plugin = {
@@ -282,8 +304,24 @@ export type {
   WidgetProperty,
   TestResultData,
   InputBlockData,
+  InputBlockDataPayload,
   InputBlock,
   FormState,
   DataColumn,
   ProjectInfo,
+  MockData,
 };
+
+export interface ProjectData {
+  testModelId?: string;
+  inputBlocks: Array<{
+    gid: string;
+    cid: string;
+    id: number;
+  }>;
+  testResults: Array<{
+    gid: string;
+    cid: string;
+    id: number;
+  }>;
+}

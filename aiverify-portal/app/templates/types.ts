@@ -16,7 +16,7 @@ type Layout = {
   static: boolean;
   isDraggable: boolean;
   isResizable: boolean;
-  resizeHandles: string | null;
+  resizeHandles: string[] | null;
   isBounded: boolean;
 };
 

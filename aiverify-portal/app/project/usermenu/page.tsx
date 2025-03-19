@@ -9,7 +9,7 @@ import { notFound } from 'next/navigation';
 import { UserFlows } from '@/app/userFlowsEnum';
 import { Button } from '@/lib/components/TremurButton';
 import { Card } from '@/lib/components/TremurCard';
-import { fetchProjects } from '@/lib/fetchApis/getProjects';
+import { getProjects } from '@/lib/fetchApis/getProjects';
 
 type UrlSearchParams = {
   searchParams: {
@@ -21,7 +21,7 @@ type UrlSearchParams = {
 export default async function UserMenuPage(props: UrlSearchParams) {
   const searchParams = await props.searchParams;
   const { projectId, flow } = searchParams;
-  const result = await fetchProjects({ ids: [projectId] });
+  const result = await getProjects({ ids: [projectId] });
   let updatedFlow = flow;
   if (flow === UserFlows.NewProjectWithNewTemplate) {
     updatedFlow = UserFlows.NewProjectWithNewTemplateAndRunNewTests;

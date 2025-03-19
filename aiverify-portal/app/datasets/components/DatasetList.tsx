@@ -1,13 +1,11 @@
 'use client';
 
 import Fuse from 'fuse.js';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useMemo, useState, useTransition } from 'react';
 import { Dataset } from '@/app/types';
 import { deleteDataset } from '@/lib/actions/deleteDataset';
 import { Icon, IconName } from '@/lib/components/IconSVG';
-import { Button, ButtonVariant } from '@/lib/components/button';
 import { debounce } from '@/lib/utils/debounce';
 import { cn } from '@/lib/utils/twmerge';
 import { Column, DataGrid } from './DataGrid';
@@ -18,7 +16,7 @@ type DatasetListProps = {
   className?: string;
 };
 
-const columns: Column<Dataset>[] = [
+const columns: Column[] = [
   {
     field: 'fileType' as keyof Dataset,
     headerName: 'Type',
@@ -30,12 +28,13 @@ const columns: Column<Dataset>[] = [
       />
     ),
   },
-  { field: 'name', headerName: 'Name' },
-  { field: 'numRows', headerName: 'Rows' },
-  { field: 'numCols', headerName: 'Columns' },
+  { field: 'name', headerName: 'Name', sortable: true },
+  { field: 'numRows', headerName: 'Rows', sortable: true },
+  { field: 'numCols', headerName: 'Columns', sortable: true },
   {
     field: 'updated_at',
     headerName: 'Date',
+    sortable: true,
     renderCell: (row: Dataset) => new Date(row.updated_at).toLocaleString(),
   },
 ];
@@ -89,12 +88,11 @@ function DatasetList({ datasets, className }: DatasetListProps) {
   function handleRowClick(dataset: Dataset) {
     setSelectedDataset(dataset);
   }
-
   const dataGrid = (
-    <DataGrid<Dataset>
+    <DataGrid
       columns={columns}
       rows={filteredDatasets}
-      pageSizeOptions={[10, 25, 50, 100]}
+      pageSizeOptions={[10, 25, 50, 100, 'All']}
       onRowClick={handleRowClick}
       highlightRow={selectedDataset}
     />
@@ -102,7 +100,24 @@ function DatasetList({ datasets, className }: DatasetListProps) {
 
   return (
     <section className={cn('flex flex-col gap-2', className)}>
-      <Filters onSearchInputChange={handleSearchInputChange} />
+      <div className="flex w-full items-center justify-between">
+        <Filters onSearchInputChange={handleSearchInputChange} />
+        {selectedDataset && (
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={() => handleDelete(selectedDataset.id)}
+              disabled={isPending}
+              className="hover:text-primary-500">
+              <Icon
+                name={IconName.Delete}
+                size={30}
+                color="#FFFFFF"
+              />
+            </button>
+          </div>
+        )}
+      </div>
       <div className="flex flex-grow gap-4">
         <div className="h-[500px] flex-grow overflow-y-auto">{dataGrid}</div>
         {selectedDataset && (
@@ -151,29 +166,6 @@ function DatasetList({ datasets, className }: DatasetListProps) {
             </div>
           </div>
         )}
-      </div>
-      <div className="mt-5 flex w-full justify-end gap-3">
-        {selectedDataset && (
-          <Button
-            type="button"
-            variant={ButtonVariant.SECONDARY}
-            text="Delete"
-            size="md"
-            pill
-            onClick={() => handleDelete(selectedDataset.id)}
-            disabled={isPending}
-          />
-        )}
-        <Link href="/datasets/upload">
-          <Button
-            type="button"
-            variant={ButtonVariant.PRIMARY}
-            text="Upload"
-            size="md"
-            pill
-            disabled={isPending}
-          />
-        </Link>
       </div>
     </section>
   );

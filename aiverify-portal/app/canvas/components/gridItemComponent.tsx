@@ -1,99 +1,395 @@
+'use client';
+
 import { getMDXComponent, MDXContentProps } from 'mdx-bundler/client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import React from 'react';
 import { Layout } from 'react-grid-layout';
-import { WidgetAlgoAndResultIdentifier } from '@/app/canvas/components/hooks/pagesDesignReducer';
 import {
+  WidgetAlgoAndResultIdentifier,
+  WidgetInputBlockIdentifier,
+  WidgetAction,
+} from '@/app/canvas/components/hooks/pagesDesignReducer';
+import {
+  ArtifactsMapping,
   InputBlockDataMapping,
   ParsedTestResults,
   TestResultDataMapping,
   WidgetOnGridLayout,
 } from '@/app/canvas/types';
-import { findTestResultByIdAndTime } from '@/app/canvas/utils/findTestResultByIdAndTime';
-import { TestResultData, InputBlockData, Plugin } from '@/app/types';
+import { findInputBlockDataById } from '@/app/canvas/utils/findInputBlockDataById';
+import { findMockDataByTypeAndCid } from '@/app/canvas/utils/findMockDataByTypeAndCid';
+import { findTestResultById } from '@/app/canvas/utils/findTestResultById';
+import {
+  TestResultData,
+  InputBlockData,
+  Plugin,
+  InputBlockDataPayload,
+} from '@/app/types';
+import {
+  GRID_WIDTH,
+  GRID_COLUMNS,
+  GRID_ROW_HEIGHT,
+} from './dimensionsConstants';
 import { WidgetPropertiesDrawer } from './drawers/widgetPropertiesDrawer';
 import { GridItemContextMenu } from './gridItemContextMenu';
 import { editorInputClassName } from './hocAddTextEditFuncitonality';
+import { WidgetErrorBoundary } from './widgetErrorBoundary';
+
+/*
+  Refer to React.memo code block below for more details on the memoization logic.
+  This component will only re-render if the memo logic detects a change.
+  This is to prevent unnecessary re-renders and improve performance.
+*/
+
 export const gridItemRootClassName = 'grid-item-root';
 type requiredStyles =
-  `grid-item-root relative h-auto w-full min-h-full${string}`; // strictly required styles
+  `grid-item-root relative h-full w-full flex flex-col${string}`; // strictly required styles
 
 type GridItemComponentProps = {
+  /** Array of all available plugins in the system, used for finding dependencies and metadata */
   allAvalaiblePlugins: Plugin[];
+
+  /** React-grid-layout Layout object containing position and dimension information */
   layout: Layout;
+
+  /** Widget configuration with MDX code, properties, and metadata */
   widget: WidgetOnGridLayout;
+
+  /** Test results used by this widget, linking algorithm CIDs to result IDs */
   testResultsUsed?: WidgetAlgoAndResultIdentifier[];
-  testResults: ParsedTestResults[];
+
+  /** Input block datas used by this widget, linking input block CIDs to input block IDs */
+  inputBlockDatasUsed?: WidgetInputBlockIdentifier[];
+
+  /** All test results available in the system that widgets can access */
+  allTestResultsOnSystem: ParsedTestResults[];
+
+  /** All input block datas available in the system that widgets can access */
+  allInputBlockDatasOnSystem: InputBlockData[];
+
+  /** Optional data from input blocks that the widget might need */
   inputBlockData?: unknown;
+
+  /** Whether the grid item is currently being dragged */
   isDragging?: boolean;
+
+  /** Whether the grid item is currently being resized */
   isResizing: boolean;
+
+  /** Callback triggered when delete button is clicked */
   onDeleteClick: () => void;
+
+  /**
+   * Callback triggered when edit button is clicked
+   * @param gridItemId - ID of the grid item
+   * @param gridItemHtmlElement - Reference to the DOM element
+   * @param widget - The widget configuration object
+   */
   onEditClick: (
     gridItemId: string,
     gridItemHtmlElement: HTMLDivElement,
     widget: WidgetOnGridLayout
   ) => void;
+
+  /** Callback triggered when info button is clicked */
+  onInfoClick: () => void;
+
+  /** Callback triggered when widget properties drawer is closed */
+  onWidgetPropertiesClose: () => void;
+
+  /** Dispatch function for updating widget properties */
+  dispatch: React.Dispatch<WidgetAction>;
+
+  /** Index of the page this widget is on */
+  pageIndex: number;
 };
 
 type MdxComponentProps = MDXContentProps & {
   id: string;
   properties: Record<string, unknown>;
   testResult: TestResultData;
-  inputBlockData: InputBlockData;
-  getIBData: (cid: string) => InputBlockData;
+  inputBlockData: InputBlockDataPayload;
+  getIBData: (cid: string) => InputBlockDataPayload;
   getResults: (cid: string) => TestResultData;
+  getArtifacts: (cid: string) => string[];
+  getArtifactURL: (
+    algo_gid: string | null,
+    algo_cid: string,
+    pathname: string
+  ) => string;
   width?: number;
   height?: number;
 };
 
 const itemStyle: requiredStyles =
-  'grid-item-root relative h-auto w-full min-h-full';
+  'grid-item-root relative h-full w-full flex flex-col';
 
-function GridItemComponent({
-  layout,
+function GridItemMain({
   allAvalaiblePlugins,
+  allTestResultsOnSystem,
+  allInputBlockDatasOnSystem,
+  layout,
   widget,
   isDragging,
   isResizing,
   testResultsUsed,
-  testResults,
+  inputBlockDatasUsed,
   onDeleteClick,
   onEditClick,
+  onInfoClick,
+  onWidgetPropertiesClose,
+  dispatch,
+  pageIndex,
 }: GridItemComponentProps) {
+  /**
+   * Controls visibility of the context menu that appears when hovering over a widget
+   * Contains edit, delete, and info buttons
+   */
   const [showContextMenu, setShowContextMenu] = useState(false);
+
+  /**
+   * Controls visibility of the widget properties drawer
+   * Shows detailed information about the widget and its test results
+   */
   const [showWidgetProperties, setShowWidgetProperties] = useState(false);
+
+  /**
+   * Tracks the position of the context menu relative to the widget
+   * Updated when the widget moves or the window scrolls
+   */
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
+
+  /**
+   * Reference to the grid item's DOM element
+   * Used for positioning the context menu and measuring dimensions
+   */
   const gridItemRef = useRef<HTMLDivElement>(null);
+
+  /**
+   * Stores the timeout ID for delayed hiding of the context menu
+   * Used to prevent the menu from disappearing immediately when mouse leaves
+   */
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  /**
+   * Tracks whether the mouse is currently hovering over the widget or its menu
+   * Used to prevent the menu from hiding when moving between the widget and menu
+   */
   const isHoveringRef = useRef<boolean>(false);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  let testResultMatch = undefined;
 
-  if (
-    testResultsUsed &&
-    testResultsUsed.length > 0 &&
-    testResultsUsed[0].testResultsCreatedAt !== undefined
-  ) {
-    testResultMatch = findTestResultByIdAndTime(
-      testResults,
-      testResultsUsed[0].gid,
-      testResultsUsed[0].cid,
-      testResultsUsed[0].testResultsCreatedAt
-    );
-  }
+  /**
+   * Stores the current width and height of the widget
+   * Calculated from layout dimensions and grid constants
+   */
+  const dimensions = useMemo(() => {
+    const columnWidth = GRID_WIDTH / GRID_COLUMNS;
+    const rowHeight = GRID_ROW_HEIGHT;
+    console.log('layout dim w n h', layout);
 
-  useEffect(() => {
-    if (!gridItemRef.current) return;
+    return {
+      width: layout.w * columnWidth,
+      height: layout.h * rowHeight,
+    };
+  }, [layout.w, layout.h]);
 
-    const resizeObserver = new ResizeObserver((entries) => {
-      const { width, height } = entries[0].contentRect;
-      setDimensions({ width, height });
-    });
+  /**
+   * Determines if the widget has editable properties
+   * Controls whether the edit button is shown in the context menu
+   */
+  const enableEditing = useMemo(() => {
+    if (Array.isArray(widget.properties)) {
+      return widget.properties.length > 0;
+    }
+    if (typeof widget.properties === 'object' && widget.properties !== null) {
+      return Object.keys(widget.properties).length > 0;
+    }
+    return false;
+  }, [widget.properties]);
 
-    resizeObserver.observe(gridItemRef.current);
-    return () => resizeObserver.disconnect();
-  }, []);
+  /**
+   * Prepares the list of test results used by this widget for display in the properties drawer
+   * Filters the full test results list to only include those relevant to this widget
+   */
+  const testResultsListForDrawer = useMemo(() => {
+    // prepare list of test results that are used by this widget, for the widget properties drawer
+    if (testResultsUsed && testResultsUsed.length > 0) {
+      return testResultsUsed.reduce<ParsedTestResults[]>((acc, result) => {
+        if (result.testResultId !== undefined) {
+          const testResult = findTestResultById(
+            allTestResultsOnSystem,
+            result.testResultId
+          );
+          if (testResult) {
+            acc.push(testResult);
+          }
+        }
+        return acc;
+      }, []);
+    }
+    return [];
+  }, [testResultsUsed]);
 
+  /**
+   * Prepares the list of input block datas used by this widget for display in the properties drawer
+   * Filters the full input block datas list to only include those relevant to this widget
+   */
+  const inputBlockDatasListForDrawer = useMemo(() => {
+    // prepare list of input block datas that are used by this widget, for the widget properties drawer
+    if (inputBlockDatasUsed && inputBlockDatasUsed.length > 0) {
+      return inputBlockDatasUsed.reduce<InputBlockData[]>((acc, ibData) => {
+        if (ibData.inputBlockDataId !== undefined) {
+          const inputBlockData = findInputBlockDataById(
+            allInputBlockDatasOnSystem,
+            ibData.inputBlockDataId
+          );
+          if (inputBlockData) {
+            acc.push(inputBlockData);
+          }
+        }
+        return acc;
+      }, []);
+    }
+    return [];
+  }, [inputBlockDatasUsed]);
+
+  /**
+   * Prepares test result data for the widget to consume and display
+   * Maps algorithm IDs to their corresponding test results or mock data
+   * If no test result is found for an algorithm, falls back to mock data
+   */
+  const testResultWidgetData = useMemo(() => {
+    // prepare test result data for the widget to consume and display data (draw graphs, etc),
+    // based on test results that are used by this widget. If no test result is found for an algo,
+    // the mock data is used instead.
+    if (testResultsUsed && testResultsUsed.length > 0) {
+      return testResultsUsed.reduce<TestResultDataMapping>((acc, result) => {
+        if (result.testResultId !== undefined) {
+          const testResult = findTestResultById(
+            allTestResultsOnSystem,
+            result.testResultId
+          );
+          if (testResult) {
+            acc[`${widget.gid}:${result.cid}`] = testResult.output;
+          } else {
+            const mockData = findMockDataByTypeAndCid(
+              widget.mockdata || [],
+              'Algorithm',
+              result.cid
+            );
+            if (mockData) {
+              acc[`${widget.gid}:${result.cid}`] = mockData.data;
+            }
+          }
+        } else {
+          const mockData = findMockDataByTypeAndCid(
+            widget.mockdata || [],
+            'Algorithm',
+            result.cid
+          );
+          if (mockData) {
+            acc[`${widget.gid}:${result.cid}`] = mockData.data;
+          }
+        }
+        return acc;
+      }, {});
+    }
+    return {};
+  }, [testResultsUsed]);
+
+  /**
+   * Prepares artifact data for the widget to consume
+   * Maps algorithm IDs to their corresponding artifacts or mock artifacts
+   * If no test result is found for an algorithm, falls back to mock data
+   */
+  const widgetArtifacts = useMemo(() => {
+    // prepare artifacts data for the widget to consume, based on test results used by this widget
+    // If no test result is found for an algo, the mock data artifacts are used instead
+    if (testResultsUsed && testResultsUsed.length > 0) {
+      return testResultsUsed.reduce<ArtifactsMapping>((acc, result) => {
+        if (result.testResultId !== undefined) {
+          const testResult = findTestResultById(
+            allTestResultsOnSystem,
+            result.testResultId
+          );
+          if (testResult && testResult.artifacts) {
+            // Transform artifact paths into full URLs
+            console.log('host', process.env.NEXT_PUBLIC_APIGW_HOST);
+            console.log('testResult', testResult.artifacts);
+            const artifactUrls = testResult.artifacts.map(
+              (artifactPath) =>
+                `${process.env.NEXT_PUBLIC_APIGW_HOST}/test_results/${result.testResultId}/artifacts/${artifactPath}`
+            );
+            acc[`${widget.gid}:${result.cid}`] = artifactUrls;
+          } else {
+            const mockData = findMockDataByTypeAndCid(
+              widget.mockdata || [],
+              'Algorithm',
+              result.cid
+            );
+            if (mockData && mockData.artifacts) {
+              acc[`${widget.gid}:${result.cid}`] = mockData.artifacts;
+            }
+          }
+        } else {
+          const mockData = findMockDataByTypeAndCid(
+            widget.mockdata || [],
+            'Algorithm',
+            result.cid
+          );
+          if (mockData && mockData.artifacts) {
+            acc[`${widget.gid}:${result.cid}`] = mockData.artifacts;
+          }
+        }
+        return acc;
+      }, {});
+    }
+    return {};
+  }, [testResultsUsed]);
+
+  /**
+   * Prepares input block data for the widget to consume
+   * Maps input block IDs to their corresponding data or mock data
+   * If no input block data is found, falls back to mock data
+   */
+  const inputBlocksWidgetData = useMemo(() => {
+    if (inputBlockDatasUsed && inputBlockDatasUsed.length > 0) {
+      return inputBlockDatasUsed.reduce<InputBlockDataMapping>((acc, data) => {
+        if (data.inputBlockDataId !== undefined) {
+          const inputBlockData = allInputBlockDatasOnSystem.find(
+            (ib) => ib.id === data.inputBlockDataId
+          );
+          if (inputBlockData && inputBlockData.data) {
+            acc[`${widget.gid}:${data.cid}`] = inputBlockData.data;
+          } else {
+            const mockData = findMockDataByTypeAndCid(
+              widget.mockdata || [],
+              'InputBlock',
+              data.cid
+            );
+            if (mockData && mockData.data) {
+              acc[`${widget.gid}:${data.cid}`] = mockData.data;
+            }
+          }
+        } else {
+          const mockData = findMockDataByTypeAndCid(
+            widget.mockdata || [],
+            'InputBlock',
+            data.cid
+          );
+          if (mockData && mockData.data) {
+            acc[`${widget.gid}:${data.cid}`] = mockData.data;
+          }
+        }
+        return acc;
+      }, {});
+    }
+    return {};
+  }, [inputBlockDatasUsed]);
+
+  /**
+   * Cleanup function for the hide timeout
+   * Ensures no memory leaks from lingering timeouts
+   */
   useEffect(() => {
     return () => {
       if (hideTimeoutRef.current) {
@@ -102,6 +398,10 @@ function GridItemComponent({
     };
   }, []);
 
+  /**
+   * Hides the context menu when the widget is being dragged
+   * Prevents the menu from appearing in the wrong position during drag
+   */
   useEffect(() => {
     if (isDragging) {
       if (hideTimeoutRef.current) {
@@ -112,6 +412,10 @@ function GridItemComponent({
     }
   }, [isDragging]);
 
+  /**
+   * Updates the position of the context menu when it's visible
+   * Ensures the menu stays aligned with the widget when scrolling or resizing
+   */
   useEffect(() => {
     if (!showContextMenu) return;
 
@@ -138,6 +442,10 @@ function GridItemComponent({
     };
   }, [showContextMenu]);
 
+  /**
+   * Handles clicks outside the widget to hide the context menu
+   * Special case to prevent hiding when clicking in an editor input field
+   */
   useEffect(() => {
     if (!showContextMenu) return;
 
@@ -159,16 +467,39 @@ function GridItemComponent({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showContextMenu]);
 
+  /**
+   * Calls the onWidgetPropertiesClose callback when the properties drawer is closed
+   * Allows parent components to react to the drawer closing
+   */
+  useEffect(() => {
+    if (showWidgetProperties === false) {
+      onWidgetPropertiesClose();
+    }
+  }, [showWidgetProperties]);
+
+  /**
+   * Handles clicks on the info button in the context menu
+   * Shows both the context menu and properties drawer
+   */
   function handleInfoClick() {
     setShowContextMenu(true);
     setShowWidgetProperties(true);
+    onInfoClick();
   }
 
+  /**
+   * Handles clicks on the edit button in the context menu
+   * Calls the parent's onEditClick with the widget and its DOM element
+   */
   function handleEditClick() {
     if (gridItemRef.current !== null)
       onEditClick(widget.gridItemId, gridItemRef.current, widget);
   }
 
+  /**
+   * Shows the context menu when mouse enters the widget
+   * Clears any pending hide timeout
+   */
   function handleMouseEnter() {
     if (hideTimeoutRef.current) {
       clearTimeout(hideTimeoutRef.current);
@@ -177,6 +508,10 @@ function GridItemComponent({
     setShowContextMenu(true);
   }
 
+  /**
+   * Sets up delayed hiding of the context menu when mouse leaves
+   * Uses a timeout to allow moving the mouse to the menu without it disappearing
+   */
   function handleMouseLeave() {
     isHoveringRef.current = false;
     hideTimeoutRef.current = setTimeout(() => {
@@ -186,6 +521,10 @@ function GridItemComponent({
     }, 300); // 300ms delay before hiding
   }
 
+  /**
+   * Creates the MDX component for the widget
+   * Falls back to a placeholder if MDX code is missing
+   */
   const Component: React.ComponentType<MdxComponentProps> = useMemo(() => {
     if (!widget.mdx) {
       const MissingMdxMessage = () => (
@@ -198,62 +537,41 @@ function GridItemComponent({
     return MDXComponent;
   }, [widget, widget.mdx]);
 
+  /**
+   * Transforms the widget's property definitions into a props object
+   * Used to pass configuration to the MDX component
+   */
   const properties = useMemo(() => {
     if (!widget.properties) return {};
-    return widget.properties.reduce((props, property) => {
-      return {
-        ...props,
-        [property.key]: property.value || property.default || property.helper,
-      };
-    }, {});
+
+    // If properties is already an object, return it directly
+    if (
+      typeof widget.properties === 'object' &&
+      !Array.isArray(widget.properties)
+    ) {
+      return widget.properties;
+    }
+
+    // If properties is an array, reduce it to an object
+    if (Array.isArray(widget.properties)) {
+      return widget.properties.reduce((props, property) => {
+        return {
+          ...props,
+          [property.key]: property.value || property.default || property.helper,
+        };
+      }, {});
+    }
+
+    return {};
   }, [widget.properties]);
-
-  const testResult = useMemo(() => {
-    if (testResultMatch) {
-      return {
-        [`${widget.gid}:${testResultMatch.cid}`]: testResultMatch.output,
-      };
-    }
-
-    if (widget.mockdata && widget.mockdata.length > 0) {
-      return widget.mockdata.reduce<TestResultDataMapping>((acc, mock) => {
-        if (mock.type === 'Algorithm') {
-          acc[`${widget.gid}:${mock.cid}`] = mock.data;
-        }
-        return acc;
-      }, {});
-    }
-    return {};
-  }, [widget, widget.mdx, testResultsUsed]);
-
-  const mockInputs = useMemo(() => {
-    // if (testResultsMapping) {
-    //   if (widget.mockdata && widget.mockdata.length > 0) {
-    //     return widget.mockdata.reduce<InputBlockDataMapping>((acc, mock) => {
-    //       if (mock.type === "InputBlock") {
-    //         acc[`${widget.gid}:${mock.cid}`] = mock.data;
-    //         mock.data.metrics = getRandomFairnessMetrics();
-    //       }
-    //       return acc;
-    //     }, {});
-    //   }
-    // }
-    if (widget.mockdata && widget.mockdata.length > 0) {
-      return widget.mockdata.reduce<InputBlockDataMapping>((acc, mock) => {
-        if (mock.type === 'InputBlock') {
-          acc[`${widget.gid}:${mock.cid}`] = mock.data;
-        }
-        return acc;
-      }, {});
-    }
-    return {};
-  }, [widget, widget.mdx]);
 
   return (
     <React.Fragment>
+      {/* Context menu that appears when hovering over the widget */}
       {showContextMenu && !isDragging ? (
         <GridItemContextMenu
           widget={widget}
+          hideEditIcon={!enableEditing}
           menuPosition={menuPosition}
           onDeleteClick={onDeleteClick}
           onInfoClick={handleInfoClick}
@@ -267,41 +585,93 @@ function GridItemComponent({
           onEditClick={handleEditClick}
         />
       ) : null}
+
+      {/* Properties drawer that shows detailed widget information */}
       {showWidgetProperties ? (
         <WidgetPropertiesDrawer
           layout={layout}
           allAvailablePlugins={allAvalaiblePlugins}
           widget={widget}
-          testResultsUsed={testResultMatch}
-          allAvailableTestResults={testResults}
+          testResultsUsed={testResultsListForDrawer}
+          inputBlocksDataUsed={inputBlockDatasListForDrawer}
           open={showWidgetProperties}
           setOpen={setShowWidgetProperties}
           onOkClick={() => setShowWidgetProperties(false)}
           onDeleteClick={onDeleteClick}
+          dispatch={dispatch}
+          pageIndex={pageIndex}
         />
       ) : null}
+
+      {/* The widget container element */}
       <div
         ref={gridItemRef}
         className={itemStyle}
+        style={{
+          width: dimensions.width,
+          height: dimensions.height,
+        }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}>
-        {isResizing ? (
+        {isResizing || isDragging ? (
+          // Show a placeholder during resize and dragging for better ux
           <div className="h-auto w-full bg-gray-100" />
         ) : (
-          <Component
-            id={widget.gridItemId}
-            properties={properties}
-            testResult={testResult}
-            inputBlockData={mockInputs}
-            getIBData={(cid) => mockInputs[`${widget.gid}:${cid}`]}
-            getResults={(cid) => testResult[`${widget.gid}:${cid}`]}
-            width={dimensions.width}
-            height={dimensions.height}
-          />
+          // Render the actual widget content with error boundary protection
+          <WidgetErrorBoundary widgetName={widget.name || widget.cid}>
+            <Component
+              id={widget.gridItemId}
+              properties={properties}
+              artifacts={widgetArtifacts}
+              testResult={testResultWidgetData}
+              inputBlockData={inputBlocksWidgetData}
+              getIBData={(cid: string) =>
+                inputBlocksWidgetData[`${widget.gid}:${cid}`]
+              }
+              getResults={(cid: string) =>
+                testResultWidgetData[`${widget.gid}:${cid}`]
+              }
+              getArtifacts={(cid: string) => {
+                const urls = widgetArtifacts[`${widget.gid}:${cid}`];
+                return Array.isArray(urls) ? urls : [];
+              }}
+              getArtifactURL={(
+                algo_gid: string | null,
+                algo_cid: string,
+                pathname: string
+              ) => {
+                const gid = algo_gid || widget.gid;
+                const urls = widgetArtifacts[`${gid}:${algo_cid}`];
+                if (!Array.isArray(urls)) return '';
+
+                // Find the URL that matches the pathname
+                const matchingUrl = urls.find((url) => url.endsWith(pathname));
+                return matchingUrl || '';
+              }}
+              width={dimensions.width}
+              height={dimensions.height}
+            />
+          </WidgetErrorBoundary>
         )}
       </div>
     </React.Fragment>
   );
 }
 
-export { GridItemComponent };
+// Use custom comparison function to prevent unnecessary re-renders
+export const GridItemComponent = React.memo(
+  GridItemMain,
+  (prevProps, nextProps) => {
+    // Only re-render if widget data changed, it's being dragged/resized, or selection state changed
+    return (
+      prevProps.widget === nextProps.widget &&
+      prevProps.isDragging === nextProps.isDragging &&
+      prevProps.isResizing === nextProps.isResizing &&
+      prevProps.layout === nextProps.layout &&
+      JSON.stringify(prevProps.testResultsUsed) ===
+        JSON.stringify(nextProps.testResultsUsed) &&
+      JSON.stringify(prevProps.inputBlockDatasUsed) ===
+        JSON.stringify(nextProps.inputBlockDatasUsed)
+    );
+  }
+);

@@ -1,3 +1,5 @@
+export const cid = "cover_page_main";
+
 import logo from './logo.png';
 import cover from './Cover02.png';
 import { getReportDate } from './utils.ts';
@@ -11,12 +13,13 @@ export const MyCoverPage = ({ props }) => {
     fontSize:"12pt",
     // color: '#702F8A',
     textTransform: "uppercase",
+    marginBottom: "5px"
   }
 
   return (
     <div style={{ position:'relative' }}>
       <div style={{ position:'absolute', top:'60px', width:'600px', right:'40px', zIndex:6000, display:'flex', flexFlow:'column wrap', alignItems:'right', textTransform:'uppercase' }}>
-        <div style={{ color:'black', fontWeight:600, fontSize:"40pt", textAlign:'right' }}>{props.properties.reportTitle || "Summary Report"}</div>
+        <div style={{ color:'black', fontWeight:600, fontSize:"40pt", textAlign:'right', marginBottom: "10px" }}>{props.properties.reportTitle || "Summary Report"}</div>
         {props.properties.reportSubtitle1 && props.properties.reportSubtitle1.length > 0 && (
           <div style={subTitleStyles} className="c-primary">
             {props.properties.reportSubtitle1}
@@ -34,7 +37,7 @@ export const MyCoverPage = ({ props }) => {
         )}
       </div>
       <div style={{ position:'absolute', top:0, left:0 }}>
-        <img src={cover} alt="cover pattern" />
+        <img src={cover} alt="cover pattern" height={props.height} />
       </div>
       <div style={{ position:'absolute', top:'960px', right:'30px' }}>
         <img src={logo} alt="AI Verify Logo" width="320px" style={{ padding:0, margin:0 }} />
@@ -44,6 +47,6 @@ export const MyCoverPage = ({ props }) => {
   )
 }
 
-<div style={{ width:props.container.width }}>
+<div style={{ width:props.width, height: props.height }}>
   <MyCoverPage props={props} />
 </div>

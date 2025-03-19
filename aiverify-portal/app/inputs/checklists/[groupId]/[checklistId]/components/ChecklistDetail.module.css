@@ -1,0 +1,65 @@
+/* ChecklistDetail.module.css */
+
+.mdx-wrapper {
+  background-color: #2d2b2f; /* Dark grey background for the wrapper */
+  color: white; /* White text for better contrast */
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.mdx-wrapper button {
+  /*   background-color: #826d8c !important; /* Primary button color */
+  color: white;
+  border: 1px solid #bcb9c0 !important;
+  padding: 10px;
+  margin-right: 5px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.mdx-wrapper h1,
+.mdx-wrapper h2,
+.mdx-wrapper h3 {
+  color: #d5ccdb !important;
+}
+
+.mdx-wrapper textarea {
+  width: 100%;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 4px;
+  background-color: #464349;
+  color: white;
+}
+
+.mdx-wrapper textarea:focus {
+  border-color: #991e66;
+  outline: none;
+}
+
+.mdx-wrapper div {
+  background-color: #2d2b2f !important;
+}
+
+.mdx-wrapper .alert {
+  border: 1px solid red;
+  padding: 10px;
+  border-radius: 4px;
+  background-color: #590000;
+  color: white;
+}
+
+.mdx-wrapper .skeleton {
+  background-color: #3d3a40;
+  border-radius: 4px;
+}
+
+.mdx-wrapper .card {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #3d3a40;
+  color: white;
+}

@@ -67,7 +67,6 @@ function PluginsPanel(props: PluginsPanelProps) {
                   {plugin.widgets.length} widgets
                 </div>
               </div>
-
             </AccordionTrigger>
             <AccordionContent>
               <section className="flex flex-col gap-2">
@@ -112,7 +111,9 @@ function PluginsPanel(props: PluginsPanelProps) {
           onChange={(e) => setSearchValue(e.target.value)}
         />
       </div>
-      {AccordionHero}
+      <div className="custom-scrollbar mr-[-10px] max-h-[calc(100vh-280px)] overflow-y-auto pr-2">
+        {AccordionHero}
+      </div>
     </section>
   );
 }

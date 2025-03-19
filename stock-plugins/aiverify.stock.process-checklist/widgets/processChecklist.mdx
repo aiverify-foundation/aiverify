@@ -75,9 +75,9 @@ export const ProcessChecklist = ({ principle, props, }) => {
   return (
     <div style={{ width:'100%', position:'relative', display:'block' }}>
     {config.sections.map((section) => (
-      <>
+      <React.Fragment key={`section-${section.index}`}>
       {section.checklist.map((check, tcIndex) => (
-        <>
+        <React.Fragment key={`check-${check.index}`}>
           {<div className="c-primary" style={styles.tcBox}>
             <b>Criteria {config.index+1}.{check.index+1} - </b>
             <span dangerouslySetInnerHTML={{ __html:check.testableCriteria }}></span>
@@ -102,7 +102,7 @@ export const ProcessChecklist = ({ principle, props, }) => {
                   </td>
                 </tr>
                 <tr style={styles.elaborationBox}>
-                  <td style={{ width:"100%", padding:"10px", overflow: "hidden" }} colspan="3">
+                  <td style={{ width:"100%", padding:"10px", overflow: "hidden" }} colSpan="3">
                     <b>Elaboration</b>
                     <div style={{ wordWrap: "break-word" }}>{process.elaboration && process.elaboration.length>0?process.elaboration:<span className="c-error">The company did not provide any reason.</span>}</div>
                   </td>
@@ -110,9 +110,9 @@ export const ProcessChecklist = ({ principle, props, }) => {
               </tbody>
             </table>
           ))}
-        </>
+        </React.Fragment>
       ))}
-      </>
+      </React.Fragment>
     ))}
     </div>
   )

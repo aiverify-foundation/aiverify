@@ -41,14 +41,16 @@ export const MetricBarChart = ({ metric, width, height, data }) => {
 
   return (
     <div className="chart-container chart-bar" style={{ width, height }}>
-      <h4>{metric}</h4>
-      <BarChart
-        data={mydata.data}
-        xAxisDataKey="outputClass"
-        bars={mydata.bars}
-        chartProps={{ layout:"vertical" }}
-        legendProps={{ wrapperStyle }}
-      />
+      <h4 style={{ padding:5, margin:0, textAlign:"center" }}>{metric}</h4>
+      <div style={{ height: "calc(100% - 40px)" }}>
+        <BarChart
+          data={mydata.data}
+          xAxisDataKey="outputClass"
+          bars={mydata.bars}
+          chartProps={{ layout:"vertical" }}
+            legendProps={{ wrapperStyle }}
+          />
+      </div>
     </div>
   )
 }
