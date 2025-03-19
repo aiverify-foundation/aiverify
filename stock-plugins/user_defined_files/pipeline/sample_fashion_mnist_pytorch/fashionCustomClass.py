@@ -1,3 +1,6 @@
+from typing import Iterable
+
+import numpy as np
 import torch
 import torchvision
 from PIL import Image
@@ -10,7 +13,7 @@ class FashionMNISTCustom(torch.nn.Module):
         self.resnet = torchvision.models.resnet18(weights=self.weights)
         self.resnet.fc = torch.nn.Linear(512, 10)
 
-    def predict(self, X):
+    def predict(self, X: Iterable[str]) -> np.ndarray:
         preprocess = self.weights.transforms()
         images = torch.stack([preprocess(Image.open(x)) for x in X])
         out: torch.Tensor = self.resnet(images)
