@@ -45,7 +45,7 @@ jobs:
         curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o /tmp/$CSA/bin/license.dat $COV_URL/downloadFile.htm?fn=license.dat
         /tmp/$CSA/bin/cov-configure --java
 
-        unzip $CSA.tar.gz
+        # unzip $CSA.tar.gz
 
     - name: Coverity Full Scan
       run: |
