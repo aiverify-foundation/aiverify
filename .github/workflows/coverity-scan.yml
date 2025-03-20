@@ -30,6 +30,7 @@ jobs:
       CSA_URL: ${{ secrets.CSA_URL }}
       CSA: cov-analysis-linux64-2024.12.1
       COV_STREAM: aiverify-v2.x
+      COVERITY_PROJECT: aiverify-v2.x
       CHECKERS: --webapp-security
       
     steps:
