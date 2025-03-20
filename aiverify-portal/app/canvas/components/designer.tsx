@@ -1126,7 +1126,7 @@ function Designer(props: DesignerProps) {
                   className="[&>*]:text-inherit"
                   droppingItem={droppingItemPlaceholder}>
                   {state.widgets[pageIndex].map((widget, widgetIndex) => {
-                    console.log('mapping widgets', widget, widgetIndex);
+                    // console.log('mapping widgets', widget, widgetIndex);
                     if (!widget.gridItemId) return null;
                     return (
                       <div
