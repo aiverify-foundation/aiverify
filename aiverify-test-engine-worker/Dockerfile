@@ -57,3 +57,13 @@ ENV PYTHON=python
 ENV VALKEY_HOST_ADDRESS=host.docker.internal
 
 ENTRYPOINT ["python", "-m", "aiverify_test_engine_worker"]
+
+
+FROM venv-build AS docker-build
+
+# RUN apk update && apk add --no-cache docker-cli
+COPY --from=docker:dind /usr/local/bin/docker /usr/local/bin/
+COPY --from=docker/buildx-bin /buildx /usr/libexec/docker/cli-plugins/docker-buildx
+
+ENV PIPELINE_BUILD=docker_build
+ENV PIPELINE_EXECUTE=docker_run
