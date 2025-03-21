@@ -9,6 +9,7 @@ import subprocess
 from pathlib import Path
 import shutil
 import tempfile
+import uuid
 
 
 class VirtualEnvironmentExecute(Pipe):
@@ -37,57 +38,120 @@ class VirtualEnvironmentExecute(Pipe):
             tag = f"{task_data.task.algorithmCID}:{task_data.task.algorithmHash[:128] if task_data.task.algorithmHash else 'latest'}"
             if self.docker_registry:
                 tag = f"{self.docker_registry}/{tag}"
+            container_name = uuid.uuid4().hex
+            logger.debug(f"tag: {tag}, container_name: {container_name}")
 
-            with tempfile.TemporaryDirectory() as tmpdirname:
-                output_folder = Path(tmpdirname)
-                # output_folder.chmod(0o777)
-                cmds = [
-                    self.docker_bin,
-                    "run",
-                    "--rm",
-                    # "-e", f"PYTHONPATH=/app/algo",
-                    f"--name={task_data.task.algorithmCID}",
-                    "-v", f"{output_folder.absolute().as_posix()}:/app/output",
-                    "-v", f"{base_data_dir.absolute().as_posix()}:/app/data",
-                    tag,
-                    "--test_run_id", task_data.task.id,
-                    # "--algo_path", f"/app/data/{task_data.algorithm_path.parent.name}/{task_data.algorithm_path.name}",
-                    "--algo_path", f"/app/algo",
-                    "--data_path", f"/app/data/{task_data.data_path.parent.name}/{task_data.data_path.name}",
-                    "--model_path", f"/app/data/{task_data.model_path.parent.name}/{task_data.model_path.name}",
-                    "--model_type", task_data.task.modelType.lower(),
-                    "--algorithm_args", json.dumps(task_data.task.algorithmArgs),
-                    "--apigw_url", self.apigw_url,
-                    "--output_zip", "/app/output/output.zip"
-                ]
-                if task_data.ground_truth_path and task_data.task.groundTruth:
-                    cmds.extend([
-                        "--ground_truth_path", f"/app/data/{task_data.ground_truth_path.parent.name}/{task_data.ground_truth_path.name}",
-                        "--ground_truth", task_data.task.groundTruth
-                    ])
-                logger.debug(f"cmds: {cmds}")
-                print(" ".join(cmds))
+            # docker run infinite
+            cmds = [
+                self.docker_bin,
+                "run",
+                "--name", container_name,
+                "--rm",
+                "-d",
+                "--entrypoint",
+                "/bin/sh",
+                tag,
+                "-c", "trap : TERM INT; sleep infinity & wait",
+                tag,
+            ]
+            logger.debug(f"docker run infinite: {cmds}")
+            subprocess.run(cmds, check=True)
 
-                # Run the algorithm
-                p = subprocess.run(cmds,
-                                   #    cwd=task_data.algorithm_path,
-                                   check=True, capture_output=True,
-                                   )
-                if p.returncode != 0:
-                    raise PipeException(f"Error executing algorithm: {p.stderr}")
-                # logger.debug(p.stdout)  # log the stdout as debug
+            # copy the data files into the container
+            container_data_path = f"/app/data/{task_data.data_path.name}"
+            container_model_path = f"/app/data/{task_data.model_path.name}"
+            cmds = [
+                self.docker_bin,
+                "cp",
+                task_data.data_path.absolute().as_posix(),
+                f"{container_name}:{container_data_path}"
+            ]
+            logger.debug(f"docker cp data path: {cmds}")
+            subprocess.run(cmds, check=True)
+            cmds = [
+                self.docker_bin,
+                "cp",
+                task_data.model_path.absolute().as_posix(),
+                f"{container_name}:{container_model_path}"
+            ]
+            logger.debug(f"docker cp model path: {cmds}")
+            subprocess.run(cmds, check=True)
+            if task_data.ground_truth_path and task_data.task.groundTruth:
+                if task_data.ground_truth_path.samefile(task_data.data_path):
+                    container_ground_truth_path = container_data_path
+                else:
+                    container_ground_truth_path = f"/app/data/{task_data.ground_truth_path.name}"
+                    cmds = [
+                        self.docker_bin,
+                        "cp",
+                        task_data.ground_truth_path.absolute().as_posix(),
+                        f"{container_name}:{container_ground_truth_path}"
+                    ]
+                    logger.debug(f"docker cp ground truth path: {cmds}")
+                    subprocess.run(cmds, check=True)
 
-                output_zip = output_folder.joinpath("output.zip")
-                if not task_data.output_zip.exists():
-                    raise PipeException(f"Output zip not generated")
-                target_output_zip = task_data.algorithm_path.joinpath("output.zip")
+            # docker exec
+            # output_folder.chmod(0o777)
+            cmds = [
+                self.docker_bin,
+                "exec",
+                container_name,
+                "python", "-m", "scripts.algo_execute",
+                "--test_run_id", task_data.task.id,
+                # "--algo_path", f"/app/data/{task_data.algorithm_path.parent.name}/{task_data.algorithm_path.name}",
+                "--algo_path", f"/app/algo",
+                "--data_path", container_data_path,
+                "--model_path", container_model_path,
+                "--model_type", task_data.task.modelType.lower(),
+                "--algorithm_args", json.dumps(task_data.task.algorithmArgs),
+                "--apigw_url", self.apigw_url,
+            ]
+            if task_data.ground_truth_path and task_data.task.groundTruth:
+                cmds.extend([
+                    "--ground_truth_path", container_ground_truth_path,
+                    "--ground_truth", task_data.task.groundTruth
+                ])
+            logger.debug(f"cmds: {cmds}")
+            print(" ".join(cmds))
 
-                shutil.copy2(output_zip, target_output_zip)
-                task_data.output_zip = target_output_zip
+            # Run the algorithm
+            p = subprocess.run(cmds,
+                               #    cwd=task_data.algorithm_path,
+                               check=True, capture_output=True,
+                               )
+            if p.returncode != 0:
+                raise PipeException(f"Error executing algorithm: {p.stderr}")
+            # logger.debug(p.stdout)  # log the stdout as debug
 
-                return task_data
+            # copy from pod
+            output_zip = task_data.algorithm_path.joinpath("output.zip")
+            cmds = [
+                self.docker_bin,
+                "cp",
+                f"{container_name}:/app/algo/output.zip",
+                output_zip.absolute().as_posix(),
+            ]
+            logger.debug(f"docker cp output cmds: {cmds}")
+            # print(" ".join(cmds))
+
+            p = subprocess.run(cmds, check=True, capture_output=True,)
+            if p.returncode != 0:
+                raise PipeException(f"Error executing algorithm: {p.stderr}")
+
+            if not output_zip.exists():
+                raise PipeException(f"Output zip not generated")
+
+            task_data.output_zip = output_zip
+            return task_data
 
         except subprocess.CalledProcessError as e:
             raise PipeException(f"Failed to run algorithm: {str(e)}")
         except Exception as e:
             raise PipeException(f"Unexpected error during algorithm execute: {str(e)}")
+        finally:
+            cmds = [
+                self.docker_bin,
+                "stop",
+                container_name,
+            ]
+            subprocess.run(cmds)  # don't care about exception
