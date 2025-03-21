@@ -12,22 +12,16 @@ Before installing and running the `aiverify-test-engine-worker` project, ensure 
 - **Python**: Version 3.11 or higher
 - **Operating System**: Debian
 - **Dependencies**: Listed in the `pyproject.toml` file
+- **Valkey**: Required for the message queue.
 
 Ensure you have Python 3.11 or higher installed on your system. You can check your Python version by running:
 ```
 python -V
 ```
 
-## Installation and Running the Test Engine Worker
-
-There are three ways to install and run `aiverify-test-engine-worker`.
-
-1. [**Using Hatch**](#hatch-development-setup)
-2. [**Local Machine Installation**](#local-machine-setup)
+# Hatch Development Setup
 
 For development, using Hatch is the easiest and most efficient method as it provides an isolated environment and ensures compatibility with the project's dependencies.
-
-# Hatch Development Setup
 
 ## Install Hatch
 Install [Hatch](https://hatch.pypa.io/latest/) if it's not yet installed on your machine. 
@@ -74,6 +68,11 @@ Update the `.env` file to configure the environment variables. Below is a table 
 | `APIGW_URL` | The URL of the AI Verify API GW. | `http://127.0.0.1:4000` |
 | `VALKEY_HOST_ADDRESS` | The Valkey server host address | `127.0.0.1` |
 | `VALKEY_PORT`      | The Valkey server port. | `6379` |
+| `PYTHON` | Path to python 3 executable | `python3` |
+| `PIPELINE_BUILD` | Pipeline build module to load | `virtual_env` |
+| `PIPELINE_EXECUTE` | Pipeline execute module to load | `virtual_env_execute` |
+| `DOCKER_REGISTRY` | Private Docker Registry (Applicable only for docker build) | None |
+| `KUBECTL_REGISTRY` | Private registry for kubectl to pull image from (Applicable only for kubectl run and exec commands) | Same as DOCKER_REGISTRY if not None, else `localhost:5000` |
 
 `TEWORKER_LOG_LEVEL`
 * Can be set to `debug`, `info`, `warning`, `error`, `critical` to set the level of logging in the test-engine-worker. 
@@ -86,6 +85,21 @@ Update the `.env` file to configure the environment variables. Below is a table 
 
 `VALKEY_PORT`
 * Indicates the port number on which the Valkey server is listening. This allows the Test Engine Worker to establish a connection to the Valkey service. The default port is `6379`.
+
+`PYTHON`
+* Specifies the path to the Python 3 executable that the Test Engine Worker will use. This allows the application to explicitly define which Python interpreter to use, ensuring compatibility and consistency across different environments. The default value is `python3`, which is typically available on most systems with Python 3 installed.
+
+`PIPELINE_BUILD`
+* Specifies the module to be used for building the test algorithm. This determines how the environment for executing tests is set up. The default value is `virtual_env`, which uses a virtual environment for task execution. Other options might include `docker_build` for using Docker containers.
+
+`PIPELINE_EXECUTE`
+* Defines the module to be used for executing the tests. This setting controls the method by which tasks are run. The default value is `virtual_env_execute`, which executes tasks within a virtual environment. Alternative options could include `docker_run` for executing tasks within Docker containers, and `kubectl_run` for executing in kubernetes environment.
+
+`DOCKER_REGISTRY`
+* Specifies the private Docker Registry to which the built Docker image will be pushed. If this variable is set to a non-None value, the Docker build process will attempt to push the successfully built image to the specified private registry. This is applicable only when using the `docker_build` pipeline build module. The default value is `None`, meaning no image will be pushed unless explicitly configured.
+
+`KUBECTL_REGISTRY`
+* Specifies the private registry from which `kubectl` will pull the image. This is applicable only for `kubectl` commands in the `kubectl_run` module. If not set, it defaults to the value of `DOCKER_REGISTRY` if it is not `None`; otherwise, it defaults to `localhost:5000`. This allows for flexibility in specifying different registries for Docker and Kubernetes operations, ensuring that images are pulled from the correct source during execution.
 
 
 ## Run the application
@@ -110,50 +124,6 @@ hatch fmt
 
 Developers should execute `hatch fmt` before raising Merge Request, to ensure that your code conforms to the lint requirements.
 
-# Local Machine Setup
-
-Follow these steps to install the `aiverify-test-engine-worker` project on your machine.
-
-1. **Clone the repository.**
-```sh
-git clone --filter=blob:none --sparse -b v2.x https://github.com/aiverify-foundation/aiverify.git
-cd aiverify
-git sparse-checkout set aiverify-test-engine-worker
-git sparse-checkout add common
-cd aiverify-test-engine-worker
-```
-The above commands will perform a sparse-checkout of the `aiverify-test-engine-worker` project under the `v2.x` branch from the aiverify GitHub repository
-
-2. **Create a virtual environment.**
-```sh
-python -m venv .venv
-source .venv/bin/activate  # On Windows use `venv\Scripts\activate`
-```
-
-3. **Run the installation script**
-There are two installation scripts [`install-amd64.sh`](./install-amd64.sh) and [install-arm64.sh](./install-arm64.sh) which you can excute depending on your machine architecture.
-
-For example, to install on your macbook:
-```
-sh ./install-arm64.sh
-```
-
-## Configuration
-
-Before running the application, you can configure the application behaviour using environment variables. This can be done by setting runtime environment or by creating a `.env` file in the root directory of the project.
-
-### Create .env
-
-See [Section](#api-gateway-configuration)
-
-## Running the Application
-
-Once you have installed the dependencies and configured the environment variables, you can run the application using the following command:
-
-```
-python -m aiverify_test_engine_worker
-```
-
 ## Running Tests
 
 To run the tests for the application, you can use `pytest`. Make sure you have `pytest` and `faker` installed. If not, you can install it using pip:
@@ -165,23 +135,4 @@ pip install pytest faker
 To run the tests:
 ```
 pytest tests
-```
-
-# Docker Setup
-To build test-engine-worker docker image, go to the `aiverify` root folder and run:
-```
-cd ..
-docker buildx build -t aiverify-test-engine-worker-base -f aiverify-test-engine-worker/Dockerfile --rm --target aiverify-test-engine-worker-base .
-docker buildx build -t aiverify-test-engine-worker -f aiverify-test-engine-worker/Dockerfile --target venv-build .
-cd aiverify-test-engine-worker
-```
-
-To run test-engine-worker from command line, run the following command with substitutes for the environment values.
-```sh
-docker run --rm --name=aiverify-test-engine-worker aiverify-test-engine-worker
-```
-
-To run as a service:
-```sh
-docker run -d --name=aiverify-test-engine-worker aiverify-test-engine-worker
 ```
