@@ -35,12 +35,6 @@ function TemplateCards({ templates, projectId, flow }: TemplateCardsProps) {
       await patchProject(projectId, {
         templateId: template.id.toString(),
         pages: template.pages,
-        projectInfo: {
-          name: template.projectInfo.name,
-          description: template.projectInfo.description,
-          reportTitle: template.projectInfo.name,
-          company: '',
-        },
         globalVars: template.globalVars,
       });
       // Navigate to template with existing template flow

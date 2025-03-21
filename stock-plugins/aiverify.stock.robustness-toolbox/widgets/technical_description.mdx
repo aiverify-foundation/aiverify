@@ -5,7 +5,7 @@ import advSample from "./images/adv_samples/0.png"
 import orgSample from "./images/org_samples/0.png"
 
 
-export const algo_cid = "robustness_toolbox"
+export const algo_cid = "aiverify_robustness_toolbox"
 
 export const MyChart = ({ results, modelType}) => {
   const [ data, setData ] = useState([]);
@@ -43,7 +43,7 @@ export const MyChart = ({ results, modelType}) => {
   
   // How-to-read - customise the the model type
   let introduction_postpend = ""
-  if(modelType == "Regression"){
+  if(modelType == "regression"){
     introduction_postpend += " Each bar represents the performance of the model. The longer the bar, the higher mean absolute error of the model. A robust model will achieve similar error rate for both original dataset and perturbed dataset. If you model is not robust, the error rate of the model will increase with a perturbed dataset."
   }
   else{
@@ -99,7 +99,7 @@ export const MyChart = ({ results, modelType}) => {
       The test results enable the Company to understand whether the model may be affected by dataset that might be perturbed incidentally or intentionally.<br/>
 
       {(() => {
-        if (modelType == "Regression"){
+        if (modelType == "regression"){
           if (results.org_performance < results.perturbed_performance) {
             return (
                 <>
@@ -277,8 +277,8 @@ export const MyChart = ({ results, modelType}) => {
 
 {props.getResults(algo_cid)?(
   <>
-    <div style={{ width:props.container.width, height:"200px" }}>
-      <MyChart results={props.getResults(algo_cid).results} modelType={props.modelAndDatasets.model.modelType}/>
+    <div style={{ width:props.width, height:"200px" }}>
+          <MyChart results={props.getResults(algo_cid).results} modelType={props.getResults(algo_cid).modelType} />
     </div>
   </>
 ):(

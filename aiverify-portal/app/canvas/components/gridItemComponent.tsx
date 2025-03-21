@@ -102,7 +102,10 @@ type MdxComponentProps = MDXContentProps & {
   properties: Record<string, unknown>;
   testResult: TestResultData;
   inputBlockData: InputBlockDataPayload;
-  getIBData: (algo_cid: string, algo_gid: string | null) => InputBlockDataPayload;
+  getIBData: (
+    algo_cid: string,
+    algo_gid: string | null
+  ) => InputBlockDataPayload;
   getResults: (algo_cid: string, algo_gid: string | null) => TestResultData;
   getArtifacts: (gid: string, cid: string) => string[];
   getArtifactURL: (
@@ -245,7 +248,31 @@ function GridItemMain({
             result.testResultId
           );
           if (testResult) {
-            acc[`${widget.gid}:${result.cid}`] = testResult.output;
+            try {
+              // Parse testResult.output if it's a string, otherwise use as is
+              const outputData = typeof testResult.output === 'string' 
+                ? JSON.parse(testResult.output)
+                : testResult.output;
+              
+              // Ensure outputData is an object before adding modelType
+              if (typeof outputData === 'object' && outputData !== null) {
+                outputData.modelType = testResult.testArguments?.modelType;
+                acc[`${widget.gid}:${result.cid}`] = outputData;
+              } else {
+                // If outputData is not an object, create a new object with the original data and modelType
+                acc[`${widget.gid}:${result.cid}`] = {
+                  output: testResult.output,
+                  modelType: testResult.testArguments?.modelType
+                };
+              }
+            } catch (error) {
+              // If parsing fails, keep original structure and add modelType separately
+              console.error('Error parsing testResult.output', error);
+              acc[`${widget.gid}:${result.cid}`] = {
+                output: testResult.output,
+                modelType: testResult.testArguments?.modelType
+              };
+            }
           } else {
             const mockData = findMockDataByTypeAndCid(
               widget.mockdata || [],
@@ -271,6 +298,8 @@ function GridItemMain({
     }
     return {};
   }, [testResultsUsed]);
+
+  console.log('testResultWidgetData', testResultWidgetData);
 
   /**
    * Prepares artifact data for the widget to consume
@@ -596,10 +625,7 @@ function GridItemMain({
               artifacts={widgetArtifacts}
               testResult={testResultWidgetData}
               inputBlockData={inputBlocksWidgetData}
-              getIBData={(
-                algo_cid: string, 
-                algo_gid: string | null
-              ) => {
+              getIBData={(algo_cid: string, algo_gid: string | null) => {
                 const gid = algo_gid || widget.gid;
                 return inputBlocksWidgetData[`${gid}:${algo_cid}`];
               }}

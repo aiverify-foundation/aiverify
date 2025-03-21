@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { BarChart } from 'aiverify-shared-library/charts'
+import { BarChart } from 'aiverify-shared-library/charts';
 
-export const algo_cid = "robustness_toolbox"
+export const algo_cid = "aiverify_robustness_toolbox"
 
 export const MyChart = ({ results, modelType}) => {
   const [ data, setData ] = useState([]);
@@ -37,8 +37,8 @@ export const MyChart = ({ results, modelType}) => {
 
 {props.getResults(algo_cid)?(
   <>
-    <div style={{ width:props.container.width, height:"200px" }}>
-      <MyChart results={props.getResults(algo_cid).results} modelType={props.modelAndDatasets.model.modelType}/>
+    <div style={{ width:props.width, height:"200px" }}>
+      <MyChart results={props.getResults(algo_cid).results} modelType={props.getResults(algo_cid).modelType}/>
     </div>
   </>
 ):(
