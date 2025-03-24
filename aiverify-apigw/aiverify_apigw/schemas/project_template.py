@@ -1,20 +1,21 @@
-from pydantic import BaseModel, Field, model_validator
+from pydantic import Field, model_validator
 from typing import List, Optional, Self
 from datetime import datetime
 from enum import StrEnum, auto
 import json
 from ..models import ProjectTemplateModel
+from .base_model import MyBaseModel
 
 from .load_examples import load_examples
 project_template_examples = load_examples("project_template_examples.json")
 
 
-class GlobalVariable(BaseModel):
+class GlobalVariable(MyBaseModel):
     key: str = Field(description="Property key", min_length=1, max_length=128)
     value: str = Field(description="Property value", max_length=128)
 
 
-class LayoutItemProperties(BaseModel):
+class LayoutItemProperties(MyBaseModel):
     justifyContent: Optional[str] = Field(default=None)
     alignItems: Optional[str] = Field(default=None)
     textAlign: Optional[str] = Field(default=None)
@@ -22,7 +23,7 @@ class LayoutItemProperties(BaseModel):
     bgcolor: Optional[str] = Field(default=None)
 
 
-class ReportWidget(BaseModel):
+class ReportWidget(MyBaseModel):
     widgetGID: str = Field(min_length=1, max_length=256)
     key: str = Field(min_length=1, max_length=128)
     layoutItemProperties: Optional[LayoutItemProperties] = None
@@ -40,7 +41,7 @@ class WidgetLayoutResizeHandleEmum(StrEnum):
     ne = auto()
 
 
-class WidgetLayout(BaseModel):
+class WidgetLayout(MyBaseModel):
     i: str = Field(description="Unique identifier for the layout item", min_length=1, max_length=128)
     x: int = Field(description="X position of the layout item", ge=0, le=12)
     y: int = Field(description="Y position of the layout item", ge=0, le=36)
@@ -65,27 +66,27 @@ class WidgetLayout(BaseModel):
         return self
 
 
-class ProjectTemplateInformation(BaseModel):
-    name: str = Field(description="Project Name", max_length=256)
+class ProjectTemplateInformation(MyBaseModel):
+    name: str = Field(description="Project Name", max_length=256, min_length=1)
     description: Optional[str] = Field(description="Property value", max_length=4096, default=None)
 
 
-class ProjectTemplateInformationOptional(BaseModel):
-    name: Optional[str] = Field(description="Project Name", max_length=256, default=None)
+class ProjectTemplateInformationOptional(MyBaseModel):
+    name: Optional[str] = Field(description="Project Name", max_length=256, min_length=1, default=None)
     description: Optional[str] = Field(description="Property value", max_length=4096, default=None)
 
 
-class Page(BaseModel):
+class Page(MyBaseModel):
     layouts: List[WidgetLayout]
     reportWidgets: List[ReportWidget] = Field(min_length=0, max_length=256)
 
 
-class ProjectTemplateMeta(BaseModel):
+class ProjectTemplateMeta(MyBaseModel):
     globalVars: Optional[List[GlobalVariable]] = Field(description="Global variables in report canvas", default=None)
     pages: List[Page] = Field(description="List of pages in report canvas", min_length=0, max_length=256, default=[])
 
 
-class ProjectTemplateMetaOptional(BaseModel):
+class ProjectTemplateMetaOptional(MyBaseModel):
     globalVars: Optional[List[GlobalVariable]] = Field(description="Global variables in report canvas", default=None)
     pages: Optional[List[Page]] = Field(description="List of pages in report canvas", min_length=0, max_length=256, default=None)
 
