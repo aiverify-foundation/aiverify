@@ -170,4 +170,5 @@ docker-compose.env
 **/*.tgz
 
 # data directory
-apigw/data/
+aiverify-apigw/data/
+aiverify-test-engine-worker/data/

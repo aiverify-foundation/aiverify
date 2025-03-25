@@ -36,7 +36,7 @@ export default function ResultsFilters({
     { id: 'aiverify_shap_toolbox', name: 'SHAP Toolbox' },
     { id: 'aiverify_robustness_toolbox', name: 'Robustness Toolbox' },
     {
-      id: 'aiverfy_accumulated_local_effect',
+      id: 'aiverify_accumulated_local_effect',
       name: 'Accumulated Local Effect',
     },
     { id: 'aiverify_blur_corruptions', name: 'Blur Corruptions' },

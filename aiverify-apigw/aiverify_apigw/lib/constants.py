@@ -41,3 +41,10 @@ class InputBlockSize(StrEnum):
     md = auto()
     lg = auto()
     xl = auto()
+
+
+class TestRunStatus(StrEnum):
+    Pending = auto()
+    Success = auto()
+    Error = auto()
+    Cancelled = auto() 
