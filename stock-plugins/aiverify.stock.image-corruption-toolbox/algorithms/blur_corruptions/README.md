@@ -111,6 +111,72 @@ python -m aiverify_blur_corruptions \
   --gaussian_blur_sigma 1.0 2.0 3.0
 ```
 
+## PyTorch support
+
+To use a custom PyTorch model with this plugin, follow the steps below:
+
+1. **Install PyTorch**
+
+   Ensure you have installed a PyTorch version compatible with your model. Visit the [PyTorch website](https://pytorch.org/get-started/locally/) for installation instructions.
+
+2. **Specify Model Path**
+
+   Use the `--model_path` command-line argument to specify the path to a **folder** containing:
+   - The model class definition (e.g., `model.py`).
+   - The model weights file (e.g., `model_weights.pt`).
+
+3. **Implement a `predict` Function**
+
+   Your model class must implement a `predict` function. This function should:
+   - Accept a batch of image file paths as input.
+   - Return a batch of predictions.
+
+   For reference, see the sample implementation in `user_defined_files/pipeline/sample_fashion_mnist_pytorch`.
+
+### Example Directory Structure
+
+```bash
+<model_path>/
+├── model.py             # Contains the model class definition
+├── model_weights.pt     # Contains the trained model weights
+```
+
+### Example `predict` Function
+
+```python
+# model.py
+import numpy as np
+import torch
+from torchvision import transforms
+from PIL import Image
+
+class CustomModel(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+        # Define your model architecture here
+        ...
+
+    def forward(self, x):
+        # Define the forward pass
+        ...
+
+    def predict(self, image_paths: Iterable[str]) -> np.ndarray:
+        transform = transforms.Compose([
+            transforms.Resize((224, 224)),
+            ...,
+            transforms.ToTensor(),
+        ])
+        images = [Image.open(path).convert("RGB") for path in image_paths]
+        image_tensors = torch.stack([transform(image) for image in images])
+
+        self.eval()
+        with torch.no_grad():
+            predictions = self(image_tensors).argmax(dim=1).detach().cpu().numpy()
+        return predictions
+```
+
+By following these steps, you can integrate your custom PyTorch model into the blur corruption plugin.
+
 ## Develop plugin locally
 
 Execute the below bash script in the project root
