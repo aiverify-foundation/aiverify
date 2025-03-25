@@ -1,8 +1,9 @@
-from pydantic import BaseModel, Field
+from pydantic import Field
 from typing import List, Optional, Annotated
 from datetime import datetime
 import json
 
+from .base_model import MyBaseModel
 from ..models import InputBlockModel, InputBlockDataModel
 from ..lib.constants import InputBlockSize
 
@@ -13,7 +14,7 @@ sample_data: dict = {
 sample_cid: str = "explainability_process_checklist"
 
 
-class InputBlockMeta(BaseModel):
+class InputBlockMeta(MyBaseModel):
     cid: str = Field(
         description="Unique identifier for the input block within the plugin",
         min_length=1,
@@ -72,7 +73,7 @@ class InputBlockOutput(InputBlockMeta):
         return obj
 
 
-class InputBlockData(BaseModel):
+class InputBlockData(MyBaseModel):
     gid: str = Field(
         description="Unique global identifier for the plugin",
         min_length=1,
@@ -111,7 +112,7 @@ class InputBlockData(BaseModel):
     }
 
 
-class InputBlockDataUpdate(BaseModel):
+class InputBlockDataUpdate(MyBaseModel):
     name: str = Field(
         description="Name for this input block data",
         min_length=1,

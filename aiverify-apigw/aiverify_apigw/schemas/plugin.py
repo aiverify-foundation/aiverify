@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, HttpUrl, TypeAdapter, AnyHttpUrl
+from pydantic import Field, HttpUrl, TypeAdapter, AnyHttpUrl
 from typing import Optional, List
 from datetime import datetime
 
@@ -7,9 +7,10 @@ from .algorithm import AlgorithmOutput
 from .widget import WidgetOutput
 from .input_block import InputBlockOutput
 from .template import TemplateOutput
+from .base_model import MyBaseModel
 
 
-class PluginMeta(BaseModel):
+class PluginMeta(MyBaseModel):
     gid: str = Field(
         description="Unique global identifier for the plugin",
         min_length=1,

@@ -1,13 +1,14 @@
-from pydantic import BaseModel, Field
+from pydantic import Field
 from typing import Optional
 from datetime import datetime
 
 from .model_api import ModelAPIType, ModelAPIParametersMapping
 from ..models.test_model_model import TestModelModel
 from ..lib.constants import TestModelMode, TestModelFileType, TestModelStatus, ModelType
+from .base_model import MyBaseModel
 
 
-class TestModelAPIInput(BaseModel):
+class TestModelAPIInput(MyBaseModel):
     name: str = Field(description="Name of the model", min_length=1, max_length=256)
     description: Optional[str] = Field(description="Description of the model", max_length=4096)
     modelType: ModelType = Field(description="Type of the model")
@@ -15,7 +16,7 @@ class TestModelAPIInput(BaseModel):
     parameterMappings: Optional[ModelAPIParametersMapping] = Field(description="Parameter mappings", default=None)
 
 
-class TestModelUpdate(BaseModel):
+class TestModelUpdate(MyBaseModel):
     name: Optional[str] = Field(description="Name of the model", min_length=1, max_length=256, default=None)
     description: Optional[str] = Field(description="Description of the model", max_length=4096, default=None)
     modelType: Optional[ModelType] = Field(description="Type of the model", default=None)
@@ -23,7 +24,7 @@ class TestModelUpdate(BaseModel):
     parameterMappings: Optional[ModelAPIParametersMapping] = Field(description="Parameter mappings", default=None)
 
 
-class TestModel(BaseModel):
+class TestModel(MyBaseModel):
     id: int = Field(description="Unique identifier for the model")
     name: str = Field(description="Name of the model", min_length=1, max_length=256)
     description: Optional[str] = Field(description="Description of the model", max_length=4096)
