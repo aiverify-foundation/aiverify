@@ -23,7 +23,7 @@ class TestRunInput(BaseModel):
                 {
                     "mode": "upload",
                     "algorithmGID": "aiverify.stock.accumulated_local_effect",
-                    "algorithmCID": "aiverfy_accumulated_local_effect",
+                    "algorithmCID": "aiverify_accumulated_local_effect",
                     "algorithmArgs": {},
                     "modelFilename": "sample_bc_credit_sklearn_linear.LogisticRegression.sav",
                     "testDatasetFilename": "sample_bc_credit_data.sav",
