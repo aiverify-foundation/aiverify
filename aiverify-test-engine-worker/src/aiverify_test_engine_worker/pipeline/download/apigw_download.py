@@ -1,5 +1,5 @@
 from ..pipe import Pipe, PipeException
-from ..schemas import PipelineData, PipeStageEum
+from ..schemas import PipelineData, PipeStageEnum
 from ...lib.filecache import FileCache, algo_cache, model_cache, dataset_cache
 from ...lib.logging import logger
 
@@ -9,8 +9,8 @@ import os
 
 class ApigwDownload(Pipe):
     @property
-    def pipe_stage(self) -> PipeStageEum:
-        return PipeStageEum.DOWNLOAD
+    def pipe_stage(self) -> PipeStageEnum:
+        return PipeStageEnum.DOWNLOAD
 
     @property
     def pipe_name(self) -> str:

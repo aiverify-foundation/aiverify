@@ -1,5 +1,5 @@
 from ..pipe import Pipe, PipeException
-from ..schemas import PipelineData, PipeStageEum
+from ..schemas import PipelineData, PipeStageEnum
 from ...lib.filecache import algo_cache
 from ...lib.logging import logger
 
@@ -9,8 +9,8 @@ import subprocess
 
 class VirtualEnvironmentBuild(Pipe):
     @property
-    def pipe_stage(self) -> PipeStageEum:
-        return PipeStageEum.PIPELINE_BUILD
+    def pipe_stage(self) -> PipeStageEnum:
+        return PipeStageEnum.PIPELINE_BUILD
 
     @property
     def pipe_name(self) -> str:

@@ -1,5 +1,5 @@
 from ..pipe import Pipe
-from ..schemas import PipelineData, PipeStageEum
+from ..schemas import PipelineData, PipeStageEnum
 from ...lib.logging import logger
 
 import os
@@ -8,8 +8,8 @@ import requests
 
 class ApigwErrorUpdate(Pipe):
     @property
-    def pipe_stage(self) -> PipeStageEum:
-        return PipeStageEum.PIPELINE_ERROR
+    def pipe_stage(self) -> PipeStageEnum:
+        return PipeStageEnum.PIPELINE_ERROR
 
     @property
     def pipe_name(self) -> str:

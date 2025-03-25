@@ -1,5 +1,5 @@
 from ..pipe import Pipe, PipeException
-from ..schemas import PipelineData, PipeStageEum
+from ..schemas import PipelineData, PipeStageEnum
 from ...lib.logging import logger
 from ...lib.filecache import base_data_dir
 
@@ -14,8 +14,8 @@ import uuid
 
 class VirtualEnvironmentExecute(Pipe):
     @property
-    def pipe_stage(self) -> PipeStageEum:
-        return PipeStageEum.PIPELINE_EXECUTE
+    def pipe_stage(self) -> PipeStageEnum:
+        return PipeStageEnum.PIPELINE_EXECUTE
 
     @property
     def pipe_name(self) -> str:

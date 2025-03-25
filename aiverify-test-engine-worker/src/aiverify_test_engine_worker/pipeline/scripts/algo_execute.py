@@ -181,7 +181,7 @@ class ProcessCallback:
             return
 
         import requests
-        url = f"{self.__class__.apigw_url}/test_runs/{self.test_run_id}/"
+        url = f"{self.__class__.apigw_url}/test_runs/{self.test_run_id}"
         payload = {"progress": completion_value}
 
         try:

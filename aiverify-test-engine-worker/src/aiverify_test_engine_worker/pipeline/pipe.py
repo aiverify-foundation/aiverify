@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from .schemas import PipelineData, PipeStageEum
+from .schemas import PipelineData, PipeStageEnum
 
 
 class PipeException(Exception):
@@ -17,7 +17,7 @@ class Pipe(ABC):
 
     @property
     @abstractmethod
-    def pipe_stage(self) -> PipeStageEum:
+    def pipe_stage(self) -> PipeStageEnum:
         pass
 
     @property

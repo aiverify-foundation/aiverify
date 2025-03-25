@@ -1,5 +1,5 @@
 from ..pipe import Pipe, PipeException
-from ..schemas import PipelineData, PipeStageEum
+from ..schemas import PipelineData, PipeStageEnum
 from ...lib.logging import logger
 from ..scripts.algorithm_utils import validate_algorithm, AlgorithmValidationError
 
@@ -12,8 +12,8 @@ from jsonschema.exceptions import ValidationError
 class ValidateInput(Pipe):
 
     @property
-    def pipe_stage(self) -> PipeStageEum:
-        return PipeStageEum.VALIDATE_INPUT
+    def pipe_stage(self) -> PipeStageEnum:
+        return PipeStageEnum.VALIDATE_INPUT
 
     @property
     def pipe_name(self) -> str:

@@ -4,7 +4,7 @@ import inspect
 from typing import List, Tuple
 from ..lib.logging import logger
 from .pipe import Pipe, PipeException
-from .schemas import PipelineData, PipeStageEum
+from .schemas import PipelineData, PipeStageEnum
 
 
 class PipelineException(Exception):
@@ -13,10 +13,10 @@ class PipelineException(Exception):
 
 class Pipeline:
     def __init__(self):
-        self.stages: List[Tuple[PipeStageEum, Pipe]] = self._load_stages()
+        self.stages: List[Tuple[PipeStageEnum, Pipe]] = self._load_stages()
 
     @staticmethod
-    def _load_pipe_module(stage: PipeStageEum, module_name: str):
+    def _load_pipe_module(stage: PipeStageEnum, module_name: str):
         logger.info(f"Loading module {stage.value}.{module_name}")
         # Dynamically load the module and get the pipe class
         module = importlib.import_module(f"aiverify_test_engine_worker.pipeline.{stage.value}.{module_name}")
@@ -35,21 +35,21 @@ class Pipeline:
         pipe_instance.setup()
         return pipe_instance
 
-    def _load_stages(self) -> List[Tuple[PipeStageEum, Pipe]]:
+    def _load_stages(self) -> List[Tuple[PipeStageEnum, Pipe]]:
         """Load the pipeline stages dynamically based on environment variables."""
         # Array of tuples representing stage-to-module mapping
-        stage_mapping: List[Tuple[PipeStageEum, str]] = [
-            (PipeStageEum.DOWNLOAD, os.getenv("PIPELINE_DOWNLOAD", "apigw_download")),
-            (PipeStageEum.PIPELINE_BUILD, os.getenv("PIPELINE_BUILD", "virtual_env")),
-            (PipeStageEum.VALIDATE_INPUT, os.getenv("PIPELINE_VALIDATE_INPUT", "validate_input")),
-            (PipeStageEum.PIPELINE_EXECUTE, os.getenv("PIPELINE_EXECUTE", "virtual_env_execute")),
-            # (PipeStageEum.VALIDATE_OUTPUT, os.getenv("PIPELINE_VALIDATE_OUTPUT", "validate_output")),
-            (PipeStageEum.UPLOAD, os.getenv("PIPELINE_UPLOAD", "apigw_upload")),
+        stage_mapping: List[Tuple[PipeStageEnum, str]] = [
+            (PipeStageEnum.DOWNLOAD, os.getenv("PIPELINE_DOWNLOAD", "apigw_download")),
+            (PipeStageEnum.PIPELINE_BUILD, os.getenv("PIPELINE_BUILD", "virtual_env")),
+            (PipeStageEnum.VALIDATE_INPUT, os.getenv("PIPELINE_VALIDATE_INPUT", "validate_input")),
+            (PipeStageEnum.PIPELINE_EXECUTE, os.getenv("PIPELINE_EXECUTE", "virtual_env_execute")),
+            # (PipeStageEnum.VALIDATE_OUTPUT, os.getenv("PIPELINE_VALIDATE_OUTPUT", "validate_output")),
+            (PipeStageEnum.UPLOAD, os.getenv("PIPELINE_UPLOAD", "apigw_upload")),
         ]
-        error_pipe_name = os.getenv(PipeStageEum.PIPELINE_ERROR, os.getenv("PIPELINE_ERROR", "apigw_error_update"))
+        error_pipe_name = os.getenv(PipeStageEnum.PIPELINE_ERROR, os.getenv("PIPELINE_ERROR", "apigw_error_update"))
         error_pipe = None
         if error_pipe_name:
-            error_pipe = self.__class__._load_pipe_module(PipeStageEum.PIPELINE_ERROR, error_pipe_name)
+            error_pipe = self.__class__._load_pipe_module(PipeStageEnum.PIPELINE_ERROR, error_pipe_name)
             self.error_pipe = error_pipe
 
         stages = []
@@ -68,7 +68,7 @@ class Pipeline:
         task_data.algorithm_id = algorithmId
         logger.info(f"Running pipeline: {task_data}")
         for stage, pipe_instance in self.stages:
-            if stage == PipeStageEum.PIPELINE_BUILD and not task_data.to_build:
+            if stage == PipeStageEnum.PIPELINE_BUILD and not task_data.to_build:
                 continue  # only build when to_build set to True
             try:
                 # Execute the pipe instance

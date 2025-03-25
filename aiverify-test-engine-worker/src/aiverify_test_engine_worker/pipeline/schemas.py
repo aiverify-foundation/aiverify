@@ -41,7 +41,7 @@ class TestRunTask(BaseModel):
         return self
 
 
-class PipeStageEum(StrEnum):
+class PipeStageEnum(StrEnum):
     DOWNLOAD = auto()
     PIPELINE_BUILD = auto()
     VALIDATE_INPUT = auto()
