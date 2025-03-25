@@ -8,9 +8,6 @@ RUN apt-get update && \
     apt-get install -y \
     git \
     gcc \
-    libgl1-mesa-glx \
-    libglib2.0-0 \
-    libmagickwand-dev \
     libhdf5-dev \
     pkg-config && \
     apt-get clean && \
@@ -31,7 +28,7 @@ COPY aiverify-test-engine-worker/install-amd64.sh ./aiverify-test-engine/install
  
 WORKDIR /app/aiverify-test-engine
 
-RUN echo "Building base image on target archiecture $TARGETARCH"
+RUN echo "Building base image on target architecture $TARGETARCH"
 RUN sh install-${TARGETARCH}.sh
 # RUN pip install pydantic>=2.0.0
 
