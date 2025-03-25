@@ -28,6 +28,7 @@ class TestArguments(MyBaseModel):
 
 
 class TestResult(MyBaseModel):
+    testRunId: Optional[str] = None
     gid: str = Field(
         description="Unique global identifier for the plugin",
         min_length=1,
