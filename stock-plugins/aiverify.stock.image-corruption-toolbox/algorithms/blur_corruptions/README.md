@@ -32,13 +32,11 @@ root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files"
 python -m aiverify_blur_corruptions \
   --data_path $root_path/data/raw_fashion_image_10 \
   --model_path $root_path/pipeline/multiclass_classification_image_mnist_fashion \
-  --ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
-  --ground_truth label \
   --model_type CLASSIFICATION \
-  --run_pipeline \
-  --annotated_ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
-  --set_seed 10 \
-  --file_name_label file_name
+  --ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
+  --ground_truth_label label \
+  --file_name_label file_name \
+  --set_seed 10
 ```
 
 If the algorithm runs successfully, the results of the test will be saved in an `output` folder.
@@ -73,13 +71,11 @@ root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files"
 python -m aiverify_blur_corruptions \
   --data_path $root_path/data/raw_fashion_image_10 \
   --model_path $root_path/pipeline/multiclass_classification_image_mnist_fashion \
-  --ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
-  --ground_truth label \
   --model_type CLASSIFICATION \
-  --run_pipeline \
-  --annotated_ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
-  --set_seed 10 \
+  --ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
+  --ground_truth_label label \
   --file_name_label file_name \
+  --set_seed 10
   --corruptions gaussian_blur defocus_blur
 ```
 
@@ -101,13 +97,11 @@ root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files"
 python -m aiverify_blur_corruptions \
   --data_path $root_path/data/raw_fashion_image_10 \
   --model_path $root_path/pipeline/multiclass_classification_image_mnist_fashion \
-  --ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
-  --ground_truth label \
   --model_type CLASSIFICATION \
-  --run_pipeline \
-  --annotated_ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
-  --set_seed 10 \
+  --ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
+  --ground_truth_label label \
   --file_name_label file_name \
+  --set_seed 10
   --gaussian_blur_sigma 1.0 2.0 3.0
 ```
 
@@ -192,7 +186,7 @@ source .venv/bin/activate
 cd aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions/
 pip install -e .
 
-python -m aiverify_blur_corruptions --data_path  <data_path> --model_path <model_path> --ground_truth_path <ground_truth_path> --ground_truth <str> --model_type CLASSIFICATION --run_pipeline --set_seed <int> --annotated_ground_truth_path <annotated_file_path> --file_name_label <str>
+python -m aiverify_blur_corruptions --data_path  <data_path> --model_path <model_path> --model_type CLASSIFICATION --ground_truth_path <ground_truth_path> --ground_truth_label <str> --file_name_label <str> --set_seed <int>
 ```
 
 ### Build Plugin
@@ -229,13 +223,11 @@ docker run \
   aiverify-blur-corruptions:v2.0.0a1 \
   --data_path /input/data/raw_fashion_image_10 \
   --model_path /input/pipeline/multiclass_classification_image_mnist_fashion \
-  --ground_truth_path /input/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
-  --ground_truth label \
   --model_type CLASSIFICATION \
-  --run_pipeline \
-  --annotated_ground_truth_path /input/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
-  --set_seed 10 \
-  --file_name_label file_name
+  --ground_truth_path /input/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
+  --ground_truth_label label \
+  --file_name_label file_name \
+  --set_seed 10
 ```
 
 If the algorithm runs successfully, the results of the test will be saved in an `output` folder in the algorithm directory.
