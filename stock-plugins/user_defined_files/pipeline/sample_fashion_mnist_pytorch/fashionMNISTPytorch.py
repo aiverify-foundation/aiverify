@@ -6,7 +6,7 @@ import torchvision
 from PIL import Image
 
 
-class FashionMNISTCustom(torch.nn.Module):
+class FashionMNISTPytorch(torch.nn.Module):
     def __init__(self):
         super().__init__()
         self.weights = torchvision.models.resnet.ResNet18_Weights.DEFAULT
