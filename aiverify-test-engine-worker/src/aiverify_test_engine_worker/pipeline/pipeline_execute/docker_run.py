@@ -12,7 +12,7 @@ import tempfile
 import uuid
 
 
-class VirtualEnvironmentExecute(Pipe):
+class DockerRun(Pipe):
     @property
     def pipe_stage(self) -> PipeStageEnum:
         return PipeStageEnum.PIPELINE_EXECUTE

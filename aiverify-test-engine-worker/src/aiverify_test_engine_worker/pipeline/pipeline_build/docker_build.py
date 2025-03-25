@@ -9,7 +9,7 @@ from pathlib import Path
 import shutil
 
 
-class VirtualEnvironmentBuild(Pipe):
+class DockerBuild(Pipe):
     @property
     def pipe_stage(self) -> PipeStageEnum:
         return PipeStageEnum.PIPELINE_BUILD

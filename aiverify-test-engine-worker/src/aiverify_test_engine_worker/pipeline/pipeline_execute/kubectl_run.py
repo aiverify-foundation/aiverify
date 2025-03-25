@@ -9,7 +9,7 @@ from pathlib import Path
 import uuid
 
 
-class VirtualEnvironmentExecute(Pipe):
+class KubectlRun(Pipe):
     @property
     def pipe_stage(self) -> PipeStageEnum:
         return PipeStageEnum.PIPELINE_EXECUTE
