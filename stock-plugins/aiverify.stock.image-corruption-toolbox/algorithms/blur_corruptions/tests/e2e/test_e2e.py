@@ -14,6 +14,16 @@ image_pipeline = {
     "file_name_label": "file_name",
     "set_seed": 10,
     "core_modules_path": "",
+    "user_defined_params": {
+        "corruptions": ["horizontal_motion_blur", "zoom_blur"],
+        "zoom_blur_zoom_factor": [1.0, 1.5, 2.0, 2.5, 3.0],
+        "glass_blur_max_delta": [1, 3, 5],
+    },
+}
+
+image_pipeline_pytorch = {
+    **image_pipeline,
+    "model_path": "../../../user_defined_files/pipeline/sample_fashion_mnist_pytorch",
 }
 
 
@@ -21,16 +31,11 @@ image_pipeline = {
     "data_set",
     [
         image_pipeline,
+        image_pipeline_pytorch,
     ],
 )
 def test_aiverify_blur_corruptions_plugin(data_set):
     # Create an instance of PluginTest with defined paths and arguments and Run.
-    plugin_argument_values = {
-        "corruptions": ["horizontal_motion_blur", "zoom_blur"],
-        "zoom_blur_zoom_factor": [1.0, 1.5, 2.0, 2.5, 3.0],
-        "glass_blur_max_delta": [1, 3, 5],
-    }
-
     plugin_test = AlgoInit(
         data_path=data_set["data_path"],
         model_path=data_set["model_path"],
@@ -40,7 +45,7 @@ def test_aiverify_blur_corruptions_plugin(data_set):
         file_name_label=data_set["file_name_label"],
         set_seed=data_set["set_seed"],
         core_modules_path=data_set["core_modules_path"],
-        user_defined_params=plugin_argument_values,
+        user_defined_params=data_set["user_defined_params"],
     )
     plugin_test.run()
 

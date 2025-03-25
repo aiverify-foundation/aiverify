@@ -64,15 +64,14 @@ class AlgoInit:
         self._core_modules_path = core_modules_path or str(Path(importlib.util.find_spec("aiverify_test_engine").origin).parent)  # fmt: skip
 
         self._user_defined_params = user_defined_params or {}
-        corruptions = self._user_defined_params.get("corruptions", [])
-        if not corruptions or "all" in corruptions:
+        user_corruptions = self._user_defined_params.get("corruptions", [])
+        user_corruptions = [name.lower() for name in user_corruptions]  # Normalize
+        if not user_corruptions or "all" in user_corruptions:
             # If no corruptions are provided, or if "all" is provided, use all corruptions
-            corruptions = list(blur.CORRUPTION_FN)
+            self._user_defined_params["corruptions"] = list(blur.CORRUPTION_FN)
         else:
-            # Filter corruption functions based on user input. This step is required to:
-            # (1) sanitize user input (2) make sure algorithm names are in correct format & order
-            corruptions = [name for name in blur.CORRUPTION_FN if name.lower() in corruptions]
-        self._user_defined_params["corruptions"] = corruptions
+            # Filter corruption functions based on user input, make sure algorithm names are in correct format & order
+            self._user_defined_params["corruptions"] = [name for name in blur.CORRUPTION_FN if name.lower() in user_corruptions]  # fmt: skip
 
         # Other variables
         self._base_path = Path().resolve()
