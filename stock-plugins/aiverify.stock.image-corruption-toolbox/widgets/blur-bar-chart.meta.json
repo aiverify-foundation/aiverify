@@ -1,13 +1,13 @@
 {
-  "cid": "blur-samples-hmotion",
+  "cid": "blur-bar-chart",
   "widgetSize": {
-    "minW": 8,
-    "minH": 7,
+    "minW": 12,
+    "minH": 10,
     "maxW": 12,
     "maxH": 36
   },
-  "name": "Samples (Blur: Horizontal Motion Blur)",
-  "description": "To generate sample images for blur corruptions (horizontal motion blur)",
+  "name": "Bar Chart (Blur Corruptions)",
+  "description": "To generate line charts to visualise the accuracy results when blur corruptions are applied",
   "dependencies": [
     {
       "cid": "aiverify_blur_corruptions"

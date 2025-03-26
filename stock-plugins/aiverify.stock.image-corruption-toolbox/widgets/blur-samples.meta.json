@@ -1,13 +1,13 @@
 {
-  "cid": "blur-samples-vmotion",
+  "cid": "blur-samples",
   "widgetSize": {
     "minW": 8,
     "minH": 7,
     "maxW": 12,
     "maxH": 36
   },
-  "name": "Samples (Blur: Vertical Blur)",
-  "description": "To generate sample images for blur corruptions (vertical motion blur)",
+  "name": "Blur samples",
+  "description": "To generate sample images for blur corruptions",
   "dependencies": [
     {
       "cid": "aiverify_blur_corruptions"

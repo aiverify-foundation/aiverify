@@ -1,0 +1,19 @@
+import { CorruptionBarChart } from './corruption-bar-chart'
+export const algo_cid = "aiverify_blur_corruptions"
+
+export const BlurBarChart = ({ props }) => {
+  const resultsData = props.getResults ? props.getResults(algo_cid).results : null;
+  
+  if (!resultsData || resultsData.length === 0) {
+    return <div>No results data available</div>;
+  }
+
+  return (
+    <CorruptionBarChart
+      data={resultsData}
+      width={props.width || "100%"}
+    />
+  );
+};
+
+<BlurBarChart props={props} />
