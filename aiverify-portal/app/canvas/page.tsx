@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 import {
   transformProjectOutputToState,
   ProjectOutput,
@@ -18,7 +19,7 @@ import {
 import { getProjects } from '@/lib/fetchApis/getProjects';
 import { fetchTemplates } from '@/lib/fetchApis/getTemplates';
 import { getTestResults } from '@/lib/fetchApis/getTestResults';
-import { Designer } from './components/designer';
+import { ClientDesigner } from './components/client-designer';
 import { State } from './components/hooks/pagesDesignReducer';
 import { ParsedTestResults } from './types';
 
@@ -166,20 +167,20 @@ export default async function CanvasPage(props: UrlSearchParams) {
   console.log('initialState', initialState);
 
   return (
-    <Designer
-      flow={flow}
-      project={projectOrTemplate}
-      initialState={initialState}
-      allPluginsWithMdx={pluginsWithMdx}
-      allTestResultsOnSystem={parsedTestResults}
-      allInputBlockDatasOnSystem={inputBlockDatas}
-      selectedTestResultsFromUrlParams={selectedTestResultsFromUrlParams}
-      selectedInputBlockDatasFromUrlParams={
-        selectedInputBlockDatasFromUrlParams
-      }
-      pageNavigationMode="multi"
-      disabled={mode === 'view'}
-      isTemplate={isTemplate}
-    />
+    <Suspense fallback={<div className="flex h-screen w-full items-center justify-center">Loading canvas...</div>}>
+      <ClientDesigner
+        flow={flow}
+        project={projectOrTemplate}
+        initialState={initialState}
+        allPluginsWithMdx={pluginsWithMdx}
+        allTestResultsOnSystem={parsedTestResults}
+        allInputBlockDatasOnSystem={inputBlockDatas}
+        selectedTestResultsFromUrlParams={selectedTestResultsFromUrlParams}
+        selectedInputBlockDatasFromUrlParams={selectedInputBlockDatasFromUrlParams}
+        pageNavigationMode="multi"
+        disabled={mode === 'view'}
+        isTemplate={isTemplate}
+      />
+    </Suspense>
   );
 }
