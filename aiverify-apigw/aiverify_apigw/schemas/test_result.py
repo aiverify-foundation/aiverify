@@ -1,12 +1,13 @@
-from pydantic import BaseModel, Field, model_validator, Json
+from pydantic import Field, model_validator, Json
 from typing import List, Optional, Literal, Any, Self
 from datetime import datetime
 import json
 from ..models import TestResultModel
 from ..lib.constants import ModelType, TestModelMode
+from .base_model import MyBaseModel
 
 
-class TestArguments(BaseModel):
+class TestArguments(MyBaseModel):
     testDataset: str = Field(description="URI of test dataset")
     mode: Literal["upload", "api"] = Field(
         description="Mode of model used, upload for model file and api for model api"
@@ -26,7 +27,8 @@ class TestArguments(BaseModel):
         return self
 
 
-class TestResult(BaseModel):
+class TestResult(MyBaseModel):
+    testRunId: Optional[str] = None
     gid: str = Field(
         description="Unique global identifier for the plugin",
         min_length=1,
@@ -111,5 +113,5 @@ class TestResultOutput(TestResult):
         return obj
 
 
-class TestResultUpdate(BaseModel):
-    name: str
+class TestResultUpdate(MyBaseModel):
+    name: str = Field(description="Test Result Name", max_length=256, min_length=1)

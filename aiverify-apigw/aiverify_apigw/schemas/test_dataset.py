@@ -1,33 +1,34 @@
-from pydantic import BaseModel, Field
+from pydantic import Field
 from typing import Optional, List
 from datetime import datetime
 import json
 
+from .base_model import MyBaseModel
 from ..lib.constants import TestDatasetFileType, TestDatasetStatus
 from ..models.test_dataset_model import TestDatasetModel
 
 
-class TestDatasetColumnUpdate(BaseModel):
-    name: str = Field(description="Name of column to update")
-    label: str = Field(description="Update column label")
+class TestDatasetColumnUpdate(MyBaseModel):
+    name: str = Field(description="Name of column to update", min_length=1, max_length=256)
+    label: str = Field(description="Update column label", max_length=4096)
 
 
-class TestDatasetUpdate(BaseModel):
+class TestDatasetUpdate(MyBaseModel):
     name: Optional[str] = Field(description="Name of the model", min_length=1, max_length=256, default=None)
     description: Optional[str] = Field(description="Description of the model", max_length=4096, default=None)
     dataColumns: Optional[List[TestDatasetColumnUpdate]] = Field(description="Update column labels", default=None)
 
 
-class TestDatasetColumn(BaseModel):
-    name: str = Field(description="Column name")
+class TestDatasetColumn(MyBaseModel):
+    name: str = Field(description="Column name", min_length=1, max_length=256)
     datatype: str = Field(description="Column data type")
     label: Optional[str] = Field(description="Column friendly label")
 
 
-class TestDataset(BaseModel):
+class TestDataset(MyBaseModel):
     id: int = Field(description="Unique identifier for the dataset")
-    name: str = Field(description="Name of the dataset", min_length=1, max_length=128)
-    description: Optional[str] = Field(description="Description of the dataset", max_length=256)
+    name: str = Field(description="Name of the dataset", min_length=1, max_length=256)
+    description: Optional[str] = Field(description="Description of the dataset", max_length=4096)
     # dataset file
     fileType: Optional[TestDatasetFileType] = Field(description="File type of dataset upload", default=None)
     filename: Optional[str] = Field(description="Filename of the dataset upload", max_length=2048, default=None)

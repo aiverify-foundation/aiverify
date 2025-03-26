@@ -1,98 +1,75 @@
 # AI Verify Portal (Web UI)
 
-The AI Verify Portal is currently undergoing a comprehensive revamp as part of AI Verify 2.0. We are working on enhancing the user interface to improve your experience. Stay tuned for updates!
+## Overview
 
-## Prerequisites
+The AI Verify Portal is the frontend UI for the AI Verify system. It serves as the primary interface for users to interact with the platform. The portal communicates with the AI Verify API Gateway (apigw) to retrieve and update data, ensuring seamless integration and data flow between the user interface and backend services. This setup allows users to efficiently manage and interact with their projects and data.
 
-Before you begin, ensure you have the following installed:
+## System Requirements
 
-- Node.js (v16 or higher)
-- Python (v3.11 or higher)
-- pip (latest version)
-- hatch (Python package manager)
-- Git
+Before installing and running the AI Verify Portal, ensure your system meets the following requirements:
 
-## Project Structure
+- **Node.js**: Version 18 or higher
+- **Operating System**: Compatible with systems that support Node.js
+- **Third Library Dependencies**: Listed in the `package.json` file
 
-The AI Verify system consists of three main components:
+Ensure you have Node.js 18.x or higher installed on your system. You can check your Node.js version by running: `node --version`.
 
-1. `aiverify-portal`: The frontend web application (Next.js)
-2. `aiverify-apigw`: The backend API gateway (Python)
-3. `aiverify-shared-library`: Shared utilities and types
+## How to install the Portal
 
-## Installation Instructions
+### 1. Install and run the aiverify-apigw
 
-### 1. Setting up aiverify-shared-library
+See the apigw [README.md](../aiverify-apigw/README.md) for installation and setup instructions. The apigw must be running when running the portal.
 
-First, set up the shared library as it's a dependency for other components:
+### 2. Build the `aiverify-shared-library`
 
-```bash
-cd aiverify-shared-library
-npm install
-npm run build
-```
+See the shared library [README.md](../aiverify-shared-library/README.md) for instructions on how to build the shared library.
 
-### 2. Setting up aiverify-apigw (Backend)
+### 3. Install the portal
 
-Navigate to the API gateway directory and set up the Python environment:
+To install the portal, run the following commands under the `aiverify-portal` project directory.
 
-```bash
-cd aiverify-apigw
-
-# Create and activate Python virtual environment using hatch
-hatch shell
-
-# Install dependencies (choose based on your CPU architecture)
-# For ARM64 (M1/M2 Macs):
-sh ./install-arm64.sh
-# For AMD64 (Intel/AMD processors):
-sh ./install-amd64.sh
-
-# Link shared library
-npm link aiverify-shared-library
-
-# Start the backend server
-python -m aiverify_apigw
-```
-
-The backend server will start on http://localhost:4000 by default.
-
-### 3. Setting up aiverify-portal (Frontend)
-
-In a new terminal, set up and start the frontend application:
-
-```bash
+```sh
 cd aiverify-portal
 npm install
+npm link ../aiverify-shared-library
+```
+
+## Environment Variables Configuration
+
+The AI Verify Portal requires certain environment variables to be configured for proper operation. These variables can be set directly in the environment or specified in a `.env` file located in the `aiverify-portal` directory.
+
+Below is a table of the environment variables and their descriptions:
+
+| Variable Name            | Description                                                       |
+| ------------------------ | ----------------------------------------------------------------- |
+| `APIGW_HOST`             | The host address of the AI Verify API Gateway.                    |
+| `NEXT_PUBLIC_APIGW_HOST` | The public host address for the API Gateway used by the frontend. |
+
+## Running the Portal
+
+To run the portal in development mode, the following commands
+
+```sh
 npm run dev
 ```
 
 The frontend application will be available at http://localhost:3000.
 
-## Environment Configuration
+# Docker Setup
 
-### Backend (.env file in aiverify-apigw)
+To build apigw docker image, go to the `aiverify` root folder and run:
 
-Create a `.env` file in the `aiverify-apigw` directory with the following configuration:
-
-```env
-MONGODB_URI=mongodb://localhost:27017
-DB_NAME=aiverify
-PORT=4000
+```
+cd ..
+docker build -t aiverify-portal -f aiverify-portal/Dockerfile .
+cd aiverify-portal
 ```
 
-### Frontend (.env file in aiverify-portal)
+To run the portal, run the following command with substitutes for the environment values if necessary.
 
-Create a `.env` file in the `aiverify-portal` directory:
-
-```env
-APIGW_HOST=http://localhost:4000
+```sh
+docker run -d --name=aiverify-portal -p 3000:3000/tcp aiverify-portal
 ```
-
-## Development Workflow
-
-1. Always start the backend server first (`aiverify-apigw`) and ensure it is linked to `aiverify-shared-library`
-2. Then start the frontend development server (`aiverify-portal`)
 
 ## Troubleshooting
 
@@ -100,11 +77,10 @@ APIGW_HOST=http://localhost:4000
 
 1. **"Error: fetch failed on /home"**
 
-   - Check if the backend server is running on port 4000
+   - Check if the backend apigw is running on port 4000
    - Verify your .env configuration
-   - Ensure MongoDB is running if required
 
 2. **"Module not found" errors**
 
-   - Run `npm install` in the affected directory
+   - Run `npm install` and `npm run build` in the affected directory
    - Check if `aiverify-shared-library` is properly linked

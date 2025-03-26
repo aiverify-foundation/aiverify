@@ -1,12 +1,13 @@
-from pydantic import BaseModel, Field
+from pydantic import Field
 from typing import List, Optional, Annotated
 from enum import StrEnum
 import json
 
 from ..models import AlgorithmModel
+from .base_model import MyBaseModel
 
 
-class AlgorithmMeta(BaseModel):
+class AlgorithmMeta(MyBaseModel):
     class ModelTypeEnum(StrEnum):
         CLASSIFICATION = "classification"
         REGRESSION = "regression"

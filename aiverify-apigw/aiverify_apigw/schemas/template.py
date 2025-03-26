@@ -1,9 +1,10 @@
-from pydantic import BaseModel, Field
+from pydantic import Field
 from typing import List, Optional, Annotated
 from ..models import TemplateModel
+from .base_model import MyBaseModel
 
 
-class TemplateMeta(BaseModel):
+class TemplateMeta(MyBaseModel):
     cid: str = Field(
         description="Unique identifier for the template within the plugin",
         min_length=1,

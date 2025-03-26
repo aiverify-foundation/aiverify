@@ -173,7 +173,7 @@ export function transformProjectOutputToState(
           },
           result: {},
           // find out how to add results
-          // exmaple value "result": {"aiverify.stock.accumulated_local_effect:aiverfy_accumulated_local_effect": null}
+          // exmaple value "result": {"aiverify.stock.accumulated_local_effect:aiverify_accumulated_local_effect": null}
         } as WidgetOnGridLayout;
       })
       .filter((widget): widget is WidgetOnGridLayout => widget !== null)
