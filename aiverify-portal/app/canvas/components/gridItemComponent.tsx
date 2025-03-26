@@ -1,3 +1,4 @@
+'use client';
 import { getMDXComponent, MDXContentProps } from 'mdx-bundler/client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import React from 'react';
@@ -250,10 +251,11 @@ function GridItemMain({
           if (testResult) {
             try {
               // Parse testResult.output if it's a string, otherwise use as is
-              const outputData = typeof testResult.output === 'string' 
-                ? JSON.parse(testResult.output)
-                : testResult.output;
-              
+              const outputData =
+                typeof testResult.output === 'string'
+                  ? JSON.parse(testResult.output)
+                  : testResult.output;
+
               // Ensure outputData is an object before adding modelType
               if (typeof outputData === 'object' && outputData !== null) {
                 outputData.modelType = testResult.testArguments?.modelType;
@@ -262,7 +264,7 @@ function GridItemMain({
                 // If outputData is not an object, create a new object with the original data and modelType
                 acc[`${widget.gid}:${result.cid}`] = {
                   output: testResult.output,
-                  modelType: testResult.testArguments?.modelType
+                  modelType: testResult.testArguments?.modelType,
                 };
               }
             } catch (error) {
@@ -270,7 +272,7 @@ function GridItemMain({
               console.error('Error parsing testResult.output', error);
               acc[`${widget.gid}:${result.cid}`] = {
                 output: testResult.output,
-                modelType: testResult.testArguments?.modelType
+                modelType: testResult.testArguments?.modelType,
               };
             }
           } else {

@@ -1,3 +1,4 @@
+'use client';
 import { RiArticleFill } from '@remixicon/react';
 import { useState } from 'react';
 import { ParsedTestResults } from '@/app/canvas/types';
