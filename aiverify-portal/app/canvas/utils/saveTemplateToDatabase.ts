@@ -1,7 +1,7 @@
 import type { State } from '@/app/canvas/components/hooks/pagesDesignReducer';
 import { patchTemplate } from '@/lib/fetchApis/getTemplates';
 import { saveStateToSessionStorage } from './sessionStorage';
-import { transformStateToTemplateInput } from './transformStateToTemplateInput';
+import { transformStateToProjectInput } from './transformStateToProjectInput';
 
 /**
  * Gets the template ID from URL parameters
@@ -16,8 +16,19 @@ export const getTemplateIdFromUrl = () => {
 };
 
 /**
+ * Extract the template ID from URL pathname
+ */
+export const getTemplateIdFromPathname = (pathname: string): number | null => {
+  const matches = pathname.match(/\/templates\/(\d+)/);
+  if (matches && matches[1]) {
+    const id = parseInt(matches[1], 10);
+    return isNaN(id) ? null : id;
+  }
+  return null;
+};
+
+/**
  * Saves the current state of the template design to storage
- * Currently uses localStorage as a placeholder
  *
  * @param state The current state of the pagesDesignReducer
  */
@@ -28,10 +39,15 @@ export const saveTemplateToDatabase = async (state: State) => {
 
   // Try to save minimal state to localStorage as backup
   try {
+    // For localStorage, filter out overflow pages
+    const nonOverflowLayouts = state.layouts.filter(
+      (_, idx) => state.pageTypes[idx] !== 'overflow'
+    );
+
     const minimalState = {
       timestamp: Date.now(),
-      templateId: getTemplateIdFromUrl().templateId,
-      layouts: state.layouts.map((layout) =>
+      templateId: getTemplateIdFromPathname(window.location.pathname),
+      layouts: nonOverflowLayouts.map((layout) =>
         layout.map((item) => ({
           i: item.i,
           x: item.x,
@@ -55,29 +71,35 @@ export const saveTemplateToDatabase = async (state: State) => {
     );
   }
 
-  const { templateId } = getTemplateIdFromUrl();
-
-  // Check if we're in a project flow by checking if the URL contains /projects/
-  const isProjectFlow = window.location.pathname.includes('/projects/');
-
-  // If we're in a project flow or no template ID, don't try to save to database
-  if (isProjectFlow || !templateId) {
-    console.log(
-      'Project flow or no template ID detected, skipping database save',
-      {
-        isProjectFlow,
-        templateId,
-        pathname: window.location.pathname,
-      }
-    );
+  // Get template ID from pathname
+  const templateId = getTemplateIdFromPathname(window.location.pathname);
+  if (!templateId) {
+    console.log('No template ID found in URL, skipping database save');
     return;
   }
 
   try {
-    // Transform state to template input format
-    const data = transformStateToTemplateInput(state);
-    console.log('template sent to patch', data);
-    const result = await patchTemplate(templateId, data);
+    // Create a modified state with overflow pages filtered out
+    const filteredState = {
+      ...state,
+      layouts: state.layouts.filter(
+        (_, idx) => state.pageTypes[idx] !== 'overflow'
+      ),
+      widgets: state.widgets.filter(
+        (_, idx) => state.pageTypes[idx] !== 'overflow'
+      ),
+      pageTypes: state.pageTypes.filter((type) => type !== 'overflow'),
+      overflowParents: state.overflowParents.filter(
+        (_, idx) => state.pageTypes[idx] !== 'overflow'
+      ),
+    };
+
+    // Use the filtered state to transform data
+    const data = transformStateToProjectInput(filteredState);
+
+    // Use type assertion to work around type issues
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const result = await patchTemplate(templateId, data as any);
 
     if ('message' in result) {
       throw new Error(result.message);
@@ -97,10 +119,15 @@ export const debouncedSaveTemplateToDatabase = (state: State) => {
 
   // Try to save minimal state to localStorage as backup
   try {
+    // For localStorage, filter out overflow pages
+    const nonOverflowLayouts = state.layouts.filter(
+      (_, idx) => state.pageTypes[idx] !== 'overflow'
+    );
+
     const minimalState = {
       timestamp: Date.now(),
-      templateId: getTemplateIdFromUrl().templateId,
-      layouts: state.layouts.map((layout) =>
+      templateId: getTemplateIdFromPathname(window.location.pathname),
+      layouts: nonOverflowLayouts.map((layout) =>
         layout.map((item) => ({
           i: item.i,
           x: item.x,
@@ -124,21 +151,10 @@ export const debouncedSaveTemplateToDatabase = (state: State) => {
     );
   }
 
-  const { templateId } = getTemplateIdFromUrl();
-
-  // Check if we're in a project flow by checking if the URL contains /projects/
-  const isProjectFlow = window.location.pathname.includes('/projects/');
-
-  // Don't even start the debounce timer if we're in a project flow or no template ID
-  if (isProjectFlow || !templateId) {
-    console.log(
-      'Project flow or no template ID detected, skipping debounced save',
-      {
-        isProjectFlow,
-        templateId,
-        pathname: window.location.pathname,
-      }
-    );
+  // Get template ID from pathname
+  const templateId = getTemplateIdFromPathname(window.location.pathname);
+  if (!templateId) {
+    console.log('No template ID found in URL, skipping debounced save');
     return;
   }
 
