@@ -99,6 +99,9 @@ type GridItemComponentProps = {
 
   /** Whether the grid is in view mode (disabled) */
   disabled?: boolean;
+
+  /** Whether the widget has visited data selection */
+  hasVisitedDataSelection: boolean;
 };
 
 type MdxComponentProps = MDXContentProps & {
@@ -110,7 +113,7 @@ type MdxComponentProps = MDXContentProps & {
     algo_cid: string,
     algo_gid: string | null
   ) => InputBlockDataPayload;
-  getResults: (algo_cid: string, algo_gid: string | null) => TestResultData;
+  getResults: (algo_cid: string, algo_gid: string | null) => TestResultData | null;
   getArtifacts: (gid: string, cid: string) => string[];
   getArtifactURL: (
     algo_cid: string,
@@ -141,6 +144,7 @@ function GridItemMain({
   dispatch,
   pageIndex,
   disabled,
+  hasVisitedDataSelection,
 }: GridItemComponentProps) {
   /**
    * Controls visibility of the context menu that appears when hovering over a widget
@@ -645,7 +649,20 @@ function GridItemMain({
                 algo_gid: string | null // change to cid, gid
               ) => {
                 const gid = algo_gid || widget.gid;
-                return testResultWidgetData[`${gid}:${algo_cid}`];
+                const key = `${gid}:${algo_cid}`;
+                
+                // If we've visited data selection page (testResultIds exists in URL)
+                // but no actual test results were selected for this algorithm,
+                // return null so the widget displays the "incomplete" message
+                if (hasVisitedDataSelection && 
+                    (!testResultsUsed || 
+                     !testResultsUsed.some(r => 
+                       r.cid === algo_cid && 
+                       r.testResultId !== undefined))) {
+                  return null;
+                }
+                
+                return testResultWidgetData[key];
               }}
               getArtifacts={(gid: string, cid: string) => {
                 const urls = widgetArtifacts[`${gid}:${cid}`];
@@ -688,7 +705,8 @@ export const GridItemComponent = React.memo(
       JSON.stringify(prevProps.testResultsUsed) ===
         JSON.stringify(nextProps.testResultsUsed) &&
       JSON.stringify(prevProps.inputBlockDatasUsed) ===
-        JSON.stringify(nextProps.inputBlockDatasUsed)
+        JSON.stringify(nextProps.inputBlockDatasUsed) &&
+      prevProps.hasVisitedDataSelection === nextProps.hasVisitedDataSelection
     );
   }
 );

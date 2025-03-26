@@ -706,14 +706,22 @@ function Designer(props: DesignerProps) {
   console.log('allPluginsWithMdx', allPluginsWithMdx);
 
   // Determines the back button link based on the current user flow
-  let updatedBackFlow = flow;
-  if (flow === UserFlows.NewProjectWithExistingTemplateAndResults) {
-    updatedBackFlow = UserFlows.NewProjectWithExistingTemplate;
-  } else if (flow === UserFlows.NewProjectWithNewTemplateAndResults) {
-    updatedBackFlow = UserFlows.NewProjectWithNewTemplate;
+  let backButtonLink = '';
+  if (
+    flow === UserFlows.NewProjectWithNewTemplate ||
+    flow === UserFlows.NewProjectWithEditingExistingTemplate
+  ) {
+    backButtonLink = `/templates?flow=${flow}&projectId=${project?.id}`;
+  } else if (
+    flow === UserFlows.NewProjectWithNewTemplateAndResults ||
+    flow === UserFlows.NewProjectWithExistingTemplateAndResults ||
+    flow === UserFlows.NewProjectWithEditingExistingTemplateAndResults
+  ) {
+    backButtonLink = `/project/select_data?flow=${flow}&projectId=${project?.id}`;
+  } else {
+    backButtonLink = `/project/select_data?flow=${flow}&projectId=${project?.id}`;
   }
-
-  const backButtonLink = `/project/select_data?flow=${updatedBackFlow}&projectId=${project?.id}`;
+  console.log('backButtonLink', backButtonLink);
 
   /**
    * Handles the start of a resize operation on a grid item
@@ -1316,6 +1324,9 @@ function Designer(props: DesignerProps) {
                           }
                           layout={state.layouts[pageIndex][widgetIndex]}
                           disabled={disabled}
+                          hasVisitedDataSelection={searchParams.has(
+                            'testResultIds'
+                          )}
                         />
                       </div>
                     );
@@ -1397,8 +1408,9 @@ function Designer(props: DesignerProps) {
       </main>
       <section className="fixed bottom-[-10] right-[200px] h-[100px] bg-transparent">
         <div className="flex items-center justify-center gap-4">
-          {flow === UserFlows.NewProjectWithExistingTemplateAndResults ||
-          flow === UserFlows.NewProjectWithNewTemplateAndResults ? (
+          {flow === UserFlows.NewProjectWithNewTemplateAndResults ||
+          flow === UserFlows.NewProjectWithExistingTemplateAndResults ||
+          flow === UserFlows.NewProjectWithEditingExistingTemplateAndResults ? (
             <Link href={backButtonLink}>
               <Button
                 className="w-[130px] gap-4 p-2 text-white"

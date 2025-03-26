@@ -27,6 +27,7 @@ interface ClientSelectDataProps {
   initialModelId?: string;
   initialTestResults?: { id: number; gid: string; cid: string }[];
   initialInputBlocks?: { id: number; gid: string; cid: string }[];
+  hasVisitedDataSelection?: boolean;
 }
 
 export type SelectedTestResult = {
@@ -145,19 +146,27 @@ export default function ClientSelectData({
       // Send all changes in a single patch request
       await patchProject(projectId, transformedData);
 
+      // Update flow based on current flow
+      let updatedFlow = flow;
+      if (flow === UserFlows.NewProjectWithNewTemplate) {
+        updatedFlow = UserFlows.NewProjectWithNewTemplateAndResults;
+      } else if (flow === UserFlows.NewProjectWithExistingTemplate) {
+        updatedFlow = UserFlows.NewProjectWithExistingTemplateAndResults;
+      } else if (flow === UserFlows.NewProjectWithEditingExistingTemplate) {
+        updatedFlow = UserFlows.NewProjectWithEditingExistingTemplateAndResults;
+      }
+
       // Construct the URL with all selected data
       const queryString = [
-        `flow=${encodeURIComponent(flow)}`,
+        `flow=${encodeURIComponent(updatedFlow)}`,
         `projectId=${encodeURIComponent(projectId)}`,
         ...(selectedModelId
           ? [`modelId=${encodeURIComponent(selectedModelId)}`]
           : []),
-        ...(selectedTestResults.length
-          ? [`testResultIds=${selectedTestResults.map((r) => r.id).join(',')}`]
-          : []),
-        ...(selectedInputBlocks.length
-          ? [`iBlockIds=${selectedInputBlocks.map((b) => b.id).join(',')}`]
-          : []),
+        // Always include testResultIds parameter, even if empty
+        `testResultIds=${selectedTestResults.map((r) => r.id).join(',')}`,
+        // Always include iBlockIds parameter, even if empty
+        `iBlockIds=${selectedInputBlocks.map((b) => b.id).join(',')}`,
       ].join('&');
 
       if (flow === UserFlows.EditExistingProject) {
