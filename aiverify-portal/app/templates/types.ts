@@ -59,6 +59,15 @@ type ReportTemplate = {
   updated_at: string;
 };
 
+type UploadStatus = 'idle' | 'uploading' | 'success' | 'error';
+
+type FileUpload = {
+  file: File;
+  progress: number;
+  status: UploadStatus;
+  id: string;
+};
+
 export type {
   Layout,
   LayoutItemProperties,
@@ -68,4 +77,6 @@ export type {
   ProjectInfo,
   ReportTemplate,
   GlobalVar,
+  UploadStatus,
+  FileUpload,
 };
