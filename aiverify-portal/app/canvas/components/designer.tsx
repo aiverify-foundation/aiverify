@@ -74,7 +74,7 @@ import { ResizeHandle } from './resizeHandle';
 import { ZoomControl } from './zoomControl';
 
 type GridItemDivRequiredStyles =
-  `grid-comp-wrapper relative group z-10${string}`; // mandatory to have relative and group
+  `${typeof criticalGridItemWrapperClass} relative group z-10${string}`; // mandatory to have relative and group
 
 type Layout = GridLayoutType & {
   widget?: WidgetOnGridLayout;
@@ -129,12 +129,6 @@ type EventDataTransfer = Event & {
 
 const pagesContentWrapperId = 'printableContent'; // element id for the pages wrapper (used for printing)
 const criticalGridItemWrapperClass = 'grid-comp-wrapper'; // class for the grid item wrapper used in some event handling
-const gridItemDivRequiredStyles: GridItemDivRequiredStyles = `${criticalGridItemWrapperClass} relative group z-10
-  hover:outline hover:outline-2 
-  hover:outline-blue-500 hover:outline-offset-2
-  active:outline-none
-  w-full h-full
-  [&>.react-grid-item]:w-full [&>.react-grid-item]:h-full`;
 
 const widgetItemSchema = z.object({
   gridItemId: z.string().optional(),
@@ -175,6 +169,13 @@ function Designer(props: DesignerProps) {
     pageNavigationMode = 'multi',
     isTemplate = false,
   } = props;
+
+  // Define gridItemDivRequiredStyles here where it has access to disabled prop
+  const gridItemDivRequiredStyles: GridItemDivRequiredStyles = `${criticalGridItemWrapperClass} relative group z-10
+    ${!disabled ? 'hover:outline hover:outline-2 hover:outline-blue-500 hover:outline-offset-2' : ''}
+    active:outline-none
+    w-full h-full
+    [&>.react-grid-item]:w-full [&>.react-grid-item]:h-full`;
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -967,6 +968,13 @@ function Designer(props: DesignerProps) {
     const currentMode = searchParams.get('mode') || 'edit';
     const newMode = currentMode === 'edit' ? 'view' : 'edit';
 
+    // Update grid visibility based on the new mode
+    if (newMode === 'view' && state.showGrid) {
+      dispatch({ type: 'TOGGLE_GRID' });
+    } else if (newMode === 'edit' && !state.showGrid) {
+      dispatch({ type: 'TOGGLE_GRID' });
+    }
+
     const params = new URLSearchParams(searchParams.toString());
     params.set('mode', newMode);
 
@@ -1081,7 +1089,11 @@ function Designer(props: DesignerProps) {
           <button
             className="disabled:opacity-50"
             title="Toggle Grid"
-            onClick={() => dispatch({ type: 'TOGGLE_GRID' })}>
+            onClick={() => {
+              if (!disabled) {
+                dispatch({ type: 'TOGGLE_GRID' });
+              }
+            }}>
             <RiGridLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
           </button>
         </div>
@@ -1195,7 +1207,7 @@ function Designer(props: DesignerProps) {
                 height: isOverflowPage ? A4_HEIGHT : 'auto',
                 width: isOverflowPage ? A4_WIDTH : 'auto',
               }}>
-              {!isOverflowPage && showGrid && (
+              {!isOverflowPage && showGrid && !disabled && (
                 <GridLines
                   columns={GRID_COLUMNS}
                   rows={GRID_ROWS}
@@ -1268,6 +1280,7 @@ function Designer(props: DesignerProps) {
                         className={cn(
                           gridItemDivRequiredStyles,
                           selectedGridItemId === widget.gridItemId &&
+                            !disabled &&
                             'outline outline-2 outline-offset-2 outline-blue-500'
                         )}>
                         <GridItemComponent
@@ -1283,10 +1296,11 @@ function Designer(props: DesignerProps) {
                           )}
                           onEditClick={handleGridItemEditClick(pageIndex)}
                           onInfoClick={() =>
+                            !disabled &&
                             setSelectedGridItemId(widget.gridItemId)
                           }
                           onWidgetPropertiesClose={() =>
-                            setSelectedGridItemId(null)
+                            !disabled && setSelectedGridItemId(null)
                           }
                           dispatch={dispatch}
                           pageIndex={pageIndex}
@@ -1301,6 +1315,7 @@ function Designer(props: DesignerProps) {
                             ]
                           }
                           layout={state.layouts[pageIndex][widgetIndex]}
+                          disabled={disabled}
                         />
                       </div>
                     );

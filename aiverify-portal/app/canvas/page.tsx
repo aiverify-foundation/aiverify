@@ -147,6 +147,11 @@ export default async function CanvasPage(props: UrlSearchParams) {
           projectOrTemplate as ProjectOutput,
           pluginsWithMdx
         );
+
+    // Set showGrid to false when in view mode
+    if (mode === 'view') {
+      initialState.showGrid = false;
+    }
   } catch (error) {
     console.error('Failed to initialize state:', error);
     // If we hit a storage quota error, try to initialize with minimal data
@@ -158,7 +163,7 @@ export default async function CanvasPage(props: UrlSearchParams) {
       gridItemToAlgosMap: {},
       gridItemToInputBlockDatasMap: {},
       currentPage: 0,
-      showGrid: true,
+      showGrid: mode !== 'view', // Set showGrid based on mode
       pageTypes: ['grid' as const],
       overflowParents: [null],
     };
@@ -167,7 +172,12 @@ export default async function CanvasPage(props: UrlSearchParams) {
   console.log('initialState', initialState);
 
   return (
-    <Suspense fallback={<div className="flex h-screen w-full items-center justify-center">Loading canvas...</div>}>
+    <Suspense
+      fallback={
+        <div className="flex h-screen w-full items-center justify-center">
+          Loading canvas...
+        </div>
+      }>
       <ClientDesigner
         flow={flow}
         project={projectOrTemplate}
@@ -176,7 +186,9 @@ export default async function CanvasPage(props: UrlSearchParams) {
         allTestResultsOnSystem={parsedTestResults}
         allInputBlockDatasOnSystem={inputBlockDatas}
         selectedTestResultsFromUrlParams={selectedTestResultsFromUrlParams}
-        selectedInputBlockDatasFromUrlParams={selectedInputBlockDatasFromUrlParams}
+        selectedInputBlockDatasFromUrlParams={
+          selectedInputBlockDatasFromUrlParams
+        }
         pageNavigationMode="multi"
         disabled={mode === 'view'}
         isTemplate={isTemplate}

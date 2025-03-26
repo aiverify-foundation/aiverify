@@ -96,6 +96,9 @@ type GridItemComponentProps = {
 
   /** Index of the page this widget is on */
   pageIndex: number;
+
+  /** Whether the grid is in view mode (disabled) */
+  disabled?: boolean;
 };
 
 type MdxComponentProps = MDXContentProps & {
@@ -137,6 +140,7 @@ function GridItemMain({
   onWidgetPropertiesClose,
   dispatch,
   pageIndex,
+  disabled,
 }: GridItemComponentProps) {
   /**
    * Controls visibility of the context menu that appears when hovering over a widget
@@ -525,7 +529,11 @@ function GridItemMain({
       clearTimeout(hideTimeoutRef.current);
     }
     isHoveringRef.current = true;
-    setShowContextMenu(true);
+
+    // Only show context menu if not in disabled/view mode
+    if (!disabled) {
+      setShowContextMenu(true);
+    }
   }
 
   /**
@@ -579,6 +587,7 @@ function GridItemMain({
           widget={widget}
           hideEditIcon={!enableEditing}
           menuPosition={menuPosition}
+          disabled={disabled}
           onDeleteClick={onDeleteClick}
           onInfoClick={handleInfoClick}
           onMouseEnter={() => {
