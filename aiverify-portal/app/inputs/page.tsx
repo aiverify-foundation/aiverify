@@ -9,23 +9,29 @@ import { getAllInputBlocks } from '@/lib/fetchApis/getAllInputBlocks';
 export default async function InputsPage() {
   // Get all available input blocks
   const inputBlocks = await getAllInputBlocks();
+  console.log('inputBlocks', inputBlocks);
 
-  // Create a map of unique input block types, excluding hardcoded ones
+  // Create a map of unique input block types, excluding aiverify process checklist and fairness tree
   const uniqueInputBlocks = inputBlocks.reduce(
     (acc, block) => {
       // Skip hardcoded blocks
-      if (block.gid === 'aiverify.stock.process_checklist' || block.gid === 'aiverify.stock.fairness_metrics_toolbox_for_classification') {
+      if (
+        block.gid === 'aiverify.stock.process_checklist' ||
+        block.gid ===
+          'aiverify.stock.fairness_metrics_toolbox_for_classification'
+      ) {
         return acc;
       }
 
       // Use gid as key to ensure uniqueness
-      if (!acc[block.gid]) {
-        acc[block.gid] = block;
+      if (!acc[block.cid]) {
+        acc[block.cid] = block;
       }
       return acc;
     },
     {} as Record<string, InputBlock>
   );
+  console.log('uniqueInputBlocks', uniqueInputBlocks);
 
   return (
     <ChecklistsProvider>
@@ -94,11 +100,10 @@ export default async function InputsPage() {
               </div>
             </Card>
           </Link>
-
           {/* Dynamic cards for other input block types */}
           {Object.values(uniqueInputBlocks).map((block) => (
             <Link
-              key={block.gid}
+              key={block.cid}
               href={`/inputs/${block.gid}/${block.cid}`}>
               <Card
                 size="md"
