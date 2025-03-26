@@ -1353,21 +1353,13 @@ function Designer(props: DesignerProps) {
 
   // Update the Next button to use navigateToNextStep
   const handleNextClick = () => {
-    if (flow === UserFlows.NewProjectWithExistingTemplate) {
-      canvasState.navigateToNextStep(
-        `/results?flow=${UserFlows.NewProjectWithExistingTemplateAndResults}&projectId=${project?.id}`
-      );
-    } else if (flow === UserFlows.NewProjectWithNewTemplate) {
+    if (flow === UserFlows.NewProjectWithNewTemplate) {
       canvasState.navigateToNextStep(
         `/project/select_data?flow=${UserFlows.NewProjectWithNewTemplate}&projectId=${project?.id}`
       );
-    } else if (flow === UserFlows.NewProjectWithExistingTemplateAndResults) {
+    } else if (flow === UserFlows.NewProjectWithEditingExistingTemplate) {
       canvasState.navigateToNextStep(
-        `/project/usermenu?flow=${UserFlows.NewProjectWithExistingTemplateAndRunNewTests}&projectId=${project?.id}`
-      );
-    } else if (flow === UserFlows.NewProjectWithNewTemplateAndResults) {
-      canvasState.navigateToNextStep(
-        `/project/usermenu?flow=${UserFlows.NewProjectWithNewTemplateAndRunNewTests}&projectId=${project?.id}`
+        `/project/select_data?flow=${UserFlows.NewProjectWithEditingExistingTemplate}&projectId=${project?.id}`
       );
     }
   };
@@ -1415,7 +1407,8 @@ function Designer(props: DesignerProps) {
               </Button>
             </Link>
           ) : null}
-          {flow === UserFlows.NewProjectWithNewTemplate ? (
+          {flow === UserFlows.NewProjectWithNewTemplate ||
+          flow === UserFlows.NewProjectWithEditingExistingTemplate ? (
             <Button
               className="w-[130px] gap-4 p-2 text-white"
               onClick={handleNextClick}>

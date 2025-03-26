@@ -61,6 +61,8 @@ export default function ClientSelectData({
     initialInputBlocks,
   });
 
+  console.log('flow clientselectdata', flow);
+
   // State for model selection
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>(
     initialModelId
@@ -96,14 +98,19 @@ export default function ClientSelectData({
 
   const handleModelChange = (modelId: string | undefined) => {
     setSelectedModelId(modelId);
-    
+
     // Instead of clearing all test results, filter out those that don't match the new model
     if (modelId) {
-      const selectedModel = allModels.find((model) => model.id.toString() === modelId);
+      const selectedModel = allModels.find(
+        (model) => model.id.toString() === modelId
+      );
       if (selectedModel) {
-        const validTestResults = selectedTestResults.filter(result => {
-          const testResult = allTestResults.find(tr => tr.id === result.id);
-          return testResult && testResult.testArguments.modelFile === selectedModel.name;
+        const validTestResults = selectedTestResults.filter((result) => {
+          const testResult = allTestResults.find((tr) => tr.id === result.id);
+          return (
+            testResult &&
+            testResult.testArguments.modelFile === selectedModel.name
+          );
         });
         setSelectedTestResults(validTestResults);
       } else {
@@ -138,8 +145,6 @@ export default function ClientSelectData({
       // Send all changes in a single patch request
       await patchProject(projectId, transformedData);
 
-      const flow = UserFlows.NewProjectWithNewTemplateAndResults;
-
       // Construct the URL with all selected data
       const queryString = [
         `flow=${encodeURIComponent(flow)}`,
@@ -155,7 +160,11 @@ export default function ClientSelectData({
           : []),
       ].join('&');
 
-      window.location.href = `/canvas?${queryString}&mode=view`;
+      if (flow === UserFlows.EditExistingProject) {
+        window.location.href = `/canvas?${queryString}&mode=edit`;
+      } else {
+        window.location.href = `/canvas?${queryString}&mode=view`;
+      }
     } catch (error) {
       console.error('Failed to update project:', error);
       // You might want to show an error message to the user here
@@ -221,8 +230,10 @@ export default function ClientSelectData({
         />
       </div>
 
-      <div className="flex justify-between">
-        {flow !== UserFlows.NewProjectWithNewTemplateAndResults && (
+      <div
+        className={`flex ${flow !== UserFlows.NewProjectWithNewTemplateAndResults && flow !== UserFlows.EditExistingProject ? 'justify-between' : 'justify-end'}`}>
+        {flow !== UserFlows.NewProjectWithNewTemplateAndResults &&
+        flow !== UserFlows.EditExistingProject ? (
           <Link href={backButtonLink}>
             <Button
               className="w-[130px] gap-4 p-2 text-white"
@@ -230,9 +241,9 @@ export default function ClientSelectData({
               <RiArrowLeftLine /> Back
             </Button>
           </Link>
-        )}
+        ) : null}
         <Button
-          className={`w-[130px] gap-4 p-2 text-white ${flow === UserFlows.NewProjectWithNewTemplateAndResults ? 'ml-auto' : 'w-[130px]'}`}
+          className={`w-[130px] gap-4 p-2 text-white ${flow}`}
           variant="secondary"
           onClick={handleNext}>
           Next <RiArrowRightLine />

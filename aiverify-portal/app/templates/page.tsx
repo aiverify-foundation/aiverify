@@ -22,7 +22,7 @@ export default async function TemplatesPage(props: UrlSearchParams) {
   const { projectId, flow } = params;
 
   let project;
-  if (flow === UserFlows.NewProject && projectId) {
+  if (flow && projectId) {
     const result = await getProjects({ ids: [projectId] });
     if ('message' in result || result.data.length === 0) {
       console.log(`project id not found: ${projectId}`);
@@ -49,12 +49,12 @@ export default async function TemplatesPage(props: UrlSearchParams) {
           />
           <div className="ml-3">
             <h1 className="text-2xl font-bold text-white">
-              {flow === UserFlows.NewProject && project
+              {flow && project
                 ? `Select A Report Template for ${project.projectInfo.name}`
                 : 'Report Templates'}
             </h1>
             <p className="text-secondary-300">
-              {flow === UserFlows.NewProject && project
+              {flow && project
                 ? 'Select a template or start with an empty canvas.'
                 : 'Browse and manage report templates.'}
             </p>
@@ -62,7 +62,7 @@ export default async function TemplatesPage(props: UrlSearchParams) {
         </div>
 
         <div className="flex h-[126px] items-center">
-          {flow === UserFlows.NewProject && project ? null : <ActionButtons />}
+          {flow && project ? null : <ActionButtons />}
         </div>
       </div>
 
