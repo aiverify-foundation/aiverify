@@ -7,7 +7,7 @@
     "maxH": 36
   },
   "name": "Bar Chart (Blur Corruptions)",
-  "description": "To generate line charts to visualise the accuracy results when blur corruptions are applied",
+  "description": "To generate bar charts to visualise the accuracy results when blur corruptions are applied",
   "dependencies": [
     {
       "cid": "aiverify_blur_corruptions"

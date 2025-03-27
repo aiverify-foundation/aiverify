@@ -41,7 +41,7 @@ export const BlurSamples = ({ props }) => {
       return;
     }
 
-    const blurUrls = [];
+    const imagesUrls = [];
     const parameters = {};
 
     severityLevels.forEach((level) => {
@@ -61,7 +61,7 @@ export const BlurSamples = ({ props }) => {
 
         try {
           const url = props.getArtifactURL(cid, imagePath);
-          blurUrls.push(url);
+          imagesUrls.push(url);
         } catch (error) {
           console.error(`Error getting URL for ${imagePath}:`, error);
         }
@@ -73,7 +73,7 @@ export const BlurSamples = ({ props }) => {
     corruptionResults.push({
       corruptionName: formattedCorruptionName,
       corruptionIndex: corruptionIndex,
-      images: blurUrls,
+      images: imagesUrls,
       parameters: parameters,
     });
   });
