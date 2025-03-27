@@ -1080,18 +1080,21 @@ function Designer(props: DesignerProps) {
           </button>
         </div>
       )}
-      <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
-        <button
-          className="disabled:opacity-50"
-          title={disabled ? 'Switch to Edit Mode' : 'Switch to View Mode'}
-          onClick={toggleMode}>
-          {disabled ? (
-            <RiEditLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
-          ) : (
-            <RiEyeLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
-          )}
-        </button>
-      </div>
+      {isTemplate ? (
+        <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
+          <button
+            className="disabled:opacity-50"
+            title={disabled ? 'Switch to Edit Mode' : 'Switch to View Mode'}
+            onClick={toggleMode}>
+            {disabled ? (
+              <RiEditLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
+            ) : (
+              <RiEyeLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
+            )}
+          </button>
+        </div>
+      ) : null}
+
       {!disabled ? (
         <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
           <button

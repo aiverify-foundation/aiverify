@@ -37,6 +37,7 @@ function TemplateCards({ templates, projectId, flow }: TemplateCardsProps) {
     if (!projectId) return;
 
     try {
+      console.log('here new project with template', template.id);
       // Update project with template data
       await patchProject(projectId, {
         templateId: template.id.toString(),
@@ -71,6 +72,7 @@ function TemplateCards({ templates, projectId, flow }: TemplateCardsProps) {
     // If in project flow, handle it differently
     if (isProjectFlow && projectId) {
       try {
+        console.log('here existing');
         // Only update pages and globalVars without templateId
         patchProject(projectId, {
           pages: template.pages,
