@@ -46,7 +46,7 @@ export const saveTemplateToDatabase = async (state: State) => {
 
     const minimalState = {
       timestamp: Date.now(),
-      templateId: getTemplateIdFromPathname(window.location.pathname),
+      templateId: getTemplateIdFromUrl().templateId,
       layouts: nonOverflowLayouts.map((layout) =>
         layout.map((item) => ({
           i: item.i,
@@ -72,7 +72,7 @@ export const saveTemplateToDatabase = async (state: State) => {
   }
 
   // Get template ID from pathname
-  const templateId = getTemplateIdFromPathname(window.location.pathname);
+  const templateId = getTemplateIdFromUrl().templateId;
   if (!templateId) {
     console.log('No template ID found in URL, skipping database save');
     return;
@@ -126,7 +126,7 @@ export const debouncedSaveTemplateToDatabase = (state: State) => {
 
     const minimalState = {
       timestamp: Date.now(),
-      templateId: getTemplateIdFromPathname(window.location.pathname),
+      templateId: getTemplateIdFromUrl().templateId,
       layouts: nonOverflowLayouts.map((layout) =>
         layout.map((item) => ({
           i: item.i,
@@ -152,7 +152,7 @@ export const debouncedSaveTemplateToDatabase = (state: State) => {
   }
 
   // Get template ID from pathname
-  const templateId = getTemplateIdFromPathname(window.location.pathname);
+  const templateId = getTemplateIdFromUrl().templateId;
   if (!templateId) {
     console.log('No template ID found in URL, skipping debounced save');
     return;
