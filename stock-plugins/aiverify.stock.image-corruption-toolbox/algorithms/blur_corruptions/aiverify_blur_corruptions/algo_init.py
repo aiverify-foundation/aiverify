@@ -47,7 +47,7 @@ class AlgoInit:
         model_path: str,
         model_type: ModelType,
         ground_truth_path: Optional[str] = None,
-        ground_truth: Optional[str] = None,
+        ground_truth_label: Optional[str] = None,
         file_name_label: Optional[str] = None,
         set_seed: Optional[int] = None,
         core_modules_path: Optional[str] = None,
@@ -58,7 +58,7 @@ class AlgoInit:
         self._model_path = model_path
         self._model_type = model_type
         self._ground_truth_path = ground_truth_path
-        self._ground_truth = ground_truth
+        self._ground_truth_label = ground_truth_label
         self._file_name_label = file_name_label
         self._set_seed = set_seed
         self._core_modules_path = core_modules_path or str(Path(importlib.util.find_spec("aiverify_test_engine").origin).parent)  # fmt: skip
@@ -74,7 +74,6 @@ class AlgoInit:
             self._user_defined_params["corruptions"] = [name for name in blur.CORRUPTION_FN if name.lower() in user_corruptions]  # fmt: skip
 
         # Other variables
-        self._base_path = Path().resolve()
         self._requires_ground_truth = model_type in (ModelType.CLASSIFICATION,)
 
     @time_class_method
@@ -127,6 +126,11 @@ class AlgoInit:
 
             print(f"[REQUIRES_GROUND_TRUTH]: {self._requires_ground_truth}")
             if self._requires_ground_truth:
+                if self._ground_truth_label is None:
+                    raise RuntimeError("ERROR: Ground truth label is required")
+                if self._file_name_label is None:
+                    raise RuntimeError("ERROR: File name label is required")
+
                 (
                     self._ground_truth_instance,
                     self._ground_truth_serializer_instance,
@@ -139,16 +143,16 @@ class AlgoInit:
 
                 if ground_truth_error_message:
                     raise RuntimeError("ERROR: Unable to get ground truth instance")
-                if self._ground_truth not in self._ground_truth_instance.read_labels():
+                if self._ground_truth_label not in self._ground_truth_instance.read_labels():
                     raise RuntimeError(
-                        f"ERROR: Ground truth label '{self._ground_truth}' not found in ground truth data."
+                        f"ERROR: Ground truth label '{self._ground_truth_label}' not found in ground truth data."
                     )
 
-                print(f"[GROUND_TRUTH_LABEL]: {self._ground_truth}")
+                print(f"[GROUND_TRUTH_LABEL]: {self._ground_truth_label}")
                 print(self._ground_truth_instance.get_data())
 
                 print("Removing ground truth label from test data...")
-                self._data_instance.remove_ground_truth(self._ground_truth)
+                self._data_instance.remove_ground_truth(self._ground_truth_label)
                 print(self._data_instance.get_data())
 
             else:
@@ -175,8 +179,8 @@ class AlgoInit:
                 user_defined_params=self._user_defined_params,
                 logger=self._logger_instance,
                 progress_callback=AlgoInit.progress_callback,
-                base_path=self._base_path,
-                ground_truth=self._ground_truth,
+                ground_truth_path=self._ground_truth_path,
+                ground_truth_label=self._ground_truth_label,
                 file_name_label=self._file_name_label,
                 set_seed=self._set_seed,
             )
@@ -223,18 +227,18 @@ class AlgoInit:
 
         # Prepare test arguments
         test_arguments = ITestArguments(
-            groundTruth=self._ground_truth,
-            modelType=self._model_type.name,
             testDataset=self._data_path,
-            modelFile=self._model_path,
+            mode="upload",
+            modelType=self._model_type.name,
             groundTruthDataset=self._ground_truth_path,
+            groundTruth=self._ground_truth_label,
             algorithmArgs={
-                "annotated_ground_truth_path": self._ground_truth_path,
+                "ground_truth_path": self._ground_truth_path,
                 "file_name_label": self._file_name_label,
                 "set_seed": self._set_seed,
                 "corruptions": self._user_defined_params["corruptions"],
             },
-            mode="upload",
+            modelFile=self._model_path,
         )
 
         # Create the output result
