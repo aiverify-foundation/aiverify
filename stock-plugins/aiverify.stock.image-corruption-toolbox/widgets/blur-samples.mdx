@@ -1,6 +1,6 @@
 import React from "react";
 import { DisplayImages } from "./display-samples";
-import { getBlurTypes, formatCorruptionName } from "./corruption-utils";
+import { getCorruptionTypes, formatCorruptionName } from "./corruption-utils";
 
 export const cid = "aiverify_blur_corruptions";
 
@@ -11,15 +11,15 @@ export const BlurSamples = ({ props }) => {
     return <div>No results data available</div>;
   }
 
-  const blurTypes = getBlurTypes(resultsData);
+  const corruptionTypes = getCorruptionTypes(resultsData, "Blur");
 
-  if (blurTypes.length === 0) {
+  if (corruptionTypes.length === 0) {
     return <div>No blur corruption data found</div>;
   }
 
   const corruptionResults = [];
 
-  blurTypes.forEach((corruptionFunction) => {
+  corruptionTypes.forEach((corruptionFunction) => {
     const corruptionIndex = resultsData.findIndex(
       (item) => item.corruption_function === corruptionFunction
     );
@@ -68,7 +68,7 @@ export const BlurSamples = ({ props }) => {
       }
     });
 
-    const formattedCorruptionName = formatCorruptionName(corruptionFunction);
+    const formattedCorruptionName = formatCorruptionName(corruptionFunction, "Blur");
 
     corruptionResults.push({
       corruptionName: formattedCorruptionName,

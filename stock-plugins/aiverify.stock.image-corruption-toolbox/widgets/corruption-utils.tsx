@@ -1,23 +1,5 @@
 import React from "react";
 
-export const safeGetArtifactURL = (props, cid, pathname) => {
-  try {
-    if (props && props.getArtifactURL) {
-      return props.getArtifactURL(cid, pathname);
-    }
-    return null; // Fallback if the function doesn't exist
-  } catch (error) {
-    console.error("Error getting artifact URL:", error);
-    return null;
-  }
-};
-
-export const getImageUrl = (props, cid, pathArray) => {
-  if (!pathArray || !Array.isArray(pathArray) || pathArray.length === 0)
-    return null;
-  return safeGetArtifactURL(props, cid, pathArray[0]);
-};
-
 export const ImageWithFallback = ({
   src,
   alt,
@@ -49,12 +31,14 @@ export const ImageWithFallback = ({
   );
 };
 
-// Get all blur types from results data
-export const getBlurTypes = (resultsData) => {
+export const getCorruptionTypes = (resultsData, corruptionType) => {
   const blurTypes = [];
   if (resultsData && resultsData.length > 0) {
     resultsData.forEach((item) => {
-      if (item.corruption_group === "Blur" && item.corruption_function) {
+      if (
+        item.corruption_group === corruptionType &&
+        item.corruption_function
+      ) {
         blurTypes.push(item.corruption_function);
       }
     });
@@ -62,14 +46,12 @@ export const getBlurTypes = (resultsData) => {
   return blurTypes;
 };
 
-// Function to format corruption name for display
-export const formatCorruptionName = (name) => {
-  // Replace underscores with spaces
+export const formatCorruptionName = (name, corruptionType) => {
   const spacedName = name.replace(/_/g, " ");
 
   // Format as "Category: Specific Type"
-  if (spacedName.includes("Blur")) {
-    return `Blur: ${spacedName}`;
+  if (spacedName.includes(corruptionType)) {
+    return `${corruptionType}: ${spacedName}`;
   }
   return spacedName;
 };

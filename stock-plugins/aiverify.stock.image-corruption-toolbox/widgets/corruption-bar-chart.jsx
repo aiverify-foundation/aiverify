@@ -36,7 +36,7 @@ export const SingleCorruptionBarChart = ({ corruptionData, width, height }) => {
         // Just show parameter value as the name
         const displayName =
           paramValue === "None" || paramValue === "N/A"
-            ? `Default`
+            ? `None`
             : `${paramValue}`;
 
         formattedData.push({
@@ -119,12 +119,15 @@ export const SingleCorruptionBarChart = ({ corruptionData, width, height }) => {
             }}
             yAxisProps={{
               label: {
-                fontSize: 12,
                 value: "Accuracy (%)",
                 angle: -90,
                 position: "insideLeft",
+                style: {
+                  fontSize: "12px",
+                },
               },
               domain: [0, 100],
+              fontSize: 12,
             }}
             chartProps={{
               margin: { top: 25, right: 30, left: 20, bottom: 5 },

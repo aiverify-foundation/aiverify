@@ -24,26 +24,37 @@ export const DisplayImages = ({
     .sort();
   const severityLevels = severityKeys.map((key) => key.replace("severity", ""));
 
-  let image_content = [];
-  let actual_content = [];
-  let preds_content = [];
-  let severity_labels = [];
-  let parameter_content = [];
-  
-  image_content.push(
+  // Extract unique parameter keys across all severity levels
+  const allParamKeys = new Set();
+  severityKeys.forEach((sevKey) => {
+    if (parameters && parameters[sevKey]) {
+      Object.keys(parameters[sevKey]).forEach((key) => allParamKeys.add(key));
+    }
+  });
+  const parameterKeys = Array.from(allParamKeys);
+
+  const severityHeaderRow = [
+    <th align="left" bgcolor="F0F0F0" key={`${id}-sev-header`}>
+      Severity
+    </th>,
+  ];
+
+  severityLevels.forEach((sevLevel) => {
+    severityHeaderRow.push(
+      <th key={`${id}-sev-${sevLevel}`} bgcolor="F0F0F0" align="center">
+        {sevLevel}
+      </th>
+    );
+  });
+
+  const imagesRow = [
     <th align="left" bgcolor="F0F0F0" key={`${id}-img-header`}>
       Images
-    </th>
-  );
-
-  parameter_content.push(
-    <th align="left" bgcolor="F0F0F0" key={`${id}-param-header`}>
-      Parameters
-    </th>
-  );
+    </th>,
+  ];
 
   images.forEach((img, index) => {
-    image_content.push(
+    imagesRow.push(
       <td key={`${id}-img-${index}`}>
         <ImageWithFallback
           src={img}
@@ -55,57 +66,67 @@ export const DisplayImages = ({
     );
   });
 
-  severity_labels.push(
-    <th align="left" bgcolor="F0F0F0" key={`${id}-sev-header`}>
-      Severity
-    </th>
-  );
-  actual_content.push(
+  // Create actual class row
+  const actualRow = [
     <th align="left" bgcolor="F0F0F0" key={`${id}-actual-header`}>
       Actual Class
-    </th>
-  );
-  preds_content.push(
-    <th align="left" bgcolor="F0F0F0" key={`${id}-pred-header`}>
-      Predictions
-    </th>
-  );
+    </th>,
+  ];
 
   severityKeys.forEach((sevKey, index) => {
-    const sevLevel = severityLevels[index];
-    severity_labels.push(
-      <th key={`${id}-sev-${sevLevel}`} bgcolor="F0F0F0" align="center">
-        {sevLevel}
-      </th>
-    );
-
-    // Add parameter data if available
-    if (parameters && parameters[sevKey]) {
-      const paramValues = Object.entries(parameters[sevKey])
-        .map(([paramName, paramValue]) =>
-          paramValue !== null ? `${paramName}: ${paramValue}` : null
-        )
-        .filter(Boolean)
-        .join(", ");
-
-      parameter_content.push(
-        <td key={`${id}-param-${sevLevel}`}>{paramValues || "N/A"}</td>
-      );
-    } else {
-      parameter_content.push(<td key={`${id}-param-${sevLevel}`}>N/A</td>);
-    }
-
     if (results_array[sevKey] && results_array[sevKey].length >= 3) {
-      actual_content.push(
-        <td key={`${id}-class-${sevLevel}`}>{results_array[sevKey][1]}</td>
-      );
-      preds_content.push(
-        <td key={`${id}-pred-${sevLevel}`}>{results_array[sevKey][2]}</td>
+      actualRow.push(
+        <td key={`${id}-class-${severityLevels[index]}`}>
+          {results_array[sevKey][1]}
+        </td>
       );
     } else {
-      actual_content.push(<td key={`${id}-class-${sevLevel}`}>N/A</td>);
-      preds_content.push(<td key={`${id}-pred-${sevLevel}`}>N/A</td>);
+      actualRow.push(<td key={`${id}-class-${severityLevels[index]}`}>N/A</td>);
     }
+  });
+
+  // Create predictions row
+  const predsRow = [
+    <th align="left" bgcolor="F0F0F0" key={`${id}-pred-header`}>
+      Predictions
+    </th>,
+  ];
+
+  severityKeys.forEach((sevKey, index) => {
+    if (results_array[sevKey] && results_array[sevKey].length >= 3) {
+      predsRow.push(
+        <td key={`${id}-pred-${severityLevels[index]}`}>
+          {results_array[sevKey][2]}
+        </td>
+      );
+    } else {
+      predsRow.push(<td key={`${id}-pred-${severityLevels[index]}`}>N/A</td>);
+    }
+  });
+
+  // Create parameter rows - one row per parameter
+  const parameterRows = parameterKeys.map((paramKey) => {
+    const row = [
+      <th align="left" bgcolor="F0F0F0" key={`${id}-param-${paramKey}-header`}>
+        {paramKey}
+      </th>,
+    ];
+
+    severityKeys.forEach((sevKey, index) => {
+      const paramValue =
+        parameters && parameters[sevKey] && parameters[sevKey][paramKey];
+      row.push(
+        <td key={`${id}-param-${paramKey}-${severityLevels[index]}`}>
+          {paramValue !== undefined && paramValue !== null ? paramValue : "N/A"}
+        </td>
+      );
+    });
+
+    return (
+      <tr key={`${id}-row-param-${paramKey}`} align="center">
+        {row}
+      </tr>
+    );
   });
 
   return (
@@ -116,19 +137,17 @@ export const DisplayImages = ({
       <table border="1">
         <tbody>
           <tr key={`${id}-row-sev`} align="center">
-            {severity_labels}
+            {severityHeaderRow}
           </tr>
           <tr key={`${id}-row-img`} align="center">
-            {image_content}
+            {imagesRow}
           </tr>
-          <tr key={`${id}-row-param`} align="center">
-            {parameter_content}
-          </tr>
+          {parameterRows}
           <tr key={`${id}-row-actual`} align="center">
-            {actual_content}
+            {actualRow}
           </tr>
           <tr key={`${id}-row-pred`} align="center">
-            {preds_content}
+            {predsRow}
           </tr>
         </tbody>
       </table>
