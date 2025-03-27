@@ -1,5 +1,5 @@
 import { MDXProvider } from '@mdx-js/react';
-import { RiInformationLine, RiCheckLine, RiCloseLine } from '@remixicon/react';
+import { RiInformationLine } from '@remixicon/react';
 import dynamic from 'next/dynamic';
 import React, { useEffect } from 'react';
 import * as ReactJSXRuntime from 'react/jsx-runtime';
@@ -16,27 +16,23 @@ interface MessageModalProps {
   type: 'success' | 'error';
 }
 
-const MessageModal = ({ isOpen, onClose, title, message, type }: MessageModalProps) => {
+const MessageModal = ({
+  isOpen,
+  onClose,
+  title,
+  message,
+}: MessageModalProps) => {
   if (!isOpen) return null;
-  
+
   return (
     <Modal
       heading={title}
       enableScreenOverlay={true}
       onCloseIconClick={onClose}
-      onPrimaryBtnClick={onClose}
-      primaryBtnLabel="Close"
-      width="400px"
-      height="auto">
+      width="500px"
+      height="200px">
       <div className="flex flex-col items-center justify-center py-6">
-        <div className={`rounded-full p-4 mb-4 ${type === 'success' ? 'bg-green-900' : 'bg-red-900'}`}>
-          {type === 'success' ? (
-            <RiCheckLine className="text-white text-3xl" />
-          ) : (
-            <RiCloseLine className="text-white text-3xl" />
-          )}
-        </div>
-        <p className="text-center text-white">{message}</p>
+        <p className="text-white">{message}</p>
       </div>
     </Modal>
   );
@@ -44,7 +40,7 @@ const MessageModal = ({ isOpen, onClose, title, message, type }: MessageModalPro
 
 interface PluginInputModalProps {
   isOpen: boolean;
-  onClose: () => void;
+  onClose: (shouldRefresh?: boolean) => void;
   pluginName: string;
   inputBlockName: string;
   mdxContent: string;
@@ -67,7 +63,7 @@ export default function PluginInputModal({
   const [error, setError] = React.useState<string>('');
   const [isLoading, setIsLoading] = React.useState(false);
   const [customName, setCustomName] = React.useState<string>('');
-  
+
   // State for message modal
   const [showMessageModal, setShowMessageModal] = React.useState(false);
   const [messageModalProps, setMessageModalProps] = React.useState<{
@@ -93,7 +89,6 @@ export default function PluginInputModal({
     setFormData({});
     setCustomName('');
     setError('');
-    setShowMessageModal(false);
   };
 
   const MDXComponent = React.useMemo(() => {
@@ -181,7 +176,12 @@ export default function PluginInputModal({
 
       const result = await response.json();
       await onSubmit(result);
-      
+
+      // Clear form data after successful submission but don't reset message modal state
+      setFormData({});
+      setCustomName('');
+      setError('');
+
       // Show success message
       setMessageModalProps({
         title: 'Success',
@@ -189,14 +189,10 @@ export default function PluginInputModal({
         type: 'success',
       });
       setShowMessageModal(true);
-      
-      // Reset form data after successful submission
-      resetForm();
-      
     } catch (e) {
       const errorMessage = e instanceof Error ? e.message : 'Invalid form data';
       setError(errorMessage);
-      
+
       // Show error message
       setMessageModalProps({
         title: 'Error',
@@ -212,14 +208,15 @@ export default function PluginInputModal({
   // Custom close handler that wraps the parent onClose and resets the form
   const handleClose = () => {
     resetForm();
-    onClose();
+    onClose(false); // false means don't refresh data
   };
 
   const handleMessageModalClose = () => {
     setShowMessageModal(false);
     if (messageModalProps.type === 'success') {
       // Only close the main modal if it was a success message
-      onClose();
+      // and pass true to indicate data should be refreshed
+      onClose(true);
     }
   };
 
@@ -227,8 +224,8 @@ export default function PluginInputModal({
 
   return (
     <>
-      {/* Main form modal - hidden when showing success message */}
-      {(!showMessageModal || messageModalProps.type === 'error') && (
+      {/* Main form modal - only hide when showing success message */}
+      {!(showMessageModal && messageModalProps.type === 'success') && (
         <Modal
           heading={`${pluginName} - ${inputBlockName}`}
           enableScreenOverlay={true}
@@ -242,13 +239,15 @@ export default function PluginInputModal({
           <div className="flex h-[calc(100%-4rem)] flex-col justify-between">
             {/* Custom name input field with tooltip */}
             <div className="mb-6">
-              <div className="flex items-center mb-2">
-                <label htmlFor="custom-name" className="text-white font-medium">
+              <div className="mb-2 flex items-center">
+                <label
+                  htmlFor="custom-name"
+                  className="font-medium text-white">
                   Input Block Name
                 </label>
-                <div className="relative ml-2 group">
-                  <RiInformationLine className="text-gray-400 hover:text-white cursor-help" />
-                  <div className="absolute left-full ml-2 top-0 w-64 bg-gray-800 p-2 rounded shadow-lg text-xs text-white opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+                <div className="group relative ml-2">
+                  <RiInformationLine className="cursor-help text-gray-400 hover:text-white" />
+                  <div className="invisible absolute left-full top-0 z-10 ml-2 w-64 rounded bg-gray-800 p-2 text-xs text-white opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100">
                     Give your input block a unique name to identify it by
                   </div>
                 </div>
@@ -256,14 +255,14 @@ export default function PluginInputModal({
               <input
                 id="custom-name"
                 type="text"
-                className="w-full p-3 bg-secondary-900 text-white rounded border border-secondary-700 focus:outline-none focus:border-primary-500"
+                className="w-full rounded border border-secondary-700 bg-secondary-900 p-3 text-white focus:border-primary-500 focus:outline-none"
                 placeholder="Enter a unique name for this input block"
                 value={customName}
                 onChange={(e) => setCustomName(e.target.value)}
                 required
               />
             </div>
-            
+
             <MDXProvider>
               <div className="prose prose-invert max-w-none overflow-y-auto">
                 {MDXComponent && (

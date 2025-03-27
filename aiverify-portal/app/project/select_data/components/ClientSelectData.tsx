@@ -2,7 +2,7 @@
 
 import { RiArrowLeftLine, RiArrowRightLine } from '@remixicon/react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Checklist, FairnessTree } from '@/app/inputs/utils/types';
 import { TestModel } from '@/app/models/utils/types';
 import { Algorithm, InputBlock, InputBlockData } from '@/app/types';
@@ -79,6 +79,14 @@ export default function ClientSelectData({
       id: result.id,
     }))
   );
+
+  // Effect to log the initial state and changes for debugging
+  useEffect(() => {
+    console.log(
+      'ClientSelectData - selectedTestResults updated:',
+      selectedTestResults
+    );
+  }, [selectedTestResults]);
 
   // State for input blocks selection
   const [selectedInputBlocks, setSelectedInputBlocks] = useState<
@@ -181,7 +189,12 @@ export default function ClientSelectData({
   };
 
   let backButtonLink = `/templates?flow=${flow}&=projectId=${projectId}`;
-  if (flow === UserFlows.NewProjectWithNewTemplate) {
+  if (
+    flow === UserFlows.NewProjectWithNewTemplate ||
+    flow === UserFlows.NewProjectWithNewTemplateAndResults ||
+    flow === UserFlows.NewProjectWithEditingExistingTemplate ||
+    flow === UserFlows.NewProjectWithEditingExistingTemplateAndResults
+  ) {
     backButtonLink = `/canvas?flow=${flow}&projectId=${projectId}`;
   } else {
     backButtonLink = `/templates?flow=${flow}&projectId=${projectId}`;
@@ -225,7 +238,7 @@ export default function ClientSelectData({
           onTestResultsChange={handleTestResultsChange}
           allTestResults={allTestResults}
           selectedModel={selectedModel}
-          initialTestResults={initialTestResults}
+          initialTestResults={selectedTestResults}
         />
         <UserInputs
           projectId={projectId}
@@ -240,9 +253,8 @@ export default function ClientSelectData({
       </div>
 
       <div
-        className={`flex ${flow !== UserFlows.NewProjectWithNewTemplateAndResults && flow !== UserFlows.EditExistingProject ? 'justify-between' : 'justify-end'}`}>
-        {flow !== UserFlows.NewProjectWithNewTemplateAndResults &&
-        flow !== UserFlows.EditExistingProject ? (
+        className={`flex ${flow !== UserFlows.EditExistingProject ? 'justify-between' : 'justify-end'}`}>
+        {flow !== UserFlows.EditExistingProject ? (
           <Link href={backButtonLink}>
             <Button
               className="w-[130px] gap-4 p-2 text-white"

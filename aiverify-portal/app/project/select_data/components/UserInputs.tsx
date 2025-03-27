@@ -2,8 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React from 'react';
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMDXBundle } from '@/app/inputs/checklists/[groupId]/[checklistId]/hooks/useMDXBundle';
 import { FairnessTreeModalWrapper } from '@/app/inputs/fairnesstree/page';
 import { Checklist, FairnessTree } from '@/app/inputs/utils/types';
@@ -130,6 +129,20 @@ export default function UserInputs({
     return groups;
   }, {} as GroupedChecklists);
 
+  // State to track when to fetch fresh data
+  const [shouldFetchData, setShouldFetchData] = useState(false);
+
+  // Effect to fetch fresh input block data when needed
+  useEffect(() => {
+    if (shouldFetchData) {
+      // Reset the flag
+      setShouldFetchData(false);
+
+      // Fetch the latest data (router.refresh() will be called by the modal close handler)
+      // This ensures that after the page refreshes, we'll maintain our selections
+    }
+  }, [shouldFetchData]);
+
   // Update parent with all selected blocks
   const updateParentWithSelectedBlocks = (
     newGroup: string,
@@ -246,6 +259,24 @@ export default function UserInputs({
   const handlePluginSubmit = async (data: Record<string, unknown>) => {
     // Handle the form submission for plugin input
     console.log('Plugin input submitted:', data);
+
+    // We need to refresh the available inputs to include the newly created one
+    if (data && data.id) {
+      // If the plugin input was for the current selected block, select the newly created input
+      if (selectedPlugin) {
+        const key = `${selectedPlugin.gid}-${selectedPlugin.cid}`;
+        const newOtherInputs = {
+          ...selectedOtherInputs,
+          [key]: data.id.toString(),
+        };
+        setSelectedOtherInputs(newOtherInputs);
+        updateParentWithSelectedBlocks(
+          selectedGroup,
+          selectedFairnessTrees,
+          newOtherInputs
+        );
+      }
+    }
   };
 
   return (
@@ -259,7 +290,9 @@ export default function UserInputs({
 
       <div className="space-y-4">
         {/* Process Checklists - Show only one consolidated dropdown */}
-        {requiredInputBlocks.some((block) => block.gid === 'aiverify.stock.process_checklist') && (
+        {requiredInputBlocks.some(
+          (block) => block.gid === 'aiverify.stock.process_checklist'
+        ) && (
           <div className="flex items-center justify-between gap-4">
             <label className="w-64 text-white">Process Checklists</label>
             <div className="relative flex-1">
@@ -436,9 +469,13 @@ export default function UserInputs({
 
       <PluginInputModal
         isOpen={!!selectedPlugin}
-        onClose={() => {
+        onClose={(shouldRefresh) => {
           setSelectedPlugin(null);
-          router.refresh();
+          // Only refresh the page if explicitly asked to
+          if (shouldRefresh) {
+            setShouldFetchData(true);
+            router.refresh();
+          }
         }}
         pluginName={selectedPlugin?.name || ''}
         inputBlockName={selectedPlugin?.inputBlock || ''}

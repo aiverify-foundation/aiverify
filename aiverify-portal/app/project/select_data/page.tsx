@@ -19,8 +19,8 @@ export default async function SelectDataPage({
 }: {
   searchParams: { projectId?: string; flow?: string };
 }) {
-  const projectId = searchParams.projectId;
-  const flow = searchParams.flow;
+  const projectId = await searchParams.projectId;
+  const flow = await searchParams.flow;
   console.log('flow', flow);
 
   if (!projectId || !flow) {
