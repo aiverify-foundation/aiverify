@@ -41,11 +41,11 @@ python -m aiverify_blur_corruptions \
 
 If the algorithm runs successfully, the results of the test will be saved in an `output` folder.
 
-## Including Specific Blur Corruptions
+## Including Specific Corruptions
 
 ### Usage
 
-By default, **all** blur corruption functions are applied. You can use the `--corruptions` flag to specify which functions to run.
+By default, **all** corruption functions are applied. You can use the `--corruptions` flag to specify which functions to run.
 
 ```sh
 --corruptions [FUNCTION_NAME ...]
@@ -53,7 +53,7 @@ By default, **all** blur corruption functions are applied. You can use the `--co
 
 ### Options
 
-- `all` -> Runs all blur corruption functions (default)
+- `all` -> Runs all corruption functions (default)
 - `gaussian_blur`
 - `glass_blur`
 - `defocus_blur`
@@ -81,9 +81,9 @@ python -m aiverify_blur_corruptions \
 
 ## Customizing Parameters
 
-To fine-tune blur corruption parameters, use the [Blur Corruption Playground Notebook](./playground.ipynb). This notebook allows you to:
+To fine-tune the corruption parameters, use the [Blur Corruption Playground Notebook](./playground.ipynb). This notebook allows you to:
 
-✅ Visualize the effects of different blur corruption functions.
+✅ Visualize the effects of different corruption functions.
 
 ✅ Experiment with different parameter values.
 
@@ -169,7 +169,7 @@ class CustomModel(torch.nn.Module):
         return predictions
 ```
 
-By following these steps, you can integrate your custom PyTorch model into the blur corruption plugin.
+By following these steps, you can integrate your custom PyTorch model into the corruption plugin.
 
 ## Develop plugin locally
 

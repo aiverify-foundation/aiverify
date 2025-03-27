@@ -361,19 +361,30 @@ class Plugin(IAlgorithm):
 
     def _load_images(self, image_paths: list[str]) -> list[np.ndarray]:
         """
-        A method to transform images in directory to numpy
+        Load a list of numpy images from file paths.
 
         Args:
             image_paths (list[str]): A list of image file paths
 
         Returns:
-            np.ndarray: A numpy array of images
+            np.ndarray: A list of numpy images
         """
         return [np.array(Image.open(i)) / 255.0 for i in image_paths]
 
     def _get_corrupted_images(
         self, images: list[np.ndarray], corruption_fn: Optional[Callable], fn_kwargs: dict
     ) -> list[np.ndarray]:
+        """
+        Apply the corruption function to a list of images.
+
+        Args:
+            images (list[np.ndarray]): A list of numpy images
+            corruption_fn (Optional[Callable]): The corruption function to apply
+            fn_kwargs (dict): The keyword arguments to pass to the corruption function
+
+        Returns:
+            list[np.ndarray]: A list of corrupted images
+        """
         corrupted_images = []
         for image in images:
             if corruption_fn:
@@ -384,6 +395,16 @@ class Plugin(IAlgorithm):
         return corrupted_images
 
     def _save_images(self, images: list[np.ndarray], subfolder_name: str) -> list[str]:
+        """
+        Save a list of numpy arrays as images in a subfolder.
+
+        Args:
+            images (list[np.ndarray]): A list of numpy images
+            subfolder_name (str): The name of the subfolder to save images
+
+        Returns:
+            list[str]: A list of saved image paths
+        """
         image_paths = []
         save_dir = self._save_folder / subfolder_name
         save_dir.mkdir(parents=True, exist_ok=True)
