@@ -66,7 +66,6 @@ export const DisplayImages = ({
     );
   });
 
-  // Create actual class row
   const actualRow = [
     <th align="left" bgcolor="F0F0F0" key={`${id}-actual-header`}>
       Actual Class
@@ -85,7 +84,6 @@ export const DisplayImages = ({
     }
   });
 
-  // Create predictions row
   const predsRow = [
     <th align="left" bgcolor="F0F0F0" key={`${id}-pred-header`}>
       Predictions

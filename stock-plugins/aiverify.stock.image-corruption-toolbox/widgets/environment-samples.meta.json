@@ -1,13 +1,13 @@
 {
-  "cid": "environment-samples-rain",
+  "cid": "environment-samples",
   "widgetSize": {
     "minW": 8,
     "minH": 7,
     "maxW": 12,
     "maxH": 36
   },
-  "name": "Samples (Environment: Rain)",
-  "description": "To generate sample images for environment corruptions (rain)",
+  "name": "Environment corruption samples",
+  "description": "To generate sample images for environment corruptions",
   "dependencies": [
     {
       "cid": "aiverify_environment_corruptions"

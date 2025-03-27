@@ -1,13 +1,13 @@
 {
-  "cid": "environment-samples-fog",
+  "cid": "environment-bar-chart",
   "widgetSize": {
-    "minW": 8,
-    "minH": 7,
+    "minW": 12,
+    "minH": 10,
     "maxW": 12,
     "maxH": 36
   },
-  "name": "Samples (Environment: Fog)",
-  "description": "To generate sample images for environment corruptions (fog)",
+  "name": "Bar Chart (Environment Corruptions)",
+  "description": "To generate bar charts to visualise the accuracy results when environment corruptions are applied",
   "dependencies": [
     {
       "cid": "aiverify_environment_corruptions"

@@ -1,13 +1,13 @@
 {
-  "cid": "digital-samples-compression",
+  "cid": "digital-samples",
   "widgetSize": {
     "minW": 8,
     "minH": 7,
     "maxW": 12,
     "maxH": 36
   },
-  "name": "Samples (Digital: Compression)",
-  "description": "To generate sample images for digital corruptions (compression)",
+  "name": "Digital corruption samples",
+  "description": "To generate sample images for digital corruptions",
   "dependencies": [
     {
       "cid": "aiverify_digital_corruptions"
