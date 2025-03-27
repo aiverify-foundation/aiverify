@@ -140,11 +140,7 @@ class Plugin(IPipeline):
             Any: predicted result
         """
         try:
-            if isinstance(data, list):
-                for item in data:
-                    return self._pipeline.predict(item)
-            else:
-                return self._pipeline.predict(data)
+            return self._pipeline.predict(data)
         except Exception:
             raise
 
@@ -159,11 +155,7 @@ class Plugin(IPipeline):
             Any: predicted result
         """
         try:
-            if isinstance(data, list):
-                for item in data:
-                    return self._pipeline.predict_proba(item)
-            else:
-                return self._pipeline.predict_proba(data)
+            return self._pipeline.predict_proba(data)
         except Exception:
             raise
 

@@ -74,8 +74,8 @@ class ObjectTest:
             "user_defined_params": {"corruptions": list(blur.CORRUPTION_FN)},
             "logger": logger_instance,
             "progress_callback": lambda _: _,
-            "base_path": Path().absolute(),
-            "ground_truth": ground_truth,
+            "ground_truth_path": valid_ground_truth_path,
+            "ground_truth_label": ground_truth,
             "file_name_label": "file_name",
             "set_seed": 10,
         }
@@ -259,7 +259,7 @@ def test_init_plugin_instance_with_invalid_ground_truth_instance_type(
 @pytest.mark.parametrize("ground_truth", [test_int, test_float, test_list, test_dict, test_tuple])
 def test_init_plugin_instance_with_invalid_ground_truth_type(ground_truth):
     test_object = ObjectTest()
-    test_object._input_args["ground_truth"] = ground_truth
+    test_object._input_args["ground_truth_label"] = ground_truth
     expected_exception_msg = "The algorithm has failed ground truth header validation."
     with pytest.raises(test_object._expected_exception) as excinfo:
         Plugin(
@@ -275,7 +275,7 @@ def test_init_plugin_instance_with_invalid_ground_truth_type(ground_truth):
 @pytest.mark.parametrize("ground_truth", [test_none])
 def test_init_plugin_instance_with_none_ground_truth_type(ground_truth):
     test_object = ObjectTest()
-    test_object._input_args["ground_truth"] = ground_truth
+    test_object._input_args["ground_truth_label"] = ground_truth
     expected_exception_msg = "The algorithm has failed ground truth header validation."
     with pytest.raises(test_object._expected_exception) as excinfo:
         Plugin(
@@ -308,9 +308,8 @@ def test_init_plugin_instance_with_missing_ground_truth(
     model_type = ModelType.CLASSIFICATION
     test_object = ObjectTest()
     input_args = test_object._input_args.copy()
-    del input_args["ground_truth"]
-    expected_exception = RuntimeError
-    expected_exception_msg = "The algorithm has failed ground truth header validation."
+    del input_args["ground_truth_label"]
+    expected_exception = TypeError
     logger_instance = logging.getLogger("PluginTestLogger")
     logger_instance.setLevel(logging.DEBUG)
 
@@ -325,7 +324,6 @@ def test_init_plugin_instance_with_missing_ground_truth(
             **input_args,
         )
     assert excinfo.type == expected_exception
-    assert expected_exception_msg in str(excinfo)
 
 
 @pytest.mark.parametrize(
@@ -400,25 +398,6 @@ def test_setup_plugin_instance_with_invalid_log_level_and_message(log_info):
     )
     with pytest.raises(test_object._expected_exception) as excinfo:
         test_plugin.add_to_log(log_info[0], log_info[1])
-    assert excinfo.type == test_object._expected_exception
-    assert expected_exception_msg in str(excinfo)
-
-
-@pytest.mark.parametrize(
-    "invalid_project_base_path",
-    [test_string, test_int, test_float, test_list, test_dict, test_tuple],
-)
-def test_init_plugin_instance_with_invalid_project_base_path(invalid_project_base_path):
-    test_object = ObjectTest()
-    test_object._input_args["base_path"] = invalid_project_base_path
-    expected_exception_msg = "The algorithm has failed validation for the project path."
-    with pytest.raises(test_object._expected_exception) as excinfo:
-        Plugin(
-            test_object._data_instance_and_serializer,
-            test_object._model_instance_and_serializer,
-            test_object._ground_truth_instance_and_serializer,
-            **test_object._input_args,
-        )
     assert excinfo.type == test_object._expected_exception
     assert expected_exception_msg in str(excinfo)
 
