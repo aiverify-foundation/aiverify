@@ -1,7 +1,7 @@
 import copy
 import logging
 import shutil
-from pathlib import Path, PurePath
+from pathlib import Path
 from typing import Callable, Dict, Optional, Tuple
 
 import numpy as np
@@ -74,11 +74,14 @@ class Plugin(IAlgorithm):
         user_defined_params: dict,
         logger: logging.Logger,
         progress_callback: Callable,
-        base_path: Path,
-        ground_truth: Optional[str] = None,
-        file_name_label: Optional[str] = None,
+        ground_truth_path: str,
+        ground_truth_label: str,
+        file_name_label: str,
         set_seed: Optional[int] = None,
     ):
+        if not requires_ground_truth:
+            raise NotImplementedError("This plugin does not support tasks without ground truth yet.")
+
         # Store the input arguments as private vars
         self._data_instance, _ = data_instance_and_serializer
         self._model_instance, _ = model_instance_and_serializer
@@ -88,13 +91,13 @@ class Plugin(IAlgorithm):
         self._user_defined_params = user_defined_params
         self._logger = logger
         self._progress_inst = SimpleProgress(1, 0, progress_callback)
-        self._base_path = base_path
+        self._ground_truth_label = ground_truth_label
 
         # Store the input parameters defined in the input schema
-        self.annotated_ground_truth_path = self._ground_truth = ground_truth
-        self.file_name_label = file_name_label
-        self.set_seed = set_seed
-        self.corruptions = user_defined_params["corruptions"]
+        self._ground_truth_path = self.annotated_ground_truth_path = ground_truth_path
+        self._file_name_label = self.file_name_label = file_name_label
+        self._set_seed = self.set_seed = set_seed
+        self._corruptions = self.corruptions = user_defined_params["corruptions"]
 
         # Perform setup for this plug-in
         self.setup()
@@ -102,8 +105,7 @@ class Plugin(IAlgorithm):
         # Write all output to the output folder
         output_folder = Path.cwd() / "output"
         output_folder.mkdir(parents=True, exist_ok=True)
-        self._tmp_path = output_folder / "temp"
-        self._save_path = output_folder / "widgets" / "blur_images"
+        self._save_folder = output_folder / "images"
 
         # Algorithm input schema defined in input.schema.json
         # By defining the input schema, it allows the front-end to know what algorithm input params is
@@ -206,11 +208,11 @@ class Plugin(IAlgorithm):
                 raise RuntimeError("The algorithm has failed ground truth data validation")
 
             # Perform validation on ground truth header
-            if not isinstance(self._ground_truth, str):
+            if not isinstance(self._ground_truth_label, str):
                 self.add_to_log(
                     logging.ERROR,
                     "The algorithm has failed ground truth header validation. \
-                    Header must be in String and must be present in the dataset: {self._ground_truth}",
+                    Header must be in String and must be present in the dataset: {self._ground_truth_label}",
                 )
                 raise RuntimeError(
                     "The algorithm has failed ground truth header validation. \
@@ -221,18 +223,6 @@ class Plugin(IAlgorithm):
         if self._progress_inst:
             if not isinstance(self._progress_inst, SimpleProgress):
                 raise RuntimeError("The algorithm has failed validation for the progress bar")
-
-        # Perform validation on project_base_path
-        if not isinstance(self._base_path, PurePath):
-            self.add_to_log(
-                logging.ERROR,
-                "The algorithm has failed validation for the project path. \
-                Ensure that the project path is a valid path: {self._base_path}",
-            )
-            raise RuntimeError(
-                "The algorithm has failed validation for the project path. \
-                Ensure that the project path is a valid path"
-            )
 
         # Perform validation on metadata
         if not isinstance(self._metadata, PluginMetadata):
@@ -282,16 +272,12 @@ class Plugin(IAlgorithm):
         # Sort ground truth based on file name
         file_names = [Path(i).name for i in self._data_instance.get_data()["image_directory"]]
         df: pd.DataFrame = self._ground_truth_instance.get_data()
-        self._ordered_ground_truth = df.set_index(self._input_arguments["file_name_label"]).reindex(file_names)
+        self._ordered_ground_truth_df = df.set_index(self._input_arguments["file_name_label"]).reindex(file_names)
 
         # Initialise main image directory
-        if self._tmp_path.exists():
-            shutil.rmtree(self._tmp_path)
-        self._tmp_path.mkdir(parents=True, exist_ok=True)
-
-        if self._save_path.exists():
-            shutil.rmtree(self._save_path)
-        self._save_path.mkdir(parents=True, exist_ok=True)
+        if self._save_folder.exists():
+            shutil.rmtree(self._save_folder)
+        self._save_folder.mkdir(parents=True, exist_ok=True)
 
         # Apply user defined parameters to default parameters
         corruption_fn = {name: blur.CORRUPTION_FN[name] for name in self._input_arguments["corruptions"]}
@@ -312,14 +298,14 @@ class Plugin(IAlgorithm):
             corruption_fn (dict): Mapping of corruption name to its corresponding function object
             parameters (dict): Dict of parameter values at different severity levels
         """
-        image_df, _ = self._transform_to_numpy(self._data_instance.get_data())
-        ground_truth_df = self._ordered_ground_truth
+        image_paths: list[str] = self._data_instance.get_data()["image_directory"].tolist()
+        ground_truths = self._ordered_ground_truth_df[self._ground_truth_label].tolist()
+        images = self._load_images(image_paths)
         combined_results = []
         output_results = dict()
 
-        seed = self._input_arguments["set_seed"]
-        np.random.seed(seed)
-        random_index = np.random.choice(len(image_df))
+        np.random.seed(self._set_seed)
+        display_idx = np.random.choice(len(image_paths))
 
         self._progress_inst.add_total(len(corruption_fn))
 
@@ -342,23 +328,23 @@ class Plugin(IAlgorithm):
             except ValueError:
                 raise ValueError(f"Number of values must be the same for all parameters! Got: {fn_params}")
 
-            # updating model accuracies using corrupted test dataset
-            for severity, kwargs in enumerate(fn_kwargs):
-                if severity > 0:
-                    corrupted_df = self._build_corrupted_dataframe(
-                        image_df, ground_truth_df, corruption_fn[corruption], kwargs, severity, corruption
-                    )
-                else:
-                    corrupted_df = self._build_corrupted_dataframe(
-                        image_df, ground_truth_df, None, kwargs, severity, corruption
-                    )
-                severity_params.update({"severity" + str(severity): kwargs})
-                accuracy = self._get_accuracy(corrupted_df, ground_truth_df)
-                accuracies.update({"severity" + str(severity): accuracy})
+            for severity, _fn_kwargs in enumerate(fn_kwargs):
+                _corruption_fn = corruption_fn[corruption] if severity > 0 else None
+                severity_params.update({"severity" + str(severity): _fn_kwargs})
 
-                random_display = self._get_rand_display(
-                    corrupted_df, ground_truth_df, corruption, severity, random_index
-                )
+                corrupted_images = self._get_corrupted_images(images, _corruption_fn, _fn_kwargs)
+                corrupted_dir = Path(corruption) / f"severity{severity}"
+                corrupted_image_paths = self._save_images(corrupted_images, str(corrupted_dir))
+                predictions = self._model_instance.predict(corrupted_image_paths)
+
+                accuracy = accuracy_score(ground_truths, predictions)
+                accuracies.update({f"severity{severity}": accuracy})
+
+                random_display = [
+                    corrupted_image_paths[display_idx],
+                    ground_truths[display_idx],
+                    predictions[display_idx],
+                ]
                 display_info.update({"severity" + str(severity): random_display})
 
             individual_results.update(
@@ -373,135 +359,37 @@ class Plugin(IAlgorithm):
         # Assign output results
         self._results = output_results
 
-    def _transform_to_numpy(self, dir_df: pd.DataFrame) -> tuple[pd.DataFrame, list]:
+    def _load_images(self, image_paths: list[str]) -> list[np.ndarray]:
         """
         A method to transform images in directory to numpy
 
         Args:
-            dir_df (dataframe): pandas Series containing column with array of directories of images
+            image_paths (list[str]): A list of image file paths
 
         Returns:
-            tuple[pd.DataFrame, list]: Dataframe containing the array of all images and list of original image shapes
+            np.ndarray: A numpy array of images
         """
-        images, image_shapes = [], []
-        for dir in dir_df["image_directory"]:  # work directly with the raw image by reading from the directory itself
-            image_array = np.array(Image.open(dir)) / 255.0
-            image_shapes.append(image_array.shape)
-            images.append(np.float64(image_array))
-        image_df = pd.Series(list(images), name="images")
-        return image_df, image_shapes
+        return [np.array(Image.open(i)) / 255.0 for i in image_paths]
 
-    def _get_accuracy(self, images: pd.Series, labels: pd.Series) -> np.float64:
-        """
-        A method to return the accuracy of the model with the corrupted set of inputs
-
-        Args:
-            images (dataframe): pandas Series containing column with array of all corrupted images
-            labels (dataframe): pandas Series containing column with ground truths
-
-        Returns:
-            np.float64: accuracy score
-        """
-        predictions = self._model_instance.predict(images["image_directory"])
-        accuracy = accuracy_score(labels, predictions)
-
-        return accuracy
-
-    def _get_rand_display(
-        self,
-        images: pd.Series,
-        labels: pd.Series,
-        corruption: str,
-        severity: np.int64,
-        index: np.int64,
-    ) -> np.ndarray:
-        """
-        A method to return random samples images for display
-
-        Args:
-            image_df (dataframe): pandas Series containing column with array of all corrupted images
-            labels (dataframe): pandas Series containing column with ground truths
-            corruption (str): name of the corurption function
-            severtity (np.int64): level of severity of perturbation
-            index (np.int64): randomly selected index for sampling
-
-        Returns:
-            np.float64: accuracy score
-        """
-        predictions = self._model_instance.predict(images["image_directory"])
-
-        random_pred = predictions[index]
-        random_actual = labels.loc[index, self._ground_truth]
-
-        image_name = str(severity) + ".png"
-        image_path = images.loc[index, "image_directory"]
-        image_relative_path = str(Path(image_path).relative_to(Path().absolute()))
-        image_relative_path = image_relative_path.replace("output/", "", 1)
-
-        Path(self._save_path / corruption).mkdir(parents=True, exist_ok=True)
-        shutil.copy(
-            image_path,
-            self._save_path / corruption / image_name,
-        )
-        display_info = np.array([image_relative_path, random_actual, random_pred])
-        return display_info
-
-    def _build_corrupted_dataframe(
-        self,
-        data: pd.Series,
-        labels: pd.DataFrame,
-        noise_fn: Optional[Callable],
-        fn_kwargs: dict,
-        severity: int,
-        corruption: str,
-    ) -> pd.DataFrame:
-        """
-        Build pandas dataframe of corrupted image (array)
-
-        Args:
-            data (Series): Pandas Series containing all the original images
-            labels (str): Image column name from input schema
-            noise_fn (Callable): Corruption function to be used
-            fn_kwargs (dict): Kwargs of corruption function
-            severity (int): Severity of corruption function
-            corruption (str): Name of corruption function
-
-        Returns:
-            pd.DataFrame: Corrupted images in pandas DataFrame in col1 and ground truth labels
-        """
-        corrupted_list = []
-
-        for img in data:
-            if noise_fn is not None:
-                corrupted_image = noise_fn(img, **fn_kwargs)
-                corrupted_list.append(corrupted_image)
+    def _get_corrupted_images(
+        self, images: list[np.ndarray], corruption_fn: Optional[Callable], fn_kwargs: dict
+    ) -> list[np.ndarray]:
+        corrupted_images = []
+        for image in images:
+            if corruption_fn:
+                corrupted_image = corruption_fn(image, **fn_kwargs)
+                corrupted_images.append(corrupted_image)
             else:
-                corrupted_list.append(img)
-        images_df = self._transform_to_dir_df(corrupted_list, str(Path(corruption) / ("severity" + str(severity))))
+                corrupted_images.append(image)
+        return corrupted_images
 
-        corrupted_df = pd.concat([images_df, labels.reset_index(drop=True, inplace=True)], axis=1)
-        return corrupted_df
+    def _save_images(self, images: list[np.ndarray], subfolder_name: str) -> list[str]:
+        image_paths = []
+        save_dir = self._save_folder / subfolder_name
+        save_dir.mkdir(parents=True, exist_ok=True)
 
-    def _transform_to_dir_df(self, data_np: list[np.ndarray], subfolder_name: str) -> pd.DataFrame:
-        """
-        A method to convert images in np.array form into saved images in directories for the model pipeline
-
-        Args:
-            data_np (np.ndarray): array containing all the iamges in np.ndarray format
-            subfolder_name (str): name of the subfolder to save the images in
-
-        Returns:
-            pd.DataFrame: Image directories in pandas dataframe
-        """
-        pred_dirs = []
-        tmp_path = self._tmp_path
-        Path(str(tmp_path / subfolder_name)).mkdir(parents=True, exist_ok=True)
-        for index, img_array in enumerate(data_np):
-            Image.fromarray(np.uint8(img_array * 255.0)).save(str(tmp_path / subfolder_name / (str(index) + ".png")))
-        for i in sorted(
-            Path.iterdir(Path(str(tmp_path / subfolder_name))),
-            key=lambda i: int(i.stem),
-        ):
-            pred_dirs.append(str(i))
-        pred_dirs_df = pd.DataFrame(pred_dirs, columns=["image_directory"])
-        return pred_dirs_df
+        for idx, image in enumerate(images):
+            image_path = save_dir / f"{idx}.png"
+            Image.fromarray((image * 255.0).astype(np.uint8)).save(image_path)
+            image_paths.append(str(image_path))
+        return image_paths

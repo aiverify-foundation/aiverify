@@ -1,72 +1,72 @@
 {
-    "title": "Algorithm Plugin Input Arguments",
-    "description": "A schema for algorithm plugin input arguments",
-    "type": "object",
-    "required": [
-        "annotated_ground_truth_path",
-        "file_name_label",
-        "set_seed",
-        "corruptions"
-    ],
-    "properties": {
-        "annotated_ground_truth_path": {
-            "title": "Annotated ground truth path",
-            "description": "Select the dataset containing image file names and corresponding ground truth labels",
-            "type": "string",
-            "ui:widget": "selectDataset"
-        },
-        "file_name_label": {
-            "title": "Name of column containing image file names",
-            "description": "Key in the name of the column containing the file names in the annotated ground truth dataset",
-            "type": "string"
-        },
-        "set_seed": {
-            "title": "Seed for selection of data for display",
-            "description": "Change to a specific seed for random selection the sample data for display if desired",
-            "default": 10,
-            "type": ["integer", "null"]
-        },
-        "corruptions": {
-            "title": "Name(s) of blur corruption to run",
-            "description": "Specify the name(s) of blur corruption function to run. Default: 'all'",
-            "type": "array",
-            "items": {"type": "string"}
-        },
-        "gaussian_blur_sigma": {
-            "title": "Gaussian Blur sigma value(s)",
-            "description": "Customize the sigma value(s) for the Gaussian Blur corruption function",
-            "type": ["array", "null"],
-            "items": {"type": "number"}
-        },
-        "glass_blur_max_delta": {
-            "title": "Glass Blur max delta value(s)",
-            "description": "Customize the max delta value(s) for the Glass Blur corruption function",
-            "type": ["array", "null"],
-            "items": {"type": "integer"}
-        },
-        "defocus_blur_radius": {
-            "title": "Defocus Blur radius value(s)",
-            "description": "Customize the radius value(s) for the Defocus Blur corruption function",
-            "type": ["array", "null"],
-            "items": {"type": "integer"}
-        },
-        "horizontal_motion_blur_kernel_size": {
-            "title": "Horizontal Motion Blur kernel size value(s)",
-            "description": "Customize the kernel size value(s) for the Horizontal Motion Blur corruption function",
-            "type": ["array", "null"],
-            "items": {"type": "integer"}
-        },
-        "vertical_motion_blur_kernel_size": {
-            "title": "Vertical Motion Blur kernel size value(s)",
-            "description": "Customize the kernel size value(s) for the Vertical Motion Blur corruption function",
-            "type": ["array", "null"],
-            "items": {"type": "integer"}
-        },
-        "zoom_blur_zoom_factor": {
-            "title": "Zoom Blur zoom factor value(s)",
-            "description": "Customize the zoom factor value(s) for the Zoom Blur corruption function",
-            "type": ["array", "null"],
-            "items": {"type": "number"}
-        }
+  "title": "Algorithm Plugin Input Arguments",
+  "description": "A schema for algorithm plugin input arguments",
+  "type": "object",
+  "required": [
+    "annotated_ground_truth_path",
+    "file_name_label",
+    "set_seed",
+    "corruptions"
+  ],
+  "properties": {
+    "annotated_ground_truth_path": {
+      "title": "Annotated Ground truth path",
+      "description": "Select the dataset containing image file names and corresponding ground truth labels",
+      "type": "string",
+      "ui:widget": "selectDataset"
+    },
+    "file_name_label": {
+      "title": "Name of column containing image file names",
+      "description": "Key in the name of the column containing the file names in the annotated ground truth dataset",
+      "type": "string"
+    },
+    "set_seed": {
+      "title": "Seed for selection of data for display",
+      "description": "Change to a specific seed for random selection the sample data for display if desired",
+      "default": 10,
+      "type": ["integer", "null"]
+    },
+    "corruptions": {
+      "title": "Name(s) of corruption to run",
+      "description": "Specify the name(s) of corruption function to run. Default: 'all'",
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "gaussian_blur_sigma": {
+      "title": "Gaussian Blur sigma value(s)",
+      "description": "Customize the sigma value(s) for the Gaussian Blur corruption function",
+      "type": ["array", "null"],
+      "items": { "type": "number" }
+    },
+    "glass_blur_max_delta": {
+      "title": "Glass Blur max delta value(s)",
+      "description": "Customize the max delta value(s) for the Glass Blur corruption function",
+      "type": ["array", "null"],
+      "items": { "type": "integer" }
+    },
+    "defocus_blur_radius": {
+      "title": "Defocus Blur radius value(s)",
+      "description": "Customize the radius value(s) for the Defocus Blur corruption function",
+      "type": ["array", "null"],
+      "items": { "type": "integer" }
+    },
+    "horizontal_motion_blur_kernel_size": {
+      "title": "Horizontal Motion Blur kernel size value(s)",
+      "description": "Customize the kernel size value(s) for the Horizontal Motion Blur corruption function",
+      "type": ["array", "null"],
+      "items": { "type": "integer" }
+    },
+    "vertical_motion_blur_kernel_size": {
+      "title": "Vertical Motion Blur kernel size value(s)",
+      "description": "Customize the kernel size value(s) for the Vertical Motion Blur corruption function",
+      "type": ["array", "null"],
+      "items": { "type": "integer" }
+    },
+    "zoom_blur_zoom_factor": {
+      "title": "Zoom Blur zoom factor value(s)",
+      "description": "Customize the zoom factor value(s) for the Zoom Blur corruption function",
+      "type": ["array", "null"],
+      "items": { "type": "number" }
     }
+  }
 }
