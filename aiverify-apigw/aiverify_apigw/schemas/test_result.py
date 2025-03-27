@@ -42,7 +42,7 @@ class TestResult(MyBaseModel):
         pattern=r"^[a-zA-Z0-9][a-zA-Z0-9-._]*$",
     )
     version: Optional[str] = Field(default=None, description="Algorithm version")
-    startTime: datetime = Field(description="Start date time of test")
+    startTime: datetime = Field(description="Start date time of test", strict=False)
     timeTaken: float = Field(description="Time taken to complete running the test in seconds.")
     testArguments: TestArguments = Field(description="Test arguments")
     output: str = Field(
@@ -79,8 +79,8 @@ class TestResult(MyBaseModel):
 class TestResultOutput(TestResult):
     id: int  # test_result_id
     name: str  # name
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+    created_at: Optional[datetime] = Field(default=None, strict=False)
+    updated_at: Optional[datetime] = Field(default=None, strict=False)
 
     @classmethod
     def from_model(cls, result: TestResultModel) -> "TestResultOutput":
