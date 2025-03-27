@@ -1,14 +1,15 @@
-from pydantic import BaseModel, Field
+from pydantic import Field
 from typing import Optional, Any, Dict
 
 import json
 from ..lib.constants import TestModelMode, TestRunStatus
 from ..models.test_run_model import TestRunModel
 from .test_result import TestResultOutput
+from .base_model import MyBaseModel
 
 
-class TestRunInput(BaseModel):
-    mode: TestModelMode
+class TestRunInput(MyBaseModel):
+    mode: TestModelMode = Field(strict=False)
     algorithmGID: str
     algorithmCID: str
     algorithmArgs: Dict[str, Any]
@@ -37,7 +38,7 @@ class TestRunInput(BaseModel):
 
 class TestRunOutput(TestRunInput):
     id: str # Test run unique identifier
-    status: TestRunStatus = Field(description="Status of the test run")
+    status: TestRunStatus = Field(description="Status of the test run", strict=False)
     progress: int = Field(default=0, ge=0, le=100)
     testResult: Optional[TestResultOutput] # only when status is success
     errorMessages: Optional[str] # only when status is error
@@ -61,7 +62,7 @@ class TestRunOutput(TestRunInput):
         )
 
 
-class TestRunStatusUpdate(BaseModel):
-    status: Optional[TestRunStatus] = None
+class TestRunStatusUpdate(MyBaseModel):
+    status: Optional[TestRunStatus] = Field(default=None, strict=False)
     progress: Optional[int] = Field(default=None, ge=0, le=100)
     errorMessages: Optional[str] = None

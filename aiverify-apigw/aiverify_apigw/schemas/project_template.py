@@ -54,7 +54,7 @@ class WidgetLayout(MyBaseModel):
     static: bool = Field(description="Whether the layout item is static")
     isDraggable: Optional[bool] = False
     isResizable: Optional[bool] = False
-    resizeHandles: Optional[List[WidgetLayoutResizeHandleEmum]] = Field(description="Resize handle", default=None)
+    resizeHandles: Optional[List[WidgetLayoutResizeHandleEmum]] = Field(description="Resize handle", default=None, strict=False)
     isBounded: Optional[bool] = False
 
     @model_validator(mode='after')
@@ -108,8 +108,8 @@ class ProjectTemplatePatchInput(ProjectTemplateMetaOptional):
 class ProjectTemplateOutput(ProjectTemplateInput):
     id: int  # project template id
     fromPlugin: Optional[bool] = False
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+    created_at: Optional[datetime] = Field(default=None, strict=False)
+    updated_at: Optional[datetime] = Field(default=None, strict=False)
 
     @classmethod
     def from_model(cls, result: ProjectTemplateModel) -> "ProjectTemplateOutput":

@@ -41,7 +41,8 @@ class InputBlockMeta(MyBaseModel):
     groupNumber: Optional[int] = Field(
         default=None, description="Input Block group number")
     width: Optional[InputBlockSize] = Field(
-        default=InputBlockSize.md, description="Width of Input Block dialog"
+        default=InputBlockSize.md, description="Width of Input Block dialog",
+        strict=False
     )
     fullScreen: Optional[bool] = Field(
         default=False, description="Width of Input Block dialog")
@@ -91,10 +92,11 @@ class InputBlockData(MyBaseModel):
         min_length=1,
         max_length=128,
     )
-    group: str = Field(  # Added the group field with validation
+    group: Optional[str] = Field(  # Added the group field with validation
         description="Unique group identifier to ensure each group contains unique checklists",
         min_length=1,
         max_length=128,
+        default=None
     )
     data: dict = Field(description="User data")
 
@@ -139,8 +141,8 @@ class InputBlockDataUpdate(MyBaseModel):
 
 class InputBlockDataOutput(InputBlockData):
     id: int = Field(description="Input block data id")
-    created_at: Optional[datetime] = Field(description="Time created")
-    updated_at: Optional[datetime] = Field(description="Time updated")
+    created_at: Optional[datetime] = Field(description="Time created", strict=False)
+    updated_at: Optional[datetime] = Field(description="Time updated", strict=False)
 
     @classmethod
     def from_model(cls, result: InputBlockDataModel) -> "InputBlockDataOutput":
