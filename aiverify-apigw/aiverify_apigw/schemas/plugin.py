@@ -25,6 +25,7 @@ class PluginMeta(MyBaseModel):
         default=None,
         description="URL of project page",
         max_length=2048,
+        strict=False
     )
 
 
@@ -32,12 +33,12 @@ class PluginOutput(PluginMeta):
     meta: str = Field(description="Content from the plugin meta file")
     is_stock: bool = Field(description="Whether this is a stock plugin", default=False)
     zip_hash: Optional[str] = Field(description="File hash of plugin zip")
-    algorithms: List[AlgorithmOutput] = Field(description="List of algorithms", default=[])
-    widgets: List[WidgetOutput] = Field(description="List of widgets", default=[])
-    input_blocks: List[InputBlockOutput] = Field(description="List of input blocks", default=[])
-    templates: List[TemplateOutput] = Field(description="List of templates", default=[])
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+    algorithms: List[AlgorithmOutput] = Field(description="List of algorithms", default=[], strict=False)
+    widgets: List[WidgetOutput] = Field(description="List of widgets", default=[], strict=False)
+    input_blocks: List[InputBlockOutput] = Field(description="List of input blocks", default=[], strict=False)
+    templates: List[TemplateOutput] = Field(description="List of templates", default=[], strict=False)
+    created_at: Optional[datetime] = Field(default=None, strict=False)
+    updated_at: Optional[datetime] = Field(default=None, strict=False)
 
     @classmethod
     def from_model(cls, result: PluginModel) -> "PluginOutput":

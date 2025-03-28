@@ -65,8 +65,8 @@ class ProjectOutput(ProjectTemplateMeta):
     testModelId: Optional[int] = Field(description="Id of the AI model selected for this project. Set to NULL if no selected", default=None)
     inputBlocks: List[ProjectComponentSelection] = Field(description="Input block selection", default=[])
     testResults: List[ProjectComponentSelection] = Field(description="Test result selection", default=[])
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+    created_at: Optional[datetime] = Field(strict=False, default=None)
+    updated_at: Optional[datetime] = Field(strict=False, default=None)
 
     @classmethod
     def from_model(cls, result: ProjectModel) -> "ProjectOutput":

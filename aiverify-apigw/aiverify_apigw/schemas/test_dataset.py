@@ -30,7 +30,7 @@ class TestDataset(MyBaseModel):
     name: str = Field(description="Name of the dataset", min_length=1, max_length=256)
     description: Optional[str] = Field(description="Description of the dataset", max_length=4096)
     # dataset file
-    fileType: Optional[TestDatasetFileType] = Field(description="File type of dataset upload", default=None)
+    fileType: Optional[TestDatasetFileType] = Field(description="File type of dataset upload", default=None, strict=False)
     filename: Optional[str] = Field(description="Filename of the dataset upload", max_length=2048, default=None)
     zip_hash: Optional[str] = Field(description="File hash of plugin zip")
     size: Optional[int] = Field(description="Size of the dataset file", default=None)
@@ -40,10 +40,10 @@ class TestDataset(MyBaseModel):
     numCols: Optional[int] = Field(description="Number of columns in this dataset", default=None)
     dataColumns: Optional[List[TestDatasetColumn]] = Field(description="Column information for this dataset", default=None)
     # status
-    status: TestDatasetStatus = Field(description="Status of the test dataset upload")
+    status: TestDatasetStatus = Field(description="Status of the test dataset upload", strict=False)
     errorMessages: Optional[str] = Field(description="Error messages related to the dataset", max_length=2048, default=None)
-    created_at: Optional[datetime] = Field(description="Timestamp when the dataset was created", default=None)
-    updated_at: Optional[datetime] = Field(description="Timestamp when the dataset was last updated", default=None)
+    created_at: Optional[datetime] = Field(description="Timestamp when the dataset was created", default=None, strict=False)
+    updated_at: Optional[datetime] = Field(description="Timestamp when the dataset was last updated", default=None, strict=False)
 
     @classmethod
     def from_model(cls, testdataset: TestDatasetModel) -> "TestDataset":

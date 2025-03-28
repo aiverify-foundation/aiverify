@@ -61,7 +61,7 @@ class WidgetMeta(MyBaseModel):
     )
     author: Optional[str] = Field(default=None, description="Widget author", min_length=1, max_length=128)
     description: Optional[str] = Field(default=None, description="Widget description", max_length=256)
-    widgetSize: WidgetMetaSize = Field(description="Describe the widget size in terms of canvas grid units")
+    widgetSize: WidgetMetaSize = Field(description="Describe the widget size in terms of canvas grid units", strict=False)
     properties: Optional[List[WidgetMetaProperty]] = Field(
         default=None, description="List of widget properties", max_length=256
     )
