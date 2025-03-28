@@ -143,10 +143,13 @@ To use a custom PyTorch model with this plugin, follow the steps below:
 
 ```python
 # model.py
+from typing import Iterable
+
 import numpy as np
 import torch
-from torchvision import transforms
 from PIL import Image
+from torchvision import transforms
+
 
 class CustomModel(torch.nn.Module):
     def __init__(self):
