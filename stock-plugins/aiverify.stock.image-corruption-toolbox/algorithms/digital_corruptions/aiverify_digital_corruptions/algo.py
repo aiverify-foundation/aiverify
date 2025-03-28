@@ -103,9 +103,9 @@ class Plugin(IAlgorithm):
         self.setup()
 
         # Write all output to the output folder
-        output_folder = Path.cwd() / "output"
-        output_folder.mkdir(parents=True, exist_ok=True)
-        self._save_folder = output_folder / "images"
+        self._output_folder = Path.cwd() / "output"
+        self._output_folder.mkdir(parents=True, exist_ok=True)
+        self._save_folder = self._output_folder / "images"
 
         # Algorithm input schema defined in input.schema.json
         # By defining the input schema, it allows the front-end to know what algorithm input params is
@@ -341,7 +341,7 @@ class Plugin(IAlgorithm):
                 accuracies.update({f"severity{severity}": accuracy})
 
                 random_display = [
-                    corrupted_image_paths[display_idx],
+                    str(Path(corrupted_image_paths[display_idx]).relative_to(self._output_folder)),
                     ground_truths[display_idx],
                     predictions[display_idx],
                 ]
