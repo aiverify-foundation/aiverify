@@ -24,7 +24,7 @@ services:
     networks:
       - aiverify_net
 
-  aiverify-portal:
+  portal:
     build:
       context: ../../
       dockerfile: aiverify-portal/Dockerfile
