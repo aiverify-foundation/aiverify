@@ -2,9 +2,12 @@
 
 This guide provides instructions on how to use Docker Compose to set up and run the various services in the AI Verify Toolkit. Docker Compose simplifies the process of managing multi-container Docker applications, making it easier to deploy and manage the AI Verify services.
 
+The docker compose file in this folder is used to development and testing purpose. The AI Verify services will build the images from the project source and save to local registry. For production, it is recommended to use the docker compose file in the `docker-compose` folder instead as it pull from Github Docker registry and does not need to build locally.
+
 ## Prerequisites
 
-Ensure you have Docker and Docker Compose installed on your system. You can download them from the official Docker website.
+- Host OS: Linux and MacOS
+- Docker >= 19.03 with buildx and docker compose
 
 ## Runing Docker Compose Services
 To run the Docker Compose services in detached mode, use the following command:
@@ -24,16 +27,23 @@ The valid docker profiles are:
 | automated-tests-docker      | Runs the services using Docker build and run for automated testing in DOOD mode. |
 | portal                      | Runs the AI Verify Portal service for accessing the web interface. |
 
+## Running the API Gateway Only
+
+The API Gateway is core service and always enabled regardless of profile. To only run the API Gateway, just run docker compose without specifying profile:
+
+```sh
+COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose -d
+```
+
 ## Running the Portal
-The AI Verify Portal is a web-based interface that allows users to interact with the AI Verify Toolkit. It provides a user-friendly platform for managing AI verification processes, accessing various tools and services, and visualizing results. By running the portal, users can access the full suite of features offered by the AI Verify Toolkit through a convenient and intuitive web interface.
+
+To run the portal service, use the following command:
 
 ```sh
 COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile portal up -d
 ```
 
 ## Running the Test Engine Workers
-
-The Test Engine Workers are designed to automate the execution of tests initiated from the AI Verify frontend. These workers handle the automatic processing and execution of test cases, allowing for efficient and scalable testing workflows. 
 
 ### Building the Test Engine Worker Base Image
 
@@ -42,7 +52,7 @@ The base image serves as the foundational layer for building other Docker images
 Use the following command to build the base image before proceeding with the Test Engine Worker services:
 
 ```sh
-docker compose --profile build-only build
+COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile build-only build
 ```
 
 ### Running Test Engine Workers with Python Venv
