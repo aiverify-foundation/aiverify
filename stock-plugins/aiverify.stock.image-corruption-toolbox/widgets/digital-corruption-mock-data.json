@@ -2,129 +2,111 @@
     "results": [
         {
             "corruption_group": "Digital",
-            "corruption_function": "Horizontal_Motion_Blur",
+            "corruption_function": "Contrast_Down",
             "parameter": {
                 "severity0": {
-                    "kernel_size": null
+                    "factor": null
                 },
                 "severity1": {
-                    "kernel_size": 3
+                    "factor": 0.2
                 },
                 "severity2": {
-                    "kernel_size": 7
+                    "factor": 0.3
                 },
                 "severity3": {
-                    "kernel_size": 11
+                    "factor": 0.5
                 },
                 "severity4": {
-                    "kernel_size": 15
+                    "factor": 0.7
                 },
                 "severity5": {
-                    "kernel_size": 19
+                    "factor": 0.9
                 }
             },
             "accuracy": {
-                "severity0": 0.9,
-                "severity1": 0.8,
-                "severity2": 0.8,
-                "severity3": 0.8,
-                "severity4": 0.8,
-                "severity5": 0.8
+                "severity0": 0.0,
+                "severity1": 0.2,
+                "severity2": 0.1,
+                "severity3": 0.0,
+                "severity4": 0.0,
+                "severity5": 0.1
             },
             "display_info": {
                 "severity0": [
-                    "images/Horizontal_Motion_Blur/severity0/9.png",
-                    "9",
-                    "9"
+                    "images/Contrast_Down/severity0/9.png",
+                    9,
+                    1
                 ],
                 "severity1": [
-                    "images/Horizontal_Motion_Blur/severity1/9.png",
-                    "9",
-                    "9"
+                    "images/Contrast_Down/severity1/9.png",
+                    9,
+                    9
                 ],
                 "severity2": [
-                    "images/Horizontal_Motion_Blur/severity2/9.png",
-                    "9",
-                    "9"
+                    "images/Contrast_Down/severity2/9.png",
+                    9,
+                    1
                 ],
                 "severity3": [
-                    "images/Horizontal_Motion_Blur/severity3/9.png",
-                    "9",
-                    "9"
+                    "images/Contrast_Down/severity3/9.png",
+                    9,
+                    1
                 ],
                 "severity4": [
-                    "images/Horizontal_Motion_Blur/severity4/9.png",
-                    "9",
-                    "9"
+                    "images/Contrast_Down/severity4/9.png",
+                    9,
+                    1
                 ],
                 "severity5": [
-                    "images/Horizontal_Motion_Blur/severity5/9.png",
-                    "9",
-                    "9"
+                    "images/Contrast_Down/severity5/9.png",
+                    9,
+                    1
                 ]
             }
         },
         {
             "corruption_group": "Digital",
-            "corruption_function": "Zoom_Blur",
+            "corruption_function": "Random_Perspective",
             "parameter": {
                 "severity0": {
-                    "zoom_factor": null
+                    "sigma": null
                 },
                 "severity1": {
-                    "zoom_factor": 1.0
+                    "sigma": 1.0
                 },
                 "severity2": {
-                    "zoom_factor": 1.5
+                    "sigma": 1.5
                 },
                 "severity3": {
-                    "zoom_factor": 2.0
-                },
-                "severity4": {
-                    "zoom_factor": 2.5
-                },
-                "severity5": {
-                    "zoom_factor": 3.0
+                    "sigma": 2.0
                 }
             },
             "accuracy": {
-                "severity0": 0.9,
-                "severity1": 0.9,
-                "severity2": 0.5,
-                "severity3": 0.4,
-                "severity4": 0.2,
-                "severity5": 0.2
+                "severity0": 0.0,
+                "severity1": 0.0,
+                "severity2": 0.1,
+                "severity3": 0.2
             },
             "display_info": {
                 "severity0": [
-                    "images/Zoom_Blur/severity0/9.png",
-                    "9",
-                    "9"
+                    "images/Random_Perspective/severity0/9.png",
+                    9,
+                    1
                 ],
                 "severity1": [
-                    "images/Zoom_Blur/severity1/9.png",
-                    "9",
-                    "9"
+                    "images/Random_Perspective/severity1/9.png",
+                    9,
+                    1
                 ],
                 "severity2": [
-                    "images/Zoom_Blur/severity2/9.png",
-                    "9",
-                    "9"
+                    "images/Random_Perspective/severity2/9.png",
+                    9,
+                    5
                 ],
                 "severity3": [
-                    "images/Zoom_Blur/severity3/9.png",
-                    "9",
-                    "9"
-                ],
-                "severity4": [
-                    "images/Zoom_Blur/severity4/9.png",
-                    "9",
-                    "9"
-                ],
-                "severity5": [
-                    "images/Zoom_Blur/severity5/9.png",
-                    "9",
-                    "9"
+                    "images/Random_Perspective/severity3/9.png",
+                    9,
+                    4
                 ]
             }
         }
