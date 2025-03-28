@@ -53,7 +53,7 @@ By default, **all** corruption functions are applied. You can use the `--corrupt
 
 ### Options
 
-- `all` -> Runs all corruption functions (default)
+- `all` -> Runs all blur corruption functions (default)
 - `gaussian_blur`
 - `glass_blur`
 - `defocus_blur`
@@ -116,12 +116,14 @@ To use a custom PyTorch model with this plugin, follow the steps below:
 2. **Specify Model Path**
 
    Use the `--model_path` command-line argument to specify the path to a **folder** containing:
+
    - The model class definition (e.g., `model.py`).
    - The model weights file (e.g., `model_weights.pt`).
 
 3. **Implement a `predict` Function**
 
    Your model class must implement a `predict` function. This function should:
+
    - Accept a batch of image file paths as input.
    - Return a batch of predictions.
 
