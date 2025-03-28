@@ -10,7 +10,12 @@ services:
     ports:
       - "4000:4000"
     volumes:
-      - aiverify_apigw_data:/data
+      - apigw_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     environment:
       APIGW_LOG_LEVEL: "debug"
       APIGW_DATA_DIR: "/data"
@@ -19,11 +24,37 @@ services:
     networks:
       - aiverify_net
 
+  portal:
+    build:
+      context: ../../
+      dockerfile: aiverify-portal/Dockerfile
+    profiles:
+      - portal
+    depends_on:
+      - apigw
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    ports:
+      - "3000:3000"
+    environment:
+      APIGW_HOST: "http://host.docker.internal:4000"
+      NEXT_PUBLIC_APIGW_HOST: "http://127.0.0.1:4000"
+    networks:
+      - aiverify_net
+
   valkey:
     image: valkey/valkey:8
     profiles:
       - automated-tests-venv
       - automated-tests-docker
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     ports:
       - '6379:6379'
     networks:
@@ -47,6 +78,9 @@ services:
       target: venv-build
     profiles:
       - automated-tests-venv
+    deploy:
+      mode: replicated
+      replicas: 3
     depends_on:
       # - test-engine-worker-base
       - valkey
@@ -67,6 +101,9 @@ services:
       target: docker-build
     profiles:
       - automated-tests-docker
+    deploy:
+      mode: replicated
+      replicas: 3
     depends_on:
       - valkey
     environment:
@@ -83,7 +120,7 @@ services:
       - aiverify_net
 
 volumes:
-  aiverify_apigw_data:
+  apigw_data:
     driver: local
 
 networks:
