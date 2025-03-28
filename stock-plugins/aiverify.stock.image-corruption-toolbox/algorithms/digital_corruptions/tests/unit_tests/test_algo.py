@@ -442,7 +442,9 @@ def test_valid_run(get_data_instance_and_serializer_without_ground_truth):
 
     validate_status = validate_json(
         results,
-        load_schema_file(str(Path(__file__).parent.parent.parent / "aiverify_digital_corruptions" / "output.schema.json")),
+        load_schema_file(
+            str(Path(__file__).parent.parent.parent / "aiverify_digital_corruptions" / "output.schema.json")
+        ),
     )
 
     assert validate_status
@@ -462,7 +464,9 @@ def test_corruptions():
 
     validate_status = validate_json(
         results,
-        load_schema_file(str(Path(__file__).parent.parent.parent / "aiverify_digital_corruptions" / "output.schema.json")),
+        load_schema_file(
+            str(Path(__file__).parent.parent.parent / "aiverify_digital_corruptions" / "output.schema.json")
+        ),
     )
 
     assert validate_status
@@ -484,7 +488,9 @@ def test_user_defined_params():
 
     validate_status = validate_json(
         results,
-        load_schema_file(str(Path(__file__).parent.parent.parent / "aiverify_digital_corruptions" / "output.schema.json")),
+        load_schema_file(
+            str(Path(__file__).parent.parent.parent / "aiverify_digital_corruptions" / "output.schema.json")
+        ),
     )
 
     assert validate_status

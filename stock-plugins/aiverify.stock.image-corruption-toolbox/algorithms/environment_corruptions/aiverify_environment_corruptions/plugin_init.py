@@ -2,15 +2,15 @@ import argparse
 
 from aiverify_test_engine.plugins.enums.model_type import ModelType
 
-from aiverify_blur_corruptions.algo import Plugin
-from aiverify_blur_corruptions.algo_init import AlgoInit
-from aiverify_blur_corruptions.utils import blur
+from aiverify_environment_corruptions.algo import Plugin
+from aiverify_environment_corruptions.algo_init import AlgoInit
+from aiverify_environment_corruptions.utils import environment
 
 
 def run():
     parser = build_parser()
     args = parser.parse_args()
-    invoke_aiverify_blur_corruptions_plugin(args)
+    invoke_aiverify_environment_corruptions_plugin(args)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -37,13 +37,13 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--corruptions",
         nargs="+",
-        choices=["all"] + [name.lower() for name in blur.CORRUPTION_FN],
+        choices=["all"] + [name.lower() for name in environment.CORRUPTION_FN],
         default=["all"],
         help="Specify the name(s) of corruption to run. Default: all",
     )
 
     def get_default(k: str) -> str:
-        return " ".join([str(v) for v in blur.DEFAULT_PARAMS[k]])
+        return " ".join([str(v) for v in environment.DEFAULT_PARAMS[k]])
 
     parser.add_argument(
         "--snow_intensity",
@@ -68,7 +68,7 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def invoke_aiverify_blur_corruptions_plugin(args: argparse.Namespace) -> None:
+def invoke_aiverify_environment_corruptions_plugin(args: argparse.Namespace) -> None:
     # =====================================================================================
     # NOTE: Do not modify the code below
     # =====================================================================================

@@ -281,7 +281,9 @@ class Plugin(IAlgorithm):
 
         # Apply user defined parameters to default parameters
         corruption_fn = {name: environment.CORRUPTION_FN[name] for name in self._input_arguments["corruptions"]}
-        user_params = {k: v for k, v in self._input_arguments.items() if k in environment.DEFAULT_PARAMS and v is not None}
+        user_params = {
+            k: v for k, v in self._input_arguments.items() if k in environment.DEFAULT_PARAMS and v is not None
+        }
         parameters = copy.deepcopy(environment.DEFAULT_PARAMS)
         parameters.update(user_params)
 
