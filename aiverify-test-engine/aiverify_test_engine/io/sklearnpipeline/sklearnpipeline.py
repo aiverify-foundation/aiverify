@@ -139,12 +139,16 @@ class Plugin(IPipeline):
         Returns:
             Any: predicted result
         """
+        # The data structure of `data` and return value should be defined by the plugin and clearly explained in the plugin README.
+        #
+        # For example, it could be a:
+        # - list[str] (a list of image paths)
+        # - list[tuple[str, tuple[int, int, int, int]]] (a list of tuples containing image path and bounding box coordinates)
+        # - list[dict] (a list of dictionaries containing image data and other metadata)
+        #
+        # The user should implement the necessary data preprocessing steps in the predict method.
         try:
-            if isinstance(data, list):
-                for item in data:
-                    return self._pipeline.predict(item)
-            else:
-                return self._pipeline.predict(data)
+            return self._pipeline.predict(data)
         except Exception:
             raise
 
@@ -159,11 +163,7 @@ class Plugin(IPipeline):
             Any: predicted result
         """
         try:
-            if isinstance(data, list):
-                for item in data:
-                    return self._pipeline.predict_proba(item)
-            else:
-                return self._pipeline.predict_proba(data)
+            return self._pipeline.predict_proba(data)
         except Exception:
             raise
 

@@ -1,3 +1,3 @@
 """
-Main package for aiverify digital corruptions plugin.
+Main package for aiverify environment corruptions plugin.
 """

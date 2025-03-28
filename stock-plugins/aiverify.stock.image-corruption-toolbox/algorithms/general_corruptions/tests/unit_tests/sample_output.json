@@ -1,136 +1,124 @@
 {
-    "results": [
-        {
-            "corruption_group": "General",
-            "corruption_function": "Gaussian_Noise",
-            "accuracy": {
-                "severity0": 0.9,
-                "severity1": 0.8,
-                "severity2": 0.9,
-                "severity3": 0.9,
-                "severity4": 0.9,
-                "severity5": 0.7
-            },
-            "display_info": {
-                "severity0": [
-                    "algorithms/general_corruptions/temp/Gaussian_Noise/severity0/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity1": [
-                    "algorithms/general_corruptions/temp/Gaussian_Noise/severity1/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity2": [
-                    "algorithms/general_corruptions/temp/Gaussian_Noise/severity2/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity3": [
-                    "algorithms/general_corruptions/temp/Gaussian_Noise/severity3/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity4": [
-                    "algorithms/general_corruptions/temp/Gaussian_Noise/severity4/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity5": [
-                    "algorithms/general_corruptions/temp/Gaussian_Noise/severity5/9.png",
-                    "5",
-                    "8"
-                ]
-            }
+  "results": [
+    {
+      "corruption_group": "General",
+      "corruption_function": "Gaussian_Noise",
+      "parameter": {
+        "severity0": {
+          "sigma": null
         },
-        {
-            "corruption_group": "General",
-            "corruption_function": "Poisson_Noise",
-            "accuracy": {
-                "severity0": 0.9,
-                "severity1": 0.8,
-                "severity2": 0.9,
-                "severity3": 0.9,
-                "severity4": 0.9,
-                "severity5": 0.9
-            },
-            "display_info": {
-                "severity0": [
-                    "algorithms/general_corruptions/temp/Poisson_Noise/severity0/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity1": [
-                    "algorithms/general_corruptions/temp/Poisson_Noise/severity1/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity2": [
-                    "algorithms/general_corruptions/temp/Poisson_Noise/severity2/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity3": [
-                    "algorithms/general_corruptions/temp/Poisson_Noise/severity3/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity4": [
-                    "algorithms/general_corruptions/temp/Poisson_Noise/severity4/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity5": [
-                    "algorithms/general_corruptions/temp/Poisson_Noise/severity5/9.png",
-                    "5",
-                    "7"
-                ]
-            }
+        "severity1": {
+          "sigma": 0.1
         },
-        {
-            "corruption_group": "General",
-            "corruption_function": "Salt_and_Pepper_Noise",
-            "accuracy": {
-                "severity0": 0.9,
-                "severity1": 0.9,
-                "severity2": 0.8,
-                "severity3": 0.8,
-                "severity4": 0.8,
-                "severity5": 0.8
-            },
-            "display_info": {
-                "severity0": [
-                    "algorithms/general_corruptions/temp/Salt_and_Pepper_Noise/severity0/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity1": [
-                    "algorithms/general_corruptions/temp/Salt_and_Pepper_Noise/severity1/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity2": [
-                    "algorithms/general_corruptions/temp/Salt_and_Pepper_Noise/severity2/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity3": [
-                    "algorithms/general_corruptions/temp/Salt_and_Pepper_Noise/severity3/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity4": [
-                    "algorithms/general_corruptions/temp/Salt_and_Pepper_Noise/severity4/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity5": [
-                    "algorithms/general_corruptions/temp/Salt_and_Pepper_Noise/severity5/9.png",
-                    "5",
-                    "8"
-                ]
-            }
+        "severity2": {
+          "sigma": 0.2
+        },
+        "severity3": {
+          "sigma": 0.3
+        },
+        "severity4": {
+          "sigma": 0.4
+        },
+        "severity5": {
+          "sigma": 0.5
         }
-    ]
+      },
+      "accuracy": {
+        "severity0": 0.9,
+        "severity1": 0.8,
+        "severity2": 0.8,
+        "severity3": 0.8,
+        "severity4": 0.8,
+        "severity5": 0.4
+      },
+      "display_info": {
+        "severity0": ["images/Gaussian_Noise/severity0/9.png", 9, 9],
+        "severity1": ["images/Gaussian_Noise/severity1/9.png", 9, 9],
+        "severity2": ["images/Gaussian_Noise/severity2/9.png", 9, 9],
+        "severity3": ["images/Gaussian_Noise/severity3/9.png", 9, 9],
+        "severity4": ["images/Gaussian_Noise/severity4/9.png", 9, 9],
+        "severity5": ["images/Gaussian_Noise/severity5/9.png", 9, 8]
+      }
+    },
+    {
+      "corruption_group": "General",
+      "corruption_function": "Poisson_Noise",
+      "parameter": {
+        "severity0": {
+          "scale": null
+        },
+        "severity1": {
+          "scale": 0.1
+        },
+        "severity2": {
+          "scale": 0.2
+        },
+        "severity3": {
+          "scale": 0.3
+        },
+        "severity4": {
+          "scale": 0.4
+        },
+        "severity5": {
+          "scale": 0.5
+        }
+      },
+      "accuracy": {
+        "severity0": 0.9,
+        "severity1": 0.9,
+        "severity2": 0.6,
+        "severity3": 0.8,
+        "severity4": 0.9,
+        "severity5": 0.8
+      },
+      "display_info": {
+        "severity0": ["images/Poisson_Noise/severity0/9.png", 9, 9],
+        "severity1": ["images/Poisson_Noise/severity1/9.png", 9, 9],
+        "severity2": ["images/Poisson_Noise/severity2/9.png", 9, 7],
+        "severity3": ["images/Poisson_Noise/severity3/9.png", 9, 7],
+        "severity4": ["images/Poisson_Noise/severity4/9.png", 9, 7],
+        "severity5": ["images/Poisson_Noise/severity5/9.png", 9, 7]
+      }
+    },
+    {
+      "corruption_group": "General",
+      "corruption_function": "Salt_and_Pepper_Noise",
+      "parameter": {
+        "severity0": {
+          "amount": null
+        },
+        "severity1": {
+          "amount": 0.1
+        },
+        "severity2": {
+          "amount": 0.15
+        },
+        "severity3": {
+          "amount": 0.2
+        },
+        "severity4": {
+          "amount": 0.25
+        },
+        "severity5": {
+          "amount": 0.3
+        }
+      },
+      "accuracy": {
+        "severity0": 0.9,
+        "severity1": 0.9,
+        "severity2": 0.9,
+        "severity3": 0.9,
+        "severity4": 0.8,
+        "severity5": 0.8
+      },
+      "display_info": {
+        "severity0": ["images/Salt_and_Pepper_Noise/severity0/9.png", 9, 9],
+        "severity1": ["images/Salt_and_Pepper_Noise/severity1/9.png", 9, 9],
+        "severity2": ["images/Salt_and_Pepper_Noise/severity2/9.png", 9, 9],
+        "severity3": ["images/Salt_and_Pepper_Noise/severity3/9.png", 9, 9],
+        "severity4": ["images/Salt_and_Pepper_Noise/severity4/9.png", 9, 9],
+        "severity5": ["images/Salt_and_Pepper_Noise/severity5/9.png", 9, 9]
+      }
+    }
+  ]
 }
