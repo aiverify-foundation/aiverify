@@ -1,49 +1,50 @@
-from pydantic import BaseModel, Field
+from pydantic import Field
 from typing import Optional
 from datetime import datetime
 
 from .model_api import ModelAPIType, ModelAPIParametersMapping
 from ..models.test_model_model import TestModelModel
 from ..lib.constants import TestModelMode, TestModelFileType, TestModelStatus, ModelType
+from .base_model import MyBaseModel
 
 
-class TestModelAPIInput(BaseModel):
+class TestModelAPIInput(MyBaseModel):
     name: str = Field(description="Name of the model", min_length=1, max_length=256)
     description: Optional[str] = Field(description="Description of the model", max_length=4096)
-    modelType: ModelType = Field(description="Type of the model")
-    modelAPI: ModelAPIType = Field(description="Model API configuration")
+    modelType: ModelType = Field(description="Type of the model", strict=False)
+    modelAPI: ModelAPIType = Field(description="Model API configuration", strict=False)
     parameterMappings: Optional[ModelAPIParametersMapping] = Field(description="Parameter mappings", default=None)
 
 
-class TestModelUpdate(BaseModel):
+class TestModelUpdate(MyBaseModel):
     name: Optional[str] = Field(description="Name of the model", min_length=1, max_length=256, default=None)
     description: Optional[str] = Field(description="Description of the model", max_length=4096, default=None)
-    modelType: Optional[ModelType] = Field(description="Type of the model", default=None)
-    modelAPI: Optional[ModelAPIType] = Field(description="Model API Configuration", default=None)
+    modelType: Optional[ModelType] = Field(description="Type of the model", default=None, strict=False)
+    modelAPI: Optional[ModelAPIType] = Field(description="Model API Configuration", default=None, strict=False)
     parameterMappings: Optional[ModelAPIParametersMapping] = Field(description="Parameter mappings", default=None)
 
 
-class TestModel(BaseModel):
+class TestModel(MyBaseModel):
     id: int = Field(description="Unique identifier for the model")
     name: str = Field(description="Name of the model", min_length=1, max_length=256)
     description: Optional[str] = Field(description="Description of the model", max_length=4096)
-    mode: TestModelMode = Field(description="Mode to indicate whether it's upload or api")
-    modelType: ModelType = Field(description="Type of the model")
+    mode: TestModelMode = Field(description="Mode to indicate whether it's upload or api", strict=False)
+    modelType: ModelType = Field(description="Type of the model", strict=False)
     # model file
-    fileType: Optional[TestModelFileType] = Field(description="File type of model upload", default=None)
+    fileType: Optional[TestModelFileType] = Field(description="File type of model upload", default=None, strict=False)
     filename: Optional[str] = Field(description="Filename of the model upload", max_length=2048, default=None)
     zip_hash: Optional[str] = Field(description="File hash of plugin zip")
     size: Optional[int] = Field(description="Size of the model file", default=None)
     serializer: Optional[str] = Field(description="Serializer used for the model upload", default=None)
     modelFormat: Optional[str] = Field(description="Format of the model upload", default=None)
     # model api
-    modelAPI: Optional[ModelAPIType] = Field(description="Model API, if mode == API", default=None)
+    modelAPI: Optional[ModelAPIType] = Field(description="Model API, if mode == API", default=None, strict=False)
     parameterMappings: Optional[ModelAPIParametersMapping] = Field(description="Parameter mappings if mode == API", default=None)
     # status
-    status: TestModelStatus = Field(description="Status of the model file")
+    status: TestModelStatus = Field(description="Status of the model file", strict=False)
     errorMessages: Optional[str] = Field(description="Error messages related to the model", max_length=2048, default=None)
-    created_at: Optional[datetime] = Field(description="Timestamp when the model was created", default=None)
-    updated_at: Optional[datetime] = Field(description="Timestamp when the model was last updated", default=None)
+    created_at: Optional[datetime] = Field(description="Timestamp when the model was created", default=None, strict=False)
+    updated_at: Optional[datetime] = Field(description="Timestamp when the model was last updated", default=None, strict=False)
 
     # @model_validator(mode='after')
     # def validate_model(self) -> Self:

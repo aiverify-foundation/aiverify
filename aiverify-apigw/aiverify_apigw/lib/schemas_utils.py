@@ -1,7 +1,8 @@
 import json
 from pathlib import Path
 from typing import Any
-from jsonschema import validate
+from jsonschema import validate, ValidationError
+from .logging import logger
 
 base_schema_dir = Path(__file__).parent.parent.parent.parent.joinpath("common/schemas")
 
@@ -28,5 +29,9 @@ def read_and_validate(path: Path, schema: Any) -> Any | None:
             obj = json.load(fp)
             validate(obj, schema)
             return obj
-    except:
+    except ValidationError as e:
+        logger.debug(f"Validation error: {e}")
+        return None
+    except Exception as e:
+        logger.debug(f"Validate exception: {e}")
         return None

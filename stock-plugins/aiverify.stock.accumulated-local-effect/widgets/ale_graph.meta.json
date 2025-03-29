@@ -13,13 +13,13 @@
   ],
   "dependencies": [
     {
-      "cid": "aiverfy_accumulated_local_effect"
+      "cid": "aiverify_accumulated_local_effect"
     }
   ],
   "mockdata": [
     {
       "type": "Algorithm",
-      "cid": "aiverfy_accumulated_local_effect",
+      "cid": "aiverify_accumulated_local_effect",
       "datapath": "accumulated_local_effect.sample.json"
     }
   ]

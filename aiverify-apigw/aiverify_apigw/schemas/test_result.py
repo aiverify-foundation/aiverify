@@ -1,12 +1,13 @@
-from pydantic import BaseModel, Field, model_validator, Json
+from pydantic import Field, model_validator, Json
 from typing import List, Optional, Literal, Any, Self
 from datetime import datetime
 import json
 from ..models import TestResultModel
 from ..lib.constants import ModelType, TestModelMode
+from .base_model import MyBaseModel
 
 
-class TestArguments(BaseModel):
+class TestArguments(MyBaseModel):
     testDataset: str = Field(description="URI of test dataset")
     mode: Literal["upload", "api"] = Field(
         description="Mode of model used, upload for model file and api for model api"
@@ -26,7 +27,8 @@ class TestArguments(BaseModel):
         return self
 
 
-class TestResult(BaseModel):
+class TestResult(MyBaseModel):
+    testRunId: Optional[str] = None
     gid: str = Field(
         description="Unique global identifier for the plugin",
         min_length=1,
@@ -40,7 +42,7 @@ class TestResult(BaseModel):
         pattern=r"^[a-zA-Z0-9][a-zA-Z0-9-._]*$",
     )
     version: Optional[str] = Field(default=None, description="Algorithm version")
-    startTime: datetime = Field(description="Start date time of test")
+    startTime: datetime = Field(description="Start date time of test", strict=False)
     timeTaken: float = Field(description="Time taken to complete running the test in seconds.")
     testArguments: TestArguments = Field(description="Test arguments")
     output: str = Field(
@@ -77,8 +79,8 @@ class TestResult(BaseModel):
 class TestResultOutput(TestResult):
     id: int  # test_result_id
     name: str  # name
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+    created_at: Optional[datetime] = Field(default=None, strict=False)
+    updated_at: Optional[datetime] = Field(default=None, strict=False)
 
     @classmethod
     def from_model(cls, result: TestResultModel) -> "TestResultOutput":
@@ -111,5 +113,5 @@ class TestResultOutput(TestResult):
         return obj
 
 
-class TestResultUpdate(BaseModel):
-    name: str
+class TestResultUpdate(MyBaseModel):
+    name: str = Field(description="Test Result Name", max_length=256, min_length=1)

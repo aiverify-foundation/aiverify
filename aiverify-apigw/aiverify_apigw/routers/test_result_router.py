@@ -8,15 +8,16 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from pathlib import PurePath
 from jsonschema import validate
+from uuid import UUID
 
 from ..lib.logging import logger
 from ..lib.database import get_db_session
-from ..lib.constants import TestDatasetFileType, TestDatasetStatus, TestModelMode, TestModelStatus
+from ..lib.constants import TestDatasetFileType, TestDatasetStatus, TestModelMode, TestModelStatus, TestRunStatus
 from ..lib.filestore import save_artifact, get_artifact
 from ..lib.utils import guess_mimetype_from_filename
 from ..lib.file_utils import get_suffix, check_valid_filename
 from ..schemas import TestResult, TestResultOutput, TestResultUpdate
-from ..models import AlgorithmModel, TestModelModel, TestResultModel, TestDatasetModel, TestArtifactModel
+from ..models import AlgorithmModel, TestModelModel, TestResultModel, TestDatasetModel, TestArtifactModel, TestRunModel
 
 router = APIRouter(prefix="/test_results", tags=["test_result"])
 
@@ -29,7 +30,7 @@ test_result_examples = load_examples("test_result_examples.json")
 #     return {"message": "List of test results"}
 
 
-async def _save_test_result(session: Session, test_result: TestResult, artifact_set: dict[str, UploadFile]):
+async def _save_test_result(session: Session, test_result: TestResult, artifact_set: dict[str, UploadFile], test_run_id: str | None = None):
     # find algorithm
     stmt = (
         select(AlgorithmModel).where(AlgorithmModel.gid == test_result.gid).where(AlgorithmModel.cid == test_result.cid)
@@ -145,8 +146,17 @@ async def _save_test_result(session: Session, test_result: TestResult, artifact_
     session.add(test_result_model)
     session.flush()
     test_result_id = str(test_result_model.id)
-    # test_result_id = "1"
-    logger.debug(f"test_result_id: {test_result_id}")
+
+    if test_run_id:
+        test_run = session.query(TestRunModel).filter_by(id=UUID(test_run_id)).first()
+        if test_run:
+            test_run.status = TestRunStatus.Success
+            test_run.progress = 100
+            test_run.test_result = test_result_model
+            test_run.updated_at = now
+            session.flush()
+        else:
+            logger.warn(f"TestRunModel with id {test_run_id} not found")
 
     # Process uploaded files
     if test_result.artifacts and len(test_result.artifacts) > 0:
@@ -211,7 +221,7 @@ async def upload_test_result(
     for result in results:
         try:
             session.begin()
-            urls = await _save_test_result(session=session, test_result=result, artifact_set=artifact_set)
+            urls = await _save_test_result(session=session, test_result=result, artifact_set=artifact_set, test_run_id=result.testRunId)
             all_urls.extend(urls)
             session.commit()
         except HTTPException as e:
@@ -294,7 +304,7 @@ async def upload_zip_file(file: UploadFile, session: Session = Depends(get_db_se
                 for result in results:
                     try:
                         session.begin()
-                        urls = await _save_test_result(session=session, test_result=result, artifact_set=artifact_set)
+                        urls = await _save_test_result(session=session, test_result=result, artifact_set=artifact_set, test_run_id=result.testRunId)
                         all_urls.extend(urls)
                         session.commit()
                     except HTTPException as e:

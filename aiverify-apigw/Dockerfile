@@ -8,6 +8,7 @@ COPY aiverify-apigw/ ./aiverify-apigw/
 COPY aiverify-test-engine/ ./aiverify-test-engine/
 COPY common/ ./common/
 COPY stock-plugins/ ./stock-plugins/
+COPY aiverify-shared-library/ ./aiverify-shared-library/
 
 # install node
 RUN apt-get update && apt-get install -y curl
@@ -17,12 +18,16 @@ RUN apt-get install -y nodejs
 RUN echo "Installed Node"
 RUN node -v
 
+WORKDIR /app/aiverify-shared-library
+RUN npm install
+RUN npm run build
+
 # install dependencies
 WORKDIR /app/aiverify-apigw
 
 #RUN pip install --no-cache-dir torch==2.4.1+cpu --index-url https://download.pytorch.org/whl/cpu
 #RUN pip install .
-RUN echo "Building on target archiecture $TARGETARCH"
+RUN echo "Building on target architecture $TARGETARCH"
 RUN sh install-${TARGETARCH}.sh
 
 ENV APIGW_LOG_LEVEL="debug"

@@ -155,6 +155,7 @@ async def upload_plugin(file: UploadFile = File(), session: Session = Depends(ge
                     backup_dir = temp_root_dir.joinpath("backup").joinpath(sanitize_filename(meta.name))
                     backup_plugin(gid, backup_dir)
                     PluginStore.delete_plugin(gid)
+                    session.expunge(existing_plugin)
                 else:
                     backup_dir = None
 

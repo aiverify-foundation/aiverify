@@ -1,8 +1,9 @@
-from pydantic import BaseModel, Field
+from pydantic import Field
 from typing import List, Optional, Annotated
 from datetime import datetime
 import json
 
+from .base_model import MyBaseModel
 from ..models import InputBlockModel, InputBlockDataModel
 from ..lib.constants import InputBlockSize
 
@@ -13,7 +14,7 @@ sample_data: dict = {
 sample_cid: str = "explainability_process_checklist"
 
 
-class InputBlockMeta(BaseModel):
+class InputBlockMeta(MyBaseModel):
     cid: str = Field(
         description="Unique identifier for the input block within the plugin",
         min_length=1,
@@ -40,7 +41,8 @@ class InputBlockMeta(BaseModel):
     groupNumber: Optional[int] = Field(
         default=None, description="Input Block group number")
     width: Optional[InputBlockSize] = Field(
-        default="md", description="Width of Input Block dialog"
+        default=InputBlockSize.md, description="Width of Input Block dialog",
+        strict=False
     )
     fullScreen: Optional[bool] = Field(
         default=False, description="Width of Input Block dialog")
@@ -72,7 +74,7 @@ class InputBlockOutput(InputBlockMeta):
         return obj
 
 
-class InputBlockData(BaseModel):
+class InputBlockData(MyBaseModel):
     gid: str = Field(
         description="Unique global identifier for the plugin",
         min_length=1,
@@ -90,10 +92,11 @@ class InputBlockData(BaseModel):
         min_length=1,
         max_length=128,
     )
-    group: str = Field(  # Added the group field with validation
+    group: Optional[str] = Field(  # Added the group field with validation
         description="Unique group identifier to ensure each group contains unique checklists",
         min_length=1,
         max_length=128,
+        default=None
     )
     data: dict = Field(description="User data")
 
@@ -111,7 +114,7 @@ class InputBlockData(BaseModel):
     }
 
 
-class InputBlockDataUpdate(BaseModel):
+class InputBlockDataUpdate(MyBaseModel):
     name: str = Field(
         description="Name for this input block data",
         min_length=1,
@@ -138,8 +141,8 @@ class InputBlockDataUpdate(BaseModel):
 
 class InputBlockDataOutput(InputBlockData):
     id: int = Field(description="Input block data id")
-    created_at: Optional[datetime] = Field(description="Time created")
-    updated_at: Optional[datetime] = Field(description="Time updated")
+    created_at: Optional[datetime] = Field(description="Time created", strict=False)
+    updated_at: Optional[datetime] = Field(description="Time updated", strict=False)
 
     @classmethod
     def from_model(cls, result: InputBlockDataModel) -> "InputBlockDataOutput":

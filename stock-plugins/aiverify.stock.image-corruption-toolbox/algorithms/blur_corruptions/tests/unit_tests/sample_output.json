@@ -1,268 +1,246 @@
 {
+  "output": {
     "results": [
-        {
-            "corruption_group": "Blur",
-            "corruption_function": "Gaussian_Blur",
-            "accuracy": {
-                "severity0": 0.9,
-                "severity1": 0.8,
-                "severity2": 0.5,
-                "severity3": 0.1,
-                "severity4": 0.1,
-                "severity5": 0.1
-            },
-            "display_info": {
-                "severity0": [
-                    "algorithms/blur_corruptions/temp/Gaussian_Blur/severity0/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity1": [
-                    "algorithms/blur_corruptions/temp/Gaussian_Blur/severity1/9.png",
-                    "5",
-                    "5"
-                ],
-                "severity2": [
-                    "algorithms/blur_corruptions/temp/Gaussian_Blur/severity2/9.png",
-                    "5",
-                    "5"
-                ],
-                "severity3": [
-                    "algorithms/blur_corruptions/temp/Gaussian_Blur/severity3/9.png",
-                    "5",
-                    "5"
-                ],
-                "severity4": [
-                    "algorithms/blur_corruptions/temp/Gaussian_Blur/severity4/9.png",
-                    "5",
-                    "5"
-                ],
-                "severity5": [
-                    "algorithms/blur_corruptions/temp/Gaussian_Blur/severity5/9.png",
-                    "5",
-                    "5"
-                ]
-            }
+      {
+        "corruption_group": "Blur",
+        "corruption_function": "Gaussian_Blur",
+        "parameter": {
+          "severity0": {
+            "sigma": null
+          },
+          "severity1": {
+            "sigma": 0.5
+          },
+          "severity2": {
+            "sigma": 1.0
+          },
+          "severity3": {
+            "sigma": 2.0
+          },
+          "severity4": {
+            "sigma": 3.0
+          },
+          "severity5": {
+            "sigma": 4.0
+          }
         },
-        {
-            "corruption_group": "Blur",
-            "corruption_function": "Glass_Blur",
-            "accuracy": {
-                "severity0": 0.9,
-                "severity1": 0.8,
-                "severity2": 0.8,
-                "severity3": 0.7,
-                "severity4": 0.7,
-                "severity5": 0.5
-            },
-            "display_info": {
-                "severity0": [
-                    "algorithms/blur_corruptions/temp/Glass_Blur/severity0/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity1": [
-                    "algorithms/blur_corruptions/temp/Glass_Blur/severity1/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity2": [
-                    "algorithms/blur_corruptions/temp/Glass_Blur/severity2/9.png",
-                    "5",
-                    "5"
-                ],
-                "severity3": [
-                    "algorithms/blur_corruptions/temp/Glass_Blur/severity3/9.png",
-                    "5",
-                    "5"
-                ],
-                "severity4": [
-                    "algorithms/blur_corruptions/temp/Glass_Blur/severity4/9.png",
-                    "5",
-                    "5"
-                ],
-                "severity5": [
-                    "algorithms/blur_corruptions/temp/Glass_Blur/severity5/9.png",
-                    "5",
-                    "5"
-                ]
-            }
+        "accuracy": {
+          "severity0": 0.9,
+          "severity1": 0.8,
+          "severity2": 0.8,
+          "severity3": 0.8,
+          "severity4": 0.8,
+          "severity5": 0.8
         },
-        {
-            "corruption_group": "Blur",
-            "corruption_function": "Defocus_Blur",
-            "accuracy": {
-                "severity0": 0.9,
-                "severity1": 0.8,
-                "severity2": 0.9,
-                "severity3": 0.5,
-                "severity4": 0.5,
-                "severity5": 0.1
-            },
-            "display_info": {
-                "severity0": [
-                    "algorithms/blur_corruptions/temp/Defocus_Blur/severity0/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity1": [
-                    "algorithms/blur_corruptions/temp/Defocus_Blur/severity1/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity2": [
-                    "algorithms/blur_corruptions/temp/Defocus_Blur/severity2/9.png",
-                    "5",
-                    "5"
-                ],
-                "severity3": [
-                    "algorithms/blur_corruptions/temp/Defocus_Blur/severity3/9.png",
-                    "5",
-                    "5"
-                ],
-                "severity4": [
-                    "algorithms/blur_corruptions/temp/Defocus_Blur/severity4/9.png",
-                    "5",
-                    "5"
-                ],
-                "severity5": [
-                    "algorithms/blur_corruptions/temp/Defocus_Blur/severity5/9.png",
-                    "5",
-                    "5"
-                ]
-            }
-        },
-        {
-            "corruption_group": "Blur",
-            "corruption_function": "Horizontal_Motion_Blur",
-            "accuracy": {
-                "severity0": 0.9,
-                "severity1": 0.6,
-                "severity2": 0.4,
-                "severity3": 0.2,
-                "severity4": 0.1,
-                "severity5": 0.1
-            },
-            "display_info": {
-                "severity0": [
-                    "algorithms/blur_corruptions/temp/Horizontal_Motion_Blur/severity0/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity1": [
-                    "algorithms/blur_corruptions/temp/Horizontal_Motion_Blur/severity1/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity2": [
-                    "algorithms/blur_corruptions/temp/Horizontal_Motion_Blur/severity2/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity3": [
-                    "algorithms/blur_corruptions/temp/Horizontal_Motion_Blur/severity3/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity4": [
-                    "algorithms/blur_corruptions/temp/Horizontal_Motion_Blur/severity4/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity5": [
-                    "algorithms/blur_corruptions/temp/Horizontal_Motion_Blur/severity5/9.png",
-                    "5",
-                    "7"
-                ]
-            }
-        },
-        {
-            "corruption_group": "Blur",
-            "corruption_function": "Vertical_Motion_Blur",
-            "accuracy": {
-                "severity0": 0.9,
-                "severity1": 1.0,
-                "severity2": 0.8,
-                "severity3": 0.9,
-                "severity4": 0.7,
-                "severity5": 0.6
-            },
-            "display_info": {
-                "severity0": [
-                    "algorithms/blur_corruptions/temp/Vertical_Motion_Blur/severity0/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity1": [
-                    "algorithms/blur_corruptions/temp/Vertical_Motion_Blur/severity1/9.png",
-                    "5",
-                    "5"
-                ],
-                "severity2": [
-                    "algorithms/blur_corruptions/temp/Vertical_Motion_Blur/severity2/9.png",
-                    "5",
-                    "5"
-                ],
-                "severity3": [
-                    "algorithms/blur_corruptions/temp/Vertical_Motion_Blur/severity3/9.png",
-                    "5",
-                    "5"
-                ],
-                "severity4": [
-                    "algorithms/blur_corruptions/temp/Vertical_Motion_Blur/severity4/9.png",
-                    "5",
-                    "5"
-                ],
-                "severity5": [
-                    "algorithms/blur_corruptions/temp/Vertical_Motion_Blur/severity5/9.png",
-                    "5",
-                    "5"
-                ]
-            }
-        },
-        {
-            "corruption_group": "Blur",
-            "corruption_function": "Zoom_Blur",
-            "accuracy": {
-                "severity0": 0.9,
-                "severity1": 0.7,
-                "severity2": 0.6,
-                "severity3": 0.5,
-                "severity4": 0.5,
-                "severity5": 0.2
-            },
-            "display_info": {
-                "severity0": [
-                    "algorithms/blur_corruptions/temp/Zoom_Blur/severity0/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity1": [
-                    "algorithms/blur_corruptions/temp/Zoom_Blur/severity1/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity2": [
-                    "algorithms/blur_corruptions/temp/Zoom_Blur/severity2/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity3": [
-                    "algorithms/blur_corruptions/temp/Zoom_Blur/severity3/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity4": [
-                    "algorithms/blur_corruptions/temp/Zoom_Blur/severity4/9.png",
-                    "5",
-                    "7"
-                ],
-                "severity5": [
-                    "algorithms/blur_corruptions/temp/Zoom_Blur/severity5/9.png",
-                    "5",
-                    "7"
-                ]
-            }
+        "display_info": {
+          "severity0": ["images/Gaussian_Blur/severity0/9.png", 9, 9],
+          "severity1": ["images/Gaussian_Blur/severity1/9.png", 9, 9],
+          "severity2": ["images/Gaussian_Blur/severity2/9.png", 9, 9],
+          "severity3": ["images/Gaussian_Blur/severity3/9.png", 9, 9],
+          "severity4": ["images/Gaussian_Blur/severity4/9.png", 9, 9],
+          "severity5": ["images/Gaussian_Blur/severity5/9.png", 9, 9]
         }
+      },
+      {
+        "corruption_group": "Blur",
+        "corruption_function": "Glass_Blur",
+        "parameter": {
+          "severity0": {
+            "max_delta": null
+          },
+          "severity1": {
+            "max_delta": 1
+          },
+          "severity2": {
+            "max_delta": 2
+          },
+          "severity3": {
+            "max_delta": 3
+          },
+          "severity4": {
+            "max_delta": 4
+          },
+          "severity5": {
+            "max_delta": 5
+          }
+        },
+        "accuracy": {
+          "severity0": 0.9,
+          "severity1": 0.8,
+          "severity2": 0.8,
+          "severity3": 0.8,
+          "severity4": 0.8,
+          "severity5": 0.8
+        },
+        "display_info": {
+          "severity0": ["images/Glass_Blur/severity0/9.png", 9, 9],
+          "severity1": ["images/Glass_Blur/severity1/9.png", 9, 9],
+          "severity2": ["images/Glass_Blur/severity2/9.png", 9, 9],
+          "severity3": ["images/Glass_Blur/severity3/9.png", 9, 9],
+          "severity4": ["images/Glass_Blur/severity4/9.png", 9, 9],
+          "severity5": ["images/Glass_Blur/severity5/9.png", 9, 9]
+        }
+      },
+      {
+        "corruption_group": "Blur",
+        "corruption_function": "Defocus_Blur",
+        "parameter": {
+          "severity0": {
+            "radius": null
+          },
+          "severity1": {
+            "radius": 3
+          },
+          "severity2": {
+            "radius": 5
+          },
+          "severity3": {
+            "radius": 7
+          },
+          "severity4": {
+            "radius": 9
+          },
+          "severity5": {
+            "radius": 11
+          }
+        },
+        "accuracy": {
+          "severity0": 0.9,
+          "severity1": 0.8,
+          "severity2": 0.8,
+          "severity3": 0.8,
+          "severity4": 0.8,
+          "severity5": 0.9
+        },
+        "display_info": {
+          "severity0": ["images/Defocus_Blur/severity0/9.png", 9, 9],
+          "severity1": ["images/Defocus_Blur/severity1/9.png", 9, 9],
+          "severity2": ["images/Defocus_Blur/severity2/9.png", 9, 9],
+          "severity3": ["images/Defocus_Blur/severity3/9.png", 9, 9],
+          "severity4": ["images/Defocus_Blur/severity4/9.png", 9, 9],
+          "severity5": ["images/Defocus_Blur/severity5/9.png", 9, 9]
+        }
+      },
+      {
+        "corruption_group": "Blur",
+        "corruption_function": "Horizontal_Motion_Blur",
+        "parameter": {
+          "severity0": {
+            "kernel_size": null
+          },
+          "severity1": {
+            "kernel_size": 3
+          },
+          "severity2": {
+            "kernel_size": 7
+          },
+          "severity3": {
+            "kernel_size": 11
+          },
+          "severity4": {
+            "kernel_size": 15
+          },
+          "severity5": {
+            "kernel_size": 19
+          }
+        },
+        "accuracy": {
+          "severity0": 0.9,
+          "severity1": 0.8,
+          "severity2": 0.8,
+          "severity3": 0.8,
+          "severity4": 0.8,
+          "severity5": 0.8
+        },
+        "display_info": {
+          "severity0": ["images/Horizontal_Motion_Blur/severity0/9.png", 9, 9],
+          "severity1": ["images/Horizontal_Motion_Blur/severity1/9.png", 9, 9],
+          "severity2": ["images/Horizontal_Motion_Blur/severity2/9.png", 9, 9],
+          "severity3": ["images/Horizontal_Motion_Blur/severity3/9.png", 9, 9],
+          "severity4": ["images/Horizontal_Motion_Blur/severity4/9.png", 9, 9],
+          "severity5": ["images/Horizontal_Motion_Blur/severity5/9.png", 9, 9]
+        }
+      },
+      {
+        "corruption_group": "Blur",
+        "corruption_function": "Vertical_Motion_Blur",
+        "parameter": {
+          "severity0": {
+            "kernel_size": null
+          },
+          "severity1": {
+            "kernel_size": 3
+          },
+          "severity2": {
+            "kernel_size": 7
+          },
+          "severity3": {
+            "kernel_size": 11
+          },
+          "severity4": {
+            "kernel_size": 15
+          },
+          "severity5": {
+            "kernel_size": 19
+          }
+        },
+        "accuracy": {
+          "severity0": 0.9,
+          "severity1": 0.9,
+          "severity2": 0.9,
+          "severity3": 0.9,
+          "severity4": 1.0,
+          "severity5": 1.0
+        },
+        "display_info": {
+          "severity0": ["images/Vertical_Motion_Blur/severity0/9.png", 9, 9],
+          "severity1": ["images/Vertical_Motion_Blur/severity1/9.png", 9, 9],
+          "severity2": ["images/Vertical_Motion_Blur/severity2/9.png", 9, 9],
+          "severity3": ["images/Vertical_Motion_Blur/severity3/9.png", 9, 9],
+          "severity4": ["images/Vertical_Motion_Blur/severity4/9.png", 9, 9],
+          "severity5": ["images/Vertical_Motion_Blur/severity5/9.png", 9, 9]
+        }
+      },
+      {
+        "corruption_group": "Blur",
+        "corruption_function": "Zoom_Blur",
+        "parameter": {
+          "severity0": {
+            "zoom_factor": null
+          },
+          "severity1": {
+            "zoom_factor": 1.0
+          },
+          "severity2": {
+            "zoom_factor": 1.05
+          },
+          "severity3": {
+            "zoom_factor": 1.1
+          },
+          "severity4": {
+            "zoom_factor": 1.15
+          },
+          "severity5": {
+            "zoom_factor": 1.2
+          }
+        },
+        "accuracy": {
+          "severity0": 0.9,
+          "severity1": 0.9,
+          "severity2": 0.9,
+          "severity3": 0.9,
+          "severity4": 0.8,
+          "severity5": 0.7
+        },
+        "display_info": {
+          "severity0": ["images/Zoom_Blur/severity0/9.png", 9, 9],
+          "severity1": ["images/Zoom_Blur/severity1/9.png", 9, 9],
+          "severity2": ["images/Zoom_Blur/severity2/9.png", 9, 9],
+          "severity3": ["images/Zoom_Blur/severity3/9.png", 9, 9],
+          "severity4": ["images/Zoom_Blur/severity4/9.png", 9, 9],
+          "severity5": ["images/Zoom_Blur/severity5/9.png", 9, 9]
+        }
+      }
     ]
+  }
 }

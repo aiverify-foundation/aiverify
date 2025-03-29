@@ -1,4 +1,3 @@
-import copy
 import importlib
 import json
 import logging
@@ -6,12 +5,8 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Tuple, Union
+from typing import Dict, Optional, Tuple
 
-from aiverify_test_engine.interfaces.idata import IData
-from aiverify_test_engine.interfaces.imodel import IModel
-from aiverify_test_engine.interfaces.ipipeline import IPipeline
-from aiverify_test_engine.interfaces.iserializer import ISerializer
 from aiverify_test_engine.interfaces.itestresult import ITestArguments, ITestResult
 from aiverify_test_engine.plugins.enums.model_type import ModelType
 from aiverify_test_engine.plugins.enums.plugin_type import PluginType
@@ -23,9 +18,9 @@ from aiverify_test_engine.utils.json_utils import (
     validate_test_result_schema,
 )
 from aiverify_test_engine.utils.time import time_class_method
-from aiverify_test_engine.utils.url_utils import get_absolute_path
 
 from aiverify_environment_corruptions.algo import Plugin
+from aiverify_environment_corruptions.utils import environment
 
 
 # =====================================================================================
@@ -48,51 +43,38 @@ class AlgoInit:
 
     def __init__(
         self,
-        run_as_pipeline: bool,
-        core_modules_path: str,
         data_path: str,
         model_path: str,
-        ground_truth_path: str,
-        ground_truth: str,
         model_type: ModelType,
-        input_arguments: dict,
+        ground_truth_path: Optional[str] = None,
+        ground_truth_label: Optional[str] = None,
+        file_name_label: Optional[str] = None,
+        set_seed: Optional[int] = None,
+        core_modules_path: Optional[str] = None,
+        user_defined_params: Optional[dict] = None,
     ):
-        # Other variables
-        self._base_path: Path = Path().absolute()
-        self._requires_ground_truth: bool = True
-        self._run_as_pipeline: bool = run_as_pipeline
-        self._start_time = None
-        self._time_taken = None
-
         # Store the input arguments as private vars
-        if core_modules_path == "":
-            core_modules_path = Path(importlib.util.find_spec("aiverify_test_engine").origin).parent
-        self._core_modules_path: str = core_modules_path
-        self._data_path: str = str(data_path)
-        self._model_path: str = str(model_path)
-        self._input_arguments: Dict = input_arguments
-        self._model_type: ModelType = model_type
+        self._data_path = data_path
+        self._model_path = model_path
+        self._model_type = model_type
+        self._ground_truth_path = ground_truth_path
+        self._ground_truth_label = ground_truth_label
+        self._file_name_label = file_name_label
+        self._set_seed = set_seed
+        self._core_modules_path = core_modules_path or str(Path(importlib.util.find_spec("aiverify_test_engine").origin).parent)  # fmt: skip
 
-        if self._requires_ground_truth:
-            self._ground_truth_path: str = str(ground_truth_path)
-            self._ground_truth: str = ground_truth
+        self._user_defined_params = user_defined_params or {}
+        user_corruptions = self._user_defined_params.get("corruptions", [])
+        user_corruptions = [name.lower() for name in user_corruptions]  # Normalize
+        if not user_corruptions or "all" in user_corruptions:
+            # If no corruptions are provided, or if "all" is provided, use all corruptions
+            self._user_defined_params["corruptions"] = list(environment.CORRUPTION_FN)
         else:
-            self._ground_truth_path: str = ""
-            self._ground_truth: str = ""
+            # Filter corruption functions based on user input, make sure algorithm names are in correct format & order
+            self._user_defined_params["corruptions"] = [name for name in environment.CORRUPTION_FN if name.lower() in user_corruptions]  # fmt: skip
 
-        # Default for instances
-        self._initial_data_instance: Union[None, IData] = None
-        self._data_instance: Union[None, IData] = None
-        self._data_serializer_instance: Union[None, ISerializer] = None
-
-        self._initial_model_instance: Union[None, IModel, IPipeline] = None
-        self._model_instance: Union[None, IModel, IPipeline] = None
-        self._model_serializer_instance: Union[None, ISerializer] = None
-
-        self._ground_truth_instance: Union[None, IData] = None
-        self._ground_truth_serializer_instance: Union[None, ISerializer] = None
-
-        self._logger_instance: Union[None, logging] = None
+        # Other variables
+        self._requires_ground_truth = model_type in (ModelType.CLASSIFICATION,)
 
     @time_class_method
     def run(self) -> None:
@@ -105,7 +87,7 @@ class AlgoInit:
             print("=" * 20)
 
             # Discover available core plugins
-            PluginManager.discover(str(self._core_modules_path))
+            PluginManager.discover(self._core_modules_path)
             print(f"[DETECTED_PLUGINS]: {PluginManager.get_printable_plugins()}")
 
             # Create logger
@@ -120,138 +102,114 @@ class AlgoInit:
             file_handler.setLevel(level=logging.DEBUG)
             self._logger_instance.addHandler(file_handler)
 
-            if self._run_as_pipeline:
-                # Identify and load data information
-                (
-                    self._data_instance,
-                    self._data_serializer_instance,
-                    data_error_message,
-                ) = PluginManager.get_instance(PluginType.DATA, **{"filename": self._data_path})
+            # Identify and load data
+            (
+                self._data_instance,
+                self._data_serializer_instance,
+                data_error_message,
+            ) = PluginManager.get_instance(PluginType.DATA, **{"filename": self._data_path})
 
-                # Identify and load model information
-                (
-                    self._model_instance,
-                    self._model_serializer_instance,
-                    model_error_message,
-                ) = PluginManager.get_instance(
-                    PluginType.PIPELINE,
-                    **{"pipeline_path": self._model_path},
-                )
-
-                # Perform a copy of the initial data and model information
-                self._initial_data_instance = copy.deepcopy(self._data_instance)
-                self._initial_model_instance = copy.deepcopy(self._model_instance)
-
-                # Perform data transformation
-                current_dataset = self._data_instance.get_data()
-                current_pipeline = self._model_instance.get_pipeline()
-                data_transformation_stages = current_pipeline[:-1]
-                transformed_dataset = data_transformation_stages.transform(current_dataset)
-                transformed_pipeline = current_pipeline[-1]
-                # Set new transformed pipeline and dataset
-                self._data_instance.set_data(transformed_dataset)
-                self._model_instance.set_pipeline(transformed_pipeline)
-
-            else:
-                # Get the data, model, and ground truth instance
-                (
-                    self._data_instance,
-                    self._data_serializer_instance,
-                    data_error_message,
-                ) = PluginManager.get_instance(PluginType.DATA, **{"filename": self._data_path})
-                (
-                    self._model_instance,
-                    self._model_serializer_instance,
-                    model_error_message,
-                ) = PluginManager.get_instance(PluginType.MODEL, **{"filename": self._model_path})
+            # Identify and load model
+            (
+                self._model_instance,
+                self._model_serializer_instance,
+                model_error_message,
+            ) = PluginManager.get_instance(PluginType.PIPELINE, **{"pipeline_path": self._model_path})
 
             # Print the instances we found from the paths and identified from the core plugins
             print(f"[DATA]: {self._data_instance} - {self._data_serializer_instance} ({data_error_message})")
             print(f"[MODEL]: {self._model_instance} - {self._model_serializer_instance} ({model_error_message})")
-            print(f"Requires Ground Truth?: {self._requires_ground_truth}")
+            print(f"[MODEL_TYPE]: {self._model_type}")
 
-            if self._data_instance and self._model_instance:
-                # Check if ground_truth is optional
-                if self._requires_ground_truth:
-                    # Get the ground truth instance
-                    (
-                        self._ground_truth_instance,
-                        self._ground_truth_serializer_instance,
-                        _ground_truth_error_message,
-                    ) = PluginManager.get_instance(PluginType.DATA, **{"filename": self._ground_truth_path})
+            if data_error_message or model_error_message:
+                raise RuntimeError("ERROR: Unable to get data or model instances")
 
-                    print(f"[GROUND_TRUTH]: {self._ground_truth_instance}{self._ground_truth_serializer_instance}")
-                    print(f"[GROUND_TRUTH]: {self._ground_truth}")
-                    print(f"[MODEL_TYPE]: {self._model_type}")
-                    print(f"[GROUND_TRUTH FEATURES]: {self._ground_truth_instance.read_labels()}")
-                    print(self._ground_truth_instance.get_data())
+            print(f"[REQUIRES_GROUND_TRUTH]: {self._requires_ground_truth}")
+            if self._requires_ground_truth:
+                if self._ground_truth_label is None:
+                    raise RuntimeError("ERROR: Ground truth label is required")
+                if self._file_name_label is None:
+                    raise RuntimeError("ERROR: File name label is required")
 
-                    print("Removing ground truth from data and keep only ground truth in ground truth data...")
+                (
+                    self._ground_truth_instance,
+                    self._ground_truth_serializer_instance,
+                    ground_truth_error_message,
+                ) = PluginManager.get_instance(PluginType.DATA, **{"filename": self._ground_truth_path})
 
-                    # Leave only the ground truth feature in self._ground_truth_instance and
-                    # Remove ground truth feature from the data instance
-                    is_ground_truth_instance_success = self._ground_truth_instance.keep_ground_truth(self._ground_truth)
-                    self._data_instance.remove_ground_truth(self._ground_truth)
-                    if not is_ground_truth_instance_success:
-                        raise RuntimeError(
-                            "ERROR: Unable to retain only ground truth in ground truth instance. (Check "
-                            "if "
-                            "ground "
-                            "truth feature exists in the data specified in ground truth path file.)"
-                        )
-
-                    print(f"[GROUND_TRUTH FEATURES]: {self._ground_truth_instance.read_labels()}")
-
-                else:
-                    # Do not require Ground Truth
-                    self._ground_truth_instance = None
-
-                # Add additional kwargs parameters
-                print("Setting additional parameters...")
-                self._input_arguments["ground_truth"] = self._ground_truth
-                self._input_arguments["model_type"] = self._model_type
-                self._input_arguments["logger"] = self._logger_instance
-                self._input_arguments["progress_callback"] = AlgoInit.progress_callback
-                self._input_arguments["project_base_path"] = self._base_path
-
-                # Run the plugin with the arguments and instances
-                print("Creating an instance of the Plugin...")
-                self._start_time = time.time()
-                plugin = Plugin(
-                    (self._data_instance, self._data_serializer_instance),
-                    (self._model_instance, self._model_serializer_instance),
-                    (self._ground_truth_instance, self._ground_truth_instance),
-                    self._initial_data_instance,
-                    self._initial_model_instance,
-                    **self._input_arguments,
+                print(
+                    f"[GROUND_TRUTH]: {self._ground_truth_instance} - {self._ground_truth_serializer_instance} ({ground_truth_error_message})"
                 )
 
-                # Generate the results using this plugin
-                print("Generating the results with the plugin...")
-                plugin.generate()
+                if ground_truth_error_message:
+                    raise RuntimeError("ERROR: Unable to get ground truth instance")
+                if self._ground_truth_label not in self._ground_truth_instance.read_labels():
+                    raise RuntimeError(
+                        f"ERROR: Ground truth label '{self._ground_truth_label}' not found in ground truth data."
+                    )
 
-                # Get the task results and convert to json friendly and validate against the output schema
-                print("Converting numpy formats if exists...")
-                results = remove_numpy_formats(plugin.get_results())
+                print(f"[GROUND_TRUTH_LABEL]: {self._ground_truth_label}")
+                print(self._ground_truth_instance.get_data())
 
-                print("Verifying results with output schema...")
-                is_success, error_messages = self._verify_task_results(results)
-                self._time_taken = time.time() - self._start_time
+                print("Removing ground truth label from test data...")
+                self._data_instance.remove_ground_truth(self._ground_truth_label)
+                print(self._data_instance.get_data())
 
-                if is_success:
-                    # Save the output results
-                    output_folder = Path.cwd() / "output"
-                    output_folder.mkdir(parents=True, exist_ok=True)
-
-                    json_file_path = output_folder / "results.json"
-                    self._generate_output_file(results, json_file_path)
-                    print("*" * 20)
-                    print(f"check the results here : {json_file_path}")
-                    print("*" * 20)
-                else:
-                    raise RuntimeError(error_messages)
             else:
-                raise RuntimeError("ERROR: Unable to get data or model instances")
+                self._ground_truth_instance = self._ground_truth_serializer_instance = None
+
+            # Run the plugin with the arguments and instances
+            print("Creating an instance of the Plugin...")
+            self._start_time = time.time()
+            plugin = Plugin(
+                data_instance_and_serializer=(
+                    self._data_instance,
+                    self._data_serializer_instance,
+                ),
+                model_instance_and_serializer=(
+                    self._model_instance,
+                    self._model_serializer_instance,
+                ),
+                ground_truth_instance_and_serializer=(
+                    self._ground_truth_instance,
+                    self._ground_truth_serializer_instance,
+                ),
+                model_type=self._model_type,
+                requires_ground_truth=self._requires_ground_truth,
+                user_defined_params=self._user_defined_params,
+                logger=self._logger_instance,
+                progress_callback=AlgoInit.progress_callback,
+                ground_truth_path=self._ground_truth_path,
+                ground_truth_label=self._ground_truth_label,
+                file_name_label=self._file_name_label,
+                set_seed=self._set_seed,
+            )
+
+            # Generate the results using this plugin
+            print("Generating the results with the plugin...")
+            plugin.generate()
+
+            # Get the task results and convert to json friendly and validate against the output schema
+            print("Converting numpy formats if exists...")
+            results = remove_numpy_formats(plugin.get_results())
+
+            # Verify the results with the output schema
+            print("Verifying results with output schema...")
+            is_success, error_messages = self._verify_task_results(results)
+            self._time_taken = time.time() - self._start_time
+
+            if is_success:
+                # Save the output results
+                output_folder = Path.cwd() / "output"
+                output_folder.mkdir(parents=True, exist_ok=True)
+
+                json_file_path = output_folder / "results.json"
+                self._generate_output_file(results, json_file_path)
+                print("*" * 20)
+                print(f"check the results here : {json_file_path}")
+                print("*" * 20)
+            else:
+                raise RuntimeError(error_messages)
 
         except Exception as error:
             # Print the error
@@ -264,28 +222,23 @@ class AlgoInit:
         """
         Format the output results into the AI Verify Test Result and write to a JSON file
         """
-        f = open(str(Path(__file__).parent / "algo.meta.json"))
-        meta_file = json.load(f)
-        annotated_ground_truth_path = self._input_arguments.get("annotated_ground_truth_path", None)
-        annotated_ground_truth_path = (
-            get_absolute_path(annotated_ground_truth_path) if annotated_ground_truth_path else None
-        )
+        with open(str(Path(__file__).parent / "algo.meta.json")) as f:
+            meta_file = json.load(f)
 
         # Prepare test arguments
         test_arguments = ITestArguments(
-            groundTruth=self._ground_truth,
-            modelType=self._model_type.name,
             testDataset=self._data_path,
-            modelFile=self._model_path,
-            groundTruthDataset=self._ground_truth_path,
-            algorithmArgs={
-                "run_pipeline": self._run_as_pipeline,
-                "set_seed": self._input_arguments["set_seed"],
-                "annotated_labels_path": annotated_ground_truth_path,
-                "file_name_label": self._input_arguments.get("file_name_label", None),
-                "corruptions": self._input_arguments["corruptions"],
-            },
             mode="upload",
+            modelType=self._model_type.name,
+            groundTruthDataset=self._ground_truth_path,
+            groundTruth=self._ground_truth_label,
+            algorithmArgs={
+                "ground_truth_path": self._ground_truth_path,
+                "file_name_label": self._file_name_label,
+                "set_seed": self._set_seed,
+                "corruptions": self._user_defined_params["corruptions"],
+            },
+            modelFile=self._model_path,
         )
 
         # Create the output result
@@ -311,10 +264,9 @@ class AlgoInit:
         image_urls = []
 
         for result in data["results"]:
-            display_info = result.get("display_info", {})
-            for severity, info in display_info.items():
+            for info in result.get("display_info", {}).values():
                 for item in info:
-                    if ".png" in item:
+                    if str(item).endswith((".png", ".jpg", ".jpeg")):
                         image_urls.append(item)
 
         return image_urls
@@ -333,7 +285,7 @@ class AlgoInit:
         error_message = ""
 
         # Check that results type is dict
-        if type(task_result) is not dict:
+        if not isinstance(task_result, dict):
             # Raise error - wrong type
             is_success = False
             error_message = f"Invalid type for results: {type(task_result).__name__}"

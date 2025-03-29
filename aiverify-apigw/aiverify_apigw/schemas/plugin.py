@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, HttpUrl, TypeAdapter, AnyHttpUrl
+from pydantic import Field, HttpUrl, TypeAdapter, AnyHttpUrl
 from typing import Optional, List
 from datetime import datetime
 
@@ -7,9 +7,10 @@ from .algorithm import AlgorithmOutput
 from .widget import WidgetOutput
 from .input_block import InputBlockOutput
 from .template import TemplateOutput
+from .base_model import MyBaseModel
 
 
-class PluginMeta(BaseModel):
+class PluginMeta(MyBaseModel):
     gid: str = Field(
         description="Unique global identifier for the plugin",
         min_length=1,
@@ -24,6 +25,7 @@ class PluginMeta(BaseModel):
         default=None,
         description="URL of project page",
         max_length=2048,
+        strict=False
     )
 
 
@@ -31,12 +33,12 @@ class PluginOutput(PluginMeta):
     meta: str = Field(description="Content from the plugin meta file")
     is_stock: bool = Field(description="Whether this is a stock plugin", default=False)
     zip_hash: Optional[str] = Field(description="File hash of plugin zip")
-    algorithms: List[AlgorithmOutput] = Field(description="List of algorithms", default=[])
-    widgets: List[WidgetOutput] = Field(description="List of widgets", default=[])
-    input_blocks: List[InputBlockOutput] = Field(description="List of input blocks", default=[])
-    templates: List[TemplateOutput] = Field(description="List of templates", default=[])
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+    algorithms: List[AlgorithmOutput] = Field(description="List of algorithms", default=[], strict=False)
+    widgets: List[WidgetOutput] = Field(description="List of widgets", default=[], strict=False)
+    input_blocks: List[InputBlockOutput] = Field(description="List of input blocks", default=[], strict=False)
+    templates: List[TemplateOutput] = Field(description="List of templates", default=[], strict=False)
+    created_at: Optional[datetime] = Field(default=None, strict=False)
+    updated_at: Optional[datetime] = Field(default=None, strict=False)
 
     @classmethod
     def from_model(cls, result: PluginModel) -> "PluginOutput":
