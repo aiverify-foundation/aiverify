@@ -1,5 +1,5 @@
-from pydantic import Field, model_validator
-from typing import List, Optional, Self
+from pydantic import Field, ConfigDict, model_validator, field_validator
+from typing import List, Optional, Self, Any
 from datetime import datetime
 from enum import StrEnum, auto
 import json
@@ -42,6 +42,7 @@ class WidgetLayoutResizeHandleEmum(StrEnum):
 
 
 class WidgetLayout(MyBaseModel):
+    model_config = ConfigDict(use_enum_values=True)
     i: str = Field(description="Unique identifier for the layout item", min_length=1, max_length=128)
     x: int = Field(description="X position of the layout item", ge=0, le=12)
     y: int = Field(description="Y position of the layout item", ge=0, le=36)
@@ -56,6 +57,15 @@ class WidgetLayout(MyBaseModel):
     isResizable: Optional[bool] = False
     resizeHandles: Optional[List[WidgetLayoutResizeHandleEmum]] = Field(description="Resize handle", default=None, strict=False)
     isBounded: Optional[bool] = False
+
+    @field_validator('resizeHandles', mode='before')
+    @classmethod
+    def convert_resize_handles(cls, value: Any) -> Any:
+        if isinstance(value, list):
+            for idx in range(len(value)):
+                if isinstance(value[idx], str):
+                    value[idx] = WidgetLayoutResizeHandleEmum(value[idx])
+        return value
 
     @model_validator(mode='after')
     def validate_widget_layout(self) -> Self:
