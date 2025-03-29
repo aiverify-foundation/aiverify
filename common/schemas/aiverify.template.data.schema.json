@@ -57,17 +57,20 @@
                   "type": "boolean"
                 },
                 "resizeHandles": {
-                  "type": "string",
-                  "enum": [
-                    "s",
-                    "w",
-                    "e",
-                    "n",
-                    "sw",
-                    "nw",
-                    "se",
-                    "ne"
-                  ]
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "s",
+                      "w",
+                      "e",
+                      "n",
+                      "sw",
+                      "nw",
+                      "se",
+                      "ne"
+                    ]  
+                  }
                 },
                 "isBounded": {
                   "type": "boolean"
