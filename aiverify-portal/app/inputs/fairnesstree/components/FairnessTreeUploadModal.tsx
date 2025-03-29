@@ -322,6 +322,7 @@ export const FairnessTreeUploadModal: React.FC<FairnessTreeModalProps> = ({
               onCloseIconClick={() => {
                 setModalMessage(null);
                 setIsSubmitted(false); // Reset state
+                router.refresh(); // Refresh data before closing
                 onClose(); // Close the modal
               }}
               width="500px"
@@ -335,8 +336,9 @@ export const FairnessTreeUploadModal: React.FC<FairnessTreeModalProps> = ({
               enableScreenOverlay={true}
               onCloseIconClick={() => {
                 setModalError(null);
-                setIsSubmitted(false);
-                router.refresh(); // Reset state
+                setIsSubmitted(false); // Reset state
+                router.refresh(); // Ensure router refreshes
+                onClose(); // Close the modal
               }}
               width="500px"
               height="200px">

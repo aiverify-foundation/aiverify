@@ -6,9 +6,15 @@ import React, { useState, useEffect } from 'react';
 import { useMDXBundle } from '@/app/inputs/checklists/[groupId]/[checklistId]/hooks/useMDXBundle';
 import { FairnessTreeModalWrapper } from '@/app/inputs/fairnesstree/page';
 import { Checklist, FairnessTree } from '@/app/inputs/utils/types';
+import {
+  ValidationResults,
+  validateInputBlock,
+  processBatchValidations,
+} from '@/app/project/select_data/utils/validationUtils';
 import { InputBlockData, InputBlock as ProjectInputBlock } from '@/app/types';
 import { Button, ButtonVariant } from '@/lib/components/button';
 import PluginInputModal from './PluginInputModal';
+
 interface UserInputsProps {
   projectId?: string | null;
   requiredInputBlocks: ProjectInputBlock[];
@@ -20,6 +26,7 @@ interface UserInputsProps {
   allInputBlockDatas: InputBlockData[];
   flow: string;
   initialInputBlocks?: Array<{ gid: string; cid: string; id: number }>;
+  onValidationResultsChange?: (results: ValidationResults) => void;
 }
 
 interface GroupedChecklists {
@@ -35,6 +42,7 @@ export default function UserInputs({
   allInputBlockDatas,
   flow,
   initialInputBlocks = [],
+  onValidationResultsChange,
 }: UserInputsProps) {
   // Initialize selectedGroup based on initialInputBlocks
   const initialGroup = (() => {
@@ -100,6 +108,11 @@ export default function UserInputs({
     [key: string]: string;
   }>(initialOtherInputs);
 
+  // State for validation results
+  const [validationResults, setValidationResults] = useState<ValidationResults>(
+    {}
+  );
+
   const [showFairnessTreeModal, setShowFairnessTreeModal] = useState(false);
   const [currentFairnessTree, setCurrentFairnessTree] = useState<{
     gid: string;
@@ -113,7 +126,6 @@ export default function UserInputs({
     cid: string;
   } | null>(null);
 
-  // Use the MDX bundle hook when a plugin is selected
   const { data: mdxBundle } = useMDXBundle(
     selectedPlugin?.gid,
     selectedPlugin?.cid
@@ -132,16 +144,75 @@ export default function UserInputs({
   // State to track when to fetch fresh data
   const [shouldFetchData, setShouldFetchData] = useState(false);
 
-  // Effect to fetch fresh input block data when needed
+  // Effect to prevalidate all available input blocks on mount
+  useEffect(() => {
+    const prevalidateAllInputs = async () => {
+      setValidationResults({});
+
+      // Prevalidate all available input blocks for potential selection
+      const allInputsToValidate = [
+        ...Object.values(groupedChecklists).flat(),
+        ...allFairnessTrees,
+        ...allInputBlockDatas,
+      ].map((input) => ({
+        gid: input.gid,
+        cid: input.cid,
+        data: input.data,
+        id: input.id,
+      }));
+
+      const results = await processBatchValidations(allInputsToValidate);
+      setValidationResults(results);
+
+      // Only notify parent on initial load, further updates will be handled by selection changes
+      if (onValidationResultsChange) {
+        onValidationResultsChange(results);
+      }
+    };
+
+    prevalidateAllInputs();
+  }, [allInputBlockDatas]);
+
+  // Simplified effect to handle selection changes
+  // Use a single effect with a stable reference to selectedInputs
+  useEffect(() => {
+    // Only notify if we have validation results
+    if (
+      onValidationResultsChange &&
+      Object.keys(validationResults).length > 0
+    ) {
+      // Wait for a stable state before notifying parent
+      const timeoutId = setTimeout(() => {
+        onValidationResultsChange(validationResults);
+      }, 50);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [
+    // Include a stable JSON representation of the selection states
+    selectedGroup,
+    JSON.stringify(selectedFairnessTrees),
+    JSON.stringify(selectedOtherInputs),
+    validationResults,
+    onValidationResultsChange,
+  ]);
+
+  // Effect to handle data refresh
   useEffect(() => {
     if (shouldFetchData) {
-      // Reset the flag
+      console.log('Refreshing data in UserInputs');
       setShouldFetchData(false);
 
-      // Fetch the latest data (router.refresh() will be called by the modal close handler)
-      // This ensures that after the page refreshes, we'll maintain our selections
+      // Force a router refresh to get fresh data from the server
+      router.refresh();
     }
-  }, [shouldFetchData]);
+  }, [shouldFetchData, router]);
+
+  // Function to force refresh when new data is submitted
+  const refreshData = () => {
+    console.log('Manual data refresh triggered');
+    setShouldFetchData(true);
+  };
 
   // Update parent with all selected blocks
   const updateParentWithSelectedBlocks = (
@@ -188,8 +259,16 @@ export default function UserInputs({
 
   // Handle checklist group selection
   const handleGroupSelection = (groupName: string) => {
+    // If the group is the same, do nothing to avoid unnecessary updates
+    if (selectedGroup === groupName) {
+      return;
+    }
+
     setSelectedGroup(groupName);
-    updateParentWithSelectedBlocks(groupName);
+
+    // Notify parent of selection change directly without using setTimeout
+    const selectedBlocks = groupName ? groupedChecklists[groupName] || [] : [];
+    onInputBlocksChange(selectedBlocks);
   };
 
   // Handle fairness tree selection
@@ -198,11 +277,18 @@ export default function UserInputs({
     treeId: string
   ) => {
     const key = `${inputBlock.gid}-${inputBlock.cid}`;
+    // If the tree ID is the same, do nothing to avoid unnecessary updates
+    if (selectedFairnessTrees[key] === treeId) {
+      return;
+    }
+
     const newFairnessTrees = {
       ...selectedFairnessTrees,
       [key]: treeId,
     };
     setSelectedFairnessTrees(newFairnessTrees);
+
+    // Build selected blocks and notify parent directly
     updateParentWithSelectedBlocks(selectedGroup, newFairnessTrees);
   };
 
@@ -211,12 +297,19 @@ export default function UserInputs({
     inputBlock: ProjectInputBlock,
     inputId: string
   ) => {
+    // If the input ID is the same, do nothing to avoid unnecessary updates
     const key = `${inputBlock.gid}-${inputBlock.cid}`;
+    if (selectedOtherInputs[key] === inputId) {
+      return;
+    }
+
     const newOtherInputs = {
       ...selectedOtherInputs,
       [key]: inputId,
     };
     setSelectedOtherInputs(newOtherInputs);
+
+    // Directly notify parent
     updateParentWithSelectedBlocks(
       selectedGroup,
       selectedFairnessTrees,
@@ -257,24 +350,43 @@ export default function UserInputs({
   };
 
   const handlePluginSubmit = async (data: Record<string, unknown>) => {
-    // Handle the form submission for plugin input
-    console.log('Plugin input submitted:', data);
+    if (data && data.id && selectedPlugin) {
+      const key = `${selectedPlugin.gid}-${selectedPlugin.cid}`;
+      const newOtherInputs = {
+        ...selectedOtherInputs,
+        [key]: data.id.toString(),
+      };
+      setSelectedOtherInputs(newOtherInputs);
 
-    // We need to refresh the available inputs to include the newly created one
-    if (data && data.id) {
-      // If the plugin input was for the current selected block, select the newly created input
-      if (selectedPlugin) {
-        const key = `${selectedPlugin.gid}-${selectedPlugin.cid}`;
-        const newOtherInputs = {
-          ...selectedOtherInputs,
-          [key]: data.id.toString(),
-        };
-        setSelectedOtherInputs(newOtherInputs);
-        updateParentWithSelectedBlocks(
-          selectedGroup,
-          selectedFairnessTrees,
-          newOtherInputs
+      // Notify parent of selection change directly
+      updateParentWithSelectedBlocks(
+        selectedGroup,
+        selectedFairnessTrees,
+        newOtherInputs
+      );
+
+      if (data.gid && data.cid && typeof data.data === 'object') {
+        const result = await validateInputBlock(
+          data.gid as string,
+          data.cid as string,
+          data.data as Record<string, unknown>,
+          data.id as number
         );
+
+        // Update validation results and notify parent in one go
+        setValidationResults((prev) => {
+          const newResults = {
+            ...prev,
+            [`${data.gid}-${data.cid}-${data.id}`]: result,
+          };
+
+          // Notify parent of validation change
+          if (onValidationResultsChange) {
+            onValidationResultsChange(newResults);
+          }
+
+          return newResults;
+        });
       }
     }
   };
@@ -289,7 +401,7 @@ export default function UserInputs({
       </div>
 
       <div className="space-y-4">
-        {/* Process Checklists - Show only one consolidated dropdown */}
+        {/* Process Checklists */}
         {requiredInputBlocks.some(
           (block) => block.gid === 'aiverify.stock.process_checklist'
         ) && (
@@ -346,41 +458,43 @@ export default function UserInputs({
             return (
               <div
                 key={key}
-                className="flex items-center justify-between gap-4">
-                <label className="w-64 text-white">{inputBlock.name}</label>
-                <div className="relative flex-1">
-                  <select
-                    value={selectedTreeId}
-                    onChange={(e) =>
-                      handleFairnessTreeSelection(inputBlock, e.target.value)
-                    }
-                    className="w-full cursor-pointer appearance-none rounded bg-secondary-900 p-3 pr-10 text-gray-300">
-                    <option value="">Choose User Input</option>
-                    {availableTrees.map((tree) => (
-                      <option
-                        key={tree.id}
-                        value={tree.id?.toString() || ''}>
-                        {tree.name}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
-                    <svg
-                      className="h-4 w-4 fill-current text-gray-400"
-                      viewBox="0 0 20 20">
-                      <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-                    </svg>
+                className="space-y-1">
+                <div className="flex items-center justify-between gap-4">
+                  <label className="w-64 text-white">{inputBlock.name}</label>
+                  <div className="relative flex-1">
+                    <select
+                      value={selectedTreeId}
+                      onChange={(e) =>
+                        handleFairnessTreeSelection(inputBlock, e.target.value)
+                      }
+                      className="w-full cursor-pointer appearance-none rounded bg-secondary-900 p-3 pr-10 text-gray-300">
+                      <option value="">Choose User Input</option>
+                      {availableTrees.map((tree) => (
+                        <option
+                          key={tree.id}
+                          value={tree.id?.toString() || ''}>
+                          {tree.name}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
+                      <svg
+                        className="h-4 w-4 fill-current text-gray-400"
+                        viewBox="0 0 20 20">
+                        <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                      </svg>
+                    </div>
                   </div>
+                  <Button
+                    variant={ButtonVariant.OUTLINE}
+                    hoverColor="var(--color-primary-500)"
+                    textColor="white"
+                    text="ADD INPUT"
+                    size="xs"
+                    pill
+                    onClick={() => handleAddTree(inputBlock)}
+                  />
                 </div>
-                <Button
-                  variant={ButtonVariant.OUTLINE}
-                  hoverColor="var(--color-primary-500)"
-                  textColor="white"
-                  text="ADD INPUT"
-                  size="xs"
-                  pill
-                  onClick={() => handleAddTree(inputBlock)}
-                />
               </div>
             );
           })}
@@ -401,7 +515,6 @@ export default function UserInputs({
               inputBlock.cid
             );
 
-            // Get the plugin name from gid if it's a plugin input block
             const isPluginInput = inputBlock.gid.startsWith('aiverify.plugin.');
             const pluginName = isPluginInput
               ? inputBlock.gid.split('.')[2]
@@ -410,48 +523,50 @@ export default function UserInputs({
             return (
               <div
                 key={key}
-                className="flex items-center justify-between gap-4">
-                <div className="flex flex-col">
-                  <label className="w-64 text-white">{inputBlock.name}</label>
-                  {isPluginInput && (
-                    <span className="text-xs text-gray-400">
-                      Plugin: {pluginName}
-                    </span>
-                  )}
-                </div>
-                <div className="relative flex-1">
-                  <select
-                    value={selectedInputId}
-                    onChange={(e) =>
-                      handleOtherInputSelection(inputBlock, e.target.value)
-                    }
-                    className="w-full cursor-pointer appearance-none rounded bg-secondary-900 p-3 pr-10 text-gray-300">
-                    <option value="">Choose User Input</option>
-                    {availableInputs.map((input) => (
-                      <option
-                        key={input.id}
-                        value={input.id?.toString() || ''}>
-                        {input.name}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
-                    <svg
-                      className="h-4 w-4 fill-current text-gray-400"
-                      viewBox="0 0 20 20">
-                      <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-                    </svg>
+                className="space-y-1">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex flex-col">
+                    <label className="w-64 text-white">{inputBlock.name}</label>
+                    {isPluginInput && (
+                      <span className="text-xs text-gray-400">
+                        Plugin: {pluginName}
+                      </span>
+                    )}
                   </div>
+                  <div className="relative flex-1">
+                    <select
+                      value={selectedInputId}
+                      onChange={(e) =>
+                        handleOtherInputSelection(inputBlock, e.target.value)
+                      }
+                      className="w-full cursor-pointer appearance-none rounded bg-secondary-900 p-3 pr-10 text-gray-300">
+                      <option value="">Choose User Input</option>
+                      {availableInputs.map((input) => (
+                        <option
+                          key={input.id}
+                          value={input.id?.toString() || ''}>
+                          {input.name}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
+                      <svg
+                        className="h-4 w-4 fill-current text-gray-400"
+                        viewBox="0 0 20 20">
+                        <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <Button
+                    variant={ButtonVariant.OUTLINE}
+                    hoverColor="var(--color-primary-500)"
+                    textColor="white"
+                    text="ADD INPUT"
+                    size="xs"
+                    pill
+                    onClick={() => handleAddInput(inputBlock)}
+                  />
                 </div>
-                <Button
-                  variant={ButtonVariant.OUTLINE}
-                  hoverColor="var(--color-primary-500)"
-                  textColor="white"
-                  text="ADD INPUT"
-                  size="xs"
-                  pill
-                  onClick={() => handleAddInput(inputBlock)}
-                />
               </div>
             );
           })}
@@ -461,7 +576,11 @@ export default function UserInputs({
       {showFairnessTreeModal && currentFairnessTree && (
         <FairnessTreeModalWrapper
           isOpen={showFairnessTreeModal}
-          onClose={() => setShowFairnessTreeModal(false)}
+          onClose={() => {
+            setShowFairnessTreeModal(false);
+            // Force refresh to ensure the dropdown shows new fairness trees
+            refreshData();
+          }}
           gid={currentFairnessTree.gid}
           cid={currentFairnessTree.cid}
         />
@@ -471,10 +590,8 @@ export default function UserInputs({
         isOpen={!!selectedPlugin}
         onClose={(shouldRefresh) => {
           setSelectedPlugin(null);
-          // Only refresh the page if explicitly asked to
           if (shouldRefresh) {
-            setShouldFetchData(true);
-            router.refresh();
+            refreshData();
           }
         }}
         pluginName={selectedPlugin?.name || ''}
