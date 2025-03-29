@@ -9,7 +9,7 @@
       "type": "debugpy",
       "request": "launch",
       "module": "aiverify_apigw",
-      "cwd": "${workspaceFolder}/src"
+      "cwd": "${workspaceFolder}"
     }
   ]
 }
