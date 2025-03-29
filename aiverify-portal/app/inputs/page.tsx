@@ -11,8 +11,8 @@ export default async function InputsPage() {
   const inputBlocks = await getAllInputBlocks();
   console.log('inputBlocks', inputBlocks);
 
-  // Create a map of unique input block types, excluding aiverify process checklist and fairness tree
-  const uniqueInputBlocks = inputBlocks.reduce(
+  // Group input blocks by their group value
+  const inputBlockGroups = inputBlocks.reduce(
     (acc, block) => {
       // Skip hardcoded blocks
       if (
@@ -23,15 +23,22 @@ export default async function InputsPage() {
         return acc;
       }
 
-      // Use gid as key to ensure uniqueness
-      if (!acc[block.cid]) {
-        acc[block.cid] = block;
+      // Use group as key, default to "Other" if no group specified
+      const groupName = block.group || 'Other';
+
+      if (!acc[groupName]) {
+        acc[groupName] = {
+          name: groupName,
+          blocks: [],
+        };
       }
+
+      acc[groupName].blocks.push(block);
       return acc;
     },
-    {} as Record<string, InputBlock>
+    {} as Record<string, { name: string; blocks: InputBlock[] }>
   );
-  console.log('uniqueInputBlocks', uniqueInputBlocks);
+  console.log('inputBlockGroups', inputBlockGroups);
 
   return (
     <ChecklistsProvider>
@@ -100,11 +107,11 @@ export default async function InputsPage() {
               </div>
             </Card>
           </Link>
-          {/* Dynamic cards for other input block types */}
-          {Object.values(uniqueInputBlocks).map((block) => (
+          {/* Group cards */}
+          {Object.values(inputBlockGroups).map((group) => (
             <Link
-              key={block.cid}
-              href={`/inputs/${block.gid}/${block.cid}`}>
+              key={group.name}
+              href={`/inputs/groups/${encodeURIComponent(group.name)}`}>
               <Card
                 size="md"
                 enableTiltEffect={true}
@@ -115,16 +122,16 @@ export default async function InputsPage() {
                 className="bg-secondary-500 !bg-none">
                 <div className="flex flex-col justify-between p-6">
                   <Icon
-                    name={IconName.File}
+                    name={IconName.Folder}
                     size={50}
                     color="white"
                   />
                   <div>
                     <p className="tracking-wide text-shadow-sm">
-                      {block.description || 'Manage input data'}
+                      Manage input blocks in this group
                     </p>
                     <h2 className="text-2xl font-bold tracking-wide text-shadow-sm">
-                      {block.name}
+                      {group.name}
                     </h2>
                   </div>
                 </div>
