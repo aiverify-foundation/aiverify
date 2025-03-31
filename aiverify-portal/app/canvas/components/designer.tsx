@@ -209,7 +209,10 @@ function Designer(props: DesignerProps) {
     InputBlockData[]
   >(selectedInputBlockDatasFromUrlParams);
   const [isPanelOpen, setIsPanelOpen] = useState(true);
-  const canvasPrint = usePrintable({ printableId: pagesContentWrapperId });
+  const canvasPrint = usePrintable({
+    printableId: pagesContentWrapperId,
+    filename: project.projectInfo.name,
+  });
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'success' | 'error' | null>(
     null

@@ -8,16 +8,37 @@ type UsePrintableOptions = {
    * @default "printable-content"
    */
   printableId?: string;
+
+  /**
+   * Custom filename for the PDF
+   * @default "document.pdf"
+   */
+  filename?: string;
 };
 
 export function usePrintable(options: UsePrintableOptions = {}) {
-  const { printableId = 'printable-content' } = options;
+  const { printableId = 'printable-content', filename = 'document.pdf' } =
+    options;
   const contentRef = useRef<HTMLDivElement>(null);
 
   const print = useCallback(() => {
     // Create a temporary container for print content
     const printContainer = document.createElement('div');
     printContainer.id = printableId;
+
+    // Set the filename for the PDF
+    if (filename && filename.trim() !== '') {
+      // Create a title element which browsers use for the default filename
+      const titleElement = document.createElement('title');
+      titleElement.textContent = filename.endsWith('.pdf')
+        ? filename
+        : `${filename}.pdf`;
+      document.head.appendChild(titleElement);
+
+      // Store the original title to restore it later
+      const originalTitle = document.title;
+      document.title = titleElement.textContent;
+    }
 
     // Clone the content instead of just copying innerHTML to preserve structure
     if (contentRef.current) {
@@ -130,6 +151,9 @@ export function usePrintable(options: UsePrintableOptions = {}) {
     // Store original elements
     const originalPrintContainer = document.getElementById(printableId);
 
+    // Store original title
+    const originalTitle = document.title;
+
     // Append temporary elements
     document.head.appendChild(styleSheet);
     document.body.appendChild(overlay);
@@ -148,11 +172,21 @@ export function usePrintable(options: UsePrintableOptions = {}) {
       styleSheet.remove();
       overlay.remove();
       printContainer.remove();
+
+      // Restore original document title
+      document.title = originalTitle;
+
+      // Remove the title element we added
+      const addedTitleElement = document.querySelector('title:not([id])');
+      if (addedTitleElement) {
+        addedTitleElement.remove();
+      }
+
       if (originalPrintContainer) {
         originalPrintContainer.style.display = '';
       }
     }, 200); // Small delay to ensure DOM is updated
-  }, [printableId]);
+  }, [printableId, filename]);
 
   return { contentRef, print };
 }
