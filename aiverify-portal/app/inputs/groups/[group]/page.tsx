@@ -10,7 +10,7 @@ interface PageParams {
 
 export default async function GroupPage({ params }: { params: PageParams }) {
   // Decode the group name from the URL
-  const groupName = decodeURIComponent(params.group);
+  const groupName = decodeURIComponent(await params.group);
 
   // Get all available input blocks
   const inputBlocks = await getAllInputBlocks();

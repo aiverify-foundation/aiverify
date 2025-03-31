@@ -706,7 +706,22 @@ function Designer(props: DesignerProps) {
   console.log('allPluginsWithMdx', allPluginsWithMdx);
 
   // Determines the back button link based on the current user flow
-  let backButtonLink = '';
+  let backButtonLink = `/templates?flow=${flow}&projectId=${project?.id}`;
+
+  // Function to convert result flows back to their editing flow equivalents
+  const getEditingFlowFromResultsFlow = (currentFlow: string) => {
+    switch (currentFlow) {
+      case UserFlows.NewProjectWithNewTemplateAndResults:
+        return UserFlows.NewProjectWithNewTemplate;
+      case UserFlows.NewProjectWithEditingExistingTemplateAndResults:
+        return UserFlows.NewProjectWithEditingExistingTemplate;
+      case UserFlows.NewProjectWithExistingTemplateAndResults:
+        return UserFlows.NewProjectWithExistingTemplate;
+      default:
+        return currentFlow;
+    }
+  };
+
   if (
     flow === UserFlows.NewProjectWithNewTemplate ||
     flow === UserFlows.NewProjectWithEditingExistingTemplate
@@ -714,10 +729,12 @@ function Designer(props: DesignerProps) {
     backButtonLink = `/templates?flow=${flow}&projectId=${project?.id}`;
   } else if (
     flow === UserFlows.NewProjectWithNewTemplateAndResults ||
-    flow === UserFlows.NewProjectWithExistingTemplateAndResults ||
-    flow === UserFlows.NewProjectWithEditingExistingTemplateAndResults
+    flow === UserFlows.NewProjectWithEditingExistingTemplateAndResults ||
+    flow === UserFlows.NewProjectWithExistingTemplateAndResults
   ) {
-    backButtonLink = `/project/select_data?flow=${flow}&projectId=${project?.id}`;
+    // For result flows, convert back to edit flow and go to select data page in edit mode
+    const editFlow = getEditingFlowFromResultsFlow(flow);
+    backButtonLink = `/project/select_data?flow=${editFlow}&projectId=${project?.id}&testResultIds=${selectedTestResults.map((result) => result.id).join(',')}&iBlockIds=${selectedInputBlockDatas.map((data) => data.id).join(',')}`;
   } else {
     backButtonLink = `/project/select_data?flow=${flow}&projectId=${project?.id}`;
   }
@@ -1038,6 +1055,20 @@ function Designer(props: DesignerProps) {
             title="Export Template"
             onClick={async () => {
               try {
+                // Format cid to match the regex pattern ^[a-zA-Z0-9][a-zA-Z0-9-._]*$
+                // Replace spaces with dashes and ensure it starts with an alphanumeric character
+                let formattedName = project.projectInfo.name.trim();
+
+                // Replace any character that's not alphanumeric, dash, dot, or underscore with dash
+                formattedName = formattedName.replace(/[^a-zA-Z0-9-._]/g, '-');
+
+                // Ensure the name starts with an alphanumeric character
+                if (!/^[a-zA-Z0-9]/.test(formattedName)) {
+                  formattedName = `a${formattedName}`;
+                }
+
+                const formattedCid = `${formattedName}-${project.id}`;
+
                 const response = await fetch(
                   `/api/project_templates/export/${project.id}`,
                   {
@@ -1048,7 +1079,7 @@ function Designer(props: DesignerProps) {
                     body: JSON.stringify({
                       name: project.projectInfo.name,
                       description: project.projectInfo.description,
-                      cid: `${project.projectInfo.name}-${project.id}`,
+                      cid: formattedCid,
                     }),
                   }
                 );

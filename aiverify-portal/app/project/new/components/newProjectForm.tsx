@@ -27,6 +27,21 @@ function NewProjectForm() {
     FormData
   >(createProject, initialFormValues);
 
+  // Add state to track form input values
+  const [formValues, setFormValues] = useState({
+    name: '',
+    description: '',
+    reportTitle: '',
+    company: '',
+  });
+
+  // Check if all required fields are filled
+  const isFormValid =
+    formValues.name.trim() !== '' &&
+    formValues.description.trim() !== '' &&
+    formValues.reportTitle.trim() !== '' &&
+    formValues.company.trim() !== '';
+
   useEffect(() => {
     if (formState.formStatus === 'error') {
       setShowErrorModal(true);
@@ -35,6 +50,18 @@ function NewProjectForm() {
     if (formState.formStatus === 'success') {
     }
   }, [formState]);
+
+  // Handle input changes
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormValues((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   return (
     <>
       {showErrorModal ? (
@@ -73,22 +100,34 @@ function NewProjectForm() {
         <TextInput
           name="name"
           label="Project Name*"
+          required
           labelClassName="!text-white"
+          value={formValues.name}
+          onChange={handleInputChange}
         />
         <TextArea
           name="description"
-          label="Project Description"
+          label="Project Description*"
+          required
           labelClassName="!text-white"
+          value={formValues.description}
+          onChange={handleInputChange}
         />
         <TextInput
           name="reportTitle"
-          label="Report Title"
+          label="Report Title*"
+          required
           labelClassName="!text-white"
+          value={formValues.reportTitle}
+          onChange={handleInputChange}
         />
         <TextInput
           name="company"
-          label="Company Name"
+          label="Company Name*"
+          required
           labelClassName="!text-white"
+          value={formValues.company}
+          onChange={handleInputChange}
         />
         <div className="mt-[80px] flex justify-between">
           <p className="text-[0.8rem] text-secondary-400">* Required</p>
@@ -97,6 +136,7 @@ function NewProjectForm() {
             text="Next"
             variant={ButtonVariant.PRIMARY}
             size="sm"
+            disabled={!isFormValid}
           />
         </div>
       </form>

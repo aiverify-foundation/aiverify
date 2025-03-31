@@ -552,7 +552,7 @@ export default function ClientSelectData({
             </Button>
           </Link>
         ) : null}
-        {selectedInputBlocks.length === 0 &&
+        {requiredInputBlocks.length === selectedInputBlocks.length &&
           !hasValidationErrors &&
           invalidInputBlocks.length === 0 && (
             <Button
