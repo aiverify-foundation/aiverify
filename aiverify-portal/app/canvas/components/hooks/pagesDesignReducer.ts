@@ -146,6 +146,13 @@ type WidgetAction =
       type: 'CONVERT_PAGES_TO_OVERFLOW';
       pageTypes: ('grid' | 'overflow')[];
       overflowParents: Array<number | null>;
+    }
+  | {
+      type: 'RESET_PAGES_WITH_OVERFLOW';
+      pageTypes: ('grid' | 'overflow')[];
+      overflowParents: Array<number | null>;
+      layouts: Layout[][];
+      widgets: WidgetOnGridLayout[][];
     };
 
 function pagesDesignReducer(state: State, action: WidgetAction): State {
@@ -703,11 +710,21 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       break;
     }
     case 'CONVERT_PAGES_TO_OVERFLOW': {
-      const { pageTypes, overflowParents } = action;
+      return {
+        ...state,
+        pageTypes: action.pageTypes,
+        overflowParents: action.overflowParents,
+      };
+    }
+
+    case 'RESET_PAGES_WITH_OVERFLOW': {
+      const { pageTypes, overflowParents, layouts, widgets } = action;
       return {
         ...state,
         pageTypes,
         overflowParents,
+        layouts,
+        widgets,
       };
     }
 

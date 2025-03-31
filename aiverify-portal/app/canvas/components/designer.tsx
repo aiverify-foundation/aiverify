@@ -495,66 +495,74 @@ function Designer(props: DesignerProps) {
     if (isInitialMount.current) return;
 
     const debouncedOverflowCheck = debounce(() => {
-      // Create copies of state arrays to avoid direct mutation
-      const newPageTypes = [...state.pageTypes];
-      const newOverflowParents = [...state.overflowParents];
-      let stateChanged = false;
+      // Process each regular (non-overflow) page individually
+      // This ensures overflow pages are inserted after their parent grid page
 
-      // First pass: Process normal pages and calculate required overflow pages
-      layouts.forEach((layout, pageIndex) => {
-        // Skip overflow pages in this loop - we only want to check normal pages
-        if (newPageTypes[pageIndex] === 'overflow') return;
+      // First pass: collect information about required overflow pages
+      const overflowRequirements = state.pageTypes
+        .map((type, pageIndex) => {
+          if (type === 'overflow') return null;
 
-        const { overflows, numOfRequiredPages } = isPageContentOverflow(
-          layouts[pageIndex],
-          state.widgets[pageIndex]
+          const { overflows, numOfRequiredPages } = isPageContentOverflow(
+            layouts[pageIndex],
+            state.widgets[pageIndex]
+          );
+
+          return { pageIndex, overflows, numOfRequiredPages };
+        })
+        .filter(
+          (
+            req
+          ): req is {
+            pageIndex: number;
+            overflows: boolean;
+            numOfRequiredPages: number;
+          } => req !== null
         );
 
-        // Convert required pages to overflow
-        if (numOfRequiredPages > 1) {
-          for (let i = 1; i < numOfRequiredPages; i++) {
-            const overflowPageIndex = pageIndex + i;
-            if (overflowPageIndex < newPageTypes.length) {
-              newPageTypes[overflowPageIndex] = 'overflow';
-              newOverflowParents[overflowPageIndex] = pageIndex;
-              stateChanged = true;
-            }
+      // Second pass: recreate the page layout with proper overflow distribution
+      // We'll rebuild the arrays from scratch for cleaner results
+      const resultPageTypes: ('grid' | 'overflow')[] = [];
+      const resultOverflowParents: (number | null)[] = [];
+      const resultLayouts: Layout[][] = [];
+      const resultWidgets: WidgetOnGridLayout[][] = [];
+
+      // Process each grid page and insert overflow pages after it
+      overflowRequirements.forEach((req) => {
+        const { pageIndex, overflows, numOfRequiredPages } = req;
+
+        // Add the original grid page
+        resultPageTypes.push('grid');
+        resultOverflowParents.push(null);
+        resultLayouts.push(layouts[pageIndex]);
+        resultWidgets.push(state.widgets[pageIndex]);
+
+        // Add overflow pages if needed
+        if (overflows) {
+          for (let i = 0; i < numOfRequiredPages - 1; i++) {
+            resultPageTypes.push('overflow');
+            resultOverflowParents.push(resultPageTypes.length - 2); // Index of the parent page we just added
+            resultLayouts.push([]);
+            resultWidgets.push([]);
           }
-        }
-
-        const existingOverflowPages = newPageTypes.filter(
-          (type, idx) =>
-            type === 'overflow' && newOverflowParents[idx] === pageIndex
-        ).length;
-
-        if (overflows && existingOverflowPages < numOfRequiredPages - 1) {
-          // Don't modify state directly here, just queue the dispatch
-          setTimeout(() => {
-            dispatch({
-              type: 'ADD_OVERFLOW_PAGES',
-              parentPageIndex: pageIndex,
-              count: numOfRequiredPages - 1 - existingOverflowPages,
-            });
-          }, 0);
-        } else if (!overflows && existingOverflowPages > 0) {
-          setTimeout(() => {
-            dispatch({
-              type: 'REMOVE_OVERFLOW_PAGES',
-              parentPageIndex: pageIndex,
-            });
-          }, 0);
         }
       });
 
-      // Only dispatch state update if changes were made
-      if (stateChanged) {
+      // Only dispatch if there's a change
+      if (
+        JSON.stringify(resultPageTypes) !== JSON.stringify(state.pageTypes) ||
+        JSON.stringify(resultOverflowParents) !==
+          JSON.stringify(state.overflowParents)
+      ) {
         dispatch({
-          type: 'CONVERT_PAGES_TO_OVERFLOW',
-          pageTypes: newPageTypes,
-          overflowParents: newOverflowParents,
+          type: 'RESET_PAGES_WITH_OVERFLOW',
+          pageTypes: resultPageTypes,
+          overflowParents: resultOverflowParents,
+          layouts: resultLayouts,
+          widgets: resultWidgets,
         });
       }
-    }, 1000);
+    }, 300);
 
     debouncedOverflowCheck();
 
@@ -568,14 +576,13 @@ function Designer(props: DesignerProps) {
     // Skip during initial mount
     if (isInitialMount.current) return;
 
-    // When test results or input block data changes, re-evaluate overflow pages
-    const triggerOverflowCheck = debounce(() => {
+    // When test results or input block data changes, trigger the overflow check
+    const triggerDataChangeReflow = debounce(() => {
       console.log(
         '[Data Change] Re-evaluating overflow pages due to data change'
       );
 
       // Force layout recalculation by temporarily applying a small style change
-      // This ensures getBoundingClientRect() will return accurate heights
       const gridItems = document.querySelectorAll(
         `.${criticalGridItemWrapperClass}`
       );
@@ -591,104 +598,28 @@ function Designer(props: DesignerProps) {
         element.style.margin = originalMargin;
       });
 
-      // Loop through all non-overflow pages and check if they need overflow changes
-      state.pageTypes.forEach((pageType, pageIndex) => {
-        if (pageType === 'overflow') return;
-
-        if (state.layouts[pageIndex] && state.widgets[pageIndex]) {
-          const { overflows, numOfRequiredPages } = isPageContentOverflow(
-            state.layouts[pageIndex],
-            state.widgets[pageIndex]
-          );
-
-          // Find existing overflow pages for this parent using indices
-          const existingOverflowIndices = state.pageTypes.reduce(
-            (indices, type, idx) => {
-              if (
-                type === 'overflow' &&
-                state.overflowParents[idx] === pageIndex
-              ) {
-                indices.push(idx);
-              }
-              return indices;
-            },
-            [] as number[]
-          );
-
-          const existingOverflowPagesCount = existingOverflowIndices.length;
-
-          // Update overflow pages if needed
-          if (
-            overflows &&
-            existingOverflowPagesCount !== numOfRequiredPages - 1
-          ) {
-            if (existingOverflowPagesCount < numOfRequiredPages - 1) {
-              // Need more overflow pages
-              dispatch({
-                type: 'ADD_OVERFLOW_PAGES',
-                parentPageIndex: pageIndex,
-                count: numOfRequiredPages - 1 - existingOverflowPagesCount,
-              });
-            } else {
-              // Need fewer overflow pages
-              // We'll mark the unnecessary ones for removal
-              const newPageTypes = [...state.pageTypes];
-              const newOverflowParents = [...state.overflowParents];
-              let stateChanged = false;
-
-              // Keep only the necessary overflow pages
-              if (existingOverflowIndices.length > numOfRequiredPages - 1) {
-                // Calculate how many to keep
-                const pagesToKeep = numOfRequiredPages - 1;
-                const indicesToRemove =
-                  existingOverflowIndices.slice(pagesToKeep);
-
-                // Convert unnecessary overflow pages back to normal pages
-                indicesToRemove.forEach((idx: number) => {
-                  if (idx < newPageTypes.length) {
-                    newPageTypes[idx] = 'grid';
-                    newOverflowParents[idx] = null;
-                    stateChanged = true;
-                  }
-                });
-
-                if (stateChanged) {
-                  dispatch({
-                    type: 'CONVERT_PAGES_TO_OVERFLOW',
-                    pageTypes: newPageTypes,
-                    overflowParents: newOverflowParents,
-                  });
-
-                  // Also trigger the remove overflow pages action
-                  dispatch({
-                    type: 'REMOVE_OVERFLOW_PAGES',
-                    parentPageIndex: pageIndex,
-                  });
-                }
-              }
-            }
-          } else if (!overflows && existingOverflowPagesCount > 0) {
-            // No overflow needed anymore
-            dispatch({
-              type: 'REMOVE_OVERFLOW_PAGES',
-              parentPageIndex: pageIndex,
-            });
-          }
-        }
+      // Trigger the overflow check by creating a temporary Layout copy
+      // This forces React to re-run the previous useEffect
+      const tempLayouts = [...layouts];
+      dispatch({
+        type: 'CHANGE_WIDGET_POSITION',
+        itemLayout: tempLayouts[currentPage]?.[0] || {
+          i: 'dummy',
+          x: 0,
+          y: 0,
+          w: 1,
+          h: 1,
+        },
+        pageIndex: currentPage,
       });
     }, 500);
 
-    triggerOverflowCheck();
+    triggerDataChangeReflow();
 
     return () => {
-      triggerOverflowCheck.cancel();
+      triggerDataChangeReflow.cancel();
     };
-  }, [
-    selectedTestResults,
-    selectedInputBlockDatas,
-    state.pageTypes,
-    state.overflowParents,
-  ]);
+  }, [selectedTestResults, selectedInputBlockDatas]);
 
   // Handles deselection of grid items when clicking outside
   useEffect(() => {
