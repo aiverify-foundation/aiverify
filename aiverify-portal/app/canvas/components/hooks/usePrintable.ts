@@ -36,7 +36,6 @@ export function usePrintable(options: UsePrintableOptions = {}) {
       document.head.appendChild(titleElement);
 
       // Store the original title to restore it later
-      const originalTitle = document.title;
       document.title = titleElement.textContent;
     }
 

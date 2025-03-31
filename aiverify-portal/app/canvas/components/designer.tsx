@@ -601,20 +601,26 @@ function Designer(props: DesignerProps) {
         element.style.margin = originalMargin;
       });
 
-      // Trigger the overflow check by creating a temporary Layout copy
-      // This forces React to re-run the previous useEffect
-      const tempLayouts = [...layouts];
-      dispatch({
-        type: 'CHANGE_WIDGET_POSITION',
-        itemLayout: tempLayouts[currentPage]?.[0] || {
-          i: 'dummy',
-          x: 0,
-          y: 0,
-          w: 1,
-          h: 1,
-        },
-        pageIndex: currentPage,
-      });
+      // Only trigger the position change if there are actual widgets on the page
+      if (layouts[currentPage]?.length > 0) {
+        // Trigger the overflow check by creating a temporary Layout copy
+        // This forces React to re-run the previous useEffect
+        const tempLayouts = [...layouts];
+        dispatch({
+          type: 'CHANGE_WIDGET_POSITION',
+          itemLayout: tempLayouts[currentPage][0],
+          pageIndex: currentPage,
+        });
+      } else {
+        // For empty pages, we can force a reflow by using a different action
+        // that doesn't require existing widgets, like toggling the grid
+        // const currentGrid = state.showGrid;
+        dispatch({ type: 'TOGGLE_GRID' });
+        // Toggle back to maintain the original state
+        setTimeout(() => {
+          dispatch({ type: 'TOGGLE_GRID' });
+        }, 0);
+      }
     }, 500);
 
     triggerDataChangeReflow();
