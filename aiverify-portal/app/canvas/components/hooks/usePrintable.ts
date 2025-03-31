@@ -57,6 +57,10 @@ export function usePrintable(options: UsePrintableOptions = {}) {
           pageClone.style.breakAfter = 'page';
         }
 
+        // Apply proper margin to each page for printing
+        pageClone.style.margin = '15px';
+        pageClone.style.boxSizing = 'border-box';
+
         // Remove elements that shouldn't be printed
         pageClone.querySelectorAll('.print\\:hidden').forEach((el) => {
           el.remove();
@@ -88,6 +92,21 @@ export function usePrintable(options: UsePrintableOptions = {}) {
           // Make sure items are visible and properly positioned
           gridItem.style.position = 'relative';
           gridItem.style.visibility = 'visible';
+          // Allow widgets to break across pages
+          gridItem.style.pageBreakInside = 'auto';
+          gridItem.style.breakInside = 'auto';
+
+          // Ensure text within grid items is preserved during printing
+          const textElements = gridItem.querySelectorAll(
+            'p, h1, h2, h3, h4, h5, h6, span, div'
+          );
+          textElements.forEach((textEl) => {
+            const el = textEl as HTMLElement;
+            // Prevent text overflow
+            el.style.overflow = 'visible';
+            el.style.textOverflow = 'clip';
+            el.style.wordBreak = 'break-word';
+          });
         });
 
         printContainer.appendChild(pageClone);
@@ -129,13 +148,16 @@ export function usePrintable(options: UsePrintableOptions = {}) {
           position: absolute;
           left: 0;
           top: 0;
+          width: 100%;
         }
         .standard-report-page {
           page-break-after: always;
           break-after: page;
-          margin: 0;
+          margin: 15px !important;
           padding: 0;
           box-shadow: none;
+          box-sizing: border-box;
+          overflow: visible !important;
         }
         .standard-report-page:last-child {
           page-break-after: auto;
@@ -144,6 +166,30 @@ export function usePrintable(options: UsePrintableOptions = {}) {
         /* Hide overflow page indicators in print */
         .text-gray-200 {
           display: none;
+        }
+        /* Ensure text is properly displayed */
+        .react-grid-item {
+          overflow: visible !important;
+          page-break-inside: auto !important;
+          break-inside: auto !important;
+        }
+        .react-grid-item * {
+          overflow: visible !important;
+          word-wrap: break-word !important;
+        }
+        /* Preserve widget content structure but allow page breaks */
+        .grid-comp-wrapper {
+          overflow: visible !important;
+          page-break-inside: auto !important;
+          break-inside: auto !important;
+        }
+        /* Add a subtle indication when a widget breaks across pages */
+        .react-grid-item::after {
+          content: '';
+          display: block;
+          height: 0;
+          page-break-after: auto;
+          break-after: auto;
         }
       }
     `;
