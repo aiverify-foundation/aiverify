@@ -113,6 +113,9 @@ export default function UserInputs({
     {}
   );
 
+  // Ref to prevent multiple validation updates
+  const didRunValidationUpdate = React.useRef(false);
+
   const [showFairnessTreeModal, setShowFairnessTreeModal] = useState(false);
   const [currentFairnessTree, setCurrentFairnessTree] = useState<{
     gid: string;
@@ -164,35 +167,40 @@ export default function UserInputs({
       const results = await processBatchValidations(allInputsToValidate);
       setValidationResults(results);
 
-      // Only notify parent on initial load, further updates will be handled by selection changes
-      if (onValidationResultsChange) {
-        onValidationResultsChange(results);
-      }
+      // Don't call onValidationResultsChange here, let the dedicated effect handle it
+      // This avoids potential setState during render issues
     };
 
     prevalidateAllInputs();
   }, [allInputBlockDatas]);
 
   // Simplified effect to handle selection changes
-  // Use a single effect with a stable reference to selectedInputs
   useEffect(() => {
-    // Only notify if we have validation results
-    if (
-      onValidationResultsChange &&
-      Object.keys(validationResults).length > 0
-    ) {
-      // Wait for a stable state before notifying parent
-      const timeoutId = setTimeout(() => {
-        onValidationResultsChange(validationResults);
-      }, 50);
+    // Only notify if we have validation results and the callback exists
+    if (!onValidationResultsChange || Object.keys(validationResults).length === 0) {
+      return;
+    }
 
-      return () => clearTimeout(timeoutId);
+    // Prevent multiple calls within the same render cycle
+    if (!didRunValidationUpdate.current) {
+      didRunValidationUpdate.current = true;
+      
+      // Use requestAnimationFrame to ensure we're not updating state during render
+      const frameId = requestAnimationFrame(() => {
+        onValidationResultsChange(validationResults);
+        didRunValidationUpdate.current = false;
+      });
+
+      return () => {
+        cancelAnimationFrame(frameId);
+        didRunValidationUpdate.current = false;
+      };
     }
   }, [
-    // Include a stable JSON representation of the selection states
+    // Use stable references without JSON.stringify
     selectedGroup,
-    JSON.stringify(selectedFairnessTrees),
-    JSON.stringify(selectedOtherInputs),
+    selectedFairnessTrees,
+    selectedOtherInputs,
     validationResults,
     onValidationResultsChange,
   ]);

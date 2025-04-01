@@ -189,10 +189,33 @@ export default function ClientSelectData({
   // Handler to receive validation results from UserInputs
   const handleValidationResultsChange = (results: ValidationResults) => {
     console.log('ClientSelectData received validation results:', results);
-    // Only update the validation results without immediately processing them
-    // This avoids potentially triggering multiple state updates in succession
-    setValidationResults(results);
-    // The useEffect with validationResults dependency will handle processing
+    
+    // Only update if the results have actually changed
+    // Use a batch update approach to avoid expensive comparisons
+    const resultsKeys = Object.keys(results);
+    const currentKeys = Object.keys(validationResults);
+    
+    // Quick check if the number of keys is different
+    if (resultsKeys.length !== currentKeys.length) {
+      requestAnimationFrame(() => {
+        setValidationResults(results);
+      });
+      return;
+    }
+    
+    // Check if any keys or validation statuses have changed
+    const hasChanged = resultsKeys.some(key => {
+      return !validationResults[key] || 
+             validationResults[key].isValid !== results[key].isValid ||
+             validationResults[key].message !== results[key].message ||
+             validationResults[key].progress !== results[key].progress;
+    });
+    
+    if (hasChanged) {
+      requestAnimationFrame(() => {
+        setValidationResults(results);
+      });
+    }
   };
 
   // Function to process validation results and update invalid blocks list
