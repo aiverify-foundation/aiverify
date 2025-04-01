@@ -200,6 +200,13 @@ export default function ClientSelectData({
     results: ValidationResults,
     currentSelectedBlocksJson?: string
   ) => {
+    // If no input blocks are required, don't show any validation errors
+    if (requiredInputBlocks.length === 0) {
+      setHasValidationErrors(false);
+      setInvalidInputBlocks([]);
+      return;
+    }
+    
     // Always use the current selectedInputBlocks from state unless explicitly overridden
     const blocksToCheck = currentSelectedBlocksJson
       ? JSON.parse(currentSelectedBlocksJson)
@@ -552,7 +559,7 @@ export default function ClientSelectData({
             </Button>
           </Link>
         ) : null}
-        {requiredInputBlocks.length === selectedInputBlocks.length &&
+        {(requiredInputBlocks.length === 0 || requiredInputBlocks.length === selectedInputBlocks.length) &&
           !hasValidationErrors &&
           invalidInputBlocks.length === 0 && (
             <Button

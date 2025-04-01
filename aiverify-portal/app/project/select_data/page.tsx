@@ -61,23 +61,23 @@ export default async function SelectDataPage({
     pluginsWithMdx
   );
   console.log('Transformed project:', transformedProject);
-  const requiredAlgorithms = transformedProject.algorithmsOnReport;
-  const requiredInputBlocks = transformedProject.inputBlocksOnReport;
+  const requiredAlgorithms = transformedProject.algorithmsOnReport || [];
+  const requiredInputBlocks = transformedProject.inputBlocksOnReport || [];
 
-  // Ensure we have the correct data types
+  // Ensure we have the correct data types and handle missing or malformed data
   const initialModelId = project.testModelId?.toString();
   const initialTestResults = Array.isArray(project.testResults)
     ? project.testResults.map((result) => ({
-        id: typeof result.id === 'number' ? result.id : parseInt(result.id),
-        gid: result.gid,
-        cid: result.cid,
+        id: typeof result.id === 'number' ? result.id : parseInt(result.id || '0'),
+        gid: result.gid || '',
+        cid: result.cid || '',
       }))
     : [];
   const initialInputBlocks = Array.isArray(project.inputBlocks)
     ? project.inputBlocks.map((block) => ({
-        id: typeof block.id === 'number' ? block.id : parseInt(block.id),
-        gid: block.gid,
-        cid: block.cid,
+        id: typeof block.id === 'number' ? block.id : parseInt(block.id || '0'),
+        gid: block.gid || '',
+        cid: block.cid || '',
       }))
     : [];
 

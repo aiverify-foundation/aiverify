@@ -1356,12 +1356,18 @@ function Designer(props: DesignerProps) {
       return;
     }
 
+    // Skip saving if this is a template from a plugin
+    if (isTemplate && 'fromPlugin' in project && project.fromPlugin) {
+      console.log('Skipping save for template from plugin');
+      return;
+    }
+
     const debouncedSave = isTemplate
       ? debouncedSaveTemplateToDatabase
       : debouncedSaveStateToDatabase;
 
     debouncedSave(state);
-  }, [state, isTemplate]);
+  }, [state, isTemplate, project]);
 
   return (
     <React.Fragment>

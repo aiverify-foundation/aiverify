@@ -82,7 +82,28 @@ export const MyChart = ({ results, featureNames, properties }) => {
       <MyChart results={props.getResults(algo_cid).results} featureNames={props.getResults(algo_cid).feature_names} properties={props.properties} />
     </div>
   </>
-):(
-  <div>No data</div>
+): (
+  <div style={{ 
+    width: props.width, 
+          height: props.height, 
+    maxHeight: 1076,
+    display: 'flex', 
+    justifyContent: 'center', 
+    alignItems: 'center',
+    flexDirection: 'column',
+    background: '#f8f9fa',
+    border: '1px dashed #dee2e6',
+    borderRadius: '4px',
+    padding: '20px',
+    textAlign: 'center' 
+  }}>
+    <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#dc3545', marginBottom: '10px' }}>
+      Report is incomplete
+    </div>
+    <div style={{ color: '#6c757d' }}>
+      No Test Result is selected for SHAP Toolbox algorithm. 
+      Please select appropriate test results in the Data Selection page.
+    </div>
+  </div>
 )}
 

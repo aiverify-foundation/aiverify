@@ -234,14 +234,17 @@ function TemplateCards({ templates, projectId, flow }: TemplateCardsProps) {
                     className="fill-primary-300 dark:fill-primary-300"
                   />
                 </button>
-                <button
-                  onClick={(e) => handleDeleteTemplate(template, e)}
-                  className="transition-colors hover:fill-primary-100">
-                  <RiDeleteBinFill
-                    size={27}
-                    className="fill-primary-300 dark:fill-primary-300"
-                  />
-                </button>
+                {/* Only show delete button if template is not from a plugin */}
+                {!template.fromPlugin && (
+                  <button
+                    onClick={(e) => handleDeleteTemplate(template, e)}
+                    className="transition-colors hover:fill-primary-100">
+                    <RiDeleteBinFill
+                      size={27}
+                      className="fill-primary-300 dark:fill-primary-300"
+                    />
+                  </button>
+                )}
               </>
             )}
           </Card.SideBar>
