@@ -6,6 +6,9 @@ import { Icon, IconName } from '@/lib/components/IconSVG';
 import { Card } from '@/lib/components/card/card';
 import { getAllInputBlocks } from '@/lib/fetchApis/getAllInputBlocks';
 
+// Tell Next.js this page should be dynamically rendered
+export const dynamic = 'force-dynamic';
+
 export default async function InputsPage() {
   // Get all available input blocks
   const inputBlocks = await getAllInputBlocks();
