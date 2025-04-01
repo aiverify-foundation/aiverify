@@ -8,9 +8,16 @@ interface PageParams {
   group: string;
 }
 
-export default async function GroupPage({ params }: { params: PageParams }) {
+export default async function GroupPage({
+  params,
+}: {
+  params: Promise<PageParams>;
+}) {
+  // Await the params promise to get the values
+  const resolvedParams = await params;
+
   // Decode the group name from the URL
-  const groupName = decodeURIComponent(await params.group);
+  const groupName = decodeURIComponent(resolvedParams.group);
 
   // Get all available input blocks
   const inputBlocks = await getAllInputBlocks();

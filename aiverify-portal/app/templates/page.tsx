@@ -11,10 +11,10 @@ import { TemplateCards } from './components/templateCards';
 import { TemplateFilters } from './components/templateFilters';
 
 type UrlSearchParams = {
-  searchParams: {
+  searchParams: Promise<{
     projectId?: string;
     flow?: UserFlows;
-  };
+  }>;
 };
 
 export default async function TemplatesPage(props: UrlSearchParams) {

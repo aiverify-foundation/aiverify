@@ -6,10 +6,12 @@ import styles from './fileSelect.module.css';
 type FileSelectContextType = {
   files: File[];
   handleFiles: (files: FileList | null) => void;
-  inputRef: React.RefObject<HTMLInputElement>;
+  inputRef: React.RefObject<HTMLInputElement | null>;
   isDragging: boolean;
   setIsDragging: (isDragging: boolean) => void;
   disabled: boolean;
+  multiple?: boolean;
+  accept?: string;
 };
 
 type FileSelectProps = {
@@ -43,7 +45,7 @@ function FileSelect({
 }: FileSelectProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handleFiles = (fileList: FileList | null) => {
     if (!fileList) return;
@@ -53,7 +55,7 @@ function FileSelect({
     onFilesSelected?.(newFiles);
   };
 
-  const value = {
+  const value: FileSelectContextType = {
     files,
     handleFiles,
     inputRef,

@@ -14,7 +14,7 @@ const TemplateUploader = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
-  const [fileValidationInfo, setFileValidationInfo] = useState<string>('');
+  const [_fileValidationInfo, setFileValidationInfo] = useState<string>('');
 
   // Hook for managing file upload
   const { mutate } = useUploadFiles({
@@ -105,7 +105,7 @@ const TemplateUploader = () => {
     setFileUploads((prevUploads) => [...prevUploads, ...newUploads]);
   };
 
-  const debugFileInfo = () => {
+  const _debugFileInfo = () => {
     if (fileUploads.length === 0) {
       console.log('No files selected');
       return;

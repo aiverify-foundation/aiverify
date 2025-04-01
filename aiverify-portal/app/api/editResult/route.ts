@@ -13,12 +13,18 @@ export async function PUT(request: Request) {
     });
 
     if (!response.ok) {
-      return NextResponse.json({ error: 'Failed to update result name' }, { status: response.status });
+      return NextResponse.json(
+        { error: 'Failed to update result name' },
+        { status: response.status }
+      );
     }
 
     const data = await response.json();
     return NextResponse.json(data, { status: 200 });
-  } catch (error) {
-    return NextResponse.json({ error: 'Server error while updating result name' }, { status: 500 });
+  } catch (_error) {
+    return NextResponse.json(
+      { error: 'Server error while updating result name' },
+      { status: 500 }
+    );
   }
 }

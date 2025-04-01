@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import { useMDXBundle } from '@/app/inputs/checklists/[groupId]/[checklistId]/hooks/useMDXBundle';
-import { FairnessTreeModalWrapper } from '@/app/inputs/fairnesstree/page';
+import { FairnessTreeModalWrapper } from '@/app/inputs/fairnesstree/components/ModalView';
 import { Checklist, FairnessTree } from '@/app/inputs/utils/types';
 import {
   ValidationResults,
@@ -177,14 +177,17 @@ export default function UserInputs({
   // Simplified effect to handle selection changes
   useEffect(() => {
     // Only notify if we have validation results and the callback exists
-    if (!onValidationResultsChange || Object.keys(validationResults).length === 0) {
+    if (
+      !onValidationResultsChange ||
+      Object.keys(validationResults).length === 0
+    ) {
       return;
     }
 
     // Prevent multiple calls within the same render cycle
     if (!didRunValidationUpdate.current) {
       didRunValidationUpdate.current = true;
-      
+
       // Use requestAnimationFrame to ensure we're not updating state during render
       const frameId = requestAnimationFrame(() => {
         onValidationResultsChange(validationResults);

@@ -104,7 +104,7 @@ async function uploadJsonWithFetch(
         // Try to parse as JSON if possible
         const errorJson = JSON.parse(errorText);
         console.error('Fetch API - Error response JSON:', errorJson);
-      } catch (e) {
+      } catch (_e) {
         // Not JSON, use as is
       }
 
@@ -203,7 +203,7 @@ async function uploadJsonWithXhr(
             const errorResponse = JSON.parse(xhr.responseText);
             console.log('XHR - Parsed error response:', errorResponse);
           }
-        } catch (e) {
+        } catch (_e) {
           console.error('XHR - Could not parse error response as JSON');
         }
 

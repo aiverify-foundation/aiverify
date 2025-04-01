@@ -9,11 +9,7 @@ import { Icon, IconName } from '@/lib/components/IconSVG';
 import { Button, ButtonVariant } from '@/lib/components/button';
 import PipelineUploader from './components/PipelineUploader';
 
-type UploadPageProps = {
-  onBack?: () => void;
-};
-
-const UploadPage: React.FC<UploadPageProps> = () => {
+const UploadPage = () => {
   const [selectedMethod, setSelectedMethod] = useState('');
   const [activeCard, setActiveCard] = useState<string>('');
   const searchParams = useSearchParams();

@@ -4,21 +4,21 @@ import { FairnessTreeModalContent } from './components/ModalView';
 import { StandaloneView } from './components/StandaloneView';
 
 interface PageProps {
-  searchParams: {
+  searchParams: Promise<{
     gid?: string;
     cid?: string;
     projectId?: string;
     flow?: string;
-  };
+  }>;
 }
 
 export default async function FairnessTreePage({ searchParams }: PageProps) {
+  const params = await searchParams;
   const gid =
-    searchParams.gid ||
-    'aiverify.stock.fairness_metrics_toolbox_for_classification';
-  const cid = searchParams.cid || 'fairness_tree';
-  const projectId = searchParams.projectId;
-  const flow = searchParams.flow;
+    params.gid || 'aiverify.stock.fairness_metrics_toolbox_for_classification';
+  const cid = params.cid || 'fairness_tree';
+  const projectId = params.projectId;
+  const flow = params.flow;
 
   // Only fetch trees if we're not in project flow
   const trees = !projectId ? await getAllFairnessTrees() : [];
@@ -38,6 +38,3 @@ export default async function FairnessTreePage({ searchParams }: PageProps) {
   // Otherwise, render the standalone version
   return <StandaloneView initialTrees={trees} />;
 }
-
-// Re-export the modal wrapper for use in other components
-export { FairnessTreeModalWrapper } from './components/ModalView';

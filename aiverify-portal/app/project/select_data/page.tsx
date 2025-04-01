@@ -17,10 +17,11 @@ import SelectDataHeader from './components/SelectDataHeader';
 export default async function SelectDataPage({
   searchParams,
 }: {
-  searchParams: { projectId?: string; flow?: string };
+  searchParams: Promise<{ projectId?: string; flow?: string }>;
 }) {
-  const projectId = await searchParams.projectId;
-  const flow = await searchParams.flow;
+  const params = await searchParams;
+  const projectId = params.projectId;
+  const flow = params.flow;
   console.log('flow', flow);
 
   if (!projectId || !flow) {
@@ -68,7 +69,10 @@ export default async function SelectDataPage({
   const initialModelId = project.testModelId?.toString();
   const initialTestResults = Array.isArray(project.testResults)
     ? project.testResults.map((result) => ({
-        id: typeof result.id === 'number' ? result.id : parseInt(result.id || '0'),
+        id:
+          typeof result.id === 'number'
+            ? result.id
+            : parseInt(result.id || '0'),
         gid: result.gid || '',
         cid: result.cid || '',
       }))

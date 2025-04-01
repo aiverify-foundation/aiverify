@@ -11,10 +11,10 @@ interface PageParams {
 export default async function DynamicInputBlockPage({
   params,
 }: {
-  params: PageParams;
+  params: Promise<PageParams>;
 }) {
   // For server components, we can access params directly
-  const { gid, cid } = params;
+  const { gid, cid } = await params;
 
   // Get the input block definition
   const inputBlocks = await getAllInputBlocks();

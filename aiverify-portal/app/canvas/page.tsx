@@ -24,14 +24,14 @@ import { State } from './components/hooks/pagesDesignReducer';
 import { ParsedTestResults } from './types';
 
 type UrlSearchParams = {
-  searchParams: {
+  searchParams: Promise<{
     flow: UserFlows;
     projectId?: string;
     templateId?: string;
     testResultIds?: string;
     iBlockIds?: string;
     mode?: 'view' | 'edit';
-  };
+  }>;
 };
 
 export default async function CanvasPage(props: UrlSearchParams) {
