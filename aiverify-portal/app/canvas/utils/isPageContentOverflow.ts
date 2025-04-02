@@ -59,7 +59,7 @@ export function isPageContentOverflow(
     const bottom = positionHeight + Math.max(gridHeight, elementHeight);
 
     // Update max bottom if this widget extends further down
-    maxBottom = Math.max(maxBottom, Math.floor(bottom));
+    maxBottom = Math.max(maxBottom, Math.floor(bottom) - 100);
   }
 
   // Calculate number of pages required based on maximum content height

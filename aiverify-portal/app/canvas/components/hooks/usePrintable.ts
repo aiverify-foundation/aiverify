@@ -2,6 +2,114 @@
 
 import { useRef, useCallback } from 'react';
 
+// Constants for page dimensions (A4)
+const A4_HEIGHT_PX = 1122; // Typical A4 height in pixels at 96 DPI
+const PAGE_BREAK_THRESHOLD = 150; // Minimum space needed at bottom of page to attempt fitting content
+const BOUNDARY_DETECTION_BUFFER = 40; // More reasonable buffer for boundary detection
+const LAST_PAGE_BUFFER = 5; // Smaller buffer for the last page to avoid unnecessary compensation
+
+// Helper function to calculate actual content height (including all children)
+function getActualContentHeight(element: HTMLElement): number {
+  // Try to get actual rendered height first using getBoundingClientRect
+  if (element.getBoundingClientRect) {
+    try {
+      const rect = element.getBoundingClientRect();
+      if (rect.height > 0) {
+        return rect.height;
+      }
+    } catch (e) {
+      console.warn('Error getting actual content height:', e);
+      // Fallback to other methods if getBoundingClientRect fails
+    }
+  }
+
+  // Try to get scrollHeight as backup
+  if (element.scrollHeight > 0) {
+    return element.scrollHeight;
+  }
+
+  // Fall back to offsetHeight if available
+  if (element.offsetHeight > 0) {
+    return element.offsetHeight;
+  }
+
+  // Last resort: style height
+  return parseInt(element.style.height || '0', 10);
+}
+
+// Helper function to check if any visual elements within a widget are near the page boundary
+function hasVisualElementsNearBoundary(
+  parentElement: HTMLElement,
+  parentYPos: number,
+  isLastPage = false
+): boolean {
+  // Use a smaller buffer for the last page to avoid unnecessary compensation
+  const bufferToUse = isLastPage ? LAST_PAGE_BUFFER : BOUNDARY_DETECTION_BUFFER;
+
+  // Find all visual elements within the parent
+  const visualElements = [
+    ...Array.from(parentElement.querySelectorAll('svg, canvas')),
+    ...Array.from(parentElement.querySelectorAll('img[src]')),
+    ...Array.from(parentElement.querySelectorAll('table')),
+  ];
+
+  if (visualElements.length === 0) {
+    return false; // No visual elements found
+  }
+
+  // Check each visual element's position relative to the page
+  for (const element of visualElements) {
+    // Skip elements with no height
+    if (!(element instanceof HTMLElement)) continue;
+
+    try {
+      // Try to get position of element relative to parent
+      let offsetTop = 0;
+      let currentElement: HTMLElement | null = element as HTMLElement;
+
+      // Walk up the DOM to find the relative position within the parent
+      while (
+        currentElement &&
+        currentElement !== parentElement &&
+        currentElement.offsetParent
+      ) {
+        offsetTop += currentElement.offsetTop;
+        currentElement = currentElement.offsetParent as HTMLElement;
+      }
+
+      // Calculate element's position on the page
+      const absoluteYPos = parentYPos + offsetTop;
+      const elementHeight = getActualContentHeight(element as HTMLElement);
+      const bottomPosition = absoluteYPos + elementHeight;
+
+      // For the last page, only consider it if it's very close to the boundary
+      if (isLastPage) {
+        // On the last page, only detect if it actually crosses the boundary
+        // with a minimal buffer to avoid triggering compensation unnecessarily
+        if (bottomPosition > A4_HEIGHT_PX) {
+          return true;
+        }
+      } else {
+        // For non-last pages, use the standard detection logic
+        if (
+          bottomPosition > A4_HEIGHT_PX ||
+          (bottomPosition > A4_HEIGHT_PX - bufferToUse &&
+            bottomPosition <= A4_HEIGHT_PX)
+        ) {
+          return true; // Found a visual element near the boundary
+        }
+      }
+    } catch (e) {
+      console.warn('Error determining visual element position:', e);
+      // If we can't determine position, be conservative
+      // But still respect the isLastPage flag
+      return !isLastPage;
+    }
+  }
+
+  return false; // No visual elements near boundary
+}
+
 type UsePrintableOptions = {
   /**
    * Custom ID for the printable content element
@@ -46,15 +154,166 @@ export function usePrintable(options: UsePrintableOptions = {}) {
         '.standard-report-page'
       );
 
-      // Total number of pages for better control
-      const totalPages = pageElements.length;
+      // Track pages that need compensation spaces due to large widgets being shifted
+      const compensationNeeded: Record<number, boolean> = {};
+
+      // First pass: Identify widgets that will need to be shifted and mark pages needing compensation
+      pageElements.forEach((pageElement, pageIndex) => {
+        const gridItems = pageElement.querySelectorAll('.react-grid-item');
+
+        // Track key metrics for this page
+        let largestWidgetHeight = 0;
+        let hasGraphsOrTables = false;
+
+        gridItems.forEach((gridItem) => {
+          const element = gridItem as HTMLElement;
+
+          // Extract positioning directly from transform styles
+          let yPos = 0;
+          const transform = element.style.transform;
+          if (transform) {
+            const translateMatch = transform.match(
+              /translate\((\d+)px,\s*(\d+)px\)/
+            );
+            if (translateMatch) {
+              yPos = parseInt(translateMatch[2], 10);
+            }
+          }
+
+          // Get dimensions
+          const height = getActualContentHeight(element);
+          largestWidgetHeight = Math.max(largestWidgetHeight, height);
+
+          // Determine boundary conditions
+          const bottomPosition = yPos + height;
+
+          // Check if element crosses or is very near page boundary
+          const isCrossingBoundary = bottomPosition > A4_HEIGHT_PX;
+          const isNearBoundary =
+            bottomPosition > A4_HEIGHT_PX - BOUNDARY_DETECTION_BUFFER &&
+            bottomPosition <= A4_HEIGHT_PX;
+
+          // Check content type - identify high-value content
+          let hasGraphs = false;
+
+          // More reliable way to check for actual images with real URLs
+          const innerHTML = element.innerHTML || '';
+          // Only consider actual image tags with http or https URLs
+          const hasImgWithSrc =
+            /<img[^>]+src=(['"])(https?:\/\/[^'"]+)\1[^>]*>/i.test(innerHTML);
+          const hasCanvas = element.querySelectorAll('canvas').length > 0;
+          const hasSvg = element.querySelectorAll('svg').length > 0;
+
+          hasGraphs = hasCanvas || hasSvg || hasImgWithSrc;
+
+          const isHighValueWidget = hasGraphs;
+
+          if (isHighValueWidget) {
+            hasGraphsOrTables = true;
+          }
+
+          // Size classification - more balanced thresholds
+          const isLargeWidget = height > 300;
+          const isMediumWidget = height > 200 && height <= 300;
+
+          // ADD COMPENSATION IN THESE KEY SCENARIOS:
+
+          // 1. Large high-value widgets (graphs/tables) crossing the boundary
+          if (isCrossingBoundary && isHighValueWidget && isLargeWidget) {
+            compensationNeeded[pageIndex + 1] = true;
+          }
+
+          // 2. Medium-sized high-value widgets very near the boundary (likely to shift)
+          else if (isNearBoundary && isHighValueWidget && isMediumWidget) {
+            compensationNeeded[pageIndex + 1] = true;
+          }
+
+          // 3. Any extremely large widget (regardless of content) crossing boundary
+          else if (isCrossingBoundary && height > A4_HEIGHT_PX * 0.45) {
+            // >45% of page height
+            compensationNeeded[pageIndex + 1] = true;
+          }
+        });
+
+        // 4. Only add compensation for pages with visual elements (graphs/charts/images) near page boundaries
+        // This is more precise than the previous approach and ignores text content near boundaries
+        if (hasGraphsOrTables) {
+          // Check if any VISUAL ELEMENT is in the bottom zone (near page boundary)
+          const hasVisualElementsNearBottom = Array.from(gridItems).some(
+            (item) => {
+              const element = item as HTMLElement;
+
+              // Skip this item if it doesn't contain visual elements
+              const hasVisualContent =
+                element.querySelectorAll('svg, canvas, table').length > 0 ||
+                /<img[^>]+src=(['"])(https?:\/\/[^'"]+)\1[^>]*>/i.test(
+                  element.innerHTML || ''
+                );
+
+              if (!hasVisualContent) {
+                return false; // Skip text-only widgets
+              }
+
+              // Now check position for visual elements
+              let yPos = 0;
+              const transform = element.style.transform;
+              if (transform) {
+                const translateMatch = transform.match(
+                  /translate\((\d+)px,\s*(\d+)px\)/
+                );
+                if (translateMatch) {
+                  yPos = parseInt(translateMatch[2], 10);
+                }
+              }
+
+              // Use the helper function to check the actual positions of visual elements
+              return hasVisualElementsNearBoundary(
+                element,
+                yPos,
+                pageIndex === pageElements.length - 1
+              );
+            }
+          );
+
+          // Only add compensation if:
+          // 1. Visual elements are near the bottom AND
+          // 2. This is not the last page of the document
+          const isLastPage = pageIndex === pageElements.length - 1;
+
+          // Safely get the total number of pages
+          const totalPages =
+            contentRef.current?.querySelectorAll('.standard-report-page')
+              .length || 0;
+
+          const isLastPageOfDocument =
+            isLastPage &&
+            (totalPages === pageIndex + 1 || pageIndex === totalPages - 1);
+
+          // For debugging - add classes to help identify what's happening
+          if (isLastPage) {
+            pageElement.classList.add('is-last-page');
+          }
+
+          if (isLastPageOfDocument) {
+            pageElement.classList.add('is-last-page-of-document');
+          }
+
+          // Only add compensation when absolutely necessary
+          // - Must have visual elements near boundary
+          // - Must not be the last page of the document
+          if (hasVisualElementsNearBottom && !isLastPageOfDocument) {
+            compensationNeeded[pageIndex + 1] = true;
+          }
+        }
+      });
 
       // Create a properly formatted print version for each page
       pageElements.forEach((pageElement, index) => {
         const pageClone = pageElement.cloneNode(true) as HTMLElement;
         const isLastPage = index === pageElements.length - 1;
+        const needsCompensation = compensationNeeded[index];
 
-        // Set page break after each page except the last one
+        // Page break controls - add forced page break if this page has compensated content
         if (!isLastPage) {
           pageClone.style.pageBreakAfter = 'always';
           pageClone.style.breakAfter = 'page';
@@ -75,6 +334,11 @@ export function usePrintable(options: UsePrintableOptions = {}) {
         pageClone.style.boxSizing = 'border-box';
         pageClone.style.position = 'relative'; // Ensure the page has relative positioning
         pageClone.style.pageBreakInside = 'avoid'; // Prevent page from breaking inside
+
+        // Add a data attribute to track if this page needs compensation
+        if (needsCompensation) {
+          pageClone.setAttribute('data-needs-compensation', 'true');
+        }
 
         // Remove elements that shouldn't be printed
         pageClone.querySelectorAll('.print\\:hidden').forEach((el) => {
@@ -147,11 +411,54 @@ export function usePrintable(options: UsePrintableOptions = {}) {
             itemClone.style.width = `${width}px`;
             itemClone.style.height = `${height}px`;
 
+            // Determine if this is a graph or table that should be kept intact
+            let isGraph = false;
+
+            // Use same regex approach for consistency with strict URL matching
+            const itemInnerHTML = itemClone.innerHTML || '';
+            const hasItemImgWithSrc =
+              /<img[^>]+src=(['"])(https?:\/\/[^'"]+)\1[^>]*>/i.test(
+                itemInnerHTML
+              );
+            const hasItemCanvas =
+              itemClone.querySelectorAll('canvas').length > 0;
+            const hasItemSvg = itemClone.querySelectorAll('svg').length > 0;
+
+            isGraph = hasItemImgWithSrc || hasItemCanvas || hasItemSvg;
+
+            const isTable = itemClone.querySelectorAll('table').length > 0;
+
+            // Use actual DOM-measured height instead of style-based height
+            const heightFromStyle = parseInt(itemClone.style.height || '0', 10);
+            const actualHeight = getActualContentHeight(itemClone);
+            const contentHeight = Math.max(heightFromStyle, actualHeight);
+
+            // Adjust height if we found content taller than the style height
+            if (actualHeight > heightFromStyle && heightFromStyle > 0) {
+              itemClone.style.height = `${actualHeight}px`;
+            }
+
+            const isLargeWidget = contentHeight > 200; // Arbitrary threshold for "large" widgets
+
+            // Apply different handling based on widget type
+            if ((isGraph || isTable) && isLargeWidget) {
+              // Mark this as a no-break widget that should be kept intact
+              itemClone.classList.add('no-break-widget');
+              itemClone.dataset.originalHeight = contentHeight.toString();
+              itemClone.dataset.originalTop = yPos.toString();
+
+              // Keep strict settings for graphs and tables
+              itemClone.style.pageBreakInside = 'avoid !important';
+              itemClone.style.breakInside = 'avoid !important';
+            } else {
+              // For other content, we can be more flexible about breaking
+              itemClone.style.pageBreakInside = 'auto';
+              itemClone.style.breakInside = 'auto';
+            }
+
             // Ensure visibility and proper content flow
             itemClone.style.visibility = 'visible';
             itemClone.style.overflow = 'visible';
-            itemClone.style.pageBreakInside = 'avoid !important';
-            itemClone.style.breakInside = 'avoid !important';
             itemClone.style.margin = '0'; // Remove any margins that could cause shifts
             itemClone.style.padding = '0'; // Normalize padding
 
@@ -186,12 +493,21 @@ export function usePrintable(options: UsePrintableOptions = {}) {
               const tableEl = table as HTMLElement;
               tableEl.style.width = '100%';
               tableEl.style.tableLayout = 'fixed';
-              tableEl.style.pageBreakInside = 'avoid';
-              tableEl.style.breakInside = 'avoid';
+
+              // For tables, we apply a specialized approach
+              if (isLargeWidget) {
+                // Large tables should not break across pages
+                tableEl.style.pageBreakInside = 'avoid';
+                tableEl.style.breakInside = 'avoid';
+              } else {
+                // Smaller tables can potentially break if necessary
+                tableEl.style.pageBreakInside = 'auto';
+                tableEl.style.breakInside = 'auto';
+              }
             });
 
             // Process images
-            itemClone.querySelectorAll('img').forEach((img) => {
+            itemClone.querySelectorAll('img[src]').forEach((img) => {
               const imgEl = img as HTMLElement;
               imgEl.style.maxWidth = '100%';
               imgEl.style.height = 'auto';
@@ -213,16 +529,39 @@ export function usePrintable(options: UsePrintableOptions = {}) {
         // Add the processed page to the print container
         printContainer.appendChild(pageClone);
 
-        // Add the page counter at the bottom (except for cover page)
-        if (index > 0 || totalPages === 1) {
-          const pageCounter = document.createElement('div');
-          pageCounter.style.position = 'absolute';
-          pageCounter.style.bottom = '15px';
-          pageCounter.style.right = '30px'; // Increase right margin to match the padding
-          pageCounter.style.fontSize = '10px';
-          pageCounter.style.color = '#999999';
-          pageCounter.textContent = `${index + 1} / ${totalPages}`;
-          pageClone.appendChild(pageCounter);
+        // Add a balanced version of compensation pages
+        if (needsCompensation && !isLastPage) {
+          // Create a compensation spacer with minimal styling
+          const compensationPage = document.createElement('div');
+          compensationPage.classList.add('compensation-page');
+
+          // Minimal size compensation - just enough for graph repositioning
+          compensationPage.style.height = '3mm'; // Smaller space, just for graphs
+          compensationPage.style.maxWidth = '210mm'; // A4 width
+          compensationPage.style.width = '100%';
+          compensationPage.style.margin = '0 auto';
+          compensationPage.style.pageBreakAfter = 'always !important';
+          compensationPage.style.breakAfter = 'page !important';
+          compensationPage.style.position = 'relative';
+          compensationPage.style.overflow = 'hidden';
+
+          // Ultra-subtle indicator that won't be visible in print
+          const indicator = document.createElement('div');
+          indicator.textContent = `Graph spacing`;
+          indicator.style.position = 'absolute';
+          indicator.style.top = '50%';
+          indicator.style.left = '50%';
+          indicator.style.transform = 'translate(-50%, -50%)';
+          indicator.style.color = '#f9f9f9'; // Nearly invisible
+          indicator.style.fontSize = '6px';
+          indicator.style.textAlign = 'center';
+          indicator.style.width = '100%';
+          indicator.classList.add('print:invisible');
+
+          compensationPage.appendChild(indicator);
+
+          // Insert the compensation page after the current page
+          printContainer.appendChild(compensationPage);
         }
       });
     } else {
@@ -232,35 +571,12 @@ export function usePrintable(options: UsePrintableOptions = {}) {
 
     // Create a strict container to prevent overflow
     const printWrapper = document.createElement('div');
-    /*     printWrapper.setAttribute('data-print-wrapper', 'true');
-    printWrapper.style.position = 'relative';
-    printWrapper.style.overflow = 'hidden';
-    printWrapper.style.pageBreakAfter = 'avoid';
-    printWrapper.style.breakAfter = 'avoid'; */
-
-    /*     // Critical: apply fixed dimensions to prevent extra pages
-    printContainer.style.cssText = `
-      position: relative;
-      z-index: 9999;
-      page-break-after: avoid;
-      break-after: avoid;
-      overflow: hidden;
-    `; */
 
     // Add the container to the wrapper
     printWrapper.appendChild(printContainer);
 
     // Create overlay for print preview
     const overlay = document.createElement('div');
-    /*     overlay.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: white;
-      z-index: 9998;
-    `; */
 
     // Create and append print styles with stronger rules
     const styleSheet = document.createElement('style');
@@ -298,7 +614,25 @@ export function usePrintable(options: UsePrintableOptions = {}) {
           display: block;
         }
         
-        /* Set fixed dimensions for A4 */
+        /* Compensation page styling - micro size for graph spacing only */
+        .compensation-page {
+          box-shadow: none;
+          box-sizing: border-box;
+          position: relative !important;
+          padding: 0;
+          margin: 0 auto !important;
+          display: block !important;
+          page-break-before: always !important;
+          page-break-after: always !important;
+          break-before: page !important;
+          break-after: page !important;
+          height: 3mm !important; /* Minimal graph spacing */
+          min-height: 3mm !important;
+          max-height: 3mm !important;
+        }
+      
+        
+        /* Additional rules to help with proper page breaks */
         @page {
           margin: 0;
           padding: 0;
@@ -328,11 +662,28 @@ export function usePrintable(options: UsePrintableOptions = {}) {
         .text-gray-200 {
           display: none;
         }
+        
+        /* Ensure all visual elements don't break across pages */
+        img, svg, canvas, table {
+          page-break-inside: avoid !important;
+          break-inside: avoid !important;
+        }
+        
+        /* Specific handling for different widget types */
+        .no-break-widget {
+          page-break-inside: avoid !important;
+          break-inside: avoid !important;
+        }
+        
+        /* Allow other widgets to potentially break if needed */
+        .react-grid-item:not(.no-break-widget) {
+          page-break-inside: auto;
+          break-inside: auto;
+        }
+        
         /* Ensure grid items are displayed exactly as in designer */
         .react-grid-item {
           overflow: visible !important;
-          page-break-inside: avoid !important;
-          break-inside: avoid !important;
           margin: 0 !important;
           padding: 0 !important;
         }
@@ -354,8 +705,6 @@ export function usePrintable(options: UsePrintableOptions = {}) {
         table {
           width: 100% !important;
           table-layout: fixed !important;
-          page-break-inside: avoid !important;
-          break-inside: avoid !important;
         }
         /* Handle images */
         img {
@@ -377,6 +726,14 @@ export function usePrintable(options: UsePrintableOptions = {}) {
         [data-print-wrapper="true"]::after {
           content: none !important;
           display: none !important;
+        }
+        
+        
+        @media print {
+          .print\\:invisible {
+            display: none !important;
+            visibility: hidden !important;
+          }
         }
       }
     `;
