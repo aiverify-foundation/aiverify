@@ -282,7 +282,7 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
               textColor="white"
               onCloseIconClick={() => {
                 setIsModalVisible(false);
-                router.refresh();
+                window.location.reload();
               }}
               enableScreenOverlay
               heading="Deletion Status"
