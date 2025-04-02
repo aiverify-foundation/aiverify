@@ -4,7 +4,6 @@ import { useRef, useCallback } from 'react';
 
 // Constants for page dimensions (A4)
 const A4_HEIGHT_PX = 1122; // Typical A4 height in pixels at 96 DPI
-const PAGE_BREAK_THRESHOLD = 150; // Minimum space needed at bottom of page to attempt fitting content
 const BOUNDARY_DETECTION_BUFFER = 40; // More reasonable buffer for boundary detection
 const LAST_PAGE_BUFFER = 5; // Smaller buffer for the last page to avoid unnecessary compensation
 
