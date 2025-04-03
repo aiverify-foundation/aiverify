@@ -1,0 +1,83 @@
+import { exportToExcel } from "./exportUtil.js";
+
+export const ExportProcessChecklists = (props) => {
+  const { groupName, checklists, isExporting, setIsExporting } = props;
+
+// Create configFiles object by directly accessing config files from the same directory
+// We use a function to create this at runtime to avoid static import issues with MDX
+const getConfigFiles = () => {
+// Define all the config file keys we need to load
+const configKeys = [
+'accountability',
+'data_governance',
+'explainability',
+'fairness',
+'human_agency_oversight',
+'inclusive_growth',
+'organisational_considerations',
+'reproducibility',
+'robustness',
+'safety',
+'security',
+'transparency'
+];
+
+    // Load each config file and add it to the configFiles object
+    const configFiles = {};
+    configKeys.forEach(key => {
+      try {
+        // Use a direct reference since we're in the same directory
+        // This approach is more compatible with MDX than static imports
+        configFiles[`config_${key}`] = require(`./config_${key}.ts`).config;
+      } catch (err) {
+        console.error(`Failed to load config_${key}.ts:`, err);
+      }
+    });
+
+    return configFiles;
+
+};
+
+const handleExport = async () => {
+if (isExporting) return;
+
+    setIsExporting(true);
+    try {
+      // Get the config files when the export is triggered
+      const configFiles = getConfigFiles();
+      await exportToExcel(groupName, checklists, configFiles);
+    } catch (error) {
+      console.error("Error exporting to Excel:", error);
+    } finally {
+      setIsExporting(false);
+    }
+
+};
+
+return (
+
+<button
+  onClick={handleExport}
+  disabled={isExporting}
+  style={{
+    cursor: isExporting ? "default" : "pointer",
+    opacity: isExporting ? 0.7 : 1,
+    background: "transparent",
+    border: "none",
+    color: "#FFFFFF",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  }}
+>
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor" />
+  </svg>
+</button>
+); };

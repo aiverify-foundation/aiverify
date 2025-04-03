@@ -33,7 +33,7 @@
     "ace-builds": "^1.36.4",
     "class-variance-authority": "^0.7.0",
     "esbuild": "^0.24.2",
-    "exceljs": "4.4.0",
+    "exceljs": "^4.4.0",
     "fuse.js": "^7.0.0",
     "jsoneditor": "^10.1.1",
     "jszip": "^3.10.1",

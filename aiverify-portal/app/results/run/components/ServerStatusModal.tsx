@@ -16,8 +16,8 @@ export default function ServerStatusModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="max-w-2xl rounded-lg bg-white p-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="max-w-2xl rounded-lg bg-secondary-800 p-8">
         <div className="mb-4 flex items-center">
           <Icon
             name={IconName.Warning}
@@ -31,31 +31,11 @@ export default function ServerStatusModal({
 
         <p className="mb-4">
           The Test Engine Worker service needs to be running to execute tests.
-          Please start the service by following these instructions:
+          Please start the service by following the instructions in the
+          README.md file.
         </p>
 
-        <div className="mb-4 rounded-md bg-gray-100 p-4">
-          <ol className="list-decimal space-y-2 pl-5">
-            <li>Open a terminal window</li>
-            <li>Navigate to the AI Verify installation directory</li>
-            <li>
-              Activate the Python virtual environment:
-              <pre className="mt-1 rounded bg-gray-200 p-2">
-                source .venv/bin/activate
-              </pre>
-            </li>
-            <li>
-              Start the test engine worker:
-              <pre className="mt-1 rounded bg-gray-200 p-2">
-                cd aiverify-test-engine-worker
-                <br />
-                python -m aiverify_test_engine_worker
-              </pre>
-            </li>
-          </ol>
-        </div>
-
-        <p className="mb-6 text-sm text-gray-600">
+        <p className="mb-6 text-sm text-gray-400">
           The Test Engine Worker needs to be running for test execution. Please
           keep the terminal window open while running tests.
         </p>

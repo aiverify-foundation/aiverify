@@ -2,10 +2,9 @@
 import { RiDownloadLine } from '@remixicon/react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, useCallback } from 'react';
-import { fetchConfigFiles } from '@/app/inputs/checklists/[groupId]/hooks/fetchConfigFiles'; // Import fetchConfigFiles
 import { useDeleteGroup } from '@/app/inputs/checklists/[groupId]/hooks/useDeleteGroup';
 import { useEditGroup } from '@/app/inputs/checklists/[groupId]/hooks/useEditGroupName';
-import { exportToExcel } from '@/app/inputs/checklists/[groupId]/utils/exportToExcel'; // Import exportToExcel
+import { useProcessChecklistExport } from '@/app/inputs/checklists/[groupId]/hooks/useProcessChecklistExport';
 import { useChecklists } from '@/app/inputs/context/ChecklistsContext';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import { Modal } from '@/lib/components/modal';
@@ -29,18 +28,14 @@ const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
   const editGroupMutation = useEditGroup();
   const deleteGroupMutation = useDeleteGroup();
 
-  // Update the localStorage key to be unique per group
-  const storageKey = `groupName_${initialGroupName}`;
+  // Storage key for group name in localStorage
+  const storageKey = `checklist_group_name_${initialGroupName}`;
 
-  // Update the localStorage retrieval
-  useEffect(() => {
-    const storedGroupName = localStorage.getItem(storageKey);
-    if (storedGroupName) {
-      setGroupName(storedGroupName);
-    }
-  }, [storageKey]);
+  // Get export functionality using the new hook
+  const { ExportButton } =
+    useProcessChecklistExport(initialGroupName, checklists);
 
-  // Update the localStorage save
+  // Update local state when initialGroupName changes
   useEffect(() => {
     if (groupName !== initialGroupName) {
       // Only store if it's different from initial
@@ -96,33 +91,6 @@ const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
   const handleCancel = () => {
     setGroupName(initialGroupName);
     setIsEditing(false);
-  };
-
-  // Export to Excel function
-  const [isExporting, setIsExporting] = useState(false);
-
-  useEffect(() => {
-    const loadConfigFiles = async () => {
-      const files = await fetchConfigFiles();
-      setConfigFiles(files);
-    };
-
-    loadConfigFiles();
-  }, []);
-
-  const handleExport = async () => {
-    setIsExporting(true);
-    try {
-      // Fetch the config files
-      const configFiles = await fetchConfigFiles();
-
-      // Export the checklists to Excel with config file details
-      await exportToExcel(groupName, checklists, configFiles);
-    } catch (error) {
-      console.error('Error exporting to Excel:', error);
-    } finally {
-      setIsExporting(false);
-    }
   };
 
   const handleModalClose = useCallback(() => {
@@ -203,12 +171,16 @@ const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
       )}
 
       <div className="flex justify-between gap-2">
-        <button
-          onClick={handleExport}
-          disabled={isExporting}
-          className="hover:text-primary-500">
-          <RiDownloadLine color="#FFFFFF" />
-        </button>
+        {/* Render the ExportButton component when available, otherwise render a fallback */}
+        <div className="mt-2" data-export-button="true">
+          {ExportButton || (
+            <button
+              disabled={true}
+              className="opacity-50">
+              <RiDownloadLine />
+            </button>
+          )}
+        </div>
         <button
           onClick={handleEditClick}
           disabled={isEditing || editGroupMutation.isPending}

@@ -839,7 +839,7 @@ export default function TestRunForm({
           isOpen={showModal}
           onClose={() => setShowModal(false)}
         />
-        <div className="py-8 text-center">
+        <div className="flex flex-col items-center justify-center py-8">
           <p className="mb-4 text-yellow-600">
             The Test Engine Worker is not running. You cannot run tests until it
             is activated.
