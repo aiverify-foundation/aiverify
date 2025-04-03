@@ -94,7 +94,7 @@ class Plugin(IAlgorithm):
         self._ground_truth_label = ground_truth_label
 
         # Store the input parameters defined in the input schema
-        self._ground_truth_path = self.annotated_ground_truth_path = ground_truth_path
+        self._ground_truth_path = self.ground_truth_path = ground_truth_path
         self._file_name_label = self.file_name_label = file_name_label
         self._set_seed = self.set_seed = set_seed
         self._corruptions = self.corruptions = user_defined_params["corruptions"]
