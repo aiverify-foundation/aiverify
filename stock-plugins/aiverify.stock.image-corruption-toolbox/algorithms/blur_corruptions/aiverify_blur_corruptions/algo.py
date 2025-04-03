@@ -72,11 +72,11 @@ class Plugin(IAlgorithm):
         initial_data_instance: Any,  # This is not used in this plugin, but is required to match the algo_execute signature
         initial_model_instance: Any,  # This is not used in this plugin, but is required to match the algo_execute signature
         model_type: ModelType,
-        requires_ground_truth: bool,
         logger: logging.Logger,
         progress_callback: Callable,
         ground_truth: str,
         file_name_label: str,
+        requires_ground_truth: bool = True,
         set_seed: Optional[int] = None,
         **user_defined_params: Dict[str, Any],
     ):
