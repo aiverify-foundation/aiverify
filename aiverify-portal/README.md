@@ -22,7 +22,12 @@ See the apigw [README.md](../aiverify-apigw/README.md) for installation and setu
 
 ### 2. Build the `aiverify-shared-library`
 
-See the shared library [README.md](../aiverify-shared-library/README.md) for instructions on how to build the shared library.
+```bash
+cd aiverify-shared-library
+npm install
+npm run build
+npm link
+```
 
 ### 3. Install the portal
 
@@ -35,6 +40,10 @@ npm link ../aiverify-shared-library
 ```
 
 ## Environment Variables Configuration
+
+# Link shared library
+cd aiverify-apigw-node
+npm link aiverify-shared-library
 
 The AI Verify Portal requires certain environment variables to be configured for proper operation. These variables can be set directly in the environment or specified in a `.env` file located in the `aiverify-portal` directory.
 

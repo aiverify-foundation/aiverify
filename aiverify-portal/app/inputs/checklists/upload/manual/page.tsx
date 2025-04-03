@@ -1,8 +1,9 @@
 'use client';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState, useRef, JSX } from 'react';
+import LayoutHeader from '@/app/inputs/checklists/components/LayoutHeader';
 import {
   ChecklistsProvider,
   useChecklists,
@@ -182,6 +183,11 @@ function useInactivityCheck() {
 }
 
 function ChecklistsPageContent() {
+  const searchParams = useSearchParams();
+  const projectId = searchParams.get('projectId');
+  const flow = searchParams.get('flow');
+  const isProjectFlow = !!projectId;
+
   const {
     checkForExistingData,
     clearAllChecklists,
@@ -253,16 +259,32 @@ function ChecklistsPageContent() {
   };
 
   const handleBack = () => {
-    window.history.back();
+    if (isProjectFlow) {
+      router.push(
+        `/inputs/checklists/upload?flow=${flow}&projectId=${projectId}`
+      );
+    } else {
+      router.push('/inputs/checklists');
+    }
+  };
+
+  const handleProjectBack = () => {
+    router.push(`/project/select_data?flow=${flow}&projectId=${projectId}`);
   };
 
   const closeModal = () => {
     setIsModalVisible(false);
-    router.push('/inputs/checklists/');
+    if (!isProjectFlow) {
+      router.push('/inputs/checklists/');
+    }
   };
 
   return (
     <div className="flex h-[calc(100vh-50px)] flex-col px-4 py-6">
+      <LayoutHeader
+        projectId={projectId}
+        onBack={handleProjectBack}
+      />
       {/* Breadcrumb navigation */}
       <div className="flex">
         <div>

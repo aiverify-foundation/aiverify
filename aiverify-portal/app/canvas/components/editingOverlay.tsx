@@ -1,10 +1,8 @@
 'use client';
 
-import { getMDXComponent } from 'mdx-bundler/client';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { WidgetOnGridLayout } from '@/app/canvas/types';
-import { hocAddTextEditFunctionality } from './hocAddTextEditFuncitonality';
 
 type EditingOverlayRequiredStyles = `editing-overlay ${string}`;
 
@@ -18,11 +16,9 @@ type EditingOverlayProps = {
 /**
  * @file aiverify/aiverify-portal/app/canvas/components/editingOverlay.tsx
  * The editing overlay is a modal that allows the user to edit the properties of a widget.
- * There is a background overlay that is used to close the overlay when the user clicks outside of it.
- * The modal renders a form that contains the widget properties. It is rendered directly above the widget.
+ * It places editable text areas directly over the content that needs to be edited.
+ * Changes to these text areas update the corresponding widget properties.
  * The form is submitted when the user clicks outside of it.
- *
- * @see {@link /app/canvas/components/hocAddTextEditFuncitonality.tsx} to see which components are editable.
  */
 
 function EditingOverlay({
@@ -51,39 +47,109 @@ function EditingOverlay({
     // get the original element's bounding client rect for positioning and sizing the editing overlay
     if (originalElement && overlayRef.current) {
       const rect = originalElement.getBoundingClientRect();
-      overlayRef.current.style.top = `${rect.top}px`;
-      overlayRef.current.style.left = `${rect.left}px`;
+
+      // Account for scroll position
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const scrollLeft = window.scrollX || document.documentElement.scrollLeft;
+
+      overlayRef.current.style.top = `${rect.top + scrollTop}px`;
+      overlayRef.current.style.left = `${rect.left + scrollLeft}px`;
       overlayRef.current.style.width = `${rect.width}px`;
-      overlayRef.current.style.height = `${rect.height}px`;
+      overlayRef.current.style.minHeight = `${rect.height}px`;
     }
   }, [originalElement]);
 
-  const EditableMDXComponent = useMemo(() => {
-    if (!widget.mdx) {
-      const MissingMdxMessage = () => (
-        <div>{`${widget.name} - ${widget.cid} : Missing mdx`}</div>
-      );
-      MissingMdxMessage.displayName = 'MissingMdxMessage';
-      return MissingMdxMessage;
-    }
-    const MDXComponent = getMDXComponent(widget.mdx.code);
-    // Add text edit functionality to the MDX component before returning it
-    return hocAddTextEditFunctionality(MDXComponent);
-  }, [widget, widget.mdx]);
+  // Find editable elements in the original element and create text areas for them
+  useEffect(() => {
+    if (!originalElement || !overlayRef.current || !widget.properties) return;
 
-  const properties = useMemo(() => {
-    if (!widget.properties) return {};
-    return widget.properties.reduce((props, property) => {
-      return {
-        ...props,
-        [property.key]:
-          propertyValues[property.key] ||
-          property.value ||
-          property.default ||
-          property.helper,
-      };
-    }, {});
-  }, [widget.properties, propertyValues]);
+    // Clear any existing content
+    const formElement = overlayRef.current.querySelector('form');
+    if (formElement) {
+      // Clear all existing content
+      while (formElement.firstChild) {
+        formElement.removeChild(formElement.firstChild);
+      }
+
+      // Find all elements with data-aivkey attribute
+      const editableElements =
+        originalElement.querySelectorAll('[data-aivkey]');
+
+      // If no elements with data-aivkey are found, fall back to text elements
+      if (editableElements.length === 0) {
+        const textElements = originalElement.querySelectorAll(
+          'p, h1, h2, h3, h4, h5, h6'
+        );
+
+        textElements.forEach((element, index) => {
+          if (widget.properties && index < widget.properties.length) {
+            createTextareaForElement(
+              element,
+              widget.properties[index].key,
+              formElement
+            );
+          }
+        });
+      } else {
+        // Create textareas for elements with data-aivkey
+        editableElements.forEach((element) => {
+          const key = element.getAttribute('data-aivkey');
+          if (key) {
+            createTextareaForElement(element, key, formElement);
+          }
+        });
+      }
+    }
+  }, [originalElement, widget.properties]);
+
+  // Helper function to create a textarea for an element
+  const createTextareaForElement = (
+    element: Element,
+    propertyKey: string,
+    formElement: Element
+  ) => {
+    // Create a textarea for the element
+    const textarea = document.createElement('textarea');
+    textarea.className = `overlay-textarea input-${element.tagName.toLowerCase()}`;
+    textarea.value = propertyValues[propertyKey] || element.textContent || '';
+    textarea.dataset.propertyKey = propertyKey;
+
+    // Position the textarea over the original element
+    const elementRect = element.getBoundingClientRect();
+    const overlayRect = overlayRef.current!.getBoundingClientRect();
+
+    textarea.style.position = 'absolute';
+    textarea.style.top = `${elementRect.top - overlayRect.top}px`;
+    textarea.style.left = `${elementRect.left - overlayRect.left}px`;
+    textarea.style.width = `${elementRect.width}px`;
+    textarea.style.minHeight = `${elementRect.height}px`;
+
+    // Auto-resize the textarea
+    textarea.addEventListener('input', (e) => {
+      const target = e.target as HTMLTextAreaElement;
+      target.style.height = 'auto';
+      target.style.height = `${target.scrollHeight}px`;
+
+      // Update the corresponding property
+      const key = target.dataset.propertyKey;
+      if (key) {
+        handlePropertyChange(key, target.value);
+      }
+    });
+
+    // Add blur event to save changes when user clicks away from textarea
+    textarea.addEventListener('blur', () => {
+      // We don't need to do anything here as property values are already updated
+      // through the input event handler
+    });
+
+    // Append the textarea to the form
+    formElement.appendChild(textarea);
+
+    // Trigger the input event to set the initial height
+    const inputEvent = new Event('input', { bubbles: true });
+    textarea.dispatchEvent(inputEvent);
+  };
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -123,13 +189,11 @@ function EditingOverlay({
       onClick={handleBackgroundClick}>
       <div
         ref={overlayRef}
-        className="fixed z-50 border border-blue-500 bg-white text-black">
-        <form onSubmit={handleFormSubmit}>
-          <EditableMDXComponent
-            properties={properties}
-            frontmatter={widget.mdx.frontmatter}
-            onPropertyChange={handlePropertyChange}
-          />
+        className="fixed z-50 overflow-visible rounded-md border-2 border-blue-500 bg-transparent p-0 text-black">
+        <form
+          onSubmit={handleFormSubmit}
+          className="relative h-full w-full">
+          {/* No save button - changes are saved automatically when clicking outside */}
         </form>
       </div>
     </div>,

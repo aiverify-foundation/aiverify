@@ -143,21 +143,16 @@ type WidgetAction =
       gridItemInputBlockDatasMap: WidgetInputBlockIdentifier[];
     }
   | {
-      type: 'INITIALIZE_WITH_TEMPLATE';
-      layouts: Layout[][];
-      widgets: WidgetOnGridLayout[][];
-      algorithmsOnReport: Algorithm[];
-      inputBlocksOnReport: InputBlock[];
-      gridItemToAlgosMap: Record<
-        WidgetGridItemId,
-        WidgetAlgoAndResultIdentifier[]
-      >;
-      gridItemToInputBlockDatasMap: Record<
-        WidgetGridItemId,
-        WidgetInputBlockIdentifier[]
-      >;
+      type: 'CONVERT_PAGES_TO_OVERFLOW';
       pageTypes: ('grid' | 'overflow')[];
       overflowParents: Array<number | null>;
+    }
+  | {
+      type: 'RESET_PAGES_WITH_OVERFLOW';
+      pageTypes: ('grid' | 'overflow')[];
+      overflowParents: Array<number | null>;
+      layouts: Layout[][];
+      widgets: WidgetOnGridLayout[][];
     };
 
 function pagesDesignReducer(state: State, action: WidgetAction): State {
@@ -511,13 +506,41 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
 
     case 'ADD_OVERFLOW_PAGES': {
       const { parentPageIndex, count } = action;
-      const insertIndex = parentPageIndex + 1;
 
-      const newLayouts = new Array(count).fill([]);
-      const newWidgets = new Array(count).fill([]);
-      const newPageTypes = new Array(count).fill('overflow');
-      const newOverflowParents = new Array(count).fill(parentPageIndex);
+      // If count is zero or negative, no need to add pages
+      if (count <= 0) {
+        return state;
+      }
 
+      // Find where to insert the overflow pages
+      // We need to place them after the parent page and any existing overflow pages
+      const existingOverflowIndices = state.pageTypes.reduce(
+        (indices, type, idx) => {
+          if (
+            type === 'overflow' &&
+            state.overflowParents[idx] === parentPageIndex
+          ) {
+            indices.push(idx);
+          }
+          return indices;
+        },
+        [] as number[]
+      );
+
+      // If there are existing overflow pages, insert after the last one
+      // Otherwise, insert directly after the parent page
+      const insertIndex =
+        existingOverflowIndices.length > 0
+          ? Math.max(...existingOverflowIndices) + 1
+          : parentPageIndex + 1;
+
+      // Prepare arrays for the new overflow pages
+      const newLayouts = Array(count).fill([]);
+      const newWidgets = Array(count).fill([]);
+      const newPageTypes = Array(count).fill('overflow' as const);
+      const newOverflowParents = Array(count).fill(parentPageIndex);
+
+      // Create a new state object with the inserted pages
       newState = {
         ...state,
         layouts: [
@@ -540,6 +563,11 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
           ...newOverflowParents,
           ...state.overflowParents.slice(insertIndex),
         ],
+        // Adjust current page index if we're inserting before it
+        currentPage:
+          state.currentPage >= insertIndex
+            ? state.currentPage + count
+            : state.currentPage,
       };
       break;
     }
@@ -558,25 +586,67 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
         return indices;
       }, [] as number[]);
 
-      // Remove the pages
+      // If no overflow pages to remove, just return the current state
+      if (indicesToRemove.length === 0) {
+        return state;
+      }
+
+      // Create new arrays filtering out the overflow pages to be removed
+      const newLayouts = state.layouts.filter(
+        (_, idx) => !indicesToRemove.includes(idx)
+      );
+
+      const newWidgets = state.widgets.filter(
+        (_, idx) => !indicesToRemove.includes(idx)
+      );
+
+      const newPageTypes = state.pageTypes.filter(
+        (_, idx) => !indicesToRemove.includes(idx)
+      );
+
+      const newOverflowParents = state.overflowParents.filter(
+        (_, idx) => !indicesToRemove.includes(idx)
+      );
+
+      // Adjust current page index if needed
+      let newCurrentPage = state.currentPage;
+
+      // If we're removing pages that would affect the current page index
+      if (indicesToRemove.some((idx) => idx <= state.currentPage)) {
+        // First, count how many removed pages are before or at the current page
+        const removedBeforeCurrent = indicesToRemove.filter(
+          (idx) => idx <= state.currentPage
+        ).length;
+
+        // Adjust current page index accordingly
+        newCurrentPage = Math.max(0, state.currentPage - removedBeforeCurrent);
+
+        // Ensure the new current page is not an overflow page
+        // If it is, move to its parent page
+        let attempts = 0;
+        while (
+          attempts < newPageTypes.length &&
+          newCurrentPage < newPageTypes.length &&
+          newPageTypes[newCurrentPage] === 'overflow'
+        ) {
+          const parent = newOverflowParents[newCurrentPage];
+          if (parent !== null && parent < newCurrentPage) {
+            newCurrentPage = parent;
+          } else {
+            // If parent is null or greater than current, move to previous page
+            newCurrentPage = Math.max(0, newCurrentPage - 1);
+          }
+          attempts++;
+        }
+      }
+
       newState = {
         ...state,
-        layouts: state.layouts.filter(
-          (_, idx) => !indicesToRemove.includes(idx)
-        ),
-        widgets: state.widgets.filter(
-          (_, idx) => !indicesToRemove.includes(idx)
-        ),
-        pageTypes: state.pageTypes.filter(
-          (_, idx) => !indicesToRemove.includes(idx)
-        ),
-        overflowParents: state.overflowParents.filter(
-          (_, idx) => !indicesToRemove.includes(idx)
-        ),
-        currentPage:
-          state.currentPage >= parentPageIndex
-            ? parentPageIndex
-            : state.currentPage,
+        layouts: newLayouts,
+        widgets: newWidgets,
+        pageTypes: newPageTypes,
+        overflowParents: newOverflowParents,
+        currentPage: newCurrentPage,
       };
       break;
     }
@@ -639,75 +709,23 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       };
       break;
     }
+    case 'CONVERT_PAGES_TO_OVERFLOW': {
+      return {
+        ...state,
+        pageTypes: action.pageTypes,
+        overflowParents: action.overflowParents,
+      };
+    }
 
-    case 'INITIALIZE_WITH_TEMPLATE': {
-      const {
-        layouts: templateLayouts,
-        widgets: templateWidgets,
-        algorithmsOnReport,
-        inputBlocksOnReport,
-        gridItemToAlgosMap,
-        gridItemToInputBlockDatasMap,
+    case 'RESET_PAGES_WITH_OVERFLOW': {
+      const { pageTypes, overflowParents, layouts, widgets } = action;
+      return {
+        ...state,
         pageTypes,
         overflowParents,
-      } = action;
-
-      // Validate input arrays
-      if (!Array.isArray(templateLayouts) || !Array.isArray(templateWidgets)) {
-        console.error(
-          'Invalid template data: layouts or widgets are not arrays'
-        );
-        return state;
-      }
-
-      // Process each page's layouts and widgets to ensure proper positioning
-      const processedLayouts = templateLayouts.map((pageLayouts, pageIndex) => {
-        if (
-          !Array.isArray(pageLayouts) ||
-          !Array.isArray(templateWidgets[pageIndex])
-        ) {
-          console.error(`Invalid page data at index ${pageIndex}`);
-          return [];
-        }
-
-        const sortedLayouts: Layout[] = [];
-        const sortedWidgets = templateWidgets[pageIndex].filter(
-          (widget) => widget && widget.gridItemId // Filter out invalid widgets
-        );
-
-        // Position each widget using findWidgetInsertPosition
-        pageLayouts.forEach((layout, idx) => {
-          if (!layout || !sortedWidgets[idx]) return; // Skip invalid layouts/widgets
-
-          const insertPosition = findWidgetInsertPosition(
-            sortedLayouts,
-            layout
-          );
-          sortedLayouts.splice(insertPosition, 0, layout);
-
-          // Move the corresponding widget to match the layout position
-          if (idx !== insertPosition) {
-            const [widget] = sortedWidgets.splice(idx, 1);
-            sortedWidgets.splice(insertPosition, 0, widget);
-          }
-        });
-
-        templateWidgets[pageIndex] = sortedWidgets;
-        return sortedLayouts;
-      });
-
-      newState = {
-        ...state,
-        layouts: processedLayouts,
-        widgets: templateWidgets,
-        algorithmsOnReport: algorithmsOnReport || [],
-        inputBlocksOnReport: inputBlocksOnReport || [],
-        gridItemToAlgosMap: gridItemToAlgosMap || {},
-        gridItemToInputBlockDatasMap: gridItemToInputBlockDatasMap || {},
-        pageTypes: pageTypes || ['grid'],
-        overflowParents: overflowParents || [null],
+        layouts,
+        widgets,
       };
-      break;
     }
 
     default:
@@ -715,7 +733,6 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
   }
 
   // Save state to database (debounced)
-  console.log('saving hereee', newState);
   debouncedSaveStateToDatabase(newState);
 
   return newState;

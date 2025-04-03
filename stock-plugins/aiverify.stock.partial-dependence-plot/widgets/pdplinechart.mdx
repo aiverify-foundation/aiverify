@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { LineChart } from 'aiverify-shared-library/charts'
 
-export const MultipleLineChart = ({ feature_names, results}) => {
+export const MultipleLineChart = ({ feature_names, results, width, height }) => {
     const [ mydata, setmydata ] = useState({
       data: [],
     });
@@ -31,27 +31,29 @@ export const MultipleLineChart = ({ feature_names, results}) => {
     }
 
     return (
-      <div style={{height: "100%"}}>
+      <div style={{ width: width, height: 'auto', minHeight: height }}>
         {mydata.data.map((each_feature, index) => {
           return (
-            <div key={index} style={{height:"100%"}}>
+            <div key={index} style={{minHeight:"200px", height: 'auto', marginBottom: '20px'}}>
               {Object.entries(each_feature).map(function ([key, value]) {
                 return (
-                  <div key={key} style={{height:"75%"}}>
+                  <div key={key} style={{minHeight:"75%", height: '200px', marginBottom: '15px'}}>
                     <h4>{key}</h4>
-                    {value.map((outputclassValue, outputclassIndex) => {
-                      return (
-                        <div key={outputclassIndex} style={{width:"33%", height:"100%", float:"left"}}>
-                            <span>Class {outputclassIndex}</span>
-                            <LineChart data={outputclassValue}
-                              xAxisDataKey="feature_value"
-                              xAxisProps={{ width:"100%", fontSize:8}}
-                              yAxisProps={{ fontSize:8}}
-                              lines={[{ dataKey:"pdp_value"}]}
-                            />
-                        </div>
-                      )
-                    })}
+                    <div style={{display: 'flex', flexWrap: 'wrap', width: '100%'}}>
+                      {value.map((outputclassValue, outputclassIndex) => {
+                        return (
+                          <div key={outputclassIndex} style={{width:"33%", minHeight:"150px", maxHeight:"150px", padding: '5px'}}>
+                              <span>Class {outputclassIndex}</span>
+                              <LineChart data={outputclassValue}
+                                xAxisDataKey="feature_value"
+                                xAxisProps={{ width:"100%", fontSize:8}}
+                                yAxisProps={{ fontSize:8}}
+                                lines={[{ dataKey:"pdp_value"}]}
+                              />
+                          </div>
+                        )
+                      })}
+                    </div>
                   </div>
                 )
               })}

@@ -1,3 +1,4 @@
+'use client';
 import { RiDatabase2Fill } from '@remixicon/react';
 import { useState, useMemo } from 'react';
 import { InputBlockData } from '@/app/types';

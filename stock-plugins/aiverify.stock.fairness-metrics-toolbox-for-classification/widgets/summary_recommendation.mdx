@@ -50,11 +50,36 @@ export const GetInterpretation = ({ data, container, results }) => {
     <b>What it means:</b>
     <br/>
     The test results enable the Company to help its stakeholder understand if the model is able to predict the outcomes fairly among the demographic groups.
-    <GetInterpretation
-      data={props.getIBData(ib_cid)}
-      container={props.container}
-      results={props.getResults(cid)}
-    />
+    {props.getResults(cid) ? (
+          <GetInterpretation
+            data={props.getIBData(ib_cid)}
+            container={props.container}
+            results={props.getResults(cid)}
+          />
+        ) : (
+        <div style={{ 
+          width: props.width, 
+          height: props.height, 
+          display: 'flex', 
+          maxHeight: 150,
+          justifyContent: 'center', 
+          alignItems: 'center',
+          flexDirection: 'column',
+          background: '#f8f9fa',
+          border: '1px dashed #dee2e6',
+          borderRadius: '4px',
+          padding: '20px',
+          textAlign: 'center' 
+        }}>
+          <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#dc3545', marginBottom: '10px' }}>
+            Report is incomplete
+          </div>
+          <div style={{ color: '#6c757d' }}>
+            No Test Result is selected for Fairness Metrics Toolbox for Classification algorithm. 
+            Please select appropriate test results in the Data Selection page.
+          </div>
+        </div>
+      )}
   </div>
 
 <div>

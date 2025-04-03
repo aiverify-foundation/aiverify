@@ -1,3 +1,4 @@
+'use client';
 import { useEffect, useRef } from 'react';
 import { debouncedSaveStateToDatabase } from '@/app/canvas/utils/saveStateToDatabase';
 import { State } from './pagesDesignReducer';

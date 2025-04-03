@@ -1,4 +1,5 @@
 'use client';
+import { RiDownloadLine } from '@remixicon/react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, useCallback } from 'react';
 import { fetchConfigFiles } from '@/app/inputs/checklists/[groupId]/hooks/fetchConfigFiles'; // Import fetchConfigFiles
@@ -57,6 +58,7 @@ const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
 
   // Update the delete handler to remove the correct storage key
   const handleDeleteConfirm = useCallback(() => {
+    console.log('Deleting group:', groupName);
     deleteGroupMutation.mutate({ groupName, checklists });
     setIsDeleteModalVisible(false);
     setSelectedGroup('');
@@ -64,7 +66,6 @@ const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
       checklists.filter((checklist) => checklist.group !== groupName)
     );
     localStorage.removeItem(storageKey); // Remove the specific group name
-    router.push('/inputs/checklists');
   }, [
     deleteGroupMutation,
     groupName,
@@ -126,7 +127,7 @@ const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
 
   const handleModalClose = useCallback(() => {
     setIsModalVisible(false);
-    router.refresh();
+    router.push('/inputs/checklists');
   }, [router]);
 
   useEffect(() => {
@@ -206,10 +207,7 @@ const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
           onClick={handleExport}
           disabled={isExporting}
           className="hover:text-primary-500">
-          <Icon
-            name={IconName.WideArrowDown}
-            color="#FFFFFF"
-          />
+          <RiDownloadLine color="#FFFFFF" />
         </button>
         <button
           onClick={handleEditClick}

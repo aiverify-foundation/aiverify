@@ -1,10 +1,48 @@
 import Link from 'next/link';
 import { ChecklistsProvider } from '@/app/inputs/context/ChecklistsContext';
 import { ScaleIcon } from '@/app/inputs/utils/icons';
+import { InputBlock } from '@/app/types';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import { Card } from '@/lib/components/card/card';
+import { getAllInputBlocks } from '@/lib/fetchApis/getAllInputBlocks';
+
+// Tell Next.js this page should be dynamically rendered
+export const dynamic = 'force-dynamic';
 
 export default async function InputsPage() {
+  // Get all available input blocks
+  const inputBlocks = await getAllInputBlocks();
+  console.log('inputBlocks', inputBlocks);
+
+  // Group input blocks by their group value
+  const inputBlockGroups = inputBlocks.reduce(
+    (acc, block) => {
+      // Skip hardcoded blocks
+      if (
+        block.gid === 'aiverify.stock.process_checklist' ||
+        block.gid ===
+          'aiverify.stock.fairness_metrics_toolbox_for_classification'
+      ) {
+        return acc;
+      }
+
+      // Use group as key, default to "Other" if no group specified
+      const groupName = block.group || 'Other';
+
+      if (!acc[groupName]) {
+        acc[groupName] = {
+          name: groupName,
+          blocks: [],
+        };
+      }
+
+      acc[groupName].blocks.push(block);
+      return acc;
+    },
+    {} as Record<string, { name: string; blocks: InputBlock[] }>
+  );
+  console.log('inputBlockGroups', inputBlockGroups);
+
   return (
     <ChecklistsProvider>
       <div className="p-6">
@@ -22,7 +60,8 @@ export default async function InputsPage() {
             </div>
           </div>
         </div>
-        <div className="mt-10 flex space-x-4">
+        <div className="mt-10 flex flex-wrap gap-4">
+          {/* Hardcoded cards */}
           <Link href="/inputs/checklists">
             <Card
               size="md"
@@ -71,6 +110,37 @@ export default async function InputsPage() {
               </div>
             </Card>
           </Link>
+          {/* Group cards */}
+          {Object.values(inputBlockGroups).map((group) => (
+            <Link
+              key={group.name}
+              href={`/inputs/groups/${encodeURIComponent(group.name)}`}>
+              <Card
+                size="md"
+                enableTiltEffect={true}
+                tiltSpeed={200}
+                tiltRotation={5}
+                enableTiltGlare={true}
+                tiltMaxGlare={0.3}
+                className="bg-secondary-500 !bg-none">
+                <div className="flex flex-col justify-between p-6">
+                  <Icon
+                    name={IconName.Folder}
+                    size={50}
+                    color="white"
+                  />
+                  <div>
+                    <p className="tracking-wide text-shadow-sm">
+                      Manage input blocks in this group
+                    </p>
+                    <h2 className="text-2xl font-bold tracking-wide text-shadow-sm">
+                      {group.name}
+                    </h2>
+                  </div>
+                </div>
+              </Card>
+            </Link>
+          ))}
         </div>
       </div>
     </ChecklistsProvider>

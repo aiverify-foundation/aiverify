@@ -11,6 +11,8 @@ export function UserManageFlowCards() {
         <Link href="/models">
           <Card
             size="md"
+            width={320}
+            height={320 * 0.6}
             enableTiltEffect={true}
             tiltSpeed={200}
             tiltRotation={5}
@@ -35,6 +37,8 @@ export function UserManageFlowCards() {
         <Link href="/datasets">
           <Card
             size="md"
+            width={320}
+            height={320 * 0.6}
             enableTiltEffect={true}
             tiltSpeed={200}
             tiltRotation={5}
@@ -59,6 +63,8 @@ export function UserManageFlowCards() {
         <Link href="/templates">
           <Card
             size="md"
+            width={320}
+            height={320 * 0.6}
             enableTiltEffect={true}
             tiltSpeed={200}
             tiltRotation={5}
@@ -85,6 +91,8 @@ export function UserManageFlowCards() {
         <Link href="/inputs">
           <Card
             size="md"
+            width={320}
+            height={320 * 0.6}
             enableTiltEffect={true}
             tiltSpeed={200}
             tiltRotation={5}
@@ -98,10 +106,10 @@ export function UserManageFlowCards() {
                 color="white"
               />
               <div>
-                <p className="text-shadow-sm tracking-wide">
+                <p className="tracking-wide text-shadow-sm">
                   Manage user inputs
                 </p>
-                <h2 className="text-shadow-sm text-2xl font-bold tracking-wide">
+                <h2 className="text-2xl font-bold tracking-wide text-shadow-sm">
                   User Inputs
                 </h2>
               </div>
@@ -111,6 +119,8 @@ export function UserManageFlowCards() {
         <Link href="/plugins">
           <Card
             size="md"
+            width={320}
+            height={320 * 0.6}
             enableTiltEffect={true}
             tiltSpeed={200}
             tiltRotation={5}
@@ -135,6 +145,8 @@ export function UserManageFlowCards() {
         <Link href="/results">
           <Card
             size="md"
+            width={320}
+            height={320 * 0.6}
             enableTiltEffect={true}
             tiltSpeed={200}
             tiltRotation={5}

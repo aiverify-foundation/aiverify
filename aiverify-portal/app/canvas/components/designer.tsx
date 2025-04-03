@@ -74,7 +74,7 @@ import { ResizeHandle } from './resizeHandle';
 import { ZoomControl } from './zoomControl';
 
 type GridItemDivRequiredStyles =
-  `grid-comp-wrapper relative group z-10${string}`; // mandatory to have relative and group
+  `${typeof criticalGridItemWrapperClass} relative group z-10${string}`; // mandatory to have relative and group
 
 type Layout = GridLayoutType & {
   widget?: WidgetOnGridLayout;
@@ -129,12 +129,6 @@ type EventDataTransfer = Event & {
 
 const pagesContentWrapperId = 'printableContent'; // element id for the pages wrapper (used for printing)
 const criticalGridItemWrapperClass = 'grid-comp-wrapper'; // class for the grid item wrapper used in some event handling
-const gridItemDivRequiredStyles: GridItemDivRequiredStyles = `${criticalGridItemWrapperClass} relative group z-10
-  hover:outline hover:outline-2 
-  hover:outline-blue-500 hover:outline-offset-2
-  active:outline-none
-  w-full h-full
-  [&>.react-grid-item]:w-full [&>.react-grid-item]:h-full`;
 
 const widgetItemSchema = z.object({
   gridItemId: z.string().optional(),
@@ -176,14 +170,18 @@ function Designer(props: DesignerProps) {
     isTemplate = false,
   } = props;
 
+  // Define gridItemDivRequiredStyles here where it has access to disabled prop
+  const gridItemDivRequiredStyles: GridItemDivRequiredStyles = `${criticalGridItemWrapperClass} relative group z-10
+    ${!disabled ? 'hover:outline hover:outline-2 hover:outline-blue-500 hover:outline-offset-2' : ''}
+    active:outline-none
+    w-full h-full
+    [&>.react-grid-item]:w-full [&>.react-grid-item]:h-full`;
+
   const router = useRouter();
   const searchParams = useSearchParams();
 
   // All hooks must be called before any conditional returns
-  console.log('project', project);
-  console.log('flow', flow);
   const canvasState = useCanvasState(initialState);
-  console.log('initialState', canvasState);
   const canvasRef = useRef<HTMLDivElement>(null);
   const isInitialMount = useRef(true);
   const freeFormAreaRef = useRef<HTMLDivElement>(null);
@@ -211,7 +209,10 @@ function Designer(props: DesignerProps) {
     InputBlockData[]
   >(selectedInputBlockDatasFromUrlParams);
   const [isPanelOpen, setIsPanelOpen] = useState(true);
-  const canvasPrint = usePrintable({ printableId: pagesContentWrapperId });
+  const canvasPrint = usePrintable({
+    printableId: pagesContentWrapperId,
+    filename: project.projectInfo.name,
+  });
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'success' | 'error' | null>(
     null
@@ -248,6 +249,9 @@ function Designer(props: DesignerProps) {
         const processDroppedWidget = debounce(() => {
           console.log(
             `[handleWidgetDrop] Dropping widget at page ${pageIndex}, position: (${item.x}, ${item.y})`
+          );
+          console.log(
+            `[handleWidgetDrop] Timestamp: ${new Date().toISOString()}`
           );
           setDraggingGridItemId(null);
 
@@ -446,132 +450,6 @@ function Designer(props: DesignerProps) {
     }
   }, [selectedTestResultsFromUrlParams]);
 
-  // Initialize the state with template data
-  /* useEffect(() => {
-    if (project.pages && project.pages.length > 0) {
-      // Convert template pages to layouts and widgets
-      console.log('proj given before', project);
-
-      // Process each page's widgets similar to handleWidgetDrop
-      const layouts: Layout[][] = (
-        (project as Project).pages as ProjectPage[]
-      ).map((page: ProjectPage, pageIndex: number) =>
-        page.reportWidgets.map((widget: WidgetOnGridLayout) => {
-          // Create a unique grid item ID
-          const gridItemId =
-            widget.gridItemId || createGridItemId(widget, pageIndex);
-
-          // Get the widget's size properties
-          const { minW, minH, maxH, maxW } = widget.widgetSize;
-          console.log('widget size creation', widget.widgetSize);
-
-          // Find the corresponding layout for this widget
-          const existingLayout = page.layouts[
-            page.reportWidgets.indexOf(widget)
-          ] || {
-            x: 0,
-            y: 0,
-          };
-          console.log('existing layout creation', existingLayout);
-
-          // Create the layout item with proper sizing
-          const itemLayout = {
-            ...existingLayout,
-            i: gridItemId,
-            minW,
-            minH,
-            maxW,
-            maxH,
-            static: false,
-            isDraggable: true,
-            isResizable: true,
-            isBounded: true,
-          };
-
-          console.log('Created layout for widget:', itemLayout);
-          return itemLayout;
-        })
-      );
-
-      const widgets: WidgetOnGridLayout[][] = (
-        (project as Project).pages as ProjectPage[]
-      ).map((page: ProjectPage, pageIndex: number) =>
-        page.reportWidgets.map((widget: WidgetOnGridLayout) => ({
-          ...widget,
-          gridItemId: widget.gridItemId || createGridItemId(widget, pageIndex),
-        }))
-      );
-
-      // Initialize page types and overflow parents
-      const pageTypes: ('grid' | 'overflow')[] = (project as Project).pages.map(
-        () => 'grid'
-      );
-      const overflowParents: Array<number | null> = (
-        project as Project
-      ).pages.map(() => null);
-
-      // Initialize algorithms and input blocks
-      const algorithmsOnReport: Algorithm[] = [];
-      const inputBlocksOnReport: InputBlock[] = [];
-      const gridItemToAlgosMap: Record<
-        string,
-        WidgetAlgoAndResultIdentifier[]
-      > = {};
-      const gridItemToInputBlockDatasMap: Record<
-        string,
-        WidgetInputBlockIdentifier[]
-      > = {};
-
-      // Process each widget to collect algorithms and input blocks
-      ((project as Project).pages as ProjectPage[]).forEach(
-        (page: ProjectPage, pageIndex: number) => {
-          page.reportWidgets.forEach((widget: WidgetOnGridLayout) => {
-            const gridItemId =
-              widget.gridItemId || createGridItemId(widget, pageIndex);
-
-            // Collect algorithms
-            const algos = getWidgetAlgosFromPlugins(allPluginsWithMdx, widget);
-            algorithmsOnReport.push(...algos);
-
-            // Collect input blocks
-            const inputBlocks = getWidgetInputBlocksFromPlugins(
-              allPluginsWithMdx,
-              widget
-            );
-            inputBlocksOnReport.push(...inputBlocks);
-
-            // Map algorithms to grid items
-            gridItemToAlgosMap[gridItemId] = algos.map((algo) => ({
-              gid: algo.gid,
-              cid: algo.cid,
-            }));
-
-            // Map input blocks to grid items
-            gridItemToInputBlockDatasMap[gridItemId] = inputBlocks.map(
-              (inputBlock) => ({
-                gid: inputBlock.gid,
-                cid: inputBlock.cid,
-              })
-            );
-          });
-        }
-      );
-
-      // Dispatch initialization action
-      dispatch({
-        type: 'INITIALIZE_WITH_TEMPLATE',
-        layouts,
-        widgets,
-        algorithmsOnReport,
-        inputBlocksOnReport,
-        gridItemToAlgosMap,
-        gridItemToInputBlockDatasMap,
-        pageTypes,
-        overflowParents,
-      });
-    }
-  }, [project.pages, allPluginsWithMdx]); */
-
   // Drag-to-scroll functionality for navigating the canvas
   useDragToScroll(freeFormAreaRef, canvasRef);
 
@@ -620,32 +498,73 @@ function Designer(props: DesignerProps) {
     if (isInitialMount.current) return;
 
     const debouncedOverflowCheck = debounce(() => {
-      layouts.forEach((layout, pageIndex) => {
-        if (state.pageTypes[pageIndex] === 'overflow') return;
+      // Process each regular (non-overflow) page individually
+      // This ensures overflow pages are inserted after their parent grid page
 
-        const { overflows, numOfRequiredPages } = isPageContentOverflow(
-          layouts[pageIndex],
-          state.widgets[pageIndex]
+      // First pass: collect information about required overflow pages
+      const overflowRequirements = state.pageTypes
+        .map((type, pageIndex) => {
+          if (type === 'overflow') return null;
+
+          const { overflows, numOfRequiredPages } = isPageContentOverflow(
+            layouts[pageIndex],
+            state.widgets[pageIndex]
+          );
+
+          return { pageIndex, overflows, numOfRequiredPages };
+        })
+        .filter(
+          (
+            req
+          ): req is {
+            pageIndex: number;
+            overflows: boolean;
+            numOfRequiredPages: number;
+          } => req !== null
         );
 
-        const existingOverflowPages = state.pageTypes.filter(
-          (type, idx) =>
-            type === 'overflow' && state.overflowParents[idx] === pageIndex
-        ).length;
+      // Second pass: recreate the page layout with proper overflow distribution
+      // We'll rebuild the arrays from scratch for cleaner results
+      const resultPageTypes: ('grid' | 'overflow')[] = [];
+      const resultOverflowParents: (number | null)[] = [];
+      const resultLayouts: Layout[][] = [];
+      const resultWidgets: WidgetOnGridLayout[][] = [];
 
-        if (overflows && existingOverflowPages < numOfRequiredPages - 1) {
-          dispatch({
-            type: 'ADD_OVERFLOW_PAGES',
-            parentPageIndex: pageIndex,
-            count: numOfRequiredPages - 1 - existingOverflowPages,
-          });
-        } else if (!overflows && existingOverflowPages > 0) {
-          dispatch({
-            type: 'REMOVE_OVERFLOW_PAGES',
-            parentPageIndex: pageIndex,
-          });
+      // Process each grid page and insert overflow pages after it
+      overflowRequirements.forEach((req) => {
+        const { pageIndex, overflows, numOfRequiredPages } = req;
+
+        // Add the original grid page
+        resultPageTypes.push('grid');
+        resultOverflowParents.push(null);
+        resultLayouts.push(layouts[pageIndex]);
+        resultWidgets.push(state.widgets[pageIndex]);
+
+        // Add overflow pages if needed
+        if (overflows) {
+          for (let i = 0; i < numOfRequiredPages - 1; i++) {
+            resultPageTypes.push('overflow');
+            resultOverflowParents.push(resultPageTypes.length - 2); // Index of the parent page we just added
+            resultLayouts.push([]);
+            resultWidgets.push([]);
+          }
         }
       });
+
+      // Only dispatch if there's a change
+      if (
+        JSON.stringify(resultPageTypes) !== JSON.stringify(state.pageTypes) ||
+        JSON.stringify(resultOverflowParents) !==
+          JSON.stringify(state.overflowParents)
+      ) {
+        dispatch({
+          type: 'RESET_PAGES_WITH_OVERFLOW',
+          pageTypes: resultPageTypes,
+          overflowParents: resultOverflowParents,
+          layouts: resultLayouts,
+          widgets: resultWidgets,
+        });
+      }
     }, 300);
 
     debouncedOverflowCheck();
@@ -654,6 +573,62 @@ function Designer(props: DesignerProps) {
       debouncedOverflowCheck.cancel();
     };
   }, [layouts, state.widgets, state.pageTypes, state.overflowParents]);
+
+  // Force re-evaluation of overflow pages when data changes
+  useEffect(() => {
+    // Skip during initial mount
+    if (isInitialMount.current) return;
+
+    // When test results or input block data changes, trigger the overflow check
+    const triggerDataChangeReflow = debounce(() => {
+      console.log(
+        '[Data Change] Re-evaluating overflow pages due to data change'
+      );
+
+      // Force layout recalculation by temporarily applying a small style change
+      const gridItems = document.querySelectorAll(
+        `.${criticalGridItemWrapperClass}`
+      );
+      gridItems.forEach((item) => {
+        const element = item as HTMLElement;
+        // Store original margin
+        const originalMargin = element.style.margin;
+        // Apply tiny change to force reflow
+        element.style.margin = '0.0001px';
+        // Force reflow
+        void element.offsetHeight;
+        // Restore original margin
+        element.style.margin = originalMargin;
+      });
+
+      // Only trigger the position change if there are actual widgets on the page
+      if (layouts[currentPage]?.length > 0) {
+        // Trigger the overflow check by creating a temporary Layout copy
+        // This forces React to re-run the previous useEffect
+        const tempLayouts = [...layouts];
+        dispatch({
+          type: 'CHANGE_WIDGET_POSITION',
+          itemLayout: tempLayouts[currentPage][0],
+          pageIndex: currentPage,
+        });
+      } else {
+        // For empty pages, we can force a reflow by using a different action
+        // that doesn't require existing widgets, like toggling the grid
+        // const currentGrid = state.showGrid;
+        dispatch({ type: 'TOGGLE_GRID' });
+        // Toggle back to maintain the original state
+        setTimeout(() => {
+          dispatch({ type: 'TOGGLE_GRID' });
+        }, 0);
+      }
+    }, 500);
+
+    triggerDataChangeReflow();
+
+    return () => {
+      triggerDataChangeReflow.cancel();
+    };
+  }, [selectedTestResults, selectedInputBlockDatas]);
 
   // Handles deselection of grid items when clicking outside
   useEffect(() => {
@@ -671,14 +646,39 @@ function Designer(props: DesignerProps) {
   console.log('allPluginsWithMdx', allPluginsWithMdx);
 
   // Determines the back button link based on the current user flow
-  let updatedBackFlow = flow;
-  if (flow === UserFlows.NewProjectWithExistingTemplateAndResults) {
-    updatedBackFlow = UserFlows.NewProjectWithExistingTemplate;
-  } else if (flow === UserFlows.NewProjectWithNewTemplateAndResults) {
-    updatedBackFlow = UserFlows.NewProjectWithNewTemplate;
-  }
+  let backButtonLink = `/templates?flow=${flow}&projectId=${project?.id}`;
 
-  const backButtonLink = `/project/select_data?flow=${updatedBackFlow}&projectId=${project?.id}`;
+  // Function to convert result flows back to their editing flow equivalents
+  const getEditingFlowFromResultsFlow = (currentFlow: string) => {
+    switch (currentFlow) {
+      case UserFlows.NewProjectWithNewTemplateAndResults:
+        return UserFlows.NewProjectWithNewTemplate;
+      case UserFlows.NewProjectWithEditingExistingTemplateAndResults:
+        return UserFlows.NewProjectWithEditingExistingTemplate;
+      case UserFlows.NewProjectWithExistingTemplateAndResults:
+        return UserFlows.NewProjectWithExistingTemplate;
+      default:
+        return currentFlow;
+    }
+  };
+
+  if (
+    flow === UserFlows.NewProjectWithNewTemplate ||
+    flow === UserFlows.NewProjectWithEditingExistingTemplate
+  ) {
+    backButtonLink = `/templates?flow=${flow}&projectId=${project?.id}`;
+  } else if (
+    flow === UserFlows.NewProjectWithNewTemplateAndResults ||
+    flow === UserFlows.NewProjectWithEditingExistingTemplateAndResults ||
+    flow === UserFlows.NewProjectWithExistingTemplateAndResults
+  ) {
+    // For result flows, convert back to edit flow and go to select data page in edit mode
+    const editFlow = getEditingFlowFromResultsFlow(flow);
+    backButtonLink = `/project/select_data?flow=${editFlow}&projectId=${project?.id}&testResultIds=${selectedTestResults.map((result) => result.id).join(',')}&iBlockIds=${selectedInputBlockDatas.map((data) => data.id).join(',')}`;
+  } else {
+    backButtonLink = `/project/select_data?flow=${flow}&projectId=${project?.id}`;
+  }
+  console.log('backButtonLink', backButtonLink);
 
   /**
    * Handles the start of a resize operation on a grid item
@@ -933,6 +933,13 @@ function Designer(props: DesignerProps) {
     const currentMode = searchParams.get('mode') || 'edit';
     const newMode = currentMode === 'edit' ? 'view' : 'edit';
 
+    // Update grid visibility based on the new mode
+    if (newMode === 'view' && state.showGrid) {
+      dispatch({ type: 'TOGGLE_GRID' });
+    } else if (newMode === 'edit' && !state.showGrid) {
+      dispatch({ type: 'TOGGLE_GRID' });
+    }
+
     const params = new URLSearchParams(searchParams.toString());
     params.set('mode', newMode);
 
@@ -988,6 +995,20 @@ function Designer(props: DesignerProps) {
             title="Export Template"
             onClick={async () => {
               try {
+                // Format cid to match the regex pattern ^[a-zA-Z0-9][a-zA-Z0-9-._]*$
+                // Replace spaces with dashes and ensure it starts with an alphanumeric character
+                let formattedName = project.projectInfo.name.trim();
+
+                // Replace any character that's not alphanumeric, dash, dot, or underscore with dash
+                formattedName = formattedName.replace(/[^a-zA-Z0-9-._]/g, '-');
+
+                // Ensure the name starts with an alphanumeric character
+                if (!/^[a-zA-Z0-9]/.test(formattedName)) {
+                  formattedName = `a${formattedName}`;
+                }
+
+                const formattedCid = `${formattedName}-${project.id}`;
+
                 const response = await fetch(
                   `/api/project_templates/export/${project.id}`,
                   {
@@ -998,7 +1019,7 @@ function Designer(props: DesignerProps) {
                     body: JSON.stringify({
                       name: project.projectInfo.name,
                       description: project.projectInfo.description,
-                      cid: `${project.projectInfo.name}-${project.id}`,
+                      cid: formattedCid,
                     }),
                   }
                 );
@@ -1030,24 +1051,31 @@ function Designer(props: DesignerProps) {
           </button>
         </div>
       )}
-      <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
-        <button
-          className="disabled:opacity-50"
-          title={disabled ? 'Switch to Edit Mode' : 'Switch to View Mode'}
-          onClick={toggleMode}>
-          {disabled ? (
-            <RiEditLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
-          ) : (
-            <RiEyeLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
-          )}
-        </button>
-      </div>
+      {isTemplate ? (
+        <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
+          <button
+            className="disabled:opacity-50"
+            title={disabled ? 'Switch to Edit Mode' : 'Switch to View Mode'}
+            onClick={toggleMode}>
+            {disabled ? (
+              <RiEditLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
+            ) : (
+              <RiEyeLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
+            )}
+          </button>
+        </div>
+      ) : null}
+
       {!disabled ? (
         <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
           <button
             className="disabled:opacity-50"
             title="Toggle Grid"
-            onClick={() => dispatch({ type: 'TOGGLE_GRID' })}>
+            onClick={() => {
+              if (!disabled) {
+                dispatch({ type: 'TOGGLE_GRID' });
+              }
+            }}>
             <RiGridLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
           </button>
         </div>
@@ -1161,7 +1189,7 @@ function Designer(props: DesignerProps) {
                 height: isOverflowPage ? A4_HEIGHT : 'auto',
                 width: isOverflowPage ? A4_WIDTH : 'auto',
               }}>
-              {!isOverflowPage && showGrid && (
+              {!isOverflowPage && showGrid && !disabled && (
                 <GridLines
                   columns={GRID_COLUMNS}
                   rows={GRID_ROWS}
@@ -1221,7 +1249,7 @@ function Designer(props: DesignerProps) {
                   className="[&>*]:text-inherit"
                   droppingItem={droppingItemPlaceholder}>
                   {state.widgets[pageIndex].map((widget, widgetIndex) => {
-                    console.log('mapping widgets', widget, widgetIndex);
+                    // console.log('mapping widgets', widget, widgetIndex);
                     if (!widget.gridItemId) return null;
                     return (
                       <div
@@ -1234,6 +1262,7 @@ function Designer(props: DesignerProps) {
                         className={cn(
                           gridItemDivRequiredStyles,
                           selectedGridItemId === widget.gridItemId &&
+                            !disabled &&
                             'outline outline-2 outline-offset-2 outline-blue-500'
                         )}>
                         <GridItemComponent
@@ -1249,10 +1278,11 @@ function Designer(props: DesignerProps) {
                           )}
                           onEditClick={handleGridItemEditClick(pageIndex)}
                           onInfoClick={() =>
+                            !disabled &&
                             setSelectedGridItemId(widget.gridItemId)
                           }
                           onWidgetPropertiesClose={() =>
-                            setSelectedGridItemId(null)
+                            !disabled && setSelectedGridItemId(null)
                           }
                           dispatch={dispatch}
                           pageIndex={pageIndex}
@@ -1267,6 +1297,10 @@ function Designer(props: DesignerProps) {
                             ]
                           }
                           layout={state.layouts[pageIndex][widgetIndex]}
+                          disabled={disabled}
+                          hasVisitedDataSelection={searchParams.has(
+                            'testResultIds'
+                          )}
                         />
                       </div>
                     );
@@ -1280,7 +1314,7 @@ function Designer(props: DesignerProps) {
     </FreeFormDraggableArea>
   );
 
-  const dataDrawers = !isTemplate && (
+  const dataDrawers = !isTemplate && disabled && (
     <section
       className={cn(
         'fixed top-[90px] z-10 flex flex-col items-start gap-2',
@@ -1304,21 +1338,13 @@ function Designer(props: DesignerProps) {
 
   // Update the Next button to use navigateToNextStep
   const handleNextClick = () => {
-    if (flow === UserFlows.NewProjectWithExistingTemplate) {
-      canvasState.navigateToNextStep(
-        `/results?flow=${UserFlows.NewProjectWithExistingTemplateAndResults}&projectId=${project?.id}`
-      );
-    } else if (flow === UserFlows.NewProjectWithNewTemplate) {
+    if (flow === UserFlows.NewProjectWithNewTemplate) {
       canvasState.navigateToNextStep(
         `/project/select_data?flow=${UserFlows.NewProjectWithNewTemplate}&projectId=${project?.id}`
       );
-    } else if (flow === UserFlows.NewProjectWithExistingTemplateAndResults) {
+    } else if (flow === UserFlows.NewProjectWithEditingExistingTemplate) {
       canvasState.navigateToNextStep(
-        `/project/usermenu?flow=${UserFlows.NewProjectWithExistingTemplateAndRunNewTests}&projectId=${project?.id}`
-      );
-    } else if (flow === UserFlows.NewProjectWithNewTemplateAndResults) {
-      canvasState.navigateToNextStep(
-        `/project/usermenu?flow=${UserFlows.NewProjectWithNewTemplateAndRunNewTests}&projectId=${project?.id}`
+        `/project/select_data?flow=${UserFlows.NewProjectWithEditingExistingTemplate}&projectId=${project?.id}`
       );
     }
   };
@@ -1330,12 +1356,18 @@ function Designer(props: DesignerProps) {
       return;
     }
 
+    // Skip saving if this is a template from a plugin
+    if (isTemplate && 'fromPlugin' in project && project.fromPlugin) {
+      console.log('Skipping save for template from plugin');
+      return;
+    }
+
     const debouncedSave = isTemplate
       ? debouncedSaveTemplateToDatabase
       : debouncedSaveStateToDatabase;
 
     debouncedSave(state);
-  }, [state, isTemplate]);
+  }, [state, isTemplate, project]);
 
   return (
     <React.Fragment>
@@ -1356,8 +1388,9 @@ function Designer(props: DesignerProps) {
       </main>
       <section className="fixed bottom-[-10] right-[200px] h-[100px] bg-transparent">
         <div className="flex items-center justify-center gap-4">
-          {flow === UserFlows.NewProjectWithExistingTemplateAndResults ||
-          flow === UserFlows.NewProjectWithNewTemplateAndResults ? (
+          {flow === UserFlows.NewProjectWithNewTemplateAndResults ||
+          flow === UserFlows.NewProjectWithExistingTemplateAndResults ||
+          flow === UserFlows.NewProjectWithEditingExistingTemplateAndResults ? (
             <Link href={backButtonLink}>
               <Button
                 className="w-[130px] gap-4 p-2 text-white"
@@ -1366,7 +1399,8 @@ function Designer(props: DesignerProps) {
               </Button>
             </Link>
           ) : null}
-          {flow === UserFlows.NewProjectWithNewTemplate ? (
+          {flow === UserFlows.NewProjectWithNewTemplate ||
+          flow === UserFlows.NewProjectWithEditingExistingTemplate ? (
             <Button
               className="w-[130px] gap-4 p-2 text-white"
               onClick={handleNextClick}>

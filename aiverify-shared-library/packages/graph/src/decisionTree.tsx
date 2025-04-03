@@ -52,7 +52,11 @@ function StepOutcomeBranch({
   const [questions, setQuestions] = useState([]);
 
   useEffect(() => {
-    setCanNext(true);
+    if (!isEditing) {
+      setCanNext(true); // Always allow navigation in view mode
+      return;
+    }
+
     const qn = cy.current.setOutcome(outcome);
 
     // Reconstruct the full path of questions based on existing selections
@@ -77,21 +81,77 @@ function StepOutcomeBranch({
       }
     }
     setQuestions(allQuestions);
-  }, [outcome, data.selections]);
+
+    // In edit mode, check if all questions have a selected choice
+    const validateQuestions = () => {
+      // If no questions, validation passes (though this shouldn't happen)
+      if (allQuestions.length === 0) return true;
+
+      // For each question, check if there's a selected choice
+      for (const question of allQuestions) {
+        const hasSelectedChoice = question
+          .getChoices()
+          .some((choice) => data.selections?.edges.includes(choice.id()));
+
+        if (!hasSelectedChoice) {
+          return false;
+        }
+      }
+      return true;
+    };
+
+    setCanNext(validateQuestions());
+  }, [outcome, data.selections, isEditing]);
 
   const handleChoice = (choice) => {
     if (!isEditing) return;
 
+    // Remove the current edge from selections to ensure clean state
+    const currentSelections = data.selections || { nodes: [], edges: [] };
+    const sourceId = choice.source().id();
+
+    // Filter out any existing edges from the same source node
+    // This ensures we're replacing the previous choice from this question
+    const filteredEdges = currentSelections.edges.filter((edgeId) => {
+      const edge = cy.current.$id(edgeId);
+      return edge.source().id() !== sourceId;
+    });
+
+    // Create new selections with the filtered edges plus the new choice
+    const newSelections = {
+      nodes: [...currentSelections.nodes],
+      edges: [...filteredEdges, choice.id()],
+    };
+
+    // Apply the new selections
+    onChangeData("selections", newSelections);
+
+    // Reset graph visual state
+    cy.current.nodes().removeClass("highlight");
+    cy.current.edges().removeClass("edge-selected");
+
+    // Re-apply selected outcome highlighting
+    outcome.addClass("highlight");
+
+    // Choose the new selection and update the visual path
     const nextqn = choice.choose();
     if (!nextqn) return;
 
-    // Update selections in the data
-    const selections = data.selections || { nodes: [], edges: [] };
-    const newSelections = {
-      nodes: [...selections.nodes],
-      edges: [...selections.edges, choice.id()],
+    // Update nodes that should be highlighted based on the selection path
+    const updatedNodes = [outcome.id()];
+    // Include any nodes along the path to the current question
+    questions.forEach((q) => updatedNodes.push(q.id()));
+    // Add the newly chosen node
+    updatedNodes.push(nextqn.id());
+
+    // Create a new selections object with the updated node list
+    const completeSelections = {
+      nodes: updatedNodes,
+      edges: newSelections.edges,
     };
-    onChangeData("selections", newSelections);
+
+    // Update the data with complete selections
+    onChangeData("selections", completeSelections);
 
     let type = nextqn.data("type");
     if (type !== "question") {
@@ -105,7 +165,9 @@ function StepOutcomeBranch({
         ];
       }
       console.log("handleChoice - metrics:", mymetrics);
+      // Always update metrics when a choice is made
       setMetrics(mymetrics);
+      setCanNext(true); // Enable next if a final choice is made
       return;
     }
 
@@ -115,6 +177,11 @@ function StepOutcomeBranch({
     qns.splice(idx + 1);
     qns.push(nextqn);
     setQuestions(qns);
+
+    // Check if we need to disable the Next button because a new question was added
+    if (isEditing) {
+      setCanNext(false);
+    }
   };
 
   return (
@@ -175,8 +242,14 @@ function Step1({
   isEditing,
 }) {
   useEffect(() => {
-    setCanNext(true); // Always allow navigation in view mode
-  }, []);
+    if (!isEditing) {
+      setCanNext(true); // Always allow navigation in view mode
+      return;
+    }
+
+    // In edit mode, check if at least one outcome is selected
+    setCanNext(selectedOutcomes.length > 0);
+  }, [isEditing, selectedOutcomes]);
 
   const handleOutcomeChange = (id) => {
     if (!isEditing) return;
@@ -227,6 +300,9 @@ function Step1({
     onChangeData("selectedOutcomes", newValue);
     onChangeData("selections", newSelections);
     setSelectedOutcomes(newValue);
+
+    // Update canNext based on whether at least one outcome is selected
+    setCanNext(newValue.length > 0);
   };
 
   return (
@@ -283,8 +359,44 @@ function Step1({
 
 function Step0({ data, definitions, onChangeData, setCanNext, isEditing }) {
   useEffect(() => {
-    setCanNext(true); // Always allow navigation in view mode
-  }, []);
+    if (!isEditing) {
+      setCanNext(true);
+      return; // Always allow navigation in view mode
+    }
+
+    // In edit mode, validate required fields
+    const validateFields = () => {
+      if (!definitions || definitions.length === 0) return true;
+
+      // Check if all definition fields are filled
+      for (const def of definitions) {
+        if (!data[def.key] || data[def.key].trim() === "") {
+          return false;
+        }
+      }
+      return true;
+    };
+
+    setCanNext(validateFields());
+  }, [isEditing, definitions, data]);
+
+  // Add onChange handler to update canNext when definitions change
+  const handleInputChange = (key, value) => {
+    onChangeData(key, value);
+
+    // Only validate in edit mode
+    if (isEditing && definitions) {
+      // Check if all fields are filled
+      const allFilled = definitions.every(
+        (def) =>
+          data[def.key] !== undefined &&
+          data[def.key] !== null &&
+          data[def.key].trim() !== ""
+      );
+
+      setCanNext(allFilled);
+    }
+  };
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
@@ -308,8 +420,8 @@ function Step0({ data, definitions, onChangeData, setCanNext, isEditing }) {
               id={item.key}
               className="aiv-input"
               style={{ marginTop: "5px" }}
-              value={data[item.key]}
-              onChange={(e) => onChangeData(item.key, e.target.value)}
+              value={data[item.key] || ""}
+              onChange={(e) => handleInputChange(item.key, e.target.value)}
               disabled={!isEditing}
               required
             />
@@ -338,12 +450,11 @@ export default function DecisionTree({
   isEditing = false,
 }: DecisionTreeProps) {
   const cy = useRef<cytoscape.Core | null>(null);
-  // Initialize to step 99 (final tree) if data exists
-  // const [step, setStep] = useState(data["metrics"]?.length > 0 ? 99 : 0);
+  // Initialize to step 99 (final tree) if data exists and not in edit mode
   const [step, setStep] = useState(
     isEditing ? 0 : data["metrics"]?.length > 0 ? 99 : 0
   );
-  const [canNext, setCanNext] = useState<boolean>(true);
+  const [canNext, setCanNext] = useState<boolean>(!isEditing);
   const [outcomes, setOutcomes] = useState(null);
   const [selectedOutcomes, setSelectedOutcomes] = useState(
     data["selectedOutcomes"] || []
@@ -394,6 +505,17 @@ export default function DecisionTree({
     }
   }, [step, metrics]);
 
+  // Add a new effect to track metrics changes during editing
+  useEffect(() => {
+    if (isEditing && metrics && metrics.length > 0) {
+      console.log("Updating metrics during editing:", metrics);
+      onChangeData(
+        "metrics",
+        Array.isArray(metrics) ? metrics : Object.values(metrics).flat()
+      );
+    }
+  }, [metrics, isEditing]);
+
   const onNext = () => {
     if (step >= selectedOutcomes.length + 1) {
       setStep(99);
@@ -423,9 +545,8 @@ export default function DecisionTree({
     <div
       style={{
         width: width || "100%",
-        height: height || "calc(100vh - 300px)",
+        height: height || "100%",
         position: "relative",
-        padding: "10px",
         overflow: "hidden",
       }}
     >
@@ -445,7 +566,7 @@ export default function DecisionTree({
               style={{ padding: 10, border: 0, marginRight: 2 }}
               onClick={() => setStep(0)}
             >
-              Go back to Step 0
+              View Inputs
             </button>
           </div>
           <div style={{ flexGrow: 1, width: "100%" }}>
@@ -456,10 +577,10 @@ export default function DecisionTree({
               isEditing={isEditing}
             />
           </div>
-          <div style={{ height: "150px", display: "flex" }}>
+          <div style={{ height: "100px", width: "100px" }}>
             <div
               className="aiv-card"
-              style={{ marginRight: "10px", textAlign: "left" }}
+              style={{ marginRight: "10px", textAlign: "center" }}
             >
               <StepFinalResults data={data} onChangeData={onChangeData} />
             </div>
@@ -471,13 +592,12 @@ export default function DecisionTree({
             display: "flex",
             height: "100%",
             width: "100%",
-            marginTop: "10px",
           }}
         >
           <div
             style={{ width: "500px", display: "flex", flexDirection: "column" }}
           >
-            <div>
+            <div className="mb-2 flex gap-2">
               <button
                 className="aiv-button"
                 style={{ padding: 10, border: 0, marginRight: 2 }}

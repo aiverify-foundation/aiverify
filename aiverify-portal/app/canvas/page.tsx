@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 import {
   transformProjectOutputToState,
   ProjectOutput,
@@ -18,19 +19,19 @@ import {
 import { getProjects } from '@/lib/fetchApis/getProjects';
 import { fetchTemplates } from '@/lib/fetchApis/getTemplates';
 import { getTestResults } from '@/lib/fetchApis/getTestResults';
-import { Designer } from './components/designer';
+import { ClientDesigner } from './components/client-designer';
 import { State } from './components/hooks/pagesDesignReducer';
 import { ParsedTestResults } from './types';
 
 type UrlSearchParams = {
-  searchParams: {
+  searchParams: Promise<{
     flow: UserFlows;
     projectId?: string;
     templateId?: string;
     testResultIds?: string;
     iBlockIds?: string;
     mode?: 'view' | 'edit';
-  };
+  }>;
 };
 
 export default async function CanvasPage(props: UrlSearchParams) {
@@ -146,6 +147,11 @@ export default async function CanvasPage(props: UrlSearchParams) {
           projectOrTemplate as ProjectOutput,
           pluginsWithMdx
         );
+
+    // Set showGrid to false when in view mode
+    if (mode === 'view') {
+      initialState.showGrid = false;
+    }
   } catch (error) {
     console.error('Failed to initialize state:', error);
     // If we hit a storage quota error, try to initialize with minimal data
@@ -157,27 +163,36 @@ export default async function CanvasPage(props: UrlSearchParams) {
       gridItemToAlgosMap: {},
       gridItemToInputBlockDatasMap: {},
       currentPage: 0,
-      showGrid: true,
+      showGrid: mode !== 'view', // Set showGrid based on mode
       pageTypes: ['grid' as const],
       overflowParents: [null],
     };
   }
 
+  console.log('initialState', initialState);
+
   return (
-    <Designer
-      flow={flow}
-      project={projectOrTemplate}
-      initialState={initialState}
-      allPluginsWithMdx={pluginsWithMdx}
-      allTestResultsOnSystem={parsedTestResults}
-      allInputBlockDatasOnSystem={inputBlockDatas}
-      selectedTestResultsFromUrlParams={selectedTestResultsFromUrlParams}
-      selectedInputBlockDatasFromUrlParams={
-        selectedInputBlockDatasFromUrlParams
-      }
-      pageNavigationMode="multi"
-      disabled={mode === 'view'}
-      isTemplate={isTemplate}
-    />
+    <Suspense
+      fallback={
+        <div className="flex h-screen w-full items-center justify-center">
+          Loading canvas...
+        </div>
+      }>
+      <ClientDesigner
+        flow={flow}
+        project={projectOrTemplate}
+        initialState={initialState}
+        allPluginsWithMdx={pluginsWithMdx}
+        allTestResultsOnSystem={parsedTestResults}
+        allInputBlockDatasOnSystem={inputBlockDatas}
+        selectedTestResultsFromUrlParams={selectedTestResultsFromUrlParams}
+        selectedInputBlockDatasFromUrlParams={
+          selectedInputBlockDatasFromUrlParams
+        }
+        pageNavigationMode="multi"
+        disabled={mode === 'view'}
+        isTemplate={isTemplate}
+      />
+    </Suspense>
   );
 }

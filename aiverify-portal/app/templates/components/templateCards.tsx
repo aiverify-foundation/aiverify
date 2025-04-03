@@ -27,20 +27,21 @@ function TemplateCards({ templates, projectId, flow }: TemplateCardsProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Check if we're in project flow (any flow that's not template-related)
+  const isProjectFlow =
+    flow !== undefined &&
+    flow !== UserFlows.ViewTemplate &&
+    flow !== UserFlows.NewTemplate;
+
   const handleNewProjectWithTemplate = async (template: ReportTemplate) => {
     if (!projectId) return;
 
     try {
+      console.log('here new project with template', template.id);
       // Update project with template data
       await patchProject(projectId, {
         templateId: template.id.toString(),
         pages: template.pages,
-        projectInfo: {
-          name: template.projectInfo.name,
-          description: template.projectInfo.description,
-          reportTitle: template.projectInfo.name,
-          company: '',
-        },
         globalVars: template.globalVars,
       });
       // Navigate to template with existing template flow
@@ -67,9 +68,30 @@ function TemplateCards({ templates, projectId, flow }: TemplateCardsProps) {
     e: React.MouseEvent
   ) => {
     e.stopPropagation();
-    router.push(
-      `/canvas?templateId=${template.id}&flow=${UserFlows.ViewTemplate}&mode=edit`
-    );
+
+    // If in project flow, handle it differently
+    if (isProjectFlow && projectId) {
+      try {
+        console.log('here existing');
+        // Only update pages and globalVars without templateId
+        patchProject(projectId, {
+          pages: template.pages,
+          globalVars: template.globalVars,
+        }).then(() => {
+          // Navigate to canvas with the EditTemplateInProjectFlow flow
+          router.push(
+            `/canvas?projectId=${projectId}&flow=${UserFlows.NewProjectWithEditingExistingTemplate}&mode=edit`
+          );
+        });
+      } catch (error) {
+        console.error('Error selecting template for editing:', error);
+      }
+    } else {
+      // Default behavior for non-project flow
+      router.push(
+        `/canvas?templateId=${template.id}&flow=${UserFlows.ViewTemplate}&mode=edit`
+      );
+    }
   };
 
   const handleCloneTemplate = async (
@@ -168,7 +190,7 @@ function TemplateCards({ templates, projectId, flow }: TemplateCardsProps) {
           height={250}
           className="cursor-pointer !bg-none text-white text-shadow-sm [&&]:bg-secondary-900"
           onClick={() =>
-            flow === UserFlows.NewProject
+            isProjectFlow
               ? handleNewProjectWithTemplate(template)
               : handleViewTemplate(template)
           }>
@@ -179,14 +201,19 @@ function TemplateCards({ templates, projectId, flow }: TemplateCardsProps) {
             <p>{template.projectInfo.description}</p>
           </Card.Content>
           <Card.SideBar className="flex flex-col items-center gap-4 border-l border-l-primary-400 py-4">
-            <button
-              onClick={(e) => handleViewTemplate(template, e)}
-              className="transition-colors hover:fill-primary-100">
-              <RiEyeFill
-                size={25}
-                className="fill-primary-300 dark:fill-primary-300"
-              />
-            </button>
+            {/* Only show the appropriate icons based on the flow */}
+            {!isProjectFlow && (
+              <button
+                onClick={(e) => handleViewTemplate(template, e)}
+                className="transition-colors hover:fill-primary-100">
+                <RiEyeFill
+                  size={25}
+                  className="fill-primary-300 dark:fill-primary-300"
+                />
+              </button>
+            )}
+
+            {/* Always show the edit icon */}
             <button
               onClick={(e) => handleEditTemplate(template, e)}
               className="transition-colors hover:fill-primary-100">
@@ -195,22 +222,31 @@ function TemplateCards({ templates, projectId, flow }: TemplateCardsProps) {
                 className="fill-primary-300 dark:fill-primary-300"
               />
             </button>
-            <button
-              onClick={(e) => handleCloneTemplate(template, e)}
-              className="transition-colors hover:fill-primary-100">
-              <RiFileCopyLine
-                size={27}
-                className="fill-primary-300 dark:fill-primary-300"
-              />
-            </button>
-            <button
-              onClick={(e) => handleDeleteTemplate(template, e)}
-              className="transition-colors hover:fill-primary-100">
-              <RiDeleteBinFill
-                size={27}
-                className="fill-primary-300 dark:fill-primary-300"
-              />
-            </button>
+
+            {/* Only show clone and delete in non-project flow */}
+            {!isProjectFlow && (
+              <>
+                <button
+                  onClick={(e) => handleCloneTemplate(template, e)}
+                  className="transition-colors hover:fill-primary-100">
+                  <RiFileCopyLine
+                    size={27}
+                    className="fill-primary-300 dark:fill-primary-300"
+                  />
+                </button>
+                {/* Only show delete button if template is not from a plugin */}
+                {!template.fromPlugin && (
+                  <button
+                    onClick={(e) => handleDeleteTemplate(template, e)}
+                    className="transition-colors hover:fill-primary-100">
+                    <RiDeleteBinFill
+                      size={27}
+                      className="fill-primary-300 dark:fill-primary-300"
+                    />
+                  </button>
+                )}
+              </>
+            )}
           </Card.SideBar>
         </Card>
       ))}

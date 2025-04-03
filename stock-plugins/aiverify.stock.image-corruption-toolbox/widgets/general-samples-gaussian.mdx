@@ -9,15 +9,30 @@ import {
 } from "./general-corruption-images.js";
 
 export const GaussianSamples = (props) => {
-  const artifactUrls = props.getArtifacts(algo_cid);
-  const gaussianUrls = artifactUrls.length > 0 
-    ? artifactUrls.filter(url => url.includes('Gaussian_Noise'))
-    : gaussian_general_images;
+  // Create an array of URLs for the different severity levels (0-5)
+  const gaussianUrls = [];
+  
+  // Try to get images from artifacts first
+  for (let i = 0; i <= 5; i++) {
+    const artifactURL = props.getArtifactURL(
+      algo_cid,
+      `temp/Gaussian_Noise/severity${i}/9.png`,
+      null
+    );
+    
+    // If URL exists, add it to the array, otherwise use default images
+    if (artifactURL) {
+      gaussianUrls.push(artifactURL);
+    }
+  }
+  
+  // If no artifacts were found, use the default images
+  const imagesToUse = gaussianUrls.length === 6 ? gaussianUrls : gaussian_general_images;
 
   return (
     <DisplayImages
       id={props.id}
-      images={gaussianUrls}
+      images={imagesToUse}
       data={props.getResults(algo_cid).results}
       corruption_index={0}
       corruption_name="General: Gaussian Noise"

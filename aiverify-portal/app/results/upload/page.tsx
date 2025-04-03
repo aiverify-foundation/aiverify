@@ -7,11 +7,7 @@ import LayoutHeader from '@/app/results/components/LayoutHeader';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import { Button, ButtonVariant } from '@/lib/components/button';
 
-type UploadPageProps = {
-  onBack?: () => void;
-};
-
-const UploadPage: React.FC<UploadPageProps> = () => {
+const UploadPage = () => {
   const [activeCard, setActiveCard] = useState<string>('');
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -116,7 +112,7 @@ const UploadPage: React.FC<UploadPageProps> = () => {
           'How it works: AI Verify will import the test results from the ZIP file.',
         ])}
         {renderOptionCard('manual', 'Manual Upload', [
-          'Supported formats: CSV, JSON',
+          'Supported formats: JSON',
           'Supported test types: All test types',
           'How it works: AI Verify will process the uploaded files as test results.',
         ])}

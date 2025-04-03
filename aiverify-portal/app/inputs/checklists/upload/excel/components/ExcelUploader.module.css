@@ -19,7 +19,7 @@
   justify-content: center;
   border: 3px dashed var(--color-primary-400);
   border-radius: 4px;
-  padding: 70px;
+  padding: 10px;
   cursor: pointer;
   white-space: nowrap;
   background-color: var(--color-secondary-900);
@@ -30,18 +30,18 @@
 }
 
 .fileList {
-  padding: 0 10px; /* Add padding instead of fixed margin */
-  margin: 0 auto; /* Center the list */
+  padding: 0 10px;
+  margin: 0 auto;
 }
 
 .fileItem {
-  width: 100%; /* Full width of parent */
+  width: 100%;
   padding: 20px;
 }
 
 .fileHeader {
   display: flex;
-  justify-content: space-between; /* Space between file name and remove button */
+  justify-content: space-between;
   align-items: left;
 }
 

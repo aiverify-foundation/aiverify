@@ -12,10 +12,10 @@ import { Card } from '@/lib/components/TremurCard';
 import { getProjects } from '@/lib/fetchApis/getProjects';
 
 type UrlSearchParams = {
-  searchParams: {
+  searchParams: Promise<{
     projectId: string;
     flow: UserFlows;
-  };
+  }>;
 };
 
 export default async function UserMenuPage(props: UrlSearchParams) {

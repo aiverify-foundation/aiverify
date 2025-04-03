@@ -2,9 +2,10 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import { usePathname, useRouter } from 'next/navigation';
+import { useParams, usePathname, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import React, { useState, useEffect, useRef } from 'react';
+import LayoutHeader from '@/app/inputs/checklists/components/LayoutHeader';
 import {
   useChecklists,
   ChecklistsProvider,
@@ -126,6 +127,11 @@ function useInactivityCheck() {
 
 export default function ChecklistDetailPage() {
   const params = useParams<PageParams>();
+  const searchParams = useSearchParams();
+  const projectId = searchParams.get('projectId');
+  const flow = searchParams.get('flow');
+  const isProjectFlow = !!projectId;
+
   const {
     updateChecklistData,
     setSelectedChecklist,
@@ -143,6 +149,20 @@ export default function ChecklistDetailPage() {
   const [showClearModal, setShowClearModal] = useState(false);
   const router = useRouter();
 
+  const handleBack = () => {
+    if (isProjectFlow) {
+      router.push(
+        `/inputs/checklists/upload/manual?flow=${flow}&projectId=${projectId}`
+      );
+    } else {
+      router.push('/inputs/checklists/upload/manual');
+    }
+  };
+
+  const handleProjectBack = () => {
+    router.push(`/project/select_data?flow=${flow}&projectId=${projectId}`);
+  };
+
   const handleNewSet = async () => {
     sessionStorage.removeItem('checklistData');
     sessionStorage.removeItem(MODAL_SHOWN_KEY);
@@ -150,11 +170,13 @@ export default function ChecklistDetailPage() {
 
     clearAllChecklists();
     setShowModal(false);
-    router.refresh();
-  };
-
-  const handleBack = () => {
-    router.push('/inputs/checklists/upload/manual');
+    if (isProjectFlow) {
+      router.push(
+        `/inputs/checklists/upload/manual?flow=${flow}&projectId=${projectId}`
+      );
+    } else {
+      router.refresh();
+    }
   };
 
   const handleClearFields = () => {
@@ -179,6 +201,10 @@ export default function ChecklistDetailPage() {
     <QueryClientProvider client={queryClient}>
       <ChecklistsProvider>
         <div className="mx-auto h-[calc(100vh-200px)] px-4 py-6">
+          <LayoutHeader
+            projectId={projectId}
+            onBack={handleProjectBack}
+          />
           {/* Breadcrumb navigation */}
           <div className="flex">
             <Icon

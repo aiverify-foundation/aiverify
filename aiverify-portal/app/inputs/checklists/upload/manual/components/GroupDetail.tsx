@@ -4,7 +4,24 @@ import React, { useMemo } from 'react';
 import * as ReactJSXRuntime from 'react/jsx-runtime';
 import { useMDXSummaryBundle } from '@/app/inputs/checklists/[groupId]/hooks/useMDXSummaryBundle';
 import { useChecklists } from '@/app/inputs/checklists/upload/context/ChecklistsContext';
+import { Checklist, InputBlock } from '@/app/inputs/utils/types';
 import { Card } from '@/lib/components/card/card';
+
+// Define the order of principles based on their groupNumber in meta.json
+const PRINCIPLE_ORDER: { [key: string]: number } = {
+  transparency_process_checklist: 1,
+  explainability_process_checklist: 2,
+  reproducibility_process_checklist: 3,
+  safety_process_checklist: 4,
+  security_process_checklist: 5,
+  robustness_process_checklist: 6,
+  fairness_process_checklist: 7,
+  data_governance_process_checklist: 8,
+  accountability_process_checklist: 9,
+  human_agency_oversight_process_checklist: 10,
+  inclusive_growth_process_checklist: 11,
+  organisational_considerations_process_checklist: 12,
+};
 
 //todo: replace any type
 
@@ -102,19 +119,35 @@ const ChecklistMDX: React.FC<ChecklistMDXProps> = ({ checklist }) => {
 };
 
 const GroupDetail: React.FC = () => {
-  const { checklists, setSelectedChecklist } = useChecklists();
+  const { checklists } = useChecklists();
   const router = useRouter();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleChecklistClick = (checklist: any) => {
-    setSelectedChecklist(checklist);
-    router.push(`/inputs/checklists/upload/manual/${checklist.cid}`);
-    router.refresh();
+  // Sort checklists by the predefined order based on cid
+  const sortedChecklists = useMemo(() => {
+    return [...checklists].sort((a, b) => {
+      const aOrder = PRINCIPLE_ORDER[a.cid] || Infinity;
+      const bOrder = PRINCIPLE_ORDER[b.cid] || Infinity;
+
+      return aOrder - bOrder;
+    });
+  }, [checklists]);
+
+  const handleChecklistClick = (checklist: Checklist) => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const flow = searchParams.get('flow');
+    const projectId = searchParams.get('projectId');
+
+    let checklistUrl = `/inputs/checklists/upload/manual/${checklist.cid}`;
+    if (flow && projectId) {
+      checklistUrl += `?flow=${flow}&projectId=${projectId}`;
+    }
+
+    router.push(checklistUrl);
   };
 
   return (
     <div className="flex h-full w-full flex-col gap-4 overflow-y-auto bg-secondary-950 p-4 scrollbar-hidden">
-      {checklists.map((checklist) => (
+      {sortedChecklists.map((checklist) => (
         <Card
           key={checklist.cid}
           size="md"
@@ -127,7 +160,9 @@ const GroupDetail: React.FC = () => {
           }}
           cardColor="var(--color-secondary-950)"
           enableTiltEffect={false}
-          onClick={() => handleChecklistClick(checklist)}>
+          onClick={() =>
+            handleChecklistClick(checklist as unknown as InputBlock)
+          }>
           <div className="flex w-full flex-col gap-2">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-medium transition-colors duration-200 group-hover:text-primary-400">

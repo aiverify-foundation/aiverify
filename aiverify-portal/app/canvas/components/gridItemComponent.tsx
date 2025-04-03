@@ -1,5 +1,4 @@
 'use client';
-
 import { getMDXComponent, MDXContentProps } from 'mdx-bundler/client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import React from 'react';
@@ -25,14 +24,9 @@ import {
   Plugin,
   InputBlockDataPayload,
 } from '@/app/types';
-import {
-  GRID_WIDTH,
-  GRID_COLUMNS,
-  GRID_ROW_HEIGHT,
-} from './dimensionsConstants';
 import { WidgetPropertiesDrawer } from './drawers/widgetPropertiesDrawer';
 import { GridItemContextMenu } from './gridItemContextMenu';
-import { editorInputClassName } from './hocAddTextEditFuncitonality';
+import { editorInputClassName } from './hocAddTextEditFunctionality';
 import { WidgetErrorBoundary } from './widgetErrorBoundary';
 
 /*
@@ -43,7 +37,7 @@ import { WidgetErrorBoundary } from './widgetErrorBoundary';
 
 export const gridItemRootClassName = 'grid-item-root';
 type requiredStyles =
-  `grid-item-root relative h-full w-full flex flex-col${string}`; // strictly required styles
+  `grid-item-root relative h-auto w-full min-h-full${string}`; // strictly required styles
 
 type GridItemComponentProps = {
   /** Array of all available plugins in the system, used for finding dependencies and metadata */
@@ -102,6 +96,12 @@ type GridItemComponentProps = {
 
   /** Index of the page this widget is on */
   pageIndex: number;
+
+  /** Whether the grid is in view mode (disabled) */
+  disabled?: boolean;
+
+  /** Whether the widget has visited data selection */
+  hasVisitedDataSelection: boolean;
 };
 
 type MdxComponentProps = MDXContentProps & {
@@ -109,20 +109,23 @@ type MdxComponentProps = MDXContentProps & {
   properties: Record<string, unknown>;
   testResult: TestResultData;
   inputBlockData: InputBlockDataPayload;
-  getIBData: (cid: string) => InputBlockDataPayload;
-  getResults: (cid: string) => TestResultData;
-  getArtifacts: (cid: string) => string[];
-  getArtifactURL: (
-    algo_gid: string | null,
+  getIBData: (
     algo_cid: string,
-    pathname: string
+    algo_gid: string | null
+  ) => InputBlockDataPayload;
+  getResults: (algo_cid: string, algo_gid: string | null) => TestResultData | null;
+  getArtifacts: (gid: string, cid: string) => string[];
+  getArtifactURL: (
+    algo_cid: string,
+    pathname: string,
+    algo_gid: string | null
   ) => string;
   width?: number;
   height?: number;
 };
 
 const itemStyle: requiredStyles =
-  'grid-item-root relative h-full w-full flex flex-col';
+  'grid-item-root relative h-auto w-full min-h-full';
 
 function GridItemMain({
   allAvalaiblePlugins,
@@ -140,6 +143,8 @@ function GridItemMain({
   onWidgetPropertiesClose,
   dispatch,
   pageIndex,
+  disabled,
+  hasVisitedDataSelection,
 }: GridItemComponentProps) {
   /**
    * Controls visibility of the context menu that appears when hovering over a widget
@@ -179,32 +184,15 @@ function GridItemMain({
 
   /**
    * Stores the current width and height of the widget
-   * Calculated from layout dimensions and grid constants
+   * Updated by ResizeObserver when the widget's size changes
    */
-  const dimensions = useMemo(() => {
-    const columnWidth = GRID_WIDTH / GRID_COLUMNS;
-    const rowHeight = GRID_ROW_HEIGHT;
-    console.log('layout dim w n h', layout);
-
-    return {
-      width: layout.w * columnWidth,
-      height: layout.h * rowHeight,
-    };
-  }, [layout.w, layout.h]);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   /**
    * Determines if the widget has editable properties
    * Controls whether the edit button is shown in the context menu
    */
-  const enableEditing = useMemo(() => {
-    if (Array.isArray(widget.properties)) {
-      return widget.properties.length > 0;
-    }
-    if (typeof widget.properties === 'object' && widget.properties !== null) {
-      return Object.keys(widget.properties).length > 0;
-    }
-    return false;
-  }, [widget.properties]);
+  const enableEditing = widget.properties && widget.properties.length > 0;
 
   /**
    * Prepares the list of test results used by this widget for display in the properties drawer
@@ -269,7 +257,32 @@ function GridItemMain({
             result.testResultId
           );
           if (testResult) {
-            acc[`${widget.gid}:${result.cid}`] = testResult.output;
+            try {
+              // Parse testResult.output if it's a string, otherwise use as is
+              const outputData =
+                typeof testResult.output === 'string'
+                  ? JSON.parse(testResult.output)
+                  : testResult.output;
+
+              // Ensure outputData is an object before adding modelType
+              if (typeof outputData === 'object' && outputData !== null) {
+                outputData.modelType = testResult.testArguments?.modelType;
+                acc[`${widget.gid}:${result.cid}`] = outputData;
+              } else {
+                // If outputData is not an object, create a new object with the original data and modelType
+                acc[`${widget.gid}:${result.cid}`] = {
+                  output: testResult.output,
+                  modelType: testResult.testArguments?.modelType,
+                };
+              }
+            } catch (error) {
+              // If parsing fails, keep original structure and add modelType separately
+              console.error('Error parsing testResult.output', error);
+              acc[`${widget.gid}:${result.cid}`] = {
+                output: testResult.output,
+                modelType: testResult.testArguments?.modelType,
+              };
+            }
           } else {
             const mockData = findMockDataByTypeAndCid(
               widget.mockdata || [],
@@ -296,6 +309,8 @@ function GridItemMain({
     return {};
   }, [testResultsUsed]);
 
+  console.log('testResultWidgetData', testResultWidgetData);
+
   /**
    * Prepares artifact data for the widget to consume
    * Maps algorithm IDs to their corresponding artifacts or mock artifacts
@@ -312,9 +327,6 @@ function GridItemMain({
             result.testResultId
           );
           if (testResult && testResult.artifacts) {
-            // Transform artifact paths into full URLs
-            console.log('host', process.env.NEXT_PUBLIC_APIGW_HOST);
-            console.log('testResult', testResult.artifacts);
             const artifactUrls = testResult.artifacts.map(
               (artifactPath) =>
                 `${process.env.NEXT_PUBLIC_APIGW_HOST}/test_results/${result.testResultId}/artifacts/${artifactPath}`
@@ -385,6 +397,22 @@ function GridItemMain({
     }
     return {};
   }, [inputBlockDatasUsed]);
+
+  /**
+   * Sets up a ResizeObserver to track the widget's dimensions
+   * Updates the dimensions state when the widget is resized
+   */
+  useEffect(() => {
+    if (!gridItemRef.current) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      const { width, height } = entries[0].contentRect;
+      setDimensions({ width, height });
+    });
+
+    resizeObserver.observe(gridItemRef.current);
+    return () => resizeObserver.disconnect();
+  }, []);
 
   /**
    * Cleanup function for the hide timeout
@@ -505,7 +533,11 @@ function GridItemMain({
       clearTimeout(hideTimeoutRef.current);
     }
     isHoveringRef.current = true;
-    setShowContextMenu(true);
+
+    // Only show context menu if not in disabled/view mode
+    if (!disabled) {
+      setShowContextMenu(true);
+    }
   }
 
   /**
@@ -543,26 +575,12 @@ function GridItemMain({
    */
   const properties = useMemo(() => {
     if (!widget.properties) return {};
-
-    // If properties is already an object, return it directly
-    if (
-      typeof widget.properties === 'object' &&
-      !Array.isArray(widget.properties)
-    ) {
-      return widget.properties;
-    }
-
-    // If properties is an array, reduce it to an object
-    if (Array.isArray(widget.properties)) {
-      return widget.properties.reduce((props, property) => {
-        return {
-          ...props,
-          [property.key]: property.value || property.default || property.helper,
-        };
-      }, {});
-    }
-
-    return {};
+    return widget.properties.reduce((props, property) => {
+      return {
+        ...props,
+        [property.key]: property.value || property.default || property.helper,
+      };
+    }, {});
   }, [widget.properties]);
 
   return (
@@ -573,6 +591,7 @@ function GridItemMain({
           widget={widget}
           hideEditIcon={!enableEditing}
           menuPosition={menuPosition}
+          disabled={disabled}
           onDeleteClick={onDeleteClick}
           onInfoClick={handleInfoClick}
           onMouseEnter={() => {
@@ -607,10 +626,6 @@ function GridItemMain({
       <div
         ref={gridItemRef}
         className={itemStyle}
-        style={{
-          width: dimensions.width,
-          height: dimensions.height,
-        }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}>
         {isResizing || isDragging ? (
@@ -625,20 +640,39 @@ function GridItemMain({
               artifacts={widgetArtifacts}
               testResult={testResultWidgetData}
               inputBlockData={inputBlocksWidgetData}
-              getIBData={(cid: string) =>
-                inputBlocksWidgetData[`${widget.gid}:${cid}`]
-              }
-              getResults={(cid: string) =>
-                testResultWidgetData[`${widget.gid}:${cid}`]
-              }
-              getArtifacts={(cid: string) => {
-                const urls = widgetArtifacts[`${widget.gid}:${cid}`];
+              getIBData={(algo_cid: string, algo_gid: string | null) => {
+                const gid = algo_gid || widget.gid;
+                return inputBlocksWidgetData[`${gid}:${algo_cid}`];
+              }}
+              getResults={(
+                algo_cid: string,
+                algo_gid: string | null // change to cid, gid
+              ) => {
+                const gid = algo_gid || widget.gid;
+                const key = `${gid}:${algo_cid}`;
+                
+                // If we've visited data selection page (testResultIds exists in URL)
+                // but no actual test results were selected for this algorithm,
+                // return null so the widget displays the "incomplete" message
+                if (hasVisitedDataSelection && 
+                    (!testResultsUsed || 
+                     !testResultsUsed.some(r => 
+                       r.cid === algo_cid && 
+                       r.testResultId !== undefined))) {
+                  return null;
+                }
+                
+                return testResultWidgetData[key];
+              }}
+              getArtifacts={(gid: string, cid: string) => {
+                const urls = widgetArtifacts[`${gid}:${cid}`];
                 return Array.isArray(urls) ? urls : [];
               }}
               getArtifactURL={(
-                algo_gid: string | null,
+                // change to cid, pathname, gid. gid can be null, if null then use widget.gid
                 algo_cid: string,
-                pathname: string
+                pathname: string,
+                algo_gid: string | null
               ) => {
                 const gid = algo_gid || widget.gid;
                 const urls = widgetArtifacts[`${gid}:${algo_cid}`];
@@ -671,7 +705,8 @@ export const GridItemComponent = React.memo(
       JSON.stringify(prevProps.testResultsUsed) ===
         JSON.stringify(nextProps.testResultsUsed) &&
       JSON.stringify(prevProps.inputBlockDatasUsed) ===
-        JSON.stringify(nextProps.inputBlockDatasUsed)
+        JSON.stringify(nextProps.inputBlockDatasUsed) &&
+      prevProps.hasVisitedDataSelection === nextProps.hasVisitedDataSelection
     );
   }
 );
