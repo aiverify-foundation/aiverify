@@ -26,7 +26,6 @@ const useSubmitTest = (options?: UseSubmitTestOptions) => {
         },
         body: JSON.stringify(testData),
         // Add these options to ensure consistent fetch behavior
-        credentials: 'same-origin',
         cache: 'no-cache',
         next: { revalidate: 0 },
       });

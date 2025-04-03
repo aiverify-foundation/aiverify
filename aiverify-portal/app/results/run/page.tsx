@@ -1,3 +1,4 @@
+import { RiFlaskLine } from '@remixicon/react';
 import Link from 'next/link';
 import React from 'react';
 import { TestModel } from '@/app/models/utils/types';
@@ -51,24 +52,10 @@ export default async function RunTestPage() {
   return (
     <div className="p-6">
       {/* Header */}
-      <div className="mb-6">
-        <div className="mb-4 flex items-center">
-          <Link
-            href="/results"
-            className="flex items-center text-blue-600 hover:text-blue-800">
-            <Icon
-              name={IconName.ArrowLeft}
-              size={16}
-              color="#2563eb"
-            />
-            <span className="ml-1">Back to Results</span>
-          </Link>
-        </div>
-
+      <div className="mb-6 mt-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <Icon
-              name={IconName.Lightning}
+            <RiFlaskLine
               size={40}
               color="#FFFFFF"
             />
@@ -86,15 +73,13 @@ export default async function RunTestPage() {
               variant={ButtonVariant.PRIMARY}
               text="VIEW RUNNING TESTS"
               size="md"
-              icon={IconName.Lightning}
-              iconPosition="left"
             />
           </Link>
         </div>
       </div>
 
       {/* Main content */}
-      <div className="rounded-lg bg-secondary-950 p-6">
+      <div className="rounded-lg bg-secondary-950">
         {fetchError ? (
           <div className="py-8 text-center">
             <p className="text-red-600">{fetchError}</p>
@@ -116,6 +101,22 @@ export default async function RunTestPage() {
             />
           </>
         )}
+      </div>
+
+      {/* Back to Results button */}
+      <div className="mt-4 flex items-center">
+        <Link
+          href="/results"
+          className="flex items-center text-blue-600 hover:text-blue-800">
+          <Button
+            pill
+            variant={ButtonVariant.SECONDARY}
+            icon={IconName.ArrowLeft}
+            iconPosition="left"
+            text="Back to Results"
+            size="md"
+          />
+        </Link>
       </div>
     </div>
   );

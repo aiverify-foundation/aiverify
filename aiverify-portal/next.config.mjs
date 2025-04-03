@@ -109,6 +109,18 @@ const nextConfig = {
         source: '/api/test_runs/run_test',
         destination: `${process.env.APIGW_HOST}/test_runs/run_test/`,
       },
+      {
+        source: '/api/test_runs',
+        destination: `${process.env.APIGW_HOST}/test_runs/`,
+      },
+      {
+        source: '/api/test_runs/:id',
+        destination: `${process.env.APIGW_HOST}/test_runs/:id`,
+      },
+      {
+        source: '/api/test_runs/:id/cancel',
+        destination: `${process.env.APIGW_HOST}/test_runs/:id/cancel`,
+      },
     ];
   },
 };
