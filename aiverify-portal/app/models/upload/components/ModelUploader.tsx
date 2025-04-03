@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import FileUploader from '@/app/models/upload/components/FileUploader';
 import FolderUpload from '@/app/models/upload/components/FolderUploader';
 import { Icon, IconName } from '@/lib/components/IconSVG';
@@ -9,6 +9,15 @@ import { Button, ButtonVariant } from '@/lib/components/button';
 const ModelUploader = ({ onBack }: { onBack: () => void }) => {
   const [activeTab, setActiveTab] = useState<'file' | 'folder'>('file');
 
+  useEffect(() => {
+    console.log(`Upload mode switched to: ${activeTab.toUpperCase()}`);
+  }, [activeTab]);
+
+  const handleTabChange = (tab: 'file' | 'folder') => {
+    console.log(`User selected ${tab.toUpperCase()} upload tab`);
+    setActiveTab(tab);
+  };
+
   return (
     <div className="h-[calc(100%-2rem)] overflow-y-auto pl-6 pr-6">
       <div className="mb-2 flex items-center justify-between">
@@ -16,13 +25,16 @@ const ModelUploader = ({ onBack }: { onBack: () => void }) => {
           <Icon
             name={IconName.ArrowLeft}
             color="white"
-            onClick={onBack}
+            onClick={() => {
+              console.log('User clicked back button');
+              onBack();
+            }}
           />
           <h1 className="ml-4 text-2xl font-semibold text-white">
             Add New AI Model {'>'} Upload Model
           </h1>
         </div>
-        <div className="inline-flex p-1">
+        <div className="inline-flex">
           <div className="flex items-center">
             <Button
               pill
@@ -35,7 +47,7 @@ const ModelUploader = ({ onBack }: { onBack: () => void }) => {
               size="sm"
               text="FILE"
               className="!rounded-r-none rounded-l-full"
-              onClick={() => setActiveTab('file')}
+              onClick={() => handleTabChange('file')}
             />
             <Button
               pill
@@ -48,7 +60,7 @@ const ModelUploader = ({ onBack }: { onBack: () => void }) => {
               size="sm"
               text="FOLDER"
               className="!rounded-l-none rounded-r-full"
-              onClick={() => setActiveTab('folder')}
+              onClick={() => handleTabChange('folder')}
             />
           </div>
         </div>
@@ -58,7 +70,12 @@ const ModelUploader = ({ onBack }: { onBack: () => void }) => {
         {activeTab === 'file' ? (
           <FileUploader />
         ) : (
-          <FolderUpload onBack={onBack} />
+          <FolderUpload
+            onBack={() => {
+              console.log('User cancelled folder upload');
+              onBack();
+            }}
+          />
         )}
       </div>
     </div>
