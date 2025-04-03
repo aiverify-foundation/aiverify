@@ -75,8 +75,7 @@ class Plugin(IAlgorithm):
         requires_ground_truth: bool,
         logger: logging.Logger,
         progress_callback: Callable,
-        ground_truth_path: str,
-        ground_truth_label: str,
+        ground_truth: str,
         file_name_label: str,
         set_seed: Optional[int] = None,
         **user_defined_params: Dict[str, Any],
@@ -93,10 +92,9 @@ class Plugin(IAlgorithm):
         self._user_defined_params = user_defined_params
         self._logger = logger
         self._progress_inst = SimpleProgress(1, 0, progress_callback)
-        self._ground_truth_label = ground_truth_label
+        self._ground_truth_label = ground_truth
 
         # Store the input parameters defined in the input schema
-        self._ground_truth_path = self.ground_truth_path = ground_truth_path
         self._file_name_label = self.file_name_label = file_name_label
         self._set_seed = self.set_seed = set_seed
         self._corruptions = self.corruptions = user_defined_params["corruptions"]

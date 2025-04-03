@@ -74,8 +74,7 @@ class ObjectTest:
             "corruptions": list(blur.CORRUPTION_FN),
             "logger": logger_instance,
             "progress_callback": lambda _: _,
-            "ground_truth_path": valid_ground_truth_path,
-            "ground_truth_label": ground_truth,
+            "ground_truth": ground_truth,
             "file_name_label": "file_name",
             "set_seed": 10,
         }
@@ -269,7 +268,7 @@ def test_init_plugin_instance_with_invalid_ground_truth_instance_type(
 @pytest.mark.parametrize("ground_truth", [test_int, test_float, test_list, test_dict, test_tuple])
 def test_init_plugin_instance_with_invalid_ground_truth_type(ground_truth):
     test_object = ObjectTest()
-    test_object._input_args["ground_truth_label"] = ground_truth
+    test_object._input_args["ground_truth"] = ground_truth
     expected_exception_msg = "The algorithm has failed ground truth header validation."
     with pytest.raises(test_object._expected_exception) as excinfo:
         Plugin(
@@ -287,7 +286,7 @@ def test_init_plugin_instance_with_invalid_ground_truth_type(ground_truth):
 @pytest.mark.parametrize("ground_truth", [test_none])
 def test_init_plugin_instance_with_none_ground_truth_type(ground_truth):
     test_object = ObjectTest()
-    test_object._input_args["ground_truth_label"] = ground_truth
+    test_object._input_args["ground_truth"] = ground_truth
     expected_exception_msg = "The algorithm has failed ground truth header validation."
     with pytest.raises(test_object._expected_exception) as excinfo:
         Plugin(
@@ -322,7 +321,7 @@ def test_init_plugin_instance_with_missing_ground_truth(
     model_type = ModelType.CLASSIFICATION
     test_object = ObjectTest()
     input_args = test_object._input_args.copy()
-    del input_args["ground_truth_label"]
+    del input_args["ground_truth"]
     expected_exception = TypeError
     logger_instance = logging.getLogger("PluginTestLogger")
     logger_instance.setLevel(logging.DEBUG)
