@@ -2,7 +2,7 @@ import copy
 import logging
 import shutil
 from pathlib import Path
-from typing import Callable, Dict, Optional, Tuple
+from typing import Any, Callable, Dict, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -69,15 +69,17 @@ class Plugin(IAlgorithm):
         data_instance_and_serializer: Tuple[IData, ISerializer],
         model_instance_and_serializer: Tuple[IModel, ISerializer],
         ground_truth_instance_and_serializer: Tuple[Optional[IData], Optional[ISerializer]],
+        initial_data_instance: Any,  # This is not used in this plugin, but is required to match the algo_execute signature
+        initial_model_instance: Any,  # This is not used in this plugin, but is required to match the algo_execute signature
         model_type: ModelType,
         requires_ground_truth: bool,
-        user_defined_params: dict,
         logger: logging.Logger,
         progress_callback: Callable,
         ground_truth_path: str,
         ground_truth_label: str,
         file_name_label: str,
         set_seed: Optional[int] = None,
+        **user_defined_params: Dict[str, Any],
     ):
         if not requires_ground_truth:
             raise NotImplementedError("This plugin does not support tasks without ground truth yet.")

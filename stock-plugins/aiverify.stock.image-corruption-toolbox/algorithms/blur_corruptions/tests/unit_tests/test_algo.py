@@ -71,7 +71,7 @@ class ObjectTest:
         input_args = {
             "model_type": model_type,
             "requires_ground_truth": True,
-            "user_defined_params": {"corruptions": list(blur.CORRUPTION_FN)},
+            "corruptions": list(blur.CORRUPTION_FN),
             "logger": logger_instance,
             "progress_callback": lambda _: _,
             "ground_truth_path": valid_ground_truth_path,
@@ -89,6 +89,8 @@ class ObjectTest:
             ground_truth_instance,
             ground_truth_serializer_instance,
         )
+        self._initial_data_instance = None
+        self._initial_model_instance = None
         self._ground_truth = ground_truth
         self._model_type = model_type
         self._input_args = input_args
@@ -180,6 +182,8 @@ def test_create_plugin_instance_with_all_valid_input():
         test_object._data_instance_and_serializer,
         test_object._model_instance_and_serializer,
         test_object._ground_truth_instance_and_serializer,
+        test_object._initial_data_instance,
+        test_object._initial_model_instance,
         **test_object._input_args,
     )
 
@@ -204,6 +208,8 @@ def test_init_plugin_instance_with_invalid_data_instance_type(
             (invalid_data_instance_type, test_object._data_instance_and_serializer[1]),
             test_object._model_instance_and_serializer,
             test_object._ground_truth_instance_and_serializer,
+            test_object._initial_data_instance,
+            test_object._initial_model_instance,
             **test_object._input_args,
         )
     assert excinfo.type == test_object._expected_exception
@@ -227,6 +233,8 @@ def test_init_plugin_instance_with_invalid_model_instance_type(
                 test_object._model_instance_and_serializer[1],
             ),
             test_object._ground_truth_instance_and_serializer,
+            test_object._initial_data_instance,
+            test_object._initial_model_instance,
             **test_object._input_args,
         )
     assert excinfo.type == test_object._expected_exception
@@ -250,6 +258,8 @@ def test_init_plugin_instance_with_invalid_ground_truth_instance_type(
                 invalid_ground_truth_instance_type,
                 test_object._ground_truth_instance_and_serializer[1],
             ),
+            test_object._initial_data_instance,
+            test_object._initial_model_instance,
             **test_object._input_args,
         )
     assert excinfo.type == test_object._expected_exception
@@ -266,6 +276,8 @@ def test_init_plugin_instance_with_invalid_ground_truth_type(ground_truth):
             test_object._data_instance_and_serializer,
             test_object._model_instance_and_serializer,
             test_object._ground_truth_instance_and_serializer,
+            test_object._initial_data_instance,
+            test_object._initial_model_instance,
             **test_object._input_args,
         )
     assert excinfo.type == test_object._expected_exception
@@ -282,6 +294,8 @@ def test_init_plugin_instance_with_none_ground_truth_type(ground_truth):
             test_object._data_instance_and_serializer,
             test_object._model_instance_and_serializer,
             test_object._ground_truth_instance_and_serializer,
+            test_object._initial_data_instance,
+            test_object._initial_model_instance,
             **test_object._input_args,
         )
     assert excinfo.type == test_object._expected_exception
@@ -348,6 +362,8 @@ def test_setup_plugin_instance_with_invalid_model_type(invalid_model_type):
             test_object._data_instance_and_serializer,
             test_object._model_instance_and_serializer,
             test_object._ground_truth_instance_and_serializer,
+            test_object._initial_data_instance,
+            test_object._initial_model_instance,
             **test_object._input_args,
         )
     assert excinfo.type == test_object._expected_exception
@@ -367,6 +383,8 @@ def test_setup_plugin_instance_with_invalid_logger_type(invalid_logger_type):
             test_object._data_instance_and_serializer,
             test_object._model_instance_and_serializer,
             test_object._ground_truth_instance_and_serializer,
+            test_object._initial_data_instance,
+            test_object._initial_model_instance,
             **test_object._input_args,
         )
     assert excinfo.type == test_object._expected_exception
@@ -394,6 +412,8 @@ def test_setup_plugin_instance_with_invalid_log_level_and_message(log_info):
         test_object._data_instance_and_serializer,
         test_object._model_instance_and_serializer,
         test_object._ground_truth_instance_and_serializer,
+        test_object._initial_data_instance,
+        test_object._initial_model_instance,
         **test_object._input_args,
     )
     with pytest.raises(test_object._expected_exception) as excinfo:
@@ -408,6 +428,8 @@ def test_plugin_valid_get_metadata():
         test_object._data_instance_and_serializer,
         test_object._model_instance_and_serializer,
         test_object._ground_truth_instance_and_serializer,
+        test_object._initial_data_instance,
+        test_object._initial_model_instance,
         **test_object._input_args,
     )
     assert isinstance(test_plugin.get_metadata(), PluginMetadata)
@@ -419,6 +441,8 @@ def test_plugin_valid_get_plugin_type():
         test_object._data_instance_and_serializer,
         test_object._model_instance_and_serializer,
         test_object._ground_truth_instance_and_serializer,
+        test_object._initial_data_instance,
+        test_object._initial_model_instance,
         **test_object._input_args,
     )
     assert isinstance(test_plugin.get_plugin_type(), PluginType)
@@ -435,6 +459,8 @@ def test_valid_run(get_data_instance_and_serializer_without_ground_truth):
         get_data_instance_and_serializer_without_ground_truth,
         test_object._model_instance_and_serializer,
         test_object._ground_truth_instance_and_serializer,
+        test_object._initial_data_instance,
+        test_object._initial_model_instance,
         **test_object._input_args,
     )
     test_plugin.generate()
@@ -450,11 +476,13 @@ def test_valid_run(get_data_instance_and_serializer_without_ground_truth):
 
 def test_corruptions():
     test_object = ObjectTest()
-    test_object._input_args["user_defined_params"]["corruptions"] = ["Horizontal_Motion_Blur", "Zoom_Blur"]
+    test_object._input_args["corruptions"] = ["Horizontal_Motion_Blur", "Zoom_Blur"]
     test_plugin = Plugin(
         test_object._data_instance_and_serializer,
         test_object._model_instance_and_serializer,
         test_object._ground_truth_instance_and_serializer,
+        test_object._initial_data_instance,
+        test_object._initial_model_instance,
         **test_object._input_args,
     )
     test_plugin.generate()
@@ -467,16 +495,18 @@ def test_corruptions():
 
     assert validate_status
     for data in results["results"]:
-        assert data["corruption_function"] in test_object._input_args["user_defined_params"]["corruptions"]
+        assert data["corruption_function"] in test_object._input_args["corruptions"]
 
 
 def test_user_defined_params():
     test_object = ObjectTest()
-    test_object._input_args["user_defined_params"]["glass_blur_max_delta"] = [1, 3, 5]
+    test_object._input_args["glass_blur_max_delta"] = [1, 3, 5]
     test_plugin = Plugin(
         test_object._data_instance_and_serializer,
         test_object._model_instance_and_serializer,
         test_object._ground_truth_instance_and_serializer,
+        test_object._initial_data_instance,
+        test_object._initial_model_instance,
         **test_object._input_args,
     )
     test_plugin.generate()

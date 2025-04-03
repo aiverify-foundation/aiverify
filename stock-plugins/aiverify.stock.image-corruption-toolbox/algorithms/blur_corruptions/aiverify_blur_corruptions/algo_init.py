@@ -174,15 +174,17 @@ class AlgoInit:
                     self._ground_truth_instance,
                     self._ground_truth_serializer_instance,
                 ),
+                initial_data_instance=None,
+                initial_model_instance=None,
                 model_type=self._model_type,
                 requires_ground_truth=self._requires_ground_truth,
-                user_defined_params=self._user_defined_params,
                 logger=self._logger_instance,
                 progress_callback=AlgoInit.progress_callback,
                 ground_truth_path=self._ground_truth_path,
                 ground_truth_label=self._ground_truth_label,
                 file_name_label=self._file_name_label,
                 set_seed=self._set_seed,
+                **self._user_defined_params,
             )
 
             # Generate the results using this plugin
