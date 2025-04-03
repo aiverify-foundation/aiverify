@@ -37,11 +37,12 @@ image_pipeline_pytorch = {
 def test_aiverify_blur_corruptions_plugin(data_set):
     # Create an instance of PluginTest with defined paths and arguments and Run.
     plugin_test = AlgoInit(
+        run_as_pipeline=True,
         data_path=data_set["data_path"],
         model_path=data_set["model_path"],
         model_type=data_set["model_type"],
         ground_truth_path=data_set["ground_truth_path"],
-        ground_truth_label=data_set["ground_truth_label"],
+        ground_truth=data_set["ground_truth_label"],
         file_name_label=data_set["file_name_label"],
         set_seed=data_set["set_seed"],
         core_modules_path=data_set["core_modules_path"],

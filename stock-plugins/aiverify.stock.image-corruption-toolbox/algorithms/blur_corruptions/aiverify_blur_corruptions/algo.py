@@ -97,7 +97,16 @@ class Plugin(IAlgorithm):
         # Store the input parameters defined in the input schema
         self._file_name_label = self.file_name_label = file_name_label
         self._set_seed = self.set_seed = set_seed
-        self._corruptions = self.corruptions = user_defined_params["corruptions"]
+
+        corruptions = self._user_defined_params.get("corruptions", [])
+        corruptions = [name.lower() for name in corruptions]  # Normalize
+        if not corruptions or "all" in corruptions:
+            # If no corruptions are provided, or if "all" is provided, use all corruptions
+            corruptions = list(blur.CORRUPTION_FN)
+        else:
+            # Filter corruption functions based on user input, make sure algorithm names are in correct format & order
+            corruptions = [name for name in blur.CORRUPTION_FN if name.lower() in corruptions]  # fmt: skip
+        self._corruptions = self.corruptions = self._user_defined_params["corruptions"] = corruptions
 
         # Perform setup for this plug-in
         self.setup()

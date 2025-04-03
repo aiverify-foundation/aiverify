@@ -113,11 +113,12 @@ def invoke_aiverify_blur_corruptions_plugin(args: argparse.Namespace) -> None:
     try:
         # Create an instance of AlgoInit with defined paths and arguments and Run.
         plugin_test = AlgoInit(
+            run_as_pipeline=True,
             data_path=args.data_path,
             model_path=args.model_path,
             model_type=args.model_type,
             ground_truth_path=args.ground_truth_path,
-            ground_truth_label=args.ground_truth_label,
+            ground_truth=args.ground_truth_label,
             file_name_label=args.file_name_label,
             set_seed=args.set_seed,
             core_modules_path=args.core_modules_path,
