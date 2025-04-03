@@ -421,36 +421,6 @@ select:focus option {
   min-width: max-content !important;
 }
 
-/* Force the native dropdown to be wider in all browsers */
-@supports (-moz-appearance: none) {
-  select {
-    -moz-appearance: none !important;
-    width: 100% !important;
-    min-width: 400px !important;
-  }
-
-  select:-moz-focusring {
-    min-width: 400px !important;
-  }
-}
-
-/* Microsoft Edge and IE styles */
-@supports (-ms-ime-align: auto) {
-  select {
-    min-width: 400px !important;
-  }
-}
-
-/* Fix for Safari */
-@media not all and (min-resolution: 0.001dpcm) {
-  @supports (-webkit-appearance: none) {
-    select {
-      min-width: 400px !important;
-      -webkit-appearance: none !important;
-    }
-  }
-}
-
 /* Dropdown style overrides */
 /* This sets the dropdown width wider than its container */
 .custom-form select {
@@ -488,24 +458,6 @@ html select option {
     background-color: var(--color-secondary-800);
     -webkit-appearance: none !important;
     appearance: none !important;
-  }
-}
-
-/* For Firefox */
-@-moz-document url-prefix() {
-  /* Force dropdown to be wider */
-  select.custom-select {
-    -moz-appearance: none !important;
-    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-    background-position: right 0.5rem center;
-    background-repeat: no-repeat;
-    padding-right: 2.5em;
-  }
-
-  /* Firefox-specific option styling */
-  select.custom-select option {
-    padding: 8px !important;
-    min-width: 400px !important;
   }
 }
 
@@ -618,19 +570,6 @@ select[data-chrome-width] {
       font-size: 14px !important;
       padding: 8px 12px !important;
       display: block !important;
-    }
-
-    /* Style select element */
-    select.chrome-select,
-    select[data-browser='chrome'] {
-      -webkit-appearance: none !important;
-      background-color: var(--color-secondary-800) !important;
-      color: var(--color-white) !important;
-      background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") !important;
-      background-position: right 8px center !important;
-      background-repeat: no-repeat !important;
-      background-size: 16px !important;
-      padding-right: 32px !important;
     }
   }
 }

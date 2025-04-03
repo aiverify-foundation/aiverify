@@ -3,7 +3,7 @@ import Link from 'next/link';
 import React from 'react';
 import { TestModel } from '@/app/models/utils/types';
 import { Dataset, Plugin } from '@/app/types';
-import { Icon, IconName } from '@/lib/components/IconSVG';
+import { IconName } from '@/lib/components/IconSVG';
 import { Button, ButtonVariant } from '@/lib/components/button';
 import { getTestModels } from '@/lib/fetchApis/getAllModels';
 import { getPlugins } from '@/lib/fetchApis/getPlugins';

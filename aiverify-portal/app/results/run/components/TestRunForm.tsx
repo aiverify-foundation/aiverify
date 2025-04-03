@@ -365,41 +365,8 @@ interface FormState {
 }
 
 // Add a helper function to determine if a field is a text input
-const isTextInputField = (
-  schema: RJSFSchema,
-  uiSchema: UiSchema,
-  fieldName: string
-): boolean => {
-  if (!schema.properties || !schema.properties[fieldName]) return false;
-
-  const property = schema.properties[fieldName] as RJSFSchema;
-  const uiOptions = uiSchema[fieldName] || {};
-
-  // Check if it's a string type and not an enum (dropdown)
-  return (
-    property.type === 'string' && !property.enum && !uiOptions['ui:widget'] // No custom widget like select
-  );
-};
 
 // Function to check if formData change is for a text input
-const isTextInputChange = (
-  schema: RJSFSchema,
-  uiSchema: UiSchema,
-  prevData: FormState | null,
-  newData: FormState | null
-): boolean => {
-  if (!prevData || !newData) return false;
-
-  // Find which field changed
-  const changedField = Object.keys(newData).find(
-    (key) =>
-      newData[key as keyof FormState] !== prevData[key as keyof FormState]
-  );
-
-  if (!changedField) return false;
-
-  return isTextInputField(schema, uiSchema, changedField);
-};
 
 export default function TestRunForm({
   plugins,
