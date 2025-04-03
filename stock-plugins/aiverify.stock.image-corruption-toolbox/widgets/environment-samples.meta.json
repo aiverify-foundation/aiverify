@@ -1,0 +1,23 @@
+{
+  "cid": "environment-samples",
+  "widgetSize": {
+    "minW": 8,
+    "minH": 7,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Environment corruption samples",
+  "description": "To generate sample images for environment corruptions",
+  "dependencies": [
+    {
+      "cid": "aiverify_environment_corruptions"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "Algorithm",
+      "cid": "aiverify_environment_corruptions",
+      "datapath": "environment-corruption-mock-data.json"
+    }
+  ]
+}

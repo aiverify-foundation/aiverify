@@ -3,132 +3,101 @@
         {
             "corruption_group": "Environment",
             "corruption_function": "Fog",
+            "parameter": {
+                "severity0": {
+                    "intensity": null
+                },
+                "severity1": {
+                    "intensity": 0.1
+                },
+                "severity2": {
+                    "intensity": 0.3
+                },
+                "severity3": {
+                    "intensity": 0.5
+                },
+                "severity4": {
+                    "intensity": 0.7
+                },
+                "severity5": {
+                    "intensity": 0.9
+                }
+            },
             "accuracy": {
-                "severity0": 0.9,
-                "severity1": 0.5,
-                "severity2": 0.3,
+                "severity0": 0.0,
+                "severity1": 0.3,
+                "severity2": 0.2,
                 "severity3": 0.3,
                 "severity4": 0.1,
                 "severity5": 0.2
             },
             "display_info": {
                 "severity0": [
-                    "algorithms/environment_corruptions/temp/Fog/severity0/9.png",
-                    "6",
-                    "6"
+                    "images/Fog/severity0/9.png",
+                    9,
+                    1
                 ],
                 "severity1": [
-                    "algorithms/environment_corruptions/temp/Fog/severity1/9.png",
-                    "6",
-                    "6"
+                    "images/Fog/severity1/9.png",
+                    9,
+                    9
                 ],
                 "severity2": [
-                    "algorithms/environment_corruptions/temp/Fog/severity2/9.png",
-                    "6",
-                    "8"
+                    "images/Fog/severity2/9.png",
+                    9,
+                    9
                 ],
                 "severity3": [
-                    "algorithms/environment_corruptions/temp/Fog/severity3/9.png",
-                    "6",
-                    "8"
+                    "images/Fog/severity3/9.png",
+                    9,
+                    4
                 ],
                 "severity4": [
-                    "algorithms/environment_corruptions/temp/Fog/severity4/9.png",
-                    "6",
-                    "8"
+                    "images/Fog/severity4/9.png",
+                    9,
+                    5
                 ],
                 "severity5": [
-                    "algorithms/environment_corruptions/temp/Fog/severity5/9.png",
-                    "6",
-                    "8"
-                ]
-            }
-        },
-        {
-            "corruption_group": "Environment",
-            "corruption_function": "Snow",
-            "accuracy": {
-                "severity0": 0.9,
-                "severity1": 0.8,
-                "severity2": 0.7,
-                "severity3": 0.5,
-                "severity4": 0.4,
-                "severity5": 0.2
-            },
-            "display_info": {
-                "severity0": [
-                    "algorithms/environment_corruptions/temp/Snow/severity0/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity1": [
-                    "algorithms/environment_corruptions/temp/Snow/severity1/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity2": [
-                    "algorithms/environment_corruptions/temp/Snow/severity2/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity3": [
-                    "algorithms/environment_corruptions/temp/Snow/severity3/9.png",
-                    "6",
-                    "8"
-                ],
-                "severity4": [
-                    "algorithms/environment_corruptions/temp/Snow/severity4/9.png",
-                    "6",
-                    "2"
-                ],
-                "severity5": [
-                    "algorithms/environment_corruptions/temp/Snow/severity5/9.png",
-                    "6",
-                    "8"
+                    "images/Fog/severity5/9.png",
+                    9,
+                    1
                 ]
             }
         },
         {
             "corruption_group": "Environment",
             "corruption_function": "Rain",
+            "parameter": {
+                "severity0": {
+                    "type": null
+                },
+                "severity1": {
+                    "type": "drizzle"
+                },
+                "severity2": {
+                    "type": "heavy"
+                }
+            },
             "accuracy": {
-                "severity0": 0.9,
-                "severity1": 0.8,
-                "severity2": 0.8,
-                "severity3": 0.9,
-                "severity4": 0.5,
-                "severity5": 0.7
+                "severity0": 0.0,
+                "severity1": 0.0,
+                "severity2": 0.0
             },
             "display_info": {
                 "severity0": [
-                    "algorithms/environment_corruptions/temp/Rain/severity0/9.png",
-                    "6",
-                    "6"
+                    "images/Rain/severity0/9.png",
+                    9,
+                    1
                 ],
                 "severity1": [
-                    "algorithms/environment_corruptions/temp/Rain/severity1/9.png",
-                    "6",
-                    "6"
+                    "images/Rain/severity1/9.png",
+                    9,
+                    1
                 ],
                 "severity2": [
-                    "algorithms/environment_corruptions/temp/Rain/severity2/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity3": [
-                    "algorithms/environment_corruptions/temp/Rain/severity3/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity4": [
-                    "algorithms/environment_corruptions/temp/Rain/severity4/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity5": [
-                    "algorithms/environment_corruptions/temp/Rain/severity5/9.png",
-                    "6",
-                    "2"
+                    "images/Rain/severity2/9.png",
+                    9,
+                    1
                 ]
             }
         }
