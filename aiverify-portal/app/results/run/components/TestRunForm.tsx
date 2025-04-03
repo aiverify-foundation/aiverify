@@ -202,6 +202,7 @@ function CustomSelectWidget(props: WidgetProps) {
   const selectedOption = enumOptions.find(
     (option: SelectOption) => option.value === value
   );
+  console.log(value, selectedOption);
   const displayValue = selectedOption
     ? selectedOption.label
     : placeholder || '-- Select --';
@@ -355,7 +356,6 @@ interface TestRunFormProps {
 }
 
 interface FormState {
-  plugin?: string;
   algorithm?: string;
   model?: string;
   testDataset?: string;
@@ -375,13 +375,12 @@ export default function TestRunForm({
   initialServerActive,
 }: TestRunFormProps) {
   const router = useRouter();
-  const [selectedPlugin, setSelectedPlugin] = useState<string | null>(null);
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<string | null>(
     null
   );
-  const [availableAlgorithms, setAvailableAlgorithms] = useState<Algorithm[]>(
-    []
-  );
+  const [allAlgorithms, setAllAlgorithms] = useState<
+    Array<Algorithm & { pluginGid: string }>
+  >([]);
   const [formData, setFormData] = useState<FormState>({
     algorithmArgs: {},
   });
@@ -461,28 +460,19 @@ export default function TestRunForm({
     console.log('Plugins available:', plugins);
   }, [plugins]);
 
-  // Update available algorithms when plugin selection changes
+  // Initialize all algorithms from all plugins
   useEffect(() => {
-    if (formData.plugin) {
-      const plugin = plugins.find((p) => p.gid === formData.plugin);
-      if (plugin) {
-        console.log('Selected plugin:', plugin.name);
-        setSelectedPlugin(plugin.gid);
-        setAvailableAlgorithms(plugin.algorithms);
-        // Reset algorithm selection when plugin changes
-        setFormData((prev) => ({
-          ...prev,
-          algorithm: undefined,
-          algorithmArgs: {},
-        }));
-        setSelectedAlgorithm(null);
-      }
-    } else {
-      setAvailableAlgorithms([]);
-      setSelectedPlugin(null);
-      setSelectedAlgorithm(null);
-    }
-  }, [formData.plugin, plugins]);
+    // Combine algorithms from all plugins
+    const allAlgos = plugins.flatMap((plugin) =>
+      plugin.algorithms.map((algo) => ({
+        ...algo,
+        pluginGid: plugin.gid,
+      }))
+    );
+
+    console.log('All algorithms:', allAlgos);
+    setAllAlgorithms(allAlgos);
+  }, [plugins]);
 
   // Update selected algorithm when algorithm selection changes
   useEffect(() => {
@@ -500,8 +490,7 @@ export default function TestRunForm({
     // Check if this is a dropdown or text field
     const isDropdown =
       newFormData &&
-      (formData.plugin !== newFormData.plugin ||
-        formData.algorithm !== newFormData.algorithm ||
+      (formData.algorithm !== newFormData.algorithm ||
         formData.model !== newFormData.model ||
         formData.testDataset !== newFormData.testDataset ||
         formData.groundTruthDataset !== newFormData.groundTruthDataset);
@@ -543,17 +532,12 @@ export default function TestRunForm({
   // Schema for test selection (plugin, algorithm, model, dataset)
   const selectionSchema: RJSFSchema = {
     type: 'object',
-    required: ['plugin', 'algorithm', 'model', 'testDataset'],
+    required: ['algorithm', 'model', 'testDataset'],
     properties: {
-      plugin: {
-        type: 'string',
-        title: 'Plugin',
-        enum: plugins.map((plugin) => plugin.gid),
-      },
       algorithm: {
         type: 'string',
         title: 'Algorithm',
-        enum: availableAlgorithms.map((algo) => algo.cid),
+        enum: allAlgorithms.map((algo) => algo.cid),
       },
       model: {
         type: 'string',
@@ -583,7 +567,6 @@ export default function TestRunForm({
   // UI Schema for form display - configure custom widgets
   const uiSchema: UiSchema = {
     'ui:order': [
-      'plugin',
       'algorithm',
       'model',
       'testDataset',
@@ -591,21 +574,12 @@ export default function TestRunForm({
       'groundTruth',
       '*',
     ],
-    plugin: {
-      'ui:placeholder': '-- Select a Plugin --',
-      'ui:emptyValue': '',
-      'ui:widget': 'CustomSelectWidget',
-      'ui:enumOptions': plugins.map((plugin) => ({
-        label: plugin.name,
-        value: plugin.gid,
-      })),
-    },
     algorithm: {
       'ui:placeholder': '-- Select an Algorithm --',
       'ui:emptyValue': '',
       'ui:widget': 'CustomSelectWidget',
-      'ui:enumOptions': availableAlgorithms.map((algo) => ({
-        label: algo.name,
+      'ui:enumOptions': allAlgorithms.map((algo) => ({
+        label: algo.zip_hash,
         value: algo.cid,
       })),
     },
@@ -654,13 +628,9 @@ export default function TestRunForm({
 
   // Get algorithm input schema
   const getAlgorithmParamsSchema = (): RJSFSchema => {
-    if (!selectedPlugin || !selectedAlgorithm)
-      return { type: 'object', properties: {} };
+    if (!selectedAlgorithm) return { type: 'object', properties: {} };
 
-    const plugin = plugins.find((p) => p.gid === selectedPlugin);
-    if (!plugin) return { type: 'object', properties: {} };
-
-    const algo = plugin.algorithms.find((a) => a.cid === selectedAlgorithm);
+    const algo = allAlgorithms.find((a) => a.cid === selectedAlgorithm);
     if (!algo) return { type: 'object', properties: {} };
 
     return algo.inputSchema as RJSFSchema;
@@ -720,8 +690,8 @@ export default function TestRunForm({
         return;
       }
 
-      if (!submitData.plugin || !submitData.algorithm) {
-        throw new Error('Please select a plugin and algorithm');
+      if (!submitData.algorithm) {
+        throw new Error('Please select an algorithm');
       }
 
       // If groundTruthDataset is empty, use testDataset
@@ -729,10 +699,19 @@ export default function TestRunForm({
         submitData.groundTruthDataset = submitData.testDataset;
       }
 
+      // Find the selected algorithm to get its plugin ID
+      const selectedAlgo = allAlgorithms.find(
+        (algo) => algo.cid === submitData.algorithm
+      );
+
+      if (!selectedAlgo) {
+        throw new Error('Selected algorithm not found');
+      }
+
       // Prepare input data
       const inputData: TestRunInput = {
         mode: 'upload',
-        algorithmGID: submitData.plugin,
+        algorithmGID: selectedAlgo.pluginGid,
         algorithmCID: submitData.algorithm,
         algorithmArgs: submitData.algorithmArgs || {},
         modelFilename: submitData.model || '',
@@ -893,7 +872,7 @@ export default function TestRunForm({
           className="custom-form"
           liveValidate={false}
           showErrorList={false}
-          key={`selection-form-${plugins.length}-${availableAlgorithms.length}`}
+          key={`selection-form-${plugins.length}-${allAlgorithms.length}`}
           templates={{
             FieldTemplate: customFieldTemplate,
             ArrayFieldTemplate: customArrayFieldTemplate,
