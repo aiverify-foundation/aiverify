@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+
+console.log('process.env.APIGW_HOST', process.env.APIGW_HOST);
 const nextConfig = {
   reactStrictMode: false,
   async rewrites() {
@@ -102,6 +104,10 @@ const nextConfig = {
       {
         source: '/api/project_templates/clone/:id',
         destination: `${process.env.APIGW_HOST}/project_templates/clone/:id`,
+      },
+      {
+        source: '/api/test_runs/run_test',
+        destination: `${process.env.APIGW_HOST}/test_runs/run_test/`,
       },
     ];
   },

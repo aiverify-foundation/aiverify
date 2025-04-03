@@ -1,0 +1,183 @@
+/* Custom Form Styling */
+.custom-form-container {
+  color: var(--color-white);
+}
+
+.custom-form {
+  color: inherit;
+}
+
+/* Specific styling for plugin select */
+.plugin-select-container,
+.plugin-select {
+  position: relative;
+  z-index: 10; /* Ensure dropdown appears above other elements */
+}
+
+.plugin-select-container select,
+select.plugin-select {
+  background-color: var(--color-secondary-800) !important;
+  color: var(--color-white) !important;
+  border: 1px solid var(--color-secondary-700) !important;
+  appearance: menulist !important;
+  -webkit-appearance: menulist !important;
+  min-height: 42px !important;
+  opacity: 1 !important;
+  position: relative !important;
+  display: block !important;
+}
+
+/* Form field labels */
+.custom-form .control-label,
+.custom-form label {
+  color: var(--color-white);
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  display: block;
+  font-size: 1rem;
+}
+
+/* Form field descriptions */
+.custom-form .field-description {
+  color: var(--color-primary-300);
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Form field containers */
+.custom-form .form-group {
+  margin-bottom: 1.5rem;
+  display: block;
+}
+
+/* Select inputs - more permissive styling to avoid breaking dropdowns */
+.custom-form select {
+  background-color: var(--color-secondary-800);
+  border: 1px solid var(--color-secondary-700);
+  color: var(--color-white);
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+  width: 100%;
+  margin-bottom: 1rem;
+  min-height: 42px; /* Increased for better visibility */
+  cursor: pointer;
+}
+
+/* Apply native appearance only where it won't cause issues */
+/* Avoid forcing appearance on specific field that's causing problems */
+.custom-form select:not([id$='plugin']) {
+  appearance: menulist;
+  -webkit-appearance: menulist;
+  -moz-appearance: menulist;
+}
+
+/* Make sure the dropdown doesn't get hidden but avoid !important where possible */
+.custom-form .form-control {
+  display: block;
+  width: 100%;
+}
+
+/* Ensure proper display of label and title */
+.custom-form .field {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.custom-form .field-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--color-white);
+  font-weight: 500;
+}
+
+/* Rest of existing styles */
+.custom-form select:focus {
+  outline: none;
+  border-color: var(--color-primary-400);
+  box-shadow: 0 0 0 1px var(--color-primary-400);
+}
+
+.custom-form select option {
+  background-color: var(--color-secondary-800);
+  color: var(--color-white);
+  padding: 8px;
+}
+
+/* Input fields */
+.custom-form input[type='text'],
+.custom-form input[type='number'] {
+  background-color: var(--color-secondary-800);
+  border: 1px solid var(--color-secondary-700);
+  color: var(--color-white);
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.custom-form input[type='text']:focus,
+.custom-form input[type='number']:focus {
+  outline: none;
+  border-color: var(--color-primary-400);
+  box-shadow: 0 0 0 1px var(--color-primary-400);
+}
+
+/* Form buttons */
+.custom-form button[type='submit'] {
+  display: none; /* Hide default submit button as we use our own */
+}
+
+/* Form errors */
+.custom-form .errors {
+  color: var(--color-danger);
+  margin-bottom: 1rem;
+}
+
+.custom-form .error-detail {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+}
+
+/* Required field indicator */
+.custom-form .required {
+  color: var(--color-danger);
+  margin-left: 0.25rem;
+}
+
+/* Form fieldset */
+.custom-form fieldset {
+  border: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+}
+
+.custom-form legend {
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--color-white);
+}
+
+/* Form sections */
+.custom-form .panel {
+  background-color: var(--color-secondary-800);
+  border-radius: 0.375rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.custom-form .panel-title {
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--color-white);
+}
+
+/* Boolean/checkbox inputs */
+.custom-form .checkbox {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.custom-form .checkbox input {
+  margin-right: 0.5rem;
+}
