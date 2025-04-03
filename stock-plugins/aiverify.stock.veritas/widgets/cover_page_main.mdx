@@ -62,24 +62,23 @@ export const MyCoverPage = ({ props }) => {
               color: 'white',
               margin: 0,
             }}>
-              CM-detailed | Customer Marketing
+              {props.properties.useCase}
             </h2>
           </div>
         </div>
       </div>
 
-      {/* Report Date (if needed) */}
-      {props.report && (
-        <div style={{
-          position: 'absolute',
-          top: '20px',
-          right: '40px',
-          fontSize: '14px',
-          color: '#666666'
-        }}>
-          {getReportDate(props)}
-        </div>
-      )}
+      {/* Powered by AI Verify - Added at the bottom right */}
+      <div style={{
+        position: 'absolute',
+        bottom: '30px',
+        right: '40px',
+        fontSize: '16px',
+        fontWeight: '500',
+        color: 'white'
+      }}>
+        Powered by AI Verify
+      </div>
     </div>
   )
 }

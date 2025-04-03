@@ -17,6 +17,12 @@
       "cid": "ethics_and_accountability_process_checklist"
     }
   ],
+  "properties": [
+    {
+      "key": "useCase",
+      "helper": "use case of the report"
+    }
+  ],
   "mockdata": [
     {
       "type": "InputBlock",

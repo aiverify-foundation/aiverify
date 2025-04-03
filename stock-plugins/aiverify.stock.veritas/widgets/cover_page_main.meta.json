@@ -10,16 +10,8 @@
   "description": "Main Cover Page for the reports",
   "properties": [
     {
-      "key": "reportTitle",
-      "helper": "Report Title"
-    },
-    {
-      "key": "reportSubtitle1",
-      "helper": "Subtitle 1 of report"
-    },
-    {
-      "key": "reportSubtitle2",
-      "helper": "Subtitle 2 of report"
+      "key": "useCase",
+      "helper": "use case of the report"
     }
   ]
 }
