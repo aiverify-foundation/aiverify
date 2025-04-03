@@ -101,8 +101,6 @@ const PipelineUploader = ({ onBack }: { onBack: () => void }) => {
       console.log(`- ${folder}: ${count} files`);
     });
 
-    const formData = new FormData();
-
     // Get the root folder name from the first file's path
     const rootFolderName =
       selectedFiles[0]?.webkitRelativePath?.split('/')[0] || '';
@@ -173,8 +171,10 @@ const PipelineUploader = ({ onBack }: { onBack: () => void }) => {
         console.log('Response data:', data);
         setModalMessage('Pipeline uploaded successfully!');
         setIsModalVisible(true);
+        // Reset all fields to initial state
         setFolderName('');
         setModelType('');
+        setSelectedFiles([]);
       },
       onError: (error) => {
         console.log('=== UPLOAD FAILED ===');
@@ -183,6 +183,10 @@ const PipelineUploader = ({ onBack }: { onBack: () => void }) => {
           `Error uploading pipeline: ${error instanceof Error ? error.message : 'Unknown error'}`
         );
         setIsModalVisible(true);
+        // Reset all fields to initial state
+        setFolderName('');
+        setModelType('');
+        setSelectedFiles([]);
       },
     });
   };

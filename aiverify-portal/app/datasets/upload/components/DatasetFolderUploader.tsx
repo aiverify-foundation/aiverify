@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import useUploadFolder from '@/app/models/upload/hooks/useUploadFolder';
-import { UploadIcon } from '@/app/models/upload/utils/icons';
+import useUploadFolder from '@/app/datasets/upload/hooks/useUploadFolder';
 import { Button, ButtonVariant } from '@/lib/components/button';
 import { Modal } from '@/lib/components/modal';
 import styles from './Uploader.module.css';
@@ -12,10 +11,9 @@ interface FileWithPath extends File {
   webkitRelativePath: string;
 }
 
-const FolderUpload = ({ onBack }: { onBack: () => void }) => {
+export function DatasetFolderUploader() {
   const [selectedFiles, setSelectedFiles] = useState<FileWithPath[]>([]);
   const [folderName, setFolderName] = useState('');
-  const [modelType, setModelType] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
 
@@ -71,18 +69,17 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
       return;
     }
 
-    if (!folderName || !modelType) {
-      setModalMessage('Please fill in all required fields.');
+    if (!folderName) {
+      setModalMessage('Please enter a folder name.');
       setIsModalVisible(true);
       return;
     }
 
-    console.log('=== PREPARING FOLDER UPLOAD ===');
+    console.log('=== PREPARING DATASET FOLDER UPLOAD ===');
     console.log(`Folder name: ${folderName}`);
-    console.log(`Model type: ${modelType}`);
     console.log(`Total files selected: ${selectedFiles.length}`);
 
-    // Group files by their direct parent folder
+    // Group files by their direct parent folder for display
     const folderCounts: Record<string, number> = {};
     selectedFiles.forEach((file) => {
       const path = file.webkitRelativePath || '';
@@ -100,48 +97,62 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
       console.log(`- ${folder}: ${count} files`);
     });
 
-    const formData = new FormData();
+    // Get the root folder name from the first file's path for debugging
+    const rootFolderName =
+      selectedFiles[0]?.webkitRelativePath?.split('/')[0] || '';
+    console.log(`Detected root folder name: ${rootFolderName}`);
+
+    // Create a new FormData object with cleaned filenames
+    const cleanedFormData = new FormData();
 
     // Extract and add subfolder information for each file
     const subfolderPaths: string[] = [];
+
+    // Files logging for debugging
     const fileDetails: Array<{
-      name: string;
-      path: string;
+      originalName: string;
+      originalPath: string;
+      cleanedName: string;
       subfolder: string;
     }> = [];
 
+    // Process all files to extract clean filenames and proper subfolder paths
     Array.from(selectedFiles).forEach((file) => {
-      formData.append('files', file);
+      const originalPath = file.webkitRelativePath;
+      const pathParts = originalPath.split('/');
 
-      // Extract the subfolder path from webkitRelativePath
-      const relativePath = file.webkitRelativePath;
+      // Extract just the filename without path
+      const baseFilename = pathParts[pathParts.length - 1];
+
+      // Create a new File object with the same content but a clean filename
+      const cleanedFile = new File([file], baseFilename, { type: file.type });
+
+      // Add the cleaned file to FormData
+      cleanedFormData.append('files', cleanedFile);
+
+      // Determine the subfolder path (starting with './')
       let subfolderPath = './';
-
-      if (relativePath) {
-        const pathParts = relativePath.split('/');
-        // If file is directly in root folder (no subfolder)
-        if (pathParts.length <= 2) {
-          subfolderPath = './';
-        } else {
-          // Extract the subfolder path (everything after the root folder name)
-          subfolderPath = './' + pathParts.slice(1, -1).join('/');
-        }
+      if (pathParts.length > 2) {
+        // File is in a subfolder, extract the path between root folder and filename
+        subfolderPath = './' + pathParts.slice(1, -1).join('/');
       }
 
       subfolderPaths.push(subfolderPath);
 
       // Store details for logging
       fileDetails.push({
-        name: file.name,
-        path: file.webkitRelativePath || '',
+        originalName: file.name,
+        originalPath: file.webkitRelativePath,
+        cleanedName: baseFilename,
         subfolder: subfolderPath,
       });
     });
 
     console.log('Files to upload (first 5):');
     fileDetails.slice(0, 5).forEach((file, index) => {
-      console.log(`${index + 1}. ${file.name}`);
-      console.log(`   Full path: ${file.path}`);
+      console.log(`${index + 1}. Original: ${file.originalName}`);
+      console.log(`   Original path: ${file.originalPath}`);
+      console.log(`   Cleaned name: ${file.cleanedName}`);
       console.log(`   Subfolder: ${file.subfolder}`);
     });
 
@@ -149,11 +160,11 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
       console.log(`... and ${fileDetails.length - 5} more files`);
     }
 
-    formData.append('foldername', folderName);
-    formData.append('model_type', modelType);
-    formData.append('file_type', 'folder');
-    formData.append('subfolders', subfolderPaths.join(','));
+    // Add the folder name and subfolders to the cleaned form data
+    cleanedFormData.append('foldername', folderName);
+    cleanedFormData.append('subfolders', subfolderPaths.join(','));
 
+    console.log('Sending folder name:', folderName);
     console.log(
       'Subfolders parameter:',
       subfolderPaths.join(',').substring(0, 100) +
@@ -164,26 +175,25 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
     // Clear selection immediately when submitting
     setSelectedFiles([]);
 
-    mutate(formData, {
-      onSuccess: () => {
-        console.log('=== UPLOAD COMPLETED SUCCESSFULLY ===');
-        setModalMessage('Folder uploaded successfully!');
+    mutate(cleanedFormData, {
+      onSuccess: (data) => {
+        console.log('=== DATASET UPLOAD COMPLETED SUCCESSFULLY ===');
+        console.log('Response data:', data);
+        setModalMessage('Dataset folder uploaded successfully!');
         setIsModalVisible(true);
         // Reset all fields to initial state
         setFolderName('');
-        setModelType('');
         setSelectedFiles([]);
       },
       onError: (error) => {
-        console.log('=== UPLOAD FAILED ===');
+        console.log('=== DATASET UPLOAD FAILED ===');
         console.error('Error details:', error);
         setModalMessage(
-          `Error uploading folder: ${error instanceof Error ? error.message : 'Unknown error'}`
+          `Error uploading dataset folder: ${error instanceof Error ? error.message : 'Unknown error'}`
         );
         setIsModalVisible(true);
         // Reset all fields to initial state
         setFolderName('');
-        setModelType('');
         setSelectedFiles([]);
       },
     });
@@ -219,7 +229,8 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
               <div className="w-1/2">
                 <h2 className="text-lg font-semibold">Before uploading...</h2>
                 <p className="mt-1 text-sm text-gray-400">
-                  Check that the model folder meets the following requirements.
+                  Check that the dataset folder meets the following
+                  requirements.
                 </p>
                 <div className="mt-4 rounded-lg border border-secondary-300 p-4">
                   <ul className="mt-2 space-y-1 text-sm">
@@ -227,10 +238,12 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
                       <strong>File Size:</strong> Less than 4GB
                     </li>
                     <li>
-                      <strong>Data Format:</strong> Scikit-learn Pipeline
+                      <strong>Data Format:</strong> Pandas, Delimiter-separated
+                      Values (comma, tab, semicolon, pipe, space, colon),
+                      Image(jpeg, jpg, png)
                     </li>
                     <li>
-                      <strong>Serializer Type:</strong> Pickle or Joblib
+                      <strong>Serializer Type:</strong> Pickle, Joblib
                     </li>
                   </ul>
                 </div>
@@ -242,15 +255,14 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
                 onClick={() => document.getElementById('folderInput')?.click()}
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}>
-                <UploadIcon size={80} />
-                <p className="mt-2 text-sm text-gray-300">
+                <p className="text-[0.9rem] text-white">
                   <span className="text-purple-400">Drag & drop folder</span> or{' '}
                   <span className="cursor-pointer text-purple-400">
                     Click to Browse
                   </span>
                 </p>
                 <p className="mt-1 text-xs text-gray-500">
-                  Select an entire folder with model files
+                  Select an entire folder with dataset files
                 </p>
                 <input
                   id="folderInput"
@@ -269,7 +281,7 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
             <div className="flex justify-start gap-8 pl-4">
               <div className="w-1/2">
                 <label className="mb-2 block font-medium text-white">
-                  Model Folder Name:*
+                  Dataset Folder Name:*
                 </label>
                 <input
                   type="text"
@@ -279,22 +291,8 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
                   maxLength={128}
                   minLength={1}
                   className="h-10 w-full rounded-md border border-gray-300 p-2 text-black"
-                  placeholder="Enter a name for this model folder"
+                  placeholder="Enter a name for this dataset folder"
                 />
-              </div>
-              <div>
-                <label className="mb-2 block font-medium text-white">
-                  Model Type:*
-                </label>
-                <select
-                  value={modelType}
-                  onChange={(e) => setModelType(e.target.value)}
-                  required
-                  className="h-10 rounded-md border border-secondary-300 px-2 text-black">
-                  <option value="">Select</option>
-                  <option value="regression">Regression</option>
-                  <option value="classification">Classification</option>
-                </select>
               </div>
             </div>
 
@@ -388,22 +386,20 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
             )}
             <div className="mb-6 mt-6 mt-auto flex items-center justify-end gap-4 pr-6">
               <Button
-                pill
-                size="sm"
-                type="button"
-                variant={ButtonVariant.SECONDARY}
-                onClick={onBack}
-                text="CANCEL"
-              />
-              <Button
                 size="sm"
                 type="submit"
-                pill
                 variant={ButtonVariant.PRIMARY}
                 disabled={
                   isLoading || !selectedFiles || selectedFiles.length === 0
                 }
                 text={isLoading ? 'Uploading...' : 'UPLOAD FOLDER'}
+              />
+              <Button
+                size="sm"
+                type="button"
+                variant={ButtonVariant.SECONDARY}
+                onClick={() => (window.location.href = '/datasets')}
+                text="VIEW DATASETS"
               />
             </div>
           </form>
@@ -411,6 +407,4 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
       </div>
     </div>
   );
-};
-
-export default FolderUpload;
+}

@@ -30,6 +30,10 @@ const nextConfig = {
         destination: `${process.env.APIGW_HOST}/test_datasets/upload`,
       },
       {
+        source: '/api/test_datasets/upload_folder',
+        destination: `${process.env.APIGW_HOST}/test_datasets/upload_folder`,
+      },
+      {
         source: '/api/plugins/upload',
         destination: `${process.env.APIGW_HOST}/plugins/upload`,
       },
