@@ -171,7 +171,8 @@ def upload_folder(
                     raise HTTPException(status_code=400, detail=f"Invalid subfolder path {folder}")
         else:
             subfolders_list = None
-
+            
+        total_size = 0
         with tempfile.TemporaryDirectory() as tmpdirname:
             tmpdir = Path(tmpdirname)
             tmp_model_folder = tmpdir.joinpath(filename)
@@ -196,6 +197,7 @@ def upload_folder(
                     raise HTTPException(status_code=400, detail=f"Invalid filename {file.filename}")
                 with open(model_path, "wb") as fp:
                     fp.write(file.file.read())
+                total_size += file.size
 
             now = datetime.now(timezone.utc)
             test_model = TestModelModel(
@@ -205,7 +207,7 @@ def upload_folder(
                 model_type=model_type,
                 file_type=file_type,
                 filename=filename,
-                # size=file.size,
+                size=total_size,
                 created_at=now,
                 updated_at=now
             )
@@ -217,7 +219,7 @@ def upload_folder(
 
             # validate the model
             try:
-                (model_format, serializer) = TestEngineValidator.validate_model(tmp_model_validate_folder, file_type == TestModelFileType.Pipeline)
+                (model_format, serializer) = TestEngineValidator.validate_model(tmp_model_validate_folder, is_pipline=True)
                 test_model.status = TestModelStatus.Valid
                 test_model.model_format = model_format
                 test_model.serializer = serializer
