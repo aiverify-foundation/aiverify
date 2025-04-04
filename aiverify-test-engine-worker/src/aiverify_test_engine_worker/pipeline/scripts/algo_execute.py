@@ -22,6 +22,7 @@ from aiverify_test_engine.interfaces.ialgorithm import IAlgorithm
 from aiverify_test_engine.interfaces.ipipeline import IPipeline
 from aiverify_test_engine.interfaces.itestresult import ITestArguments, ITestResult
 from aiverify_test_engine.plugins.enums.model_type import ModelType
+from aiverify_test_engine.plugins.enums.pipeline_plugin_type import PipelinePluginType
 from aiverify_test_engine.utils.json_utils import (
     remove_numpy_formats,
     validate_json,
@@ -231,17 +232,19 @@ def run():
         initial_data_instance = copy.deepcopy(data_instance)
         initial_model_instance = copy.deepcopy(model_instance)
 
-        # Perform data transformation
-        current_dataset = data_instance.get_data()
-        current_pipeline = model_instance.get_pipeline()
-        data_transformation_stages = current_pipeline[:-1]
-        transformed_dataset = data_transformation_stages.transform(
-            current_dataset
-        )
-        transformed_pipeline = current_pipeline[-1]
-        # Set new transformed pipeline and dataset
-        data_instance.set_data(transformed_dataset)
-        model_instance.set_pipeline(transformed_pipeline)
+        # For pytorch pipeline, transformation is wrapped in the pipeline itself
+        if model_instance.get_pipeline_plugin_type() != PipelinePluginType.PYTORCH:
+            # Perform data transformation
+            current_dataset = data_instance.get_data()
+            current_pipeline = model_instance.get_pipeline()
+            data_transformation_stages = current_pipeline[:-1]
+            transformed_dataset = data_transformation_stages.transform(
+                current_dataset
+            )
+            transformed_pipeline = current_pipeline[-1]
+            # Set new transformed pipeline and dataset
+            data_instance.set_data(transformed_dataset)
+            model_instance.set_pipeline(transformed_pipeline)
 
     except:  # if exception, not pipeline
         (model_instance, model_serializer, model_errmsg) = PluginManager.get_instance(
@@ -267,18 +270,18 @@ def run():
             exit(-1)
         # Leave only the ground truth feature in self._ground_truth_instance and
         # Remove ground truth feature from the data instance
-        is_ground_truth_instance_success = (
-            ground_truth_data_instance.keep_ground_truth(args.ground_truth)
-        )
-        data_instance.remove_ground_truth(args.ground_truth)
-        if not is_ground_truth_instance_success:
-            logger.debug(
-                "ERROR: Unable to retain only ground truth in ground truth instance. (Check "
-                "if "
-                "ground "
-                "truth feature exists in the data specified in ground truth path file.)"
-            )
-            exit(-1)
+        # is_ground_truth_instance_success = (
+        #     ground_truth_data_instance.keep_ground_truth(args.ground_truth)
+        # )
+        # data_instance.remove_ground_truth(args.ground_truth)
+        # if not is_ground_truth_instance_success:
+        #     logger.debug(
+        #         "ERROR: Unable to retain only ground truth in ground truth instance. (Check "
+        #         "if "
+        #         "ground "
+        #         "truth feature exists in the data specified in ground truth path file.)"
+        #     )
+        #     exit(-1)
 
     # set the input arguments
     input_arguments: Dict = copy.deepcopy(args.algorithm_args)
