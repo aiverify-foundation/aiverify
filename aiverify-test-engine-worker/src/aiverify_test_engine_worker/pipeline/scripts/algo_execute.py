@@ -272,7 +272,7 @@ def run():
         # is_ground_truth_instance_success = (
         #     ground_truth_data_instance.keep_ground_truth(args.ground_truth)
         # )
-        # data_instance.remove_ground_truth(args.ground_truth)
+        data_instance.remove_ground_truth(args.ground_truth)
         # if not is_ground_truth_instance_success:
         #     logger.debug(
         #         "ERROR: Unable to retain only ground truth in ground truth instance. (Check "
@@ -340,8 +340,6 @@ def run():
                 str(args.data_path),
                 str(args.model_path),
                 str(args.ground_truth_path),
-                args.ground_truth,
-                args.model_type,
                 **input_arguments,
             )
             algo_init_instance._start_time = start_time
