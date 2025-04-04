@@ -258,7 +258,7 @@ def run():
     # load ground truth
     if args.ground_truth_path:
         (ground_truth_data_instance, ground_truth_data_serializer, ground_truth_data_errmsg) = PluginManager.get_instance(
-            PluginType.DATA, **{"filename": args.data_path.absolute().as_posix()}
+            PluginType.DATA, **{"filename": args.ground_truth_path.absolute().as_posix()}
         )
         logging.debug(
             f"validate ground truth dataset. data_instance:{ground_truth_data_instance}, data_serializer: {ground_truth_data_serializer}, errmsg: {ground_truth_data_errmsg}")
@@ -290,7 +290,13 @@ def run():
     input_arguments["project_base_path"] = algo_src_path
 
     logger.debug(f"input_arguments: {input_arguments}")
-
+    
+    #Remove old output folder if present
+    output_folder: Path = args.algo_path.joinpath("output")
+    if output_folder.exists():
+        import shutil
+        shutil.rmtree(output_folder)
+        
     # Run the plugin with the arguments and instances
     logger.debug("Creating an instance of the Plugin...")
     start_time = time.time()
@@ -310,18 +316,13 @@ def run():
     # Get the task results and convert to json friendly and validate against the output schema
     logger.debug("Converting numpy formats if exists...")
     results = remove_numpy_formats(plugin.get_results())
-
+    
     logger.debug("Verifying results with output schema...")
     if not isinstance(results, Dict) or not validate_json(results, output_schema):
         logger.critical(f"Invalid results: {results}")
         exit(-1)
 
-    # Print the output results
-    output_folder: Path = args.algo_path.joinpath("output")
-    if output_folder.exists():
-        import shutil
-        shutil.rmtree(output_folder)
-
+    # Create output folder to store results
     output_folder.mkdir(parents=True, exist_ok=True)
     json_file_path = output_folder.joinpath("results.json")
 
@@ -334,9 +335,9 @@ def run():
             algo_init_instance = algo_init_class(
                 run_as_pipeline,
                 core_modules_path,
-                args.data_path,
-                args.model_path,
-                args.ground_truth_path,
+                str(args.data_path),
+                str(args.model_path),
+                str(args.ground_truth_path),
                 args.ground_truth,
                 args.model_type,
                 **input_arguments,
@@ -391,11 +392,11 @@ def run():
         output_json = json.dumps(output_dict, default=str)
         with open(json_file_path, "w") as json_file:
             json_file.write(output_json)
-
+            
     output_zip_path: Path = args.output_zip if args.output_zip else args.algo_path.joinpath("output.zip")
 
     output_zip_path.parent.mkdir(parents=True, exist_ok=True)
-
+    
     # Create a zip file of all files in the output_folder
     with ZipFile(output_zip_path, "w") as zipf:
         for file_path in output_folder.rglob("**/*"):
@@ -405,7 +406,7 @@ def run():
                 zipf.mkdir(file_path.relative_to(output_folder).as_posix())
 
     logger.info("Algorithm run method completed successfully.")
-
-
+    
+    
 if __name__ == "__main__":
     run()
