@@ -25,7 +25,9 @@ export function useProcessChecklistExport(
   checklists: Checklist[]
 ) {
   const [isExporting, setIsExporting] = useState(false);
-  const [ExportButton, setExportButton] = useState<React.ReactNode | null>(null);
+  const [ExportButton, setExportButton] = useState<React.ReactNode | null>(
+    null
+  );
 
   // Plugin IDs
   const gid = 'aiverify.stock.process_checklist';
@@ -48,17 +50,21 @@ export function useProcessChecklistExport(
         const moduleExports = executeMDXBundle(mdxBundle);
 
         // Check if prepareExportData function is exported from the MDX
-        if (moduleExports && typeof moduleExports.prepareExportData === 'function') {
+        if (
+          moduleExports &&
+          typeof moduleExports.prepareExportData === 'function'
+        ) {
           // Create a custom export button that uses our Excel utility
           const CustomExportButton = () => {
             const handleExport = async () => {
               if (isExporting) return;
-              
+
               setIsExporting(true);
               try {
                 // Use the prepareExportData function directly from the module exports
-                const workbookDefinition = await moduleExports.prepareExportData(groupName, checklists);
-                
+                const workbookDefinition =
+                  await moduleExports.prepareExportData(groupName, checklists);
+
                 if (workbookDefinition) {
                   // Use our generic Excel utility to create and download the Excel file
                   await createAndDownloadExcel(workbookDefinition);
@@ -91,7 +97,7 @@ export function useProcessChecklistExport(
               disabled={true}
               className="opacity-50 hover:text-primary-500"
               title="Export not available">
-              <RiDownloadLine size={24} />
+              <RiDownloadLine size={20} />
             </button>
           );
         }
@@ -109,7 +115,9 @@ export function useProcessChecklistExport(
     if (!isReady || isExporting) return;
 
     // Find the export button in the DOM
-    const button = document.querySelector('[data-export-button="true"] button') as HTMLElement;
+    const button = document.querySelector(
+      '[data-export-button="true"] button'
+    ) as HTMLElement;
     if (button) {
       button.click();
     } else {

@@ -1,26 +1,231 @@
 // Export function for use in MDX files
-export async function exportToExcel(groupName, checklists, configFiles) {
+export async function prepareChecklistExportData(
+  groupName,
+  checklists,
+  configFiles
+) {
   if (!groupName || !checklists || !configFiles) {
-    console.error('Missing required parameters for export');
-    return;
+    console.error("Missing required parameters for export data preparation");
+    return null;
   }
 
   try {
-    // Dynamically import ExcelJS to avoid issues with MDX parsing
-    const ExcelJS = (await import('exceljs')).default;
+    // Create a data structure to hold the formatted checklist data
+    const formattedChecklistData = [];
 
-    // Create a new workbook
-    const workbook = new ExcelJS.Workbook();
-    workbook.creator = 'Checklist App';
-    workbook.lastModifiedBy = 'Checklist App';
-    workbook.created = new Date();
-    workbook.modified = new Date();
+    // Sort checklists based on groupNumber from their meta.json files
+    const sortedChecklists = [...checklists].sort((a, b) => {
+      try {
+        // Extract the base key (without _process_checklist suffix)
+        const keyA = a.cid.replace("_process_checklist", "");
+        const keyB = b.cid.replace("_process_checklist", "");
 
-    // Process each checklist
-    checklists.forEach((checklist) => {
+        // Determine the meta file paths
+        let metaFileA, metaFileB;
+
+        // Handle the special case for inclusive_growth
+        if (keyA === "inclusive_growth") {
+          metaFileA = require(`./inclusive_growth_process_checklist.meta.json`);
+        } else {
+          metaFileA = require(`./${keyA}_process_checklist.meta.json`);
+        }
+
+        if (keyB === "inclusive_growth") {
+          metaFileB = require(`./inclusive_growth_process_checklist.meta.json`);
+        } else {
+          metaFileB = require(`./${keyB}_process_checklist.meta.json`);
+        }
+
+        // Extract groupNumber from meta files or use default values
+        const groupNumberA = metaFileA.groupNumber || 999;
+        const groupNumberB = metaFileB.groupNumber || 999;
+
+        return groupNumberA - groupNumberB;
+      } catch (error) {
+        console.error("Error sorting checklists by groupNumber:", error);
+        return 0; // Keep original order if there's an error
+      }
+    });
+
+    // Define Excel styles
+    const excelStyles = {
+      title: {
+        font: { bold: true, size: 12, color: { argb: "FF000000" } },
+        fill: {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FF6D9EEB" }, // #6d9eeb
+        },
+        alignment: {
+          horizontal: "left",
+          vertical: "middle",
+          wrapText: true,
+        },
+        border: {
+          top: { style: "thin", color: { argb: "FF000000" } },
+          left: { style: "thin", color: { argb: "FF000000" } },
+          bottom: { style: "thin", color: { argb: "FF000000" } },
+          right: { style: "thin", color: { argb: "FF000000" } },
+        },
+      },
+      description: {
+        font: { bold: false, size: 12, color: { argb: "FF000000" } },
+        fill: {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFD9E6FC" }, //d9e6fc
+        },
+        alignment: {
+          horizontal: "left",
+          vertical: "middle",
+          wrapText: true,
+        },
+        border: {
+          top: { style: "thin", color: { argb: "FF000000" } },
+          left: { style: "thin", color: { argb: "FF000000" } },
+          bottom: { style: "thin", color: { argb: "FF000000" } },
+          right: { style: "thin", color: { argb: "FF000000" } },
+        },
+      },
+      sectionHeader: {
+        font: { bold: true, size: 12, color: { argb: "FFFFFFFF" } },
+        fill: {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FF000000" },
+        },
+        alignment: {
+          horizontal: "center",
+          vertical: "middle",
+          wrapText: true,
+        },
+        border: {
+          top: { style: "thin", color: { argb: "FF000000" } },
+          left: { style: "thin", color: { argb: "FF000000" } },
+          bottom: { style: "thin", color: { argb: "FF000000" } },
+          right: { style: "thin", color: { argb: "FF000000" } },
+        },
+      },
+      testableCriteriaHeader: {
+        font: { bold: true, size: 10, color: { argb: "FFFFFFFF" } },
+        fill: {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FF6D9EEB" },
+        },
+        alignment: {
+          horizontal: "left",
+          vertical: "middle",
+          wrapText: true,
+        },
+        border: {
+          top: { style: "thin", color: { argb: "FF000000" } },
+          left: { style: "thin", color: { argb: "FF000000" } },
+          bottom: { style: "thin", color: { argb: "FF000000" } },
+          right: { style: "thin", color: { argb: "FF000000" } },
+        },
+      },
+      testableCriteriaContent: {
+        font: { size: 10, color: { argb: "FF000000" } },
+        fill: {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFA4C2F4" }, //a4c2f4
+        },
+        alignment: {
+          horizontal: "left",
+          vertical: "middle",
+          wrapText: true,
+        },
+        border: {
+          top: { style: "thin", color: { argb: "FF000000" } },
+          left: { style: "thin", color: { argb: "FF000000" } },
+          bottom: { style: "thin", color: { argb: "FF000000" } },
+          right: { style: "thin", color: { argb: "FF000000" } },
+        },
+      },
+      processHeader: {
+        font: { bold: true, size: 10, color: { argb: "FF000000" } },
+        fill: {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFC9DAF8" }, // c9daf8
+        },
+        alignment: {
+          horizontal: "center",
+          vertical: "middle",
+          wrapText: true,
+        },
+        border: {
+          top: { style: "thin", color: { argb: "FF000000" } },
+          left: { style: "thin", color: { argb: "FF000000" } },
+          bottom: { style: "thin", color: { argb: "FF000000" } },
+          right: { style: "thin", color: { argb: "FF000000" } },
+        },
+      },
+      evenRow: {
+        font: { size: 10, color: { argb: "FF000000" } },
+        fill: {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFD9E1F2" },
+        },
+        alignment: { vertical: "top", wrapText: true },
+        border: {
+          top: { style: "thin", color: { argb: "FF000000" } },
+          left: { style: "thin", color: { argb: "FF000000" } },
+          bottom: { style: "thin", color: { argb: "FF000000" } },
+          right: { style: "thin", color: { argb: "FF000000" } },
+        },
+      },
+      oddRow: {
+        font: { size: 10, color: { argb: "FF000000" } },
+        fill: {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFFFFFFF" },
+        },
+        alignment: { vertical: "top", wrapText: true },
+        border: {
+          top: { style: "thin", color: { argb: "FF000000" } },
+          left: { style: "thin", color: { argb: "FF000000" } },
+          bottom: { style: "thin", color: { argb: "FF000000" } },
+          right: { style: "thin", color: { argb: "FF000000" } },
+        },
+      },
+    };
+
+    // Column definitions for Excel
+    const columns = [
+      { key: "pid", width: 10 },
+      { key: "process", width: 40 },
+      { key: "metric", width: 20 },
+      { key: "processChecks", width: 50 },
+      { key: "completed", width: 20 },
+      { key: "elaboration", width: 40 },
+    ];
+
+    // Sheets configuration - complete instructions for building Excel sheets
+    const sheets = [];
+
+    // Helper function to replace <br> tags with newlines for all text content
+    const replaceBreakTags = (text) => {
+      return typeof text === "string"
+        ? text.replace(/<br\s*\/?>/g, "\n")
+        : text;
+    };
+
+    // Process each checklist to create a worksheet configuration
+    sortedChecklists.forEach((checklist) => {
       // Get the config key from the checklist ID
-      const key = checklist.cid.replace('_process_checklist', '');
-      const configKey = `config_${key}`;
+      const key = checklist.cid.replace("_process_checklist", "");
+      const configKey =
+        key === "inclusive_growth"
+          ? "config_inclusive_growth_soc_env"
+          : `config_${key}`;
+
+      // Get the config file content - the configFiles object should already have the correct mapping
+      // from the getConfigFiles function that handles the special case for inclusive_growth
       const configFileContent = configFiles[configKey];
 
       if (!configFileContent) {
@@ -30,234 +235,106 @@ export async function exportToExcel(groupName, checklists, configFiles) {
 
       try {
         // Parse the config file content if it's a string
-        const config = typeof configFileContent === 'string'
-          ? JSON.parse(configFileContent)
-          : configFileContent;
+        const config =
+          typeof configFileContent === "string"
+            ? JSON.parse(configFileContent)
+            : configFileContent;
 
         // Validate the config object
-        if (!config || typeof config !== 'object') {
+        if (!config || typeof config !== "object") {
           throw new Error(`Invalid config file content for ${configKey}`);
         }
 
-        // Ensure required fields exist
+        // Ensure required fields exist and format any text content
         const validatedConfig = {
-          principle: config.principle || 'Unknown Principle',
-          description: config.description || 'No description available',
+          principle: replaceBreakTags(config.principle) || "Unknown Principle",
+          description:
+            replaceBreakTags(config.description) || "No description available",
           sections: config.sections || [],
         };
 
-        // Create worksheet (limit name to 31 characters for Excel compatibility)
-        const worksheet = workbook.addWorksheet(
-          checklist.name.replace(/Process Checklist$/, '').substring(0, 31)
-        );
-
-        // Set column widths
-        worksheet.columns = [
-          { key: 'pid', width: 10 },
-          { key: 'process', width: 40 },
-          { key: 'metric', width: 20 },
-          { key: 'processChecks', width: 50 },
-          { key: 'completed', width: 20 },
-          { key: 'elaboration', width: 40 }
-        ];
-
-        // Define styles
-        const styles = {
-          title: {
-            font: { bold: true, size: 12, color: { argb: 'FF000000' } },
-            fill: {
-              type: 'pattern',
-              pattern: 'solid',
-              fgColor: { argb: 'FF6D9EEB' } // #6d9eeb
-            },
-            alignment: {
-              horizontal: 'left',
-              vertical: 'middle',
-              wrapText: true
-            },
-            border: {
-              top: { style: 'thin', color: { argb: 'FF000000' } },
-              left: { style: 'thin', color: { argb: 'FF000000' } },
-              bottom: { style: 'thin', color: { argb: 'FF000000' } },
-              right: { style: 'thin', color: { argb: 'FF000000' } }
-            }
-          },
-          description: {
-            font: { bold: false, size: 12, color: { argb: 'FF000000' } },
-            fill: {
-              type: 'pattern',
-              pattern: 'solid',
-              fgColor: { argb: 'FFD9E6FC' } //d9e6fc
-            },
-            alignment: { horizontal: 'left', vertical: 'middle', wrapText: true },
-            border: {
-              top: { style: 'thin', color: { argb: 'FF000000' } },
-              left: { style: 'thin', color: { argb: 'FF000000' } },
-              bottom: { style: 'thin', color: { argb: 'FF000000' } },
-              right: { style: 'thin', color: { argb: 'FF000000' } }
-            }
-          },
-          sectionHeader: {
-            font: { bold: true, size: 12, color: { argb: 'FFFFFFFF' } },
-            fill: {
-              type: 'pattern',
-              pattern: 'solid',
-              fgColor: { argb: 'FF000000' }
-            },
-            alignment: {
-              horizontal: 'center',
-              vertical: 'middle',
-              wrapText: true
-            },
-            border: {
-              top: { style: 'thin', color: { argb: 'FF000000' } },
-              left: { style: 'thin', color: { argb: 'FF000000' } },
-              bottom: { style: 'thin', color: { argb: 'FF000000' } },
-              right: { style: 'thin', color: { argb: 'FF000000' } }
-            }
-          },
-          testableCriteriaHeader: {
-            font: { bold: true, size: 10, color: { argb: 'FFFFFFFF' } },
-            fill: {
-              type: 'pattern',
-              pattern: 'solid',
-              fgColor: { argb: 'FF6D9EEB' }
-            },
-            alignment: { horizontal: 'left', vertical: 'middle', wrapText: true },
-            border: {
-              top: { style: 'thin', color: { argb: 'FF000000' } },
-              left: { style: 'thin', color: { argb: 'FF000000' } },
-              bottom: { style: 'thin', color: { argb: 'FF000000' } },
-              right: { style: 'thin', color: { argb: 'FF000000' } }
-            }
-          },
-          testableCriteriaContent: {
-            font: { size: 10, color: { argb: 'FF000000' } },
-            fill: {
-              type: 'pattern',
-              pattern: 'solid',
-              fgColor: { argb: 'FFA4C2F4' } //a4c2f4
-            },
-            alignment: { horizontal: 'left', vertical: 'middle', wrapText: true },
-            border: {
-              top: { style: 'thin', color: { argb: 'FF000000' } },
-              left: { style: 'thin', color: { argb: 'FF000000' } },
-              bottom: { style: 'thin', color: { argb: 'FF000000' } },
-              right: { style: 'thin', color: { argb: 'FF000000' } }
-            }
-          },
-          processHeader: {
-            font: { bold: true, size: 10, color: { argb: 'FF000000' } },
-            fill: {
-              type: 'pattern',
-              pattern: 'solid',
-              fgColor: { argb: 'FFC9DAF8' } // c9daf8
-            },
-            alignment: {
-              horizontal: 'center',
-              vertical: 'middle',
-              wrapText: true
-            },
-            border: {
-              top: { style: 'thin', color: { argb: 'FF000000' } },
-              left: { style: 'thin', color: { argb: 'FF000000' } },
-              bottom: { style: 'thin', color: { argb: 'FF000000' } },
-              right: { style: 'thin', color: { argb: 'FF000000' } }
-            }
-          },
-          evenRow: {
-            font: { size: 10, color: { argb: 'FF000000' } },
-            fill: {
-              type: 'pattern',
-              pattern: 'solid',
-              fgColor: { argb: 'FFD9E1F2' }
-            },
-            alignment: { vertical: 'top', wrapText: true },
-            border: {
-              top: { style: 'thin', color: { argb: 'FF000000' } },
-              left: { style: 'thin', color: { argb: 'FF000000' } },
-              bottom: { style: 'thin', color: { argb: 'FF000000' } },
-              right: { style: 'thin', color: { argb: 'FF000000' } }
-            }
-          },
-          oddRow: {
-            font: { size: 10, color: { argb: 'FF000000' } },
-            fill: {
-              type: 'pattern',
-              pattern: 'solid',
-              fgColor: { argb: 'FFFFFFFF' }
-            },
-            alignment: { vertical: 'top', wrapText: true },
-            border: {
-              top: { style: 'thin', color: { argb: 'FF000000' } },
-              left: { style: 'thin', color: { argb: 'FF000000' } },
-              bottom: { style: 'thin', color: { argb: 'FF000000' } },
-              right: { style: 'thin', color: { argb: 'FF000000' } }
-            }
-          }
+        // Create a sheet configuration object
+        const sheetConfig = {
+          name: checklist.name
+            .replace(/Process Checklist$/, "")
+            .substring(0, 31), // Excel limits worksheet names to 31 chars
+          columns: columns,
+          rows: [],
         };
 
-        // Add title row with principle name
-        const titleRow = worksheet.addRow([
-          validatedConfig.principle.toUpperCase()
-        ]);
-        titleRow.height = 30;
-        // Merge cells for title
-        worksheet.mergeCells('A1:F1');
-        // Apply style to title row
-        applyStyleToRow(titleRow, styles.title);
+        // Add title row
+        sheetConfig.rows.push({
+          cells: [
+            { value: validatedConfig.principle.toUpperCase(), style: "title" },
+          ],
+          height: 30,
+          mergedCells: "A1:F1",
+        });
 
         // Add description row
-        const descRow = worksheet.addRow([validatedConfig.description]);
-        descRow.height = 60;
-        // Merge cells for description
-        worksheet.mergeCells('A2:F2');
-        // Apply style to description row
-        applyStyleToRow(descRow, styles.description);
+        sheetConfig.rows.push({
+          cells: [{ value: validatedConfig.description, style: "description" }],
+          height: 60,
+          mergedCells: "A2:F2",
+        });
 
         // Add Process Checklist header
-        const headerRow = worksheet.addRow(['Process Checklist']);
-        // Merge cells for header
-        worksheet.mergeCells('A3:F3');
-        // Apply style to header row
-        applyStyleToRow(headerRow, styles.sectionHeader);
-
-        let rowIndex = 4;
+        sheetConfig.rows.push({
+          cells: [{ value: "Process Checklist", style: "sectionHeader" }],
+          mergedCells: "A3:F3",
+        });
 
         // Iterate through the sections and processes in the config
         validatedConfig.sections.forEach((section) => {
           section.checklist.forEach((check) => {
-            // Add Testable Criteria row
-            const criteriaHeaderRow = worksheet.addRow(['Testable Criteria']);
-            // Merge cells for testable criteria header
-            worksheet.mergeCells(`A${rowIndex}:F${rowIndex}`);
-            // Apply style to testable criteria header row
-            applyStyleToRow(criteriaHeaderRow, styles.testableCriteriaHeader);
-            rowIndex++;
-
-            // Add the testable criteria content
-            const criteriaContentRow = worksheet.addRow([check.testableCriteria]);
-            // Merge cells for testable criteria content
-            worksheet.mergeCells(`A${rowIndex}:F${rowIndex}`);
-            criteriaContentRow.height = calculateRowHeight(
+            // Format testable criteria
+            const formattedTestableCriteria = replaceBreakTags(
               check.testableCriteria
             );
-            // Apply style to testable criteria content row
-            applyStyleToRow(criteriaContentRow, styles.testableCriteriaContent);
-            rowIndex++;
 
-            // Add header row for the processes
-            const processHeaderRow = worksheet.addRow([
-              'pid',
-              'Process',
-              'Metric',
-              'Process Checks',
-              'Process Checks Completed\n(Yes / No / Not Applicable)',
-              'Elaboration\n- If Yes, describe how it is implemented / documented (where applicable).\n- If No, state the reason(s) why it is not implemented.\n- If Not applicable, state reason(s).'
-            ]);
-            // Apply style to process header row
-            applyStyleToRow(processHeaderRow, styles.processHeader);
-            rowIndex++;
+            // Add Testable Criteria header row
+            sheetConfig.rows.push({
+              cells: [
+                { value: "Testable Criteria", style: "testableCriteriaHeader" },
+              ],
+              mergedCells: `A${sheetConfig.rows.length + 1}:F${
+                sheetConfig.rows.length + 1
+              }`,
+            });
+
+            // Add testable criteria content row
+            sheetConfig.rows.push({
+              cells: [
+                {
+                  value: formattedTestableCriteria,
+                  style: "testableCriteriaContent",
+                },
+              ],
+              height: calculateRowHeight(formattedTestableCriteria),
+              mergedCells: `A${sheetConfig.rows.length + 1}:F${
+                sheetConfig.rows.length + 1
+              }`,
+            });
+
+            // Add header row for processes
+            sheetConfig.rows.push({
+              cells: [
+                { value: "pid", style: "processHeader" },
+                { value: "Process", style: "processHeader" },
+                { value: "Metric", style: "processHeader" },
+                { value: "Process Checks", style: "processHeader" },
+                {
+                  value:
+                    "Process Checks Completed\n(Yes / No / Not Applicable)",
+                  style: "processHeader",
+                },
+                {
+                  value:
+                    "Elaboration\n- If Yes, describe how it is implemented / documented (where applicable).\n- If No, state the reason(s) why it is not implemented.\n- If Not applicable, state reason(s).",
+                  style: "processHeader",
+                },
+              ],
+            });
 
             // Add process rows
             let processRowCount = 0;
@@ -266,103 +343,97 @@ export async function exportToExcel(groupName, checklists, configFiles) {
               const completedKey = `completed-${pid}`;
               const elaborationKey = `elaboration-${pid}`;
 
-              const completedValue = checklist.data[completedKey] || '';
-              const elaborationValue = checklist.data[elaborationKey] || '';
+              const completedValue = checklist.data[completedKey] || "";
+              const elaborationValue = checklist.data[elaborationKey] || "";
 
-              // Replace <br> tags with newlines
-              const formattedCompletedValue = completedValue.replace(
-                /<br\s*\/?>/g,
-                '\n'
+              // Replace <br> tags with newlines for all text content
+              const formattedCompletedValue = replaceBreakTags(completedValue);
+              const formattedElaborationValue =
+                replaceBreakTags(elaborationValue);
+
+              // Also format the process and processChecks from the config
+              const formattedProcess = replaceBreakTags(process.process);
+              const formattedProcessChecks = replaceBreakTags(
+                process.processChecks
               );
-              const formattedElaborationValue = elaborationValue.replace(
-                /<br\s*\/?>/g,
-                '\n'
-              );
 
-              const processRow = worksheet.addRow([
-                pid,
-                process.process,
-                process.metric,
-                process.processChecks,
-                formattedCompletedValue,
-                formattedElaborationValue
-              ]);
-
-              // Calculate appropriate row height based on content
-              processRow.height = Math.max(
-                calculateRowHeight(process.process),
-                calculateRowHeight(process.processChecks),
+              // Calculate height
+              const rowHeight = Math.max(
+                calculateRowHeight(formattedProcess),
+                calculateRowHeight(formattedProcessChecks),
                 calculateRowHeight(formattedElaborationValue)
               );
-              // Apply alternating row styles
-              const style =
-                processRowCount % 2 === 0 ? styles.evenRow : styles.oddRow;
-              applyStyleToRow(processRow, style);
+
+              // Determine style for alternating rows
+              const rowStyle = processRowCount % 2 === 0 ? "evenRow" : "oddRow";
+
+              // Add the process row
+              sheetConfig.rows.push({
+                cells: [
+                  { value: pid, style: rowStyle },
+                  { value: formattedProcess, style: rowStyle },
+                  { value: process.metric, style: rowStyle },
+                  { value: formattedProcessChecks, style: rowStyle },
+                  { value: formattedCompletedValue, style: rowStyle },
+                  { value: formattedElaborationValue, style: rowStyle },
+                ],
+                height: rowHeight,
+              });
+
               processRowCount++;
-              rowIndex++;
             });
           });
         });
 
-        // Add summary justification header row
-        const summaryHeaderRow = worksheet.addRow(['Summary Justification']);
-        // Merge cells for summary justification header
-        worksheet.mergeCells(`A${rowIndex}:F${rowIndex}`);
-        // Apply style to summary justification header row
-        applyStyleToRow(summaryHeaderRow, styles.sectionHeader);
-        rowIndex++;
+        // Add summary justification header
+        sheetConfig.rows.push({
+          cells: [{ value: "Summary Justification", style: "sectionHeader" }],
+          mergedCells: `A${sheetConfig.rows.length + 1}:F${
+            sheetConfig.rows.length + 1
+          }`,
+        });
 
-        // Add the summary justification content
-        const summaryKey = `summary-justification-${validatedConfig.principle}`;
-        // Get summary from checklist data
-        const summaryValue = checklist.data[summaryKey] || '';
-        const summaryRow = worksheet.addRow([summaryValue]);
-        // Merge cells for testable criteria content
-        worksheet.mergeCells(`A${rowIndex}:F${rowIndex}`);
-        summaryRow.height = calculateRowHeight(summaryValue);
-        // Apply style to testable criteria content row
-        applyStyleToRow(summaryRow, styles.oddRow);
-        rowIndex++;
+        // Add summary justification content
+        // For inclusive_growth, we need to handle a different key pattern
+        let summaryKey;
+        if (key === "inclusive_growth") {
+          summaryKey = `summary-justification-inclusive_growth_soc_env`;
+        } else {
+          summaryKey = `summary-justification-${validatedConfig.principle}`;
+        }
+
+        const summaryValue = checklist.data[summaryKey] || "";
+        const formattedSummaryValue = replaceBreakTags(summaryValue);
+
+        sheetConfig.rows.push({
+          cells: [{ value: formattedSummaryValue, style: "oddRow" }],
+          height: calculateRowHeight(formattedSummaryValue),
+          mergedCells: `A${sheetConfig.rows.length + 1}:F${
+            sheetConfig.rows.length + 1
+          }`,
+        });
+
+        // Add the sheet configuration to the sheets array
+        sheets.push(sheetConfig);
       } catch (error) {
         console.error(`Error processing checklist ${checklist.name}:`, error);
       }
     });
 
-    // Write the workbook to a buffer
-    const buffer = await workbook.xlsx.writeBuffer();
-
-    // Create a Blob from the buffer
-    const blob = new Blob([buffer], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    });
-
-    // Create a download link and trigger the download
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${groupName}_checklists.xlsx`;
-    document.body.appendChild(a);
-    a.click();
-
-    // Clean up
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
-    
-    return true; // Indicate successful export
+    // Return a complete Excel workbook blueprint
+    return {
+      fileName: `${groupName}_checklists.xlsx`,
+      creator: "AI Verify",
+      lastModifiedBy: "AI Verify",
+      created: new Date(),
+      modified: new Date(),
+      styles: excelStyles,
+      sheets: sheets,
+    };
   } catch (error) {
-    console.error('Error during export:', error);
-    return false;
+    console.error("Error during data preparation:", error);
+    return null;
   }
-}
-
-// Helper function to apply style to an entire row
-function applyStyleToRow(row, style) {
-  row.eachCell((cell) => {
-    cell.font = style.font;
-    cell.fill = style.fill;
-    cell.alignment = style.alignment;
-    cell.border = style.border;
-  });
 }
 
 // Helper function to calculate row height based on content length
@@ -381,4 +452,4 @@ function calculateRowHeight(content) {
   if (lineCount > 1) return 40;
 
   return 20; // Default height
-} 
+}

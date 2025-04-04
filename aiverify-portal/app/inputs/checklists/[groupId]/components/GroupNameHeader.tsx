@@ -21,7 +21,6 @@ const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
   const [modalMessage, setModalMessage] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
-  const [, setConfigFiles] = useState<Record<string, string>>({});
 
   const { checklists, setChecklists, setSelectedGroup } = useChecklists();
 
@@ -32,8 +31,10 @@ const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
   const storageKey = `checklist_group_name_${initialGroupName}`;
 
   // Get export functionality using the new hook
-  const { ExportButton } =
-    useProcessChecklistExport(initialGroupName, checklists);
+  const { ExportButton } = useProcessChecklistExport(
+    initialGroupName,
+    checklists
+  );
 
   // Update local state when initialGroupName changes
   useEffect(() => {
@@ -172,12 +173,18 @@ const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
 
       <div className="flex justify-between gap-2">
         {/* Render the ExportButton component when available, otherwise render a fallback */}
-        <div className="mt-2" data-export-button="true">
+        <div
+          data-export-button="true"
+          className="mt-2">
           {ExportButton || (
             <button
               disabled={true}
               className="opacity-50">
-              <RiDownloadLine />
+              <Icon
+                name={IconName.WideArrowDown}
+                color="#FFFFFF"
+                size={24}
+              />
             </button>
           )}
         </div>
