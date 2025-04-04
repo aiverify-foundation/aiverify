@@ -10,13 +10,34 @@ import { Button, ButtonVariant } from '@/lib/components/button';
 import { Modal } from '@/lib/components/modal';
 import styles from './ExcelUploader.module.css';
 
+// Define the interface for checklist submissions
+interface ChecklistSubmission {
+  gid: string;
+  cid: string;
+  name: string;
+  group: string;
+  data: Record<string, string>;
+}
+
+// Define the error interface
+interface SubmissionError {
+  message?: string;
+  statusCode?: number;
+  details?: unknown;
+}
+
 const ExcelUploader = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
+  const [duplicateSubmissions, setDuplicateSubmissions] = useState<
+    ChecklistSubmission[]
+  >([]);
+  const [groupName, setGroupName] = useState('');
 
   // Preload the MDX bundle to ensure it's available
   const { error: mdxError } = useMDXSummaryBundle(
@@ -46,6 +67,65 @@ const ExcelUploader = () => {
     }
   };
 
+  const overwriteChecklists = async () => {
+    setIsConfirmModalVisible(false);
+    setIsUploading(true);
+
+    try {
+      console.log(
+        `Overwriting ${duplicateSubmissions.length} checklists for group "${groupName}"`
+      );
+
+      // Process each submission with PUT request instead of POST
+      for (const submission of duplicateSubmissions) {
+        // Get existing checklist ID by querying API
+        const queryParams = new URLSearchParams({
+          gid: submission.gid,
+          cid: submission.cid,
+          group: submission.group,
+        });
+
+        const response = await fetch(`/api/input_block_data?${queryParams}`);
+        if (response.ok) {
+          const existingChecklist = await response.json();
+          if (existingChecklist && existingChecklist.length > 0) {
+            // Use PUT to update the existing checklist
+            const updateResponse = await fetch(
+              `/api/input_block_data/${existingChecklist[0].id}`,
+              {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(submission),
+              }
+            );
+
+            if (!updateResponse.ok) {
+              throw new Error(
+                `Failed to update checklist ${submission.cid}: ${updateResponse.statusText}`
+              );
+            }
+          }
+        }
+      }
+
+      setModalMessage(
+        `Successfully overwritten ${duplicateSubmissions.length} checklists for group "${groupName}".`
+      );
+      setIsModalVisible(true);
+    } catch (error) {
+      console.error('Error during overwrite process:', error);
+      setModalMessage(
+        `Overwrite failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
+      setIsModalVisible(true);
+    } finally {
+      setIsUploading(false);
+      setDuplicateSubmissions([]);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!file) return;
 
@@ -61,30 +141,63 @@ const ExcelUploader = () => {
     setIsUploading(true);
 
     try {
-      const groupName = file.name
+      const fileGroupName = file.name
         .replace('.xlsx', '')
         .replace('_checklists', '');
 
-      console.log('Processing Excel file:', file.name);
-      console.log('Using group name:', groupName);
+      setGroupName(fileGroupName);
 
-      const submissions = await excelToJson(file, groupName);
+      console.log('Processing Excel file:', file.name);
+      console.log('Using group name:', fileGroupName);
+
+      const submissions = await excelToJson(file, fileGroupName);
 
       if (submissions && submissions.length > 0) {
         console.log(`Submitting ${submissions.length} checklists`);
-        for (const submission of submissions) {
-          await submitChecklist(submission);
+
+        try {
+          for (const submission of submissions) {
+            await submitChecklist(submission);
+          }
+
+          setModalMessage(
+            `Upload Successful! Processed ${submissions.length} checklists.`
+          );
+          setIsModalVisible(true);
+        } catch (error: unknown) {
+          console.log('Error during checklist submission:', error);
+
+          // Check if it's a duplicate checklist error (400 with specific message)
+          const submissionError = error as SubmissionError;
+          if (
+            submissionError.message &&
+            submissionError.message.includes('already exists')
+          ) {
+            console.log(
+              'Detected duplicate checklist error:',
+              submissionError.message
+            );
+
+            // Store submissions for potential overwrite
+            setDuplicateSubmissions(submissions);
+
+            // Show confirmation modal for overwrite
+            setIsConfirmModalVisible(true);
+          } else {
+            // Other error types
+            setModalMessage(
+              `Upload failed: ${submissionError.message || 'Unknown error'}`
+            );
+            setIsModalVisible(true);
+          }
         }
-        setModalMessage(
-          `Upload Successful! Processed ${submissions.length} checklists.`
-        );
       } else {
         console.warn('No valid checklists were found in the file');
         setModalMessage(
           'Upload complete, but no valid checklists were found in the file.'
         );
+        setIsModalVisible(true);
       }
-      setIsModalVisible(true);
     } catch (error) {
       console.error('Error during upload process:', error);
       setModalMessage(
@@ -98,6 +211,11 @@ const ExcelUploader = () => {
 
   const closeModal = () => {
     setIsModalVisible(false);
+  };
+
+  const closeConfirmModal = () => {
+    setIsConfirmModalVisible(false);
+    setDuplicateSubmissions([]);
   };
 
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
@@ -117,7 +235,7 @@ const ExcelUploader = () => {
       className="relative mb-8 flex h-[calc(100vh-100px)] overflow-y-auto rounded-lg bg-secondary-950 pl-10 scrollbar-hidden"
       role="region"
       aria-label="Excel uploader container">
-      {/* Upload Popup */}
+      {/* Upload Status Modal */}
       {isModalVisible && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center"
@@ -134,6 +252,34 @@ const ExcelUploader = () => {
           </Modal>
         </div>
       )}
+
+      {/* Confirmation Modal for Overwrite */}
+      {isConfirmModalVisible && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          role="dialog"
+          aria-label="overwrite confirmation modal">
+          <Modal
+            bgColor="var(--color-warning-500)"
+            textColor="white"
+            onCloseIconClick={closeConfirmModal}
+            enableScreenOverlay
+            heading="Duplicate Checklists Detected"
+            height={250}
+            primaryBtnLabel="Yes, Overwrite"
+            secondaryBtnLabel="Cancel"
+            onPrimaryBtnClick={overwriteChecklists}
+            onSecondaryBtnClick={closeConfirmModal}>
+            <div className="mb-4">
+              <p>
+                There is an existing group of checklists with the name &quot;
+                {groupName}&quot;. Do you want to overwrite these checklists?
+              </p>
+            </div>
+          </Modal>
+        </div>
+      )}
+
       <div className="mt-6 w-full">
         <div
           className="mb-8 flex items-center justify-between"
