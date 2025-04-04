@@ -1,1 +1,0 @@
-<#--List the values and core concepts that are relevant to the use case.-->

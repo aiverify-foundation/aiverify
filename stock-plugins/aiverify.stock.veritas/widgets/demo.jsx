@@ -1,578 +1,255 @@
 import React from "react";
 import {
-  mockData,
-  safeGetArtifactURL,
   SectionContainer,
-  SectionTitle,
-  SectionContent,
-  formatNumber,
-  ImageWithFallback,
+  QuestionContainer,
+  QuestionHeader,
+  Elaboration,
+  CriteriaContainer,
+  CriteriaHeader,
 } from "./veritas_components";
+import {
+  G3,
+  G4,
+  G5_S1,
+  G5_S2,
+  G5_S3,
+  G10,
+  G11_S1,
+  G11_S3,
+  EA1,
+  EA2,
+  EA3,
+  EA5_S2,
+  EA5_S3,
+  EA7,
+  F1_S1,
+  F2_S1,
+  F2_S2,
+  F3_S1,
+  F3_S2,
+  F4_S1,
+  F4_S2,
+  F4_S3,
+  F5,
+  F6,
+  F7,
+  F8_S1,
+  F8_S2,
+  F8_S3,
+  F9_S1,
+  F9_S2,
+  F10_S1,
+  F10_S2,
+  F11,
+  F12_S1,
+  T1,
+  T2_S2,
+  T3_S1,
+  T3_S2,
+  T5,
+  T6,
+  T7_S1,
+  T9_S2,
+  T10,
+  T11,
+  T13,
+} from "./answer";
+import { processChecklistConfigsByPrinciple } from "./summary_compute";
 
-export const cid = "veritastool";
+export const ProcessChecklist = ({
+  principle,
+  props,
+  filterQuestions = [],
+}) => {
+  const [config, setConfig] = React.useState(null);
+  const [filteredSections, setFilteredSections] = React.useState([]);
+  const [data, setData] = React.useState(null);
+  const useCase = props.properties.useCase;
 
-export const FairnessMetricsTable = ({ fairMetricValues, fairnessInit }) => {
-  if (!fairMetricValues || Object.keys(fairMetricValues).length === 0) {
-    return <p>No fairness metrics available.</p>;
+  React.useEffect(() => {
+    const config = processChecklistConfigsByPrinciple[principle];
+    if (!config) {
+      return;
+    }
+    setConfig(config);
+
+    const data = props.getIBData(config.cid);
+    setData(data);
+
+    for (const section of config.sections) {
+      for (const check of section.checklist) {
+        for (const ps of check.processes) {
+          const key = `elaboration-${ps.pid}`;
+          ps.elaboration = data[key];
+        }
+      }
+    }
+
+    // Filter sections based on the filterQuestions array
+    if (filterQuestions && filterQuestions.length > 0) {
+      const filtered = config.sections
+        .map((section) => {
+          const sectionCopy = { ...section };
+          sectionCopy.checklist = section.checklist.filter((check) => {
+            const questionNumber = `${principle.charAt(0).toUpperCase()}${
+              check.index + 1
+            }`;
+
+            return filterQuestions.includes(questionNumber);
+          });
+
+          return sectionCopy;
+        })
+        .filter((section) => section.checklist.length > 0);
+
+      setFilteredSections(filtered);
+    } else {
+      // If no filter, use all sections
+      setFilteredSections(config.sections);
+    }
+  }, [props, principle, filterQuestions]);
+
+  if (!config) {
+    return <div>Invalid principle</div>;
   }
 
-  const primaryMetric = fairnessInit?.fair_metric_name || "";
-
-  return (
-    <div style={{ overflowX: "auto" }}>
-      <table
-        style={{
-          width: "100%",
-          borderCollapse: "collapse",
-          marginTop: "15px",
-          marginBottom: "25px",
-        }}
-      >
-        <thead>
-          <tr>
-            <th
-              style={{
-                padding: "8px 12px",
-                textAlign: "left",
-                borderBottom: "2px solid #ddd",
-              }}
-            >
-              Fairness Metric
-            </th>
-            <th
-              style={{
-                padding: "8px 12px",
-                textAlign: "left",
-                borderBottom: "2px solid #ddd",
-              }}
-            >
-              Value
-            </th>
-            <th
-              style={{
-                padding: "8px 12px",
-                textAlign: "left",
-                borderBottom: "2px solid #ddd",
-              }}
-            >
-              Threshold
-            </th>
-            <th
-              style={{
-                padding: "8px 12px",
-                textAlign: "left",
-                borderBottom: "2px solid #ddd",
-              }}
-            >
-              Conclusion
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {Object.entries(fairMetricValues).map(([metricName, valueList]) => {
-            const isFair =
-              Array.isArray(valueList) && valueList.length >= 3
-                ? valueList[2] === "fair"
-                : null;
-
-            return (
-              <tr
-                key={metricName}
-                style={{
-                  backgroundColor:
-                    metricName === primaryMetric ? "#fff0f0" : "transparent",
-                  borderBottom: "1px solid #ddd",
-                }}
-              >
-                <td
-                  style={{
-                    padding: "8px 12px",
-                    fontWeight:
-                      metricName === primaryMetric ? "bold" : "normal",
-                  }}
-                >
-                  {metricName}
-                </td>
-                <td style={{ padding: "8px 12px" }}>
-                  {Array.isArray(valueList) && valueList.length >= 2
-                    ? `${formatNumber(valueList[0])} ± ${formatNumber(
-                        valueList[1]
-                      )}`
-                    : formatNumber(valueList)}
-                </td>
-                <td style={{ padding: "8px 12px" }}>
-                  {Array.isArray(valueList) && valueList.length >= 4
-                    ? formatNumber(valueList[3])
-                    : "N/A"}
-                </td>
-                <td
-                  style={{
-                    padding: "8px 12px",
-                    color:
-                      isFair === true
-                        ? "green"
-                        : isFair === false
-                        ? "red"
-                        : "inherit",
-                  }}
-                >
-                  {isFair !== null ? (isFair ? "Fair" : "Unfair") : "N/A"}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
-  );
-};
-
-export const FeatureImportanceTable = ({ feature }) => {
-  if (
-    !feature.featureImportance ||
-    Object.keys(feature.featureImportance).length === 0
-  ) {
-    return <p>No feature importance data available.</p>;
-  }
-
-  return (
-    <div style={{ overflowX: "auto", marginBottom: "20px" }}>
-      <table
-        style={{
-          width: "100%",
-          borderCollapse: "collapse",
-          marginTop: "15px",
-          marginBottom: "10px",
-        }}
-      >
-        <thead>
-          <tr>
-            <th
-              style={{
-                padding: "8px 12px",
-                textAlign: "left",
-                borderBottom: "2px solid #ddd",
-              }}
-            >
-              Personal attribute
-            </th>
-            <th
-              style={{
-                padding: "8px 12px",
-                textAlign: "left",
-                borderBottom: "2px solid #ddd",
-              }}
-            >
-              Impact on Performance
-            </th>
-            <th
-              style={{
-                padding: "8px 12px",
-                textAlign: "left",
-                borderBottom: "2px solid #ddd",
-              }}
-            >
-              Impact on Fairness
-            </th>
-            <th
-              style={{
-                padding: "8px 12px",
-                textAlign: "left",
-                borderBottom: "2px solid #ddd",
-              }}
-            >
-              Fairness conclusion
-            </th>
-            <th
-              style={{
-                padding: "8px 12px",
-                textAlign: "left",
-                borderBottom: "2px solid #ddd",
-              }}
-            >
-              Suggestion
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {Object.entries(feature.featureImportance).map(([key, value]) => (
-            <tr key={key} style={{ borderBottom: "1px solid #ddd" }}>
-              <td style={{ padding: "8px 12px" }}>{key}</td>
-              {Array.isArray(value) &&
-                value.map((element, index) => (
-                  <td key={index} style={{ padding: "8px 12px" }}>
-                    {element}
-                  </td>
-                ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-};
-
-export const Section = ({ title, children }) => (
-  <SectionContainer>
-    <SectionTitle>{title}</SectionTitle>
-    <SectionContent>{children}</SectionContent>
-  </SectionContainer>
-);
-
-export const FairnessTest = ({ props }) => {
-  const testResult = props.getResults ? props.getResults(cid) : null;
-  const data = testResult || mockData;
-
-  const fairness = data?.fairness || {};
-  const reportPlots = fairness?.report_plots || {};
-
-  // Helper function to safely get artifact URLs
-  const getImageUrl = (pathArray) => {
-    if (!pathArray || !Array.isArray(pathArray) || pathArray.length === 0)
-      return null;
-    return safeGetArtifactURL(props, cid, pathArray[0]);
+  const constructQuestionNumber = (pid) => {
+    const firstLetter = principle.charAt(0).toUpperCase();
+    const pidParts = pid.split(".");
+    if (pidParts.length >= 2) {
+      const secondDigit = pidParts[1];
+      const remainder = pidParts.slice(2).join(".");
+      return `${firstLetter}${secondDigit}${remainder ? "." + remainder : ""}`;
+    }
+    return `${firstLetter}${pid}`;
   };
 
-  // Extract feature names from fairness data
-   const featureNames = fairness.features ? Object.keys(fairness.features) : [];
+  const renderComponent = (componentName) => {
+    const componentMap = {
+      G3: <G3 props={props} data={data} />,
+      G4: <G4 props={props} data={data} />,
+      "G5.1": <G5_S1 props={props} data={data} />,
+      "G5.2": <G5_S2 props={props} data={data} />,
+      "G5.3": <G5_S3 props={props} data={data} />,
+      G10: <G10 props={props} data={data} />,
+      "G11.1": <G11_S1 props={props} data={data} />,
+      "G11.3": <G11_S3 props={props} data={data} />,
+      "F1.1": <F1_S1 props={props} data={data} />,
+      "F2.1": <F2_S1 props={props} data={data} />,
+      "F2.2": <F2_S2 props={props} data={data} />,
+      "F3.1": <F3_S1 props={props} data={data} />,
+      "F3.2": <F3_S2 props={props} data={data} />,
+      "F4.1": <F4_S1 props={props} data={data} />,
+      "F4.2": <F4_S2 props={props} data={data} />,
+      "F4.3": <F4_S3 props={props} data={data} />,
+      F5: <F5 props={props} data={data} />,
+      F6: <F6 props={props} data={data} />,
+      F7: <F7 props={props} data={data} />,
+      "F8.1": <F8_S1 props={props} data={data} />,
+      "F8.2": <F8_S2 props={props} data={data} />,
+      "F8.3": <F8_S3 props={props} data={data} />,
+      "F9.1": <F9_S1 props={props} data={data} />,
+      "F9.2": <F9_S2 props={props} data={data} />,
+      "F10.1": <F10_S1 props={props} data={data} />,
+      "F10.2": <F10_S2 props={props} data={data} />,
+      F11: <F11 props={props} data={data} />,
+      "F12.1": <F12_S1 props={props} data={data} />,
+      EA1: <EA1 props={props} data={data} />,
+      EA2: <EA2 props={props} data={data} />,
+      EA3: <EA3 props={props} data={data} />,
+      "EA5.2": <EA5_S2 props={props} data={data} />,
+      "EA5.3": <EA5_S3 props={props} data={data} />,
+      EA7: <EA7 props={props} data={data} />,
+      T1: <T1 props={props} data={data} />,
+      "T2.2": <T2_S2 props={props} data={data} />,
+      "T3.1": <T3_S1 props={props} data={data} />,
+      "T3.2": <T3_S2 props={props} data={data} />,
+      T5: <T5 props={props} data={data} />,
+      T6: <T6 props={props} data={data} />,
+      "T7.1": <T7_S1 props={props} data={data} />,
+      "T9.2": <T9_S2 props={props} data={data} />,
+      T10: <T10 props={props} data={data} />,
+      T11: <T11 props={props} data={data} />,
+      T13: <T13 props={props} data={data} />,
+    };
+
+    if (props.componentMap && props.componentMap[componentName]) {
+      const Component = props.componentMap[componentName];
+      return <Component props={props} data={data} />;
+    }
+
+    return componentMap[componentName] || null;
+  };
 
   return (
-    <div
-      style={{
-        padding: "20px",
-        height: props.height || "100%",
-        width: props.width || "100%",
-      }}
-    >
-      <h2 style={{ marginBottom: "20px" }}>
-        {props.properties?.title || "Model Fairness Analysis"}
-      </h2>
+    <div style={{ padding: "20px" }}>
+      {filteredSections.map((section) => (
+        <React.Fragment key={`section-${section.index}`}>
+          {section.checklist.map((check) => (
+            <SectionContainer key={`check-${check.index}`}>
+              <CriteriaContainer>
+                <CriteriaHeader>
+                  {principle.charAt(0).toUpperCase()}
+                  {check.index + 1} -{" "}
+                  {check.testableCriteria.replace(/<[^>]*>/g, "")}
+                </CriteriaHeader>
+              </CriteriaContainer>
 
-      {/* Introduction Section */}
-      <Section title="Fairness Considerations">
-        <p style={{ marginBottom: "15px" }}>
-          If the AIDA system outcome is assistive (such as assessing if an
-          individual should get automated access to a financial product) then
-          the most important harms to consider usually are whether at-risk
-          groups are incorrectly denied assistance more often than others.
-          Whereas if the AIDA system outcome is punitive (such as assessing if
-          an individual is fraudulent), then most important harms to consider
-          usually are whether at-risk groups incorrectly receive the punitive
-          outcome more often than others.
-        </p>
-        <p>
-          Checking if the distribution of benefits to at-risk groups is
-          comparable to the target population is one way to identify important
-          benefits for the groups at risk of disadvantages.
-        </p>
-      </Section>
-
-      {/* Target Label Distribution Section */}
-      <Section title="Target Label Distribution">
-        <p style={{ marginBottom: "15px" }}>
-          The pie chart below shows the distribution of target labels in the
-          dataset.
-        </p>
-
-        {reportPlots.distribution && reportPlots.distribution.length > 0 ? (
-          <div style={{ marginTop: "20px", textAlign: "center" }}>
-            <div style={{ fontWeight: "bold", marginBottom: "10px" }}>
-              Class Distribution
-            </div>
-            <ImageWithFallback
-              src={getImageUrl(reportPlots.distribution)}
-              alt="Class Distribution"
-              height="350px"
-            />
-            {fairness.min_class_distribution && (
-              <p style={{ marginTop: "10px" }}>
-                The proportion of{" "}
-                <strong>{fairness.min_class_distribution.key}</strong> is
-                approximately {fairness.min_class_distribution.value}, which
-                indicates
-                {fairness.class_distribution_is_average
-                  ? " a small imbalance in distribution of labels."
-                  : " a large imbalance in distribution of labels."}
-              </p>
-            )}
-          </div>
-        ) : (
-          <p>Class distribution data is not available for this project.</p>
-        )}
-      </Section>
-
-      {/* Group Distribution Section */}
-      <Section title="Group Distribution">
-        <p style={{ marginBottom: "15px" }}>
-          For each protected attribute, the group distribution pie chart is
-          shown. The risk of representation bias depends on both absolute and
-          relative amounts of training data. On a relative basis, less than 50
-          percent imbalance between classes is generally considered a relatively
-          low level of imbalance.
-        </p>
-
-        {featureNames.map((featureName) => {
-          const feature = fairness.feature_map[featureName];
-          return (
-            <div key={featureName} style={{ marginBottom: "30px" }}>
-              {reportPlots.features &&
-              reportPlots.features[featureName] &&
-              reportPlots.features[featureName].distribution &&
-              reportPlots.features[featureName].distribution.length > 0 ? (
-                <div style={{ marginTop: "20px", textAlign: "center" }}>
-                  <div style={{ fontWeight: "bold", marginBottom: "10px" }}>
-                    Feature Distribution for {featureName}
-                  </div>
-                  <ImageWithFallback
-                    src={getImageUrl(
-                      reportPlots.features[featureName].distribution
+              {/* If only one process, don't show the question text since it's redundant */}
+              {check.processes.length === 1 ? (
+                <QuestionContainer key={`process-${check.processes[0].pid}`}>
+                  <Elaboration>
+                    {renderComponent(
+                      constructQuestionNumber(check.processes[0].pid)
                     )}
-                    alt={`Feature Distribution for ${featureName}`}
-                    height="350px"
-                  />
-                </div>
-              ) : null}
-
-              {feature && feature.distribution_ratio !== undefined && (
-                <p style={{ marginTop: "10px" }}>
-                  The ratio of the sample size of the two groups is{" "}
-                  {feature.distribution_ratio}, which is{" "}
-                  {feature.is_low
-                    ? "lower than 2, so the risk of underrepresentation"
-                    : "larger than 2, so there exists underrepresentation"}{" "}
-                  for <strong>{featureName}</strong>.
-                </p>
+                    {check.processes[0].elaboration &&
+                    check.processes[0].elaboration.length > 0
+                      ? check.processes[0].elaboration
+                      : !check.processes[0].excludeInput && (
+                          <span style={{ color: "#d32f2f" }}>
+                            The company did not provide any response.
+                          </span>
+                        )}
+                  </Elaboration>
+                </QuestionContainer>
+              ) : (
+                // If multiple processes, show each question with its text
+                check.processes.map((process) => (
+                  <QuestionContainer key={`process-${process.pid}`}>
+                    <QuestionHeader>
+                      {constructQuestionNumber(process.pid)}{" "}
+                      {process.process.replace(/<[^>]*>/g, "")}
+                    </QuestionHeader>
+                    {renderComponent(constructQuestionNumber(process.pid))}
+                    <Elaboration>
+                      {process.elaboration && process.elaboration.length > 0
+                        ? process.elaboration
+                        : !process.excludeInput && (
+                            <span style={{ color: "#d32f2f" }}>
+                              The company did not provide any response.
+                            </span>
+                          )}
+                    </Elaboration>
+                  </QuestionContainer>
+                ))
               )}
-            </div>
-          );
-        })}
-      </Section>
-
-      {/* Correlation Analysis Section */}
-      <Section title="Correlation Analysis">
-        <p style={{ marginBottom: "15px" }}>
-          Some of the non-personal attributes may act as proxies for personal
-          attributes. So we would like to check if there are strong correlations
-          for the features. The correlation matrix heatmap (if applicable) of
-          top 20 most important features are shown below.
-        </p>
-
-        {reportPlots.correlation && reportPlots.correlation.length > 0 ? (
-          <div style={{ marginTop: "20px", textAlign: "center" }}>
-            <div style={{ fontWeight: "bold", marginBottom: "10px" }}>
-              Feature Correlation Heatmap
-            </div>
-            <ImageWithFallback
-              src={getImageUrl(reportPlots.correlation)}
-              alt="Feature Correlation Heatmap"
-              height="400px"
-            />
-          </div>
-        ) : (
-          <p>Correlation heatmap is not available for this project.</p>
-        )}
-      </Section>
-
-      {/* Feature Importance Section */}
-      <Section title="Feature Importance Analysis">
-        <p style={{ marginBottom: "15px" }}>
-          Leave-One-Covariate-Out (LOCO) approach is used to measure the feature
-          importance of personal attributes. Each time we train a new model by
-          dropping each feature and compare the fairness metric and model
-          performance metric before dropping the feature.
-        </p>
-        <p style={{ marginBottom: "15px" }}>
-          Impact on primary performance metric and primary fairness metric are
-          the differences between metrics before (baseline model) and after
-          (LOCO model) dropping each feature (LOCO model - baseline model).
-        </p>
-
-        {featureNames.map((featureName) => {
-          const feature = fairness.feature_map[featureName];
-          if (!feature || !feature.feature_importance) return null;
-
-          return (
-            <div key={featureName} style={{ marginBottom: "30px" }}>
-              <h4 style={{ marginBottom: "10px" }}>
-                Feature: <strong>{featureName}</strong>
-              </h4>
-
-              <FeatureImportanceTable feature={feature} />
-
-              {feature.fair_threshold !== undefined &&
-                feature.fairness_conclusion !== undefined &&
-                feature.fair_metric_value !== undefined &&
-                feature.importance_info !== undefined && (
-                  <p>
-                    <strong>{featureName}</strong>: The fairness threshold is{" "}
-                    {feature.fair_threshold}, and the{" "}
-                    <strong>{fairness.fairness_init?.fair_metric_name}</strong>{" "}
-                    for {featureName} in the baseline model is{" "}
-                    {feature.fair_metric_value} which is
-                    {feature.fairness_conclusion === "fair"
-                      ? " within the threshold, so the conclusion is fair."
-                      : " not within the threshold, so the conclusion is unfair."}
-                    For the LOCO model,{" "}
-                    {fairness.fairness_init?.fair_metric_name} changes by{" "}
-                    {feature.importance_info[1]}, so{" "}
-                    {fairness.fairness_init?.fair_metric_name} for {featureName}{" "}
-                    is
-                    {feature.is_to_fair === true
-                      ? " within the threshold, so the model is fair"
-                      : " not within the threshold, so the model is unfair"}
-                    after removing {featureName}, and we suggest to{" "}
-                    {feature.importance_info[3]}.
-                  </p>
-                )}
-            </div>
-          );
-        })}
-      </Section>
-
-      {/* Primary Fairness Metric Section */}
-      <Section title="Primary Fairness Metric">
-        {fairness.fairness_init && (
-          <p style={{ marginBottom: "15px" }}>
-            {fairness.fairness_init.fair_metric_name_input === "auto" ? (
-              <>
-                To assess the fairness of this model, our priority is to measure{" "}
-                {fairness.fairness_init.fair_impact}{" "}
-                {fairness.fairness_init.fair_priority || ""} to the{" "}
-                {fairness.fairness_init.fair_concern_display} group, therefore
-                we choose {fairness.fairness_init.fair_metric_name} as primary
-                fairness metric for the assessment.
-              </>
-            ) : (
-              <>
-                The selected primary metric is{" "}
-                {fairness.fairness_init.fair_metric_name}.
-              </>
-            )}
-          </p>
-        )}
-      </Section>
-
-      {/* Group Fairness Section */}
-      <Section title="Group Fairness">
-        <p style={{ marginBottom: "15px" }}>
-          The table below lists the values and respective uncertainties of
-          fairness metrics. The uncertainties in the fairness metrics are
-          measured using bootstrap methods with 50 replications and 5-95%
-          confidence intervals used and the plus-minus intervals representing
-          two standard deviations. The primary fairness metric is highlighted.
-        </p>
-        <p style={{ marginBottom: "15px" }}>
-          Fairness threshold is calculated based on fairness threshold input.
-          Fairness conclusion will be generated by comparing fairness threshold
-          and absolute difference between the fairness metrics and neutral
-          position. Note that if the metric is ratio based, neutral position is
-          1; if metric is parity based, neutral position is 0; if the absolute
-          difference is lower than the fairness threshold, the fairness
-          conclusion would be fair.
-        </p>
-
-        <FairnessMetricsTable
-          fairMetricValues={fairness.fair_metric_values}
-          fairnessInit={fairness.fairness_init}
-        />
-
-        {fairness.individual_fairness &&
-          fairness.individual_fairness.consistency_score !== undefined && (
-            <div style={{ marginTop: "20px" }}>
-              <h4>Individual Fairness</h4>
-              <p>
-                For individual fairness, the consistency score is{" "}
-                {fairness.individual_fairness.consistency_score}.
-              </p>
-            </div>
-          )}
-      </Section>
-
-      {/* Bias Mitigation Section */}
-      <Section title="Bias Mitigation Techniques">
-        <p style={{ marginBottom: "15px" }}>
-          Pre-processing, in-processing and post-processing algorithms are
-          available to mitigate the bias and improve fairness. Here the
-          postprocessing mitigation method in the form of constrained balanced
-          accuracy is applied. The mitigation approach selects separate
-          classification thresholds for groups for which it aims to optimise
-          fairness.
-        </p>
-      </Section>
-
-      {/* Performance-Fairness Trade-off Section */}
-      <Section title="Performance-Fairness Trade-off Analysis">
-        <p style={{ marginBottom: "15px" }}>
-          To do trade-off analysis, a grid search for thresholds was conducted.
-          The objective is to bring the selected fairness metric to within the
-          accepted range while maximising the balanced accuracy. The
-          fairness-performance trade-offs of operating the model at various
-          thresholds is visualized below.
-        </p>
-
-        <ul style={{ marginBottom: "15px" }}>
-          <li>
-            The heatmap indicates the model's expected performance (balanced
-            accuracy) when operated at each pair of risk thresholds.
-          </li>
-          <li>
-            The white contour lines indicate the primary fairness metric with
-            respect to each selected attribute. The optimal position for
-            fairness metric depends on whether it is a parity-based or
-            ratio-based metric. If it is parity-based, it is optimal when equal
-            to zero (0); otherwise it is optimal when equal to one(1).
-          </li>
-          <li>
-            The x-axis and y-axis show a range of possible lending risk
-            thresholds for two groups, respectively.
-          </li>
-        </ul>
-
-        {featureNames.map((featureName) => {
-          return reportPlots.features &&
-            reportPlots.features[featureName] &&
-            reportPlots.features[featureName].tradeoff &&
-            reportPlots.features[featureName].tradeoff.length > 0 ? (
-            <div
-              key={featureName}
-              style={{ marginTop: "20px", textAlign: "center" }}
-            >
-              <div style={{ fontWeight: "bold", marginBottom: "10px" }}>
-                Trade-off Contour for {featureName}
-              </div>
-              <ImageWithFallback
-                src={getImageUrl(reportPlots.features[featureName].tradeoff)}
-                alt={`Trade-off Contour for ${featureName}`}
-                height="400px"
-              />
-            </div>
-          ) : null;
-        })}
-
-        <div style={{ marginTop: "20px" }}>
-          <p>There are three points of interests on the heatmap:</p>
-          <ul>
-            <li>
-              The <strong>blue diamond</strong> maximizes the unconstrained
-              model performance.
-            </li>
-            <li>
-              The <strong>red X</strong> maximizes model performance while
-              keeping the same risk threshold for privileged and unprivileged
-              group.
-            </li>
-            <li>
-              The <strong>purple star</strong> maximizes the model performance
-              while ensuring optimal fairness as measured via the selected
-              fairness metric.
-            </li>
-          </ul>
-        </div>
-      </Section>
+            </SectionContainer>
+          ))}
+        </React.Fragment>
+      ))}
     </div>
   );
 };
 
-<div>
-  <FairnessTest props={props} />
-</div>;
+export default function ProcessChecklistWrapper(props) {
+  const principle = props.properties?.principle || "fairness";
+  const filterQuestions = props.filterQuestions || [];
+
+  return (
+    <ProcessChecklist
+      principle={principle}
+      props={props}
+      filterQuestions={filterQuestions}
+    />
+  );
+}

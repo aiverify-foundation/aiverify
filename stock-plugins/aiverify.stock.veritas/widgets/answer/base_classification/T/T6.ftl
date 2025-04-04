@@ -1,2 +1,0 @@
-
-Refer to T1.
