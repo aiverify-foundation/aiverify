@@ -51,7 +51,7 @@ class AlgoInit:
         model_type: ModelType,
         file_name_label: Optional[str] = None,
         set_seed: Optional[int] = None,
-        user_defined_params: Optional[dict] = None,
+        **user_defined_params: dict,
     ):
         # Store the input arguments as private vars
         self._data_path = data_path
@@ -62,7 +62,7 @@ class AlgoInit:
         self._file_name_label = file_name_label
         self._set_seed = set_seed
         self._core_modules_path = core_modules_path or str(Path(importlib.util.find_spec("aiverify_test_engine").origin).parent)  # fmt: skip
-        self._user_defined_params = user_defined_params or {}
+        self._user_defined_params = user_defined_params
 
         # Other variables
         self._requires_ground_truth = model_type in (ModelType.CLASSIFICATION,)

@@ -339,6 +339,7 @@ def run():
                 args.ground_truth_path,
                 args.ground_truth,
                 args.model_type,
+                **input_arguments,
             )
             algo_init_instance._start_time = start_time
             algo_init_instance._time_taken = time_taken

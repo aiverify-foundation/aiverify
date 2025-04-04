@@ -46,7 +46,7 @@ def test_aiverify_blur_corruptions_plugin(data_set):
         file_name_label=data_set["file_name_label"],
         set_seed=data_set["set_seed"],
         core_modules_path=data_set["core_modules_path"],
-        user_defined_params=data_set["user_defined_params"],
+        **data_set["user_defined_params"],
     )
     plugin_test.run()
 
