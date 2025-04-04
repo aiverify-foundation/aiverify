@@ -2,11 +2,7 @@
   "title": "Algorithm Plugin Input Arguments",
   "description": "A schema for algorithm plugin input arguments",
   "type": "object",
-  "required": [
-    "file_name_label",
-    "set_seed",
-    "corruptions"
-  ],
+  "required": ["file_name_label", "set_seed", "corruptions"],
   "properties": {
     "file_name_label": {
       "title": "Name of column containing image file names",
