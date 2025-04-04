@@ -30,7 +30,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Model type.",
     )
     parser.add_argument("--ground_truth_path", help="Path to the ground truth CSV file with image path and label.")
-    parser.add_argument("--ground_truth_label", help="The ground truth label in the ground truth file.")
+    parser.add_argument("--ground_truth", help="The ground truth label in the ground truth file.")
     parser.add_argument("--file_name_label", help="The file name label in the ground truth file.")
     parser.add_argument("--core_modules_path", help="Path to the core modules. Detects automatically if not provided.")
     parser.add_argument("--set_seed", type=int, help="Set seed value for reproducibility.")
@@ -118,7 +118,7 @@ def invoke_aiverify_blur_corruptions_plugin(args: argparse.Namespace) -> None:
             model_path=args.model_path,
             model_type=args.model_type,
             ground_truth_path=args.ground_truth_path,
-            ground_truth=args.ground_truth_label,
+            ground_truth=args.ground_truth,
             file_name_label=args.file_name_label,
             set_seed=args.set_seed,
             core_modules_path=args.core_modules_path,
