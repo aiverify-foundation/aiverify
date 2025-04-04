@@ -232,8 +232,7 @@ def run():
         initial_data_instance = copy.deepcopy(data_instance)
         initial_model_instance = copy.deepcopy(model_instance)
 
-        # For pytorch pipeline, transformation is wrapped in the pipeline itself
-        if model_instance.get_pipeline_plugin_type() != PipelinePluginType.PYTORCH:
+        if model_instance.get_pipeline_plugin_type() == PipelinePluginType.SKLEARN:
             # Perform data transformation
             current_dataset = data_instance.get_data()
             current_pipeline = model_instance.get_pipeline()
