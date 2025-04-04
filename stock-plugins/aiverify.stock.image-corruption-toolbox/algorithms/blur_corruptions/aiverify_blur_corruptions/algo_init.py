@@ -42,7 +42,7 @@ class AlgoInit:
 
     def __init__(
         self,
-        run_as_pipeline: bool,
+        run_as_pipeline: bool,  # This is not used in this plugin, but is required to match the algo_execute signature
         core_modules_path: Optional[str],
         data_path: str,
         model_path: str,

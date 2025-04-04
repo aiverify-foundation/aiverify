@@ -122,7 +122,7 @@ def invoke_aiverify_blur_corruptions_plugin(args: argparse.Namespace) -> None:
             file_name_label=args.file_name_label,
             set_seed=args.set_seed,
             core_modules_path=args.core_modules_path,
-            user_defined_params=user_defined_params,
+            **user_defined_params,
         )
         plugin_test.run()
 
