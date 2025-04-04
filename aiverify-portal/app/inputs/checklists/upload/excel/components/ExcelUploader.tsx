@@ -3,6 +3,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState } from 'react';
 import { excelToJson } from '@/app/inputs/checklists/upload/excel/utils/excelToJson';
 import { useChecklistSubmission } from '@/app/inputs/checklists/upload/hooks/useUploadSubmission';
+import { useMDXSummaryBundle } from '@/app/inputs/hooks/useMDXSummaryBundle';
 import { UploadIcon } from '@/app/models/upload/utils/icons';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import { Button, ButtonVariant } from '@/lib/components/button';
@@ -16,6 +17,12 @@ const ExcelUploader = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
+
+  // Preload the MDX bundle to ensure it's available
+  const { data: mdxBundle, error: mdxError } = useMDXSummaryBundle(
+    'aiverify.stock.process_checklist',
+    'export_process_checklists'
+  );
 
   const { submitChecklist } = useChecklistSubmission();
 
@@ -42,19 +49,44 @@ const ExcelUploader = () => {
   const handleSubmit = async () => {
     if (!file) return;
 
+    // Check if MDX bundle is available
+    if (mdxError) {
+      setModalMessage(
+        `Error loading conversion functions: ${mdxError.message}`
+      );
+      setIsModalVisible(true);
+      return;
+    }
+
     setIsUploading(true);
 
     try {
-      const groupName = file.name.replace('_checklists.xlsx', '');
+      const groupName = file.name
+        .replace('.xlsx', '')
+        .replace('_checklists', '');
+
+      console.log('Processing Excel file:', file.name);
+      console.log('Using group name:', groupName);
+
       const submissions = await excelToJson(file, groupName);
 
-      for (const submission of submissions) {
-        await submitChecklist(submission);
+      if (submissions && submissions.length > 0) {
+        console.log(`Submitting ${submissions.length} checklists`);
+        for (const submission of submissions) {
+          await submitChecklist(submission);
+        }
+        setModalMessage(
+          `Upload Successful! Processed ${submissions.length} checklists.`
+        );
+      } else {
+        console.warn('No valid checklists were found in the file');
+        setModalMessage(
+          'Upload complete, but no valid checklists were found in the file.'
+        );
       }
-
-      setModalMessage('Upload Successful!');
       setIsModalVisible(true);
     } catch (error) {
+      console.error('Error during upload process:', error);
       setModalMessage(
         `Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
