@@ -61,7 +61,7 @@ async function convertExcelToJson(file: File): Promise<ExcelJsonData> {
 
         const sheets: ExcelSheetData[] = [];
 
-        workbook.eachSheet((worksheet, sheetId) => {
+        workbook.eachSheet((worksheet) => {
           const sheetName = worksheet.name;
           console.log(`Processing sheet: ${sheetName}`);
           const rows: ExcelRowData[] = [];

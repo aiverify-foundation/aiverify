@@ -19,7 +19,7 @@ const ExcelUploader = () => {
   const [modalMessage, setModalMessage] = useState('');
 
   // Preload the MDX bundle to ensure it's available
-  const { data: mdxBundle, error: mdxError } = useMDXSummaryBundle(
+  const { error: mdxError } = useMDXSummaryBundle(
     'aiverify.stock.process_checklist',
     'export_process_checklists'
   );
