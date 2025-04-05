@@ -1,0 +1,159 @@
+# Docker Build & Push
+# 1. Unit tests with code coverage (pytest)
+# 2. Code quality analysis (flake8)
+# 3. Dependency analysis (vulnerabilities)
+# 4. Dependency analysis (copyleft licenses)
+
+name: v2 Docker Build and Push
+
+env:
+  IMAGE_NAMES:  'aiverify-apigw,
+                 aiverify-portal,
+                 aiverify-test-engine-worker'
+  GH_TOKEN: ${{ github.token }}
+  
+on:
+  # Runs when a pull request to main is being assigned
+  pull_request:
+    types: [ assigned, synchronize ]
+    branches:
+      - 'v2.x'
+    paths:
+      - 'aiverify-test-engine-worker/**'
+      - 'aiverify-apigw/**'
+      - 'aiverify-portal/**'
+
+  # Run this workflow manually from Actions tab
+  workflow_dispatch:
+    inputs:
+      branch_to_test:
+        description: 'Branch or tag to run docker build'
+        required: true
+        default: 'v2.x'
+        type: string
+      image_to_build:
+        description: 'Name of image to build'
+        required: true
+        default: 'aiverify-apigw'
+        
+  push:
+    branches: [ ci/v2-docker-push-ghcr' ]
+    
+# Allow one concurrent deployment
+concurrency:
+  group: ${{ github.repository }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+
+  init-image-build-push:
+    # Run only when PR is assigned, even on subsequent commits (i.e. synchronize)
+    if: (github.event_name == 'pull_request' && github.event.pull_request.assignee != null) || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
+    runs-on: ubuntu-latest
+    outputs:
+      branch_to_test: ${{ steps.prep_matrix.outputs.branch_to_test }}
+      pr_num: ${{ steps.prep_matrix.outputs.pr_num }}
+      matrix: ${{ steps.prep_matrix.outputs.matrix }}
+    
+    timeout-minutes: 40
+
+    steps:
+
+      - name: Set env variables
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "BRANCH_TO_TEST=${{ github.event.pull_request.head.ref }}" >> "$GITHUB_ENV"
+            echo "PR_NUM=#${{ github.event.pull_request.number }}" >> "$GITHUB_ENV"
+            PR_FILES=$(gh pr view ${{ github.event.pull_request.number }} --repo github.com/${{ github.repository }} --json files --jq '.files[].path' | paste -sd "," -)
+            echo "Files changed in this pull request:"
+            echo "$PR_FILES"
+            echo "CHANGED_FILES=${PR_FILES}" >> $GITHUB_ENV
+          elif [ "${{ github.event_name }}" == "push" ]; then
+            echo "BRANCH_TO_TEST=${{ github.ref }}" >> "$GITHUB_ENV"
+            echo "PR_NUM=#000" >> $GITHUB_ENV
+            PUSH_FILES=$(gh api repos/${{ github.repository }}/commits/${{ github.sha }} | jq -r '.files[].filename' | paste -sd "," -)
+            echo "Files changed in this push:"
+            echo "$PUSH_FILES"
+            echo "CHANGED_FILES=${PUSH_FILES}" >> $GITHUB_ENV
+          elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "BRANCH_TO_TEST=${{ inputs.branch_to_test }}" >> "$GITHUB_ENV"
+            echo "PR_NUM=#000" >> $GITHUB_ENV
+            echo "CHANGED_FILES=${{ inputs.image_to_build }}" >> $GITHUB_ENV
+          fi
+
+      - name: Prepare matrix
+        id: prep_matrix
+        run: |
+          FILE_LIST=${{ env.CHANGED_FILES }}
+          IMAGE_NAMES=(${IMAGE_NAMES//,/ })
+          
+          declare -A IMAGE_MAP
+
+          IFS=',' read -ra FILE_ARRAY <<< "$FILE_LIST"
+          for file in "${FILE_ARRAY[@]}"; do
+            for image in "${IMAGE_NAMES[@]}"; do
+              # Check if the file name contains the image name
+              if [[ $file == *"${image}"* ]]; then
+                # Add image name to the associative array
+                IMAGE_MAP["${image}"]="${image}"
+              fi
+            done
+          done
+
+          # Extract keys (image_name) from IMAGE_MAP map
+          IMAGES_TO_BUILD=(${!IMAGE_MAP[@]})
+
+          echo "IMAGES_TO_BUILD=${IMAGES_TO_BUILD[*]}" >> $GITHUB_ENV
+          echo "Images to build: ${IMAGES_TO_BUILD[*]}"
+
+          matrix_include=$(for image in "${IMAGES_TO_BUILD[@]}"; do echo "{\"image_name\":\"${image}\"}"; done | jq -s . | tr -d '[:space:]')
+          MATRIX="{\"include\":$matrix_include}"
+          echo $MATRIX
+
+          echo "branch_to_test=${{ env.BRANCH_TO_TEST }}" >> $GITHUB_OUTPUT
+          echo "pr_num=${{ env.PR_NUM }}" >> $GITHUB_OUTPUT
+          echo "matrix={\"include\":$matrix_include}" >> $GITHUB_OUTPUT
+
+  run-image-image-build-push:
+    needs: init-image-build-push
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.init-image-build-push.outputs.matrix) }}
+      fail-fast: false
+      max-parallel: 1
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.init-image-build-push.outputs.branch_to_test }}
+          sparse-checkout: |
+            ${{ matrix.image_name }}
+            .ci
+
+      - name: Build and push image
+        id: build_push_image
+        run: |
+          set +e
+          if [ "${{ matrix.image_name }}" == "aiverify-test-engine-worker" ] || [ "${{ matrix.image_name }}" == "aiverify-apigw" ]; then
+            tag=$(grep -oP '(?<=version = ")[^"]*' ${{ matrix.image_name }}/pyproject.toml)
+          elif [ "${{ matrix.image_name }}" == "aiverify-portal" ]; then
+            tag=$(grep -oP '(?<=version": ")[^"]*' ${{ matrix.image_name }}/package.json)
+          else
+            tag="default-tag"
+          fi
+
+          if [ "${{ matrix.image_name }}" == "aiverify-test-engine-worker" ]; then
+            bash .ci/docker_build_push.sh ${{ matrix.image_name }} $tag aiverify-foundation ${{ matrix.image_name }}  aiverify-test-engine-worker-base base
+            bash .ci/docker_build_push.sh ${{ matrix.image_name }} $tag aiverify-foundation ${{ matrix.image_name }}  venv-build venv
+            bash .ci/docker_build_push.sh ${{ matrix.image_name }} $tag aiverify-foundation ${{ matrix.image_name }}  docker-build docker
+          else
+            bash .ci/docker_build_push.sh ${{ matrix.image_name }} $tag aiverify-foundation ${{ matrix.image_name }}
+          fi
+          build_status=$?
+          set -e
+          if [ $build_status -ne 0 ]; then
+              echo "STATUS=failure" >> $GITHUB_ENV
+              exit 1
+          fi
+
+
