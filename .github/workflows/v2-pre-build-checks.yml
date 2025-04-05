@@ -47,7 +47,7 @@ on:
         default: 'accumulated_local_effect,shap_toolbox'
         
   push:
-    branches: [ ci/v2-pre-build-checks' ]
+    branches: [ ci/v2-pre-build-checks ]
     
 # Allow one concurrent deployment
 concurrency:
