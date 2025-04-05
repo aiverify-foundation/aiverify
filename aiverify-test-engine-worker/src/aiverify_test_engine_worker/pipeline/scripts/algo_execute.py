@@ -232,18 +232,22 @@ def run():
         initial_data_instance = copy.deepcopy(data_instance)
         initial_model_instance = copy.deepcopy(model_instance)
 
-        if model_instance.get_pipeline_plugin_type() == PipelinePluginType.SKLEARN:
-            # Perform data transformation
-            current_dataset = data_instance.get_data()
-            current_pipeline = model_instance.get_pipeline()
-            data_transformation_stages = current_pipeline[:-1]
-            transformed_dataset = data_transformation_stages.transform(
-                current_dataset
-            )
-            transformed_pipeline = current_pipeline[-1]
-            # Set new transformed pipeline and dataset
-            data_instance.set_data(transformed_dataset)
-            model_instance.set_pipeline(transformed_pipeline)
+        try:
+            if model_instance.get_pipeline_plugin_type() == PipelinePluginType.SKLEARN:
+                # Perform data transformation
+                current_dataset = data_instance.get_data()
+                current_pipeline = model_instance.get_pipeline()
+                data_transformation_stages = current_pipeline[:-1]
+                transformed_dataset = data_transformation_stages.transform(
+                    current_dataset
+                )
+                transformed_pipeline = current_pipeline[-1]
+                # Set new transformed pipeline and dataset
+                data_instance.set_data(transformed_dataset)
+                model_instance.set_pipeline(transformed_pipeline)
+        except Exception as e:
+            logger.error(f"Unable to transform pipeline data: {e}")
+            # probaby not best way to handle, but for now just ignore when data transformation exception
 
     except:  # if exception, not pipeline
         (model_instance, model_serializer, model_errmsg) = PluginManager.get_instance(
