@@ -20,7 +20,6 @@ from aiverify_test_engine.utils.json_utils import (
 from aiverify_test_engine.utils.time import time_class_method
 
 from aiverify_environment_corruptions.algo import Plugin
-from aiverify_environment_corruptions.utils import environment
 
 
 # =====================================================================================
@@ -43,35 +42,27 @@ class AlgoInit:
 
     def __init__(
         self,
+        run_as_pipeline: bool,  # This is not used in this plugin, but is required to match the algo_execute signature
+        core_modules_path: Optional[str],
         data_path: str,
         model_path: str,
+        ground_truth_path: Optional[str],
+        ground_truth: Optional[str],
         model_type: ModelType,
-        ground_truth_path: Optional[str] = None,
-        ground_truth_label: Optional[str] = None,
         file_name_label: Optional[str] = None,
         set_seed: Optional[int] = None,
-        core_modules_path: Optional[str] = None,
-        user_defined_params: Optional[dict] = None,
+        **user_defined_params: dict,
     ):
         # Store the input arguments as private vars
         self._data_path = data_path
         self._model_path = model_path
         self._model_type = model_type
         self._ground_truth_path = ground_truth_path
-        self._ground_truth_label = ground_truth_label
+        self._ground_truth_label = ground_truth
         self._file_name_label = file_name_label
         self._set_seed = set_seed
         self._core_modules_path = core_modules_path or str(Path(importlib.util.find_spec("aiverify_test_engine").origin).parent)  # fmt: skip
-
-        self._user_defined_params = user_defined_params or {}
-        user_corruptions = self._user_defined_params.get("corruptions", [])
-        user_corruptions = [name.lower() for name in user_corruptions]  # Normalize
-        if not user_corruptions or "all" in user_corruptions:
-            # If no corruptions are provided, or if "all" is provided, use all corruptions
-            self._user_defined_params["corruptions"] = list(environment.CORRUPTION_FN)
-        else:
-            # Filter corruption functions based on user input, make sure algorithm names are in correct format & order
-            self._user_defined_params["corruptions"] = [name for name in environment.CORRUPTION_FN if name.lower() in user_corruptions]  # fmt: skip
+        self._user_defined_params = user_defined_params
 
         # Other variables
         self._requires_ground_truth = model_type in (ModelType.CLASSIFICATION,)
@@ -174,15 +165,16 @@ class AlgoInit:
                     self._ground_truth_instance,
                     self._ground_truth_serializer_instance,
                 ),
+                initial_data_instance=None,
+                initial_model_instance=None,
                 model_type=self._model_type,
                 requires_ground_truth=self._requires_ground_truth,
-                user_defined_params=self._user_defined_params,
                 logger=self._logger_instance,
                 progress_callback=AlgoInit.progress_callback,
-                ground_truth_path=self._ground_truth_path,
-                ground_truth_label=self._ground_truth_label,
+                ground_truth=self._ground_truth_label,
                 file_name_label=self._file_name_label,
                 set_seed=self._set_seed,
+                **self._user_defined_params,
             )
 
             # Generate the results using this plugin

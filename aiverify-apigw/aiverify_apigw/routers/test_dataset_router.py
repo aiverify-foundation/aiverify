@@ -150,6 +150,7 @@ def upload_dataset_folder(
         else:
             subfolders_list = None
 
+        total_size = 0
         with tempfile.TemporaryDirectory() as tmpdirname:
             tmpdir = Path(tmpdirname)
             tmp_dataset_folder = tmpdir.joinpath(filename)
@@ -174,6 +175,7 @@ def upload_dataset_folder(
                     raise HTTPException(status_code=400, detail=f"Invalid filename {file.filename}")
                 with open(dataset_path, "wb") as fp:
                     fp.write(file.file.read())
+                total_size += file.size
 
             now = datetime.now(timezone.utc)
             test_dataset = TestDatasetModel(
@@ -181,6 +183,7 @@ def upload_dataset_folder(
                 description=None,
                 file_type=TestDatasetFileType.Folder,
                 filename=filename,
+                size=total_size,
                 created_at=now,
                 updated_at=now
             )
