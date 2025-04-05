@@ -1,12 +1,11 @@
 # Docker Build & Push
-# 1. Unit tests with code coverage (pytest)
-# 2. Code quality analysis (flake8)
-# 3. Dependency analysis (vulnerabilities)
-# 4. Dependency analysis (copyleft licenses)
+# 1. Build docker image for amd64 and arm64
+# 2. Push image to GitHub Container Registry (ghcr.io)
 
 name: v2 Docker Build and Push
 
 env:
+  # Images to build
   IMAGE_NAMES:  'aiverify-apigw,
                  aiverify-portal,
                  aiverify-test-engine-worker'
@@ -14,10 +13,11 @@ env:
   
 on:
   # Runs when a pull request to main is being assigned
+  # If there are changes in the following specified paths.
   pull_request:
     types: [ assigned, synchronize ]
     branches:
-      - 'v2.x'
+      - 'main'
     paths:
       - 'aiverify-test-engine-worker/**'
       - 'aiverify-apigw/**'
@@ -48,6 +48,7 @@ jobs:
 
   init-image-build-push:
     # Run only when PR is assigned, even on subsequent commits (i.e. synchronize)
+    # Also allow manual trigger
     if: (github.event_name == 'pull_request' && github.event.pull_request.assignee != null) || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
     runs-on: ubuntu-latest
     outputs:
@@ -55,7 +56,7 @@ jobs:
       pr_num: ${{ steps.prep_matrix.outputs.pr_num }}
       matrix: ${{ steps.prep_matrix.outputs.matrix }}
     
-    timeout-minutes: 40
+    timeout-minutes: 15
 
     steps:
 
@@ -68,6 +69,10 @@ jobs:
             echo "Files changed in this pull request:"
             echo "$PR_FILES"
             echo "CHANGED_FILES=${PR_FILES}" >> $GITHUB_ENV
+          elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "BRANCH_TO_TEST=${{ inputs.branch_to_test }}" >> "$GITHUB_ENV"
+            echo "PR_NUM=#000" >> $GITHUB_ENV
+            echo "CHANGED_FILES=${{ inputs.image_to_build }}" >> $GITHUB_ENV
           elif [ "${{ github.event_name }}" == "push" ]; then
             echo "BRANCH_TO_TEST=${{ github.ref }}" >> "$GITHUB_ENV"
             echo "PR_NUM=#000" >> $GITHUB_ENV
@@ -75,10 +80,6 @@ jobs:
             echo "Files changed in this push:"
             echo "$PUSH_FILES"
             echo "CHANGED_FILES=${PUSH_FILES}" >> $GITHUB_ENV
-          elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "BRANCH_TO_TEST=${{ inputs.branch_to_test }}" >> "$GITHUB_ENV"
-            echo "PR_NUM=#000" >> $GITHUB_ENV
-            echo "CHANGED_FILES=${{ inputs.image_to_build }}" >> $GITHUB_ENV
           fi
 
       - name: Prepare matrix
@@ -92,7 +93,7 @@ jobs:
           IFS=',' read -ra FILE_ARRAY <<< "$FILE_LIST"
           for file in "${FILE_ARRAY[@]}"; do
             for image in "${IMAGE_NAMES[@]}"; do
-              # Check if the file name contains the image name
+              # Check if the file path contains the image name
               if [[ $file == *"${image}"* ]]; then
                 # Add image name to the associative array
                 IMAGE_MAP["${image}"]="${image}"
@@ -106,6 +107,7 @@ jobs:
           echo "IMAGES_TO_BUILD=${IMAGES_TO_BUILD[*]}" >> $GITHUB_ENV
           echo "Images to build: ${IMAGES_TO_BUILD[*]}"
 
+          # Create matrix
           matrix_include=$(for image in "${IMAGES_TO_BUILD[@]}"; do echo "{\"image_name\":\"${image}\"}"; done | jq -s . | tr -d '[:space:]')
           MATRIX="{\"include\":$matrix_include}"
           echo $MATRIX
@@ -117,6 +119,7 @@ jobs:
   run-image-image-build-push:
     needs: init-image-build-push
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     strategy:
       matrix: ${{ fromJson(needs.init-image-build-push.outputs.matrix) }}
       fail-fast: false
@@ -133,7 +136,7 @@ jobs:
       - name: Build and push image
         id: build_push_image
         run: |
-          set +e
+
           if [ "${{ matrix.image_name }}" == "aiverify-test-engine-worker" ] || [ "${{ matrix.image_name }}" == "aiverify-apigw" ]; then
             tag=$(grep -oP '(?<=version = ")[^"]*' ${{ matrix.image_name }}/pyproject.toml)
           elif [ "${{ matrix.image_name }}" == "aiverify-portal" ]; then
@@ -142,6 +145,8 @@ jobs:
             tag="default-tag"
           fi
 
+          set +e
+          echo "Building image ${{ matrix.image_name}}:$tag..."
           if [ "${{ matrix.image_name }}" == "aiverify-test-engine-worker" ]; then
             bash .ci/docker_build_push.sh ${{ matrix.image_name }} $tag aiverify-foundation ${{ matrix.image_name }}  aiverify-test-engine-worker-base base
             bash .ci/docker_build_push.sh ${{ matrix.image_name }} $tag aiverify-foundation ${{ matrix.image_name }}  venv-build venv
