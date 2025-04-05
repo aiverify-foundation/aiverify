@@ -1,0 +1,17 @@
+{
+  "cid": "cover_page_main",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 36,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Main cover page",
+  "description": "Main Cover Page for the reports",
+  "properties": [
+    {
+      "key": "useCase",
+      "helper": "use case of the report"
+    }
+  ]
+}

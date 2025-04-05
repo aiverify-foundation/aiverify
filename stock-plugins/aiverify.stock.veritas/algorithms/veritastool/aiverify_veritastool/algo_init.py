@@ -25,6 +25,7 @@ from aiverify_test_engine.interfaces.itestresult import ITestArguments, ITestRes
 from aiverify_test_engine.plugins.enums.model_type import ModelType
 from aiverify_test_engine.plugins.enums.plugin_type import PluginType
 from aiverify_test_engine.plugins.plugins_manager import PluginManager
+from aiverify_veritastool.util.aiverify import generate_veritas_images
 from aiverify_test_engine.utils.json_utils import (
     load_schema_file,
     validate_json,
@@ -87,6 +88,7 @@ class AlgoInit:
         self._model_path = str(model_path)
         self._training_data_path = input_arguments.get("training_data_path", None)
         self._training_ground_truth_path = input_arguments.get("training_ground_truth_path", None)
+        self._probability_threshold = input_arguments.get("probability_threshold", 0.5)
         self._input_arguments = input_arguments
         self._model_type = model_type
         if self._model_type not in self._supported_algorithm_model_type:
@@ -219,15 +221,16 @@ class AlgoInit:
             model = self._model_instance.get_pipeline() if self._run_as_pipeline else self._model_instance.get_model()
 
             # Get predictions
-            y_pred = model.predict(test_data)
             y_prob = model.predict_proba(test_data)[:, 1] if hasattr(model, "predict_proba") else None
+            y_pred = (y_prob >= self._probability_threshold).astype(int)
 
             if self._model_type == ModelType.CLASSIFICATION:
                 veritas_model_type = "classification"
             elif self._model_type == ModelType.REGRESSION:
                 veritas_model_type = "regression"
+            elif self._model_type == ModelType.UPLIFT:
+                veritas_model_type = "uplift"
             else:
-                # Currently uplift is not implemented
                 raise ValueError(f"Invalid model type: {self._model_type}")
             protected_features_cols = (
                 test_data[self._input_arguments["protected_features"]]
@@ -273,7 +276,6 @@ class AlgoInit:
         try:
             container = self._create_veritas_container()
 
-            use_case = self._input_arguments.get("use_case", "base_classification")
             fair_threshold = self._input_arguments.get("fair_threshold", 80)
             fair_metric_name = self._input_arguments.get("fair_metric", "auto")
             fair_concern = self._input_arguments.get("fair_concern", "eligible")
@@ -301,8 +303,6 @@ class AlgoInit:
                 tran_pdp_feature=tran_pdp_feature,
             )
 
-            use_case_instance.evaluate(visualize=True, output=True)
-            use_case_instance.explain()
             results = use_case_instance.compile(save_artifact=False)
             return results
 
@@ -319,7 +319,6 @@ class AlgoInit:
 
             # Discover plugins
             PluginManager.discover(str(self._core_modules_path))
-            # print(f"[DETECTED_PLUGINS]: {PluginManager.get_printable_plugins()}")
 
             # Create logger
             self._logger_instance = logging.getLogger("AlgoInitLogger")
@@ -389,7 +388,22 @@ class AlgoInit:
                 },
                 mode="upload",
             )
+            output_dir = output_path.parent
+            output_dir.mkdir(parents=True, exist_ok=True)
+            visualization_images, report_plots_structure = generate_veritas_images(results, output_dir)
             artifacts = results.pop("artifacts", []) if "artifacts" in results else None
+            artifacts.extend(visualization_images)
+
+            # Add report_plots structure to the output results
+            for section, data in report_plots_structure.items():
+                if section in results:
+                    if results[section] is None:
+                        results[section] = data
+                    else:
+                        results[section].update(data)
+                else:
+                    results[section] = data
+
             output = ITestResult(
                 gid=meta_file["gid"],
                 cid=meta_file["cid"],

@@ -1,0 +1,87 @@
+import logo from './veritas-logo.png';
+import cover from './veritas-cover-background.png';
+import { getReportDate } from './utils.ts';
+
+export const MyCoverPage = ({ props }) => {
+  return (
+    <div style={{ 
+      position: 'relative',
+      width: '100%',
+      height: '100vh',
+      overflow: 'hidden'
+    }}>
+      {/* Background Image */}
+      <div style={{ position:'absolute', top:0, left:0 }}>
+        <img src={cover} alt="cover pattern" />
+      </div>
+
+      {/* White Overlay with Gradient */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '80%',
+        height: '30%',
+        background: 'rgba(218,228,237,0.95)',
+        borderBottomRightRadius: '10%'
+      }}>
+        {/* Content Container */}
+        <div style={{
+          position: 'relative',
+          padding: '10px 40px'
+        }}>
+          {/* Logo */}
+          <img
+            src={logo}
+            alt="AI Verify Logo"
+            style={{
+              width: '320px',
+            }}
+          />
+
+          {/* Title */}
+          <h1 style={{
+            fontSize: '40px',
+            fontWeight: 'bold',
+            color: '#1a237e',
+            margin: '0 0 24px 0',
+          }}>
+            FEAT Assessment Report
+          </h1>
+
+          {/* Subtitle Container */}
+          <div style={{
+            backgroundColor: '#987B3B',
+            padding: '16px 40px',
+            borderRadius: '30px',
+            display: 'inline-block'
+          }}>
+            <h2 style={{
+              fontSize: '24px',
+              fontWeight: '500',
+              color: 'white',
+              margin: 0,
+            }}>
+              {props.properties.useCase}
+            </h2>
+          </div>
+        </div>
+      </div>
+
+      {/* Powered by AI Verify - Added at the bottom right */}
+      <div style={{
+        position: 'absolute',
+        bottom: '15%',
+        right: '15%',
+        fontSize: '16px',
+        color: 'white'
+      }}>
+        Powered by AI Verify
+      </div>
+    </div>
+  )
+}
+
+<div style={{ width: props.width, height: props.height }}>
+  <MyCoverPage props={props} />
+</div>
