@@ -148,9 +148,9 @@ jobs:
           set +e
           echo "Building image ${{ matrix.image_name}}:$tag..."
           if [ "${{ matrix.image_name }}" == "aiverify-test-engine-worker" ]; then
-            bash .ci/docker_build_push.sh ${{ matrix.image_name }} $tag aiverify-foundation ${{ matrix.image_name }}  aiverify-test-engine-worker-base base
-            bash .ci/docker_build_push.sh ${{ matrix.image_name }} $tag aiverify-foundation ${{ matrix.image_name }}  venv-build venv
-            bash .ci/docker_build_push.sh ${{ matrix.image_name }} $tag aiverify-foundation ${{ matrix.image_name }}  docker-build docker
+            bash .ci/docker_build_push.sh ${{ matrix.image_name }} $tag aiverify-foundation ${{ matrix.image_name }} aiverify-test-engine-worker-base base
+            bash .ci/docker_build_push.sh ${{ matrix.image_name }} $tag aiverify-foundation ${{ matrix.image_name }} venv-build venv
+            bash .ci/docker_build_push.sh ${{ matrix.image_name }} $tag aiverify-foundation ${{ matrix.image_name }} docker-build docker
           else
             bash .ci/docker_build_push.sh ${{ matrix.image_name }} $tag aiverify-foundation ${{ matrix.image_name }}
           fi

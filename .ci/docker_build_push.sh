@@ -33,11 +33,12 @@ docker buildx inspect --bootstrap
 
 echo "Build and push image $IMAGE_NAME..."
 
+
 # Build and push the image for both amd64 and arm64 platforms
 if [ -n "$TARGET" ]; then
-    docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/$GITHUB_USERNAME/$IMAGE_NAME:$TAG-$TAG_SUFFIX -f $DOCKERFILE_DIR/Dockerfile --provenance=false --sbom=false --target $TARGET --push .
+    docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/$GITHUB_USERNAME/$IMAGE_NAME:$TAG-$TAG_SUFFIX -f $DOCKERFILE_DIR/Dockerfile --provenance=false --sbom=false --target $TARGET --push $DOCKERFILE_DIR
 else
-    docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/$GITHUB_USERNAME/$IMAGE_NAME:$TAG -f $DOCKERFILE_DIR/Dockerfile --provenance=false --sbom=false --push .
+    docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/$GITHUB_USERNAME/$IMAGE_NAME:$TAG -f $DOCKERFILE_DIR/Dockerfile --provenance=false --sbom=false --push $DOCKERFILE_DIR
 fi
 
 echo "Create and push manifests..."
