@@ -119,7 +119,7 @@ jobs:
   run-image-image-build-push:
     needs: init-image-build-push
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 120
     strategy:
       matrix: ${{ fromJson(needs.init-image-build-push.outputs.matrix) }}
       fail-fast: false
