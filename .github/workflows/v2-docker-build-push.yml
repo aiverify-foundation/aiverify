@@ -37,7 +37,7 @@ on:
         default: 'aiverify-apigw'
         
   push:
-    branches: [ ci/v2-docker-push-ghcr' ]
+    branches: [ ci/docker-push-ghcr' ]
     
 # Allow one concurrent deployment
 concurrency:
