@@ -81,7 +81,7 @@ jobs:
             echo "$PUSH_FILES"
             echo "CHANGED_FILES=${PUSH_FILES}" >> $GITHUB_ENV
           fi
-
+    
       - name: Prepare matrix
         id: prep_matrix
         run: |
@@ -125,6 +125,10 @@ jobs:
       fail-fast: false
       max-parallel: 1
     steps:
+      - name: Free up disk space
+        run: |
+          bash .ci/free_disk_space.sh
+          
       - name: Checkout code
         uses: actions/checkout@v4
         with:
@@ -133,7 +137,6 @@ jobs:
       - name: Build and push image
         id: build_push_image
         run: |
-
           if [ "${{ matrix.image_name }}" == "aiverify-test-engine-worker" ] || [ "${{ matrix.image_name }}" == "aiverify-apigw" ]; then
             tag=$(grep -oP '(?<=version = ")[^"]*' ${{ matrix.image_name }}/pyproject.toml)
           elif [ "${{ matrix.image_name }}" == "aiverify-portal" ]; then
