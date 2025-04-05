@@ -125,14 +125,15 @@ jobs:
       fail-fast: false
       max-parallel: 1
     steps:
-      - name: Free up disk space
-        run: |
-          bash .ci/free_disk_space.sh
-          
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           ref: ${{ needs.init-image-build-push.outputs.branch_to_test }}
+
+      - name: Free up disk space
+        run: |
+          bash .ci/free_disk_space.sh          
 
       - name: Build and push image
         id: build_push_image
