@@ -14,9 +14,6 @@ DOCKERFILE_DIR=$4
 TARGET=${5:-}
 TAG_SUFFIX=${6:-}
 
-# Save the current directory
-ORIGINAL_DIR=$(pwd)
-
 # Login to GitHub Container Registry
 echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USERNAME --password-stdin
 
@@ -28,17 +25,13 @@ docker buildx create --name mybuilder --use
 # Inspect the builder instance
 docker buildx inspect --bootstrap
 
-# Change to the directory containing the Dockerfile
-#cd $DOCKERFILE_DIR
-
 echo "Build and push image $IMAGE_NAME..."
-
 
 # Build and push the image for both amd64 and arm64 platforms
 if [ -n "$TARGET" ]; then
-    docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/$GITHUB_USERNAME/$IMAGE_NAME:$TAG-$TAG_SUFFIX -f $DOCKERFILE_DIR/Dockerfile --provenance=false --sbom=false --target $TARGET --push $DOCKERFILE_DIR
+    docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/$GITHUB_USERNAME/$IMAGE_NAME:$TAG-$TAG_SUFFIX -f $DOCKERFILE_DIR/Dockerfile --provenance=false --sbom=false --target $TARGET --push .
 else
-    docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/$GITHUB_USERNAME/$IMAGE_NAME:$TAG -f $DOCKERFILE_DIR/Dockerfile --provenance=false --sbom=false --push $DOCKERFILE_DIR
+    docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/$GITHUB_USERNAME/$IMAGE_NAME:$TAG -f $DOCKERFILE_DIR/Dockerfile --provenance=false --sbom=false --push .
 fi
 
 echo "Create and push manifests..."
@@ -51,9 +44,6 @@ else
     docker buildx imagetools create -t ghcr.io/$GITHUB_USERNAME/$IMAGE_NAME:$TAG ghcr.io/$GITHUB_USERNAME/$IMAGE_NAME:$TAG
     docker buildx imagetools create -t ghcr.io/$GITHUB_USERNAME/$IMAGE_NAME:latest ghcr.io/$GITHUB_USERNAME/$IMAGE_NAME:$TAG
 fi
-
-# Change back to the original directory
-cd $ORIGINAL_DIR
 
 # Clean up
 docker buildx rm mybuilder

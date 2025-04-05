@@ -9,7 +9,7 @@ env:
   IMAGE_NAMES:  'aiverify-apigw,
                  aiverify-portal,
                  aiverify-test-engine-worker'
-  GH_TOKEN: ${{ github.token }}
+  GITHUB_TOKEN: ${{ github.token }}
   
 on:
   # Runs when a pull request to main is being assigned
@@ -129,9 +129,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ needs.init-image-build-push.outputs.branch_to_test }}
-          sparse-checkout: |
-            ${{ matrix.image_name }}
-            .ci
 
       - name: Build and push image
         id: build_push_image
