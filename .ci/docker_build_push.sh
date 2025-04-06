@@ -45,6 +45,9 @@ else
     docker buildx imagetools create -t ghcr.io/$GITHUB_USERNAME/$IMAGE_NAME:latest ghcr.io/$GITHUB_USERNAME/$IMAGE_NAME:$TAG
 fi
 
+# Clean up build cache
+yes | docker builder prune --all
+
 # Clean up
 docker buildx rm mybuilder
 
