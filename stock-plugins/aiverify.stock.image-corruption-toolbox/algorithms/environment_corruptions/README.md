@@ -34,7 +34,7 @@ python -m aiverify_environment_corruptions \
   --model_path $root_path/pipeline/multiclass_classification_image_mnist_fashion \
   --model_type CLASSIFICATION \
   --ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
-  --ground_truth_label label \
+  --ground_truth label \
   --file_name_label file_name \
   --set_seed 10
 ```
@@ -70,7 +70,7 @@ python -m aiverify_environment_corruptions \
   --model_path $root_path/pipeline/multiclass_classification_image_mnist_fashion \
   --model_type CLASSIFICATION \
   --ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
-  --ground_truth_label label \
+  --ground_truth label \
   --file_name_label file_name \
   --set_seed 10
   --corruptions snow rain
@@ -96,7 +96,7 @@ python -m aiverify_environment_corruptions \
   --model_path $root_path/pipeline/multiclass_classification_image_mnist_fashion \
   --model_type CLASSIFICATION \
   --ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
-  --ground_truth_label label \
+  --ground_truth label \
   --file_name_label file_name \
   --set_seed 10
   --snow_intensity 1.0 2.0 3.0
@@ -188,7 +188,7 @@ source .venv/bin/activate
 cd aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/environment_corruptions/
 pip install -e .
 
-python -m aiverify_environment_corruptions --data_path  <data_path> --model_path <model_path> --model_type CLASSIFICATION --ground_truth_path <ground_truth_path> --ground_truth_label <str> --file_name_label <str> --set_seed <int>
+python -m aiverify_environment_corruptions --data_path  <data_path> --model_path <model_path> --model_type CLASSIFICATION --ground_truth_path <ground_truth_path> --ground_truth <str> --file_name_label <str> --set_seed <int>
 ```
 
 ### Build Plugin
@@ -227,7 +227,7 @@ docker run \
   --model_path /input/pipeline/multiclass_classification_image_mnist_fashion \
   --model_type CLASSIFICATION \
   --ground_truth_path /input/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
-  --ground_truth_label label \
+  --ground_truth label \
   --file_name_label file_name \
   --set_seed 10
 ```

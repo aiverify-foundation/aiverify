@@ -1,0 +1,241 @@
+{
+    "globalVars": [],
+    "pages": [
+        {
+            "layouts": [
+                {
+                    "i": "aiverify.stock.veritas-cover_page_main-p0-1743064932191-udsfa",
+                    "x": 0,
+                    "y": 0,
+                    "w": 12,
+                    "h": 36,
+                    "maxW": 12,
+                    "maxH": 36,
+                    "minW": 12,
+                    "minH": 36,
+                    "static": false,
+                    "isDraggable": true,
+                    "isResizable": true,
+                    "resizeHandles": [
+                        "se"
+                    ],
+                    "isBounded": true
+                },
+                {
+                    "i": "aiverify.stock.veritas-generic_process_checklist_responses-p0-1743064957351-ymgd4",
+                    "x": 0,
+                    "y": 36,
+                    "w": 12,
+                    "h": 36,
+                    "maxW": 12,
+                    "maxH": 36,
+                    "minW": 12,
+                    "minH": 36,
+                    "static": false,
+                    "isDraggable": true,
+                    "isResizable": true,
+                    "resizeHandles": [
+                        "se"
+                    ],
+                    "isBounded": true
+                }
+            ],
+            "reportWidgets": [
+                {
+                    "widgetGID": "aiverify.stock.veritas:cover_page_main",
+                    "key": "aiverify.stock.veritas-cover_page_main-p0-1743064932191-udsfa",
+                    "properties": {
+                        "useCase": "Base Regression"
+                    }
+                },
+                {
+                    "widgetGID": "aiverify.stock.veritas:generic_process_checklist_responses",
+                    "key": "aiverify.stock.veritas-generic_process_checklist_responses-p0-1743064957351-ymgd4",
+                    "properties": {
+                        "useCase": "Base Regression"
+                    }
+                }
+            ]
+        },
+        {
+            "layouts": [
+                {
+                    "i": "aiverify.stock.veritas-generic_performance_tests-p4-1743064974813-d3iji",
+                    "x": 0,
+                    "y": 0,
+                    "w": 12,
+                    "h": 24,
+                    "maxW": 12,
+                    "maxH": 36,
+                    "minW": 12,
+                    "minH": 24,
+                    "static": false,
+                    "isDraggable": true,
+                    "isResizable": true,
+                    "resizeHandles": [
+                        "se"
+                    ],
+                    "isBounded": true
+                }
+            ],
+            "reportWidgets": [
+                {
+                    "widgetGID": "aiverify.stock.veritas:generic_performance_tests",
+                    "key": "aiverify.stock.veritas-generic_performance_tests-p4-1743064974813-d3iji",
+                    "properties": {}
+                }
+            ]
+        },
+        {
+            "layouts": [
+                {
+                    "i": "aiverify.stock.veritas-fairness_process_checklist_responses-p6-1743064988139-q4f82",
+                    "x": 0,
+                    "y": 0,
+                    "w": 12,
+                    "h": 36,
+                    "maxW": 12,
+                    "maxH": 36,
+                    "minW": 12,
+                    "minH": 36,
+                    "static": false,
+                    "isDraggable": true,
+                    "isResizable": true,
+                    "resizeHandles": [
+                        "se"
+                    ],
+                    "isBounded": true
+                }
+            ],
+            "reportWidgets": [
+                {
+                    "widgetGID": "aiverify.stock.veritas:fairness_process_checklist_responses",
+                    "key": "aiverify.stock.veritas-fairness_process_checklist_responses-p6-1743064988139-q4f82",
+                    "properties": {
+                        "useCase": "Base Regression"
+                    }
+                }
+            ]
+        },
+        {
+            "layouts": [
+                {
+                    "i": "aiverify.stock.veritas-fairness_technical_tests-p10-1743064994380-bmigw",
+                    "x": 0,
+                    "y": 0,
+                    "w": 12,
+                    "h": 36,
+                    "maxW": 12,
+                    "maxH": 36,
+                    "minW": 12,
+                    "minH": 36,
+                    "static": false,
+                    "isDraggable": true,
+                    "isResizable": true,
+                    "resizeHandles": [
+                        "se"
+                    ],
+                    "isBounded": true
+                }
+            ],
+            "reportWidgets": [
+                {
+                    "widgetGID": "aiverify.stock.veritas:fairness_technical_tests",
+                    "key": "aiverify.stock.veritas-fairness_technical_tests-p10-1743064994380-bmigw",
+                    "properties": {}
+                }
+            ]
+        },
+        {
+            "layouts": [
+                {
+                    "i": "aiverify.stock.veritas-ethics_and_accountability_process_checklist_responses-p14-1743065007131-g14yc",
+                    "x": 0,
+                    "y": 0,
+                    "w": 12,
+                    "h": 10,
+                    "maxW": 12,
+                    "maxH": 36,
+                    "minW": 12,
+                    "minH": 10,
+                    "static": false,
+                    "isDraggable": true,
+                    "isResizable": true,
+                    "resizeHandles": [
+                        "se"
+                    ],
+                    "isBounded": true
+                }
+            ],
+            "reportWidgets": [
+                {
+                    "widgetGID": "aiverify.stock.veritas:ethics_and_accountability_process_checklist_responses",
+                    "key": "aiverify.stock.veritas-ethics_and_accountability_process_checklist_responses-p14-1743065007131-g14yc",
+                    "properties": {
+                        "useCase": "Base Regression"
+                    }
+                }
+            ]
+        },
+        {
+            "layouts": [
+                {
+                    "i": "aiverify.stock.veritas-transparency_process_checklist_responses-p16-1743065020969-x6num",
+                    "x": 0,
+                    "y": 0,
+                    "w": 12,
+                    "h": 36,
+                    "maxW": 12,
+                    "maxH": 36,
+                    "minW": 12,
+                    "minH": 36,
+                    "static": false,
+                    "isDraggable": true,
+                    "isResizable": true,
+                    "resizeHandles": [
+                        "se"
+                    ],
+                    "isBounded": true
+                }
+            ],
+            "reportWidgets": [
+                {
+                    "widgetGID": "aiverify.stock.veritas:transparency_process_checklist_responses",
+                    "key": "aiverify.stock.veritas-transparency_process_checklist_responses-p16-1743065020969-x6num",
+                    "properties": {
+                        "useCase": "Base Regression"
+                    }
+                }
+            ]
+        },
+        {
+            "layouts": [
+                {
+                    "i": "aiverify.stock.veritas-transparency_technical_tests-p20-1743065028202-up4o1",
+                    "x": 0,
+                    "y": 0,
+                    "w": 12,
+                    "h": 36,
+                    "maxW": 12,
+                    "maxH": 36,
+                    "minW": 12,
+                    "minH": 36,
+                    "static": false,
+                    "isDraggable": true,
+                    "isResizable": true,
+                    "resizeHandles": [
+                        "se"
+                    ],
+                    "isBounded": true
+                }
+            ],
+            "reportWidgets": [
+                {
+                    "widgetGID": "aiverify.stock.veritas:transparency_technical_tests",
+                    "key": "aiverify.stock.veritas-transparency_technical_tests-p20-1743065028202-up4o1",
+                    "properties": {}
+                }
+            ]
+        }
+    ]
+}

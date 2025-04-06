@@ -16,6 +16,7 @@ dependencies = [
     "ipywidgets==8.0.4",
     "ipython == 8.11.0",
     "matplotlib==3.7.1",
+    "seaborn==0.13.2",
     "phik==0.12.4",
     "shap==0.46.0",
     "matplotlib-inline==0.1.6",

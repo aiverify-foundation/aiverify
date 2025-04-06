@@ -1,7 +1,7 @@
 {
     "cid": "veritastool",
     "gid": "aiverify.stock.veritas",
-    "name": "VeritasTool",
+    "name": "Veritas fairness & transparency assessment",
     "modelType": [
         "classification",
         "regression",

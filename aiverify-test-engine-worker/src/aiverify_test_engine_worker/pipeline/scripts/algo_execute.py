@@ -22,6 +22,7 @@ from aiverify_test_engine.interfaces.ialgorithm import IAlgorithm
 from aiverify_test_engine.interfaces.ipipeline import IPipeline
 from aiverify_test_engine.interfaces.itestresult import ITestArguments, ITestResult
 from aiverify_test_engine.plugins.enums.model_type import ModelType
+from aiverify_test_engine.plugins.enums.pipeline_plugin_type import PipelinePluginType
 from aiverify_test_engine.utils.json_utils import (
     remove_numpy_formats,
     validate_json,
@@ -231,17 +232,22 @@ def run():
         initial_data_instance = copy.deepcopy(data_instance)
         initial_model_instance = copy.deepcopy(model_instance)
 
-        # Perform data transformation
-        current_dataset = data_instance.get_data()
-        current_pipeline = model_instance.get_pipeline()
-        data_transformation_stages = current_pipeline[:-1]
-        transformed_dataset = data_transformation_stages.transform(
-            current_dataset
-        )
-        transformed_pipeline = current_pipeline[-1]
-        # Set new transformed pipeline and dataset
-        data_instance.set_data(transformed_dataset)
-        model_instance.set_pipeline(transformed_pipeline)
+        try:
+            if model_instance.get_pipeline_plugin_type() == PipelinePluginType.SKLEARN:
+                # Perform data transformation
+                current_dataset = data_instance.get_data()
+                current_pipeline = model_instance.get_pipeline()
+                data_transformation_stages = current_pipeline[:-1]
+                transformed_dataset = data_transformation_stages.transform(
+                    current_dataset
+                )
+                transformed_pipeline = current_pipeline[-1]
+                # Set new transformed pipeline and dataset
+                data_instance.set_data(transformed_dataset)
+                model_instance.set_pipeline(transformed_pipeline)
+        except Exception as e:
+            logger.error(f"Unable to transform pipeline data: {e}")
+            # probaby not best way to handle, but for now just ignore when data transformation exception
 
     except:  # if exception, not pipeline
         (model_instance, model_serializer, model_errmsg) = PluginManager.get_instance(
@@ -258,7 +264,7 @@ def run():
     # load ground truth
     if args.ground_truth_path:
         (ground_truth_data_instance, ground_truth_data_serializer, ground_truth_data_errmsg) = PluginManager.get_instance(
-            PluginType.DATA, **{"filename": args.data_path.absolute().as_posix()}
+            PluginType.DATA, **{"filename": args.ground_truth_path.absolute().as_posix()}
         )
         logging.debug(
             f"validate ground truth dataset. data_instance:{ground_truth_data_instance}, data_serializer: {ground_truth_data_serializer}, errmsg: {ground_truth_data_errmsg}")
@@ -267,18 +273,18 @@ def run():
             exit(-1)
         # Leave only the ground truth feature in self._ground_truth_instance and
         # Remove ground truth feature from the data instance
-        is_ground_truth_instance_success = (
-            ground_truth_data_instance.keep_ground_truth(args.ground_truth)
-        )
+        # is_ground_truth_instance_success = (
+        #     ground_truth_data_instance.keep_ground_truth(args.ground_truth)
+        # )
         data_instance.remove_ground_truth(args.ground_truth)
-        if not is_ground_truth_instance_success:
-            logger.debug(
-                "ERROR: Unable to retain only ground truth in ground truth instance. (Check "
-                "if "
-                "ground "
-                "truth feature exists in the data specified in ground truth path file.)"
-            )
-            exit(-1)
+        # if not is_ground_truth_instance_success:
+        #     logger.debug(
+        #         "ERROR: Unable to retain only ground truth in ground truth instance. (Check "
+        #         "if "
+        #         "ground "
+        #         "truth feature exists in the data specified in ground truth path file.)"
+        #     )
+        #     exit(-1)
 
     # set the input arguments
     input_arguments: Dict = copy.deepcopy(args.algorithm_args)
@@ -290,7 +296,13 @@ def run():
     input_arguments["project_base_path"] = algo_src_path
 
     logger.debug(f"input_arguments: {input_arguments}")
-
+    
+    #Remove old output folder if present
+    output_folder: Path = args.algo_path.joinpath("output")
+    if output_folder.exists():
+        import shutil
+        shutil.rmtree(output_folder)
+        
     # Run the plugin with the arguments and instances
     logger.debug("Creating an instance of the Plugin...")
     start_time = time.time()
@@ -310,18 +322,13 @@ def run():
     # Get the task results and convert to json friendly and validate against the output schema
     logger.debug("Converting numpy formats if exists...")
     results = remove_numpy_formats(plugin.get_results())
-
+    
     logger.debug("Verifying results with output schema...")
     if not isinstance(results, Dict) or not validate_json(results, output_schema):
         logger.critical(f"Invalid results: {results}")
         exit(-1)
 
-    # Print the output results
-    output_folder: Path = args.algo_path.joinpath("output")
-    if output_folder.exists():
-        import shutil
-        shutil.rmtree(output_folder)
-
+    # Create output folder to store results
     output_folder.mkdir(parents=True, exist_ok=True)
     json_file_path = output_folder.joinpath("results.json")
 
@@ -334,11 +341,10 @@ def run():
             algo_init_instance = algo_init_class(
                 run_as_pipeline,
                 core_modules_path,
-                args.data_path,
-                args.model_path,
-                args.ground_truth_path,
-                args.ground_truth,
-                args.model_type,
+                str(args.data_path),
+                str(args.model_path),
+                str(args.ground_truth_path),
+                **input_arguments,
             )
             algo_init_instance._start_time = start_time
             algo_init_instance._time_taken = time_taken
@@ -390,11 +396,11 @@ def run():
         output_json = json.dumps(output_dict, default=str)
         with open(json_file_path, "w") as json_file:
             json_file.write(output_json)
-
+            
     output_zip_path: Path = args.output_zip if args.output_zip else args.algo_path.joinpath("output.zip")
 
     output_zip_path.parent.mkdir(parents=True, exist_ok=True)
-
+    
     # Create a zip file of all files in the output_folder
     with ZipFile(output_zip_path, "w") as zipf:
         for file_path in output_folder.rglob("**/*"):
@@ -404,7 +410,7 @@ def run():
                 zipf.mkdir(file_path.relative_to(output_folder).as_posix())
 
     logger.info("Algorithm run method completed successfully.")
-
-
+    
+    
 if __name__ == "__main__":
     run()

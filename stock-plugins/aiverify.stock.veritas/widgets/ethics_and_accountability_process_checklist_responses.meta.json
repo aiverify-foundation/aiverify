@@ -1,0 +1,34 @@
+{
+  "cid": "ethics_and_accountability_process_checklist_responses",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 10,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "User Responses - Ethics and Accountability Veritas Checklist",
+  "description": "List the user responses for Ethics and Accountability Veritas checklist",
+  "tag": [
+    "stock",
+    "process-checklist"
+  ],
+  "dependencies": [
+    {
+      "cid": "ethics_and_accountability_process_checklist"
+    }
+  ],
+  "properties": [
+    {
+      "key": "useCase",
+      "helper": "use case of the report"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "InputBlock",
+      "cid": "ethics_and_accountability_process_checklist",
+      "datapath": "ethics_and_accountability_process_checklist.sample.json"
+    }
+  ],
+  "dynamicHeight": true
+}
