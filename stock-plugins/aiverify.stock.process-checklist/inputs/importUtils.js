@@ -41,29 +41,100 @@ function isValidPid(pid) {
 }
 
 /**
+ * Validates and normalizes the completed field value
+ * @param {string} value - The value to validate and normalize
+ * @returns {string} The normalized value or empty string if invalid
+ */
+function validateAndNormalizeCompletedValue(value) {
+  if (!value || typeof value !== "string") return "";
+
+  // Convert to lowercase for case-insensitive comparison
+  const lowerValue = value.trim().toLowerCase();
+
+  // Map for valid values and their normalized forms
+  const validValueMap = {
+    yes: "Yes",
+    no: "No",
+    "not applicable": "Not Applicable",
+    na: "Not Applicable",
+    "n.a": "Not Applicable",
+    "n.a.": "Not Applicable",
+  };
+
+  return validValueMap[lowerValue] || "";
+}
+
+/**
+ * Helper function to format a principle name to Title Case (first letter of each word capitalized)
+ * @param {string} principle - The principle name to format
+ * @returns {string} The formatted principle name
+ */
+function formatPrincipleName(principle) {
+  // Handle special formatting for multi-word principles
+  return principle
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+/**
+ * Helper function to find a match for a sheet name in the checklist mapping
+ * Only performs exact matching (case-insensitive)
+ * @param {string} sheetName - The sheet name to find a match for
+ * @param {Object} reverseMapping - The reverse mapping of display names to CIDs
+ * @returns {string|null} The matching CID or null if no match found
+ */
+function findBestCidMatch(sheetName, reverseMapping) {
+  // Only perform exact match (case-insensitive)
+  const exactMatch = reverseMapping[sheetName.trim().toLowerCase()];
+  if (exactMatch) {
+    return exactMatch;
+  }
+
+  // No match found
+  return null;
+}
+
+/**
  * Converts JSON data from an uploaded file into the format expected by the API gateway
  * @param {Object} jsonData - JSON data from an uploaded file
  * @param {string} groupName - The group name to associate with the checklists
- * @returns {Array} Array of checklist submissions in the format expected by the API
+ * @returns {Object} Object containing submissions array and unmatchedSheets array
  */
 export function jsonToChecklistSubmissions(jsonData, groupName) {
   if (!jsonData || !Array.isArray(jsonData.sheets) || !groupName) {
     console.error("Invalid JSON data or missing group name");
-    return [];
+    return { submissions: [], unmatchedSheets: [] };
   }
 
   const reverseMapping = getReverseChecklistMapping();
   const submissions = [];
+  const unmatchedSheets = [];
 
   // Process each sheet in the JSON data
   jsonData.sheets.forEach((sheet) => {
-    const sheetName = sheet.name.trim().toLowerCase();
-    const cid = reverseMapping[sheetName];
+    // Try to find a match for this sheet name (exact match only)
+    const cid = findBestCidMatch(sheet.name, reverseMapping);
 
     if (!cid) {
-      console.warn(`No CID found for sheet: ${sheet.name}`);
-      return;
+      console.warn(
+        `No exact match found for sheet name: "${sheet.name}". Sheet names must match principle names exactly (case-insensitive).`
+      );
+      unmatchedSheets.push(sheet.name);
+      return; // Skip this sheet
     }
+
+    // Extract principle name from cid (e.g., "transparency" from "transparency_process_checklist")
+    // This is a fallback in case the principleName is not extracted from the Excel file
+    const principle = cid.replace("_process_checklist", "");
+
+    // Use the extracted principle name if available, otherwise format the principle from CID
+    const principleForSummary = sheet.principleName
+      ? sheet.principleName // Use the already formatted principle name from the Excel
+      : formatPrincipleName(principle); // Format the principle name from CID
+
+    // Use the principle name for the summary justification key
+    const summaryKey = `summary-justification-${principleForSummary}`;
 
     const checklistData = {};
 
@@ -74,25 +145,53 @@ export function jsonToChecklistSubmissions(jsonData, groupName) {
       const elaboration = row.elaboration;
 
       if (isValidPid(pid)) {
+        // Validate and normalize the completed value
         if (completed !== undefined) {
-          checklistData[`completed-${pid}`] = completed || "";
+          const normalizedCompleted =
+            validateAndNormalizeCompletedValue(completed);
+          checklistData[`completed-${pid}`] = normalizedCompleted;
         }
+
         if (elaboration !== undefined) {
           checklistData[`elaboration-${pid}`] = elaboration || "";
         }
       }
     });
 
+    // Add the summary justification from the sheet level property
+    if (sheet.summaryJustification) {
+      checklistData[summaryKey] = sheet.summaryJustification;
+    }
+
+    // Ensure the name includes "Process Checklist"
+    let displayName = sheet.name;
+    if (!displayName.toLowerCase().includes("process checklist")) {
+      displayName = `${displayName} Process Checklist`;
+    }
+
     submissions.push({
       gid: "aiverify.stock.process_checklist",
       cid,
-      name: sheet.name,
+      name: displayName,
       group: groupName,
       data: checklistData,
     });
   });
 
-  return submissions;
+  // Log a summary of any unmatched sheets
+  if (unmatchedSheets.length > 0) {
+    console.warn(
+      `Warning: Could not process ${
+        unmatchedSheets.length
+      } sheets because their names did not exactly match any principle name: ${unmatchedSheets.join(
+        ", "
+      )}. Sheet names must exactly match one of: ${Object.values(
+        checklistMapping
+      ).join(", ")} (case-insensitive).`
+    );
+  }
+
+  return { submissions, unmatchedSheets };
 }
 
 /**
@@ -100,7 +199,7 @@ export function jsonToChecklistSubmissions(jsonData, groupName) {
  * This function is designed to be flexible and handle various JSON structures
  * @param {Object|Array} jsonData - JSON data that might contain checklist information
  * @param {string} groupName - The group name to associate with the checklists
- * @returns {Array} Array of checklist submissions
+ * @returns {Object} Object containing submissions array and unmatchedSheets array
  */
 export function extractChecklistData(jsonData, groupName) {
   // If the JSON is already in the expected format with sheets property
@@ -122,9 +221,11 @@ export function extractChecklistData(jsonData, groupName) {
         sheetMap[item.sheetName].push(item);
       } else if (
         item.pid &&
-        (item.completed !== undefined || item.elaboration !== undefined)
+        (item.completed !== undefined ||
+          item.elaboration !== undefined ||
+          item.summaryJustification !== undefined)
       ) {
-        // If we have PID and either completed or elaboration fields directly
+        // If we have PID and either completed, elaboration, or summaryJustification fields directly
         // Make an assumption about which checklist it belongs to based on PID prefix
         // This is a fallback approach and may need customization based on your data structure
         const sheetName = guessSheetNameFromPid(item.pid);
@@ -171,14 +272,29 @@ export function extractChecklistData(jsonData, groupName) {
       if (cid) {
         const checklistData = {};
 
-        // Process the object to extract PID, completed, and elaboration data
-        extractChecklistItemsFromObject(jsonData[key], checklistData);
+        // Extract principle name from cid
+        const principle = cid.replace("_process_checklist", "");
+
+        // Process the object to extract PID, completed, elaboration, and summary-justification data
+        extractChecklistItemsFromObject(
+          jsonData[key],
+          checklistData,
+          principle
+        );
 
         if (Object.keys(checklistData).length > 0) {
+          // Get the display name from the checklistMapping
+          let displayName = checklistMapping[cid];
+
+          // Ensure the name includes "Process Checklist"
+          if (!displayName.toLowerCase().includes("process checklist")) {
+            displayName = `${displayName} Process Checklist`;
+          }
+
           submissions.push({
             gid: "aiverify.stock.process_checklist",
             cid,
-            name: checklistMapping[cid],
+            name: displayName,
             group: groupName,
             data: checklistData,
           });
@@ -187,24 +303,38 @@ export function extractChecklistData(jsonData, groupName) {
     }
   });
 
-  return submissions.length > 0 ? submissions : [];
+  // Return empty arrays if no other extraction method worked
+  return { submissions: [], unmatchedSheets: [] };
 }
 
 /**
  * Helper function to recursively extract checklist items from a complex object
  * @param {Object} obj - Object that might contain checklist data
  * @param {Object} checklistData - Object to populate with extracted data
+ * @param {string} principle - The principle name for summary-justification field
  */
-function extractChecklistItemsFromObject(obj, checklistData) {
+function extractChecklistItemsFromObject(obj, checklistData, principle) {
   if (!obj || typeof obj !== "object") return;
 
-  // Check if this object directly has pid, completed, and elaboration properties
+  // Format the principle name to Title Case (first letter of each word capitalized)
+  const formattedPrinciple = formatPrincipleName(principle);
+
+  // Use the formatted principle name for the summary justification key
+  const summaryKey = `summary-justification-${formattedPrinciple}`;
+
+  // Check if this object directly has pid, completed, elaboration, and summaryJustification properties
   if (obj.pid && isValidPid(obj.pid)) {
     if (obj.completed !== undefined) {
-      checklistData[`completed-${obj.pid}`] = obj.completed || "";
+      const normalizedCompleted = validateAndNormalizeCompletedValue(
+        obj.completed
+      );
+      checklistData[`completed-${obj.pid}`] = normalizedCompleted;
     }
     if (obj.elaboration !== undefined) {
       checklistData[`elaboration-${obj.pid}`] = obj.elaboration || "";
+    }
+    if (obj.summaryJustification !== undefined) {
+      checklistData[summaryKey] = obj.summaryJustification || "";
     }
     return;
   }
@@ -216,24 +346,43 @@ function extractChecklistItemsFromObject(obj, checklistData) {
       const value = obj[key];
       if (typeof value === "object") {
         if (value.completed !== undefined) {
-          checklistData[`completed-${key}`] = value.completed || "";
+          const normalizedCompleted = validateAndNormalizeCompletedValue(
+            value.completed
+          );
+          checklistData[`completed-${key}`] = normalizedCompleted;
         }
         if (value.elaboration !== undefined) {
           checklistData[`elaboration-${key}`] = value.elaboration || "";
         }
+        if (value.summaryJustification !== undefined) {
+          checklistData[summaryKey] = value.summaryJustification || "";
+        }
       } else if (typeof value === "string") {
         // If the value is a string, assume it's the 'completed' status
-        checklistData[`completed-${key}`] = value;
+        const normalizedCompleted = validateAndNormalizeCompletedValue(value);
+        checklistData[`completed-${key}`] = normalizedCompleted;
       }
-    } else if (key.startsWith("completed-") || key.startsWith("elaboration-")) {
+    } else if (
+      key.startsWith("completed-") ||
+      key.startsWith("elaboration-") ||
+      key.startsWith("summary-justification-")
+    ) {
       // If we have keys that already match our expected format
-      const pidMatch = key.match(/^(completed|elaboration)-(.+)$/);
-      if (pidMatch && isValidPid(pidMatch[2])) {
+      if (key.startsWith("completed-")) {
+        const pidMatch = key.match(/^completed-(.+)$/);
+        if (pidMatch && isValidPid(pidMatch[1])) {
+          const normalizedCompleted = validateAndNormalizeCompletedValue(
+            obj[key]
+          );
+          checklistData[key] = normalizedCompleted;
+        }
+      } else {
+        // For elaboration and summary-justification, keep as is
         checklistData[key] = obj[key] || "";
       }
     } else if (typeof obj[key] === "object") {
       // Recursively check nested objects
-      extractChecklistItemsFromObject(obj[key], checklistData);
+      extractChecklistItemsFromObject(obj[key], checklistData, principle);
     }
   }
 }
@@ -272,7 +421,7 @@ function guessSheetNameFromPid(pid) {
  * Main function to import JSON data and convert it to the expected format
  * @param {Object|string} jsonData - JSON data or stringified JSON data
  * @param {string} groupName - The group name to associate with the checklists
- * @returns {Array} Array of checklist submissions in the expected format
+ * @returns {Object} Object containing submissions array and unmatchedSheets array
  */
 export function importJson(jsonData, groupName) {
   try {
@@ -284,6 +433,6 @@ export function importJson(jsonData, groupName) {
     return extractChecklistData(parsedData, groupName);
   } catch (error) {
     console.error("Error importing JSON data:", error);
-    return [];
+    return { submissions: [], unmatchedSheets: [] };
   }
 }

@@ -26,6 +26,15 @@ interface SubmissionError {
   details?: unknown;
 }
 
+// Define an interface for the input block data structure
+interface InputBlockData {
+  id: string;
+  gid: string;
+  cid: string;
+  group: string;
+  data: Record<string, string>; // For other properties that may exist
+}
+
 const ExcelUploader = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -37,6 +46,7 @@ const ExcelUploader = () => {
   const [duplicateSubmissions, setDuplicateSubmissions] = useState<
     ChecklistSubmission[]
   >([]);
+  const [unmatchedSheets, setUnmatchedSheets] = useState<string[]>([]);
   const [groupName, setGroupName] = useState('');
 
   // Preload the MDX bundle to ensure it's available
@@ -76,43 +86,73 @@ const ExcelUploader = () => {
         `Overwriting ${duplicateSubmissions.length} checklists for group "${groupName}"`
       );
 
-      // Process each submission with PUT request instead of POST
+      // Step 1: Fetch all existing input block data in a single request
+      const response = await fetch('/api/input_block_data');
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch existing input block data: ${response.statusText}`
+        );
+      }
+
+      const allInputBlockData = await response.json();
+      console.log(
+        `Retrieved ${allInputBlockData.length} existing input blocks`
+      );
+
+      // Step 2: Create a lookup map for faster matching by gid, cid, and group
+      const inputBlockLookupMap = allInputBlockData.reduce(
+        (map: Record<string, string>, item: InputBlockData) => {
+          // Create a unique key combining gid, cid, and group
+          const key = `${item.gid}|${item.cid}|${item.group}`;
+          map[key] = item.id;
+          return map;
+        },
+        {}
+      );
+
+      // Step 3: Process each submission with PUT request to update existing data
       for (const submission of duplicateSubmissions) {
-        // Get existing checklist ID by querying API
-        const queryParams = new URLSearchParams({
-          gid: submission.gid,
-          cid: submission.cid,
-          group: submission.group,
-        });
+        // Create the same unique key format for this submission
+        const lookupKey = `${submission.gid}|${submission.cid}|${submission.group}`;
+        const existingId = inputBlockLookupMap[lookupKey];
 
-        const response = await fetch(`/api/input_block_data?${queryParams}`);
-        if (response.ok) {
-          const existingChecklist = await response.json();
-          if (existingChecklist && existingChecklist.length > 0) {
-            // Use PUT to update the existing checklist
-            const updateResponse = await fetch(
-              `/api/input_block_data/${existingChecklist[0].id}`,
-              {
-                method: 'PUT',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(submission),
-              }
-            );
-
-            if (!updateResponse.ok) {
-              throw new Error(
-                `Failed to update checklist ${submission.cid}: ${updateResponse.statusText}`
-              );
+        if (existingId) {
+          // Use PUT to update the existing checklist
+          const updateResponse = await fetch(
+            `/api/input_block_data/${existingId}`,
+            {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(submission),
             }
+          );
+
+          if (!updateResponse.ok) {
+            throw new Error(
+              `Failed to update checklist ${submission.cid}: ${updateResponse.statusText}`
+            );
           }
+
+          console.log(
+            `Successfully updated checklist ${submission.cid} with ID ${existingId}`
+          );
+        } else {
+          console.warn(
+            `No existing input block found for ${submission.cid} in group ${submission.group}`
+          );
         }
       }
 
-      setModalMessage(
-        `Successfully overwritten ${duplicateSubmissions.length} checklists for group "${groupName}".`
-      );
+      let message = `Successfully overwritten ${duplicateSubmissions.length} checklists for group "${groupName}"!`;
+
+      // Add information about unmatched sheets if any
+      if (unmatchedSheets && unmatchedSheets.length > 0) {
+        message += `\n\n${unmatchedSheets.length} sheet(s) did not exactly match any principle name and were not uploaded: ${unmatchedSheets.join(', ')}.\n\nSheet names must exactly match principle names (case-insensitive).`;
+      }
+
+      setModalMessage(message);
       setIsModalVisible(true);
     } catch (error) {
       console.error('Error during overwrite process:', error);
@@ -150,7 +190,11 @@ const ExcelUploader = () => {
       console.log('Processing Excel file:', file.name);
       console.log('Using group name:', fileGroupName);
 
-      const submissions = await excelToJson(file, fileGroupName);
+      const result = await excelToJson(file, fileGroupName);
+      const { submissions, unmatchedSheets: unmatchedSheetsList } = result;
+
+      // Store unmatched sheets for later use in messages
+      setUnmatchedSheets(unmatchedSheetsList || []);
 
       if (submissions && submissions.length > 0) {
         console.log(`Submitting ${submissions.length} checklists`);
@@ -160,9 +204,14 @@ const ExcelUploader = () => {
             await submitChecklist(submission);
           }
 
-          setModalMessage(
-            `Upload Successful! Processed ${submissions.length} checklists.`
-          );
+          let message = `Upload Successful! Processed ${submissions.length} checklists.`;
+
+          // Add information about unmatched sheets if any
+          if (unmatchedSheetsList && unmatchedSheetsList.length > 0) {
+            message += `\n\n${unmatchedSheetsList.length} sheet(s) did not exactly match any principle name and were not uploaded: ${unmatchedSheetsList.join(', ')}.\n\nSheet names must exactly match principle names (case-insensitive).`;
+          }
+
+          setModalMessage(message);
           setIsModalVisible(true);
         } catch (error: unknown) {
           console.log('Error during checklist submission:', error);
@@ -185,17 +234,28 @@ const ExcelUploader = () => {
             setIsConfirmModalVisible(true);
           } else {
             // Other error types
-            setModalMessage(
-              `Upload failed: ${submissionError.message || 'Unknown error'}`
-            );
+            let message = `Upload failed: ${submissionError.message || 'Unknown error'}`;
+
+            // Add information about unmatched sheets if any
+            if (unmatchedSheetsList && unmatchedSheetsList.length > 0) {
+              message += `\n\nAdditionally, ${unmatchedSheetsList.length} sheet(s) did not exactly match any principle name: ${unmatchedSheetsList.join(', ')}.\n\nSheet names must exactly match principle names (case-insensitive).`;
+            }
+
+            setModalMessage(message);
             setIsModalVisible(true);
           }
         }
       } else {
-        console.warn('No valid checklists were found in the file');
-        setModalMessage(
-          'Upload complete, but no valid checklists were found in the file.'
-        );
+        let message =
+          'Upload complete, but no valid checklists were found in the file.';
+
+        // If we have unmatched sheets, mention them specifically
+        if (unmatchedSheetsList && unmatchedSheetsList.length > 0) {
+          message += `\n\n${unmatchedSheetsList.length} sheet(s) could not be matched because their names did not exactly match any principle name: ${unmatchedSheetsList.join(', ')}.\n\nSheet names must exactly match principle names (case-insensitive).`;
+        }
+
+        console.warn(message);
+        setModalMessage(message);
         setIsModalVisible(true);
       }
     } catch (error) {
@@ -247,8 +307,12 @@ const ExcelUploader = () => {
             onCloseIconClick={closeModal}
             enableScreenOverlay
             heading="Upload Excel File"
-            height={200}>
-            <p id="upload-confirmation-message">{modalMessage}</p>
+            height={300}>
+            <p
+              id="upload-confirmation-message"
+              style={{ whiteSpace: 'pre-line' }}>
+              {modalMessage}
+            </p>
           </Modal>
         </div>
       )}
@@ -331,7 +395,30 @@ const ExcelUploader = () => {
                     <li role="listitem">
                       File Name:{' '}
                       <span className="text-secondary-300">
-                        Must end with &apos;_checklists.xlsx&apos;
+                        Must start with group name and end with
+                        &apos;_checklists.xlsx&apos;
+                      </span>
+                    </li>
+                    <li role="listitem">
+                      Excel Sheet Names:{' '}
+                      <span className="text-secondary-300">
+                        Ensure that each sheet have the correct names as
+                        follows, else it will not be uploaded: Transparency,
+                        Explainability, Reproducibility, Safety, Security,
+                        Robustness, Fairness, Data Governance, Accountability,
+                        Human Agency Oversight, Inclusive Growth, Organisational
+                        Considerations. Ensure that the Completed column is
+                        filled with a Yes, No or Not Applicable, else it will be
+                        a blank value.
+                      </span>
+                    </li>
+                    <li role="listitem">
+                      Excel Sheet Content:{' '}
+                      <span className="text-secondary-300">
+                        Only content in the columns: Completed, Elaboration, and
+                        the section for Summary Justification will be uploaded.
+                        Ensure that the Completed column is filled with a Yes,
+                        No or Not Applicable, else it will be a blank value.
                       </span>
                     </li>
                   </ul>

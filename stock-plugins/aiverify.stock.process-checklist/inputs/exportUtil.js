@@ -21,20 +21,11 @@ export async function prepareChecklistExportData(
         const keyB = b.cid.replace("_process_checklist", "");
 
         // Determine the meta file paths
+        // The only special case is for inclusive_growth, which needs a different meta file
         let metaFileA, metaFileB;
 
-        // Handle the special case for inclusive_growth
-        if (keyA === "inclusive_growth") {
-          metaFileA = require(`./inclusive_growth_process_checklist.meta.json`);
-        } else {
-          metaFileA = require(`./${keyA}_process_checklist.meta.json`);
-        }
-
-        if (keyB === "inclusive_growth") {
-          metaFileB = require(`./inclusive_growth_process_checklist.meta.json`);
-        } else {
-          metaFileB = require(`./${keyB}_process_checklist.meta.json`);
-        }
+        metaFileA = require(`./${keyA}_process_checklist.meta.json`);
+        metaFileB = require(`./${keyB}_process_checklist.meta.json`);
 
         // Extract groupNumber from meta files or use default values
         const groupNumberA = metaFileA.groupNumber || 999;
@@ -219,13 +210,14 @@ export async function prepareChecklistExportData(
     sortedChecklists.forEach((checklist) => {
       // Get the config key from the checklist ID
       const key = checklist.cid.replace("_process_checklist", "");
+
+      // Special case for inclusive_growth - needs different config file name
       const configKey =
         key === "inclusive_growth"
           ? "config_inclusive_growth_soc_env"
           : `config_${key}`;
 
-      // Get the config file content - the configFiles object should already have the correct mapping
-      // from the getConfigFiles function that handles the special case for inclusive_growth
+      // Get the config file content
       const configFileContent = configFiles[configKey];
 
       if (!configFileContent) {
@@ -393,15 +385,8 @@ export async function prepareChecklistExportData(
           }`,
         });
 
-        // Add summary justification content
-        // For inclusive_growth, we need to handle a different key pattern
-        let summaryKey;
-        if (key === "inclusive_growth") {
-          summaryKey = `summary-justification-inclusive_growth_soc_env`;
-        } else {
-          summaryKey = `summary-justification-${validatedConfig.principle}`;
-        }
-
+        // Add summary justification content - use the same principle name from config
+        const summaryKey = `summary-justification-${validatedConfig.principle}`;
         const summaryValue = checklist.data[summaryKey] || "";
         const formattedSummaryValue = replaceBreakTags(summaryValue);
 
