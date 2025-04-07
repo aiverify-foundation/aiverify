@@ -9,6 +9,7 @@ env:
   IMAGE_NAMES:  'aiverify-apigw,
                  aiverify-portal,
                  aiverify-test-engine-worker'
+
   GITHUB_TOKEN: ${{ github.token }}
   
 on:
@@ -107,8 +108,46 @@ jobs:
           echo "IMAGES_TO_BUILD=${IMAGES_TO_BUILD[*]}" >> $GITHUB_ENV
           echo "Images to build: ${IMAGES_TO_BUILD[*]}"
 
+          # # Create matrix
+          # matrix_include=$(for image in "${IMAGES_TO_BUILD[@]}"; do echo "{\"image_name\":\"${image}\"}"; done | jq -s . | tr -d '[:space:]')
+          # MATRIX="{\"include\":$matrix_include}"
+          # echo $MATRIX
+
           # Create matrix
-          matrix_include=$(for image in "${IMAGES_TO_BUILD[@]}"; do echo "{\"image_name\":\"${image}\"}"; done | jq -s . | tr -d '[:space:]')
+          matrix_include=$(for image in "${IMAGES_TO_BUILD[@]}"; do
+            if [ "$image" == "aiverify-apigw" ]; then
+              tag=$(grep -oP '(?<=version = ")[^"]*' $image/pyproject.toml)
+              target="default-target"
+            elif [ "$image" == "aiverify-portal" ]; then
+              tag=$(grep -oP '(?<=version": ")[^"]*' $image/package.json)
+              target="default-target"
+            elif [ "$image" == "aiverify-test-engine-worker" ]; then
+              tag=$(grep -oP '(?<=version = ")[^"]*' $image/pyproject.toml)
+              target="default-target"
+            else
+              tag="default-tag"
+              target="default-target"
+            fi
+            echo "{\"image_name\":\"${image}\", \"target\":\"${target}\", \"tag\":\"${tag}\"}"
+          done | jq -s . | tr -d '[:space:]')
+          MATRIX="{\"include\":$matrix_include}"
+          echo $MATRIX
+
+          matrix_include=$(for image in "${IMAGES_TO_BUILD[@]}"; do
+            if [ "$image" == "aiverify-apigw" ]; then
+              echo "{\"image_name\":\"${image}\", \"target\":\"\", \"tag_suffix\":\"\"}"
+            elif [ "$image" == "aiverify-portal" ]; then
+              echo "{\"image_name\":\"${image}\", \"target\":\"\", \"tag_suffix\":\"\"}"
+            elif [ "$image" == "aiverify-test-engine-worker" ]; then
+              echo "{\"image_name\":\"${image}\", \"target\":\"aiverify-test-engine-worker-base\", \"tag_suffix\":\"base\"}"
+              echo "{\"image_name\":\"${image}\", \"target\":\"venv-build\", \"tag_suffix\":\"venv\"}"
+              echo "{\"image_name\":\"${image}\", \"target\":\"docker-build\", \"tag_suffix\":\"docker\"}"
+            else
+              echo "STATUS=failure" >> $GITHUB_ENV
+              echo "Invalid image value: ${image_name}"
+              exit 1
+            fi
+          done | jq -s . | tr -d '[:space:]')
           MATRIX="{\"include\":$matrix_include}"
           echo $MATRIX
 
@@ -119,7 +158,7 @@ jobs:
   run-image-image-build-push:
     needs: init-image-build-push
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 360
     strategy:
       matrix: ${{ fromJson(needs.init-image-build-push.outputs.matrix) }}
       fail-fast: false
@@ -131,6 +170,7 @@ jobs:
         with:
           ref: ${{ needs.init-image-build-push.outputs.branch_to_test }}
 
+      # Free up disk space first as the image to build is very large
       - name: Free up disk space
         run: |
           bash .ci/free_disk_space.sh          
@@ -143,17 +183,17 @@ jobs:
           elif [ "${{ matrix.image_name }}" == "aiverify-portal" ]; then
             tag=$(grep -oP '(?<=version": ")[^"]*' ${{ matrix.image_name }}/package.json)
           else
-            tag="default-tag"
+            echo "STATUS=failure" >> $GITHUB_ENV
+            echo "Invalid image value: ${{ matrix.image_name }}"
+            exit 1
           fi
 
           set +e
-          echo "Building image ${{ matrix.image_name}}:$tag..."
-          if [ "${{ matrix.image_name }}" == "aiverify-test-engine-worker" ]; then
-            bash .ci/docker_build_push.sh ${{ matrix.image_name }} $tag aiverify-foundation ${{ matrix.image_name }} aiverify-test-engine-worker-base base
-            bash .ci/docker_build_push.sh ${{ matrix.image_name }} $tag aiverify-foundation ${{ matrix.image_name }} venv-build venv
-            bash .ci/docker_build_push.sh ${{ matrix.image_name }} $tag aiverify-foundation ${{ matrix.image_name }} docker-build docker
-          else
+          echo "Building image ${{ matrix.image_name}}:$tag ${{ matrix.target }} ${{ matrix.tag_suffix }}..."
+          if [ "${{ matrix.target }}" == "" ]; then
             bash .ci/docker_build_push.sh ${{ matrix.image_name }} $tag aiverify-foundation ${{ matrix.image_name }}
+          else
+            bash .ci/docker_build_push.sh ${{ matrix.image_name }} $tag aiverify-foundation ${{ matrix.image_name }} ${{ matrix.target }} ${{ matrix.tag_suffix }}
           fi
           build_status=$?
           set -e
