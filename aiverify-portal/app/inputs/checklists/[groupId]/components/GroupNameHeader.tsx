@@ -21,6 +21,9 @@ const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
   const [modalMessage, setModalMessage] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [isExportModalVisible, setIsExportModalVisible] = useState(false);
+  const [selectedExportFormat, setSelectedExportFormat] = useState<'json' | 'xlsx'>('json');
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const { checklists, setChecklists, setSelectedGroup } = useChecklists();
 
@@ -30,11 +33,58 @@ const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
   // Storage key for group name in localStorage
   const storageKey = `checklist_group_name_${initialGroupName}`;
 
-  // Get export functionality using the new hook
-  const { ExportButton } = useProcessChecklistExport(
+  // Initialize export hooks for both formats, but only use the selected one
+  const { isExporting: isJsonExporting, handleExport: handleJsonExport } = useProcessChecklistExport(
+    'json',
     initialGroupName,
     checklists
   );
+  
+  const { isExporting: isXlsxExporting, handleExport: handleXlsxExport } = useProcessChecklistExport(
+    'xlsx',
+    initialGroupName,
+    checklists
+  );
+
+  // Function to handle export button click
+  const handleExportClick = useCallback(() => {
+    setIsExportModalVisible(true);
+  }, []);
+
+  // Function to perform the export with the selected format
+  const performExport = useCallback(async () => {
+    setIsDownloading(true);
+    try {
+      if (selectedExportFormat === 'json') {
+        const jsonData = await handleJsonExport();
+        if (jsonData) {
+          // Create and download a JSON file
+          const jsonString = JSON.stringify(jsonData, null, 2);
+          const blob = new Blob([jsonString], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${initialGroupName}_checklists.json`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }
+      } else {
+        // For xlsx, the download is handled internally by the hook
+        await handleXlsxExport();
+      }
+      setModalMessage(`Export as ${selectedExportFormat.toUpperCase()} completed successfully.`);
+      setIsModalVisible(true);
+    } catch (error) {
+      console.error('Export failed:', error);
+      setModalMessage(`Export failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setIsModalVisible(true);
+    } finally {
+      setIsDownloading(false);
+      setIsExportModalVisible(false);
+    }
+  }, [selectedExportFormat, handleJsonExport, handleXlsxExport, initialGroupName]);
 
   // Update local state when initialGroupName changes
   useEffect(() => {
@@ -96,8 +146,7 @@ const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
 
   const handleModalClose = useCallback(() => {
     setIsModalVisible(false);
-    router.push('/inputs/checklists');
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     if (editGroupMutation.isSuccess && isSaving) {
@@ -172,22 +221,14 @@ const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
       )}
 
       <div className="flex justify-between gap-2">
-        {/* Render the ExportButton component when available, otherwise render a fallback */}
-        <div
-          data-export-button="true"
-          className="mt-2">
-          {ExportButton || (
-            <button
-              disabled={true}
-              className="opacity-50">
-              <Icon
-                name={IconName.WideArrowDown}
-                color="#FFFFFF"
-                size={24}
-              />
-            </button>
-          )}
-        </div>
+        {/* Custom download button */}
+        <button
+          onClick={handleExportClick}
+          disabled={isDownloading || isJsonExporting || isXlsxExporting}
+          className="mt-2 hover:text-primary-500"
+          title="Export checklists">
+          <RiDownloadLine size={20} />
+        </button>
         <button
           onClick={handleEditClick}
           disabled={isEditing || editGroupMutation.isPending}
@@ -208,6 +249,7 @@ const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
         </button>
       </div>
 
+      {/* Status/Message Modal */}
       {isModalVisible && (
         <Modal
           heading={modalMessage.includes('successfully') ? 'Success' : 'Error'}
@@ -217,6 +259,7 @@ const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
         </Modal>
       )}
 
+      {/* Delete Confirmation Modal */}
       {isDeleteModalVisible && (
         <Modal
           heading="Confirm Deletion"
@@ -229,6 +272,48 @@ const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
           <p>
             Are you sure you want to delete this group and all its checklists?
           </p>
+        </Modal>
+      )}
+
+      {/* Export Format Selection Modal */}
+      {isExportModalVisible && (
+        <Modal
+          heading="Export Checklists"
+          enableScreenOverlay={true}
+          onCloseIconClick={() => setIsExportModalVisible(false)}
+          primaryBtnLabel="Export"
+          secondaryBtnLabel="Cancel"
+          onPrimaryBtnClick={performExport}
+          onSecondaryBtnClick={() => setIsExportModalVisible(false)}>
+          <div>
+            <p className="mb-4">Choose a format to export your checklists:</p>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  id="exportExcel"
+                  name="exportFormat"
+                  value="xlsx"
+                  checked={selectedExportFormat === 'xlsx'}
+                  onChange={() => setSelectedExportFormat('xlsx')}
+                  className="mr-2"
+                />
+                <label htmlFor="exportExcel">Excel (.xlsx)</label>
+              </div>
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  id="exportJson"
+                  name="exportFormat"
+                  value="json"
+                  checked={selectedExportFormat === 'json'}
+                  onChange={() => setSelectedExportFormat('json')}
+                  className="mr-2"
+                />
+                <label htmlFor="exportJson">JSON (.json)</label>
+              </div>
+            </div>
+          </div>
         </Modal>
       )}
     </div>

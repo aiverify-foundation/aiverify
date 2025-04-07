@@ -1,5 +1,4 @@
-import { RiDownloadLine } from '@remixicon/react';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { createAndDownloadExcel } from '@/app/inputs/checklists/[groupId]/utils/excelExport';
 import { executeMDXBundle } from './useMDXExecution';
 import { useMDXSummaryBundle } from './useMDXSummaryBundle';
@@ -14,20 +13,22 @@ interface Checklist {
   [key: string]: string | Record<string, string> | unknown;
 }
 
+// Define return type for export data
+type ExportResult = Record<string, unknown> | boolean | null;
+
 /**
  * A hook that provides functionality to export process checklists using the plugin
+ * @param format The export format ('json' or 'xlsx')
  * @param groupName The name of the group to export
  * @param checklists The checklists to export
  * @returns An object with export functionality and state
  */
 export function useProcessChecklistExport(
+  format: string,
   groupName: string,
   checklists: Checklist[]
 ) {
   const [isExporting, setIsExporting] = useState(false);
-  const [ExportButton, setExportButton] = useState<React.ReactNode | null>(
-    null
-  );
 
   // Plugin IDs
   const gid = 'aiverify.stock.process_checklist';
@@ -42,93 +43,57 @@ export function useProcessChecklistExport(
   // Flag to track whether the export functionality is ready
   const isReady = !isLoadingBundle && !!mdxBundle?.code;
 
-  // Create the export button component and export function
-  useEffect(() => {
-    if (mdxBundle?.code) {
-      try {
-        // Execute the MDX bundle to get the exported functions
-        const moduleExports = executeMDXBundle(mdxBundle);
+  // Function to export data based on the format
+  const handleExport = useCallback(async (): Promise<ExportResult> => {
+    if (!isReady || isExporting) return null;
 
-        // Check if prepareExportData function is exported from the MDX
-        if (
-          moduleExports &&
-          typeof moduleExports.prepareExportData === 'function'
-        ) {
-          // Create a custom export button that uses our Excel utility
-          const CustomExportButton = () => {
-            const handleExport = async () => {
-              if (isExporting) return;
-
-              setIsExporting(true);
-              try {
-                // Use the prepareExportData function directly from the module exports
-                const workbookDefinition =
-                  await moduleExports.prepareExportData(groupName, checklists);
-
-                if (workbookDefinition) {
-                  // Use our generic Excel utility to create and download the Excel file
-                  await createAndDownloadExcel(workbookDefinition);
-                } else {
-                  console.error('Failed to prepare Excel workbook definition');
-                }
-              } catch (error) {
-                console.error('Error during export:', error);
-              } finally {
-                setIsExporting(false);
-              }
-            };
-
-            return (
-              <button
-                onClick={handleExport}
-                disabled={isExporting}
-                className="hover:text-primary-500"
-                title="Export checklists to Excel">
-                <RiDownloadLine size={20} />
-              </button>
-            );
-          };
-
-          setExportButton(<CustomExportButton />);
-        } else {
-          console.error('prepareExportData function not found in MDX bundle');
-          setExportButton(
-            <button
-              disabled={true}
-              className="opacity-50 hover:text-primary-500"
-              title="Export not available">
-              <RiDownloadLine size={20} />
-            </button>
-          );
-        }
-      } catch (error) {
-        console.error('Error executing MDX bundle:', error);
-        setExportButton(null);
+    setIsExporting(true);
+    try {
+      if (!mdxBundle?.code) {
+        throw new Error('MDX bundle not loaded');
       }
-    } else {
-      setExportButton(null);
-    }
-  }, [mdxBundle, groupName, checklists, isExporting]);
 
-  // Function to trigger the export programmatically
-  const triggerExport = useCallback(() => {
-    if (!isReady || isExporting) return;
+      // Execute the MDX bundle to get the exported functions
+      const moduleExports = executeMDXBundle(mdxBundle);
 
-    // Find the export button in the DOM
-    const button = document.querySelector(
-      '[data-export-button="true"] button'
-    ) as HTMLElement;
-    if (button) {
-      button.click();
-    } else {
-      console.error('Export button not found in DOM');
+      // Check if exportProcessChecklists function is exported from the MDX
+      if (
+        moduleExports &&
+        typeof moduleExports.exportProcessChecklists === 'function'
+      ) {
+        // Use the exportProcessChecklists function from the module exports
+        const result = await moduleExports.exportProcessChecklists(
+          format,
+          groupName,
+          checklists
+        );
+
+        if (format.toLowerCase() === 'xlsx' && result) {
+          // For Excel, create and download the file
+          await createAndDownloadExcel(result);
+          return true; // Return true to indicate success
+        } else if (format.toLowerCase() === 'json') {
+          // For JSON, return the data
+          return result;
+        } else {
+          console.error('Unsupported export format or no data returned');
+          return null;
+        }
+      } else {
+        console.error('exportProcessChecklists function not found in MDX bundle');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error during export:', error);
+      return null;
+    } finally {
+      setIsExporting(false);
     }
-  }, [isReady, isExporting]);
+  }, [isReady, isExporting, mdxBundle, format, groupName, checklists]);
 
   return {
     isExporting,
     isReady,
-    ExportButton,
-    triggerExport,
+    handleExport
   };
 }
