@@ -17,7 +17,7 @@
 Each test algorithm can now be installed via pip and run individually.
 
 ```sh
-pip install aiverify-digital-corruptions==2.0.0a1
+pip install aiverify-digital-corruptions
 ```
 
 ## Example Usage
@@ -191,7 +191,7 @@ source .venv/bin/activate
 
 # install plugin
 cd aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions/
-pip install -e .
+pip install .
 
 python -m aiverify_digital_corruptions --data_path  <data_path> --model_path <model_path> --model_type CLASSIFICATION --ground_truth_path <ground_truth_path> --ground_truth <str> --file_name_label <str> --set_seed <int>
 ```
@@ -217,7 +217,7 @@ pytest .
 In the aiverify root directory, run the below command to build the docker image
 
 ```sh
-docker build -t aiverify-digital-corruptions:v2.0.0a1 -f stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions/Dockerfile .
+docker build -t aiverify-digital-corruptions -f stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions/Dockerfile .
 ```
 
 Run the below bash script to run the algorithm
@@ -227,7 +227,7 @@ Run the below bash script to run the algorithm
 docker run \
   -v $(pwd)/stock-plugins/user_defined_files:/input \
   -v $(pwd)/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions/output:/app/aiverify/output \
-  aiverify-digital-corruptions:v2.0.0a1 \
+  aiverify-digital-corruptions \
   --data_path /input/data/raw_fashion_image_10 \
   --model_path /input/pipeline/multiclass_classification_image_mnist_fashion \
   --model_type CLASSIFICATION \
@@ -244,5 +244,5 @@ If the algorithm runs successfully, the results of the test will be saved in an 
 Run the following steps to execute the unit and integration tests inside the `tests/` folder
 
 ```sh
-docker run --entrypoint python3 aiverify-digital-corruptions:v2.0.0a1 -m pytest .
+docker run --entrypoint python3 aiverify-digital-corruptions -m pytest .
 ```

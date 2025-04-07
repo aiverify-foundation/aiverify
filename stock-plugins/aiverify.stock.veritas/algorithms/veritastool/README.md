@@ -285,7 +285,7 @@ pytest .
 In the aiverify root directory, run the following command to build the docker image
 
 ```sh
-docker build -t aiverify-veritastool:v2.0.0a2 -f ./stock-plugins/aiverify.stock.veritas/algorithms/veritastool/Dockerfile .
+docker build -t aiverify-veritastool -f ./stock-plugins/aiverify.stock.veritas/algorithms/veritastool/Dockerfile .
 ```
 
 Modify the parameters accordingly and run the example bash script:
@@ -295,7 +295,7 @@ Modify the parameters accordingly and run the example bash script:
 docker run \
   -v $(pwd)/stock-plugins/user_defined_files:/input \
   -v $(pwd)/stock-plugins/aiverify.stock.veritas/algorithms/veritastool/output:/app/aiverify/output \
-  aiverify-veritastool:v2.0.0a2 \
+  aiverify-veritastool \
   --data_path /input/veritas_data/cs_X_test.pkl \
   --model_path /input/veritas_data/cs_model.pkl \
   --ground_truth_path /input/veritas_data/cs_y_test.pkl \
