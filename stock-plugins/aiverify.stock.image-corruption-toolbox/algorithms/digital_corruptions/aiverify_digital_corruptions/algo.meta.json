@@ -5,7 +5,7 @@
     "modelType": [
         "classification"
     ],
-    "version": "2.0.0a2",
+    "version": "2.0.0",
     "author": "AI Verify",
     "description": "Algorithm that adds digital corruptions (brightness up and down, contrast up and down, compression, tilt, saturate)",
     "tags": [
