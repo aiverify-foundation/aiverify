@@ -36,9 +36,17 @@ on:
         description: 'Name of image to build'
         required: true
         default: 'aiverify-apigw'
+      image_tag:
+        description: 'Image tag'
+        required: false
         
   push:
     branches: [ ci/docker-push-ghcr ]
+    # paths:
+    #   - 'aiverify-test-engine-worker/**'
+    #   - 'aiverify-apigw/**'
+    #   - 'aiverify-portal/**'
+
     
 # Allow one concurrent deployment
 concurrency:
@@ -55,6 +63,7 @@ jobs:
     outputs:
       branch_to_test: ${{ steps.prep_matrix.outputs.branch_to_test }}
       pr_num: ${{ steps.prep_matrix.outputs.pr_num }}
+      image_tag: ${{ steps.prep_matrix.outputs.image_tag }}
       matrix: ${{ steps.prep_matrix.outputs.matrix }}
     
     timeout-minutes: 15
@@ -70,17 +79,20 @@ jobs:
             echo "Files changed in this pull request:"
             echo "$PR_FILES"
             echo "CHANGED_FILES=${PR_FILES}" >> $GITHUB_ENV
+            echo "IMAGE_TAG=" >> $GITHUB_ENV
           elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "BRANCH_TO_TEST=${{ inputs.branch_to_test }}" >> "$GITHUB_ENV"
+            echo "BRANCH_TO_TEST=${{ inputs.branch_to_test }}" >> $GITHUB_ENV
             echo "PR_NUM=#000" >> $GITHUB_ENV
             echo "CHANGED_FILES=${{ inputs.image_to_build }}" >> $GITHUB_ENV
+            echo "IMAGE_TAG=${{ inputs.image_tag }}" >> $GITHUB_ENV
           elif [ "${{ github.event_name }}" == "push" ]; then
-            echo "BRANCH_TO_TEST=${{ github.ref }}" >> "$GITHUB_ENV"
+            echo "BRANCH_TO_TEST=${{ github.ref }}" >> $GITHUB_ENV
             echo "PR_NUM=#000" >> $GITHUB_ENV
             PUSH_FILES=$(gh api repos/${{ github.repository }}/commits/${{ github.sha }} | jq -r '.files[].filename' | paste -sd "," -)
             echo "Files changed in this push:"
             echo "$PUSH_FILES"
             echo "CHANGED_FILES=${PUSH_FILES}" >> $GITHUB_ENV
+            echo "IMAGE_TAG=" >> $GITHUB_ENV
           fi
     
       - name: Prepare matrix
@@ -153,6 +165,7 @@ jobs:
 
           echo "branch_to_test=${{ env.BRANCH_TO_TEST }}" >> $GITHUB_OUTPUT
           echo "pr_num=${{ env.PR_NUM }}" >> $GITHUB_OUTPUT
+          echo "image_tag=${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
           echo "matrix={\"include\":$matrix_include}" >> $GITHUB_OUTPUT
 
   run-image-image-build-push:
@@ -178,14 +191,18 @@ jobs:
       - name: Build and push image
         id: build_push_image
         run: |
-          if [ "${{ matrix.image_name }}" == "aiverify-test-engine-worker" ] || [ "${{ matrix.image_name }}" == "aiverify-apigw" ]; then
-            tag=$(grep -oP '(?<=version = ")[^"]*' ${{ matrix.image_name }}/pyproject.toml)
-          elif [ "${{ matrix.image_name }}" == "aiverify-portal" ]; then
-            tag=$(grep -oP '(?<=version": ")[^"]*' ${{ matrix.image_name }}/package.json)
+          if [ "${{ needs.init-image-build-push.outputs.image_tag }}" == "" ] then
+            if [ "${{ matrix.image_name }}" == "aiverify-test-engine-worker" ] || [ "${{ matrix.image_name }}" == "aiverify-apigw" ]; then
+              tag=$(grep -oP '(?<=version = ")[^"]*' ${{ matrix.image_name }}/pyproject.toml)
+            elif [ "${{ matrix.image_name }}" == "aiverify-portal" ]; then
+              tag=$(grep -oP '(?<=version": ")[^"]*' ${{ matrix.image_name }}/package.json)
+            else
+              echo "STATUS=failure" >> $GITHUB_ENV
+              echo "Invalid image value: ${{ matrix.image_name }}"
+              exit 1
+            fi
           else
-            echo "STATUS=failure" >> $GITHUB_ENV
-            echo "Invalid image value: ${{ matrix.image_name }}"
-            exit 1
+            tag = ${{ needs.init-image-build-push.outputs.image_tag }}
           fi
 
           set +e
