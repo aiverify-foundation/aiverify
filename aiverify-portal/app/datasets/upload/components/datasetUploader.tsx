@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { DatasetFolderUploader } from '@/app/datasets/upload/components/DatasetFolderUploader';
 import { FileUpload } from '@/app/datasets/upload/types';
 import { uploadDatasetFile } from '@/app/datasets/upload/utils/uploadDatasetFile';
 import { Icon, IconName } from '@/lib/components/IconSVG';
@@ -9,7 +10,7 @@ import { Button, ButtonVariant } from '@/lib/components/button';
 import { Modal } from '@/lib/components/modal';
 import styles from './Uploader.module.css';
 
-export function DatasetUploader({}: { className?: string }) {
+function DatasetFileUploader() {
   const [fileUploads, setFileUploads] = useState<FileUpload[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -79,6 +80,11 @@ export function DatasetUploader({}: { className?: string }) {
         hasErrors ? 'Some files failed to upload.' : 'Upload Successful!'
       );
       setIsModalVisible(true);
+
+      // After a short delay, reset all fields to initial state
+      setTimeout(() => {
+        setFileUploads([]);
+      }, 2000); // 2 second delay to let the user see the completion status
     });
   };
 
@@ -97,9 +103,9 @@ export function DatasetUploader({}: { className?: string }) {
 
   return (
     <div
-      className="relative mb-8 flex h-[calc(100vh-200px)] overflow-y-auto rounded-lg bg-secondary-950 pl-10 scrollbar-hidden"
+      className="relative flex h-full overflow-y-auto scrollbar-hidden"
       role="region"
-      aria-label="Dataset uploader container">
+      aria-label="Dataset file uploader container">
       {/* Upload Popup */}
       {isModalVisible && (
         <div
@@ -117,28 +123,7 @@ export function DatasetUploader({}: { className?: string }) {
           </Modal>
         </div>
       )}
-      <div className="mt-6 h-[calc(100%-3rem)] w-full overflow-y-auto p-8">
-        <div
-          className="mb-8 flex items-center justify-between"
-          role="banner"
-          aria-label="Uploader header">
-          <div className="flex items-center">
-            <Link href="/datasets">
-              <Icon
-                name={IconName.ArrowLeft}
-                color="white"
-                size={30}
-                aria-label="Back to datasets"
-              />
-            </Link>
-            <h1
-              className="ml-6 text-2xl font-semibold text-white"
-              aria-label="upload dataset header"
-              aria-level={1}>
-              Add New Dataset {'>'} Upload Dataset File
-            </h1>
-          </div>
-        </div>
+      <div className="mt-6 h-[calc(100%-2rem)] w-full overflow-y-auto p-6">
         <div className="flex">
           <div
             className="mr-20 flex w-full flex-col"
@@ -272,6 +257,82 @@ export function DatasetUploader({}: { className?: string }) {
               </Link>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function DatasetUploader() {
+  const [activeTab, setActiveTab] = useState<'file' | 'folder'>('file');
+
+  const handleTabChange = (tab: 'file' | 'folder') => {
+    console.log(`User selected ${tab.toUpperCase()} upload tab`);
+    setActiveTab(tab);
+  };
+
+  return (
+    <div className="relative mb-8 flex h-[calc(100vh-150px)] overflow-y-auto rounded-lg bg-secondary-950 scrollbar-hidden">
+      <div className="h-[calc(100%-3rem)] w-full overflow-y-auto p-6">
+        <div
+          className="mb-2 flex items-center justify-between"
+          role="banner"
+          aria-label="Uploader header">
+          <div className="flex items-center">
+            <Link href="/datasets">
+              <Icon
+                name={IconName.ArrowLeft}
+                color="white"
+                size={30}
+                aria-label="Back to datasets"
+              />
+            </Link>
+            <h1
+              className="ml-6 text-2xl font-semibold text-white"
+              aria-label="upload dataset header"
+              aria-level={1}>
+              Add New Dataset {'>'} Upload Dataset
+            </h1>
+          </div>
+
+          <div className="inline-flex">
+            <div className="flex items-center">
+              <Button
+                pill
+                textColor="white"
+                variant={
+                  activeTab === 'file'
+                    ? ButtonVariant.PRIMARY
+                    : ButtonVariant.OUTLINE
+                }
+                size="sm"
+                text="FILE"
+                className="!rounded-r-none rounded-l-full"
+                onClick={() => handleTabChange('file')}
+              />
+              <Button
+                pill
+                textColor="white"
+                variant={
+                  activeTab === 'folder'
+                    ? ButtonVariant.PRIMARY
+                    : ButtonVariant.OUTLINE
+                }
+                size="sm"
+                text="FOLDER"
+                className="!rounded-l-none rounded-r-full"
+                onClick={() => handleTabChange('folder')}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-lg">
+          {activeTab === 'file' ? (
+            <DatasetFileUploader />
+          ) : (
+            <DatasetFolderUploader />
+          )}
         </div>
       </div>
     </div>

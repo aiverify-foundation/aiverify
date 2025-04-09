@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+
+console.log('process.env.APIGW_HOST', process.env.APIGW_HOST);
 const nextConfig = {
   reactStrictMode: false,
   async rewrites() {
@@ -26,6 +28,10 @@ const nextConfig = {
       {
         source: '/api/test_datasets/upload',
         destination: `${process.env.APIGW_HOST}/test_datasets/upload`,
+      },
+      {
+        source: '/api/test_datasets/upload_folder',
+        destination: `${process.env.APIGW_HOST}/test_datasets/upload_folder`,
       },
       {
         source: '/api/plugins/upload',
@@ -102,6 +108,22 @@ const nextConfig = {
       {
         source: '/api/project_templates/clone/:id',
         destination: `${process.env.APIGW_HOST}/project_templates/clone/:id`,
+      },
+      {
+        source: '/api/test_runs/run_test',
+        destination: `${process.env.APIGW_HOST}/test_runs/run_test/`,
+      },
+      {
+        source: '/api/test_runs',
+        destination: `${process.env.APIGW_HOST}/test_runs/`,
+      },
+      {
+        source: '/api/test_runs/:id',
+        destination: `${process.env.APIGW_HOST}/test_runs/:id`,
+      },
+      {
+        source: '/api/test_runs/:id/cancel',
+        destination: `${process.env.APIGW_HOST}/test_runs/:id/cancel`,
       },
     ];
   },

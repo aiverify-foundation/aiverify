@@ -3,5 +3,6 @@
   "name": "Transparency Process Checklist",
   "description": "Process checklist for Transparency principle",
   "group": "AI Verify Process Checklists",
-  "width": "xl"
+  "width": "xl",
+  "groupNumber": 1
 }

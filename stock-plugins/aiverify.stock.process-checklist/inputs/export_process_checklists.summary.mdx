@@ -1,0 +1,339 @@
+import { prepareChecklistExportData } from "./exportUtil.js";
+import { importJson, jsonToChecklistSubmissions, extractChecklistData } from "./importUtils.js";
+
+export const getConfigFiles = () => {
+  console.log("Starting getConfigFiles...");
+  
+  const configKeys = [
+    'accountability',
+    'data_governance',
+    'explainability',
+    'fairness',
+    'human_agency_oversight',
+    'inclusive_growth_soc_env',
+    'organisational_considerations',
+    'reproducibility',
+    'robustness',
+    'safety',
+    'security',
+    'transparency'
+  ];
+
+console.log(`Will try to load ${configKeys.length} config files: ${configKeys.join(', ')}`);
+
+const configFiles = {};
+let loadedCount = 0;
+
+configKeys.forEach(key => {
+try {
+// Try different ways to require the config file
+let config = null;
+
+      // Method 1: Try direct require
+      try {
+        console.log(`Attempting to load config for ${key} using direct require...`);
+        config = require(`./config_${key}.ts`).config;
+        console.log(`Successfully loaded config for ${key} using direct require`);
+      } catch (err1) {
+        console.log(`Failed to load with direct require: ${err1.message}`);
+
+        // Method 2: Try with full path
+        try {
+          const fullPath = `./inputs/config_${key}.ts`;
+          console.log(`Attempting to load config for ${key} using full path: ${fullPath}`);
+          config = require(fullPath).config;
+          console.log(`Successfully loaded config for ${key} using full path`);
+        } catch (err2) {
+          console.log(`Failed to load with full path: ${err2.message}`);
+
+          // Method 3: Create a dummy config as fallback if all else fails
+          console.log(`Creating dummy config for ${key} as fallback`);
+          config = {
+            principle: key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' '),
+            description: `${key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ')} checklist`,
+            sections: []
+          };
+        }
+      }
+
+      if (config) {
+        configFiles[`config_${key}`] = config;
+        loadedCount++;
+        console.log(`Successfully stored config for key: config_${key}`);
+      }
+    } catch (err) {
+      console.error(`Failed to load or process config file for ${key}:`, err);
+    }
+
+});
+
+console.log(`Loaded ${loadedCount}/${configKeys.length} config files`);
+return configFiles;
+};
+
+export function exportAsJson(checklists) {
+  try {
+    // Get all config files
+    console.log("Fetching config files for JSON export");
+    const configFiles = getConfigFiles();
+    
+    // Check if we got any config files
+    const configKeys = Object.keys(configFiles);
+    console.log(`Loaded ${configKeys.length} config files: ${configKeys.join(', ')}`);
+    
+    if (configKeys.length === 0) {
+      console.error("No config files were loaded. JSON export may be incomplete.");
+    }
+
+    // Initialize the result object
+    const result = {
+      exportDate: new Date().toISOString(),
+      checklists: []
+    };
+
+    // Sort checklists based on groupNumber from their meta.json files
+    const sortedChecklists = [...checklists].sort((a, b) => {
+      try {
+        // Extract the base key (without _process_checklist suffix)
+        const keyA = a.cid.replace("_process_checklist", "");
+        const keyB = b.cid.replace("_process_checklist", "");
+
+        // Determine the meta file paths
+        let metaFileA, metaFileB;
+
+        try {
+          metaFileA = require(`./${keyA}_process_checklist.meta.json`);
+          metaFileB = require(`./${keyB}_process_checklist.meta.json`);
+
+          // Extract groupNumber from meta files or use default values
+          const groupNumberA = metaFileA.groupNumber || 999;
+          const groupNumberB = metaFileB.groupNumber || 999;
+
+          return groupNumberA - groupNumberB;
+        } catch (error) {
+          console.error("Error sorting checklists by groupNumber:", error);
+          return 0; // Keep original order if there's an error
+        }
+      } catch (error) {
+        console.error("Error in sorting comparison function:", error);
+        return 0;
+      }
+    });
+
+    // Process each checklist
+    console.log(`Processing ${sortedChecklists.length} checklists for JSON export`);
+    for (const checklist of sortedChecklists) {
+      try {
+        // Extract principle name from cid (e.g., 'transparency' from 'transparency_process_checklist')
+        const principle = checklist.cid.replace('_process_checklist', '');
+
+        // Special case for inclusive_growth - needs different config file name
+        const configKey = principle === 'inclusive_growth'
+          ? 'config_inclusive_growth_soc_env'
+          : `config_${principle}`;
+
+        console.log(`Looking for config with key: ${configKey} for principle: ${principle}`);
+
+        // Get the corresponding config
+        const config = configFiles[configKey];
+
+        if (!config) {
+          console.warn(`Config not found for principle: ${principle}. Using fallback approach.`);
+
+          // Fallback: Create a basic structure even without the config
+          const checklistData = {
+            id: checklist.id || "",
+            gid: checklist.gid,
+            cid: checklist.cid,
+            name: checklist.name,
+            group: checklist.group,
+            principle: principle,
+            description: `Checklist for ${principle}`,
+            sections: []
+          };
+
+          // Add a basic data section with just the raw data
+          checklistData.data = checklist.data;
+
+          // Add summary justification if available
+          const summaryJustificationKey = `summary-justification-${principle}`;
+          checklistData.summaryJustification = checklist.data[summaryJustificationKey] || "";
+
+          // Add the checklist to the result
+          result.checklists.push(checklistData);
+          continue;
+        }
+
+        // Create a structured object for this checklist
+        const checklistData = {
+          id: checklist.id || "",
+          gid: checklist.gid,
+          cid: checklist.cid,
+          name: checklist.name,
+          group: checklist.group,
+          principle: config.principle,
+          description: config.description,
+          sections: []
+        };
+
+        // Process each section in the config
+        for (const section of config.sections) {
+          const sectionData = {
+            section: section.section,
+            testType: section.testType,
+            criteria: []
+          };
+
+          // Process each testable criteria in the section
+          for (const criteriaItem of section.checklist) {
+            const criteriaData = {
+              testableCriteria: criteriaItem.testableCriteria,
+              processes: []
+            };
+
+            // Process each process in the criteria
+            for (const process of criteriaItem.processes) {
+              const pid = process.pid;
+
+              // Get the completed and elaboration data from the checklist
+              const completed = checklist.data[`completed-${pid}`] || '';
+              const elaboration = checklist.data[`elaboration-${pid}`] || '';
+
+              // Add the process data
+              criteriaData.processes.push({
+                pid: pid,
+                process: process.process,
+                metric: process.metric,
+                processChecks: process.processChecks,
+                completed: completed,
+                elaboration: elaboration
+              });
+            }
+
+            sectionData.criteria.push(criteriaData);
+          }
+
+          checklistData.sections.push(sectionData);
+        }
+
+        // Count completed processes
+        let yesCount = 0;
+        let totalProcesses = 0;
+
+        for (const section of checklistData.sections) {
+          for (const criteria of section.criteria) {
+            for (const process of criteria.processes) {
+              totalProcesses++;
+              if (process.completed === 'Yes') {
+                yesCount++;
+              }
+            }
+          }
+        }
+
+        // Add summary justification if available
+        const summaryJustificationKey = `summary-justification-${config.principle}`;
+        if (checklist.data[summaryJustificationKey]) {
+          checklistData.summaryJustification = checklist.data[summaryJustificationKey];
+        } else {
+          checklistData.summaryJustification = "";
+          console.warn(`No summary justification found for principle: ${config.principle}`);
+        }
+
+        // Add the processed checklist to the result
+        result.checklists.push(checklistData);
+      } catch (error) {
+        console.error(`Error processing checklist ${checklist.cid}:`, error);
+        // Continue with the next checklist even if this one failed
+      }
+    }
+
+    console.log(`JSON export completed with ${result.checklists.length} checklists`);
+    return result;
+
+} catch (error) {
+console.error("Error in exportAsJson:", error);
+// Return a minimal valid result
+return {
+exportDate: new Date().toISOString(),
+checklists: [],
+error: error.message
+};
+}
+}
+
+export async function prepareExportData(groupName, checklists) {
+  try {
+    // Get the config files
+    const configFiles = getConfigFiles();
+
+    // Use the function to prepare the Excel workbook definition
+    const workbookDefinition = await prepareChecklistExportData(
+      groupName,
+      checklists,
+      configFiles
+    );
+
+    return workbookDefinition;
+
+} catch (error) {
+console.error("Error preparing export data:", error);
+return null;
+}
+}
+
+export const mdxImportJson = importJson;
+export const mdxJsonToChecklistSubmissions = jsonToChecklistSubmissions;
+export const mdxExtractChecklistData = extractChecklistData;
+
+export async function exportProcessChecklists(format, groupName, checklists) {
+  console.log(`Starting exportProcessChecklists with format: ${format}, groupName: ${groupName}`);
+  
+  if (!format || !checklists || !Array.isArray(checklists)) {
+    console.error('Invalid parameters for export');
+    return null;
+  }
+
+// Convert format to lowercase for case-insensitive comparison
+const formatLower = format.toLowerCase();
+
+try {
+if (formatLower === 'json') {
+// For JSON format, call exportAsJson
+console.log('Using JSON export format');
+return exportAsJson(checklists);
+} else if (formatLower === 'xlsx') {
+// For Excel format, call prepareExportData
+console.log('Using Excel export format');
+return await prepareExportData(groupName, checklists);
+} else {
+console.error(`Unsupported export format: ${format}. Supported formats are 'json' and 'xlsx'.`);
+return null;
+}
+} catch (error) {
+console.error(`Error in exportProcessChecklists (format: ${format}):`, error);
+
+    // Create a minimal response for error cases
+    if (formatLower === 'json') {
+      return {
+        exportDate: new Date().toISOString(),
+        checklists: [],
+        error: error.message
+      };
+    }
+    return null;
+
+}
+}
+
+export function ExportProcessChecklists(props) {
+  const { groupName, checklists } = props;
+
+return (
+
+<div style={{ padding: "8px", color: "#666", fontSize: "14px" }}>
+  <div>Export component is ready. This renderer is for preview only.</div>
+  <div>Group: {groupName}</div>
+  <div>Checklists: {checklists?.length || 0} items</div>
+</div>
+); }
