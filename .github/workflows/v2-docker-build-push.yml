@@ -191,7 +191,7 @@ jobs:
       - name: Build and push image
         id: build_push_image
         run: |
-          if [ "${{ needs.init-image-build-push.outputs.image_tag }}" == "" ] then
+          if [ "${{ needs.init-image-build-push.outputs.image_tag }}" == "" ]; then
             if [ "${{ matrix.image_name }}" == "aiverify-test-engine-worker" ] || [ "${{ matrix.image_name }}" == "aiverify-apigw" ]; then
               tag=$(grep -oP '(?<=version = ")[^"]*' ${{ matrix.image_name }}/pyproject.toml)
             elif [ "${{ matrix.image_name }}" == "aiverify-portal" ]; then
