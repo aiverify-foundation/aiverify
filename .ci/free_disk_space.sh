@@ -25,6 +25,7 @@
 # The Flink end to end tests download and generate more than 17 GB of files,
 # causing unpredictable behavior and build failures.
 #
+
 echo "=============================================================================="
 echo "Freeing up disk space on CI system"
 echo "=============================================================================="
@@ -32,7 +33,17 @@ echo "==========================================================================
 echo "Listing 100 largest packages"
 dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n | tail -n 100
 df -h
-echo "Removing large packages"
+
+echo "Identifying top 5 largest packages"
+top_5_packages=$(dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n | tail -n 5 | awk '{print $2}')
+echo "Top 5 largest packages: $top_5_packages"
+
+echo "Removing top 5 largest packages"
+for package in $top_5_packages; do
+    sudo apt-get remove -y $package
+done
+
+echo "Removing other large packages"
 sudo apt-get remove -y '^ghc-8.*'
 sudo apt-get remove -y '^dotnet-.*'
 sudo apt-get remove -y '^llvm-.*'
@@ -41,6 +52,7 @@ sudo apt-get remove -y azure-cli google-cloud-sdk hhvm google-chrome-stable fire
 sudo apt-get autoremove -y
 sudo apt-get clean
 df -h
+
 echo "Removing large directories"
 # deleting 15GB
 rm -rf /usr/share/dotnet/
