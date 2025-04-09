@@ -34,12 +34,12 @@ echo "Listing 100 largest packages"
 dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n | tail -n 100
 df -h
 
-echo "Identifying top 5 largest packages"
-top_5_packages=$(dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n | tail -n 5 | awk '{print $2}')
-echo "Top 5 largest packages: $top_5_packages"
+echo "Identifying top 10 largest packages"
+top_10_packages=$(dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n | tail -n 10 | awk '{print $2}')
+echo "Top 10 largest packages: $top_10_packages"
 
-echo "Removing top 5 largest packages"
-for package in $top_5_packages; do
+echo "Removing top 10 largest packages"
+for package in $top_10_packages; do
     sudo apt-get remove -y $package
 done
 
