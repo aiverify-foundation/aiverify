@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 #
 # The Azure provided machines typically have the following disk allocation:
 # Total space: 85GB
@@ -34,14 +33,14 @@ echo "Listing 100 largest packages"
 dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n | tail -n 100
 df -h
 
-echo "Identifying top 10 largest packages"
-top_10_packages=$(dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n | tail -n 10 | awk '{print $2}')
-echo "Top 10 largest packages: $top_10_packages"
+# echo "Identifying top 10 largest packages"
+# top_10_packages=$(dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n | tail -n 10 | awk '{print $2}')
+# echo "Top 10 largest packages: $top_10_packages"
 
-echo "Removing top 10 largest packages"
-for package in $top_10_packages; do
-    sudo apt-get remove -y $package
-done
+# echo "Removing top 10 largest packages"
+# for package in $top_10_packages; do
+#     sudo apt-get remove -y $package
+# done
 
 echo "Removing other large packages"
 sudo apt-get remove -y '^ghc-8.*'
@@ -49,9 +48,11 @@ sudo apt-get remove -y '^dotnet-.*'
 sudo apt-get remove -y '^llvm-.*'
 sudo apt-get remove -y 'php.*'
 sudo apt-get remove -y azure-cli google-cloud-sdk hhvm google-chrome-stable firefox powershell mono-devel
+sudo apt-get remove -y 'temurin-*'
+sudo apt-get remove -y microsoft-edge-stable google-chrome-stable google-cloud-cli-anthoscli mysql-server-core-8.0 postgresql-16
 sudo apt-get autoremove -y
 sudo apt-get clean
-df -h
+#df -h
 
 echo "Removing large directories"
 # deleting 15GB
