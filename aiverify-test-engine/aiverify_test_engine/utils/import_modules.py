@@ -15,7 +15,7 @@ def create_module_spec(
     module_name: str, module_file_path: str
 ) -> Union[None, ModuleSpec]:
     """
-    A function to create module specifications if it does not exist
+    A function to create module specifications
 
     Args:
         module_name (str): Input module name to be imported
