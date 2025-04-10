@@ -102,13 +102,13 @@ class TestCollectionImportModules:
         assert sys.modules["example_serializer"]
         from example_serializer import Plugin  # type: ignore
 
-        assert Plugin._name == "original_delimiterserializer"
+        assert Plugin._name == "original_delimiterserializer"  # Loaded original
 
         import_python_modules("tests/duplicate_import_modules/duplicate")
         assert sys.modules["example_serializer"]
         from example_serializer import Plugin  # type: ignore
 
-        assert Plugin._name == "duplicate_delimiterserializer"
+        assert Plugin._name == "duplicate_delimiterserializer"  # Loaded duplicate
 
     def test_import_python_modules_same_name_same_origin(self):
         """
@@ -118,14 +118,14 @@ class TestCollectionImportModules:
         assert sys.modules["example_serializer"]
         from example_serializer import Plugin  # type: ignore
 
-        assert Plugin._name == "original_delimiterserializer"
+        assert Plugin._name == "original_delimiterserializer"  # Loaded original
+        Plugin._name = "duplicate_delimiterserializer"  # Modify original cache
 
-        Plugin._name = "duplicate_delimiterserializer"
         import_python_modules("tests/duplicate_import_modules/original")
         assert sys.modules["example_serializer"]
         from example_serializer import Plugin  # type: ignore
 
-        assert Plugin._name == "original_delimiterserializer"
+        assert Plugin._name == "original_delimiterserializer"  # Cache is reloaded
 
     @pytest.mark.parametrize(
         "discover_folder, expected_result",
