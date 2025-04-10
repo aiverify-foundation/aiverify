@@ -3,6 +3,7 @@ from importlib.machinery import ModuleSpec
 from types import ModuleType
 
 import pytest
+
 from aiverify_test_engine.utils.import_modules import (
     create_module_spec,
     get_non_python_files,
@@ -92,6 +93,39 @@ class TestCollectionImportModules:
         import_python_modules(discover_folder)
         if expected_result:
             assert sys.modules[module_name]
+
+    def test_import_python_modules_same_name_different_origin(self):
+        """
+        Tests that it can import duplicate modules and override the existing ones
+        """
+        import_python_modules("tests/duplicate_import_modules/original")
+        assert sys.modules["example_serializer"]
+        from example_serializer import Plugin  # type: ignore
+
+        assert Plugin._name == "original_delimiterserializer"
+
+        import_python_modules("tests/duplicate_import_modules/duplicate")
+        assert sys.modules["example_serializer"]
+        from example_serializer import Plugin  # type: ignore
+
+        assert Plugin._name == "duplicate_delimiterserializer"
+
+    def test_import_python_modules_same_name_same_origin(self):
+        """
+        Tests that it can import duplicate modules and override the existing ones
+        """
+        import_python_modules("tests/duplicate_import_modules/original")
+        assert sys.modules["example_serializer"]
+        from example_serializer import Plugin  # type: ignore
+
+        assert Plugin._name == "original_delimiterserializer"
+
+        Plugin._name = "duplicate_delimiterserializer"
+        import_python_modules("tests/duplicate_import_modules/original")
+        assert sys.modules["example_serializer"]
+        from example_serializer import Plugin  # type: ignore
+
+        assert Plugin._name == "original_delimiterserializer"
 
     @pytest.mark.parametrize(
         "discover_folder, expected_result",
