@@ -33,12 +33,10 @@ def create_module_spec(
         ):
             return None
 
-        module_spec = importlib.util.find_spec(module_name)
-        if module_spec is None:
-            # Create a module spec since it is not available
-            module_spec = importlib.util.spec_from_file_location(
-                module_name, module_file_path
-            )
+        # Create a module spec
+        module_spec = importlib.util.spec_from_file_location(
+            module_name, module_file_path
+        )
 
         return module_spec
 
