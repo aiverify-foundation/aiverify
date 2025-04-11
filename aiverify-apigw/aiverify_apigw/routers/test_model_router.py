@@ -99,24 +99,26 @@ async def upload_model_files(
                         logger.debug(f"Model validation error: {e}")
                         test_model.status = TestModelStatus.Invalid
                         test_model.error_message = str(e)
+                        raise HTTPException(status_code=400, detail=f"Unsupported Model Files")
 
-                    try:
-                        filehash = fs_save_test_model(model_path)
-                    except Exception as e:
-                        # if save error, set model to invalid
-                        logger.error(f"Error saving model file: {e}")
-                        test_model.status = TestModelStatus.Invalid
-                        test_model.error_message = f"Error saving test model to file: {e}"
-                    else:
-                        logger.debug(f"filehash: {filehash}")
-                        test_model.zip_hash = filehash
+                    if test_model.status == TestModelStatus.Valid:
+                        try:
+                            filehash = fs_save_test_model(model_path)
+                        except Exception as e:
+                            # if save error, set model to invalid
+                            logger.error(f"Error saving model file: {e}")
+                            test_model.status = TestModelStatus.Invalid
+                            test_model.error_message = f"Error saving test model to file: {e}"
+                            raise HTTPException(status_code=400, detail=f"Error saving model files")
+                        else:
+                            logger.debug(f"filehash: {filehash}")
+                            test_model.zip_hash = filehash
 
-                    model_list.append(test_model)
-                    session.add(test_model)
+                        model_list.append(test_model)
+                        session.add(test_model)
 
         return [TestModel.from_model(model) for model in model_list]
-    except HTTPException as e:
-        raise e
+
     except Exception as e:
         logger.error(f"Error uploading model files: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
@@ -227,24 +229,27 @@ def upload_folder(
                 logger.debug(f"Model validation error: {e}")
                 test_model.status = TestModelStatus.Invalid
                 test_model.error_message = str(e)
+                raise HTTPException(status_code=400, detail=f"Unsupported Model Folder")
 
-            # save to fs
-            try:
-                filehash = fs_save_test_model(tmp_model_folder)
-            except Exception as e:
-                # if save error, set model to invalid
-                test_model.status = TestModelStatus.Invalid
-                test_model.error_message = f"Error saving model: {e}"
-            else:
-                test_model.zip_hash = filehash
+            if test_model.status == TestModelStatus.Valid:
+                # save to fs
+                try:
+                    filehash = fs_save_test_model(tmp_model_folder)
+                except Exception as e:
+                    # if save error, set model to invalid
+                    logger.error(f"Error saving model folder: {e}")
+                    test_model.status = TestModelStatus.Invalid
+                    test_model.error_message = f"Error saving model: {e}"
+                    raise HTTPException(status_code=400, detail=f"Error saving model files to folder")
+                else:
+                    test_model.zip_hash = filehash
 
-            session.add(test_model)
-            session.commit()
-            # session.refresh(test_model)
+                session.add(test_model)
+                session.commit()
+                # session.refresh(test_model)
 
             return TestModel.from_model(test_model) 
-    except HTTPException as e:
-        raise e
+
     except Exception as e:
         logger.error(f"Error uploading model files: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
