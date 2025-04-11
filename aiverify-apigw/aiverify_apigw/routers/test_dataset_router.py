@@ -79,24 +79,26 @@ async def upload_dataset_files(
                         logger.debug(f"Dataset validation error: {e}")
                         test_dataset.status = TestDatasetStatus.Invalid
                         test_dataset.error_message = str(e)
+                        raise HTTPException(status_code=400, detail=f"Unsupported Dataset")
 
-                    try:
-                        filehash = fs_save_test_dataset(dataset_path)
-                    except Exception as e:
-                        # if save error, set dataset to invalid
-                        logger.error(f"Error saving dataset file: {e}")
-                        test_dataset.status = TestDatasetStatus.Invalid
-                        test_dataset.error_message = f"Error saving test dataset to file: {e}"
-                    else:
-                        logger.debug(f"filehash: {filehash}")
-                        test_dataset.zip_hash = filehash
+                    if test_dataset.status == TestDatasetStatus.Valid:
+                        try:
+                            filehash = fs_save_test_dataset(dataset_path)
+                        except Exception as e:
+                            # if save error, set dataset to invalid
+                            logger.error(f"Error saving dataset file: {e}")
+                            test_dataset.status = TestDatasetStatus.Invalid
+                            test_dataset.error_message = f"Error saving test dataset to file: {e}"
+                            raise HTTPException(status_code=400, detail=f"Error saving test dataset files")
+                        else:
+                            logger.debug(f"filehash: {filehash}")
+                            test_dataset.zip_hash = filehash
 
-                    model_list.append(test_dataset)
-                    session.add(test_dataset)
+                        model_list.append(test_dataset)
+                        session.add(test_dataset)
 
         return [TestDataset.from_model(dataset) for dataset in model_list]
-    except HTTPException as e:
-        raise e
+
     except Exception as e:
         logger.error(f"Error uploading dataset files: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
@@ -202,27 +204,30 @@ def upload_dataset_folder(
                 test_dataset.num_cols = num_cols
                 test_dataset.data_columns = json.dumps(data_columns).encode("utf-8")
             except TestEngineValidatorException as e:
-                logger.debug(f"Model validation error: {e}")
+                logger.debug(f"Dataset validation error: {e}")
                 test_dataset.status = TestDatasetStatus.Invalid
                 test_dataset.error_message = str(e)
+                raise HTTPException(status_code=400, detail=f"Unsupported Dataset")
 
-            # save to fs
-            try:
-                filehash = fs_save_test_dataset(tmp_dataset_folder)
-            except Exception as e:
-                # if save error, set model to invalid
-                test_dataset.status = TestDatasetStatus.Invalid
-                test_dataset.error_message = f"Error saving model: {e}"
-            else:
-                test_dataset.zip_hash = filehash
+            if test_dataset.status == TestDatasetStatus.Valid:
+                # save to fs
+                try:
+                    filehash = fs_save_test_dataset(tmp_dataset_folder)
+                except Exception as e:
+                    # if save error, set dataset to invalid
+                    logger.error(f"Error saving dataset folder: {e}")
+                    test_dataset.status = TestDatasetStatus.Invalid
+                    test_dataset.error_message = f"Error saving model: {e}"
+                    raise HTTPException(status_code=400, detail=f"Error saving test dataset to folder")
+                else:
+                    test_dataset.zip_hash = filehash
 
-            session.add(test_dataset)
-            session.commit()
+                session.add(test_dataset)
+                session.commit()
             # session.refresh(test_model)
 
             return TestDataset.from_model(test_dataset) 
-    except HTTPException as e:
-        raise e
+
     except Exception as e:
         logger.error(f"Error uploading dataset files: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
