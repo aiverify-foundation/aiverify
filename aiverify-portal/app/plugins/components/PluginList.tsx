@@ -167,7 +167,7 @@ export default function PluginsList({ plugins }: Props) {
         console.log('Loading state set to false');
         return filteredResults;
       });
-    }, 3000); // Delay of 5 seconds for suspense
+    }, 300); // Delay of 0.3 seconds for suspense
   };
 
   return (
