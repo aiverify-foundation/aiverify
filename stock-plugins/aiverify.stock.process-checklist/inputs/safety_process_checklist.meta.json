@@ -3,5 +3,6 @@
   "name": "Safety Process Checklist",
   "description": "Process checklist for Safety principle",
   "group": "AI Verify Process Checklists",
+  "groupNumber": 4,
   "width": "xl"
 }

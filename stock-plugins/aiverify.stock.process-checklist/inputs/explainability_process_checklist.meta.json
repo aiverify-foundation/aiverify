@@ -3,5 +3,6 @@
   "name": "Explainability Process Checklist",
   "description": "Process checklist for Explainability principle",
   "group": "AI Verify Process Checklists",
+  "groupNumber": 2,
   "width": "xl"
 }

@@ -52,8 +52,20 @@ const nextConfig = {
         destination: `${process.env.APIGW_HOST}/input_block_data/:id`,
       },
       {
+        source: '/api/input_block_data/groups/:id',
+        destination: `${process.env.APIGW_HOST}/input_block_data/groups/:id`,
+      },
+      {
         source: '/api/input_block_data',
         destination: `${process.env.APIGW_HOST}/input_block_data/`,
+      },
+      {
+        source: '/api/input_block_data/groups',
+        destination: `${process.env.APIGW_HOST}/input_block_data/groups/`,
+      },
+      {
+        source: '/api/input_block_data/groups/:gid/:group',
+        destination: `${process.env.APIGW_HOST}/input_block_data/groups/:gid/:group`,
       },
       {
         source: '/api/test_models/:id',

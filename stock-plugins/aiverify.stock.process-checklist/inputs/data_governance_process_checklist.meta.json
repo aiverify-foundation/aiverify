@@ -3,5 +3,6 @@
   "name": "Data Governance Process Checklist",
   "description": "Process checklist for Data Governance principle",
   "group": "AI Verify Process Checklists",
+  "groupNumber": 8,
   "width": "xl"
 }

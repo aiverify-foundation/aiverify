@@ -3,5 +3,6 @@
   "name": "Human Agency & Oversight Process Checklist",
   "description": "Process checklist for Human Agency & Oversight principle",
   "group": "AI Verify Process Checklists",
+  "groupNumber": 10,
   "width": "xl"
 }

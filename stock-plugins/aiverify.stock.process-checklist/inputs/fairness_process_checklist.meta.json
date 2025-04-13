@@ -3,5 +3,6 @@
   "name": "Fairness Process Checklist",
   "description": "Process checklist for Fairness principle",
   "group": "AI Verify Process Checklists",
+  "groupNumber": 7,
   "width": "xl"
 }

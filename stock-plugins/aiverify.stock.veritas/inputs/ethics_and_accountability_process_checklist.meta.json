@@ -3,6 +3,6 @@
   "name": "Ethics and Accountability Process Checklist",
   "description": "Process checklist for Ethics and Accountability principle",
   "group": "Veritas Process Checklists",
-  "width": "xl",
-  "order": 1
+  "groupNumber": 3,
+  "width": "xl"
 }
