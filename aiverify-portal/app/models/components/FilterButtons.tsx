@@ -20,7 +20,6 @@ export default function ModelsFilters({
   const pillFilters = [
     { id: 'model', label: 'MODEL' },
     { id: 'pipeline', label: 'PIPELINE' },
-    { id: 'api', label: 'MODEL API' },
   ];
 
   const [selectedPill, setSelectedPill] = useState<string | null>(null);
