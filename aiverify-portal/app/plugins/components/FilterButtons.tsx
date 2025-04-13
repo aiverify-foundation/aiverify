@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Plugin } from '@/app/plugins/utils/types';
 import { IconName } from '@/lib/components/IconSVG';
 import { Icon } from '@/lib/components/IconSVG';
 import { Button, ButtonVariant } from '@/lib/components/button';
@@ -12,6 +13,7 @@ type FilterProps = {
   onFilter: (filters: string[]) => void;
   onSort: (sortBy: string) => void;
   activeFilters: string[];
+  plugins?: Plugin[];
 };
 
 export default function PluginsFilters({
@@ -19,6 +21,7 @@ export default function PluginsFilters({
   onFilter,
   onSort,
   activeFilters,
+  plugins = [],
 }: FilterProps) {
   const pillFilters = [
     { id: 'templates', label: 'TEMPLATES' },
@@ -27,15 +30,48 @@ export default function PluginsFilters({
     { id: 'inputBlocks', label: 'INPUT BLOCKS' },
   ];
 
-  const filterOptions = [{ id: '', name: 'Select' }];
+  // Initialize filterOptions with the default "Select" option
+  const [filterOptions, setFilterOptions] = useState([
+    { id: '', name: 'Select' },
+  ]);
 
   const sortOptions = [
     { id: 'date-asc', name: 'Installed Date (oldest to newest)' },
     { id: 'date-desc', name: 'Installed Date (newest to oldest)' },
     { id: 'name', name: 'Name (A-Z)' },
   ];
-  const [] = useState<string | null>(null);
+  const [, setSelectedTagFilter] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Extract tags from plugins when plugins prop changes
+  useEffect(() => {
+    if (plugins && plugins.length > 0) {
+      // Get all unique tags from plugin meta
+      const uniqueTags = new Set<string>();
+
+      plugins.forEach((plugin) => {
+        try {
+          if (plugin.meta) {
+            const metaData = JSON.parse(plugin.meta);
+            if (metaData.tags && Array.isArray(metaData.tags)) {
+              metaData.tags.forEach((tag: string) => uniqueTags.add(tag));
+            }
+          }
+        } catch (error) {
+          console.error('Error parsing plugin meta:', error);
+        }
+      });
+
+      // Convert Set to array of option objects for dropdown
+      const tagOptions = Array.from(uniqueTags).map((tag) => ({
+        id: `tag:${tag}`,
+        name: tag,
+      }));
+
+      // Update the filter options with the default option and the extracted tags
+      setFilterOptions([{ id: '', name: 'Select' }, ...tagOptions]);
+    }
+  }, [plugins]);
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
@@ -55,6 +91,21 @@ export default function PluginsFilters({
     }
 
     onFilter(newFilters); // Pass the updated filters to parent
+  };
+
+  const handleTagSelect = (tagId: string) => {
+    setSelectedTagFilter(tagId);
+
+    // If a tag is selected, add it to the active filters
+    if (tagId) {
+      // Remove any previous tag filters (those that start with "tag:")
+      const nonTagFilters = activeFilters.filter((f) => !f.startsWith('tag:'));
+      onFilter([...nonTagFilters, tagId]);
+    } else {
+      // If "Select" option is chosen, remove all tag filters
+      const nonTagFilters = activeFilters.filter((f) => !f.startsWith('tag:'));
+      onFilter(nonTagFilters);
+    }
   };
 
   return (
@@ -94,7 +145,7 @@ export default function PluginsFilters({
             id="filter-dropdown"
             title="Select"
             data={filterOptions}
-            onSelect={(id) => handlePillClick(id)}
+            onSelect={(id) => handleTagSelect(id)}
             aria-label="Filter by tags"
           />
         </div>
