@@ -14,6 +14,7 @@ interface DropdownProps {
   style?: string;
   selectedId?: string;
   onSelect?: (id: string) => void;
+  width?: string;
 }
 
 const Dropdown = ({
@@ -24,16 +25,15 @@ const Dropdown = ({
   style,
   selectedId,
   onSelect,
+  width,
 }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<DropdownItem | undefined>(
     data?.find((item) => item.id === selectedId)
   );
   const [dynamicPosition, setDynamicPosition] = useState(position);
-  const [maxWidth, setMaxWidth] = useState(0);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const measureRef = useRef<HTMLSpanElement>(null);
 
   const handleChange = (item: DropdownItem) => {
     setSelectedItem(item);
@@ -92,19 +92,7 @@ const Dropdown = ({
     }
   }, [isOpen, position]);
 
-  // Calculate the max width for the button
-  useEffect(() => {
-    if (measureRef.current) {
-      const widths = data.map((item) => {
-        measureRef.current!.textContent = item.name;
-        return measureRef.current!.offsetWidth;
-      });
-      const maxWidth = Math.max(...widths);
-      setMaxWidth(maxWidth + 15);
-    }
-  }, [data]);
-
-  const dropdownClass = `absolute w-full min-w-[200px] overflow-y-auto py-3 rounded shadow-md z-40 border-secondary-300 bg-secondary-950 ${
+  const dropdownClass = `absolute w-full min-w-[100px] overflow-y-auto py-3 rounded shadow-md z-40 border-secondary-300 bg-secondary-950 ${
     dynamicPosition === 'bottom-right'
       ? 'top-full left-0 mt-2'
       : dynamicPosition === 'bottom-left'
@@ -118,20 +106,13 @@ const Dropdown = ({
     <div
       ref={dropdownRef}
       className="relative"
+      style={{ width: width || 'auto' }}
       role="combobox"
       aria-haspopup="listbox"
       aria-expanded={isOpen}
       aria-owns={`${id}-dropdown`}
       aria-controls={`${id}-dropdown`}
       aria-label={`Dropdown for selecting ${title}`}>
-      <span
-        ref={measureRef}
-        style={{
-          position: 'absolute',
-          visibility: 'hidden',
-          whiteSpace: 'nowrap',
-        }}
-      />
       <button
         id={id}
         aria-label="Toggle dropdown"
@@ -139,13 +120,12 @@ const Dropdown = ({
         aria-expanded={isOpen}
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center justify-between gap-2 rounded border px-4 py-2 ${
+        className={`flex w-full items-center justify-between gap-2 rounded border px-4 py-2 ${
           selectedItem
             ? 'bg-secondary-950 text-white'
             : 'bg-secondary-950 text-white'
-        } ${style}`}
-        style={{ minWidth: maxWidth + 100 }}>
-        <span>{selectedItem?.name || title}</span>
+        } ${style}`}>
+        <span className="truncate">{selectedItem?.name || title}</span>
         <Icon
           name={isOpen ? IconName.WideArrowUp : IconName.WideArrowDown}
           size={10}
@@ -171,7 +151,7 @@ const Dropdown = ({
                 className={`flex cursor-pointer items-center px-3 hover:bg-gray-200 ${
                   selectedItem?.id === item.id ? 'bg-secondary-950' : ''
                 }`}>
-                <span>{item.name}</span>
+                <span className="truncate">{item.name}</span>
               </li>
             ))}
           </ul>

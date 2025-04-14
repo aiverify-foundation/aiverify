@@ -128,7 +128,7 @@ export default function PluginsFilters({
                 ? ButtonVariant.PRIMARY
                 : ButtonVariant.OUTLINE
             }
-            size="sm"
+            size="xs"
             pill={true}
             onClick={() => handlePillClick(filter.id)}
             aria-pressed={activeFilters.includes(filter.id)}
@@ -137,26 +137,28 @@ export default function PluginsFilters({
         ))}
       </div>
       {/* Filter and Sort */}
-      <div className="flex items-start justify-between space-x-3">
-        {/* Filter Dropdown */}
-        <div>
+      <div className="flex items-start space-x-3">
+        {/* Filter Dropdown - 1/4 width */}
+        <div className="w-1/4">
           <h4 className="mb-1 text-left">Tags</h4>
           <Dropdown
             id="filter-dropdown"
             title="Select"
             data={filterOptions}
             onSelect={(id) => handleTagSelect(id)}
+            width="100%"
             aria-label="Filter by tags"
           />
         </div>
 
-        {/* Sort Dropdown */}
-        <div>
+        {/* Sort Dropdown - 3/4 width */}
+        <div className="w-3/4">
           <h4 className="mb-1 text-left">Sort By</h4>
           <Dropdown
             id="sort-dropdown"
             data={sortOptions}
             onSelect={(sortBy) => onSort(sortBy)}
+            width="100%"
             aria-label="Sort plugins"
           />
         </div>
