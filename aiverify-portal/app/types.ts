@@ -256,7 +256,7 @@ export interface InputBlock {
   version?: string | null;
   author?: string | null;
   tags?: string | null;
-  groupNumber?: string | null;
+  groupNumber?: number | null;
   fullScreen?: boolean;
 }
 
@@ -267,6 +267,23 @@ type InputBlockData = {
   group: string;
   data: InputBlockDataPayload;
   id: number;
+  created_at: string;
+  updated_at: string;
+};
+
+type InputBlockGroupDataChild = {
+  cid: string;
+  name: string;
+  groupNumber: number;
+  data: InputBlockDataPayload;
+};
+
+type InputBlockGroupData = {
+  id: number;
+  gid: string;
+  name: string;
+  group: string;
+  input_blocks: InputBlockGroupDataChild[];
   created_at: string;
   updated_at: string;
 };
@@ -306,6 +323,8 @@ export type {
   TestResultData,
   InputBlockData,
   InputBlockDataPayload,
+  InputBlockGroupData,
+  InputBlockGroupDataChild,
   FormState,
   DataColumn,
   ProjectInfo,
