@@ -2,7 +2,7 @@
 
 import { getMDXComponent } from 'mdx-bundler/client';
 import React, { useMemo, useState } from 'react';
-import { InfoIcon } from '@/app/inputs/checklists/upload/utils/icons';
+import { InfoIcon } from '../../groups/[gid]/[group]/upload/utils/icons';
 import { useDeleteFairnessTree } from '@/app/inputs/fairnesstree/hooks/useDeleteFairnessTree';
 import { useFairnessTreeEdit } from '@/app/inputs/fairnesstree/hooks/useEditFairnessTree';
 import { useMDXBundle } from '@/app/inputs/fairnesstree/hooks/useMDXBundle';

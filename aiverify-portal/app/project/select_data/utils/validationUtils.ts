@@ -46,6 +46,7 @@ export const validateInputBlock = async (
   id?: number
 ): Promise<ValidationResult> => {
   try {
+    // console.log('>>> validateInputBlock:', gid, cid, id, data);
     const response = await fetch(`/api/plugins/${gid}/summary/${cid}`);
     if (!response.ok) {
       throw new Error(`Failed to fetch summary bundle: ${response.status}`);

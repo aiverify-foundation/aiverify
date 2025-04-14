@@ -1,22 +1,30 @@
 // types.ts
+import { InputBlock } from '@/app/types';
 
-export type ChecklistData = {
+export type InputBlockData = {
   [key: string]: string; // e.g., "completed-2.1.1": "Yes"
 };
 
-export type InputBlock = {
+export type InputBlockChecklist = {
   gid: string; // Group ID, e.g., "aiverify.stock.process_checklist"
   cid: string; // Checklist ID, e.g., "explainability_process_checklist"
   name: string; // Checklist name, e.g., "explainability_process_checklist"
   group: string; // Group name, e.g., "check a"
-  data: ChecklistData; // Data related to the checklist
+  data: InputBlockData; // Data related to the checklist
   id: number; // Unique ID for the checklist
   created_at: string; // Timestamp of creation
   updated_at: string; // Timestamp of last update
   groupNumber?: number; // Group number for ordering
 };
 
-export type Checklist = InputBlock;
+export type InputBlockGroup = {
+  gid: string; // Group ID, e.g., "aiverify.stock.process_checklist"
+  groupName: string;
+  inputBlocks: InputBlock[];
+  data: InputBlockData;
+};
+
+export type Checklist = InputBlockChecklist;
 
 export interface FairnessTreeData {
   sensitiveFeature: string;

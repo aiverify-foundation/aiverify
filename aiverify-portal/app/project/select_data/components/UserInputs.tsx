@@ -1,16 +1,18 @@
 'use client';
 
+import { group } from 'console';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
-import { useMDXBundle } from '@/app/inputs/checklists/[groupId]/[checklistId]/hooks/useMDXBundle';
 import { FairnessTreeModalWrapper } from '@/app/inputs/fairnesstree/components/ModalView';
-import { Checklist, FairnessTree } from '@/app/inputs/utils/types';
+import { useMDXBundle } from '@/app/inputs/groups/[gid]/[group]/[groupId]/[cid]/hooks/useMDXBundle';
+import { FairnessTree } from '@/app/inputs/utils/types';
 import {
   ValidationResults,
   validateInputBlock,
   processBatchValidations,
 } from '@/app/project/select_data/utils/validationUtils';
+import { InputBlockGroupData } from '@/app/types';
 import { InputBlockData, InputBlock as ProjectInputBlock } from '@/app/types';
 import { Button, ButtonVariant } from '@/lib/components/button';
 import PluginInputModal from './PluginInputModal';
@@ -19,9 +21,14 @@ interface UserInputsProps {
   projectId?: string | null;
   requiredInputBlocks: ProjectInputBlock[];
   onInputBlocksChange: (
-    inputBlocks: Array<{ gid: string; cid: string; id: number }>
+    inputBlocks: Array<{
+      gid: string;
+      cid: string;
+      id: number;
+      group: string | null;
+    }>
   ) => void;
-  allChecklists: Checklist[];
+  allInputBlockGroups: InputBlockGroupData[];
   allFairnessTrees: FairnessTree[];
   allInputBlockDatas: InputBlockData[];
   flow: string;
@@ -29,15 +36,11 @@ interface UserInputsProps {
   onValidationResultsChange?: (results: ValidationResults) => void;
 }
 
-interface GroupedChecklists {
-  [key: string]: Checklist[];
-}
-
 export default function UserInputs({
   projectId,
   requiredInputBlocks,
   onInputBlocksChange,
-  allChecklists,
+  allInputBlockGroups,
   allFairnessTrees,
   allInputBlockDatas,
   flow,
@@ -45,20 +48,21 @@ export default function UserInputs({
   onValidationResultsChange,
 }: UserInputsProps) {
   // Initialize selectedGroup based on initialInputBlocks
-  const initialGroup = (() => {
-    const checklistBlock = initialInputBlocks.find(
-      (block) => block.gid === 'aiverify.stock.process_checklist'
-    );
-    if (checklistBlock) {
-      const matchingChecklist = allChecklists.find(
-        (checklist) => checklist.id === checklistBlock.id
-      );
-      return matchingChecklist?.group || '';
-    }
-    return '';
-  })();
+  // const initialGroup = (() => {
+  //   const checklistBlock = initialInputBlocks.find(
+  //     (block) => block.gid === 'aiverify.stock.process_checklist'
+  //   );
+  //   if (checklistBlock) {
+  //     const matchingChecklist = allInputBlockGroups.find(
+  //       (group) => group.id === checklistBlock.id
+  //     );
+  //     return matchingChecklist?.group || '';
+  //   }
+  //   return '';
+  // })();
 
-  const [selectedGroup, setSelectedGroup] = useState<string>(initialGroup);
+  const [selectedGroup, setSelectedGroup] =
+    useState<InputBlockGroupData | null>(null);
   const router = useRouter();
 
   // Initialize fairness trees based on initialInputBlocks
@@ -135,14 +139,40 @@ export default function UserInputs({
   );
 
   // Group checklists by group name
-  const groupedChecklists = allChecklists.reduce((groups, checklist) => {
-    const groupName = checklist.group || 'Ungrouped';
-    if (!groups[groupName]) {
-      groups[groupName] = [];
-    }
-    groups[groupName].push(checklist);
-    return groups;
-  }, {} as GroupedChecklists);
+  // console.log('allInputBlockGroups', allInputBlockGroups);
+  const groupedChecklists = allInputBlockGroups.reduce(
+    (acc, group) => {
+      // const groupName = group.name;
+      if (!group.group) return acc;
+      if (!requiredInputBlocks.find((x) => x.group && x.group == group.group))
+        return acc;
+      if (!acc[group.group]) {
+        acc[group.group] = {
+          gid: group.gid,
+          data: [] as InputBlockGroupData[],
+        };
+      }
+      // groups[groupName].push(checklist);
+      acc[group.group].data.push(group);
+      return acc;
+    },
+    {} as Record<string, { gid: string; data: InputBlockGroupData[] }>
+  );
+  console.log('groupedChecklists:', groupedChecklists);
+
+  const requiredInputBlockGroups = requiredInputBlocks.reduce((acc, ib) => {
+    if (!ib.group) return acc;
+    acc.add(ib.group);
+    return acc;
+  }, new Set<string>());
+  const requiredInputBlockGroupData = Array.from(requiredInputBlockGroups).map(
+    (groupName) => ({
+      group: groupName,
+      gid: groupedChecklists[groupName].gid,
+      groupData: groupedChecklists[groupName].data || [],
+    })
+  );
+  console.log('requiredInputBlockGroupData:', requiredInputBlockGroupData);
 
   // State to track when to fetch fresh data
   const [shouldFetchData, setShouldFetchData] = useState(false);
@@ -153,8 +183,8 @@ export default function UserInputs({
       setValidationResults({});
 
       // Prevalidate all available input blocks for potential selection
-      const allInputsToValidate = [
-        ...Object.values(groupedChecklists).flat(),
+      let allInputsToValidate = [
+        // ...Object.values(groupedChecklists).flat(),
         ...allFairnessTrees,
         ...allInputBlockDatas,
       ].map((input) => ({
@@ -163,6 +193,22 @@ export default function UserInputs({
         data: input.data,
         id: input.id,
       }));
+      for (const groups of Object.values(groupedChecklists)) {
+        allInputsToValidate = [
+          ...allInputsToValidate,
+          ...groups.data
+            .map((group) =>
+              group.input_blocks.map((ib) => ({
+                gid: group.gid,
+                cid: ib.cid,
+                data: ib.data,
+                id: group.id,
+              }))
+            )
+            .flat(),
+        ];
+      }
+      console.log('allInputsToValidate:', allInputsToValidate);
 
       const results = await processBatchValidations(allInputsToValidate);
       setValidationResults(results);
@@ -227,15 +273,28 @@ export default function UserInputs({
 
   // Update parent with all selected blocks
   const updateParentWithSelectedBlocks = (
-    newGroup: string,
+    newGroup: InputBlockGroupData | null,
     newFairnessTrees: { [key: string]: string } = selectedFairnessTrees,
     newOtherInputs: { [key: string]: string } = selectedOtherInputs
   ) => {
-    let selectedBlocks: Array<{ gid: string; cid: string; id: number }> = [];
+    let selectedBlocks: Array<{
+      gid: string;
+      cid: string;
+      id: number;
+      group: string | null;
+    }> = [];
 
     // Add selected checklists
-    if (newGroup && groupedChecklists[newGroup]) {
-      selectedBlocks = [...selectedBlocks, ...groupedChecklists[newGroup]];
+    if (newGroup) {
+      selectedBlocks = [
+        ...selectedBlocks,
+        ...newGroup.input_blocks.map((ib) => ({
+          gid: newGroup.gid,
+          cid: ib.cid,
+          id: newGroup.id,
+          group: newGroup.group,
+        })),
+      ];
     }
 
     // Add selected fairness trees
@@ -248,6 +307,7 @@ export default function UserInputs({
             gid,
             cid,
             id: tree.id,
+            group: null,
           });
         }
       }
@@ -261,6 +321,7 @@ export default function UserInputs({
           gid,
           cid,
           id: parseInt(inputId),
+          group: null,
         });
       }
     });
@@ -269,16 +330,31 @@ export default function UserInputs({
   };
 
   // Handle checklist group selection
-  const handleGroupSelection = (groupName: string) => {
+  const handleGroupSelection = (groupName: string, name: string) => {
+    console.log('handleGroupSelection:', groupName, name);
     // If the group is the same, do nothing to avoid unnecessary updates
-    if (selectedGroup === groupName) {
+
+    const group = groupedChecklists[groupName].data.find((x) => x.name == name);
+    if (!group) {
+      console.error('Unable to find group:', name);
+      return;
+    }
+    if (selectedGroup?.name === group.name) {
       return;
     }
 
-    setSelectedGroup(groupName);
+    setSelectedGroup(group);
 
     // Notify parent of selection change directly without using setTimeout
-    const selectedBlocks = groupName ? groupedChecklists[groupName] || [] : [];
+    // const selectedBlocks = groupName ? groupedChecklists[groupName] || [] : [];
+    // const selectedBlocks = groupedChecklists
+    const selectedBlocks = group.input_blocks.map((ib) => ({
+      gid: group.gid,
+      cid: ib.cid,
+      id: group.id,
+      group: group.group,
+    }));
+    // console.log('selectedBlocks:', selectedBlocks);
     onInputBlocksChange(selectedBlocks);
   };
 
@@ -413,22 +489,24 @@ export default function UserInputs({
 
       <div className="space-y-4">
         {/* Process Checklists */}
-        {requiredInputBlocks.some(
-          (block) => block.gid === 'aiverify.stock.process_checklist'
-        ) && (
-          <div className="flex items-center justify-between gap-4">
-            <label className="w-64 text-white">Process Checklists</label>
+        {requiredInputBlockGroupData.map((group) => (
+          <div
+            className="flex items-center justify-between gap-4"
+            key={group.group}>
+            <label className="w-64 text-white">{group.group}</label>
             <div className="relative flex-1">
               <select
-                value={selectedGroup}
-                onChange={(e) => handleGroupSelection(e.target.value)}
+                value={selectedGroup ? selectedGroup.name : ''}
+                onChange={(e) =>
+                  handleGroupSelection(group.group, e.target.value)
+                }
                 className="w-full cursor-pointer appearance-none rounded bg-secondary-900 p-3 pr-10 text-gray-300">
                 <option value="">Choose User Input</option>
-                {Object.entries(groupedChecklists).map(([groupName]) => (
+                {group.groupData.map((group) => (
                   <option
-                    key={groupName}
-                    value={groupName}>
-                    {groupName}
+                    key={group.name}
+                    value={group.name}>
+                    {group.name}
                   </option>
                 ))}
               </select>
@@ -441,7 +519,7 @@ export default function UserInputs({
               </div>
             </div>
             <Link
-              href={`/inputs/checklists/upload?flow=${flow}${projectId ? `&projectId=${projectId}` : ''}`}>
+              href={`/inputs/groups/${group.gid}/${group.group}/upload?flow=${flow}${projectId ? `&projectId=${projectId}` : ''}`}>
               <Button
                 variant={ButtonVariant.OUTLINE}
                 hoverColor="var(--color-primary-500)"
@@ -452,7 +530,7 @@ export default function UserInputs({
               />
             </Link>
           </div>
-        )}
+        ))}
 
         {/* Fairness Trees */}
         {requiredInputBlocks
@@ -514,6 +592,7 @@ export default function UserInputs({
         {requiredInputBlocks
           .filter(
             (block) =>
+              !block.group &&
               block.gid !== 'aiverify.stock.process_checklist' &&
               block.gid !==
                 'aiverify.stock.fairness_metrics_toolbox_for_classification'
