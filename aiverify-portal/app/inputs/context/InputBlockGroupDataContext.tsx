@@ -162,10 +162,10 @@ export const InputBlockGroupDataProvider: React.FC<{
     }
   }, [gid, group, groupId]);
   const debouncedSaveInputBlockData = useCallback(
-    debounce(() => {
-      console.log('debouncedSaveInputBlockData:', currentGroupData);
-      if (!currentGroupData) return;
-      const input_blocks = currentGroupData.input_blocks.map((e) => ({
+    debounce((data: InputBlockGroupData) => {
+      console.log('debouncedSaveInputBlockData:', data);
+      // if (!currentGroupData) return;
+      const input_blocks = data.input_blocks.map((e) => ({
         cid: e.cid,
         data: e.data,
       }));
@@ -175,7 +175,7 @@ export const InputBlockGroupDataProvider: React.FC<{
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: currentGroupData.name,
+          name: data.name,
           input_blocks,
         }),
       })
@@ -192,7 +192,7 @@ export const InputBlockGroupDataProvider: React.FC<{
           console.error('Error saving input block data:', error);
         });
     }, 3000),
-    [currentGroupData]
+    []
   );
   const setInputBlockData = (cid: string, data: InputBlockDataPayload) => {
     if (!groupId) {
@@ -211,7 +211,7 @@ export const InputBlockGroupDataProvider: React.FC<{
     }
     ib.data = data; // to do autosave
     setCurrentGroupData(newData);
-    debouncedSaveInputBlockData();
+    debouncedSaveInputBlockData(newData);
   };
   const setName = (name: string) => {
     if (!groupId) {
@@ -224,8 +224,9 @@ export const InputBlockGroupDataProvider: React.FC<{
     }
     const newData = { ...currentGroupData };
     newData.name = name;
+    // console.log('newData:', newData);
     setCurrentGroupData(newData);
-    debouncedSaveInputBlockData();
+    debouncedSaveInputBlockData(newData);
   };
   const getInputBlockData = (cid: string) => {
     // console.log('getInputBlockData', cid, groupId, currentGroupData);
