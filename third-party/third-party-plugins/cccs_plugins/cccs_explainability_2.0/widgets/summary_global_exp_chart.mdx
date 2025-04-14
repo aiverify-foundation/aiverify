@@ -145,7 +145,7 @@ export const MyChart = ({ results, featureNames, properties }) => {
 
 {props.getResults(algo_cid, gid)?(
   <>
-    <div style={{ width:props.container.width, height:"100%" }}>
+    <div style={{ width:props.width, height:"100%" }}>
       <MyChart results={props.getResults(algo_cid, gid).results} featureNames={props.getResults(algo_cid, gid).feature_names} properties={props.properties} />
     </div>
   </>

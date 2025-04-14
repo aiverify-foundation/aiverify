@@ -17,7 +17,7 @@
   "mockdata": [
     {
       "type": "Algorithm",
-      "cid": "shap_toolbox",
+      "cid": "aiverify_shap_toolbox",
       "datapath": "shap_toolbox.sample.json"
     }
   ],
