@@ -214,14 +214,17 @@ function TemplateCards({ templates, projectId, flow }: TemplateCardsProps) {
             )}
 
             {/* Always show the edit icon */}
-            <button
-              onClick={(e) => handleEditTemplate(template, e)}
-              className="transition-colors hover:fill-primary-100">
-              <RiPencilFill
-                size={27}
-                className="fill-primary-300 dark:fill-primary-300"
-              />
-            </button>
+            {/* Only show delete button if template is not from a plugin */}
+            {!template.fromPlugin && (
+              <button
+                onClick={(e) => handleEditTemplate(template, e)}
+                className="transition-colors hover:fill-primary-100">
+                <RiPencilFill
+                  size={27}
+                  className="fill-primary-300 dark:fill-primary-300"
+                />
+              </button>
+            )}
 
             {/* Only show clone and delete in non-project flow */}
             {!isProjectFlow && (
