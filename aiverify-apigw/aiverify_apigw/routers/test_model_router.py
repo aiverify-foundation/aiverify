@@ -37,20 +37,21 @@ async def upload_model_files(
     logger.debug(f"upload_model_files, files: {files}, model_types: {model_types}")
     if not model_types:
         raise HTTPException(status_code=400, detail=f"Invalid parameters")
-    
+
     if len(files) == 0:
         raise HTTPException(status_code=400, detail="No file upload")
-    
+
     try:
         model_types_array = model_types.split(",")
         if len(files) != len(model_types_array):
-            raise HTTPException(status_code=400, detail=f"Number of model files information must be equal to number of files uploaded")
-        
+            raise HTTPException(
+                status_code=400, detail=f"Number of model files information must be equal to number of files uploaded")
+
         model_types_list = [ModelType(type) for type in model_types_array]
         print(model_types_list)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error validating form data: {e}")
-    
+
     # validate all the models first
     try:
         model_list: List[TestModelModel] = []
@@ -64,7 +65,7 @@ async def upload_model_files(
                         raise HTTPException(status_code=400, detail=f"Invalid filename {file.filename}")
                     if not check_file_size(file.size):
                         raise HTTPException(status_code=400, detail=f"File {file.filename} exceeds maximum upload size")
-                    
+
                     # check for duplicate filenames
                     filename = file.filename
                     filepath = PurePath(filename)
@@ -72,7 +73,7 @@ async def upload_model_files(
                     while session.query(TestModelModel).filter(TestModelModel.filename == filename).count() > 0:
                         filename = f"{filepath.stem}_{file_counter}{filepath.suffix}"
                         file_counter = file_counter + 1
-                    
+
                     model_path = tmpdir.joinpath(filename)
                     now = datetime.now(timezone.utc)
                     with open(model_path, "wb") as fp:
@@ -119,6 +120,9 @@ async def upload_model_files(
 
         return [TestModel.from_model(model) for model in model_list]
 
+    except HTTPException:
+        raise
+
     except Exception as e:
         logger.error(f"Error uploading model files: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
@@ -136,7 +140,8 @@ def upload_folder(
     """
     Endpoint to upload multiple files that belong to one TestModel.
     """
-    logger.debug(f"upload_model_files, foldername: {foldername}, subfolders: {subfolders}, model_type: {model_type}, file_type: {file_type}, files: {files}")
+    logger.debug(
+        f"upload_model_files, foldername: {foldername}, subfolders: {subfolders}, model_type: {model_type}, file_type: {file_type}, files: {files}")
 
     if len(files) == 0:
         raise HTTPException(status_code=400, detail="No files uploaded")
@@ -153,7 +158,7 @@ def upload_folder(
         filename = f"{filepath.stem}_{file_counter}{filepath.suffix}"
         file_counter = file_counter + 1
 
-    try:    
+    try:
         # validate subfolders
         if subfolders and len(subfolders) > 0:
             subfolders_list = subfolders.split(",")
@@ -173,7 +178,7 @@ def upload_folder(
                     raise HTTPException(status_code=400, detail=f"Invalid subfolder path {folder}")
         else:
             subfolders_list = None
-            
+
         total_size = 0
         with tempfile.TemporaryDirectory() as tmpdirname:
             tmpdir = Path(tmpdirname)
@@ -194,7 +199,7 @@ def upload_folder(
                 else:
                     model_path = tmp_model_folder.joinpath(file.filename)
                 try:
-                    model_path.relative_to(tmp_model_folder) # double check to make sure final file under model folder
+                    model_path.relative_to(tmp_model_folder)  # double check to make sure final file under model folder
                 except ValueError:
                     raise HTTPException(status_code=400, detail=f"Invalid filename {file.filename}")
                 with open(model_path, "wb") as fp:
@@ -248,7 +253,10 @@ def upload_folder(
                 session.commit()
                 # session.refresh(test_model)
 
-            return TestModel.from_model(test_model) 
+            return TestModel.from_model(test_model)
+
+    except HTTPException:
+        raise
 
     except Exception as e:
         logger.error(f"Error uploading model files: {e}")
@@ -283,7 +291,7 @@ def read_test_model(model_id: int, session: Session = Depends(get_db_session)):
     except Exception as e:
         logger.error(f"Error retrieving test model with ID {model_id}: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
-    
+
 
 @router.get("/download/{model_id}", response_class=Response)
 def download_test_model(model_id: int, session: Session = Depends(get_db_session)):
@@ -294,13 +302,13 @@ def download_test_model(model_id: int, session: Session = Depends(get_db_session
         test_model = session.query(TestModelModel).filter(TestModelModel.id == model_id).first()
         if not test_model:
             raise HTTPException(status_code=404, detail="Test model not found")
-        
+
         if test_model.status != TestModelStatus.Valid:
             raise HTTPException(status_code=400, detail="Model is invalid")
-        
+
         if test_model.mode != TestModelMode.Upload or test_model.filename is None or test_model.file_type is None:
             raise HTTPException(status_code=400, detail="Model file has not been uploaded")
-        
+
         model_content = fs_get_test_model(test_model.filename)
 
         if test_model.file_type == TestModelFileType.File:
@@ -316,7 +324,7 @@ def download_test_model(model_id: int, session: Session = Depends(get_db_session
     except Exception as e:
         logger.error(f"Error downloading test model with ID {model_id}: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
-    
+
 
 @router.patch("/{model_id}", response_model=TestModel)
 def update_test_model(model_id: int, model_update: TestModelUpdate, session: Session = Depends(get_db_session)):
@@ -327,10 +335,10 @@ def update_test_model(model_id: int, model_update: TestModelUpdate, session: Ses
         test_model = session.query(TestModelModel).filter(TestModelModel.id == model_id).first()
         if not test_model:
             raise HTTPException(status_code=404, detail="Test model not found")
-        
+
         if test_model.status != TestModelStatus.Valid:
             raise HTTPException(status_code=400, detail="Model is invalid")
-        
+
         if model_update.name:
             test_model.name = model_update.name
         if model_update.description:
@@ -366,10 +374,11 @@ def delete_test_model(model_id: int, session: Session = Depends(get_db_session))
         test_model = session.query(TestModelModel).filter(TestModelModel.id == model_id).first()
         if not test_model:
             raise HTTPException(status_code=404, detail="Test model not found")
-        
+
         if session.query(TestResultModel).filter(TestResultModel.model_id == test_model.id).count() > 0:
-            raise HTTPException(status_code=404, detail="Test model cannot be deleted if there are test results referencing this model")
-        
+            raise HTTPException(
+                status_code=404, detail="Test model cannot be deleted if there are test results referencing this model")
+
         if test_model.mode == TestModelMode.Upload and test_model.filename and test_model.file_type is not None:
             fs_delete_test_model(test_model.filename)
 
@@ -385,12 +394,12 @@ def delete_test_model(model_id: int, session: Session = Depends(get_db_session))
 
 @router.post("/modelapi", response_model=TestModel)
 def create_test_model_api(input_data: Annotated[
-                            TestModelAPIInput,
-                            Body(
-                                openapi_examples=model_api_examples
-                            )
-                        ], 
-                        session: Session = Depends(get_db_session)):
+        TestModelAPIInput,
+        Body(
+            openapi_examples=model_api_examples
+        )
+],
+        session: Session = Depends(get_db_session)):
     """
     Endpoint to create a new TestModelModel from TestModelAPIInput.
     """
@@ -431,8 +440,8 @@ def export_test_model(model_id: int, session: Session = Depends(get_db_session))
             raise HTTPException(status_code=400, detail="Invalid model")
         if test_model.mode != TestModelMode.API:
             raise HTTPException(status_code=400, detail="Test model is not API mode")
-        
-        if test_model.model_api is None: # should not happen
+
+        if test_model.model_api is None:  # should not happen
             raise HTTPException(status_code=500, detail="Invalid model API setting")
         model_api = ModelAPIType.model_validate_json(test_model.model_api.decode('utf-8'))
         openapi_schema = model_api.exportModelAPI()
