@@ -110,6 +110,103 @@ function hasVisualElementsNearBoundary(
   return false; // No visual elements near boundary
 }
 
+// New helper function to check if content would fit on the next page after shifting
+function contentWouldFitAfterShift(
+  parentElement: HTMLElement,
+  parentYPos: number
+): boolean {
+  // Find visual elements that would be shifted
+  const visualElements = [
+    ...Array.from(parentElement.querySelectorAll('svg, canvas')),
+    ...Array.from(parentElement.querySelectorAll('img[src]')),
+    ...Array.from(parentElement.querySelectorAll('table')),
+  ];
+
+  if (visualElements.length === 0) {
+    return true; // No visual elements to shift
+  }
+
+  // Calculate how much content would be shifted and its total height
+  const elementsToBeShifted = [];
+  let totalShiftedContentHeight = 0;
+
+  // Find all content that would be shifted to the next page
+  for (const element of visualElements) {
+    if (!(element instanceof HTMLElement)) continue;
+
+    try {
+      // Calculate position
+      let offsetTop = 0;
+      let currentElement: HTMLElement | null = element as HTMLElement;
+
+      while (
+        currentElement &&
+        currentElement !== parentElement &&
+        currentElement.offsetParent
+      ) {
+        offsetTop += currentElement.offsetTop;
+        currentElement = currentElement.offsetParent as HTMLElement;
+      }
+
+      // Calculate position on page
+      const absoluteYPos = parentYPos + offsetTop;
+      const elementHeight = getActualContentHeight(element as HTMLElement);
+      const bottomPosition = absoluteYPos + elementHeight;
+
+      // If element crosses or is near the page boundary
+      if (
+        absoluteYPos < A4_HEIGHT_PX &&
+        bottomPosition > A4_HEIGHT_PX - BOUNDARY_DETECTION_BUFFER
+      ) {
+        // This element would be shifted
+        elementsToBeShifted.push({
+          element,
+          height: elementHeight,
+          yPos: absoluteYPos,
+          bottomPos: bottomPosition,
+        });
+
+        // Calculate how much content would go to next page
+        // If element is partially on current page
+        if (absoluteYPos < A4_HEIGHT_PX) {
+          // Only count the portion that would be shifted
+          const shiftedPortion = bottomPosition - A4_HEIGHT_PX;
+          totalShiftedContentHeight += shiftedPortion;
+        } else {
+          // Element would be entirely on next page
+          totalShiftedContentHeight += elementHeight;
+        }
+      }
+    } catch (e) {
+      console.warn('Error calculating shifted content:', e);
+      return false; // Be conservative if we can't calculate
+    }
+  }
+
+  // Get the remaining content that would also be shifted
+  let remainingContentHeight = 0;
+  try {
+    // Calculate total height of grid-item-root
+    const rootContentHeight = getActualContentHeight(parentElement);
+    // Calculate height of content after the last visual element
+    const lastElement = elementsToBeShifted[elementsToBeShifted.length - 1];
+    if (lastElement) {
+      remainingContentHeight = rootContentHeight - lastElement.bottomPos;
+      if (remainingContentHeight < 0) remainingContentHeight = 0;
+    }
+  } catch (e) {
+    console.warn('Error calculating remaining content:', e);
+    return false; // Be conservative if we can't calculate
+  }
+
+  // Total content to be moved to next page
+  const totalContentForNextPage =
+    totalShiftedContentHeight + remainingContentHeight;
+
+  // Check if it would fit on a single page
+  return totalContentForNextPage <= A4_HEIGHT_PX;
+}
+
 type UsePrintableOptions = {
   /**
    * Custom ID for the printable content element
@@ -148,9 +245,6 @@ export function usePrintable(options: UsePrintableOptions = {}) {
     }
 
     if (contentRef.current) {
-      // Clone the content to avoid modifying the original - but use node cloning instead of innerHTML
-      const contentClone = contentRef.current.cloneNode(true) as HTMLElement;
-
       // Get all page elements directly from the original content (more reliable)
       const pageElements = contentRef.current.querySelectorAll(
         '.standard-report-page'
@@ -219,13 +313,28 @@ export function usePrintable(options: UsePrintableOptions = {}) {
 
           // ADD COMPENSATION IN THESE KEY SCENARIOS:
 
+          // Check if the content would fit within the next page if shifted
+          const contentWouldFit = contentWouldFitAfterShift(element, yPos);
+
           // 1. Large high-value widgets (graphs/tables) crossing the boundary
-          if (isCrossingBoundary && isHighValueWidget && isLargeWidget) {
+          // Only add compensation if the content would NOT fit on next page
+          if (
+            isCrossingBoundary &&
+            isHighValueWidget &&
+            isLargeWidget &&
+            !contentWouldFit
+          ) {
             compensationNeeded[pageIndex + 1] = true;
           }
 
           // 2. Medium-sized high-value widgets very near the boundary (likely to shift)
-          else if (isNearBoundary && isHighValueWidget && isMediumWidget) {
+          // Only add compensation if the content would NOT fit on next page
+          else if (
+            isNearBoundary &&
+            isHighValueWidget &&
+            isMediumWidget &&
+            !contentWouldFit
+          ) {
             compensationNeeded[pageIndex + 1] = true;
           }
         });
@@ -261,25 +370,29 @@ export function usePrintable(options: UsePrintableOptions = {}) {
                 }
               }
 
-              // Use the helper function to check the actual positions of visual elements
-              return hasVisualElementsNearBoundary(
+              // Check if visual elements are near boundary
+              const hasElementsNearBoundary = hasVisualElementsNearBoundary(
                 element,
                 yPos,
                 pageIndex === pageElements.length - 1
               );
+
+              // If elements are near boundary, check if they would fit on next page
+              if (hasElementsNearBoundary) {
+                return !contentWouldFitAfterShift(element, yPos);
+              }
+
+              return false;
             }
           );
 
           // Only add compensation if:
           // 1. Visual elements are near the bottom AND
-          // 2. This is not the last page of the document
+          // 2. This is not the last page of the document AND
+          // 3. The content would not fit on the next page
           const isLastPage = pageIndex === pageElements.length - 1;
-          const totalPages = pageElements.length;
           const isLastPageOfDocument = isLastPage;
 
-          // Only add compensation when absolutely necessary
-          // - Must have visual elements near boundary
-          // - Must not be the last page of the document
           if (hasVisualElementsNearBottom && !isLastPageOfDocument) {
             compensationNeeded[pageIndex + 1] = true;
           }
@@ -296,11 +409,10 @@ export function usePrintable(options: UsePrintableOptions = {}) {
 
       // Get all pages in the copied content
       const pages = printContainer.querySelectorAll('.standard-report-page');
-      let insertedCompensationPages = 0;
+      //let insertedCompensationPages = 0;
 
       // Apply original page break settings and add compensation pages
       pages.forEach((page, index) => {
-        const adjustedIndex = index + insertedCompensationPages;
         const isLastPage = index === pages.length - 1;
         const needsCompensation = compensationNeeded[index];
 
@@ -350,7 +462,7 @@ export function usePrintable(options: UsePrintableOptions = {}) {
           page.after(compensationPage);
 
           // Increment counter for inserted pages
-          insertedCompensationPages++;
+          //insertedCompensationPages++;
         }
       });
     } else {
