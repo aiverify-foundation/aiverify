@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useCallback } from 'react';
+import { A4_MARGIN } from '../dimensionsConstants';
 
 // Constants for page dimensions (A4)
 const A4_HEIGHT_PX = 1100; // Typical A4 height in pixels at 96 DPI
@@ -383,34 +384,35 @@ export function usePrintable(options: UsePrintableOptions = {}) {
           box-sizing: border-box;
         }
         
-        /* Page styling */
+        /* Page styling - standard grid pages */
         .standard-report-page {
           box-shadow: none;
           box-sizing: border-box;
           overflow: visible !important;
           position: relative !important;
-          padding: 0;
+          /* Keep original padding for grid pages */
           margin: 0 auto !important;
           max-width: 210mm; /* A4 width */
           width: 100%;
           display: block;
         }
         
-        /* Compensation page styling */
+        /* Compensation page styling - apply consistent margins */
         .compensation-page {
           box-shadow: none;
           box-sizing: border-box;
           position: relative !important;
-          padding: 0;
+          padding: ${A4_MARGIN}px !important; /* Apply A4_MARGIN to compensation pages */
           margin: 0 auto !important;
           display: block !important;
           page-break-before: always !important;
           page-break-after: always !important;
           break-before: page !important;
           break-after: page !important;
-          height: 3mm !important; /* Minimal graph spacing */
+          height: auto !important; /* Allow height based on content */
           min-height: 3mm !important;
-          max-height: 3mm !important;
+          max-width: 210mm; /* A4 width */
+          width: 100%;
         }
       
         /* Page break settings */
@@ -425,9 +427,9 @@ export function usePrintable(options: UsePrintableOptions = {}) {
           margin-bottom: 0 !important;
         }
         
-        /* A4 page size */
+        /* A4 page size - use consistent margin for all pages */
         @page {
-          margin: 0;
+          margin: ${A4_MARGIN}px !important; /* Apply A4_MARGIN to @page */
           padding: 0;
           size: 210mm 297mm;
         }
