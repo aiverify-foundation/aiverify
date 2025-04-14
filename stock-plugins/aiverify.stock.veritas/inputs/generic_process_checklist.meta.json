@@ -3,6 +3,6 @@
   "name": "Generic Process Checklist",
   "description": "Generic Veritas Process Checklist",
   "group": "Veritas Process Checklists",
-  "width": "xl",
-  "order": 1
+  "groupNumber": 1,
+  "width": "xl"
 }

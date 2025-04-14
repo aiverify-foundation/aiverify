@@ -3,8 +3,8 @@ import { RiInformationLine } from '@remixicon/react';
 import dynamic from 'next/dynamic';
 import React, { useEffect } from 'react';
 import * as ReactJSXRuntime from 'react/jsx-runtime';
-import { Skeleton } from '@/app/inputs/checklists/[groupId]/[checklistId]/utils/Skeletion';
-import type { MDXProps } from '@/app/inputs/checklists/[groupId]/[checklistId]/utils/types';
+import { Skeleton } from '@/app/inputs/groups/[gid]/[group]/[groupId]/[cid]/utils/Skeletion';
+import type { MDXProps } from '@/app/inputs/groups/[gid]/[group]/[groupId]/[cid]/utils/types';
 import { Modal } from '@/lib/components/modal';
 
 // Message Modal Component for Success/Error messages

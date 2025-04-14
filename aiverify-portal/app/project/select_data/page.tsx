@@ -3,8 +3,8 @@ import {
   transformProjectOutputToState,
   ProjectOutput,
 } from '@/app/canvas/utils/transformProjectOutputToState';
-import { getAllChecklists } from '@/lib/fetchApis/getAllChecklists';
 import { getAllFairnessTrees } from '@/lib/fetchApis/getAllFairnessTrees';
+import { getAllInputBlockGroups } from '@/lib/fetchApis/getAllInputBlockGroup';
 import { getTestModels } from '@/lib/fetchApis/getAllModels';
 import { getInputBlockDatas } from '@/lib/fetchApis/getInputBlockDatas';
 import { getPlugins } from '@/lib/fetchApis/getPlugins';
@@ -38,7 +38,7 @@ export default async function SelectDataPage({
   const project = result.data[0] as ProjectOutput;
   const allModels = await getTestModels();
   const allTestResults = await getTestResults();
-  const allChecklists = await getAllChecklists();
+  const allInputBlockGroups = await getAllInputBlockGroups();
   const allFairnessTrees = await getAllFairnessTrees();
   const allInputBlockDatas = await getInputBlockDatas();
 
@@ -123,7 +123,7 @@ export default async function SelectDataPage({
             requiredInputBlocks={requiredInputBlocks}
             allModels={allModels}
             allTestResults={allTestResults}
-            allChecklists={allChecklists}
+            allInputBlockGroups={allInputBlockGroups}
             allFairnessTrees={allFairnessTrees}
             allInputBlockDatas={allInputBlockDatas}
             flow={flow}

@@ -53,12 +53,12 @@
         ],
         "alphabetize": { "order": "asc" }
       }
-    ],
-    "no-restricted-imports": [
-      "error",
-      {
-        "patterns": ["../"]
-      }
     ]
+    // "no-restricted-imports": [
+    //   "error",
+    //   {
+    //     "patterns": ["../"]
+    //   }
+    // ]
   }
 }

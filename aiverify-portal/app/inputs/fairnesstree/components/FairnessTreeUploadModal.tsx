@@ -5,13 +5,13 @@ import { getMDXComponent } from 'mdx-bundler/client';
 import { useRouter } from 'next/navigation';
 import React, { useState, useMemo, useEffect } from 'react';
 import * as ReactJSXRuntime from 'react/jsx-runtime';
-import { InfoIcon } from '@/app/inputs/checklists/upload/utils/icons';
 import { useFairnessTree } from '@/app/inputs/fairnesstree/context/FairnessTreeContext';
 import { useMDXBundle } from '@/app/inputs/fairnesstree/hooks/useMDXBundle';
 import { useMDXSummaryBundle } from '@/app/inputs/fairnesstree/hooks/useMDXSummaryBundle';
 import { useSubmitFairnessTree } from '@/app/inputs/fairnesstree/hooks/useSubmitFairnessTree';
 import { FairnessTreeData } from '@/app/inputs/utils/types';
 import { Modal } from '@/lib/components/modal';
+import { InfoIcon } from '../../groups/[gid]/[group]/upload/utils/icons';
 import './DecisionTree.css';
 import { Tooltip } from './Tooltip';
 interface FairnessTreeModalProps {

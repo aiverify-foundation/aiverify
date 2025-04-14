@@ -4,8 +4,9 @@ import { RiArrowLeftLine, RiArrowRightLine } from '@remixicon/react';
 import { RiAlertLine } from '@remixicon/react';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { Checklist, FairnessTree } from '@/app/inputs/utils/types';
+import { FairnessTree } from '@/app/inputs/utils/types';
 import { TestModel } from '@/app/models/utils/types';
+import { InputBlockGroupData } from '@/app/types';
 import { Algorithm, InputBlock, InputBlockData } from '@/app/types';
 import { TestResult } from '@/app/types';
 import { UserFlows } from '@/app/userFlowsEnum';
@@ -21,7 +22,7 @@ interface ClientSelectDataProps {
   requiredInputBlocks: InputBlock[];
   allModels: TestModel[];
   allTestResults: TestResult[];
-  allChecklists: Checklist[];
+  allInputBlockGroups: InputBlockGroupData[];
   allFairnessTrees: FairnessTree[];
   allInputBlockDatas: InputBlockData[];
   flow: string;
@@ -61,7 +62,7 @@ export default function ClientSelectData({
   requiredInputBlocks,
   allModels,
   allTestResults,
-  allChecklists,
+  allInputBlockGroups,
   allFairnessTrees,
   allInputBlockDatas,
   flow,
@@ -189,12 +190,12 @@ export default function ClientSelectData({
   // Handler to receive validation results from UserInputs
   const handleValidationResultsChange = (results: ValidationResults) => {
     console.log('ClientSelectData received validation results:', results);
-    
+
     // Only update if the results have actually changed
     // Use a batch update approach to avoid expensive comparisons
     const resultsKeys = Object.keys(results);
     const currentKeys = Object.keys(validationResults);
-    
+
     // Quick check if the number of keys is different
     if (resultsKeys.length !== currentKeys.length) {
       requestAnimationFrame(() => {
@@ -202,15 +203,17 @@ export default function ClientSelectData({
       });
       return;
     }
-    
+
     // Check if any keys or validation statuses have changed
-    const hasChanged = resultsKeys.some(key => {
-      return !validationResults[key] || 
-             validationResults[key].isValid !== results[key].isValid ||
-             validationResults[key].message !== results[key].message ||
-             validationResults[key].progress !== results[key].progress;
+    const hasChanged = resultsKeys.some((key) => {
+      return (
+        !validationResults[key] ||
+        validationResults[key].isValid !== results[key].isValid ||
+        validationResults[key].message !== results[key].message ||
+        validationResults[key].progress !== results[key].progress
+      );
     });
-    
+
     if (hasChanged) {
       requestAnimationFrame(() => {
         setValidationResults(results);
@@ -229,7 +232,7 @@ export default function ClientSelectData({
       setInvalidInputBlocks([]);
       return;
     }
-    
+
     // Always use the current selectedInputBlocks from state unless explicitly overridden
     const blocksToCheck = currentSelectedBlocksJson
       ? JSON.parse(currentSelectedBlocksJson)
@@ -256,21 +259,21 @@ export default function ClientSelectData({
       let name = cid;
 
       // Special case for Process Checklists, which is a dropdown with multiple options but one label
-      if (gid === 'aiverify.stock.process_checklist') {
-        type = 'Process Checklists';
+      // if (gid === 'aiverify.stock.process_checklist') {
+      //   type = 'Process Checklists';
 
-        // For process checklists, find the checklist name based on id
-        if (id !== undefined) {
-          const checklist = allChecklists.find(
-            (c) => c.gid === gid && c.cid === cid && c.id === id
-          );
-          if (checklist) {
-            name = checklist.name || `${cid}`;
-            return { name, type };
-          }
-        }
-        return { name, type };
-      }
+      //   // For process checklists, find the checklist name based on id
+      //   if (id !== undefined) {
+      //     const checklist = allInputBlockGroups.find(
+      //       (c) => c.gid === gid && c.cid === cid && c.id === id
+      //     );
+      //     if (checklist) {
+      //       name = checklist.name || `${cid}`;
+      //       return { name, type };
+      //     }
+      //   }
+      //   return { name, type };
+      // }
 
       // For other input blocks, find the matching required input block to get its display name
       const requiredInputBlock = requiredInputBlocks.find(
@@ -503,7 +506,7 @@ export default function ClientSelectData({
           flow={flow}
           requiredInputBlocks={requiredInputBlocks}
           onInputBlocksChange={handleInputBlocksChange}
-          allChecklists={allChecklists}
+          allInputBlockGroups={allInputBlockGroups}
           allFairnessTrees={allFairnessTrees}
           allInputBlockDatas={allInputBlockDatas}
           initialInputBlocks={initialInputBlocks}
@@ -582,7 +585,8 @@ export default function ClientSelectData({
             </Button>
           </Link>
         ) : null}
-        {(requiredInputBlocks.length === 0 || requiredInputBlocks.length === selectedInputBlocks.length) &&
+        {(requiredInputBlocks.length === 0 ||
+          requiredInputBlocks.length === selectedInputBlocks.length) &&
           !hasValidationErrors &&
           invalidInputBlocks.length === 0 && (
             <Button
