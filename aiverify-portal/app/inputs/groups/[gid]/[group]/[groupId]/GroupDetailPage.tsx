@@ -25,7 +25,8 @@ const queryClient = new QueryClient({
 });
 
 export default function GroupDetailPage() {
-  const { gid, group, groupId, groupDataList } = useInputBlockGroupData();
+  const { gid, group, groupId, groupDataList, setName, currentGroupData } =
+    useInputBlockGroupData();
   // const { selectedGroup, checklists, setSelectedGroup } = useChecklists();
   // console.log('checklist', checklists);
   // const pathname = usePathname();
@@ -37,12 +38,12 @@ export default function GroupDetailPage() {
   // }, [pathname]);
 
   // const groupName = selectedGroup ?? decodeURIComponent(groupIdFromURL ?? '');
-  const selectedGroup =
-    groupDataList && groupId
-      ? groupDataList.find((x) => x.id == groupId)
-      : null;
-  const groupName = group;
-  console.log(groupName);
+  // const selectedGroup =
+  //   groupDataList && groupId
+  //     ? groupDataList.find((x) => x.id == groupId)
+  //     : null;
+  // const groupName = group;
+  // console.log(groupName);
 
   // Set the selected group if it's not already set
   // useEffect(() => {
@@ -97,6 +98,14 @@ export default function GroupDetailPage() {
   const handleSearch = (query: string) => setSearchQuery(query);
   const handleSort = (newSortBy: string) => setSortBy(newSortBy);
 
+  const updateGroupName = (newName: string) => {
+    console.log('updateGroupName:', newName);
+    setName(newName);
+  };
+
+  if (!currentGroupData) {
+    return <div>Group data not found</div>;
+  }
   return (
     <QueryClientProvider client={queryClient}>
       <Suspense fallback={<div>Loading...</div>}>
@@ -129,7 +138,7 @@ export default function GroupDetailPage() {
                     color="#FFFFFF"
                   />
                   <h1 className="text-2xl font-bold text-white hover:underline">
-                    {selectedGroup?.name}
+                    {currentGroupData?.name}
                   </h1>
                 </div>
                 <h3 className="text-white">Manage and view {group}</h3>
@@ -137,15 +146,18 @@ export default function GroupDetailPage() {
             </div>
             <ActionButtons
               gid={gid}
-              group={groupName}
+              group={currentGroupData.group}
             />
           </div>
           <div className="mt-6 h-full w-full items-start justify-start overflow-y-auto rounded bg-secondary-950 scrollbar-hidden">
-            <GroupHeader groupName={selectedGroup?.name || ''} />
+            <GroupHeader
+              groupName={currentGroupData.name || ''}
+              updateGroupName={updateGroupName}
+            />
             <SplitPane
               leftPane={
                 <div className="h-auto">
-                  <ProgressBar groupName={groupName} />
+                  <ProgressBar groupName={currentGroupData.group} />
                 </div>
               }
               rightPane={
@@ -154,7 +166,7 @@ export default function GroupDetailPage() {
                     onSearch={handleSearch}
                     onSort={handleSort}
                   />
-                  {selectedGroup && <GroupDetail group={selectedGroup} />}
+                  {currentGroupData && <GroupDetail group={currentGroupData} />}
                 </div>
               }
             />

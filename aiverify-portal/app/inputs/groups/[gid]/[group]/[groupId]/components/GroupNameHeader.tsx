@@ -13,9 +13,13 @@ import {
 
 interface GroupHeaderProps {
   groupName: string;
+  updateGroupName: (newName: string) => void;
 }
 
-const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
+const GroupHeader = ({
+  groupName: initialGroupName,
+  updateGroupName,
+}: GroupHeaderProps) => {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [groupName, setGroupName] = useState(initialGroupName);
@@ -31,8 +35,7 @@ const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
   const [setConfigFiles] = useState<Record<string, string>>({});
 
   // const { checklists, setChecklists, setSelectedGroup } = useChecklists();
-  const { groupId, gid, group, setName, currentGroupData } =
-    useInputBlockGroupData();
+  const { groupId, group, currentGroupData } = useInputBlockGroupData();
   const checklists: Checklist[] = currentGroupData
     ? currentGroupData.input_blocks.map(
         (x) =>
@@ -49,7 +52,7 @@ const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
   const deleteGroupMutation = useDeleteGroup();
 
   // Storage key for group name in localStorage
-  const storageKey = `checklist_group_name_${initialGroupName}`;
+  // const storageKey = `checklist_group_name_${initialGroupName}`;
 
   // Initialize export hooks for both formats, but only use the selected one
   const { isExporting: isJsonExporting, handleExport: handleJsonExport } =
@@ -231,7 +234,7 @@ const GroupHeader = ({ groupName: initialGroupName }: GroupHeaderProps) => {
             // e.preventDefault();
             // handleSubmit();
             setIsSaving(true);
-            setName(groupName);
+            updateGroupName(groupName);
             setIsEditing(false);
           }}
           className="flex gap-2">
