@@ -26,10 +26,6 @@ export interface TemplateOutput {
       minW: number;
       minH: number;
       static: boolean;
-      isDraggable: boolean;
-      isResizable: boolean;
-      resizeHandles: ResizeHandle[] | undefined;
-      isBounded: boolean;
     }[];
     reportWidgets: {
       widgetGID: string;
