@@ -213,9 +213,9 @@ function TemplateCards({ templates, projectId, flow }: TemplateCardsProps) {
               </button>
             )}
 
-            {/* Always show the edit icon */}
-            {/* Only show delete button if template is not from a plugin */}
-            {!template.fromPlugin && (
+            {/* Conditionally show edit icon based on plugin status and flow */}
+            {/* Show if: in project flow OR (in template flow AND not from plugin) */}
+            {(isProjectFlow || !template.fromPlugin) && (
               <button
                 onClick={(e) => handleEditTemplate(template, e)}
                 className="transition-colors hover:fill-primary-100">
