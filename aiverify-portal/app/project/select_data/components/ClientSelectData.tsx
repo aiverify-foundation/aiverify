@@ -475,6 +475,22 @@ export default function ClientSelectData({
   }
   console.log('backButtonLink', backButtonLink);
 
+  console.log('requiredinputblocks length', requiredInputBlocks.length);
+  console.log('selectedinputblocks length', selectedInputBlocks.length);
+  console.log(
+    'requiredInputBlocks.length === 0 || requiredInputBlocks.length === selectedInputBlocks.length',
+    requiredInputBlocks.length === 0 ||
+      requiredInputBlocks.length === selectedInputBlocks.length
+  );
+  console.log('hasValidationErrors', hasValidationErrors);
+  console.log('invalidInputBlocks.length', invalidInputBlocks.length);
+  console.log(
+    'flag',
+    requiredInputBlocks.length === 0 &&
+      !hasValidationErrors &&
+      invalidInputBlocks.length === 0
+  );
+
   // Get the selected model object
   const selectedModel = selectedModelId
     ? allModels.find((model) => model.id.toString() === selectedModelId)
@@ -626,7 +642,7 @@ export default function ClientSelectData({
           </Link>
         ) : null}
         {(requiredInputBlocks.length === 0 ||
-          requiredInputBlocks.length === selectedInputBlocks.length) &&
+          requiredInputBlocks.length <= selectedInputBlocks.length) &&
           !hasValidationErrors &&
           invalidInputBlocks.length === 0 && (
             <Button
