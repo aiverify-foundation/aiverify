@@ -3,7 +3,7 @@ version: '3.8'
 name: aiverify
 services:
   apigw: # required for all services
-    image: "localhost:5000/aiverify-apigw"
+    image: "ghcr.io/aiverify-foundation/aiverify-apigw"
     ports:
       - "4000:4000"
     volumes:
@@ -22,7 +22,7 @@ services:
       - aiverify_net
 
   portal:
-    image: "localhost:5000/aiverify-portal"
+    image: "ghcr.io/aiverify-foundation/aiverify-portal"
     profiles:
       - portal
     depends_on:
@@ -56,14 +56,14 @@ services:
       - aiverify_net
 
   test-engine-worker-base:
-    image: "localhost:5000/aiverify-test-engine-worker-base"
+    image: "ghcr.io/aiverify-foundation/aiverify-test-engine-worker:latest-base"
     profiles:
       - build-only
     networks:
       - aiverify_net
 
   test-engine-worker:
-    image: "localhost:5000/aiverify-test-engine-worker"
+    image: "ghcr.io/aiverify-foundation/aiverify-test-engine-worker:latest-venv"
     profiles:
       - automated-tests-venv
     deploy:
@@ -83,7 +83,7 @@ services:
 
   test-engine-worker-docker:
     user: root
-    image: "localhost:5000/aiverify-test-engine-worker-docker"
+    image: "ghcr.io/aiverify-foundation/aiverify-test-engine-worker:latest-docker"
     profiles:
       - automated-tests-docker
     deploy:
