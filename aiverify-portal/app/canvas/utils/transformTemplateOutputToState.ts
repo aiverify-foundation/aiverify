@@ -9,8 +9,6 @@ import { getWidgetAlgosFromPlugins } from '@/app/canvas/utils/getWidgetAlgosFrom
 import { getWidgetInputBlocksFromPlugins } from '@/app/canvas/utils/getWidgetInputBlocksFromPlugins';
 import { Algorithm, InputBlock } from '@/app/types';
 
-type ResizeHandle = 's' | 'w' | 'e' | 'n' | 'sw' | 'nw' | 'se' | 'ne';
-
 export interface TemplateOutput {
   id: number;
   fromPlugin: boolean;

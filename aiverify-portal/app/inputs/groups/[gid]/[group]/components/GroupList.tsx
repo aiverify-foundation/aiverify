@@ -7,38 +7,17 @@ import ChecklistsFilters from '@/app/inputs/components/FilterButtons';
 // import { useChecklists } from '@/app/inputs/context/ChecklistsContext';
 import { useInputBlockGroupData } from '@/app/inputs/context/InputBlockGroupDataContext';
 
-import { Checklist, GroupedChecklists } from '@/app/inputs/utils/types';
 import { Card } from '@/lib/components/card/card';
 
-type GroupListProps = {
-  // checklists: Checklist[];
-};
+type GroupListProps = object;
 
-const GroupList: React.FC<GroupListProps> = ({}) => {
-  // const { setChecklists, setSelectedGroup } = useChecklists();
+const GroupList: React.FC<GroupListProps> = () => {
   const { groupDataList, gid, group } = useInputBlockGroupData();
   const router = useRouter();
 
   // State for search query and sort option
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('date-desc');
-
-  // Group checklists by group name
-  // const groupedChecklists = useMemo(() => {
-  //   if (!groupData) {
-  //     return [];
-  //   }
-  //   // return groupData.input_blocks.reduce((groups, checklist) => {
-  //   //   const groupName = group;
-  //   //   if (!groups[groupName]) {
-  //   //     groups[groupName] = [];
-  //   //   }
-  //   //   groups[groupName].push(checklist);
-  //   //   return groups;
-  //   // }, {} as GroupedChecklists);
-  //   return groupData.input_blocks;
-  // }, [groupData?.input_blocks]);
-  const groupNames = groupDataList ? groupDataList.map((x) => x.name) : [];
 
   // Create a Fuse instance to search only group names
   const fuse = useMemo(() => {

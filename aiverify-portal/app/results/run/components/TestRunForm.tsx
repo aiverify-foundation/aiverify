@@ -8,6 +8,7 @@ import {
   ArrayFieldTemplateProps,
   ArrayFieldTemplateItemType,
   WidgetProps,
+  ErrorSchema,
 } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 import { useRouter } from 'next/navigation';
@@ -481,6 +482,17 @@ export default function TestRunForm({
   const [isServerActive] = useState<boolean>(initialServerActive);
   const [showModal, setShowModal] = useState(!initialServerActive);
 
+  // Add form validation state
+  const [isMainFormValid, setIsMainFormValid] = useState<boolean>(false);
+  const [isAlgorithmFormValid, setIsAlgorithmFormValid] =
+    useState<boolean>(true); // Default to true as it might not be required
+  const [mainFormErrors, setMainFormErrors] = useState<ErrorSchema | undefined>(
+    undefined
+  );
+  const [algorithmFormErrors, setAlgorithmFormErrors] = useState<
+    ErrorSchema | undefined
+  >(undefined);
+
   // Debounce timers for handling text input
   const mainFormTimer = useRef<NodeJS.Timeout | null>(null);
   const algorithmFormTimer = useRef<NodeJS.Timeout | null>(null);
@@ -638,9 +650,14 @@ export default function TestRunForm({
     }
   }, [formData.algorithm, allAlgorithms]);
 
-  // Debounced form change handler
+  // Debounced form change handler with validation
   const handleFormChange = (e: IChangeEvent) => {
     const newFormData = e.formData as FormState;
+
+    // Check if the form is valid (no errors)
+    const isValid = e.errors?.length === 0;
+    setIsMainFormValid(isValid);
+    setMainFormErrors(e.errorSchema);
 
     // Check if this is a dropdown or text field
     const isDropdown =
@@ -666,8 +683,13 @@ export default function TestRunForm({
     }, 500);
   };
 
-  // Debounced algorithm param change handler
+  // Debounced algorithm param change handler with validation
   const handleAlgorithmParamChange = (e: IChangeEvent) => {
+    // Check if the algorithm parameters form is valid
+    const isValid = e.errors?.length === 0;
+    setIsAlgorithmFormValid(isValid);
+    setAlgorithmFormErrors(e.errorSchema);
+
     if (algorithmFormTimer.current) {
       clearTimeout(algorithmFormTimer.current);
     }
@@ -706,13 +728,14 @@ export default function TestRunForm({
       },
       groundTruthDataset: {
         type: 'string',
-        title: 'Ground Truth Dataset (Optional)',
+        title: 'Ground Truth Dataset',
+        description:
+          'If not selected, the test dataset will be used as the ground truth dataset',
         enum: datasets.map((dataset) => dataset.filename),
       },
       groundTruth: {
         type: 'string',
-        title:
-          'Ground Truth Column (Required if Ground Truth Dataset is selected)',
+        title: 'Ground Truth Column',
         description:
           'The column name in the dataset that contains the ground truth values',
       },
@@ -1002,6 +1025,88 @@ export default function TestRunForm({
     );
   };
 
+  // Get missing required fields
+  const getMissingFieldsMessage = (): string => {
+    const missingFields: string[] = [];
+
+    // Check main form errors
+    if (mainFormErrors) {
+      // Check for required fields in main form
+      if (
+        mainFormErrors.algorithm?.__errors?.includes('is a required property')
+      ) {
+        missingFields.push('Algorithm');
+      }
+      if (mainFormErrors.model?.__errors?.includes('is a required property')) {
+        missingFields.push('Model');
+      }
+      if (
+        mainFormErrors.testDataset?.__errors?.includes('is a required property')
+      ) {
+        missingFields.push('Test Dataset');
+      }
+      if (
+        mainFormErrors.groundTruth?.__errors?.includes(
+          'is a required property'
+        ) &&
+        formData.groundTruthDataset
+      ) {
+        missingFields.push('Ground Truth Column');
+      }
+    }
+
+    // Check algorithm form errors if algorithm is selected
+    if (selectedAlgorithm && algorithmFormErrors) {
+      // Get the algorithm schema to check which fields are required
+      const algoSchema = getAlgorithmParamsSchema();
+      const requiredFields = algoSchema.required || [];
+
+      // Check each required field
+      requiredFields.forEach((field) => {
+        const fieldName = String(field);
+        if (
+          algorithmFormErrors[fieldName]?.__errors?.includes(
+            'is a required property'
+          )
+        ) {
+          // Get a more friendly name from the schema if available
+          const propSchema = algoSchema.properties?.[fieldName];
+
+          // Safely get the title property
+          let friendlyName = fieldName;
+          if (
+            propSchema &&
+            typeof propSchema === 'object' &&
+            propSchema !== null
+          ) {
+            // Use a type assertion to access the potential title property
+            const schemaObj = propSchema as { title?: string };
+            if (schemaObj.title) {
+              friendlyName = schemaObj.title;
+            }
+          }
+
+          missingFields.push(`${friendlyName} (Algorithm Parameter)`);
+        }
+      });
+    }
+
+    if (missingFields.length === 0) {
+      return '';
+    } else if (missingFields.length === 1) {
+      return `Please fill in the required field: ${missingFields[0]}`;
+    } else {
+      const lastField = missingFields.pop();
+      return `Please fill in the required fields: ${missingFields.join(', ')} and ${lastField}`;
+    }
+  };
+
+  // Determine if the form is valid overall
+  const isFormValid = isMainFormValid && isAlgorithmFormValid && isServerActive;
+
+  // Get message about missing fields
+  const missingFieldsMessage = getMissingFieldsMessage();
+
   if (!isServerActive) {
     return (
       <>
@@ -1040,7 +1145,7 @@ export default function TestRunForm({
           uiSchema={uiSchema}
           widgets={widgets}
           className="custom-form"
-          liveValidate={false}
+          liveValidate={true}
           showErrorList={false}
           key={`selection-form-${plugins.length}-${allAlgorithms.length}`}
           templates={{
@@ -1062,7 +1167,7 @@ export default function TestRunForm({
               uiSchema={getAlgorithmUISchema()}
               widgets={widgets}
               className="custom-form"
-              liveValidate={false}
+              liveValidate={true}
               showErrorList={false}
               key={`algorithm-form-${selectedAlgorithm}`}
               templates={{
@@ -1093,21 +1198,35 @@ export default function TestRunForm({
         </div>
       )}
 
-      <div className="mt-6 flex justify-end space-x-3">
-        <Button
-          variant={ButtonVariant.OUTLINE}
-          text="Cancel"
-          size="md"
-          textColor="white"
-          onClick={() => router.push('/results')}
-        />
-        <Button
-          variant={ButtonVariant.PRIMARY}
-          text={isPending ? 'Running...' : 'Run Test'}
-          size="md"
-          disabled={isPending}
-          onClick={() => handleSubmit({ formData })}
-        />
+      <div className="mt-6 flex flex-col space-y-2">
+        <div className="flex justify-end space-x-3">
+          <Button
+            variant={ButtonVariant.OUTLINE}
+            text="Cancel"
+            size="md"
+            textColor="white"
+            onClick={() => router.push('/results')}
+          />
+          <Button
+            variant={ButtonVariant.PRIMARY}
+            text={isPending ? 'Running...' : 'Run Test'}
+            size="md"
+            disabled={isPending || !isFormValid}
+            onClick={() => handleSubmit({ formData })}
+          />
+        </div>
+
+        {!isFormValid && !isPending && missingFieldsMessage && (
+          <div className="flex items-center justify-end text-sm text-yellow-500">
+            <Icon
+              name={IconName.Alert}
+              size={16}
+              color="#fcc800"
+              style={{ marginRight: '0.5rem' }}
+            />
+            <span>{missingFieldsMessage}</span>
+          </div>
+        )}
       </div>
     </div>
   );

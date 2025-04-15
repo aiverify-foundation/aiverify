@@ -25,14 +25,14 @@ const GroupHeader = ({
   const [groupName, setGroupName] = useState(initialGroupName);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
-  const [isSaving, setIsSaving] = useState(false);
+  const [, setIsSaving] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [isExportModalVisible, setIsExportModalVisible] = useState(false);
   const [selectedExportFormat, setSelectedExportFormat] = useState<
     'json' | 'xlsx'
   >('json');
   const [isDownloading, setIsDownloading] = useState(false);
-  const [setConfigFiles] = useState<Record<string, string>>({});
+  const [] = useState<Record<string, string>>({});
 
   // const { checklists, setChecklists, setSelectedGroup } = useChecklists();
   const { groupId, group, currentGroupData } = useInputBlockGroupData();

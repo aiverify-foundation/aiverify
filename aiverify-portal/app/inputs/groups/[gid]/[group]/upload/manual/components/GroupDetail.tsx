@@ -8,33 +8,9 @@ import { InputBlock } from '@/app/types';
 import { Card } from '@/lib/components/card/card';
 import { useMDXSummaryBundle } from '../../../[groupId]/hooks/useMDXSummaryBundle';
 
-// Define the order of principles based on their groupNumber in meta.json
-// const PRINCIPLE_ORDER: { [key: string]: number } = {
-//   transparency_process_checklist: 1,
-//   explainability_process_checklist: 2,
-//   reproducibility_process_checklist: 3,
-//   safety_process_checklist: 4,
-//   security_process_checklist: 5,
-//   robustness_process_checklist: 6,
-//   fairness_process_checklist: 7,
-//   data_governance_process_checklist: 8,
-//   accountability_process_checklist: 9,
-//   human_agency_oversight_process_checklist: 10,
-//   inclusive_growth_process_checklist: 11,
-//   organisational_considerations_process_checklist: 12,
-// };
-
-//todo: replace any type
-
 interface InputBlockMDXProps {
   inputBlock: InputBlock;
   data: InputBlockData;
-  // checklist: {
-  //   gid: string;
-  //   cid: string;
-  //   data: Record<string, string>;
-  //   name: string;
-  // };
 }
 
 const InputBlockMDX: React.FC<InputBlockMDXProps> = ({ inputBlock, data }) => {

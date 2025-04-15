@@ -1,29 +1,17 @@
 'use client';
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState, useRef, JSX } from 'react';
 import { ChevronLeftIcon } from '@/app/inputs/utils/icons';
-import { Plugin } from '@/app/plugins/utils/types';
 import { Modal } from '@/lib/components/modal';
-import { getPlugin } from '@/lib/fetchApis/getAllPlugins';
 import { InputBlockGroup } from '../../../../../utils/types';
 import LayoutHeader from '../../components/LayoutHeader';
-import { GroupDataProvider, useChecklists } from '../context/ChecklistsContext';
+import { useChecklists } from '../context/ChecklistsContext';
 import { useInputBlockGroupSubmission } from '../hooks/useUploadSubmission';
 import InputBlockGroupDetail from './components/GroupDetail';
 import { GroupNameInput } from './components/GroupNameInput';
 import ProgressBar from './components/ProgressSidebar';
 import SplitPane from './components/SplitPane';
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
 
 const INACTIVITY_TIMEOUT = 10 * 60 * 1000; //10 mins of inactivity
 const MODAL_SHOWN_KEY = 'continueModalShown';

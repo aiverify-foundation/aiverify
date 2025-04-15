@@ -1,15 +1,15 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import * as ReactJSXRuntime from 'react/jsx-runtime';
+import { useInputBlockGroupData } from '@/app/inputs/context/InputBlockGroupDataContext';
+import { InputBlockDataPayload } from '@/app/types';
 import { Modal } from '@/lib/components/modal';
 import { useMDXBundle } from '../../../../[groupId]/[cid]/hooks/useMDXBundle';
 import { Skeleton } from '../../../../[groupId]/[cid]/utils/Skeletion';
 // import { useChecklists } from '../../../context/ChecklistsContext';
-import { useInputBlockGroupData } from '@/app/inputs/context/InputBlockGroupDataContext';
 import styles from './ChecklistDetail.module.css';
-import { InputBlockDataPayload } from '@/app/types';
 
 interface ChecklistDetailProps {
   cid: string;
@@ -22,6 +22,31 @@ interface MDXProps {
   onChangeData: (key: string, value: string) => void;
 }
 
+// Helper function to convert InputBlockDataPayload to Record<string, string>
+const convertToStringRecord = (
+  data: InputBlockDataPayload
+): Record<string, string> => {
+  const result: Record<string, string> = {};
+
+  Object.entries(data).forEach(([key, value]) => {
+    if (value === null || value === undefined) {
+      result[key] = '';
+    } else if (typeof value === 'string') {
+      result[key] = value;
+    } else {
+      // Convert any non-string values to string representation
+      try {
+        result[key] = JSON.stringify(value);
+      } catch {
+        // Fall back to String() if JSON.stringify fails
+        result[key] = String(value);
+      }
+    }
+  });
+
+  return result;
+};
+
 const ChecklistDetail: React.FC<ChecklistDetailProps> = ({
   cid,
   data,
@@ -29,8 +54,7 @@ const ChecklistDetail: React.FC<ChecklistDetailProps> = ({
 }) => {
   // const { checklists, updateChecklistData, setSelectedChecklist } =
   //   useChecklists();
-  const { gid, group, inputBlocks, currentGroupData } =
-    useInputBlockGroupData();
+  const { inputBlocks } = useInputBlockGroupData();
   const inputBlock = useMemo(
     () => (inputBlocks || []).find((c) => c.cid === cid),
     [inputBlocks, cid]
@@ -59,7 +83,7 @@ const ChecklistDetail: React.FC<ChecklistDetailProps> = ({
       // updateChecklistData(id, newData);
       setLastSaved(new Date());
     },
-    [inputBlock, localData, cid /*updateChecklistData*/]
+    [inputBlock, localData, onDataUpdated /*updateChecklistData*/]
   );
 
   console.log('checklist used for mdx bundle', inputBlock);
@@ -93,6 +117,12 @@ const ChecklistDetail: React.FC<ChecklistDetailProps> = ({
     setShowClearModal(false);
   }, [inputBlock /*updateChecklistData*/]);
 
+  // Convert localData to string record for MDXComponent
+  const stringData = useMemo(
+    () => convertToStringRecord(localData),
+    [localData]
+  );
+
   if (!inputBlock || !MDXComponent) {
     return <div>No checklist data available</div>;
   }
@@ -110,7 +140,7 @@ const ChecklistDetail: React.FC<ChecklistDetailProps> = ({
         </div>
 
         <MDXComponent
-          data={localData}
+          data={stringData}
           onChangeData={handleDataChange}
         />
 

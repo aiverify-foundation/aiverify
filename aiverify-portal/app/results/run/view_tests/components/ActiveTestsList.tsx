@@ -37,20 +37,10 @@ export default function ActiveTestsList({ runs }: { runs: TestRunOutput[] }) {
   });
 
   // Delete test run functionality
-  const {
-    mutate: deleteTestRun,
-    isPending: isDeleting,
-    isError: isDeleteError,
-    error: deleteError,
-  } = useDeleteTestRun();
+  const { mutate: deleteTestRun, isPending: isDeleting } = useDeleteTestRun();
 
   // Use the cancel hook
-  const {
-    mutate: cancelTestRun,
-    isPending: isCancelling,
-    isError: isCancelError,
-    error: cancelError,
-  } = useCancelTestRun();
+  const { mutate: cancelTestRun, isPending: isCancelling } = useCancelTestRun();
 
   const statusFilters = [
     { id: 'pending', label: 'PENDING' },

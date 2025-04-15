@@ -5,7 +5,6 @@ import { useRef, useCallback } from 'react';
 // Constants for page dimensions (A4)
 const A4_HEIGHT_PX = 1100; // Typical A4 height in pixels at 96 DPI
 const BOUNDARY_DETECTION_BUFFER = 6; // Buffer for boundary detection
-const LAST_PAGE_BUFFER = 5; // Smaller buffer for the last page to avoid unnecessary compensation
 
 // Helper function to calculate actual content height (including all children)
 function getActualContentHeight(element: HTMLElement): number {
@@ -43,7 +42,6 @@ function hasVisualElementsNearBoundary(
   isLastPage = false
 ): boolean {
   // Use a smaller buffer for the last page to avoid unnecessary compensation
-  const bufferToUse = isLastPage ? LAST_PAGE_BUFFER : BOUNDARY_DETECTION_BUFFER;
 
   // Find all visual elements within the parent
   const visualElements = [
@@ -144,7 +142,6 @@ export function usePrintable(options: UsePrintableOptions = {}) {
 
     if (contentRef.current) {
       // Clone the content to avoid modifying the original - but use node cloning instead of innerHTML
-      const contentClone = contentRef.current.cloneNode(true) as HTMLElement;
 
       // Get all page elements directly from the original content (more reliable)
       const pageElements = contentRef.current.querySelectorAll(
@@ -272,7 +269,6 @@ export function usePrintable(options: UsePrintableOptions = {}) {
           // 1. Visual elements are near the bottom AND
           // 2. This is not the last page of the document
           const isLastPage = pageIndex === pageElements.length - 1;
-          const totalPages = pageElements.length;
           const isLastPageOfDocument = isLastPage;
 
           // Only add compensation when absolutely necessary
@@ -294,11 +290,9 @@ export function usePrintable(options: UsePrintableOptions = {}) {
 
       // Get all pages in the copied content
       const pages = printContainer.querySelectorAll('.standard-report-page');
-      let insertedCompensationPages = 0;
 
       // Apply original page break settings and add compensation pages
       pages.forEach((page, index) => {
-        const adjustedIndex = index + insertedCompensationPages;
         const isLastPage = index === pages.length - 1;
         const needsCompensation = compensationNeeded[index];
 
@@ -348,7 +342,7 @@ export function usePrintable(options: UsePrintableOptions = {}) {
           page.after(compensationPage);
 
           // Increment counter for inserted pages
-          insertedCompensationPages++;
+          //insertedCompensationPages++;
         }
       });
     } else {
