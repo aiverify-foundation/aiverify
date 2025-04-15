@@ -8,10 +8,11 @@ import ActiveTestsList from './components/ActiveTestsList';
 export default async function RunningTestsPage({
   searchParams,
 }: {
-  searchParams: { projectId?: string; flow?: string };
+  searchParams: Promise<{ projectId?: string; flow?: string }>;
 }) {
-  const projectId = searchParams.projectId;
-  const flow = searchParams.flow;
+  const resolvedParams = await searchParams;
+  const projectId = resolvedParams.projectId;
+  const flow = resolvedParams.flow;
   const isProjectFlow = !!projectId && !!flow;
 
   const runs = await getTestRuns();

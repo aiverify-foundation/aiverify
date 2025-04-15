@@ -15,20 +15,21 @@ import TestRunForm from './components/TestRunForm';
 export default async function RunTestPage({
   searchParams,
 }: {
-  searchParams: {
+  searchParams: Promise<{
     projectId?: string;
     flow?: string;
     algorithmGid?: string;
     algorithmCid?: string;
     modelId?: string;
-  };
+  }>;
 }) {
   // Check if coming from project flow
-  const projectId = searchParams.projectId;
-  const flow = searchParams.flow;
-  const algorithmGid = searchParams.algorithmGid;
-  const algorithmCid = searchParams.algorithmCid;
-  const modelId = searchParams.modelId;
+  const resolvedParams = await searchParams;
+  const projectId = resolvedParams.projectId;
+  const flow = resolvedParams.flow;
+  const algorithmGid = resolvedParams.algorithmGid;
+  const algorithmCid = resolvedParams.algorithmCid;
+  const modelId = resolvedParams.modelId;
   const isProjectFlow = !!projectId && !!flow;
 
   // Fetch models and datasets

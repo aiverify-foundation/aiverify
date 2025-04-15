@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import Link from 'next/link';
 // import { ChecklistsProvider } from '@/app/inputs/context/ChecklistsContext';
-import { ScaleIcon } from '@/app/inputs/utils/icons';
+// import { ScaleIcon } from '@/app/inputs/utils/icons';
 import { InputBlock } from '@/app/types';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import { Card } from '@/lib/components/card/card';
