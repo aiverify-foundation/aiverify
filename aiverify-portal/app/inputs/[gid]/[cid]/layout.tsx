@@ -3,8 +3,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import { ReactNode } from 'react';
+import { FairnessTreeProvider } from '@/app/inputs/[gid]/[cid]/context/FairnessTreeContext';
 import LayoutHeader from '@/app/inputs/components/LayoutHeader';
-import { FairnessTreeProvider } from '@/app/inputs/fairnesstree/context/FairnessTreeContext';
 
 type LayoutProps = {
   children: ReactNode;

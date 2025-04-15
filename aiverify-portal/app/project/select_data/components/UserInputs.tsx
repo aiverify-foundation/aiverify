@@ -1,10 +1,9 @@
 'use client';
 
-import { group } from 'console';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
-import { FairnessTreeModalWrapper } from '@/app/inputs/fairnesstree/components/ModalView';
+import { FairnessTreeModalWrapper } from '@/app/inputs/[gid]/[cid]/components/ModalView';
 import { useMDXBundle } from '@/app/inputs/groups/[gid]/[group]/[groupId]/[cid]/hooks/useMDXBundle';
 import { FairnessTree } from '@/app/inputs/utils/types';
 import {
