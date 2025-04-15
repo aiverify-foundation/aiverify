@@ -353,6 +353,9 @@ interface TestRunFormProps {
   models: Array<{ filename: string; name: string }>;
   datasets: Array<{ filename: string; name: string }>;
   initialServerActive: boolean;
+  preselectedModel?: { id: number; name: string; filename: string };
+  projectId?: string;
+  flow?: string;
 }
 
 interface FormState {
@@ -373,6 +376,9 @@ export default function TestRunForm({
   models,
   datasets,
   initialServerActive,
+  preselectedModel,
+  projectId,
+  flow,
 }: TestRunFormProps) {
   const router = useRouter();
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<string | null>(
@@ -396,8 +402,14 @@ export default function TestRunForm({
   const { mutate: submitTest, isPending } = useSubmitTest({
     onSuccess: (data) => {
       console.log('Test submitted successfully:', data);
-      // Redirect to the active tests page to see the running test
-      router.push('/results/run/view_tests');
+      // Always redirect to view tests page, but preserve project context in URL parameters
+      if (projectId && flow) {
+        router.push(
+          `/results/run/view_tests?projectId=${projectId}&flow=${flow}`
+        );
+      } else {
+        router.push('/results/run/view_tests');
+      }
     },
     onError: (err: Error) => {
       console.error('Error submitting test:', err);
@@ -472,7 +484,25 @@ export default function TestRunForm({
 
     console.log('All algorithms:', allAlgos);
     setAllAlgorithms(allAlgos);
-  }, [plugins]);
+
+    // Pre-select algorithm if only one is available (e.g., when coming from project flow)
+    if (allAlgos.length === 1 && !formData.algorithm) {
+      setFormData((prev) => ({
+        ...prev,
+        algorithm: allAlgos[0].cid,
+      }));
+    }
+  }, [plugins, formData.algorithm]);
+
+  // Pre-select model if provided
+  useEffect(() => {
+    if (preselectedModel && !formData.model) {
+      setFormData((prev) => ({
+        ...prev,
+        model: preselectedModel.filename,
+      }));
+    }
+  }, [preselectedModel, formData.model]);
 
   // Update selected algorithm when algorithm selection changes
   useEffect(() => {
