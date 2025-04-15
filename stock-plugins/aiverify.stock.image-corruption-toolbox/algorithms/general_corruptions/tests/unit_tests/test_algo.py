@@ -526,3 +526,30 @@ def test_user_defined_params():
     for data in results["results"]:
         if data["corruption_function"] == "Salt_and_Pepper_Noise":
             assert len(data["accuracy"]) == 4
+
+
+def test_empty_user_defined_params():
+    test_object = ObjectTest()
+    test_object._input_args["salt_and_pepper_noise_amount"] = []
+    test_plugin = Plugin(
+        test_object._data_instance_and_serializer,
+        test_object._model_instance_and_serializer,
+        test_object._ground_truth_instance_and_serializer,
+        test_object._initial_data_instance,
+        test_object._initial_model_instance,
+        **test_object._input_args,
+    )
+    test_plugin.generate()
+    results = remove_numpy_formats(test_plugin.get_results())
+
+    validate_status = validate_json(
+        results,
+        load_schema_file(
+            str(Path(__file__).parent.parent.parent / "aiverify_general_corruptions" / "output.schema.json")
+        ),
+    )
+
+    assert validate_status
+    for data in results["results"]:
+        if data["corruption_function"] == "Salt_and_Pepper_Noise":
+            assert len(data["accuracy"]) == 6
