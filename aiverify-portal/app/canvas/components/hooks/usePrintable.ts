@@ -90,11 +90,7 @@ function hasVisualElementsNearBoundary(
         }
       } else {
         // For non-last pages, use the standard detection logic
-        if (
-          bottomPosition > A4_HEIGHT_PX ||
-          (bottomPosition > A4_HEIGHT_PX - bufferToUse &&
-            bottomPosition <= A4_HEIGHT_PX)
-        ) {
+        if (bottomPosition > A4_HEIGHT_PX) {
           return true; // Found a visual element near the boundary
         }
       }
@@ -241,6 +237,9 @@ export function usePrintable(options: UsePrintableOptions = {}) {
               const hasVisualContent =
                 element.querySelectorAll('svg, canvas').length > 0 ||
                 /<img[^>]+src=(['"])(https?:\/\/[^'"]+)\1[^>]*>/i.test(
+                  element.innerHTML || ''
+                ) ||
+                /<table style="border-collapse: collapse; padding: 0px; margin: 0px; break-inside: avoid; width: 100%; table-layout: fixed;">/i.test(
                   element.innerHTML || ''
                 );
 
