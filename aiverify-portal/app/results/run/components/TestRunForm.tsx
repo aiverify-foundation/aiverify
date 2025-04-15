@@ -367,9 +367,96 @@ interface FormState {
   algorithmArgs?: Record<string, unknown>;
 }
 
-// Add a helper function to determine if a field is a text input
+// Utility function to process algorithm arguments according to input schema
+const processAlgorithmArgs = (
+  args: Record<string, unknown> | undefined,
+  schema: RJSFSchema
+): Record<string, unknown> => {
+  // If no schema or no properties, return args as is or empty object
+  if (!schema || !schema.properties) {
+    console.debug(
+      'No schema or properties found, returning args as is:',
+      args || {}
+    );
+    return args || {};
+  }
 
-// Function to check if formData change is for a text input
+  console.debug('Processing algorithm args with schema:', {
+    originalArgs: args,
+    schemaProperties: schema.properties,
+    schemaRequired: schema.required,
+  });
+
+  // Start with provided args or empty object
+  const processedArgs: Record<string, unknown> = args ? { ...args } : {};
+
+  // Get the list of required properties
+  const requiredProps: string[] = Array.isArray(schema.required)
+    ? schema.required
+    : [];
+
+  // Process each property in the schema
+  Object.entries(schema.properties).forEach(([propName, propSchema]) => {
+    // Skip if it's not a valid schema object
+    if (typeof propSchema !== 'object') return;
+
+    const isRequired = requiredProps.includes(propName);
+    const initialValue = processedArgs[propName];
+
+    // Handle when property is not provided by user
+    if (processedArgs[propName] === undefined) {
+      // If there's a default value, use it
+      if ('default' in propSchema) {
+        processedArgs[propName] = propSchema.default;
+        console.debug(
+          `Applied default value for ${propName}:`,
+          propSchema.default
+        );
+      }
+      // For optional array types with union type ["array", "null"], use null
+      else if (
+        !isRequired &&
+        Array.isArray(propSchema.type) &&
+        propSchema.type.includes('array') &&
+        propSchema.type.includes('null')
+      ) {
+        processedArgs[propName] = null;
+        console.debug(`Set null for optional array ${propName} (not provided)`);
+      }
+      // For other optional properties, leave them undefined (they'll be omitted)
+    }
+
+    // Special handling for empty arrays - if user explicitly provided an empty array
+    // for a non-required field that accepts null, consider if we should convert to null
+    // (This is debatable and depends on your API expectations)
+    if (
+      !isRequired &&
+      Array.isArray(processedArgs[propName]) &&
+      (processedArgs[propName] as unknown[]).length === 0 &&
+      Array.isArray(propSchema.type) &&
+      propSchema.type.includes('null')
+    ) {
+      // Here we keep empty arrays as is, but you could set to null if that's preferred
+      // processedArgs[propName] = null;
+      console.debug(
+        `Empty array detected for ${propName}, keeping as empty array`
+      );
+    }
+
+    // Log if value changed
+    if (initialValue !== processedArgs[propName]) {
+      console.debug(`${propName} value changed:`, {
+        from: initialValue,
+        to: processedArgs[propName],
+        required: isRequired,
+        schemaType: propSchema.type,
+      });
+    }
+  });
+
+  console.debug('Final processed args:', processedArgs);
+  return processedArgs;
+};
 
 export default function TestRunForm({
   plugins,
@@ -508,10 +595,48 @@ export default function TestRunForm({
   useEffect(() => {
     if (formData.algorithm) {
       setSelectedAlgorithm(formData.algorithm);
+
+      // Find the selected algorithm to get its input schema
+      const selectedAlgo = allAlgorithms.find(
+        (algo) => algo.cid === formData.algorithm
+      );
+
+      if (selectedAlgo && selectedAlgo.inputSchema) {
+        // Initialize algorithm args with default values from schema
+        const schema = selectedAlgo.inputSchema as RJSFSchema;
+        const initialArgs: Record<string, unknown> = {};
+
+        // If schema has properties, extract default values
+        if (schema.properties) {
+          Object.entries(schema.properties).forEach(
+            ([propName, propSchema]) => {
+              // Skip if it's not a valid schema object
+              if (typeof propSchema !== 'object') return;
+
+              // If property has a default value, use it for initialization
+              if ('default' in propSchema) {
+                initialArgs[propName] = propSchema.default;
+              }
+            }
+          );
+        }
+
+        // Only update if we have default values to set and user hasn't set any values yet
+        if (
+          Object.keys(initialArgs).length > 0 &&
+          (!formData.algorithmArgs ||
+            Object.keys(formData.algorithmArgs).length === 0)
+        ) {
+          setFormData((prev) => ({
+            ...prev,
+            algorithmArgs: initialArgs,
+          }));
+        }
+      }
     } else {
       setSelectedAlgorithm(null);
     }
-  }, [formData.algorithm]);
+  }, [formData.algorithm, allAlgorithms]);
 
   // Debounced form change handler
   const handleFormChange = (e: IChangeEvent) => {
@@ -738,16 +863,31 @@ export default function TestRunForm({
         throw new Error('Selected algorithm not found');
       }
 
+      // Process algorithm args according to input schema
+      const processedArgs = processAlgorithmArgs(
+        submitData.algorithmArgs,
+        selectedAlgo.inputSchema as RJSFSchema
+      );
+
+      // Log differences between original and processed args
+      console.log('Algorithm arguments processing:', {
+        original: submitData.algorithmArgs || {},
+        processed: processedArgs,
+        hasDifferences:
+          JSON.stringify(submitData.algorithmArgs || {}) !==
+          JSON.stringify(processedArgs),
+      });
+
       // Prepare input data
       const inputData: TestRunInput = {
         mode: 'upload',
         algorithmGID: selectedAlgo.pluginGid,
         algorithmCID: submitData.algorithm,
-        algorithmArgs: submitData.algorithmArgs || {},
+        algorithmArgs: processedArgs,
         modelFilename: submitData.model || '',
         testDatasetFilename: submitData.testDataset || '',
         groundTruthDatasetFilename: submitData.groundTruthDataset,
-        groundTruth: submitData.groundTruth || 'default',
+        groundTruth: submitData.groundTruth,
       };
 
       console.log('Submitting test with data:', inputData);

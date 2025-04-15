@@ -57,7 +57,7 @@ export default async function InputsPage() {
     acc.push(block);
     return acc;
   }, [] as InputBlock[]);
-  // console.log('inputBlockNonGroups', inputBlockNonGroups);
+  console.log('inputBlockNonGroups', inputBlockNonGroups);
 
   return (
     // <ChecklistsProvider>
@@ -77,55 +77,6 @@ export default async function InputsPage() {
         </div>
       </div>
       <div className="mt-10 flex flex-wrap gap-4">
-        {/* Hardcoded cards */}
-        {/* <Link href="/inputs/checklists">
-          <Card
-            size="md"
-            enableTiltEffect={true}
-            tiltSpeed={200}
-            tiltRotation={5}
-            enableTiltGlare={true}
-            tiltMaxGlare={0.3}
-            className="bg-secondary-500 !bg-none">
-            <div className="flex flex-col justify-between p-6">
-              <Icon
-                name={IconName.CheckList}
-                size={50}
-                color="white"
-              />
-              <div>
-                <p className="tracking-wide text-shadow-sm">
-                  Manage process checklists
-                </p>
-                <h2 className="text-2xl font-bold tracking-wide text-shadow-sm">
-                  AI Verify Process Checklists
-                </h2>
-              </div>
-            </div>
-          </Card>
-        </Link> */}
-        <Link href="/inputs/fairnesstree">
-          <Card
-            size="md"
-            enableTiltEffect={true}
-            tiltSpeed={200}
-            tiltRotation={5}
-            enableTiltGlare={true}
-            tiltMaxGlare={0.3}
-            className="bg-secondary-500 !bg-none">
-            <div className="flex flex-col justify-between p-6">
-              <ScaleIcon color="white" />
-              <div>
-                <p className="tracking-wide text-shadow-sm">
-                  Manage and view fairness trees
-                </p>
-                <h2 className="text-2xl font-bold tracking-wide text-shadow-sm">
-                  Fairness Tree
-                </h2>
-              </div>
-            </div>
-          </Card>
-        </Link>
         {/* Group cards */}
         {Object.values(sortedInputBlockGroups).map((group) => (
           <Link
@@ -151,6 +102,37 @@ export default async function InputsPage() {
                   </p>
                   <h2 className="text-2xl font-bold tracking-wide text-shadow-sm">
                     {group.name}
+                  </h2>
+                </div>
+              </div>
+            </Card>
+          </Link>
+        ))}
+        {/* Non-grouped cards */}
+        {inputBlockNonGroups.map((block) => (
+          <Link
+            key={block.gid + block.cid}
+            href={`/inputs/${encodeURIComponent(block.gid)}/${encodeURIComponent(block.cid)}`}>
+            <Card
+              size="md"
+              enableTiltEffect={true}
+              tiltSpeed={200}
+              tiltRotation={5}
+              enableTiltGlare={true}
+              tiltMaxGlare={0.3}
+              className="bg-secondary-500 !bg-none">
+              <div className="flex flex-col justify-between p-6">
+                <Icon
+                  name={IconName.CheckList}
+                  size={50}
+                  color="white"
+                />
+                <div>
+                  <p className="tracking-wide text-shadow-sm">
+                    Manage input blocks in this group
+                  </p>
+                  <h2 className="text-2xl font-bold tracking-wide text-shadow-sm">
+                    {block.name}
                   </h2>
                 </div>
               </div>

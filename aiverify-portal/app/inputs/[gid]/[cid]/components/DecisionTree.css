@@ -1,0 +1,131 @@
+/* Styling for the overall decision tree container */
+.decision-tree-container {
+  width: 100%;
+  height: 100%; /* Or a specific height */
+  position: relative;
+  padding: 10px;
+  overflow: hidden;
+  font-family: sans-serif; /* Example font */
+}
+
+/* Style for the steps container (left side) */
+.step-container {
+  width: 100px; /* Or adjust as needed */
+  display: flex;
+  flex-direction: column;
+}
+
+.step-buttons {
+  display: flex;
+}
+
+.aiv-button {
+  /* Style for buttons */
+  padding: 10px;
+  border: 0;
+  margin-right: 2px;
+  background-color: orange; /* Example color */
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.aiv-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Style for the content area within the step container */
+.step-content {
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 10px;
+  margin-top: 10px;
+  background-color: #000000 !important; /* Example background */
+  color: black !important;
+}
+
+/* Style for headings within steps */
+.step-content h2,
+.step-content h4 {
+  padding: 0;
+  margin: 0;
+  font-weight: bold;
+}
+.step-content h4 {
+  margin-top: 10px;
+}
+
+/* Style for labels */
+.step-content label {
+  margin-top: 10px;
+  font-weight: 600;
+  display: block; /* Makes labels stack nicely */
+}
+
+/* Style for inputs and textareas */
+.aiv-input,
+.aiv-textarea {
+  width: 100%;
+  box-sizing: border-box; /* Prevents padding from affecting width */
+  margin-top: 5px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: none; /* Prevents textarea resizing */
+  background-color: #3d3a40;
+}
+
+/* Style for the decision tree graph area (right side) */
+.graph-container {
+  flex-grow: 1;
+  height: 100%;
+  padding: 10px;
+  display: block; /* Or flex if you want to further control layout */
+}
+
+/* Style for the final results card */
+.aiv-card {
+  background-color: #645f6a;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  box-sizing: border-box; /* Include padding in width/height */
+}
+.c-secondary {
+  background-color: #645f6a;
+}
+.c-warning {
+  color: white;
+}
+
+/* Style for the outcome selection checkboxes and labels */
+.outcome-selection {
+  margin-bottom: 10px; /* Space between outcome selections */
+}
+
+.outcome-selection input[type='checkbox'] {
+  margin-right: 5px;
+}
+
+/* Style for ordered lists in the outcome selection area */
+.outcome-selection ol {
+  list-style-type: lower-alpha;
+  padding-left: 20px;
+  margin: 0;
+}
+
+/* General styles */
+.highlight {
+  /* Example highlight style for nodes */
+  background-color: yellow !important;
+}
+.edge-selected {
+  stroke: red !important;
+}
+
+/* Styles for the modal content area */
+.modal-content {
+  height: 100%;
+  background-color: #000000 !important;
+}
