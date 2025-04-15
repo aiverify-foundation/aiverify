@@ -229,11 +229,11 @@ const GroupHeader = ({
       {isEditing ? (
         <form
           id="edit-name-form"
-          action={() => {
+          onSubmit={(e) => {
+            e.preventDefault();
             console.log('onSubmit:', groupName);
-            // e.preventDefault();
-            // handleSubmit();
             setIsSaving(true);
+            // Call updateGroupName immediately without any debouncing
             updateGroupName(groupName);
             setIsEditing(false);
           }}
@@ -248,9 +248,7 @@ const GroupHeader = ({
           />
           <button
             type="submit"
-            className="text-white hover:text-primary-500"
-            // disabled={editGroupMutation.isPending || isSaving}
-          >
+            className="text-white hover:text-primary-500">
             Save
           </button>
           <button
