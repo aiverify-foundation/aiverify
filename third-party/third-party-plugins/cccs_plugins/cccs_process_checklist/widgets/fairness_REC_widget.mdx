@@ -13,10 +13,10 @@ export const Recommendation = ({ data02 }) => {
   let recommendation;
   if (noCount >= 1) {
     //Failed Test
-    recommendation = "Ensuring fairness in AI models' predictions is crucial for building consumer confidence that the best products and services will win out as firms are perceived to be playing by the rules. Ensuring fairness in AI model's predictions would also prevent any unfair practices resulting from the AI model. The company's AI model should not unfairly discriminate or show favouritism towards any specific groups, brands, or products. If the company sees itself as dominant, it could be abusing this dominant position in potential anti-competitive behaviour by giving itself (or other companies) preferential treatment, which could harm competition in another market. The company should review the AI algorithm to avoid potentially infringing Section 47 of the Competition Act, which prohibits the abuse of a dominant market position that is not based on fair competition and perpetuates the dominant position of the business. If the company's AI model tends to show discrimination against certain consumers or demographics (e.g. where the AI company takes advantage of a consumer who is not reasonably able to understand the nature of the transaction), the company could be engaging in an unfair practice that is prohibited under the Consumer Protection (Fair Trading) Act. The company should review its AI algorithm to avoid potentially infringing the Consumer Protection (Fair Trading) Act.";
+    recommendation = "Ensuring fairness in AI models’ predictions is crucial for building consumer confidence that the best products and services will win out as firms are perceived to be playing by the rules. Ensuring fairness in AI model’s predictions would also prevent any unfair practices resulting from the AI model.\nThe company’s AI model should not unfairly discriminate or show favouritism towards any specific groups, brands, or products. If the company sees itself as dominant, it could be abusing this dominant position in potential anti-competitive behaviour by giving itself (or other companies) preferential treatment, which could harm competition in another market. The company should review the AI algorithm to avoid potentially infringing section 47 of the Competition Act, which prohibits the abuse of a dominant market position that is not based on fair competition and perpetuates the dominant position of the business.\nIf the company’s AI model tends to show discrimination against certain consumers or demographics, the company could be engaging in an unfair practice as defined under the Consumer Protection (Fair Trading) Act, e.g. taking advantage of a consumer who is known not to be in a position to protect his or her own interest. The company should review its AI algorithm to avoid any liability in this regard.";
   } else {
     //Passed Test
-    recommendation = "Ensuring fairness in AI models' predictions is crucial for building consumer confidence that the best products and services will win out as firms are perceived to be playing by the rules. Ensuring fairness in AI model's predictions would also prevent any potentially false or misleading claims resulting from the AI model. The company has ensured that the AI model does not discriminate against or favour any target groups, brands, or products.";
+    recommendation = "Ensuring fairness in AI models’ predictions is crucial for building consumer confidence that the best products and services will win out as firms are perceived to be playing by the rules. Ensuring fairness in AI model’s predictions, supported by representative training data, helps ensure equal treatment of consumers in AI-driven recommendations and that certain groups of consumers would not be taken advantage of.\nThe company has ensured that the AI model does not discriminate against or favour any target groups, brands, or products and that the AI model does not discriminate against or take advantage of consumers based on their capacity to engage in transactions.";
   }
 
   return (
@@ -29,11 +29,11 @@ export const Recommendation = ({ data02 }) => {
 
 export const MissingCriteria = ({ data }) => {
     const questionsDict = {
-        "4_1_1": "4.1.1 Ensure training data is diverse and representative in order to avoid biasness against certain groups or individuals.",
-        "4_2_1": "4.2.1 Ensure that the AI model does not unduly favor specific brands or products and the decision-making process should be based on inputs only.",
+        "4_1_1": "4.1.1 Ensure training data is diverse and representative in order to avoid biasness against certain groups, firms or individuals.",
+        "4_2_1": "4.2.1 Ensure that the AI model does not unduly favor specific brands or products, and the decision-making process should be based on inputs only.",
         "4_2_2": "4.2.2 Ensure that the AI model does not self-preference.",
-        "4_2_3": "4.2.3 Ensure AI company conducts regular bias testing and impact assessments to prevent favouring of certain brands/products.",
-        "4_2_4": "4.2.4 Ensure that AI company has a clear mechanism for addressing and rectifying instances of favoritism or discrimination."
+        "4_2_3": "4.2.3 Ensure that the company conducts regular bias testing and impact assessments to prevent favouring of certain brands/products.",
+        "4_2_4": "4.2.4 Ensure that the company has a clear mechanism for addressing and rectifying instances of favoritism or discrimination."
     };
 
     const noResponses = data

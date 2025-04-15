@@ -13,10 +13,10 @@ export const Recommendation = ({ data02 }) => {
   let recommendation;
   if (noCount >= 1) {
     //Failed Test
-    recommendation = "The market would trend towards positive outcomes such as the bolstering of innovation and competitive dynamics, if there were mechanisms to determine the proper allocation of accountability and responsibility. Proper allocation of accountability will also incentivise firms to improve consumer outcomes, and consumers may more easily seek redress when things go wrong, leading to consumer confidence, trust and adoption. The company should take proactive responsibility for what they control in the value chain and take positive action necessary to ensure consumers are adequately protected and ensure the development of a competitive market that gains the trust and confidence of consumers and businesses.";
+    recommendation = "The market would trend towards positive outcomes such as the bolstering of innovation and competitive dynamics, if there were mechanisms to determine the proper allocation of accountability and responsibility. Proper allocation of accountability will also incentivise firms to improve consumer outcomes, and consumers may more easily seek redress when things go wrong, leading to consumer confidence, trust and adoption.\n\n\nThe company should take proactive responsibility for what they control in the value chain and take positive action necessary to ensure consumers are adequately protected and ensure the development of a competitive market that gains the trust and confidence of consumers and businesses.";
   } else {
     //Passed Test
-    recommendation = "The market would trend towards positive outcomes, such as the bolstering of innovation and competitive dynamics, if there were mechanisms to determine the proper allocation of accountability and responsibility. Proper allocation of accountability will also incentivise firms to improve consumer outcomes, and consumers may more easily seek redress when things go wrong, leading to consumer confidence, trust and adoption. The company has ensured that accountability for any issues arising from the AI model are allocated adequately and that consumers can easily seek redress issues for problems with the company's AI products.";
+    recommendation = "The market would trend towards positive outcomes, such as the bolstering of innovation and competitive dynamics, if there were mechanisms to determine the proper allocation of accountability and responsibility. Proper allocation of accountability will also incentivise firms to improve consumer outcomes, and consumers may more easily seek redress when things go wrong, leading to consumer confidence, trust and adoption.\n\n\nThe company has ensured that accountability for any issues arising from the AI model are allocated adequately and that consumers can easily seek redress issues for problems with the company’s AI products.";
   }
 
   return (
@@ -32,8 +32,8 @@ export const Recommendation = ({ data02 }) => {
 
 export const MissingCriteria = ({ data }) => {
     const questionsDict = {
-        "7_1_1": "7.1.1 Ensure that AI company has the accountability and incentive to improve consumers' experience.",
-        "7_1_2": "7.1.2 Ensure that clear information about routes to redress are provided to consumers in case of issues."
+        "7_1_1": "7.1.1 Ensure that the company has the accountability and incentive to improve consumers’ experience.",
+        "7_1_2": "7.1.2 Ensure that clear information about routes to redress are provided to consumers for issues that can occur."
     };
 
     const noResponses = data
@@ -98,7 +98,7 @@ export const MyComponent = (props) => {
                 <h2>CCCS Recommendations</h2>
             </div>
             <div style={{ padding:"10px", textAlign: "center" }}>
-                <h2 className="c-primary">Principle: Accountability (General Good Practice)</h2>
+                <h2 className="c-primary">Principle: Accountability (General good practice)</h2>
             </div>
             <h4 style={{paddingLeft: "10px", paddingRight: "10px"}}>
                 The outcome of this principle is to ensure that there is clear and proper allocation of accountability.

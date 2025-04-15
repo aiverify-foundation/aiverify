@@ -13,10 +13,10 @@ export const Recommendation = ({ data02 }) => {
   let recommendation;
   if (noCount >= 1) {
     //Failed Test
-    recommendation = "For the market to be more competitive, developers should be able to gain access, on reasonable terms, to key inputs they need to develop and deploy AI models. The company should avoid restricting competitors' access to data or resources for the development of their AI models and allow non-discriminatory access to its AI products and services. If the company considers itself to be dominant, it should review its practices to avoid potentially infringing Section 47 of the Competition Act, which prohibits the abuse of a dominant market position that is not based on fair competition and perpetuates the dominant position of the business.";
+    recommendation = "For the market to be more competitive, developers should be able to gain access, on reasonable terms, to key inputs they need to develop and deploy AI models. In addition, a dominant company should not mandate data collection from users for the purposes of improving its AI models.\nIf the company considers itself to be dominant, the company should: \n-Avoid restricting competitors' access to data or resources for the development of their AI models unjustifiably\n-Allow non-discriminatory access to its AI products and services\n-Ensure data collection practices include explicit user consent and clear opt-out mechanisms to prevent unfair data accumulation advantages that could artificially strengthen its market position. \n\nIf the company considers itself to be dominant, it should review its practices to avoid potentially infringing section 47 of the Competition Act, which prohibits the abuse of a dominant market position that is not based on fair competition and perpetuates the dominant position of the business.";
   } else {
     //Passed Test
-    recommendation = "For the market to be more competitive, developers should be able to gain access, on reasonable terms, to key inputs they need to develop and/or deploy AI models. The company has taken steps to ensure unrestricted access to its products and services, and it does not withhold essential data or resources necessary for the development and/or deployment of AI models by its competitors.";
+    recommendation = "For the market to be more competitive, AI companies should be able to gain access, on reasonable terms, to key inputs they need to develop and/or deploy AI models. In addition, a dominant company should not mandate data collection from users for the purposes of improving its AI models.\n\nThe company has taken steps to ensure unrestricted access to its products and services, and it does not withhold essential data or resources necessary for the development and/or deployment of AI models by its competitors. The company also avoids mandatory data collection practices for the training of its AI models that could unfairly strengthen its market position.";
   }
 
   return (
@@ -29,10 +29,11 @@ export const Recommendation = ({ data02 }) => {
 
 export const MissingCriteria = ({ data }) => {
     const questionsDict = {
-        "2_1_1": "2.1.1 Checks if the AI company has leveraged its dominance in one market to unfairly limit access to data or resources for competing AI model developers in other markets.",
+        "2_1_1": "2.1.1 Checks if the company has leveraged its dominance in one market to unfairly limit access to data or resources for competing AI model developers in other markets.",
         "2_1_2": "2.1.2 Regular assessments of data access policies ensures that there are no unfair limitations to data or resources for developers in other markets.",
-        "2_1_3": "2.1.3 Checks whether a dominant AI developer has exclusive dealings with deployers downstream that may deter entry of new AI developers.",
-        "2_2_1": "2.2.1 Ensure that the AI company maintains non-discriminatory access to its AI products and services."
+        "2_1_3": "2.1.3 Checks whether a dominant AI developer has exclusive dealings with multiple deployers downstream that may deter entry of new AI developers.",
+        "2_2_1": "2.2.1 Ensure that a dominant developer/deployer maintains non-discriminatory access to its AI products and services.",
+        "2_3_1": "2.3.1 Ensure that a dominant developer/deployer does not make use of mandatory data collection practices to exclusively accumulate large amounts of user data to improve its AI models, potentially raising barriers to entry for competitors."
     };
 
     const noResponses = data
@@ -64,7 +65,8 @@ export const MyComponent = (props) => {
             props.getIBData(ib_cid)["2_1_1"],
             props.getIBData(ib_cid)["2_1_2"],
             props.getIBData(ib_cid)["2_1_3"],
-            props.getIBData(ib_cid)["2_2_1"]
+            props.getIBData(ib_cid)["2_2_1"],
+            props.getIBData(ib_cid)["2_3_1"]
         ];
 
         const yesCount = responses.filter(response => response === 'Yes').length;
@@ -78,7 +80,7 @@ export const MyComponent = (props) => {
         ]);
 
         const ids = [
-            "2_1_1", "2_1_2", "2_1_3", "2_2_1"
+            "2_1_1", "2_1_2", "2_1_3", "2_2_1", "2_3_1"
         ];
 
         const responseswithID = ids.map(id => ({
@@ -102,7 +104,7 @@ export const MyComponent = (props) => {
                 <h2 className="c-primary">Principle: Accessibility (Competition)</h2>
             </div>
             <h4 style={{paddingLeft: "10px", paddingRight: "10px"}}>
-                The outcome of this principle is to ensure that AI companies do not restrict data or resources that are essential to the development of AI models from other competing AI model developers and that they allow non-discriminatory access to their AI products and services.
+                The outcome of this principle is to ensure that companies do not restrict data or resources that are essential to the development of AI models from other competing AI model developers and that they allow non-discriminatory access to their AI products and services.
             </h4>
             <div style={{ height:"400px", padding:"5px" }}>
                 <PieChart

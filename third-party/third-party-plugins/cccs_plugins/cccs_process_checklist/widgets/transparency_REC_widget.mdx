@@ -13,10 +13,10 @@ export const Recommendation = ({ data02 }) => {
   let recommendation;
   if (noCount >= 1) {
     //Failed Test
-    recommendation = "The market would trend towards positive outcomes if models were themselves reliable and accurate, and if consumers had the right information about them to make informed decisions. In cases where AI models have limitations, users should be appropriately informed about these constraints. The company should ensure performance claims are verifiable and clearly state specific metrics, allowing consumers to understand features, capabilities, and limitations. Consumers should be informed about the AI model's accuracy in its output so that consumers can make informed choices when using the model. If the company is making false or misleading claims or fail to disclose any limitations, the company could potentially be infringing the Consumer Protection (Fair Trading) Act.";
+    recommendation = "The market would trend towards positive outcomes if models were themselves reliable and accurate, and if consumers had the right information about them to make informed decisions. In cases where AI models have limitations, users should be appropriately informed about these constraints.\nThe company should ensure performance claims are verifiable and clearly state specific metrics, allowing consumers to understand features, capabilities, and limitations. Consumers should be informed about the AI model's accuracy in its output so that consumers can make informed choices when using the model. Any AI-driven mechanisms that influence consumer behaviour should be transparent and avoid deceptive design patterns that could exploit consumer vulnerabilities. If the company is making claims that turn out to be false or misleading to consumers without any disclaimer or disclosure of limitations, or employs deceptive nudging mechanisms, the company could be engaging in an unfair practice as defined under the Consumer Protection (Fair Trading) Act.";
   } else {
     //Passed Test
-    recommendation = "The market would trend towards positive outcomes if models were themselves reliable and accurate, and if consumers had the right information about them to make informed decisions. In cases where AI models have limitations, users should be appropriately informed about these constraints. The company has taken steps to ensure that its claims about its AI models are accurate and not misleading. Consumers also receive clear information about the risks and limitations of the AI models.";
+    recommendation = "The market would trend towards positive outcomes if models were themselves reliable and accurate, and if consumers had the right information about them to make informed decisions. In cases where AI models have limitations, users should be appropriately informed about these constraints.\nThe company has implemented measures to ensure its claims about AI models are accurate, verifiable, and not misleading. The company provides information about the AI system’s limitations and risks in a clear and accessible manner and maintains transparency about how AI-driven recommendations may influence consumer decisions.";
   }
 
   return (
@@ -29,11 +29,14 @@ export const Recommendation = ({ data02 }) => {
 
 export const MissingCriteria = ({ data }) => {
     const questionsDict = {
-        "5_1_1": "5.1.1 Claims comparing AI company's AI models with another competing model should clearly state specific metrics and criteria.",
-        "5_1_2": "5.1.2 Performance claims made by AI company should be verifiable and substantiated.",
+        "5_1_1": "5.1.1 Claims comparing company’s AI models with another competing model should clearly state specific metrics and criteria.",
+        "5_1_2": "5.1.2 Performance claims made by the company should be verifiable and substantiated.",
         "5_1_3": "5.1.3 Consumers should be able to understand the features and capabilities easily.",
-        "5_2_1": "5.2.1 Ensure that users are informed of the AI model's information (including limitations in accuracy, if any).",
-        "5_2_2": "5.2.2 Ensure that users are able to make informed choices when using the AI model (including the knowledge of when an AI model is being used)."
+        "5_2_1": "5.2.1 Ensure that users are informed of the AI model’s information (including limitations in accuracy, if any).",
+        "5_2_2": "5.2.2 Ensure that users are able to make informed choices when using the AI model (including the knowledge of when an AI model is being used).",
+        "5_3_1": "5.3.1 Has the company implemented processes to review whether its AI system's interface design and recommendation patterns misrepresent or make false or misleading claims about products, services, or choices to consumers?",
+        "5_3_2": "5.3.2 Does the company regularly audit its AI recommendation systems to ensure the design does not misrepresent or make false or misleading claims about products or services to consumers?",
+        "5_3_3": "5.3.3 Has the company established clear guidelines on how it is using AI systems to present choices to consumers, ensuring options are not presented in a way that is misleading or misrepresenting?"
     };
 
     const noResponses = data
@@ -66,7 +69,10 @@ export const MyComponent = (props) => {
             props.getIBData(ib_cid)["5_1_2"],
             props.getIBData(ib_cid)["5_1_3"],
             props.getIBData(ib_cid)["5_2_1"],
-            props.getIBData(ib_cid)["5_2_2"]
+            props.getIBData(ib_cid)["5_2_2"],
+            props.getIBData(ib_cid)["5_3_1"],
+            props.getIBData(ib_cid)["5_3_2"],
+            props.getIBData(ib_cid)["5_3_3"]
         ];
 
         const yesCount = responses.filter(response => response === 'Yes').length;
@@ -80,7 +86,7 @@ export const MyComponent = (props) => {
         ]);
 
         const ids = [
-            "5_1_1", "5_1_2", "5_1_3", "5_2_1", "5_2_2"
+            "5_1_1", "5_1_2", "5_1_3", "5_2_1", "5_2_2", "5_3_1", "5_3_2", "5_3_3"
         ];
 
         const responseswithID = ids.map(id => ({
