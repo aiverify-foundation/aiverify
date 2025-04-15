@@ -189,6 +189,10 @@ export default function ChecklistDetailPage() {
     // }
     updateNewGroupData(params.cid, {});
     setShowClearModal(false);
+    setTimeout(() => {
+      // Use history API for more reliable refresh
+      window.location.href = window.location.href;
+    }, 1000);
   };
 
   // Find the checklist by its ID to ensure it is selected

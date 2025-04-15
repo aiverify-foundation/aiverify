@@ -71,6 +71,10 @@ const ChecklistDetail: React.FC<ChecklistDetailProps> = ({ cid, gid }) => {
     const clearedData = {};
     setLocalData(clearedData);
     setInputBlockData(cid, clearedData);
+    setTimeout(() => {
+      // Use history API for more reliable refresh
+      window.location.href = window.location.href;
+    }, 1000);
   };
 
   const MDXComponent = React.useMemo(() => {
