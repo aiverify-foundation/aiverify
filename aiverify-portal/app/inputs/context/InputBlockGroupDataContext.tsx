@@ -191,7 +191,7 @@ export const InputBlockGroupDataProvider: React.FC<{
         .catch((error) => {
           console.error('Error saving input block data:', error);
         });
-    }, 3000),
+    }, 1000),
     []
   );
   const setInputBlockData = (cid: string, data: InputBlockDataPayload) => {
