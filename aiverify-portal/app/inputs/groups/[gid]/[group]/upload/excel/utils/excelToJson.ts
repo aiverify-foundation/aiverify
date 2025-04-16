@@ -1,11 +1,6 @@
 import * as ExcelJS from 'exceljs';
 import { InputBlockDataPayload } from '@/app/types';
 import { executeMDXBundle } from '../../../[groupId]/hooks/useMDXExecution';
-// import * as XLSX from 'xlsx';
-
-// interface ChecklistData {
-//   [key: string]: string; // e.g., "completed-9.1.1": "Yes", "elaboration-9.1.1": "Some text"
-// }
 
 interface ChecklistSubmission {
   gid: string; // Group ID, e.g., "aiverify.stock.process_checklist"

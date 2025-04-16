@@ -2,8 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
-import { QueryProvider } from '@/app/inputs/fairnesstree/components/QueryProvider';
-import { FairnessTreeProvider } from '@/app/inputs/fairnesstree/context/FairnessTreeContext';
+import { QueryProvider } from '@/app/inputs/[gid]/[cid]/components/QueryProvider';
+import { FairnessTreeProvider } from '@/app/inputs/[gid]/[cid]/context/FairnessTreeContext';
 import { FairnessTreeUploadModal } from './FairnessTreeUploadModal';
 
 // Modal content for project flow

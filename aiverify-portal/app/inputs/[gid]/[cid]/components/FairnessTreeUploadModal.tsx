@@ -5,13 +5,13 @@ import { getMDXComponent } from 'mdx-bundler/client';
 import { useRouter } from 'next/navigation';
 import React, { useState, useMemo, useEffect } from 'react';
 import * as ReactJSXRuntime from 'react/jsx-runtime';
-import { useFairnessTree } from '@/app/inputs/fairnesstree/context/FairnessTreeContext';
-import { useMDXBundle } from '@/app/inputs/fairnesstree/hooks/useMDXBundle';
-import { useMDXSummaryBundle } from '@/app/inputs/fairnesstree/hooks/useMDXSummaryBundle';
-import { useSubmitFairnessTree } from '@/app/inputs/fairnesstree/hooks/useSubmitFairnessTree';
+import { useFairnessTree } from '@/app/inputs/[gid]/[cid]/context/FairnessTreeContext';
+import { useMDXBundle } from '@/app/inputs/[gid]/[cid]/hooks/useMDXBundle';
+import { useMDXSummaryBundle } from '@/app/inputs/[gid]/[cid]/hooks/useMDXSummaryBundle';
+import { useSubmitFairnessTree } from '@/app/inputs/[gid]/[cid]/hooks/useSubmitFairnessTree';
+import { InfoIcon } from '@/app/inputs/groups/[gid]/[group]/upload/utils/icons';
 import { FairnessTreeData } from '@/app/inputs/utils/types';
 import { Modal } from '@/lib/components/modal';
-import { InfoIcon } from '../../groups/[gid]/[group]/upload/utils/icons';
 import './DecisionTree.css';
 import { Tooltip } from './Tooltip';
 interface FairnessTreeModalProps {
@@ -153,11 +153,11 @@ export const FairnessTreeUploadModal: React.FC<FairnessTreeModalProps> = ({
     try {
       await submitFairnessTree(fairnessTreeData);
       addFairnessTree({
-        gid: 'aiverify.stock.fairness_metrics_toolbox_for_classification',
+        gid: gid,
         name,
         group: name,
         data: treeData,
-        cid: 'fairness_tree',
+        cid: cid,
       });
       setModalMessage('Tree updated successfully');
       setIsSubmitted(true); // Switch to the success/error modal

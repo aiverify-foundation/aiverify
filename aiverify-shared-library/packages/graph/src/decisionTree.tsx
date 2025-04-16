@@ -27,13 +27,48 @@ const validateRequired = (data: any, names: string[]) => {
 function StepFinalResults({ data, onChangeData }) {
   return (
     <div>
-      <h2 style={{ padding: 0, margin: 0, width: "100%", textAlign: "center" }}>
+      <h2
+        style={{
+          padding: "0 0 10px 0",
+          margin: 0,
+          width: "100%",
+          textAlign: "center",
+          borderBottom: "1px solid rgba(255,255,255,0.2)",
+          color: "#ffffff",
+        }}
+      >
         Selected Metrics
       </h2>
-      <ol style={{ paddingRight: "10px" }}>
-        {(data["metrics"] as any[]).map((metric) => (
-          <li key={`metric-${metric}`}>{metric}</li>
-        ))}
+      <ol
+        style={{
+          paddingRight: "10px",
+          paddingLeft: "25px",
+          marginTop: "10px",
+          maxHeight: "300px",
+          overflowY: "auto",
+          color: "#ffffff",
+        }}
+      >
+        {(data["metrics"] as any[])?.length > 0 ? (
+          data["metrics"].map((metric) => (
+            <li
+              key={`metric-${metric}`}
+              style={{
+                marginBottom: "8px",
+                lineHeight: "1.4",
+                color: "#ffffff",
+              }}
+            >
+              {metric}
+            </li>
+          ))
+        ) : (
+          <div
+            style={{ textAlign: "center", color: "#cccccc", padding: "10px 0" }}
+          >
+            No metrics selected
+          </div>
+        )}
       </ol>
     </div>
   );
@@ -577,10 +612,29 @@ export default function DecisionTree({
               isEditing={isEditing}
             />
           </div>
-          <div style={{ height: "100px", width: "100px" }}>
+          <div
+            style={{
+              position: "absolute",
+              right: "20px",
+              top: "60px",
+              width: "300px",
+              minHeight: "100px",
+              maxHeight: "400px",
+              zIndex: 100,
+              boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
+              borderRadius: "4px",
+              overflow: "hidden",
+            }}
+          >
             <div
               className="aiv-card"
-              style={{ marginRight: "10px", textAlign: "center" }}
+              style={{
+                height: "100%",
+                padding: "15px",
+                backgroundColor: "#3d3a40",
+                color: "#ffffff",
+                border: "1px solid rgba(0,0,0,0.125)",
+              }}
             >
               <StepFinalResults data={data} onChangeData={onChangeData} />
             </div>

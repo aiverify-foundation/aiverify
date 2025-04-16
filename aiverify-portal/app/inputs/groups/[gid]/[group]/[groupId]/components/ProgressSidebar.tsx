@@ -7,7 +7,6 @@ import {
   GetInputBlockDataReturnType,
 } from '@/app/inputs/context/InputBlockGroupDataContext';
 // import { Checklist } from '@/app/inputs/utils/types';
-import { InputBlockGroupDataChild, InputBlock } from '@/app/types';
 import { useMDXSummaryBundle } from '../../[groupId]/hooks/useMDXSummaryBundle';
 import {
   WarningCircleIcon,
@@ -18,16 +17,17 @@ import {
 const GroupProgressItem: React.FC<{
   group: GetInputBlockDataReturnType;
 }> = ({ group }) => {
-  if (!group.ibdata.data || !group.inputBlock) {
-    return null;
-  }
+  // Always call hooks at the top level, before any conditional logic
   const { data: mdxSummaryBundle } = useMDXSummaryBundle(
-    group.inputBlock.gid,
-    group.inputBlock.cid
+    group.inputBlock?.gid || '',
+    group.inputBlock?.cid || ''
   );
 
+  // Call useMemo hook unconditionally before any conditional returns
   const progressData = useMemo(() => {
-    if (!mdxSummaryBundle?.code) return null;
+    if (!group.ibdata?.data || !group.inputBlock || !mdxSummaryBundle?.code) {
+      return null;
+    }
 
     try {
       const context = {
@@ -51,6 +51,11 @@ const GroupProgressItem: React.FC<{
       return null;
     }
   }, [mdxSummaryBundle, group]);
+
+  // Early return after all hooks have been called
+  if (!group.ibdata.data || !group.inputBlock) {
+    return null;
+  }
 
   const isCompleted = progressData === 100;
 
@@ -80,31 +85,10 @@ const GroupProgressItem: React.FC<{
   );
 };
 
-const ProgressBar: React.FC<{ groupName: string }> = ({ groupName }) => {
-  // const { checklists } = useChecklists();
-  const { gid, group, groupId, groupDataList, inputBlocks, getInputBlockData } =
-    useInputBlockGroupData();
+const ProgressSidebar: React.FC = () => {
+  const { group, inputBlocks, getInputBlockData } = useInputBlockGroupData();
 
-  // const groupData =
-  //   groupId && groupDataList
-  //     ? groupDataList.find((x) => x.id === groupId)
-  //     : null;
-  // const inputBlocks = groupData ? groupData.input_blocks : [];
-
-  // const groupChecklists = useMemo(() => {
-  //   // Filter checklists by group name
-  //   const filtered = checklists.filter(
-  //     (checklist) => checklist.group.toLowerCase() === groupName.toLowerCase()
-  //   );
-
-  //   // Sort by the predefined order based on cid
-  //   return filtered.sort((a, b) => {
-  //     const aOrder = PRINCIPLE_ORDER[a.cid] || Infinity;
-  //     const bOrder = PRINCIPLE_ORDER[b.cid] || Infinity;
-
-  //     return aOrder - bOrder;
-  //   });
-  // }, [, /* checklists */ groupName]);
+  // Filter and create the list of input blocks data
   const filteredInputBlocks = inputBlocks
     ? inputBlocks.reduce((acc, ib) => {
         const group = getInputBlockData(ib.cid);
@@ -126,4 +110,4 @@ const ProgressBar: React.FC<{ groupName: string }> = ({ groupName }) => {
   );
 };
 
-export default ProgressBar;
+export default ProgressSidebar;

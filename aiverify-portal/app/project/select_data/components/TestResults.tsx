@@ -170,7 +170,7 @@ export default function TestResults({
                       key={result.id}
                       value={result.id}>
                       {result.name} -{' '}
-                      {new Date(result.created_at).toLocaleDateString()}
+                      {new Date(result.created_at).toLocaleString()}
                     </option>
                   ))}
                 </select>
@@ -182,15 +182,17 @@ export default function TestResults({
                   </svg>
                 </div>
               </div>
-              <Button
-                variant={ButtonVariant.OUTLINE}
-                hoverColor="var(--color-primary-500)"
-                textColor="white"
-                text="RUN TESTS"
-                size="xs"
-                pill
-                onClick={() => {}}
-              />
+              <Link
+                href={`/results/run?flow=${flow}&projectId=${projectId}&algorithmGid=${algorithm.gid}&algorithmCid=${algorithm.cid}${selectedModel ? `&modelId=${selectedModel.id}` : ''}`}>
+                <Button
+                  variant={ButtonVariant.OUTLINE}
+                  hoverColor="var(--color-primary-500)"
+                  textColor="white"
+                  text="RUN TESTS"
+                  size="xs"
+                  pill
+                />
+              </Link>
             </div>
           );
         })}

@@ -2,10 +2,10 @@
 
 import { getMDXComponent } from 'mdx-bundler/client';
 import React, { useMemo, useState } from 'react';
-import { InfoIcon } from '../../groups/[gid]/[group]/upload/utils/icons';
-import { useDeleteFairnessTree } from '@/app/inputs/fairnesstree/hooks/useDeleteFairnessTree';
-import { useFairnessTreeEdit } from '@/app/inputs/fairnesstree/hooks/useEditFairnessTree';
-import { useMDXBundle } from '@/app/inputs/fairnesstree/hooks/useMDXBundle';
+import { useDeleteFairnessTree } from '@/app/inputs/[gid]/[cid]/hooks/useDeleteFairnessTree';
+import { useFairnessTreeEdit } from '@/app/inputs/[gid]/[cid]/hooks/useEditFairnessTree';
+import { useMDXBundle } from '@/app/inputs/[gid]/[cid]/hooks/useMDXBundle';
+import { InfoIcon } from '@/app/inputs/groups/[gid]/[group]/upload/utils/icons';
 import { FairnessTree } from '@/app/inputs/utils/types';
 import { Modal } from '@/lib/components/modal';
 import './DecisionTree.css';

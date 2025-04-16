@@ -15,7 +15,7 @@ export function transformStateToTemplateInput(state: {
   // Construct pages array from layouts and widgets
   const pages = state.layouts.map((pageLayouts, pageIndex) => ({
     layouts: pageLayouts.map(
-      (layout): Layout => ({
+      (layout): Partial<Layout> => ({
         i: layout.i,
         x: layout.x,
         y: layout.y,
@@ -25,10 +25,6 @@ export function transformStateToTemplateInput(state: {
         maxH: layout.maxH ?? 36,
         minW: layout.minW ?? 1,
         minH: layout.minH ?? 1,
-        isDraggable: true,
-        isResizable: true,
-        resizeHandles: ['se', 'sw', 'nw', 'ne'],
-        isBounded: true,
         static: false,
       })
     ),

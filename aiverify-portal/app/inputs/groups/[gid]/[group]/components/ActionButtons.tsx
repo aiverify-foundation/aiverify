@@ -1,6 +1,5 @@
 'use client';
 import React, { useState, useTransition } from 'react';
-import { useInputBlockGroupData } from '@/app/inputs/context/InputBlockGroupDataContext';
 import { Button, ButtonVariant } from '@/lib/components/button';
 import { Modal } from '@/lib/components/modal';
 import { useInputBlockGroupSubmission } from '../upload/hooks/useUploadSubmission';
@@ -15,7 +14,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
   group,
 }: ActionButtonsProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const { submitInputBlockGroup: submitChecklist } =
     useInputBlockGroupSubmission();
 

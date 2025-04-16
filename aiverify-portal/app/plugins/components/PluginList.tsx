@@ -85,18 +85,32 @@ export default function PluginsList({ plugins }: Props) {
     if (activeFilters.length > 0) {
       searchPlugins = searchPlugins.filter((plugin) => {
         return activeFilters.every((filter) => {
-          switch (filter) {
-            case 'templates':
-              return plugin.templates.length > 0;
-            case 'widgets':
-              return plugin.widgets.length > 0;
-            case 'algorithms':
-              return plugin.algorithms.length > 0;
-            case 'inputBlocks':
-              return plugin.input_blocks.length > 0;
-            default:
-              return true;
+          // Handle category filters
+          if (filter === 'templates') return plugin.templates.length > 0;
+          if (filter === 'widgets') return plugin.widgets.length > 0;
+          if (filter === 'algorithms') return plugin.algorithms.length > 0;
+          if (filter === 'inputBlocks') return plugin.input_blocks.length > 0;
+
+          // Handle tag filters (those that start with "tag:")
+          if (filter.startsWith('tag:')) {
+            const tagToFilter = filter.substring(4); // Remove 'tag:' prefix
+            try {
+              const metaData = JSON.parse(plugin.meta);
+              return (
+                metaData.tags &&
+                Array.isArray(metaData.tags) &&
+                metaData.tags.includes(tagToFilter)
+              );
+            } catch (error) {
+              console.error(
+                'Error parsing plugin meta for tag filtering:',
+                error
+              );
+              return false;
+            }
           }
+
+          return true;
         });
       });
     }
@@ -153,7 +167,7 @@ export default function PluginsList({ plugins }: Props) {
         console.log('Loading state set to false');
         return filteredResults;
       });
-    }, 3000); // Delay of 5 seconds for suspense
+    }, 300); // Delay of 0.3 seconds for suspense
   };
 
   return (
@@ -168,6 +182,7 @@ export default function PluginsList({ plugins }: Props) {
             onFilter={handleFilter}
             onSort={handleSort}
             activeFilters={activeFilters}
+            plugins={plugins}
           />
           <div
             className="mt-2 flex-1 overflow-y-auto p-1 scrollbar-hidden"

@@ -258,67 +258,80 @@ export default function ClientSelectData({
       let type = 'Other';
       let name = cid;
 
-      // Special case for Process Checklists, which is a dropdown with multiple options but one label
-      // if (gid === 'aiverify.stock.process_checklist') {
-      //   type = 'Process Checklists';
+      // Check if this is a process checklist (pattern matching from the image)
+      if (
+        cid.includes('process_checklist') ||
+        cid.endsWith('_process_checklist')
+      ) {
+        // Group all process checklists under their parent group name
+        // Look for the required input block that would contain this checklist
+        const parentBlock = requiredInputBlocks.find(
+          (block) =>
+            block.group &&
+            (block.gid === 'aiverify.stock.process_checklist' ||
+              block.gid === 'aiverify.stock.veritas')
+        );
 
-      //   // For process checklists, find the checklist name based on id
-      //   if (id !== undefined) {
-      //     const checklist = allInputBlockGroups.find(
-      //       (c) => c.gid === gid && c.cid === cid && c.id === id
-      //     );
-      //     if (checklist) {
-      //       name = checklist.name || `${cid}`;
-      //       return { name, type };
-      //     }
-      //   }
-      //   return { name, type };
-      // }
+        if (parentBlock && parentBlock.group) {
+          type = parentBlock.group;
+        } else if (gid === 'aiverify.stock.process_checklist') {
+          type = 'AI Verify Process Checklists';
+        } else if (gid === 'aiverify.stock.veritas') {
+          type = 'Veritas Process Checklists';
+        }
 
-      // For other input blocks, find the matching required input block to get its display name
-      const requiredInputBlock = requiredInputBlocks.find(
-        (block) => block.gid === gid && block.cid === cid
-      );
+        // Format the name to be more readable (e.g., "accountability_process_checklist" -> "Accountability Process Checklist")
+        name = cid
+          .split('_')
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
+      } else {
+        // For other input blocks, find the matching required input block to get its display name
+        const requiredInputBlock = requiredInputBlocks.find(
+          (block) => block.gid === gid && block.cid === cid
+        );
 
-      // If we found a matching required input block, use its name as the category header
-      if (requiredInputBlock) {
-        type = requiredInputBlock.name;
+        // If we found a matching required input block, use its name as the category header
+        if (requiredInputBlock) {
+          type = requiredInputBlock.name;
 
-        // Now find the actual instance name based on id
-        if (id !== undefined) {
-          // Check in fairness trees
-          if (
-            gid === 'aiverify.stock.fairness_metrics_toolbox_for_classification'
-          ) {
-            const fairnessTree = allFairnessTrees.find(
-              (f) => f.gid === gid && f.cid === cid && f.id === id
+          // Now find the actual instance name based on id
+          if (id !== undefined) {
+            // Check in fairness trees
+            if (
+              gid ===
+              'aiverify.stock.fairness_metrics_toolbox_for_classification'
+            ) {
+              const fairnessTree = allFairnessTrees.find(
+                (f) => f.gid === gid && f.cid === cid && f.id === id
+              );
+              if (fairnessTree) {
+                name = fairnessTree.name || `${cid}`;
+                return { name, type };
+              }
+            }
+
+            // Check in other input block datas
+            const inputBlock = allInputBlockDatas.find(
+              (i) => i.gid === gid && i.cid === cid && i.id === id
             );
-            if (fairnessTree) {
-              name = fairnessTree.name || `${cid}`;
+            if (inputBlock) {
+              name = inputBlock.name || `${cid}`;
               return { name, type };
             }
           }
-
-          // Check in other input block datas
-          const inputBlock = allInputBlockDatas.find(
-            (i) => i.gid === gid && i.cid === cid && i.id === id
-          );
-          if (inputBlock) {
-            name = inputBlock.name || `${cid}`;
-            return { name, type };
-          }
-        }
-      } else {
-        // Fallback for blocks not in requiredInputBlocks
-        if (gid.includes('fairness')) {
-          type = 'Fairness Metrics';
-        } else if (gid.startsWith('aiverify.plugin.')) {
-          // Extract plugin name from gid
-          const pluginParts = gid.split('.');
-          if (pluginParts.length > 2) {
-            type = `${pluginParts[2].charAt(0).toUpperCase() + pluginParts[2].slice(1)} Plugin`;
-          } else {
-            type = 'Plugin';
+        } else {
+          // Fallback for blocks not in requiredInputBlocks
+          if (gid.includes('fairness')) {
+            type = 'Fairness Tree';
+          } else if (gid.startsWith('aiverify.plugin.')) {
+            // Extract plugin name from gid
+            const pluginParts = gid.split('.');
+            if (pluginParts.length > 2) {
+              type = `${pluginParts[2].charAt(0).toUpperCase() + pluginParts[2].slice(1)} Plugin`;
+            } else {
+              type = 'Plugin';
+            }
           }
         }
       }
@@ -462,15 +475,26 @@ export default function ClientSelectData({
   }
   console.log('backButtonLink', backButtonLink);
 
+  console.log('requiredinputblocks length', requiredInputBlocks.length);
+  console.log('selectedinputblocks length', selectedInputBlocks.length);
+  console.log(
+    'requiredInputBlocks.length === 0 || requiredInputBlocks.length === selectedInputBlocks.length',
+    requiredInputBlocks.length === 0 ||
+      requiredInputBlocks.length === selectedInputBlocks.length
+  );
+  console.log('hasValidationErrors', hasValidationErrors);
+  console.log('invalidInputBlocks.length', invalidInputBlocks.length);
+  console.log(
+    'flag',
+    requiredInputBlocks.length === 0 &&
+      !hasValidationErrors &&
+      invalidInputBlocks.length === 0
+  );
+
   // Get the selected model object
   const selectedModel = selectedModelId
     ? allModels.find((model) => model.id.toString() === selectedModelId)
     : undefined;
-
-  console.log('selectedModel', selectedModel);
-  console.log('selectedModelId', selectedModelId);
-  console.log('selectedTestResults', selectedTestResults);
-  console.log('selectedInputBlocks', selectedInputBlocks);
 
   return (
     <div className="flex max-w-[1000px] flex-col gap-6">
@@ -536,7 +560,7 @@ export default function ClientSelectData({
                       again or choose a different option from the dropdown.
                     </p>
 
-                    {/* Group validation errors by their input block types as shown in UserInputs.tsx */}
+                    {/* Group validation errors by their input block types */}
                     {(() => {
                       // Get unique types from invalidInputBlocks and sort them
                       const types = [
@@ -555,14 +579,46 @@ export default function ClientSelectData({
                           <ul className="ml-4 list-disc space-y-1">
                             {invalidInputBlocks
                               .filter((block) => block.type === type)
-                              .map((block, index) => (
-                                <li key={`invalid-${type}-${index}`}>
-                                  <span className="font-medium">
-                                    {block.name}
-                                  </span>
-                                  : {block.message}
-                                </li>
-                              ))}
+                              .map((block, index) => {
+                                // Format the message to match "0 out of X Checks done" pattern
+                                const formattedMessage = block.message.includes(
+                                  'Checks done'
+                                )
+                                  ? block.message
+                                  : (() => {
+                                      // Extract number of checks from the message if available
+                                      const checksMatch =
+                                        block.message.match(/(\d+)/);
+                                      if (checksMatch && checksMatch[1]) {
+                                        return `0 out of ${checksMatch[1]} Checks done`;
+                                      }
+                                      return block.message;
+                                    })();
+
+                                return (
+                                  <li key={`invalid-${type}-${index}`}>
+                                    {/* For process checklists, format as "name: message" */}
+                                    {block.name
+                                      .toLowerCase()
+                                      .includes('process_checklist') ||
+                                    block.name
+                                      .toLowerCase()
+                                      .includes('checklist') ? (
+                                      <>
+                                        {block.name.toLowerCase()}:{' '}
+                                        {formattedMessage}
+                                      </>
+                                    ) : (
+                                      <>
+                                        <span className="font-medium">
+                                          {block.name}
+                                        </span>
+                                        : {formattedMessage}
+                                      </>
+                                    )}
+                                  </li>
+                                );
+                              })}
                           </ul>
                         </div>
                       ));
@@ -586,7 +642,7 @@ export default function ClientSelectData({
           </Link>
         ) : null}
         {(requiredInputBlocks.length === 0 ||
-          requiredInputBlocks.length === selectedInputBlocks.length) &&
+          requiredInputBlocks.length <= selectedInputBlocks.length) &&
           !hasValidationErrors &&
           invalidInputBlocks.length === 0 && (
             <Button

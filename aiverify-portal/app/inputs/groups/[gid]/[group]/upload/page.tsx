@@ -4,9 +4,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import React, { useState, useTransition } from 'react';
+import { useInputBlockGroupData } from '@/app/inputs/context/InputBlockGroupDataContext';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import { Button, ButtonVariant } from '@/lib/components/button';
-import { useInputBlockGroupData } from '@/app/inputs/context/InputBlockGroupDataContext';
 import LayoutHeader from '../components/LayoutHeader';
 
 const UploadPage = () => {
@@ -17,7 +17,7 @@ const UploadPage = () => {
   const flow = searchParams.get('flow');
   const isProjectFlow = !!projectId;
   const { gid, group } = useInputBlockGroupData();
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   const handleMethodSelect = (method: string) => {
     setActiveCard(method);

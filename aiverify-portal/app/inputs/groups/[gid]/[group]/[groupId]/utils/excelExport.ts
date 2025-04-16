@@ -99,37 +99,42 @@ export async function createAndDownloadExcel(
               cell.font = font;
             }
           }
-          
+
           // Apply fill styles
           if (style.fill) {
             // Most common issue with Excel styling is with fill patterns
-            if (style.fill.type === 'pattern' && style.fill.pattern === 'solid') {
+            if (
+              style.fill.type === 'pattern' &&
+              style.fill.pattern === 'solid'
+            ) {
               // Ensure we have properly formatted color objects
-              const fgColor = style.fill.fgColor && style.fill.fgColor.argb 
-                ? style.fill.fgColor 
-                : { argb: 'FFFFFFFF' }; // Default to white
-              
-              const bgColor = style.fill.bgColor && style.fill.bgColor.argb 
-                ? style.fill.bgColor 
-                : { argb: 'FFFFFFFF' }; // Default to white
-              
+              const fgColor =
+                style.fill.fgColor && style.fill.fgColor.argb
+                  ? style.fill.fgColor
+                  : { argb: 'FFFFFFFF' }; // Default to white
+
+              const bgColor =
+                style.fill.bgColor && style.fill.bgColor.argb
+                  ? style.fill.bgColor
+                  : { argb: 'FFFFFFFF' }; // Default to white
+
               cell.fill = {
                 type: 'pattern',
                 pattern: 'solid',
                 fgColor: fgColor,
-                bgColor: bgColor
+                bgColor: bgColor,
               };
             } else {
               // For other fill types, try to use as is
               cell.fill = style.fill;
             }
           }
-          
+
           // Apply alignment
           if (style.alignment) {
             cell.alignment = style.alignment;
           }
-          
+
           // Apply borders
           if (style.border) {
             cell.border = style.border;
@@ -137,51 +142,54 @@ export async function createAndDownloadExcel(
         };
 
         // Process each row
-        sheetDef.rows.forEach((rowDef, rowIndex) => {
-          const rowNumber = rowIndex + 1;
-          
+        sheetDef.rows.forEach((rowDef) => {
           // Create an array of values for the row
-          const values = rowDef.cells.map(cell => cell.value);
-          
+          const values = rowDef.cells.map((cell) => cell.value);
+
           // Add the row to the worksheet
           const row = worksheet.addRow(values);
-          
+
           // Set row height if specified
           if (rowDef.height) {
             row.height = rowDef.height;
           }
-          
+
           // Apply styles to cells
           rowDef.cells.forEach((cellDef, colIndex) => {
             const cell = row.getCell(colIndex + 1);
             applyStyleToCell(cell, cellDef.style);
           });
-          
+
           // Handle merged cells
           if (rowDef.mergedCells) {
             // First, merge the cells
             worksheet.mergeCells(rowDef.mergedCells);
-            
+
             // Apply the styles to all cells in the merged range
             // This helps ensure consistent styling within the merged area
             try {
               const range = rowDef.mergedCells.split(':');
               if (range.length === 2) {
                 const startCell = worksheet.getCell(range[0]);
-                const endCell = worksheet.getCell(range[1]);
-                
+
                 // Extract the column and row from the cell references
                 // Convert the cell addresses to column/row indices
                 const startCellAddress = worksheet.getCell(range[0]).address;
                 const endCellAddress = worksheet.getCell(range[1]).address;
-                
+
                 // Parse the column letter and row from the address
                 const startColLetter = startCellAddress.replace(/[0-9]/g, '');
-                const startRowNum = parseInt(startCellAddress.replace(/[^0-9]/g, ''), 10);
-                
+                const startRowNum = parseInt(
+                  startCellAddress.replace(/[^0-9]/g, ''),
+                  10
+                );
+
                 const endColLetter = endCellAddress.replace(/[0-9]/g, '');
-                const endRowNum = parseInt(endCellAddress.replace(/[^0-9]/g, ''), 10);
-                
+                const endRowNum = parseInt(
+                  endCellAddress.replace(/[^0-9]/g, ''),
+                  10
+                );
+
                 // Convert column letters to column numbers
                 const colToNum = (col: string) => {
                   let result = 0;
@@ -190,24 +198,24 @@ export async function createAndDownloadExcel(
                   }
                   return result;
                 };
-                
+
                 const startColNum = colToNum(startColLetter);
                 const endColNum = colToNum(endColLetter);
-                
+
                 // Get the style from the first cell in the row
                 const styleName = rowDef.cells[0].style;
-                
+
                 // Apply that style to all cells in the merged range
                 if (styleName) {
                   // Apply to the start cell first (most important)
                   applyStyleToCell(startCell, styleName);
-                  
+
                   // Also apply to other cells in the range to ensure consistent styling
                   for (let row = startRowNum; row <= endRowNum; row++) {
                     for (let col = startColNum; col <= endColNum; col++) {
                       // Skip the start cell as we already styled it
                       if (row === startRowNum && col === startColNum) continue;
-                      
+
                       const cell = worksheet.getCell(row, col);
                       // For other cells in the range, focus on the fill style
                       // which is often the most visible aspect
@@ -254,4 +262,4 @@ export async function createAndDownloadExcel(
     console.error('Error during Excel creation:', error);
     return false;
   }
-} 
+}

@@ -1,6 +1,5 @@
 /** @type {import('next').NextConfig} */
 
-console.log('process.env.APIGW_HOST', process.env.APIGW_HOST);
 const nextConfig = {
   reactStrictMode: false,
   async rewrites() {

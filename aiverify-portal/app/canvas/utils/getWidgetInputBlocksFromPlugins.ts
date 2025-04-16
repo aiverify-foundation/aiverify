@@ -45,9 +45,9 @@ export function getWidgetInputBlocksFromPlugins(
   // go through all the widget dependencies and get the input blocks from the list of plugins
   for (const dependency of widget.dependencies) {
     console.log('Processing dependency for input blocks:', dependency);
-    const plugin = pluginsWithMdx.find((p) => p.gid === widget.gid);
+    const plugin = pluginsWithMdx.find((p) => p.gid === dependency.gid);
     if (!plugin) {
-      console.log('No plugin found for gid:', widget.gid);
+      console.log('No plugin found for gid:', dependency.gid);
       continue;
     }
 
@@ -59,6 +59,35 @@ export function getWidgetInputBlocksFromPlugins(
       inputBlocks.push(inputBlock);
     } else {
       console.log('No input block found for cid:', dependency.cid);
+    }
+  }
+
+  // If no algorithms were found using widget.gid, try using dependency.gid
+  if (inputBlocks.length === 0) {
+    console.log(
+      'No input blocks found using widget.gid, trying dependency.gid'
+    );
+
+    for (const dependency of widget.dependencies) {
+      console.log('Processing dependency with widget.gid:', widget.gid);
+      const plugin = pluginsWithMdx.find((p) => p.gid === widget.gid);
+      if (!plugin) {
+        console.log('No plugin found for widget gid:', widget.gid);
+        continue;
+      }
+
+      const inputBlock = plugin.input_blocks?.find(
+        (ib) => ib.cid === dependency.cid
+      );
+      if (inputBlock) {
+        console.log('Found input block using dependency.gid:', inputBlock);
+        inputBlocks.push(inputBlock);
+      } else {
+        console.log(
+          'No input block found for cid with widget.gid:',
+          widget.gid
+        );
+      }
     }
   }
 

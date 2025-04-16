@@ -113,7 +113,10 @@ type MdxComponentProps = MDXContentProps & {
     algo_cid: string,
     algo_gid: string | null
   ) => InputBlockDataPayload;
-  getResults: (algo_cid: string, algo_gid: string | null) => TestResultData | null;
+  getResults: (
+    algo_cid: string,
+    algo_gid: string | null
+  ) => TestResultData | null;
   getArtifacts: (gid: string, cid: string) => string[];
   getArtifactURL: (
     algo_cid: string,
@@ -251,6 +254,9 @@ function GridItemMain({
     // the mock data is used instead.
     if (testResultsUsed && testResultsUsed.length > 0) {
       return testResultsUsed.reduce<TestResultDataMapping>((acc, result) => {
+        // Use dependency's GID if available, otherwise fallback to widget's GID
+        const gid = result.gid || widget.gid;
+
         if (result.testResultId !== undefined) {
           const testResult = findTestResultById(
             allTestResultsOnSystem,
@@ -267,10 +273,10 @@ function GridItemMain({
               // Ensure outputData is an object before adding modelType
               if (typeof outputData === 'object' && outputData !== null) {
                 outputData.modelType = testResult.testArguments?.modelType;
-                acc[`${widget.gid}:${result.cid}`] = outputData;
+                acc[`${gid}:${result.cid}`] = outputData;
               } else {
                 // If outputData is not an object, create a new object with the original data and modelType
-                acc[`${widget.gid}:${result.cid}`] = {
+                acc[`${gid}:${result.cid}`] = {
                   output: testResult.output,
                   modelType: testResult.testArguments?.modelType,
                 };
@@ -278,7 +284,7 @@ function GridItemMain({
             } catch (error) {
               // If parsing fails, keep original structure and add modelType separately
               console.error('Error parsing testResult.output', error);
-              acc[`${widget.gid}:${result.cid}`] = {
+              acc[`${gid}:${result.cid}`] = {
                 output: testResult.output,
                 modelType: testResult.testArguments?.modelType,
               };
@@ -290,7 +296,7 @@ function GridItemMain({
               result.cid
             );
             if (mockData) {
-              acc[`${widget.gid}:${result.cid}`] = mockData.data;
+              acc[`${gid}:${result.cid}`] = mockData.data;
             }
           }
         } else {
@@ -300,7 +306,7 @@ function GridItemMain({
             result.cid
           );
           if (mockData) {
-            acc[`${widget.gid}:${result.cid}`] = mockData.data;
+            acc[`${gid}:${result.cid}`] = mockData.data;
           }
         }
         return acc;
@@ -321,6 +327,9 @@ function GridItemMain({
     // If no test result is found for an algo, the mock data artifacts are used instead
     if (testResultsUsed && testResultsUsed.length > 0) {
       return testResultsUsed.reduce<ArtifactsMapping>((acc, result) => {
+        // Use dependency's GID if available, otherwise fallback to widget's GID
+        const gid = result.gid || widget.gid;
+
         if (result.testResultId !== undefined) {
           const testResult = findTestResultById(
             allTestResultsOnSystem,
@@ -331,7 +340,7 @@ function GridItemMain({
               (artifactPath) =>
                 `${process.env.NEXT_PUBLIC_APIGW_HOST}/test_results/${result.testResultId}/artifacts/${artifactPath}`
             );
-            acc[`${widget.gid}:${result.cid}`] = artifactUrls;
+            acc[`${gid}:${result.cid}`] = artifactUrls;
           } else {
             const mockData = findMockDataByTypeAndCid(
               widget.mockdata || [],
@@ -339,7 +348,7 @@ function GridItemMain({
               result.cid
             );
             if (mockData && mockData.artifacts) {
-              acc[`${widget.gid}:${result.cid}`] = mockData.artifacts;
+              acc[`${gid}:${result.cid}`] = mockData.artifacts;
             }
           }
         } else {
@@ -349,7 +358,7 @@ function GridItemMain({
             result.cid
           );
           if (mockData && mockData.artifacts) {
-            acc[`${widget.gid}:${result.cid}`] = mockData.artifacts;
+            acc[`${gid}:${result.cid}`] = mockData.artifacts;
           }
         }
         return acc;
@@ -366,12 +375,13 @@ function GridItemMain({
   const inputBlocksWidgetData = useMemo(() => {
     if (inputBlockDatasUsed && inputBlockDatasUsed.length > 0) {
       return inputBlockDatasUsed.reduce<InputBlockDataMapping>((acc, data) => {
+        const gid = data.gid || widget.gid;
         if (data.inputBlockDataId !== undefined) {
           const inputBlockData = allInputBlockDatasOnSystem.find(
             (ib) => ib.id === data.inputBlockDataId
           );
           if (inputBlockData && inputBlockData.data) {
-            acc[`${widget.gid}:${data.cid}`] = inputBlockData.data;
+            acc[`${gid}:${data.cid}`] = inputBlockData.data;
           } else {
             const mockData = findMockDataByTypeAndCid(
               widget.mockdata || [],
@@ -379,7 +389,7 @@ function GridItemMain({
               data.cid
             );
             if (mockData && mockData.data) {
-              acc[`${widget.gid}:${data.cid}`] = mockData.data;
+              acc[`${gid}:${data.cid}`] = mockData.data;
             }
           }
         } else {
@@ -389,7 +399,7 @@ function GridItemMain({
             data.cid
           );
           if (mockData && mockData.data) {
-            acc[`${widget.gid}:${data.cid}`] = mockData.data;
+            acc[`${gid}:${data.cid}`] = mockData.data;
           }
         }
         return acc;
@@ -398,6 +408,7 @@ function GridItemMain({
     return {};
   }, [inputBlockDatasUsed]);
 
+  console.log('inputBlocksWidgetData', inputBlocksWidgetData);
   /**
    * Sets up a ResizeObserver to track the widget's dimensions
    * Updates the dimensions state when the widget is resized
@@ -642,7 +653,8 @@ function GridItemMain({
               inputBlockData={inputBlocksWidgetData}
               getIBData={(algo_cid: string, algo_gid: string | null) => {
                 const gid = algo_gid || widget.gid;
-                return inputBlocksWidgetData[`${gid}:${algo_cid}`];
+                const key = `${gid}:${algo_cid}`;
+                return inputBlocksWidgetData[key];
               }}
               getResults={(
                 algo_cid: string,
@@ -650,18 +662,18 @@ function GridItemMain({
               ) => {
                 const gid = algo_gid || widget.gid;
                 const key = `${gid}:${algo_cid}`;
-                
                 // If we've visited data selection page (testResultIds exists in URL)
                 // but no actual test results were selected for this algorithm,
                 // return null so the widget displays the "incomplete" message
-                if (hasVisitedDataSelection && 
-                    (!testResultsUsed || 
-                     !testResultsUsed.some(r => 
-                       r.cid === algo_cid && 
-                       r.testResultId !== undefined))) {
+                if (
+                  hasVisitedDataSelection &&
+                  (!testResultsUsed ||
+                    !testResultsUsed.some(
+                      (r) => r.cid === algo_cid && r.testResultId !== undefined
+                    ))
+                ) {
                   return null;
                 }
-                
                 return testResultWidgetData[key];
               }}
               getArtifacts={(gid: string, cid: string) => {

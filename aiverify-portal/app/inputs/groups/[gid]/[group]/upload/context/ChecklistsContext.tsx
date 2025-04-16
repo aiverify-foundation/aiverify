@@ -7,7 +7,6 @@ import React, {
   useCallback,
   useEffect,
 } from 'react';
-import { InputBlockGroup } from '@/app/inputs/utils/types';
 
 // Types
 interface Checklist {
