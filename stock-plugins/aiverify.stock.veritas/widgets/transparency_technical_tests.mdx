@@ -1,0 +1,243 @@
+import React from "react";
+import {
+  mockData,
+  safeGetArtifactURL,
+  SectionContainer,
+  SectionTitle,
+  SectionContent,
+  ImageWithFallback,
+} from "./veritas_components";
+
+export const cid = "veritastool";
+
+export const Section = ({ title, children }) => (
+  <SectionContainer>
+    <SectionTitle>{title}</SectionTitle>
+    <SectionContent>{children}</SectionContent>
+  </SectionContainer>
+);
+
+export const TransparencyTest = ({ props }) => {
+  const testResult = props.getResults ? props.getResults(cid) : null;
+  const data = testResult || mockData;
+
+  const transparency = data?.transparency || {};
+  const reportPlots = transparency?.report_plots || {};
+
+  // Helper function to safely get artifact URLs
+  const getImageUrl = (pathArray) => {
+    if (!pathArray || !Array.isArray(pathArray) || pathArray.length === 0)
+      return null;
+    return safeGetArtifactURL(props, cid, pathArray[0]);
+  };
+
+  return (
+    <div
+      style={{
+        padding: "20px"
+      }}
+    >
+      <h2 style={{ marginBottom: "20px" }}>
+        Model Transparency Analysis
+      </h2>
+
+      {/* Permutation Importance Section */}
+      <Section title="Permutation Importance">
+        <p style={{ marginBottom: "15px" }}>
+          The permutation feature importance measures the decrease in model score when a single feature is randomly shuffled
+          while keeping other features constant. A large decrease in model score indicates a relative large contribution of the feature.
+          The permutation importance plot below shows the top 10 highest contributing features and their relative percentage importance in descending order.
+          The most important feature is assigned the highest importance (100%) and all other variables are measured relative to the most important feature.
+        </p>
+
+        {reportPlots.permutation_importance && reportPlots.permutation_importance.length > 0 ? (
+          <div style={{ marginTop: "20px", textAlign: "center" }}>
+            <div style={{ fontWeight: "bold", marginBottom: "10px" }}>
+              Permutation Feature Importance
+            </div>
+            <ImageWithFallback
+              src={getImageUrl(reportPlots.permutation_importance)}
+              alt="Permutation Feature Importance"
+              height="400px"
+            />
+          </div>
+        ) : (
+          <p>Permutation importance analysis is not available for this project.</p>
+        )}
+      </Section>
+
+      {/* Partial Dependence Plot Section */}
+      <Section title="Partial Dependence Plot">
+        <p style={{ marginBottom: "15px" }}>
+          Partial dependence plot shows how the predicted outcome changes with the selected feature.
+        </p>
+
+        {reportPlots.partial_dependence && reportPlots.partial_dependence.length > 0 ? (
+          <div style={{ marginTop: "20px", textAlign: "center" }}>
+            <div style={{ fontWeight: "bold", marginBottom: "10px" }}>
+              Partial Dependence Plot
+            </div>
+            <ImageWithFallback
+              src={getImageUrl(reportPlots.partial_dependence)}
+              alt="Partial Dependence Plot"
+              height="400px"
+            />
+          </div>
+        ) : (
+          <p>Partial dependence plots are not available for this project.</p>
+        )}
+      </Section>
+
+      {/* Global Interpretability Section */}
+      <Section title="Global Interpretability Based on SHAP">
+        <p style={{ marginBottom: "15px" }}>
+          At a global level, the collective SHAP values show how much each predictor contributes, either positively or negatively, to the target variable.
+          In the summary plot below, variables are ranked in descending order. Each point represents an observation; the color indicates whether the value of
+          a certain feature is high (in red) or low (in blue). A negative SHAP value indicates negative impact while a positive SHAP value indicates a positive impact
+          on the predicted outcome.
+        </p>
+
+        {reportPlots.shap_summary && reportPlots.shap_summary.length > 0 ? (
+          <div style={{ marginTop: "20px", textAlign: "center" }}>
+            <div style={{ fontWeight: "bold", marginBottom: "10px" }}>
+              SHAP Summary Plot
+            </div>
+            <ImageWithFallback
+              src={getImageUrl(reportPlots.shap_summary)}
+              alt="SHAP Summary Plot"
+              height="400px"
+            />
+          </div>
+        ) : (
+          <p>Global interpretability analysis is not available for this project.</p>
+        )}
+
+        {/* If there's a table of global feature importance available */}
+        {transparency.shap_global_importance && (
+          <div style={{ marginTop: "20px", overflowX: "auto" }}>
+            <div style={{ fontWeight: "bold", marginBottom: "10px" }}>
+              SHAP Global Feature Importance
+            </div>
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                marginTop: "15px",
+                marginBottom: "25px",
+              }}
+            >
+              <thead>
+                <tr>
+                  <th style={{ padding: "8px 12px", textAlign: "left", borderBottom: "2px solid #ddd" }}>
+                    Feature
+                  </th>
+                  <th style={{ padding: "8px 12px", textAlign: "left", borderBottom: "2px solid #ddd" }}>
+                    SHAP Value
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(transparency.shap_global_importance).map(([feature, value]) => (
+                  <tr key={feature} style={{ borderBottom: "1px solid #ddd" }}>
+                    <td style={{ padding: "8px 12px" }}>{feature}</td>
+                    <td style={{ padding: "8px 12px" }}>{value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Section>
+
+      {/* Local Interpretability Section */}
+      <Section title="Local Interpretability Based on SHAP">
+        <p style={{ marginBottom: "15px" }}>
+          At a local level, each observation gets its own set of SHAP values. Shown in red are the variables that pushing the predictions higher,
+          while shown in blue are the variables pushing the predictions lower. E[f(x)] is the baseline ratio for selection while f(x)
+          is the sum of all SHAP values added to baseline for a particular customer.
+        </p>
+
+        {reportPlots.waterfall && reportPlots.waterfall.length > 0 ? (
+          <div style={{ marginTop: "20px", textAlign: "center" }}>
+            <div style={{ fontWeight: "bold", marginBottom: "10px" }}>
+              SHAP Waterfall Plot
+            </div>
+            <ImageWithFallback
+              src={getImageUrl(reportPlots.waterfall)}
+              alt="SHAP Waterfall Plot"
+              height="400px"
+            />
+          </div>
+        ) : (
+          <p>Local interpretability analysis is not available for this project.</p>
+        )}
+
+        {/* If there's a table of local feature importance available */}
+        {transparency.shap_local_importance && (
+          <div style={{ marginTop: "20px", overflowX: "auto" }}>
+            <div style={{ fontWeight: "bold", marginBottom: "10px" }}>
+              SHAP Local Feature Importance
+            </div>
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                marginTop: "15px",
+                marginBottom: "25px",
+              }}
+            >
+              <thead>
+                <tr>
+                  <th style={{ padding: "8px 12px", textAlign: "left", borderBottom: "2px solid #ddd" }}>
+                    Feature
+                  </th>
+                  <th style={{ padding: "8px 12px", textAlign: "left", borderBottom: "2px solid #ddd" }}>
+                    SHAP Value
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(transparency.shap_local_importance).map(([feature, value]) => (
+                  <tr key={feature} style={{ borderBottom: "1px solid #ddd" }}>
+                    <td style={{ padding: "8px 12px" }}>{feature}</td>
+                    <td style={{ padding: "8px 12px" }}>{value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Sample selection for local analysis, if available */}
+        {transparency.sample_selector && (
+          <div style={{ marginTop: "20px" }}>
+            <div style={{ fontWeight: "bold", marginBottom: "10px" }}>
+              Sample Selection
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <label htmlFor="sample-selector">Select a sample for local analysis:</label>
+              <select 
+                id="sample-selector" 
+                style={{ 
+                  padding: "8px 12px", 
+                  borderRadius: "4px", 
+                  border: "1px solid #ddd" 
+                }}
+              >
+                {transparency.sample_selector.map((sample, index) => (
+                  <option key={index} value={index}>
+                    Sample {index + 1}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
+      </Section>
+    </div>
+  );
+};
+
+<div>
+  <TransparencyTest props={props} />
+</div>

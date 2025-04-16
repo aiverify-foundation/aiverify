@@ -112,6 +112,7 @@ type inputBlock = {
   tags: string | null;
   description: string;
   group: string | null;
+  groupNumber: number | null;
   width: string;
   fullScreen: boolean;
   gid: string;

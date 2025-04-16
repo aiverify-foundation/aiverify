@@ -1,0 +1,16 @@
+{
+  "cid": "transparency_technical_tests",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 36,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Veritas Transparency Techical Tests",
+  "description": "Veritas Transparency Techical Tests",
+  "dependencies": [
+    {
+      "cid": "veritastool"
+    }
+  ]
+}

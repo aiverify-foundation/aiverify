@@ -1,0 +1,7 @@
+{
+  "cid": "export_process_checklists",
+  "name": "Export Process Checklists",
+  "description": "Utility to export all process checklists to Excel",
+  "group": "AI Verify Process Checklists",
+  "width": "xs"
+} 

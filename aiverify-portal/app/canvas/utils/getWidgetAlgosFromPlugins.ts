@@ -45,9 +45,9 @@ export function getWidgetAlgosFromPlugins(
   // go through all the widget dependencies and get the algos from the list of plugins
   for (const dependency of widget.dependencies) {
     console.log('Processing dependency:', dependency);
-    const plugin = pluginsWithMdx.find((p) => p.gid === widget.gid);
+    const plugin = pluginsWithMdx.find((p) => p.gid === dependency.gid);
     if (!plugin) {
-      console.log('No plugin found for gid:', widget.gid);
+      console.log('No plugin found for gid:', dependency.gid);
       continue;
     }
 
@@ -57,6 +57,31 @@ export function getWidgetAlgosFromPlugins(
       algos.push(algo);
     } else {
       console.log('No algorithm found for cid:', dependency.cid);
+    }
+  }
+
+  // If no algorithms were found using dependency.gid, try using widget.gid
+  if (algos.length === 0) {
+    console.log('No algorithms found using widget.gid, trying dependency.gid');
+
+    for (const dependency of widget.dependencies) {
+      console.log('Processing dependency with widget.gid:', widget.gid);
+      const plugin = pluginsWithMdx.find((p) => p.gid === widget.gid);
+      if (!plugin) {
+        console.log('No plugin found for widget gid:', widget.gid);
+        continue;
+      }
+
+      const algo = plugin.algorithms?.find((a) => a.cid === dependency.cid);
+      if (algo) {
+        console.log('Found algorithm using dependency.gid:', algo);
+        algos.push(algo);
+      } else {
+        console.log(
+          'No algorithm found for cid with dependency.gid:',
+          dependency.cid
+        );
+      }
     }
   }
 

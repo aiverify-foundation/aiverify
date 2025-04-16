@@ -2,7 +2,7 @@ import { DatasetUploader } from './components/datasetUploader';
 
 function UploadResultsPage() {
   return (
-    <div className="p-6">
+    <div className="mt-6">
       <DatasetUploader />
     </div>
   );

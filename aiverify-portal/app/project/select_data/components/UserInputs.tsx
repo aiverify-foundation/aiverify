@@ -1,27 +1,63 @@
 'use client';
 
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useState, useEffect } from 'react';
-import { useMDXBundle } from '@/app/inputs/checklists/[groupId]/[checklistId]/hooks/useMDXBundle';
-import { FairnessTreeModalWrapper } from '@/app/inputs/fairnesstree/components/ModalView';
-import { Checklist, FairnessTree } from '@/app/inputs/utils/types';
+import React, { useState, useEffect, useTransition } from 'react';
+import { FairnessTreeModalWrapper } from '@/app/inputs/[gid]/[cid]/components/ModalView';
+import { useMDXBundle } from '@/app/inputs/groups/[gid]/[group]/[groupId]/[cid]/hooks/useMDXBundle';
+import { FairnessTree } from '@/app/inputs/utils/types';
 import {
   ValidationResults,
   validateInputBlock,
   processBatchValidations,
 } from '@/app/project/select_data/utils/validationUtils';
+import { InputBlockGroupData } from '@/app/types';
 import { InputBlockData, InputBlock as ProjectInputBlock } from '@/app/types';
 import { Button, ButtonVariant } from '@/lib/components/button';
 import PluginInputModal from './PluginInputModal';
+
+// Add API call to submit input block group
+async function submitInputBlockGroup(data: {
+  gid: string;
+  group: string;
+  name: string;
+  input_blocks: Array<{
+    cid: string;
+    data?: Record<string, unknown>;
+  }>;
+}) {
+  try {
+    console.log('data:', data);
+    const response = await fetch('/api/input_block_data/groups', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Failed to submit input block group:', error);
+    return null;
+  }
+}
 
 interface UserInputsProps {
   projectId?: string | null;
   requiredInputBlocks: ProjectInputBlock[];
   onInputBlocksChange: (
-    inputBlocks: Array<{ gid: string; cid: string; id: number }>
+    inputBlocks: Array<{
+      gid: string;
+      cid: string;
+      id: number;
+      group: string | null;
+    }>
   ) => void;
-  allChecklists: Checklist[];
+  allInputBlockGroups: InputBlockGroupData[];
   allFairnessTrees: FairnessTree[];
   allInputBlockDatas: InputBlockData[];
   flow: string;
@@ -29,37 +65,19 @@ interface UserInputsProps {
   onValidationResultsChange?: (results: ValidationResults) => void;
 }
 
-interface GroupedChecklists {
-  [key: string]: Checklist[];
-}
-
 export default function UserInputs({
-  projectId,
   requiredInputBlocks,
   onInputBlocksChange,
-  allChecklists,
+  allInputBlockGroups,
   allFairnessTrees,
   allInputBlockDatas,
-  flow,
   initialInputBlocks = [],
   onValidationResultsChange,
 }: UserInputsProps) {
-  // Initialize selectedGroup based on initialInputBlocks
-  const initialGroup = (() => {
-    const checklistBlock = initialInputBlocks.find(
-      (block) => block.gid === 'aiverify.stock.process_checklist'
-    );
-    if (checklistBlock) {
-      const matchingChecklist = allChecklists.find(
-        (checklist) => checklist.id === checklistBlock.id
-      );
-      return matchingChecklist?.group || '';
-    }
-    return '';
-  })();
-
-  const [selectedGroup, setSelectedGroup] = useState<string>(initialGroup);
+  const [selectedGroup, setSelectedGroup] =
+    useState<InputBlockGroupData | null>(null);
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   // Initialize fairness trees based on initialInputBlocks
   const initialFairnessTrees = (() => {
@@ -134,15 +152,45 @@ export default function UserInputs({
     selectedPlugin?.cid
   );
 
-  // Group checklists by group name
-  const groupedChecklists = allChecklists.reduce((groups, checklist) => {
-    const groupName = checklist.group || 'Ungrouped';
-    if (!groups[groupName]) {
-      groups[groupName] = [];
-    }
-    groups[groupName].push(checklist);
-    return groups;
-  }, {} as GroupedChecklists);
+  // Group all input blocks by their group property
+  const groupedInputBlocks = requiredInputBlocks.reduce(
+    (acc, block) => {
+      if (!block.group) return acc;
+
+      if (!acc[block.group]) {
+        acc[block.group] = {
+          gid: block.gid,
+          cid: block.cid,
+          blocks: [],
+        };
+      }
+
+      acc[block.group].blocks.push(block);
+      return acc;
+    },
+    {} as Record<
+      string,
+      { gid: string; cid: string; blocks: ProjectInputBlock[] }
+    >
+  );
+
+  // Extract unique groups from the required input blocks
+  const requiredGroups = Object.keys(groupedInputBlocks);
+
+  // Find available input block groups for each required group
+  const availableGroupSelections = requiredGroups.map((groupName) => {
+    const groupData = allInputBlockGroups.filter((g) => g.group === groupName);
+    return {
+      groupName,
+      gid: groupedInputBlocks[groupName].gid,
+      availableGroups: groupData,
+    };
+  });
+
+  // Get non-grouped input blocks (like fairness trees and other inputs)
+  const nonGroupedInputBlocks = requiredInputBlocks.filter(
+    (block) => !block.group
+  );
 
   // State to track when to fetch fresh data
   const [shouldFetchData, setShouldFetchData] = useState(false);
@@ -154,7 +202,6 @@ export default function UserInputs({
 
       // Prevalidate all available input blocks for potential selection
       const allInputsToValidate = [
-        ...Object.values(groupedChecklists).flat(),
         ...allFairnessTrees,
         ...allInputBlockDatas,
       ].map((input) => ({
@@ -164,15 +211,26 @@ export default function UserInputs({
         id: input.id,
       }));
 
+      // Add group input blocks to validation
+      allInputBlockGroups.forEach((group) => {
+        if (group.input_blocks) {
+          group.input_blocks.forEach((ib) => {
+            allInputsToValidate.push({
+              gid: group.gid,
+              cid: ib.cid,
+              data: ib.data,
+              id: group.id,
+            });
+          });
+        }
+      });
+
       const results = await processBatchValidations(allInputsToValidate);
       setValidationResults(results);
-
-      // Don't call onValidationResultsChange here, let the dedicated effect handle it
-      // This avoids potential setState during render issues
     };
 
     prevalidateAllInputs();
-  }, [allInputBlockDatas]);
+  }, [allInputBlockDatas, allInputBlockGroups, allFairnessTrees]);
 
   // Simplified effect to handle selection changes
   useEffect(() => {
@@ -200,7 +258,6 @@ export default function UserInputs({
       };
     }
   }, [
-    // Use stable references without JSON.stringify
     selectedGroup,
     selectedFairnessTrees,
     selectedOtherInputs,
@@ -227,15 +284,28 @@ export default function UserInputs({
 
   // Update parent with all selected blocks
   const updateParentWithSelectedBlocks = (
-    newGroup: string,
+    newGroup: InputBlockGroupData | null,
     newFairnessTrees: { [key: string]: string } = selectedFairnessTrees,
     newOtherInputs: { [key: string]: string } = selectedOtherInputs
   ) => {
-    let selectedBlocks: Array<{ gid: string; cid: string; id: number }> = [];
+    let selectedBlocks: Array<{
+      gid: string;
+      cid: string;
+      id: number;
+      group: string | null;
+    }> = [];
 
     // Add selected checklists
-    if (newGroup && groupedChecklists[newGroup]) {
-      selectedBlocks = [...selectedBlocks, ...groupedChecklists[newGroup]];
+    if (newGroup) {
+      selectedBlocks = [
+        ...selectedBlocks,
+        ...newGroup.input_blocks.map((ib) => ({
+          gid: newGroup.gid,
+          cid: ib.cid,
+          id: newGroup.id,
+          group: newGroup.group,
+        })),
+      ];
     }
 
     // Add selected fairness trees
@@ -248,6 +318,7 @@ export default function UserInputs({
             gid,
             cid,
             id: tree.id,
+            group: null,
           });
         }
       }
@@ -261,6 +332,7 @@ export default function UserInputs({
           gid,
           cid,
           id: parseInt(inputId),
+          group: null,
         });
       }
     });
@@ -269,16 +341,30 @@ export default function UserInputs({
   };
 
   // Handle checklist group selection
-  const handleGroupSelection = (groupName: string) => {
-    // If the group is the same, do nothing to avoid unnecessary updates
-    if (selectedGroup === groupName) {
+  const handleGroupSelection = (groupName: string, groupId: string) => {
+    // Find the selected group in allInputBlockGroups
+    const group = allInputBlockGroups.find((g) => g.id?.toString() === groupId);
+
+    if (!group) {
+      console.error('Unable to find group with ID:', groupId);
       return;
     }
 
-    setSelectedGroup(groupName);
+    // If the group is the same, do nothing to avoid unnecessary updates
+    if (selectedGroup?.id === group.id) {
+      return;
+    }
 
-    // Notify parent of selection change directly without using setTimeout
-    const selectedBlocks = groupName ? groupedChecklists[groupName] || [] : [];
+    setSelectedGroup(group);
+
+    // Create selected blocks from the group's input blocks
+    const selectedBlocks = group.input_blocks.map((ib) => ({
+      gid: group.gid,
+      cid: ib.cid,
+      id: group.id || 0,
+      group: group.group,
+    }));
+
     onInputBlocksChange(selectedBlocks);
   };
 
@@ -402,6 +488,47 @@ export default function UserInputs({
     }
   };
 
+  // Function to handle creating a new input block group
+  const handleAddNewInputBlockGroup = (groupName: string, gid: string) => {
+    console.log('Creating new input block group:', { groupName, gid });
+
+    // Verify the gid is not empty
+    if (!gid) {
+      console.error(
+        'Cannot create input block group: gid is empty for group',
+        groupName
+      );
+      alert(`Cannot create input block: Missing information for ${groupName}`);
+      return;
+    }
+
+    startTransition(async () => {
+      const payload = {
+        gid: gid,
+        group: groupName,
+        name: groupName,
+        input_blocks: [],
+      };
+
+      console.log('Submitting payload:', payload);
+
+      const res = await submitInputBlockGroup(payload);
+
+      console.log('API response:', res);
+      if (res && res['id']) {
+        const encodedGID = encodeURIComponent(gid);
+        const encodedGroup = encodeURIComponent(groupName);
+        const groupId = res['id'];
+
+        // Redirect to the edit page for the newly created input block group
+        window.location.href = `/inputs/groups/${encodedGID}/${encodedGroup}/${groupId}`;
+      } else {
+        console.error('Failed to create input block group. API response:', res);
+        alert('Failed to create input block. Please try again.');
+      }
+    });
+  };
+
   return (
     <div className="rounded-lg border border-secondary-500 bg-secondary-950 p-6">
       <div>
@@ -412,23 +539,32 @@ export default function UserInputs({
       </div>
 
       <div className="space-y-4">
-        {/* Process Checklists */}
-        {requiredInputBlocks.some(
-          (block) => block.gid === 'aiverify.stock.process_checklist'
-        ) && (
-          <div className="flex items-center justify-between gap-4">
-            <label className="w-64 text-white">Process Checklists</label>
+        {/* Group-based Input Blocks */}
+        {availableGroupSelections.map((groupSelection) => (
+          <div
+            className="flex items-center justify-between gap-4"
+            key={groupSelection.groupName}>
+            <label className="w-64 text-white">
+              {groupSelection.groupName}
+            </label>
             <div className="relative flex-1">
               <select
-                value={selectedGroup}
-                onChange={(e) => handleGroupSelection(e.target.value)}
+                value={
+                  selectedGroup &&
+                  selectedGroup.group === groupSelection.groupName
+                    ? selectedGroup.id?.toString() || ''
+                    : ''
+                }
+                onChange={(e) =>
+                  handleGroupSelection(groupSelection.groupName, e.target.value)
+                }
                 className="w-full cursor-pointer appearance-none rounded bg-secondary-900 p-3 pr-10 text-gray-300">
                 <option value="">Choose User Input</option>
-                {Object.entries(groupedChecklists).map(([groupName]) => (
+                {groupSelection.availableGroups.map((group) => (
                   <option
-                    key={groupName}
-                    value={groupName}>
-                    {groupName}
+                    key={group.id}
+                    value={group.id?.toString() || ''}>
+                    {group.name}
                   </option>
                 ))}
               </select>
@@ -440,22 +576,32 @@ export default function UserInputs({
                 </svg>
               </div>
             </div>
-            <Link
-              href={`/inputs/checklists/upload?flow=${flow}${projectId ? `&projectId=${projectId}` : ''}`}>
-              <Button
-                variant={ButtonVariant.OUTLINE}
-                hoverColor="var(--color-primary-500)"
-                textColor="white"
-                text="ADD INPUT"
-                size="xs"
-                pill
-              />
-            </Link>
+            <Button
+              variant={ButtonVariant.OUTLINE}
+              hoverColor="var(--color-primary-500)"
+              textColor="white"
+              text={
+                isPending
+                  ? 'CREATING...'
+                  : !groupSelection.gid
+                    ? 'MISSING GID'
+                    : 'ADD INPUT'
+              }
+              size="xs"
+              pill
+              onClick={() =>
+                handleAddNewInputBlockGroup(
+                  groupSelection.groupName,
+                  groupSelection.gid
+                )
+              }
+              disabled={isPending || !groupSelection.gid}
+            />
           </div>
-        )}
+        ))}
 
         {/* Fairness Trees */}
-        {requiredInputBlocks
+        {nonGroupedInputBlocks
           .filter(
             (block) =>
               block.gid ===
@@ -511,7 +657,7 @@ export default function UserInputs({
           })}
 
         {/* Other Input Blocks */}
-        {requiredInputBlocks
+        {nonGroupedInputBlocks
           .filter(
             (block) =>
               block.gid !== 'aiverify.stock.process_checklist' &&

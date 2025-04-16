@@ -417,6 +417,7 @@ class PluginStore:
                         # tags=meta.tags,
                         gid=plugin_meta.gid,
                         group=meta.group,
+                        groupNumber=meta.groupNumber,
                         width=meta.width,
                         fullscreen=meta.fullScreen,
                     )

@@ -20,7 +20,7 @@
         "CLASSIFICATION",
         "--ground_truth_path",
         "data/pickle_pandas_fashion_mnist_annotated_labels_10.sav",
-        "--ground_truth_label",
+        "--ground_truth",
         "label",
         "--file_name_label",
         "file_name",

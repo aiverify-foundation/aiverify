@@ -1,0 +1,8 @@
+{
+  "cid": "generic_process_checklist",
+  "name": "Generic Process Checklist",
+  "description": "Generic Veritas Process Checklist",
+  "group": "Veritas Process Checklists",
+  "groupNumber": 1,
+  "width": "xl"
+}

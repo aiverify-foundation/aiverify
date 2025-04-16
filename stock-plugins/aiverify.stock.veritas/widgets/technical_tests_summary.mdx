@@ -1,0 +1,88 @@
+import React, { useState } from 'react';
+import { MyPageTitle3 } from './misc.mdx';
+
+export const TechnicalSummary = ({props}) => {
+  const [data, setData] = useState({
+    numSuccess: 0,
+    numFailed: 0,
+    numSkipped: 0,
+    numTests: 0,
+  })
+  
+  useState(() => {
+    let numSuccess = 0;
+    let numFailed = 0;
+    let numTests = 0;
+    for (let test of props.tests) {
+      numTests++;
+      switch (test.status) {
+        case 'Success':
+          numSuccess++;
+          break;
+        default:
+          numFailed++;
+          break;
+      }
+    }
+    setData({
+      numSuccess,
+      numFailed,
+      numSkipped: 0,
+      numTests,
+    })
+
+  }, [props.tests])
+
+  const styles = {
+    container: {
+      width: '100%',
+      display: 'flex',
+      rowGap: '10px',
+      justifyContent: 'space-between',
+      marginTop: '10px'
+    },
+    box: {
+      height: '80px',
+      backgroundColor: '#eff3f8',
+      width: '32%',
+      padding: '5px',
+      fontWeight: 600,
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    label: {
+      textTransform: 'uppercase',
+      fontSize: '15px',
+    },
+    stat: {
+      color: 'black',
+    }
+  }
+
+  return (
+    <div style={styles.container}>
+      <div style={styles.box}>
+        <div style={{ ...styles.label, color:'green' }}>Tests Successfully Run</div>
+        <div style={styles.stat}>{data.numSuccess} / {data.numTests}</div>
+      </div>
+      <div style={styles.box}>
+        <div style={{ ...styles.label, color:'red' }}>Tests Failed to Complete</div>
+        <div style={styles.stat}>{data.numFailed} / {data.numTests}</div>
+      </div>
+      <div style={styles.box}>
+        <div style={styles.label}>Tests Skipped By User</div>
+        <div style={styles.stat}>{data.numSkipped} / {data.numTests}</div>
+      </div>
+    </div>
+  )
+
+}
+
+<MyPageTitle3 title="Technical Tests" />
+{props.tests && (
+  <div>
+    <TechnicalSummary props={props} />
+  </div>
+)}

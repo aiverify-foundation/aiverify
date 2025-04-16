@@ -213,15 +213,18 @@ function TemplateCards({ templates, projectId, flow }: TemplateCardsProps) {
               </button>
             )}
 
-            {/* Always show the edit icon */}
-            <button
-              onClick={(e) => handleEditTemplate(template, e)}
-              className="transition-colors hover:fill-primary-100">
-              <RiPencilFill
-                size={27}
-                className="fill-primary-300 dark:fill-primary-300"
-              />
-            </button>
+            {/* Conditionally show edit icon based on plugin status and flow */}
+            {/* Show if: in project flow OR (in template flow AND not from plugin) */}
+            {(isProjectFlow || !template.fromPlugin) && (
+              <button
+                onClick={(e) => handleEditTemplate(template, e)}
+                className="transition-colors hover:fill-primary-100">
+                <RiPencilFill
+                  size={27}
+                  className="fill-primary-300 dark:fill-primary-300"
+                />
+              </button>
+            )}
 
             {/* Only show clone and delete in non-project flow */}
             {!isProjectFlow && (

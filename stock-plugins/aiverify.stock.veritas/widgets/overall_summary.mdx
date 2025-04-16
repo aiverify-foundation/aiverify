@@ -1,0 +1,63 @@
+import React, { useEffect, useState } from 'react';
+import { PieChart, renderCustomizedPieLabel } from 'aiverify-shared-library/charts';
+import { getCompletionStatistics, responseOptions } from './summary_compute.ts';
+import { styles } from './styles.mdx';
+
+export const MySummary = ({ getIBData }) => {
+  const [ stats, setStats ] = useState(null);
+  const [ chartData, setChartData ] = useState([]);
+
+  useEffect(() => {
+    // console.log(inputBlockData)
+    const stats = getCompletionStatistics(getIBData);
+    const totals = stats["totals"];
+    const chartData = [];
+    for (let opt of responseOptions) {
+      chartData.push({
+        name: opt,
+        value: totals[`num${opt.replaceAll(/\s+/g,"")}`]
+      })
+    }
+    setStats(totals);
+    setChartData(chartData);
+  }, [getIBData])
+
+  return (
+    <>
+      <div style={{ width:'100%' }}>
+        <div style={{ display:'flex' }}>
+          {stats && <div style={{ flexGrow:1, textAlign:'justify', marginRight:'5px' }}>
+            <b>The company has completed the process checklist of {stats["totalQuestions"]} process checks, of which:</b>
+            <ul style={{ ...styles.ul, marginTop:'5px' }}>
+              <li><b>{stats.numYes} process checks</b> are indicated as "Yes", meaning that there is documentary evidence for the implementation of these criteria.</li>
+              <li><b>{stats.numNo} process checks</b> are indicated as "No". As these process checks have not been implemented, there could be a potential risk that the company needs to assess and/or mitigate<sup>1</sup>.</li>
+              <li><b>{stats.numNotApplicable} process checks</b> are indicated as "Not Applicable"<sup>2</sup>.</li>
+            </ul>
+            <div style={{ fontSize:'13px' }}>
+              <sup>1</sup>The company should periodically review that the reason(s) for not implementing the process checks remains valid and aligned with company's values, objectives and regulatory requirements.
+            </div>
+            <div style={{ fontSize:'13px' }}>
+              <sup>2</sup>If the operating environment or model changes, company should assess whether these process checks would become relevant.
+            </div>
+          </div>}
+          <div style={{ width:'400px', flexShrink:0, height:'300px' }}>
+            <PieChart
+              pies={[{
+                dataKey:"value",
+                data:chartData,
+                innerRadius:40,
+                outerRadius:120,
+                labelLine:false,
+                label:renderCustomizedPieLabel
+              }]}
+            />
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
+<div style={{ width: props.width, fontSize:'15px' }}>
+  <MySummary getIBData={props.getIBData} />
+</div>

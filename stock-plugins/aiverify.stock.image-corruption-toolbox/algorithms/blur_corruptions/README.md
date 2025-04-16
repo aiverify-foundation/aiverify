@@ -17,7 +17,7 @@
 Each test algorithm can now be installed via pip and run individually.
 
 ```sh
-pip install aiverify-blur-corruptions==2.0.0a1
+pip install aiverify-blur-corruptions
 ```
 
 ## Example Usage
@@ -34,7 +34,7 @@ python -m aiverify_blur_corruptions \
   --model_path $root_path/pipeline/multiclass_classification_image_mnist_fashion \
   --model_type CLASSIFICATION \
   --ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
-  --ground_truth_label label \
+  --ground_truth label \
   --file_name_label file_name \
   --set_seed 10
 ```
@@ -73,7 +73,7 @@ python -m aiverify_blur_corruptions \
   --model_path $root_path/pipeline/multiclass_classification_image_mnist_fashion \
   --model_type CLASSIFICATION \
   --ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
-  --ground_truth_label label \
+  --ground_truth label \
   --file_name_label file_name \
   --set_seed 10
   --corruptions gaussian_blur defocus_blur
@@ -99,7 +99,7 @@ python -m aiverify_blur_corruptions \
   --model_path $root_path/pipeline/multiclass_classification_image_mnist_fashion \
   --model_type CLASSIFICATION \
   --ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
-  --ground_truth_label label \
+  --ground_truth label \
   --file_name_label file_name \
   --set_seed 10
   --gaussian_blur_sigma 1.0 2.0 3.0
@@ -189,9 +189,9 @@ source .venv/bin/activate
 
 # install plugin
 cd aiverify/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions/
-pip install -e .
+pip install .
 
-python -m aiverify_blur_corruptions --data_path  <data_path> --model_path <model_path> --model_type CLASSIFICATION --ground_truth_path <ground_truth_path> --ground_truth_label <str> --file_name_label <str> --set_seed <int>
+python -m aiverify_blur_corruptions --data_path  <data_path> --model_path <model_path> --model_type CLASSIFICATION --ground_truth_path <ground_truth_path> --ground_truth <str> --file_name_label <str> --set_seed <int>
 ```
 
 ### Build Plugin
@@ -215,7 +215,7 @@ pytest .
 In the aiverify root directory, run the below command to build the docker image
 
 ```sh
-docker build -t aiverify-blur-corruptions:v2.0.0a1 -f stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions/Dockerfile .
+docker build -t aiverify-blur-corruptions -f stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions/Dockerfile .
 ```
 
 Run the below bash script to run the algorithm
@@ -225,12 +225,12 @@ Run the below bash script to run the algorithm
 docker run \
   -v $(pwd)/stock-plugins/user_defined_files:/input \
   -v $(pwd)/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions/output:/app/aiverify/output \
-  aiverify-blur-corruptions:v2.0.0a1 \
+  aiverify-blur-corruptions \
   --data_path /input/data/raw_fashion_image_10 \
   --model_path /input/pipeline/multiclass_classification_image_mnist_fashion \
   --model_type CLASSIFICATION \
   --ground_truth_path /input/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
-  --ground_truth_label label \
+  --ground_truth label \
   --file_name_label file_name \
   --set_seed 10
 ```
@@ -242,5 +242,5 @@ If the algorithm runs successfully, the results of the test will be saved in an 
 Run the following steps to execute the unit and integration tests inside the `tests/` folder
 
 ```sh
-docker run --entrypoint python3 aiverify-blur-corruptions:v2.0.0a1 -m pytest .
+docker run --entrypoint python3 aiverify-blur-corruptions -m pytest .
 ```

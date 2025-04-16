@@ -70,7 +70,7 @@ const CanvasHeader = ({ project }: CanvasHeaderProps) => {
             </li>
             <li className="border-b border-secondary-300 py-2">
               <Link
-                href="/data"
+                href="/datasets"
                 className="block hover:text-secondary-300">
                 Data
               </Link>
