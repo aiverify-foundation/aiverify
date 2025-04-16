@@ -1,0 +1,24 @@
+{
+  "cid": "pro_competitive_algo_UR_widget",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 1,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Pro-Competitive Algorithms - User Response",
+  "description": "This widget is used to display user responses for the Pro-Competitive Algorithms (Competition) process checklist.",
+  "dynamicHeight": true,
+  "dependencies": [
+    {
+      "cid": "pro_competitive_algo"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "InputBlock",
+      "cid": "pro_competitive_algo",
+      "datapath": "pro_competitive_algo.sample.json"
+    }
+  ]
+}
