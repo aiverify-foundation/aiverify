@@ -33,15 +33,6 @@ echo "Listing 100 largest packages"
 dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n | tail -n 100
 df -h
 
-# echo "Identifying top 10 largest packages"
-# top_10_packages=$(dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n | tail -n 10 | awk '{print $2}')
-# echo "Top 10 largest packages: $top_10_packages"
-
-# echo "Removing top 10 largest packages"
-# for package in $top_10_packages; do
-#     sudo apt-get remove -y $package
-# done
-
 echo "Removing other large packages"
 sudo apt-get remove -y '^ghc-8.*'
 sudo apt-get remove -y '^dotnet-.*'

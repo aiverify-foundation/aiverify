@@ -25,7 +25,7 @@ docker buildx create --name mybuilder --use
 # Inspect the builder instance
 docker buildx inspect --bootstrap
 
-echo "Build and push image $IMAGE_NAME..."
+echo "Build and push image name=$IMAGE_NAME tag=$TAG target=$TARGET tag_suffix=$TAG_SUFFIX..."
 
 # Build and push the image for both amd64 and arm64 platforms
 if [ -n "$TARGET" ]; then
