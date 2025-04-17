@@ -74,7 +74,8 @@ After deploying AI Verify, verify that all components are running correctly.
 3. **Access AI Verify**: Depending on your setup, access AI Verify via the exposed service (e.g., using the service's external IP or port-forwarding).
 
    ```bash
-   kubectl port-forward svc/portal -n aiverify 3000:3000 
+   kubectl port-forward svc/portal -n aiverify 3000:3000 & \
+   kubectl port-forward svc/apigw -n aiverify 4000:4000 &
    ```
 
    Then, open your browser and navigate to [`http://localhost:3000`](http://localhost:3000).
