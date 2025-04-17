@@ -1,0 +1,20 @@
+export const cid = "fairness_metrics_toolbox_for_classification"
+export const gid = "aiverify.stock.fairness_metrics_toolbox_for_classification"
+
+{props.getResults(cid, gid)?(
+  <>
+    <div style={{width:"100%"}}>
+      <b>The fairness test shows how correctly your model has predicted the selected sensitive feature(s) (Selected: {props.getResults(cid, gid).sensitive_feature.join(", ")}).</b>
+      <br/>
+      The displayed metric(s) are derived from the fairness decision tree's selection. Each bar corresponds to a unique combination of subgroups within the selected sensitive feature(s). The graph's length indicates the magnitude of accuracy/error made by your model while predicting the outcomes. 
+    </div>
+  </>
+):(
+<>
+  No data  
+</>
+)}
+
+
+
+
