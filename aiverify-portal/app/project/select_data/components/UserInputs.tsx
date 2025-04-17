@@ -73,6 +73,8 @@ export default function UserInputs({
   allInputBlockDatas,
   initialInputBlocks = [],
   onValidationResultsChange,
+  projectId,
+  flow,
 }: UserInputsProps) {
   const [selectedGroup, setSelectedGroup] =
     useState<InputBlockGroupData | null>(null);
@@ -521,7 +523,25 @@ export default function UserInputs({
         const groupId = res['id'];
 
         // Redirect to the edit page for the newly created input block group
-        window.location.href = `/inputs/groups/${encodedGID}/${encodedGroup}/${groupId}`;
+        // Add flow and projectId query parameters if they exist
+        let url = `/inputs/groups/${encodedGID}/${encodedGroup}/${groupId}`;
+        
+        // Check if flow and projectId are provided in the props
+        const queryParams = new URLSearchParams();
+        if (flow) {
+          queryParams.append('flow', flow);
+        }
+        if (projectId) {
+          queryParams.append('projectId', projectId);
+        }
+        
+        // Append query parameters if any exist
+        const queryString = queryParams.toString();
+        if (queryString) {
+          url += `?${queryString}`;
+        }
+        
+        window.location.href = url;
       } else {
         console.error('Failed to create input block group. API response:', res);
         alert('Failed to create input block. Please try again.');
