@@ -29,7 +29,7 @@ As a AI Verify stock-plugin, this updates the existing [Veritas Toolkit](https:/
 The easiest way to install veritastool is to download it from [`PyPI`](https://pypi.org/project/aiverify-veritastool/). It's going to install the library itself and its prerequisites as well. It is suggested to create virtual environment with requirements.txt file first.
 
 ```sh
-pip install aiverify-veritastool==2.0.0a2
+pip install aiverify-veritastool==2.0.0
 ```
 
 ## Migrating from the existing Veritas Toolkit
