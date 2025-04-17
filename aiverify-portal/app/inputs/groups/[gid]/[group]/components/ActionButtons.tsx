@@ -1,4 +1,5 @@
 'use client';
+import { useSearchParams } from 'next/navigation';
 import React, { useState, useTransition } from 'react';
 import { Button, ButtonVariant } from '@/lib/components/button';
 import { Modal } from '@/lib/components/modal';
@@ -15,11 +16,24 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
 }: ActionButtonsProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [, startTransition] = useTransition();
-  const { submitInputBlockGroup: submitChecklist } =
-    useInputBlockGroupSubmission();
+  const { submitInputBlockGroup: submitChecklist } = useInputBlockGroupSubmission();
+  const searchParams = useSearchParams();
+  const projectId = searchParams.get('projectId');
+  const flow = searchParams.get('flow');
 
   const encodedGroup = encodeURIComponent(group);
   const encodedGID = encodeURIComponent(gid);
+
+  // Helper to build URLs with query parameters
+  const buildUrlWithParams = (baseUrl: string) => {
+    if (!projectId && !flow) return baseUrl;
+    
+    const params = new URLSearchParams();
+    if (projectId) params.append('projectId', projectId);
+    if (flow) params.append('flow', flow);
+    
+    return `${baseUrl}?${params.toString()}`;
+  };
 
   const addNewChecklist = () => {
     // TODO: handle errors
@@ -33,7 +47,8 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
       console.log('res:', res);
       if (res && res['id']) {
         const groupId = res['id'];
-        window.location.href = `/inputs/groups/${encodedGID}/${encodedGroup}/${groupId}`;
+        const url = buildUrlWithParams(`/inputs/groups/${encodedGID}/${encodedGroup}/${groupId}`);
+        window.location.href = url;
       }
     });
   };
@@ -68,7 +83,8 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
           secondaryBtnLabel="Create New"
           onPrimaryBtnClick={() => {
             setIsModalOpen(false);
-            window.location.href = `/inputs/groups/${encodedGID}/${encodedGroup}/upload/excel`;
+            const url = buildUrlWithParams(`/inputs/groups/${encodedGID}/${encodedGroup}/upload/excel`);
+            window.location.href = url;
           }}
           onSecondaryBtnClick={() => {
             setIsModalOpen(false);

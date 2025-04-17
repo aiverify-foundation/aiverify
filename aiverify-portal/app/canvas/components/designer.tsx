@@ -643,7 +643,7 @@ function Designer(props: DesignerProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  console.log('allPluginsWithMdx', allPluginsWithMdx);
+  //console.log('allPluginsWithMdx', allPluginsWithMdx);
 
   // Determines the back button link based on the current user flow
   let backButtonLink = `/templates?flow=${flow}&projectId=${project?.id}`;
@@ -678,7 +678,7 @@ function Designer(props: DesignerProps) {
   } else {
     backButtonLink = `/project/select_data?flow=${flow}&projectId=${project?.id}`;
   }
-  console.log('backButtonLink', backButtonLink);
+  //console.log('backButtonLink', backButtonLink);
 
   /**
    * Handles the start of a resize operation on a grid item
@@ -1334,7 +1334,7 @@ function Designer(props: DesignerProps) {
     </section>
   );
 
-  console.log('state', state);
+  //console.log('state', state);
 
   // Update the Next button to use navigateToNextStep
   const handleNextClick = () => {

@@ -1,6 +1,6 @@
 // import { useParams } from 'next/navigation';
 import { debounce } from 'lodash';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import React, {
   createContext,
   useContext,
@@ -90,6 +90,8 @@ export type InputBlockGroupDataContextType = {
   newGroupData: InputBlockGroupDataUpdate;
   updateNewGroupData: (cid: string, data: InputBlockDataPayload) => void;
   saveNewGroupData: () => Promise<void>;
+  projectId: string | null;
+  flow: string | null;
 };
 
 const InputBlockGroupDataContext = createContext<
@@ -105,6 +107,10 @@ export const InputBlockGroupDataProvider: React.FC<{
     groupId: string | undefined;
     cid: string | undefined;
   }>();
+  const searchParams = useSearchParams();
+  const projectId = searchParams.get('projectId');
+  const flow = searchParams.get('flow');
+  
   const { gid, group, cid } = params;
   const groupId = params.groupId ? parseInt(params.groupId) : undefined;
   const [inputBlocks, setInputBlocks] = useState<InputBlock[]>([]);
@@ -301,6 +307,8 @@ export const InputBlockGroupDataProvider: React.FC<{
         newGroupData,
         updateNewGroupData,
         saveNewGroupData,
+        projectId,
+        flow,
       }}>
       {children}
     </InputBlockGroupDataContext.Provider>
