@@ -32,17 +32,17 @@ spec:
           image: valkey/valkey:8
           ports:
             - containerPort: 6379
-          livenessProbe:
-            exec:
-              command:
-                - valkey-cli
-                - ping
-            initialDelaySeconds: 30
-            periodSeconds: 10
-          readinessProbe:
-            exec:
-              command:
-                - valkey-cli
-                - ping
-            initialDelaySeconds: 30
-            periodSeconds: 10
+          # livenessProbe:
+          #   exec:
+          #     command:
+          #       - valkey-cli
+          #       - ping
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 10
+          # readinessProbe:
+          #   exec:
+          #     command:
+          #       - valkey-cli
+          #       - ping
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 10
