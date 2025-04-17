@@ -1,7 +1,7 @@
 {
     "gid": "aiverify.stock.veritas",
     "cid": "veritastool",
-    "version": "2.0.0a2",
+    "version": "2.0.0",
     "startTime": "2025-03-17T00:25:28.940227",
     "timeTaken": 0.0,
     "testArguments": {
