@@ -47,4 +47,4 @@ spec:
             - name: APIGW_HOST
               value: "http://apigw.aiverify.svc.cluster.local:4000"
             - name: NEXT_PUBLIC_APIGW_HOST
-              value: "http://apigw.testing:4000"
+              value: "http://127.0.0.1:4000"
