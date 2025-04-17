@@ -232,7 +232,7 @@ export function usePrintable(options: UsePrintableOptions = {}) {
 
               // Skip this item if it doesn't contain visual elements
               const hasVisualContent =
-                element.querySelectorAll('svg, canvas').length > 0 ||
+                element.querySelectorAll('svg, canvas, table').length > 0 ||
                 /<img[^>]+src=(['"])(https?:\/\/[^'"]+)\1[^>]*>/i.test(
                   element.innerHTML || ''
                 ) ||

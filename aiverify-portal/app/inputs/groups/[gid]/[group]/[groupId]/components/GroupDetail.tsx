@@ -1,5 +1,5 @@
 'use client';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useMemo } from 'react';
 import * as ReactJSXRuntime from 'react/jsx-runtime';
 // import { useChecklists } from '@/app/inputs/context/ChecklistsContext';
@@ -95,6 +95,9 @@ const GroupDetail: React.FC<{
 }> = ({ group }) => {
   // const { setSelectedChecklist } = useChecklists();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const projectId = searchParams.get('projectId');
+  const flow = searchParams.get('flow');
 
   // Sort checklists by the predefined order based on cid
   // const sortedChecklists = useMemo(() => {
@@ -111,9 +114,24 @@ const GroupDetail: React.FC<{
     const selectedInputBlock = sortedList.find((x) => x.cid === cid);
     if (selectedInputBlock) {
       // setSelectedChecklist(selectedInputBlock);
-      router.push(
-        `/inputs/groups/${group.gid}/${group.group}/${group.id}/${cid}`
-      );
+      let url = `/inputs/groups/${group.gid}/${group.group}/${group.id}/${cid}`;
+      
+      // Preserve query parameters if they exist
+      const queryParams = new URLSearchParams();
+      if (flow) {
+        queryParams.append('flow', flow);
+      }
+      if (projectId) {
+        queryParams.append('projectId', projectId);
+      }
+      
+      // Append query parameters if any exist
+      const queryString = queryParams.toString();
+      if (queryString) {
+        url += `?${queryString}`;
+      }
+      
+      router.push(url);
     }
   };
 
