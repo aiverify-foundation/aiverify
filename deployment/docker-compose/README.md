@@ -32,7 +32,7 @@ The valid docker profiles are:
 The API Gateway is core service and always enabled regardless of profile. To only run the API Gateway, just run docker compose without specifying profile:
 
 ```sh
-docker-compose -d
+docker-compose up -d
 ```
 
 ## Running the Portal
