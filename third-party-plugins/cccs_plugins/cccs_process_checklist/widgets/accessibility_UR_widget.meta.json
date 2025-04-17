@@ -1,0 +1,24 @@
+{
+  "cid": "accessibility_UR_widget",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 1,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Accessibility - User Response",
+  "description": "This widget is used to display user responses for the Accessibility (Competition) process checklist.",
+  "dynamicHeight": true,
+  "dependencies": [
+    {
+      "cid": "accessibility"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "InputBlock",
+      "cid": "accessibility",
+      "datapath": "accessibility.sample.json"
+    }
+  ]
+}

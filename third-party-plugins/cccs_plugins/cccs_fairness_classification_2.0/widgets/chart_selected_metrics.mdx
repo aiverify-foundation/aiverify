@@ -1,0 +1,54 @@
+import { useEffect, useState } from 'react';
+export const cid = "fairness_metrics_toolbox_for_classification"
+export const ib_cid = "fairness_tree"
+export const gid = "aiverify.stock.fairness_metrics_toolbox_for_classification"
+import { MetricBarChart } from './metricbarchart.mdx';
+import { MetricBarChart2 } from './metricbarchart2.mdx';
+
+
+export const MetricsChart = ({ id, data, results, width, height }) => {
+
+  let metrics_map = {
+    'False Negative Rate Parity': "False Negative Rate",
+    "False Positive Rate Parity": "False Positive Rate",
+    "False Discovery Rate Parity": "False Discovery Rate",
+    "False Omission Rate Parity": "False Omission Rate",
+    "True Positive Rate Parity / Equal Opportunity": "True Positive Rate",
+    "True Negative Rate Parity": "True Negative Rate",
+    "Positive Predictive Value Parity": "Positive Predictive Value Parity",
+    "Negative Predictive Value Parity": "Negative Predictive Value Parity",
+    "Equal Parity": "Equal Selection Parity",
+    "Disparate Impact": "Disparate Impact",
+  };
+
+  return (
+    <div style={{ width, height }}>
+    {
+      data.metrics.map(metric => 
+        metric == "Equal Parity" || metric == "Disparate Impact" ?
+          <MetricBarChart2
+            key={`${id}-${metric}`}
+            metric={metrics_map[metric]}
+            width={width}
+            height={height / data.metrics.length}
+            data={results}
+          /> : <MetricBarChart
+            key={`${id}-${metric}`}
+            metric={metrics_map[metric]}
+            width={width}
+            height={height / data.metrics.length}
+            data={results}
+          />
+      )
+    }
+    </div>
+  )
+}
+
+
+<MetricsChart
+  data={props.getIBData(ib_cid, gid)}
+  results={props.getResults(cid, gid)}
+  width={props.width}
+  height={props.height}
+/>

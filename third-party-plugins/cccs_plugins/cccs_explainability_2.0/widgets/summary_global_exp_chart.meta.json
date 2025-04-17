@@ -1,0 +1,31 @@
+{
+  "cid": "summary_global_exp_chart",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 12,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Bar Chart (Summary)",
+  "description": "To generate bar chart, interpretation and recommendations for explainability testing",
+  "dependencies": [
+    {
+      "cid": "aiverify_shap_toolbox",
+      "gid": "aiverify.stock.shap_toolbox"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "Algorithm",
+      "cid": "aiverify_shap_toolbox",
+      "datapath": "shap_toolbox.sample.json"
+    }
+  ],
+  "properties": [
+    {
+      "key": "topNFeatures",
+      "helper": "To show the top N features in the chart",
+      "default": "20"
+    }
+  ]
+}
