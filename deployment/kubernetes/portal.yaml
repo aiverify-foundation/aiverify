@@ -31,18 +31,18 @@ spec:
           image: ghcr.io/aiverify-foundation/aiverify-portal
           ports:
             - containerPort: 3000
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 3000
-            initialDelaySeconds: 30
-            periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 3000
-            initialDelaySeconds: 30
-            periodSeconds: 10
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: 3000
+          #   initialDelaySeconds: 60
+          #   periodSeconds: 10
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: 3000
+          #   initialDelaySeconds: 60
+          #   periodSeconds: 10
           env:
             - name: APIGW_HOST
               value: "http://apigw.aiverify.svc.cluster.local:4000"
