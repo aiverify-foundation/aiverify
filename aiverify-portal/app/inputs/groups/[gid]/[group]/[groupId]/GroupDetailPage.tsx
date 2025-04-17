@@ -1,18 +1,15 @@
 'use client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import Fuse from 'fuse.js';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Suspense, useMemo, useState, useEffect } from 'react';
+import { Suspense, useState } from 'react';
 import ChecklistsFilters from '@/app/inputs/components/FilterButtons';
-// import { useChecklists } from '@/app/inputs/context/ChecklistsContext';
 import { useInputBlockGroupData } from '@/app/inputs/context/InputBlockGroupDataContext';
 import { ChevronLeftIcon } from '@/app/inputs/utils/icons';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import ActionButtons from '../components/ActionButtons';
 import GroupDetail from './components/GroupDetail';
 import GroupHeader from './components/GroupNameHeader';
-import ProgressBar from './components/ProgressSidebar';
+import ProgressSidebar from './components/ProgressSidebar';
 import SplitPane from './components/SplitPane';
 
 const queryClient = new QueryClient({
@@ -25,8 +22,7 @@ const queryClient = new QueryClient({
 });
 
 export default function GroupDetailPage() {
-  const { gid, group, groupId, groupDataList, setName, currentGroupData } =
-    useInputBlockGroupData();
+  const { gid, group, setName, currentGroupData } = useInputBlockGroupData();
   // const { selectedGroup, checklists, setSelectedGroup } = useChecklists();
   // console.log('checklist', checklists);
   // const pathname = usePathname();
@@ -53,8 +49,8 @@ export default function GroupDetailPage() {
   // }, [groupIdFromURL, selectedGroup, setSelectedGroup]);
 
   // Search and sort state
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState('date-desc');
+  const [, setSearchQuery] = useState('');
+  const [, setSortBy] = useState('date-desc');
 
   // // Initialize Fuse search
   // const fuse = useMemo(() => {
@@ -157,7 +153,7 @@ export default function GroupDetailPage() {
             <SplitPane
               leftPane={
                 <div className="h-auto">
-                  <ProgressBar groupName={currentGroupData.group} />
+                  <ProgressSidebar />
                 </div>
               }
               rightPane={

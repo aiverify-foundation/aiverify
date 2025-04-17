@@ -22,6 +22,14 @@ const configFileNameMapping: Record<string, string> = {
     'config_organisational_considerations',
 };
 
+// Helper function to safely convert any value to string
+function safeToString(value: any): string {
+  if (value === undefined || value === null) {
+    return '';
+  }
+  return String(value);
+}
+
 export async function exportToExcel(
   groupName: string,
   // checklists: any[],
@@ -293,15 +301,13 @@ export async function exportToExcel(
             const completedValue = ib.data[completedKey] || '';
             const elaborationValue = ib.data[elaborationKey] || '';
 
-            // Replace <br> tags with newlines
-            const formattedCompletedValue = completedValue.replace(
-              /<br\s*\/?>/g,
-              '\n'
-            );
-            const formattedElaborationValue = elaborationValue.replace(
-              /<br\s*\/?>/g,
-              '\n'
-            );
+            // Replace <br> tags with newlines - safely convert to string first
+            const formattedCompletedValue = safeToString(
+              completedValue
+            ).replace(/<br\s*\/?>/g, '\n');
+            const formattedElaborationValue = safeToString(
+              elaborationValue
+            ).replace(/<br\s*\/?>/g, '\n');
 
             const processRow = worksheet.addRow([
               pid,
@@ -343,7 +349,8 @@ export async function exportToExcel(
       const summaryRow = worksheet.addRow([summaryValue]);
       // Merge cells for testable criteria content
       worksheet.mergeCells(`A${rowIndex}:F${rowIndex}`);
-      summaryRow.height = calculateRowHeight(summaryValue);
+      // Safely convert summaryValue to string for calculating row height
+      summaryRow.height = calculateRowHeight(safeToString(summaryValue));
       // Apply style to testable criteria content row
       applyStyleToRow(summaryRow, styles.oddRow);
       rowIndex++;
@@ -383,7 +390,7 @@ function applyStyleToRow(row: ExcelJS.Row, style: any) {
   });
 }
 
-// Helper function to calculate row height based on content length
+// Helper function to calculate row height based on content
 function calculateRowHeight(content: string): number {
   if (!content) return 20; // Default height
 

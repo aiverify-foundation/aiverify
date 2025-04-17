@@ -5,13 +5,13 @@ import Link from 'next/link';
 import { useParams, usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect, useRef } from 'react';
+import { useInputBlockGroupData } from '@/app/inputs/context/InputBlockGroupDataContext';
+import { InputBlockDataPayload } from '@/app/types';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import { Modal } from '@/lib/components/modal';
 // import { useChecklists } from '../../..//upload/context/ChecklistsContext';
-import { useInputBlockGroupData } from '@/app/inputs/context/InputBlockGroupDataContext';
 import LayoutHeader from '../../../components/LayoutHeader';
 import ChecklistDetail from './components/ChecklistDetail';
-import { InputBlockDataPayload } from '@/app/types';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -140,7 +140,7 @@ export default function ChecklistDetailPage() {
   //   checklists,
   //   selectedChecklist,
   // } = useChecklists();
-  const { gid, group, newGroupData, updateNewGroupData, saveNewGroupData } =
+  const { gid, group, newGroupData, updateNewGroupData } =
     useInputBlockGroupData();
 
   // see if redundant
@@ -189,6 +189,10 @@ export default function ChecklistDetailPage() {
     // }
     updateNewGroupData(params.cid, {});
     setShowClearModal(false);
+    setTimeout(() => {
+      // Use history API for more reliable refresh
+      window.location.href = window.location.href;
+    }, 1000);
   };
 
   // Find the checklist by its ID to ensure it is selected

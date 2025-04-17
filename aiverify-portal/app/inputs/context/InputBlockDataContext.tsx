@@ -1,7 +1,6 @@
 import { useParams, useSearchParams } from 'next/navigation';
-import React, { use, createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 // import { InputBlock } from '@/app/types';
-import { getPlugin } from '@/lib/fetchApis/getAllPlugins';
 
 type InputBlockDataType = {
   [key: string]: unknown;

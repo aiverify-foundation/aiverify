@@ -1,13 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-  useMemo,
-} from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import * as ReactJSXRuntime from 'react/jsx-runtime';
 import { useInputBlockGroupData } from '@/app/inputs/context/InputBlockGroupDataContext';
 import { Modal } from '@/lib/components/modal';
@@ -39,11 +33,7 @@ const ChecklistDetail: React.FC<ChecklistDetailProps> = ({ cid, gid }) => {
   }, [currentGroupData]);
   // console.log('ibdata: ', ibdata);
 
-  const {
-    data: mdxBundle,
-    isLoading: isLoadingMDX,
-    error: mdxError,
-  } = useMDXBundle(gid, cid);
+  const { data: mdxBundle } = useMDXBundle(gid, cid);
   // console.log('mdxBundle', mdxBundle);
 
   const [localData, setLocalData] = useState(ibdata?.ibdata.data || {});
@@ -81,6 +71,10 @@ const ChecklistDetail: React.FC<ChecklistDetailProps> = ({ cid, gid }) => {
     const clearedData = {};
     setLocalData(clearedData);
     setInputBlockData(cid, clearedData);
+    setTimeout(() => {
+      // Use history API for more reliable refresh
+      window.location.href = window.location.href;
+    }, 1000);
   };
 
   const MDXComponent = React.useMemo(() => {
@@ -170,13 +164,10 @@ const ChecklistDetail: React.FC<ChecklistDetailProps> = ({ cid, gid }) => {
           Last updated: {new Date(groupData.updated_at).toLocaleString()}
         </p>
       </div>
-
       <MDXComponent
-        data={localData}
+        data={localData as Record<string, string>} // Ensure data is cast to the correct type
         onChangeData={handleDataChange}
       />
-
-      {/* Clear Fields Confirmation Modal */}
       {showClearModal && (
         <Modal
           heading="Confirm Clear"

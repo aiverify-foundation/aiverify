@@ -3,9 +3,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Link from 'next/link';
 import React from 'react';
+import { useInputBlockGroupData } from '@/app/inputs/context/InputBlockGroupDataContext';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import ChecklistDetail from './components/ChecklistDetail';
-import { useInputBlockGroupData } from '@/app/inputs/context/InputBlockGroupDataContext';
 
 const queryClient = new QueryClient({
   defaultOptions: {

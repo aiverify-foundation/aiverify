@@ -97,7 +97,7 @@ export default async function CanvasPage(props: UrlSearchParams) {
       projectInfo: template.projectInfo,
       created_at: template.created_at,
       updated_at: template.updated_at,
-    } as TemplateOutput;
+    } as unknown as TemplateOutput;
   } else {
     notFound();
   }

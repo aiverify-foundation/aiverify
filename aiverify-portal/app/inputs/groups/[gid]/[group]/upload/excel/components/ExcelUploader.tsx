@@ -21,13 +21,6 @@ interface ChecklistSubmission {
   data: Record<string, string>;
 }
 
-// Define the error interface
-interface SubmissionError {
-  message?: string;
-  statusCode?: number;
-  details?: unknown;
-}
-
 // Define an interface for the input block data structure
 interface InputBlockData {
   id: string;
@@ -56,8 +49,7 @@ const ExcelUploader = () => {
     'aiverify.stock.process_checklist',
     'export_process_checklists'
   );
-  const { gid, group, groupDataList, setInputBlockData } =
-    useInputBlockGroupData();
+  const { gid, group, groupDataList } = useInputBlockGroupData();
 
   const { submitInputBlockGroup: submitChecklist } =
     useInputBlockGroupSubmission();

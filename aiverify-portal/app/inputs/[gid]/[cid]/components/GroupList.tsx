@@ -3,8 +3,8 @@ import Fuse from 'fuse.js';
 import dynamic from 'next/dynamic';
 import React, { useMemo, useState } from 'react';
 import * as ReactJSXRuntime from 'react/jsx-runtime';
+import { useMDXSummaryBundle } from '@/app/inputs/[gid]/[cid]/hooks/useMDXSummaryBundle';
 import ChecklistsFilters from '@/app/inputs/components/FilterButtons';
-import { useMDXSummaryBundle } from '@/app/inputs/fairnesstree/hooks/useMDXSummaryBundle';
 import { FairnessTree } from '@/app/inputs/utils/types';
 import { Card } from '@/lib/components/card/card';
 

@@ -117,7 +117,7 @@ export const InputBlockGroupDataProvider: React.FC<{
     group: group,
     input_blocks: [],
   });
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   useEffect(() => {
     console.log('InputBlockGroupDataProvider', gid, group);
@@ -185,13 +185,13 @@ export const InputBlockGroupDataProvider: React.FC<{
           }
           return response.json();
         })
-        .then((data) => {
+        .then(() => {
           // console.log('Successfully saved input block data:', data);
         })
         .catch((error) => {
           console.error('Error saving input block data:', error);
         });
-    }, 3000),
+    }, 1000),
     []
   );
   const setInputBlockData = (cid: string, data: InputBlockDataPayload) => {

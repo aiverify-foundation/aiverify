@@ -1,11 +1,17 @@
 // ActionButtons.tsx
 'use client';
+import { useParams } from 'next/navigation';
 import React, { useState } from 'react';
 import { Button, ButtonVariant } from '@/lib/components/button';
 import { FairnessTreeUploadModal } from './FairnessTreeUploadModal';
 
 const ActionButtons: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const params = useParams();
+  const gid = params.gid as string;
+  const cid = params.cid as string;
+  console.log('gid', gid);
+  console.log('cid', cid);
 
   return (
     <div className="flex">
@@ -20,8 +26,8 @@ const ActionButtons: React.FC = () => {
       <FairnessTreeUploadModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        gid="aiverify.stock.fairness_metrics_toolbox_for_classification" // Replace with actual gid
-        cid="fairness_tree" // Replace with actual cid
+        gid={gid}
+        cid={cid}
       />
     </div>
   );

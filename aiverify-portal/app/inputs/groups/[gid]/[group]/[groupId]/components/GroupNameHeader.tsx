@@ -25,14 +25,14 @@ const GroupHeader = ({
   const [groupName, setGroupName] = useState(initialGroupName);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
-  const [isSaving, setIsSaving] = useState(false);
+  const [, setIsSaving] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [isExportModalVisible, setIsExportModalVisible] = useState(false);
   const [selectedExportFormat, setSelectedExportFormat] = useState<
     'json' | 'xlsx'
   >('json');
   const [isDownloading, setIsDownloading] = useState(false);
-  const [setConfigFiles] = useState<Record<string, string>>({});
+  const [] = useState<Record<string, string>>({});
 
   // const { checklists, setChecklists, setSelectedGroup } = useChecklists();
   const { groupId, group, currentGroupData } = useInputBlockGroupData();
@@ -229,11 +229,11 @@ const GroupHeader = ({
       {isEditing ? (
         <form
           id="edit-name-form"
-          action={() => {
+          onSubmit={(e) => {
+            e.preventDefault();
             console.log('onSubmit:', groupName);
-            // e.preventDefault();
-            // handleSubmit();
             setIsSaving(true);
+            // Call updateGroupName immediately without any debouncing
             updateGroupName(groupName);
             setIsEditing(false);
           }}
@@ -248,9 +248,7 @@ const GroupHeader = ({
           />
           <button
             type="submit"
-            className="text-white hover:text-primary-500"
-            // disabled={editGroupMutation.isPending || isSaving}
-          >
+            className="text-white hover:text-primary-500">
             Save
           </button>
           <button
