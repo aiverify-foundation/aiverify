@@ -6,7 +6,7 @@ The AI Verify Toolkit is an open-source, [extensible](introduction/extensibility
 
 ## How does the toolkit work?
 
-The toolkit can used flexibly to generate report including creating and filling process checklists, running technical tests via CLI or UI (Portal). The generated results can be used across reports, which can either use a standard reporting template or a customized report.
+The toolkit can used be flexibly to generate report including creating and filling process checklists, running technical tests via CLI or UI (Portal). The generated results can be used across reports, which can either use a standard reporting template or a customized report.
 
 To help companies align their reports with the AI Verify Testing Framework, the toolkit also comes with a set of report templates, which pre-defines the report layout, technical tests and process checks needed.
 
