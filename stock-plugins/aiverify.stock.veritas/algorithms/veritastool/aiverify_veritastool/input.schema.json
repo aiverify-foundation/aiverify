@@ -3,9 +3,6 @@
     "description": "Schema for Veritas fairness assessment input parameters",
     "type": "object",
     "required": [
-        "protected_features",
-        "privileged_groups",
-        "positive_label",
         "model_type"
     ],
     "properties": {
