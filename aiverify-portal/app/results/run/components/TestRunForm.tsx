@@ -9,10 +9,12 @@ import {
   ArrayFieldTemplateItemType,
   WidgetProps,
   ErrorSchema,
+  WrapIfAdditionalTemplateProps,
+  ADDITIONAL_PROPERTY_FLAG,
 } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 import { useRouter } from 'next/navigation';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import useSubmitTest from '@/app/results/run/hooks/useSubmitTest';
 import { Algorithm, Plugin } from '@/app/types';
 import { Icon, IconName } from '@/lib/components/IconSVG';
@@ -349,6 +351,166 @@ function CustomSelectWidget(props: WidgetProps) {
   );
 }
 
+const WrapIfAdditionalTemplate = (props: WrapIfAdditionalTemplateProps) => {
+  const {
+    id,
+    label,
+    onKeyChange,
+    onDropPropertyClick,
+    schema,
+    children,
+    uiSchema,
+    registry,
+    classNames,
+    style,
+  } = props;
+  const { RemoveButton } = registry.templates.ButtonTemplates;
+  const additional = ADDITIONAL_PROPERTY_FLAG in schema;
+
+  if (!additional) {
+    return <div>{children}</div>;
+  }
+
+  return (
+    <div
+      className={classNames}
+      style={style}>
+      <div className="grid grid-cols-12 gap-4">
+        <div className="col-span-5 mt-2">
+          <input
+            className="form-control"
+            type="text"
+            id={`${id}-key`}
+            onBlur={function (event) {
+              onKeyChange(event.target.value);
+            }}
+            defaultValue={label}
+          />
+        </div>
+        <div className="form-additional col-span-5">{children}</div>
+        <div className="col-span-2 mt-2">
+          <button
+            type="button"
+            className="ml-2 rounded bg-[var(--color-danger)] px-2 py-1 text-white"
+            onClick={onDropPropertyClick(label)}>
+            ✕
+          </button>
+        </div>
+        {/* <RemoveButton
+          onClick={onDropPropertyClick(label)}
+          uiSchema={uiSchema}
+        /> */}
+      </div>
+    </div>
+  );
+};
+
+// Custom field templates to handle specific fields
+const customFieldTemplate = (props: FieldTemplateProps) => {
+  const { id, label, required, children, rawErrors, schema, uiSchema, hidden } =
+    props;
+
+  // Don't render labels for array items as they'll get their own labels
+  const isArrayItem =
+    id.includes('_') &&
+    id.split('_').length > 2 &&
+    !isNaN(Number(id.split('_').pop()));
+
+  if (hidden) {
+    return <div className="hidden">{children}</div>;
+  }
+
+  // Skip rendering labels for array fields since they're handled by ArrayFieldTemplate
+  // const isArray = schema.type === 'array';
+
+  // Skip rendering labels for array items or nested objects
+  // if (isArrayItem || isArray) {
+  //   // return <div className="w-full">{children}</div>;
+  //   return (
+  //     <WrapIfAdditionalTemplate {...props}>
+  //       <div className="w-full">{children}</div>
+  //     </WrapIfAdditionalTemplate>
+  //   );
+  // }
+
+  // Default rendering for all other fields
+  return (
+    <WrapIfAdditionalTemplate {...props}>
+      <div className="mb-4">
+        {!uiSchema?.['ui:hidden'] && (
+          <label className="mb-2 block font-medium text-white">
+            {schema.title || label}
+            {required && (
+              <span className="ml-1 text-[var(--color-danger)]">*</span>
+            )}
+          </label>
+        )}
+        {schema.description && (
+          <p className="mb-1 mt-1 text-sm text-[var(--color-primary-300)]">
+            {schema.description}
+          </p>
+        )}
+        {children}
+
+        {/* {rawErrors && rawErrors.length > 0 && (
+            <div className="mt-1 text-sm text-[var(--color-danger)]">
+              {rawErrors.map((error: string, i: number) => (
+                <div key={i}>{error}</div>
+              ))}
+            </div>
+          )} */}
+      </div>
+    </WrapIfAdditionalTemplate>
+  );
+};
+
+// Custom array field template
+const customArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
+  // console.log('props:', props);
+  return (
+    <div className="array-field-container">
+      {/* {props.canAdd && (
+          <div className="array-field-title mb-2">
+            <span className="font-medium text-white">{props.title}</span>
+            {props.required && (
+              <span className="ml-1 text-[var(--color-danger)]">*</span>
+            )}
+          </div>
+        )}
+        {props.schema.description && (
+          <p className="mt-1 text-sm text-[var(--color-primary-300)]">
+            {props.schema.description}
+          </p>
+        )} */}
+      {props.items.map((element: ArrayFieldTemplateItemType) => (
+        <div
+          key={element.key}
+          className="flex space-x-2">
+          <div className="w-[80%]">{element.children}</div>
+          {element.hasRemove && (
+            <div className="mt-9 flex-none">
+              <button
+                type="button"
+                className="ml-2 rounded bg-[var(--color-danger)] px-2 py-1 text-white"
+                onClick={element.onDropIndexClick(element.index)}>
+                ✕
+              </button>
+            </div>
+          )}
+        </div>
+      ))}
+      {props.canAdd && (
+        <button
+          type="button"
+          className="mb-2 mt-2 rounded bg-[var(--color-primary-500)] px-3 py-1 text-white"
+          onClick={props.onAddClick}>
+          + Add
+        </button>
+      )}
+    </div>
+  );
+};
+
 interface TestRunFormProps {
   plugins: Plugin[];
   models: Array<{ filename: string; name: string }>;
@@ -478,6 +640,9 @@ export default function TestRunForm({
   const [formData, setFormData] = useState<FormState>({
     algorithmArgs: {},
   });
+  const [algorithmArgs, setAlgorithmArgs] = useState<Record<string, unknown>>(
+    {}
+  );
   const [error, setError] = useState<string | null>(null);
   const [isServerActive] = useState<boolean>(initialServerActive);
   const [showModal, setShowModal] = useState(!initialServerActive);
@@ -687,23 +852,35 @@ export default function TestRunForm({
   const handleAlgorithmParamChange = (e: IChangeEvent) => {
     // Check if the algorithm parameters form is valid
     const isValid = e.errors?.length === 0;
-    setIsAlgorithmFormValid(isValid);
-    setAlgorithmFormErrors(e.errorSchema);
-
-    if (algorithmFormTimer.current) {
-      clearTimeout(algorithmFormTimer.current);
+    if (isValid != isAlgorithmFormValid) {
+      setIsAlgorithmFormValid(isValid);
     }
+    if (e.errorSchema !== algorithmFormErrors) {
+      setAlgorithmFormErrors(e.errorSchema);
+    }
+    setAlgorithmArgs(e.formData);
+    // const algorithmArgs = e.formData as Record<string, unknown>;
+    // if (algorithmArgs) {
+    //   setAlgorithmArgs((prev) => ({
+    //     ...prev,
+    //     algorithmArgs,
+    //   }));
+    // }
 
-    // For algorithm parameters, use debouncing
-    algorithmFormTimer.current = setTimeout(() => {
-      const algorithmArgs = e.formData as Record<string, unknown>;
-      if (algorithmArgs) {
-        setFormData((prev) => ({
-          ...prev,
-          algorithmArgs,
-        }));
-      }
-    }, 500);
+    // if (algorithmFormTimer.current) {
+    //   clearTimeout(algorithmFormTimer.current);
+    // }
+
+    // // For algorithm parameters, use debouncing
+    // algorithmFormTimer.current = setTimeout(() => {
+    //   const algorithmArgs = e.formData as Record<string, unknown>;
+    //   if (algorithmArgs) {
+    //     setFormData((prev) => ({
+    //       ...prev,
+    //       algorithmArgs,
+    //     }));
+    //   }
+    // }, 500);
   };
 
   // Schema for test selection (plugin, algorithm, model, dataset)
@@ -844,14 +1021,14 @@ export default function TestRunForm({
   };
 
   // Check if algorithm has parameters
-  const hasAlgorithmParameters = (): boolean => {
+  const hasAlgorithmParameters = useMemo((): boolean => {
     const schema = getAlgorithmParamsSchema();
     return !!(
       schema &&
       schema.properties &&
       Object.keys(schema.properties).length > 0
     );
-  };
+  }, [selectedAlgorithm]);
 
   // Handle form submission
   const handleSubmit = async ({
@@ -885,6 +1062,8 @@ export default function TestRunForm({
       if (!selectedAlgo) {
         throw new Error('Selected algorithm not found');
       }
+
+      submitData.algorithmArgs = algorithmArgs;
 
       // Process algorithm args according to input schema
       const processedArgs = processAlgorithmArgs(
@@ -933,97 +1112,9 @@ export default function TestRunForm({
     };
   }, []);
 
-  // Custom field templates to handle specific fields
-  const customFieldTemplate = (props: FieldTemplateProps) => {
-    const { id, label, required, children, rawErrors, schema, uiSchema } =
-      props;
-
-    // Don't render labels for array items as they'll get their own labels
-    const isArrayItem =
-      id.includes('_') &&
-      id.split('_').length > 2 &&
-      !isNaN(Number(id.split('_').pop()));
-
-    // Skip rendering labels for array fields since they're handled by ArrayFieldTemplate
-    const isArray = schema.type === 'array';
-
-    // Skip rendering labels for array items or nested objects
-    if (isArrayItem || isArray) {
-      return <div className="w-full">{children}</div>;
-    }
-
-    // Default rendering for all other fields
-    return (
-      <div className="mb-4">
-        {!uiSchema?.['ui:hidden'] && (
-          <label className="mb-2 block font-medium text-white">
-            {schema.title || label}
-            {required && (
-              <span className="ml-1 text-[var(--color-danger)]">*</span>
-            )}
-          </label>
-        )}
-        {schema.description && (
-          <p className="mb-1 mt-1 text-sm text-[var(--color-primary-300)]">
-            {schema.description}
-          </p>
-        )}
-        {children}
-
-        {rawErrors && rawErrors.length > 0 && (
-          <div className="mt-1 text-sm text-[var(--color-danger)]">
-            {rawErrors.map((error: string, i: number) => (
-              <div key={i}>{error}</div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  // Custom array field template
-  const customArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
-    return (
-      <div className="array-field-container">
-        {props.canAdd && (
-          <div className="array-field-title mb-2">
-            <span className="font-medium text-white">{props.title}</span>
-            {props.required && (
-              <span className="ml-1 text-[var(--color-danger)]">*</span>
-            )}
-          </div>
-        )}
-        {props.schema.description && (
-          <p className="mt-1 text-sm text-[var(--color-primary-300)]">
-            {props.schema.description}
-          </p>
-        )}
-        {props.items.map((element: ArrayFieldTemplateItemType) => (
-          <div
-            key={element.key}
-            className="array-item">
-            <div className="flex-grow">{element.children}</div>
-            {element.hasRemove && (
-              <button
-                type="button"
-                className="ml-2 rounded bg-[var(--color-danger)] px-2 py-1 text-white"
-                onClick={element.onDropIndexClick(element.index)}>
-                ✕
-              </button>
-            )}
-          </div>
-        ))}
-        {props.canAdd && (
-          <button
-            type="button"
-            className="mb-2 mt-2 rounded bg-[var(--color-primary-500)] px-3 py-1 text-white"
-            onClick={props.onAddClick}>
-            + Add
-          </button>
-        )}
-      </div>
-    );
-  };
+  useEffect(() => {
+    setAlgorithmArgs({});
+  }, [selectedAlgorithm]);
 
   // Get missing required fields
   const getMissingFieldsMessage = (): string => {
@@ -1155,14 +1246,15 @@ export default function TestRunForm({
         />
       </div>
 
-      {selectedAlgorithm && hasAlgorithmParameters() && (
+      {selectedAlgorithm && hasAlgorithmParameters && (
         <div className="mt-6">
           <h3 className="mb-4 text-lg font-medium">Algorithm Parameters</h3>
           <div className="custom-form-container">
             <Form
               schema={getAlgorithmParamsSchema()}
               validator={validator}
-              formData={formData.algorithmArgs || {}}
+              formData={algorithmArgs}
+              // onChange={(e) => setAlgorithmArgs(e.formData)}
               onChange={handleAlgorithmParamChange}
               uiSchema={getAlgorithmUISchema()}
               widgets={widgets}
