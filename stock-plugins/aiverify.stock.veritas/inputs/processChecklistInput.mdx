@@ -29,19 +29,19 @@ export const ProcessChecklistInput = ({ config, data, onChangeData }) => {
                 {check.processes
                   .filter(process => !process.excludeInput)
                   .map((process, index2) => (
-                    <div key={process.pid} style={{ width:"100%", display:"flex", backgroundColor:"#E5F1F9", color: "black", padding:10, marginTop:5, marginBottom:5 }}>
+                    <div key={process.pid} style={{ width:"100%", display:"flex", padding:10, marginTop:5, marginBottom:5 }}>
                       <div style={{ fontWeight:600, width: "50px" }}>{process.pid}</div>
                       <div style={{ width:"100%" }}>
                         <div dangerouslySetInnerHTML={{ __html:process.process }}></div>
                         <div style={{ display:"flex", marginTop:5 }}>
                         </div>
-                        <h4 style={{ padding:0, margin:"5px 0 0 0", color: "black" }}>Completed</h4>
+                        <h4 style={{ padding:0, margin:"5px 0 0 0" }}>Completed</h4>
                         <div style={{ display:"flex" }}>
                           <CompletedButton label="Yes" pid={process.pid} data={data} onChangeData={onChangeData} />
                           <CompletedButton label="No" pid={process.pid} data={data} onChangeData={onChangeData} />
                           <CompletedButton label="Not Applicable" pid={process.pid} data={data} onChangeData={onChangeData} />
                         </div>
-                        <h4 style={{ padding:0, margin:"5px 0 0 0", color: "black" }}>Elaboration</h4>
+                        <h4 style={{ padding:0, margin:"5px 0 0 0" }}>Elaboration</h4>
                         <textarea rows="4" style={{ width:"100%", borderWidth:0, resize:"none" }} maxLength={256} value={data[`elaboration-${process.pid}`]} onChange={(e)=>onChangeData(`elaboration-${process.pid}`,e.target.value)} />
                       </div>
                     </div>
