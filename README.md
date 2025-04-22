@@ -1,5 +1,5 @@
 ## Introduction
-This is a user guide for AI Verify 
+This is a user guide for AI Verify. 
 
 <br>
 
