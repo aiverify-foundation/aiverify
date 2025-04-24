@@ -285,6 +285,28 @@ select option {
   color: var(--color-white);
 }
 
+.custom-form .btn-add {
+  /* width: 100px; */
+  /* height: 100px; */
+  /* background-color: blueviolet; */
+  /* color: white; */
+  background-color: var(--color-primary-500);
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.custom-form .btn-add > i {
+  display: none;
+}
+.custom-form .btn-add::after {
+  content: '+ Add';
+}
+
 /* Boolean/checkbox inputs */
 .custom-form .checkbox {
   display: flex;

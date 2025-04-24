@@ -29,12 +29,11 @@ Run the below bash script to execute the plugin
 
 root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files"
 python -m aiverify_fairness_metrics_toolbox_for_classification \
-  --data_path $root_path/data/sample_mc_pipeline_toxic_data.sav \
-  --model_path $root_path/pipeline/mc_tabular_toxic \
-  --ground_truth_path $root_path/data/sample_mc_pipeline_toxic_ytest_data.sav \
+  --data_path $root_path/data/sample_mc_toxic_data.sav \
+  --model_path $root_path/model/sample_mc_toxic_sklearn_linear.LogisticRegression.sav \
+  --ground_truth_path $root_path/data/sample_mc_toxic_data.sav \
   --ground_truth toxic \
   --model_type CLASSIFICATION \
-  --run_pipeline \
   --sensitive_features_list gender
 ```
 
@@ -93,11 +92,10 @@ docker run \
   -v $(pwd)/stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification/output:/app/aiverify/output \
   aiverify-fairness-metrics-toolbox-for-classification \
   --data_path /input/data/sample_mc_pipeline_toxic_data.sav \
-  --model_path /input/pipeline/mc_tabular_toxic \
+  --model_path /model/sample_mc_toxic_sklearn_linear.LogisticRegression.sav \
   --ground_truth_path /input/data/sample_mc_pipeline_toxic_ytest_data.sav \
   --ground_truth toxic \
   --model_type CLASSIFICATION \
-  --run_pipeline \
   --sensitive_features_list gender
 ```
 

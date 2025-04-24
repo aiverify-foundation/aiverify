@@ -9,12 +9,16 @@ import {
   ArrayFieldTemplateItemType,
   WidgetProps,
   ErrorSchema,
+  WrapIfAdditionalTemplateProps,
+  ADDITIONAL_PROPERTY_FLAG,
 } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
+// import { parseRJSFSchema } from 'aiverify-shared-library/lib/';
 import { useRouter } from 'next/navigation';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, use } from 'react';
 import useSubmitTest from '@/app/results/run/hooks/useSubmitTest';
 import { Algorithm, Plugin } from '@/app/types';
+import { Dataset } from '@/app/types';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import { Button, ButtonVariant } from '@/lib/components/button';
 import { TestRunInput } from '@/lib/fetchApis/getTestRunApis';
@@ -203,7 +207,7 @@ function CustomSelectWidget(props: WidgetProps) {
   const selectedOption = enumOptions.find(
     (option: SelectOption) => option.value === value
   );
-  console.log(value, selectedOption);
+  // console.log(value, selectedOption);
   const displayValue = selectedOption
     ? selectedOption.label
     : placeholder || '-- Select --';
@@ -349,10 +353,170 @@ function CustomSelectWidget(props: WidgetProps) {
   );
 }
 
+const WrapIfAdditionalTemplate = (props: WrapIfAdditionalTemplateProps) => {
+  const {
+    id,
+    label,
+    onKeyChange,
+    onDropPropertyClick,
+    schema,
+    children,
+    uiSchema,
+    registry,
+    classNames,
+    style,
+  } = props;
+  const { RemoveButton } = registry.templates.ButtonTemplates;
+  const additional = ADDITIONAL_PROPERTY_FLAG in schema;
+
+  if (!additional) {
+    return <div>{children}</div>;
+  }
+
+  return (
+    <div
+      className={classNames}
+      style={style}>
+      <div className="grid grid-cols-12 gap-4">
+        <div className="col-span-5 mt-2">
+          <input
+            className="form-control"
+            type="text"
+            id={`${id}-key`}
+            onBlur={function (event) {
+              onKeyChange(event.target.value);
+            }}
+            defaultValue={label}
+          />
+        </div>
+        <div className="form-additional col-span-5">{children}</div>
+        <div className="col-span-2 mt-2">
+          <button
+            type="button"
+            className="ml-2 rounded bg-[var(--color-danger)] px-2 py-1 text-white"
+            onClick={onDropPropertyClick(label)}>
+            ✕
+          </button>
+        </div>
+        {/* <RemoveButton
+          onClick={onDropPropertyClick(label)}
+          uiSchema={uiSchema}
+        /> */}
+      </div>
+    </div>
+  );
+};
+
+// Custom field templates to handle specific fields
+const customFieldTemplate = (props: FieldTemplateProps) => {
+  const { id, label, required, children, rawErrors, schema, uiSchema, hidden } =
+    props;
+
+  // Don't render labels for array items as they'll get their own labels
+  const isArrayItem =
+    id.includes('_') &&
+    id.split('_').length > 2 &&
+    !isNaN(Number(id.split('_').pop()));
+
+  if (hidden) {
+    return <div className="hidden">{children}</div>;
+  }
+
+  // Skip rendering labels for array fields since they're handled by ArrayFieldTemplate
+  // const isArray = schema.type === 'array';
+
+  // Skip rendering labels for array items or nested objects
+  // if (isArrayItem || isArray) {
+  //   // return <div className="w-full">{children}</div>;
+  //   return (
+  //     <WrapIfAdditionalTemplate {...props}>
+  //       <div className="w-full">{children}</div>
+  //     </WrapIfAdditionalTemplate>
+  //   );
+  // }
+
+  // Default rendering for all other fields
+  return (
+    <WrapIfAdditionalTemplate {...props}>
+      <div className="mb-4">
+        {!uiSchema?.['ui:hidden'] && (
+          <label className="mb-2 block font-medium text-white">
+            {schema.title || label}
+            {required && (
+              <span className="ml-1 text-[var(--color-danger)]">*</span>
+            )}
+          </label>
+        )}
+        {schema.description && (
+          <p className="mb-1 mt-1 text-sm text-[var(--color-primary-300)]">
+            {schema.description}
+          </p>
+        )}
+        {children}
+
+        {/* {rawErrors && rawErrors.length > 0 && (
+            <div className="mt-1 text-sm text-[var(--color-danger)]">
+              {rawErrors.map((error: string, i: number) => (
+                <div key={i}>{error}</div>
+              ))}
+            </div>
+          )} */}
+      </div>
+    </WrapIfAdditionalTemplate>
+  );
+};
+
+// Custom array field template
+const customArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
+  // console.log('props:', props);
+  return (
+    <div className="array-field-container">
+      {/* {props.canAdd && (
+          <div className="array-field-title mb-2">
+            <span className="font-medium text-white">{props.title}</span>
+            {props.required && (
+              <span className="ml-1 text-[var(--color-danger)]">*</span>
+            )}
+          </div>
+        )}
+        {props.schema.description && (
+          <p className="mt-1 text-sm text-[var(--color-primary-300)]">
+            {props.schema.description}
+          </p>
+        )} */}
+      {props.items.map((element: ArrayFieldTemplateItemType) => (
+        <div
+          key={element.key}
+          className="flex space-x-2">
+          <div className="w-[80%]">{element.children}</div>
+          {element.hasRemove && (
+            <div className="mt-9 flex-none">
+              <button
+                type="button"
+                className="ml-2 rounded bg-[var(--color-danger)] px-2 py-1 text-white"
+                onClick={element.onDropIndexClick(element.index)}>
+                ✕
+              </button>
+            </div>
+          )}
+        </div>
+      ))}
+      {props.canAdd && (
+        <button
+          type="button"
+          className="mb-2 mt-2 rounded bg-[var(--color-primary-500)] px-3 py-1 text-white"
+          onClick={props.onAddClick}>
+          + Add
+        </button>
+      )}
+    </div>
+  );
+};
+
 interface TestRunFormProps {
   plugins: Plugin[];
   models: Array<{ filename: string; name: string }>;
-  datasets: Array<{ filename: string; name: string }>;
+  datasets: Dataset[];
   initialServerActive: boolean;
   preselectedModel?: { id: number; name: string; filename: string };
   projectId?: string;
@@ -365,7 +529,7 @@ interface FormState {
   testDataset?: string;
   groundTruthDataset?: string;
   groundTruth?: string;
-  algorithmArgs?: Record<string, unknown>;
+  // algorithmArgs?: Record<string, unknown>;
 }
 
 // Utility function to process algorithm arguments according to input schema
@@ -404,8 +568,8 @@ const processAlgorithmArgs = (
     const isRequired = requiredProps.includes(propName);
     const initialValue = processedArgs[propName];
 
-    // Handle when property is not provided by user
     if (processedArgs[propName] === undefined) {
+      // Handle when property is not provided by user
       // If there's a default value, use it
       if ('default' in propSchema) {
         processedArgs[propName] = propSchema.default;
@@ -425,6 +589,15 @@ const processAlgorithmArgs = (
         console.debug(`Set null for optional array ${propName} (not provided)`);
       }
       // For other optional properties, leave them undefined (they'll be omitted)
+    }
+
+    // if selectDataset, then add "_dataset_:" to dataset filename
+    if (
+      propSchema &&
+      'selectDataset' in propSchema &&
+      processedArgs[propName] !== undefined
+    ) {
+      processedArgs[propName] = '_dataset_:' + processedArgs[propName];
     }
 
     // Special handling for empty arrays - if user explicitly provided an empty array
@@ -478,6 +651,9 @@ export default function TestRunForm({
   const [formData, setFormData] = useState<FormState>({
     algorithmArgs: {},
   });
+  const [algorithmArgs, setAlgorithmArgs] = useState<Record<string, unknown>>(
+    {}
+  );
   const [error, setError] = useState<string | null>(null);
   const [isServerActive] = useState<boolean>(initialServerActive);
   const [showModal, setShowModal] = useState(!initialServerActive);
@@ -659,144 +835,203 @@ export default function TestRunForm({
     setIsMainFormValid(isValid);
     setMainFormErrors(e.errorSchema);
 
-    // Check if this is a dropdown or text field
-    const isDropdown =
-      newFormData &&
-      (formData.algorithm !== newFormData.algorithm ||
-        formData.model !== newFormData.model ||
-        formData.testDataset !== newFormData.testDataset ||
-        formData.groundTruthDataset !== newFormData.groundTruthDataset);
+    setFormData(newFormData);
 
-    // For dropdowns, update immediately
-    if (isDropdown) {
-      setFormData(newFormData);
-      return;
-    }
+    // // Check if this is a dropdown or text field
+    // const isDropdown =
+    //   newFormData &&
+    //   (formData.algorithm !== newFormData.algorithm ||
+    //     formData.model !== newFormData.model ||
+    //     formData.testDataset !== newFormData.testDataset ||
+    //     formData.groundTruthDataset !== newFormData.groundTruthDataset);
 
-    // For text fields, debounce updates
-    if (mainFormTimer.current) {
-      clearTimeout(mainFormTimer.current);
-    }
+    // // For dropdowns, update immediately
+    // if (isDropdown) {
+    //   setFormData(newFormData);
+    //   return;
+    // }
 
-    mainFormTimer.current = setTimeout(() => {
-      setFormData(newFormData);
-    }, 500);
+    // // For text fields, debounce updates
+    // if (mainFormTimer.current) {
+    //   clearTimeout(mainFormTimer.current);
+    // }
+
+    // mainFormTimer.current = setTimeout(() => {
+    //   setFormData(newFormData);
+    // }, 500);
   };
 
   // Debounced algorithm param change handler with validation
   const handleAlgorithmParamChange = (e: IChangeEvent) => {
     // Check if the algorithm parameters form is valid
     const isValid = e.errors?.length === 0;
-    setIsAlgorithmFormValid(isValid);
-    setAlgorithmFormErrors(e.errorSchema);
-
-    if (algorithmFormTimer.current) {
-      clearTimeout(algorithmFormTimer.current);
+    if (isValid != isAlgorithmFormValid) {
+      setIsAlgorithmFormValid(isValid);
     }
+    if (e.errorSchema !== algorithmFormErrors) {
+      setAlgorithmFormErrors(e.errorSchema);
+    }
+    setAlgorithmArgs(e.formData);
+    // const algorithmArgs = e.formData as Record<string, unknown>;
+    // if (algorithmArgs) {
+    //   setAlgorithmArgs((prev) => ({
+    //     ...prev,
+    //     algorithmArgs,
+    //   }));
+    // }
 
-    // For algorithm parameters, use debouncing
-    algorithmFormTimer.current = setTimeout(() => {
-      const algorithmArgs = e.formData as Record<string, unknown>;
-      if (algorithmArgs) {
-        setFormData((prev) => ({
-          ...prev,
-          algorithmArgs,
-        }));
-      }
-    }, 500);
+    // if (algorithmFormTimer.current) {
+    //   clearTimeout(algorithmFormTimer.current);
+    // }
+
+    // // For algorithm parameters, use debouncing
+    // algorithmFormTimer.current = setTimeout(() => {
+    //   const algorithmArgs = e.formData as Record<string, unknown>;
+    //   if (algorithmArgs) {
+    //     setFormData((prev) => ({
+    //       ...prev,
+    //       algorithmArgs,
+    //     }));
+    //   }
+    // }, 500);
   };
+
+  const selectedTestDataset: Dataset | null = useMemo(() => {
+    if (formData.testDataset) {
+      const testDataset = datasets.find(
+        (x) => x.filename === formData.testDataset
+      );
+      return testDataset || null;
+    } else {
+      return null;
+    }
+  }, [formData.testDataset]);
+
+  const selectedGroundTruthDataset: Dataset | null = useMemo(() => {
+    if (formData.groundTruthDataset) {
+      const groundTruthDataset = datasets.find(
+        (x) => x.filename === formData.groundTruthDataset
+      );
+      return groundTruthDataset || null;
+    } else if (selectedTestDataset) {
+      return selectedTestDataset;
+    } else {
+      return null;
+    }
+  }, [formData.groundTruthDataset, selectedTestDataset]);
 
   // Schema for test selection (plugin, algorithm, model, dataset)
-  const selectionSchema: RJSFSchema = {
-    type: 'object',
-    required: ['algorithm', 'model', 'testDataset'],
-    properties: {
-      algorithm: {
-        type: 'string',
-        title: 'Algorithm',
-        enum: allAlgorithms.map((algo) => algo.cid),
+  const selectionSchema: RJSFSchema = useMemo(() => {
+    let groundTruthEnum: string[] = [];
+    if (selectedGroundTruthDataset && selectedGroundTruthDataset.dataColumns) {
+      groundTruthEnum = selectedGroundTruthDataset.dataColumns.map(
+        (x) => x.name
+      );
+    }
+    const schema = {
+      type: 'object',
+      required: ['algorithm', 'model', 'testDataset'],
+      properties: {
+        algorithm: {
+          type: 'string',
+          title: 'Algorithm',
+          enum: allAlgorithms.map((algo) => algo.cid),
+        },
+        model: {
+          type: 'string',
+          title: 'Model',
+          enum: models.map((model) => model.filename),
+        },
+        testDataset: {
+          type: 'string',
+          title: 'Test Dataset',
+          enum: datasets.map((dataset) => dataset.filename),
+        },
+        groundTruthDataset: {
+          type: 'string',
+          title: 'Ground Truth Dataset',
+          description:
+            'If not selected, the test dataset will be used as the ground truth dataset',
+          enum: datasets.map((dataset) => dataset.filename),
+        },
+        groundTruth: {
+          type: 'string',
+          title: 'Ground Truth Column',
+          description:
+            'The column name in the dataset that contains the ground truth values',
+          enum: groundTruthEnum,
+        },
       },
-      model: {
-        type: 'string',
-        title: 'Model',
-        enum: models.map((model) => model.filename),
-      },
-      testDataset: {
-        type: 'string',
-        title: 'Test Dataset',
-        enum: datasets.map((dataset) => dataset.filename),
-      },
-      groundTruthDataset: {
-        type: 'string',
-        title: 'Ground Truth Dataset',
-        description:
-          'If not selected, the test dataset will be used as the ground truth dataset',
-        enum: datasets.map((dataset) => dataset.filename),
-      },
-      groundTruth: {
-        type: 'string',
-        title: 'Ground Truth Column',
-        description:
-          'The column name in the dataset that contains the ground truth values',
-      },
-    },
-  };
+    };
+    return schema;
+  }, [allAlgorithms, models, datasets, selectedGroundTruthDataset]);
 
   // UI Schema for form display - configure custom widgets
-  const uiSchema: UiSchema = {
-    'ui:order': [
-      'algorithm',
-      'model',
-      'testDataset',
-      'groundTruthDataset',
-      'groundTruth',
-      '*',
-    ],
-    algorithm: {
-      'ui:placeholder': '-- Select an Algorithm --',
-      'ui:emptyValue': '',
-      'ui:widget': 'CustomSelectWidget',
-      'ui:enumOptions': allAlgorithms.map((algo) => ({
-        label: algo.zip_hash,
-        value: algo.cid,
-      })),
-    },
-    model: {
-      'ui:placeholder': '-- Select a Model --',
-      'ui:emptyValue': '',
-      'ui:widget': 'CustomSelectWidget',
-      'ui:enumOptions': models.map((model) => ({
-        label: model.name,
-        value: model.filename,
-      })),
-    },
-    testDataset: {
-      'ui:placeholder': '-- Select a Test Dataset --',
-      'ui:emptyValue': '',
-      'ui:widget': 'CustomSelectWidget',
-      'ui:enumOptions': datasets.map((dataset) => ({
-        label: dataset.name,
-        value: dataset.filename,
-      })),
-    },
-    groundTruthDataset: {
-      'ui:placeholder': '-- Select a Ground Truth Dataset --',
-      'ui:emptyValue': '',
-      'ui:widget': 'CustomSelectWidget',
-      'ui:enumOptions': [
-        { label: 'Same as Test Dataset', value: '' },
-        ...datasets.map((dataset) => ({
+  const uiSchema: UiSchema = useMemo(() => {
+    const schema = {
+      'ui:order': [
+        'algorithm',
+        'model',
+        'testDataset',
+        'groundTruthDataset',
+        'groundTruth',
+        '*',
+      ],
+      algorithm: {
+        'ui:placeholder': '-- Select an Algorithm --',
+        'ui:emptyValue': '',
+        'ui:widget': 'CustomSelectWidget',
+        'ui:enumOptions': allAlgorithms.map((algo) => ({
+          label: algo.zip_hash,
+          value: algo.cid,
+        })),
+      },
+      model: {
+        'ui:placeholder': '-- Select a Model --',
+        'ui:emptyValue': '',
+        'ui:widget': 'CustomSelectWidget',
+        'ui:enumOptions': models.map((model) => ({
+          label: model.name,
+          value: model.filename,
+        })),
+      },
+      testDataset: {
+        'ui:placeholder': '-- Select a Test Dataset --',
+        'ui:emptyValue': '',
+        'ui:widget': 'CustomSelectWidget',
+        'ui:enumOptions': datasets.map((dataset) => ({
           label: dataset.name,
           value: dataset.filename,
         })),
-      ],
-    },
-    groundTruth: {
-      'ui:placeholder': 'Enter column name',
-      'ui:emptyValue': '',
-      'ui:widget': 'CustomTextWidget',
-    },
-  };
+      },
+      groundTruthDataset: {
+        'ui:placeholder': '-- Select a Ground Truth Dataset --',
+        'ui:emptyValue': '',
+        'ui:widget': 'CustomSelectWidget',
+        'ui:enumOptions': [
+          { label: 'Same as Test Dataset', value: '' },
+          ...datasets.map((dataset) => ({
+            label: dataset.name,
+            value: dataset.filename,
+          })),
+        ],
+      },
+      groundTruth: {
+        'ui:placeholder': 'Enter column name',
+        'ui:emptyValue': '',
+        // 'ui:widget': 'CustomTextWidget',
+        'ui:widget': 'CustomSelectWidget',
+        'ui:enumOptions':
+          selectedGroundTruthDataset && selectedGroundTruthDataset.dataColumns
+            ? selectedGroundTruthDataset.dataColumns.map((x) => ({
+                label: x.label,
+                value: x.name,
+              }))
+            : [],
+      },
+    };
+    return schema;
+  }, [selectionSchema]);
 
   // Create a map of custom widgets
   const widgets = {
@@ -805,27 +1040,86 @@ export default function TestRunForm({
   };
 
   // Get algorithm input schema
-  const getAlgorithmParamsSchema = (): RJSFSchema => {
-    if (!selectedAlgorithm) return { type: 'object', properties: {} };
+  const algorithmParamsSchema: RJSFSchema = useMemo(() => {
+    if (!selectedAlgorithm)
+      return { type: 'object', properties: {} } as RJSFSchema;
 
     const algo = allAlgorithms.find((a) => a.cid === selectedAlgorithm);
     if (!algo) return { type: 'object', properties: {} };
 
+    const schema = algo.inputSchema as RJSFSchema;
+    Object.keys(schema.properties).forEach(async (propName) => {
+      const prop = schema.properties![propName] as RJSFSchema;
+      if ('ui:widget' in prop) {
+        const uiWidget = prop['ui:widget'];
+        if (uiWidget === 'selectDataset') {
+          prop['enum'] = [
+            ...('default' in prop ? [prop['default']] : []),
+            ...datasets.map((dataset) => dataset.filename),
+          ];
+          prop['selectDataset'] = 1;
+        } else if (uiWidget === 'selectTestDataFeature') {
+          if (selectedTestDataset && selectedTestDataset.dataColumns) {
+            prop['enum'] = selectedTestDataset.dataColumns.map((x) => x.name);
+          } else {
+            prop['enum'] = [];
+          }
+        }
+        // console.log('output', prop);
+      }
+    });
+
     return algo.inputSchema as RJSFSchema;
-  };
+  }, [selectedAlgorithm, selectedTestDataset]);
 
   // Get algorithm UI schema
-  const getAlgorithmUISchema = (): UiSchema => {
+  const algorithmUISchema: UiSchema = useMemo(() => {
     // Create a UI schema that applies CustomTextWidget to all string inputs without enum
-    const schema = getAlgorithmParamsSchema();
+    const schema = algorithmParamsSchema;
     if (!schema.properties) return {};
 
     const uiSchema: UiSchema = {};
 
     // For each property that is a string type without enum, use our custom widget
-    Object.keys(schema.properties).forEach((propName) => {
+    Object.keys(schema.properties).forEach(async (propName) => {
       const prop = schema.properties![propName] as RJSFSchema;
-      if (prop.type === 'string') {
+      if ('ui:widget' in prop) {
+        console.log('ui:widget:', prop);
+        const uiWidget = prop['ui:widget'];
+        if (uiWidget === 'selectDataset') {
+          uiSchema[propName] = {
+            'ui:placeholder': `-- Select ${prop.title} --`,
+            'ui:widget': 'CustomSelectWidget',
+            'ui:enumOptions': [
+              ...('default' in prop
+                ? [
+                    {
+                      label: prop['default'].length > 0 ? prop['default'] : '',
+                      value: prop['default'],
+                    },
+                  ]
+                : []),
+              ...datasets.map((dataset) => ({
+                label: dataset.name,
+                value: dataset.filename,
+              })),
+            ],
+          };
+        } else if (uiWidget === 'selectTestDataFeature') {
+          const enumOptions =
+            selectedTestDataset && selectedTestDataset.dataColumns
+              ? selectedTestDataset.dataColumns.map((x) => ({
+                  label: x.label,
+                  value: x.name,
+                }))
+              : [];
+          uiSchema[propName] = {
+            'ui:widget': 'CustomSelectWidget',
+            'ui:emptyValue': '',
+            'ui:enumOptions': enumOptions,
+          };
+        }
+      } else if (prop.type === 'string') {
         if (prop.enum) {
           // For dropdowns (enum), use our custom select widget
           uiSchema[propName] = {
@@ -840,18 +1134,19 @@ export default function TestRunForm({
       }
     });
 
+    console.log('uiSchema:', uiSchema);
     return uiSchema;
-  };
+  }, [algorithmParamsSchema]);
 
   // Check if algorithm has parameters
-  const hasAlgorithmParameters = (): boolean => {
-    const schema = getAlgorithmParamsSchema();
+  const hasAlgorithmParameters = useMemo((): boolean => {
+    const schema = algorithmParamsSchema;
     return !!(
       schema &&
       schema.properties &&
       Object.keys(schema.properties).length > 0
     );
-  };
+  }, [selectedAlgorithm]);
 
   // Handle form submission
   const handleSubmit = async ({
@@ -885,6 +1180,8 @@ export default function TestRunForm({
       if (!selectedAlgo) {
         throw new Error('Selected algorithm not found');
       }
+
+      submitData.algorithmArgs = algorithmArgs;
 
       // Process algorithm args according to input schema
       const processedArgs = processAlgorithmArgs(
@@ -933,97 +1230,9 @@ export default function TestRunForm({
     };
   }, []);
 
-  // Custom field templates to handle specific fields
-  const customFieldTemplate = (props: FieldTemplateProps) => {
-    const { id, label, required, children, rawErrors, schema, uiSchema } =
-      props;
-
-    // Don't render labels for array items as they'll get their own labels
-    const isArrayItem =
-      id.includes('_') &&
-      id.split('_').length > 2 &&
-      !isNaN(Number(id.split('_').pop()));
-
-    // Skip rendering labels for array fields since they're handled by ArrayFieldTemplate
-    const isArray = schema.type === 'array';
-
-    // Skip rendering labels for array items or nested objects
-    if (isArrayItem || isArray) {
-      return <div className="w-full">{children}</div>;
-    }
-
-    // Default rendering for all other fields
-    return (
-      <div className="mb-4">
-        {!uiSchema?.['ui:hidden'] && (
-          <label className="mb-2 block font-medium text-white">
-            {schema.title || label}
-            {required && (
-              <span className="ml-1 text-[var(--color-danger)]">*</span>
-            )}
-          </label>
-        )}
-        {schema.description && (
-          <p className="mb-1 mt-1 text-sm text-[var(--color-primary-300)]">
-            {schema.description}
-          </p>
-        )}
-        {children}
-
-        {rawErrors && rawErrors.length > 0 && (
-          <div className="mt-1 text-sm text-[var(--color-danger)]">
-            {rawErrors.map((error: string, i: number) => (
-              <div key={i}>{error}</div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  // Custom array field template
-  const customArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
-    return (
-      <div className="array-field-container">
-        {props.canAdd && (
-          <div className="array-field-title mb-2">
-            <span className="font-medium text-white">{props.title}</span>
-            {props.required && (
-              <span className="ml-1 text-[var(--color-danger)]">*</span>
-            )}
-          </div>
-        )}
-        {props.schema.description && (
-          <p className="mt-1 text-sm text-[var(--color-primary-300)]">
-            {props.schema.description}
-          </p>
-        )}
-        {props.items.map((element: ArrayFieldTemplateItemType) => (
-          <div
-            key={element.key}
-            className="array-item">
-            <div className="flex-grow">{element.children}</div>
-            {element.hasRemove && (
-              <button
-                type="button"
-                className="ml-2 rounded bg-[var(--color-danger)] px-2 py-1 text-white"
-                onClick={element.onDropIndexClick(element.index)}>
-                ✕
-              </button>
-            )}
-          </div>
-        ))}
-        {props.canAdd && (
-          <button
-            type="button"
-            className="mb-2 mt-2 rounded bg-[var(--color-primary-500)] px-3 py-1 text-white"
-            onClick={props.onAddClick}>
-            + Add
-          </button>
-        )}
-      </div>
-    );
-  };
+  useEffect(() => {
+    setAlgorithmArgs({});
+  }, [selectedAlgorithm]);
 
   // Get missing required fields
   const getMissingFieldsMessage = (): string => {
@@ -1058,7 +1267,7 @@ export default function TestRunForm({
     // Check algorithm form errors if algorithm is selected
     if (selectedAlgorithm && algorithmFormErrors) {
       // Get the algorithm schema to check which fields are required
-      const algoSchema = getAlgorithmParamsSchema();
+      const algoSchema = algorithmParamsSchema;
       const requiredFields = algoSchema.required || [];
 
       // Check each required field
@@ -1155,16 +1364,17 @@ export default function TestRunForm({
         />
       </div>
 
-      {selectedAlgorithm && hasAlgorithmParameters() && (
+      {selectedAlgorithm && hasAlgorithmParameters && (
         <div className="mt-6">
           <h3 className="mb-4 text-lg font-medium">Algorithm Parameters</h3>
           <div className="custom-form-container">
             <Form
-              schema={getAlgorithmParamsSchema()}
+              schema={algorithmParamsSchema}
               validator={validator}
-              formData={formData.algorithmArgs || {}}
+              formData={algorithmArgs}
+              // onChange={(e) => setAlgorithmArgs(e.formData)}
               onChange={handleAlgorithmParamChange}
-              uiSchema={getAlgorithmUISchema()}
+              uiSchema={algorithmUISchema}
               widgets={widgets}
               className="custom-form"
               liveValidate={true}
