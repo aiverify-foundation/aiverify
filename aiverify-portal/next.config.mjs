@@ -138,6 +138,9 @@ const nextConfig = {
       },
     ];
   },
+  experimental: {
+    proxyTimeout: parseInt(process.env.PROXY_TIMEOUT || '60000'),
+  },
 };
 
 export default nextConfig;

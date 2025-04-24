@@ -114,6 +114,15 @@ class ApigwDownload(Pipe):
         if task_data.task.groundTruthDataset:
             task_data.ground_truth_path = self._download_dataset(
                 task_data.task.groundTruthDataset, task_data.task.groundTruthDatasetHash)
+            
+        # check if any of the algo arguments require dataset download
+        if task_data.task.algorithmArgs:
+            for key in task_data.task.algorithmArgs.keys():
+                value = task_data.task.algorithmArgs[key]
+                if isinstance(value, str) and value.startswith("_dataset_:"):
+                    ds = value[len("_dataset_:"):]
+                    p = self._download_dataset(ds, None)
+                    task_data.task.algorithmArgs[key] = p.absolute().as_posix()
 
         # data.intermediate_data[self.pipe_stage] = {
         #     "hello": "world"

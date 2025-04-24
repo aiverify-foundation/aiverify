@@ -42,6 +42,7 @@ npm link ../aiverify-shared-library
 ## Environment Variables Configuration
 
 # Link shared library
+
 cd aiverify-apigw-node
 npm link aiverify-shared-library
 
@@ -53,6 +54,7 @@ Below is a table of the environment variables and their descriptions:
 | ------------------------ | ----------------------------------------------------------------- |
 | `APIGW_HOST`             | The host address of the AI Verify API Gateway.                    |
 | `NEXT_PUBLIC_APIGW_HOST` | The public host address for the API Gateway used by the frontend. |
+| `PROXY_TIMEOUT`          | Set the proxy timeout. Default to 600000ms                        |
 
 ## Running the Portal
 
