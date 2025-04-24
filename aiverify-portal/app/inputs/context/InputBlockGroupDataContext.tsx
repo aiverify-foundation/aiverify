@@ -110,7 +110,7 @@ export const InputBlockGroupDataProvider: React.FC<{
   const searchParams = useSearchParams();
   const projectId = searchParams.get('projectId');
   const flow = searchParams.get('flow');
-  
+
   const { gid, group, cid } = params;
   const groupId = params.groupId ? parseInt(params.groupId) : undefined;
   const [inputBlocks, setInputBlocks] = useState<InputBlock[]>([]);
@@ -198,7 +198,7 @@ export const InputBlockGroupDataProvider: React.FC<{
           console.error('Error saving input block data:', error);
         });
     }, 1000),
-    []
+    [groupId]
   );
   const setInputBlockData = (cid: string, data: InputBlockDataPayload) => {
     if (!groupId) {
