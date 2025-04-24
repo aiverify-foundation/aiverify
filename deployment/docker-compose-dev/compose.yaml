@@ -28,6 +28,7 @@ services:
     build:
       context: ../../
       dockerfile: aiverify-portal/Dockerfile
+      target: development
     profiles:
       - portal
     depends_on:
