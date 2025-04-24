@@ -1672,7 +1672,7 @@
             "color": null,
             "bgcolor": null
           },
-          "widgetGID": "aiverify.stock.shap_toolbox_1:introduction",
+          "widgetGID": "aiverify.stock.shap_toolbox:introduction",
           "key": "1724148911971",
           "properties": null
         },
@@ -1684,7 +1684,7 @@
             "color": null,
             "bgcolor": null
           },
-          "widgetGID": "aiverify.stock.shap_toolbox_1:how_to_read",
+          "widgetGID": "aiverify.stock.shap_toolbox:how_to_read",
           "key": "1724148923465",
           "properties": null
         },
@@ -1696,7 +1696,7 @@
             "color": null,
             "bgcolor": null
           },
-          "widgetGID": "aiverify.stock.shap_toolbox_1:introduction",
+          "widgetGID": "aiverify.stock.shap_toolbox:introduction",
           "key": "1739501826558",
           "properties": null
         }
@@ -1750,7 +1750,7 @@
             "color": null,
             "bgcolor": null
           },
-          "widgetGID": "aiverify.stock.shap_toolbox_1:summary_global_exp_chart",
+          "widgetGID": "aiverify.stock.shap_toolbox:summary_global_exp_chart",
           "key": "1724149101083",
           "properties": {
             "topNFeatures": "20"
@@ -1844,7 +1844,7 @@
             "color": null,
             "bgcolor": null
           },
-          "widgetGID": "aiverify.stock.shap_toolbox_1:recommendations",
+          "widgetGID": "aiverify.stock.shap_toolbox:recommendations",
           "key": "1724836563833",
           "properties": null
         },
