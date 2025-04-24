@@ -4,6 +4,8 @@ import { Icon, IconName } from '@/lib/components/IconSVG';
 import { getPlugins } from '@/lib/fetchApis/getPlugins';
 import PluginsList from './components/PluginList';
 
+export const dynamic = 'force-dynamic';
+
 export default async function PluginsPage() {
   const pluginsResult = await getPlugins();
 

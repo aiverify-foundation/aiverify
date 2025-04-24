@@ -4,6 +4,8 @@ import { getTestResults } from '@/lib/fetchApis/getTestResults';
 import ActionButtons from './components/ActionButton';
 import TestResultsList from './components/TestResultsList';
 
+export const dynamic = 'force-dynamic';
+
 export default async function ResultsPage() {
   const testResults = await getTestResults();
 
