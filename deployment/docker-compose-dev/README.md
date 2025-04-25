@@ -70,3 +70,9 @@ To run the Test Engine Workers using the `automated-tests-docker` profile, which
 ```sh
 COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-docker up -d
 ```
+
+## Rebuilding the Docker Images
+To rebuild the docker images, add --no-cache to the docker-compose build command. For example:
+```sh
+COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-venv --profile portal build --no-cache
+```

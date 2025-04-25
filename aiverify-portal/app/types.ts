@@ -1,3 +1,5 @@
+import { string } from 'zod';
+
 type Project = {
   globalVars: unknown[];
   pages: unknown[];
@@ -90,6 +92,12 @@ type DataColumn = {
 type DatasetStatus = 'invalid' | 'valid';
 type FileType = 'file' | 'folder';
 
+type DatasetColumn = {
+  name: string;
+  datatype: string;
+  label?: string;
+};
+
 type Dataset = {
   id: string;
   name: string;
@@ -102,7 +110,7 @@ type Dataset = {
   dataFormat: string | null;
   numRows: number | null;
   numCols: number | null;
-  dataColumns: string[] | null;
+  dataColumns: DatasetColumn[] | null;
   status: DatasetStatus;
   errorMessages: string | null;
   created_at: string;

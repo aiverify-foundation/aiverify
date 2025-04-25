@@ -68,11 +68,21 @@ The frontend application will be available at http://localhost:3000.
 
 # Docker Setup
 
-To build apigw docker image, go to the `aiverify` root folder and run:
+To build apigw docker image, go to the `aiverify` root folder and run docker build on the Dockerfile:
 
-```
+Development build:
+
+```sh
 cd ..
-docker build -t aiverify-portal -f aiverify-portal/Dockerfile .
+docker build -t aiverify-portal -f aiverify-portal/Dockerfile --target development --no-cache .
+cd aiverify-portal
+```
+
+Production build:
+
+```sh
+cd ..
+docker build -t aiverify-portal -f aiverify-portal/Dockerfile --target production --no-cache .
 cd aiverify-portal
 ```
 

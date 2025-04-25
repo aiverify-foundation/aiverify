@@ -561,9 +561,11 @@ const processAlgorithmArgs = (
     : [];
 
   // Process each property in the schema
-  Object.entries(schema.properties).forEach(([propName, propSchema]) => {
+  Object.entries(
+    schema.properties as Record<string, Record<string, unknown>>
+  ).forEach(([propName, propSchema]) => {
     // Skip if it's not a valid schema object
-    if (typeof propSchema !== 'object') return;
+    if (typeof propSchema !== 'object' || propSchema === null) return;
 
     const isRequired = requiredProps.includes(propName);
     const initialValue = processedArgs[propName];
@@ -581,7 +583,7 @@ const processAlgorithmArgs = (
       // For optional array types with union type ["array", "null"], use null
       else if (
         !isRequired &&
-        Array.isArray(propSchema.type) &&
+        Array.isArray(propSchema['type']) &&
         propSchema.type.includes('array') &&
         propSchema.type.includes('null')
       ) {
@@ -649,7 +651,7 @@ export default function TestRunForm({
     Array<Algorithm & { pluginGid: string }>
   >([]);
   const [formData, setFormData] = useState<FormState>({
-    algorithmArgs: {},
+    // algorithmArgs: {},
   });
   const [algorithmArgs, setAlgorithmArgs] = useState<Record<string, unknown>>(
     {}
@@ -799,7 +801,7 @@ export default function TestRunForm({
           Object.entries(schema.properties).forEach(
             ([propName, propSchema]) => {
               // Skip if it's not a valid schema object
-              if (typeof propSchema !== 'object') return;
+              if (typeof propSchema !== 'object' || propSchema === null) return;
 
               // If property has a default value, use it for initialization
               if ('default' in propSchema) {
@@ -812,13 +814,13 @@ export default function TestRunForm({
         // Only update if we have default values to set and user hasn't set any values yet
         if (
           Object.keys(initialArgs).length > 0 &&
-          (!formData.algorithmArgs ||
-            Object.keys(formData.algorithmArgs).length === 0)
+          Object.keys(algorithmArgs).length === 0
         ) {
-          setFormData((prev) => ({
-            ...prev,
-            algorithmArgs: initialArgs,
-          }));
+          // setFormData((prev) => ({
+          //   ...prev,
+          //   algorithmArgs: initialArgs,
+          // }));
+          setAlgorithmArgs(initialArgs);
         }
       }
     } else {
@@ -1149,13 +1151,14 @@ export default function TestRunForm({
   }, [selectedAlgorithm]);
 
   // Handle form submission
-  const handleSubmit = async ({
-    formData: submitData,
-  }: {
-    formData: FormState;
-  }) => {
+  const handleSubmit = async () => {
     try {
       setError(null);
+
+      const submitData = {
+        ...formData,
+        algorithmArgs,
+      };
 
       // Check if server is active
       if (!isServerActive) {
@@ -1268,7 +1271,7 @@ export default function TestRunForm({
     if (selectedAlgorithm && algorithmFormErrors) {
       // Get the algorithm schema to check which fields are required
       const algoSchema = algorithmParamsSchema;
-      const requiredFields = algoSchema.required || [];
+      const requiredFields = (algoSchema.required || []) as string[];
 
       // Check each required field
       requiredFields.forEach((field) => {
@@ -1350,7 +1353,7 @@ export default function TestRunForm({
           validator={validator}
           formData={formData}
           onChange={handleFormChange}
-          onSubmit={handleSubmit as unknown as FormProps['onSubmit']}
+          // onSubmit={handleSubmit as unknown as FormProps['onSubmit']}
           uiSchema={uiSchema}
           widgets={widgets}
           className="custom-form"
@@ -1422,7 +1425,7 @@ export default function TestRunForm({
             text={isPending ? 'Running...' : 'Run Test'}
             size="md"
             disabled={isPending || !isFormValid}
-            onClick={() => handleSubmit({ formData })}
+            onClick={() => handleSubmit()}
           />
         </div>
 
