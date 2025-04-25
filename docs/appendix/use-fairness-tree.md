@@ -1,4 +1,4 @@
-# Introduction
+# Understand Fairness Metrics
 Today, there are more than 20 fairness metrics that cannot be all satisfied altogether [1]. The challenge then, is to provide a methodology that can assist in selecting the most appropriate fairness metric(s) to use in the use case. We called this the *Fairness Metrics Selection problem*.
 
 In this guide, we will describe the list of fairness metrics available to use for both binary and multiclass classification. Then, we will describe our approach to our fairness decision tree, which is developed to address the *Fairness Metrics Selection Problem* in AI Verify.
