@@ -16,7 +16,7 @@ The toolkit can used flexibly to generate report including creating and filling 
 
 To help companies align their reports with the AI Verify Testing Framework, the toolkit also comes with a set of report templates, which pre-defines the report layout, technical tests and process checks needed.
 
-To prepare the report using AIVT, you will need ML/AI model ([single file or a preprocessing pipeline or model API](./appendix/standalone-vs-pipeline.md)), dataset, user input (process checklists). You run the test through Portal or via command line and use the reporting modules to generate reports.  To extend the suite of existing testing functionalities, you can [install plugins]() built by the AI Verify Foundation or third parties.
+To prepare the report using AIVT, you will need ML/AI model ([single file or a preprocessing pipeline or model API](./appendix/standalone-vs-pipeline.md)), dataset (currently AIVT2.0 supports Tabular and Image data types), user input (process checklists). You run the test through Portal or via command line and use the reporting modules to generate reports.  To extend the suite of existing testing functionalities, you can [install plugins](./detailed-guide/plugin-management.md) built by the AI Verify Foundation or third parties.
 
 For a more detailed breakdown of features, check out [AIVT2.0 Features](./introduction/AIVT 2.0 features.md).
 
