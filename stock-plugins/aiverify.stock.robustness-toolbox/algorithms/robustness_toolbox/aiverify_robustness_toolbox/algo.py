@@ -550,12 +550,8 @@ class Plugin(IAlgorithm):
                     )
 
                 else:
-                    if self._serializer_instance.get_serializer_plugin_type() is SerializerPluginType.IMAGE:
-                        processed_pertubed_input = [perturbed_input]
-                    else:
-                        processed_pertubed_input = [[perturbed_input]]
                     processed_pertubed_input_df = self._transform_to_df(
-                        processed_pertubed_input,
+                        [perturbed_input],
                         image_shapes,
                         subfolder_name="adv_pred",
                     )
