@@ -24,7 +24,7 @@ regression_non_pipeline = {
 
 image_pipeline = {
     "data_path": str("../../../user_defined_files/data/raw_fashion_image_10/0.png"),
-    "model_path": str("../../../user_defined_files/pipeline/multiclass_classification_image_mnist_fashion"),
+    "model_path": str("../../../user_defined_files/pipeline/mc_image_fashion"),
     "ground_truth_path": str("../../../user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"),
     "run_pipeline": True,
     "model_type": ModelType.CLASSIFICATION,

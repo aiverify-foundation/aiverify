@@ -64,7 +64,7 @@
         "--data_path",
         "data/raw_fashion_image_10",
         "--model_path",
-        "pipeline/multiclass_classification_image_mnist_fashion",
+        "pipeline/sample_fashion_mnist_sklearn",
         "--model_type",
         "CLASSIFICATION",
         "--ground_truth_path",

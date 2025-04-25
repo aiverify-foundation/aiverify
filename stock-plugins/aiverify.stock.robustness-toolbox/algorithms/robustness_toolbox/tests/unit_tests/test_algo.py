@@ -24,7 +24,7 @@ def test_discover_plugin():
 
 valid_data_path = str(Path().absolute() / "../../../user_defined_files/data/raw_fashion_image_10/0.png")
 valid_model_path = str(
-    Path().absolute() / "../../../user_defined_files/pipeline/multiclass_classification_image_mnist_fashion"
+    Path().absolute() / "../../../user_defined_files/pipeline/mc_image_fashion"
 )
 valid_ground_truth_path = str(
     Path().absolute() / "../../../user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav"

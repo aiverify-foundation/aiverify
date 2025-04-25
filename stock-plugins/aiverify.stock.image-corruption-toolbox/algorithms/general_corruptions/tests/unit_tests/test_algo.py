@@ -26,7 +26,7 @@ def test_discover_plugin():
 
 # Variables for testing
 valid_data_path = str("../../../user_defined_files/data/raw_fashion_image_10")
-valid_model_path = str("../../../user_defined_files/pipeline/multiclass_classification_image_mnist_fashion")
+valid_model_path = str("../../../user_defined_files/pipeline/sample_fashion_mnist_sklearn")
 valid_ground_truth_path = str("../../../user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav")
 
 test_string = "data_str"

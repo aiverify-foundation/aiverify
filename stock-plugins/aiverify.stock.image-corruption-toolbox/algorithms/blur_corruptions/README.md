@@ -31,7 +31,7 @@ root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files"
 
 python -m aiverify_blur_corruptions \
   --data_path $root_path/data/raw_fashion_image_10 \
-  --model_path $root_path/pipeline/multiclass_classification_image_mnist_fashion \
+  --model_path $root_path/pipeline/sample_fashion_mnist_sklearn \
   --model_type CLASSIFICATION \
   --ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
   --ground_truth label \
@@ -70,7 +70,7 @@ root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files"
 
 python -m aiverify_blur_corruptions \
   --data_path $root_path/data/raw_fashion_image_10 \
-  --model_path $root_path/pipeline/multiclass_classification_image_mnist_fashion \
+  --model_path $root_path/pipeline/sample_fashion_mnist_sklearn \
   --model_type CLASSIFICATION \
   --ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
   --ground_truth label \
@@ -96,7 +96,7 @@ root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files"
 
 python -m aiverify_blur_corruptions \
   --data_path $root_path/data/raw_fashion_image_10 \
-  --model_path $root_path/pipeline/multiclass_classification_image_mnist_fashion \
+  --model_path $root_path/pipeline/sample_fashion_mnist_sklearn \
   --model_type CLASSIFICATION \
   --ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
   --ground_truth label \
@@ -227,7 +227,7 @@ docker run \
   -v $(pwd)/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions/output:/app/aiverify/output \
   aiverify-blur-corruptions \
   --data_path /input/data/raw_fashion_image_10 \
-  --model_path /input/pipeline/multiclass_classification_image_mnist_fashion \
+  --model_path /input/pipeline/sample_fashion_mnist_sklearn \
   --model_type CLASSIFICATION \
   --ground_truth_path /input/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
   --ground_truth label \
