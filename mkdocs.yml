@@ -55,51 +55,24 @@ plugins:
 nav:
   - Introduction:
       - Introduction: index.md
-      - How It Works: introduction/how-it-works.md
-      - Extensibility: introduction/extensibility.md
-  - Getting Started:
-      - Quick Start Guide: getting-started/quick-start-guide.md
-      - Installation & Setup:
-          - Build and run from Dockerfile: getting-started/docker-setup.md
-          - Build and run from source code: getting-started/source-code-setup.md
-      - Accessing AI Model: getting-started/accessing-ai-model.md
+      - AIVT 2.0 Features: introduction/AIVT 2.0 features.md
+  - Quick Start Guide: ./quick-start-guide.md
+  - Getting Started: ./getting-started.md
+  - Detailed Guide:
+      - Installation using Kubernetes: ./detailed-guide/installation-using-kubernetes.md
       - Preparation of Input Files:
-          - Introduction: getting-started/preparation-of-input-files.md
-          - How to Prepare Tabular Datasets and Models: getting-started/prepare-tabular.ipynb
-          - How to Prepare Image Datasets and Models: getting-started/prepare-image.ipynb
-  - How-to:
-      - How to Test an AI Model and Generate a Report:
-          - Intro: using-toolkit-step-by-step/test-ai-model-and-generate-report/0-intro.md
-          - 1. Create New Project: using-toolkit-step-by-step/test-ai-model-and-generate-report/1-create-new-project.md
-          - 2. Select a Report Template: using-toolkit-step-by-step/test-ai-model-and-generate-report/2-select-template.md
-          - 3. Design The Report: using-toolkit-step-by-step/test-ai-model-and-generate-report/3-design-the-report.md
-          - 4. Select Testing Dataset: using-toolkit-step-by-step/test-ai-model-and-generate-report/4-select-testing-dataset.md
-          - 5. Select Ground Truth Dataset: using-toolkit-step-by-step/test-ai-model-and-generate-report/5-select-ground-truth-dataset.md
-          - 6. Select AI Model: using-toolkit-step-by-step/test-ai-model-and-generate-report/6-select-ai-model.md
-          - 7. Provide Test Arguments: using-toolkit-step-by-step/test-ai-model-and-generate-report/7-provide-test-args.md
-          - 8. Complete Process Checklist: using-toolkit-step-by-step/test-ai-model-and-generate-report/8-complete-process-checklist.md
-          - 9. Select Fairness Metrics using Fairness Tree: using-toolkit-step-by-step/test-ai-model-and-generate-report/9-select-fairness-metrics-using-fainess-tree.md
-          - 10. Run Test and Generate Report: using-toolkit-step-by-step/test-ai-model-and-generate-report/10-run-test-and-generate-report.md
-      - How to Design a Customised Report:
-          - Intro: using-toolkit-step-by-step/design-customized-report/0-intro.md
-          - 1. Create New Project: using-toolkit-step-by-step/design-customized-report/1-create-new-project.md
-          - 2. Start Empty Canvas: using-toolkit-step-by-step/design-customized-report/2-start-empty-canvas.md
-          - 3. Design Report with Widgets: using-toolkit-step-by-step/design-customized-report/3-design-report-with-widgets.md
-          - 4. Using Global Variables: using-toolkit-step-by-step/design-customized-report/4-using-global-variable.md
-          - 5. Adding New Pages: using-toolkit-step-by-step/design-customized-report/5-add-new-pages.md
-          - 6. Using Widgets with Dependencies: using-toolkit-step-by-step/design-customized-report/6-using-widget-with-dependencies.md
-          - 7. Save as Report Template: using-toolkit-step-by-step/design-customized-report/7-save-as-template.md
-          - 8. Export as Plugin: using-toolkit-step-by-step/design-customized-report/8-export-as-plugin.md
-      - How to Understand the Fairness Decision Tree: how-to/use-fairness-tree.md
-      - How to Connect to AI Model API: how-to/connect-to-ai-model-api.md
-  - User Interface & Features:
-      - Homepage: user-interface-features/homepage.md
-      - Canvas Page: user-interface-features/canvas-page.md
-      - Input Blocks Page: user-interface-features/input-blocks-page.md
-      - Report Generating Page: user-interface-features/report-generating-page.md
-      - Asset Manager Page: user-interface-features/asset-manager-page.md
-      - Plugin Manager Page: user-interface-features/plugin-manager-page.md
-      - Report Template Manager Page: user-interface-features/report-template-manager-page.md
+          - Introduction: ./detailed-guide/input-preparation/preparation-of-input-files.md
+          - Prepare Tabular Datasets and models: ./detailed-guide/input-preparation/prepare-tabular.ipynb
+          - Prepare Image Datasets and models: ./detailed-guide/input-preparation/prepare-image.ipynb
+  
+      - AI Verify Process checklists: ./detailed-guide/aiverify-process-checklist.md
+      - Veritas Process checklists: ./detailed-guide/veritas-process-checklist.md
+      - Plugin Management: ./detailed-guide/plugin-management.md
+      - Fairness Test: ./detailed-guide/fairness-test.md
+      - Explainability Test: ./detailed-guide/explainability-test.md
+      - Robustness Test: ./detailed-guide/robustness-test.md
+      - Supported Versions: ./detailed-guide/supported-versions.md
+      
   - Troubleshooting: trouble-shooting/troubleshooting.md
   - FAQs: others/faq.md
   - Compatibility Table: others/compatibility.md

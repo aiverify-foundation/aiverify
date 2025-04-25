@@ -2,27 +2,22 @@
 
 ## Overview
 
-The AI Verify Toolkit is an open-source, [extensible](introduction/extensibility/) toolkit that validates the performance of AI systems against a set of 11 internationally recognised AI ethics principles through process checks and technical tests. AI Verify can be used by companies for self-assessment, or by independent testers to verify AI models against the AI Verify Testing Framework. It supports the technical assessment of supervised learning models trained on most tabular and image datasets for binary / multiclass classification and regression models.
+The AI Verify Toolkit is an open-source, extensible toolkit that validates the performance of AI systems. This aligns with best practices from NIST and OECD. The framework consists of 11 AI ethics principles and corresponding testable criteria and testing processes. It has more than 8 different technical tests to assess a model’s fairness, explainability and robustness. It is built for Data Science and Compliance Users to execute algorithms via the CLI and upload the results to the portal, where they can be integrated with process checklists and used for report generation.
 
-## How does the toolkit work?
+## What is new in AIVT 2.0?
 
-The toolkit can used be flexibly to generate report including creating and filling process checklists, running technical tests via CLI or UI (Portal). The generated results can be used across reports, which can either use a standard reporting template or a customized report.
+- Veritas integration - Fairness and transparency tests that helps assess tradeoff across thresholds with additional explainability plots.
+- Improved Computer Vision support – AIVT 2.0 supports custom PyTorch pipelines, and a new improved image corruption toolbox built on the albumentations library.
+- Improved Portal UI/UX – Intuitive and streamlined user interface.
+
+## What can AIVT 2.0 do?
+
+The toolkit can used flexibly to generate report including creating and filling process checklists, running technical tests via CLI or UI (Portal). The generated results can be used across reports, which can either use a standard reporting template or a customized report.
 
 To help companies align their reports with the AI Verify Testing Framework, the toolkit also comes with a set of report templates, which pre-defines the report layout, technical tests and process checks needed.
 
-To extend the suite of existing testing functionalities, you can install plugins built by the AI Verify Foundation or third parties.
+To prepare the report using AIVT, you will need ML/AI model ([single file or a preprocessing pipeline or model API](./appendix/standalone-vs-pipeline.md)), dataset, user input (process checklists). You run the test through Portal or via command line and use the reporting modules to generate reports.  To extend the suite of existing testing functionalities, you can [install plugins]() built by the AI Verify Foundation or third parties.
 
-## Supported environments
+For a more detailed breakdown of features, check out [AIVT2.0 Features](./introduction/AIVT 2.0 features.md).
 
-The AI Verify Toolkit can be deployed in 2 ways.
-
-- [Build and run from Dockerfile](./getting-started/docker-setup/): This method is best for a quick installation and start-up.
-- [Build and run from source code](./getting-started/source-code-setup/): This method allows for more flexibility.
-
-##
-
-For a more detailed breakdown of how AI Verify works, check out [How It Works](./introduction/how-it-works/)
-
-To jump directly into the tool, <a href="./res/quick-start-guide.pdf" target="_blank">Download the Quick Start Guide here</a>. <!-- TODO: Link -->
-
-If you are looking to contribute to the AI Verify Toolkit, [Visit the Developer Documentation here](https://imda-btg.github.io/aiverify-developer-tools/).
+To get started with the tool, refer to [Getting started](./getting-started.md).
