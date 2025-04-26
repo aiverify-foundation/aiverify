@@ -90,7 +90,7 @@ docker run \
   -v $(pwd)/stock-plugins/aiverify.stock.robustness-toolbox/algorithms/robustness_toolbox/output:/app/aiverify/output \
   aiverify-robustness-toolbox \
   --data_path /input/data/raw_fashion_image_10 \
-  --model_path /input/pipeline/multiclass_classification_image_mnist_fashion \
+  --model_path /input/pipeline/mc_image_fashion \
   --ground_truth_path /input/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
   --ground_truth label \
   --model_type CLASSIFICATION \
