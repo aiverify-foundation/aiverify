@@ -239,7 +239,7 @@ Once the finalised parameters are decided, one can validate the results and gene
 
 root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files/veritas_data"
 
-python "aiverify.stock.veritas/algorithms/veritastool/aiverify_veritastool/plugin_init.py" \
+aiverify_veritastool \
   --data_path $root_path/cs_X_test.pkl \
   --model_path $root_path/cs_model.pkl \
   --ground_truth_path $root_path/cs_y_test.pkl \
