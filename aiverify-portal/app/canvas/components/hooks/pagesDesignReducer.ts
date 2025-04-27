@@ -91,6 +91,7 @@ export const initialState: State = {
   pageTypes: ['grid'],
   overflowParents: [null],
   inputBlocksOnReport: [],
+  useRealData: false,
 };
 
 type WidgetAction =
