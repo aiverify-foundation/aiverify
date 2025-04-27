@@ -10,6 +10,7 @@ import {
 } from '@/app/canvas/utils/transformTemplateOutputToState';
 import { ReportTemplate, Page, Layout } from '@/app/templates/types';
 import { InputBlockData } from '@/app/types';
+import { TestResult } from '@/app/types';
 import { UserFlows } from '@/app/userFlowsEnum';
 import { getInputBlockDatas } from '@/lib/fetchApis/getInputBlockDatas';
 import {
@@ -45,10 +46,16 @@ export default async function CanvasPage(props: UrlSearchParams) {
     mode = 'edit',
   } = searchParams;
 
+  // console.log('searchParams', searchParams);
+  console.log('testResultIds', testResultIds);
+
+  const useRealData = !!(
+    projectId !== undefined && testResultIds !== undefined
+  );
+  console.log('useRealData:', useRealData);
+
   // Get plugins and other data that's needed regardless of project/template
   const plugins = await getPlugins({ groupByPluginId: false });
-  const testResults = await getTestResults();
-  const inputBlockDatas = await getInputBlockDatas();
 
   if ('message' in plugins) {
     throw new Error(plugins.message);
@@ -104,49 +111,21 @@ export default async function CanvasPage(props: UrlSearchParams) {
 
   const isTemplate = templateId !== undefined;
 
-  const parsedTestResults = testResults.map((result) => {
-    try {
-      return {
-        ...result,
-        output: JSON.parse(JSON.parse(result.output)),
-      };
-    } catch (error) {
-      console.error('Failed to parse test result output:', error);
-      return {
-        ...result,
-        output: null,
-      };
-    }
-  });
-
-  let selectedTestResultsFromUrlParams: ParsedTestResults[] = [];
-  if (testResultIds != undefined) {
-    const testIdsArray = testResultIds.split(',');
-    selectedTestResultsFromUrlParams = parsedTestResults.filter((result) =>
-      testIdsArray.includes(result.id.toString())
-    );
-  }
-
-  let selectedInputBlockDatasFromUrlParams: InputBlockData[] = [];
-  if (iBlockIds != undefined) {
-    const iBlockIdsArray = iBlockIds.split(',');
-    selectedInputBlockDatasFromUrlParams = inputBlockDatas.filter((data) =>
-      iBlockIdsArray.includes(data.id.toString())
-    );
-  }
-
   // Initialize state with error handling for storage quota
   let initialState: State;
   try {
-    initialState = isTemplate
-      ? transformTemplateOutputToState(
-          projectOrTemplate as TemplateOutput,
-          pluginsWithMdx
-        )
-      : transformProjectOutputToState(
-          projectOrTemplate as ProjectOutput,
-          pluginsWithMdx
-        );
+    initialState = {
+      useRealData,
+      ...(isTemplate
+        ? transformTemplateOutputToState(
+            projectOrTemplate as TemplateOutput,
+            pluginsWithMdx
+          )
+        : transformProjectOutputToState(
+            projectOrTemplate as ProjectOutput,
+            pluginsWithMdx
+          )),
+    };
 
     // Set showGrid to false when in view mode
     if (mode === 'view') {
@@ -156,6 +135,7 @@ export default async function CanvasPage(props: UrlSearchParams) {
     console.error('Failed to initialize state:', error);
     // If we hit a storage quota error, try to initialize with minimal data
     initialState = {
+      useRealData,
       layouts: [[]],
       widgets: [[]],
       algorithmsOnReport: [],
@@ -169,7 +149,56 @@ export default async function CanvasPage(props: UrlSearchParams) {
     };
   }
 
-  console.log('initialState', initialState);
+  // console.log('initialState', initialState);
+  console.log(
+    'initialState.algorithmsOnReport',
+    initialState.algorithmsOnReport
+  );
+
+  let selectedTestResultsFromUrlParams: ParsedTestResults[] = [];
+  let parsedTestResults: ParsedTestResults[] = [];
+  if (useRealData) {
+    // only query for test result not using mock data
+    if (testResultIds && testResultIds.length > 0) {
+      const testResults = await getTestResults();
+
+      parsedTestResults = testResults.map((result) => {
+        try {
+          return {
+            ...result,
+            output: JSON.parse(JSON.parse(result.output)),
+          };
+        } catch (error) {
+          console.error('Failed to parse test result output:', error);
+          return {
+            ...result,
+            output: null,
+          };
+        }
+      });
+
+      console.log('parsedTestResults', parsedTestResults);
+
+      const testIdsArray = testResultIds.split(',');
+      selectedTestResultsFromUrlParams = parsedTestResults.filter((result) =>
+        testIdsArray.includes(result.id.toString())
+      );
+    }
+  }
+
+  console.log(
+    'selectedTestResultsFromUrlParams',
+    selectedTestResultsFromUrlParams
+  );
+
+  let selectedInputBlockDatasFromUrlParams: InputBlockData[] = [];
+  const inputBlockDatas = await getInputBlockDatas();
+  if (iBlockIds != undefined) {
+    const iBlockIdsArray = iBlockIds.split(',');
+    selectedInputBlockDatasFromUrlParams = inputBlockDatas.filter((data) =>
+      iBlockIdsArray.includes(data.id.toString())
+    );
+  }
 
   return (
     <Suspense

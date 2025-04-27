@@ -452,7 +452,7 @@ export default function ClientSelectData({
       ].join('&');
 
       if (flow === UserFlows.EditExistingProject) {
-        window.location.href = `/canvas?${queryString}&mode=edit`;
+        window.location.href = `/canvas?${queryString}&mode=view`;
       } else {
         window.location.href = `/canvas?${queryString}&mode=view`;
       }
