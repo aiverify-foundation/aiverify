@@ -21,7 +21,7 @@
             "additionalProperties": {
                 "type": "array",
                 "items": {
-                    "type": "string"
+                    "type": "integer"
                 }
             }
         },
@@ -32,7 +32,7 @@
             "additionalProperties": {
                 "type": "array",
                 "items": {
-                    "type": "string"
+                    "type": "integer"
                 }
             }
         },
@@ -57,7 +57,7 @@
             "description": "Label values considered favorable",
             "type": "array",
             "items": {
-                "type": "string"
+                "type": "integer"
             }
         },
         "negative_label": {
@@ -65,7 +65,7 @@
             "description": "Label values considered unfavorable (required for uplift models)",
             "type": "array",
             "items": {
-                "type": "string"
+                "type": "integer"
             }
         },
         "fair_threshold": {
