@@ -75,6 +75,9 @@ export type State = {
    * Example: [null, null, null, 2, 2] means pages 4 and 5 are overflow from page 3
    */
   overflowParents: Array<number | null>;
+
+  /** indicate whether to use real or mock data */
+  useRealData: boolean;
 };
 
 export const initialState: State = {
@@ -88,6 +91,7 @@ export const initialState: State = {
   pageTypes: ['grid'],
   overflowParents: [null],
   inputBlocksOnReport: [],
+  useRealData: false,
 };
 
 type WidgetAction =

@@ -102,6 +102,8 @@ type GridItemComponentProps = {
 
   /** Whether the widget has visited data selection */
   hasVisitedDataSelection: boolean;
+
+  useRealData: boolean; // whether to use real or mock data
 };
 
 type MdxComponentProps = MDXContentProps & {
@@ -148,7 +150,9 @@ function GridItemMain({
   pageIndex,
   disabled,
   hasVisitedDataSelection,
+  useRealData,
 }: GridItemComponentProps) {
+  console.log('>> GridItemMain useRealData: ', useRealData);
   /**
    * Controls visibility of the context menu that appears when hovering over a widget
    * Contains edit, delete, and info buttons
@@ -289,7 +293,7 @@ function GridItemMain({
                 modelType: testResult.testArguments?.modelType,
               };
             }
-          } else {
+          } else if (!useRealData) {
             const mockData = findMockDataByTypeAndCid(
               widget.mockdata || [],
               'Algorithm',
@@ -299,7 +303,7 @@ function GridItemMain({
               acc[`${gid}:${result.cid}`] = mockData.data;
             }
           }
-        } else {
+        } else if (!useRealData) {
           const mockData = findMockDataByTypeAndCid(
             widget.mockdata || [],
             'Algorithm',
@@ -315,7 +319,7 @@ function GridItemMain({
     return {};
   }, [testResultsUsed]);
 
-  console.log('testResultWidgetData', testResultWidgetData);
+  // console.log('testResultWidgetData', testResultWidgetData);
 
   /**
    * Prepares artifact data for the widget to consume
@@ -341,7 +345,7 @@ function GridItemMain({
                 `${process.env.NEXT_PUBLIC_APIGW_HOST}/test_results/${result.testResultId}/artifacts/${artifactPath}`
             );
             acc[`${gid}:${result.cid}`] = artifactUrls;
-          } else {
+          } else if (!useRealData) {
             const mockData = findMockDataByTypeAndCid(
               widget.mockdata || [],
               'Algorithm',
@@ -351,7 +355,7 @@ function GridItemMain({
               acc[`${gid}:${result.cid}`] = mockData.artifacts;
             }
           }
-        } else {
+        } else if (!useRealData) {
           const mockData = findMockDataByTypeAndCid(
             widget.mockdata || [],
             'Algorithm',
@@ -382,7 +386,7 @@ function GridItemMain({
           );
           if (inputBlockData && inputBlockData.data) {
             acc[`${gid}:${data.cid}`] = inputBlockData.data;
-          } else {
+          } else if (!useRealData) {
             const mockData = findMockDataByTypeAndCid(
               widget.mockdata || [],
               'InputBlock',
@@ -392,7 +396,7 @@ function GridItemMain({
               acc[`${gid}:${data.cid}`] = mockData.data;
             }
           }
-        } else {
+        } else if (!useRealData) {
           const mockData = findMockDataByTypeAndCid(
             widget.mockdata || [],
             'InputBlock',
@@ -408,7 +412,7 @@ function GridItemMain({
     return {};
   }, [inputBlockDatasUsed]);
 
-  console.log('inputBlocksWidgetData', inputBlocksWidgetData);
+  // console.log('inputBlocksWidgetData', inputBlocksWidgetData);
   /**
    * Sets up a ResizeObserver to track the widget's dimensions
    * Updates the dimensions state when the widget is resized

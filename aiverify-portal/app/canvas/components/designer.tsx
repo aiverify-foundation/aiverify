@@ -1301,6 +1301,7 @@ function Designer(props: DesignerProps) {
                           hasVisitedDataSelection={searchParams.has(
                             'testResultIds'
                           )}
+                          useRealData={state.useRealData}
                         />
                       </div>
                     );

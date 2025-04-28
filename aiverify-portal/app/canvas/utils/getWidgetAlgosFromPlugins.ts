@@ -53,10 +53,10 @@ export function getWidgetAlgosFromPlugins(
 
     const algo = plugin.algorithms?.find((a) => a.cid === dependency.cid);
     if (algo) {
-      console.log('Found algorithm:', algo);
+      // console.log('Found algorithm:', algo);
       algos.push(algo);
     } else {
-      console.log('No algorithm found for cid:', dependency.cid);
+      // console.log('No algorithm found for cid:', dependency.cid);
     }
   }
 
@@ -77,7 +77,7 @@ export function getWidgetAlgosFromPlugins(
         //console.log('Found algorithm using dependency.gid:', algo);
         algos.push(algo);
       } else {
-        console.log('No algorithm found for cid with dependency.gid:',dependency.cid);
+        // console.log('No algorithm found for cid with dependency.gid:',dependency.cid);
       }
     }
   }
