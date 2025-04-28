@@ -11,7 +11,7 @@ dependencies = [
     "xgboost==2.1.1",
     "scipy==1.14.1",
     "shap==0.46.0",
-    "aiverify-test-engine>=2.0.0",
+    "aiverify-test-engine>=2.0.1",
 ]
 requires-python = ">=3.10,<3.12"
 dynamic = ["version"]

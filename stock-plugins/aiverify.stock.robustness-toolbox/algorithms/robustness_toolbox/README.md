@@ -18,7 +18,9 @@ pip install aiverify-robustness-toolbox
 
 ## Example Usage:
 
-Run the following bash script to execute the plugin
+The robustness plugin supports testing of tabular and image data.
+
+Run the following bash script to execute the plugin on tabular data:
 
 ```sh
 #!/bin/bash
@@ -29,6 +31,21 @@ python -m aiverify_robustness_toolbox \
   --model_path $root_path/pipeline/bc_tabular_credit \
   --ground_truth_path $root_path/data/sample_bc_pipeline_credit_ytest_data.sav \
   --ground_truth default \
+  --model_type CLASSIFICATION \
+  --run_pipeline
+```
+
+Run the following bash script to execute the plugin on image data:
+
+```sh
+#!/bin/bash
+
+root_path="<PATH_TO_FOLDER>/aiverify/stock-plugins/user_defined_files"
+python -m aiverify_robustness_toolbox \
+  --data_path $root_path/data/raw_fashion_image_10/0.png \
+  --model_path $root_path/pipeline/mc_image_fashion \
+  --ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
+  --ground_truth label \
   --model_type CLASSIFICATION \
   --run_pipeline \
   --annotated_ground_truth_path $root_path/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
@@ -90,7 +107,7 @@ docker run \
   -v $(pwd)/stock-plugins/aiverify.stock.robustness-toolbox/algorithms/robustness_toolbox/output:/app/aiverify/output \
   aiverify-robustness-toolbox \
   --data_path /input/data/raw_fashion_image_10 \
-  --model_path /input/pipeline/multiclass_classification_image_mnist_fashion \
+  --model_path /input/pipeline/mc_image_fashion \
   --ground_truth_path /input/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
   --ground_truth label \
   --model_type CLASSIFICATION \

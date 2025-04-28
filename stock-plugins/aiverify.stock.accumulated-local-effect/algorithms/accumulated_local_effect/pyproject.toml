@@ -3,11 +3,7 @@ name = "aiverify-accumulated-local-effect"
 description = "AI Verify implementation of the Accumulated Local Effect algorithm. The algorithm provides black box explainations of how features and their corresponding values influence the prediction of a model."
 authors = [{ name = "AI Verify" }]
 readme = "README.md"
-dependencies = [
-    "numpy==1.26.4",
-    "pandas==2.2.2",
-    "aiverify-test-engine>=2.0.0",
-]
+dependencies = ["numpy==1.26.4", "pandas==2.2.2", "aiverify-test-engine>=2.0.1"]
 requires-python = ">=3.10,<3.12"
 dynamic = ["version"]
 

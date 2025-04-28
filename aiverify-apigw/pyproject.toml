@@ -9,15 +9,13 @@ Source = "https://github.com/aiverify-foundation/aiverify/tree/v2.x"
 
 [project]
 name = "aiverify-apigw"
-version = "2.0.0"
+version = "2.0.1"
 description = 'The apigw provides middleware functionality for the aiverify portal'
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
 keywords = []
-authors = [
-  { name = "Peck Yoke", email = "leong_peck_yoke@imda.gov.sg" },
-]
+authors = [{ name = "Peck Yoke", email = "leong_peck_yoke@imda.gov.sg" }]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python :: 3",
@@ -38,10 +36,11 @@ dependencies = [
   "valkey[libvalkey]==6.*",
 ]
 
+[project.optional-dependencies]
+dev = ["aiverify-test-engine[dev]", "faker>=28.1.0"]
+
 [tool.hatch.envs.default]
-post-install-commands = [
-  "pip install -e ../aiverify-test-engine[all]",
-]
+post-install-commands = ["pip install -e ../aiverify-test-engine[all]"]
 
 [tool.hatch.metadata]
 allow-direct-references = true
@@ -53,13 +52,11 @@ dev = "python -m aiverify_apigw"
 python = ["3.11"]
 
 [tool.hatch.envs.hatch-test]
-extra-dependencies = [
-  "faker>=28.1.0"
-]
+extra-dependencies = ["faker>=28.1.0"]
 
 [tool.ruff.lint]
 preview = true
-select = ["E20","E21","E22","E23","E24","E3","F401","F8"]
+select = ["E20", "E21", "E22", "E23", "E24", "E3", "F401", "F8"]
 
 [tool.coverage.run]
 source_pkgs = ["aiverify_apigw"]
@@ -70,8 +67,4 @@ parallel = true
 aiverify_apigw = ["aiverify_apigw/", "*/aiverify-apigw/aiverify_apigw"]
 
 [tool.coverage.report]
-exclude_lines = [
-  "no cov",
-  "if __name__ == .__main__.:",
-  "if TYPE_CHECKING:",
-]
+exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]

@@ -386,7 +386,7 @@ class Plugin(IAlgorithm):
             else:
                 data_to_predict = self._transform_to_df(data_in_numpy, raw_shapes, subfolder_name="pred_init")
 
-            predictions = self._model.predict([data_to_predict], self._data_labels_items)
+            predictions = self._model.predict(data_to_predict, self._data_labels_items)
             # Update the progress total value (initial adversarial + final adversarial samples)
             self._progress_inst.add_total(2 * len(data_in_numpy))
 
@@ -550,12 +550,8 @@ class Plugin(IAlgorithm):
                     )
 
                 else:
-                    if self._serializer_instance.get_serializer_plugin_type() is SerializerPluginType.IMAGE:
-                        processed_pertubed_input = [perturbed_input]
-                    else:
-                        processed_pertubed_input = [[perturbed_input]]
                     processed_pertubed_input_df = self._transform_to_df(
-                        processed_pertubed_input,
+                        [perturbed_input],
                         image_shapes,
                         subfolder_name="adv_pred",
                     )
@@ -645,7 +641,7 @@ class Plugin(IAlgorithm):
 
                             # Check predictions for adversarial
                             potential_adversarials_prediction = self._model.predict(
-                                [adversarial_list_to_predict], self._data_labels_items
+                                adversarial_list_to_predict, self._data_labels_items
                             )
                             satisfied = potential_adversarials_prediction != ground_truth_in_numpy
                             delta_ratio = np.mean(satisfied)
@@ -688,7 +684,7 @@ class Plugin(IAlgorithm):
                                     subfolder_name="potential_adv_pred" + str(iteration) + str(count_test),
                                 )
                                 potential_adversarials_prediction = self._model.predict(
-                                    [potential_adv_pred_transformed],
+                                    potential_adv_pred_transformed,
                                     self._data_labels_items,
                                 )
                             satisfied = potential_adversarials_prediction != ground_truth_in_numpy
@@ -755,8 +751,6 @@ class Plugin(IAlgorithm):
             final_adversarial_samples_to_predict = self._transform_to_df(
                 final_adversarial_samples, image_shapes, subfolder_name="adv_prediction"
             )
-        if self._serializer_instance.get_serializer_plugin_type() is not SerializerPluginType.IMAGE:
-            final_adversarial_samples_to_predict = [final_adversarial_samples_to_predict]
 
         adversarial_prediction = self._model.predict(final_adversarial_samples_to_predict, self._data_labels_items)
 

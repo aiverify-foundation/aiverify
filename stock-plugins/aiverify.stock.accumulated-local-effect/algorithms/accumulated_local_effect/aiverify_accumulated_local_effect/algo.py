@@ -357,8 +357,8 @@ class Plugin(IAlgorithm):
 
         # with the data points replaced with the intervals
         # now we can run the predictions for both intervals
-        prediction_lower_bound = self._model_instance.predict([z_lower], dict_items_labels)
-        prediction_higher_bound = self._model_instance.predict([z_higher], dict_items_labels)
+        prediction_lower_bound = self._model_instance.predict(z_lower, dict_items_labels)
+        prediction_higher_bound = self._model_instance.predict(z_higher, dict_items_labels)
 
         prediction_lower_bound = np.array([eval(str(i)) for i in prediction_lower_bound])
         prediction_higher_bound = np.array([eval(str(i)) for i in prediction_higher_bound])
@@ -462,9 +462,9 @@ class Plugin(IAlgorithm):
         dict_items_labels = self._data_instance.read_labels().items()
 
         # runs prediction on both replaced dataset
-        z_upper_prediction = self._model_instance.predict([z_upper[data_remove_last_group]], dict_items_labels)
-        z_lower_prediction = self._model_instance.predict([z_lower[data_remove_first_group]], dict_items_labels)
-        z = self._model_instance.predict([data], dict_items_labels)
+        z_upper_prediction = self._model_instance.predict(z_upper[data_remove_last_group], dict_items_labels)
+        z_lower_prediction = self._model_instance.predict(z_lower[data_remove_first_group], dict_items_labels)
+        z = self._model_instance.predict(data, dict_items_labels)
 
         z_upper_prediction = np.array([eval(str(i)) for i in z_upper_prediction])
         z_lower_prediction = np.array([eval(str(i)) for i in z_lower_prediction])

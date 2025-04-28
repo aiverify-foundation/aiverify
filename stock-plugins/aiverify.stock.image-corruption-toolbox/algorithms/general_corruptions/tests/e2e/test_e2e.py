@@ -7,7 +7,7 @@ from aiverify_general_corruptions.algo_init import AlgoInit
 
 image_pipeline = {
     "data_path": "../../../user_defined_files/data/raw_fashion_image_10",
-    "model_path": "../../../user_defined_files/pipeline/multiclass_classification_image_mnist_fashion",
+    "model_path": "../../../user_defined_files/pipeline/sample_fashion_mnist_sklearn",
     "ground_truth_path": "../../../user_defined_files/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav",
     "model_type": ModelType.CLASSIFICATION,
     "ground_truth_label": "label",
