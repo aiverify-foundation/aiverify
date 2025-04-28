@@ -6,7 +6,7 @@ For docker (recommended), follow installation steps from [Quick start guide](./q
 </object>
 
 
-Refer to [detailed installation guide](./detailed-guide/installation-using-kubernetes.md) if you choose to use Kubernetes.
+Refer to [detailed installation guide](./detailed-guide/installation-using-kubernetes.md) if you choose to use Kubernetes or refer to [detailed Installation & Setup guide](https://github.com/aiverify-foundation/aiverify/wiki/Installation-&-Setup).
 
 Open [http://localhost:3000](http://localhost:3000)
 
