@@ -166,24 +166,6 @@ class Plugin(IAlgorithm):
             elif key == "protected_features" and value is None:
                 # Ensure protected_features is an array if None
                 value = []
-            elif key == "privileged_groups" and value is not None:
-                # Convert numeric values in privileged_groups to strings
-                transformed_groups = {}
-                for feature, values in value.items():
-                    transformed_groups[feature] = [str(v) for v in values]
-                value = transformed_groups
-            elif key == "unprivileged_groups" and value is not None:
-                # Convert numeric values in unprivileged_groups to strings
-                transformed_groups = {}
-                for feature, values in value.items():
-                    transformed_groups[feature] = [str(v) for v in values]
-                value = transformed_groups
-            elif key == "positive_label" and value is not None:
-                # Convert numeric values in positive_label to strings
-                value = [str(v) for v in value]
-            elif key == "negative_label" and value is not None:
-                # Convert numeric values in negative_label to strings
-                value = [str(v) for v in value]
 
             # Only set properties that are not None and defined in the schema
             if value is not None:
@@ -434,6 +416,7 @@ class Plugin(IAlgorithm):
             up_grp = self._all_input_arguments.get("unprivileged_groups")
             pos_label = self._all_input_arguments.get("positive_label")
             neg_label = self._all_input_arguments.get("negative_label")
+            neg_label = None if neg_label == [] else neg_label
 
             container = ModelContainer(
                 y_true=y_true,

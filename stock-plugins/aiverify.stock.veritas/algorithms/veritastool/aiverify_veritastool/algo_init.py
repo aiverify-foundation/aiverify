@@ -217,13 +217,26 @@ class AlgoInit:
             self._input_arguments["progress_callback"] = AlgoInit.progress_callback
             self._input_arguments["project_base_path"] = self._base_path
 
-            # Convert protected_features from dictionary keys to array if provided as dict
+            # Convert protected_features from dictionary keys to array if provided as dict and cast values to int
             if "privileged_groups" in self._input_arguments and self._input_arguments["privileged_groups"]:
+                for key, value in self._input_arguments["privileged_groups"].items():
+                    if isinstance(value, list):
+                        self._input_arguments["privileged_groups"][key] = [int(v) for v in value]
+                    else:
+                        self._input_arguments["privileged_groups"][key] = int(value)
+
                 if self._input_arguments.get("protected_features") is None:
                     self._input_arguments["protected_features"] = list(
                         self._input_arguments["privileged_groups"].keys()
                     )
                     print(f"Auto-detected protected features: {self._input_arguments['protected_features']}")
+
+            if "unprivileged_groups" in self._input_arguments and self._input_arguments["unprivileged_groups"]:
+                for key, value in self._input_arguments["unprivileged_groups"].items():
+                    if isinstance(value, list):
+                        self._input_arguments["unprivileged_groups"][key] = [int(v) for v in value]
+                    else:
+                        self._input_arguments["unprivileged_groups"][key] = int(value)
 
             # Add training data instances to the arguments
             if self._training_data_instance:
