@@ -48,6 +48,8 @@ python -m aiverify_partial_dependence_plot \
   --no-run_pipeline
 ```
 
+[Refer to Python notebook that walks through the steps with sample data](../res/detailed-guide/AIVT_2_0_PDP.ipynb).
+
 Once the algorithm runs successfully, the results will be saved in an `output` folder.
 Use the generated result to create a report.
 

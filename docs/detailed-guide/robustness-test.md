@@ -24,9 +24,10 @@ python -m aiverify_robustness_toolbox \
   --model_type CLASSIFICATION
 ```
 
+[Refer to Python notebook that walks through the steps with sample data](../res/detailed-guide/AIVT_2_0_Robustness.ipynb).
+
 Once the algorithm runs successfully, the results will be saved in an `output` folder.
 Use the generated result to create a report.
-
 
 ## Generate report
 
