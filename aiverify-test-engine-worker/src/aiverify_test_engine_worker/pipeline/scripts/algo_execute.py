@@ -233,7 +233,11 @@ def run():
         initial_model_instance = copy.deepcopy(model_instance)
 
         try:
-            if model_instance.get_pipeline_plugin_type() == PipelinePluginType.SKLEARN:
+            # veritastool handles data transformation internally
+            if (
+                model_instance.get_pipeline_plugin_type() == PipelinePluginType.SKLEARN
+                and algo_meta.get("cid") != "veritastool"
+            ):
                 # Perform data transformation
                 current_dataset = data_instance.get_data()
                 current_pipeline = model_instance.get_pipeline()
