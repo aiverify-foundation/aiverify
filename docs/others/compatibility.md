@@ -6,7 +6,7 @@ In this table, we list the supported AI framework and algorithms.
 
 | Framework   | Version  | Algorithm    | Model Type |
 | ----- |----|----|-----|
-|    scikit-learn  | 1.2.2   | Binary Classification | Logistic Regression |
+|    scikit-learn  | 1.4.0   | Binary Classification | Logistic Regression |
 | || | Decision Tree |
 | || | Random Forest |
 | || | Gradient Boosting Classifier |
@@ -24,14 +24,17 @@ In this table, we list the supported AI framework and algorithms.
 | || | Extra Tree Regressor |
 | || | Gradient Boosting Regressor |
 | || | Random Forest Regression |
-|  Tensorflow     | 2.12.0 | Binary Classification | Keras Sequential |
+|  Tensorflow     | 2.13.0 | Binary Classification | Keras Sequential |
 | || Multiclass Classification | Keras Sequential  |
 | || Regression| Keras Sequential  |
-|  XGBoost     |1.7.5| Binary Classification | XGB Classifier|
+|  PyTorch     | >2.0 | Binary Classification | PyTorch Sequential |
+| || Multiclass Classification | PyTorch Sequential  |
+| || Regression| PyTorch Sequential  |
+|  XGBoost     |2.0.3| Binary Classification | XGB Classifier|
 | || | XGB Booster |
 | || Multiclass Classifcation | XGB Classifier |
 | || Regression | XGB Regressor |
-|  LightGBM     |3.3.5| Binary Classification | LGBM Classifier|
+|  LightGBM     |4.3.0| Binary Classification | LGBM Classifier|
 
 ## Data Serialisers
 
