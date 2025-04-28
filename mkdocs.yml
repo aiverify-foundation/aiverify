@@ -78,7 +78,6 @@ nav:
       - Standalone model vs Model pipeline: ./appendix/standalone-vs-pipeline.md
       - Understand the Fairness Decision Tree: ./appendix/use-fairness-tree.md
 
-  - Compatibility Table: others/compatibility.md
   - References:
       - AI Verify Developer Tools: https://github.com/aiverify-foundation/aiverify-developer-tools/
       - Developer Documentation: https://aiverify-foundation.github.io/aiverify-developer-tools/getting_started/start_here/
