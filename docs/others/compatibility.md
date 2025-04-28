@@ -27,9 +27,9 @@ In this table, we list the supported AI framework and algorithms.
 |  Tensorflow     | 2.13.0 | Binary Classification | Keras Sequential |
 | || Multiclass Classification | Keras Sequential  |
 | || Regression| Keras Sequential  |
-|  PyTorch     | >2.0 | Binary Classification | PyTorch Sequential |
-| || Multiclass Classification | PyTorch Sequential  |
-| || Regression| PyTorch Sequential  |
+|  PyTorch     | >2.0 | Binary Classification | PyTorch model |
+| || Multiclass Classification | PyTorch model  |
+| || Regression| PyTorch model  |
 |  XGBoost     |2.0.3| Binary Classification | XGB Classifier|
 | || | XGB Booster |
 | || Multiclass Classifcation | XGB Classifier |
@@ -41,7 +41,7 @@ In this table, we list the supported AI framework and algorithms.
 | Library   | Version  | 
 | ----- |----|
 |  pickle  | Version is based on the pickle installed in your environment   | 
-|  joblib  | 1.3.2   | 
+|  joblib  | 1.4.2   | 
 
 !!! Info
         If your datasets and models are serialised using other version, please modify your environment accordingly.
