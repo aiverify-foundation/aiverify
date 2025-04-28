@@ -1,28 +1,21 @@
 {
-    "cid": "aiverify_partial_dependence_plot",
-    "gid": "aiverify.stock.partial_dependence_plot",
-    "name": "Partial Dependence Plot",
-    "modelType": [
-        "classification",
-        "regression"
-    ],
-    "version": "2.0.0",
-    "author": "AI Verify",
-    "description": "A Partial Dependence Plot (PDP) explains how each feature and its feature value contribute to the predictions.",
-    "tags": [
-        "Partial Dependence Plot",
-        "classification",
-        "regression"
-    ],
-    "requireGroundTruth": true,
-    "requiredFiles": [
-        "AUTHORS.rst",
-        "CHANGELOG.md",
-        "input.schema.json",
-        "LICENSE",
-        "output.schema.json",
-        "partial_dependence_plot.meta.json",
-        "partial_dependence_plot.py",
-        "README.md"
-    ]
+  "cid": "aiverify_partial_dependence_plot",
+  "gid": "aiverify.stock.partial_dependence_plot",
+  "name": "Partial Dependence Plot",
+  "modelType": ["classification", "regression"],
+  "version": "2.0.1",
+  "author": "AI Verify",
+  "description": "A Partial Dependence Plot (PDP) explains how each feature and its feature value contribute to the predictions.",
+  "tags": ["Partial Dependence Plot", "classification", "regression"],
+  "requireGroundTruth": true,
+  "requiredFiles": [
+    "AUTHORS.rst",
+    "CHANGELOG.md",
+    "input.schema.json",
+    "LICENSE",
+    "output.schema.json",
+    "partial_dependence_plot.meta.json",
+    "partial_dependence_plot.py",
+    "README.md"
+  ]
 }

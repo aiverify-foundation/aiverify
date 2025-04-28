@@ -3,11 +3,7 @@ name = "aiverify-partial-dependence-plot"
 description = "AI Verify implementation of Partial Dependence Plot (PDP) that explains how each feature and its feature value contribute to the predictions."
 authors = [{ name = "AI Verify" }]
 readme = "README.md"
-dependencies = [
-    "numpy==1.26.4",
-    "scipy==1.14.1",
-    "aiverify-test-engine>=2.0.0",
-]
+dependencies = ["numpy==1.26.4", "scipy==1.14.1", "aiverify-test-engine>=2.0.1"]
 requires-python = ">=3.10,<3.12"
 dynamic = ["version"]
 
