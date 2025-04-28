@@ -1,27 +1,22 @@
 {
-    "cid": "aiverify_environment_corruptions",
-    "gid": "aiverify.stock.image_corruption_toolbox",
-    "name": "Environment Corruptions",
-    "modelType": [
-        "classification"
-    ],
-    "version": "2.0.0",
-    "author": "AI Verify",
-    "description": "Algorithm that adds environmental corruptions (rain, fog and snow)",
-    "tags": [
-        "Environment Corruptions",
-        "classification"
-    ],
-    "requireGroundTruth": true,
-    "requiredFiles": [
-        "AUTHORS.rst",
-        "CHANGELOG.md",
-        "input.schema.json",
-        "LICENSE",
-        "output.schema.json",
-        "environment_corruptions.meta.json",
-        "environment_corruptions.py",
-        "README.md",
-        "utils"
-    ]
+  "cid": "aiverify_environment_corruptions",
+  "gid": "aiverify.stock.image_corruption_toolbox",
+  "name": "Environment Corruptions",
+  "modelType": ["classification"],
+  "version": "2.0.1",
+  "author": "AI Verify",
+  "description": "Algorithm that adds environmental corruptions (rain, fog and snow)",
+  "tags": ["Environment Corruptions", "classification"],
+  "requireGroundTruth": true,
+  "requiredFiles": [
+    "AUTHORS.rst",
+    "CHANGELOG.md",
+    "input.schema.json",
+    "LICENSE",
+    "output.schema.json",
+    "environment_corruptions.meta.json",
+    "environment_corruptions.py",
+    "README.md",
+    "utils"
+  ]
 }
