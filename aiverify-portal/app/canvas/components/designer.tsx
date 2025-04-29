@@ -1268,7 +1268,8 @@ function Designer(props: DesignerProps) {
                         <GridItemComponent
                           allAvalaiblePlugins={allPluginsWithMdx}
                           allInputBlockDatasOnSystem={
-                            allInputBlockDatasOnSystem
+                            // allInputBlockDatasOnSystem
+                            selectedInputBlockDatasFromUrlParams
                           }
                           allTestResultsOnSystem={allTestResultsOnSystem}
                           widget={widget}
