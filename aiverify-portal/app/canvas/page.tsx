@@ -12,7 +12,10 @@ import { ReportTemplate, Page, Layout } from '@/app/templates/types';
 import { InputBlockData } from '@/app/types';
 import { TestResult } from '@/app/types';
 import { UserFlows } from '@/app/userFlowsEnum';
-import { getInputBlockDatas } from '@/lib/fetchApis/getInputBlockDatas';
+import {
+  getInputBlockDatas,
+  getInputBlockGroupDatas,
+} from '@/lib/fetchApis/getInputBlockDatas';
 import {
   getPlugins,
   populatePluginsMdxBundles,
@@ -157,6 +160,9 @@ export default async function CanvasPage(props: UrlSearchParams) {
 
   let selectedTestResultsFromUrlParams: ParsedTestResults[] = [];
   let parsedTestResults: ParsedTestResults[] = [];
+  let selectedInputBlockDatasFromUrlParams: InputBlockData[] = [];
+  let parsedInputBlockDatas: InputBlockData[] = [];
+
   if (useRealData) {
     // only query for test result not using mock data
     if (testResultIds && testResultIds.length > 0) {
@@ -184,21 +190,48 @@ export default async function CanvasPage(props: UrlSearchParams) {
         testIdsArray.includes(result.id.toString())
       );
     }
+
+    if (iBlockIds && iBlockIds.length > 0) {
+      const inputBlockDatas = await getInputBlockDatas();
+      const inputBlockGroupDatas = await getInputBlockGroupDatas();
+      console.log('inputBlockGroupDatas', inputBlockGroupDatas);
+      parsedInputBlockDatas = [
+        ...inputBlockDatas,
+        ...inputBlockGroupDatas.reduce((acc, grp) => {
+          for (const ib of grp.input_blocks) {
+            // console.log('ib', ib);
+            acc.push({
+              gid: grp.gid,
+              cid: ib.cid,
+              name: ib.name,
+              data: ib.data,
+              id: grp.id,
+              group: grp.group,
+              created_at: grp.created_at,
+              updated_at: grp.updated_at,
+            });
+          }
+          return acc;
+        }, [] as InputBlockData[]),
+      ];
+
+      const iBlockIdsArray = iBlockIds.split(',');
+      selectedInputBlockDatasFromUrlParams = parsedInputBlockDatas.filter(
+        (data) => iBlockIdsArray.includes(data.id.toString())
+      );
+    }
+
+    console.log('parsedInputBlockDatas', parsedInputBlockDatas);
+    console.log(
+      'selectedInputBlockDatasFromUrlParams',
+      selectedInputBlockDatasFromUrlParams
+    );
   }
 
   console.log(
     'selectedTestResultsFromUrlParams',
     selectedTestResultsFromUrlParams
   );
-
-  let selectedInputBlockDatasFromUrlParams: InputBlockData[] = [];
-  const inputBlockDatas = await getInputBlockDatas();
-  if (iBlockIds != undefined) {
-    const iBlockIdsArray = iBlockIds.split(',');
-    selectedInputBlockDatasFromUrlParams = inputBlockDatas.filter((data) =>
-      iBlockIdsArray.includes(data.id.toString())
-    );
-  }
 
   return (
     <Suspense
@@ -213,7 +246,7 @@ export default async function CanvasPage(props: UrlSearchParams) {
         initialState={initialState}
         allPluginsWithMdx={pluginsWithMdx}
         allTestResultsOnSystem={parsedTestResults}
-        allInputBlockDatasOnSystem={inputBlockDatas}
+        allInputBlockDatasOnSystem={parsedInputBlockDatas}
         selectedTestResultsFromUrlParams={selectedTestResultsFromUrlParams}
         selectedInputBlockDatasFromUrlParams={
           selectedInputBlockDatasFromUrlParams

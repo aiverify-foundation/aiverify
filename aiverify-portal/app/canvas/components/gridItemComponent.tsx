@@ -152,7 +152,11 @@ function GridItemMain({
   hasVisitedDataSelection,
   useRealData,
 }: GridItemComponentProps) {
-  console.log('>> GridItemMain useRealData: ', useRealData);
+  // console.log('>> GridItemMain useRealData: ', useRealData);
+  // console.log('testResultsUsed:', testResultsUsed);
+  // console.log('inputBlockDatasUsed:', inputBlockDatasUsed);
+  // console.log('allInputBlockDatasOnSystem:', allInputBlockDatasOnSystem);
+
   /**
    * Controls visibility of the context menu that appears when hovering over a widget
    * Contains edit, delete, and info buttons
@@ -380,9 +384,25 @@ function GridItemMain({
     if (inputBlockDatasUsed && inputBlockDatasUsed.length > 0) {
       return inputBlockDatasUsed.reduce<InputBlockDataMapping>((acc, data) => {
         const gid = data.gid || widget.gid;
-        if (data.inputBlockDataId !== undefined) {
+        // if (data.inputBlockDataId !== undefined) {
+        //   const inputBlockData = allInputBlockDatasOnSystem.find(
+        //     (ib) => ib.id === data.inputBlockDataId
+        //   );
+        //   if (inputBlockData && inputBlockData.data) {
+        //     acc[`${gid}:${data.cid}`] = inputBlockData.data;
+        //   } else if (!useRealData) {
+        //     const mockData = findMockDataByTypeAndCid(
+        //       widget.mockdata || [],
+        //       'InputBlock',
+        //       data.cid
+        //     );
+        //     if (mockData && mockData.data) {
+        //       acc[`${gid}:${data.cid}`] = mockData.data;
+        //     }
+        //   }
+        if (gid && data.cid) {
           const inputBlockData = allInputBlockDatasOnSystem.find(
-            (ib) => ib.id === data.inputBlockDataId
+            (ib) => ib.cid === data.cid && ib.gid === gid
           );
           if (inputBlockData && inputBlockData.data) {
             acc[`${gid}:${data.cid}`] = inputBlockData.data;

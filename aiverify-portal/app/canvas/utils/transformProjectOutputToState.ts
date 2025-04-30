@@ -246,15 +246,18 @@ export function transformProjectOutputToState(
           widget
         );
 
+        console.log('project.inputBlocks:', project.inputBlocks);
+        console.log('Real inputBlocks:', inputBlocks);
+
         // Map input blocks to grid items with their input block data IDs
         gridItemToInputBlockDatasMap[widget.gridItemId] = inputBlocks.map(
           (inputBlock) => ({
             gid: inputBlock.gid,
             cid: inputBlock.cid,
-            inputBlockDataId: project.inputBlocks.find(
-              (block) =>
-                block.gid === inputBlock.gid && block.cid === inputBlock.cid
-            )?.id,
+            // inputBlockDataId: inputBlocks.find(
+            //   (block) =>
+            //     block.gid === inputBlock.gid && block.cid === inputBlock.cid
+            // )?.id,
           })
         );
 
