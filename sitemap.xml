@@ -16,7 +16,17 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://imda-btg.github.io/aiverify/appendix/faq/</loc>
+         <lastmod>2025-04-30</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://imda-btg.github.io/aiverify/appendix/standalone-vs-pipeline/</loc>
+         <lastmod>2025-04-30</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://imda-btg.github.io/aiverify/appendix/supported-versions/</loc>
          <lastmod>2025-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -52,11 +62,6 @@
     </url>
     <url>
          <loc>https://imda-btg.github.io/aiverify/detailed-guide/robustness-test/</loc>
-         <lastmod>2025-04-30</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://imda-btg.github.io/aiverify/detailed-guide/supported-versions/</loc>
          <lastmod>2025-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -107,11 +112,6 @@
     </url>
     <url>
          <loc>https://imda-btg.github.io/aiverify/others/compatibility/</loc>
-         <lastmod>2025-04-30</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://imda-btg.github.io/aiverify/others/faq/</loc>
          <lastmod>2025-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
