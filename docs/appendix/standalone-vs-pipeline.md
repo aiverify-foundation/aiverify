@@ -15,12 +15,14 @@ The list of datatype formats supported are as follows:
 
 ## Upload AI Model
 
-![Upload AI Model](../../res/getting-started/model.png)
+![Upload AI Model](../res/getting-started/model.png)
 
 ## Upload Pipeline
 
 If your dataset requires pre-processing before being fed into the prediction model, you can upload the pre-processing functions together with your model as a pipeline folder.
 
-![Upload Pipeline](../../res/getting-started/pipeline.png)
 
-Currently, the toolkit supports a limited set of models. Check out the[ full list of framework and algorithm types supported.](../others/compatibility.md)
+
+![Upload Pipeline](../res/getting-started/pipeline.png)
+
+Currently, the toolkit supports a limited set of models. Check out the[ full list of framework and algorithm types supported.](./supported-versions.md)

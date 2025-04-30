@@ -21,7 +21,7 @@ For generating reports, there are 4 steps needed:
 
 ##Upload Dataset
 
-[Download `sample_bc_credit_data.sav` from this folder](https://github.com/aiverify-foundation/aiverify/tree/e2a0099bf51837e516ef09ca7115cbcbd5d8896c/stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox/tests/user_defined_files/data) to your local file system. To prepare data for your own use case [follow the detailed guide here](./detailed-guide/).
+[Download `sample_bc_credit_data.sav` from this folder](https://github.com/aiverify-foundation/aiverify/tree/e2a0099bf51837e516ef09ca7115cbcbd5d8896c/stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox/tests/user_defined_files/data) to your local file system. To prepare data for your own use case [follow the detailed guide here](./detailed-guide/input-preparation/preparation-of-input-files.md).
 
 From Homepage, click on "Manage"
 ![aivf2-0-manage](./res/getting-started/manage.png)
@@ -45,7 +45,7 @@ Click on “Confirm Dataset” to upload the dataset onto the portal.
 
 
 ##Upload model
-[Download `sample_bc_credit_sklearn_linear.LogisticRegression.sav` from this folder](https://github.com/aiverify-foundation/aiverify/tree/e2a0099bf51837e516ef09ca7115cbcbd5d8896c/stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox/tests/user_defined_files/model) to your local file system. To prepare model for your own use case [follow the detailed guide here](./detailed-guide/)).
+[Download `sample_bc_credit_sklearn_linear.LogisticRegression.sav` from this folder](https://github.com/aiverify-foundation/aiverify/tree/e2a0099bf51837e516ef09ca7115cbcbd5d8896c/stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox/tests/user_defined_files/model) to your local file system. To prepare model for your own use case [follow the detailed guide here](./detailed-guide/input-preparation/preparation-of-input-files.md).
 
 
 From Homepage, click on “Manage”

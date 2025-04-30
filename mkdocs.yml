@@ -71,12 +71,12 @@ nav:
       - Fairness Test: ./detailed-guide/fairness-test.md
       - Explainability Test: ./detailed-guide/explainability-test.md
       - Robustness Test: ./detailed-guide/robustness-test.md
-      - Supported Versions: ./detailed-guide/supported-versions.md
       
-  - FAQs: others/faq.md
   - Appendix: 
       - Standalone model vs Model pipeline: ./appendix/standalone-vs-pipeline.md
       - Understand the Fairness Decision Tree: ./appendix/use-fairness-tree.md
+      - Supported Versions: ./detailed-guide/supported-versions.md
+      - FAQs: ./appendix/faq.md
 
   - References:
       - AI Verify Developer Tools: https://github.com/aiverify-foundation/aiverify-developer-tools/
