@@ -20,6 +20,10 @@ on:
         required: false
         default: 'false'
 
+  push:
+    branches:
+      - ci/publish-pypi
+
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
