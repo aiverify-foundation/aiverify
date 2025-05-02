@@ -19,6 +19,10 @@ on:
         description: 'Set to true to publish the test engine instead of plugins (mutually exclusive)'
         required: false
         default: 'false'
+      branch:
+        description: 'Branch to checkout (optional; defaults to main)'
+        required: false
+        default: 'main'
 
   push:
     branches:
@@ -29,7 +33,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}      
 
       - name: Set up Python
         uses: actions/setup-python@v5
