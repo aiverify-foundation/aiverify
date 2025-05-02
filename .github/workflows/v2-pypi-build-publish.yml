@@ -1,4 +1,55 @@
-name: Build and Publish PyPI
+# -----------------------------------------------------------------------------
+# Workflow: PyPI Build and Publish
+#
+# Overview:
+# This GitHub Actions workflow builds and publishes Python packages (plugins or
+# the test engine) to PyPI or Test PyPI. It can be triggered manually via the 
+# 'workflow_dispatch' event.
+#
+# Inputs:
+# - publish:
+#     Description: Where to publish ('test-pypi', 'pypi', or leave empty for dry run)
+#     Default: ''
+#
+# - plugin:
+#     Description: Plugin name (optional; builds all plugins if not specified)
+#     Default: ''
+#
+# - algo:
+#     Description: Algorithm name (optional; builds all algorithms if not specified)
+#     Default: ''
+#
+# - test_engine:
+#     Description: Set to 'true' to publish the test engine instead of plugins
+#     Default: 'false'
+#
+# - branch:
+#     Description: Branch to checkout (defaults to 'main' if not specified)
+#     Default: 'main'
+#
+# Jobs:
+# - build-and-publish:
+#     Runs on: ubuntu-latest
+#     Steps:
+#     1. Checkout repository using the specified branch.
+#     2. Set up Python (v3.11) environment.
+#     3. Install Hatch (Python build tool).
+#     4. Build and publish plugin(s) if 'test_engine' is false:
+#        - Runs './ci/publish-pypi-plugin.sh' with dynamically built arguments.
+#     5. Build and publish test engine if 'test_engine' is true:
+#        - Runs './ci/publish-pypi-test-engine.sh' with dynamically built arguments.
+#
+# Secrets:
+# - TEST_PYPI_TOKEN: Token for authenticating with Test PyPI.
+# - PYPI_TOKEN: Token for authenticating with PyPI.
+#
+# Notes:
+# - The workflow supports flexible configuration via manual dispatch inputs.
+# - Default behavior (if no inputs are provided) is to build all plugins on the 
+#   'main' branch without publishing (dry run).
+# -----------------------------------------------------------------------------
+
+name: PyPI Build and Publish
 
 on:
   workflow_dispatch:
