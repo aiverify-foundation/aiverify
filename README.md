@@ -20,11 +20,10 @@ We are thrilled to announce the upcoming release of AI Verify 2.x, a groundbreak
 <img src="https://github.com/user-attachments/assets/967b4122-ae88-4cf3-ba76-56562ea7cdc9" width="80%">
 </p>
 
-The new version is targeted for completion by March 2025. For more details on the technical design, refer to our [wiki](https://github.com/aiverify-foundation/aiverify/wiki/AI-Verify-2.0-Architecture).
+For more details on the technical design, refer to our [wiki](https://github.com/aiverify-foundation/aiverify/wiki/AI-Verify-2.0-Architecture).
 
-In the meantime, we have released an alpha version of the new AI Verify 2.x with the modular architecture and independent test algorithms that can be easily installed via pip. Refer to the [aiverify-test-engine directory](./aiverify-test-engine/README.md) for installation instructions or check out the individual plugins of interest in the `stock-plugins` directory.
+Refer to the [aiverify-test-engine directory](./aiverify-test-engine/README.md) for installation instructions or check out the individual plugins of interest in the `stock-plugins` directory.
 
-Stay tuned for more updates as we get closer to the release date. We can't wait for you to experience the new and improved AI Verify 2.x!
 
 ## Introduction
 
@@ -38,11 +37,11 @@ This document provides important notices and information about the project that 
 
 ## User Guide
 
-Learn how you may utilise AI Verify effectively [here](https://aiverify-foundation.github.io/aiverify).
+User guide is updated for v2.0, learn how you may utilise AI Verify effectively [here](https://aiverify-foundation.github.io/aiverify).
 
 ## Developer Guide
 
-Learn how you can utilise the developer tools effectively to contribute to the project [here](https://aiverify-foundation.github.io/aiverify-developer-tools/getting_started/start_here/).
+The AIVT v2.0 developer guide is targeted for completion by July 2025.
 
 ## Contributing Guidelines
 
