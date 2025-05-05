@@ -94,6 +94,175 @@ cre_sco_obj= CreditScoring(model_params = [container], fair_threshold = 80, fair
 
 ```
 
+## ModelContainer
+
+The ModelContainer class is a helper class that holds all the model parameters required for computations in all use cases. It acts as a data holder for model details, input data, and metadata.
+
+### ModelContainer Parameters
+
+Here are the main parameters of the ModelContainer class:
+
+| Parameter       | Type                                      | Required | Default          | Description                                                      |
+| --------------- | ----------------------------------------- | -------- | ---------------- | ---------------------------------------------------------------- |
+| `y_true`        | list, np.ndarray, pd.Series               | Yes      | None             | Ground truth target values                                       |
+| `p_grp`         | dict of lists                             | Yes      | None             | Dictionary of privileged groups for protected variables          |
+| `model_type`    | str                                       | Yes      | "classification" | Type of model: "classification", "regression", or "uplift"       |
+| `model_name`    | str                                       | No       | "auto"           | Name for the model artifact json file                            |
+| `y_pred`        | list, np.ndarray, pd.Series               | No       | None             | Predicted targets as returned by classifier                      |
+| `y_prob`        | list, np.ndarray, pd.Series, pd.DataFrame | No       | None             | Predicted probabilities as returned by classifier                |
+| `y_train`       | list, np.ndarray, pd.Series               | No       | None             | Ground truth for training data                                   |
+| `x_train`       | pd.DataFrame, str                         | No       | None             | Training dataset                                                 |
+| `x_test`        | pd.DataFrame, str                         | No       | None             | Testing dataset                                                  |
+| `model_object`  | object                                    | No       | None             | Trained model object for feature importance                      |
+| `up_grp`        | dict                                      | No       | None             | Dictionary of unprivileged groups for protected variables        |
+| `sample_weight` | list, np.ndarray                          | No       | None             | Weights for normalizing y_true & y_pred                          |
+| `pos_label`     | list                                      | No       | [1]              | Label values considered favorable                                |
+| `neg_label`     | list                                      | No       | None             | Label values considered unfavorable (required for uplift models) |
+
+## Use Cases
+
+The Veritas Toolkit provides various use cases for different applications:
+
+1. Base Classification
+2. Base Regression
+3. Customer Marketing
+4. Credit Scoring
+5. Predictive Underwriting
+
+Each use case is a wrapper around the `Fairness` and `Transparency` classes, which are responsible for computing the respective metrics and analyses. The use cases take in the model container as input using the `model_params` parameter. Here's an example of the parameters of a use case:
+
+### Fairness Parameters
+
+| Parameter          | Type       | Required | Default        | Description                                                                  |
+| ------------------ | ---------- | -------- | -------------- | ---------------------------------------------------------------------------- |
+| `fair_threshold`   | int, float | No       | 80             | Fairness threshold value (0-100)                                             |
+| `perf_metric_name` | str        | No       | "balanced_acc" | Primary performance metric used in `evaluate()` and/or `compile()` functions |
+| `fair_metric_name` | str        | No       | "auto"         | Primary performance metric used in `evaluate()` and/or `compile()` functions |
+| `fair_concern`     | str        | No       | "eligible"     | Fairness concern: "eligible", "inclusive", or "both"                         |
+| `fair_priority`    | str        | No       | "benefit"      | Fairness priority: "benefit" or "harm"                                       |
+| `fair_impact`      | str        | No       | "normal"       | Fairness impact: "normal", "significant", or "selective"                     |
+| `fair_metric_type` | str        | No       | "difference"   | Fairness metric type: "difference" or "ratio"                                |
+
+#### Performance Metrics (`perf_metric_name`)
+
+The performance metrics available depend on the model type. Here are the supported metrics:
+
+| Model Type     | Available Metrics                                                                                                           |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Classification | "accuracy", "balanced_acc", "f1_score", "precision", "recall", "tnr", "fnr", "npv", "roc_auc", "log_loss", "selection_rate" |
+| Regression     | "rmse", "mape", "wape"                                                                                                      |
+| Uplift         | "emp_lift", "expected_profit", "expected_selection_rate"                                                                    |
+
+#### Fairness Metrics (`fair_metric_name`)
+
+When `fair_metric_name` is set to "auto", the toolkit uses the Fairness Tree methodology to determine the appropriate metric based on `fair_concern`, `fair_priority`, and `fair_impact`. You can also directly specify a fairness metric:
+
+**Difference-based Metrics**
+
+These metrics measure the arithmetic difference between privileged and unprivileged groups:
+
+| Metric Name            | Description                                                   |
+| ---------------------- | ------------------------------------------------------------- |
+| `demographic_parity`   | Difference in approval rates                                  |
+| `equal_opportunity`    | Difference in true positive rates                             |
+| `fpr_parity`           | Difference in false positive rates                            |
+| `tnr_parity`           | Difference in true negative rates                             |
+| `fnr_parity`           | Difference in false negative rates                            |
+| `ppv_parity`           | Difference in positive predictive values                      |
+| `npv_parity`           | Difference in negative predictive values                      |
+| `fdr_parity`           | Difference in false discovery rates                           |
+| `for_parity`           | Difference in false omission rates                            |
+| `equal_odds`           | Difference in equalized odds                                  |
+| `neg_equal_odds`       | Difference in negative equalized odds                         |
+| `calibration_by_group` | Difference in calibration by group                            |
+| `auc_parity`           | Difference in AUC                                             |
+| `log_loss_parity`      | Difference in log loss                                        |
+| `rmse_parity`          | Difference in root mean squared error (regression)            |
+| `mape_parity`          | Difference in mean absolute percentage error (regression)     |
+| `wape_parity`          | Difference in weighted absolute percentage error (regression) |
+| `rejected_harm`        | Difference in harm from rejection (uplift)                    |
+| `acquire_benefit`      | Difference in benefit from acquiring (uplift)                 |
+
+**Ratio-based Metrics**
+
+These metrics measure the ratio between unprivileged and privileged groups:
+
+| Metric Name                  | Description                                              |
+| ---------------------------- | -------------------------------------------------------- |
+| `disparate_impact`           | Ratio of approval rates                                  |
+| `equal_opportunity_ratio`    | Ratio of true positive rates                             |
+| `fpr_ratio`                  | Ratio of false positive rates                            |
+| `tnr_ratio`                  | Ratio of true negative rates                             |
+| `fnr_ratio`                  | Ratio of false negative rates                            |
+| `ppv_ratio`                  | Ratio of positive predictive values                      |
+| `npv_ratio`                  | Ratio of negative predictive values                      |
+| `fdr_ratio`                  | Ratio of false discovery rates                           |
+| `for_ratio`                  | Ratio of false omission rates                            |
+| `equal_odds_ratio`           | Ratio of equalized odds                                  |
+| `neg_equal_odds_ratio`       | Ratio of negative equalized odds                         |
+| `calibration_by_group_ratio` | Ratio of calibration by group                            |
+| `auc_ratio`                  | Ratio of AUC                                             |
+| `log_loss_ratio`             | Ratio of log loss                                        |
+| `rmse_ratio`                 | Ratio of root mean squared error (regression)            |
+| `mape_ratio`                 | Ratio of mean absolute percentage error (regression)     |
+| `wape_ratio`                 | Ratio of weighted absolute percentage error (regression) |
+
+#### Fairness Concern (`fair_concern`)
+
+This parameter helps determine what type of fairness concern is being addressed:
+
+| Value       | Description                                                                                                             |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------- |
+| "eligible"  | Focuses on whether individuals who are eligible for a given outcome are treated fairly                                  |
+| "inclusive" | Focuses on whether individuals who are not eligible for a given outcome (e.g. rejected applications) are treated fairly |
+| "both"      | Considers fairness for both accepted and rejected individuals                                                           |
+
+#### Fairness Priority (`fair_priority`)
+
+This parameter helps determine what should be prioritized in the fairness assessment:
+
+| Value     | Description                                               |
+| --------- | --------------------------------------------------------- |
+| "benefit" | Prioritizes ensuring that benefits are distributed fairly |
+| "harm"    | Prioritizes ensuring that harms are distributed fairly    |
+
+#### Fairness Impact (`fair_impact`)
+
+This parameter helps determine the context and severity of the fairness impact:
+
+| Value         | Description                                                                                             |
+| ------------- | ------------------------------------------------------------------------------------------------------- |
+| "normal"      | Standard impact context with no special considerations; selects for basic rate parity metrics           |
+| "significant" | Contexts where decisions have major consequences; selects metrics that focus on predictive value parity |
+| "selective"   | Identical as selecting `significant`                                                                    |
+
+### Transparency Parameters
+
+| Parameter          | Type       | Required | Default | Description                             |
+| ------------------ | ---------- | -------- | ------- | --------------------------------------- |
+| `tran_row_num`     | list       | No       | [1]     | Row indices for local interpretability  |
+| `tran_max_sample`  | int, float | No       | 1       | Number/percent of records to sample     |
+| `tran_pdp_feature` | list       | No       | []      | Features for partial dependence plots   |
+| `tran_max_display` | int        | No       | 10      | Number of features to display in output |
+
+### Special Parameters
+
+Each use case has its own set of special parameters that are specific to the use case. For example, the `CreditScoring` use case takes in additional parameters for `num_applicants` and `base_default_rate`:
+
+| Parameter           | Type | Description                                                      |
+| ------------------- | ---- | ---------------------------------------------------------------- |
+| `num_applicants`    | dict | Counts of rejected applicants for privileged/unprivileged groups |
+| `base_default_rate` | dict | Base default rates for privileged/unprivileged groups            |
+
+while `CustomerMarketing` accepts the following parameters:
+
+| Parameter        | Type       | Description                                  |
+| ---------------- | ---------- | -------------------------------------------- |
+| `treatment_cost` | int, float | Cost of the marketing treatment per customer |
+| `revenue`        | int, float | Revenue gained per customer                  |
+
+For more information, refer to the docstrings of the respective classes and use cases.
+
 ### API functions
 
 Below are the API functions that the user can execute to obtain the fairness and transparency diagnosis of their use cases.
