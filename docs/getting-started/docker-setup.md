@@ -38,4 +38,4 @@ For automated test execution via portal, use
 !!! Warning
       Upon initial start-up of the toolkit, pages might take some time to load.
 
-   ![aiverify-home](../../res/getting-started/ai-verify-example.png)
+   ![aiverify-home](../res/getting-started/aiverify-home.png)
