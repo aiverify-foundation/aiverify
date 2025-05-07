@@ -18,6 +18,7 @@ import {
 import { findInputBlockDataById } from '@/app/canvas/utils/findInputBlockDataById';
 import { findMockDataByTypeAndCid } from '@/app/canvas/utils/findMockDataByTypeAndCid';
 import { findTestResultById } from '@/app/canvas/utils/findTestResultById';
+import { TestModel } from '@/app/models/utils/types';
 import {
   TestResultData,
   InputBlockData,
@@ -48,6 +49,11 @@ type GridItemComponentProps = {
 
   /** Widget configuration with MDX code, properties, and metadata */
   widget: WidgetOnGridLayout;
+
+  /** Test model data from the project */
+  model: TestModel | null;
+
+  projectCreatedAt: string;
 
   /** Test results used by this widget, linking algorithm CIDs to result IDs */
   testResultsUsed?: WidgetAlgoAndResultIdentifier[];
@@ -104,6 +110,12 @@ type GridItemComponentProps = {
   hasVisitedDataSelection: boolean;
 
   useRealData: boolean; // whether to use real or mock data
+  
+  /** Number of tests/algorithms required for the report */
+  requiredTestCount: number;
+  
+  /** Number of tests/algorithms that have been selected */
+  selectedTestCount: number;
 };
 
 type MdxComponentProps = MDXContentProps & {
@@ -111,6 +123,8 @@ type MdxComponentProps = MDXContentProps & {
   properties: Record<string, unknown>;
   testResult: TestResultData;
   inputBlockData: InputBlockDataPayload;
+  model: TestModel | null;
+  projectCreatedAt: string;
   getIBData: (
     algo_cid: string,
     algo_gid: string | null
@@ -127,6 +141,8 @@ type MdxComponentProps = MDXContentProps & {
   ) => string;
   width?: number;
   height?: number;
+  requiredTestCount: number;
+  selectedTestCount: number;
 };
 
 const itemStyle: requiredStyles =
@@ -140,6 +156,8 @@ function GridItemMain({
   widget,
   isDragging,
   isResizing,
+  model,
+  projectCreatedAt,
   testResultsUsed,
   inputBlockDatasUsed,
   onDeleteClick,
@@ -151,6 +169,8 @@ function GridItemMain({
   disabled,
   hasVisitedDataSelection,
   useRealData,
+  requiredTestCount,
+  selectedTestCount,
 }: GridItemComponentProps) {
   // console.log('>> GridItemMain useRealData: ', useRealData);
   // console.log('testResultsUsed:', testResultsUsed);
@@ -673,6 +693,8 @@ function GridItemMain({
               id={widget.gridItemId}
               properties={properties}
               artifacts={widgetArtifacts}
+              model={model}
+              projectCreatedAt={projectCreatedAt}
               testResult={testResultWidgetData}
               inputBlockData={inputBlocksWidgetData}
               getIBData={(algo_cid: string, algo_gid: string | null) => {
@@ -720,6 +742,8 @@ function GridItemMain({
               }}
               width={dimensions.width}
               height={dimensions.height}
+              requiredTestCount={requiredTestCount}
+              selectedTestCount={selectedTestCount}
             />
           </WidgetErrorBoundary>
         )}
@@ -732,17 +756,21 @@ function GridItemMain({
 export const GridItemComponent = React.memo(
   GridItemMain,
   (prevProps, nextProps) => {
+    console.log("model", prevProps.model, nextProps.model);
     // Only re-render if widget data changed, it's being dragged/resized, or selection state changed
     return (
       prevProps.widget === nextProps.widget &&
       prevProps.isDragging === nextProps.isDragging &&
       prevProps.isResizing === nextProps.isResizing &&
+      prevProps.model === nextProps.model &&
       prevProps.layout === nextProps.layout &&
       JSON.stringify(prevProps.testResultsUsed) ===
         JSON.stringify(nextProps.testResultsUsed) &&
       JSON.stringify(prevProps.inputBlockDatasUsed) ===
         JSON.stringify(nextProps.inputBlockDatasUsed) &&
-      prevProps.hasVisitedDataSelection === nextProps.hasVisitedDataSelection
+      prevProps.hasVisitedDataSelection === nextProps.hasVisitedDataSelection &&
+      prevProps.requiredTestCount === nextProps.requiredTestCount &&
+      prevProps.selectedTestCount === nextProps.selectedTestCount
     );
   }
 );

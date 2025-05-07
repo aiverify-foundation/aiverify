@@ -33,6 +33,7 @@ import { debouncedSaveStateToDatabase } from '@/app/canvas/utils/saveStateToData
 import { debouncedSaveTemplateToDatabase } from '@/app/canvas/utils/saveTemplateToDatabase';
 import { ProjectOutput } from '@/app/canvas/utils/transformProjectOutputToState';
 import { TemplateOutput } from '@/app/canvas/utils/transformTemplateOutputToState';
+import { TestModel } from '@/app/models/utils/types';
 import { InputBlockData, Widget } from '@/app/types';
 import { UserFlows } from '@/app/userFlowsEnum';
 import { Button } from '@/lib/components/TremurButton';
@@ -119,6 +120,9 @@ type DesignerProps = {
 
   /** Whether this is a template view or project view */
   isTemplate?: boolean;
+
+  /** Model data for the project */
+  modelData?: TestModel | null;
 };
 
 type EventDataTransfer = Event & {
@@ -168,6 +172,7 @@ function Designer(props: DesignerProps) {
     disabled = false,
     pageNavigationMode = 'multi',
     isTemplate = false,
+    modelData = null,
   } = props;
 
   // Define gridItemDivRequiredStyles here where it has access to disabled prop
@@ -968,6 +973,26 @@ function Designer(props: DesignerProps) {
     setShowSaveModal(true);
   };
 
+  // Calculate the total number of required tests and selected tests
+  const requiredTestCount = state.algorithmsOnReport.length;
+  
+  // Calculate selected test count from project data
+  let selectedTestCount = 0;
+  if ('testResults' in project && Array.isArray(project.testResults)) {
+    selectedTestCount = project.testResults.length;
+  } else {
+    // Count unique test results with valid testResultId across all widgets
+    const uniqueTestResults = new Set();
+    Object.values(state.gridItemToAlgosMap).forEach(algoArray => {
+      algoArray.forEach(algo => {
+        if (algo.testResultId !== undefined) {
+          uniqueTestResults.add(algo.testResultId);
+        }
+      });
+    });
+    selectedTestCount = uniqueTestResults.size;
+  }
+
   const mainControlsSection = (
     <section className="fixed right-[100px] top-[105px] z-50 flex w-[50px] max-w-[50px] flex-col gap-4">
       <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
@@ -1251,6 +1276,7 @@ function Designer(props: DesignerProps) {
                   {state.widgets[pageIndex].map((widget, widgetIndex) => {
                     // console.log('mapping widgets', widget, widgetIndex);
                     if (!widget.gridItemId) return null;
+                    
                     return (
                       <div
                         /*
@@ -1289,6 +1315,8 @@ function Designer(props: DesignerProps) {
                           pageIndex={pageIndex}
                           isDragging={draggingGridItemId === widget.gridItemId}
                           isResizing={resizingGridItemId === widget.gridItemId}
+                          projectCreatedAt={project.created_at || ''}
+                          model={modelData}
                           testResultsUsed={
                             state.gridItemToAlgosMap[widget.gridItemId]
                           }
@@ -1303,6 +1331,8 @@ function Designer(props: DesignerProps) {
                             'testResultIds'
                           )}
                           useRealData={state.useRealData}
+                          requiredTestCount={requiredTestCount}
+                          selectedTestCount={selectedTestCount}
                         />
                       </div>
                     );

@@ -101,7 +101,7 @@ export default function UserInputs({
 }: UserInputsProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [pluginsData, setPluginsData] = useState<Record<string, Plugin>>({});
+  const [, setPluginsData] = useState<Record<string, Plugin>>({});
   const [inputBlockProperties, setInputBlockProperties] = useState<Record<string, InputBlockProperties>>({});
 
   // Fetch plugins data to get input block properties
@@ -435,12 +435,22 @@ export default function UserInputs({
             }
           } else {
             // Regular input block
-            selectedBlocks.push({
-              gid,
-              cid,
-              id: parseInt(inputId),
-              group: null,
-            });
+            const inputBlock = allInputBlockDatas.find((ib) => ib.id?.toString() === inputId);
+            if (inputBlock?.id) {
+              selectedBlocks.push({
+                gid,
+                cid,
+                id: inputBlock.id,
+                group: null,
+              });
+            } else {
+              selectedBlocks.push({
+                gid,
+                cid,
+                id: parseInt(inputId),
+                group: null,
+              });
+            }
           }
         }
       }
@@ -526,7 +536,8 @@ export default function UserInputs({
     setCurrentInputBlock(null);
     setShowInputModal(false);
     
-    if (shouldRefresh) {
+    // Only refresh if explicitly requested and not already triggered by handleInputSubmit
+    if (shouldRefresh && !shouldFetchData) {
       refreshData();
     }
   };
@@ -540,32 +551,40 @@ export default function UserInputs({
       };
       setSelectedSingleInputs(newSingleInputs);
 
-      // Notify parent of selection change directly
-      updateParentWithSelectedBlocks(selectedGroup, newSingleInputs);
+      // Force a router refresh to get the latest data from the server
+      router.refresh();
+      
+      // Wait for the router refresh to complete before notifying parent
+      // This ensures the parent component has access to the latest data
+      setTimeout(() => {
+        // Notify parent of selection change after refresh
+        updateParentWithSelectedBlocks(selectedGroup, newSingleInputs);
+        
+        // Also validate the input block
+        if (data.gid && data.cid && typeof data.data === 'object') {
+          validateInputBlock(
+            data.gid as string,
+            data.cid as string,
+            data.data as Record<string, unknown>,
+            data.id as number
+          ).then(result => {
+            // Update validation results and notify parent
+            setValidationResults((prev) => {
+              const newResults = {
+                ...prev,
+                [`${data.gid}-${data.cid}-${data.id}`]: result,
+              };
 
-      if (data.gid && data.cid && typeof data.data === 'object') {
-        const result = await validateInputBlock(
-          data.gid as string,
-          data.cid as string,
-          data.data as Record<string, unknown>,
-          data.id as number
-        );
+              // Notify parent of validation change
+              if (onValidationResultsChange) {
+                onValidationResultsChange(newResults);
+              }
 
-        // Update validation results and notify parent in one go
-        setValidationResults((prev) => {
-          const newResults = {
-            ...prev,
-            [`${data.gid}-${data.cid}-${data.id}`]: result,
-          };
-
-          // Notify parent of validation change
-          if (onValidationResultsChange) {
-            onValidationResultsChange(newResults);
-          }
-
-          return newResults;
-        });
-      }
+              return newResults;
+            });
+          });
+        }
+      }, 300); // Small delay to ensure refresh completes
     }
   };
 
@@ -726,6 +745,15 @@ export default function UserInputs({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedGroup]);
+
+  // Effect to update parent when allInputBlockDatas changes and we have selected inputs
+  useEffect(() => {
+    // Only run if we have selected inputs and allInputBlockDatas has been loaded
+    if (Object.keys(selectedSingleInputs).length > 0 && allInputBlockDatas.length > 0) {
+      //console.log('allInputBlockDatas changed, updating parent with current selections');
+      updateParentWithSelectedBlocks(selectedGroup, selectedSingleInputs);
+    }
+  }, [allInputBlockDatas]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="rounded-lg border border-secondary-500 bg-secondary-950 p-6">
