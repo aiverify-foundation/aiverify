@@ -470,9 +470,10 @@ export default function ClientSelectData({
     flow === UserFlows.NewProjectWithNewTemplate ||
     flow === UserFlows.NewProjectWithNewTemplateAndResults ||
     flow === UserFlows.NewProjectWithEditingExistingTemplate ||
-    flow === UserFlows.NewProjectWithEditingExistingTemplateAndResults
+    flow === UserFlows.NewProjectWithEditingExistingTemplateAndResults ||
+    flow === UserFlows.EditExistingProject
   ) {
-    backButtonLink = `/canvas?flow=${flow}&projectId=${projectId}`;
+    backButtonLink = `/canvas?flow=${flow}&projectId=${projectId}&mode=edit`;
   } else {
     backButtonLink = `/templates?flow=${flow}&projectId=${projectId}`;
   }
@@ -634,8 +635,8 @@ export default function ClientSelectData({
       </div>
 
       <div
-        className={`flex ${flow !== UserFlows.EditExistingProject ? 'justify-between' : 'justify-end'}`}>
-        {flow !== UserFlows.EditExistingProject ? (
+        className='flex justify-between'>
+        
           <Link href={backButtonLink}>
             <Button
               className="w-[130px] gap-4 p-2 text-white"
@@ -643,7 +644,7 @@ export default function ClientSelectData({
               <RiArrowLeftLine /> Back
             </Button>
           </Link>
-        ) : null}
+        
         {(requiredInputBlocks.length === 0 ||
           requiredInputBlocks.length <= selectedInputBlocks.length) &&
           !hasValidationErrors && (

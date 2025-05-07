@@ -1378,6 +1378,10 @@ function Designer(props: DesignerProps) {
       canvasState.navigateToNextStep(
         `/project/select_data?flow=${UserFlows.NewProjectWithEditingExistingTemplate}&projectId=${project?.id}`
       );
+    } else if (flow === UserFlows.EditExistingProject) {
+      canvasState.navigateToNextStep(
+        `/project/select_data?flow=${UserFlows.EditExistingProject}&projectId=${project?.id}`
+      );
     }
   };
 
@@ -1432,7 +1436,8 @@ function Designer(props: DesignerProps) {
             </Link>
           ) : null}
           {flow === UserFlows.NewProjectWithNewTemplate ||
-          flow === UserFlows.NewProjectWithEditingExistingTemplate ? (
+            flow === UserFlows.NewProjectWithEditingExistingTemplate ||
+            flow === UserFlows.EditExistingProject ? (
             <Button
               className="w-[130px] gap-4 p-2 text-white"
               onClick={handleNextClick}>
