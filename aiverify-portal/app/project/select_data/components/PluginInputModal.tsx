@@ -4,8 +4,14 @@ import dynamic from 'next/dynamic';
 import React, { useEffect } from 'react';
 import * as ReactJSXRuntime from 'react/jsx-runtime';
 import { Skeleton } from '@/app/inputs/groups/[gid]/[group]/[groupId]/[cid]/utils/Skeletion';
-import type { MDXProps } from '@/app/inputs/groups/[gid]/[group]/[groupId]/[cid]/utils/types';
 import { Modal } from '@/lib/components/modal';
+import '@/app/inputs/[gid]/[cid]/components/DecisionTree.css';
+
+// Define a more specific interface for MDX component props
+interface DynamicMDXProps {
+  data: Record<string, unknown>;
+  onChangeData: (key: string, value: unknown) => void;
+}
 
 // Message Modal Component for Success/Error messages
 interface MessageModalProps {
@@ -47,6 +53,8 @@ interface PluginInputModalProps {
   onSubmit: (data: Record<string, unknown>) => void;
   gid: string;
   cid: string;
+  width?: string; // "xs", "sm", "md", "lg", "xl"
+  fullScreen?: boolean;
 }
 
 export default function PluginInputModal({
@@ -58,6 +66,8 @@ export default function PluginInputModal({
   onSubmit,
   gid,
   cid,
+  width,
+  fullScreen,
 }: PluginInputModalProps) {
   const [formData, setFormData] = React.useState<Record<string, unknown>>({});
   const [error, setError] = React.useState<string>('');
@@ -101,9 +111,10 @@ export default function PluginInputModal({
       };
 
       const componentFn = new Function(...Object.keys(context), mdxContent);
+      // Use our custom interface for the component props
       const Component = componentFn(
         ...Object.values(context)
-      ) as React.ComponentType<MDXProps>;
+      ) as React.ComponentType<DynamicMDXProps>;
 
       return dynamic(() => Promise.resolve(Component), {
         loading: () => <Skeleton className="h-64 w-full" />,
@@ -155,19 +166,22 @@ export default function PluginInputModal({
       // Generate a unique group ID using timestamp and random characters
       const uniqueGroup = `${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
 
+      // Prepare data to submit
+      const dataToSubmit = {
+        gid,
+        cid,
+        group: uniqueGroup,
+        name: customName.trim(),
+        data: formData,
+      };
+
       // Make POST request to /api/input_block_data
       const response = await fetch('/api/input_block_data', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          gid,
-          cid,
-          group: uniqueGroup,
-          name: customName.trim(), // Use the custom name instead of inputBlockName
-          data: formData,
-        }),
+        body: JSON.stringify(dataToSubmit),
       });
 
       if (!response.ok) {
@@ -178,9 +192,7 @@ export default function PluginInputModal({
       await onSubmit(result);
 
       // Clear form data after successful submission but don't reset message modal state
-      setFormData({});
-      setCustomName('');
-      setError('');
+      resetForm();
 
       // Show success message
       setMessageModalProps({
@@ -220,6 +232,39 @@ export default function PluginInputModal({
     }
   };
 
+  // Map width prop to actual width values
+  const getModalWidth = () => {
+    if (fullScreen) {
+      return "100vw";
+    }
+    
+    // Map size to actual width
+    switch(width) {
+      case 'xs':
+        return '20rem'; // 320px
+      case 'sm':
+        return '30rem'; // 480px
+      case 'md':
+        return '40rem'; // 640px
+      case 'lg':
+        return '50rem'; // 800px
+      case 'xl':
+        return '60rem'; // 960px
+      default:
+        return '40rem'; // Default to medium size
+    }
+  };
+  console.log("width", getModalWidth());
+
+  // Determine modal height based on fullScreen prop
+  const getModalHeight = () => {
+    if (fullScreen) {
+      return "100vh";
+    }
+    return 'calc(100% - 100px)';
+  };
+  console.log("height", getModalHeight());
+
   if (!isOpen) return null;
 
   return (
@@ -234,9 +279,10 @@ export default function PluginInputModal({
           onSecondaryBtnClick={handleClose}
           primaryBtnLabel={isLoading ? 'Submitting...' : 'Submit'}
           secondaryBtnLabel="Cancel"
-          width={'calc(100% - 200px)'}
-          height={'calc(100% - 100px)'}>
-          <div className="flex h-[calc(100%-4rem)] flex-col justify-between">
+          width={getModalWidth()}
+          height={getModalHeight()}
+          className={fullScreen ? "fixed inset-0 !translate-x-0 !translate-y-0 !top-0 !left-0 !transform-none rounded-none" : ""}>
+          <div className={`flex ${fullScreen ? 'h-full' : 'h-[calc(100%-4rem)]'} flex-col`}>
             {/* Custom name input field with tooltip */}
             <div className="mb-6">
               <div className="mb-2 flex items-center">
@@ -264,17 +310,16 @@ export default function PluginInputModal({
             </div>
 
             <MDXProvider>
-              <div className="prose prose-invert max-w-none overflow-y-auto">
+              <div className="">
                 {MDXComponent && (
                   <MDXComponent
-                    data={formData as Record<string, string>}
-                    onChangeData={(key: string, value: string) => {
-                      handleChange(key, value);
-                    }}
+                    data={formData}
+                    onChangeData={handleChange}
                   />
                 )}
               </div>
             </MDXProvider>
+            
             {error && <div className="mt-4 text-sm text-red-500">{error}</div>}
           </div>
         </Modal>

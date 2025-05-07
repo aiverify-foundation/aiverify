@@ -420,13 +420,16 @@ export default function ClientSelectData({
     try {
       // Transform the data to only include IDs
       const transformedData = {
-        testModelId: selectedModelId,
+        testModelId: selectedModelId ? parseInt(selectedModelId) : null,
         testResults: selectedTestResults.map((result) => result.id),
         inputBlocks: selectedInputBlocks.map((block) => block.id),
       };
 
+      console.log('transformedData', transformedData);
+
       // Send all changes in a single patch request
       await patchProject(projectId, transformedData);
+      console.log('patchProject done');
 
       // Update flow based on current flow
       let updatedFlow = flow;
@@ -475,8 +478,8 @@ export default function ClientSelectData({
   }
   console.log('backButtonLink', backButtonLink);
 
-  console.log('requiredinputblocks length', requiredInputBlocks.length);
-  console.log('selectedinputblocks length', selectedInputBlocks.length);
+  console.log('requiredinputblocks length', requiredInputBlocks);
+  console.log('selectedinputblocks length', selectedInputBlocks);
   console.log(
     'requiredInputBlocks.length === 0 || requiredInputBlocks.length === selectedInputBlocks.length',
     requiredInputBlocks.length === 0 ||
@@ -643,8 +646,7 @@ export default function ClientSelectData({
         ) : null}
         {(requiredInputBlocks.length === 0 ||
           requiredInputBlocks.length <= selectedInputBlocks.length) &&
-          !hasValidationErrors &&
-          invalidInputBlocks.length === 0 && (
+          !hasValidationErrors && (
             <Button
               className={`w-[130px] gap-4 p-2 text-white ${flow}`}
               variant="secondary"

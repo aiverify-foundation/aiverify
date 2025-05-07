@@ -10,7 +10,6 @@ import {
 } from '@/app/canvas/utils/transformTemplateOutputToState';
 import { ReportTemplate, Page, Layout } from '@/app/templates/types';
 import { InputBlockData } from '@/app/types';
-import { TestResult } from '@/app/types';
 import { UserFlows } from '@/app/userFlowsEnum';
 import {
   getInputBlockDatas,
@@ -53,7 +52,7 @@ export default async function CanvasPage(props: UrlSearchParams) {
   console.log('testResultIds', testResultIds);
 
   const useRealData = !!(
-    projectId !== undefined && testResultIds !== undefined
+    projectId !== undefined && mode !== 'edit'
   );
   console.log('useRealData:', useRealData);
 
