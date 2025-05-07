@@ -124,7 +124,7 @@ class PluginTest:
         str(Path(__file__).parent / "user_defined_files/pickle_pipeline.sav"),
         str(Path(__file__).parent / "user_defined_files/sklearn_pipeline_files/"),
         str(Path(__file__).parent / "user_defined_files/sklearn_pipeline_files.zip"),
-        "https://github.com/aiverify-foundation/aiverify/raw/refs/heads/v2.x/aiverify-test-engine/tests/io/user_defined_files/sklearn_pipeline_files.zip",  # noqa: E501
+        "https://github.com/aiverify-foundation/aiverify/raw/refs/heads/main/aiverify-test-engine/tests/io/user_defined_files/sklearn_pipeline_files.zip",  # noqa: E501
     ],
 )
 def test_end_to_end_pipeline_plugin(file_path, request):
