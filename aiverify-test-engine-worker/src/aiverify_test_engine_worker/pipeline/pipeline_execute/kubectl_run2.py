@@ -47,7 +47,8 @@ class KubectlRun2(Pipe):
             "--model_path", pod_model_path, 
             "--model_type", task_data.task.modelType.lower(),
             "--algorithm_args", json_args,
-            "--apigw_url", self.apigw_url
+            "--apigw_url", self.apigw_url,
+            "--upload_output_to_apigw",
         ]
 
         if task_data.ground_truth_path and task_data.task.groundTruth:
