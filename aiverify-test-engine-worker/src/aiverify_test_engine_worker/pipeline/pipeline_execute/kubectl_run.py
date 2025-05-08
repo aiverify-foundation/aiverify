@@ -21,8 +21,8 @@ class KubectlRun(Pipe):
     def setup(self):
         self.kubectl_bin = os.getenv("KUBECTL", "kubectl")
         self.algo_execute = Path(__file__).parent.joinpath("algo_execute.py")
-        self.apigw_url = os.getenv("DOCKER_APIGW_URL", "http://host.docker.internal:4000")
-        self.extra_args = os.getenv("DOCKER_RUN_EXTRA_ARGS", "--namespace=aiverify")
+        self.apigw_url = os.getenv("KUBECTL_APIGW_URL", "http://apigw.aiverify.svc.cluster.local:4000")
+        self.extra_args = os.getenv("KUBECTL_RUN_EXTRA_ARGS", "--namespace=aiverify")
         registry = os.getenv("KUBECTL_REGISTRY", None)
         if registry is None:
             registry = os.getenv("DOCKER_REGISTRY", "localhost:5000")
@@ -41,7 +41,7 @@ class KubectlRun(Pipe):
                 pod_name,
                 "--restart=Never",
                 self.extra_args,
-                f"--image={self.registry}/{tag}",
+                f"--image={self.registry + '/' if self.registry else ''}{tag}", 
                 "--command",
                 "--",
                 "/bin/sh", "-c", "trap : TERM INT; sleep infinity & wait"
