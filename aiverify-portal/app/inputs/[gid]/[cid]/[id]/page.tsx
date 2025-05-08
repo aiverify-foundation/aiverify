@@ -246,11 +246,11 @@ export default function DynamicInputBlockDetail({
             <h1 className="text-2xl font-bold text-white">{inputData.name}</h1>
             <div className="flex space-x-3 text-sm text-secondary-400">
               <span>
-                Created: {new Date(inputData.created_at).toLocaleDateString()}
+                Created: {new Date(inputData.created_at + "Z").toLocaleDateString()}
               </span>
               <span>
                 Last Updated:{' '}
-                {new Date(inputData.updated_at).toLocaleDateString()}
+                {new Date(inputData.updated_at + "Z").toLocaleDateString()}
               </span>
             </div>
           </div>

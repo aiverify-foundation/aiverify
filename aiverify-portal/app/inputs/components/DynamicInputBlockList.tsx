@@ -217,11 +217,11 @@ export const DynamicInputBlockList: React.FC<DynamicInputBlockListProps> = ({
                     </div>
                     <div className="text-sm text-gray-500">
                       Last updated:{' '}
-                      {new Date(item.updated_at).toLocaleDateString('en-GB')}
+                      {new Date(item.updated_at + "Z").toLocaleDateString('en-GB')}
                     </div>
                     <div className="mt-2 text-sm text-gray-400">
                       Created:{' '}
-                      {new Date(item.created_at).toLocaleDateString('en-GB')}
+                      {new Date(item.created_at + "Z").toLocaleDateString('en-GB')}
                     </div>
                   </div>
                 </Card>
