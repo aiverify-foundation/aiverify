@@ -97,7 +97,7 @@ function TestResultsDrawer(props: TestResultsDrawerProps) {
                       {result.name}
                     </span>
                     <span className="text-xs text-gray-500">
-                      {new Date(result.created_at).toLocaleString()}
+                      {new Date(result.created_at + "Z").toLocaleString()}
                     </span>
                   </div>
                 </label>
