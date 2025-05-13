@@ -80,7 +80,7 @@ export interface ProjectOutput {
     reportTitle: string;
     company: string;
   };
-  testModelId: string | null;
+  testModelId: number | null;
   inputBlocks: {
     id: number;
     gid: string;
