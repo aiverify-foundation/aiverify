@@ -155,7 +155,7 @@ const GroupDetail: React.FC<{
           <div className="flex flex-col gap-0">
             <div className="text-lg font-medium">{ib.name}</div>
             <div className="text-sm text-gray-500">
-              Last updated: {new Date(group.updated_at).toLocaleDateString()}
+              Last updated: {new Date(group.updated_at + "Z").toLocaleDateString()}
             </div>
             <ChecklistMDX cid={ib.cid} />
           </div>

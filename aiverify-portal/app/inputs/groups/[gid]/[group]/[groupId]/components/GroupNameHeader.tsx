@@ -35,7 +35,11 @@ const GroupHeader = ({
   const [] = useState<Record<string, string>>({});
 
   // const { checklists, setChecklists, setSelectedGroup } = useChecklists();
-  const { groupId, group, currentGroupData } = useInputBlockGroupData();
+  const { groupId, group, currentGroupData, gid } = useInputBlockGroupData();
+  
+  // Check if the current group is the aiverify process checklist
+  const isProcessChecklist = gid === 'aiverify.stock.process_checklist';
+  
   const checklists: Checklist[] = currentGroupData
     ? currentGroupData.input_blocks.map(
         (x) =>
@@ -263,14 +267,16 @@ const GroupHeader = ({
       )}
 
       <div className="flex justify-between gap-2">
-        {/* Custom download button */}
-        <button
-          onClick={handleExportClick}
-          disabled={isDownloading || isJsonExporting || isXlsxExporting}
-          className="mt-2 hover:text-primary-500"
-          title="Export checklists">
-          <RiDownloadLine size={20} />
-        </button>
+        {/* Custom download button - only show for aiverify.stock.process_checklist */}
+        {isProcessChecklist && (
+          <button
+            onClick={handleExportClick}
+            disabled={isDownloading || isJsonExporting || isXlsxExporting}
+            className="mt-2 hover:text-primary-500"
+            title="Export checklists">
+            <RiDownloadLine size={20} />
+          </button>
+        )}
         <button
           onClick={handleEditClick}
           // disabled={isEditing || editGroupMutation.isPending}
