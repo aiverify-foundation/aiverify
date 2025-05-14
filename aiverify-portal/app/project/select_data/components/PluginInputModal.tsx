@@ -1,11 +1,25 @@
 import { MDXProvider } from '@mdx-js/react';
 import { RiInformationLine } from '@remixicon/react';
 import dynamic from 'next/dynamic';
-import React, { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useMemo } from 'react';
 import * as ReactJSXRuntime from 'react/jsx-runtime';
+import { QueryProvider } from '@/app/inputs/[gid]/[cid]/components/QueryProvider';
+import { Tooltip } from '@/app/inputs/[gid]/[cid]/components/Tooltip';
+import { FairnessTreeProvider } from '@/app/inputs/[gid]/[cid]/context/FairnessTreeContext';
 import { Skeleton } from '@/app/inputs/groups/[gid]/[group]/[groupId]/[cid]/utils/Skeletion';
-import type { MDXProps } from '@/app/inputs/groups/[gid]/[group]/[groupId]/[cid]/utils/types';
 import { Modal } from '@/lib/components/modal';
+import '@/app/inputs/[gid]/[cid]/components/DecisionTree.css';
+
+// Define a more specific interface for MDX component props
+interface DynamicMDXProps {
+  data: Record<string, unknown>;
+  onChangeData: (key: string, value: unknown) => void;
+  isEditing?: boolean;
+  graphdata?: Record<string, unknown>;
+  definitions?: Record<string, unknown>;
+  frontmatter?: Record<string, unknown>;
+}
 
 // Message Modal Component for Success/Error messages
 interface MessageModalProps {
@@ -47,7 +61,39 @@ interface PluginInputModalProps {
   onSubmit: (data: Record<string, unknown>) => void;
   gid: string;
   cid: string;
+  width?: string; // "xs", "sm", "md", "lg", "xl"
+  fullScreen?: boolean;
+  frontmatter?: Record<string, unknown>; // Add frontmatter from MDX bundle
 }
+
+// Universal initial data structure that works for all component types
+const createUniversalInitialData = () => ({
+  // Common fields that might be used by any component
+  name: '',
+  description: '',
+  
+  // Fields used by fairness trees and other complex components
+  sensitiveFeature: '',
+  favourableOutcomeName: '',
+  qualified: '',
+  unqualified: '',
+  
+  // Arrays that might be needed by any component
+  data: [],
+  metrics: [],
+  selectedOutcomes: [],
+  
+  // Nested structures that might be needed
+  selections: {
+    nodes: [],
+    edges: [],
+  },
+  
+  // Other potential fields with safe default values
+  options: {},
+  config: {},
+  parameters: {},
+});
 
 export default function PluginInputModal({
   isOpen,
@@ -58,11 +104,20 @@ export default function PluginInputModal({
   onSubmit,
   gid,
   cid,
+  width,
+  fullScreen,
+  frontmatter,
 }: PluginInputModalProps) {
-  const [formData, setFormData] = React.useState<Record<string, unknown>>({});
+  // Create a universal initial data structure that works for all component types
+  const initialFormData = useMemo(() => createUniversalInitialData(), []);
+  
+  const [formData, setFormData] = React.useState<Record<string, unknown>>(initialFormData);
   const [error, setError] = React.useState<string>('');
   const [isLoading, setIsLoading] = React.useState(false);
   const [customName, setCustomName] = React.useState<string>('');
+  const [validationProgress, setValidationProgress] = React.useState<number>(0);
+  const [isSubmitted, setIsSubmitted] = React.useState<boolean>(false);
+  const router = useRouter();
 
   // State for message modal
   const [showMessageModal, setShowMessageModal] = React.useState(false);
@@ -86,10 +141,52 @@ export default function PluginInputModal({
 
   // Function to reset the form to its initial state
   const resetForm = () => {
-    setFormData({});
+    setFormData(initialFormData);
     setCustomName('');
     setError('');
+    setValidationProgress(0);
+    setIsSubmitted(false);
   };
+
+  // Extract validation and summary functions if they exist in the MDX content
+  const extractedFunctions = useMemo(() => {
+    if (!mdxContent) return null;
+
+    try {
+      const context = {
+        React,
+        jsx: ReactJSXRuntime.jsx,
+        jsxs: ReactJSXRuntime.jsxs,
+        _jsx_runtime: ReactJSXRuntime,
+        Fragment: ReactJSXRuntime.Fragment,
+      };
+
+      const componentFn = new Function(...Object.keys(context), mdxContent);
+      const moduleExports = componentFn(...Object.values(context));
+
+      return {
+        validate: typeof moduleExports.validate === 'function' ? moduleExports.validate : null,
+        progress: typeof moduleExports.progress === 'function' ? moduleExports.progress : null,
+        summary: typeof moduleExports.summary === 'function' ? moduleExports.summary : null,
+      };
+    } catch (error) {
+      console.error('Error extracting functions from MDX:', error);
+      return null;
+    }
+  }, [mdxContent]);
+
+  // Update progress whenever form data changes
+  useEffect(() => {
+    if (extractedFunctions?.progress) {
+      try {
+        const progress = extractedFunctions.progress(formData);
+        setValidationProgress(progress || 0);
+      } catch (error) {
+        console.error('Error calculating progress:', error);
+        setValidationProgress(0);
+      }
+    }
+  }, [formData, extractedFunctions]);
 
   const MDXComponent = React.useMemo(() => {
     if (!mdxContent) return null;
@@ -97,13 +194,17 @@ export default function PluginInputModal({
     try {
       const context = {
         React,
+        jsx: ReactJSXRuntime.jsx,
+        jsxs: ReactJSXRuntime.jsxs,
         _jsx_runtime: ReactJSXRuntime,
+        Fragment: ReactJSXRuntime.Fragment,
       };
 
       const componentFn = new Function(...Object.keys(context), mdxContent);
+      // Use our custom interface for the component props
       const Component = componentFn(
         ...Object.values(context)
-      ) as React.ComponentType<MDXProps>;
+      ) as React.ComponentType<DynamicMDXProps>;
 
       return dynamic(() => Promise.resolve(Component), {
         loading: () => <Skeleton className="h-64 w-full" />,
@@ -116,44 +217,79 @@ export default function PluginInputModal({
   }, [mdxContent]);
 
   const handleChange = (name: string, value: unknown) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => {
+      // Handle nested properties (e.g., 'selections.nodes')
+      if (name.includes('.')) {
+        const parts = name.split('.');
+        const topLevelProp = parts[0];
+        const nestedProp = parts[1];
+        
+        // Ensure the top-level property exists and is an object
+        const topLevelObj = prev[topLevelProp] || {};
+        
+        // Create a new object with the nested property updated
+        const updatedObj = { 
+          ...topLevelObj, 
+          [nestedProp]: value 
+        };
+        
+        return { ...prev, [topLevelProp]: updatedObj };
+      }
+      
+      // Handle regular properties
+      return { ...prev, [name]: value };
+    });
+    
     setError('');
+  };
+
+  const validateForm = (): boolean => {
+    // Check if name is provided
+    if (!customName.trim()) {
+      setError('Please provide a unique name for this input block');
+      return false;
+    }
+
+    // Use validation function if available
+    if (extractedFunctions?.validate) {
+      try {
+        const isValid = extractedFunctions.validate(formData);
+        if (!isValid) {
+          setError('Please fill in all required fields before submitting.');
+          return false;
+        }
+      } catch (error) {
+        console.error('Validation error:', error);
+        setError('Error validating form data. Please check your inputs.');
+        return false;
+      }
+    }
+
+    return true;
   };
 
   const handleSubmit = async () => {
     setError('');
     setIsLoading(true);
 
-    if (!customName.trim()) {
-      setError('Please provide a unique name for this input block');
+    // Validate form
+    if (!validateForm()) {
       setIsLoading(false);
       return;
     }
 
     try {
-      // Validate JSON data if present
-      if (formData.data) {
-        const data =
-          typeof formData.data === 'string'
-            ? JSON.parse(formData.data as string)
-            : formData.data;
-
-        if (!Array.isArray(data)) {
-          throw new Error('Data must be an array of objects');
-        }
-
-        // Validate each data point
-        data.forEach((point, index) => {
-          if (!point.x || !point.y) {
-            throw new Error(
-              `Data point ${index} must have x and y coordinates`
-            );
-          }
-        });
-      }
-
       // Generate a unique group ID using timestamp and random characters
       const uniqueGroup = `${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
+
+      // Prepare data to submit
+      const dataToSubmit = {
+        gid,
+        cid,
+        group: uniqueGroup,
+        name: customName.trim(),
+        data: formData,
+      };
 
       // Make POST request to /api/input_block_data
       const response = await fetch('/api/input_block_data', {
@@ -161,13 +297,7 @@ export default function PluginInputModal({
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          gid,
-          cid,
-          group: uniqueGroup,
-          name: customName.trim(), // Use the custom name instead of inputBlockName
-          data: formData,
-        }),
+        body: JSON.stringify(dataToSubmit),
       });
 
       if (!response.ok) {
@@ -178,9 +308,7 @@ export default function PluginInputModal({
       await onSubmit(result);
 
       // Clear form data after successful submission but don't reset message modal state
-      setFormData({});
-      setCustomName('');
-      setError('');
+      resetForm();
 
       // Show success message
       setMessageModalProps({
@@ -188,6 +316,7 @@ export default function PluginInputModal({
         message: `Input block "${customName}" was successfully created!`,
         type: 'success',
       });
+      setIsSubmitted(true);
       setShowMessageModal(true);
     } catch (e) {
       const errorMessage = e instanceof Error ? e.message : 'Invalid form data';
@@ -199,6 +328,7 @@ export default function PluginInputModal({
         message: errorMessage,
         type: 'error',
       });
+      setIsSubmitted(true);
       setShowMessageModal(true);
     } finally {
       setIsLoading(false);
@@ -216,72 +346,193 @@ export default function PluginInputModal({
     if (messageModalProps.type === 'success') {
       // Only close the main modal if it was a success message
       // and pass true to indicate data should be refreshed
+      router.refresh();
       onClose(true);
     }
   };
 
+  // Map width prop to actual width values
+  const getModalWidth = () => {
+    if (fullScreen) {
+      return "100vw";
+    }
+    
+    // Map size to actual width
+    switch(width) {
+      case 'xs':
+        return '20rem'; // 320px
+      case 'sm':
+        return '30rem'; // 480px
+      case 'md':
+        return '40rem'; // 640px
+      case 'lg':
+        return '50rem'; // 800px
+      case 'xl':
+        return '60rem'; // 960px
+      default:
+        return '90%'; // Default to 90% like FairnessTreeUploadModal
+    }
+  };
+
+  // Determine modal height based on fullScreen prop
+  const getModalHeight = () => {
+    if (fullScreen) {
+      return "100vh";
+    }
+    return 'calc(100% - 50px)'; // Match FairnessTreeUploadModal height
+  };
+
   if (!isOpen) return null;
+
+  // If we're in the submitted state, show the appropriate message modal
+  if (isSubmitted) {
+    return (
+      <>
+        {messageModalProps.type === 'success' && (
+          <Modal
+            heading="Success"
+            enableScreenOverlay={true}
+            onCloseIconClick={() => {
+              setShowMessageModal(false);
+              setIsSubmitted(false);
+              router.refresh();
+              onClose(true);
+            }}
+            width="500px"
+            height="200px">
+            {messageModalProps.message}
+          </Modal>
+        )}
+        {messageModalProps.type === 'error' && (
+          <Modal
+            heading="Error"
+            enableScreenOverlay={true}
+            onCloseIconClick={() => {
+              setShowMessageModal(false);
+              setIsSubmitted(false);
+            }}
+            width="500px"
+            height="200px">
+            {messageModalProps.message}
+          </Modal>
+        )}
+      </>
+    );
+  }
+
+  // For loading state
+  if (isLoading && !MDXComponent) {
+    return (
+      <Modal
+        heading={`Loading ${inputBlockName}`}
+        enableScreenOverlay={true}
+        onCloseIconClick={handleClose}
+        width={getModalWidth()}
+        height={getModalHeight()}>
+        <div className="flex h-64 items-center justify-center">
+          <div className="mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-white" />
+          <p className="ml-3 text-lg text-white">Loading content...</p>
+        </div>
+      </Modal>
+    );
+  }
 
   return (
     <>
-      {/* Main form modal - only hide when showing success message */}
-      {!(showMessageModal && messageModalProps.type === 'success') && (
-        <Modal
-          heading={`${pluginName} - ${inputBlockName}`}
-          enableScreenOverlay={true}
-          onCloseIconClick={handleClose}
-          onPrimaryBtnClick={handleSubmit}
-          onSecondaryBtnClick={handleClose}
-          primaryBtnLabel={isLoading ? 'Submitting...' : 'Submit'}
-          secondaryBtnLabel="Cancel"
-          width={'calc(100% - 200px)'}
-          height={'calc(100% - 100px)'}>
-          <div className="flex h-[calc(100%-4rem)] flex-col justify-between">
-            {/* Custom name input field with tooltip */}
-            <div className="mb-6">
-              <div className="mb-2 flex items-center">
-                <label
-                  htmlFor="custom-name"
-                  className="font-medium text-white">
-                  Input Block Name
-                </label>
-                <div className="group relative ml-2">
-                  <RiInformationLine className="cursor-help text-gray-400 hover:text-white" />
-                  <div className="invisible absolute left-full top-0 z-10 ml-2 w-64 rounded bg-gray-800 p-2 text-xs text-white opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100">
-                    Give your input block a unique name to identify it by
+      {/* Main form modal */}
+      <QueryProvider>
+        <FairnessTreeProvider>
+          <Modal
+            heading={`${pluginName} - ${inputBlockName}`}
+            enableScreenOverlay={true}
+            onCloseIconClick={handleClose}
+            onPrimaryBtnClick={handleSubmit}
+            onSecondaryBtnClick={handleClose}
+            primaryBtnLabel={isLoading ? 'Submitting...' : 'Submit'}
+            secondaryBtnLabel="Cancel"
+            width={getModalWidth()}
+            height={getModalHeight()}
+            className={fullScreen ? "fixed inset-0 !translate-x-0 !translate-y-0 !top-0 !left-0 !transform-none rounded-none" : ""}>
+            <div className="flex h-[calc(100%-50px)] flex-col">
+              {/* Header with name input and progress bar */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6">
+                {/* Name input field with tooltip */}
+                <div className="sm:mb-0 sm:max-w-[70%] sm:flex-grow">
+                  <div className="flex items-center">
+                    {/* Label and Tooltip */}
+                    <div className="mr-2 flex items-center">
+                      <label
+                        htmlFor="name"
+                        className="font-small mr-2 text-white">
+                        Name
+                      </label>
+                      <Tooltip content="Enter a unique name for this input block">
+                        <RiInformationLine className="h-5 w-5 text-gray-400 hover:text-gray-200" />
+                      </Tooltip>
+                    </div>
+
+                    {/* Input Field */}
+                    <input
+                      id="name"
+                      value={customName}
+                      required
+                      onChange={(e) => {
+                        setCustomName(e.target.value);
+                        setError('');
+                      }}
+                      className="h-[20px] flex-grow rounded border border-secondary-700 bg-secondary-900 p-3 text-white focus:border-primary-500 focus:outline-none"
+                      placeholder="Enter a unique name for this input block"
+                    />
                   </div>
                 </div>
-              </div>
-              <input
-                id="custom-name"
-                type="text"
-                className="w-full rounded border border-secondary-700 bg-secondary-900 p-3 text-white focus:border-primary-500 focus:outline-none"
-                placeholder="Enter a unique name for this input block"
-                value={customName}
-                onChange={(e) => setCustomName(e.target.value)}
-                required
-              />
-            </div>
 
-            <MDXProvider>
-              <div className="prose prose-invert max-w-none overflow-y-auto">
-                {MDXComponent && (
-                  <MDXComponent
-                    data={formData as Record<string, string>}
-                    onChangeData={(key: string, value: string) => {
-                      handleChange(key, value);
-                    }}
-                  />
+                {/* Completion Progress - Show if available */}
+                {extractedFunctions?.progress && (
+                  <div className="flex items-center gap-2 sm:ml-auto sm:flex-shrink-0">
+                    <div className="mr-2 whitespace-nowrap text-sm font-medium text-white">
+                      Completion: {validationProgress}%
+                    </div>
+                    <div className="h-2 w-20 overflow-hidden rounded-full bg-secondary-700">
+                      <div
+                        className={`h-full rounded-full transition-all duration-300 ${
+                          validationProgress === 100
+                            ? 'bg-green-500'
+                            : 'bg-primary-500'
+                        }`}
+                        style={{ width: `${validationProgress}%` }}
+                      />
+                    </div>
+                  </div>
                 )}
               </div>
-            </MDXProvider>
-            {error && <div className="mt-4 text-sm text-red-500">{error}</div>}
-          </div>
-        </Modal>
-      )}
+
+              {/* Error message */}
+              {error && (
+                <div className="mb-4 text-sm text-red-500">{error}</div>
+              )}
+
+              {/* Main form content area */}
+              <div className="decision-tree-container h-[calc(100%-50px)] flex-1 overflow-y-auto">
+                <MDXProvider>
+                  {MDXComponent && (
+                    <MDXComponent
+                      data={formData}
+                      onChangeData={handleChange}
+                      isEditing={true}
+                      graphdata={frontmatter?.graphdata as Record<string, unknown> | undefined}
+                      definitions={frontmatter?.definitions as Record<string, unknown> | undefined}
+                      frontmatter={frontmatter}
+                    />
+                  )}
+                </MDXProvider>
+              </div>
+            </div>
+          </Modal>
+        </FairnessTreeProvider>
+      </QueryProvider>
 
       {/* Message modal - shown conditionally */}
-      {showMessageModal && (
+      {showMessageModal && !isSubmitted && (
         <MessageModal
           isOpen={showMessageModal}
           onClose={handleMessageModalClose}

@@ -20,7 +20,7 @@ const ActionButtons: React.FC = () => {
         textColor="white"
         variant={ButtonVariant.OUTLINE}
         size="sm"
-        text="ADD FAIRNESS TREE"
+        text="ADD INPUT BLOCK"
         onClick={() => setIsModalOpen(true)}
       />
       <FairnessTreeUploadModal

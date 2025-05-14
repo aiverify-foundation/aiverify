@@ -94,7 +94,7 @@ const SelectDataHeader = ({ updatedAt }: SelectDataHeaderProps) => {
           />
         </Link>
         <span className="text-sm text-gray-400">
-          Autosaved at {new Date(updatedAt).toLocaleString()}
+          Autosaved at {new Date(updatedAt + "Z").toLocaleString()}
         </span>
       </div>
 

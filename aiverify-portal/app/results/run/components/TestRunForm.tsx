@@ -930,34 +930,34 @@ export default function TestRunForm({
         (x) => x.name
       );
     }
-    const schema = {
-      type: 'object',
+    const schema: RJSFSchema = {
+      type: "object",
       required: ['algorithm', 'model', 'testDataset'],
       properties: {
         algorithm: {
-          type: 'string',
+          type: "string",
           title: 'Algorithm',
           enum: allAlgorithms.map((algo) => algo.cid),
         },
         model: {
-          type: 'string',
+          type: "string",
           title: 'Model',
           enum: models.map((model) => model.filename),
         },
         testDataset: {
-          type: 'string',
+          type: "string",
           title: 'Test Dataset',
           enum: datasets.map((dataset) => dataset.filename),
         },
         groundTruthDataset: {
-          type: 'string',
+          type: "string",
           title: 'Ground Truth Dataset',
           description:
             'If not selected, the test dataset will be used as the ground truth dataset',
           enum: datasets.map((dataset) => dataset.filename),
         },
         groundTruth: {
-          type: 'string',
+          type: "string",
           title: 'Ground Truth Column',
           description:
             'The column name in the dataset that contains the ground truth values',
@@ -1049,30 +1049,49 @@ export default function TestRunForm({
     const algo = allAlgorithms.find((a) => a.cid === selectedAlgorithm);
     if (!algo) return { type: 'object', properties: {} };
 
-    const schema = algo.inputSchema as RJSFSchema;
-    Object.keys(schema.properties).forEach(async (propName) => {
-      const prop = schema.properties![propName] as RJSFSchema;
-      if ('ui:widget' in prop) {
-        const uiWidget = prop['ui:widget'];
-        if (uiWidget === 'selectDataset') {
-          prop['enum'] = [
-            ...('default' in prop ? [prop['default']] : []),
-            ...datasets.map((dataset) => dataset.filename),
-          ];
-          prop['selectDataset'] = 1;
-        } else if (uiWidget === 'selectTestDataFeature') {
-          if (selectedTestDataset && selectedTestDataset.dataColumns) {
-            prop['enum'] = selectedTestDataset.dataColumns.map((x) => x.name);
-          } else {
-            prop['enum'] = [];
+    const schema = { ...algo.inputSchema } as RJSFSchema;
+    
+    // Handle properties safely
+    if (schema.properties) {
+      // Create a safe copy of the properties to work with
+      const properties = { ...schema.properties };
+      
+      // Iterate through properties safely
+      for (const propName of Object.keys(properties)) {
+        const prop = properties[propName] as RJSFSchema;
+        
+        if (prop && typeof prop === 'object' && 'ui:widget' in prop) {
+          const uiWidget = prop['ui:widget'];
+          
+          if (uiWidget === 'selectDataset') {
+            // Create a new enum array with proper typing
+            const datasetEnums: string[] = datasets.map((dataset) => dataset.filename);
+            
+            // Handle default value safely
+            if ('default' in prop && prop['default'] !== undefined && prop['default'] !== null) {
+              const defaultValue = String(prop['default']);
+              prop['enum'] = [defaultValue, ...datasetEnums];
+            } else {
+              prop['enum'] = datasetEnums;
+            }
+            
+            prop['selectDataset'] = 1;
+          } else if (uiWidget === 'selectTestDataFeature') {
+            if (selectedTestDataset && selectedTestDataset.dataColumns) {
+              prop['enum'] = selectedTestDataset.dataColumns.map((x) => x.name);
+            } else {
+              prop['enum'] = [];
+            }
           }
         }
-        // console.log('output', prop);
       }
-    });
+      
+      // Update the schema with our safely modified properties
+      schema.properties = properties;
+    }
 
-    return algo.inputSchema as RJSFSchema;
-  }, [selectedAlgorithm, selectedTestDataset]);
+    return schema;
+  }, [selectedAlgorithm, selectedTestDataset, datasets]);
 
   // Get algorithm UI schema
   const algorithmUISchema: UiSchema = useMemo(() => {
@@ -1082,30 +1101,46 @@ export default function TestRunForm({
 
     const uiSchema: UiSchema = {};
 
-    // For each property that is a string type without enum, use our custom widget
-    Object.keys(schema.properties).forEach(async (propName) => {
-      const prop = schema.properties![propName] as RJSFSchema;
-      if ('ui:widget' in prop) {
-        console.log('ui:widget:', prop);
+    // Iterate through properties safely
+    for (const propName of Object.keys(schema.properties)) {
+      const prop = schema.properties[propName] as RJSFSchema;
+      
+      if (prop && typeof prop === 'object' && 'ui:widget' in prop) {
         const uiWidget = prop['ui:widget'];
+        
         if (uiWidget === 'selectDataset') {
+          const enumOptions = [];
+          
+          // Handle default value safely
+          if ('default' in prop && prop['default'] !== undefined && prop['default'] !== null) {
+            const defaultValue = prop['default'];
+            let defaultLabel = '';
+            
+            // Handle different types of default values
+            if (typeof defaultValue === 'string' && defaultValue.length > 0) {
+              defaultLabel = defaultValue;
+            } else if (defaultValue !== null) {
+              defaultLabel = String(defaultValue);
+            }
+            
+            enumOptions.push({
+              label: defaultLabel,
+              value: defaultValue
+            });
+          }
+          
+          // Add dataset options
+          datasets.forEach(dataset => {
+            enumOptions.push({
+              label: dataset.name,
+              value: dataset.filename
+            });
+          });
+          
           uiSchema[propName] = {
-            'ui:placeholder': `-- Select ${prop.title} --`,
+            'ui:placeholder': `-- Select ${prop.title || propName} --`,
             'ui:widget': 'CustomSelectWidget',
-            'ui:enumOptions': [
-              ...('default' in prop
-                ? [
-                    {
-                      label: prop['default'].length > 0 ? prop['default'] : '',
-                      value: prop['default'],
-                    },
-                  ]
-                : []),
-              ...datasets.map((dataset) => ({
-                label: dataset.name,
-                value: dataset.filename,
-              })),
-            ],
+            'ui:enumOptions': enumOptions
           };
         } else if (uiWidget === 'selectTestDataFeature') {
           const enumOptions =
@@ -1121,7 +1156,7 @@ export default function TestRunForm({
             'ui:enumOptions': enumOptions,
           };
         }
-      } else if (prop.type === 'string') {
+      } else if (prop && typeof prop === 'object' && prop.type === 'string') {
         if (prop.enum) {
           // For dropdowns (enum), use our custom select widget
           uiSchema[propName] = {
@@ -1134,11 +1169,10 @@ export default function TestRunForm({
           };
         }
       }
-    });
+    }
 
-    console.log('uiSchema:', uiSchema);
     return uiSchema;
-  }, [algorithmParamsSchema]);
+  }, [algorithmParamsSchema, datasets, selectedTestDataset]);
 
   // Check if algorithm has parameters
   const hasAlgorithmParameters = useMemo((): boolean => {

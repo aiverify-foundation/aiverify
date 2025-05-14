@@ -19,7 +19,7 @@ const CanvasHeader = ({ project }: CanvasHeaderProps) => {
   // Format the timestamp
   const formatTimestamp = (timestamp: string) => {
     // Create a date object and format it for Singapore timezone
-    const date = new Date(timestamp);
+    const date = new Date(timestamp + "Z");
     return date.toLocaleString('en-GB', {
       day: 'numeric',
       month: 'short',

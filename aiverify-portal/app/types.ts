@@ -1,4 +1,3 @@
-import { string } from 'zod';
 
 type Project = {
   globalVars: unknown[];
@@ -11,7 +10,7 @@ type Project = {
     reportTitle: string;
     company: string;
   };
-  testModelId: string | null;
+  testModelId: number | null;
   inputBlocks: unknown[];
   testResults: unknown[];
   created_at: string;

@@ -55,10 +55,10 @@ export default function PluginCard({ plugin }: Props) {
             <div>
               <span
                 className="font-semibold text-white"
-                aria-label={`Installed on ${new Date(plugin.updated_at).toLocaleString('en-GB')}`}>
+                aria-label={`Installed on ${new Date(plugin.updated_at + "Z").toLocaleString('en-GB')}`}>
                 Installed on:
               </span>{' '}
-              {new Date(plugin.updated_at).toLocaleString('en-GB')}
+              {new Date(plugin.updated_at + "Z").toLocaleString('en-GB')}
             </div>
           </div>
 
