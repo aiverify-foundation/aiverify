@@ -83,11 +83,20 @@ hatch build
 
 ### Pytest is used as the testing framework.
 
+Ensure the Python 3.11 Virtual Environment is setup and activated in the aiverify root directory.
+
+```sh
+python -m venv .venv
+source .venv/bin/activate
+pip install "./aiverify-apigw[dev]"
+```
+
 Run the following steps to execute the unit and integration tests inside the `tests/` folder
 
 ```sh
 cd aiverify/stock-plugins/aiverify.stock.robustness-toolbox/algorithms/robustness_toolbox
-pytest .
+pip install .
+pytest tests
 ```
 
 ## Run using Docker
