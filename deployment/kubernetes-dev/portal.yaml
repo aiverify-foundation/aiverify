@@ -29,6 +29,7 @@ spec:
       containers:
         - name: portal
           image: aiverify-portal
+          imagePullPolicy: Never
           ports:
             - containerPort: 3000
           # livenessProbe:

@@ -42,6 +42,7 @@ spec:
       containers:
         - name: apigw
           image: aiverify-apigw
+          imagePullPolicy: Never
           ports:
             - containerPort: 4000
           # livenessProbe:
