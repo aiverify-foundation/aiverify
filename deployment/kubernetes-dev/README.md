@@ -13,7 +13,7 @@ The provided YAML files are for reference and may need to be adapted to your spe
 
 The `deployment/kubernetes` folder deploys AI Verify on a Kubernetes cluster, with the tasks picked up by the Test Engine Worker being executed using Python Virtual Environment. In this `deployment/kubernetes-dev` folder, tasks are executed using kubectl. 
 
-1. kkubectl.yaml — Synchronous Execution via Pod (PIPELINE_EXECUTE="kubectl_run")
+### 1. **kubectl.yaml — Synchronous Execution via Pod (PIPELINE_EXECUTE="kubectl_run")**
 
 - The Test Engine Worker launches a Kubernetes pod for each task.
 - It waits for the pod to complete execution.
@@ -26,7 +26,7 @@ Use this mode when:
 - Each task must finish before the next one begins (sequential execution).
 - TEW manages result uploading centrally.
 
-2. kubectl2.yaml — Asynchronous Execution via Job (PIPELINE_EXECUTE="kubectl_run2")
+### **2. kubectl2.yaml — Asynchronous Execution via Job (PIPELINE_EXECUTE="kubectl_run2")**
 
 - The TEW applies a Kubernetes Job for each task.
 - It does not wait for job completion.
