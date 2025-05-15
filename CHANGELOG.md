@@ -1,6 +1,14 @@
 # Changelog
 The purpose of this changelog is to document all notable changes made to the AI Verify project. This includes new features, bug fixes, and any other modifications that impact the functionality, performance, or usability of the toolkit. By maintaining a detailed changelog, we aim to provide transparency and keep users and contributors informed about the evolution of the project.
 
+# 2.0.0 - 2025-04-17
+
+### Added
+- Test Engine Worker for automated test runs from Portal
+- Deployment scripts for docker compose and kubernetes
+- Add pytorch support in aiverify-test-engine
+- Complete portal and apigw development
+
 ## 2.0.0a2 - 2025-02-03
 
 ### Added

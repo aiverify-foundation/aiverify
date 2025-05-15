@@ -1,0 +1,56 @@
+export const CompletedButton = ({ label, pid, data, onChangeData }) => {
+  const key = `completed-${pid}`;
+  const handleClick = (event) => {
+    event.preventDefault();
+    if (data && data[key] === label) {
+      onChangeData(key, undefined)
+    } else {
+      onChangeData(key, label)
+    }
+  }
+  if (data && data[key] === label) {
+    return <button data-testid={key} style={{ padding:10, backgroundColor:"#40638F", color:"white", border:0, marginRight:2, cursor:"pointer" }} onClick={handleClick}>{label}</button>
+  } else {
+    return <button data-testid={key} style={{ padding:10, backgroundColor:"white", color:"black", border:0, marginRight:2, cursor:"pointer" }} onClick={handleClick}>{label}</button>
+  }
+}
+
+export const ProcessChecklistInput = ({ config, data, onChangeData }) => {
+  return (
+    <div style={{ width:"100%" }}>
+      {config.sections.map(section => (
+        <div key={section.section}>
+          <h3>{section.section}</h3>
+          <div style={{  }}>
+            {section.checklist.map((check, index) => (
+              <div key={`check-${index}`} style={{ marginTop:'10px' }}>
+                <b>Testable Criteria</b>
+                <div dangerouslySetInnerHTML={{ __html:check.testableCriteria }}></div>
+                {check.processes
+                  .filter(process => !process.excludeInput)
+                  .map((process, index2) => (
+                    <div key={process.pid} style={{ width:"100%", display:"flex", padding:10, marginTop:5, marginBottom:5 }}>
+                      <div style={{ fontWeight:600, width: "50px" }}>{process.pid}</div>
+                      <div style={{ width:"100%" }}>
+                        <div dangerouslySetInnerHTML={{ __html:process.process }}></div>
+                        <div style={{ display:"flex", marginTop:5 }}>
+                        </div>
+                        <h4 style={{ padding:0, margin:"5px 0 0 0" }}>Completed</h4>
+                        <div style={{ display:"flex" }}>
+                          <CompletedButton label="Yes" pid={process.pid} data={data} onChangeData={onChangeData} />
+                          <CompletedButton label="No" pid={process.pid} data={data} onChangeData={onChangeData} />
+                          <CompletedButton label="Not Applicable" pid={process.pid} data={data} onChangeData={onChangeData} />
+                        </div>
+                        <h4 style={{ padding:0, margin:"5px 0 0 0" }}>Elaboration</h4>
+                        <textarea rows="4" style={{ width:"100%", borderWidth:0, resize:"none" }} maxLength={256} value={data[`elaboration-${process.pid}`]} onChange={(e)=>onChangeData(`elaboration-${process.pid}`,e.target.value)} />
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}

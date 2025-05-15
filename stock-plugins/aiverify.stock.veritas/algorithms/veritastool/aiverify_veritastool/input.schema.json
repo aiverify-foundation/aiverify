@@ -3,9 +3,6 @@
     "description": "Schema for Veritas fairness assessment input parameters",
     "type": "object",
     "required": [
-        "protected_features",
-        "privileged_groups",
-        "positive_label",
         "model_type"
     ],
     "properties": {
@@ -15,8 +12,7 @@
             "type": "array",
             "items": {
                 "type": "string"
-            },
-            "minItems": 1
+            }
         },
         "privileged_groups": {
             "title": "Privileged Groups",
@@ -25,7 +21,7 @@
             "additionalProperties": {
                 "type": "array",
                 "items": {
-                    "type": "string"
+                    "type": "integer"
                 }
             }
         },
@@ -36,7 +32,7 @@
             "additionalProperties": {
                 "type": "array",
                 "items": {
-                    "type": "string"
+                    "type": "integer"
                 }
             }
         },
@@ -61,16 +57,15 @@
             "description": "Label values considered favorable",
             "type": "array",
             "items": {
-                "type": "string"
-            },
-            "minItems": 1
+                "type": "integer"
+            }
         },
         "negative_label": {
             "title": "Negative Labels",
             "description": "Label values considered unfavorable (required for uplift models)",
             "type": "array",
             "items": {
-                "type": "string"
+                "type": "integer"
             }
         },
         "fair_threshold": {

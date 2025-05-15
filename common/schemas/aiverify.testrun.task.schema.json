@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "/aiverify.taskqueue.testrun.schema.json",
+  "title": "Test Run Task Schema",
+  "description": "Schema for Test Run tasks",
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "A generated unique identifier that is used to uniquely identify the task in the task queue.",
+      "type": "string"
+    },
+    "mode": {
+      "description": "Whether run model natively or use API based testing",
+      "type": "string",
+      "enum": [
+        "upload",
+        "api"
+      ]
+    },
+    "algorithmGID": {
+      "description": "Algorithm ID of the algorithm to run",
+      "type": "string"
+    },
+    "algorithmCID": {
+      "description": "Algorithm ID of the algorithm to run",
+      "type": "string"
+    },
+    "algorithmHash": {
+      "description": "Hash of the algorithm zip download",
+      "type": "string"
+    },
+    "testDataset": {
+      "description": "Data path to test dataset with labels",
+      "type": "string"
+    },
+    "testDatasetHash": {
+      "description": "Hash of the test dataset file or zip",
+      "type": "string"
+    },
+    "groundTruthDataset": {
+      "description": "Path to dataset with ground truth",
+      "type": "string"
+    },
+    "groundTruthDatasetHash": {
+      "description": "Hash of the ground truth dataset file or zip",
+      "type": "string"
+    },
+    "groundTruth": {
+      "description": "Name of column containing the labels",
+      "type": "string"
+    },
+    "modelFile": {
+      "description": "Model path to the saved offline model",
+      "type": "string"
+    },
+    "modelFileHash": {
+      "description": "Hash of the model file or zip",
+      "type": "string"
+    },
+    "apiSchema": {
+      "description": "Openapi V3 describing the API"
+    },
+    "apiConfig": {
+      "description": "Config file for API",
+    },
+    "modelType": {
+      "description": "The type of model",
+      "type": "string",
+      "enum": [
+        "classification",
+        "regression",
+        "uplift"
+      ]
+    },
+    "algorithmArgs": {
+      "description": "JSON object in the format as described in the algorithm input schema."
+    }
+  },
+  "required": [
+    "id",
+    "mode",
+    "testDataset",
+    "algorithmId",
+    "algorithmArgs"
+  ],
+  "if": {
+    "properties": {
+      "mode": {
+        "const": "upload"
+      }
+    }
+  },
+  "then": {
+    "required": [
+      "modelFile"
+    ]
+  },
+  "else": {
+    "required": [
+      "apiSchema",
+      "apiConfig"
+    ]
+  }
+}

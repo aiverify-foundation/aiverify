@@ -1,0 +1,260 @@
+import React from "react";
+import {
+  SectionContainer,
+  QuestionContainer,
+  QuestionHeader,
+  Elaboration,
+  CriteriaContainer,
+  CriteriaHeader,
+} from "./veritas_components";
+import {
+  G3,
+  G4,
+  G5_S1,
+  G5_S2,
+  G5_S3,
+  G10,
+  G11_S1,
+  G11_S3,
+  EA1,
+  EA2,
+  EA3,
+  EA5_S2,
+  EA5_S3,
+  EA7,
+  F1_S1,
+  F2_S1,
+  F2_S2,
+  F3_S1,
+  F3_S2,
+  F4_S1,
+  F4_S2,
+  F4_S3,
+  F5,
+  F6,
+  F7,
+  F8_S1,
+  F8_S2,
+  F8_S3,
+  F9_S1,
+  F9_S2,
+  F10_S1,
+  F10_S2,
+  F11,
+  F12_S1,
+  T1,
+  T2_S2,
+  T3_S1,
+  T3_S2,
+  T5,
+  T6,
+  T7_S1,
+  T9_S2,
+  T10,
+  T11,
+  T13,
+} from "./answer";
+import { processChecklistConfigsByPrinciple } from "./summary_compute";
+
+export const ProcessChecklist = ({
+  principle,
+  props,
+  filterQuestions = [],
+}) => {
+  const [config, setConfig] = React.useState(null);
+  const [filteredSections, setFilteredSections] = React.useState([]);
+  const [data, setData] = React.useState(null);
+  const useCase = props.properties.useCase;
+
+  React.useEffect(() => {
+    const config = processChecklistConfigsByPrinciple[principle];
+    if (!config) {
+      return;
+    }
+    setConfig(config);
+
+    const data = props.getIBData(config.cid);
+    setData(data);
+
+    for (const section of config.sections) {
+      for (const check of section.checklist) {
+        for (const ps of check.processes) {
+          const key = `elaboration-${ps.pid}`;
+          ps.elaboration = data[key];
+        }
+      }
+    }
+
+    // Filter sections based on the filterQuestions array
+    if (filterQuestions && filterQuestions.length > 0) {
+      const filtered = config.sections
+        .map((section) => {
+          const sectionCopy = { ...section };
+          sectionCopy.checklist = section.checklist.filter((check) => {
+            const questionNumber = `${principle.charAt(0).toUpperCase()}${
+              check.index + 1
+            }`;
+
+            return filterQuestions.includes(questionNumber);
+          });
+
+          return sectionCopy;
+        })
+        .filter((section) => section.checklist.length > 0);
+
+      setFilteredSections(filtered);
+    } else {
+      // If no filter, use all sections
+      setFilteredSections(config.sections);
+    }
+  }, [props, principle, filterQuestions]);
+
+  if (!config) {
+    return <div>Invalid principle</div>;
+  }
+
+  const constructQuestionNumber = (pid) => {
+    const firstLetter = principle.charAt(0).toUpperCase();
+    const pidParts = pid.split(".");
+    if (pidParts.length >= 2) {
+      const secondDigit = pidParts[1];
+      const remainder = pidParts.slice(2).join(".");
+      return `${firstLetter}${secondDigit}${remainder ? "." + remainder : ""}`;
+    }
+    return `${firstLetter}${pid}`;
+  };
+
+  const renderComponent = (componentName) => {
+    if (props.componentMap && props.componentMap[componentName]) {
+      const Component = props.componentMap[componentName];
+      return <Component props={props} data={data} />;
+    }
+
+    // Convert component name format and create alternative names to try
+    const normalizedName = componentName.replace(/\.(\d+)/g, "_S$1");
+    const baseComponent = componentName.split(".")[0];
+
+    const componentMap = {
+      G3,
+      G4,
+      G5_S1,
+      G5_S2,
+      G5_S3,
+      G10,
+      G11_S1,
+      G11_S3,
+      EA1,
+      EA2,
+      EA3,
+      EA5_S2,
+      EA5_S3,
+      EA7,
+      F1_S1,
+      F2_S1,
+      F2_S2,
+      F3_S1,
+      F3_S2,
+      F4_S1,
+      F4_S2,
+      F4_S3,
+      F5,
+      F6,
+      F7,
+      F8_S1,
+      F8_S2,
+      F8_S3,
+      F9_S1,
+      F9_S2,
+      F10_S1,
+      F10_S2,
+      F11,
+      F12_S1,
+      T1,
+      T2_S2,
+      T3_S1,
+      T3_S2,
+      T5,
+      T6,
+      T7_S1,
+      T9_S2,
+      T10,
+      T11,
+      T13,
+    };
+
+    const Component =
+      componentMap[normalizedName] || componentMap[baseComponent];
+
+    return Component ? <Component props={props} data={data} /> : null;
+  };
+
+  return (
+    <div style={{ padding: "20px" }}>
+      {filteredSections.map((section) => (
+        <React.Fragment key={`section-${section.index}`}>
+          {section.checklist.map((check) => (
+            <SectionContainer key={`check-${check.index}`}>
+              <CriteriaContainer>
+                <CriteriaHeader>
+                  {principle.charAt(0).toUpperCase()}
+                  {check.index + 1} -{" "}
+                  {check.testableCriteria.replace(/<[^>]*>/g, "")}
+                </CriteriaHeader>
+              </CriteriaContainer>
+
+              {/* If only one process, don't show the question text since it's redundant */}
+              {check.processes.length === 1 ? (
+                <QuestionContainer key={`process-${check.processes[0].pid}`}>
+                  {renderComponent(constructQuestionNumber(check.processes[0].pid))}
+                  <Elaboration>
+                    {check.processes[0].elaboration &&
+                    check.processes[0].elaboration.length > 0
+                      ? check.processes[0].elaboration
+                      : !check.processes[0].excludeInput && (
+                          <span style={{ color: "#d32f2f" }}>
+                            The company did not provide any response.
+                          </span>
+                        )}
+                  </Elaboration>
+                </QuestionContainer>
+              ) : (
+                // If multiple processes, show each question with its text
+                check.processes.map((process) => (
+                  <QuestionContainer key={`process-${process.pid}`}>
+                    <QuestionHeader>
+                      {constructQuestionNumber(process.pid)}{" "}
+                      {process.process.replace(/<[^>]*>/g, "")}
+                    </QuestionHeader>
+                    {renderComponent(constructQuestionNumber(process.pid))}
+                    <Elaboration>
+                      {process.elaboration && process.elaboration.length > 0
+                        ? process.elaboration
+                        : !process.excludeInput && (
+                            <span style={{ color: "#d32f2f" }}>
+                              The company did not provide any response.
+                            </span>
+                          )}
+                    </Elaboration>
+                  </QuestionContainer>
+                ))
+              )}
+            </SectionContainer>
+          ))}
+        </React.Fragment>
+      ))}
+    </div>
+  );
+};
+
+export default function ProcessChecklistWrapper(props) {
+  const principle = props.properties?.principle || "fairness";
+  const filterQuestions = props.filterQuestions || [];
+
+  return (
+    <ProcessChecklist
+      principle={principle}
+      props={props}
+      filterQuestions={filterQuestions}
+    />
+  );
+}

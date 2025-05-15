@@ -295,15 +295,15 @@
           "static": false
         },
         {
-          "i": "1696318449619",
+          "i": "1696473432607",
           "x": 0,
           "y": 3,
           "w": 12,
-          "h": 33,
+          "h": 36,
           "maxW": 12,
           "maxH": 36,
           "minW": 12,
-          "minH": 27,
+          "minH": 36,
           "static": false
         }
       ],
@@ -345,7 +345,7 @@
             "bgcolor": null
           },
           "widgetGID": "aiverify.stock.process_checklist:area_descriptions",
-          "key": "1696318449619",
+          "key": "1696473432607",
           "properties": {
             "startIndex": "0",
             "numAreas": "6"

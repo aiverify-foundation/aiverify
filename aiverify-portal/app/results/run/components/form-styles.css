@@ -1,0 +1,728 @@
+/* Custom Form Styling */
+.custom-form-container {
+  color: var(--color-white);
+}
+
+.custom-form {
+  color: inherit;
+}
+
+/* Hide duplicate titles and descriptions */
+.custom-form legend,
+.custom-form #root__title,
+.custom-form #root__description,
+.custom-form [id$='__title'],
+.custom-form [id$='__description'] {
+  display: none;
+}
+
+/* Hide descriptions for array fields outside of array-field-container */
+.custom-form .mb-4 > .array-field-container + p.mt-1 {
+  display: none;
+}
+
+/* Array field styling */
+.custom-form .array-item-list {
+  margin-bottom: 1rem;
+}
+
+.custom-form .array-item {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  background-color: var(--color-secondary-900);
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  width: 50%;
+  display: flex;
+  align-items: center;
+  height: 3.5rem;
+}
+
+.custom-form .array-item-toolbox {
+  margin-left: 0.5rem;
+}
+
+.custom-form .array-item-toolbox button {
+  background-color: var(--color-danger);
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+}
+
+.custom-form .array-item-add button {
+  background-color: var(--color-primary-500);
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Form field labels */
+.custom-form .control-label,
+.custom-form label {
+  color: var(--color-white);
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  display: block;
+  font-size: 1rem;
+}
+
+/* Form field descriptions */
+.custom-form .field-description {
+  color: var(--color-primary-300);
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Form field containers */
+.custom-form .form-group {
+  margin-bottom: 1.5rem;
+  display: block;
+}
+
+/* Custom select container styling */
+.custom-select-container {
+  position: relative;
+  width: 100%;
+}
+
+/* Use a single rule for all browsers where possible */
+.custom-form select,
+.custom-select {
+  /* Base styles */
+  width: 100% !important;
+  max-width: 100%;
+  background-color: var(--color-secondary-800);
+  border: 1px solid var(--color-secondary-700);
+  color: var(--color-white);
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  min-height: 42px;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Fix dropdown width for Chrome/Safari/Firefox and other browsers */
+.custom-form select option,
+.custom-select option {
+  width: max-content !important;
+  min-width: 400px !important;
+  max-width: none !important;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  background-color: var(--color-secondary-800);
+  color: var(--color-white);
+  padding: 10px;
+}
+
+/* Special styling for specific browsers */
+/* Firefox */
+@-moz-document url-prefix() {
+  .custom-form select,
+  .custom-select {
+    width: 100% !important;
+    text-overflow: ellipsis;
+  }
+
+  .custom-form select option,
+  .custom-select option {
+    min-width: 400px !important;
+  }
+}
+
+/* Chrome/Safari */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .custom-form select,
+  .custom-select {
+    width: 100% !important;
+    text-overflow: ellipsis;
+  }
+
+  /* Apply dropdown width through the select element's data attribute */
+  .custom-form select[data-preferred-width],
+  .custom-select[data-preferred-width] {
+    width: attr(data-preferred-width) !important;
+  }
+
+  .custom-form select option,
+  .custom-select option {
+    min-width: 400px !important;
+  }
+}
+
+/* Modern browsers approach - using CSS variables */
+.custom-select {
+  --dropdown-min-width: 400px;
+}
+
+.custom-select option {
+  min-width: var(--dropdown-min-width, 400px) !important;
+}
+
+/* Ensure proper display of label and title */
+.custom-form .field {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.custom-form .field-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--color-white);
+  font-weight: 500;
+}
+
+/* Rest of existing styles */
+.custom-form select:focus {
+  outline: none;
+  border-color: var(--color-primary-400);
+  box-shadow: 0 0 0 1px var(--color-primary-400);
+}
+
+.custom-form select option {
+  background-color: var(--color-secondary-800);
+  color: var(--color-white);
+  padding: 8px;
+  white-space: normal; /* Allow text to wrap */
+  word-wrap: break-word; /* Break long words */
+  max-width: none; /* Remove any max-width restriction */
+  width: auto; /* Allow option to expand as needed */
+  overflow: visible; /* Ensure content doesn't get cut off */
+}
+
+/* Fix for dropdown width in browsers */
+select::-ms-expand {
+  display: none; /* Remove default arrow in IE */
+}
+
+/* Improve dropdown display across browsers */
+.custom-form select,
+.custom-form select option {
+  text-overflow: ellipsis; /* Show ellipsis for overflow text */
+  min-width: 100%; /* Ensures minimum width matches the container */
+}
+
+/* Ensure dropdown menu is wide enough */
+select optgroup,
+select option {
+  max-width: none !important; /* Override any max-width */
+  width: max-content !important; /* Allow content to determine width */
+}
+
+/* Input fields */
+.custom-form input[type='text'],
+.custom-form input[type='number'] {
+  background-color: var(--color-secondary-800);
+  border: 1px solid var(--color-secondary-700);
+  color: var(--color-white);
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+  width: 100%;
+}
+
+.custom-form input[type='text']:focus,
+.custom-form input[type='number']:focus {
+  outline: none;
+  border-color: var(--color-primary-400);
+  box-shadow: 0 0 0 1px var(--color-primary-400);
+}
+
+/* Form buttons */
+.custom-form button[type='submit'] {
+  display: none; /* Hide default submit button as we use our own */
+}
+
+/* Form errors */
+.custom-form .errors {
+  color: var(--color-danger);
+  margin-bottom: 1rem;
+}
+
+.custom-form .error-detail {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+}
+
+/* Required field indicator */
+.custom-form .required {
+  color: var(--color-danger);
+  margin-left: 0.25rem;
+}
+
+/* Form fieldset */
+.custom-form fieldset {
+  border: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+}
+
+.custom-form legend {
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--color-white);
+}
+
+/* Form sections */
+.custom-form .panel {
+  background-color: var(--color-secondary-800);
+  border-radius: 0.375rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.custom-form .panel-title {
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--color-white);
+}
+
+.custom-form .btn-add {
+  /* width: 100px; */
+  /* height: 100px; */
+  /* background-color: blueviolet; */
+  /* color: white; */
+  background-color: var(--color-primary-500);
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.custom-form .btn-add > i {
+  display: none;
+}
+.custom-form .btn-add::after {
+  content: '+ Add';
+}
+
+/* Boolean/checkbox inputs */
+.custom-form .checkbox {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.custom-form .checkbox input {
+  margin-right: 0.5rem;
+}
+
+/* Dropdown enhancement styles */
+/* Override browser-specific select styling */
+.custom-form select {
+  width: 100% !important; /* Force full width */
+  max-width: 100%; /* Ensure it doesn't overflow its container */
+  text-overflow: ellipsis; /* Show ellipsis for long text */
+  overflow: hidden; /* Hide overflow text in the select element itself */
+}
+
+/* Target Firefox specifically for better dropdown styling */
+@-moz-document url-prefix() {
+  .custom-form select {
+    text-indent: 0.01px;
+    text-overflow: ellipsis;
+    padding-right: 25px; /* Space for the dropdown arrow */
+  }
+
+  .custom-form select option {
+    max-width: none !important;
+    width: auto !important;
+  }
+
+  /* This affects the dropdown list in Firefox */
+  select::-moz-select-dropdown {
+    width: auto !important;
+    min-width: 400px !important; /* Enforce a wider dropdown */
+  }
+}
+
+/* Chrome and Safari specific styles */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .custom-form select,
+  .custom-select {
+    width: 100% !important;
+    text-overflow: ellipsis;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1em;
+    padding-right: 2.5em;
+  }
+
+  /* Chrome-specific dropdown styling */
+  select.custom-select option,
+  .custom-form select option {
+    min-width: 500px !important; /* Wider for Chrome */
+    width: max-content !important;
+    max-width: none !important;
+    white-space: normal !important;
+    background-color: var(--color-secondary-800);
+    color: var(--color-white);
+    overflow: visible !important;
+  }
+
+  /* Enhance Chrome's autocomplete styling */
+  select:-webkit-autofill,
+  select:-webkit-autofill:hover,
+  select:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--color-white);
+    -webkit-box-shadow: 0 0 0px 1000px var(--color-secondary-800) inset;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+}
+
+/* Chrome-specific hacks using @supports */
+@supports (-webkit-appearance: none) and (not (overflow: -webkit-marquee)) {
+  .custom-select option,
+  .custom-form select option {
+    min-width: 500px !important;
+    padding: 8px 10px !important;
+  }
+
+  /* Force select to use non-native styling in Chrome */
+  select:not([multiple]) {
+    background-color: var(--color-secondary-800) !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+}
+
+/* Last resort fix for Chrome - use extra selectors to increase specificity */
+body .custom-form select option,
+html body .custom-select option,
+:root select.custom-select option {
+  min-width: 500px !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+
+/* Global dropdown width fix - this affects most modern browsers */
+.custom-form select {
+  /* Add these to help all browsers */
+  min-width: 100%;
+  position: relative;
+}
+
+/* Force wider options for all browsers */
+datalist,
+select > option,
+select > optgroup {
+  width: auto !important;
+  min-width: 400px !important;
+  max-width: none !important;
+}
+
+/* Option styling to ensure they have enough width */
+.custom-form select option {
+  padding: 10px;
+  min-width: 400px !important; /* Force a minimum width */
+  width: max-content !important;
+  max-width: none !important;
+  white-space: normal;
+  overflow: visible;
+  font-size: 0.95rem; /* Slightly smaller font may help fit more */
+  line-height: 1.5;
+  text-align: left;
+}
+
+/* Target dropdown when it's expanded */
+select:focus option {
+  min-width: max-content !important;
+}
+
+/* Dropdown style overrides */
+/* This sets the dropdown width wider than its container */
+.custom-form select {
+  width: 100% !important;
+}
+
+/* Make the dropdown list wider than the select element */
+.custom-form select option {
+  width: 100%;
+  min-width: 400px !important;
+  max-width: none !important;
+  white-space: normal !important;
+  padding: 0.5rem !important;
+}
+
+/* Handle the dropdown menu specifically */
+html body select option,
+html select option {
+  min-width: 400px !important;
+  white-space: normal !important;
+}
+
+/* For Webkit browsers (Chrome, Safari, newer Edge) */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  select:not([size]):not([multiple]) {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1em;
+    padding-right: 2.5em;
+  }
+
+  /* Force Safari to show full width dropdown */
+  .custom-form select {
+    background-color: var(--color-secondary-800);
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+}
+
+/* Override menulist appearance to ensure dropdown width exceeds select element width */
+select:-moz-focusring,
+select::-moz-focus-inner {
+  min-width: 400px !important;
+}
+
+/* Chrome-specific classes for select elements */
+.chrome-select {
+  width: 100% !important;
+  background-color: var(--color-secondary-800) !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") !important;
+  background-position: right 0.5rem center !important;
+  background-repeat: no-repeat !important;
+  background-size: 1em !important;
+  padding-right: 2.5em !important;
+}
+
+/* Chrome options need extra width */
+.chrome-option,
+select[data-browser='chrome'] option,
+.chrome-select option {
+  min-width: 500px !important;
+  max-width: none !important;
+  width: max-content !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+  text-align: left !important;
+  padding: 8px 12px !important;
+  background-color: var(--color-secondary-800) !important;
+  color: var(--color-white) !important;
+}
+
+/* Override Chrome's rendering of select elements */
+select.chrome-select::-webkit-scrollbar {
+  width: 10px;
+}
+
+select.chrome-select::-webkit-scrollbar-track {
+  background: var(--color-secondary-900);
+}
+
+select.chrome-select::-webkit-scrollbar-thumb {
+  background-color: var(--color-secondary-600);
+  border-radius: 6px;
+}
+
+/* Ensure the select menu has enough width in Chrome */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  /* Target Chrome specifically */
+  @supports (-webkit-appearance: none) {
+    select.chrome-select,
+    select[data-browser='chrome'] {
+      /* Force non-native styling */
+      -webkit-appearance: none !important;
+      appearance: none !important;
+    }
+
+    /* Force enough width for options */
+    select.chrome-select option,
+    select[data-browser='chrome'] option {
+      width: auto !important;
+      min-width: 500px !important;
+      max-width: none !important;
+    }
+
+    /* Enhance option rendering */
+    .custom-form select.chrome-select option {
+      display: block;
+      padding: 8px 12px !important;
+      line-height: 1.5 !important;
+    }
+  }
+}
+
+/* Chrome-specific container enhancements */
+.chrome-select-container {
+  position: relative;
+  width: 100%;
+}
+
+/* Special Chrome select handling */
+select[data-chrome-width] {
+  /* Ensure proper dropdown styling */
+  background-color: var(--color-secondary-800) !important;
+  color: var(--color-white) !important;
+}
+
+/* Most aggressive Chrome targeting */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  @supports (not (overflow: -webkit-marquee)) and (not (-ms-ime-align: auto)) {
+    /* This combination of media query and supports rule targets Chrome specifically */
+    select[data-browser='chrome'] option,
+    select[data-chrome-width] option,
+    .chrome-option {
+      /* Force minimum width for Chrome dropdown */
+      min-width: 500px !important;
+      width: auto !important;
+      max-width: none !important;
+      white-space: normal !important;
+      overflow: visible !important;
+      word-break: break-word !important;
+      word-wrap: break-word !important;
+      line-height: 1.5 !important;
+      text-align: left !important;
+      font-size: 14px !important;
+      padding: 8px 12px !important;
+      display: block !important;
+    }
+  }
+}
+
+/* Additional Chrome fixes */
+@media all and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: 0.001dpcm) {
+  .chrome-select,
+  select[data-chrome-width] {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") !important;
+    background-position: right 8px center !important;
+    background-repeat: no-repeat !important;
+    background-size: 16px !important;
+    padding-right: 32px !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+}
+
+/* Last resort with inline styles */
+option[style*='min-width: 500px'] {
+  min-width: 500px !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+
+/* Custom Dropdown Component Styling */
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.custom-dropdown-button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  text-align: left;
+  background-color: var(--color-secondary-800);
+  border: 1px solid var(--color-secondary-600);
+  border-radius: 0.375rem;
+  color: var(--color-white);
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+  cursor: pointer;
+  height: 42px;
+}
+
+.custom-dropdown-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.custom-dropdown-button:hover:not(:disabled) {
+  background-color: var(--color-secondary-700);
+  border-color: var(--color-secondary-500);
+}
+
+.custom-dropdown-button:focus {
+  outline: none;
+  border-color: var(--color-primary-400);
+  box-shadow: 0 0 0 1px var(--color-primary-400);
+}
+
+.custom-dropdown-selected-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.custom-dropdown-arrow {
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.custom-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 100;
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: var(--color-secondary-800);
+  border: 1px solid var(--color-secondary-600);
+  border-radius: 0.375rem;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.custom-dropdown-option {
+  padding: 10px 12px;
+  cursor: pointer;
+  color: var(--color-white);
+  text-align: left;
+  white-space: normal;
+  word-break: break-word;
+  transition: background-color 0.15s ease;
+  width: 100%;
+}
+
+.custom-dropdown-option:hover,
+.custom-dropdown-option:focus,
+.custom-dropdown-option.focused {
+  background-color: var(--color-secondary-700);
+  outline: none;
+}
+
+.custom-dropdown-option.selected {
+  background-color: var(--color-secondary-700);
+  font-weight: 500;
+}
+
+/* Scrollbar styling for dropdown */
+.custom-dropdown-menu::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-dropdown-menu::-webkit-scrollbar-track {
+  background: var(--color-secondary-900);
+  border-radius: 4px;
+}
+
+.custom-dropdown-menu::-webkit-scrollbar-thumb {
+  background-color: var(--color-secondary-600);
+  border-radius: 4px;
+}
+
+.custom-dropdown-menu::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-secondary-500);
+}

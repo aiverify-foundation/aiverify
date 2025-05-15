@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { BarChart } from 'aiverify-shared-library/charts'
+import { BarChart } from 'aiverify-shared-library/charts';
 
-export const algo_cid = "robustness_toolbox"
+export const algo_cid = "aiverify_robustness_toolbox"
 
 export const MyChart = ({ results, modelType}) => {
   const [ data, setData ] = useState([]);
@@ -37,11 +37,31 @@ export const MyChart = ({ results, modelType}) => {
 
 {props.getResults(algo_cid)?(
   <>
-    <div style={{ width:props.container.width, height:"200px" }}>
-      <MyChart results={props.getResults(algo_cid).results} modelType={props.modelAndDatasets.model.modelType}/>
+    <div style={{ width:props.width, height:"200px" }}>
+      <MyChart results={props.getResults(algo_cid).results} modelType={props.getResults(algo_cid).modelType}/>
     </div>
   </>
-):(
-  <div>No data</div>
+): (
+  <div style={{ 
+    width: props.width, 
+          height: props.height, 
+    maxHeight: 1076,
+    display: 'flex', 
+    justifyContent: 'center', 
+    alignItems: 'center',
+    flexDirection: 'column',
+    background: '#f8f9fa',
+    border: '1px dashed #dee2e6',
+    borderRadius: '4px',
+    padding: '20px',
+    textAlign: 'center' 
+  }}>
+    <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#dc3545', marginBottom: '10px' }}>
+      Report is incomplete
+    </div>
+    <div style={{ color: '#6c757d' }}>
+      No Test Result is selected for Robustness Toolbox algorithm. 
+      Please select appropriate test results in the Data Selection page.
+    </div>
+  </div>
 )}
-

@@ -1,26 +1,21 @@
 {
-    "cid": "aiverify_general_corruptions",
-    "gid": "aiverify.stock.image_corruption_toolbox",
-    "name": "General Corruptions",
-    "modelType": [
-        "classification"
-    ],
-    "version": "2.0.0a2",
-    "author": "AI Verify",
-    "description": "Algorithm that adds general corruptions (gaussian, poisson and salt and pepper noise)",
-    "tags": [
-        "General Corruptions",
-        "classification"
-    ],
-    "requireGroundTruth": true,
-    "requiredFiles": [
-        "AUTHORS.rst",
-        "CHANGELOG.md",
-        "input.schema.json",
-        "LICENSE",
-        "output.schema.json",
-        "algo.meta.json",
-        "algo.py",
-        "README.md"
-    ]
+  "cid": "aiverify_general_corruptions",
+  "gid": "aiverify.stock.image_corruption_toolbox",
+  "name": "General Corruptions",
+  "modelType": ["classification"],
+  "version": "2.0.1",
+  "author": "AI Verify",
+  "description": "Algorithm that adds general corruptions (gaussian, poisson and salt and pepper noise)",
+  "tags": ["General Corruptions", "classification"],
+  "requireGroundTruth": true,
+  "requiredFiles": [
+    "AUTHORS.rst",
+    "CHANGELOG.md",
+    "input.schema.json",
+    "LICENSE",
+    "output.schema.json",
+    "algo.meta.json",
+    "algo.py",
+    "README.md"
+  ]
 }

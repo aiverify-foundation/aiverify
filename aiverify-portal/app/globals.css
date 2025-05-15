@@ -55,6 +55,74 @@ body {
   scrollbar-color: rgba(126, 126, 126, 0.3) transparent;
 }
 
+/* Print styles to ensure proper widget rendering */
+@media print {
+  /* Global print styles */
+  @page {
+    margin: 15px;
+    size: auto;
+  }
+
+  body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Ensure all content is visible but allow page breaks */
+  .react-grid-layout,
+  .react-grid-item,
+  .grid-comp-wrapper {
+    overflow: visible !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+
+  /* Text handling for widgets */
+  .react-grid-item p,
+  .react-grid-item div,
+  .react-grid-item span,
+  .react-grid-item h1,
+  .react-grid-item h2,
+  .react-grid-item h3,
+  .react-grid-item h4,
+  .react-grid-item h5,
+  .react-grid-item h6 {
+    overflow: visible !important;
+    text-overflow: clip !important;
+    word-wrap: break-word !important;
+    white-space: normal !important;
+  }
+
+  /* Ensure headings don't break */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  /* Keep at least 2 lines of text together when breaking */
+  p {
+    orphans: 2;
+    widows: 2;
+  }
+
+  /* Ensure standard report pages display properly */
+  .standard-report-page {
+    margin: 15px !important;
+    page-break-after: always !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+  }
+
+  .standard-report-page:last-child {
+    page-break-after: auto !important;
+  }
+}
+
 /* Loading animation ring*/
 
 @keyframes animateC {

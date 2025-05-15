@@ -10,13 +10,13 @@
   "description": "To generate and display PDP values in line graphs for each feature in each class output",
   "dependencies": [
     {
-      "cid": "partial_dependence_plot"
+      "cid": "aiverify_partial_dependence_plot"
     }
   ],
   "mockdata": [
     {
       "type": "Algorithm",
-      "cid": "partial_dependence_plot",
+      "cid": "aiverify_partial_dependence_plot",
       "datapath": "sample.json"
     }
   ]

@@ -2,10 +2,12 @@
 
 import { RiFileChartFill } from '@remixicon/react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { UserFlows } from '@/app/userFlowsEnum';
 import { Card } from '@/lib/components/TremurCard';
 import { Modal } from '@/lib/components/modal';
+import { patchProject } from '@/lib/fetchApis/getProjects';
 import { NewTemplateForm } from './NewTemplateForm';
 
 type CreateTemplateCardProps = {
@@ -17,10 +19,32 @@ export function CreateTemplateCard({
   projectId,
   flow,
 }: CreateTemplateCardProps) {
+  const router = useRouter();
   const [showForm, setShowForm] = useState(false);
 
-  const handleClick = (e: React.MouseEvent) => {
-    if (flow === UserFlows.NewProject && projectId) return;
+  const handleClick = async (e: React.MouseEvent) => {
+    if (
+      flow != UserFlows.NewProject &&
+      flow != UserFlows.ViewTemplate &&
+      flow != UserFlows.NewTemplate &&
+      projectId
+    ) {
+      e.preventDefault();
+      try {
+        // Update project with blank template
+        await patchProject(projectId, {
+          pages: [],
+        });
+        router.push(
+          `/canvas?flow=${UserFlows.NewProjectWithNewTemplate}&projectId=${projectId}&mode=edit`
+        );
+      } catch (error) {
+        console.error(error);
+      }
+      return;
+    } else if (flow === UserFlows.NewProject && projectId) {
+      return;
+    }
     e.preventDefault();
     setShowForm(true);
   };
@@ -41,7 +65,9 @@ export function CreateTemplateCard({
       ) : null}
       <Link
         href={
-          flow === UserFlows.NewProject && projectId
+          flow != UserFlows.ViewTemplate &&
+          flow != UserFlows.NewTemplate &&
+          projectId
             ? `/canvas?flow=${UserFlows.NewProjectWithNewTemplate}&projectId=${projectId}&mode=edit`
             : '#'
         }

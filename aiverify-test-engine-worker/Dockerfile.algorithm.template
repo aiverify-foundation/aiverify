@@ -1,0 +1,18 @@
+# Dockerfile template for building algorithm images
+FROM $base_image
+
+WORKDIR /app
+
+# Copy algorithm folder
+COPY . algo/
+
+WORKDIR /app/algo
+
+# Install algorithm requirements
+RUN pip install --no-cache-dir .
+RUN mkdir -p /app/output
+
+ENV PYTHONPATH=/app/algo
+# add additional ENV as necessary
+
+ENTRYPOINT ["python", "-m", "scripts.algo_execute"]

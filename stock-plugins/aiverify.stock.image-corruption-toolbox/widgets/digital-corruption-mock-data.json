@@ -2,309 +2,111 @@
     "results": [
         {
             "corruption_group": "Digital",
-            "corruption_function": "Brightness_Down",
+            "corruption_function": "Contrast_Down",
+            "parameter": {
+                "severity0": {
+                    "factor": null
+                },
+                "severity1": {
+                    "factor": 0.2
+                },
+                "severity2": {
+                    "factor": 0.3
+                },
+                "severity3": {
+                    "factor": 0.5
+                },
+                "severity4": {
+                    "factor": 0.7
+                },
+                "severity5": {
+                    "factor": 0.9
+                }
+            },
             "accuracy": {
-                "severity0": 0.9,
-                "severity1": 0.9,
-                "severity2": 0.8,
-                "severity3": 0.8,
-                "severity4": 0.4,
+                "severity0": 0.0,
+                "severity1": 0.2,
+                "severity2": 0.1,
+                "severity3": 0.0,
+                "severity4": 0.0,
                 "severity5": 0.1
             },
             "display_info": {
                 "severity0": [
-                    "algorithms/digital_corruptions/temp/Brightness_Down/severity0/9.png",
-                    "6",
-                    "6"
+                    "images/Contrast_Down/severity0/9.png",
+                    9,
+                    1
                 ],
                 "severity1": [
-                    "algorithms/digital_corruptions/temp/Brightness_Down/severity1/9.png",
-                    "6",
-                    "6"
+                    "images/Contrast_Down/severity1/9.png",
+                    9,
+                    9
                 ],
                 "severity2": [
-                    "algorithms/digital_corruptions/temp/Brightness_Down/severity2/9.png",
-                    "6",
-                    "6"
+                    "images/Contrast_Down/severity2/9.png",
+                    9,
+                    1
                 ],
                 "severity3": [
-                    "algorithms/digital_corruptions/temp/Brightness_Down/severity3/9.png",
-                    "6",
-                    "6"
+                    "images/Contrast_Down/severity3/9.png",
+                    9,
+                    1
                 ],
                 "severity4": [
-                    "algorithms/digital_corruptions/temp/Brightness_Down/severity4/9.png",
-                    "6",
-                    "5"
+                    "images/Contrast_Down/severity4/9.png",
+                    9,
+                    1
                 ],
                 "severity5": [
-                    "algorithms/digital_corruptions/temp/Brightness_Down/severity5/9.png",
-                    "6",
-                    "5"
+                    "images/Contrast_Down/severity5/9.png",
+                    9,
+                    1
                 ]
             }
         },
         {
             "corruption_group": "Digital",
-            "corruption_function": "Brightness_Up",
+            "corruption_function": "Random_Perspective",
+            "parameter": {
+                "severity0": {
+                    "sigma": null
+                },
+                "severity1": {
+                    "sigma": 1.0
+                },
+                "severity2": {
+                    "sigma": 1.5
+                },
+                "severity3": {
+                    "sigma": 2.0
+                }
+            },
             "accuracy": {
-                "severity0": 0.9,
-                "severity1": 0.7,
-                "severity2": 0.7,
-                "severity3": 0.7,
-                "severity4": 0.8,
-                "severity5": 0.8
+                "severity0": 0.0,
+                "severity1": 0.0,
+                "severity2": 0.1,
+                "severity3": 0.2
             },
             "display_info": {
                 "severity0": [
-                    "algorithms/digital_corruptions/temp/Brightness_Up/severity0/9.png",
-                    "6",
-                    "6"
+                    "images/Random_Perspective/severity0/9.png",
+                    9,
+                    1
                 ],
                 "severity1": [
-                    "algorithms/digital_corruptions/temp/Brightness_Up/severity1/9.png",
-                    "6",
-                    "6"
+                    "images/Random_Perspective/severity1/9.png",
+                    9,
+                    1
                 ],
                 "severity2": [
-                    "algorithms/digital_corruptions/temp/Brightness_Up/severity2/9.png",
-                    "6",
-                    "6"
+                    "images/Random_Perspective/severity2/9.png",
+                    9,
+                    5
                 ],
                 "severity3": [
-                    "algorithms/digital_corruptions/temp/Brightness_Up/severity3/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity4": [
-                    "algorithms/digital_corruptions/temp/Brightness_Up/severity4/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity5": [
-                    "algorithms/digital_corruptions/temp/Brightness_Up/severity5/9.png",
-                    "6",
-                    "6"
-                ]
-            }
-        },
-        {
-            "corruption_group": "Digital",
-            "corruption_function": "Contrast_Down",
-            "accuracy": {
-                "severity0": 0.9,
-                "severity1": 0.6,
-                "severity2": 0.5,
-                "severity3": 0.4,
-                "severity4": 0.4,
-                "severity5": 0.2
-            },
-            "display_info": {
-                "severity0": [
-                    "algorithms/digital_corruptions/temp/Contrast_Down/severity0/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity1": [
-                    "algorithms/digital_corruptions/temp/Contrast_Down/severity1/9.png",
-                    "6",
-                    "8"
-                ],
-                "severity2": [
-                    "algorithms/digital_corruptions/temp/Contrast_Down/severity2/9.png",
-                    "6",
-                    "8"
-                ],
-                "severity3": [
-                    "algorithms/digital_corruptions/temp/Contrast_Down/severity3/9.png",
-                    "6",
-                    "8"
-                ],
-                "severity4": [
-                    "algorithms/digital_corruptions/temp/Contrast_Down/severity4/9.png",
-                    "6",
-                    "8"
-                ],
-                "severity5": [
-                    "algorithms/digital_corruptions/temp/Contrast_Down/severity5/9.png",
-                    "6",
-                    "8"
-                ]
-            }
-        },
-        {
-            "corruption_group": "Digital",
-            "corruption_function": "Contrast_Up",
-            "accuracy": {
-                "severity0": 0.9,
-                "severity1": 0.7,
-                "severity2": 0.7,
-                "severity3": 0.7,
-                "severity4": 0.7,
-                "severity5": 0.8
-            },
-            "display_info": {
-                "severity0": [
-                    "algorithms/digital_corruptions/temp/Contrast_Up/severity0/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity1": [
-                    "algorithms/digital_corruptions/temp/Contrast_Up/severity1/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity2": [
-                    "algorithms/digital_corruptions/temp/Contrast_Up/severity2/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity3": [
-                    "algorithms/digital_corruptions/temp/Contrast_Up/severity3/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity4": [
-                    "algorithms/digital_corruptions/temp/Contrast_Up/severity4/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity5": [
-                    "algorithms/digital_corruptions/temp/Contrast_Up/severity5/9.png",
-                    "6",
-                    "6"
-                ]
-            }
-        },
-        {
-            "corruption_group": "Digital",
-            "corruption_function": "Saturate",
-            "accuracy": {
-                "severity0": 0.9,
-                "severity1": 0.9,
-                "severity2": 0.9,
-                "severity3": 0.9,
-                "severity4": 0.9,
-                "severity5": 0.9
-            },
-            "display_info": {
-                "severity0": [
-                    "algorithms/digital_corruptions/temp/Saturate/severity0/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity1": [
-                    "algorithms/digital_corruptions/temp/Saturate/severity1/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity2": [
-                    "algorithms/digital_corruptions/temp/Saturate/severity2/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity3": [
-                    "algorithms/digital_corruptions/temp/Saturate/severity3/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity4": [
-                    "algorithms/digital_corruptions/temp/Saturate/severity4/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity5": [
-                    "algorithms/digital_corruptions/temp/Saturate/severity5/9.png",
-                    "6",
-                    "6"
-                ]
-            }
-        },
-        {
-            "corruption_group": "Digital",
-            "corruption_function": "Random_Tilt",
-            "accuracy": {
-                "severity0": 0.9,
-                "severity1": 0.9,
-                "severity2": 0.7,
-                "severity3": 0.6,
-                "severity4": 0.6,
-                "severity5": 0.2
-            },
-            "display_info": {
-                "severity0": [
-                    "algorithms/digital_corruptions/temp/Random_Tilt/severity0/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity1": [
-                    "algorithms/digital_corruptions/temp/Random_Tilt/severity1/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity2": [
-                    "algorithms/digital_corruptions/temp/Random_Tilt/severity2/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity3": [
-                    "algorithms/digital_corruptions/temp/Random_Tilt/severity3/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity4": [
-                    "algorithms/digital_corruptions/temp/Random_Tilt/severity4/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity5": [
-                    "algorithms/digital_corruptions/temp/Random_Tilt/severity5/9.png",
-                    "6",
-                    "4"
-                ]
-            }
-        },
-        {
-            "corruption_group": "Digital",
-            "corruption_function": "Compression",
-            "accuracy": {
-                "severity0": 0.9,
-                "severity1": 0.9,
-                "severity2": 0.9,
-                "severity3": 0.9,
-                "severity4": 0.9,
-                "severity5": 0.9
-            },
-            "display_info": {
-                "severity0": [
-                    "algorithms/digital_corruptions/temp/Compression/severity0/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity1": [
-                    "algorithms/digital_corruptions/temp/Compression/severity1/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity2": [
-                    "algorithms/digital_corruptions/temp/Compression/severity2/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity3": [
-                    "algorithms/digital_corruptions/temp/Compression/severity3/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity4": [
-                    "algorithms/digital_corruptions/temp/Compression/severity4/9.png",
-                    "6",
-                    "6"
-                ],
-                "severity5": [
-                    "algorithms/digital_corruptions/temp/Compression/severity5/9.png",
-                    "6",
-                    "6"
+                    "images/Random_Perspective/severity3/9.png",
+                    9,
+                    4
                 ]
             }
         }

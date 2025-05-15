@@ -4,6 +4,8 @@ import { ProjectCardsLoading } from './components/projectCardsLoading';
 import { ProjectsFilters } from './components/projectFilters';
 import { UserFlowCards } from './components/userFlowCards';
 
+export const dynamic = 'force-dynamic';
+
 export default async function HomePage() {
   return (
     <main className="w-full px-6">

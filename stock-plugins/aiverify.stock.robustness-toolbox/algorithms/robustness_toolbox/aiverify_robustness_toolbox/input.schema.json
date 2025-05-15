@@ -9,12 +9,14 @@
             "title": "Annotated ground truth path",
             "description": "Annotated ground truth path",
             "type": "string",
+            "default": "",
             "ui:widget": "selectDataset"
         },
         "file_name_label": {
             "title": "Name of column containing image file names",
             "description": "Key in the name of the column containing the file names in the annotated ground truth dataset",
-            "type": "string"
+            "type": "string",
+            "default": ""
         }
     }
 }

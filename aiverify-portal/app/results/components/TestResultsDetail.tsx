@@ -282,7 +282,7 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
               textColor="white"
               onCloseIconClick={() => {
                 setIsModalVisible(false);
-                router.refresh();
+                window.location.reload();
               }}
               enableScreenOverlay
               heading="Deletion Status"
@@ -311,7 +311,7 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
             </p>
             <p>
               <span className="font-semibold">Test Date:</span>{' '}
-              {new Date(currentResult.created_at).toLocaleString('en-GB')}
+              {new Date(currentResult.created_at + "Z").toLocaleString('en-GB')}
             </p>
             <p>
               <span className="font-semibold">Test Dataset:</span>{' '}

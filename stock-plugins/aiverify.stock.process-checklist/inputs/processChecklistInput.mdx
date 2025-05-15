@@ -48,7 +48,7 @@ export const ProcessChecklistInput = ({ config, data, onChangeData }) => {
                         <CompletedButton label="Not Applicable" pid={process.pid} data={data} onChangeData={onChangeData} />
                       </div>
                       <h4 style={{ padding:0, margin:"5px 0 0 0" }}>Elaboration</h4>
-                      <textarea rows="4" style={{ width:"100%", borderWidth:0, resize:"none" }} maxLength={256} value={data[`elaboration-${process.pid}`]} onChange={(e)=>onChangeData(`elaboration-${process.pid}`,e.target.value)} />
+                      <textarea rows="4" style={{ width:"100%", borderWidth:0, resize:"none" }} maxLength={4096} value={data[`elaboration-${process.pid}`]} onChange={(e)=>onChangeData(`elaboration-${process.pid}`,e.target.value)} />
                     </div>
                   </div>
                 ))}
@@ -59,7 +59,7 @@ export const ProcessChecklistInput = ({ config, data, onChangeData }) => {
       ))}
       <b style={{ margin:"10px 0 0 0" }}>Summary Justification</b>
       <div style={{ backgroundColor:"#F3F0F5", padding:'10px' }}>
-        <textarea rows="4" style={{ width:"100%", borderWidth:0, resize:"none" }} maxLength={256} value={data[`summary-justification-${config.principle}`]} onChange={(e)=>onChangeData(`summary-justification-${config.principle}`,e.target.value)} />
+        <textarea rows="4" style={{ width:"100%", borderWidth:0, resize:"none" }} maxLength={4096} value={data[`summary-justification-${config.principle}`]} onChange={(e)=>onChangeData(`summary-justification-${config.principle}`,e.target.value)} />
       </div>
     </div>
   )

@@ -24,6 +24,62 @@
       "request": "launch",
       "cwd": "${workspaceFolder}/test-engine-app",
       "module": "test_engine_app"
+    },
+    {
+      "name": "pytorch",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions/aiverify_blur_corruptions/plugin_init.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/stock-plugins/user_defined_files",
+      "args": [
+        "--data_path",
+        "data/raw_fashion_image_10",
+        "--model_path",
+        "pipeline/sample_fashion_mnist_pytorch",
+        "--model_type",
+        "CLASSIFICATION",
+        "--ground_truth_path",
+        "data/pickle_pandas_fashion_mnist_annotated_labels_10.sav",
+        "--ground_truth",
+        "label",
+        "--file_name_label",
+        "file_name",
+        "--set_seed",
+        "10",
+        "--corruptions",
+        "horizontal_motion_blur",
+        "zoom_blur"
+      ],
+      "justMyCode": false
+    },
+    {
+      "name": "sklearn",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions/aiverify_blur_corruptions/plugin_init.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/stock-plugins/user_defined_files",
+      "args": [
+        "--data_path",
+        "data/raw_fashion_image_10",
+        "--model_path",
+        "pipeline/sample_fashion_mnist_sklearn",
+        "--model_type",
+        "CLASSIFICATION",
+        "--ground_truth_path",
+        "data/pickle_pandas_fashion_mnist_annotated_labels_10.sav",
+        "--ground_truth",
+        "label",
+        "--file_name_label",
+        "file_name",
+        "--set_seed",
+        "10",
+        "--corruptions",
+        "horizontal_motion_blur",
+        "zoom_blur"
+      ],
+      "justMyCode": false
     }
   ]
 }

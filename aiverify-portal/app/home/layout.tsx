@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react';
 import { ReactNode } from 'react';
 import { Icon, IconName } from '@/lib/components/IconSVG';
@@ -14,12 +15,14 @@ const HomeLayout = ({ children }: LayoutProps) => {
       <header className="bg-primary-950/100 fixed left-0 right-0 top-0 z-50 flex h-16 items-center border-b border-primary-700 px-6 backdrop-blur-sm">
         <div className="flex flex-grow items-center justify-center">
           <div className="text-center">
-            <Image
-              src="/aiverify-logo-white.svg"
-              alt="AI Verify"
-              width={250}
-              height={40}
-            />
+             <Link href="/home">
+              <Image
+                src="/aiverify-logo-white.svg"
+                alt="AI Verify"
+                width={250}
+                height={40}
+                />
+              </Link>
           </div>
         </div>
 

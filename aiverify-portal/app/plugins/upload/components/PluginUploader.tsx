@@ -154,19 +154,27 @@ const PluginUploader = () => {
                     role="list"
                     aria-label="list of plugin upload requirements">
                     <li role="listitem">
-                      File Size:{' '}
-                      <span className="text-secondary-300">Less than 4GB</span>
-                    </li>
-                    <li role="listitem">
-                      Data Format:{' '}
+                      File Format:{' '}
                       <span className="text-secondary-300">
-                        Pandas, Delimiter-separated Values (comma, tab,
-                        semicolon, pipe, space, colon), Image(jpeg, jpg, png)
+                        ZIP file containing plugin or algorithm package
                       </span>
                     </li>
                     <li role="listitem">
-                      Serialiser Type:{' '}
-                      <span className="text-secondary-300">Pickle, Joblib</span>
+                      Plugin Structure:{' '}
+                      <span className="text-secondary-300">
+                        Must contain plugin.meta.json file or pyproject.toml for
+                        algorithms
+                      </span>
+                    </li>
+                    <li role="listitem">
+                      Supported Components:{' '}
+                      <span className="text-secondary-300">
+                        Algorithms, Widgets, Input Blocks, and Templates
+                      </span>
+                    </li>
+                    <li role="listitem">
+                      File Size:{' '}
+                      <span className="text-secondary-300">Less than 4GB</span>
                     </li>
                   </ul>
                 </div>

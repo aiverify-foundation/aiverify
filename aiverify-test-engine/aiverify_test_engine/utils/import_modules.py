@@ -15,7 +15,7 @@ def create_module_spec(
     module_name: str, module_file_path: str
 ) -> Union[None, ModuleSpec]:
     """
-    A function to create module specifications if it does not exist
+    A function to create module specifications
 
     Args:
         module_name (str): Input module name to be imported
@@ -33,12 +33,10 @@ def create_module_spec(
         ):
             return None
 
-        module_spec = importlib.util.find_spec(module_name)
-        if module_spec is None:
-            # Create a module spec since it is not available
-            module_spec = importlib.util.spec_from_file_location(
-                module_name, module_file_path
-            )
+        # Create a module spec
+        module_spec = importlib.util.spec_from_file_location(
+            module_name, module_file_path
+        )
 
         return module_spec
 

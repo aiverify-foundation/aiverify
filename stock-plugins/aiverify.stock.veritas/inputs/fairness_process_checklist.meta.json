@@ -1,0 +1,8 @@
+{
+  "cid": "fairness_process_checklist",
+  "name": "Fairness Process Checklist",
+  "description": "Process checklist for Fairness principle",
+  "group": "Veritas Process Checklists",
+  "groupNumber": 2,
+  "width": "xl"
+}

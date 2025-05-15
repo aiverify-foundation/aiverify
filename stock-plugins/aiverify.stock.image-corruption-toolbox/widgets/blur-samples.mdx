@@ -1,0 +1,104 @@
+import React from "react";
+import { DisplayImages } from "./display-samples";
+import { getCorruptionTypes, formatCorruptionName } from "./corruption-utils";
+
+export const cid = "aiverify_blur_corruptions";
+
+export const BlurSamples = ({ props }) => {
+  const resultsData = props.getResults ? props.getResults(cid).results : null;
+
+  if (!resultsData || resultsData.length === 0) {
+    return <div>No results data available</div>;
+  }
+
+  const corruptionTypes = getCorruptionTypes(resultsData, "Blur");
+
+  if (corruptionTypes.length === 0) {
+    return <div>No blur corruption data found</div>;
+  }
+
+  const corruptionResults = [];
+
+  corruptionTypes.forEach((corruptionFunction) => {
+    const corruptionIndex = resultsData.findIndex(
+      (item) => item.corruption_function === corruptionFunction
+    );
+
+    if (corruptionIndex === -1) {
+      console.error(`Could not find data for ${corruptionFunction}`);
+      return;
+    }
+
+    const corruptionData = resultsData[corruptionIndex];
+
+    const severityLevels = Object.keys(corruptionData.parameter || {})
+      .filter((key) => key.startsWith("severity"))
+      .map((key) => parseInt(key.replace("severity", "")))
+      .sort((a, b) => a - b);
+
+    if (severityLevels.length === 0) {
+      console.warn(`No severity levels found for ${corruptionFunction}`);
+      return;
+    }
+
+    const imagesUrls = [];
+    const parameters = {};
+
+    severityLevels.forEach((level) => {
+      const severityKey = `severity${level}`;
+
+      if (corruptionData.parameter && corruptionData.parameter[severityKey]) {
+        parameters[severityKey] = corruptionData.parameter[severityKey];
+      }
+
+      if (
+        corruptionData.display_info &&
+        corruptionData.display_info[severityKey] &&
+        corruptionData.display_info[severityKey][0]
+      ) {
+        const imagePath = corruptionData.display_info[severityKey][0];
+        console.log(imagePath);
+
+        try {
+          const url = props.getArtifactURL(cid, imagePath);
+          imagesUrls.push(url);
+        } catch (error) {
+          console.error(`Error getting URL for ${imagePath}:`, error);
+        }
+      }
+    });
+
+    const formattedCorruptionName = formatCorruptionName(corruptionFunction, "Blur");
+
+    corruptionResults.push({
+      corruptionName: formattedCorruptionName,
+      corruptionIndex: corruptionIndex,
+      images: imagesUrls,
+      parameters: parameters,
+    });
+  });
+
+  if (corruptionResults.length === 0) {
+    return <div>Could not process any blur corruption types</div>;
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+      {corruptionResults.map((result, index) => (
+        <div key={index}>
+          <DisplayImages
+            id={`${props.id}-${index}`}
+            images={result.images}
+            data={resultsData}
+            corruption_index={result.corruptionIndex}
+            corruption_name={result.corruptionName}
+            parameters={result.parameters}
+          />
+        </div>
+      ))}
+    </div>
+  );
+};
+
+
+<BlurSamples props={props} />

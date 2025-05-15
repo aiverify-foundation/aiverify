@@ -187,10 +187,10 @@ export default function PluginDetail({ plugin, onDelete }: Props) {
           <p>
             <span
               className="font-semibold"
-              aria-label={`Installed date ${new Date(currentPlugin.updated_at).toLocaleString('en-GB')}`}>
+              aria-label={`Installed date ${new Date(currentPlugin.updated_at + "Z").toLocaleString('en-GB')}`}>
               Installed on:
             </span>{' '}
-            {new Date(currentPlugin.updated_at).toLocaleString('en-GB')}
+            {new Date(currentPlugin.updated_at + "Z").toLocaleString('en-GB')}
           </p>
         </div>
       </div>

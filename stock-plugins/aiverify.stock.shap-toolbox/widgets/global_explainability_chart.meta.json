@@ -10,13 +10,13 @@
   "description": "To display the average SHAP values using a bar chart",
   "dependencies": [
     {
-      "cid": "shap_toolbox"
+      "cid": "aiverify_shap_toolbox"
     }
   ],
   "mockdata": [
     {
       "type": "Algorithm",
-      "cid": "shap_toolbox",
+      "cid": "aiverify_shap_toolbox",
       "datapath": "shap_toolbox.sample.json"
     }
   ],

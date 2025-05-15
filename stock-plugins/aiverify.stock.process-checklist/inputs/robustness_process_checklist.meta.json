@@ -3,5 +3,6 @@
   "name": "Robustness Process Checklist",
   "description": "Process checklist for Robustness principle",
   "group": "AI Verify Process Checklists",
-  "width": "xl"
+  "width": "xl",
+  "groupNumber": 6
 }

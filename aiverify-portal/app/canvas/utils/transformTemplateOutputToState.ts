@@ -9,8 +9,6 @@ import { getWidgetAlgosFromPlugins } from '@/app/canvas/utils/getWidgetAlgosFrom
 import { getWidgetInputBlocksFromPlugins } from '@/app/canvas/utils/getWidgetInputBlocksFromPlugins';
 import { Algorithm, InputBlock } from '@/app/types';
 
-type ResizeHandle = 's' | 'w' | 'e' | 'n' | 'sw' | 'nw' | 'se' | 'ne';
-
 export interface TemplateOutput {
   id: number;
   fromPlugin: boolean;
@@ -26,10 +24,6 @@ export interface TemplateOutput {
       minW: number;
       minH: number;
       static: boolean;
-      isDraggable: boolean;
-      isResizable: boolean;
-      resizeHandles: ResizeHandle[] | undefined;
-      isBounded: boolean;
     }[];
     reportWidgets: {
       widgetGID: string;
@@ -254,28 +248,13 @@ export function transformTemplateOutputToState(
     });
   });
 
-  // Calculate pageTypes and overflowParents based on layout heights
   const pageTypes: ('grid' | 'overflow')[] = [];
   const overflowParents: Array<number | null> = [];
-  const MAX_GRID_HEIGHT = 36;
 
-  template.pages.forEach((page) => {
-    const totalHeight = page.layouts.reduce((sum, layout) => sum + layout.h, 0);
-
-    if (totalHeight > MAX_GRID_HEIGHT) {
-      const lastGridPageIndex = pageTypes.findIndex((type) => type === 'grid');
-
-      if (lastGridPageIndex === -1) {
-        pageTypes.push('grid');
-        overflowParents.push(null);
-      } else {
-        pageTypes.push('overflow');
-        overflowParents.push(lastGridPageIndex);
-      }
-    } else {
-      pageTypes.push('grid');
-      overflowParents.push(null);
-    }
+  // First, set all pages as 'grid' with null parent
+  template.pages.forEach(() => {
+    pageTypes.push('grid');
+    overflowParents.push(null);
   });
 
   return {

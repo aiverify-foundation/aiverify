@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-export const algo_cid = "robustness_toolbox"
+export const algo_cid = "aiverify_robustness_toolbox"
 
 export const MyChart = ({ results, modelType}) => {
   const [ data, setData ] = useState([]);
@@ -77,7 +77,7 @@ export const MyChart = ({ results, modelType}) => {
         let introduction = "The robustness test generates perturbed dataset based on your given test samples with the intention to cause your model to produce different predictions."
         let introduction_postpend = ""
 
-        if(modelType == "Regression"){
+        if(modelType == "regression"){
           introduction_postpend += " Each bar represents the performance of the model. The longer the bar, the higher mean absolute error of the model. A robust model will achieve similar error rate for both original dataset and perturbed dataset. If you model is not robust, the error rate of the model will increase with a perturbed dataset."
         }
         else{
@@ -86,7 +86,7 @@ export const MyChart = ({ results, modelType}) => {
 
         let preword = "The test results enable the Company to understand whether the model may be affected by dataset that might be perturbed incidentally or intentionally."
         
-        if (modelType == "Regression"){
+        if (modelType == "regression"){
           if (results.org_performance < results.perturbed_performance) {
             return (
                 <>
@@ -206,11 +206,32 @@ export const MyChart = ({ results, modelType}) => {
 
 {props.getResults(algo_cid)?(
   <>
-    <div style={{ width:props.container.width, height:"200px" }}>
-      <MyChart results={props.getResults(algo_cid).results} modelType={props.modelAndDatasets.model.modelType}/>
+    <div style={{ width:props.width, height:"200px" }}>
+      <MyChart results={props.getResults(algo_cid).results} modelType={props.getResults(algo_cid).modelType}/>
     </div>
   </>
-):(
-  <div>No data</div>
+): (
+  <div style={{ 
+    width: props.width, 
+          height: props.height, 
+    maxHeight: 1076,
+    display: 'flex', 
+    justifyContent: 'center', 
+    alignItems: 'center',
+    flexDirection: 'column',
+    background: '#f8f9fa',
+    border: '1px dashed #dee2e6',
+    borderRadius: '4px',
+    padding: '20px',
+    textAlign: 'center' 
+  }}>
+    <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#dc3545', marginBottom: '10px' }}>
+      Report is incomplete
+    </div>
+    <div style={{ color: '#6c757d' }}>
+      No Test Result is selected for Robustness Toolbox algorithm. 
+      Please select appropriate test results in the Data Selection page.
+    </div>
+  </div>
 )}
 

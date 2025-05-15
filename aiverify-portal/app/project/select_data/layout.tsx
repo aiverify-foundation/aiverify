@@ -1,10 +1,7 @@
-import { ProjectOutput } from '@/app/canvas/utils/transformProjectOutputToState';
-
 export default function SelectDataLayout({
   children,
 }: {
   children: React.ReactNode;
-  project: ProjectOutput;
 }) {
   return (
     <div className="min-h-screen">

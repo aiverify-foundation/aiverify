@@ -2,10 +2,10 @@ import { NextResponse } from 'next/server';
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const projectId = params.id;
+    const projectId = (await params).id;
     const data = await request.json();
 
     // Make API call to update project data

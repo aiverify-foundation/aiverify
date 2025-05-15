@@ -28,17 +28,30 @@ export const saveStateToDatabase = async (state: State) => {
 
   // Try to save minimal state to localStorage as backup
   try {
-    const minimalState = {
-      timestamp: Date.now(),
-      projectId: getProjectIdAndFlowFromUrl().projectId,
-      layouts: state.layouts.map((layout) =>
-        layout.map((item) => ({
+    // Get only non-overflow pages
+    const nonOverflowPages = state.layouts
+      .map((layout, index) => ({ layout, index }))
+      .filter(({ index }) => state.pageTypes[index] !== 'overflow')
+      .map(({ layout, index }) => ({
+        layouts: layout.map((item) => ({
           i: item.i,
           x: item.x,
           y: item.y,
           w: item.w,
           h: item.h,
-        }))
+        })),
+        widgets: state.widgets[index],
+        isOverflowPage: false,
+        pageIndex: index,
+      }));
+
+    const minimalState = {
+      timestamp: Date.now(),
+      projectId: getProjectIdAndFlowFromUrl().projectId,
+      layouts: nonOverflowPages.map((p) => p.layouts),
+      pageTypes: state.pageTypes.filter((type) => type !== 'overflow'),
+      overflowParents: state.overflowParents.filter(
+        (_, idx) => state.pageTypes[idx] !== 'overflow'
       ),
       lastModified: new Date().toISOString(),
     };
@@ -71,8 +84,10 @@ export const saveStateToDatabase = async (state: State) => {
   }
 
   try {
-    // Transform state to project input format
-    const data = transformStateToProjectInput(state);
+    // Transform state to project input format - this will filter out overflow pages
+    const data = transformStateToProjectInput(state, {
+      filterOverflowPages: true,
+    });
     const result = await patchProject(projectId, data);
 
     if ('message' in result) {
@@ -93,17 +108,28 @@ export const debouncedSaveStateToDatabase = (state: State) => {
 
   // Try to save minimal state to localStorage as backup
   try {
-    const minimalState = {
-      timestamp: Date.now(),
-      projectId: getProjectIdAndFlowFromUrl().projectId,
-      layouts: state.layouts.map((layout) =>
-        layout.map((item) => ({
+    // Get only non-overflow pages
+    const nonOverflowPages = state.layouts
+      .map((layout, index) => ({ layout, index }))
+      .filter(({ index }) => state.pageTypes[index] !== 'overflow')
+      .map(({ layout, index }) => ({
+        layouts: layout.map((item) => ({
           i: item.i,
           x: item.x,
           y: item.y,
           w: item.w,
           h: item.h,
-        }))
+        })),
+        pageIndex: index,
+      }));
+
+    const minimalState = {
+      timestamp: Date.now(),
+      projectId: getProjectIdAndFlowFromUrl().projectId,
+      layouts: nonOverflowPages.map((p) => p.layouts),
+      pageTypes: state.pageTypes.filter((type) => type !== 'overflow'),
+      overflowParents: state.overflowParents.filter(
+        (_, idx) => state.pageTypes[idx] !== 'overflow'
       ),
       lastModified: new Date().toISOString(),
     };

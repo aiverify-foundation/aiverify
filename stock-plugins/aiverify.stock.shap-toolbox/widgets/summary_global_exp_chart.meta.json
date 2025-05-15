@@ -10,13 +10,13 @@
   "description": "To generate bar chart, interpretation and recommendations for explainability testing",
   "dependencies": [
     {
-      "cid": "shap_toolbox"
+      "cid": "aiverify_shap_toolbox"
     }
   ],
   "mockdata": [
     {
       "type": "Algorithm",
-      "cid": "shap_toolbox",
+      "cid": "aiverify_shap_toolbox",
       "datapath": "shap_toolbox.sample.json"
     }
   ],

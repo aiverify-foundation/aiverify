@@ -1,12 +1,13 @@
-from pydantic import BaseModel, Field
+from pydantic import Field
 from typing import List, Optional, Annotated
 from enum import StrEnum
 import json
 
 from ..models import AlgorithmModel
+from .base_model import MyBaseModel
 
 
-class AlgorithmMeta(BaseModel):
+class AlgorithmMeta(MyBaseModel):
     class ModelTypeEnum(StrEnum):
         CLASSIFICATION = "classification"
         REGRESSION = "regression"
@@ -25,7 +26,7 @@ class AlgorithmMeta(BaseModel):
         pattern=r"^[a-zA-Z0-9][a-zA-Z0-9-._]*$",
     )
     name: str = Field(description="Algorithm name", min_length=1, max_length=256)
-    modelType: List[ModelTypeEnum] = Field(description="AI model type", min_length=1, max_length=3)
+    modelType: List[ModelTypeEnum] = Field(description="AI model type", min_length=1, max_length=3, strict=False)
     version: Optional[str] = Field(
         default=None,
         description="Version of the algorithm, default to plugin version if not specified",
