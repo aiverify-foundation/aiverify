@@ -1,23 +1,20 @@
 # SCA Scan
 
-name: Software Composition Analysis
+name: v2 Software Composition Analysis
 
 on:
   # Runs on a schedule
   schedule:
     - cron: "5 14 * * 5"
 
+  # Runs when a pull request review is being submitted    
+  pull_request:
+    types: [assigned, synchronize]
+    branches:
+      - "v2.x"
+
   # Run this workflow manually from Actions tab
   workflow_dispatch:
-    inputs:
-      branch_to_test:
-        description: 'Branch or tag to run test'
-        required: true
-        default: 'main'
-        type: string
-        options:
-        - 'main' 
-        - 'v2.x'
 
 # Allow one concurrent deployment
 concurrency:
@@ -40,43 +37,24 @@ jobs:
     #       repository: aiverify-foundation/aiverify
     #       submodules: recursive
 
-    # - name: Checkout Code (Pull Request Into v2.x)
-    #   if: github.event_name == 'pull_request'
-    #   uses: actions/checkout@v4
-    #   with:
-    #       ref: ${{ github.event.pull_request.head.ref }}
-    #       repository: ${{ github.event.pull_request.head.repo.full_name }}
-    #       submodules: recursive
-
     - name: Checkout Code
       uses: actions/checkout@v4
       with:
-        ref: ${{ inputs.branch_to_test }}
+        ref: main
         repository: aiverify-foundation/aiverify
         submodules: recursive
-
-    - name: Set Branch Variable (v2.x)
-      if: inputs.branch_to_test == 'v2.x'
-      run: |
-          echo "BRANCH=v2.x" >> "$GITHUB_ENV" 
-
-    - name: Set Branch Variable (Main)
-      if: inputs.branch_to_test == 'main'
-      run: |
-          echo "BRANCH=v1.0" >> "$GITHUB_ENV"
 
     - name: Set up Python 3.11
       uses: actions/setup-python@v5
       with:
         python-version: "3.11"
 
-    - name: Install & Scan APIGW (v2.x)
-      if: inputs.branch_to_test == 'v2.x'
+    - name: Install & Scan APIGW
       run: |
           cd aiverify-apigw
           python3 -m venv .venv
           source .venv/bin/activate
-          pip install -e .
+          pip install .
           pip freeze > requirements.txt
           rm -rf .venv
 
@@ -88,16 +66,7 @@ jobs:
           deactivate
           cd ${GITHUB_WORKSPACE}
 
-    - name: Install & Scan APIGW (Main)
-      if: inputs.branch_to_test == 'main'
-      run: |
-          cd ai-verify-apigw
-          npm install
-          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=ai-verify-apigw --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="ai-verify-apigw_$BRANCH" --detect.excluded.directories=tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
-          cd ${GITHUB_WORKSPACE}
-
-    - name: Install & Scan PORTAL (v2.x)
-      if: inputs.branch_to_test == 'v2.x'
+    - name: Install & Scan PORTAL
       run: |
         cd aiverify-portal
         rm package-lock.json
@@ -106,29 +75,12 @@ jobs:
         mv aiverify_portal_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
         cd ${GITHUB_WORKSPACE}
 
-    - name: Install & Scan PORTAL (Main)
-      if: inputs.branch_to_test == 'main'
-      run: |
-          cd ai-verify-portal
-          npm install
-          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=ai-verify-portal --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="ai-verify-portal_$BRANCH" --detect.excluded.directories=tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
-          cd ${GITHUB_WORKSPACE}
-
-    - name: Install & Scan SHARED LIBRARY (Main)
-      if: inputs.branch_to_test == 'main'
-      run: |
-          cd ai-verify-shared-library
-          npm install
-          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=ai-verify-shared-library --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="ai-verify-shared-library_$BRANCH" --detect.excluded.directories=tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
-          cd ${GITHUB_WORKSPACE}
-
-    - name: Install & Scan TEST ENGINE (v2.x)
-      if: inputs.branch_to_test == 'v2.x'
+    - name: Install & Scan TEST ENGINE
       run: |
           cd aiverify-test-engine
           python3 -m venv .venv
           source .venv/bin/activate
-          pip install .[all]
+          pip install ".[all]"
           pip freeze > requirements.txt
           rm -rf .venv
 
@@ -140,46 +92,13 @@ jobs:
           deactivate
           cd ${GITHUB_WORKSPACE}
 
-    - name: Install & Scan TEST ENGINE (Main)
-      if: inputs.branch_to_test == 'main'
-      run: |
-          cd test-engine-app
-          python3 -m venv .venv
-          source .venv/bin/activate
-          pip install -r requirements.txt
-          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=test-engine-app --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="test-engine-app_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
-          deactivate
-          cd ${GITHUB_WORKSPACE}
-
-    - name: Install & Scan TEST ENGINE CORE (Main)
-      if: inputs.branch_to_test == 'main'
-      run: |
-          cd test-engine-core
-          python3 -m venv .venv
-          source .venv/bin/activate
-          pip install -r requirements.txt
-          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=test-engine-core --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="test-engine-core_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
-          deactivate
-          cd ${GITHUB_WORKSPACE}
-
-    - name: Install & Scan TEST ENGINE CORE MODULES (Main)
-      if: inputs.branch_to_test == 'main'
-      run: |
-          cd test-engine-core-modules
-          python3 -m venv .venv
-          source .venv/bin/activate
-          pip install -r requirements.txt
-          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=test-engine-core-modules --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="test-engine-core-modules_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
-          deactivate
-          cd ${GITHUB_WORKSPACE}
-
     - name: Install & Scan Accumulated Local Effects (v2.x)
       if: inputs.branch_to_test == 'v2.x'
       run: |
           cd stock-plugins/aiverify.stock.accumulated-local-effect/algorithms/accumulated_local_effect
           python3 -m venv .venv
           source .venv/bin/activate
-          pip install -e .
+          pip install .
           pip freeze > requirements.txt
           rm -rf .venv
 
@@ -191,8 +110,7 @@ jobs:
           deactivate
           cd ${GITHUB_WORKSPACE}
 
-    - name: Install & Scan Decorators (v2.x)
-      if: inputs.branch_to_test == 'v2.x'
+    - name: Install & Scan Decorators
       run: |
           cd stock-plugins/aiverify.stock.decorators
           npm install
@@ -200,13 +118,12 @@ jobs:
           mv decorators_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           cd ${GITHUB_WORKSPACE}
 
-    - name: Install & Scan Fairness Metric ToolBox For Classification (v2.x)
-      if: inputs.branch_to_test == 'v2.x'
+    - name: Install & Scan Fairness Metric ToolBox For Classification
       run: |
           cd stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification
           python3 -m venv .venv
           source .venv/bin/activate
-          pip install -e .
+          pip install .
           pip freeze > requirements.txt
           rm -rf .venv
 
@@ -218,13 +135,12 @@ jobs:
           deactivate
           cd ${GITHUB_WORKSPACE}
 
-    - name: Install & Scan Fairness Metric ToolBox For Regression (v2.x)
-      if: inputs.branch_to_test == 'v2.x'
+    - name: Install & Scan Fairness Metric ToolBox For Regression
       run: |
           cd stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-regression/algorithms/fairness_metrics_toolbox_for_regression
           python3 -m venv .venv
           source .venv/bin/activate
-          pip install -e .
+          pip install .
           pip freeze > requirements.txt
           rm -rf .venv
 
@@ -236,23 +152,23 @@ jobs:
           deactivate
           cd ${GITHUB_WORKSPACE}
 
-    - name: Install & Scan Blur Corruptions (v2.x)
-      if: inputs.branch_to_test == 'v2.x'
-      run: |
-          cd aiverify-test-engine
-          source .venv/bin/activate
-          cd {GITHUB_WORKSPACE}
-          cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions
-          pip install -e .
-          pip freeze > requirements.txt
-          deactivate
+    # - name: Install & Scan Blur Corruptions (v2.x)
+    #   if: inputs.branch_to_test == 'v2.x'
+    #   run: |
+    #       cd aiverify-test-engine
+    #       source .venv/bin/activate
+    #       cd {GITHUB_WORKSPACE}
+    #       cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions
+    #       pip install .
+    #       pip freeze > requirements.txt
+    #       deactivate
 
-          python3 -m venv .venv
-          source .venv/bin/activate
-          pip install -r requirements.txt
-          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=blur-corruptions --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="blur-corruptions_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
-          mv blur_corruptions_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
-          deactivate
+    #       python3 -m venv .venv
+    #       source .venv/bin/activate
+    #       pip install -r requirements.txt
+    #       bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=blur-corruptions --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="blur-corruptions_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
+    #       mv blur_corruptions_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
+    #       deactivate
 
     # - name: Install & Scan Digital Corruptions (v2.x)
     #   if: inputs.branch_to_test == 'v2.x'
@@ -260,7 +176,7 @@ jobs:
     #       cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions
     #       python3 -m venv .venv
     #       source .venv/bin/activate
-    #       pip install -e .
+    #       pip install .
     #       pip freeze > requirements.txt
     #       rm -rf .venv
 
@@ -305,8 +221,7 @@ jobs:
     #       mv general_corruptions_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
     #       deactivate
 
-    - name: Install & Scan Partial Dependence Plot (v2.x)
-      if: inputs.branch_to_test == 'v2.x'
+    - name: Install & Scan Partial Dependence Plot
       run: |
           cd stock-plugins/aiverify.stock.partial-dependence-plot/algorithms/partial_dependence_plot
           python3 -m venv .venv
@@ -322,8 +237,7 @@ jobs:
           mv partial_dependence_plot_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
 
-    - name: Install & Scan Robustness ToolBox (v2.x)
-      if: inputs.branch_to_test == 'v2.x'
+    - name: Install & Scan Robustness ToolBox
       run: |
           cd stock-plugins/aiverify.stock.robustness-toolbox/algorithms/robustness_toolbox
           python3 -m venv .venv
@@ -339,8 +253,7 @@ jobs:
           mv robustness_toolbox_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
 
-    - name: Install & Scan SHAP ToolBox (v2.x)
-      if: inputs.branch_to_test == 'v2.x'
+    - name: Install & Scan SHAP ToolBox
       run: |
           cd stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox
           python3 -m venv .venv
@@ -356,8 +269,7 @@ jobs:
           mv shap_toolbox_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
 
-    - name: Install & Scan Veritas (v2.x)
-      if: inputs.branch_to_test == 'v2.x'
+    - name: Install & Scan Veritas
       run: | 
           cd stock-plugins/aiverify.stock.veritas/algorithms/veritastool
           python3 -m venv .venv
