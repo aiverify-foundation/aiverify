@@ -149,7 +149,7 @@ def parse_arguments():
     if args.upload_output_to_apigw and not args.apigw_url:
         parser.error("--apigw_url is required when --upload_output_to_apigw is set.")
     if args.apigw_url and not args.upload_output_to_apigw:
-        logger.warning("--apigw_url is set but --upload_output_to_apigw is not. URL will be ignored.")
+        logger.warning("--apigw_url is set but --upload_output_to_apigw is not. URL will be used only for progress update.")
 
     if args.verbose > 0:
         if args.verbose == 1:
