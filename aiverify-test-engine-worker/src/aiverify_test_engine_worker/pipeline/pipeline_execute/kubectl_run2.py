@@ -22,8 +22,8 @@ class KubectlRun2(Pipe):
     def setup(self):
         self.kubectl_bin = os.getenv("KUBECTL", "kubectl")
         self.algo_execute = Path(__file__).parent.joinpath("algo_execute.py")
-        self.apigw_url = os.getenv("DOCKER_APIGW_URL", "http://apigw.aiverify.svc.cluster.local:4000")
-        self.extra_args = os.getenv("DOCKER_RUN_EXTRA_ARGS", "--namespace=aiverify")
+        self.apigw_url = os.getenv("KUBECTL_APIGW_URL", "http://apigw.aiverify.svc.cluster.local:4000")
+        self.extra_args = os.getenv("KUBECTL_RUN_EXTRA_ARGS", "--namespace=aiverify")
         registry = os.getenv("KUBECTL_REGISTRY", None)
         if registry is None:
             registry = os.getenv("DOCKER_REGISTRY", "")
