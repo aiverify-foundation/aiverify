@@ -15,6 +15,12 @@ on:
 
   # Run this workflow manually from Actions tab
   workflow_dispatch:
+    inputs:
+      branch_to_test:
+        description: "Branch or tag to run test"
+        required: true
+        default: main
+        type: string
 
 # Allow one concurrent deployment
 concurrency:
