@@ -1,6 +1,6 @@
 # SCA Scan
 
-name: Software Composition Analysis
+name: v2 Software Composition Analysis
 
 on:
   # Runs on a schedule
