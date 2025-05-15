@@ -12,11 +12,7 @@ from .algorithm_utils import validate_algorithm
 import logging
 from datetime import datetime
 import requests
-logging.basicConfig(
-    level=logging.INFO,
-    handlers=[logging.StreamHandler(sys.stdout)],
-    format="%(asctime)s [%(levelname)s] %(message)s"
-)
+logging.basicConfig(format='%(levelname)-8s [%(filename)s:%(lineno)d] %(message)s')
 logger = logging.getLogger(__name__)
 
 from aiverify_test_engine.plugins.enums.plugin_type import PluginType
