@@ -29,6 +29,7 @@ def mock_test_result_data():
             "modelType": "classification",
         },
         "output": {"result": 100},
+        "testRunId": None
     }
 
 
@@ -208,7 +209,26 @@ class TestUploadZipFile:
         assert response.json() == urls
         mock_test_result_data = mock_upload_zipfile[1]
         result = TestResult(**mock_test_result_data)
-        mock_save_test_result.assert_called_once_with(test_result=result, session=ANY, artifact_set=ANY)
+        mock_save_test_result.assert_called_once_with(test_result=result, session=ANY, artifact_set=ANY, test_run_id=None)
+
+    @patch("aiverify_apigw.routers.test_result_router._save_test_result")
+    def test_upload_zip_file_success_with_resultid(self, mock_save_test_result, test_client, mock_upload_zipfile):
+        """Test successfully uploading a valid zip file."""
+        urls = ["/test_results/1"]
+        # Mock the result of _save_test_result to return URLs
+        mock_save_test_result.return_value = urls
+
+        # Perform the POST request with the mocked zip file
+        mock_upload_zipfile[0].seek(0)
+        files = {"file": ("test.zip", mock_upload_zipfile[0].read(), "application/zip")}
+        response = test_client.post("/test_results/upload_zip", files=files)
+
+        # Assertions
+        assert response.status_code == 200
+        assert response.json() == urls
+        mock_test_result_data = mock_upload_zipfile[1]
+        result = TestResult(**mock_test_result_data)
+        mock_save_test_result.assert_called_once_with(test_result=result, session=ANY, artifact_set=ANY, test_run_id=None)
 
     def test_upload_zip_file_invalid_format(self, test_client):
         """Test uploading a file that is not a zip."""
