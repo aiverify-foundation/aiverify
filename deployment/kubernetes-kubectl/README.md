@@ -13,7 +13,7 @@ The provided YAML files are for reference and may need to be adapted to your spe
 
 The `deployment/kubernetes` folder deploys AI Verify on a Kubernetes cluster, with the tasks picked up by the Test Engine Worker being executed using Python Virtual Environment. In this `deployment/kubernetes-dev` folder, tasks are executed using kubectl. 
 
-### 1. **kubectl.yaml** — Synchronous Execution via Pod (PIPELINE_EXECUTE="kubectl_run")
+### 1. kubectl.yaml — Synchronous Execution via Pod (PIPELINE_EXECUTE="kubectl_run")
 
 - The Test Engine Worker launches a Kubernetes pod for each task.
 - It waits for the pod to complete execution.
@@ -26,7 +26,7 @@ Use this mode when:
 - Each task must finish before the next one begins (sequential execution).
 - TEW manages result uploading centrally.
 
-### **2. kubectl2.yaml** — Asynchronous Execution via Job (PIPELINE_EXECUTE="kubectl_run2")
+### 2. kubectl2.yaml — Asynchronous Execution via Job (PIPELINE_EXECUTE="kubectl_run2")
 
 - The TEW applies a Kubernetes Job for each task.
 - It does not wait for job completion.
@@ -65,7 +65,7 @@ From the root aiverify/ directory, use the following command, replacing the buil
 DOCKER_BUILDKIT=1 docker build -f aiverify-portal/Dockerfile --build-arg APIGW_HOST="YOUR_APIGW_HOST" --build-arg NEXT_PUBLIC_APIGW_HOST="YOUR_NEXT_PUBLIC_APIGW_HOST" -t aiverify-portal --target production .
 ```
 
-2. **Build Test Engine Worker image with docker and kubectl support**
+2. **Build test engine worker image with docker and kubectl support**
 
 From the root aiverify/ directory, use the following command:
 
@@ -74,6 +74,8 @@ DOCKER_BUILDKIT=1 docker build -f aiverify-test-engine-worker/Dockerfile -t aive
 ```
 
 3. **Apply the YAML Files**: Apply the YAML files to deploy AI Verify in the `aiverify` namespace.
+
+From this directory,
 
    ```bash
    kubectl apply -f <yaml-file> -n aiverify
