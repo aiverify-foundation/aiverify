@@ -161,7 +161,7 @@ jobs:
       run: |
           cd aiverify-test-engine
           source .venv/bin/activate
-          cd {GITHUB_WORKSPACE}
+          cd ${GITHUB_WORKSPACE}
           cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions
           pip install .
           pip freeze > requirements.txt
