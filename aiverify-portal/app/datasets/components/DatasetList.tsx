@@ -35,7 +35,7 @@ const columns: Column[] = [
     field: 'updated_at',
     headerName: 'Date',
     sortable: true,
-    renderCell: (row: Dataset) => new Date(row.updated_at).toLocaleString(),
+    renderCell: (row: Dataset) => new Date(row.updated_at + "Z").toLocaleString(),
   },
 ];
 
@@ -154,13 +154,13 @@ function DatasetList({ datasets, className }: DatasetListProps) {
               <div className="flex gap-3">
                 <span className="text-secondary-400">Created:</span>
                 <span>
-                  {new Date(selectedDataset.created_at).toLocaleString()}
+                  {new Date(selectedDataset.created_at + "Z").toLocaleString()}
                 </span>
               </div>
               <div className="flex gap-3">
                 <span className="text-secondary-400">Last Updated:</span>
                 <span>
-                  {new Date(selectedDataset.updated_at).toLocaleString()}
+                  {new Date(selectedDataset.updated_at + "Z").toLocaleString()}
                 </span>
               </div>
             </div>

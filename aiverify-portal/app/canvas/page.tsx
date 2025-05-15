@@ -8,10 +8,11 @@ import {
   transformTemplateOutputToState,
   TemplateOutput,
 } from '@/app/canvas/utils/transformTemplateOutputToState';
+import { TestModel } from '@/app/models/utils/types';
 import { ReportTemplate, Page, Layout } from '@/app/templates/types';
 import { InputBlockData } from '@/app/types';
-import { TestResult } from '@/app/types';
 import { UserFlows } from '@/app/userFlowsEnum';
+import { getTestModels } from '@/lib/fetchApis/getAllModels';
 import {
   getInputBlockDatas,
   getInputBlockGroupDatas,
@@ -53,7 +54,7 @@ export default async function CanvasPage(props: UrlSearchParams) {
   console.log('testResultIds', testResultIds);
 
   const useRealData = !!(
-    projectId !== undefined && testResultIds !== undefined
+    projectId !== undefined && mode !== 'edit'
   );
   console.log('useRealData:', useRealData);
 
@@ -113,6 +114,17 @@ export default async function CanvasPage(props: UrlSearchParams) {
   }
 
   const isTemplate = templateId !== undefined;
+
+  // Fetch model data here instead of in the Designer component
+  let modelData: TestModel | null = null;
+  if (!isTemplate && 'testModelId' in projectOrTemplate && projectOrTemplate.testModelId) {
+    try {
+      const models = await getTestModels();
+      modelData = models.find(m => m.id === Number(projectOrTemplate.testModelId)) || null;
+    } catch (error) {
+      console.error('Failed to fetch model data:', error);
+    }
+  }
 
   // Initialize state with error handling for storage quota
   let initialState: State;
@@ -254,6 +266,7 @@ export default async function CanvasPage(props: UrlSearchParams) {
         pageNavigationMode="multi"
         disabled={mode === 'view'}
         isTemplate={isTemplate}
+        modelData={modelData}
       />
     </Suspense>
   );

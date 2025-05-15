@@ -228,7 +228,7 @@ function InputBlockDatasDrawer(props: InputBlockDatasDrawerProps) {
                               </span>
                               <span className="text-xs text-gray-500">
                                 {new Date(
-                                  firstItem.created_at
+                                  firstItem.created_at + "Z"
                                 ).toLocaleString()}
                               </span>
                             </div>
@@ -278,7 +278,7 @@ function InputBlockDatasDrawer(props: InputBlockDatasDrawerProps) {
                               <span className="text-xs text-gray-500">
                                 {groupItems.length} checklists •{' '}
                                 {new Date(
-                                  firstItem.created_at
+                                  firstItem.created_at + "Z"
                                 ).toLocaleString()}
                               </span>
                             </div>

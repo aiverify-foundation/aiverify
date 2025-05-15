@@ -6,28 +6,24 @@ This summary provides an overview of the AI model tested. The details of each pr
 
 <MyPageTitle2 title="AI Model Information" />
 
-{props.modelAndDatasets && (
+{props.model && (
   <table style={{ width:'100%', marginTop:'10px' }}>
     <tbody>
       <tr>
         <th style={{ ...styles.th, width:'30%' }}>Name of Model Tested:</th>
-        <td style={{ ...styles.td, width:'70%' }}>{props.properties?.modelName}</td>
+        <td style={{ ...styles.td, width:'70%' }}>{props.model.name}</td>
       </tr>
       <tr>
         <th style={styles.th}>Model Type:</th>
-        <td style={styles.td}>{props.modelAndDatasets.model?.modelType}</td>
+        <td style={styles.td}>{props.model.modelType}</td>
       </tr>
       <tr>
         <th style={styles.th}>Model Filename:</th>
-        <td style={styles.td}>{props.modelAndDatasets.model?.filename}</td>
-      </tr>
-      <tr>
-        <th style={styles.th}>Test Dataset:</th>
-        <td style={styles.td}>{props.modelAndDatasets.testDataset?.filename}</td>
+        <td style={styles.td}>{props.model.filename}</td>
       </tr>
       <tr>
         <th style={styles.th}>Report Completed:</th>
-        <td style={styles.td}>{props.report?getReportDateTime(props):""}</td>
+        <td style={styles.td}>{props.projectCreatedAt}</td>
       </tr>
     </tbody>
   </table>

@@ -161,7 +161,7 @@ const ChecklistDetail: React.FC<ChecklistDetailProps> = ({ cid, gid }) => {
           </div>
         </div>
         <p className="text-sm text-gray-500">
-          Last updated: {new Date(groupData.updated_at).toLocaleString()}
+          Last updated: {new Date(groupData.updated_at + "Z").toLocaleString()}
         </p>
       </div>
       <MDXComponent

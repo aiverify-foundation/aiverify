@@ -170,7 +170,7 @@ export default function TestResults({
                       key={result.id}
                       value={result.id}>
                       {result.name} -{' '}
-                      {new Date(result.created_at).toLocaleString()}
+                      {new Date(result.created_at + "Z").toLocaleString()}
                     </option>
                   ))}
                 </select>

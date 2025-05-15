@@ -168,7 +168,7 @@ const FairnessTreeGroupList: React.FC<GroupListProps> = ({ trees }) => {
               </div>
               <div className="text-sm text-gray-500">
                 Last updated:{' '}
-                {new Date(tree.updated_at || '').toLocaleDateString('en-GB')}
+                {new Date(tree.updated_at + "Z" || '').toLocaleDateString('en-GB')}
               </div>
               <FairnessTreeSummaryMDX tree={tree} />
             </div>
