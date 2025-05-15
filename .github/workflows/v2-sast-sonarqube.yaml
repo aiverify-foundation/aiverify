@@ -1,0 +1,112 @@
+name: SAST (Sonarqube)
+
+env:
+  PROJECT_KEY:  'aiverify'
+
+on:
+  # Runs when a pull request to main is being assigned
+  pull_request:
+    types: [ assigned, synchronize ]
+    branches: [ main, dev_main ]
+
+  # Run this workflow manually from Actions tab
+  workflow_dispatch:
+    inputs:
+      branch_to_test:
+        description: 'Branch or tag to analyze'
+        required: true
+        default: 'main'
+        type: string
+            
+#   push:
+#     branches: [ ci/self-hosted-runner ]
+
+# Allow one concurrent deployment
+concurrency:
+  group: ${{ github.repository }}-${{ github.workflow }}
+  cancel-in-progress: true
+  
+jobs:  
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set env variables
+        run: |
+          echo "project_key=${PROJECT_KEY}" >> $GITHUB_ENV
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "branch_to_test=${{ github.event.pull_request.head.ref }}" >> $GITHUB_ENV
+            echo "pr_num=#${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+          elif [ "${{ github.event_name }}" == "push" ]; then
+            echo "branch_to_test=${{ github.ref }}" >> $GITHUB_ENV
+            echo "pr_num=push" >> $GITHUB_ENV
+          elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "branch_to_test=${{ inputs.branch_to_test }}" >> $GITHUB_ENV
+            echo "pr_num=dispatch" >> $GITHUB_ENV
+          fi
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.branch_to_test }}
+          # Disabling shallow clones is recommended for improving the relevancy of reporting
+          fetch-depth: 0
+
+      - name: SonarQube analysis
+        uses: SonarSource/sonarqube-scan-action@v5.0.0 # See the latest version at https://github.com/marketplace/actions/official-sonarqube-scan
+        with:
+          args: >
+            -Dsonar.projectKey=${{ env.project_key }}
+            -Dssonar.scanner.metadataFilePath=${{ github.workspace }}
+          #  -Dsonar.verbose=true 
+        env:
+          SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
+          SONAR_HOST_URL: ${{ vars.SONARQUBE_SERVER_URL }}
+
+      - name: Analysis results
+        id: analysis_results
+        run: |
+            SONAR_PROJECT_KEY=${{ env.project_key }}
+            echo "SonarQube analysis results:"
+            response=$(curl -s -u ${{ secrets.SONARQUBE_TOKEN }}: \
+              "${{ vars.SONARQUBE_SERVER_URL }}/api/measures/component?component=${SONAR_PROJECT_KEY}&metricKeys=vulnerabilities,software_quality_reliability_issues,code_smells")
+            
+            # Get vulnerability, reliability and maintainability (code smells) issue count
+            vul_count=$(echo $response | jq '.component.measures[] | select(.metric == "vulnerabilities") | .value | tonumber')
+            rel_count=$(echo $response | jq '.component.measures[] | select(.metric == "software_quality_reliability_issues") | .value | tonumber')
+            mnt_count=$(echo $response | jq '.component.measures[] | select(.metric == "code_smells") | .value | tonumber')
+            
+            SUMMARY_MSG="vulnerabilities: $vul_count, reliability: $rel_count, maintainability: $mnt_count"
+            DASHBOARD_URL=$(grep "dashboardUrl" "${{ github.workspace }}/.scannerwork/report-task.txt" | cut -d '=' -f 2)"=${{ env.project_key }}"
+            echo "summary_msg=${SUMMARY_MSG}" >> $GITHUB_ENV
+            echo "dashboard_url=${DASHBOARD_URL}" >> $GITHUB_ENV
+
+            RED='\033[0;31m'
+            ORANGE='\033[0;33m'
+            GREEN='\033[0;32m'
+            NC='\033[0m' # No Color
+  
+            if [ "$vul_count" -gt 0 ]; then
+              echo -e "${RED}${SUMMARY_MSG}${NC}"
+              echo -e "${RED}Refer to ${DASHBOARD_URL} for more details.${NC}"
+              exit 2
+            elif [ "$rel_count" -gt 0 ] || [ "$mnt_count" -gt 0 ]; then
+              echo -e "${ORANGE}${SUMMARY_MSG}${NC}"
+              echo -e "${ORANGE}Refer to ${DASHBOARD_URL} for more details.${NC}"
+            else
+              echo -e "${GREEN}${SUMMARY_MSG}${NC}"
+            fi
+
+      # Send slack notification
+      - name: Send slack notification
+        if: ${{ ! cancelled() }}
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "workflow": "${{ github.repository }} - ${{ github.workflow }} - ${{ env.pr_num }}",
+              "status": "SAST: ${{ steps.analysis_results.outcome }}",
+              "details": "${{ env.summary_msg }}",
+              "ref": "${{ env.dashboard_url }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CI }}
