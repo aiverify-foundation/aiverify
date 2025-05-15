@@ -160,7 +160,6 @@ jobs:
     - name: Free up disk space
       run: |
         bash .ci/free_disk_space.sh
-        sudo apt install temurin-17-jdk
         cd ${GITHUB_WORKSPACE}
 
     - name: Install & Scan Blur Corruptions
