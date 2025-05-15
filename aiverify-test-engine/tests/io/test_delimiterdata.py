@@ -164,7 +164,7 @@ class PluginTest:
     "data_path",
     [
         str(Path(__file__).parent / "user_defined_files/sv_comma.txt"),
-        "https://raw.githubusercontent.com/aiverify-foundation/aiverify/refs/heads/v2.x/aiverify-test-engine/tests/io/user_defined_files/sv_comma.txt",  # noqa: E501
+        "https://raw.githubusercontent.com/aiverify-foundation/aiverify/refs/heads/main/aiverify-test-engine/tests/io/user_defined_files/sv_comma.txt",  # noqa: E501
     ],
 )
 def test_end_to_end_data_plugin_test(data_path, request):
