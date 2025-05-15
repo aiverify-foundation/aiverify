@@ -75,10 +75,6 @@ on:
         required: false
         default: 'main'
 
-  push:
-    branches:
-      - ci/publish-pypi
-
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
