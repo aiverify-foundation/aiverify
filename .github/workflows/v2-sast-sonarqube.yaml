@@ -18,8 +18,8 @@ on:
         default: 'main'
         type: string
             
-#   push:
-#     branches: [ ci/self-hosted-runner ]
+  push:
+    branches: [ ci/sast-sonarqube ]
 
 # Allow one concurrent deployment
 concurrency:
