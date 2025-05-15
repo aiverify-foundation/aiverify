@@ -157,6 +157,11 @@ jobs:
           deactivate
           cd ${GITHUB_WORKSPACE}
 
+    - name: Free up disk space
+      run: |
+        bash .ci/free_disk_space.sh
+        cd ${GITHUB_WORKSPACE}
+
     - name: Install & Scan Blur Corruptions
       run: |
           cd aiverify-test-engine
@@ -173,6 +178,7 @@ jobs:
           bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=blur-corruptions --detect.project.version.name=v2.x --detect.source.path=. --detect.code.location.name="blur-corruptions_v2.x" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv blur_corruptions_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
+          cd ${GITHUB_WORKSPACE}
 
     # - name: Install & Scan Digital Corruptions
     #   run: |
