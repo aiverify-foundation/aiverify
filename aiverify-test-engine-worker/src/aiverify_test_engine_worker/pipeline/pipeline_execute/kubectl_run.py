@@ -25,7 +25,7 @@ class KubectlRun(Pipe):
         self.extra_args = os.getenv("KUBECTL_RUN_EXTRA_ARGS", "--namespace=aiverify")
         registry = os.getenv("KUBECTL_REGISTRY", None)
         if registry is None:
-            registry = os.getenv("DOCKER_REGISTRY", "localhost:5000")
+            registry = os.getenv("DOCKER_REGISTRY", "")
         self.registry = registry
 
     def execute(self, task_data: PipelineData) -> PipelineData:
