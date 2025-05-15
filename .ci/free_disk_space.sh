@@ -39,7 +39,7 @@ sudo apt-get remove -y '^dotnet-.*'
 #sudo apt-get remove -y '^llvm-.*'
 sudo apt-get remove -y 'php.*'
 sudo apt-get remove -y azure-cli google-cloud-sdk hhvm google-chrome-stable firefox powershell mono-devel
-sudo apt-get remove -y 'temurin-*'
+# sudo apt-get remove -y 'temurin-*'
 sudo apt-get remove -y 'llvm-*'
 sudo apt-get remove -y 'libllvm*'
 sudo apt-get remove -y google-cloud-cli microsoft-edge-stable google-chrome-stable google-cloud-cli-anthoscli
