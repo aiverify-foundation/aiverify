@@ -64,5 +64,9 @@
         "./dist/types/charts/src/index.d.ts"
       ]
     }
+  },
+  "overrides": {
+    "@babel/runtime": "^7.26.10",
+    "serialize-javascript": "^6.0.2"
   }
 }
