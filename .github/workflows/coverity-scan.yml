@@ -70,7 +70,7 @@ jobs:
     - name: Download Coverity Excel Sheet
       if: always()
       uses: actions/upload-artifact@v4
-        with:
+      with:
           name: coverity-results-${{ github.run_id }}
           path: |
             ${{ github.workspace }}
