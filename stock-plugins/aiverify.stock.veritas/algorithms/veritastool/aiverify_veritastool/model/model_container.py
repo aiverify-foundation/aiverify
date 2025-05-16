@@ -28,6 +28,7 @@ class ModelContainer(object):
         x_train=None,
         x_test=None,
         model_object=None,
+        model_objects=None,
         up_grp=None,
         predict_proba_op_name="predict_proba",
     ):
@@ -106,6 +107,9 @@ class ModelContainer(object):
         model_object : object
                 A blank model object used in the feature importance section for training and prediction.
 
+        model_objects : list of model object
+                 Blank model objects used in the feature importance section for training and prediction.
+
         _input_validation_lookup : dictionary
                 Contains the attribute, its correct data type and values (if it is applicable) for every argument passed by user.
 
@@ -157,6 +161,7 @@ class ModelContainer(object):
             self.p_grp_input = None
         self.protected_features_cols = protected_features_cols
         self.model_object = model_object
+        self.model_objects = model_objects
         self.train_op_name = train_op_name
         self.predict_op_name = predict_op_name
         self.predict_proba_op_name = predict_proba_op_name
