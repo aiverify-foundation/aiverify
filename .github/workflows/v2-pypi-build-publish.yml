@@ -1,0 +1,127 @@
+# -----------------------------------------------------------------------------
+# Workflow: PyPI Build and Publish
+#
+# Overview:
+# This GitHub Actions workflow builds and publishes Python packages (plugins or
+# the test engine) to PyPI or Test PyPI. It can be triggered manually via the 
+# 'workflow_dispatch' event.
+#
+# Inputs:
+# - publish:
+#     Description: Where to publish ('test-pypi', 'pypi', or leave empty for dry run)
+#     Default: ''
+#
+# - plugin:
+#     Description: Plugin name (optional; builds all plugins if not specified)
+#     Default: ''
+#
+# - algo:
+#     Description: Algorithm name (optional; builds all algorithms if not specified)
+#     Default: ''
+#
+# - test_engine:
+#     Description: Set to 'true' to publish the test engine instead of plugins
+#     Default: 'false'
+#
+# - branch:
+#     Description: Branch to checkout (defaults to 'main' if not specified)
+#     Default: 'main'
+#
+# Jobs:
+# - build-and-publish:
+#     Runs on: ubuntu-latest
+#     Steps:
+#     1. Checkout repository using the specified branch.
+#     2. Set up Python (v3.11) environment.
+#     3. Install Hatch (Python build tool).
+#     4. Build and publish plugin(s) if 'test_engine' is false:
+#        - Runs './ci/publish-pypi-plugin.sh' with dynamically built arguments.
+#     5. Build and publish test engine if 'test_engine' is true:
+#        - Runs './ci/publish-pypi-test-engine.sh' with dynamically built arguments.
+#
+# Secrets:
+# - TEST_PYPI_TOKEN: Token for authenticating with Test PyPI.
+# - PYPI_TOKEN: Token for authenticating with PyPI.
+#
+# Notes:
+# - The workflow supports flexible configuration via manual dispatch inputs.
+# - Default behavior (if no inputs are provided) is to build all plugins on the 
+#   'main' branch without publishing (dry run).
+# -----------------------------------------------------------------------------
+
+name: PyPI Build and Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Where to publish (test-pypi, pypi, or leave empty for none)'
+        required: false
+        default: ''
+      plugin:
+        description: 'Plugin name (optional; if not provided, all plugins will be built)'
+        required: false
+        default: ''
+      algo:
+        description: 'Algorithm name (optional; if not provided, all algorithms will be built)'
+        required: false
+        default: ''
+      test_engine:
+        description: 'Set to true to publish the test engine instead of plugins (mutually exclusive)'
+        required: false
+        default: 'false'
+      branch:
+        description: 'Branch to checkout (optional; defaults to main)'
+        required: false
+        default: 'main'
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}      
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Hatch
+        run: pip install hatch
+
+      # This step builds and publishes the plugin(s) based on the provided input parameters.
+      - name: Build and publish plugin
+        if: ${{ github.event.inputs.test_engine != 'true' }}
+        env:
+          TEST_PYPI_TOKEN: ${{ secrets.TEST_PYPI_TOKEN }}
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          args=""
+          if [ "${{ github.event.inputs.publish }}" != "" ]; then
+            args="$args --publish ${{ github.event.inputs.publish }}"
+          fi
+          if [ "${{ github.event.inputs.plugin }}" != "" ]; then
+            args="$args --plugin ${{ github.event.inputs.plugin }}"
+          fi
+          if [ "${{ github.event.inputs.algo }}" != "" ]; then
+            args="$args --algo ${{ github.event.inputs.algo }}"
+          fi
+          echo "Running: ./ci/publish-pypi-plugin.sh $args"
+          bash .ci/publish-pypi-plugin.sh $args
+
+      # This step builds and publishes the test engine if the test_engine input is set to true.
+      - name: Build and publish test engine
+        if: ${{ github.event.inputs.test_engine == 'true' }}
+        env:
+          TEST_PYPI_TOKEN: ${{ secrets.TEST_PYPI_TOKEN }}
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          args=""
+          if [ "${{ github.event.inputs.publish }}" != "" ]; then
+            args="--publish ${{ github.event.inputs.publish }}"
+          fi
+          echo "Running: ./ci/publish-pypi-test-engine.sh $args"
+          bash .ci/publish-pypi-test-engine.sh $args
