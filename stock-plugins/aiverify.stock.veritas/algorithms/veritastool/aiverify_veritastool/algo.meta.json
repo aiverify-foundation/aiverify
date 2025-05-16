@@ -7,7 +7,7 @@
         "regression",
         "uplift"
     ],
-    "version": "2.0.1post1",
+    "version": "2.0.1",
     "author": "AI Verify",
     "description": "Veritas Diagnosis tool for fairness & transparency assessment.",
     "tags": [
