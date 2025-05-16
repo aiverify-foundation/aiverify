@@ -30,11 +30,11 @@ kubectl create namespace aiverify
 
 1. **Sparse checkout the K8s YAML files**: Sparse Checkout of Kubernetes Deployment Files
 
-   To clone only the `deployment/kubernetes` folder from the `v2.x` branch of the repository, use the following commands:
+   To clone only the `deployment/kubernetes` folder from the main branch of the repository, use the following commands:
 
    ```bash
    # Clone the repository with sparse checkout for the specific folder
-   git clone --filter=blob:none --sparse -b v2.x https://github.com/aiverify-foundation/aiverify.git
+   git clone --filter=blob:none --sparse -b main https://github.com/aiverify-foundation/aiverify.git
    cd aiverify
    git sparse-checkout set deployment/kubernetes
    ```

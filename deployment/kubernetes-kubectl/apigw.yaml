@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: apigw-pvc
+  namespace: aiverify
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: standard
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apigw
+  namespace: aiverify
+spec:
+  selector:
+    app: apigw
+  ports:
+    - protocol: TCP
+      port: 4000
+      targetPort: 4000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apigw
+  namespace: aiverify
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apigw
+  template:
+    metadata:
+      labels:
+        app: apigw
+    spec:
+      containers:
+        - name: apigw
+          image: ghcr.io/aiverify-foundation/aiverify-apigw
+          ports:
+            - containerPort: 4000
+          # livenessProbe:
+          #   httpGet:
+          #     path: /docs
+          #     port: 4000
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 10
+          # readinessProbe:
+          #   httpGet:
+          #     path: /docs
+          #     port: 4000
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 10
+          env:
+            - name: APIGW_DATA_DIR
+              value: "/data"
+            - name: APIGW_PORT
+              value: "4000"
+            - name: APIGW_HOST_ADDRESS
+              value: "0.0.0.0"
+            - name: VALKEY_PORT
+              value: "6379"
+            - name: VALKEY_HOST_ADDRESS
+              value: "valkey.aiverify.svc.cluster.local"
+          volumeMounts:
+            - name: apigw-data
+              mountPath: /data
+              
+      volumes:
+        - name: apigw-data
+          persistentVolumeClaim:
+            claimName: apigw-pvc
