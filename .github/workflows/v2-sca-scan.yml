@@ -11,16 +11,10 @@ on:
   pull_request:
     types: [assigned, synchronize]
     branches:
-      - "v2.x"
+      - "main"
 
   # Run this workflow manually from Actions tab
   workflow_dispatch:
-    inputs:
-      branch_to_test:
-        description: "Branch or tag to run test"
-        required: true
-        default: main
-        type: string
 
 # Allow one concurrent deployment
 concurrency:
@@ -31,17 +25,9 @@ jobs:
   software-composition-analysis:
 
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 60
 
     steps:
-
-    # - name: Checkout Code (Schedule)
-    #   if: github.event_name == 'schedule'
-    #   uses: actions/checkout@v4
-    #   with:
-    #       ref: v2.x
-    #       repository: aiverify-foundation/aiverify
-    #       submodules: recursive
 
     - name: Checkout Code
       uses: actions/checkout@v4
@@ -67,18 +53,30 @@ jobs:
           python3 -m venv .venv
           source .venv/bin/activate
           pip install -r requirements.txt
-          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=aiverify-apigw --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="aiverify-apigw_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
+          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=aiverify-apigw --detect.project.version.name=v2.x --detect.source.path=. --detect.code.location.name="aiverify-apigw_v2.x" --detect.excluded.directories=tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv aiverify_apigw_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
+          rm -rf .venv
           cd ${GITHUB_WORKSPACE}
+
+    - name: Install & Scan SHARED LIBRARY
+      run: |
+        cd aiverify-shared-library
+        rm package-lock.json
+        npm install --omit=dev --omit=optional
+        bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=aiverify-shared-library --detect.project.version.name=v2.x --detect.source.path=. --detect.code.location.name="aiverify-shared-library_v2.x" --detect.excluded.directories=tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
+        mv aiverify_shared_library_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
+        npm cache clean --force
+        cd ${GITHUB_WORKSPACE}
 
     - name: Install & Scan PORTAL
       run: |
         cd aiverify-portal
         rm package-lock.json
         npm install --omit=dev --omit=optional
-        bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=aiverify-portal --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="aiverify-portal_$BRANCH" --detect.excluded.directories=tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
+        bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=aiverify-portal --detect.project.version.name=v2.x --detect.source.path=. --detect.code.location.name="aiverify-portal_v2.x" --detect.excluded.directories=tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
         mv aiverify_portal_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
+        npm cache clean --force
         cd ${GITHUB_WORKSPACE}
 
     - name: Install & Scan TEST ENGINE
@@ -93,13 +91,31 @@ jobs:
           python3 -m venv .venv
           source .venv/bin/activate
           pip install -r requirements.txt
-          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=aiverify-test-engine --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="aiverify-test-engine_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
+          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=aiverify-test-engine --detect.project.version.name=v2.x --detect.source.path=. --detect.code.location.name="aiverify-test-engine_v2.x" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv aiverify_test_engine_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
+          rm -rf .venv
           cd ${GITHUB_WORKSPACE}
 
-    - name: Install & Scan Accumulated Local Effects (v2.x)
-      if: inputs.branch_to_test == 'v2.x'
+    - name: Install & Scan TEST ENGINE WORKER
+      run: |
+          cd aiverify-test-engine-worker
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install .
+          pip freeze > requirements.txt
+          rm -rf .venv
+
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
+          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=aiverify-test-engine-worker --detect.project.version.name=v2.x --detect.source.path=. --detect.code.location.name="aiverify-test-engine-worker_v2.x" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
+          mv aiverify_test_engine_worker_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
+          deactivate
+          rm -rf .venv
+          cd ${GITHUB_WORKSPACE}
+
+    - name: Install & Scan Accumulated Local Effects
       run: |
           cd stock-plugins/aiverify.stock.accumulated-local-effect/algorithms/accumulated_local_effect
           python3 -m venv .venv
@@ -111,17 +127,19 @@ jobs:
           python3 -m venv .venv
           source .venv/bin/activate
           pip install -r requirements.txt
-          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=accumulated-local-effect --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="accumulated-local-effect_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
+          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=accumulated-local-effect --detect.project.version.name=v2.x --detect.source.path=. --detect.code.location.name="accumulated-local-effect_v2.x" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv accumulated_local_effect_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
+          rm -rf .venv
           cd ${GITHUB_WORKSPACE}
 
     - name: Install & Scan Decorators
       run: |
           cd stock-plugins/aiverify.stock.decorators
           npm install
-          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=decorators --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="decorators_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
+          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=decorators --detect.project.version.name=v2.x --detect.source.path=. --detect.code.location.name="decorators_v2.x" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv decorators_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
+          npm cache clean --force
           cd ${GITHUB_WORKSPACE}
 
     - name: Install & Scan Fairness Metric ToolBox For Classification
@@ -136,9 +154,10 @@ jobs:
           python3 -m venv .venv
           source .venv/bin/activate
           pip install -r requirements.txt
-          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=fairness-metrics-toolbox-for-classification --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="fairness-metrics-toolbox-for-classification_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
+          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=fairness-metrics-toolbox-for-classification --detect.project.version.name=v2.x --detect.source.path=. --detect.code.location.name="fairness-metrics-toolbox-for-classification_v2.x" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv fairness_metrics_toolbox_for_classification_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
+          rm -rf .venv
           cd ${GITHUB_WORKSPACE}
 
     - name: Install & Scan Fairness Metric ToolBox For Regression
@@ -153,95 +172,122 @@ jobs:
           python3 -m venv .venv
           source .venv/bin/activate
           pip install -r requirements.txt
-          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=fairness-metrics-toolbox-for-regression --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="fairness-metrics-toolbox-for-regression_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
+          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=fairness-metrics-toolbox-for-regression --detect.project.version.name=v2.x --detect.source.path=. --detect.code.location.name="fairness-metrics-toolbox-for-regression_v2.x" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv fairness_metrics_toolbox_for_regression_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
+          rm -rf .venv
           cd ${GITHUB_WORKSPACE}
 
-    # - name: Install & Scan Blur Corruptions (v2.x)
-    #   if: inputs.branch_to_test == 'v2.x'
-    #   run: |
-    #       cd aiverify-test-engine
-    #       source .venv/bin/activate
-    #       cd {GITHUB_WORKSPACE}
-    #       cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions
-    #       pip install .
-    #       pip freeze > requirements.txt
-    #       deactivate
+    - name: Install & Scan Blur Corruptions
+      run: |
+          cd aiverify-test-engine
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install ".[all]"
 
-    #       python3 -m venv .venv
-    #       source .venv/bin/activate
-    #       pip install -r requirements.txt
-    #       bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=blur-corruptions --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="blur-corruptions_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
-    #       mv blur_corruptions_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
-    #       deactivate
+          cd ${GITHUB_WORKSPACE}
+          cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/blur_corruptions
+          pip install .
+          pip freeze > requirements.txt
+          deactivate
+          rm -rf .venv
 
-    # - name: Install & Scan Digital Corruptions (v2.x)
-    #   if: inputs.branch_to_test == 'v2.x'
-    #   run: |
-    #       cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions
-    #       python3 -m venv .venv
-    #       source .venv/bin/activate
-    #       pip install .
-    #       pip freeze > requirements.txt
-    #       rm -rf .venv
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
+          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=blur-corruptions --detect.project.version.name=v2.x --detect.source.path=. --detect.code.location.name="blur-corruptions_v2.x" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
+          mv blur_corruptions_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
+          deactivate
+          rm -rf .venv
+          cd ${GITHUB_WORKSPACE}
 
-    #       python3 -m venv .venv
-    #       source .venv/bin/activate
-    #       pip install -r requirements.txt
-    #       bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=digital-corruptions --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="digital-corruptions_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
-    #       mv digital_corruptions_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
-    #       deactivate
+    - name: Install & Scan Digital Corruptions
+      run: |
+          cd aiverify-test-engine
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install ".[all]"
 
-    # - name: Install & Scan Environment Corruptions (v2.x)
-    #   if: inputs.branch_to_test == 'v2.x'
-    #   run: |
-    #       cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/environment_corruptions
-    #       python3 -m venv .venv
-    #       source .venv/bin/activate
-    #       pip install -e .
-    #       pip freeze > requirements.txt
-    #       rm -rf .venv
+          cd ${GITHUB_WORKSPACE}
+          cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions
+          pip install .
+          pip freeze > requirements.txt
+          deactivate
+          rm -rf .venv
 
-    #       python3 -m venv .venv
-    #       source .venv/bin/activate
-    #       pip install -r requirements.txt
-    #       bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=environment-corruptions --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="environment-corruptions_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
-    #       mv environment_corruptions_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
-    #       deactivate
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
+          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=digital-corruptions --detect.project.version.name=v2.x --detect.source.path=. --detect.code.location.name="digital-corruptions_v2.x" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
+          mv digital_corruptions_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
+          deactivate
+          rm -rf .venv
+          cd ${GITHUB_WORKSPACE}
 
-    # - name: Install & Scan General Corruptions (v2.x)
-    #   if: inputs.branch_to_test == 'v2.x'
-    #   run: |
-    #       cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/general_corruptions
-    #       python3 -m venv .venv
-    #       source .venv/bin/activate
-    #       pip install -e .
-    #       pip freeze > requirements.txt
-    #       rm -rf .venv
+    - name: Install & Scan Environment Corruptions
+      run: |
+          cd aiverify-test-engine
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install ".[all]"
 
-    #       python3 -m venv .venv
-    #       source .venv/bin/activate
-    #       pip install -r requirements.txt
-    #       bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=general-corruptions --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="general-corruptions_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
-    #       mv general_corruptions_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
-    #       deactivate
+          cd ${GITHUB_WORKSPACE}
+          cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/environment_corruptions
+          pip install .
+          pip freeze > requirements.txt
+          deactivate
+          rm -rf .venv
+
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
+          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=environment-corruptions --detect.project.version.name=v2.x --detect.source.path=. --detect.code.location.name="environment-corruptions_v2.x" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
+          mv environment_corruptions_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
+          deactivate
+          rm -rf .venv
+          cd ${GITHUB_WORKSPACE}
+
+    - name: Install & Scan General Corruptions
+      run: |
+          cd aiverify-test-engine
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install ".[all]"
+
+          cd ${GITHUB_WORKSPACE}
+          cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/general_corruptions
+          pip install .
+          pip freeze > requirements.txt
+          deactivate
+          rm -rf .venv
+
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
+          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=general-corruptions --detect.project.version.name=v2.x --detect.source.path=. --detect.code.location.name="general-corruptions_v2.x" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
+          mv general_corruptions_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
+          deactivate
+          rm -rf .venv
+          cd ${GITHUB_WORKSPACE}
 
     - name: Install & Scan Partial Dependence Plot
       run: |
           cd stock-plugins/aiverify.stock.partial-dependence-plot/algorithms/partial_dependence_plot
           python3 -m venv .venv
           source .venv/bin/activate
-          pip install -e .
+          pip install .
           pip freeze > requirements.txt
+          deactivate
           rm -rf .venv
 
           python3 -m venv .venv
           source .venv/bin/activate
           pip install -r requirements.txt
-          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=partial-dependence-plot --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="partial-dependence-plot_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
+          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=partial-dependence-plot --detect.project.version.name=v2.x --detect.source.path=. --detect.code.location.name="partial-dependence-plot_v2.x" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv partial_dependence_plot_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
+          rm -rf .venv
+          cd ${GITHUB_WORKSPACE}
 
     - name: Install & Scan Robustness ToolBox
       run: |
@@ -250,14 +296,17 @@ jobs:
           source .venv/bin/activate
           pip install -e .
           pip freeze > requirements.txt
+          deactivate
           rm -rf .venv
 
           python3 -m venv .venv
           source .venv/bin/activate
           pip install -r requirements.txt
-          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=robustness-toolbox --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="robustness-toolbox_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
+          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=robustness-toolbox --detect.project.version.name=v2.x --detect.source.path=. --detect.code.location.name="robustness-toolbox_v2.x" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv robustness_toolbox_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
+          rm -rf .venv
+          cd ${GITHUB_WORKSPACE}
 
     - name: Install & Scan SHAP ToolBox
       run: |
@@ -266,14 +315,17 @@ jobs:
           source .venv/bin/activate
           pip install -e .
           pip freeze > requirements.txt
+          deactivate
           rm -rf .venv
 
           python3 -m venv .venv
           source .venv/bin/activate
           pip install -r requirements.txt
-          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=shap-toolbox --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="shap-toolbox_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
+          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=shap-toolbox --detect.project.version.name=v2.x --detect.source.path=. --detect.code.location.name="shap-toolbox_v2.x" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv shap_toolbox_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
+          rm -rf .venv
+          cd ${GITHUB_WORKSPACE}
 
     - name: Install & Scan Veritas
       run: | 
@@ -282,14 +334,17 @@ jobs:
           source .venv/bin/activate
           pip install -e .
           pip freeze > requirements.txt
+          deactivate
           rm -rf .venv
 
           python3 -m venv .venv
           source .venv/bin/activate
           pip install -r requirements.txt
-          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=veritas --detect.project.version.name=$BRANCH --detect.source.path=. --detect.code.location.name="veritas_$BRANCH" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
+          bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=veritas --detect.project.version.name=v2.x --detect.source.path=. --detect.code.location.name="veritas_v2.x" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv veritas_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
+          rm -rf .venv
+          cd ${GITHUB_WORKSPACE}
 
     # - name: Commit All Notices File
     #   env:
