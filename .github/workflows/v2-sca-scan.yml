@@ -70,6 +70,7 @@ jobs:
           bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=aiverify-apigw --detect.project.version.name=v2.x --detect.source.path=. --detect.code.location.name="aiverify-apigw_v2.x" --detect.excluded.directories=tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv aiverify_apigw_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
+          rm -rf .venv
           cd ${GITHUB_WORKSPACE}
 
     - name: Install & Scan PORTAL
@@ -113,6 +114,7 @@ jobs:
           bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=accumulated-local-effect --detect.project.version.name=v2.x --detect.source.path=. --detect.code.location.name="accumulated-local-effect_v2.x" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv accumulated_local_effect_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
+          rm -rf .venv
           cd ${GITHUB_WORKSPACE}
 
     - name: Install & Scan Decorators
@@ -138,6 +140,7 @@ jobs:
           bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=fairness-metrics-toolbox-for-classification --detect.project.version.name=v2.x --detect.source.path=. --detect.code.location.name="fairness-metrics-toolbox-for-classification_v2.x" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv fairness_metrics_toolbox_for_classification_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
+          rm -rf .venv
           cd ${GITHUB_WORKSPACE}
 
     - name: Install & Scan Fairness Metric ToolBox For Regression
@@ -155,12 +158,13 @@ jobs:
           bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=fairness-metrics-toolbox-for-regression --detect.project.version.name=v2.x --detect.source.path=. --detect.code.location.name="fairness-metrics-toolbox-for-regression_v2.x" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv fairness_metrics_toolbox_for_regression_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
+          rm -rf .venv
           cd ${GITHUB_WORKSPACE}
 
-    - name: Free up disk space
-      run: |
-        bash .ci/free_disk_space.sh
-        cd ${GITHUB_WORKSPACE}
+    # - name: Free up disk space
+    #   run: |
+    #     bash .ci/free_disk_space.sh
+    #     cd ${GITHUB_WORKSPACE}
 
     - name: Install & Scan Blur Corruptions
       run: |
@@ -178,6 +182,7 @@ jobs:
           bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=blur-corruptions --detect.project.version.name=v2.x --detect.source.path=. --detect.code.location.name="blur-corruptions_v2.x" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv blur_corruptions_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
+          rm -rf .venv
           cd ${GITHUB_WORKSPACE}
 
     # - name: Install & Scan Digital Corruptions
