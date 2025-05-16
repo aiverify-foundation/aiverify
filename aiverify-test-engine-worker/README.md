@@ -132,7 +132,17 @@ To run the tests for the application, you can use `pytest`. Make sure you have `
 pip install pytest faker
 ```
 
-To run the tests:
+Ensure the Python 3.11 Virtual Environment is setup and activated in the aiverify root directory.
+
+```sh
+python -m venv .venv
+source .venv/bin/activate
+pip install "./aiverify-apigw[dev]"
 ```
+
+To run the tests:
+```sh
+cd aiverify-apigw
+pip install .
 pytest tests
 ```
