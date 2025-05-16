@@ -5,18 +5,18 @@ on:
   pull_request:
     types: [ assigned, synchronize ]
     branches:
-      - 'v2.x'
+      - 'main'
 
   workflow_dispatch:
-    inputs:
-      branch_to_test:
-        description: 'Branch or tag to run test'
-        required: true
-        default: 'v2.x'
-        type: string
+    # inputs:
+    #   branch_to_test:
+    #     description: 'Branch or tag to run test'
+    #     required: true
+    #     default: 'main'
+    #     type: string
   
   push:
-    branches: [ 'v2.x' ]
+    branches: [ 'main' ]
 
 jobs:
   Coverity:
