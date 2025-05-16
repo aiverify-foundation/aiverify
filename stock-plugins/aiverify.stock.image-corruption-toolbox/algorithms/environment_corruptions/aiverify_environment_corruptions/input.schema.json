@@ -1,54 +1,43 @@
 {
-    "title": "Algorithm Plugin Input Arguments",
-    "description": "A schema for algorithm plugin input arguments",
-    "type": "object",
-    "required": [
-        "annotated_ground_truth_path",
-        "file_name_label",
-        "set_seed",
-        "corruptions"
-    ],
-    "properties": {
-        "annotated_ground_truth_path": {
-            "title": "Annotated ground truth path",
-            "description": "Select the dataset containing image file names and corresponding ground truth labels",
-            "type": "string",
-            "ui:widget": "selectDataset"
-        },
-        "file_name_label": {
-            "title": "Name of column containing image file names",
-            "description": "Key in the name of the column containing the file names in the annotated ground truth dataset",
-            "type": "string"
-        },
-        "set_seed": {
-            "title": "Seed for selection of data for display",
-            "description": "Change to a specific seed for random selection the sample data for display if desired",
-            "default": 10,
-            "type": "integer"
-        },
-        "corruptions": {
-            "title": "Name(s) of environment corruption to run",
-            "description": "Specify the name(s) of environment corruption function to run. Default: 'all'",
-            "type": "array",
-            "items": {"type": "string"}
-        },
-        "snow_intensity": {
-            "title": "Snow intensity value(s)",
-            "description": "Customize the intensity value(s) for the Snow corruption function",
-            "type": ["array", "null"],
-            "items": {"type": "number"}
-        },
-        "fog_intensity": {
-            "title": "Fog intensity value(s)",
-            "description": "Customize the intensity value(s) for the Fog corruption function",
-            "type": ["array", "null"],
-            "items": {"type": "number"}
-        },
-        "rain_type": {
-            "title": "Rain type(s)",
-            "description": "Customize the type(s) for the Rain corruption function",
-            "type": ["array", "null"],
-            "items": {"type": "string"}
-        }
+  "title": "Algorithm Plugin Input Arguments",
+  "description": "A schema for algorithm plugin input arguments",
+  "type": "object",
+  "required": ["file_name_label", "set_seed", "corruptions"],
+  "properties": {
+    "file_name_label": {
+      "title": "Name of column containing image file names",
+      "description": "Key in the name of the column containing the file names in the annotated ground truth dataset",
+      "type": "string"
+    },
+    "set_seed": {
+      "title": "Seed for selection of data for display",
+      "description": "Change to a specific seed for random selection the sample data for display if desired",
+      "default": 10,
+      "type": ["integer", "null"]
+    },
+    "corruptions": {
+      "title": "Name(s) of corruption to run",
+      "description": "Specify the name(s) of corruption function to run. Default: 'all'",
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "snow_intensity": {
+      "title": "Snow intensity value(s)",
+      "description": "Customize the intensity value(s) for the Snow corruption function",
+      "type": ["array", "null"],
+      "items": { "type": "number" }
+    },
+    "fog_intensity": {
+      "title": "Fog intensity value(s)",
+      "description": "Customize the intensity value(s) for the Fog corruption function",
+      "type": ["array", "null"],
+      "items": { "type": "number" }
+    },
+    "rain_type": {
+      "title": "Rain type(s)",
+      "description": "Customize the type(s) for the Rain corruption function",
+      "type": ["array", "null"],
+      "items": { "type": "string" }
     }
+  }
 }

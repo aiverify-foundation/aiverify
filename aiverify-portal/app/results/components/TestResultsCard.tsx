@@ -84,7 +84,7 @@ export default function TestResultsCard({
               <div>
                 <span className="font-semibold text-white">Test Date:</span>{' '}
                 <span className="break-words text-white">
-                  {new Date(result.created_at).toLocaleString('en-US', {
+                  {new Date(result.created_at + "Z").toLocaleString('en-US', {
                     month: '2-digit',
                     day: '2-digit',
                     year: 'numeric',

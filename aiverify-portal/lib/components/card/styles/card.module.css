@@ -1,10 +1,7 @@
-:root {
+.card {
   --card-width-sm: 250px;
   --card-width-md: 380px;
   --card-width-lg: 600px;
-}
-
-.card {
   flex-direction: column;
   box-shadow: 2px 4px 6px -1px rgb(0 0 0 / 0.4);
   transition: background-color 0.3s ease;

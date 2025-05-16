@@ -1,23 +1,24 @@
-from pydantic import BaseModel, Field
+from pydantic import Field
 from typing import List, Optional, Literal, Annotated
 import json
 from ..models import WidgetModel
+from .base_model import MyBaseModel
 
 
-class WidgetMetaSize(BaseModel):
+class WidgetMetaSize(MyBaseModel):
     minW: int = Field(description="Minimum widget width", ge=1, le=12)
     minH: int = Field(description="Minimum widget height", ge=1, le=36)
     maxW: int = Field(description="Maximum widget width", ge=1, le=12)
     maxH: int = Field(description="Maximum widget height", ge=1, le=36)
 
 
-class WidgetMetaProperty(BaseModel):
+class WidgetMetaProperty(MyBaseModel):
     key: str = Field(description="Property key", min_length=1, max_length=128)
     helper: str = Field(description="Helper text for the property", max_length=256)
     default: Optional[str] = Field(default=None, description="Property default value", max_length=4096)
 
 
-class WidgetMetaDependency(BaseModel):
+class WidgetMetaDependency(MyBaseModel):
     gid: Optional[str] = Field(
         default=None,
         description="GID of the dependency component plugin. If empty, assume component within same plugin.",
@@ -29,7 +30,7 @@ class WidgetMetaDependency(BaseModel):
     )
 
 
-class WidgetMetaMockData(BaseModel):
+class WidgetMetaMockData(MyBaseModel):
     type: Literal["Algorithm", "InputBlock"] = Field(description="Type of sample data")
     gid: Optional[str] = Field(
         default=None,
@@ -44,7 +45,7 @@ class WidgetMetaMockData(BaseModel):
     )
 
 
-class WidgetMeta(BaseModel):
+class WidgetMeta(MyBaseModel):
     cid: str = Field(
         description="Unique identifier for the widget within the plugin",
         min_length=1,
@@ -60,7 +61,7 @@ class WidgetMeta(BaseModel):
     )
     author: Optional[str] = Field(default=None, description="Widget author", min_length=1, max_length=128)
     description: Optional[str] = Field(default=None, description="Widget description", max_length=256)
-    widgetSize: WidgetMetaSize = Field(description="Describe the widget size in terms of canvas grid units")
+    widgetSize: WidgetMetaSize = Field(description="Describe the widget size in terms of canvas grid units", strict=False)
     properties: Optional[List[WidgetMetaProperty]] = Field(
         default=None, description="List of widget properties", max_length=256
     )

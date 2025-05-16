@@ -1,0 +1,16 @@
+{
+  "cid": "generic_performance_tests",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 24,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Veritas Generic Performance Tests",
+  "description": "Veritas Generic Performance Tests",
+  "dependencies": [
+    {
+      "cid": "veritastool"
+    }
+  ]
+}

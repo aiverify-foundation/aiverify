@@ -9,9 +9,19 @@ const useUploadFolder = () => {
         method: 'POST',
         body: formData,
       });
+
       if (!response.ok) {
-        throw new Error('Failed to upload folder');
+        // Try to extract error message from response
+        try {
+          const errorData = await response.json();
+          throw new Error(errorData.detail || 'Failed to upload folder');
+        } catch (jsonError) {
+          // If JSON parsing fails, fall back to status text
+          console.log('Failed to parse error response:', jsonError);
+          throw new Error(`Failed to upload folder: ${response.statusText}`);
+        }
       }
+
       return response.json();
     },
   });

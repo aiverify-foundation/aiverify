@@ -1,0 +1,72 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.urls]
+Documentation = "https://github.com/aiverify-foundation/aiverify/tree/v2.x#readme"
+Issues = "https://github.com/aiverify-foundation/aiverify/issues"
+Source = "https://github.com/aiverify-foundation/aiverify/tree/v2.x"
+
+[project]
+name = "aiverify-test-engine-worker"
+version = "2.0.1"
+description = 'The Test Engine Worker read tasks from the task queue to execute tests and post results to aiverify-apigw'
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "Peck Yoke", email = "leong_peck_yoke@imda.gov.sg" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+  "valkey[libvalkey]==6.*",
+  "python-dotenv>=1.0.1",
+  "pydantic==2.*",
+  "jsonschema==4.*",
+]
+
+[tool.hatch.envs.default]
+post-install-commands = [
+  "pip install -e '../aiverify-test-engine[all]'",
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.envs.default.scripts]
+dev = "python -m aiverify_test_engine_worker"
+
+[[tool.hatch.envs.hatch-test.matrix]]
+python = ["3.11"]
+
+[tool.hatch.envs.hatch-test]
+extra-dependencies = [
+  "faker>=28.1.0"
+]
+
+[tool.ruff.lint]
+preview = true
+select = ["E20","E21","E22","E23","E24","E3","F401","F8"]
+
+[tool.coverage.run]
+source_pkgs = ["aiverify_test_engine_worker"]
+branch = true
+parallel = true
+
+[tool.coverage.paths]
+aiverify_test_engine_worker = ["aiverify_test_engine_worker/", "*/aiverify-test-engine-worker/aiverify_test_engine_worker"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]

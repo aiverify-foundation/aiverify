@@ -9,3 +9,4 @@ from .user_model import *
 from .input_block_data_model import *
 from .project_template_model import *
 from .project_model import *
+from .test_run_model import *

@@ -1,13 +1,13 @@
 {
     "cid": "veritastool",
     "gid": "aiverify.stock.veritas",
-    "name": "VeritasTool",
+    "name": "Veritas fairness & transparency assessment",
     "modelType": [
         "classification",
         "regression",
         "uplift"
     ],
-    "version": "2.0.0a2",
+    "version": "2.0.1",
     "author": "AI Verify",
     "description": "Veritas Diagnosis tool for fairness & transparency assessment.",
     "tags": [

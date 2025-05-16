@@ -1,0 +1,103 @@
+import React, { useEffect, useState } from 'react';
+
+export const TechnicalInterpretationChart = ({ id, metric, data }) => {
+  const [mydata, setmydata] = useState({
+    data: [],
+    numFeatureLabels: 0,
+  });
+
+  // more than one group, hence use for min and max subgroups
+  function getContent(display) {
+    let content = [];
+    let i = 0;
+    for (let oc in display) {
+      const item = display[oc]
+      content.push(
+      <div key={`${id}-${i++}-type1`} style={{border:"1px solid black", backgroundColor:"#eee", textAlign:"center", padding:'5px', marginBottom: '5px'}}>
+        {item.minName} vs {item.maxName}<br/>
+        {item.outputClass}<br/>{Math.round(item.parity * 1000 + Number.EPSILON) / 1000}<br/>
+      </div>
+      )
+    }
+    return content;
+  }
+
+  // //  only got two groups
+  // function getTwoLabelContent(display) {
+  //   let content = [];
+  //   for (let oc in display) {
+  //     const item = display[oc]
+  //     content.push(
+  //       <div style={{border:"1px solid black", backgroundColor:"#eee", textAlign:"center", padding:'5px'}}>
+  //         {item.outputClass}<br/>{item.minName} vs max {item.maxName}<br/>{Math.round(item.parity * 1000 + Number.EPSILON) / 1000}<br/>
+  //       </div>
+  //     )
+  //   }
+  //   return content;
+  // }
+
+  useEffect(() => {
+    let display = [];
+    const sensitiveFeatures = data.sensitive_feature;
+    const outputClasses = data.output_classes;
+    let numFeatureLabels = 0;
+    if (!data || !data.results || !data.output_classes || !data.sensitive_feature) {
+      return <div>No results</div>;
+    }
+
+    else {
+      for (let oc = 0; oc < data.results.length; oc++) {
+        if (sensitiveFeatures.length == 1) {
+          numFeatureLabels = data.results[0][metric].length;
+          max_group = sensitiveFeatures.map((f, idx) => `${f}:${data.results[oc][metric][0].group[idx]}`)
+          min_group = sensitiveFeatures.map((f, idx) => `${f}:${data.results[oc][metric][0].group[idx]}`)
+        }
+        else {
+          max_group = sensitiveFeatures.map((f, idx) => `${f}:${data.results[oc][metric][0].group[idx]}`).join(",")
+          min_group = sensitiveFeatures.map((f, idx) => `${f}:${data.results[oc][metric][0].group[idx]}`).join(",")
+        }
+        let max = data.results[oc][metric][0].metric
+        let min = data.results[oc][metric][0].metric
+        for (let row of data.results[oc][metric]) {
+          if (sensitiveFeatures.length == 1) {
+            group = sensitiveFeatures.map((f, idx) => `${f}:${row.group[idx]}`)
+          }
+          else {
+            group = sensitiveFeatures.map((f, idx) => `${f}:${row.group[idx]}`).join(",")
+          }
+          local_metric = row.metric
+          if (local_metric < min) {
+            min = local_metric
+            min_group = group
+          }
+          if (local_metric >= max) {
+            max = local_metric
+            max_group = group
+          }
+        }
+        let diff = 0;
+        diff = max - min
+        let obj = {}
+        obj["outputClass"] = `Class ${outputClasses[oc]}`
+        obj["minName"] = min_group
+        obj["maxName"] = max_group
+        obj["parity"] = diff
+        display.push(obj)
+      }
+    }
+    setmydata({
+      data: display,
+      numFeatureLabels: numFeatureLabels,
+    });
+  }, [metric, data])
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 5, width: '40%', flexShrink: 0 }}>
+      <h4>{metric}</h4>
+      {getContent(mydata.data)}
+    </div>
+  )
+}
+
+
+

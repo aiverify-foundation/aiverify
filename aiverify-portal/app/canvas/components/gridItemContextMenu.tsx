@@ -10,6 +10,7 @@ type GridItemContextMenuProps = {
   widget: WidgetOnGridLayout;
   menuPosition: { top: number; left: number };
   hideEditIcon?: boolean;
+  disabled?: boolean;
   onDeleteClick: () => void;
   onEditClick: () => void;
   onInfoClick: () => void;
@@ -21,12 +22,18 @@ function GridItemContextMenu({
   widget,
   menuPosition,
   hideEditIcon = false,
+  disabled = false,
   onDeleteClick,
   onEditClick,
   onInfoClick,
   onMouseEnter,
   onMouseLeave,
 }: GridItemContextMenuProps) {
+  // Don't render the menu in view/disabled mode
+  if (disabled) {
+    return null;
+  }
+
   return createPortal(
     <div
       className="fixed flex flex-col gap-1"

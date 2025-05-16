@@ -1,13 +1,13 @@
 [project]
 name = "aiverify-environment-corruptions"
-description = "Part of AI Verify image corruption toolbox. This package includes algorithms that add environmental corruptions (rain, fog and snow) to images at 5 severity levels, to test the robustness of machine learning models."
+description = "Part of AI Verify image corruption toolbox. This package includes algorithms that add environmental corruptions (rain, fog and snow) to images at different severity levels, to test the robustness of machine learning models."
 authors = [{ name = "AI Verify" }]
 readme = "README.md"
 dependencies = [
     "numpy==1.26.4",
     "pandas==2.2.2",
     "pillow==10.4.0",
-    "aiverify-test-engine>=2.0.0a1",
+    "aiverify-test-engine>=2.0.1",
     "albumentations>=2.0.4",
 ]
 requires-python = ">=3.10,<3.12"

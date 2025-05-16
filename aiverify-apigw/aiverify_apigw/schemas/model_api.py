@@ -1,7 +1,9 @@
 from enum import StrEnum
-from pydantic import BaseModel, Field, HttpUrl, model_validator, field_validator, ValidationInfo
+from pydantic import Field, HttpUrl, model_validator, field_validator, ValidationInfo
 from typing import List, Optional, Dict, Self
 from urllib.parse import urlparse, unquote
+
+from .base_model import MyBaseModel
 
 
 class OpenAPIPrimitiveTypesEnum(StrEnum):
@@ -47,35 +49,35 @@ valid_auth_types = [
 
 
 # models
-class OpenAPIAdditionalHeadersType(BaseModel):
+class OpenAPIAdditionalHeadersType(MyBaseModel):
     name: str = Field(
         min_length=1, 
         max_length=128, 
         description="Name of the header."
     )
-    type: OpenAPIPrimitiveTypesEnum = Field(description="Primitive type of the header value.")
+    type: OpenAPIPrimitiveTypesEnum = Field(description="Primitive type of the header value.", strict=False)
     value: Dict = Field(description="Value of the header in JSON format.")
 
 
-class OpenAPIPathParamsType(BaseModel):
+class OpenAPIPathParamsType(MyBaseModel):
     name: str = Field(
         min_length=1, 
         max_length=128, 
         description="Name of the path parameter."
     )
-    type: OpenAPIPrimitiveTypesEnum = Field(description="Primitive type of the path parameter.")
+    type: OpenAPIPrimitiveTypesEnum = Field(description="Primitive type of the path parameter.", strict=False)
 
 
-class QueryAPIParamsType(BaseModel):
+class QueryAPIParamsType(MyBaseModel):
     name: str = Field(
         min_length=1, 
         max_length=128, 
         description="Name of the query parameter."
     )
-    type: OpenAPIPrimitiveTypesEnum = Field(description="Primitive type of the query parameter.")
+    type: OpenAPIPrimitiveTypesEnum = Field(description="Primitive type of the query parameter.", strict=False)
 
 
-class OpenAPIParametersPathType(BaseModel):
+class OpenAPIParametersPathType(MyBaseModel):
     mediaType: str = Field(description="Media type of the path parameter. Default is 'none'.")
     isArray: bool = Field(description="Indicates if the parameter is an array. If mediaType == 'none' cannot be array")
     maxItems: Optional[int] = Field(None, ge=1, description="Maximum number of items if the parameter is an array.")
@@ -95,7 +97,7 @@ class OpenAPIParametersPathType(BaseModel):
         return self
 
 
-class OpenAPIParametersQueryType(BaseModel):
+class OpenAPIParametersQueryType(MyBaseModel):
     mediaType: str = Field(description="Media type of the query parameter.")
     name: Optional[str] = Field(
         min_length=1, 
@@ -105,7 +107,7 @@ class OpenAPIParametersQueryType(BaseModel):
     )
     isArray: bool = Field(description="Indicates if the parameter is an array. If mediaType == 'none' cannot be array")
     maxItems: Optional[int] = Field(None, ge=1, description="Maximum number of items if the query parameter is an array.")
-    queryParams: Optional[List[QueryAPIParamsType]] = Field(None, description="List of query parameters.")
+    queryParams: Optional[List[QueryAPIParamsType]] = Field(None, description="List of query parameters.", strict=False)
 
     @field_validator('mediaType')
     @classmethod
@@ -123,21 +125,21 @@ class OpenAPIParametersQueryType(BaseModel):
         return self
 
 
-class OpenAPIParametersType(BaseModel):
-    paths: Optional[OpenAPIParametersPathType] = Field(description="Path parameters configuration.", default=None)
-    queries: Optional[OpenAPIParametersQueryType] = Field(description="Query parameters configuration.", default=None)
+class OpenAPIParametersType(MyBaseModel):
+    paths: Optional[OpenAPIParametersPathType] = Field(description="Path parameters configuration.", default=None, strict=False)
+    queries: Optional[OpenAPIParametersQueryType] = Field(description="Query parameters configuration.", default=None, strict=False)
 
 
-class OpenAPIRequestBodyPropertyType(BaseModel):
+class OpenAPIRequestBodyPropertyType(MyBaseModel):
     field: str = Field(
         min_length=1, 
         max_length=128, 
         description="Field name in the request body. Must be between 1 and 128 characters."
     )
-    type: OpenAPIPrimitiveTypesEnum = Field(description="Primitive type of the request body field.")
+    type: OpenAPIPrimitiveTypesEnum = Field(description="Primitive type of the request body field.", strict=False)
 
 
-class OpenAPIRequestBodyType(BaseModel):
+class OpenAPIRequestBodyType(MyBaseModel):
     mediaType: str = Field(description="Media type of the request body.")
     isArray: bool = Field(description="Indicates if the request body is an array.")
     name: Optional[str] = Field(
@@ -147,7 +149,7 @@ class OpenAPIRequestBodyType(BaseModel):
         default=None
     )
     maxItems: Optional[int] = Field(ge=1, description="Maximum number of items in the request body array.", default=None)
-    properties: List[OpenAPIRequestBodyPropertyType] = Field(description="Properties of the request body.")
+    properties: List[OpenAPIRequestBodyPropertyType] = Field(description="Properties of the request body.", strict=False)
 
     @field_validator('mediaType')
     @classmethod
@@ -157,7 +159,7 @@ class OpenAPIRequestBodyType(BaseModel):
         return v
     
 
-class OpenAPIResponseType(BaseModel):
+class OpenAPIResponseType(MyBaseModel):
     statusCode: int = Field(ge=200, le=299, description="HTTP status code of the response.")
     mediaType: str = Field(description="Media type of the response.")
     schema: Dict = Field(description="Schema of the response in JSON format.")
@@ -170,7 +172,7 @@ class OpenAPIResponseType(BaseModel):
         return v
 
 
-class ModelAPIRequestConfigType(BaseModel):
+class ModelAPIRequestConfigType(MyBaseModel):
     sslVerify: bool = Field(description="Indicates whether to verify the SSL certificate.", default=True)
     connectionTimeout: int = Field(ge=-1, description="Timeout for connecting to the server, in seconds.", default=-1)
     rateLimit: int = Field(ge=-1, description="Maximum number of requests allowed per second.", default=-1)
@@ -178,25 +180,25 @@ class ModelAPIRequestConfigType(BaseModel):
     batchLimit: int = Field(ge=-1, description="Maximum number of requests in a batch.", default=-1)
     connectionRetries: int = Field(ge=-1, description="Number of retries for connecting to the server.", default=3)
     maxConnections: int = Field(ge=-1, description="Maximum number of concurrent connections allowed.", default=-1)
-    batchStrategy: ModelAPIRequestConfigBatchStrategyEnum = Field(description="Batching strategy for requests.")
+    batchStrategy: ModelAPIRequestConfigBatchStrategyEnum = Field(description="Batching strategy for requests.", strict=False)
 
 
-class ModelAPIParametersMapping(BaseModel):
+class ModelAPIParametersMapping(MyBaseModel):
     requestBody: Optional[Dict] = Field(description="Parameter mapping for request body", default=None)
     parameters: Optional[Dict] = Field(description="Parameter mapping for path parameters", default=None)
 
 
-class ModelAPIType(BaseModel):
-    method: OpenAPIMethodEnum = Field(description="HTTP method of the API (POST or GET).")
-    url: HttpUrl = Field(description="URL of the API endpoint.")
+class ModelAPIType(MyBaseModel):
+    method: OpenAPIMethodEnum = Field(description="HTTP method of the API (POST or GET).", strict=False)
+    url: HttpUrl = Field(description="URL of the API endpoint.", strict=False)
     urlParams: Optional[str] = Field(description="URL parameters as a string.", default=None)
     authType: str = Field(description="Authentication type for the API.")
     authTypeConfig: Optional[Dict] = Field(description="Configuration for the authentication type.", default=None)
     additionalHeaders: Optional[List[OpenAPIAdditionalHeadersType]] = Field(description="Additional headers for the API.", default=None)
-    parameters: Optional[OpenAPIParametersType] = Field(description="Parameters configuration for the API.", default=None)
-    requestBody: Optional[OpenAPIRequestBodyType] = Field(description="Request body configuration for the API.", default=None)
-    response: OpenAPIResponseType = Field(description="Response configuration for the API.")
-    requestConfig: Optional[ModelAPIRequestConfigType] = Field(description="Request configuration for the API.", default=None)
+    parameters: Optional[OpenAPIParametersType] = Field(description="Parameters configuration for the API.", default=None, strict=False)
+    requestBody: Optional[OpenAPIRequestBodyType] = Field(description="Request body configuration for the API.", default=None, strict=False)
+    response: OpenAPIResponseType = Field(description="Response configuration for the API.", strict=False)
+    requestConfig: Optional[ModelAPIRequestConfigType] = Field(description="Request configuration for the API.", default=None, strict=False)
     # parameterMappings: Optional[ModelAPIParametersMapping] = Field(description="Specify the parameter mappings")
 
     @field_validator('authType')
@@ -472,9 +474,9 @@ class ModelAPIType(BaseModel):
         return spec
 
 
-class ModelAPIExportSchema(BaseModel):
-    requestConfig: Optional[ModelAPIRequestConfigType] = Field(description="Request configuration for the API.", default=None)
-    response: OpenAPIResponseType = Field(description="Response configuration for the API.")
+class ModelAPIExportSchema(MyBaseModel):
+    requestConfig: Optional[ModelAPIRequestConfigType] = Field(description="Request configuration for the API.", default=None, strict=False)
+    response: OpenAPIResponseType = Field(description="Response configuration for the API.", strict=False)
     openapiSchema: dict = Field(description="Contains the openapi schema")
     requestBody: Optional[Dict] = Field(description="Parameter mapping for request body", default=None)
     parameters: Optional[Dict] = Field(description="Parameter mapping for path parameters", default=None)

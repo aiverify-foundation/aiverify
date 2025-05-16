@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+
 const nextConfig = {
   reactStrictMode: false,
   async rewrites() {
@@ -28,6 +29,10 @@ const nextConfig = {
         destination: `${process.env.APIGW_HOST}/test_datasets/upload`,
       },
       {
+        source: '/api/test_datasets/upload_folder',
+        destination: `${process.env.APIGW_HOST}/test_datasets/upload_folder`,
+      },
+      {
         source: '/api/plugins/upload',
         destination: `${process.env.APIGW_HOST}/plugins/upload`,
       },
@@ -52,8 +57,20 @@ const nextConfig = {
         destination: `${process.env.APIGW_HOST}/input_block_data/:id`,
       },
       {
+        source: '/api/input_block_data/groups/:id',
+        destination: `${process.env.APIGW_HOST}/input_block_data/groups/:id`,
+      },
+      {
         source: '/api/input_block_data',
         destination: `${process.env.APIGW_HOST}/input_block_data/`,
+      },
+      {
+        source: '/api/input_block_data/groups',
+        destination: `${process.env.APIGW_HOST}/input_block_data/groups/`,
+      },
+      {
+        source: '/api/input_block_data/groups/:gid/:group',
+        destination: `${process.env.APIGW_HOST}/input_block_data/groups/:gid/:group`,
       },
       {
         source: '/api/test_models/:id',
@@ -103,7 +120,26 @@ const nextConfig = {
         source: '/api/project_templates/clone/:id',
         destination: `${process.env.APIGW_HOST}/project_templates/clone/:id`,
       },
+      {
+        source: '/api/test_runs/run_test',
+        destination: `${process.env.APIGW_HOST}/test_runs/run_test/`,
+      },
+      {
+        source: '/api/test_runs',
+        destination: `${process.env.APIGW_HOST}/test_runs/`,
+      },
+      {
+        source: '/api/test_runs/:id',
+        destination: `${process.env.APIGW_HOST}/test_runs/:id`,
+      },
+      {
+        source: '/api/test_runs/:id/cancel',
+        destination: `${process.env.APIGW_HOST}/test_runs/:id/cancel`,
+      },
     ];
+  },
+  experimental: {
+    proxyTimeout: parseInt(process.env.PROXY_TIMEOUT || '60000'),
   },
 };
 

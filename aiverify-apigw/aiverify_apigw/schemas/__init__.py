@@ -10,3 +10,4 @@ from .project import *
 from .test_model import *
 from .model_api import *
 from .test_dataset import *
+from .test_run import *

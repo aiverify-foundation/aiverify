@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { TestModel } from '@/app/models/utils/types';
 import { Algorithm, TestResult } from '@/app/types';
 import { Button, ButtonVariant } from '@/lib/components/button';
@@ -15,6 +15,7 @@ interface TestResultsProps {
   allTestResults: TestResult[];
   selectedModel?: TestModel;
   flow: string;
+  initialTestResults?: Array<{ gid: string; cid: string; id: number }>;
 }
 
 export default function TestResults({
@@ -24,22 +25,58 @@ export default function TestResults({
   allTestResults,
   selectedModel,
   flow,
+  initialTestResults = [],
 }: TestResultsProps) {
-  const [selectedTestResults, setSelectedTestResults] = useState<
-    Array<{ gid: string; cid: string; id: number }>
-  >(() => {
-    // Find test results that match the required algorithms
-    const matchingResults = allTestResults.filter((result) =>
-      requiredAlgorithms.some(
-        (algo) => algo.gid === result.gid && algo.cid === result.cid
-      )
+  const [selectedTestResults, setSelectedTestResults] =
+    useState<Array<{ gid: string; cid: string; id: number }>>(
+      initialTestResults
     );
-    return matchingResults.map((result) => ({
-      gid: result.gid,
-      cid: result.cid,
-      id: result.id,
-    }));
-  });
+
+  // Log the initial test results for debugging
+  useEffect(() => {
+    console.log('TestResults - initialTestResults:', initialTestResults);
+    console.log('TestResults - internal state:', selectedTestResults);
+  }, [initialTestResults, selectedTestResults]);
+
+  // Update internal state when parent component updates initialTestResults
+  useEffect(() => {
+    if (initialTestResults && initialTestResults.length > 0) {
+      // Check if the arrays are different before updating to avoid infinite loops
+      const currentIds = selectedTestResults
+        .map((r) => r.id)
+        .sort()
+        .join(',');
+      const newIds = initialTestResults
+        .map((r) => r.id)
+        .sort()
+        .join(',');
+
+      if (currentIds !== newIds) {
+        console.log('Updating selectedTestResults from initialTestResults');
+        setSelectedTestResults(initialTestResults);
+      }
+    }
+  }, [initialTestResults]);
+
+  // Also reset selections when model changes
+  useEffect(() => {
+    if (selectedModel) {
+      // Filter out test results that don't match the selected model
+      const validTestResults = selectedTestResults.filter((result) => {
+        const testResult = allTestResults.find((tr) => tr.id === result.id);
+        return (
+          testResult &&
+          testResult.testArguments.modelFile === selectedModel.name
+        );
+      });
+
+      // Only update if there's a change to avoid infinite loops
+      if (validTestResults.length !== selectedTestResults.length) {
+        setSelectedTestResults(validTestResults);
+        onTestResultsChange(validTestResults);
+      }
+    }
+  }, [selectedModel, allTestResults]);
 
   const getTestResultsForAlgorithm = (algorithm: Algorithm) => {
     return allTestResults.filter(
@@ -55,10 +92,12 @@ export default function TestResults({
     algorithm: Algorithm,
     testResultId: number | undefined
   ) => {
+    // First remove any existing selection for this algorithm
     const newSelectedTestResults = selectedTestResults.filter(
       (result) => result.gid !== algorithm.gid || result.cid !== algorithm.cid
     );
 
+    // Then add new selection if one was made
     if (testResultId !== undefined) {
       const testResult = allTestResults.find(
         (result) => result.id === testResultId
@@ -72,6 +111,7 @@ export default function TestResults({
       }
     }
 
+    console.log('Updating test results to:', newSelectedTestResults);
     setSelectedTestResults(newSelectedTestResults);
     onTestResultsChange(newSelectedTestResults);
   };
@@ -93,9 +133,20 @@ export default function TestResults({
       <div className="space-y-4">
         {requiredAlgorithms.map((algorithm) => {
           const testResults = getTestResultsForAlgorithm(algorithm);
+
+          // Find the selected test result for this algorithm
           const selectedTestResult = selectedTestResults.find(
             (result) =>
               result.gid === algorithm.gid && result.cid === algorithm.cid
+          );
+
+          const selectedValue = selectedTestResult
+            ? selectedTestResult.id.toString()
+            : '';
+
+          console.log(
+            `Algorithm ${algorithm.name} - Selected value:`,
+            selectedValue
           );
 
           return (
@@ -106,7 +157,7 @@ export default function TestResults({
               <div className="relative flex-1">
                 <select
                   className="w-full cursor-pointer appearance-none rounded bg-secondary-900 p-3 pr-10 text-white"
-                  value={selectedTestResult?.id || ''}
+                  value={selectedValue}
                   onChange={(e) =>
                     handleTestResultChange(
                       algorithm,
@@ -119,7 +170,7 @@ export default function TestResults({
                       key={result.id}
                       value={result.id}>
                       {result.name} -{' '}
-                      {new Date(result.created_at).toLocaleDateString()}
+                      {new Date(result.created_at + "Z").toLocaleString()}
                     </option>
                   ))}
                 </select>
@@ -131,15 +182,17 @@ export default function TestResults({
                   </svg>
                 </div>
               </div>
-              <Button
-                variant={ButtonVariant.OUTLINE}
-                hoverColor="var(--color-primary-500)"
-                textColor="white"
-                text="RUN TESTS"
-                size="xs"
-                pill
-                onClick={() => {}}
-              />
+              <Link
+                href={`/results/run?flow=${flow}&projectId=${projectId}&algorithmGid=${algorithm.gid}&algorithmCid=${algorithm.cid}${selectedModel ? `&modelId=${selectedModel.id}` : ''}`}>
+                <Button
+                  variant={ButtonVariant.OUTLINE}
+                  hoverColor="var(--color-primary-500)"
+                  textColor="white"
+                  text="RUN TESTS"
+                  size="xs"
+                  pill
+                />
+              </Link>
             </div>
           );
         })}

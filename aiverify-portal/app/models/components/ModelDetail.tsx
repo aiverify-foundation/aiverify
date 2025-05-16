@@ -206,7 +206,7 @@ const ModelDetail: React.FC<Props> = ({ model }) => {
       )}
       <span>
         <strong>Date Updated: </strong>
-        {new Date(editedModel.updated_at).toLocaleString('en-GB')}
+        {new Date(editedModel.updated_at + "Z").toLocaleString('en-GB')}
       </span>
       {model.size && (
         <span>

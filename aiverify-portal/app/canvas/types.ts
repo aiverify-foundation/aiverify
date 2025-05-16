@@ -30,6 +30,25 @@ type ParsedTestResults = TestResult & {
     | object[]
   >;
 };
+// type ParsedTestResults = {
+//   id: number;
+//   gid: string;
+//   cid: string;
+//   startTime: string;
+//   timeTaken: number;
+//   artifacts?: string[];
+//   output: Record<
+//     string,
+//     | string
+//     | number
+//     | boolean
+//     | object
+//     | string[]
+//     | number[]
+//     | boolean[]
+//     | object[]
+//   >;
+// };
 
 type TestResultDataMapping = Record<string, TestResultData>;
 type ArtifactsMapping = Record<string, string[]>;

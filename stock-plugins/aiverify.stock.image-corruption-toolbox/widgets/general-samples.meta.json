@@ -1,0 +1,23 @@
+{
+  "cid": "general-samples",
+  "widgetSize": {
+    "minW": 8,
+    "minH": 7,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "General corruption samples",
+  "description": "To generate sample images for general corruptions",
+  "dependencies": [
+    {
+      "cid": "aiverify_general_corruptions"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "Algorithm",
+      "cid": "aiverify_general_corruptions",
+      "datapath": "general-corruption-mock-data.json"
+    }
+  ]
+}

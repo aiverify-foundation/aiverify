@@ -1,3 +1,4 @@
+
 type Project = {
   globalVars: unknown[];
   pages: unknown[];
@@ -9,7 +10,7 @@ type Project = {
     reportTitle: string;
     company: string;
   };
-  testModelId: string | null;
+  testModelId: number | null;
   inputBlocks: unknown[];
   testResults: unknown[];
   created_at: string;
@@ -90,6 +91,12 @@ type DataColumn = {
 type DatasetStatus = 'invalid' | 'valid';
 type FileType = 'file' | 'folder';
 
+type DatasetColumn = {
+  name: string;
+  datatype: string;
+  label?: string;
+};
+
 type Dataset = {
   id: string;
   name: string;
@@ -102,7 +109,7 @@ type Dataset = {
   dataFormat: string | null;
   numRows: number | null;
   numCols: number | null;
-  dataColumns: string[] | null;
+  dataColumns: DatasetColumn[] | null;
   status: DatasetStatus;
   errorMessages: string | null;
   created_at: string;
@@ -245,19 +252,20 @@ type Widget = {
   gid: string;
 };
 
-type InputBlock = {
-  cid: string;
+export interface InputBlock {
   gid: string;
+  cid: string;
   name: string;
-  version: string | null;
-  author: string | null;
-  tags: string | null;
-  description: string | null;
-  group: string;
-  groupNumber: string | null;
-  width: string;
-  fullScreen: boolean;
-};
+  description: string;
+  group?: string;
+  width?: string;
+  mdxContent?: string;
+  version?: string | null;
+  author?: string | null;
+  tags?: string | null;
+  groupNumber?: number | null;
+  fullScreen?: boolean;
+}
 
 type InputBlockData = {
   gid: string;
@@ -266,6 +274,23 @@ type InputBlockData = {
   group: string;
   data: InputBlockDataPayload;
   id: number;
+  created_at: string;
+  updated_at: string;
+};
+
+type InputBlockGroupDataChild = {
+  cid: string;
+  name: string;
+  groupNumber: number;
+  data: InputBlockDataPayload;
+};
+
+type InputBlockGroupData = {
+  id: number;
+  gid: string;
+  name: string;
+  group: string;
+  input_blocks: InputBlockGroupDataChild[];
   created_at: string;
   updated_at: string;
 };
@@ -305,7 +330,8 @@ export type {
   TestResultData,
   InputBlockData,
   InputBlockDataPayload,
-  InputBlock,
+  InputBlockGroupData,
+  InputBlockGroupDataChild,
   FormState,
   DataColumn,
   ProjectInfo,

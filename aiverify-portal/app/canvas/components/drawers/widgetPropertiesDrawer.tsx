@@ -1,3 +1,4 @@
+'use client';
 import {
   RiFlaskFill,
   RiFlaskLine,
@@ -234,7 +235,7 @@ function WidgetPropertiesDrawer(props: WidgetPropertiesDrawerProps) {
                                         Created:
                                       </span>{' '}
                                       {new Date(
-                                        testResultForThisAlgo.created_at
+                                        testResultForThisAlgo.created_at + "Z"
                                       ).toLocaleString()}
                                     </div>
                                     <div className="text-[0.8rem] text-blue-600">
@@ -242,7 +243,7 @@ function WidgetPropertiesDrawer(props: WidgetPropertiesDrawerProps) {
                                         Updated:
                                       </span>{' '}
                                       {new Date(
-                                        testResultForThisAlgo.updated_at
+                                        testResultForThisAlgo.updated_at + "Z"
                                       ).toLocaleString()}
                                     </div>
                                     <div className="text-[0.8rem] text-blue-600">
@@ -321,7 +322,7 @@ function WidgetPropertiesDrawer(props: WidgetPropertiesDrawerProps) {
                             <div className="text-[0.8rem]">
                               <span className="font-semibold">Created:</span>{' '}
                               {new Date(
-                                inputBlockData.created_at
+                                inputBlockData.created_at + "Z"
                               ).toLocaleString()}
                             </div>
                           </div>

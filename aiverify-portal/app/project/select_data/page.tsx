@@ -3,22 +3,26 @@ import {
   transformProjectOutputToState,
   ProjectOutput,
 } from '@/app/canvas/utils/transformProjectOutputToState';
-import { getAllChecklists } from '@/lib/fetchApis/getAllChecklists';
 import { getAllFairnessTrees } from '@/lib/fetchApis/getAllFairnessTrees';
+import { getAllInputBlockGroups } from '@/lib/fetchApis/getAllInputBlockGroup';
 import { getTestModels } from '@/lib/fetchApis/getAllModels';
+import { getInputBlockDatas } from '@/lib/fetchApis/getInputBlockDatas';
 import { getPlugins } from '@/lib/fetchApis/getPlugins';
 import { populatePluginsMdxBundles } from '@/lib/fetchApis/getPlugins';
 import { getProjects } from '@/lib/fetchApis/getProjects';
 import { getTestResults } from '@/lib/fetchApis/getTestResults';
 import ClientSelectData from './components/ClientSelectData';
 import SelectDataHeader from './components/SelectDataHeader';
+
 export default async function SelectDataPage({
   searchParams,
 }: {
-  searchParams: { projectId?: string; flow?: string };
+  searchParams: Promise<{ projectId?: string; flow?: string }>;
 }) {
-  const projectId = searchParams.projectId;
-  const flow = searchParams.flow;
+  const params = await searchParams;
+  const projectId = params.projectId;
+  const flow = params.flow;
+  console.log('flow', flow);
 
   if (!projectId || !flow) {
     notFound();
@@ -34,8 +38,9 @@ export default async function SelectDataPage({
   const project = result.data[0] as ProjectOutput;
   const allModels = await getTestModels();
   const allTestResults = await getTestResults();
-  const allChecklists = await getAllChecklists();
+  const allInputBlockGroups = await getAllInputBlockGroups();
   const allFairnessTrees = await getAllFairnessTrees();
+  const allInputBlockDatas = await getInputBlockDatas();
 
   console.log('Project data:', {
     testModelId: project.testModelId,
@@ -56,23 +61,27 @@ export default async function SelectDataPage({
     project,
     pluginsWithMdx
   );
-  const requiredAlgorithms = transformedProject.algorithmsOnReport;
-  const requiredInputBlocks = transformedProject.inputBlocksOnReport;
+  console.log('Transformed project:', transformedProject);
+  const requiredAlgorithms = transformedProject.algorithmsOnReport || [];
+  const requiredInputBlocks = transformedProject.inputBlocksOnReport || [];
 
-  // Ensure we have the correct data types
+  // Ensure we have the correct data types and handle missing or malformed data
   const initialModelId = project.testModelId?.toString();
   const initialTestResults = Array.isArray(project.testResults)
     ? project.testResults.map((result) => ({
-        id: typeof result.id === 'number' ? result.id : parseInt(result.id),
-        gid: result.gid,
-        cid: result.cid,
+        id:
+          typeof result.id === 'number'
+            ? result.id
+            : parseInt(result.id || '0'),
+        gid: result.gid || '',
+        cid: result.cid || '',
       }))
     : [];
   const initialInputBlocks = Array.isArray(project.inputBlocks)
     ? project.inputBlocks.map((block) => ({
-        id: typeof block.id === 'number' ? block.id : parseInt(block.id),
-        gid: block.gid,
-        cid: block.cid,
+        id: typeof block.id === 'number' ? block.id : parseInt(block.id || '0'),
+        gid: block.gid || '',
+        cid: block.cid || '',
       }))
     : [];
 
@@ -114,8 +123,9 @@ export default async function SelectDataPage({
             requiredInputBlocks={requiredInputBlocks}
             allModels={allModels}
             allTestResults={allTestResults}
-            allChecklists={allChecklists}
+            allInputBlockGroups={allInputBlockGroups}
             allFairnessTrees={allFairnessTrees}
+            allInputBlockDatas={allInputBlockDatas}
             flow={flow}
             initialModelId={initialModelId}
             initialTestResults={initialTestResults}

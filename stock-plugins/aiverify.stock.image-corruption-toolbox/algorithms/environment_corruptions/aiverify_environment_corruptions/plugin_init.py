@@ -1,62 +1,45 @@
 import argparse
 
-from aiverify_environment_corruptions.algo_init import AlgoInit
-from aiverify_environment_corruptions.utils import environment
 from aiverify_test_engine.plugins.enums.model_type import ModelType
 
-parser = argparse.ArgumentParser(description="Run the plugin test with specified parameters.")
+from aiverify_environment_corruptions.algo import Plugin
+from aiverify_environment_corruptions.algo_init import AlgoInit
+from aiverify_environment_corruptions.utils import environment
 
 
 def run():
-    parse_input_args()
-    invoke_aiverify_digital_corruptions_plugin()
+    parser = build_parser()
+    args = parser.parse_args()
+    invoke_aiverify_environment_corruptions_plugin(args)
 
 
-def parse_input_args():
-    global parser
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="Run the plugin test with specified parameters.")
 
-    parser.add_argument("--data_path", required=True, help="Path to the data file.")
-    parser.add_argument("--model_path", required=True, help="Path to the model file.")
-    parser.add_argument("--ground_truth_path", required=True, help="Path to the ground truth data file.")
+    parser.add_argument("--data_path", required=True, help="Path to the data file/folder.")
     parser.add_argument(
-        "--ground_truth",
+        "--model_path",
         required=True,
-        help="The ground truth column name in the data.",
-    )
-    parser.add_argument(
-        "--run_pipeline",
-        action=argparse.BooleanOptionalAction,
-        help="Whether to run the test as a pipeline (default: False).",
+        help="Path to the model file/folder. "
+        "The model should have a `predict` method that takes a batch of image file path and returns a batch prediction.",
     )
     parser.add_argument(
         "--model_type",
         required=True,
-        choices=["CLASSIFICATION", "REGRESSION"],
-        help="The type of model (CLASSIFICATION or REGRESSION).",
+        choices=[model_type.name for model_type in Plugin._supported_algorithm_model_type],
+        help="Model type.",
     )
-    parser.add_argument(
-        "--core_modules_path",
-        default="",
-        help="Path to the core modules (default: empty).",
-    )
-    parser.add_argument(
-        "--set_seed",
-        default=0,
-        type=int,
-        help="Seed value",
-    )
-    parser.add_argument(
-        "--annotated_ground_truth_path",
-        default="",
-        help="Path to the annotated labels file.",
-    )
-    parser.add_argument("--file_name_label", default="", help="The label of the file name.")
+    parser.add_argument("--ground_truth_path", help="Path to the ground truth CSV file with image path and label.")
+    parser.add_argument("--ground_truth", help="The ground truth label in the ground truth file.")
+    parser.add_argument("--file_name_label", help="The file name label in the ground truth file.")
+    parser.add_argument("--core_modules_path", help="Path to the core modules. Detects automatically if not provided.")
+    parser.add_argument("--set_seed", type=int, help="Set seed value for reproducibility.")
     parser.add_argument(
         "--corruptions",
         nargs="+",
         choices=["all"] + [name.lower() for name in environment.CORRUPTION_FN],
         default=["all"],
-        help="Specify the name(s) of environment corruption to run. Default: all",
+        help="Specify the name(s) of corruption to run. Default: all",
     )
 
     def get_default(k: str) -> str:
@@ -82,30 +65,16 @@ def parse_input_args():
         help=f"Rain corruption type. Default: {get_default('rain_type')}",
     )
 
+    return parser
 
-def invoke_aiverify_digital_corruptions_plugin():
+
+def invoke_aiverify_environment_corruptions_plugin(args: argparse.Namespace) -> None:
     # =====================================================================================
     # NOTE: Do not modify the code below
     # =====================================================================================
     # Perform Plugin Testing
 
-    # Parse the arguments
-    args = parser.parse_args()
-
-    # Determine the value of run_pipeline
-    if args.run_pipeline is None:
-        run_pipeline = False  # Default to False if not provided
-    else:
-        run_pipeline = args.run_pipeline
-
-    # Map string argument to ModelType enum
-    model_type = ModelType[args.model_type]
-
-    if "all" in args.corruptions:
-        args.corruptions = list(environment.CORRUPTION_FN)
-    else:
-        # This step is required to (1) sanitize user input (2) make sure algorithm names are in correct format & order
-        args.corruptions = [name for name in environment.CORRUPTION_FN if name.lower() in args.corruptions]
+    args.model_type = ModelType[args.model_type]
 
     user_defined_params = {
         "corruptions": args.corruptions,
@@ -113,43 +82,26 @@ def invoke_aiverify_digital_corruptions_plugin():
         "fog_intensity": args.fog_intensity,
         "rain_type": args.rain_type,
     }
-
-    plugin_argument_values = {
-        "set_seed": args.set_seed,
-        "annotated_ground_truth_path": args.annotated_ground_truth_path,
-        "file_name_label": args.file_name_label,
-        **user_defined_params,
-    }
-
-    print("*" * 20)
     # Debugging prints
-    print(
-        f"Running with the following arguments:\n"
-        f"Data Path: {args.data_path}\n"
-        f"Model Path: {args.model_path}\n"
-        f"Ground Truth Path: {args.ground_truth_path}\n"
-        f"Ground Truth: {args.ground_truth}\n"
-        f"Run Pipeline: {run_pipeline}\n"
-        f"Model Type: {model_type}\n"
-        f"Core Modules Path: {args.core_modules_path}\n"
-        f"Seed Value: {args.set_seed}\n"
-        f"Annotated Ground Truth Path: {args.annotated_ground_truth_path}\n"
-        f"File Name Label: {args.file_name_label}\n"
-        f"User Defined Parameters: {user_defined_params}"
-    )
+    print("*" * 20)
+    print(f"Running with the following arguments:")
+    for k, v in vars(args).items():
+        print(f"{k}: {v}")
     print("*" * 20)
 
     try:
         # Create an instance of AlgoInit with defined paths and arguments and Run.
         plugin_test = AlgoInit(
-            run_pipeline,
-            args.core_modules_path,
-            args.data_path,
-            args.model_path,
-            args.ground_truth_path,
-            args.ground_truth,
-            model_type,
-            plugin_argument_values,
+            run_as_pipeline=True,
+            data_path=args.data_path,
+            model_path=args.model_path,
+            model_type=args.model_type,
+            ground_truth_path=args.ground_truth_path,
+            ground_truth=args.ground_truth,
+            file_name_label=args.file_name_label,
+            set_seed=args.set_seed,
+            core_modules_path=args.core_modules_path,
+            **user_defined_params,
         )
         plugin_test.run()
 

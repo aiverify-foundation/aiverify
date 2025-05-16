@@ -4,34 +4,21 @@ import { MyPageTitle3 } from './misc.mdx';
 export const TechnicalSummary = ({props}) => {
   const [data, setData] = useState({
     numSuccess: 0,
-    numFailed: 0,
     numSkipped: 0,
     numTests: 0,
   })
 
   useState(() => {
-    let numSuccess = 0;
-    let numFailed = 0;
-    let numTests = 0;
-    for (let test of props.tests) {
-      numTests++;
-      switch (test.status) {
-        case 'Success':
-          numSuccess++;
-          break;
-        default:
-          numFailed++;
-          break;
-      }
-    }
-    setData({
-      numSuccess,
-      numFailed,
-      numSkipped: 0,
-      numTests,
-    })
-
-  }, [props.tests])
+    // Use requiredTestCount and selectedTestCount if available
+    if (props.requiredTestCount !== undefined && props.selectedTestCount !== undefined) {
+      setData({
+        numSuccess: props.selectedTestCount,
+        numSkipped: props.requiredTestCount - props.selectedTestCount,
+        numTests: props.requiredTestCount,
+      });
+    } 
+    // Fallback to the old calculation method if the new props aren't available
+  }, [props.tests, props.requiredTestCount, props.selectedTestCount])
 
   const styles = {
     container: {
@@ -68,10 +55,6 @@ export const TechnicalSummary = ({props}) => {
         <div style={styles.stat}>{data.numSuccess} / {data.numTests}</div>
       </div>
       <div style={styles.box}>
-        <div style={{ ...styles.label, color:'red' }}>Tests Failed to Complete</div>
-        <div style={styles.stat}>{data.numFailed} / {data.numTests}</div>
-      </div>
-      <div style={styles.box}>
         <div style={styles.label}>Tests Skipped By User</div>
         <div style={styles.stat}>{data.numSkipped} / {data.numTests}</div>
       </div>
@@ -81,7 +64,7 @@ export const TechnicalSummary = ({props}) => {
 }
 
 <MyPageTitle3 title="Technical Tests" />
-{props.tests && (
+{props.requiredTestCount !== undefined && props.selectedTestCount !== undefined && (
   <div>
     <TechnicalSummary props={props} />
   </div>

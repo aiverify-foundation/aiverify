@@ -38,6 +38,9 @@ from ..util.utility import (
     check_value,
 )
 
+# Some of the older created examples have this issues
+warnings.filterwarnings("ignore", message="X has feature names, but StandardScaler was fitted without feature names")
+
 
 class Fairness:
     """

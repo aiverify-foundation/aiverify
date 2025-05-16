@@ -6,26 +6,36 @@ export async function GET(request: Request) {
   const name = url.searchParams.get('name');
 
   if (!id || !name) {
-    return NextResponse.json({ error: 'Missing id or name parameter' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'Missing id or name parameter' },
+      { status: 400 }
+    );
   }
 
   try {
-    const response = await fetch(`http://127.0.0.1:4000/test_results/${id}/artifacts/${name}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await fetch(
+      `${process.env.APIGW_HOST}/test_results/${id}/artifacts/${name}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
 
     if (!response.ok) {
-      return NextResponse.json({ error: 'Failed to get artifact' }, { status: response.status });
+      return NextResponse.json(
+        { error: 'Failed to get artifact' },
+        { status: response.status }
+      );
     }
 
     // Extract headers
     const contentType = response.headers.get('Content-Type') || '';
-    const contentDisposition = response.headers.get('Content-Disposition') || '';
-    console.log("backend contentype:", contentType)
-    console.log("backend contentdisposition:", contentDisposition)
+    const contentDisposition =
+      response.headers.get('Content-Disposition') || '';
+    console.log('backend contentype:', contentType);
+    console.log('backend contentdisposition:', contentDisposition);
 
     // Pass through the response body and headers
     const blob = await response.blob();
@@ -38,6 +48,9 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     console.error('Error fetching artifact:', error);
-    return NextResponse.json({ error: 'Server error while getting artifact' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Server error while getting artifact' },
+      { status: 500 }
+    );
   }
 }

@@ -19,7 +19,7 @@ const CanvasHeader = ({ project }: CanvasHeaderProps) => {
   // Format the timestamp
   const formatTimestamp = (timestamp: string) => {
     // Create a date object and format it for Singapore timezone
-    const date = new Date(timestamp);
+    const date = new Date(timestamp + "Z");
     return date.toLocaleString('en-GB', {
       day: 'numeric',
       month: 'short',
@@ -70,7 +70,7 @@ const CanvasHeader = ({ project }: CanvasHeaderProps) => {
             </li>
             <li className="border-b border-secondary-300 py-2">
               <Link
-                href="/data"
+                href="/datasets"
                 className="block hover:text-secondary-300">
                 Data
               </Link>

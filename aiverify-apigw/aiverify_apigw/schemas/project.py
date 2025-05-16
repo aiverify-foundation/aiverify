@@ -1,16 +1,17 @@
-from pydantic import BaseModel, Field
+from pydantic import Field
 from typing import Optional, List
 from datetime import datetime
 import json
 
 from .project_template import ProjectTemplateMeta, ProjectTemplateMetaOptional
 from ..models import ProjectModel
+from .base_model import MyBaseModel
 
 
-class ProjectInformation(BaseModel):
-    name: str = Field(description="Project Name", max_length=256)
-    description: Optional[str] = Field(description="Property value", max_length=4096, default=None)
-    reportTitle: Optional[str] = Field(description="Property value", max_length=256, default=None)
+class ProjectInformation(MyBaseModel):
+    name: str = Field(description="Project Name", max_length=256, min_length=1)
+    description: Optional[str] = Field(description="Property value", max_length=4096, min_length=1, default=None)
+    reportTitle: Optional[str] = Field(description="Property value", max_length=256, min_length=1, default=None)
     company: Optional[str] = Field(description="Property value", max_length=256, default=None)
 
     model_config = {
@@ -27,7 +28,7 @@ class ProjectInformation(BaseModel):
     }
 
 
-class ProjectComponentSelection(BaseModel):
+class ProjectComponentSelection(MyBaseModel):
     gid: str = Field(
         description="Unique global identifier for the plugin",
         min_length=1,
@@ -64,8 +65,8 @@ class ProjectOutput(ProjectTemplateMeta):
     testModelId: Optional[int] = Field(description="Id of the AI model selected for this project. Set to NULL if no selected", default=None)
     inputBlocks: List[ProjectComponentSelection] = Field(description="Input block selection", default=[])
     testResults: List[ProjectComponentSelection] = Field(description="Test result selection", default=[])
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+    created_at: Optional[datetime] = Field(strict=False, default=None)
+    updated_at: Optional[datetime] = Field(strict=False, default=None)
 
     @classmethod
     def from_model(cls, result: ProjectModel) -> "ProjectOutput":

@@ -1,0 +1,23 @@
+{
+  "cid": "general-bar-chart",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 10,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Bar Chart (General Corruptions)",
+  "description": "To generate bar charts to visualise the accuracy results when general corruptions are applied",
+  "dependencies": [
+    {
+      "cid": "aiverify_general_corruptions"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "Algorithm",
+      "cid": "aiverify_general_corruptions",
+      "datapath": "general-corruption-mock-data.json"
+    }
+  ]
+}

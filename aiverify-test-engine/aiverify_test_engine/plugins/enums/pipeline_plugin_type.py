@@ -7,3 +7,4 @@ class PipelinePluginType(Enum):
     """
 
     SKLEARN = 1
+    PYTORCH = 2

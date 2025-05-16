@@ -318,7 +318,7 @@ class Plugin(IAlgorithm):
 
         # list of tuple of labels to be passed into predict()
         dict_items_labels = self._data_instance.read_labels().items()
-        predictions = self._model_instance.predict([data], dict_items_labels)
+        predictions = self._model_instance.predict(data, dict_items_labels)
 
         # have put back the ground truth column because we need this for comparison in run-test
         data[self._ground_truth] = testing[[self._ground_truth]]

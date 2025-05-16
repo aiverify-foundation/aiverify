@@ -60,7 +60,7 @@ const ModelList: React.FC<Props> = ({ models }) => {
       headerName: 'Updated At',
       sortable: true,
       renderCell: (row: TestModel) =>
-        new Date(row.updated_at).toLocaleString('en-GB'),
+        new Date(row.updated_at + "Z").toLocaleString('en-GB'),
     },
   ];
 

@@ -46,7 +46,7 @@ const SelectDataHeader = ({ updatedAt }: SelectDataHeaderProps) => {
             </li>
             <li className="border-b border-secondary-300 py-2">
               <Link
-                href="/data"
+                href="/datasets"
                 className="block hover:text-secondary-300">
                 Data
               </Link>
@@ -94,7 +94,7 @@ const SelectDataHeader = ({ updatedAt }: SelectDataHeaderProps) => {
           />
         </Link>
         <span className="text-sm text-gray-400">
-          Autosaved at {new Date(updatedAt).toLocaleString()}
+          Autosaved at {new Date(updatedAt + "Z").toLocaleString()}
         </span>
       </div>
 

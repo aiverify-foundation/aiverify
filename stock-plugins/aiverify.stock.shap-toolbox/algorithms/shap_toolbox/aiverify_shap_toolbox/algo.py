@@ -484,7 +484,7 @@ class Plugin(IAlgorithm):
             Any: predicted value
         """
         dict_item_labels = self._data_instance.read_labels().items()
-        predicted_results = self._model_instance.predict([data.tolist()], dict_item_labels)
+        predicted_results = self._model_instance.predict(data, dict_item_labels)
         if isinstance(predicted_results, list):
             predicted_results = np.array(list(predicted_results), dtype="float32")
         return predicted_results

@@ -1,3 +1,4 @@
+'use client';
 import { useState, useCallback } from 'react';
 
 // Amount to change zoom level by on each step

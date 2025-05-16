@@ -10,13 +10,13 @@
   "description": "To provide introduction, interpretation and recommendations for robustness testing",
   "dependencies": [
     {
-      "cid": "robustness_toolbox"
+      "cid": "aiverify_robustness_toolbox"
     }
   ],
   "mockdata": [
     {
       "type": "Algorithm",
-      "cid": "robustness_toolbox",
+      "cid": "aiverify_robustness_toolbox",
       "datapath": "robustness_toolbox.sample.json"
     }
   ]

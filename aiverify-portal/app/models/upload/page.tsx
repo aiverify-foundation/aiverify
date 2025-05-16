@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState } from 'react';
 import LayoutHeader from '@/app/models/components/LayoutHeader';
 import ModelUploader from '@/app/models/upload/components/ModelUploader';
@@ -9,17 +9,14 @@ import { Icon, IconName } from '@/lib/components/IconSVG';
 import { Button, ButtonVariant } from '@/lib/components/button';
 import PipelineUploader from './components/PipelineUploader';
 
-type UploadPageProps = {
-  onBack?: () => void;
-};
-
-const UploadPage: React.FC<UploadPageProps> = () => {
+const UploadPage = () => {
   const [selectedMethod, setSelectedMethod] = useState('');
   const [activeCard, setActiveCard] = useState<string>('');
   const searchParams = useSearchParams();
   const projectId = searchParams.get('projectId');
+  const flow = searchParams.get('flow');
   const isProjectFlow = !!projectId;
-
+  const router = useRouter();
   const handleMethodSelect = (method: string) => {
     setActiveCard(method);
   };
@@ -32,7 +29,7 @@ const UploadPage: React.FC<UploadPageProps> = () => {
 
   const handleBackProject = () => {
     if (isProjectFlow) {
-      window.history.back();
+      router.push(`/project/select_data?flow=${flow}&projectId=${projectId}`);
     }
   };
 

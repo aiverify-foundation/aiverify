@@ -1,28 +1,21 @@
 {
-    "cid": "aiverify_robustness_toolbox",
-    "gid": "aiverify.stock.robustness_toolbox",
-    "name": "Robustness Toolbox",
-    "modelType": [
-        "classification",
-        "regression"
-    ],
-    "version": "2.0.0a2",
-    "author": "AI Verify",
-    "description": "This plugin generates a perturbed dataset using boundary attack algorithm on the test dataset.",
-    "tags": [
-        "Robustness Toolbox",
-        "classification",
-        "regression"
-    ],
-    "requireGroundTruth": true,
-    "requiredFiles": [
-        "AUTHORS.rst",
-        "CHANGELOG.md",
-        "input.schema.json",
-        "LICENSE",
-        "output.schema.json",
-        "algo.meta.json",
-        "algo.py",
-        "README.md"
-    ]
+  "cid": "aiverify_robustness_toolbox",
+  "gid": "aiverify.stock.robustness_toolbox",
+  "name": "Robustness Toolbox",
+  "modelType": ["classification", "regression"],
+  "version": "2.0.1",
+  "author": "AI Verify",
+  "description": "This plugin generates a perturbed dataset using boundary attack algorithm on the test dataset.",
+  "tags": ["Robustness Toolbox", "classification", "regression"],
+  "requireGroundTruth": true,
+  "requiredFiles": [
+    "AUTHORS.rst",
+    "CHANGELOG.md",
+    "input.schema.json",
+    "LICENSE",
+    "output.schema.json",
+    "algo.meta.json",
+    "algo.py",
+    "README.md"
+  ]
 }
