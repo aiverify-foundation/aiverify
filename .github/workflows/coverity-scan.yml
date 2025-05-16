@@ -73,7 +73,7 @@ jobs:
       with:
           name: coverity-results-${{ github.run_id }}
           path: |
-            ${{ github.workspace }}
+            ${{ github.workspace }}/coverity.csv
 
     # - id: changeset
     #   name: Get Pull Request Changeset
