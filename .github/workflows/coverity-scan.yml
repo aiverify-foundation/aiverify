@@ -46,14 +46,14 @@ jobs:
         curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o /tmp/$CSA/bin/license.dat $COV_URL/downloadFile.htm?fn=license.dat
         /tmp/$CSA/bin/cov-configure --java
 
-    # - name: Coverity Full Scan
-    #   run: |
-    #     export PATH=$PATH:/tmp/$CSA/bin
-    #     set -x
-    #     coverity capture
-    #     cov-analyze --dir idir --all --all-security --strip-path $GITHUB_WORKSPACE $CHECKERS
-    #     cov-commit-defects --dir idir --ticker-mode none --url $COV_URL --stream $COV_STREAM --scm git \
-    #       --description $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID --target $RUNNER_OS --version $GITHUB_SHA
+    - name: Coverity Full Scan
+      run: |
+        export PATH=$PATH:/tmp/$CSA/bin
+        set -x
+        coverity capture
+        cov-analyze --dir idir --all --all-security --strip-path $GITHUB_WORKSPACE $CHECKERS
+        cov-commit-defects --dir idir --ticker-mode none --url $COV_URL --stream $COV_STREAM --scm git \
+          --description $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID --target $RUNNER_OS --version $GITHUB_SHA
 
     - name: Coverity Quality Gate
       # if: ${{ github.event_name != 'pull_request' }}
