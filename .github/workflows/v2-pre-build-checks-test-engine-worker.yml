@@ -6,8 +6,8 @@
 
 name: v2 Pre-build Checks (test-engine-worker)
 
-env:
-  GH_TOKEN: ${{ github.token }}
+# env:
+#   GH_TOKEN: ${{ github.token }}
   
 on:
   # Runs when a pull request to main is being assigned
