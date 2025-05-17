@@ -110,7 +110,7 @@ jobs:
         if: ${{ ! cancelled() }}
         run: |      
           set +e
-          bash ${{ env.CI_DIR }}/run-test.sh apigw_apigw -m
+          bash ${{ env.CI_DIR }}/run-test.sh aiverify_apigw -m
           source ${{ env.CI_DIR }}/gen_pre_build_summ.sh test aiverify_apigw
           test_status=$?
           source ${{ env.CI_DIR }}/gen_pre_build_summ.sh coverage aiverify_apigw
