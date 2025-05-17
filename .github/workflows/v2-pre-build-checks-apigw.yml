@@ -130,7 +130,6 @@ jobs:
         working-directory: ${{ github.workspace }}/${{ env.WDIR }}
         run: |
           set +e
-          cp ${{ env.CI_DIR }}/.flake8 .
           bash ${{ env.CI_DIR }}/run-flake8.sh aiverify_apigw
           source ${{ env.CI_DIR }}/gen_pre_build_summ.sh lint aiverify_apigw
           lint_status=$?
