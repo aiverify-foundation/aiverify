@@ -69,6 +69,7 @@ jobs:
             aiverify-apigw
             aiverify-shared-library
             aiverify-test-engine
+            common
             .ci
 
       # Setup python    
