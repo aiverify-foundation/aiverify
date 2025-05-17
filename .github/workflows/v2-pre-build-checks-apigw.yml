@@ -101,7 +101,7 @@ jobs:
           pip install -e .
           pip install pipdeptree > /dev/null
           pipdeptree -fl 
-          pip install pytest pytest-mock pytest-html pytest-json pytest-cov coverage anybadge > /dev/null
+          pip install pytest pytest-mock pytest-html pytest-json pytest-cov coverage faker > /dev/null
           pip install flake8 flake8-html > /dev/null
 
       # Check 1: Unit tests & coverage    
