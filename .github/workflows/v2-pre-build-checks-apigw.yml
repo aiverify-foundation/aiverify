@@ -88,7 +88,7 @@ jobs:
         working-directory: ${{ github.workspace }}/${{ env.WDIR }}
         run: |
           echo "Install dependencies"
-          cd aiverify-shared-library
+          cd ../aiverify-shared-library
           npm install
           npm run build
           cd ../aiverify-apigw/aiverify-apigw-node
