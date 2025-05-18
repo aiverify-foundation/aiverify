@@ -122,13 +122,23 @@ jobs:
             # npm run coverage
             npx jest --silent
             exit_code_jest=$?
+            # ANSI color codes
+            RED='\033[0;31m'
+            GREEN='\033[0;32m'
+            RESET='\033[0m'
+            test_result=$(npx jest --json --silent)
+            total_tests=$(echo "$test_result" | jq '.numTotalTests // 0')
+            failed_tests=$(echo "$test_result" | jq '.numFailedTests // 0')
+            passed_tests=$(echo "$test_result" | jq '.numPassedTests // 0')
             echo "########### Unit Test Summary ###########"
-            total_tests=$(npx jest --json --silent | jq '.numTotalTests')
-            failed_tests=$(npx jest --json --silent | jq '.numFailedTests')
-            passed_tests=$(npx jest --json --silent | jq '.numPassedTests')
-            printf "Passed: %s\n" "$passed_tests"
-            printf "Failed: %s\n" "$failed_tests"
-            printf "Total:  %s\n" "$total_tests"
+            if [ "$total_tests" -eq 0 ] || [ "$passed_tests" -eq 0 ] || [ "$failed_tests" -ne 0 ]; then
+              COLOR=$RED
+            else
+              COLOR=$GREEN
+            fi
+            printf "${COLOR}Passed: %s${RESET}\n" "$passed_tests"
+            printf "${COLOR}Failed: %s${RESET}\n" "$failed_tests"
+            printf "${COLOR}Total:  %s${RESET}\n" "$total_tests"
             echo "#########################################"
             if [ -f coverage/coverage-summary.json ]; then
               coverage_pct=$(jq '.total.lines.pct' coverage/coverage-summary.json)
@@ -199,7 +209,7 @@ jobs:
               .vulnerabilities | to_entries[] |
               .key as $pkg |
               .value.via[]? | select(type == "object" and .title != null) |
-              "\($pkg) - \(.severity): \(.title)"' $audit_json
+              "\($pkg) - \(.severity): \(.title)\(if .via? | has(\"source\") then \" (via: \(.via.source))\" else \"\" end)"' $audit_json
             echo "############################################"
 
             # ANSI color codes
