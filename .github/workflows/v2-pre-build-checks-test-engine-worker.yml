@@ -26,9 +26,6 @@ on:
         required: true
         default: 'main'
         type: string
-
-  push:
-    branches: [ ci/pre-build-check-2 ]
     
 # Allow one concurrent deployment
 concurrency:
