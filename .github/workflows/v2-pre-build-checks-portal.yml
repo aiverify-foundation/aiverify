@@ -6,6 +6,10 @@
 
 name: v2 Pre-build Checks (portal)
 
+env:
+  NEXT_PUBLIC_APIGW_HOST: 'http://127.0.0.1:4000'
+  APIGW_HOST: 'http://host.docker.internal:4000'
+
 on:
   # Runs when a pull request to main is being assigned
   pull_request:
@@ -136,6 +140,30 @@ jobs:
             # npm run lint-json-report
             npm run lint -f html -o eslint-report.html
             npm run lint -f json -o eslint-report.json
+
+            # ANSI color codes
+            RED='\033[0;31m'
+            ORANGE='\033[0;33m'
+            GREEN='\033[0;32m'
+            RESET='\033[0m'
+
+            # Parse JSON report for errors and warnings
+            total_errors=$(jq '[.[].errorCount] | add // 0' eslint-report.json)
+            total_warnings=$(jq '[.[].warningCount] | add // 0' eslint-report.json)
+
+            echo "########### Lint Summary ###########"
+            if [ "$total_errors" -gt 0 ]; then
+              printf "${RED}Errors: %s${RESET}\n" "$total_errors"
+            else
+              printf "${GREEN}Errors: %s${RESET}\n" "$total_errors"
+            fi
+            if [ "$total_warnings" -gt 0 ]; then
+              printf "${ORANGE}Warnings: %s${RESET}\n" "$total_warnings"
+            else
+              printf "${GREEN}Warnings: %s${RESET}\n" "$total_warnings"
+            fi
+            echo "####################################"
+
             set -e
             if [ $exit_code_lint -ne 0 ]; then
               echo "lint failed, exiting..."
@@ -152,11 +180,12 @@ jobs:
             npm audit --omit=dev --json > $audit_json
             exit_code_audit=$?
 
-            echo "########### Vulnerability Details (top 10) ###########"
+            echo "########### Vulnerability Details ###########"
             jq -r '
-              .vulnerabilities | to_entries[] | 
-              "\(.value.name)@\(.value.range) - \(.value.severity): \(.value.title)"' $audit_json | head -n 10
-            echo "######################################################"
+              .vulnerabilities | to_entries[] |
+              select(.value.via[0].title? != null) |
+              "\(.value.name)@\(.value.range) - \(.value.severity): \(.value.via[0].title)"' $audit_json
+            echo "############################################"
 
             # ANSI color codes
             RED='\033[0;31m'
