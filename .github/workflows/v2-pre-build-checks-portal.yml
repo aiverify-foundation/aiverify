@@ -120,8 +120,22 @@ jobs:
             set +e
             sudo timedatectl set-timezone Asia/Singapore
             # npm run coverage
-            npx jest --silent 
+            npx jest --silent
             exit_code_jest=$?
+            echo "########### Unit Test Summary ###########"
+            total_tests=$(npx jest --json --silent | jq '.numTotalTests')
+            failed_tests=$(npx jest --json --silent | jq '.numFailedTests')
+            passed_tests=$(npx jest --json --silent | jq '.numPassedTests')
+            printf "Passed: %s\n" "$passed_tests"
+            printf "Failed: %s\n" "$failed_tests"
+            printf "Total:  %s\n" "$total_tests"
+            echo "#########################################"
+            if [ -f coverage/coverage-summary.json ]; then
+              coverage_pct=$(jq '.total.lines.pct' coverage/coverage-summary.json)
+              echo "########### Code Coverage Summary ###########"
+              echo "Line Coverage: $coverage_pct%"
+              echo "#############################################"
+            fi
             set -e
             if [ $exit_code_jest -ne 0 ]; then
               echo "jest failed, exiting..."
@@ -183,8 +197,9 @@ jobs:
             echo "########### Vulnerability Details ###########"
             jq -r '
               .vulnerabilities | to_entries[] |
-              select(.value.via[0].title? != null) |
-              "\(.value.name)@\(.value.range) - \(.value.severity): \(.value.via[0].title)"' $audit_json
+              .key as $pkg |
+              .value.via[]? | select(type == "object" and .title != null) |
+              "\($pkg) - \(.severity): \(.title)"' $audit_json
             echo "############################################"
 
             # ANSI color codes
