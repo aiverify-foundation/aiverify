@@ -126,6 +126,8 @@ jobs:
               total_tests=0
               failed_tests=0
               passed_tests=0
+              echo "No tests found, Failing the step."
+              exit 1
             else
               test_result=$(npx jest --json --silent)
               total_tests=$(echo "$test_result" | jq '.numTotalTests // 0')
@@ -162,7 +164,7 @@ jobs:
               COVERAGE_COLOR=$GREEN
             fi
             echo "########### Code Coverage Summary ###########"
-            printf "${COVERAGE_COLOR}Code Coverage: %s%s\n" "$coverage_pct" "$RESET"
+            printf "${COVERAGE_COLOR}Code Coverage: %s%% ${RESET}\n" "$coverage_pct"
             echo "#############################################"
             set -e
             if [ $exit_code_jest -ne 0 ]; then
@@ -223,11 +225,16 @@ jobs:
             exit_code_audit=$?
 
             echo "########### Vulnerability Details ###########"
+            #jq -r '
+            #  .vulnerabilities | to_entries[] |
+            #  .key as $pkg |
+            #  .value.via[]? | select(type == "object" and .title != null) |
+            #  "\($pkg) - \(.severity): \(.title)" + (if has("source") then " (via: \(.source))" else "" end)' $audit_json
             jq -r '
               .vulnerabilities | to_entries[] |
               .key as $pkg |
               .value.via[]? | select(type == "object" and .title != null) |
-              "\($pkg) - \(.severity): \(.title)" + (if has("source") then " (via: \(.source))" else "" end)' $audit_json
+              "\($pkg) - \(.severity): \(.title)" + (if .via? then " (introduced via: \(.via))" else "" end)' audit.json  
             echo "############################################"
 
             # ANSI color codes
