@@ -151,33 +151,70 @@ jobs:
             audit_json="audit.json"
             npm audit --omit=dev --json > $audit_json
             exit_code_audit=$?
-            
+
+            echo "########### Vulnerability Details (top 10) ###########"
+            jq -r '
+              .vulnerabilities | to_entries[] | 
+              "\(.value.name)@\(.value.range) - \(.value.severity): \(.value.title)"' $audit_json | head -n 10
+            echo "######################################################"
+
+            # ANSI color codes
+            RED='\033[0;31m'
+            ORANGE='\033[0;33m'
+            GREEN='\033[0;32m'
+            RESET='\033[0m'
+
             critical_count=$(jq '[.vulnerabilities[] | select(.severity=="critical")] | length' $audit_json)
             high_count=$(jq '[.vulnerabilities[] | select(.severity=="high")] | length' $audit_json)
             medium_count=$(jq '[.vulnerabilities[] | select(.severity=="moderate")] | length' $audit_json)
-            
-            echo "Vulnerability Summary:" > vuln-summary.txt
-            echo "Critical: $critical_count" >> vuln-summary.txt
-            echo "High: $high_count" >> vuln-summary.txt
-            echo "Medium: $medium_count" >> vuln-summary.txt
+
+            # Vulnerability summary with color and block markers
+            echo "########### Vulnerability Summary ###########" > vuln-summary.txt
+            if [ "$critical_count" -gt 0 ]; then
+              printf "${RED}Critical: %s${RESET}\n" "$critical_count" >> vuln-summary.txt
+            else
+              printf "${GREEN}Critical: %s${RESET}\n" "$critical_count" >> vuln-summary.txt
+            fi
+            if [ "$high_count" -gt 0 ]; then
+              printf "${ORANGE}High: %s${RESET}\n" "$high_count" >> vuln-summary.txt
+            else
+              printf "${GREEN}High: %s${RESET}\n" "$high_count" >> vuln-summary.txt
+            fi
+            if [ "$medium_count" -gt 0 ]; then
+              printf "${ORANGE}Medium: %s${RESET}\n" "$medium_count" >> vuln-summary.txt
+            else
+              printf "${GREEN}Medium: %s${RESET}\n" "$medium_count" >> vuln-summary.txt
+            fi
+            echo "############################################" >> vuln-summary.txt
             cat vuln-summary.txt
 
-            echo -e "License Check Summary for portal\n" > license-report.txt
+            # License summary block with color and block markers
+            echo -e "########### License Check Summary for portal ###########\n" > license-report.txt
             cat licenses-found.txt >> license-report.txt
-            echo -e "\nLicense Check Summary for shared-library\n" >> license-report.txt
+            echo -e "\n########### License Check Summary for shared-library ###########\n" >> license-report.txt
             cat ../aiverify-shared-library/licenses-found.txt >> license-report.txt
 
             strong_copyleft_count=$(grep -iE 'GPL|AGPL|Affero|CeCILL' licenses-found.txt | wc -l)
             weak_copyleft_count=$(grep -iE 'LGPL|MPL|CDDL' licenses-found.txt | wc -l)
 
-            echo -e "\nCopyleft License Summary:" >> license-report.txt
-            echo "Strong copyleft: $strong_copyleft_count" >> license-report.txt
-            echo "Weak copyleft: $weak_copyleft_count" >> license-report.txt
+            echo -e "\n########### Copyleft License Summary ###########" >> license-report.txt
+            if [ "$strong_copyleft_count" -gt 0 ]; then
+              printf "${RED}Strong copyleft: %s${RESET}\n" "$strong_copyleft_count" >> license-report.txt
+            else
+              printf "${GREEN}Strong copyleft: %s${RESET}\n" "$strong_copyleft_count" >> license-report.txt
+            fi
+            if [ "$weak_copyleft_count" -gt 0 ]; then
+              printf "${ORANGE}Weak copyleft: %s${RESET}\n" "$weak_copyleft_count" >> license-report.txt
+            else
+              printf "${GREEN}Weak copyleft: %s${RESET}\n" "$weak_copyleft_count" >> license-report.txt
+            fi
+            echo "############################################" >> license-report.txt
             cat license-report.txt
 
-            # Also append the vulnerability summary to license-report.txt
-            echo -e "\nVulnerability Summary:" >> license-report.txt
-            cat vuln-summary.txt >> license-report.txt
+            # Append vulnerability summary block to license report
+            echo -e "\n########### Vulnerability Summary ###########" >> license-report.txt
+            tail -n +2 vuln-summary.txt | head -n -1 >> license-report.txt
+            echo "############################################" >> license-report.txt
 
             cp license-report.txt licenses-found.txt
             set -e
