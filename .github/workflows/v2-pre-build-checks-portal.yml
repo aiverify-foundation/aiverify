@@ -1,11 +1,10 @@
-# Pre-merge Checks (for Nodejs/Typescript projects)
+# Pre-build Checks (Portal)
 # 1. Unit tests with code coverage (jest)
 # 2. Code quality analysis (lint)
 # 3. Dependency analysis (vulnerabilities)
 # 4. Dependency analysis (undesirable licenses)
-# 5. Deploy reports generated from the above to GitHub Pages
 
-name: Pre-Merge Checks (ai-verify-portal)
+name: v2 Pre-build Checks (portal)
 
 on:
   # Runs when a pull request to main is being assigned
@@ -201,4 +200,3 @@ jobs:
         #     git commit -m "feat(portal) actions publish portal reports to dashboard"
         #     git push
         #     set -e
-        
