@@ -61,6 +61,7 @@ jobs:
             fi
             echo "WDIR=aiverify-portal" >> $GITHUB_ENV
             echo "CI_DIR=../.ci" >> $GITHUB_ENV
+            echo "STATUS=success" >> $GITHUB_ENV
   
         - name: Checkout code
           uses: actions/checkout@v4
@@ -112,7 +113,8 @@ jobs:
             npx prettier --check .
 
         # Unit Tests & Coverage
-        - name: Unit tests with coverage
+        - id: unit_test
+          name: Unit tests with coverage
           if: ${{ ! cancelled() }}
           working-directory: ${{ github.workspace }}/aiverify-portal
           timeout-minutes: 30
@@ -126,15 +128,16 @@ jobs:
               total_tests=0
               failed_tests=0
               passed_tests=0
-              echo "No tests found, Failing the step."
-              exit 1
+              echo "No tests found."
+              exit_code_jest=1
             else
               test_result=$(npx jest --json --silent)
               total_tests=$(echo "$test_result" | jq '.numTotalTests // 0')
               failed_tests=$(echo "$test_result" | jq '.numFailedTests // 0')
               passed_tests=$(echo "$test_result" | jq '.numPassedTests // 0')
+              exit_code_jest=$?
             fi
-            exit_code_jest=$?
+
             # ANSI color codes
             RED='\033[0;31m'
             ORANGE='\033[0;33m'
@@ -166,23 +169,27 @@ jobs:
             echo "########### Code Coverage Summary ###########"
             printf "${COVERAGE_COLOR}Code Coverage: %s%% ${RESET}\n" "$coverage_pct"
             echo "#############################################"
+            echo "code_coverage_status=$COVERAGE_COLOR" >> $GITHUB_OUTPUT
+            echo "unit_test_summary=Unit Tests Passed: $passed_tests, Failed: $failed_tests, Total: $total_tests" >> $GITHUB_OUTPUT
+            echo "coverage_summary=Coverage: $coverage_pct%" >> $GITHUB_OUTPUT
             set -e
             if [ $exit_code_jest -ne 0 ]; then
-              echo "jest failed, exiting..."
+              echo "STATUS=failure" >> $GITHUB_ENV
+              echo "jest failed, failing the step..."
               exit $exit_code_jest
             fi
 
         # eslint
-        - name: Code quality analysis - lint
+        - id: code_quality
+          name: Code quality analysis - lint
           if: ${{ ! cancelled() }}
           working-directory: ${{ github.workspace }}/aiverify-portal
           run: |
             set +e
             npm run lint
             exit_code_lint=$?
-            # npm run lint-html-report
-            # npm run lint-json-report
-            npx next lint --format html > eslint-report.html
+
+            # Generate JSON report
             npx next lint --format json > eslint-report.json
 
             # ANSI color codes
@@ -191,14 +198,18 @@ jobs:
             GREEN='\033[0;32m'
             RESET='\033[0m'
 
+            cat eslint-report.json
+
             # Parse JSON report for errors and warnings
             total_errors=$(jq '[.[].errorCount] | add // 0' eslint-report.json)
             total_warnings=$(jq '[.[].warningCount] | add // 0' eslint-report.json)
 
             echo "########### Lint Summary ###########"
             if [ "$total_errors" -gt 0 ]; then
+              COLOR=$RED
               printf "${RED}Errors: %s${RESET}\n" "$total_errors"
             else
+              COLOR=$GREEN
               printf "${GREEN}Errors: %s${RESET}\n" "$total_errors"
             fi
             if [ "$total_warnings" -gt 0 ]; then
@@ -208,14 +219,18 @@ jobs:
             fi
             echo "####################################"
 
+            echo "lint_summary=Lint Errors: $total_errors, Warnings: $total_warnings" >> $GITHUB_OUTPUT
+
             set -e
             if [ $exit_code_lint -ne 0 ]; then
-              echo "lint failed, exiting..."
+              echo "STATUS=failure" >> $GITHUB_ENV
+              echo "lint failed, failing the step..."
               exit $exit_code_lint
             fi
 
         # npm audit
-        - name: Dependency analysis - vulnerabilities & licenses
+        - id: dependency_analysis
+          name: Dependency analysis - vulnerabilities & licenses
           if: ${{ ! cancelled() }}
           working-directory: ${{ github.workspace }}/aiverify-portal
           run: |
@@ -224,12 +239,7 @@ jobs:
             npm audit --omit=dev --json > $audit_json
             exit_code_audit=$?
 
-            echo "########### Vulnerability Details ###########"
-            #jq -r '
-            #  .vulnerabilities | to_entries[] |
-            #  .key as $pkg |
-            #  .value.via[]? | select(type == "object" and .title != null) |
-            #  "\($pkg) - \(.severity): \(.title)" + (if has("source") then " (via: \(.source))" else "" end)' $audit_json
+            echo "########## Vulnerability Details ###########"
             jq -r '
               .vulnerabilities | to_entries[] |
               .key as $pkg |
@@ -247,6 +257,15 @@ jobs:
             high_count=$(jq '[.vulnerabilities[] | select(.severity=="high")] | length' $audit_json)
             medium_count=$(jq '[.vulnerabilities[] | select(.severity=="moderate")] | length' $audit_json)
 
+            # Determine vulnerability color
+            if [ "$critical_count" -gt 0 ]; then
+              VULN_COLOR=$RED
+            elif [ "$high_count" -gt 0 ]; then
+              VULN_COLOR=$ORANGE
+            else
+              VULN_COLOR=$GREEN
+            fi
+
             # Vulnerability summary with color and block markers
             echo "########### Vulnerability Summary ###########" > vuln-summary.txt
             if [ "$critical_count" -gt 0 ]; then
@@ -255,7 +274,7 @@ jobs:
               printf "${GREEN}Critical: %s${RESET}\n" "$critical_count" >> vuln-summary.txt
             fi
             if [ "$high_count" -gt 0 ]; then
-              printf "${ORANGE}High: %s${RESET}\n" "$high_count" >> vuln-summary.txt
+              printf "${RED}High: %s${RESET}\n" "$high_count" >> vuln-summary.txt
             else
               printf "${GREEN}High: %s${RESET}\n" "$high_count" >> vuln-summary.txt
             fi
@@ -276,7 +295,16 @@ jobs:
             strong_copyleft_count=$(grep -iE 'GPL|AGPL|Affero|CeCILL' licenses-found.txt | wc -l)
             weak_copyleft_count=$(grep -iE 'LGPL|MPL|CDDL' licenses-found.txt | wc -l)
 
-            echo -e "\n########### Copyleft License Summary ###########" >> license-report.txt
+            # Determine license color
+            if [ "$strong_copyleft_count" -gt 0 ]; then
+              LICENSE_COLOR=$RED
+            elif [ "$weak_copyleft_count" -gt 0 ]; then
+              LICENSE_COLOR=$ORANGE
+            else
+              LICENSE_COLOR=$GREEN
+            fi
+
+            echo -e "\n######## Copyleft License Summary ##########" >> license-report.txt
             if [ "$strong_copyleft_count" -gt 0 ]; then
               printf "${RED}Strong copyleft: %s${RESET}\n" "$strong_copyleft_count" >> license-report.txt
             else
@@ -296,39 +324,30 @@ jobs:
             echo "############################################" >> license-report.txt
 
             cp license-report.txt licenses-found.txt
+
+            # echo "dependency_status=$VULN_COLOR" >> $GITHUB_OUTPUT
+            # echo "license_status=$LICENSE_COLOR" >> $GITHUB_OUTPUT
+            echo "vulnerability_summary=Dep Vulnerability Critical: $critical_count, High: $high_count, Medium: $medium_count" >> $GITHUB_OUTPUT
+            echo "license_summary=Strong Copyleft: $strong_copyleft_count, Weak Copyleft: $weak_copyleft_count" >> $GITHUB_OUTPUT
+
             set -e
             if [ $exit_code_audit -ne 0 ]; then
-              echo "npm audit failed, exiting..."
+              echo "STATUS=failure" >> $GITHUB_ENV
+              echo "npm audit failed, failing the step.."
               exit $exit_code_audit
             fi
 
-        # ### Publish reports to ci dashboard ###
-
-        # - name: Checkout dashboard
-        #   if: ${{ github.event.pull_request.head.repo.full_name == github.repository && always() }}
-        #   uses: actions/checkout@v3
-        #   with:
-        #     repository: aiverify-foundation/ci-dashboard
-        #     token: ${{ secrets.CHECKOUT_TOKEN }}
-        #     ref: main
-        #     path: check-results
-
-        # - name: Push results to dashboard
-        #   if: ${{ github.event.pull_request.head.repo.full_name == github.repository && always() }}
-        #   working-directory: ${{ github.workspace }}/check-results
-        #   run: |
-        #     set +e
-        #     find ../ -type f -name ".gitignore" -exec rm {} +
-        #     [ -d "docs/pre-merge/portal" ] && rm -rf docs/pre-merge/portal
-        #     mkdir -p docs/pre-merge/portal
-        #     mv ../ai-verify-portal/coverage docs/pre-merge/portal/
-        #     mv ../ai-verify-portal/*.svg docs/pre-merge/portal/
-        #     mv ../ai-verify-portal/*.html docs/pre-merge/portal/
-        #     mv ../ai-verify-portal/*.md docs/pre-merge/portal/
-        #     mv ../ai-verify-portal/*.txt docs/pre-merge/portal/
-        #     git add docs/pre-merge/portal
-        #     git config user.name "aiverify"
-        #     git config user.email "aiverify@imda.gov.sg"
-        #     git commit -m "feat(portal) actions publish portal reports to dashboard"
-        #     git push
-        #     set -e
+        # Send status to Slack 
+        - name: Send slack notification
+          if: ${{ ! cancelled() }}
+          uses: slackapi/slack-github-action@v1.26.0
+          with:
+            payload: |
+              {
+                "workflow": "${{ github.repository }} | ${{ github.workflow }} | ${{ inputs.pr_num }} | ${{ env.ALGO_NAME }}",
+                "status": "${{ env.STATUS }}",
+                "details": "${{ steps.unit_test.outputs.unit_test_summary }} | ${{ steps.code_quality.outputs.lint_summary }} | ${{ steps.dependency_analysis.outputs.vulnerability_summary }} | ${{ steps.dependency_analysis.outputs.license_summary }}",
+                "ref": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+              }
+          env:
+            SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CI }}
