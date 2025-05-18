@@ -29,9 +29,6 @@ on:
         default: 'main'
         type: string
 
-  push:
-    branches: [ci/pre-build-check-2]
-
 # Allow one concurrent deployment
 concurrency:
   group: ${{ github.repository }}-${{ github.workflow }}
@@ -113,8 +110,8 @@ jobs:
             npx prettier --check .
 
         # Unit Tests & Coverage
-        - id: unit_test
-          name: Unit tests with coverage
+        - name: Unit tests with coverage
+          id: unit_test
           if: ${{ ! cancelled() }}
           working-directory: ${{ github.workspace }}/aiverify-portal
           timeout-minutes: 30
@@ -180,8 +177,8 @@ jobs:
             fi
 
         # eslint
-        - id: code_quality
-          name: Code quality analysis - lint
+        - name: Code quality analysis (lint)
+          id: code_quality
           if: ${{ ! cancelled() }}
           working-directory: ${{ github.workspace }}/aiverify-portal
           run: |
@@ -198,10 +195,8 @@ jobs:
             GREEN='\033[0;32m'
             RESET='\033[0m'
 
-            cat eslint-report.json
-
             # Parse JSON report for errors and warnings
-            total_errors=$(jq '[.[].errorCount] | add // 0' eslint-report.json)
+            total_errors=$(jq '[.[] | .fatalErrorCount + .errorCount] | add // 0' eslint-report.json)
             total_warnings=$(jq '[.[].warningCount] | add // 0' eslint-report.json)
 
             echo "########### Lint Summary ###########"
@@ -229,8 +224,8 @@ jobs:
             fi
 
         # npm audit
-        - id: dependency_analysis
-          name: Dependency analysis - vulnerabilities & licenses
+        - name: Dependency analysis (vulnerabilities & licenses)
+          id: dependency_analysis
           if: ${{ ! cancelled() }}
           working-directory: ${{ github.workspace }}/aiverify-portal
           run: |
