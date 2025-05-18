@@ -72,14 +72,8 @@ jobs:
           uses: actions/setup-node@v4
           with:
             node-version: '23'
-
-        # Install dependencies
-        - name: Setup npm cache/install
-          uses: actions/setup-node@v3
-          with:
-            node-version: 18
-            cache: "npm"
-            cache-dependency-path: ai-verify-portal
+            cache: 'npm'
+            cache-dependency-path: aiverify-portal
 
         - name: Install dependencies for shared-library
           working-directory: ${{ github.workspace }}/aiverify-shared-library
@@ -95,14 +89,14 @@ jobs:
             npm install --omit=dev
             npx license-checker --summary --out licenses-found.txt -y
             npm install -D
-            npm i -D eslint-formatter-html
+            npm i -D eslint-formatter-html jest prettier
             npm link ../aiverify-shared-library
 
         # Compile typescript source files
         - name: Build portal (next build)
           working-directory: ${{ github.workspace }}/aiverify-portal
           run: |
-            cp .env.development .env
+            # cp .env.development .env
             npm run build
 
         # Format check
