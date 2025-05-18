@@ -162,7 +162,7 @@ jobs:
               COVERAGE_COLOR=$GREEN
             fi
             echo "########### Code Coverage Summary ###########"
-            printf "${COVERAGE_COLOR}Line Coverage: %s%%%s\n" "$coverage_pct" "$RESET"
+            printf "${COVERAGE_COLOR}Code Coverage: %s%s\n" "$coverage_pct" "$RESET"
             echo "#############################################"
             set -e
             if [ $exit_code_jest -ne 0 ]; then
@@ -227,7 +227,7 @@ jobs:
               .vulnerabilities | to_entries[] |
               .key as $pkg |
               .value.via[]? | select(type == "object" and .title != null) |
-              "\($pkg) - \(.severity): \(.title)\(if has(\"source\") then \" (via: \(.source))\" else \"\" end)"' $audit_json
+              "\($pkg) - \(.severity): \(.title)" + (if has("source") then " (via: \(.source))" else "" end)' $audit_json
             echo "############################################"
 
             # ANSI color codes
