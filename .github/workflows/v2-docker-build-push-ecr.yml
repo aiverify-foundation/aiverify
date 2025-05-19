@@ -1,8 +1,8 @@
 name: Docker Build & Push (ECR)
 
 env:
-  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-  AWS_REGION: ${{ secrets.AWS_REGION }}
+  AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
+  AWS_REGION: ${{ vars.AWS_REGION }}
 
 on:
   # Run this workflow everyday at 6:05pm (10:05am UTC) 
@@ -41,6 +41,10 @@ on:
         required: false
         default: 'main'
 
+  push:
+    branches:
+      - 'ci/image-scan-ecr'
+ 
 jobs:
   build-and-push-schedule:
     if: github.event_name == 'schedule'
@@ -103,6 +107,12 @@ jobs:
     timeout-minutes: 360
 
     steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.AWS_REGION }}
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
