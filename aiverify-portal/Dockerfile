@@ -1,4 +1,5 @@
 FROM node:23-alpine AS base
+RUN apk update && apk upgrade
 ARG TARGETARCH
 
 ARG NEXT_PUBLIC_APIGW_HOST=http://127.0.0.1:4000
