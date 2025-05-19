@@ -105,6 +105,9 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 360
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Configure AWS credentials
