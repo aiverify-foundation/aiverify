@@ -1,0 +1,127 @@
+name: Docker Build & Push (ECR)
+
+env:
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+
+on:
+  # Run this workflow everyday at 6:05pm (10:05am UTC) 
+  schedule:
+    - cron: '5 10 * * *'
+
+  # Manually trigger the workflow
+  workflow_dispatch:
+    inputs:
+      image_name:
+        description: 'Docker image name, e.g. aiverify-portal'
+        required: true
+        default: 'aiverify-portal'
+      tag:
+        description: 'Tag for the Docker image, e.g. 2.0.2'
+        required: true
+        default: 'dev'
+      github_username:
+        description: 'GitHub username or org that owns the image, e.g. aiverify-foundation'
+        required: true
+        default: 'aiverify-foundation'
+      dockerfile_dir:
+        description: 'Relative path to the Dockerfile directory, e.g. aiverify-apigw'
+        required: true
+        default: 'aiverify-portal'
+      build_target:
+        description: 'Optional: Docker build target'
+        required: false
+        default: ''
+      tag_suffix:
+        description: 'Optional: Tag suffix for the target'
+        required: false
+        default: ''
+      branch:
+        description: 'Git branch to check out, e.g. main'
+        required: false
+        default: 'main'
+
+jobs:
+  build-and-push-schedule:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    strategy:
+      matrix:
+        include:
+          - image_name: aiverify-portal
+            dockerfile_dir: aiverify-portal
+            build_target: ''
+            tag_suffix: ''
+          - image_name: aiverify-apigw
+            dockerfile_dir: aiverify-apigw
+            build_target: ''
+            tag_suffix: ''
+          - image_name: aiverify-test-engine-worker
+            dockerfile_dir: aiverify-test-engine-worker
+            build_target: aiverify-test-engine-worker-base
+            tag_suffix: base
+          - image_name: aiverify-test-engine-worker
+            dockerfile_dir: aiverify-test-engine-worker
+            build_target: venv-build
+            tag_suffix: venv
+          - image_name: aiverify-test-engine-worker
+            dockerfile_dir: aiverify-test-engine-worker
+            build_target: docker-build
+            tag_suffix: docker
+      fail-fast: false
+      max-parallel: 1
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Run Docker build & push script
+        run: |
+          chmod +x .ci/docker_build_push_ecr.sh
+          image_name="${{ matrix.image_name }}"
+          tag="dev"
+          github_username="aiverify-foundation"
+          dockerfile_dir="${{ matrix.dockerfile_dir }}"
+          build_target="${{ matrix.build_target }}"
+          tag_suffix="${{ matrix.tag_suffix }}"
+
+          .ci/docker_build_push_ecr.sh \
+            "$image_name" \
+            "$tag" \
+            "$github_username" \
+            "$dockerfile_dir" \
+            "$build_target" \
+            "$tag_suffix"
+
+  build-and-push-manual:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Run Docker build & push script
+        run: |
+          chmod +x .ci/docker_build_push_ecr.sh
+          image_name="${{ github.event.inputs.image_name }}"
+          tag="${{ github.event.inputs.tag }}"
+          github_username="${{ github.event.inputs.github_username }}"
+          dockerfile_dir="${{ github.event.inputs.dockerfile_dir }}"
+          build_target="${{ github.event.inputs.build_target }}"
+          tag_suffix="${{ github.event.inputs.tag_suffix }}"
+
+          .ci/docker_build_push_ecr.sh \
+            "$image_name" \
+            "$tag" \
+            "$github_username" \
+            "$dockerfile_dir" \
+            "$build_target" \
+            "$tag_suffix"
