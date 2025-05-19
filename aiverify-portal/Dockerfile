@@ -1,4 +1,5 @@
-FROM node:23-alpine as base
+FROM node:23-alpine AS base
+RUN apk update && apk upgrade
 ARG TARGETARCH
 
 ARG NEXT_PUBLIC_APIGW_HOST=http://127.0.0.1:4000
@@ -25,7 +26,7 @@ ENV APIGW_HOST=$APIGW_HOST
 EXPOSE 3000
 
 # development build
-FROM base as development
+FROM base AS development
 
 WORKDIR /app/aiverify-portal
 
@@ -36,7 +37,7 @@ RUN npm link ../aiverify-shared-library
 ENTRYPOINT ["npm", "run", "dev"]
 
 # production build
-FROM base as production
+FROM base AS production
 
 WORKDIR /app/aiverify-portal
 
