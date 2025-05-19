@@ -41,9 +41,9 @@ on:
         required: false
         default: 'main'
 
-  push:
-    branches:
-      - 'ci/image-scan-ecr'
+  # push:
+  #   branches:
+  #     - 'ci/image-scan-ecr'
  
 jobs:
   build-and-push-schedule:
