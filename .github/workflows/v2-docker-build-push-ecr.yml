@@ -1,4 +1,4 @@
-name: Docker Build & Push (ECR)
+name: v2 Docker Build & Push (ECR)
 
 env:
   AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
@@ -41,9 +41,9 @@ on:
         required: false
         default: 'main'
 
-  # push:
-  #   branches:
-  #     - 'ci/image-scan-ecr'
+  push:
+    branches:
+      - 'ci/image-scan-ecr'
  
 jobs:
   build-and-push-schedule:
@@ -83,7 +83,7 @@ jobs:
         with:
           ref: main
 
-      - name: Run Docker build & push script
+      - name: Run Docker build & push
         run: |
           chmod +x .ci/docker_build_push_ecr.sh
           image_name="${{ matrix.image_name }}"
@@ -110,7 +110,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-to-assume: ${{ vars.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ vars.AWS_REGION }}
 
       - name: Checkout code
@@ -118,7 +118,7 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch }}
 
-      - name: Run Docker build & push script
+      - name: Run Docker build & push
         run: |
           chmod +x .ci/docker_build_push_ecr.sh
           image_name="${{ github.event.inputs.image_name }}"
