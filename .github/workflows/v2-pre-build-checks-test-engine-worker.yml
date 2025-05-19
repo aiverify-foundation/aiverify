@@ -1,0 +1,159 @@
+# Pre-build Checks (Test Engine Worker)
+# 1. Unit tests with code coverage (pytest)
+# 2. Code quality analysis (flake8)
+# 3. Dependency analysis (vulnerabilities)
+# 4. Dependency analysis (copyleft licenses)
+
+name: v2 Pre-build Checks (test-engine-worker)
+
+# env:
+#   GH_TOKEN: ${{ github.token }}
+  
+on:
+  # Runs when a pull request to main is being assigned
+  pull_request:
+    types: [ assigned, synchronize ]
+    branches:
+      - 'main'
+    paths:
+      - 'aiverify-test-engine-worker/**'
+
+  # Run this workflow manually from Actions tab
+  workflow_dispatch:
+    inputs:
+      branch_to_test:
+        description: 'Branch or tag to run test'
+        required: true
+        default: 'main'
+        type: string
+    
+# Allow one concurrent deployment
+concurrency:
+  group: ${{ github.repository }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+
+  pre-build-checks:
+    # Run only when PR is assigned, even on subsequent commits (i.e. synchronize)
+    if: (github.event_name == 'pull_request' && github.event.pull_request.assignee != null) || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
+    runs-on: ubuntu-latest    
+    timeout-minutes: 40
+
+    steps:
+
+      - name: Set env variables
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "BRANCH_TO_TEST=${{ github.event.pull_request.head.ref }}" >> $GITHUB_ENV
+            echo "PR_NUM=#${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+          elif [ "${{ github.event_name }}" == "push" ]; then
+            echo "BRANCH_TO_TEST=${{ github.ref }}" >> $GITHUB_ENV
+            echo "PR_NUM=#000" >> "$GITHUB_ENV"
+          elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "BRANCH_TO_TEST=${{ inputs.branch_to_test }}" >> $GITHUB_ENV
+            echo "PR_NUM=#000" >> "$GITHUB_ENV"
+          fi
+          echo "WDIR=aiverify-test-engine-worker" >> $GITHUB_ENV
+          echo "CI_DIR=../.ci" >> $GITHUB_ENV
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH_TO_TEST }}
+          sparse-checkout: |
+            aiverify-test-engine
+            aiverify-test-engine-worker
+            .ci
+
+      # Setup python    
+      - name: Setup python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: 'pip'
+
+      # Install dependencies
+      - name: Install dependencies
+        working-directory: ${{ github.workspace }}/${{ env.WDIR }}
+        run: |
+          echo "Install dependencies"
+          pip install . > /dev/null
+          pip install pipdeptree > /dev/null
+          pipdeptree -fl 
+          pip install pytest pytest-mock pytest-html pytest-json pytest-cov coverage anybadge > /dev/null
+          pip install flake8 flake8-html > /dev/null
+
+      # Check 1: Unit tests & coverage    
+      - name: Unit tests with coverage
+        id: unit_test
+        working-directory: ${{ github.workspace }}/${{ env.WDIR }}
+        if: ${{ ! cancelled() }}
+        run: |      
+          set +e
+          bash ${{ env.CI_DIR }}/run-test.sh src/aiverify_test_engine_worker -m
+          source ${{ env.CI_DIR }}/gen_pre_build_summ.sh test src/aiverify_test_engine_worker
+          test_status=$?
+          source ${{ env.CI_DIR }}/gen_pre_build_summ.sh coverage src/aiverify_test_engine_worker
+          coverage_status=$?
+          echo "unit_test_status=$UNITTEST_SUMMARY" >> $GITHUB_OUTPUT
+          echo "code_coverage_status=$COVERAGE_SUMMARY" >> $GITHUB_OUTPUT
+          set -e
+          if [ $test_status -ne 0 ] || [ $coverage_status -ne 0 ]; then
+              echo "STATUS=failure" >> $GITHUB_ENV
+              exit 1
+          fi
+
+      # Check 2: Code quality analysis (flake8)
+      - name: Code quality analysis (flake8)
+        id: code_quality
+        if: ${{ ! cancelled() }}
+        working-directory: ${{ github.workspace }}/${{ env.WDIR }}
+        run: |
+          set +e
+          cp ${{ env.CI_DIR }}/.flake8 .
+          bash ${{ env.CI_DIR }}/run-flake8.sh src/aiverify_test_engine_worker
+          source ${{ env.CI_DIR }}/gen_pre_build_summ.sh lint src/aiverify_test_engine_worker
+          lint_status=$?
+          echo "code_quality_status=$LINT_SUMMARY" >> $GITHUB_OUTPUT
+          set -e
+          if [ $lint_status -ne 0 ]; then
+              echo "STATUS=failure" >> $GITHUB_ENV
+              exit $lint_status
+          fi
+
+      # Check 3: Dependency vulnerability & license analysis (pip-audit)
+      - name: Dependency analysis (vulnerabilities & licenses)
+        id: dependency_analysis
+        if: ${{ ! cancelled() }}
+        working-directory: ${{ github.workspace }}/${{ env.WDIR }}
+        run: |
+          set +e
+          bash ${{ env.CI_DIR }}/run-pip-audit.sh src/aiverify_test_engine_worker
+          source ${{ env.CI_DIR }}/gen_pre_build_summ.sh dependency src/aiverify_test_engine_worker
+          dep_status=$?
+          source ${{ env.CI_DIR }}/gen_pre_build_summ.sh license src/aiverify_test_engine_worker
+          lic_status=$?
+          echo "dependency_status=$DEPENDENCY_SUMMARY" >> $GITHUB_OUTPUT
+          echo "license_status=$LICENSE_SUMMARY" >> $GITHUB_OUTPUT
+          set -e
+          if [ $dep_status -ne 0 ] || [ $lic_status -ne 0 ]; then
+              echo "STATUS=failure" >> $GITHUB_ENV
+              exit 1
+          fi
+        shell: bash
+
+      # Send status to Slack 
+      - name: Send slack notification
+        if: ${{ ! cancelled() }}
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "workflow": "${{ github.repository }} | ${{ github.workflow }} | ${{ inputs.pr_num }} | ${{ env.ALGO_NAME }}",
+              "status": "${{ env.STATUS }}",
+              "details": "${{ steps.unit_test.outputs.unit_test_status }} | ${{ steps.unit_test.outputs.code_coverage_status }} | ${{ steps.code_quality.outputs.code_quality_status }} | ${{ steps.dependency_analysis.outputs.dependency_status }} | ${{ steps.dependency_analysis.outputs.license_status }}",
+              "ref": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CI }}
