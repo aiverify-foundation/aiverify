@@ -1,0 +1,348 @@
+# Pre-build Checks (Portal)
+# 1. Unit tests with code coverage (jest)
+# 2. Code quality analysis (lint)
+# 3. Dependency analysis (vulnerabilities)
+# 4. Dependency analysis (undesirable licenses)
+
+name: v2 Pre-build Checks (portal)
+
+env:
+  NEXT_PUBLIC_APIGW_HOST: 'http://127.0.0.1:4000'
+  APIGW_HOST: 'http://host.docker.internal:4000'
+
+on:
+  # Runs when a pull request to main is being assigned
+  pull_request:
+    types: [assigned, synchronize]
+    branches:
+      - "main"
+    paths:
+      - "aiverify-portal/**"
+      - "aiverify-shared-library/**"
+
+  # Run this workflow manually from Actions tab
+  workflow_dispatch:
+    inputs:
+      branch_to_test:
+        description: 'Branch or tag to run test'
+        required: true
+        default: 'main'
+        type: string
+
+# Allow one concurrent deployment
+concurrency:
+  group: ${{ github.repository }}-${{ github.workflow }}
+  cancel-in-progress: true
+  
+jobs:
+  
+    pre-build-checks:
+      # Run only when PR is assigned, even on subsequent commits (i.e. synchronize)
+      if: (github.event_name == 'pull_request' && github.event.pull_request.assignee != null) || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
+      runs-on: ubuntu-latest    
+      timeout-minutes: 40
+  
+      steps:
+  
+        - name: Set env variables
+          run: |
+            if [ "${{ github.event_name }}" == "pull_request" ]; then
+              echo "BRANCH_TO_TEST=${{ github.event.pull_request.head.ref }}" >> $GITHUB_ENV
+              echo "PR_NUM=#${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+            elif [ "${{ github.event_name }}" == "push" ]; then
+              echo "BRANCH_TO_TEST=${{ github.ref }}" >> $GITHUB_ENV
+              echo "PR_NUM=#000" >> "$GITHUB_ENV"
+            elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+              echo "BRANCH_TO_TEST=${{ inputs.branch_to_test }}" >> $GITHUB_ENV
+              echo "PR_NUM=#000" >> "$GITHUB_ENV"
+            fi
+            echo "WDIR=aiverify-portal" >> $GITHUB_ENV
+            echo "CI_DIR=../.ci" >> $GITHUB_ENV
+            echo "STATUS=success" >> $GITHUB_ENV
+  
+        - name: Checkout code
+          uses: actions/checkout@v4
+          with:
+            ref: ${{ env.BRANCH_TO_TEST }}
+            sparse-checkout: |
+              aiverify-portal
+              aiverify-shared-library
+              common
+              .ci
+    
+        - name: Setup Node.js 23
+          uses: actions/setup-node@v4
+          with:
+            node-version: '23'
+            cache: 'npm'
+            cache-dependency-path: aiverify-portal
+
+        - name: Install dependencies for shared-library
+          working-directory: ${{ github.workspace }}/aiverify-shared-library
+          run: |
+            npm install --omit=dev
+            npx license-checker --summary --out licenses-found.txt -y
+            npm install -D
+            npm run build
+
+        - name: Install dependencies for portal
+          working-directory: ${{ github.workspace }}/aiverify-portal
+          run: |
+            npm install --omit=dev
+            npx license-checker --summary --out licenses-found.txt -y
+            npm install -D
+            npm i -D eslint-formatter-html
+            npm link ../aiverify-shared-library
+
+        # Compile typescript source files
+        - name: Build portal (next build)
+          working-directory: ${{ github.workspace }}/aiverify-portal
+          run: |
+            # cp .env.development .env
+            npm run build
+
+        # Format check
+        - name: Format check
+          if: ${{ ! cancelled() }}
+          working-directory: ${{ github.workspace }}/aiverify-portal
+          run: |
+            # npm run format-check
+            npx prettier --check .
+
+        # Unit Tests & Coverage
+        - name: Unit tests with coverage
+          id: unit_test
+          if: ${{ ! cancelled() }}
+          working-directory: ${{ github.workspace }}/aiverify-portal
+          timeout-minutes: 30
+          run: |
+            set +e
+            sudo timedatectl set-timezone Asia/Singapore
+            # npm run coverage
+            jest_output=$(npx jest --silent 2>&1)
+            echo "$jest_output"
+            if echo "$jest_output" | grep -q "No tests found"; then
+              total_tests=0
+              failed_tests=0
+              passed_tests=0
+              echo "No tests found."
+              exit_code_jest=1
+            else
+              test_result=$(npx jest --json --silent)
+              total_tests=$(echo "$test_result" | jq '.numTotalTests // 0')
+              failed_tests=$(echo "$test_result" | jq '.numFailedTests // 0')
+              passed_tests=$(echo "$test_result" | jq '.numPassedTests // 0')
+              exit_code_jest=$?
+            fi
+
+            # ANSI color codes
+            RED='\033[0;31m'
+            ORANGE='\033[0;33m'
+            GREEN='\033[0;32m'
+            RESET='\033[0m'
+            echo "########### Unit Test Summary ###########"
+            if [ "$total_tests" -eq 0 ] || [ "$passed_tests" -eq 0 ] || [ "$failed_tests" -ne 0 ]; then
+              COLOR=$RED
+            else
+              COLOR=$GREEN
+            fi
+            printf "${COLOR}Passed: %s${RESET}\n" "$passed_tests"
+            printf "${COLOR}Failed: %s${RESET}\n" "$failed_tests"
+            printf "${COLOR}Total:  %s${RESET}\n" "$total_tests"
+            echo "#########################################"
+            if [ -f coverage/coverage-summary.json ]; then
+              coverage_pct=$(jq '.total.lines.pct' coverage/coverage-summary.json)
+            else
+              coverage_pct=0
+            fi
+            # Set coverage color based on percentage
+            if (( $(echo "$coverage_pct < 50" | bc -l) )); then
+              COVERAGE_COLOR=$RED
+            elif (( $(echo "$coverage_pct < 70" | bc -l) )); then
+              COVERAGE_COLOR=$ORANGE
+            else
+              COVERAGE_COLOR=$GREEN
+            fi
+            echo "########### Code Coverage Summary ###########"
+            printf "${COVERAGE_COLOR}Code Coverage: %s%% ${RESET}\n" "$coverage_pct"
+            echo "#############################################"
+            echo "code_coverage_status=$COVERAGE_COLOR" >> $GITHUB_OUTPUT
+            echo "unit_test_summary=Unit Tests Passed: $passed_tests, Failed: $failed_tests, Total: $total_tests" >> $GITHUB_OUTPUT
+            echo "coverage_summary=Coverage: $coverage_pct%" >> $GITHUB_OUTPUT
+            set -e
+            if [ $exit_code_jest -ne 0 ]; then
+              echo "STATUS=failure" >> $GITHUB_ENV
+              echo "jest failed, failing the step..."
+              exit $exit_code_jest
+            fi
+
+        # eslint
+        - name: Code quality analysis (lint)
+          id: code_quality
+          if: ${{ ! cancelled() }}
+          working-directory: ${{ github.workspace }}/aiverify-portal
+          run: |
+            set +e
+            npm run lint
+            exit_code_lint=$?
+
+            # Generate JSON report
+            npx next lint --format json > eslint-report.json
+
+            # ANSI color codes
+            RED='\033[0;31m'
+            ORANGE='\033[0;33m'
+            GREEN='\033[0;32m'
+            RESET='\033[0m'
+
+            # Parse JSON report for errors and warnings
+            total_errors=$(jq '[.[] | .fatalErrorCount + .errorCount] | add // 0' eslint-report.json)
+            total_warnings=$(jq '[.[].warningCount] | add // 0' eslint-report.json)
+
+            echo "########### Lint Summary ###########"
+            if [ "$total_errors" -gt 0 ]; then
+              COLOR=$RED
+              printf "${RED}Errors: %s${RESET}\n" "$total_errors"
+            else
+              COLOR=$GREEN
+              printf "${GREEN}Errors: %s${RESET}\n" "$total_errors"
+            fi
+            if [ "$total_warnings" -gt 0 ]; then
+              printf "${ORANGE}Warnings: %s${RESET}\n" "$total_warnings"
+            else
+              printf "${GREEN}Warnings: %s${RESET}\n" "$total_warnings"
+            fi
+            echo "####################################"
+
+            echo "lint_summary=Lint Errors: $total_errors, Warnings: $total_warnings" >> $GITHUB_OUTPUT
+
+            set -e
+            if [ $exit_code_lint -ne 0 ]; then
+              echo "STATUS=failure" >> $GITHUB_ENV
+              echo "lint failed, failing the step..."
+              exit $exit_code_lint
+            fi
+
+        # npm audit
+        - name: Dependency analysis (vulnerabilities & licenses)
+          id: dependency_analysis
+          if: ${{ ! cancelled() }}
+          working-directory: ${{ github.workspace }}/aiverify-portal
+          run: |
+            set +e
+            audit_json="audit.json"
+            npm audit --omit=dev --json > $audit_json
+            exit_code_audit=$?
+
+            echo "########## Vulnerability Details ###########"
+            jq -r '
+              .vulnerabilities | to_entries[] |
+              .key as $pkg |
+              .value.via[]? | select(type == "object" and .title != null) |
+              "\($pkg) - \(.severity): \(.title)" + (if .via? then " (introduced via: \(.via))" else "" end)' audit.json  
+            echo "############################################"
+
+            # ANSI color codes
+            RED='\033[0;31m'
+            ORANGE='\033[0;33m'
+            GREEN='\033[0;32m'
+            RESET='\033[0m'
+
+            critical_count=$(jq '[.vulnerabilities[] | select(.severity=="critical")] | length' $audit_json)
+            high_count=$(jq '[.vulnerabilities[] | select(.severity=="high")] | length' $audit_json)
+            medium_count=$(jq '[.vulnerabilities[] | select(.severity=="moderate")] | length' $audit_json)
+
+            # Determine vulnerability color
+            if [ "$critical_count" -gt 0 ]; then
+              VULN_COLOR=$RED
+            elif [ "$high_count" -gt 0 ]; then
+              VULN_COLOR=$ORANGE
+            else
+              VULN_COLOR=$GREEN
+            fi
+
+            # Vulnerability summary with color and block markers
+            echo "########### Vulnerability Summary ###########" > vuln-summary.txt
+            if [ "$critical_count" -gt 0 ]; then
+              printf "${RED}Critical: %s${RESET}\n" "$critical_count" >> vuln-summary.txt
+            else
+              printf "${GREEN}Critical: %s${RESET}\n" "$critical_count" >> vuln-summary.txt
+            fi
+            if [ "$high_count" -gt 0 ]; then
+              printf "${RED}High: %s${RESET}\n" "$high_count" >> vuln-summary.txt
+            else
+              printf "${GREEN}High: %s${RESET}\n" "$high_count" >> vuln-summary.txt
+            fi
+            if [ "$medium_count" -gt 0 ]; then
+              printf "${ORANGE}Medium: %s${RESET}\n" "$medium_count" >> vuln-summary.txt
+            else
+              printf "${GREEN}Medium: %s${RESET}\n" "$medium_count" >> vuln-summary.txt
+            fi
+            echo "############################################" >> vuln-summary.txt
+            cat vuln-summary.txt
+
+            # License summary block with color and block markers
+            echo -e "########### License Check Summary for portal ###########\n" > license-report.txt
+            cat licenses-found.txt >> license-report.txt
+            echo -e "\n########### License Check Summary for shared-library ###########\n" >> license-report.txt
+            cat ../aiverify-shared-library/licenses-found.txt >> license-report.txt
+
+            strong_copyleft_count=$(grep -iE 'GPL|AGPL|Affero|CeCILL' licenses-found.txt | wc -l)
+            weak_copyleft_count=$(grep -iE 'LGPL|MPL|CDDL' licenses-found.txt | wc -l)
+
+            # Determine license color
+            if [ "$strong_copyleft_count" -gt 0 ]; then
+              LICENSE_COLOR=$RED
+            elif [ "$weak_copyleft_count" -gt 0 ]; then
+              LICENSE_COLOR=$ORANGE
+            else
+              LICENSE_COLOR=$GREEN
+            fi
+
+            echo -e "\n######## Copyleft License Summary ##########" >> license-report.txt
+            if [ "$strong_copyleft_count" -gt 0 ]; then
+              printf "${RED}Strong copyleft: %s${RESET}\n" "$strong_copyleft_count" >> license-report.txt
+            else
+              printf "${GREEN}Strong copyleft: %s${RESET}\n" "$strong_copyleft_count" >> license-report.txt
+            fi
+            if [ "$weak_copyleft_count" -gt 0 ]; then
+              printf "${ORANGE}Weak copyleft: %s${RESET}\n" "$weak_copyleft_count" >> license-report.txt
+            else
+              printf "${GREEN}Weak copyleft: %s${RESET}\n" "$weak_copyleft_count" >> license-report.txt
+            fi
+            echo "############################################" >> license-report.txt
+            cat license-report.txt
+
+            # Append vulnerability summary block to license report
+            echo -e "\n########### Vulnerability Summary ###########" >> license-report.txt
+            tail -n +2 vuln-summary.txt | head -n -1 >> license-report.txt
+            echo "############################################" >> license-report.txt
+
+            cp license-report.txt licenses-found.txt
+
+            # echo "dependency_status=$VULN_COLOR" >> $GITHUB_OUTPUT
+            # echo "license_status=$LICENSE_COLOR" >> $GITHUB_OUTPUT
+            echo "vulnerability_summary=Dep Vulnerability Critical: $critical_count, High: $high_count, Medium: $medium_count" >> $GITHUB_OUTPUT
+            echo "license_summary=Strong Copyleft: $strong_copyleft_count, Weak Copyleft: $weak_copyleft_count" >> $GITHUB_OUTPUT
+
+            set -e
+            if [ $exit_code_audit -ne 0 ]; then
+              echo "STATUS=failure" >> $GITHUB_ENV
+              echo "npm audit failed, failing the step.."
+              exit $exit_code_audit
+            fi
+
+        # Send status to Slack 
+        - name: Send slack notification
+          if: ${{ ! cancelled() }}
+          uses: slackapi/slack-github-action@v1.26.0
+          with:
+            payload: |
+              {
+                "workflow": "${{ github.repository }} | ${{ github.workflow }} | ${{ inputs.pr_num }} | ${{ env.ALGO_NAME }}",
+                "status": "${{ env.STATUS }}",
+                "details": "${{ steps.unit_test.outputs.unit_test_summary }} | ${{ steps.code_quality.outputs.lint_summary }} | ${{ steps.dependency_analysis.outputs.vulnerability_summary }} | ${{ steps.dependency_analysis.outputs.license_summary }}",
+                "ref": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+              }
+          env:
+            SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CI }}
