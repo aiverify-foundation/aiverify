@@ -13,9 +13,9 @@ on:
   workflow_dispatch:
     inputs:
       image_name:
-        description: 'Docker image name, e.g. aiverify-portal'
+        description: 'Docker image name, e.g. aiverify-apigw'
         required: true
-        default: 'aiverify-portal'
+        default: 'aiverify-apigw'
       tag:
         description: 'Tag for the Docker image, e.g. 2.0.2'
         required: true
@@ -27,7 +27,7 @@ on:
       dockerfile_dir:
         description: 'Relative path to the Dockerfile directory, e.g. aiverify-apigw'
         required: true
-        default: 'aiverify-portal'
+        default: 'aiverify-apigw'
       build_target:
         description: 'Optional: Docker build target'
         required: false
