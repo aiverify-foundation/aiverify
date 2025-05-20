@@ -110,10 +110,10 @@ type GridItemComponentProps = {
   hasVisitedDataSelection: boolean;
 
   useRealData: boolean; // whether to use real or mock data
-  
+
   /** Number of tests/algorithms required for the report */
   requiredTestCount: number;
-  
+
   /** Number of tests/algorithms that have been selected */
   selectedTestCount: number;
 };
@@ -366,7 +366,7 @@ function GridItemMain({
           if (testResult && testResult.artifacts) {
             const artifactUrls = testResult.artifacts.map(
               (artifactPath) =>
-                `${process.env.NEXT_PUBLIC_APIGW_HOST}/test_results/${result.testResultId}/artifacts/${artifactPath}`
+                `/api/test_results/${result.testResultId}/artifacts/${artifactPath}`
             );
             acc[`${gid}:${result.cid}`] = artifactUrls;
           } else if (!useRealData) {
@@ -756,7 +756,7 @@ function GridItemMain({
 export const GridItemComponent = React.memo(
   GridItemMain,
   (prevProps, nextProps) => {
-    console.log("model", prevProps.model, nextProps.model);
+    console.log('model', prevProps.model, nextProps.model);
     // Only re-render if widget data changed, it's being dragged/resized, or selection state changed
     return (
       prevProps.widget === nextProps.widget &&
