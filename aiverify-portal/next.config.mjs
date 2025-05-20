@@ -2,6 +2,7 @@
 
 const nextConfig = {
   reactStrictMode: false,
+  skipTrailingSlashRedirect: true,
   // async rewrites() {
   //   return [
   //     {
