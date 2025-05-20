@@ -21,7 +21,9 @@ on:
     inputs:
       branch_to_test:
         description: 'Branch or tag to checkout'
+        description: 'Branch or tag to checkout'
         required: true
+        default: 'main'
         default: 'main'
         type: string
       image_to_build:
@@ -29,6 +31,7 @@ on:
         required: true
         default: 'aiverify-apigw'
       image_tag:
+        description: 'Tag for the image, e.g. 2.0.2'
         description: 'Tag for the image, e.g. 2.0.2'
         required: false
 
