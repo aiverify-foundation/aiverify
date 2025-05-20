@@ -135,39 +135,22 @@ jobs:
           echo "IMAGES_TO_BUILD=${IMAGES_TO_BUILD[*]}" >> $GITHUB_ENV
           echo "Images to build: ${IMAGES_TO_BUILD[*]}"
 
-          # Create matrix for version tags and targets
+          # Create unified matrix for image/tag/target/tag_suffix
           matrix_include=$(for image in "${IMAGES_TO_BUILD[@]}"; do
             if [ "$image" == "aiverify-apigw" ]; then
               tag=$(grep -oP '(?<=version = ")[^"]*' $image/pyproject.toml)
-              target="default-target"
+              echo "{\"image_name\":\"${image}\", \"target\":\"\", \"tag_suffix\":\"\", \"tag\":\"${tag}\"}"
             elif [ "$image" == "aiverify-portal" ]; then
-              tag=$(grep -oP '(?<=version": ")[^"]*' $image/package.json)
-              target="default-target"
+              tag=$(grep -oP '(?<=version\": \")[^\"]*' $image/package.json)
+              echo "{\"image_name\":\"${image}\", \"target\":\"\", \"tag_suffix\":\"\", \"tag\":\"${tag}\"}"
             elif [ "$image" == "aiverify-test-engine-worker" ]; then
-              tag=$(grep -oP '(?<=version = ")[^"]*' $image/pyproject.toml)
-              target="default-target"
-            else
-              tag="default-tag"
-              target="default-target"
-            fi
-            echo "{\"image_name\":\"${image}\", \"target\":\"${target}\", \"tag\":\"${tag}\"}"
-          done | jq -s . | tr -d '[:space:]')
-          MATRIX="{\"include\":$matrix_include}"
-          echo $MATRIX
-
-          # Create matrix for build targets and tag suffixes
-          matrix_include=$(for image in "${IMAGES_TO_BUILD[@]}"; do
-            if [ "$image" == "aiverify-apigw" ]; then
-              echo "{\"image_name\":\"${image}\", \"target\":\"\", \"tag_suffix\":\"\"}"
-            elif [ "$image" == "aiverify-portal" ]; then
-              echo "{\"image_name\":\"${image}\", \"target\":\"\", \"tag_suffix\":\"\"}"
-            elif [ "$image" == "aiverify-test-engine-worker" ]; then
-              echo "{\"image_name\":\"${image}\", \"target\":\"aiverify-test-engine-worker-base\", \"tag_suffix\":\"base\"}"
-              echo "{\"image_name\":\"${image}\", \"target\":\"venv-build\", \"tag_suffix\":\"venv\"}"
-              echo "{\"image_name\":\"${image}\", \"target\":\"docker-build\", \"tag_suffix\":\"docker\"}"
+              tag=$(grep -oP '(?<=version = \")[^"]*' $image/pyproject.toml)
+              echo "{\"image_name\":\"${image}\", \"target\":\"aiverify-test-engine-worker-base\", \"tag_suffix\":\"base\", \"tag\":\"${tag}\"}"
+              echo "{\"image_name\":\"${image}\", \"target\":\"venv-build\", \"tag_suffix\":\"venv\", \"tag\":\"${tag}\"}"
+              echo "{\"image_name\":\"${image}\", \"target\":\"docker-build\", \"tag_suffix\":\"docker\", \"tag\":\"${tag}\"}"
             else
               echo "STATUS=failure" >> $GITHUB_ENV
-              echo "Invalid image value: ${image_name}"
+              echo "Invalid image value: ${image}"
               exit 1
             fi
           done | jq -s . | tr -d '[:space:]')
