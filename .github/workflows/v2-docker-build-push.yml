@@ -68,6 +68,14 @@ jobs:
 
     steps:
 
+      # Checkout the code at the branch that triggered the push
+      - name: Checkout code for diff
+        if: github.event_name == 'push'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
       # Step: Set env variables depending on the event type
       # - For manual trigger: use inputs
       # - For push: detect version changes and derive affected images
