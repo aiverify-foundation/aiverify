@@ -35,7 +35,6 @@ on:
   push:
     branches: [ main, ci/release-docker-image ]
     paths:
-      - '.github/**'
       - '**/pyproject.toml'
       - '**/package.json'
               
