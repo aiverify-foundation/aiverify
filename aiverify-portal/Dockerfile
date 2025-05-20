@@ -1,7 +1,6 @@
 FROM node:23-alpine as base
 ARG TARGETARCH
 
-ARG NEXT_PUBLIC_APIGW_HOST=http://127.0.0.1:4000
 ARG APIGW_HOST=http://host.docker.internal:4000
 
 WORKDIR /app
@@ -20,7 +19,6 @@ RUN npm run build
 # RUN npm run build
 
 # ENV NODE_ENV=production
-ENV NEXT_PUBLIC_APIGW_HOST=$NEXT_PUBLIC_APIGW_HOST
 ENV APIGW_HOST=$APIGW_HOST
 EXPOSE 3000
 
