@@ -135,7 +135,7 @@ jobs:
           echo "IMAGES_TO_BUILD=${IMAGES_TO_BUILD[*]}" >> $GITHUB_ENV
           echo "Images to build: ${IMAGES_TO_BUILD[*]}"
 
-          # Create unified matrix for image/tag/target/tag_suffix
+          # Create matrix for image/tag/target/tag_suffix
           matrix_include=$(for image in "${IMAGES_TO_BUILD[@]}"; do
             if [ "$image" == "aiverify-apigw" ]; then
               tag=$(grep -oP '(?<=version = ")[^"]*' $image/pyproject.toml)
