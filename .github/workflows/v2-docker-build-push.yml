@@ -1,6 +1,8 @@
-# Docker Build & Push
-# 1. Build docker image for amd64 and arm64
-# 2. Push image to GitHub Container Registry (ghcr.io)
+# GitHub Actions Workflow: v2 Docker Build and Push
+# 
+# This workflow builds and pushes Docker images for selected components of the aiverify project.
+# It is triggered manually, or when a version change is detected in pyproject.toml or package.json.
+# For aiverify-test-engine-worker, it builds multiple targets (base, venv, docker).
 
 name: v2 Docker Build and Push
 
@@ -31,8 +33,9 @@ on:
         required: false
 
   push:
-    branches: [ main ]
+    branches: [ main, ci/release-docker-image ]
     paths:
+      - '.github/**'
       - '**/pyproject.toml'
       - '**/package.json'
               
@@ -50,10 +53,10 @@ concurrency:
 
 jobs:
 
+  # Job to initialize image build and push process
   init-image-build-push:
-    # Run only when PR is assigned, even on subsequent commits (i.e. synchronize)
-    # Also allow manual trigger
-    if: (github.event_name == 'pull_request' && github.event.pull_request.assignee != null) || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
+    # Run only when triggered manually or on push event
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push'
     runs-on: ubuntu-latest
     outputs:
       branch_to_test: ${{ steps.prep_matrix.outputs.branch_to_test }}
@@ -65,6 +68,9 @@ jobs:
 
     steps:
 
+      # Step: Set env variables depending on the event type
+      # - For manual trigger: use inputs
+      # - For push: detect version changes and derive affected images
       - name: Set env variables
         run: |
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
@@ -95,6 +101,7 @@ jobs:
             echo "IMAGE_TAG=" >> $GITHUB_ENV
           fi
     
+      # Step: Prepare matrix for images to build based on changed files
       - name: Prepare matrix
         id: prep_matrix
         run: |
@@ -120,7 +127,7 @@ jobs:
           echo "IMAGES_TO_BUILD=${IMAGES_TO_BUILD[*]}" >> $GITHUB_ENV
           echo "Images to build: ${IMAGES_TO_BUILD[*]}"
 
-          # Create matrix
+          # Create matrix for version tags and targets
           matrix_include=$(for image in "${IMAGES_TO_BUILD[@]}"; do
             if [ "$image" == "aiverify-apigw" ]; then
               tag=$(grep -oP '(?<=version = ")[^"]*' $image/pyproject.toml)
@@ -140,6 +147,7 @@ jobs:
           MATRIX="{\"include\":$matrix_include}"
           echo $MATRIX
 
+          # Create matrix for build targets and tag suffixes
           matrix_include=$(for image in "${IMAGES_TO_BUILD[@]}"; do
             if [ "$image" == "aiverify-apigw" ]; then
               echo "{\"image_name\":\"${image}\", \"target\":\"\", \"tag_suffix\":\"\"}"
@@ -163,6 +171,7 @@ jobs:
           echo "image_tag=${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
           echo "matrix={\"include\":$matrix_include}" >> $GITHUB_OUTPUT
 
+  # Job to run the actual image build and push steps
   run-image-image-build-push:
     needs: init-image-build-push
     runs-on: ubuntu-latest
@@ -173,16 +182,19 @@ jobs:
       max-parallel: 1
     steps:
       
+      # Checkout the code at the specified branch or tag
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           ref: ${{ needs.init-image-build-push.outputs.branch_to_test }}
 
-      # Free up disk space first as the image to build is very large
+      # Free up disk space before building large images
       - name: Free up disk space
         run: |
           bash .ci/free_disk_space.sh          
 
+      # Step: Build and push image using docker_build_push.sh script
+      # If no manual tag is provided, extract the version from pyproject.toml or package.json
       - name: Build and push image
         id: build_push_image
         run: |
