@@ -1,15 +1,18 @@
 name: v2 Docker Build & Push (ECR)
 
+# This GitHub Actions workflow builds and pushes Docker images to AWS ECR.
+# It supports both manual dispatch and scheduled daily builds, using a dynamic matrix strategy.
+
 env:
   AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
   AWS_REGION: ${{ vars.AWS_REGION }}
 
 on:
-  # Run this workflow everyday at 6:05pm (10:05am UTC) 
+  # Run this workflow everyday at 6:05pm Singapore Time (10:05am UTC)
   schedule:
     - cron: '5 10 * * *'
 
-  # Manually trigger the workflow
+  # Allow manual trigger with custom parameters
   workflow_dispatch:
     inputs:
       image_name:
@@ -41,9 +44,9 @@ on:
         required: false
         default: 'main'
 
-  push:
-    branches:
-      - 'ci/image-scan-ecr'
+  # push:
+  #   branches:
+  #     - 'ci/image-scan-ecr'
  
 jobs:
   build-and-push:
@@ -54,6 +57,9 @@ jobs:
       contents: read
 
     strategy:
+      # Dynamically create the build matrix based on the event type
+      # - For manual dispatch: build a single image from input parameters
+      # - For scheduled or push triggers: build multiple predefined image configs
       matrix:
         include: ${{ fromJson(
           github.event_name == 'workflow_dispatch'
@@ -63,36 +69,40 @@ jobs:
                 github.event.inputs.build_target,
                 github.event.inputs.tag_suffix
             ) || 
-             '[     {"image_name":"aiverify-portal","dockerfile_dir":"aiverify-portal","build_target":"","tag_suffix":""},
-                    {"image_name":"aiverify-apigw","dockerfile_dir":"aiverify-apigw","build_target":"","tag_suffix":""},
-                    {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"aiverify-test-engine-worker-base","tag_suffix":"base"},
-                    {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"venv-build","tag_suffix":"venv"},
-                    {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"docker-build","tag_suffix":"docker"} ]' ) }}
+             '[ {"image_name":"aiverify-portal","dockerfile_dir":"aiverify-portal","build_target":"","tag_suffix":""},
+                {"image_name":"aiverify-apigw","dockerfile_dir":"aiverify-apigw","build_target":"","tag_suffix":""},
+                {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"aiverify-test-engine-worker-base","tag_suffix":"base"},
+                {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"venv-build","tag_suffix":"venv"},
+                {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"docker-build","tag_suffix":"docker"} ]' ) }}
       fail-fast: false
       max-parallel: 1
 
     steps:
 
+      # Configure AWS credentials using OIDC
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ vars.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ vars.AWS_REGION }}
 
+      # Log in to AWS Elastic Container Registry (ECR)
       - name: Login to ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2      
 
+      # Check out the source code from the specified branch
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.branch || 'main' }}
 
-      # As the image to build is very large
+      # Free up disk space before building large Docker images
       - name: Free up disk space
         run: |
           bash .ci/free_disk_space.sh
 
+      # Build and push Docker image using provided or matrix values
       - name: Run Docker build & push
         run: |
           chmod +x .ci/docker_build_push_ecr.sh
