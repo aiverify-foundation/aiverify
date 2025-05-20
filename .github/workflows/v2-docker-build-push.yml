@@ -18,18 +18,18 @@ on:
   workflow_dispatch:
     inputs:
       branch_to_test:
-        description: 'Branch or tag to run docker build'
+        description: 'Branch or tag to checkout'
         required: true
-        default: 'v2.x'
+        default: 'main'
         type: string
       image_to_build:
         description: 'Name of image to build'
         required: true
         default: 'aiverify-apigw'
       image_tag:
-        description: 'Image tag'
+        description: 'Tag for the image, e.g. 2.0.2'
         required: false
-        
+
   # push:
   #   branches: [ main ]
   #   paths:
