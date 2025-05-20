@@ -35,8 +35,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      APIGW_HOST: "http://host.docker.internal:4000"
-      NEXT_PUBLIC_APIGW_HOST: "http://127.0.0.1:4000"
+      APIGW_HOST: "http://apigw:4000"
     networks:
       - aiverify_net
 
