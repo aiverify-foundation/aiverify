@@ -1,4 +1,5 @@
 FROM node:23-alpine AS base
+RUN apk update && apk upgrade
 ARG TARGETARCH
 
 ARG APIGW_HOST=http://host.docker.internal:4000
