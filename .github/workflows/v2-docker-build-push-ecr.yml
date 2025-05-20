@@ -62,7 +62,7 @@ jobs:
       # - For scheduled or push triggers: build multiple predefined image configs
       matrix:
         include: ${{ fromJson(
-          github.event_name == 'workflow_dispatch'
+          github.event_name == 'push'
             && format('[{{"image_name":"{0}","dockerfile_dir":"{1}","build_target":"{2}","tag_suffix":"{3}"}}]', 
                 github.event.inputs.image_name,
                 github.event.inputs.dockerfile_dir,
