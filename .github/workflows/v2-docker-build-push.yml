@@ -33,11 +33,11 @@ on:
         description: 'Tag for the image, e.g. 2.0.2'
         required: false
 
-  # push:
-  #   branches: [ main, ci/release-docker-image ]
-  #   paths:
-  #     - '**/pyproject.toml'
-  #     - '**/package.json'
+  push:
+    branches: [ main ]
+    paths:
+      - '**/pyproject.toml'
+      - '**/package.json'
 
 # Allow one concurrent deployment
 concurrency:
