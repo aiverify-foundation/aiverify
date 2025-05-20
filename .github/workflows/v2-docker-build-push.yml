@@ -1,8 +1,9 @@
 # GitHub Actions Workflow: v2 Docker Build and Push
 # 
-# This workflow builds and pushes Docker images for selected components of the aiverify project.
-# It is triggered manually, or when a version change is detected in pyproject.toml or package.json.
-# For aiverify-test-engine-worker, it builds multiple targets (base, venv, docker).
+# This workflow builds and pushes Docker images to GitHub Container Registry (ghcr)
+# for selected components of the aiverify project. It can be triggered manually,
+# or when a version change is detected in pyproject.toml or package.json. For
+# aiverify-test-engine-worker, it builds multiple targets (base, venv, docker).
 
 name: v2 Docker Build and Push
 
@@ -32,11 +33,11 @@ on:
         description: 'Tag for the image, e.g. 2.0.2'
         required: false
 
-  push:
-    branches: [ main, ci/release-docker-image ]
-    paths:
-      - '**/pyproject.toml'
-      - '**/package.json'
+  # push:
+  #   branches: [ main, ci/release-docker-image ]
+  #   paths:
+  #     - '**/pyproject.toml'
+  #     - '**/package.json'
 
 # Allow one concurrent deployment
 concurrency:
