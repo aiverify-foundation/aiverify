@@ -12,7 +12,7 @@ export const useSubmitFairnessTree = () => {
   const mutation = useMutation({
     mutationFn: async (fairnessTreeData: FairnessTreeData) => {
       console.log('submit:', fairnessTreeData);
-      const response = await fetch('/api/input_block_data', {
+      const response = await fetch('/api/input_block_data/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
