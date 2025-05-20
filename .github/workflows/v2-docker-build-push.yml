@@ -37,13 +37,6 @@ on:
     paths:
       - '**/pyproject.toml'
       - '**/package.json'
-              
-  # push:
-  #   branches: [ main ]
-  #   paths:
-  #     - 'aiverify-test-engine-worker/**'
-  #     - 'aiverify-apigw/**'
-  #     - 'aiverify-portal/**'
 
 # Allow one concurrent deployment
 concurrency:
