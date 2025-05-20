@@ -19,7 +19,7 @@ on:
       tag:
         description: 'Tag for the Docker image, e.g. 2.0.2'
         required: true
-        default: 'test'
+        default: 'dev'
       github_username:
         description: 'GitHub username or org that owns the image, e.g. aiverify-foundation'
         required: true
@@ -57,20 +57,19 @@ jobs:
       matrix:
         include: ${{ fromJson(
           github.event_name == 'workflow_dispatch'
-            && format('[{{"image_name":"{0}","dockerfile_dir":"{1}","build_target":"{2}","tag_suffix":"{3}"}}]',
+            && format('[{{"image_name":"{0}","dockerfile_dir":"{1}","build_target":"{2}","tag_suffix":"{3}"}}]', 
                 github.event.inputs.image_name,
                 github.event.inputs.dockerfile_dir,
                 github.event.inputs.build_target,
                 github.event.inputs.tag_suffix
-            )
-            || '[{"image_name":"aiverify-portal","dockerfile_dir":"aiverify-portal","build_target":"","tag_suffix":""},
-                 {"image_name":"aiverify-apigw","dockerfile_dir":"aiverify-apigw","build_target":"","tag_suffix":""},
-                 {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"aiverify-test-engine-worker-base","tag_suffix":"base"},
-                 {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"venv-build","tag_suffix":"venv"},
-                 {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"docker-build","tag_suffix":"docker"}]'
-        ) }}
-        fail-fast: false
-        max-parallel: 1
+            ) || 
+             '[     {"image_name":"aiverify-portal","dockerfile_dir":"aiverify-portal","build_target":"","tag_suffix":""},
+                    {"image_name":"aiverify-apigw","dockerfile_dir":"aiverify-apigw","build_target":"","tag_suffix":""},
+                    {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"aiverify-test-engine-worker-base","tag_suffix":"base"},
+                    {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"venv-build","tag_suffix":"venv"},
+                    {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"docker-build","tag_suffix":"docker"} ]' ) }}
+      fail-fast: false
+      max-parallel: 1
 
     steps:
 
@@ -98,7 +97,7 @@ jobs:
         run: |
           chmod +x .ci/docker_build_push_ecr.sh
           image_name="${{ matrix.image_name }}"
-          tag="${{ github.event.inputs.tag || 'test' }}"
+          tag="${{ github.event.inputs.tag || 'dev' }}"
           github_username="${{ github.event.inputs.github_username || 'aiverify-foundation' }}"
           dockerfile_dir="${{ matrix.dockerfile_dir }}"
           build_target="${{ matrix.build_target }}"
