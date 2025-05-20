@@ -134,3 +134,6 @@ This would generate a new report with selected sections.
 ![aivf2-0-generate-report-save](./res/getting-started/generate-report-save.png)
 
 You can either save this as a template or export as a PDF based on your needs.
+
+!!! Info
+      Report generation is optimised for Chrome browser. Users are recommended to use Chrome browser for best experience compared to other browsers.

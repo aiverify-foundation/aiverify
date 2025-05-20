@@ -75,7 +75,7 @@ nav:
   - Appendix: 
       - Standalone model vs Model pipeline: ./appendix/standalone-vs-pipeline.md
       - Understand the Fairness Decision Tree: ./appendix/use-fairness-tree.md
-      - Supported Versions: ./detailed-guide/supported-versions.md
+      - Supported Versions: ./appendix/supported-versions.md
       - FAQs: ./appendix/faq.md
 
   - References:

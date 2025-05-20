@@ -51,3 +51,6 @@ Choose the model and test results from previous run and click "Next".
 
 
 Save the report or export as PDF.
+
+!!! Info
+      Report generation is optimised for Chrome browser. Users are recommended to use Chrome browser for best experience compared to other browsers.

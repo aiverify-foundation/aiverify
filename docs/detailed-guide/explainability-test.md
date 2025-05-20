@@ -73,3 +73,6 @@ Choose the model and test results from previous run and click "Next".
 ![aivf2-0-explainability-save](../res/detailed-guide/explainability-save.png)
 
 Save the report or export as a PDF.
+
+!!! Info
+      Report generation is optimised for Chrome browser. Users are recommended to use Chrome browser for best experience compared to other browsers.

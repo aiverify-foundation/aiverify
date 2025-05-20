@@ -55,3 +55,6 @@ Click "Next".
 ![aivf2-0-fairness-save](../res/detailed-guide/fairness-save.png)
 
 Save as template or download the generated report as PDF.
+
+!!! Info
+      Report generation is optimised for Chrome browser. Users are recommended to use Chrome browser for best experience compared to other browsers.
