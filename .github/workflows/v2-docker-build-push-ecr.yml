@@ -19,7 +19,7 @@ on:
       tag:
         description: 'Tag for the Docker image, e.g. 2.0.2'
         required: true
-        default: 'dev'
+        default: 'test'
       github_username:
         description: 'GitHub username or org that owns the image, e.g. aiverify-foundation'
         required: true
@@ -41,13 +41,12 @@ on:
         required: false
         default: 'main'
 
-  push:
-    branches:
-      - 'ci/image-scan-ecr'
+  # push:
+  #   branches:
+  #     - 'ci/image-scan-ecr'
  
 jobs:
-  build-and-push-schedule:
-    if: github.event_name == 'schedule'
+  build-and-push:
     runs-on: ubuntu-latest
     timeout-minutes: 360
     permissions:
@@ -56,29 +55,22 @@ jobs:
 
     strategy:
       matrix:
-        include:
-          - image_name: aiverify-portal
-            dockerfile_dir: aiverify-portal
-            build_target: ''
-            tag_suffix: ''
-          - image_name: aiverify-apigw
-            dockerfile_dir: aiverify-apigw
-            build_target: ''
-            tag_suffix: ''
-          - image_name: aiverify-test-engine-worker
-            dockerfile_dir: aiverify-test-engine-worker
-            build_target: aiverify-test-engine-worker-base
-            tag_suffix: base
-          - image_name: aiverify-test-engine-worker
-            dockerfile_dir: aiverify-test-engine-worker
-            build_target: venv-build
-            tag_suffix: venv
-          - image_name: aiverify-test-engine-worker
-            dockerfile_dir: aiverify-test-engine-worker
-            build_target: docker-build
-            tag_suffix: docker
-      fail-fast: false
-      max-parallel: 1
+        include: ${{ fromJson(
+          github.event_name == 'workflow_dispatch'
+            && format('[{{"image_name":"{0}","dockerfile_dir":"{1}","build_target":"{2}","tag_suffix":"{3}"}}]',
+                github.event.inputs.image_name,
+                github.event.inputs.dockerfile_dir,
+                github.event.inputs.build_target,
+                github.event.inputs.tag_suffix
+            )
+            || '[{"image_name":"aiverify-portal","dockerfile_dir":"aiverify-portal","build_target":"","tag_suffix":""},
+                 {"image_name":"aiverify-apigw","dockerfile_dir":"aiverify-apigw","build_target":"","tag_suffix":""},
+                 {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"aiverify-test-engine-worker-base","tag_suffix":"base"},
+                 {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"venv-build","tag_suffix":"venv"},
+                 {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"docker-build","tag_suffix":"docker"}]'
+        ) }}
+        fail-fast: false
+        max-parallel: 1
 
     steps:
 
@@ -95,9 +87,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.event.inputs.branch || 'main' }}
 
-      # Free up disk space first as the image to build is very large
+      # As the image to build is very large
       - name: Free up disk space
         run: |
           bash .ci/free_disk_space.sh
@@ -106,59 +98,11 @@ jobs:
         run: |
           chmod +x .ci/docker_build_push_ecr.sh
           image_name="${{ matrix.image_name }}"
-          tag="dev"
-          github_username="aiverify-foundation"
+          tag="${{ github.event.inputs.tag || 'test' }}"
+          github_username="${{ github.event.inputs.github_username || 'aiverify-foundation' }}"
           dockerfile_dir="${{ matrix.dockerfile_dir }}"
           build_target="${{ matrix.build_target }}"
           tag_suffix="${{ matrix.tag_suffix }}"
-
-          .ci/docker_build_push_ecr.sh \
-            "$image_name" \
-            "$tag" \
-            "$github_username" \
-            "$dockerfile_dir" \
-            "$build_target" \
-            "$tag_suffix"
-
-  build-and-push-manual:
-    if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    timeout-minutes: 360
-    permissions:
-      id-token: write
-      contents: read
-
-    steps:
- 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ vars.AWS_ROLE_TO_ASSUME }}
-          aws-region: ${{ vars.AWS_REGION }}
-
-      - name: Login to ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.inputs.branch }}
-
-      # Free up disk space first as the image to build is very large
-      - name: Free up disk space
-        run: |
-          bash .ci/free_disk_space.sh
-
-      - name: Run Docker build & push
-        run: |
-          chmod +x .ci/docker_build_push_ecr.sh
-          image_name="${{ github.event.inputs.image_name }}"
-          tag="${{ github.event.inputs.tag }}"
-          github_username="${{ github.event.inputs.github_username }}"
-          dockerfile_dir="${{ github.event.inputs.dockerfile_dir }}"
-          build_target="${{ github.event.inputs.build_target }}"
-          tag_suffix="${{ github.event.inputs.tag_suffix }}"
 
           .ci/docker_build_push_ecr.sh \
             "$image_name" \

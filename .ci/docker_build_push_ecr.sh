@@ -19,6 +19,13 @@
 #   - AWS_ACCOUNT_ID : Your AWS account ID
 #   - AWS_REGION     : The region for the ECR registry
 #
+# Note:
+#   If the script is run locally,
+#   1. Assume an IAM role with the necessary permissions to push images to ECR.
+#      You can use the `aws sts assume-role` command to get temporary credentials
+#      and export them as environment variables.
+#   2. Uncomment the `aws ecr get-login-password` line to log in to ECR.
+#
 # Usage:
 #   bash .ci/docker_build_push.sh <image-name> <tag> <github-username> <dockerfile-dir> [build-target tag-suffix]
 #
@@ -47,7 +54,8 @@ TAG_SUFFIX=${6:-}
 ECR_REPO=$IMAGE_NAME
 ECR_IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$GITHUB_USERNAME/$IMAGE_NAME
 
-# aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+# If this script is run locally, uncomment the following line to log in to ECR
+#aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
 # echo "Create a new build instance..."
 
