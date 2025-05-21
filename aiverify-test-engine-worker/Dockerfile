@@ -64,3 +64,21 @@ COPY --from=docker/buildx-bin /buildx /usr/libexec/docker/cli-plugins/docker-bui
 
 ENV PIPELINE_BUILD=docker_build
 ENV PIPELINE_EXECUTE=docker_run
+
+FROM venv-build AS docker-kube
+
+COPY --from=docker:dind /usr/local/bin/docker /usr/local/bin/
+COPY --from=docker/buildx-bin /buildx /usr/libexec/docker/cli-plugins/docker-buildx
+
+# Install curl and kubectl
+RUN apt-get update && \
+    apt-get install -y curl && \
+    ARCH=$(dpkg --print-architecture) && \
+    curl -LO "https://dl.k8s.io/release/v1.23.5/bin/linux/${ARCH}/kubectl" && \
+    chmod +x ./kubectl && \
+    mv ./kubectl /usr/local/bin/ && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Set necessary environment variables for Docker and Kubernetes
+ENV PIPELINE_BUILD=docker_build
+ENV PIPELINE_EXECUTE=kubectl_run
