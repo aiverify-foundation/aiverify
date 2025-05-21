@@ -150,6 +150,7 @@ jobs:
 
       - name: Run Smoke Test
         run: |
+          ls -la
           cd smoke-testing
           npm install
           npx playwright install --with-deps
