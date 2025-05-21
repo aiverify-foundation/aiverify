@@ -54,7 +54,7 @@ jobs:
 
       - name: Build & RUN PORTAL, APIGW & Test Engine Worker
         run: |
-          cd ${GITHUB_WORKSPACE}/deployment/docker-compose-prod
+          cd deployment/docker-compose-prod
           ls -la
           COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile portal up -d
           COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile automated-tests-venv up -d
