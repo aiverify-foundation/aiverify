@@ -37,7 +37,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.ref }}
           repository: aiverify-foundation/aiverify
 
       - name: Checkout Smoke Test Code
