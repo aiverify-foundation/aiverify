@@ -57,7 +57,7 @@ jobs:
           cd deployment/docker-compose-prod
           ls -la
           COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile portal up -d
-          bash cd ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
+          bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
           COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile automated-tests-venv up -d
           cd ${GITHUB_WORKSPACE}
 
