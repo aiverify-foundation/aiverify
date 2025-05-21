@@ -40,13 +40,6 @@ jobs:
           ref: ${{ github.ref }}
           repository: aiverify-foundation/aiverify
 
-      - name: Checkout Smoke Test Code
-        uses: actions/checkout@v4
-        with:
-          ref: main
-          repository: aiverify-foundation/smoke-testing
-          path: smoke-testing
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -147,6 +140,13 @@ jobs:
       #     deactivate
       #     rm -rf .venv2
       #     cd ${GITHUB_WORKSPACE}
+
+      - name: Checkout Smoke Test Code
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          repository: aiverify-foundation/smoke-testing
+          path: smoke-testing
 
       - name: Run Smoke Test
         run: |
