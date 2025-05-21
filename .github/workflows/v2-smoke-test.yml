@@ -19,8 +19,8 @@ on:
         type: string
 
   push:
-    branches: [main]
-
+    branches:
+      - "main"
 # Allow one concurrent deployment
 concurrency:
   group: ${{ github.repository }}-${{ github.workflow }}
@@ -57,6 +57,7 @@ jobs:
           cd deployment/docker-compose-prod
           ls -la
           COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile portal up -d
+          bash .ci/free-trial-setup.sh
           COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile automated-tests-venv up -d
           cd ${GITHUB_WORKSPACE}
 
