@@ -40,6 +40,13 @@ jobs:
           ref: ${{ github.ref }}
           repository: aiverify-foundation/aiverify
 
+      - name: Checkout Smoke Test Code
+        uses: actions/checkout@v4
+        with:
+          ref: v2.x
+          repository: aiverify-foundation/smoke-testing
+          path: smoke-testing
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -141,35 +148,27 @@ jobs:
       #     rm -rf .venv2
       #     cd ${GITHUB_WORKSPACE}
 
-      - name: Checkout Smoke Test Code
-        uses: actions/checkout@v4
-        with:
-          ref: main
-          repository: aiverify-foundation/smoke-testing
-          path: smoke-testing
-
       - name: Run Smoke Test
         run: |
-          ls -la
           cd smoke-testing
           npm install
           npx playwright install --with-deps
           URL=http://localhost:3000 npx playwright test tests/03-smoke.spec.js
 
-      - name: Upload Playwright Traces
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-trace-v2.0-smoke-testing-${{ github.run_id }}
-          path: |
-            ${{ github.workspace }}/smoke-testing/test-results/
+      # - name: Upload Playwright Traces
+      #   if: always()
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: playwright-trace-v2.0-smoke-testing-${{ github.run_id }}
+      #     path: |
+      #       ${{ github.workspace }}/smoke-testing/test-results/
 
-      - name: APIGW Logs
-        if: always()
-        run: |
-          cat ${GITHUB_WORKSPACE}/aiverify-apigw/output.log
+      # - name: APIGW Logs
+      #   if: always()
+      #   run: |
+      #     cat ${GITHUB_WORKSPACE}/aiverify-apigw/output.log
 
-      - name: PORTAL Logs
-        if: always()
-        run: |
-          cat ${GITHUB_WORKSPACE}/aiverify-portal/output.log
+      # - name: PORTAL Logs
+      #   if: always()
+      #   run: |
+      #     cat ${GITHUB_WORKSPACE}/aiverify-portal/output.log
