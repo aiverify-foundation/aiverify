@@ -54,8 +54,8 @@ jobs:
 
       - name: Build & RUN PORTAL, APIGW & Test Engine Worker
         run: |
-          cd deployment/docker-compose-prod
-          ls -la
+          cd deployment/docker-compose-dev
+          DOCKER_BUILDKIT=1 docker build -f aiverify-portal/Dockerfile -t aiverify-portal --target production .
           COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile portal up -d
           bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
           COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile automated-tests-venv up -d
