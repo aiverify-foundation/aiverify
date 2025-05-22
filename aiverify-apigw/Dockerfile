@@ -58,6 +58,7 @@ COPY --from=build /app/aiverify-test-engine ./aiverify-test-engine
 COPY --from=build /app/common ./common
 COPY --from=build /app/stock-plugins ./stock-plugins
 COPY --from=build /app/aiverify-shared-library/dist ./aiverify-shared-library/dist
+# COPY --from=build /app/aiverify-shared-library/node_modules ./aiverify-shared-library/node_modules
 COPY --from=build /app/aiverify-shared-library/package.json ./aiverify-shared-library/package.json
 COPY --from=build /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
 
