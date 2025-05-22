@@ -96,7 +96,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.branch || 'main' }}
+      
+      # Free up disk space before building large Docker images
+      - name: Free up disk space
+        run: |
+          bash .ci/free_disk_space.sh
 
+      # Delete existing images from the ECR repository
       - name: Delete existing images from ECR
         run: |
           aws ecr list-images \
@@ -110,11 +116,6 @@ jobs:
               --repository-name ${{ github.event.inputs.github_username || 'aiverify-foundation' }}/${{ matrix.image_name }} \
               --image-ids "[$image]"
           done
-
-      # Free up disk space before building large Docker images
-      - name: Free up disk space
-        run: |
-          bash .ci/free_disk_space.sh
 
       # Build and push Docker image using provided or matrix values
       - name: Run Docker build & push
