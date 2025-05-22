@@ -97,11 +97,6 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch || 'main' }}
 
-      # Free up disk space before building large Docker images
-      - name: Free up disk space
-        run: |
-          bash .ci/free_disk_space.sh
-
       - name: Delete existing images from ECR
         run: |
           aws ecr list-images \
@@ -114,6 +109,11 @@ jobs:
               --repository-name ${{ matrix.image_name }} \
               --image-ids "[$image]"
           done
+
+      # Free up disk space before building large Docker images
+      - name: Free up disk space
+        run: |
+          bash .ci/free_disk_space.sh
 
       # Build and push Docker image using provided or matrix values
       - name: Run Docker build & push
