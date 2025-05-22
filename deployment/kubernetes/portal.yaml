@@ -26,6 +26,10 @@ spec:
       labels:
         app: portal
     spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
         - name: portal
           image: ghcr.io/aiverify-foundation/aiverify-portal

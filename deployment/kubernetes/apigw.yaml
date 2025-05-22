@@ -39,6 +39,10 @@ spec:
       labels:
         app: apigw
     spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
         - name: apigw
           image: ghcr.io/aiverify-foundation/aiverify-apigw
