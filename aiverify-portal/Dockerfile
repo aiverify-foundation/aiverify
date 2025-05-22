@@ -3,6 +3,7 @@ FROM node:23-alpine AS build
 # to move this to production stage when PR #566 is merged
 ARG APIGW_HOST=http://host.docker.internal:4000
 ENV APIGW_HOST=$APIGW_HOST
+ARG NEXT_PUBLIC_APIGW_HOST=http://127.0.0.1:4000
 
 WORKDIR /app
 

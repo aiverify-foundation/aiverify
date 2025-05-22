@@ -67,11 +67,11 @@ RUN pip install -U pip && pip install --no-cache-dir -U setuptools>=78.1.1
 # Change ownership of the application and directory
 RUN chown -R appuser:appuser /app
 
-# Switch to the non-root user
-USER appuser
-
 # venv build
 FROM base AS venv-build
+
+# Switch to the non-root user
+USER appuser
 
 ENV TEWORKER_LOG_LEVEL="debug"
 ENV APIGW_URL=http://host.docker.internal:4000
@@ -83,13 +83,40 @@ ENTRYPOINT ["python", "-m", "aiverify_test_engine_worker"]
 
 
 # dind build
-FROM venv-build AS docker-build
+FROM base AS docker-build
 
 # RUN apk update && apk add --no-cache docker-cli
 COPY --from=docker:dind /usr/local/bin/docker /usr/local/bin/
 COPY --from=docker/buildx-bin /buildx /usr/libexec/docker/cli-plugins/docker-buildx
 
+# Switch to the non-root user
+USER appuser
+
 ENV PIPELINE_BUILD=docker_build
 ENV PIPELINE_EXECUTE=docker_run
+
+ENTRYPOINT ["python", "-m", "aiverify_test_engine_worker"]
+
+
+# kube build
+FROM base AS docker-kube
+
+COPY --from=docker:dind /usr/local/bin/docker /usr/local/bin/
+COPY --from=docker/buildx-bin /buildx /usr/libexec/docker/cli-plugins/docker-buildx
+
+# Install curl and kubectl
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl && \
+    ARCH=$(dpkg --print-architecture) && \
+    curl -LO "https://dl.k8s.io/release/v1.23.5/bin/linux/${ARCH}/kubectl" && \
+    chmod +x ./kubectl && \
+    mv ./kubectl /usr/local/bin/ && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Switch to the non-root user
+USER appuser
+# Set necessary environment variables for Docker and Kubernetes
+ENV PIPELINE_BUILD=docker_build
+ENV PIPELINE_EXECUTE=kubectl_run
 
 ENTRYPOINT ["python", "-m", "aiverify_test_engine_worker"]
