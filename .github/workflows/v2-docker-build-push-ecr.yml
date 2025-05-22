@@ -100,13 +100,13 @@ jobs:
       - name: Delete existing images from ECR
         run: |
           aws ecr list-images \
-            --repository-name ${{ matrix.image_name }} \
+            --repository-name ${{ github.event.inputs.github_username || 'aiverify-foundation' }}/${{ matrix.image_name }} \
             --query 'imageIds[*]' \
             --output json | \
           jq -c '.[]' | \
           while read -r image; do
             aws ecr batch-delete-image \
-              --repository-name ${{ matrix.image_name }} \
+              --repository-name ${{ github.event.inputs.github_username || 'aiverify-foundation' }}/${{ matrix.image_name }} \
               --image-ids "[$image]"
           done
 
