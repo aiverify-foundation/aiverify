@@ -101,7 +101,8 @@ jobs:
         run: |
           aws ecr list-images \
             --repository-name ${{ github.event.inputs.github_username || 'aiverify-foundation' }}/${{ matrix.image_name }} \
-            --query 'imageIds[*]' \
+            --filter tagStatus=ANY \
+            --query 'imageIds' \
             --output json | \
           jq -c '.[]' | \
           while read -r image; do
