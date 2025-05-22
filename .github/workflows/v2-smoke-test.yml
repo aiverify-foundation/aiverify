@@ -29,7 +29,7 @@ concurrency:
 jobs:
   smoke-test:
     #  Run only when PR is approved
-    if: (github.event_name == 'pull_request' && github.event.pull_request.assignee != null) || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
+    if: (github.event_name == 'pull_request') || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
@@ -47,10 +47,10 @@ jobs:
           repository: aiverify-foundation/smoke-testing
           path: smoke-testing
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+      # - name: Setup Python
+      #   uses: actions/setup-python@v5
+      #   with:
+      #     python-version: "3.11"
 
       - name: Build & RUN PORTAL, APIGW & Test Engine Worker
         run: |
