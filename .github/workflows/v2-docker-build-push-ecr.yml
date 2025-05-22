@@ -102,6 +102,19 @@ jobs:
         run: |
           bash .ci/free_disk_space.sh
 
+      - name: Delete existing images from ECR
+        run: |
+          aws ecr list-images \
+            --repository-name ${{ matrix.image_name }} \
+            --query 'imageIds[*]' \
+            --output json | \
+          jq -c '.[]' | \
+          while read -r image; do
+            aws ecr batch-delete-image \
+              --repository-name ${{ matrix.image_name }} \
+              --image-ids "[$image]"
+          done
+
       # Build and push Docker image using provided or matrix values
       - name: Run Docker build & push
         run: |
