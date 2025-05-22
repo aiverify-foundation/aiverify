@@ -31,7 +31,7 @@ concurrency:
 jobs:
   integration-test:
     #  Run only when PR is approved
-    if: (github.event_name == 'pull_request') || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
+    if: (github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || github.event_name == 'push')
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
@@ -65,7 +65,7 @@ jobs:
           cd qa-test/frontend-testing
           npm install
           npx playwright install --with-deps
-          ENVIRONMENT_URL=http://localhost:3000 npx playwright test
+          ENVIRONMENT_URL=http://127.0.0.1:3000 npx playwright test
 
       # - name: Run backend tests
       #   if: ${{ ! cancelled() }}
