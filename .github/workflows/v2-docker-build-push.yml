@@ -159,7 +159,7 @@ jobs:
   # Job to run the actual image build and push, if matrix is not empty
   run-image-build-push:
     needs: init-image-build-push
-    if: ${{ fromJson(needs.init-image-build-push.outputs.matrix).include != '' }}
+    if: ${{ needs.init-image-build-push.outputs.matrix != '{"include":[]}' }}
     runs-on: ubuntu-latest
     timeout-minutes: 360
     strategy:
