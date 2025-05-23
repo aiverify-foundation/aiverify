@@ -35,7 +35,7 @@ on:
 
   # When there are changes to pyproject.toml, package.json
   push:
-    branches: [ main ]
+    branches: [ main, ci/release-docker-image-fix ]
     paths:
       - '**/pyproject.toml'
       - '**/package.json'
