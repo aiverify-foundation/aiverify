@@ -155,7 +155,10 @@ jobs:
           echo "pr_num=${{ env.PR_NUM }}" >> $GITHUB_OUTPUT
           echo "image_tag=${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
           echo "matrix={\"include\":$matrix_include}" >> $GITHUB_OUTPUT
-
+          if [ -z "$matrix_include" ]; then
+            echo "Nothing to build"
+          fi
+          
   # Job to run the actual image build and push, if matrix is not empty
   run-image-build-push:
     needs: init-image-build-push
