@@ -27,7 +27,7 @@ const UploadPage = () => {
     if (activeCard) {
       if (activeCard === 'manual') {
         startTransition(async () => {
-          const response = await fetch('/api/input_block_data/groups/', {
+          const response = await fetch('/api/input_block_data/groups', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
