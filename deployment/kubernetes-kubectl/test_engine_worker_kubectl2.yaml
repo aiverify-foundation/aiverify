@@ -40,6 +40,10 @@ spec:
         app: test-engine-worker
     spec:
       serviceAccountName: test-engine-sa
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
         - name: test-engine-worker
           image: aiverify-test-engine-worker-kube

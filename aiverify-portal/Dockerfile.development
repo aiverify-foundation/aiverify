@@ -1,0 +1,27 @@
+FROM node:23-alpine
+RUN apk update && apk upgrade
+
+ARG NEXT_PUBLIC_APIGW_HOST=http://127.0.0.1:4000
+ARG APIGW_HOST=http://host.docker.internal:4000
+
+WORKDIR /app
+
+# copy files
+COPY aiverify-portal/ ./aiverify-portal/
+COPY aiverify-shared-library/ ./aiverify-shared-library/
+COPY common/ ./common/
+
+# install aiverify-shared-library
+WORKDIR /app/aiverify-shared-library
+RUN npm install && npm run build
+
+ENV NEXT_PUBLIC_APIGW_HOST=$NEXT_PUBLIC_APIGW_HOST
+ENV APIGW_HOST=$APIGW_HOST
+EXPOSE 3000
+
+WORKDIR /app/aiverify-portal
+
+RUN npm install && npm link ../aiverify-shared-library
+
+# ENTRYPOINT ["npm", "run", "start"]
+ENTRYPOINT ["npm", "run", "dev"]

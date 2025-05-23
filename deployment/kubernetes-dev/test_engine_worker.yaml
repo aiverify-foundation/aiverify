@@ -32,7 +32,8 @@ spec:
         fsGroup: 1000
       containers:
         - name: test-engine-worker
-          image: ghcr.io/aiverify-foundation/aiverify-test-engine-worker:latest-venv
+          image: aiverify-test-engine-worker
+          imagePullPolicy: Never
           env:
             - name: APIGW_URL
               value: "http://apigw.aiverify.svc.cluster.local:4000"
