@@ -1,8 +1,8 @@
 # GitHub Actions Workflow: v2 Docker Build and Push
 # 
 # This workflow builds and pushes Docker images to GitHub Container Registry (ghcr)
-# for selected components of the aiverify project. It can be triggered manually,
-# or when a version change is detected in pyproject.toml or package.json. For
+# for apigw, portal and test-engine-worker. It can be triggered manually, or
+# when a version change is detected in pyproject.toml or package.json. For
 # aiverify-test-engine-worker, it builds multiple targets (base, venv, docker).
 
 name: v2 Docker Build and Push
@@ -33,6 +33,7 @@ on:
         description: 'Tag for the image, e.g. 2.0.2'
         required: false
 
+  # When there are changes to pyproject.toml, package.json
   push:
     branches: [ main ]
     paths:
@@ -154,10 +155,14 @@ jobs:
           echo "pr_num=${{ env.PR_NUM }}" >> $GITHUB_OUTPUT
           echo "image_tag=${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
           echo "matrix={\"include\":$matrix_include}" >> $GITHUB_OUTPUT
+          if [ $MATRIX == '{"include":[]}' ]; then
+            echo "Nothing to build"
+          fi
 
-  # Job to run the actual image build and push steps
-  run-image-image-build-push:
+  # Job to run the actual image build and push, if matrix is not empty
+  run-image-build-push:
     needs: init-image-build-push
+    if: ${{ needs.init-image-build-push.outputs.matrix != '{"include":[]}' }}
     runs-on: ubuntu-latest
     timeout-minutes: 360
     strategy:

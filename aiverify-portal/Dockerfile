@@ -1,10 +1,5 @@
 FROM node:23-alpine AS build
 
-# to move this to production stage when PR #566 is merged
-ARG APIGW_HOST=http://host.docker.internal:4000
-ENV APIGW_HOST=$APIGW_HOST
-ARG NEXT_PUBLIC_APIGW_HOST=http://127.0.0.1:4000
-
 WORKDIR /app
 
 # copy files
@@ -24,7 +19,7 @@ RUN npm install && npm link ../aiverify-shared-library && npm run build
 # production
 FROM node:23-alpine
 
-ARG NEXT_PUBLIC_APIGW_HOST=http://127.0.0.1:4000
+ARG APIGW_HOST=http://host.docker.internal:4000
 
 RUN apk update && apk upgrade
 
@@ -47,7 +42,7 @@ USER node
 
 WORKDIR /app/aiverify-portal
 
-ENV NEXT_PUBLIC_APIGW_HOST=$NEXT_PUBLIC_APIGW_HOST
+ENV APIGW_HOST=$APIGW_HOST
 EXPOSE 3000
 
 ENTRYPOINT ["npm", "start"]
