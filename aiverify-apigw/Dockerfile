@@ -1,17 +1,17 @@
-# Stage 1: Build stage
-FROM python:3.11-slim AS build
-ARG TARGETARCH
+##
+## Build the python base image first with the folliowing command:
+## docker buildx build -t aiverify-python-base -f aiverify-test-engine/Dockerfile --no-cache .
+##
 
-# Combine all apt-get installations into a single layer with cleanup
+# Stage 1: Build stage
+FROM aiverify-python-base AS build
+
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    curl \
-    git \
-    gcc \
-    libhdf5-dev \
-    pkg-config && \
+    apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends curl && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
 
 # install node
 RUN curl -fsSL https://deb.nodesource.com/setup_23.x -o nodesource_setup.sh && \
@@ -23,8 +23,6 @@ RUN curl -fsSL https://deb.nodesource.com/setup_23.x -o nodesource_setup.sh && \
 # copy application files
 WORKDIR /app
 COPY aiverify-apigw/ ./aiverify-apigw/
-COPY aiverify-test-engine/ ./aiverify-test-engine/
-COPY common/ ./common/
 COPY stock-plugins/ ./stock-plugins/
 COPY aiverify-shared-library/ ./aiverify-shared-library/
 
@@ -34,16 +32,16 @@ RUN npm install && npm run build
 
 # build the application
 WORKDIR /app/aiverify-apigw
-RUN sh install-${TARGETARCH}.sh
+RUN pip install -e . && \
+    cd aiverify-apigw-node && \
+    npm install
+    # npm link ../../aiverify-shared-library
 
 # Stage 2: Runtime stage
-FROM python:3.11-slim
-ARG TARGETARCH
+FROM aiverify-python-base
 
 # Create a non-root user
 RUN useradd -m appuser
-
-# RUN pip install -U setuptools>=78.1.1  
 
 # update the installed packages to latest versions
 RUN apt-get update && \
@@ -54,8 +52,6 @@ RUN apt-get update && \
 # Copy only the necessary files from the build stage
 WORKDIR /app
 COPY --from=build /app/aiverify-apigw ./aiverify-apigw
-COPY --from=build /app/aiverify-test-engine ./aiverify-test-engine
-COPY --from=build /app/common ./common
 COPY --from=build /app/stock-plugins ./stock-plugins
 COPY --from=build /app/aiverify-shared-library/dist ./aiverify-shared-library/dist
 # COPY --from=build /app/aiverify-shared-library/node_modules ./aiverify-shared-library/node_modules
@@ -65,9 +61,6 @@ COPY --from=build /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python
 # Get NodeJS and npm
 COPY --from=node:23-slim /usr/local/bin /usr/local/bin
 COPY --from=node:23-slim /usr/local/lib/node_modules /usr/local/lib/node_modules
-
-# update setuptools
-RUN pip install -U pip && pip install --no-cache-dir -U setuptools>=78.1.1
 
 # link to shared library
 WORKDIR /app/aiverify-apigw/aiverify-apigw-node
