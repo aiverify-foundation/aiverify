@@ -70,6 +70,8 @@ spec:
               value: "0.0.0.0"
             - name: VALKEY_HOST_ADDRESS
               value: "valkey.aiverify.svc.cluster.local"
+            - name: VALKEY_PORT
+              value: "6379"
           volumeMounts:
             - mountPath: /data
               name: apigw-data
