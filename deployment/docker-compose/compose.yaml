@@ -4,6 +4,7 @@ name: aiverify
 services:
   apigw: # required for all services
     image: "ghcr.io/aiverify-foundation/aiverify-apigw"
+    user: appuser
     ports:
       - "4000:4000"
     volumes:
@@ -23,6 +24,7 @@ services:
 
   portal:
     image: "ghcr.io/aiverify-foundation/aiverify-portal"
+    user: node
     profiles:
       - portal
     depends_on:
@@ -35,13 +37,12 @@ services:
     ports:
       - "3000:3000"
     environment:
-      APIGW_HOST: "http://host.docker.internal:4000"
-      NEXT_PUBLIC_APIGW_HOST: "http://127.0.0.1:4000"
+      APIGW_HOST: "http://apigw:4000"
     networks:
       - aiverify_net
 
   valkey:
-    image: valkey/valkey:8
+    image: valkey/valkey:8-alpine
     profiles:
       - automated-tests-venv
       - automated-tests-docker
@@ -64,6 +65,7 @@ services:
 
   test-engine-worker:
     image: "ghcr.io/aiverify-foundation/aiverify-test-engine-worker:latest-venv"
+    user: appuser
     profiles:
       - automated-tests-venv
     deploy:
@@ -82,8 +84,8 @@ services:
       - aiverify_net
 
   test-engine-worker-docker:
-    user: root
     image: "ghcr.io/aiverify-foundation/aiverify-test-engine-worker:latest-docker"
+    user: root # unfortunately required for dind
     profiles:
       - automated-tests-docker
     deploy:

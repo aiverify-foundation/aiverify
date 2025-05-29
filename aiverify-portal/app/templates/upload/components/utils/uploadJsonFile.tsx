@@ -81,7 +81,7 @@ async function uploadJsonWithFetch(
     };
 
     // Send the JSON content directly
-    const response = await fetch('/api/project_templates', {
+    const response = await fetch('/api/project_templates/', {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(jsonContent),
