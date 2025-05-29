@@ -32,7 +32,8 @@ spec:
         fsGroup: 1000
       containers:
         - name: portal
-          image: ghcr.io/aiverify-foundation/aiverify-portal
+          image: aiverify-portal
+          imagePullPolicy: Never
           ports:
             - containerPort: 3000
           # livenessProbe:
@@ -50,3 +51,5 @@ spec:
           env:
             - name: APIGW_HOST
               value: "http://apigw.aiverify.svc.cluster.local:4000"
+            - name: NEXT_PUBLIC_APIGW_HOST
+              value: "http://127.0.0.1:4000"
