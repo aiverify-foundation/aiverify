@@ -50,12 +50,12 @@ jobs:
         cov-commit-defects --dir idir --ticker-mode none --url $COV_URL --stream $COV_STREAM --scm git \
           --description $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID --target $RUNNER_OS --version $GITHUB_SHA
 
-    - name: Coverity Quality Gate
+    - name: Coverity Scan Results
       run: |
         curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/api/viewContents/issues/v1/High%20Impact%20Outstanding?projectId=$COVERITY_PROJECT > results.json
         cat results.json
 
-    - name: Export Results to CSV
+    - name: Export Coverity Scan Results to CSV
       if: always()
       run: |
         curl -fLsS --header "Accept: text/csv" --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/api/viewContents/issues/v1/High%20Impact%20Outstanding?projectId=$COVERITY_PROJECT > coverity.csv
