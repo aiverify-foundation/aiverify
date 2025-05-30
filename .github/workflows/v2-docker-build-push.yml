@@ -139,7 +139,7 @@ jobs:
               echo "{\"image_name\":\"${image}\", \"target\":\"\", \"tag_suffix\":\"\", \"tag\":\"${tag}\"}"
             elif [ "$image" == "aiverify-test-engine-worker" ]; then
               tag=$(grep -oP '(?<=version = \")[^"]*' $image/pyproject.toml)
-              echo "{\"image_name\":\"${image}\", \"target\":\"aiverify-test-engine-worker-base\", \"tag_suffix\":\"base\", \"tag\":\"${tag}\"}"
+              echo "{\"image_name\":\"${image}\", \"target\":\"base\", \"tag_suffix\":\"base\", \"tag\":\"${tag}\"}"
               echo "{\"image_name\":\"${image}\", \"target\":\"venv-build\", \"tag_suffix\":\"venv\", \"tag\":\"${tag}\"}"
               echo "{\"image_name\":\"${image}\", \"target\":\"docker-build\", \"tag_suffix\":\"docker\", \"tag\":\"${tag}\"}"
             else
