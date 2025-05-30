@@ -1,6 +1,9 @@
-# Docker Build & Push
-# 1. Build docker image for amd64 and arm64
-# 2. Push image to GitHub Container Registry (ghcr.io)
+# GitHub Actions Workflow: v2 Docker Build and Push
+# 
+# This workflow builds and pushes Docker images to GitHub Container Registry (ghcr)
+# for apigw, portal and test-engine-worker. It can be triggered manually, or
+# when a version change is detected in pyproject.toml or package.json. For
+# aiverify-test-engine-worker, it builds multiple targets (base, venv, docker).
 
 name: v2 Docker Build and Push
 
@@ -18,24 +21,24 @@ on:
   workflow_dispatch:
     inputs:
       branch_to_test:
-        description: 'Branch or tag to run docker build'
+        description: 'Branch or tag to checkout'
         required: true
-        default: 'v2.x'
+        default: 'main'
         type: string
       image_to_build:
         description: 'Name of image to build'
         required: true
         default: 'aiverify-apigw'
       image_tag:
-        description: 'Image tag'
+        description: 'Tag for the image, e.g. 2.0.2'
         required: false
-        
-  # push:
-  #   branches: [ main ]
-  #   paths:
-  #     - 'aiverify-test-engine-worker/**'
-  #     - 'aiverify-apigw/**'
-  #     - 'aiverify-portal/**'
+
+  # When there are changes to pyproject.toml, package.json
+  push:
+    branches: [ main ]
+    paths:
+      - '**/pyproject.toml'
+      - '**/package.json'
 
 # Allow one concurrent deployment
 concurrency:
@@ -44,10 +47,10 @@ concurrency:
 
 jobs:
 
+  # Job to initialize image build and push process
   init-image-build-push:
-    # Run only when PR is assigned, even on subsequent commits (i.e. synchronize)
-    # Also allow manual trigger
-    if: (github.event_name == 'pull_request' && github.event.pull_request.assignee != null) || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
+    # Run only when triggered manually or on push event
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push'
     runs-on: ubuntu-latest
     outputs:
       branch_to_test: ${{ steps.prep_matrix.outputs.branch_to_test }}
@@ -59,31 +62,48 @@ jobs:
 
     steps:
 
+      # Checkout the code at the branch that triggered the push
+      - name: Checkout code for diff
+        if: github.event_name == 'push'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      # Step: Set env variables depending on the event type
+      # - For manual trigger: use inputs
+      # - For push: detect version changes and derive affected images
       - name: Set env variables
         run: |
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            echo "BRANCH_TO_TEST=${{ github.event.pull_request.head.ref }}" >> "$GITHUB_ENV"
-            echo "PR_NUM=#${{ github.event.pull_request.number }}" >> "$GITHUB_ENV"
-            PR_FILES=$(gh pr view ${{ github.event.pull_request.number }} --repo github.com/${{ github.repository }} --json files --jq '.files[].path' | paste -sd "," -)
-            echo "Files changed in this pull request:"
-            echo "$PR_FILES"
-            echo "CHANGED_FILES=${PR_FILES}" >> $GITHUB_ENV
-            echo "IMAGE_TAG=" >> $GITHUB_ENV
-          elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "BRANCH_TO_TEST=${{ inputs.branch_to_test }}" >> $GITHUB_ENV
-            echo "PR_NUM=#000" >> $GITHUB_ENV
-            echo "CHANGED_FILES=${{ inputs.image_to_build }}" >> $GITHUB_ENV
-            echo "IMAGE_TAG=${{ inputs.image_tag }}" >> $GITHUB_ENV
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "BRANCH_TO_TEST=${{ inputs.branch_to_test }}" >> "$GITHUB_ENV"
+            echo "PR_NUM=#000" >> "$GITHUB_ENV"
+            echo "CHANGED_FILES=${{ inputs.image_to_build }}" >> "$GITHUB_ENV"
+            echo "IMAGE_TAG=${{ inputs.image_tag }}" >> "$GITHUB_ENV"
           elif [ "${{ github.event_name }}" == "push" ]; then
             echo "BRANCH_TO_TEST=${{ github.ref }}" >> $GITHUB_ENV
             echo "PR_NUM=#000" >> $GITHUB_ENV
-            PUSH_FILES=$(gh api repos/${{ github.repository }}/commits/${{ github.sha }} | jq -r '.files[].filename' | paste -sd "," -)
-            echo "Files changed in this push:"
-            echo "$PUSH_FILES"
-            echo "CHANGED_FILES=${PUSH_FILES}" >> $GITHUB_ENV
+            FILE_LIST=""
+            for file in $(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -E 'pyproject.toml|package.json'); do
+              if [[ $file == *"pyproject.toml" ]]; then
+                old_version=$(git show ${{ github.event.before }}:$file | grep '^version\s*=' | cut -d '"' -f2)
+                new_version=$(grep '^version\s*=' "$file" | cut -d '"' -f2)
+              elif [[ $file == *"package.json" ]]; then
+                old_version=$(git show ${{ github.event.before }}:$file | jq -r '.version')
+                new_version=$(jq -r '.version' "$file")
+              fi
+              if [ "$old_version" != "$new_version" ]; then
+                FILE_LIST+="$file,"
+              fi
+            done
+            FILE_LIST=${FILE_LIST%,}  # remove trailing comma
+            echo "Files with version changes in this push:"
+            echo "$FILE_LIST"
+            echo "CHANGED_FILES=${FILE_LIST}" >> $GITHUB_ENV
             echo "IMAGE_TAG=" >> $GITHUB_ENV
           fi
     
+      # Step: Prepare matrix for images to build based on changed files
       - name: Prepare matrix
         id: prep_matrix
         run: |
@@ -109,43 +129,22 @@ jobs:
           echo "IMAGES_TO_BUILD=${IMAGES_TO_BUILD[*]}" >> $GITHUB_ENV
           echo "Images to build: ${IMAGES_TO_BUILD[*]}"
 
-          # # Create matrix
-          # matrix_include=$(for image in "${IMAGES_TO_BUILD[@]}"; do echo "{\"image_name\":\"${image}\"}"; done | jq -s . | tr -d '[:space:]')
-          # MATRIX="{\"include\":$matrix_include}"
-          # echo $MATRIX
-
-          # Create matrix
+          # Create matrix for image/tag/target/tag_suffix
           matrix_include=$(for image in "${IMAGES_TO_BUILD[@]}"; do
             if [ "$image" == "aiverify-apigw" ]; then
               tag=$(grep -oP '(?<=version = ")[^"]*' $image/pyproject.toml)
-              target="default-target"
+              echo "{\"image_name\":\"${image}\", \"target\":\"\", \"tag_suffix\":\"\", \"tag\":\"${tag}\"}"
             elif [ "$image" == "aiverify-portal" ]; then
-              tag=$(grep -oP '(?<=version": ")[^"]*' $image/package.json)
-              target="default-target"
+              tag=$(grep -oP '(?<=version\": \")[^\"]*' $image/package.json)
+              echo "{\"image_name\":\"${image}\", \"target\":\"\", \"tag_suffix\":\"\", \"tag\":\"${tag}\"}"
             elif [ "$image" == "aiverify-test-engine-worker" ]; then
-              tag=$(grep -oP '(?<=version = ")[^"]*' $image/pyproject.toml)
-              target="default-target"
-            else
-              tag="default-tag"
-              target="default-target"
-            fi
-            echo "{\"image_name\":\"${image}\", \"target\":\"${target}\", \"tag\":\"${tag}\"}"
-          done | jq -s . | tr -d '[:space:]')
-          MATRIX="{\"include\":$matrix_include}"
-          echo $MATRIX
-
-          matrix_include=$(for image in "${IMAGES_TO_BUILD[@]}"; do
-            if [ "$image" == "aiverify-apigw" ]; then
-              echo "{\"image_name\":\"${image}\", \"target\":\"\", \"tag_suffix\":\"\"}"
-            elif [ "$image" == "aiverify-portal" ]; then
-              echo "{\"image_name\":\"${image}\", \"target\":\"\", \"tag_suffix\":\"\"}"
-            elif [ "$image" == "aiverify-test-engine-worker" ]; then
-              echo "{\"image_name\":\"${image}\", \"target\":\"aiverify-test-engine-worker-base\", \"tag_suffix\":\"base\"}"
-              echo "{\"image_name\":\"${image}\", \"target\":\"venv-build\", \"tag_suffix\":\"venv\"}"
-              echo "{\"image_name\":\"${image}\", \"target\":\"docker-build\", \"tag_suffix\":\"docker\"}"
+              tag=$(grep -oP '(?<=version = \")[^"]*' $image/pyproject.toml)
+              echo "{\"image_name\":\"${image}\", \"target\":\"aiverify-test-engine-worker-base\", \"tag_suffix\":\"base\", \"tag\":\"${tag}\"}"
+              echo "{\"image_name\":\"${image}\", \"target\":\"venv-build\", \"tag_suffix\":\"venv\", \"tag\":\"${tag}\"}"
+              echo "{\"image_name\":\"${image}\", \"target\":\"docker-build\", \"tag_suffix\":\"docker\", \"tag\":\"${tag}\"}"
             else
               echo "STATUS=failure" >> $GITHUB_ENV
-              echo "Invalid image value: ${image_name}"
+              echo "Invalid image value: ${image}"
               exit 1
             fi
           done | jq -s . | tr -d '[:space:]')
@@ -156,9 +155,14 @@ jobs:
           echo "pr_num=${{ env.PR_NUM }}" >> $GITHUB_OUTPUT
           echo "image_tag=${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
           echo "matrix={\"include\":$matrix_include}" >> $GITHUB_OUTPUT
+          if [ $MATRIX == '{"include":[]}' ]; then
+            echo "Nothing to build"
+          fi
 
-  run-image-image-build-push:
+  # Job to run the actual image build and push, if matrix is not empty
+  run-image-build-push:
     needs: init-image-build-push
+    if: ${{ needs.init-image-build-push.outputs.matrix != '{"include":[]}' }}
     runs-on: ubuntu-latest
     timeout-minutes: 360
     strategy:
@@ -167,16 +171,19 @@ jobs:
       max-parallel: 1
     steps:
       
+      # Checkout the code at the specified branch or tag
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           ref: ${{ needs.init-image-build-push.outputs.branch_to_test }}
 
-      # Free up disk space first as the image to build is very large
+      # Free up disk space before building large images
       - name: Free up disk space
         run: |
           bash .ci/free_disk_space.sh          
 
+      # Step: Build and push image using docker_build_push.sh script
+      # If no manual tag is provided, extract the version from pyproject.toml or package.json
       - name: Build and push image
         id: build_push_image
         run: |
@@ -207,5 +214,3 @@ jobs:
               echo "STATUS=failure" >> $GITHUB_ENV
               exit 1
           fi
-
-

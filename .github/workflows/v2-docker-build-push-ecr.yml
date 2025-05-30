@@ -1,0 +1,137 @@
+name: v2 Docker Build & Push (ECR)
+
+# This GitHub Actions workflow builds and pushes Docker images to AWS ECR.
+# It supports both manual dispatch and scheduled daily builds, using a dynamic matrix strategy.
+
+env:
+  AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
+  AWS_REGION: ${{ vars.AWS_REGION }}
+
+on:
+  # Run this workflow everyday at 6:05pm Singapore Time (10:05am UTC)
+  schedule:
+    - cron: '5 10 * * *'
+
+  # Allow manual trigger with custom parameters
+  workflow_dispatch:
+    inputs:
+      image_name:
+        description: 'Docker image name, e.g. aiverify-apigw'
+        required: true
+        default: 'aiverify-apigw'
+      tag:
+        description: 'Tag for the Docker image, e.g. 2.0.2'
+        required: true
+        default: 'dev'
+      github_username:
+        description: 'GitHub username or org that owns the image, e.g. aiverify-foundation'
+        required: true
+        default: 'aiverify-foundation'
+      dockerfile_dir:
+        description: 'Relative path to the Dockerfile directory, e.g. aiverify-apigw'
+        required: true
+        default: 'aiverify-apigw'
+      build_target:
+        description: 'Optional: Docker build target'
+        required: false
+        default: ''
+      tag_suffix:
+        description: 'Optional: Tag suffix for the target'
+        required: false
+        default: ''
+      branch:
+        description: 'Git branch to check out, e.g. main'
+        required: false
+        default: 'main'
+
+  # push:
+  #   branches:
+  #     - 'ci/image-scan-ecr'
+ 
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    permissions:
+      id-token: write
+      contents: read
+
+    strategy:
+      # Dynamically create the build matrix based on the event type
+      # - For manual dispatch: build a single image from input parameters
+      # - For scheduled or push triggers: build multiple predefined image configs
+      matrix:
+        include: ${{ fromJson(
+          github.event_name == 'workflow_dispatch'
+            && format('[{{"image_name":"{0}","dockerfile_dir":"{1}","build_target":"{2}","tag_suffix":"{3}"}}]', 
+                github.event.inputs.image_name,
+                github.event.inputs.dockerfile_dir,
+                github.event.inputs.build_target,
+                github.event.inputs.tag_suffix
+            ) || 
+             '[ {"image_name":"aiverify-portal","dockerfile_dir":"aiverify-portal","build_target":"","tag_suffix":""},
+                {"image_name":"aiverify-apigw","dockerfile_dir":"aiverify-apigw","build_target":"","tag_suffix":""},
+                {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"aiverify-test-engine-worker-base","tag_suffix":"base"},
+                {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"venv-build","tag_suffix":"venv"},
+                {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"docker-build","tag_suffix":"docker"} ]' ) }}
+      fail-fast: false
+      max-parallel: 1
+
+    steps:
+
+      # Configure AWS credentials using OIDC
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      # Log in to AWS Elastic Container Registry (ECR)
+      - name: Login to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2      
+
+      # Check out the source code from the specified branch
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch || 'main' }}
+      
+      # Free up disk space before building large Docker images
+      - name: Free up disk space
+        run: |
+          bash .ci/free_disk_space.sh
+
+      # Delete existing images from the ECR repository
+      - name: Delete existing images from ECR
+        run: |
+          aws ecr list-images \
+            --repository-name ${{ github.event.inputs.github_username || 'aiverify-foundation' }}/${{ matrix.image_name }} \
+            --filter tagStatus=ANY \
+            --query 'imageIds' \
+            --output json | \
+          jq -c '.[]' | \
+          while read -r image; do
+            aws ecr batch-delete-image \
+              --repository-name ${{ github.event.inputs.github_username || 'aiverify-foundation' }}/${{ matrix.image_name }} \
+              --image-ids "[$image]"
+          done
+
+      # Build and push Docker image using provided or matrix values
+      - name: Run Docker build & push
+        run: |
+          chmod +x .ci/docker_build_push_ecr.sh
+          image_name="${{ matrix.image_name }}"
+          tag="${{ github.event.inputs.tag || 'dev' }}"
+          github_username="${{ github.event.inputs.github_username || 'aiverify-foundation' }}"
+          dockerfile_dir="${{ matrix.dockerfile_dir }}"
+          build_target="${{ matrix.build_target }}"
+          tag_suffix="${{ matrix.tag_suffix }}"
+
+          .ci/docker_build_push_ecr.sh \
+            "$image_name" \
+            "$tag" \
+            "$github_username" \
+            "$dockerfile_dir" \
+            "$build_target" \
+            "$tag_suffix"

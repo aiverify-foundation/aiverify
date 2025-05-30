@@ -21,7 +21,10 @@ router = APIRouter(prefix="/test_runs", tags=["test_run"])
 TASK_STREAM_NAME = "aiverify:worker:task_queue"
 TASK_GROUP_NAME = "aiverify_workers"
 host = os.getenv("VALKEY_HOST_ADDRESS", "127.0.0.1")
-port = int(os.getenv("VALKEY_PORT", 6379))
+try:
+    port = int(os.getenv("VALKEY_PORT", "6379"))
+except:
+    port = 6379
 client = valkey.Valkey(host=host, port=port, db=0)
 # client.ping()
 

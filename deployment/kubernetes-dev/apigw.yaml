@@ -45,7 +45,8 @@ spec:
         fsGroup: 1000
       containers:
         - name: apigw
-          image: ghcr.io/aiverify-foundation/aiverify-apigw
+          image: aiverify-apigw
+          imagePullPolicy: Never
           ports:
             - containerPort: 4000
           # livenessProbe:
