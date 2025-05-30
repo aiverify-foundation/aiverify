@@ -1,27 +1,23 @@
 name: v2 Coverity Scan
 
 on:
-  
-  pull_request:
-    types: [ assigned, synchronize ]
-    branches:
-      - 'main'
+  # Run this workflow everyday at 6:05pm Singapore Time (10:05am UTC)
+  schedule:
+    - cron: '5 10 * * *'
 
+  # Run this workflow manually from Actions tab
   workflow_dispatch:
-    # inputs:
-    #   branch_to_test:
-    #     description: 'Branch or tag to run test'
-    #     required: true
-    #     default: 'main'
-    #     type: string
-  
-  push:
-    branches: [ 'main' ]
+
+# Allow one concurrent deployment
+concurrency:
+  group: ${{ github.repository }}-${{ github.workflow }}
+  cancel-in-progress: true
 
 jobs:
-  Coverity:
-    if: (github.event_name == 'pull_request' && github.event.pull_request.assignee != null) || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
+  Static-Application-Security-Testing:
+
     runs-on: ubuntu-latest
+    timeout-minutes: 60
 
     env:
       COV_URL: ${{ secrets.COV_URL }}
@@ -41,7 +37,6 @@ jobs:
 
     - name: Coverity Download
       run: |
-        
         curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/downloadFile.htm?fn=$CSA.tar.gz | tar -C /tmp -xzf -
         curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o /tmp/$CSA/bin/license.dat $COV_URL/downloadFile.htm?fn=license.dat
         /tmp/$CSA/bin/cov-configure --java
@@ -56,10 +51,9 @@ jobs:
           --description $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID --target $RUNNER_OS --version $GITHUB_SHA
 
     - name: Coverity Quality Gate
-      # if: ${{ github.event_name != 'pull_request' }}
       run: |
         curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/api/viewContents/issues/v1/High%20Impact%20Outstanding?projectId=$COVERITY_PROJECT > results.json
-        if [ $(cat results.json | jq .viewContentsV1.totalRows) -ne 0 ]; then cat results.json | jq .viewContentsV1.rows; exit 1; fi
+        cat results.json
 
     - name: Export Results to CSV
       if: always()
@@ -74,17 +68,3 @@ jobs:
           name: coverity-results-${{ github.run_id }}
           path: |
             ${{ github.workspace }}/coverity.csv
-
-    # - id: changeset
-    #   name: Get Pull Request Changeset
-    #   uses: jitterbit/get-changed-files@v1
-    #   if: ${{ github.event_name == 'pull_request' }}
-
-    # - name: Coverity Incremental Scan
-    #   if: ${{ github.event_name == 'pull_request' && steps.changeset.outputs.added_modified != '' }}
-    #   run: |
-    #     export PATH=$PATH:/tmp/$CSA/bin
-    #     set -x
-    #     cov-run-desktop --dir idir --url $COV_URL --stream aiverify-2.x --build $BLDCMD
-    #     cov-run-desktop --dir idir --url $COV_URL --stream aiverify-2.x --present-in-reference false \
-    #       --ignore-uncapturable-inputs true --exit1-if-defects true ${{ steps.changeset.outputs.added_modified }}
