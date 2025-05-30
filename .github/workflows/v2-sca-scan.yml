@@ -3,15 +3,9 @@
 name: v2 Software Composition Analysis
 
 on:
-  # Runs on a schedule
+  # Run this workflow everyday at 6:05pm Singapore Time (10:05am UTC)
   schedule:
-    - cron: "5 14 * * 5"
-
-  # Runs when a pull request review is being submitted    
-  pull_request:
-    types: [assigned, synchronize]
-    branches:
-      - "main"
+    - cron: '5 10 * * *'
 
   # Run this workflow manually from Actions tab
   workflow_dispatch:
@@ -22,7 +16,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  software-composition-analysis:
+  Software-Composition-Analysis:
 
     runs-on: ubuntu-latest
     timeout-minutes: 60
