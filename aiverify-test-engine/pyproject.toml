@@ -38,7 +38,7 @@ classifiers = [
 [project.optional-dependencies]
 tensorflow = ["tensorflow>=2.18.0"]
 
-gbm = ["lightgbm==4.5.0", "xgboost==2.1.1"]
+gbm = ["lightgbm>=4.6.0", "xgboost==2.1.1"]
 
 pytorch = ["torch>=2.0", "torchvision>=0.15.0"]
 
