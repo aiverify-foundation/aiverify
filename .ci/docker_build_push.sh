@@ -28,9 +28,14 @@ docker buildx inspect --bootstrap
 echo "Build and push image name=$IMAGE_NAME tag=$TAG target=$TARGET tag_suffix=$TAG_SUFFIX..."
 
 # Build and push the image for both amd64 and arm64 platforms
+
 if [ -n "$TARGET" ]; then
+    # Build aiverify-python-base
+    docker buildx build --platform linux/amd64,linux/arm64 -t aiverify-python-base -f aiverify-test-engine/Dockerfile .
     docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/$GITHUB_USERNAME/$IMAGE_NAME:$TAG-$TAG_SUFFIX -f $DOCKERFILE_DIR/Dockerfile --provenance=false --sbom=false --target $TARGET --push .
 else
+    # Build aiverify-python-base
+    docker buildx build --platform linux/amd64,linux/arm64 -t aiverify-python-base -f aiverify-test-engine/Dockerfile .
     docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/$GITHUB_USERNAME/$IMAGE_NAME:$TAG -f $DOCKERFILE_DIR/Dockerfile --provenance=false --sbom=false --push .
 fi
 
