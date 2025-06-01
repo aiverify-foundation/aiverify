@@ -59,7 +59,6 @@ jobs:
       if: always()
       run: |
         curl -fLsS --header "Accept: text/csv" --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/api/viewContents/issues/v1/High%20Impact%20Outstanding?projectId=$COVERITY_PROJECT > coverity.csv
-        ls -la
 
     - name: Download Coverity Excel Sheet
       if: always()
