@@ -52,7 +52,7 @@ jobs:
       - name: Build & RUN PORTAL, APIGW & Test Engine Worker
         run: |
           echo "Building aiverify-python-base"
-          docker buildx build -t aiverify-python-base -f aiverify-test-engine/Dockerfile .
+          docker buildx build -t aiverify-python-base -f aiverify-test-engine/Dockerfile --no-cache .
           cd deployment/docker-compose-dev
 
           echo "Building & Running Portal, APIGW & Test Engine Worker"
