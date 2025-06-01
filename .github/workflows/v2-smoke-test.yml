@@ -71,7 +71,8 @@ jobs:
 
           echo "Building & Running Portal, APIGW & Test Engine Worker"
           # COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose up -d
-          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile portal --profile automated-tests-venv up -d
+          # COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile portal --profile automated-tests-venv up -d
+          docker compose up -d
           bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
           cd ${GITHUB_WORKSPACE}
 
@@ -165,8 +166,8 @@ jobs:
       - name: Run Smoke Test
         run: |
           cd smoke-testing
-          npm install
-          bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
+          # npm install
+          # bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
           npx playwright install --with-deps
           URL=http://127.0.0.1:3000 npx playwright test tests/03-smoke.spec.js
 
