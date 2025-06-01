@@ -190,6 +190,7 @@ jobs:
           if [ "${{ needs.init-image-build-push.outputs.image_tag }}" == "" ]; then
             if [ "${{ matrix.image_name }}" == "aiverify-test-engine-worker" ] || [ "${{ matrix.image_name }}" == "aiverify-apigw" ]; then
               tag=$(grep -oP '(?<=version = ")[^"]*' ${{ matrix.image_name }}/pyproject.toml)
+              build_aiverify_python_base=true
             elif [ "${{ matrix.image_name }}" == "aiverify-portal" ]; then
               tag=$(grep -oP '(?<=version": ")[^"]*' ${{ matrix.image_name }}/package.json)
             else
@@ -202,6 +203,11 @@ jobs:
           fi
 
           set +e
+          if [[ "$build_aiverify_python_base" = true ]]; then
+            echo "Building aiverify-python-base..."
+            push=false
+            bash .ci/docker_build_push.sh aiverify-python-base $tag aiverify-foundation aiverify-test-engine ${{ matrix.target }} ${{ matrix.tag_suffix }} $push
+          fi
           echo "Building image ${{ matrix.image_name}}:$tag ${{ matrix.target }} ${{ matrix.tag_suffix }}..."
           if [ "${{ matrix.target }}" == "" ]; then
             bash .ci/docker_build_push.sh ${{ matrix.image_name }} $tag aiverify-foundation ${{ matrix.image_name }}
