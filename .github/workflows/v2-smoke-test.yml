@@ -70,8 +70,9 @@ jobs:
           cd deployment/docker-compose-dev
 
           echo "Building & Running Portal, APIGW & Test Engine Worker"
-          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile portal up -d
-          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile automated-tests-venv up -d
+          # COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose up -d
+          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile portal --profile automated-tests-venv up -d
+          bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
           cd ${GITHUB_WORKSPACE}
 
       # - name: Set ROOT_PATH Variable
