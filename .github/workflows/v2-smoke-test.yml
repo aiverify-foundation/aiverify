@@ -55,25 +55,12 @@ jobs:
           docker buildx build -t aiverify-python-base -f aiverify-test-engine/Dockerfile --no-cache .
           bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
 
-          echo "Building APIGW Image"
-          docker buildx build -t aiverify-apigw -f aiverify-apigw/Dockerfile --no-cache .
-          bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
-
-          echo "Building Test Engine Worker Image"
-          docker buildx build -t aiverify-test-engine-worker -f aiverify-test-engine-worker/Dockerfile --no-cache .
-          bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
-
-          echo "Building Portal Image"
-          docker buildx build -t aiverify-portal -f aiverify-portal/Dockerfile --no-cache .
-          bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
-
           cd deployment/docker-compose-dev
 
           echo "Building & Running Portal, APIGW & Test Engine Worker"
-          # COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose up -d
-          # COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile portal --profile automated-tests-venv up -d
-          docker compose up -d
+          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose up --profile portal up -d
           bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
+          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile automated-tests-venv up -d
           cd ${GITHUB_WORKSPACE}
 
       # - name: Set ROOT_PATH Variable
@@ -167,7 +154,6 @@ jobs:
         run: |
           cd smoke-testing
           npm ci
-          bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
           npx playwright install --with-deps
           URL=http://127.0.0.1:3000 npx playwright test tests/03-smoke.spec.js
 
