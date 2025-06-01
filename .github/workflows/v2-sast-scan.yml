@@ -53,7 +53,7 @@ jobs:
     - name: Coverity Scan Results
       run: |
         curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/api/viewContents/issues/v1/High%20Impact%20Outstanding?projectId=$COVERITY_PROJECT > results.json
-        cat results.json
+        cat results.json | jq .viewContentsV1.rows
 
     - name: Export Coverity Scan Results to CSV
       if: always()
