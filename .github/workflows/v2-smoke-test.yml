@@ -61,6 +61,7 @@ jobs:
           COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile portal up -d
           bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
           COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile automated-tests-venv up -d
+          docker builder prune
           cd ${GITHUB_WORKSPACE}
 
       # - name: Set ROOT_PATH Variable
