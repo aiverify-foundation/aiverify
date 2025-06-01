@@ -154,6 +154,7 @@ jobs:
         run: |
           cd smoke-testing
           npm ci
+          bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
           npx playwright install --with-deps
           URL=http://127.0.0.1:3000 npx playwright test tests/03-smoke.spec.js
 
