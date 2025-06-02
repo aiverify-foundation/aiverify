@@ -71,7 +71,7 @@ jobs:
             ) || 
              '[ {"image_name":"aiverify-portal","dockerfile_dir":"aiverify-portal","build_target":"","tag_suffix":""},
                 {"image_name":"aiverify-apigw","dockerfile_dir":"aiverify-apigw","build_target":"","tag_suffix":""},
-                {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"aiverify-test-engine-worker-base","tag_suffix":"base"},
+                {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"base","tag_suffix":"base"},
                 {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"venv-build","tag_suffix":"venv"},
                 {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"docker-build","tag_suffix":"docker"} ]' ) }}
       fail-fast: false
@@ -128,7 +128,12 @@ jobs:
           build_target="${{ matrix.build_target }}"
           tag_suffix="${{ matrix.tag_suffix }}"
 
+          if [ "${{ matrix.image_name }}" == "aiverify-test-engine-worker" ] || [ "${{ matrix.image_name }}" == "aiverify-apigw" ]; then
+            .ci/docker_build_push.sh true aiverify-python-base $tag aiverify-foundation aiverify-test-engine
+          fi
+
           .ci/docker_build_push_ecr.sh \
+            true
             "$image_name" \
             "$tag" \
             "$github_username" \
