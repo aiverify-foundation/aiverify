@@ -66,7 +66,7 @@ docker buildx create --name mybuilder --use
 # Inspect the builder instance
 docker buildx inspect --bootstrap
 
-if [[ "$PUSH" = false ]]; then
+if [[ "$PUSH" == "false" ]]; then
     # Build aiverify-python-base
     docker buildx build --platform linux/amd64,linux/arm64 -t $IMAGE_NAME -f $DOCKERFILE_DIR/Dockerfile .
 else
