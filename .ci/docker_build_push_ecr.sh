@@ -72,12 +72,10 @@ docker buildx create --name mybuilder --use
 docker buildx inspect --bootstrap
 
 if [[ "$PUSH" == "false" ]]; then
-    ls -la
-    pwd
     # Build aiverify-python-base
     echo "Build image name=$IMAGE_NAME"
     echo "Docker Directory=$DOCKERFILE_DIR"
-    docker buildx build --platform linux/amd64,linux/arm64 -t $IMAGE_NAME -f $DOCKERFILE_DIR/Dockerfile .
+    docker buildx build --platform linux/amd64,linux/arm64 -t $IMAGE_NAME -f aiverify-test-engine/Dockerfile .
 else
 
     echo "Build and push image name=$IMAGE_NAME tag=$TAG target=$TARGET tag_suffix=$TAG_SUFFIX..."
