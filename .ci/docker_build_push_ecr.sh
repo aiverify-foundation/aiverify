@@ -60,9 +60,6 @@ echo $DOCKERFILE_DIR
 ECR_REPO=$IMAGE_NAME
 ECR_IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$GITHUB_USERNAME/$IMAGE_NAME
 
-# If this script is run locally, uncomment the following line to log in to ECR
-#aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
-
 # echo "Create a new build instance..."
 
 # Create a new builder instance
@@ -76,6 +73,9 @@ if [[ "$PUSH" == "false" ]]; then
     echo "Build AI Verify Python Base"
     docker buildx build --platform linux/amd64,linux/arm64 -t $IMAGE_NAME -f $DOCKERFILE_DIR/Dockerfile .
 else
+    # If this script is run locally, uncomment the following line to log in to ECR
+    # aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+    
     echo "Build and push image name=$IMAGE_NAME tag=$TAG target=$TARGET tag_suffix=$TAG_SUFFIX..."
     
     # Build and push the image for both amd64 and arm64 platforms
