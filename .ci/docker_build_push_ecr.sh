@@ -71,6 +71,7 @@ if [[ "$PUSH" == "false" ]]; then
     pwd
     # Build aiverify-python-base
     echo "Build image name=$IMAGE_NAME"
+    echo "Docker Directory=$DOCKERFILE_DIR"
     docker buildx build --platform linux/amd64,linux/arm64 -t $IMAGE_NAME -f $DOCKERFILE_DIR/Dockerfile .
 else
 
