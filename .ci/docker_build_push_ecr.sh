@@ -52,11 +52,6 @@ DOCKERFILE_DIR=$5
 TARGET=${6:-}
 TAG_SUFFIX=${7:-}
 
-echo $PUSH
-echo $IMAGE_NAME
-echo $TAG
-echo $DOCKERFILE_DIR
-
 ECR_REPO=$IMAGE_NAME
 ECR_IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$GITHUB_USERNAME/$IMAGE_NAME
 
@@ -71,7 +66,7 @@ docker buildx create --name mybuilder --use
 # Inspect the builder instance
 docker buildx inspect --bootstrap
 
-if [ $PUSH == "false" ]; then
+if [[ "$PUSH" == "false" ]]; then
     # Build aiverify-python-base
     docker buildx build --platform linux/amd64,linux/arm64 -t $IMAGE_NAME -f $DOCKERFILE_DIR/Dockerfile .
 else
