@@ -71,7 +71,8 @@ docker buildx inspect --bootstrap
 if [[ "$PUSH" == "false" ]]; then
     # Build aiverify-python-base
     echo "Build AI Verify Python Base"
-    docker buildx build --platform linux/amd64,linux/arm64 -t $IMAGE_NAME -f $DOCKERFILE_DIR/Dockerfile .
+    docker buildx build --platform linux/amd64,linux/arm64 -t $ECR_IMAGE_URI:$TAG -f $DOCKERFILE_DIR/Dockerfile --provenance=false --sbom=false --push .
+
 else
     # If this script is run locally, uncomment the following line to log in to ECR
     # aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
