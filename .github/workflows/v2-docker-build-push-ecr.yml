@@ -132,7 +132,7 @@ jobs:
             .ci/docker_build_push_ecr.sh \
             false \
             aiverify-python-base \
-            "$tag" \ 
+            dev \ 
             aiverify-foundation \
             aiverify-test-engine
           fi
