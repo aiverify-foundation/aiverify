@@ -7,13 +7,21 @@ if [ "$#" -lt 1 ] ; then
 fi
 
 # Set variables
-IMAGE_NAME=$1
-TAG=$2
-GITHUB_USERNAME=$3
-DOCKERFILE_DIR=$4
-TARGET=${5:-}
-TAG_SUFFIX=${6:-}
-PUSH=${7:-}
+PUSH=$1
+IMAGE_NAME=$2
+TAG=$3
+GITHUB_USERNAME=$4
+DOCKERFILE_DIR=$5
+TARGET=${6:-}
+TAG_SUFFIX=${7:-}
+
+# echo "Create a new build instance..."
+
+# Create a new builder instance
+docker buildx create --name mybuilder --use
+
+# Inspect the builder instance
+docker buildx inspect --bootstrap
 
 if [[ "$PUSH" = false ]]; then
     # Build aiverify-python-base
@@ -21,14 +29,6 @@ if [[ "$PUSH" = false ]]; then
 else
     # Login to GitHub Container Registry
     echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USERNAME --password-stdin
-
-    # echo "Create a new build instance..."
-
-    # Create a new builder instance
-    docker buildx create --name mybuilder --use
-
-    # Inspect the builder instance
-    docker buildx inspect --bootstrap
 
     echo "Build and push image name=$IMAGE_NAME tag=$TAG target=$TARGET tag_suffix=$TAG_SUFFIX..."
 
@@ -49,6 +49,7 @@ else
         docker buildx imagetools create -t ghcr.io/$GITHUB_USERNAME/$IMAGE_NAME:$TAG ghcr.io/$GITHUB_USERNAME/$IMAGE_NAME:$TAG
         docker buildx imagetools create -t ghcr.io/$GITHUB_USERNAME/$IMAGE_NAME:latest ghcr.io/$GITHUB_USERNAME/$IMAGE_NAME:$TAG
     fi
+fi
 
 # Clean up build cache
 yes | docker builder prune --all
