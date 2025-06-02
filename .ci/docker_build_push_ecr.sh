@@ -39,7 +39,7 @@
 
 # Check if the correct number of arguments is provided
 if [ "$#" -lt 1 ] ; then
-    echo "Usage: $0 <image-name> <tag> <github-username> <dockerfile-dir> [build-target tag-suffix]"
+    echo "Usage: $0 <push-build-boolean> <image-name> <tag> <github-username> <dockerfile-dir> [build-target tag-suffix]"
     exit 1
 fi
 
