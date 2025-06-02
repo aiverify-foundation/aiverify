@@ -129,7 +129,12 @@ jobs:
           tag_suffix="${{ matrix.tag_suffix }}"
 
           if [ "${{ matrix.image_name }}" == "aiverify-test-engine-worker" ] || [ "${{ matrix.image_name }}" == "aiverify-apigw" ]; then
-            .ci/docker_build_push_ecr.sh false aiverify-python-base $tag aiverify-foundation aiverify-test-engine
+            .ci/docker_build_push_ecr.sh \
+            "false" \ 
+            "aiverify-python-base" \
+            "$tag" \
+            "aiverify-foundation" \ 
+            "aiverify-test-engine"
           fi
 
           .ci/docker_build_push_ecr.sh \
