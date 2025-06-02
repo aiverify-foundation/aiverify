@@ -2,7 +2,7 @@
 
 # Check if the correct number of arguments is provided
 if [ "$#" -lt 1 ] ; then
-    echo "Usage: $0 <image-name> <tag> <github-username> <dockerfile-dir> [target tag-suffix]"
+    echo "Usage: $0 <push-build-boolean> <image-name> <tag> <github-username> <dockerfile-dir> [target tag-suffix]"
     exit 1
 fi
 
@@ -25,6 +25,7 @@ docker buildx inspect --bootstrap
 
 if [[ "$PUSH" = false ]]; then
     # Build aiverify-python-base
+    echo "Build AI Verify Python Base"
     docker buildx build --platform linux/amd64,linux/arm64 -t $IMAGE_NAME -f $DOCKERFILE_DIR/Dockerfile .
 else
     # Login to GitHub Container Registry
