@@ -130,7 +130,7 @@ jobs:
 
           if [ "${{ matrix.image_name }}" == "aiverify-test-engine-worker" ] || [ "${{ matrix.image_name }}" == "aiverify-apigw" ]; then
             .ci/docker_build_push_ecr.sh \
-            false \
+            "false" \
             aiverify-python-base \
             "$tag" \ 
             aiverify-foundation \
