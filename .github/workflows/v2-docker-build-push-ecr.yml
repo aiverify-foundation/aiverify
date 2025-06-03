@@ -6,6 +6,7 @@ name: v2 Docker Build & Push (ECR)
 env:
   AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
   AWS_REGION: ${{ vars.AWS_REGION }}
+
   GITHUB_TOKEN: ${{ github.token }}
 
 on:
@@ -56,7 +57,8 @@ jobs:
     permissions:
       id-token: write
       contents: read
-
+      packages: write
+      
     strategy:
       # Dynamically create the build matrix based on the event type
       # - For manual dispatch: build a single image from input parameters
