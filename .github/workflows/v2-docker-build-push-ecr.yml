@@ -117,12 +117,15 @@ jobs:
               --image-ids "[$image]"
           done
 
-      # Enable containerd image store for Docker engine
-      - name: Enable containerd image store
+      # Build and push aiverify-python-base to GHCR
+      - name: Build and push aiverify-python-base to GHCR
         run: |
-          sudo mkdir -p /etc/docker
-          echo '{"features": {"containerd-snapshotter": true}}' | sudo tee /etc/docker/daemon.json
-          sudo systemctl restart docker
+          chmod +x .ci/docker_build_push.sh
+          .ci/docker_build_push.sh \
+            aiverify-python-base \
+            latest \
+            aiverify-foundation \
+            aiverify-test-engine
 
       # Build and push Docker image using provided or matrix values
       - name: Run Docker build & push

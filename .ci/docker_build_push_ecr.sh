@@ -27,14 +27,14 @@
 #   2. Uncomment the `aws ecr get-login-password` line to log in to ECR.
 #
 # Usage:
-#   bash .ci/docker_build_push.sh <push> <image-name> <tag> <github-username> <dockerfile-dir> [build-target tag-suffix]
+#   bash .ci/docker_build_push.sh <image-name> <tag> <github-username> <dockerfile-dir> [build-target tag-suffix]
 #
 # Example:
-#  bash .ci/docker_build_push.sh false aiverify-apigw 2.0.1 aiverify-foundation aiverify-apigw
-#  bash .ci/docker_build_push.sh false aiverify-apigw 2.0.1 aiverify-foundation aiverify-portal
-#  bash .ci/docker_build_push.sh false aiverify-test-engine-worker 2.0.0 aiverify-foundation aiverify-test-engine-worker base base
-#  bash .ci/docker_build_push.sh false aiverify-test-engine-worker 2.0.0 aiverify-foundation aiverify-test-engine-worker venv-build venv
-#  bash .ci/docker_build_push.sh false aiverify-test-engine-worker 2.0.0 aiverify-foundation aiverify-test-engine-worker docker-build docker
+#  bash .ci/docker_build_push.sh aiverify-apigw 2.0.1 aiverify-foundation aiverify-apigw
+#  bash .ci/docker_build_push.sh aiverify-apigw 2.0.1 aiverify-foundation aiverify-portal
+#  bash .ci/docker_build_push.sh aiverify-test-engine-worker 2.0.0 aiverify-foundation aiverify-test-engine-worker base base
+#  bash .ci/docker_build_push.sh aiverify-test-engine-worker 2.0.0 aiverify-foundation aiverify-test-engine-worker venv-build venv
+#  bash .ci/docker_build_push.sh aiverify-test-engine-worker 2.0.0 aiverify-foundation aiverify-test-engine-worker docker-build docker
 ##########################################################################
 
 # Abort script if any command fails
@@ -42,52 +42,45 @@ set -e
 
 # Check if the correct number of arguments is provided
 if [ "$#" -lt 1 ] ; then
-    echo "Usage: $0 <push-build-boolean> <image-name> <tag> <github-username> <dockerfile-dir> [build-target tag-suffix]"
+    echo "Usage: $0 <image-name> <tag> <github-username> <dockerfile-dir> [build-target tag-suffix]"
     exit 1
 fi
 
 # Set variables
-PUSH=$1
-IMAGE_NAME=$2
-TAG=$3
-GITHUB_USERNAME=$4
-DOCKERFILE_DIR=$5
-TARGET=${6:-}
-TAG_SUFFIX=${7:-}
+IMAGE_NAME=$1
+TAG=$2
+GITHUB_USERNAME=$3
+DOCKERFILE_DIR=$4
+TARGET=${5:-}
+TAG_SUFFIX=${6:-}
 
 ECR_REPO=$IMAGE_NAME
 ECR_IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$GITHUB_USERNAME/$IMAGE_NAME
 
-if [[ "$PUSH" == "false" ]]; then
-    echo "Build image name=$IMAGE_NAME..."
-    docker buildx build --platform linux/amd64 -t $IMAGE_NAME -f $DOCKERFILE_DIR/Dockerfile --provenance=false --sbom=false --load .
-    echo "Docker image built successfully!"
+echo "Build and push image name=$IMAGE_NAME tag=$TAG target=$TARGET tag_suffix=$TAG_SUFFIX..."
+
+# If this script is run locally, uncomment the following line to log in to ECR
+# aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+
+# Build and push the image for both amd64 and arm64 platforms
+if [ -n "$TARGET" ]; then
+    docker buildx build --platform linux/amd64,linux/arm64 -t $ECR_IMAGE_URI:$TAG-$TAG_SUFFIX -f $DOCKERFILE_DIR/Dockerfile --provenance=false --sbom=false --target $TARGET --push .
 else
-    echo "Build and push image name=$IMAGE_NAME tag=$TAG target=$TARGET tag_suffix=$TAG_SUFFIX..."
-
-    # If this script is run locally, uncomment the following line to log in to ECR
-    # aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
-
-    # Build and push the image for both amd64 and arm64 platforms
-    if [ -n "$TARGET" ]; then
-        docker buildx build --platform linux/amd64,linux/arm64 -t $ECR_IMAGE_URI:$TAG-$TAG_SUFFIX -f $DOCKERFILE_DIR/Dockerfile --provenance=false --sbom=false --target $TARGET --push .
-    else
-        docker buildx build --platform linux/amd64,linux/arm64 -t $ECR_IMAGE_URI:$TAG -f $DOCKERFILE_DIR/Dockerfile --provenance=false --sbom=false --push .
-    fi
-
-    echo "Create and push manifests..."
-
-    # Create and push the manifest for specified tag and the latest tag
-    if [ -n "$TARGET" ]; then
-        docker buildx imagetools create -t $ECR_IMAGE_URI:$TAG-$TAG_SUFFIX $ECR_IMAGE_URI:$TAG-$TAG_SUFFIX
-        docker buildx imagetools create -t $ECR_IMAGE_URI:latest-$TAG_SUFFIX $ECR_IMAGE_URI:$TAG-$TAG_SUFFIX
-    else
-        docker buildx imagetools create -t $ECR_IMAGE_URI:$TAG $ECR_IMAGE_URI:$TAG
-        docker buildx imagetools create -t $ECR_IMAGE_URI:latest $ECR_IMAGE_URI:$TAG
-    fi
-
-    # Clean up build cache
-    yes | docker builder prune --all
-
-    echo "Docker image built and pushed to AWS ECR successfully!"
+    docker buildx build --platform linux/amd64,linux/arm64 -t $ECR_IMAGE_URI:$TAG -f $DOCKERFILE_DIR/Dockerfile --provenance=false --sbom=false --push .
 fi
+
+echo "Create and push manifests..."
+
+# Create and push the manifest for specified tag and the latest tag
+if [ -n "$TARGET" ]; then
+    docker buildx imagetools create -t $ECR_IMAGE_URI:$TAG-$TAG_SUFFIX $ECR_IMAGE_URI:$TAG-$TAG_SUFFIX
+    docker buildx imagetools create -t $ECR_IMAGE_URI:latest-$TAG_SUFFIX $ECR_IMAGE_URI:$TAG-$TAG_SUFFIX
+else
+    docker buildx imagetools create -t $ECR_IMAGE_URI:$TAG $ECR_IMAGE_URI:$TAG
+    docker buildx imagetools create -t $ECR_IMAGE_URI:latest $ECR_IMAGE_URI:$TAG
+fi
+
+# Clean up build cache
+yes | docker builder prune --all
+
+echo "Docker image built and pushed to AWS ECR successfully!"
