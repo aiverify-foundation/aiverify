@@ -98,10 +98,10 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch || 'main' }}
       
-      # # Free up disk space before building large Docker images
-      # - name: Free up disk space
-      #   run: |
-      #     bash .ci/free_disk_space.sh
+      # Free up disk space before building large Docker images
+      - name: Free up disk space
+        run: |
+          bash .ci/free_disk_space.sh
 
       # Delete existing images from the ECR repository
       - name: Delete existing images from ECR
