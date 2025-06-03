@@ -6,6 +6,7 @@ name: v2 Docker Build & Push (ECR)
 env:
   AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
   AWS_REGION: ${{ vars.AWS_REGION }}
+  GITHUB_TOKEN: ${{ github.token }}
 
 on:
   # Run this workflow everyday at 6:05pm Singapore Time (10:05am UTC)
