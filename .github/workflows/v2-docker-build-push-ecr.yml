@@ -80,6 +80,23 @@ jobs:
 
     steps:
 
+      # Check out the source code from the specified branch
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch || 'main' }}
+      
+      # # Free up disk space before building large Docker images
+      # - name: Free up disk space
+      #   run: |
+      #     bash .ci/free_disk_space.sh
+
+      # Build and push aiverify-python-base to GHCR
+      - name: Build and push aiverify-python-base to GHCR
+        run: |
+          chmod +x .ci/docker_build_push.sh
+          bash .ci/docker_build_push.sh aiverify-python-base latest aiverify-foundation aiverify-test-engine
+
       # Configure AWS credentials using OIDC
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -91,17 +108,6 @@ jobs:
       - name: Login to ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2      
-
-      # Check out the source code from the specified branch
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.inputs.branch || 'main' }}
-      
-      # # Free up disk space before building large Docker images
-      # - name: Free up disk space
-      #   run: |
-      #     bash .ci/free_disk_space.sh
 
       # Delete existing images from the ECR repository
       - name: Delete existing images from ECR
@@ -118,11 +124,6 @@ jobs:
               --image-ids "[$image]"
           done
 
-      # Build and push aiverify-python-base to GHCR
-      - name: Build and push aiverify-python-base to GHCR
-        run: |
-          chmod +x .ci/docker_build_push.sh
-          bash .ci/docker_build_push.sh aiverify-python-base latest aiverify-foundation aiverify-test-engine
 
       # Build and push Docker image using provided or matrix values
       - name: Run Docker build & push
