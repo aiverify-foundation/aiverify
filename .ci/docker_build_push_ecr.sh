@@ -61,7 +61,7 @@ ECR_IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$GITHUB_USERNAME
 # echo "Create a new build instance..."
 
 # Create a new builder instance
-docker buildx create --name mybuilder --use
+docker buildx create --name mybuilder --use --append
 
 # Inspect the builder instance
 docker buildx inspect --bootstrap
@@ -69,7 +69,7 @@ docker buildx inspect --bootstrap
 if [[ "$PUSH" == "false" ]]; then
     # Build aiverify-python-base
     echo "Build AI Verify Python Base"
-    docker buildx build --platform linux/amd64,linux/arm64 -t $IMAGE_NAME -f $DOCKERFILE_DIR/Dockerfile .
+    docker buildx build --platform linux/amd64,linux/arm64 -t $IMAGE_NAME -f ../$DOCKERFILE_DIR/Dockerfile --no-cache .
     
 else
     echo "Build and push image name=$IMAGE_NAME tag=$TAG target=$TARGET tag_suffix=$TAG_SUFFIX..."
