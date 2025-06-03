@@ -20,7 +20,7 @@ on:
   # Run this workflow manually from Actions tab
   workflow_dispatch:
     inputs:
-      branch_to_test:
+      branch:
         description: 'Branch or tag to checkout'
         required: true
         default: 'main'
@@ -32,6 +32,10 @@ on:
       image_tag:
         description: 'Tag for the image, e.g. 2.0.2'
         required: false
+      build_base:
+        description: 'Build aiverify-python-base image'
+        required: false
+        default: 'true'
 
   # When there are changes to pyproject.toml, package.json
   push:
@@ -182,9 +186,14 @@ jobs:
         run: |
           bash .ci/free_disk_space.sh          
 
+      # Set BUILD_BASE flag
+      - name: Set BUILD_BASE flag
+        run: |
+          echo "BUILD_BASE=${{ github.event.inputs.build_base || 'true' }}" >> $GITHUB_ENV
+
       # Build and push aiverify-python-base
       - name: Build and push aiverify-python-base
-        if: matrix.image_name == 'aiverify-test-engine-worker' || matrix.image_name == 'aiverify-apigw'
+        if: (matrix.image_name == 'aiverify-test-engine-worker' || matrix.image_name == 'aiverify-apigw') && env.BUILD_BASE == 'true'
         run: |
           echo "Building aiverify-python-base..."
           bash .ci/docker_build_push.sh aiverify-python-base latest aiverify-foundation aiverify-test-engine

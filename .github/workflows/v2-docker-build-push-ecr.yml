@@ -41,6 +41,10 @@ on:
         description: 'Optional: Tag suffix for the target'
         required: false
         default: ''
+      build_base:
+        description: 'Optional: Build aiverify-python-base image'
+        required: false
+        default: 'true'
       branch:
         description: 'Git branch to check out, e.g. main'
         required: false
@@ -93,9 +97,14 @@ jobs:
         run: |
           bash .ci/free_disk_space.sh
 
+      # Set BUILD_BASE flag
+      - name: Set BUILD_BASE flag
+        run: |
+          echo "BUILD_BASE=${{ github.event.inputs.build_base || 'true' }}" >> $GITHUB_ENV
+
       # Build and push aiverify-python-base to GHCR
       - name: Build and push aiverify-python-base to GHCR
-        if: matrix.image_name == 'aiverify-test-engine-worker' || matrix.image_name == 'aiverify-apigw'
+        if: (matrix.image_name == 'aiverify-test-engine-worker' || matrix.image_name == 'aiverify-apigw') && env.BUILD_BASE == 'true'
         run: |
           chmod +x .ci/docker_build_push.sh
           bash .ci/docker_build_push.sh aiverify-python-base latest aiverify-foundation aiverify-test-engine
