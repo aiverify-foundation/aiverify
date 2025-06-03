@@ -61,7 +61,7 @@ ECR_IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$GITHUB_USERNAME
 # echo "Create a new build instance..."
 
 # Create a new builder instance
-docker buildx create --name mybuilder --use --append
+docker buildx create --name mybuilder --use
 
 # Inspect the builder instance
 docker buildx inspect --bootstrap
