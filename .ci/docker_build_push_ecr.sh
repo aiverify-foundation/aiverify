@@ -69,7 +69,7 @@ docker buildx inspect --bootstrap
 if [[ "$PUSH" == "false" ]]; then
     # Build aiverify-python-base
     echo "Build AI Verify Python Base"
-    docker buildx build --platform linux/amd64,linux/arm64 -t $IMAGE_NAME -f ../$DOCKERFILE_DIR/Dockerfile --no-cache .
+    docker buildx build --platform linux/amd64,linux/arm64 -t $IMAGE_NAME -f $DOCKERFILE_DIR/Dockerfile .
     
 else
     echo "Build and push image name=$IMAGE_NAME tag=$TAG target=$TARGET tag_suffix=$TAG_SUFFIX..."
@@ -91,7 +91,6 @@ else
         docker buildx imagetools create -t $ECR_IMAGE_URI:$TAG $ECR_IMAGE_URI:$TAG
         docker buildx imagetools create -t $ECR_IMAGE_URI:latest $ECR_IMAGE_URI:$TAG
     fi
-
 
     # Clean up build cache
     yes | docker builder prune --all
