@@ -10,12 +10,7 @@ ARG TARGETARCH
 
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y \
-    git \
-    gcc \
-    g++ \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install git -y 
 
 ENV PYTHONUNBUFFERED=1
 ENV PIP_NO_CACHE_DIR=1
@@ -48,7 +43,5 @@ RUN apt-get update && \
 
 # copy the aiverify-test-engine
 WORKDIR /app
-COPY --from=build /app/aiverify-test-engine ./aiverify-test-engine
-COPY --from=build /app/common ./common
 
 
