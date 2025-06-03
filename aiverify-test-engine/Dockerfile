@@ -9,7 +9,6 @@ FROM python:3.11-slim AS build
 ARG TARGETARCH
 
 RUN apt-get update && \
-    apt-get upgrade -y && \
     apt-get install git -y 
 
 ENV PYTHONUNBUFFERED=1
@@ -22,8 +21,6 @@ FROM python:3.11-slim
 
 # update all the system packages to the latest versions
 RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 # # # Install runtime dependencies

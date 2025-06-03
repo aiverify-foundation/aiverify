@@ -124,7 +124,7 @@ jobs:
           chmod +x .ci/docker_build_push.sh
           .ci/docker_build_push.sh \
             aiverify-python-base \
-            latest \
+            base \
             aiverify-foundation \
             aiverify-test-engine
 
