@@ -37,6 +37,9 @@
 #  bash .ci/docker_build_push.sh false aiverify-test-engine-worker 2.0.0 aiverify-foundation aiverify-test-engine-worker docker-build docker
 ##########################################################################
 
+# Abort script if any command fails
+set -e
+
 # Check if the correct number of arguments is provided
 if [ "$#" -lt 1 ] ; then
     echo "Usage: $0 <push-build-boolean> <image-name> <tag> <github-username> <dockerfile-dir> [build-target tag-suffix]"
@@ -55,25 +58,16 @@ TAG_SUFFIX=${7:-}
 ECR_REPO=$IMAGE_NAME
 ECR_IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$GITHUB_USERNAME/$IMAGE_NAME
 
-# If this script is run locally, uncomment the following line to log in to ECR
-# aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
-
-# echo "Create a new build instance..."
-
-# Create a new builder instance
-docker buildx create --name mybuilder --use
-
-# Inspect the builder instance
-docker buildx inspect --bootstrap
-
 if [[ "$PUSH" == "false" ]]; then
-    # Build aiverify-python-base
-    echo "Build AI Verify Python Base"
-    docker buildx build --platform linux/amd64,linux/arm64 -t $IMAGE_NAME -f $DOCKERFILE_DIR/Dockerfile .
-    
+    echo "Build image name=$IMAGE_NAME..."
+    docker buildx build --platform linux/amd64,linux/arm64 -t $IMAGE_NAME -f $DOCKERFILE_DIR/Dockerfile --provenance=false --sbom=false --load .
+    echo "Docker image built successfully!"
 else
     echo "Build and push image name=$IMAGE_NAME tag=$TAG target=$TARGET tag_suffix=$TAG_SUFFIX..."
-    
+
+    # If this script is run locally, uncomment the following line to log in to ECR
+    # aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+
     # Build and push the image for both amd64 and arm64 platforms
     if [ -n "$TARGET" ]; then
         docker buildx build --platform linux/amd64,linux/arm64 -t $ECR_IMAGE_URI:$TAG-$TAG_SUFFIX -f $DOCKERFILE_DIR/Dockerfile --provenance=false --sbom=false --target $TARGET --push .
@@ -94,9 +88,6 @@ else
 
     # Clean up build cache
     yes | docker builder prune --all
-
-    # Clean up
-    docker buildx rm mybuilder
 
     echo "Docker image built and pushed to AWS ECR successfully!"
 fi
