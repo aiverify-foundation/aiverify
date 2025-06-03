@@ -69,15 +69,14 @@ docker buildx inspect --bootstrap
 if [[ "$PUSH" == "false" ]]; then
     # Build aiverify-python-base
     echo "Build AI Verify Python Base"
-    docker buildx build --platform linux/amd64,linux/arm64 -t $IMAGE_NAME -f $DOCKERFILE_DIR/Dockerfile .
+    docker buildx build --platform linux/amd64,linux/arm64 -t $IMAGE_NAME -f $DOCKERFILE_DIR/Dockerfile --load .
     
 else
     echo "Build and push image name=$IMAGE_NAME tag=$TAG target=$TARGET tag_suffix=$TAG_SUFFIX..."
     
     # Build and push the image for both amd64 and arm64 platforms
     if [ -n "$TARGET" ]; then
-        # docker buildx build --platform linux/amd64,linux/arm64 -t $ECR_IMAGE_URI:$TAG-$TAG_SUFFIX -f $DOCKERFILE_DIR/Dockerfile --provenance=false --sbom=false --target $TARGET --push .
-        docker buildx build --platform linux/am64,linux/arm64 -t $IMAGE_NAME -f $DOCKERFILE_DIR/Dockerfile .
+        docker buildx build --platform linux/amd64,linux/arm64 -t $ECR_IMAGE_URI:$TAG-$TAG_SUFFIX -f $DOCKERFILE_DIR/Dockerfile --provenance=false --sbom=false --target $TARGET --push .
     else
         docker buildx build --platform linux/amd64,linux/arm64 -t $ECR_IMAGE_URI:$TAG -f $DOCKERFILE_DIR/Dockerfile --provenance=false --sbom=false --push .
     fi
