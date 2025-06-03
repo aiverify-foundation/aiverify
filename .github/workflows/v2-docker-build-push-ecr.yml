@@ -122,11 +122,7 @@ jobs:
       - name: Build and push aiverify-python-base to GHCR
         run: |
           chmod +x .ci/docker_build_push.sh
-          .ci/docker_build_push.sh \
-            aiverify-python-base \
-            base \
-            aiverify-foundation \
-            aiverify-test-engine
+          bash .ci/docker_build_push.sh aiverify-python-base latest aiverify-foundation aiverify-test-engine
 
       # Build and push Docker image using provided or matrix values
       - name: Run Docker build & push
@@ -140,7 +136,6 @@ jobs:
           tag_suffix="${{ matrix.tag_suffix }}"
 
           .ci/docker_build_push_ecr.sh \
-            true \
             "$image_name" \
             "$tag" \
             "$github_username" \
