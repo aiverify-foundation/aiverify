@@ -177,10 +177,17 @@ jobs:
         with:
           ref: ${{ needs.init-image-build-push.outputs.branch_to_test }}
 
-      # Free up disk space before building large images
-      - name: Free up disk space
+      # # Free up disk space before building large images
+      # - name: Free up disk space
+      #   run: |
+      #     bash .ci/free_disk_space.sh          
+
+      # Build and push aiverify-python-base
+      - name: Build and push aiverify-python-base
+        if: matrix.image_name == 'aiverify-test-engine-worker' || matrix.image_name == 'aiverify-apigw'
         run: |
-          bash .ci/free_disk_space.sh          
+          echo "Building aiverify-python-base..."
+          bash .ci/docker_build_push.sh aiverify-python-base latest aiverify-foundation aiverify-test-engine
 
       # Step: Build and push image using docker_build_push.sh script
       # If no manual tag is provided, extract the version from pyproject.toml or package.json
@@ -202,10 +209,6 @@ jobs:
           fi
 
           set +e
-          if [ "${{ matrix.image_name }}" == "aiverify-test-engine-worker" ] || [ "${{ matrix.image_name }}" == "aiverify-apigw" ]; then
-            echo "Building aiverify-python-base..."
-            bash .ci/docker_build_push.sh false aiverify-python-base latest aiverify-foundation aiverify-test-engine
-          fi
           echo "Building image ${{ matrix.image_name}}:$tag ${{ matrix.target }} ${{ matrix.tag_suffix }}..."
           if [ "${{ matrix.target }}" == "" ]; then
             bash .ci/docker_build_push.sh true ${{ matrix.image_name }} $tag aiverify-foundation ${{ matrix.image_name }}
