@@ -60,7 +60,7 @@ ECR_IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$GITHUB_USERNAME
 
 if [[ "$PUSH" == "false" ]]; then
     echo "Build image name=$IMAGE_NAME..."
-    docker buildx build --platform linux/amd64,linux/arm64 -t $IMAGE_NAME -f $DOCKERFILE_DIR/Dockerfile --provenance=false --sbom=false --output "type=image" --load .
+    docker buildx build --platform linux/amd64 -t $IMAGE_NAME -f $DOCKERFILE_DIR/Dockerfile --provenance=false --sbom=false --load .
     echo "Docker image built successfully!"
 else
     echo "Build and push image name=$IMAGE_NAME tag=$TAG target=$TARGET tag_suffix=$TAG_SUFFIX..."
