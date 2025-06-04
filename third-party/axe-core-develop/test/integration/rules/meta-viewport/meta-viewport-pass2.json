@@ -1,5 +1,0 @@
-{
-  "description": "meta-viewport pass test 2",
-  "rule": "meta-viewport",
-  "passes": [["#mvp"]]
-}
