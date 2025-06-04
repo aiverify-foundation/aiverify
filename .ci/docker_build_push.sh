@@ -6,6 +6,9 @@ if [ "$#" -lt 1 ] ; then
     exit 1
 fi
 
+# Abort script if any command fails
+set -e
+
 # Set variables
 IMAGE_NAME=$1
 TAG=$2
