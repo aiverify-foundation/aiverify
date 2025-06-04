@@ -8,6 +8,7 @@ export enum UserFlows {
   NewProjectWithNewTemplateAndRunNewTests = '7',
   EditExistingProject = '8',
   ViewTemplate = '9',
+  EditExistingProjectWithResults = '10',
   NewTemplate = '11',
   NewProjectWithEditingExistingTemplate = '12',
   NewProjectWithEditingExistingTemplateAndResults = '13',
