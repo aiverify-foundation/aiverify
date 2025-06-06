@@ -101,7 +101,7 @@ def _create_mock_input_block(gid: str, group: str | None=None, group_number: int
     width = faker.random_element(elements=[InputBlockSize.xs, InputBlockSize.sm,
                                  InputBlockSize.md, InputBlockSize.lg, InputBlockSize.xl])
     fullscreen = faker.boolean()
-    name = faker.name()
+    name=faker.name()
     meta = {
         "cid": cid,
         "name": name,
