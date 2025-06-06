@@ -83,6 +83,8 @@ def mock_plugins(db_session):
         AlgorithmModel,
         WidgetModel,
         InputBlockModel,
+        InputBlockGroupDataModel,
+        InputBlockDataModel,
         TemplateModel,
         PluginComponentModel,
         ProjectTemplateModel
@@ -96,6 +98,8 @@ def mock_plugins(db_session):
     db_session.query(AlgorithmModel).delete()
     db_session.query(WidgetModel).delete()
     db_session.query(InputBlockModel).delete()
+    db_session.query(InputBlockGroupDataModel).delete()
+    db_session.query(InputBlockDataModel).delete()
     db_session.query(TemplateModel).delete()
     db_session.query(PluginComponentModel).delete()
     db_session.query(ProjectTemplateModel).delete()
