@@ -155,3 +155,27 @@ def mock_project_template(db_session):
     db_session.commit()
     yield project_template
     db_session.delete(project_template)
+
+
+@pytest.fixture(scope="function")
+def mock_input_block_data(db_session, mock_plugins):
+    from .mocks.mock_input_block_data import create_mock_input_block_data
+    from aiverify_apigw.models import InputBlockDataModel
+
+    results = create_mock_input_block_data(db_session, mock_plugins[0].inputblocks[0])
+    db_session.commit()
+    yield results
+    db_session.query(InputBlockDataModel).delete()
+    db_session.commit()
+
+
+@pytest.fixture(scope="function")
+def mock_input_block_group_data(db_session, mock_plugins):
+    from .mocks.mock_input_block_data import create_mock_input_block_group_data
+    from aiverify_apigw.models import InputBlockGroupDataModel
+    inputblocks = [ib for ib in mock_plugins[0].inputblocks if ib.group is not None]
+    results = create_mock_input_block_group_data(db_session, inputblocks)
+    db_session.commit()
+    yield results
+    db_session.query(InputBlockGroupDataModel).delete()
+    db_session.commit()
