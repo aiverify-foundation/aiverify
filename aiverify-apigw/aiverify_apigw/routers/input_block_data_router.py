@@ -57,6 +57,8 @@ def create_input_block_data(ibdata: InputBlockData, session: Session = Depends(g
         session.commit()
         session.refresh(new_input_block_data)
         return InputBlockDataOutput.from_model(new_input_block_data)
+    except HTTPException:
+        raise
     except Exception as e:
         session.rollback()
         raise HTTPException(status_code=500, detail=f"Internal error {e}")
