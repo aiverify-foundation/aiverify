@@ -155,21 +155,7 @@ def mock_project_template(db_session):
     project_template = create_mock_project_templates(db_session)
     db_session.commit()
     yield project_template
-    db_session.query(ProjectTemplateModel).delete()
-    db_session.commit()
-
-
-@pytest.fixture(scope="function")
-def mock_projects(db_session, mock_project_template):
-    from .mocks.mock_data_project import create_mock_project
-    from aiverify_apigw.models import ProjectModel
-    project1 = create_mock_project(db_session, mock_project_template)
-    project2 = create_mock_project(db_session)
-    projects = [project1, project2]
-    db_session.commit()
-    yield projects
-    db_session.query(ProjectModel).delete()
-    db_session.commit()
+    db_session.delete(project_template)
 
 
 @pytest.fixture(scope="function")
@@ -194,42 +180,3 @@ def mock_input_block_group_data(db_session, mock_plugins):
     yield results
     db_session.query(InputBlockGroupDataModel).delete()
     db_session.commit()
-
-
-@pytest.fixture(scope="function")
-def mock_test_datasets(db_session):
-    from .mocks.mock_test_dataset import create_mock_test_datasets
-    from aiverify_apigw.models import TestDatasetModel
-    results = create_mock_test_datasets(db_session)
-    db_session.commit()
-    yield results
-    db_session.query(TestDatasetModel).delete()
-    db_session.commit()
-
-
-@pytest.fixture(scope="function")
-def mock_test_models(db_session):
-    from .mocks.mock_test_model import create_mock_test_models
-    from aiverify_apigw.models import TestModelModel
-    results = create_mock_test_models(db_session)
-    db_session.commit()
-    yield results
-    db_session.query(TestModelModel).delete()
-    db_session.commit()
-
-
-@pytest.fixture(scope="function")
-def mock_test_runs(db_session, mock_plugins):
-    from .mocks.mock_test_run import create_mock_test_runs
-    from aiverify_apigw.models import TestResultModel, TestModelModel, TestDatasetModel, TestArtifactModel, TestRunModel
-
-    results = create_mock_test_runs(db_session, mock_plugins)
-    db_session.commit()
-    yield results
-    db_session.query(TestRunModel).delete()
-    db_session.query(TestResultModel).delete()
-    db_session.query(TestModelModel).delete()
-    db_session.query(TestDatasetModel).delete()
-    db_session.query(TestArtifactModel).delete()
-    db_session.commit()
-
