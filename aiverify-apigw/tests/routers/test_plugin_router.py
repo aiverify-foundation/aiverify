@@ -256,7 +256,7 @@ class TestDownloadPluginInputBlocks:
         assert response.json()["detail"] == "Plugin not found"
 
     def test_download_plugin_input_blocks_empty(self, test_client, db_session, mock_plugins_no_widgets_inputblocks):
-        """Test when the plugin has no widgets."""
+        """Test when the plugin has no input blocks."""
 
         plugin = mock_plugins_no_widgets_inputblocks
         gid = plugin.gid
