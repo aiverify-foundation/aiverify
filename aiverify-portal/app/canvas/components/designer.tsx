@@ -1422,11 +1422,12 @@ function Designer(props: DesignerProps) {
         {mainControlsSection}
         {pagesSection}
       </main>
-      <section className="fixed bottom-[-10] right-[200px] h-[100px] bg-transparent">
+      <section className="fixed bottom-2.5 right-[200px] h-[100px] bg-transparent z-40">
         <div className="flex items-center justify-center gap-4">
           {flow === UserFlows.NewProjectWithNewTemplateAndResults ||
           flow === UserFlows.NewProjectWithExistingTemplateAndResults ||
-          flow === UserFlows.NewProjectWithEditingExistingTemplateAndResults ? (
+          flow === UserFlows.NewProjectWithEditingExistingTemplateAndResults ||
+          flow === UserFlows.EditExistingProjectWithResults ? (
             <Link href={backButtonLink}>
               <Button
                 className="w-[130px] gap-4 p-2 text-white"
