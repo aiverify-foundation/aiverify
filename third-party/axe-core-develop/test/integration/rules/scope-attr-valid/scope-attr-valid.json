@@ -1,5 +1,0 @@
-{
-  "rule": "scope-attr-valid",
-  "violations": [["#badvalue"], ["#tdrow"], ["#tdcol"]],
-  "passes": [["#throw"], ["#thcol"]]
-}
