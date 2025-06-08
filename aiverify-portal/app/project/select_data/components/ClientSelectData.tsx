@@ -76,8 +76,6 @@ export default function ClientSelectData({
     initialInputBlocks,
   });
 
-  console.log('flow clientselectdata', flow);
-
   // State for model selection
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>(
     initialModelId
@@ -433,14 +431,15 @@ export default function ClientSelectData({
 
       // Update flow based on current flow
       let updatedFlow = flow;
-      if (flow === UserFlows.NewProjectWithNewTemplate) {
+      if (flow === UserFlows.EditExistingProject) {
+        updatedFlow = UserFlows.EditExistingProjectWithResults;
+      } else if (flow === UserFlows.NewProjectWithNewTemplate) {
         updatedFlow = UserFlows.NewProjectWithNewTemplateAndResults;
       } else if (flow === UserFlows.NewProjectWithExistingTemplate) {
         updatedFlow = UserFlows.NewProjectWithExistingTemplateAndResults;
       } else if (flow === UserFlows.NewProjectWithEditingExistingTemplate) {
         updatedFlow = UserFlows.NewProjectWithEditingExistingTemplateAndResults;
       }
-
       // Construct the URL with all selected data
       const queryString = [
         `flow=${encodeURIComponent(updatedFlow)}`,
@@ -454,7 +453,7 @@ export default function ClientSelectData({
         `iBlockIds=${selectedInputBlocks.map((b) => b.id).join(',')}`,
       ].join('&');
 
-      if (flow === UserFlows.EditExistingProject) {
+      if (updatedFlow === UserFlows.EditExistingProjectWithResults) {
         window.location.href = `/canvas?${queryString}&mode=view`;
       } else {
         window.location.href = `/canvas?${queryString}&mode=view`;

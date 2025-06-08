@@ -193,12 +193,18 @@ export default function UserInputs({
     console.log('First group block:', firstGroupBlock);
     
     // Find the matching input block group from allInputBlockGroups
-    // First try to match by ID
-    let matchingGroup = allInputBlockGroups.find(
-      (group) => group.id === firstGroupBlock.id
-    );
+    // Since the saved id is actually a groupNumber, we need to find a group that contains
+    // an input block with the matching gid, cid, and groupNumber
+    let matchingGroup = allInputBlockGroups.find((group) => {
+      // Check if this group contains an input block with matching gid, cid, and groupNumber
+      return group.gid === firstGroupBlock.gid && 
+             group.input_blocks.some(ib => 
+               ib.cid === firstGroupBlock.cid && 
+               ib.groupNumber === firstGroupBlock.id
+             );
+    });
     
-    // If no match by ID, try to find a matching group by gid and cid
+    // If no match by groupNumber, try to find a matching group by gid and group name (fallback)
     if (!matchingGroup) {
       // Find the required input block to get the group name
       const requiredBlock = requiredInputBlocks.find(
@@ -323,7 +329,7 @@ export default function UserInputs({
               gid: group.gid,
               cid: ib.cid,
               data: ib.data,
-              id: group.id,
+              id: ib.groupNumber,
             });
           });
         }
@@ -407,7 +413,7 @@ export default function UserInputs({
         ...newGroup.input_blocks.map((ib) => ({
           gid: newGroup.gid,
           cid: ib.cid,
-          id: newGroup.id || 0,
+          id: ib.groupNumber || 0,
           group: newGroup.group,
         })),
       ];

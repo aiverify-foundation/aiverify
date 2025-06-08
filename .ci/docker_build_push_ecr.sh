@@ -32,10 +32,13 @@
 # Example:
 #  bash .ci/docker_build_push.sh aiverify-apigw 2.0.1 aiverify-foundation aiverify-apigw
 #  bash .ci/docker_build_push.sh aiverify-apigw 2.0.1 aiverify-foundation aiverify-portal
-#  bash .ci/docker_build_push.sh aiverify-test-engine-worker 2.0.0 aiverify-foundation aiverify-test-engine-worker aiverify-test-engine-worker-base base
+#  bash .ci/docker_build_push.sh aiverify-test-engine-worker 2.0.0 aiverify-foundation aiverify-test-engine-worker base base
 #  bash .ci/docker_build_push.sh aiverify-test-engine-worker 2.0.0 aiverify-foundation aiverify-test-engine-worker venv-build venv
 #  bash .ci/docker_build_push.sh aiverify-test-engine-worker 2.0.0 aiverify-foundation aiverify-test-engine-worker docker-build docker
 ##########################################################################
+
+# Abort script if any command fails
+set -e
 
 # Check if the correct number of arguments is provided
 if [ "$#" -lt 1 ] ; then
@@ -54,9 +57,6 @@ TAG_SUFFIX=${6:-}
 ECR_REPO=$IMAGE_NAME
 ECR_IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$GITHUB_USERNAME/$IMAGE_NAME
 
-# If this script is run locally, uncomment the following line to log in to ECR
-#aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
-
 # echo "Create a new build instance..."
 
 # Create a new builder instance
@@ -66,6 +66,9 @@ docker buildx create --name mybuilder --use
 docker buildx inspect --bootstrap
 
 echo "Build and push image name=$IMAGE_NAME tag=$TAG target=$TARGET tag_suffix=$TAG_SUFFIX..."
+
+# If this script is run locally, uncomment the following line to log in to ECR
+# aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
 # Build and push the image for both amd64 and arm64 platforms
 if [ -n "$TARGET" ]; then

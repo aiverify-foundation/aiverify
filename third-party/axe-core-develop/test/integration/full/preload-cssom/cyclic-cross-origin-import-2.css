@@ -1,3 +1,0 @@
-/* calls a stylesheets, which inturn refers back to this one */
-
-@import 'cyclic-cross-origin-import-1.css';
