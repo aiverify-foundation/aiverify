@@ -102,57 +102,51 @@ export function DatasetFolderUploader() {
       selectedFiles[0]?.webkitRelativePath?.split('/')[0] || '';
     console.log(`Detected root folder name: ${rootFolderName}`);
 
-    // Create a new FormData object with cleaned filenames
-    const cleanedFormData = new FormData();
+    // Create FormData object
+    const formData = new FormData();
 
     // Extract and add subfolder information for each file
     const subfolderPaths: string[] = [];
-
-    // Files logging for debugging
     const fileDetails: Array<{
-      originalName: string;
-      originalPath: string;
-      cleanedName: string;
+      name: string;
+      path: string;
       subfolder: string;
     }> = [];
 
-    // Process all files to extract clean filenames and proper subfolder paths
+    // Process files and extract subfolder paths
     Array.from(selectedFiles).forEach((file) => {
-      const originalPath = file.webkitRelativePath;
-      const pathParts = originalPath.split('/');
+      // Add original file to FormData (no need to clean filename)
+      formData.append('files', file);
 
-      // Extract just the filename without path
-      const baseFilename = pathParts[pathParts.length - 1];
-
-      // Create a new File object with the same content but a clean filename
-      const cleanedFile = new File([file], baseFilename, { type: file.type });
-
-      // Add the cleaned file to FormData
-      cleanedFormData.append('files', cleanedFile);
-
-      // Determine the subfolder path (starting with './')
+      // Extract subfolder path from webkitRelativePath
+      const relativePath = file.webkitRelativePath;
       let subfolderPath = './';
-      if (pathParts.length > 2) {
-        // File is in a subfolder, extract the path between root folder and filename
-        subfolderPath = './' + pathParts.slice(1, -1).join('/');
+
+      if (relativePath) {
+        const pathParts = relativePath.split('/');
+        // If file is directly in root folder (no subfolder)
+        if (pathParts.length <= 2) {
+          subfolderPath = './';
+        } else {
+          // Extract the subfolder path (everything after the root folder name)
+          subfolderPath = './' + pathParts.slice(1, -1).join('/');
+        }
       }
 
       subfolderPaths.push(subfolderPath);
 
       // Store details for logging
       fileDetails.push({
-        originalName: file.name,
-        originalPath: file.webkitRelativePath,
-        cleanedName: baseFilename,
+        name: file.name,
+        path: file.webkitRelativePath || '',
         subfolder: subfolderPath,
       });
     });
 
     console.log('Files to upload (first 5):');
     fileDetails.slice(0, 5).forEach((file, index) => {
-      console.log(`${index + 1}. Original: ${file.originalName}`);
-      console.log(`   Original path: ${file.originalPath}`);
-      console.log(`   Cleaned name: ${file.cleanedName}`);
+      console.log(`${index + 1}. ${file.name}`);
+      console.log(`   Full path: ${file.path}`);
       console.log(`   Subfolder: ${file.subfolder}`);
     });
 
@@ -160,9 +154,9 @@ export function DatasetFolderUploader() {
       console.log(`... and ${fileDetails.length - 5} more files`);
     }
 
-    // Add the folder name and subfolders to the cleaned form data
-    cleanedFormData.append('foldername', folderName);
-    cleanedFormData.append('subfolders', subfolderPaths.join(','));
+    // Add the folder name and subfolders to FormData
+    formData.append('foldername', folderName);
+    formData.append('subfolders', subfolderPaths.join(','));
 
     console.log('Sending folder name:', folderName);
     console.log(
@@ -175,7 +169,7 @@ export function DatasetFolderUploader() {
     // Clear selection immediately when submitting
     setSelectedFiles([]);
 
-    mutate(cleanedFormData, {
+    mutate(formData, {
       onSuccess: (data) => {
         console.log('=== DATASET UPLOAD COMPLETED SUCCESSFULLY ===');
         console.log('Response data:', data);
