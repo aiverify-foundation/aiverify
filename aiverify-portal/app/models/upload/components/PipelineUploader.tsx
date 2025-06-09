@@ -12,8 +12,7 @@ import { reject } from 'lodash';
 
 // Extended File interface with webkitRelativePath
 interface FileWithPath extends File {
-  // webkitRelativePath: string;
-  relativePath: string;
+  webkitRelativePath: string;
 }
 
 const PipelineUploader = ({ onBack }: { onBack: () => void }) => {
@@ -30,22 +29,19 @@ const PipelineUploader = ({ onBack }: { onBack: () => void }) => {
     console.log('files:', files instanceof FileList, files);
 
     if (files instanceof FileList) {
-      files = (Array.from(files) as FileWithPath[]).map((file) => {
-        file.relativePath = file.webkitRelativePath;
-        return file;
-      });
+      files = Array.from(files) as FileWithPath[];
     }
 
     // Only allow one folder upload at a time
     // Clear previous selections when a new folder is selected
-    if (files.length > 0 && 'relativePath' in files[0]) {
+    if (files.length > 0 && 'webkitRelativePath' in files[0]) {
       // Get folder name from first file's path
-      const folderPath = (files[0] as FileWithPath).relativePath.split('/')[0];
+      const folderPath = (files[0] as FileWithPath).webkitRelativePath.split('/')[0];
 
       // If there are already files selected, show a message that we're replacing them
       if (selectedFiles.length > 0) {
         const previousFolder =
-          selectedFiles[0]?.relativePath?.split('/')[0] || '';
+          selectedFiles[0]?.webkitRelativePath?.split('/')[0] || '';
         if (previousFolder !== folderPath) {
           console.log(
             `Replacing folder "${previousFolder}" with "${folderPath}"`
@@ -67,120 +63,7 @@ const PipelineUploader = ({ onBack }: { onBack: () => void }) => {
 
   const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
-    // const items = event.dataTransfer.items;
-    // for (let i = 0; i < items.length; i++) {
-    //   const item = items[i].webkitGetAsEntry(); //Might be renamed to GetAsEntry() in 2020
-    //   console.log('item:', item);
-    //   // if (item) {
-    //   // GetFileTree(item);
-    //   // }
-    // }
-    const filesArray: FileWithPath[] = [];
-    const items = event.dataTransfer.items;
-    console.log('CHECK:', items.length, items);
-
-    const rootFolder =
-      folderName && folderName.length > 0 ? folderName : 'Root';
-
-    const handleItem = async (item: FileSystemEntry) => {
-      console.log('handleItem', item);
-      if (item.isFile) {
-        // If it's a file, add it directly
-        try {
-          const file = (await new Promise((resolve, reject) =>
-            (item as FileSystemFileEntry).file((f) => {
-              resolve(f);
-            })
-          ).catch((err) => {
-            console.log('error:', err);
-            reject(err);
-          })) as FileWithPath;
-          console.log('file', file);
-          return [file];
-        } catch (err) {
-          console.log('err', err);
-          return [];
-        }
-
-        // if (file) {
-        //   file.relativePath = `${rootFolder}/${file.name}`;
-        //   filesArray.push(file);
-        // }
-      } else if (item.isDirectory) {
-        // If it's a directory, read its contents
-        const dirReader = (item as FileSystemDirectoryEntry).createReader();
-        const entries = (await new Promise((resolve, reject) => {
-          dirReader.readEntries(resolve, reject);
-        })) as FileSystemEntry[];
-        console.log('entries', entries);
-        for (const entry of entries) {
-        }
-        return [];
-        // dirReader.readEntries((entries) => {
-        //   entries.forEach((entry) => {
-        //     console.log('sub entry:', entry);
-        //     if (entry.isFile) {
-        //       entry.file((file) => {
-        //         (file as FileWithPath).relativePath =
-        //           `${rootFolder}/${item.name}/${file.name}`;
-        //         filesArray.push(file as FileWithPath);
-        //       });
-        //     }
-        //   });
-        // });
-      }
-    };
-
-    for (const dtitem of Array.from(items)) {
-      const item = dtitem.webkitGetAsEntry();
-      console.log('item', item);
-      if (!item) {
-        continue;
-      }
-      if (item.isFile) {
-        const file = dtitem.getAsFile() as FileWithPath;
-        if (file) {
-          file.relativePath = `${rootFolder}/${file.name}`;
-          filesArray.push(file);
-        }
-      } else if (item.isDirectory) {
-        // TODO: Below code seems to case subsequence entires to return null
-        // ignore directory for now
-        // const dirhandle =
-        //   (await dtitem.getAsFileSystemHandle()) as FileSystemDirectoryHandle;
-        // const dirReader = (item as FileSystemDirectoryEntry).createReader();
-        // const entries = (await new Promise((resolve, reject) => {
-        //   dirReader.readEntries(resolve, reject);
-        // })) as FileSystemEntry[];
-        // console.log('entries', entries);
-        // for (const entry of entries) {
-        //   if (entry.isFile) {
-        //     // handle only up to on sub folder for now
-        //     const file = (await new Promise((resolve) =>
-        //       (entry as FileSystemFileEntry).file((f) => {
-        //         console.log('>>> file', f);
-        //         resolve(f);
-        //       })
-        //     )) as FileWithPath;
-        //     // file.relativePath = `${rootFolder}/${item.name}/${file.name}`;
-        //     // filesArray.push(file);
-        //   }
-        // }
-      }
-      // const item = items[i].webkitGetAsEntry();
-      // console.log('item:', item);
-      // if (item) {
-      // }
-    }
-
-    // const files = filesArray as unknown as FileList;
-    console.log('filesArray', filesArray);
-    handleFiles(filesArray);
-    // const files = event.dataTransfer.files..map((file) => {
-    //   file.webkitRelativePath = `Root/${file.name}`;
-    //   return file;
-    // }) as FileList;
-    // handleFiles(event.dataTransfer.files);
+    handleFiles(event.dataTransfer.files);
   };
 
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
@@ -209,7 +92,7 @@ const PipelineUploader = ({ onBack }: { onBack: () => void }) => {
     // Group files by their direct parent folder for display purposes
     const folderCounts: Record<string, number> = {};
     selectedFiles.forEach((file) => {
-      const path = file.relativePath || '';
+      const path = file.webkitRelativePath || '';
       const parts = path.split('/');
 
       if (parts.length > 1) {
@@ -225,50 +108,53 @@ const PipelineUploader = ({ onBack }: { onBack: () => void }) => {
     });
 
     // Get the root folder name from the first file's path
-    const rootFolderName = selectedFiles[0]?.relativePath?.split('/')[0] || '';
+    const rootFolderName = selectedFiles[0]?.webkitRelativePath?.split('/')[0] || '';
     console.log(`Detected root folder name: ${rootFolderName}`);
 
     // Create a new FormData object
-    const cleanedFormData = new FormData();
+    const formData = new FormData();
 
-    // For pipeline uploads, we'll use './' for all files to prevent the server from
-    // duplicating the folder structure
+    // Extract and add subfolder information for each file
     const subfolderPaths: string[] = [];
-
-    // Files logging for debugging
     const fileDetails: Array<{
-      originalName: string;
-      originalPath: string;
-      cleanedName: string;
+      name: string;
+      path: string;
+      subfolder: string;
     }> = [];
 
-    // Process each file to extract just the base filename without the folder path
     Array.from(selectedFiles).forEach((file) => {
-      const originalPath = file.relativePath;
-      // Extract just the filename without path
-      const pathParts = originalPath.split('/');
-      const baseFilename = pathParts[pathParts.length - 1];
+      formData.append('files', file);
 
-      // Create a new File object with the same content but a clean filename
-      // We can't directly modify the File object, so we need to create a new one
-      const cleanedFile = new File([file], baseFilename, { type: file.type });
+      // Extract the subfolder path from webkitRelativePath
+      const relativePath = file.webkitRelativePath;
+      let subfolderPath = './';
 
-      // Add the cleaned file to FormData
-      cleanedFormData.append('files', cleanedFile);
-      subfolderPaths.push('./');
+      if (relativePath) {
+        const pathParts = relativePath.split('/');
+        // If file is directly in root folder (no subfolder)
+        if (pathParts.length <= 2) {
+          subfolderPath = './';
+        } else {
+          // Extract the subfolder path (everything after the root folder name)
+          subfolderPath = './' + pathParts.slice(1, -1).join('/');
+        }
+      }
 
+      subfolderPaths.push(subfolderPath);
+
+      // Store details for logging
       fileDetails.push({
-        originalName: file.name,
-        originalPath: file.webkitRelativePath,
-        cleanedName: baseFilename,
+        name: file.name,
+        path: file.webkitRelativePath || '',
+        subfolder: subfolderPath,
       });
     });
 
     console.log('Files to upload (first 5):');
     fileDetails.slice(0, 5).forEach((file, index) => {
-      console.log(`${index + 1}. Original: ${file.originalName}`);
-      console.log(`   Original path: ${file.originalPath}`);
-      console.log(`   Cleaned name: ${file.cleanedName}`);
+      console.log(`${index + 1}. ${file.name}`);
+      console.log(`   Full path: ${file.path}`);
+      console.log(`   Subfolder: ${file.subfolder}`);
     });
 
     if (fileDetails.length > 5) {
@@ -276,18 +162,22 @@ const PipelineUploader = ({ onBack }: { onBack: () => void }) => {
     }
 
     // Add the rest of the required form data
-    cleanedFormData.append('foldername', folderName);
-    cleanedFormData.append('model_type', modelType);
-    cleanedFormData.append('file_type', 'pipeline');
-    cleanedFormData.append('subfolders', subfolderPaths.join(','));
+    formData.append('foldername', folderName);
+    formData.append('model_type', modelType);
+    formData.append('file_type', 'pipeline');
+    formData.append('subfolders', subfolderPaths.join(','));
 
-    console.log('Subfolders parameter:', subfolderPaths.join(','));
+    console.log(
+      'Subfolders parameter:',
+      subfolderPaths.join(',').substring(0, 100) +
+        (subfolderPaths.join(',').length > 100 ? '...' : '')
+    );
     console.log('=== SENDING UPLOAD REQUEST ===');
 
     // Clear selection immediately when submitting
     setSelectedFiles([]);
 
-    mutate(cleanedFormData, {
+    mutate(formData, {
       onSuccess: (data) => {
         console.log('=== UPLOAD COMPLETED SUCCESSFULLY ===');
         console.log('Response data:', data);
@@ -458,7 +348,7 @@ const PipelineUploader = ({ onBack }: { onBack: () => void }) => {
                   {(() => {
                     const filesByFolder: Record<string, FileWithPath[]> = {};
                     selectedFiles.forEach((file) => {
-                      const path = file.relativePath || '';
+                      const path = file.webkitRelativePath || '';
                       const parts = path.split('/');
                       // If it's just a file in the root folder
                       if (parts.length <= 2) {
@@ -493,7 +383,7 @@ const PipelineUploader = ({ onBack }: { onBack: () => void }) => {
                             </h4>
                             <ul className="list-inside list-disc space-y-2 pl-4 text-white">
                               {files.slice(0, 5).map((file, index) => {
-                                const pathParts = file.relativePath.split('/');
+                                const pathParts = file.webkitRelativePath.split('/');
                                 const displayPath =
                                   pathParts.length > 2
                                     ? pathParts.slice(2).join('/')
