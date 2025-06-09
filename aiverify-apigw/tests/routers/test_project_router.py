@@ -3,6 +3,7 @@ import json
 # from aiverify_apigw.models import ProjectModel, ProjectTemplateModel, TestModelModel, InputBlockDataModel, TestResultModel
 # from aiverify_apigw.schemas import ProjectOutput, ProjectInformation, ProjectInput, ProjectPatchInput, ProjectTemplateOutput
 
+
 class TestGetAllProjects:
     def test_get_all_projects_success(self, test_client, mock_projects):
         response = test_client.get("/projects/")
@@ -13,7 +14,6 @@ class TestGetAllProjects:
             mock = next((mock for mock in mock_projects if mock.id == project["id"]), None)
             assert mock is not None
             assert project["projectInfo"]["name"] == mock.name
-
 
 
 class TestCreateProject:
