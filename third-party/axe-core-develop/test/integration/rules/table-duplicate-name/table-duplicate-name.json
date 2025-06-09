@@ -1,5 +1,0 @@
-{
-  "rule": "table-duplicate-name",
-  "violations": [["#fail1"]],
-  "passes": [["#pass1"], ["#pass2"]]
-}

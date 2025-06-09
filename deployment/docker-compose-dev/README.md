@@ -27,6 +27,17 @@ The valid docker profiles are:
 | automated-tests-docker      | Runs the services using Docker build and run for automated testing in DOOD mode. |
 | portal                      | Runs the AI Verify Portal service for accessing the web interface. |
 
+
+### Building the Base Images
+
+The base images serves as the foundational layer for building other Docker images required by the other services. It is essential to build the base images first to ensure that all subsequent images have the necessary dependencies and configurations.
+
+Use the following command to build the base python image before proceeding with the other builds:
+
+```sh
+docker buildx build -t aiverify-python-base -f aiverify-test-engine/Dockerfile --no-cache .
+```
+
 ## Running the API Gateway Only
 
 The API Gateway is core service and always enabled regardless of profile. To only run the API Gateway, just run docker compose without specifying profile:
