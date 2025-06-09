@@ -155,7 +155,8 @@ def mock_project_template(db_session):
     project_template = create_mock_project_templates(db_session)
     db_session.commit()
     yield project_template
-    db_session.delete(project_template)
+    db_session.query(ProjectTemplateModel).delete()
+    db_session.commit()
 
 
 @pytest.fixture(scope="function")
