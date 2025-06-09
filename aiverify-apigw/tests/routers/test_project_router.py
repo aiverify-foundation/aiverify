@@ -53,3 +53,106 @@ class TestCreateProject:
         assert response.status_code == 200
         assert response.json()["projectInfo"]["name"] == project_data["name"]
 
+
+class TestReadProject:
+    def test_read_project_success(self, test_client, mock_projects):
+        project = mock_projects[0]
+
+        response = test_client.get(f"/projects/{project.id}")
+        assert response.status_code == 200
+        assert response.json()["projectInfo"]["name"] == project.name
+
+    def test_read_project_not_found(self, test_client):
+        response = test_client.get("/projects/1234")
+        assert response.status_code == 404
+
+
+class TestUpdateProject:
+    def test_update_project_success(self, test_client, mock_projects):
+        project = mock_projects[0]
+
+        update_data = {
+            "projectInfo": {
+                "name": "Updated Project",
+                "description": "Updated Description",
+                "reportTitle": "Updated Report",
+                "company": "Updated Company"
+            },
+            "testModelId": None,
+            "inputBlocks": [],
+            "testResults": [],
+            "globalVars": [],
+            "pages": []
+        }
+        response = test_client.put(f"/projects/{project.id}", json=update_data)
+        assert response.status_code == 200
+        assert response.json()["projectInfo"]["name"] == update_data["projectInfo"]["name"]
+
+    def test_update_project_not_found(self, test_client):
+        update_data = {
+            "projectInfo": {
+                "name": "Updated Project",
+                "description": "Updated Description",
+                "reportTitle": "Updated Report",
+                "company": "Updated Company"
+            }
+        }
+        response = test_client.put("/projects/1234", json=update_data)
+        assert response.status_code == 404
+
+
+class TestPatchUpdateProject:
+    def test_patch_update_project_success(self, test_client, mock_projects):
+        project = mock_projects[0]
+
+        patch_data = {
+            "projectInfo": {
+                "name": "Patched Project"
+            },
+        }
+        response = test_client.patch(f"/projects/projects/{project.id}", json=patch_data)
+        assert response.status_code == 200
+        assert response.json()["projectInfo"]["name"] == patch_data["projectInfo"]["name"]
+
+    def test_patch_update_project_not_found(self, test_client):
+        patch_data = {
+            "projectInfo": {
+                "name": "Patched Project"
+            }
+        }
+        response = test_client.patch("/projects/projects/1234", json=patch_data)
+        assert response.status_code == 404
+
+
+class TestDeleteProject:
+    def test_delete_project_success(self, test_client, mock_projects):
+        project = mock_projects[0]
+
+        response = test_client.delete(f"/projects/projects/{project.id}")
+        assert response.status_code == 200
+        assert response.json() == project.id
+
+    def test_delete_project_not_found(self, test_client):
+        response = test_client.delete("/projects/projects/1234")
+        assert response.status_code == 404
+
+
+class TestSaveProjectAsTemplate:
+    def test_save_project_as_template_success(self, test_client, mock_projects):
+        project = mock_projects[0]
+
+        template_data = {
+            "name": "New Template",
+            "description": "Template Description"
+        }
+        response = test_client.post(f"/projects/saveProjectAsTemplate/{project.id}", json=template_data)
+        assert response.status_code == 200
+        assert response.json()["projectInfo"]["name"] == template_data["name"]
+
+    def test_save_project_as_template_not_found(self, test_client):
+        template_data = {
+            "name": "New Template",
+            "description": "Template Description"
+        }
+        response = test_client.post("/projects/saveProjectAsTemplate/1234", json=template_data)
+        assert response.status_code == 404
