@@ -22,6 +22,7 @@ def _create_mock_test_model():
         file_type=TestModelFileType.File,
         created_at=fake_date,
         updated_at=fake_date,
+        size=faker.pyint(min_value=1)
     )
     return test_model
 
