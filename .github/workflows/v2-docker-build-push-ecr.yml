@@ -56,7 +56,7 @@ on:
  
 jobs:
   build-and-push:
-    runs-on: ubuntu-latest
+    runs-on: arc-runner-aiverify
     timeout-minutes: 360
     permissions:
       id-token: write
