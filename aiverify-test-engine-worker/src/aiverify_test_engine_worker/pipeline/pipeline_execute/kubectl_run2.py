@@ -37,7 +37,19 @@ class KubectlRun2(Pipe):
         
         pod_data_path = f"/app/data/datasets/{task_data.data_path.name}"
         pod_model_path = f"/app/data/models/{task_data.model_path.name}"
-        json_args = json.dumps(task_data.task.algorithmArgs).replace('"', '\\"')
+
+        json_args_dict = task_data.task.algorithmArgs  # This is a Python dict, not yet stringified
+
+        # Modify paths in the dict
+        for key, value in json_args_dict.items():
+            if isinstance(value, str) and os.path.isabs(value) and os.path.exists(value):
+                filename = os.path.basename(value)
+                # Replace with new path inside container
+                new_path = f"/app/data/datasets/{filename}"
+                json_args_dict[key] = new_path
+
+        # Convert to JSON with properly escaped quotes
+        json_args = json.dumps(json_args_dict).replace('"', '\\"')
         
         # Build command-line arguments
         args = [
