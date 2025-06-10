@@ -68,48 +68,17 @@ const PipelineUploader = ({ onBack }: { onBack: () => void }) => {
       modelType: globalModelType // Use global model type as default
     }));
 
-    // Add new folders to existing ones, avoiding duplicates
+    // Add all new folders to existing ones - no duplicate checking
     setSelectedFolders(prevFolders => {
-      const updatedFolders = [...prevFolders];
-      const addedFolders: string[] = [];
-      const replacedFolders: string[] = [];
-
-      newFolders.forEach(newFolder => {
-        const existingIndex = updatedFolders.findIndex(folder => folder.name === newFolder.name);
-        if (existingIndex >= 0) {
-          // Replace existing folder but keep its model type
-          updatedFolders[existingIndex] = {
-            ...newFolder,
-            modelType: updatedFolders[existingIndex].modelType || globalModelType
-          };
-          replacedFolders.push(newFolder.name);
-        } else {
-          // Add new folder
-          updatedFolders.push(newFolder);
-          addedFolders.push(newFolder.name);
-        }
-      });
-
-      // Show message about added/replaced folders
-      let message = '';
-      if (addedFolders.length > 0) {
-        message += `Added folder${addedFolders.length > 1 ? 's' : ''}: ${addedFolders.join(', ')}`;
-      }
-      if (replacedFolders.length > 0) {
-        if (message) message += '. ';
-        message += `Replaced folder${replacedFolders.length > 1 ? 's' : ''}: ${replacedFolders.join(', ')}`;
-      }
+      const updatedFolders = [...prevFolders, ...newFolders];
       
-      if (message) {
-        setModalMessage(message);
-        setIsModalVisible(true);
-      }
+      // Show message about added folders
+      const message = `Added folder${newFolders.length > 1 ? 's' : ''}: ${newFolders.map(f => f.name).join(', ')}`;
+      setModalMessage(message);
+      setIsModalVisible(true);
 
       return updatedFolders;
     });
-
-    // Reset the file input value to allow reselecting the same folder
-    resetFileInput();
   };
 
   const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
@@ -431,7 +400,11 @@ const PipelineUploader = ({ onBack }: { onBack: () => void }) => {
                     multiple: true,
                   }}
                   className="hidden"
-                  onChange={(e) => handleFiles(e.target.files || [])}
+                  onChange={(e) => {
+                    handleFiles(e.target.files || []);
+                    // Clear the input value to allow selecting the same files again
+                    e.target.value = '';
+                  }}
                 />
               </div>
             </div>
