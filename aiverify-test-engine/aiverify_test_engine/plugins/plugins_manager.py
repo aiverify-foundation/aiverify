@@ -62,6 +62,7 @@ class PluginManager:
     _pipeline_priority_list: List = [
         PipelinePluginType.SKLEARN,
         PipelinePluginType.PYTORCH,
+        PipelinePluginType.API,
     ]
     _plugins: Dict = {plugin_type.name: dict() for plugin_type in PluginType}
     lock: Lock = Lock()
