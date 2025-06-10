@@ -194,3 +194,15 @@ def mock_input_block_group_data(db_session, mock_plugins):
     yield results
     db_session.query(InputBlockGroupDataModel).delete()
     db_session.commit()
+
+
+@pytest.fixture(scope="function")
+def mock_test_datasets(db_session):
+    from .mocks.mock_test_dataset import create_mock_test_datasets
+    from aiverify_apigw.models import TestDatasetModel
+    results = create_mock_test_datasets(db_session)
+    db_session.commit()
+    yield results
+    db_session.query(TestDatasetModel).delete()
+    db_session.commit()
+
