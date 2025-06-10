@@ -217,3 +217,19 @@ def mock_test_models(db_session):
     db_session.query(TestModelModel).delete()
     db_session.commit()
 
+
+@pytest.fixture(scope="function")
+def mock_test_runs(db_session, mock_plugins):
+    from .mocks.mock_test_run import create_mock_test_runs
+    from aiverify_apigw.models import TestResultModel, TestModelModel, TestDatasetModel, TestArtifactModel, TestRunModel
+
+    results = create_mock_test_runs(db_session, mock_plugins)
+    db_session.commit()
+    yield results
+    db_session.query(TestRunModel).delete()
+    db_session.query(TestResultModel).delete()
+    db_session.query(TestModelModel).delete()
+    db_session.query(TestDatasetModel).delete()
+    db_session.query(TestArtifactModel).delete()
+    db_session.commit()
+
