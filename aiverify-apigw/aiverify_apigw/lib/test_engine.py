@@ -73,12 +73,17 @@ class TestEngineValidator:
                     raise TestEngineValidatorException(f"Invalid model instance returned: {type(model_instance)}")
         except:
             raise TestEngineValidatorException(f"Invalid model format")
-        if model_instance and model_serializer:
+        if model_instance:
             (is_success, error_messages) = model_instance.setup() 
             if not is_success:
                 raise TestEngineValidatorException(f"Failed to perform model instance setup: {error_messages}")
             if is_pipline:
-                result = (model_instance.get_pipeline_plugin_type().name.lower(), model_serializer.get_serializer_plugin_type().name.lower())
+                result = (
+                    model_instance.get_pipeline_plugin_type().name.lower(),
+                    model_serializer.get_serializer_plugin_type().name.lower()
+                    if model_serializer is not None
+                    else None
+                )
             else:
                 result = (model_instance.get_model_plugin_type().name.lower(), model_serializer.get_serializer_plugin_type().name.lower())
             model_instance.cleanup()
