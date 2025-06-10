@@ -16,6 +16,7 @@ def _create_mock_test_dataset():
         # filepath=f"file:///examples/data/{filename}",
         filename=filename,
         file_type=TestDatasetFileType.File,
+        size=faker.pyint(min_value=1)
     )
     return test_dataset
 
