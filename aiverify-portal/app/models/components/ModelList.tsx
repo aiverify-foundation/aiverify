@@ -258,7 +258,8 @@ const ModelList: React.FC<Props> = ({ models }) => {
         </div>
       )}
 
-      {/* Search and filter section */}
+        <div className="flex w-full items-center justify-between">
+          {/* Search and filter section */}
       <div className="mt-6">
         <ModelsFilters
           onSearch={handleSearch}
@@ -278,8 +279,10 @@ const ModelList: React.FC<Props> = ({ models }) => {
         />
       </div>
 
+        </div>
+
       {/* Data Grid or Loading Rectangle */}
-      <div className="mt-2 w-full">
+      <div className="h-[500px] flex-grow overflow-y-auto">
         {loading ? renderLoading('400px') : renderDataGrid()}
       </div>
     </div>

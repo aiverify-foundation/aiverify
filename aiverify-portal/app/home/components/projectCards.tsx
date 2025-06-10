@@ -68,7 +68,7 @@ function ProjectCards({ projects: initialProjects }: ProjectCardsProps) {
           </Card.Content>
           <Card.SideBar className="flex flex-col items-center gap-4 border-l border-l-primary-400 py-4">
             <Link
-              href={`/canvas?flow=${UserFlows.EditExistingProject}&projectId=${project.id}&modelId=${project.testModelId}&testResultIds=${(project.testResults as { id: number }[]).map((result) => result.id).join(',')}&iBlockIds=${(project.inputBlocks as { id: number }[]).map((block) => block.id).join(',')}&mode=view`}>
+              href={`/canvas?flow=${UserFlows.EditExistingProjectWithResults}&projectId=${project.id}&modelId=${project.testModelId}&testResultIds=${(project.testResults as { id: number }[]).map((result) => result.id).join(',')}&iBlockIds=${(project.inputBlocks as { id: number }[]).map((block) => block.id).join(',')}&mode=view`}>
               <RiEyeLine
                 size={25}
                 className="fill-primary-300 dark:fill-primary-300"

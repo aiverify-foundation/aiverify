@@ -662,6 +662,8 @@ function Designer(props: DesignerProps) {
         return UserFlows.NewProjectWithEditingExistingTemplate;
       case UserFlows.NewProjectWithExistingTemplateAndResults:
         return UserFlows.NewProjectWithExistingTemplate;
+      case UserFlows.EditExistingProjectWithResults:
+        return UserFlows.EditExistingProject;
       default:
         return currentFlow;
     }
@@ -675,7 +677,9 @@ function Designer(props: DesignerProps) {
   } else if (
     flow === UserFlows.NewProjectWithNewTemplateAndResults ||
     flow === UserFlows.NewProjectWithEditingExistingTemplateAndResults ||
-    flow === UserFlows.NewProjectWithExistingTemplateAndResults
+    flow === UserFlows.NewProjectWithExistingTemplateAndResults ||
+    flow === UserFlows.EditExistingProject ||
+    flow === UserFlows.EditExistingProjectWithResults
   ) {
     // For result flows, convert back to edit flow and go to select data page in edit mode
     const editFlow = getEditingFlowFromResultsFlow(flow);
@@ -1206,7 +1210,7 @@ function Designer(props: DesignerProps) {
                 'standard-report-page',
                 'relative bg-white text-black shadow',
                 'cursor-default active:cursor-default',
-                isOverflowPage && 'pointer-events-none',
+                isOverflowPage && 'pointer-events-none no-print',
                 !isOverflowPage && pageNavigationMode === 'multi' && 'mt-2',
                 pageNavigationMode === 'single' && 'mx-auto'
               )}
@@ -1219,7 +1223,7 @@ function Designer(props: DesignerProps) {
                   columns={GRID_COLUMNS}
                   rows={GRID_ROWS}
                   padding={A4_MARGIN}
-                  className="print:hidden"
+                  className="no-print"
                 />
               )}
               <PageNumber
@@ -1232,16 +1236,16 @@ function Designer(props: DesignerProps) {
                 }
                 isOverflowPage={isOverflowPage}
                 zoomLevel={zoomLevel}
-                className="print:hidden"
+                className="no-print"
               />
               {isOverflowPage && overflowParent !== null ? (
                 <div
-                  className="absolute flex items-center justify-center"
+                  className="absolute flex items-center justify-center no-print"
                   style={{
                     height: A4_HEIGHT,
                     width: A4_WIDTH,
                   }}>
-                  <div className="text-sm text-gray-200 print:hidden">
+                  <div className="text-sm text-gray-200 no-print">
                     Overflow content from page {overflowParent + 1}
                   </div>
                 </div>

@@ -111,28 +111,38 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
     }> = [];
 
     Array.from(selectedFiles).forEach((file) => {
-      formData.append('files', file);
-
       // Extract the subfolder path from webkitRelativePath
       const relativePath = file.webkitRelativePath;
-      let subfolderPath = './';
+      let subfolderPath = '';
+      let cleanFileName = file.name;
 
       if (relativePath) {
         const pathParts = relativePath.split('/');
         // If file is directly in root folder (no subfolder)
         if (pathParts.length <= 2) {
-          subfolderPath = './';
+          subfolderPath = '';
+          cleanFileName = pathParts[pathParts.length - 1]; // Just the filename
         } else {
-          // Extract the subfolder path (everything after the root folder name)
-          subfolderPath = './' + pathParts.slice(1, -1).join('/');
+          // Extract the subfolder path (everything after the root folder name, excluding the filename)
+          subfolderPath = pathParts.slice(1, -1).join('/');
+          cleanFileName = pathParts[pathParts.length - 1]; // Just the filename
         }
       }
+
+      // Create a new File object with clean filename (without folder path)
+      const cleanFile = new File([file], cleanFileName, {
+        type: file.type,
+        lastModified: file.lastModified,
+      });
+
+      // Add the clean file to FormData
+      formData.append('files', cleanFile);
 
       subfolderPaths.push(subfolderPath);
 
       // Store details for logging
       fileDetails.push({
-        name: file.name,
+        name: cleanFileName,
         path: file.webkitRelativePath || '',
         subfolder: subfolderPath,
       });
@@ -141,8 +151,8 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
     console.log('Files to upload (first 5):');
     fileDetails.slice(0, 5).forEach((file, index) => {
       console.log(`${index + 1}. ${file.name}`);
-      console.log(`   Full path: ${file.path}`);
-      console.log(`   Subfolder: ${file.subfolder}`);
+      console.log(`   Original path: ${file.path}`);
+      console.log(`   Subfolder: "${file.subfolder}"`);
     });
 
     if (fileDetails.length > 5) {
