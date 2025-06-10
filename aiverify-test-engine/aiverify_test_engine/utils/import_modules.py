@@ -3,12 +3,14 @@ import importlib.util
 import re
 import sys
 from importlib.machinery import ModuleSpec
-from inspect import isclass, isfunction
+from inspect import isclass, isfunction, getmembers
 from pathlib import Path
 from types import ModuleType
-from typing import Dict, Union
+from typing import Dict, Union, Tuple, Optional
+import os
 
 from aiverify_test_engine.utils.validate_checks import is_empty_string
+from aiverify_test_engine.interfaces.ipipeline import IPipeline
 
 
 def create_module_spec(
@@ -131,3 +133,25 @@ def get_non_python_files(discover_folder: str) -> Dict:
             non_python_dict.update({Path(plugin_path).name: plugin_path})
 
     return non_python_dict
+
+def discover_pipeline(directory_path: str) -> Tuple[bool, Optional[type[IPipeline]]]:
+    for filename in os.listdir(directory_path):
+        if filename.endswith(".py") and not filename.startswith("__"):
+            module_path = os.path.join(directory_path, filename)
+            module_name = filename[:-3]
+
+            try:
+                spec = importlib.util.spec_from_file_location(module_name, module_path)
+                if spec and spec.loader:
+                    module = importlib.util.module_from_spec(spec)
+                    sys.modules[module_name] = module
+                    spec.loader.exec_module(module)
+
+                    for _, obj in getmembers(module, isclass):
+                        if issubclass(obj, IPipeline) and obj is not IPipeline:
+                            print(f"Found valid pipeline subclass: {obj.__name__} in {filename}")
+                            return True, obj
+            except Exception:
+                pass  # Ignore faulty modules
+
+    return False, None

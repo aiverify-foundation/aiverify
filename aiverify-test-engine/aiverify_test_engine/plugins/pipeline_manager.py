@@ -9,6 +9,7 @@ from aiverify_test_engine.interfaces.iserializer import ISerializer
 from aiverify_test_engine.utils.import_modules import (
     get_non_python_files,
     import_python_modules,
+    discover_pipeline,
 )
 from aiverify_test_engine.utils.log_utils import log_message
 from aiverify_test_engine.utils.url_utils import download_from_url, is_url
@@ -158,7 +159,6 @@ class PipelineManager:
             # Pipeline needs to import accompanying class and load it up.
             # Pipeline path will be in folder, and we will need to import the python modules first,
             # then find out which is the pipeline file to be deserialized and used.
-            import_python_modules(pipeline_path)
             non_python_files = get_non_python_files(pipeline_path)
             if non_python_files:
                 log_message(
@@ -167,71 +167,86 @@ class PipelineManager:
                     f"Found these non-python files: {non_python_files}",
                 )
                 pipeline_file = list(non_python_files.values())[0]
+                
+                import_python_modules(pipeline_path)
+                
+                # Attempt to deserialize the pipeline with the supported serializer.
+                log_message(
+                    PipelineManager._logger,
+                    logging.INFO,
+                    f"Attempting to deserialize pipeline: {pipeline_file}",
+                )
+                (
+                    is_success,
+                    pipeline,
+                    return_pipeline_serializer_instance,
+                ) = PipelineManager._try_to_deserialize_pipeline(
+                    pipeline_file, serializer_plugins
+                )
+                
+                if not is_success:
+                    # Failed to deserialize pipeline file
+                    error_message = (
+                        f"There was an error deserializing the pipeline: {pipeline_file}"
+                    )
+                    log_message(PipelineManager._logger, logging.ERROR, error_message)
+                    return (
+                        False,
+                        return_pipeline_instance,
+                        return_pipeline_serializer_instance,
+                        error_message,
+                    )
+                    
+                    # Attempt to identify the pipeline format with the supported list.
+                log_message(
+                    PipelineManager._logger,
+                    logging.INFO,
+                    f"Attempting to identify pipeline format: {type(pipeline)}",
+                )
+                (
+                    is_success,
+                    return_pipeline_instance,
+                ) = PipelineManager._try_to_identify_pipeline_format(
+                    pipeline_plugins, **{"pipeline": pipeline}
+                )
+                if is_success:
+                    error_message = ""
+                    log_message(
+                        PipelineManager._logger,
+                        logging.INFO,
+                        f"Supported pipeline format: {type(pipeline)}, "
+                        f"{return_pipeline_instance.get_pipeline_plugin_type()}"
+                        f"[{return_pipeline_instance.get_pipeline_algorithm()}]",
+                    )
+                else:
+                    # Failed to get pipeline format
+                    return_pipeline_instance = None
+                    error_message = f"There was an error getting pipeline format (unsupported): {type(pipeline)}"
+                    log_message(PipelineManager._logger, logging.ERROR, error_message)
+            
             else:
-                error_message = (
-                    "There was an error getting pipeline files in the folder"
-                )
-                log_message(PipelineManager._logger, logging.ERROR, error_message)
-                return (
-                    False,
-                    return_pipeline_instance,
-                    return_pipeline_serializer_instance,
-                    error_message,
-                )
-
-            # Attempt to deserialize the pipeline with the supported serializer.
-            log_message(
-                PipelineManager._logger,
-                logging.INFO,
-                f"Attempting to deserialize pipeline: {pipeline_file}",
-            )
-            (
-                is_success,
-                pipeline,
-                return_pipeline_serializer_instance,
-            ) = PipelineManager._try_to_deserialize_pipeline(
-                pipeline_file, serializer_plugins
-            )
-
-            if not is_success:
-                # Failed to deserialize pipeline file
-                error_message = (
-                    f"There was an error deserializing the pipeline: {pipeline_file}"
-                )
-                log_message(PipelineManager._logger, logging.ERROR, error_message)
-                return (
-                    False,
-                    return_pipeline_instance,
-                    return_pipeline_serializer_instance,
-                    error_message,
-                )
-
-        # Attempt to identify the pipeline format with the supported list.
-        log_message(
-            PipelineManager._logger,
-            logging.INFO,
-            f"Attempting to identify pipeline format: {type(pipeline)}",
-        )
-        (
-            is_success,
-            return_pipeline_instance,
-        ) = PipelineManager._try_to_identify_pipeline_format(
-            pipeline_plugins, **{"pipeline": pipeline}
-        )
-        if is_success:
-            error_message = ""
-            log_message(
-                PipelineManager._logger,
-                logging.INFO,
-                f"Supported pipeline format: {type(pipeline)}, "
-                f"{return_pipeline_instance.get_pipeline_plugin_type()}"
-                f"[{return_pipeline_instance.get_pipeline_algorithm()}]",
-            )
-        else:
-            # Failed to get pipeline format
-            return_pipeline_instance = None
-            error_message = f"There was an error getting pipeline format (unsupported): {type(pipeline)}"
-            log_message(PipelineManager._logger, logging.ERROR, error_message)
+                # API pipeline
+                is_success, pipeline_cls = discover_pipeline(pipeline_path)  
+                
+                try:
+                    return_pipeline_instance = pipeline_cls()
+                except Exception as e:
+                    print(f"Failed to instantiate pipeline_cls: {e}")
+                    
+                return_pipeline_serializer_instance = None 
+                
+                if is_success:
+                    error_message = ""
+                    log_message(
+                        PipelineManager._logger,
+                        logging.INFO,
+                        f"Supported pipeline format: Custom API",
+                    )
+                else:
+                    # Failed to get pipeline format
+                    return_pipeline_instance = None
+                    error_message = f"There was an error getting custom pipeline format"
+                    log_message(PipelineManager._logger, logging.ERROR, error_message)       
 
         if temp_dir:
             shutil.rmtree(temp_dir)
