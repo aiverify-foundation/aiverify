@@ -206,3 +206,14 @@ def mock_test_datasets(db_session):
     db_session.query(TestDatasetModel).delete()
     db_session.commit()
 
+
+@pytest.fixture(scope="function")
+def mock_test_models(db_session):
+    from .mocks.mock_test_model import create_mock_test_models
+    from aiverify_apigw.models import TestModelModel
+    results = create_mock_test_models(db_session)
+    db_session.commit()
+    yield results
+    db_session.query(TestModelModel).delete()
+    db_session.commit()
+
