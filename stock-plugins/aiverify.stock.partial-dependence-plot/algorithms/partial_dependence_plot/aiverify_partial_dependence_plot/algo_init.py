@@ -15,6 +15,7 @@ from aiverify_test_engine.interfaces.ipipeline import IPipeline
 from aiverify_test_engine.interfaces.iserializer import ISerializer
 from aiverify_test_engine.interfaces.itestresult import ITestArguments, ITestResult
 from aiverify_test_engine.plugins.enums.model_type import ModelType
+from aiverify_test_engine.plugins.enums.pipeline_plugin_type import PipelinePluginType
 from aiverify_test_engine.plugins.enums.plugin_type import PluginType
 from aiverify_test_engine.plugins.plugins_manager import PluginManager
 from aiverify_test_engine.utils.json_utils import (
@@ -139,15 +140,16 @@ class AlgoInit:
                 self._initial_data_instance = copy.deepcopy(self._data_instance)
                 self._initial_model_instance = copy.deepcopy(self._model_instance)
 
-                # Perform data transformation
-                current_dataset = self._data_instance.get_data()
-                current_pipeline = self._model_instance.get_pipeline()
-                data_transformation_stages = current_pipeline[:-1]
-                transformed_dataset = data_transformation_stages.transform(current_dataset)
-                transformed_pipeline = current_pipeline[-1]
-                # Set new transformed pipeline and dataset
-                self._data_instance.set_data(transformed_dataset)
-                self._model_instance.set_pipeline(transformed_pipeline)
+                if self._model_instance.get_pipeline_plugin_type() == PipelinePluginType.SKLEARN:
+                    # Perform data transformation
+                    current_dataset = self._data_instance.get_data()
+                    current_pipeline = self._model_instance.get_pipeline()
+                    data_transformation_stages = current_pipeline[:-1]
+                    transformed_dataset = data_transformation_stages.transform(current_dataset)
+                    transformed_pipeline = current_pipeline[-1]
+                    # Set new transformed pipeline and dataset
+                    self._data_instance.set_data(transformed_dataset)
+                    self._model_instance.set_pipeline(transformed_pipeline)
 
             else:
                 # Get the data, model, and ground truth instance
