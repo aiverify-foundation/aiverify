@@ -38,6 +38,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["aiverify-test-engine[dev]", "faker>=28.1.0"]
+test = ["pytest", "pytest-mock", "faker>=28.1.0", "aiverify-test-engine"]
 
 [tool.hatch.envs.default]
 post-install-commands = ["pip install -e ../aiverify-test-engine[all]"]
