@@ -13,7 +13,6 @@ from aiverify_test_engine.interfaces.ipipeline import IPipeline
 from aiverify_test_engine.interfaces.iserializer import ISerializer
 from aiverify_test_engine.plugins.enums.data_plugin_type import DataPluginType
 from aiverify_test_engine.plugins.enums.model_plugin_type import ModelPluginType
-from aiverify_test_engine.plugins.enums.pipeline_plugin_type import PipelinePluginType
 from aiverify_test_engine.plugins.enums.model_type import ModelType
 from aiverify_test_engine.plugins.enums.plugin_type import PluginType
 from aiverify_test_engine.plugins.metadata.plugin_metadata import PluginMetadata
