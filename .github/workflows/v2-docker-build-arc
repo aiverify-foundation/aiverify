@@ -50,13 +50,13 @@ on:
         required: false
         default: 'main'
 
-  # push:
-  #   branches:
-  #     - 'ci/image-scan-ecr'
+  push:
+    branches:
+      - 'ci/use-arc-runner'
  
 jobs:
   build-and-push:
-    runs-on: ubuntu-latest
+    runs-on: arc-runner-aiverify
     timeout-minutes: 360
     permissions:
       id-token: write
