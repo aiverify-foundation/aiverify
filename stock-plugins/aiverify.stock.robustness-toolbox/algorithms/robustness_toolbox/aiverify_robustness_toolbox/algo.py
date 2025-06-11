@@ -346,14 +346,6 @@ class Plugin(IAlgorithm):
                 self._data_labels = list(self._data_instance.read_labels().keys())
                 self._data_labels_items = self._data_instance.read_labels().items()
                 self._ordered_ground_truth = self._ground_truth_instance.get_data()
-                # Apply keep_ground_truth only if not already applied
-                if isinstance(self._ordered_ground_truth, pd.DataFrame):
-                    if (
-                        len(self._ordered_ground_truth.columns) != 1
-                        or self._ordered_ground_truth.columns[0] != self._ground_truth
-                    ):
-                        self._ground_truth_instance.keep_ground_truth(self._ground_truth)
-                        self._ordered_ground_truth = self._ground_truth_instance.get_data()
 
             # Perform boundary attack
             self._perform_boundary_attack()
