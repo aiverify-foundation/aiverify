@@ -15,6 +15,19 @@ class TestGetAllProjects:
             assert mock is not None
             assert project["projectInfo"]["name"] == mock.name
 
+    def test_get_all_projects_internal_error(self, test_client, monkeypatch):
+        # Simulate an exception in the database query to trigger HTTP 500
+        def mock_query_all(*args, **kwargs):
+            raise Exception("Database error")
+        # Patch the session.query().all() call inside the endpoint
+        monkeypatch.setattr(
+            "aiverify_apigw.routers.project_router.Session.query",
+            lambda self, *a, **k: type("Q", (), {"all": mock_query_all})()
+        )
+        response = test_client.get("/projects/")
+        assert response.status_code == 500
+        assert "Internal error" in response.json()["detail"]
+
 
 class TestCreateProject:
     def test_create_project_success(self, test_client, mock_project_template):
@@ -53,6 +66,25 @@ class TestCreateProject:
         assert response.status_code == 200
         assert response.json()["projectInfo"]["name"] == project_data["name"]
 
+    def test_create_project_internal_error(self, test_client, monkeypatch):
+        # Simulate an exception in the database commit to trigger HTTP 500
+        def mock_commit(*args, **kwargs):
+            raise Exception("Database commit error")
+        # Patch the session.commit call inside the endpoint
+        monkeypatch.setattr(
+            "aiverify_apigw.routers.project_router.Session.commit",
+            mock_commit
+        )
+        project_data = {
+            "name": "New Project",
+            "description": "Project Description",
+            "reportTitle": "Report Title",
+            "company": "Company"
+        }
+        response = test_client.post("/projects/", json=project_data)
+        assert response.status_code == 500
+        assert "Internal error" in response.json()["detail"]
+
 
 class TestReadProject:
     def test_read_project_success(self, test_client, mock_projects):
@@ -65,6 +97,19 @@ class TestReadProject:
     def test_read_project_not_found(self, test_client):
         response = test_client.get("/projects/1234")
         assert response.status_code == 404
+
+    def test_read_project_internal_error(self, test_client, monkeypatch):
+        # Simulate an exception in the database query to trigger HTTP 500
+        def mock_query(*args, **kwargs):
+            raise Exception("Database query error")
+        # Patch the session.query call inside the endpoint
+        monkeypatch.setattr(
+            "aiverify_apigw.routers.project_router.Session.query",
+            mock_query
+        )
+        response = test_client.get("/projects/1")
+        assert response.status_code == 500
+        assert "Internal error" in response.json()["detail"]
 
 
 class TestUpdateProject:
@@ -100,6 +145,41 @@ class TestUpdateProject:
         response = test_client.put("/projects/1234", json=update_data)
         assert response.status_code == 404
 
+    def test_update_project_test_model_not_found(self, test_client, mock_projects):
+        project = mock_projects[0]
+        update_data = {
+            "projectInfo": {
+                "name": "Updated Project",
+                "description": "Updated Description",
+                "reportTitle": "Updated Report",
+                "company": "Updated Company"
+            },
+            "testModelId": 9999  # Assume this test model does not exist
+        }
+        response = test_client.put(f"/projects/{project.id}", json=update_data)
+        assert response.status_code == 404
+
+    def test_update_project_internal_error(self, test_client, monkeypatch):
+        # Simulate an exception in the database query to trigger HTTP 500
+        def mock_query(*args, **kwargs):
+            raise Exception("Database query error")
+        # Patch the session.query call inside the endpoint
+        monkeypatch.setattr(
+            "aiverify_apigw.routers.project_router.Session.query",
+            mock_query
+        )
+        update_data = {
+            "projectInfo": {
+                "name": "Updated Project",
+                "description": "Updated Description",
+                "reportTitle": "Updated Report",
+                "company": "Updated Company"
+            }
+        }
+        response = test_client.put("/projects/1", json=update_data)
+        assert response.status_code == 500
+        assert "Internal error" in response.json()["detail"]
+
 
 class TestPatchUpdateProject:
     def test_patch_update_project_success(self, test_client, mock_projects):
@@ -123,6 +203,32 @@ class TestPatchUpdateProject:
         response = test_client.patch("/projects/projects/1234", json=patch_data)
         assert response.status_code == 404
 
+    def test_patch_project_test_model_not_found(self, test_client, mock_projects):
+        project = mock_projects[0]
+        update_data = {
+            "testModelId": 9999  # Assume this test model does not exist
+        }
+        response = test_client.patch(f"/projects/projects/{project.id}", json=update_data)
+        assert response.status_code == 400
+
+    def test_patch_update_project_internal_error(self, test_client, monkeypatch):
+        # Simulate an exception in the database query to trigger HTTP 500
+        def mock_query(*args, **kwargs):
+            raise Exception("Database query error")
+        # Patch the session.query call inside the endpoint
+        monkeypatch.setattr(
+            "aiverify_apigw.routers.project_router.Session.query",
+            mock_query
+        )
+        patch_data = {
+            "projectInfo": {
+                "name": "Patched Project"
+            }
+        }
+        response = test_client.patch("/projects/projects/1", json=patch_data)
+        assert response.status_code == 500
+        assert "Internal error" in response.json()["detail"]
+
 
 class TestDeleteProject:
     def test_delete_project_success(self, test_client, mock_projects):
@@ -135,6 +241,19 @@ class TestDeleteProject:
     def test_delete_project_not_found(self, test_client):
         response = test_client.delete("/projects/projects/1234")
         assert response.status_code == 404
+
+    def test_delete_project_internal_error(self, test_client, monkeypatch):
+        # Simulate an exception in the database query to trigger HTTP 500
+        def mock_query(*args, **kwargs):
+            raise Exception("Database query error")
+        # Patch the session.query call inside the endpoint
+        monkeypatch.setattr(
+            "aiverify_apigw.routers.project_router.Session.query",
+            mock_query
+        )
+        response = test_client.delete("/projects/projects/1")
+        assert response.status_code == 500
+        assert "Internal error" in response.json()["detail"]
 
 
 class TestSaveProjectAsTemplate:
@@ -156,3 +275,19 @@ class TestSaveProjectAsTemplate:
         }
         response = test_client.post("/projects/saveProjectAsTemplate/1234", json=template_data)
         assert response.status_code == 404
+
+    def test_save_project_as_template_internal_error(self, test_client, monkeypatch):
+        # Simulate an exception in the database query to trigger HTTP 500
+        def mock_query(*args, **kwargs):
+            raise Exception("Database query error")
+        monkeypatch.setattr(
+            "aiverify_apigw.routers.project_router.Session.query",
+            mock_query
+        )
+        template_data = {
+            "name": "New Template",
+            "description": "Template Description"
+        }
+        response = test_client.post("/projects/saveProjectAsTemplate/1", json=template_data)
+        assert response.status_code == 500
+        assert "Internal error" in response.json()["detail"]
