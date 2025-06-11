@@ -92,10 +92,10 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch || 'main' }}
       
-      # Free up disk space before building large Docker images
-      - name: Free up disk space
-        run: |
-          bash .ci/free_disk_space.sh
+      # # Free up disk space before building large Docker images
+      # - name: Free up disk space
+      #   run: |
+      #     bash .ci/free_disk_space.sh
 
       # Set BUILD_BASE flag
       - name: Set BUILD_BASE flag
@@ -112,7 +112,7 @@ jobs:
           context: aiverify-test-engine
           containerfiles: |
             aiverify-test-engine/Dockerfile
+          platforms: linux/amd64,linux/arm64
           registry: ghcr.io
           username: aiverify-foundation
           password: ${{ secrets.GITHUB_TOKEN }}
-
