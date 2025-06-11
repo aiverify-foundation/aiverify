@@ -346,7 +346,6 @@ class Plugin(IAlgorithm):
                 self._data_labels = list(self._data_instance.read_labels().keys())
                 self._data_labels_items = self._data_instance.read_labels().items()
                 self._ordered_ground_truth = self._ground_truth_instance.get_data()
-                # Apply keep_ground_truth only if not already applied
 
             # Perform boundary attack
             self._perform_boundary_attack()
