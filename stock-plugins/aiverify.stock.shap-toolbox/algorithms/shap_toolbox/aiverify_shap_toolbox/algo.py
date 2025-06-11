@@ -13,6 +13,7 @@ from aiverify_test_engine.interfaces.ipipeline import IPipeline
 from aiverify_test_engine.interfaces.iserializer import ISerializer
 from aiverify_test_engine.plugins.enums.data_plugin_type import DataPluginType
 from aiverify_test_engine.plugins.enums.model_plugin_type import ModelPluginType
+from aiverify_test_engine.plugins.enums.pipeline_plugin_type import PipelinePluginType
 from aiverify_test_engine.plugins.enums.model_type import ModelType
 from aiverify_test_engine.plugins.enums.plugin_type import PluginType
 from aiverify_test_engine.plugins.metadata.plugin_metadata import PluginMetadata
@@ -413,8 +414,9 @@ class Plugin(IAlgorithm):
             self._background = self._background_instance.get_data()
 
         if self._model_instance.get_plugin_type() is PluginType.PIPELINE:
-            transformers = self._model.get_pipeline()[:-1]
-            self._background = transformers.transform(self._background)
+            if self._model_instance.get_plugin_type() is PluginType.PIPELINE:
+                transformers = self._model.get_pipeline()[:-1]
+                self._background = transformers.transform(self._background)
 
         # Perform data_sampling and background_sampling
         if self._data_samples > 0:
