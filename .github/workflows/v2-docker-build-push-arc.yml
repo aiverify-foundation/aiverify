@@ -109,7 +109,6 @@ jobs:
         with:
           image: aiverify-python-base
           tags: latest
-          context: aiverify-test-engine
           containerfiles: |
             aiverify-test-engine/Dockerfile
           platforms: linux/amd64,linux/arm64
