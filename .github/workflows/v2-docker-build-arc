@@ -1,4 +1,4 @@
-ame: v2 Docker Build & Push (ARC)
+name: v2 Docker Build & Push (ARC)
 
 # This GitHub Actions workflow builds and pushes Docker images to AWS ECR.
 # It supports both manual dispatch and scheduled daily builds, using a dynamic matrix strategy.
