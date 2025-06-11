@@ -101,6 +101,7 @@ jobs:
       - name: Set BUILD_BASE flag
         run: |
           echo "BUILD_BASE=${{ github.event.inputs.build_base || 'true' }}" >> $GITHUB_ENV
+          sudo apt install buildah -y
 
       # Build and push aiverify-python-base with Buildah
       - name: Build and push aiverify-python-base with Buildah
