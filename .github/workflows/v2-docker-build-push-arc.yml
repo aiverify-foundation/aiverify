@@ -95,8 +95,8 @@ jobs:
       - name: Set BUILD_BASE flag
         run: |
           echo "BUILD_BASE=${{ github.event.inputs.build_base || 'true' }}" >> $GITHUB_ENV
-          # sudo apt-get update
-          # sudo apt-get -y install buildah
+          sudo apt-get update
+          sudo apt-get -y install buildah
 
       # Check out the source code from the specified branch
       - name: Checkout code
