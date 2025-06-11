@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, UploadFile, Form, Depends, Response, Body
+from fastapi import APIRouter, HTTPException, UploadFile, Form, Depends, Response
 from typing import List, Annotated, Any, Literal
 from datetime import datetime, timezone
 from sqlalchemy.orm import Session
@@ -11,7 +11,7 @@ from ..lib.constants import ModelType, TestModelMode, TestModelFileType, TestMod
 from ..lib.file_utils import check_valid_filename, check_file_size
 from ..lib.filestore import save_test_model as fs_save_test_model, delete_test_model as fs_delete_test_model, get_test_model as fs_get_test_model
 from ..lib.database import get_db_session
-from ..schemas import TestModel, TestModelUpdate, TestModelAPIInput, ModelAPIExportSchema, ModelAPIType, ModelAPIParametersMapping, load_examples
+from ..schemas import TestModel, TestModelUpdate, load_examples
 from ..models import TestModelModel, TestResultModel
 from ..lib.test_engine import TestEngineValidator, TestEngineValidatorException
 
