@@ -102,11 +102,8 @@ jobs:
         run: |
           echo "BUILD_BASE=${{ github.event.inputs.build_base || 'true' }}" >> $GITHUB_ENV
           sudo apt-get update
-          sudo apt-get install -qq -y software-properties-common 
-          sudo add-apt-repository -y ppa:projectatomic/ppa
-          sudo apt-get update -qq
-          sudo apt-get -qq -y install buildah
-
+          sudo apt-get -y install buildah
+          
       # Build and push aiverify-python-base with Buildah
       - name: Build and push aiverify-python-base with Buildah
         if: (matrix.image_name == 'aiverify-test-engine-worker' || matrix.image_name == 'aiverify-apigw') && env.BUILD_BASE == 'true'
