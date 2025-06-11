@@ -1,7 +1,5 @@
 import pytest
 import json
-from aiverify_apigw.models import PluginModel, InputBlockModel, InputBlockDataModel, InputBlockGroupDataModel
-from aiverify_apigw.schemas import InputBlockData, InputBlockDataOutput, InputBlockGroupDataInput, InputBlockGroupDataOutput, InputBlockDataUpdate, InputBlockGroupDataUpdate
 
 
 class TestListInputBlockData:
