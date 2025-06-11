@@ -1,0 +1,118 @@
+name: v2 Docker Build & Push (ARC)
+
+# This GitHub Actions workflow builds and pushes Docker images to AWS ECR.
+# It supports both manual dispatch and scheduled daily builds, using a dynamic matrix strategy.
+
+env:
+  AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
+  AWS_REGION: ${{ vars.AWS_REGION }}
+
+  GITHUB_TOKEN: ${{ github.token }}
+
+on:
+  # Run this workflow everyday at 6:05pm Singapore Time (10:05am UTC)
+  schedule:
+    - cron: '5 10 * * *'
+
+  # Allow manual trigger with custom parameters
+  workflow_dispatch:
+    inputs:
+      image_name:
+        description: 'Docker image name, e.g. aiverify-apigw'
+        required: true
+        default: 'aiverify-apigw'
+      tag:
+        description: 'Tag for the Docker image, e.g. 2.0.2'
+        required: true
+        default: 'dev'
+      github_username:
+        description: 'GitHub username or org that owns the image, e.g. aiverify-foundation'
+        required: true
+        default: 'aiverify-foundation'
+      dockerfile_dir:
+        description: 'Relative path to the Dockerfile directory, e.g. aiverify-apigw'
+        required: true
+        default: 'aiverify-apigw'
+      build_target:
+        description: 'Optional: Docker build target'
+        required: false
+        default: ''
+      tag_suffix:
+        description: 'Optional: Tag suffix for the target'
+        required: false
+        default: ''
+      build_base:
+        description: 'Optional: Build aiverify-python-base image'
+        required: false
+        default: 'true'
+      branch:
+        description: 'Git branch to check out, e.g. main'
+        required: false
+        default: 'main'
+
+  push:
+    branches:
+      - 'ci/use-arc-runner'
+ 
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    permissions:
+      id-token: write
+      contents: read
+      packages: write
+
+    strategy:
+      # Dynamically create the build matrix based on the event type
+      # - For manual dispatch: build a single image from input parameters
+      # - For scheduled or push triggers: build multiple predefined image configs
+      matrix:
+        include: ${{ fromJson(
+          (github.event_name == 'workflow_dispatch' && github.event.inputs.image_name != 'all')
+            && format('[{{"image_name":"{0}","dockerfile_dir":"{1}","build_target":"{2}","tag_suffix":"{3}"}}]', 
+                github.event.inputs.image_name,
+                github.event.inputs.dockerfile_dir,
+                github.event.inputs.build_target,
+                github.event.inputs.tag_suffix
+            ) || 
+             '[ {"image_name":"aiverify-portal","dockerfile_dir":"aiverify-portal","build_target":"","tag_suffix":""},
+                {"image_name":"aiverify-apigw","dockerfile_dir":"aiverify-apigw","build_target":"","tag_suffix":""},
+                {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"base","tag_suffix":"base"},
+                {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"venv-build","tag_suffix":"venv"},
+                {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"docker-build","tag_suffix":"docker"} ]' ) }}
+      fail-fast: false
+      max-parallel: 1
+
+    steps:
+
+      # Check out the source code from the specified branch
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch || 'main' }}
+      
+      # Free up disk space before building large Docker images
+      - name: Free up disk space
+        run: |
+          bash .ci/free_disk_space.sh
+
+      # Set BUILD_BASE flag
+      - name: Set BUILD_BASE flag
+        run: |
+          echo "BUILD_BASE=${{ github.event.inputs.build_base || 'true' }}" >> $GITHUB_ENV
+
+      # Build and push aiverify-python-base with Buildah
+      - name: Build and push aiverify-python-base with Buildah
+        if: (matrix.image_name == 'aiverify-test-engine-worker' || matrix.image_name == 'aiverify-apigw') && env.BUILD_BASE == 'true'
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: aiverify-python-base
+          tags: latest
+          context: aiverify-test-engine
+          containerfiles: |
+            aiverify-test-engine/Dockerfile
+          registry: ghcr.io
+          username: aiverify-foundation
+          password: ${{ secrets.GITHUB_TOKEN }}
+
