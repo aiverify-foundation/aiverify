@@ -414,9 +414,8 @@ class Plugin(IAlgorithm):
             self._background = self._background_instance.get_data()
 
         if self._model_instance.get_plugin_type() is PluginType.PIPELINE:
-            if self._model_instance.get_pipeline_plugin_type() is PipelinePluginType.SKLEARN:
-                transformers = self._model.get_pipeline()[:-1]
-                self._background = transformers.transform(self._background)
+            transformers = self._model.get_pipeline()[:-1]
+            self._background = transformers.transform(self._background)
 
         # Perform data_sampling and background_sampling
         if self._data_samples > 0:
