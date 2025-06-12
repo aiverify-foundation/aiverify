@@ -76,6 +76,8 @@ async def read_project(project_id: int, session: Session = Depends(get_db_sessio
         if not project:
             raise HTTPException(status_code=404, detail="Project not found")
         return ProjectOutput.from_model(project)
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error retrieving project with ID {project_id}: {e}")
         raise HTTPException(status_code=500, detail=f"Internal error {e}")
