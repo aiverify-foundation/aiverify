@@ -42,8 +42,22 @@ aiverify-test-engine/
 
 ### Running Tests
 
-```bash
-python -m pytest tests
+### Pytest is used as the testing framework.
+
+Ensure the Python 3.11 Virtual Environment is setup and activated in the aiverify root directory.
+
+```sh
+python -m venv .venv
+source .venv/bin/activate
+pip install "./aiverify-apigw[dev]"
+```
+
+To run the tests:
+
+```sh
+cd aiverify-test-engine
+pip install .
+pytest tests
 ```
 
 ### Building the Package
