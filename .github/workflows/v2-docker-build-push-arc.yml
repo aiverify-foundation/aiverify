@@ -108,7 +108,10 @@ jobs:
         if: (matrix.image_name == 'aiverify-test-engine-worker' || matrix.image_name == 'aiverify-apigw') && env.BUILD_BASE == 'true'
         run: |
           sudo apt-get update
-          sudo apt-get install -y buildah
+          sudo apt-get install -y buildah uidmap
+          echo "0 100000 65536" | sudo tee /etc/subuid
+          echo "0 100000 65536" | sudo tee /etc/subgid
+          export BUILDAH_ISOLATION=chroot
           buildah bud -f aiverify-test-engine/Dockerfile -t ghcr.io/aiverify-foundation/aiverify-python-base:latest .
           echo "${{ secrets.GITHUB_TOKEN }}" | buildah login -u aiverify-foundation --password-stdin ghcr.io
           buildah push ghcr.io/aiverify-foundation/aiverify-python-base:latest
