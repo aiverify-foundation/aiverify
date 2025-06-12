@@ -104,13 +104,11 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch || 'main' }}
       
-      - name: Build and push aiverify-python-base with Kaniko
+      - name: Build and push aiverify-python-base with Buildah
         if: (matrix.image_name == 'aiverify-test-engine-worker' || matrix.image_name == 'aiverify-apigw') && env.BUILD_BASE == 'true'
-        uses: aevea/action-kaniko@v0.10.0
-        with:
-          image: ghcr.io/aiverify-foundation/aiverify-python-base
-          tag: latest
-          build_file: aiverify-test-engine/Dockerfile
-          registry: ghcr.io
-          username: aiverify-foundation
-          password: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y buildah
+          buildah bud -f aiverify-test-engine/Dockerfile -t ghcr.io/aiverify-foundation/aiverify-python-base:latest .
+          echo "${{ secrets.GITHUB_TOKEN }}" | buildah login -u aiverify-foundation --password-stdin ghcr.io
+          buildah push ghcr.io/aiverify-foundation/aiverify-python-base:latest
