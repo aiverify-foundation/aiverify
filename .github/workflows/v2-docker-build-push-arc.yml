@@ -103,16 +103,25 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.branch || 'main' }}
+
+      - name: Install Buildah and configure user namespace
+        run: |
+          id
+          sudo apt-get update
+          sudo apt-get install -y buildah uidmap
+          
+          sudo usermod --add-subuids 10000-75535 $(whoami)
+          sudo usermod --add-subgids 10000-75535 $(whoami)
+
+          sudo echo "$(whoami):10000:65536" >> /etc/subuid
+          sudo echo "$(whoami):10000:65536" >> /etc/subgid
+
+          # echo "0:100000:65536" | sudo tee /etc/subuid
+          # echo "0:100000:65536" | sudo tee /etc/subgid
       
       - name: Build and push aiverify-python-base with Buildah
         if: (matrix.image_name == 'aiverify-test-engine-worker' || matrix.image_name == 'aiverify-apigw') && env.BUILD_BASE == 'true'
         run: |
-          sudo apt-get update
-          sudo apt-get install -y buildah uidmap
-          cat /etc/subuid
-          cat /etc/subgid
-          echo "0:100000:65536" | sudo tee /etc/subuid
-          echo "0:100000:65536" | sudo tee /etc/subgid
           export BUILDAH_ISOLATION=chroot
           buildah bud -f aiverify-test-engine/Dockerfile -t ghcr.io/aiverify-foundation/aiverify-python-base:latest .
           echo "${{ secrets.GITHUB_TOKEN }}" | buildah login -u aiverify-foundation --password-stdin ghcr.io
