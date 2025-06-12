@@ -49,12 +49,18 @@ def _create_mock_algorithm(gid: str):
 
 def _create_mock_widgets(gid: str):
     cid = ".".join(faker.words()).lower()
-    widget_size = json.dumps({
-            "minW": faker.random_int(min=1, max=12),
-            "minH": faker.random_int(min=1, max=12),
+    widget_size = {
+            "minW": 1,
+            "minH": 1,
             "maxW": faker.random_int(min=1, max=12),
             "maxH": faker.random_int(min=1, max=12),
-        }).encode("utf-8")
+        }
+    name = faker.name()
+    meta = {
+        "cid": cid,
+        "name": name,
+        "widgetSize": widget_size
+    }
     properties = json.dumps([json.dumps({"key": faker.word(), "helper": faker.word()})]).encode("utf-8")
     # mockdata = json.dumps({"mockKey": faker.word(), "mockValue": faker.word()}).encode("utf-8")
     dependencies = json.dumps([json.dumps({"cid": faker.word()})]).encode("utf-8")
@@ -63,11 +69,11 @@ def _create_mock_widgets(gid: str):
         cid=cid,
         name=faker.name(),
         version=faker.numerify("%!!.%!!.%!!"),
-        author=faker.name(),
+        author=name,
         description=faker.text(max_nb_chars=256),
         gid=gid,
-        meta=b'{"key1":"value1"}',
-        widget_size=widget_size,
+        meta=json.dumps(meta).encode("utf-8"),
+        widget_size=json.dumps(widget_size).encode("utf-8"),
         properties=properties,
         # mockdata=mockdata,
         dynamic_height=faker.boolean(),
@@ -76,22 +82,28 @@ def _create_mock_widgets(gid: str):
     )
 
 
-def _create_mock_input_block(gid: str):
+def _create_mock_input_block(gid: str, group: str | None=None, group_number: int | None=None):
     cid = ".".join(faker.words()).lower()
-    group = faker.word()
+    # group = faker.word()
     width = faker.random_element(elements=[InputBlockSize.xs, InputBlockSize.sm,
                                  InputBlockSize.md, InputBlockSize.lg, InputBlockSize.xl])
     fullscreen = faker.boolean()
+    name = faker.name()
+    meta = {
+        "cid": cid,
+        "name": name,
+    }
     return InputBlockModel(
         id=f"{gid}:{cid}",
         cid=cid,
-        name=faker.name(),
+        name=name,
         version=faker.numerify("%!!.%!!.%!!"),
         author=faker.name(),
         description=faker.text(max_nb_chars=256),
         gid=gid,
-        meta=b'{"key1":"value1"}',
+        meta=json.dumps(meta).encode("utf-8"),
         group=group,
+        groupNumber=group_number,
         width=width,
         fullscreen=fullscreen,
         plugin_id=gid,
@@ -100,17 +112,22 @@ def _create_mock_input_block(gid: str):
 
 def _create_mock_template(gid: str):
     cid = ".".join(faker.words()).lower()
+    name = faker.name()
     template = json.dumps({"templateKey": faker.word(), "templateValue": faker.word()}).encode("utf-8")
     project_data = create_mock_project_template_data_meta().model_dump_json().encode('utf-8')
+    meta = {
+        "cid": cid,
+        "name": name,
+    }
     model = TemplateModel(
         id=f"{gid}:{cid}",
         cid=cid,
         name=faker.name(),
         version=faker.numerify("%!!.%!!.%!!"),
-        author=faker.name(),
+        author=name,
         description=faker.text(max_nb_chars=256),
         gid=gid,
-        meta=b'{"key1":"value1"}',
+        meta=json.dumps(meta).encode("utf-8"),
         template=template,
         project_data=project_data,
         plugin_id=gid,
@@ -132,11 +149,12 @@ def _create_mock_plugin(num_algo: int | None = None, num_widgets: int | None = N
         num_algo = faker.random_int(min=1, max=3)
     algorithms = [_create_mock_algorithm(gid) for i in range(num_algo)]
     if num_widgets is None:
-        num_widgets = faker.random_int(min=1, max=3)
+        num_widgets = faker.random_int(min=2, max=4)
     widgets = [_create_mock_widgets(gid) for i in range(num_widgets)]
     if num_input_blocks is None:
-        num_input_blocks = faker.random_int(min=1, max=3)
-    inputblocks = [_create_mock_input_block(gid) for i in range(num_input_blocks)]
+        num_input_blocks = faker.random_int(min=2, max=4)
+    group = faker.word()
+    inputblocks = [_create_mock_input_block(gid) for i in range(num_input_blocks)] + [_create_mock_input_block(gid, group, i + 1) for i in range(num_input_blocks)]
     if num_templates is None:
         num_templates = faker.random_int(min=1, max=2)
     templates = []
@@ -176,4 +194,5 @@ def create_mock_plugins(session, num_plugins: int = 2, is_stock: bool = True):
         plugins.append(plugin)
     session.add_all(plugins)
     session.flush()
+    session.expunge_all()
     return plugins

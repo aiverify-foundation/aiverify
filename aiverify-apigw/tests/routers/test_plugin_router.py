@@ -256,7 +256,7 @@ class TestDownloadPluginInputBlocks:
         assert response.json()["detail"] == "Plugin not found"
 
     def test_download_plugin_input_blocks_empty(self, test_client, db_session, mock_plugins_no_widgets_inputblocks):
-        """Test when the plugin has no widgets."""
+        """Test when the plugin has no input blocks."""
 
         plugin = mock_plugins_no_widgets_inputblocks
         gid = plugin.gid
@@ -281,3 +281,130 @@ class TestDownloadPluginInputBlocks:
         # Assertions
         assert response.status_code == 500
         assert response.json()["detail"] == exception_error_msg
+
+
+class TestDownloadPluginBundle:
+    @patch("aiverify_apigw.routers.plugin_router.get_plugin_mdx_bundle", autospec=True)
+    def test_download_plugin_bundle_widget(self, mock_get_plugin_mdx_bundle, test_client, mock_plugins):
+        """Test successful download of a widget bundle."""
+        
+        # Mock the bundle data
+        mock_bundle = {"code": "mock_code", "frontmatter": "mock_frontmatter"}
+        mock_get_plugin_mdx_bundle.return_value = mock_bundle
+
+        # Perform the GET request
+        plugin = mock_plugins[0]
+        widget = plugin.widgets[0]
+        gid = plugin.gid
+        cid = f"widget:{widget.cid}"
+        response = test_client.get(f"/plugins/{gid}/bundle/{cid}")
+
+        # Assertions
+        assert response.status_code == 200
+        assert response.json() == mock_bundle
+        mock_get_plugin_mdx_bundle.assert_called_once_with(gid, cid)
+
+    @patch("aiverify_apigw.routers.plugin_router.get_plugin_mdx_bundle", autospec=True)
+    def test_download_plugin_bundle_input_block(self, mock_get_plugin_mdx_bundle, test_client, mock_plugins):
+        """Test successful download of an input block bundle."""
+        
+        # Mock the bundle data
+        mock_bundle = {"code": "mock_code", "frontmatter": "mock_frontmatter"}
+        mock_get_plugin_mdx_bundle.return_value = mock_bundle
+
+        # Perform the GET request
+        plugin = mock_plugins[0]
+        ib = plugin.inputblocks[0]
+        gid = plugin.gid
+        cid = f"inputblock:{ib.cid}"
+        response = test_client.get(f"/plugins/{gid}/bundle/{cid}")
+
+        # Assertions
+        assert response.status_code == 200
+        assert response.json() == mock_bundle
+        mock_get_plugin_mdx_bundle.assert_called_once_with(gid, cid)
+
+    def test_download_plugin_bundle_not_found(self, test_client):
+        """Test when the plugin or bundle is not found."""
+
+        # Perform the GET request
+        gid = "nonexistent_plugin"
+        cid = "nonexistent_cid"
+        response = test_client.get(f"/plugins/{gid}/bundle/{cid}")
+
+        # Assertions
+        assert response.status_code == 404
+        assert response.json()["detail"] == "Plugin not found"
+
+    @patch("aiverify_apigw.routers.plugin_router.get_plugin_mdx_bundle", autospec=True)
+    def test_download_plugin_bundle_internal_error(self, mock_get_plugin_mdx_bundle, test_client, mock_plugins):
+        """Test internal server error when generating the bundle."""
+
+        # Simulate an internal error in get_plugin_mdx_bundle
+        exception_error_msg = "Internal server error"
+        mock_get_plugin_mdx_bundle.side_effect = Exception(exception_error_msg)
+
+        # Perform the GET request
+        plugin = mock_plugins[0]
+        widget = plugin.widgets[0]
+        gid = plugin.gid
+        cid = f"widget:{widget.cid}"
+        response = test_client.get(f"/plugins/{gid}/bundle/{cid}")
+
+        # Assertions
+        assert response.status_code == 500
+        assert response.json()["detail"] == exception_error_msg
+
+
+class TestDownloadPluginSummary:
+    @patch("aiverify_apigw.routers.plugin_router.get_plugin_mdx_bundle", autospec=True)
+    def test_download_plugin_summary_success(self, mock_get_plugin_mdx_bundle, test_client, mock_plugins):
+        """Test successful download of a plugin summary."""
+        
+        # Mock the bundle data
+        mock_bundle = {"code": "mock_code", "frontmatter": "mock_frontmatter"}
+        mock_get_plugin_mdx_bundle.return_value = mock_bundle
+
+        # Perform the GET request
+        plugin = mock_plugins[0]
+        widget = plugin.widgets[0]
+        gid = plugin.gid
+        cid = f"widget:{widget.cid}"
+        response = test_client.get(f"/plugins/{gid}/summary/{cid}")
+
+        # Assertions
+        assert response.status_code == 200
+        assert response.json() == mock_bundle
+        mock_get_plugin_mdx_bundle.assert_called_once_with(gid, cid, summary=True)
+
+    def test_download_plugin_summary_not_found(self, test_client):
+        """Test when the plugin or summary is not found."""
+
+        # Perform the GET request
+        gid = "nonexistent_plugin"
+        cid = "nonexistent_cid"
+        response = test_client.get(f"/plugins/{gid}/summary/{cid}")
+
+        # Assertions
+        assert response.status_code == 404
+        assert response.json()["detail"] == "Plugin not found"
+
+    @patch("aiverify_apigw.routers.plugin_router.get_plugin_mdx_bundle", autospec=True)
+    def test_download_plugin_summary_internal_error(self, mock_get_plugin_mdx_bundle, test_client, mock_plugins):
+        """Test internal server error when generating the summary."""
+
+        # Simulate an internal error in get_plugin_mdx_bundle
+        exception_error_msg = "Internal server error"
+        mock_get_plugin_mdx_bundle.side_effect = Exception(exception_error_msg)
+
+        # Perform the GET request
+        plugin = mock_plugins[0]
+        widget = plugin.widgets[0]
+        gid = plugin.gid
+        cid = f"widget:{widget.cid}"
+        response = test_client.get(f"/plugins/{gid}/summary/{cid}")
+
+        # Assertions
+        assert response.status_code == 500
+        assert response.json()["detail"] == exception_error_msg
+
