@@ -110,14 +110,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y buildah uidmap
           
-          sudo usermod --add-subuids 10000-75535 $(whoami)
-          sudo usermod --add-subgids 10000-75535 $(whoami)
+          # sudo usermod --add-subuids 10000-75535 $(whoami)
+          # sudo usermod --add-subgids 10000-75535 $(whoami)
 
           # sudo echo "$(whoami):10000:65536" >> /etc/subuid
           # sudo echo "$(whoami):10000:65536" >> /etc/subgid
 
-          echo "$(whoami):10000:65536" | sudo tee /etc/subuid
-          echo "$(whoami):10000:65536" | sudo tee /etc/subgid
+          echo "$(whoami):100000:65536" | sudo tee /etc/subuid
+          echo "$(whoami):100000:65536" | sudo tee /etc/subgid
       
       - name: Build and push aiverify-python-base with Buildah
         if: (matrix.image_name == 'aiverify-test-engine-worker' || matrix.image_name == 'aiverify-apigw') && env.BUILD_BASE == 'true'
