@@ -335,7 +335,7 @@ Output:
 	Removing the variable makes the model less fair and;
 	Removing hurts performance
 	
-  - "exclude": The variable should be removed from the model. This is recommended when:
+	- "exclude": The variable should be removed from the model. This is recommended when:
   Removing the variable makes the model fairer and;
 	Removing improves performance
 	
