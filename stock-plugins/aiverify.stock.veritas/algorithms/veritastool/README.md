@@ -339,7 +339,7 @@ Output:
   Removing the variable makes the model fairer and;
 	Removing improves performance
 	
-  - "examine further": More analysis is needed. This happens when there's a tradeoff between fairness and performance i.e. removing a variable improves fairness but hurts performance, or vice versa.
+	- "examine further": More analysis is needed. This happens when there's a tradeoff between fairness and performance i.e. removing a variable improves fairness but hurts performance, or vice versa.
 
 **Root Cause**
 
