@@ -106,5 +106,9 @@ If the algorithm runs successfully, the results of the test will be saved in an 
 Run the following steps to execute the unit and integration tests inside the `tests/` folder
 
 ```sh
-docker run --entrypoint python3 aiverify-accumulated-local-effect -m pytest .
+docker run \
+  --entrypoint python3 \
+  -w /app/aiverify/stock-plugins/aiverify.stock.accumulated-local-effect/algorithms/accumulated_local_effect \
+  aiverify-accumulated-local-effect \
+  -m pytest .
 ```

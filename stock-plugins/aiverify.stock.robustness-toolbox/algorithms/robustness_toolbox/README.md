@@ -125,5 +125,9 @@ If the algorithm runs successfully, the results of the test will be saved in an 
 Run the following steps to execute the unit and integration tests inside the `tests/` folder
 
 ```sh
-docker run --entrypoint python3 aiverify-robustness-toolbox -m pytest .
+docker run \
+  --entrypoint python3 \
+  -w /app/aiverify/stock-plugins/aiverify.stock.robustness-toolbox/algorithms/robustness_toolbox \
+  aiverify-robustness-toolbox \
+  -m pytest .
 ```
