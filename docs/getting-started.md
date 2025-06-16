@@ -74,7 +74,16 @@ You will receive a confirmation after model file is uploaded successfully onto t
 ![aivf2-0-model-success](./res/getting-started/model-success.png)
 
 
-##Run tests and save results
+## Run report with custom model
+
+You can now run custom model using the same veritas (now aiverify_veritastool) python library and export the results using the new `convert_veritas_artifact_to_aiverify` function to the aiverify format. This will allow you to upload the results to the portsl to generate a report - no model is required to be uploaded and the test does not need to be triggered from the portal.
+
+![aivf2-0-upload-results](./res/getting-started/upload-results.png)
+
+You can try running one of the [notebook examples](https://github.com/aiverify-foundation/aiverify/tree/main/stock-plugins/aiverify.stock.veritas/algorithms/veritastool/examples) to generate a `output` folder that can be zipped and uploaded to the portal.
+
+
+## Run tests and save results
 
 If you want to run an "Explainability" test - example Accumulated Local Effects (ALE), 
 
