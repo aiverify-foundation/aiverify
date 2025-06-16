@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import Any, List, Tuple
+from typing import Any, Tuple
+
+import tensorflow as tf
 
 from aiverify_test_engine.interfaces.imodel import IModel
 from aiverify_test_engine.plugins.enums.model_plugin_type import ModelPluginType
@@ -18,7 +20,6 @@ class Plugin(IModel):
     # Some information on plugin
     _model: Any = None
     _model_algorithm: str = ""
-    _supported_algorithms: List = ["keras.src.engine.sequential.Sequential"]
     _name: str = "tensorflowmodel"
     _description: str = "tensorflowmodel supports detecting tensorflow models"
     _version: str = "0.9.0"
@@ -176,13 +177,7 @@ class Plugin(IModel):
             Tuple[bool, str]: true if model is supported, str will store the support
             algo name
         """
-        model_algorithm = ""
-        is_success = False
-
-        module_type_name = f"{type(model).__module__}.{type(model).__name__}"
-        for supported_algo in self._supported_algorithms:
-            if supported_algo == module_type_name:
-                model_algorithm = supported_algo
-                is_success = True
+        is_success = isinstance(model, tf.keras.Layer)
+        model_algorithm = f"{type(model).__module__}.{type(model).__name__}"
 
         return is_success, model_algorithm

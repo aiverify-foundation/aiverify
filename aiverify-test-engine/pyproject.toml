@@ -1,6 +1,6 @@
 [project]
 name = "aiverify-test-engine"
-version = "2.0.1"
+version = "2.1.0"
 authors = [{ name = "AI Verify" }]
 description = "AI Verify Test Engine provides core interfaces, converters, data, model and plugin managers to facilitate the development of tests for AI systems. It is used as a base library for all AI Verify official stock-plugins and can be used to develop custom plugins."
 dependencies = [
@@ -25,7 +25,7 @@ dependencies = [
     "pydantic==2.*",
 ]
 readme = "README.md"
-requires-python = ">=3.10,<3.12"
+requires-python = ">=3.10,<3.13"
 license = { text = "Apache Software License 2.0" }
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -36,13 +36,17 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-tensorflow = ["tensorflow==2.14.0"]
+tensorflow = ["tensorflow>=2.18.0"]
 
 gbm = ["lightgbm>=4.6.0", "xgboost==2.1.1"]
 
 pytorch = ["torch>=2.0", "torchvision>=0.15.0"]
 
-all = ["aiverify-test-engine[tensorflow]", "aiverify-test-engine[gbm]", "aiverify-test-engine[pytorch]"]
+all = [
+    "aiverify-test-engine[tensorflow]",
+    "aiverify-test-engine[gbm]",
+    "aiverify-test-engine[pytorch]",
+]
 
 dev = [
     "aiverify-test-engine[all]",
