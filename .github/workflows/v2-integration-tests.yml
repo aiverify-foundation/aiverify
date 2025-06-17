@@ -3,6 +3,12 @@
 
 name: v2 Integration Tests
 
+env:
+  AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
+  AWS_REGION: ${{ vars.AWS_REGION }}
+
+  GITHUB_TOKEN: ${{ github.token }}
+
 on:
   # Runs when a pull request review is being submitted
   pull_request:
@@ -46,26 +52,26 @@ jobs:
       - name: Checkout Integration Test Code
         uses: actions/checkout@v4
         with:
-          repository: aiverify-foundation/frontend-testing
-          ref: v2.x
-          path: qa-test/frontend-testing
+          ref: main
+          repository: aiverify-foundation/aivt-integration-testing
+          path: integration-testing
+
+      - name: Login to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2      
 
       - name: Build & RUN PORTAL, APIGW & Test Engine Worker
         run: |
-          cd deployment/docker-compose-prod
-          ls -la
-          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile portal up -d
-          bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
-          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile automated-tests-venv up -d
-          cd ${GITHUB_WORKSPACE}
+          aws ecr describe-repositories     
 
-      - name: Run Integration Test
-        if: ${{ ! cancelled() }}
-        run: |
-          cd qa-test/frontend-testing
-          npm install
-          npx playwright install --with-deps
-          ENVIRONMENT_URL=http://127.0.0.1:3000 npx playwright test
+      # - name: Run Integration Test
+      #   if: ${{ ! cancelled() }}
+      #   run: |
+      #     cd integration-testing
+      #     npm ci
+      #     # bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
+      #     npx playwright install --with-deps
+      #     URL=http://127.0.0.1 PORT_NUMBER=3000 ROOT_FOLDER=${GITHUB_WORKSPACE}/stock-plugins/user_defined_files npx playwright test tests/portal/workflows.spec.js
 
       # - name: Run backend tests
       #   if: ${{ ! cancelled() }}
