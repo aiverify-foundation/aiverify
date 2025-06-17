@@ -80,6 +80,7 @@ jobs:
 
           echo "Pull AI Verify Test Engine Worker Image"
           docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_CONTAINER_REPOSITORY/aiverify-test-engine-worker
+          aiverify-test-engine-worker:venv
 
           echo "Pull AI Verify Portal Image"
           docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_CONTAINER_REPOSITORY/aiverify-portal
