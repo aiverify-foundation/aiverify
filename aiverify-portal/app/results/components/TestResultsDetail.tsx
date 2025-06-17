@@ -6,11 +6,9 @@ import React, { useState, useEffect } from 'react';
 import { TestResult } from '@/app/types';
 import { Button, ButtonVariant } from '@/lib/components/button';
 import { Modal } from '@/lib/components/modal';
-import { deleteResult } from '@/lib/fetchApis/deleteTestResult';
-import { getArtifacts } from '@/lib/fetchApis/getArtifacts';
-import { updateResultName } from '@/lib/fetchApis/updateResultName';
 import ArtifactModal from './ArtifactPopup';
 import { ResultsNameHeader } from './ResultsNameHeader';
+import { deleteResult, updateResultName, getArtifacts } from '@/lib/fetchApis/getTestResults';
 
 type Props = {
   result: TestResult | null;
