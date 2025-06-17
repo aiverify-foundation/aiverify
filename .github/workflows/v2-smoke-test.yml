@@ -54,14 +54,23 @@ jobs:
           echo "Building Python Base Image"
           docker buildx build -t aiverify-python-base -f aiverify-test-engine/Dockerfile --no-cache .
           bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
+          docker builder prune -a
+          docker buildx build -t aiverify-test-engine-worker -f aiverify-test-engine/Dockerfile --no-cache .
+          bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
+          docker builder prune -a
+          docker buildx build -t aiverify-portal -f aiverify-portal/Dockerfile --no-cache .
+          bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
+          docker builder prune -a
 
           cd deployment/docker-compose-dev
 
           echo "Building & Running Portal, APIGW & Test Engine Worker"
           COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile portal up -d
           bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
+          docker build prune -a
           COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile automated-tests-venv up -d
-          docker builder prune
+          bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
+          docker build prune -a
           cd ${GITHUB_WORKSPACE}
 
       # - name: Set ROOT_PATH Variable
