@@ -73,6 +73,11 @@ import { PageNumber } from './pageNumber';
 import { PluginsPanel } from './pluginsPanel';
 import { ResizeHandle } from './resizeHandle';
 import { ZoomControl } from './zoomControl';
+import { transformStateToProjectInput } from '@/app/canvas/utils/transformStateToProjectInput';
+import { getProjectIdAndFlowFromUrl } from '@/app/canvas/utils/saveStateToDatabase';
+import { getTemplateIdFromUrl } from '@/app/canvas/utils/saveTemplateToDatabase';
+import { patchProject } from '@/lib/fetchApis/getProjects';
+import { patchTemplate } from '@/lib/fetchApis/getTemplates';
 
 type GridItemDivRequiredStyles =
   `${typeof criticalGridItemWrapperClass} relative group z-10${string}`; // mandatory to have relative and group
@@ -222,6 +227,13 @@ function Designer(props: DesignerProps) {
   const [saveStatus, setSaveStatus] = useState<'success' | 'error' | null>(
     null
   );
+  const [showEditProjectModal, setShowEditProjectModal] = useState(false);
+  const [editProjectForm, setEditProjectForm] = useState({
+    name: project.projectInfo.name,
+    description: project.projectInfo.description || '',
+  });
+  const [showEditStatusModal, setShowEditStatusModal] = useState(false);
+  const [editStatus, setEditStatus] = useState<'success' | 'error' | null>(null);
 
   // Calculate the minimum height required for the content wrapper
   const contentWrapperMinHeight = useMemo(() => {
@@ -973,6 +985,81 @@ function Designer(props: DesignerProps) {
     setShowSaveModal(true);
   };
 
+  // Add handlers for editing project info
+  const handleEditProjectOpen = () => {
+    setEditProjectForm({
+      name: project.projectInfo.name,
+      description: project.projectInfo.description || '',
+    });
+    setShowEditProjectModal(true);
+  };
+
+  const handleEditProjectClose = () => {
+    setShowEditProjectModal(false);
+    setEditProjectForm({
+      name: project.projectInfo.name,
+      description: project.projectInfo.description || '',
+    });
+  };
+
+  const handleEditProjectSave = async () => {
+    try {
+      // Transform state to project input format
+      const transformedData = transformStateToProjectInput(state, {
+        filterOverflowPages: true,
+      });
+
+      // Add the updated project info to the data payload
+      const dataWithProjectInfo = {
+        ...transformedData,
+        projectInfo: {
+          name: editProjectForm.name,
+          description: editProjectForm.description,
+          reportTitle: project.projectInfo.reportTitle || '',
+          company: project.projectInfo.company || '',
+        },
+      };
+
+      if (isTemplate) {
+        // For templates, use the template API
+        const { templateId } = getTemplateIdFromUrl();
+        if (!templateId) {
+          throw new Error('No template ID found in URL');
+        }
+
+        const result = await patchTemplate(templateId, dataWithProjectInfo as any);
+        if ('message' in result) {
+          throw new Error(result.message);
+        }
+      } else {
+        // For projects, use the project API
+        const { projectId } = getProjectIdAndFlowFromUrl();
+        if (!projectId) {
+          throw new Error('No project ID found in URL');
+        }
+
+        const result = await patchProject(projectId, dataWithProjectInfo);
+        if ('message' in result) {
+          throw new Error(result.message);
+        }
+      }
+
+      // Update the local project object for immediate UI feedback
+      project.projectInfo.name = editProjectForm.name;
+      project.projectInfo.description = editProjectForm.description;
+      
+      setShowEditProjectModal(false);
+      setEditStatus('success');
+      setShowEditStatusModal(true);
+      console.log('Successfully saved project info');
+    } catch (error) {
+      console.error('Error saving project info:', error);
+      setShowEditProjectModal(false);
+      setEditStatus('error');
+      setShowEditStatusModal(true);
+    }
+  };
+
   // Calculate the total number of required tests and selected tests
   const requiredTestCount = state.algorithmsOnReport.length;
   
@@ -1146,10 +1233,22 @@ function Designer(props: DesignerProps) {
       )}
 
       <div className={cn('h-full p-4 pr-2', !isPanelOpen && 'hidden')}>
-        <h4 className="mb-0 text-lg font-bold">{project.projectInfo.name}</h4>
-        <p className="text-sm text-gray-500">
-          {project.projectInfo.description}
-        </p>
+        <div className=" items-center gap-2">
+          <div className="">
+            <h4 className="mb-0 text-lg font-bold">{project.projectInfo.name}</h4>
+            <p className="text-sm text-gray-500">
+              {project.projectInfo.description}
+            </p>
+          </div>
+          <div className="flex justify-end">
+          <button
+            onClick={handleEditProjectOpen}
+            className="flex-shrink-0 p-1.5 rounded hover:bg-gray-200 transition-colors"
+            title="Edit project info">
+            <RiEditLine className="h-4 w-4 text-white hover:text-gray-800" />
+          </button>
+          </div>
+        </div>
         <PluginsPanel
           plugins={allPluginsWithMdx}
           className="custom-scrollbar w-full overflow-auto pr-[10px] pt-[50px]"
@@ -1447,6 +1546,52 @@ function Designer(props: DesignerProps) {
           ) : null}
         </div>
       </section>
+      {showEditProjectModal ? (
+        <Modal
+          heading="Edit Project Information"
+          enableScreenOverlay={true}
+          onCloseIconClick={handleEditProjectClose}
+          height={400}
+          primaryBtnLabel="Save"
+          secondaryBtnLabel="Cancel"
+          onPrimaryBtnClick={handleEditProjectSave}
+          onSecondaryBtnClick={handleEditProjectClose}>
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="project-name" className="block text-sm font-medium text-white mb-2">
+                Name
+              </label>
+              <input
+                id="project-name"
+                type="text"
+                value={editProjectForm.name}
+                onChange={(e) => setEditProjectForm(prev => ({
+                  ...prev,
+                  name: e.target.value
+                }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+                placeholder="Enter project name"
+              />
+            </div>
+            <div>
+              <label htmlFor="project-description" className="block text-sm font-medium text-white mb-2">
+                Description
+              </label>
+              <textarea
+                id="project-description"
+                value={editProjectForm.description}
+                onChange={(e) => setEditProjectForm(prev => ({
+                  ...prev,
+                  description: e.target.value
+                }))}
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black resize-none"
+                placeholder="Enter project description"
+              />
+            </div>
+          </div>
+        </Modal>
+      ) : null}
       {showSaveModal ? (
         <Modal
           heading={saveStatus === 'success' ? 'Success!' : 'Error'}
@@ -1460,6 +1605,23 @@ function Designer(props: DesignerProps) {
               {saveStatus === 'success'
                 ? 'Project has been successfully saved as a template.'
                 : 'Failed to save project as template. Please try again.'}
+            </p>
+          </div>
+        </Modal>
+      ) : null}
+      {showEditStatusModal ? (
+        <Modal
+          heading={editStatus === 'success' ? 'Success!' : 'Error'}
+          enableScreenOverlay={true}
+          onCloseIconClick={() => {
+            setShowEditStatusModal(false);
+            setEditStatus(null);
+          }}>
+          <div className="flex h-full flex-col justify-between">
+            <p className="text-white">
+              {editStatus === 'success'
+                ? 'Project information has been successfully updated.'
+                : 'Failed to update project information. Please try again.'}
             </p>
           </div>
         </Modal>
