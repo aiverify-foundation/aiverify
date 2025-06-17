@@ -40,9 +40,9 @@ jobs:
       - name: Checkout Smoke Test Code
         uses: actions/checkout@v4
         with:
-          ref: v2.x
-          repository: aiverify-foundation/smoke-testing
-          path: smoke-testing
+          ref: main
+          repository: aiverify-foundation/integration-testing
+          path: integration-testing
 
       # - name: Setup Python
       #   uses: actions/setup-python@v5
@@ -153,11 +153,11 @@ jobs:
 
       - name: Run Smoke Test
         run: |
-          cd smoke-testing
+          cd integration-testing
           npm ci
           bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
           npx playwright install --with-deps
-          URL=http://127.0.0.1:3000 npx playwright test tests/03-smoke.spec.js
+          URL=http://127.0.0.1:3000 npx playwright test tests/portal/workflows.spec.js
 
       # - name: Upload Playwright Traces
       #   if: always()
