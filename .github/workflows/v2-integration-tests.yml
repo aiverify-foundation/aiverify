@@ -6,7 +6,7 @@ name: v2 Integration Tests
 env:
   AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
   AWS_REGION: ${{ vars.AWS_REGION }}
-
+  AWS_CONTAINER_REPOSITORY: ${{ vars.AWS_CONTAINER_REPOSITORY }}
   GITHUB_TOKEN: ${{ github.token }}
 
 on:
@@ -70,7 +70,7 @@ jobs:
 
       - name: Build & RUN PORTAL, APIGW & Test Engine Worker
         run: |
-          aws ecr describe-repositories     
+          docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_CONTAINER_REPOSITORY/aiverify-portal
 
       # - name: Run Integration Test
       #   if: ${{ ! cancelled() }}
