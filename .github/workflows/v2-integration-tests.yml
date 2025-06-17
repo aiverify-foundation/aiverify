@@ -35,7 +35,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  integration-test:
+  Integration-Test:
     #  Run only when PR is approved
     if: (github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || github.event_name == 'push')
     runs-on: ubuntu-latest
