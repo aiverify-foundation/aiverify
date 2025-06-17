@@ -79,6 +79,10 @@ jobs:
           echo "Pull AI Verify Portal Image"
           docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_CONTAINER_REPOSITORY/aiverify-portal
 
+          echo "Create and Run AI Verify Containers"
+          cd deployment/docker-compose-dev
+          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile automated-tests-venv --profile portal up -d
+
       # - name: Run Integration Test
       #   if: ${{ ! cancelled() }}
       #   run: |
