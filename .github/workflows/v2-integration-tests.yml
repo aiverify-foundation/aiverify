@@ -79,8 +79,8 @@ jobs:
           echo "Pull AI Verify APIGW Image"
           docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_CONTAINER_REPOSITORY/aiverify-apigw
 
-          echo "Pull AI Verify Test Engine Worker Image"
-          docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_CONTAINER_REPOSITORY/aiverify-test-engine-worker:$TEST_ENGINE_WORKER_IMAGE_TAG
+          # echo "Pull AI Verify Test Engine Worker Image"
+          # docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_CONTAINER_REPOSITORY/aiverify-test-engine-worker:$TEST_ENGINE_WORKER_IMAGE_TAG
 
           echo "Pull AI Verify Portal Image"
           docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_CONTAINER_REPOSITORY/aiverify-portal
