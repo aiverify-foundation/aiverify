@@ -78,6 +78,8 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
     if (!currentResult) return;
 
     let jsonData = '';
+    let processedData = '';
+    
     if (dataType === 'algorithmArgs') {
       jsonData = currentResult.testArguments.algorithmArgs;
       console.log(jsonData);
@@ -85,7 +87,23 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
       jsonData = currentResult.output;
     }
 
-    const blob = new Blob([JSON.parse(jsonData)], { type: 'application/json' });
+    try {
+      // Handle the data processing similar to how it's displayed in the UI
+      if (typeof jsonData === 'string') {
+        // Try to double-parse the JSON string (as it seems to be double-encoded)
+        const parsed = JSON.parse(JSON.parse(jsonData));
+        processedData = JSON.stringify(parsed, null, 2);
+      } else {
+        // If it's already an object, stringify it
+        processedData = JSON.stringify(jsonData, null, 2);
+      }
+    } catch (error) {
+      console.error('Error processing JSON data:', error);
+      // Fallback: use the raw data
+      processedData = typeof jsonData === 'string' ? jsonData : JSON.stringify(jsonData, null, 2);
+    }
+
+    const blob = new Blob([processedData], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
 
     const a = document.createElement('a');
@@ -455,7 +473,7 @@ export default function TestResultDetail({ result, onUpdateResult }: Props) {
                     ) : (
                       <pre>
                         {typeof currentResult.artifacts === 'string'
-                          ? currentResult.artifacts // Display as is if it’s a string
+                          ? currentResult.artifacts // Display as is if it's a string
                           : JSON.stringify(currentResult.artifacts, null, 2)}
                       </pre>
                     )}
