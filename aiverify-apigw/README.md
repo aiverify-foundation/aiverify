@@ -185,7 +185,7 @@ python -m aiverify_apigw
 To run the tests for the application, you can use `pytest`. Make sure you have `pytest` and `faker` installed. If not, you can install it using pip:
 
 ```
-pip install pytest faker
+pip install -e '.[test]'
 ```
 
 To run the tests:
