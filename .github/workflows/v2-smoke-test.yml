@@ -41,7 +41,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main
-          repository: aiverify-foundation/integration-testing
+          repository: aiverify-foundation/aivt-integration-testing
           path: integration-testing
 
       # - name: Setup Python
