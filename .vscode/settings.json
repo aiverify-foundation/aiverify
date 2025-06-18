@@ -24,5 +24,9 @@
   "eslint.timeBudget.onValidation": {
     "warn": 4000,
     "error": 8000
+  },
+  "sonarlint.connectedMode.project": {
+    "connectionId": "kwk-vscode",
+    "projectKey": "aiverify"
   }
 }

@@ -5,6 +5,8 @@ venv
 **/*.log
 .tox
 
+etc
+
 # vscode ignores
 .vscode/*
 !.vscode/settings.json
