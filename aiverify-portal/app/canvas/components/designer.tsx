@@ -78,6 +78,7 @@ import { getProjectIdAndFlowFromUrl } from '@/app/canvas/utils/saveStateToDataba
 import { getTemplateIdFromUrl } from '@/app/canvas/utils/saveTemplateToDatabase';
 import { patchProject } from '@/lib/fetchApis/getProjects';
 import { patchTemplate } from '@/lib/fetchApis/getTemplates';
+import { ProcessedTemplateData } from '@/app/templates/types';
 
 type GridItemDivRequiredStyles =
   `${typeof criticalGridItemWrapperClass} relative group z-10${string}`; // mandatory to have relative and group
@@ -1009,25 +1010,53 @@ function Designer(props: DesignerProps) {
         filterOverflowPages: true,
       });
 
-      // Add the updated project info to the data payload
-      const dataWithProjectInfo = {
-        ...transformedData,
-        projectInfo: {
-          name: editProjectForm.name,
-          description: editProjectForm.description,
-          reportTitle: project.projectInfo.reportTitle || '',
-          company: project.projectInfo.company || '',
-        },
-      };
-
       if (isTemplate) {
-        // For templates, use the template API
+        // For templates, use the template API and ensure we have the correct structure
         const { templateId } = getTemplateIdFromUrl();
         if (!templateId) {
           throw new Error('No template ID found in URL');
         }
 
-        const result = await patchTemplate(templateId, dataWithProjectInfo as any);
+        // Create ProcessedTemplateData structure with globalVars
+        const templateData: ProcessedTemplateData = {
+          globalVars: 'globalVars' in project ? (project.globalVars as { key: string; value: string }[]) : [],
+          pages: transformedData.pages.map((page) => ({
+            layouts: page.layouts.map((layout) => ({
+              i: layout.i,
+              x: layout.x,
+              y: layout.y,
+              w: layout.w,
+              h: layout.h,
+              maxW: layout.maxW ?? 12,
+              maxH: layout.maxH ?? 36,
+              minW: layout.minW ?? 1,
+              minH: layout.minH ?? 1,
+              static: layout.static ?? false,
+              isDraggable: layout.isDraggable ?? true,
+              isResizable: layout.isResizable ?? true,
+              resizeHandles: layout.resizeHandles ?? null,
+              isBounded: layout.isBounded ?? true,
+            })),
+            reportWidgets: page.reportWidgets.map((widget) => ({
+              widgetGID: widget.widgetGID,
+              key: widget.key,
+              layoutItemProperties: {
+                justifyContent: 'left',
+                alignItems: 'top',
+                textAlign: 'left',
+                color: null,
+                bgcolor: null,
+              },
+              properties: widget.properties,
+            })),
+          })),
+          projectInfo: {
+            name: editProjectForm.name,
+            description: editProjectForm.description,
+          },
+        };
+
+        const result = await patchTemplate(templateId, templateData);
         if ('message' in result) {
           throw new Error(result.message);
         }
@@ -1037,6 +1066,17 @@ function Designer(props: DesignerProps) {
         if (!projectId) {
           throw new Error('No project ID found in URL');
         }
+
+        // Add the updated project info to the data payload
+        const dataWithProjectInfo = {
+          ...transformedData,
+          projectInfo: {
+            name: editProjectForm.name,
+            description: editProjectForm.description,
+            reportTitle: project.projectInfo.reportTitle || '',
+            company: project.projectInfo.company || '',
+          },
+        };
 
         const result = await patchProject(projectId, dataWithProjectInfo);
         if ('message' in result) {
