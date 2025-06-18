@@ -78,45 +78,6 @@ export function ProjectsFilters({ className, projects }: ProjectsFiltersProps) {
             onClick={handleClear}
           />
         </div>
-        <div className="flex items-center gap-3">
-          <h4>Filter By Status</h4>
-          <Button
-            pill
-            textColor="white"
-            variant={ButtonVariant.OUTLINE}
-            size="sm"
-            text="Completed"
-            className="!border-white"
-            hoverColor="var(--color-primary-500)"
-          />
-          <Button
-            pill
-            textColor="white"
-            variant={ButtonVariant.OUTLINE}
-            size="sm"
-            text="No Report Yet"
-            className="!border-white"
-            hoverColor="var(--color-primary-500)"
-          />
-          <Button
-            pill
-            textColor="white"
-            variant={ButtonVariant.OUTLINE}
-            size="sm"
-            text="Running Test"
-            className="!border-white"
-            hoverColor="var(--color-primary-500)"
-          />
-          <Button
-            pill
-            textColor="white"
-            variant={ButtonVariant.OUTLINE}
-            size="sm"
-            text="Generating PDF"
-            className="!border-white"
-            hoverColor="var(--color-primary-500)"
-          />
-        </div>
       </div>
     </section>
   );
