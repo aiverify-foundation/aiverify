@@ -56,7 +56,7 @@ on:
  
 jobs:
   build-and-push:
-    runs-on: self-hosted
+    runs-on: ec2-10-21-100-78
     timeout-minutes: 360
     permissions:
       id-token: write
