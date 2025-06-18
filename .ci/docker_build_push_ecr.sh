@@ -60,7 +60,7 @@ ECR_IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$GITHUB_USERNAME
 # echo "Create a new build instance..."
 
 # Create a new builder instance
-docker buildx create --name mybuilder --use
+# docker buildx create --name mybuilder --use
 
 # Inspect the builder instance
 docker buildx inspect --bootstrap
@@ -92,6 +92,6 @@ fi
 yes | docker builder prune --all
 
 # Clean up
-docker buildx rm mybuilder
+# docker buildx rm mybuilder
 
 echo "Docker image built and pushed to AWS ECR successfully!"
