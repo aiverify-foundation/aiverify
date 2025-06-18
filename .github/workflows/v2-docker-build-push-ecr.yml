@@ -56,7 +56,7 @@ on:
  
 jobs:
   build-and-push:
-    runs-on: arc-runner-aiverify
+    runs-on: self-hosted
     timeout-minutes: 360
     permissions:
       id-token: write
