@@ -7,7 +7,7 @@ env:
                  aiverify-portal,
                  aiverify-test-engine-worker'
 
-#   GITHUB_TOKEN: ${{ github.token }}
+  GITHUB_TOKEN: ${{ github.token }}
   
 on:
 
@@ -44,6 +44,11 @@ concurrency:
 jobs:
   build-and-push:
     runs-on: self-hosted
+    permissions:
+      id-token: write
+      contents: read
+      packages: write
+
     steps:
       # Check out the source code from the specified branch
       - name: Checkout code
