@@ -39,10 +39,8 @@ on:
 
   # When there are changes to pyproject.toml, package.json
   push:
-    branches: [ main ]
-    paths:
-      - '**/pyproject.toml'
-      - '**/package.json'
+    branches: [ ci/use-remote-server ]
+
 
 # Allow one concurrent deployment
 concurrency:
@@ -52,7 +50,7 @@ concurrency:
 
 jobs:
   build-and-push:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       # Check out the source code from the specified branch
       - name: Checkout code
