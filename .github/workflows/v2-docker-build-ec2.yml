@@ -37,9 +37,8 @@ on:
         required: false
         default: 'true'
 
-  # When there are changes to pyproject.toml, package.json
-  push:
-    branches: [ ci/use-remote-server ]
+#   push:
+#     branches: [ ci/use-remote-server ]
 
 
 # Allow one concurrent deployment
@@ -65,5 +64,5 @@ jobs:
 
       - name: Set execute permissions on build script
         run: |
-          chmod +x ./ec2_docker_build.sh
-          ./ec2_docker_build.sh
+          chmod +x .ci/ec2_docker_build.sh
+          .ci/ec2_docker_build.sh
