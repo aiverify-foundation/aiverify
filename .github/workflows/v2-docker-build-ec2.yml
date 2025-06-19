@@ -47,7 +47,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-      packages: write
+      packages: read
 
     steps:
       # Check out the source code from the specified branch
