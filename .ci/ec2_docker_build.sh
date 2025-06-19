@@ -17,7 +17,7 @@ CLONE_DIR="aiverify"
 # cd "$CLONE_DIR"
 
 # Build Docker images
-services=("aiverify-portal" "aiverify-apigw" "aiverify-test-engine-worker")
+services=("aiverify-apigw", "aiverify-test-engine-worker", "aiverify-portal")
 
 for service in "${services[@]}"; do
   echo "Building Docker image for $service using buildx..."

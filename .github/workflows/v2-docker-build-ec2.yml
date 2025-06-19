@@ -1,9 +1,3 @@
-# GitHub Actions Workflow: v2 Docker Build and Push
-# 
-# This workflow builds and pushes Docker images to GitHub Container Registry (ghcr)
-# for apigw, portal and test-engine-worker. It can be triggered manually, or
-# when a version change is detected in pyproject.toml or package.json. For
-# aiverify-test-engine-worker, it builds multiple targets (base, venv, docker).
 
 name: v2 Docker Build (EC2)
 
@@ -13,7 +7,7 @@ env:
                  aiverify-portal,
                  aiverify-test-engine-worker'
 
-  GITHUB_TOKEN: ${{ github.token }}
+#   GITHUB_TOKEN: ${{ github.token }}
   
 on:
 
