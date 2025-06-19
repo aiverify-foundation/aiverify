@@ -61,6 +61,11 @@ jobs:
         run: |
           bash .ci/free_disk_space.sh
 
+      - name: Loign to GHCR
+        run: |
+            echo "${{ env.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+
     #   - name: Build images
     #     run: |
     #       chmod +x .ci/ec2_docker_build.sh
