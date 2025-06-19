@@ -16,6 +16,9 @@ CLONE_DIR="aiverify"
 # git clone "$REPO_URL"
 # cd "$CLONE_DIR"
 
+# Login to GitHub Container Registry
+echo $GITHUB_TOKEN | docker login ghcr.io -u aiverify-foundation --password-stdin
+
 # Build Docker images
 services=("aiverify-apigw" "aiverify-test-engine-worker" "aiverify-portal")
 
