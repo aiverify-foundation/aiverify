@@ -14,7 +14,7 @@ CLONE_DIR="aiverify"
 
 # echo "Cloning AIVerify repository..."
 # git clone "$REPO_URL"
-cd "$CLONE_DIR"
+# cd "$CLONE_DIR"
 
 # Build Docker images
 services=("aiverify-portal" "aiverify-apigw" "aiverify-test-engine-worker")

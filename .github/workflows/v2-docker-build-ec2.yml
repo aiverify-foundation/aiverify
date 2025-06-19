@@ -1,0 +1,71 @@
+# GitHub Actions Workflow: v2 Docker Build and Push
+# 
+# This workflow builds and pushes Docker images to GitHub Container Registry (ghcr)
+# for apigw, portal and test-engine-worker. It can be triggered manually, or
+# when a version change is detected in pyproject.toml or package.json. For
+# aiverify-test-engine-worker, it builds multiple targets (base, venv, docker).
+
+name: v2 Docker Build (EC2)
+
+env:
+  # Images to build
+  IMAGE_NAMES:  'aiverify-apigw,
+                 aiverify-portal,
+                 aiverify-test-engine-worker'
+
+  GITHUB_TOKEN: ${{ github.token }}
+  
+on:
+
+  # Run this workflow manually from Actions tab
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch or tag to checkout'
+        required: true
+        default: 'main'
+        type: string
+      image_to_build:
+        description: 'Name of image to build'
+        required: true
+        default: 'aiverify-apigw'
+      image_tag:
+        description: 'Tag for the image, e.g. 2.0.2'
+        required: false
+      build_base:
+        description: 'Build aiverify-python-base image'
+        required: false
+        default: 'true'
+
+  # When there are changes to pyproject.toml, package.json
+  push:
+    branches: [ main ]
+    paths:
+      - '**/pyproject.toml'
+      - '**/package.json'
+
+# Allow one concurrent deployment
+concurrency:
+  group: ${{ github.repository }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      # Check out the source code from the specified branch
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch || 'main' }}
+     
+        # Free up disk space before building large Docker images
+      - name: Free up disk space
+        run: |
+          bash .ci/free_disk_space.sh
+
+      - name: Set execute permissions on build script
+        run: |
+          chmod +x ./ec2_docker_build.sh
+          ./ec2_docker_build.sh
