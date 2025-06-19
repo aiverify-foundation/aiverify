@@ -47,7 +47,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-      packages: read
+      packages: write
 
     steps:
       # Check out the source code from the specified branch
@@ -61,7 +61,9 @@ jobs:
         run: |
           bash .ci/free_disk_space.sh
 
-      - name: Set execute permissions on build script
+      - name: Build images
         run: |
+          chmod +x .ci/docker_build_push.sh
+          bash .ci/docker_build_push.sh aiverify-python-base latest aiverify-foundation aiverify-test-engine
           chmod +x .ci/ec2_docker_build.sh
-          .ci/ec2_docker_build.sh
+          bash .ci/ec2_docker_build.sh
