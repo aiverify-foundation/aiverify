@@ -144,6 +144,7 @@ export default function DecisionTreeGraph({
   // Default to not editing if not provided
   const cyRef = useRef<HTMLDivElement>(null);
   const cy = useRef<cytoscape.Core | null>(null);
+  const [showResetButton, setShowResetButton] = useState(false);
   // const graphdata = useRef<cytoscape.CollectionReturnValue|null>(null);
 
   const style: cytoscape.Stylesheet[] = [
@@ -297,6 +298,32 @@ export default function DecisionTreeGraph({
     return div;
   };
 
+  const resetView = () => {
+    if (cy.current) {
+      cy.current.fit(cy.current.nodes(), 20);
+      cy.current.center();
+      setShowResetButton(false);
+    }
+  };
+
+  const checkViewBounds = () => {
+    if (!cy.current) return;
+    
+    const extent = cy.current.extent();
+    const containerBB = cy.current.container().getBoundingClientRect();
+    const zoom = cy.current.zoom();
+    
+    // Show reset button if zoom is too small or content is out of view
+    const minZoom = 0.1;
+    const shouldShowReset = zoom < minZoom || 
+      extent.x1 > containerBB.width || 
+      extent.x2 < 0 || 
+      extent.y1 > containerBB.height || 
+      extent.y2 < 0;
+    
+    setShowResetButton(shouldShowReset);
+  };
+
   useEffect(() => {
     if (!graphdata || !definitions) return;
 
@@ -334,16 +361,39 @@ export default function DecisionTreeGraph({
       style,
 
       elements,
+      
+      // Add zoom and pan limits
+      minZoom: 0.1,
+      maxZoom: 3,
+      wheelSensitivity: 0.5,
     });
 
     // @ts-ignore
     cy.current.domNode();
+
+    // Add event listeners for zoom and pan changes
+    cy.current.on('zoom pan', checkViewBounds);
+    
+    // Add double-click to reset view
+    cy.current.on('tap', (evt) => {
+      if (evt.target === cy.current) {
+        // Double-click on background
+        const now = Date.now();
+        const lastTap = cy.current.scratch('lastTap') || 0;
+        if (now - lastTap < 300) {
+          resetView();
+        }
+        cy.current.scratch('lastTap', now);
+      }
+    });
 
     // graphdata.current = cy.current.elements().remove();
 
     if (onReady) {
       cy.current.ready(() => {
         onReady(cy.current!);
+        // Initial bounds check
+        setTimeout(checkViewBounds, 100);
       });
     }
     // let coll = cy.current.collection(elements);
@@ -369,7 +419,31 @@ export default function DecisionTreeGraph({
   return (
     <div
       ref={cyRef}
-      style={{ width: width || "100%", height: height || "100%" }}
-    />
+      style={{ width: width || "100%", height: height || "100%", position: "relative" }}
+    >
+      {showResetButton && (
+        <button
+          onClick={resetView}
+          style={{
+            position: "absolute",
+            top: "10px",
+            right: "10px",
+            zIndex: 1000,
+            padding: "8px 12px",
+            backgroundColor: "#ff0d57",
+            color: "#ffffff",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontSize: "12px",
+            fontWeight: "bold",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+          }}
+          title="Double-click background or click here to reset view"
+        >
+          Reset View
+        </button>
+      )}
+    </div>
   );
 }

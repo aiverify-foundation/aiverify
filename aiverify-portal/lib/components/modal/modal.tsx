@@ -54,7 +54,7 @@ function Modal(props: ModalProps) {
         />
       )}
       <div
-        className={`absolute left-1/2 top-1/2 z-[1000] h-[260px] w-[600px] -translate-x-1/2 -translate-y-1/2 transform rounded-[5px] bg-gradient-to-br from-secondary-600 to-secondary-700 p-6 shadow-xl dark:bg-secondary-700 ${className}`}
+        className={`fixed left-1/2 top-1/2 z-[1000] h-[260px] w-[600px] -translate-x-1/2 -translate-y-1/2 transform rounded-[5px] bg-gradient-to-br from-secondary-600 to-secondary-700 p-6 shadow-xl dark:bg-secondary-700 ${className}`}
         style={{
           top,
           left,
