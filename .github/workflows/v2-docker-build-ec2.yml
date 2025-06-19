@@ -1,11 +1,8 @@
+# This workflow builds and runs Docker images on a self-hosted EC2 instance for testing purposes.
+
 name: v2 Docker Build (EC2)
 
 env:
-  # Images to build
-  IMAGE_NAMES:  'aiverify-apigw,
-                 aiverify-portal,
-                 aiverify-test-engine-worker'
-
   GITHUB_TOKEN: ${{ github.token }}
   
 on:
@@ -18,27 +15,14 @@ on:
         required: true
         default: 'main'
         type: string
-      image_to_build:
-        description: 'Name of image to build'
-        required: true
-        default: 'aiverify-apigw'
-      image_tag:
-        description: 'Tag for the image, e.g. 2.0.2'
-        required: false
-      build_base:
-        description: 'Build aiverify-python-base image'
-        required: false
-        default: 'true'
 
 #   push:
 #     branches: [ ci/use-remote-server ]
-
 
 # Allow one concurrent deployment
 concurrency:
   group: ${{ github.repository }}-${{ github.workflow }}
   cancel-in-progress: true
-
 
 jobs:
   build-and-push:
@@ -49,7 +33,7 @@ jobs:
       packages: write
 
     steps:
-      # Check out the source code from the specified branch
+        # Check out the source code from the specified branch
       - name: Checkout code
         uses: actions/checkout@v4
         with:
@@ -60,22 +44,20 @@ jobs:
         run: |
           bash .ci/free_disk_space.sh
 
-      - name: Loign to GHCR
+        # Log in to GitHub Container Registry (GHCR), needed in Github Actions
+      - name: Login to GHCR
         run: |
             echo "${{ env.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
+        # Clean slate to force rebuild all images    
       - name: Delete all local Docker images
         run: |
           docker ps -q | xargs -r docker stop
           docker images -q | xargs -r docker rmi -f
           docker system prune -a -f --volumes
 
-    #   - name: Build images
-    #     run: |
-    #       chmod +x .ci/ec2_docker_build.sh
-    #       .ci/ec2_docker_build.sh
-
-      - name: Run images
+        # Launch containers in Docker Compose  
+      - name: Run images in Docker Compose
         run: |
           cd deployment/docker-compose-dev
           COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-docker up -d
