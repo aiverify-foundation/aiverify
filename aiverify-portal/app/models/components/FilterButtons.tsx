@@ -46,7 +46,6 @@ export default function ModelsFilters({
             placeholder="Search Models"
             inputStyles={{
               paddingLeft: 40,
-              height: '40px',
             }}
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
