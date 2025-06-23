@@ -101,11 +101,11 @@ class KubectlRun(Pipe):
             for key, value in json_args_dict.items():
                 if isinstance(value, str) and os.path.isabs(value) and os.path.exists(value):
                     filename = os.path.basename(value)
-                    # Replace with new path inside container
+                    # Replace with new path inside pod
                     new_path = f"/app/data/{filename}"
                     json_args_dict[key] = new_path
 
-            # Convert to JSON with properly escaped quotes
+            # Convert to JSON
             json_args = json.dumps(json_args_dict)
             
             # kubectl exec
