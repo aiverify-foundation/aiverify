@@ -114,7 +114,6 @@ const DatasetList: React.FC<DatasetListProps> = ({ datasets, className }) => {
 
         if (failedDeletions.length > 0) {
           // Show the specific error message from the API
-          console.log(failedDeletions);
           const errorMessage = failedDeletions[0].message || 'Failed to delete some datasets.';
           setModalMessage(errorMessage);
           setLoading(false);
