@@ -452,4 +452,41 @@ def run():
             logger.exception(f"Unexpected error while uploading zip: {e}")
     
 if __name__ == "__main__":
-    run()
+
+    try:
+        args = parse_arguments()
+    except Exception as e:
+        logger.critical(f"Failed to parse arguments: {e}")
+        exit(-1)
+    
+    if args.upload_output_to_apigw:
+        # Run with error reporting 
+        try:
+            run()
+        except Exception as e:
+            import traceback
+            error_message = traceback.format_exc()
+            logger.debug(f"Update Pipeline error to API GW")
+
+            update_obj = {
+                "status": "error",
+                "errorMessages": f"Failed to run algorithm: {error_message}",
+            }
+
+            apigw_url = args.apigw_url
+            test_run_id = args.test_run_id
+
+            if apigw_url and test_run_id:
+                update_url = f"{apigw_url}/test_runs/{test_run_id}"
+                logger.debug(f"Post error to {update_url}: {update_obj}")
+                try:
+                    requests.patch(update_url, json=update_obj)
+                    logger.info("Error successfully reported to API Gateway.")
+                except Exception as api_error:
+                    logger.warning(f"Failed to report error to API Gateway: {api_error}")
+            else:
+                logger.warning("Missing apigw_url or test_run_id; cannot send error update.")
+
+            exit(-1)
+    else:
+        run()
