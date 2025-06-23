@@ -470,7 +470,8 @@ export default function ClientSelectData({
     flow === UserFlows.NewProjectWithNewTemplateAndResults ||
     flow === UserFlows.NewProjectWithEditingExistingTemplate ||
     flow === UserFlows.NewProjectWithEditingExistingTemplateAndResults ||
-    flow === UserFlows.EditExistingProject
+    flow === UserFlows.EditExistingProject ||
+    flow === UserFlows.EditExistingProjectWithResults
   ) {
     backButtonLink = `/canvas?flow=${flow}&projectId=${projectId}&mode=edit`;
   } else {
