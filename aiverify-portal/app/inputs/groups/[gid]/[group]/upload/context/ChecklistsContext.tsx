@@ -7,17 +7,9 @@ import React, {
   useCallback,
   useEffect,
 } from 'react';
+import { DEFAULT_CHECKLISTS, Checklist } from './checklistConstants';
 
 // Types
-interface Checklist {
-  cid: string;
-  gid: string;
-  name: string;
-  data: Record<string, string>;
-  group: string;
-  updated_at?: string;
-}
-
 interface ChecklistContextState {
   checklists: Checklist[];
   selectedChecklist: Checklist | null;
@@ -37,94 +29,6 @@ interface ChecklistContextActions {
 }
 
 type ChecklistContextValue = ChecklistContextState & ChecklistContextActions;
-
-// Default checklist definitions
-const DEFAULT_CHECKLISTS: Checklist[] = [
-  {
-    cid: 'accountability_process_checklist',
-    gid: 'aiverify.stock.process_checklist',
-    name: 'Accountability Process Checklist',
-    data: {},
-    group: 'default',
-  },
-  {
-    cid: 'data_governance_process_checklist',
-    gid: 'aiverify.stock.process_checklist',
-    name: 'Data Governance Process Checklist',
-    data: {},
-    group: 'default',
-  },
-  {
-    cid: 'explainability_process_checklist',
-    gid: 'aiverify.stock.process_checklist',
-    name: 'Explainability Process Checklist',
-    data: {},
-    group: 'default',
-  },
-  {
-    cid: 'fairness_process_checklist',
-    gid: 'aiverify.stock.process_checklist',
-    name: 'Fairness Process Checklist',
-    data: {},
-    group: 'default',
-  },
-  {
-    cid: 'human_agency_oversight_process_checklist',
-    gid: 'aiverify.stock.process_checklist',
-    name: 'Human Agency Oversight Process Checklist',
-    data: {},
-    group: 'default',
-  },
-  {
-    cid: 'inclusive_growth_process_checklist',
-    gid: 'aiverify.stock.process_checklist',
-    name: 'Inclusive Growth Process Checklist',
-    data: {},
-    group: 'default',
-  },
-  {
-    cid: 'organisational_considerations_process_checklist',
-    gid: 'aiverify.stock.process_checklist',
-    name: 'Organisational Considerations Process Checklist',
-    data: {},
-    group: 'default',
-  },
-  {
-    cid: 'reproducibility_process_checklist',
-    gid: 'aiverify.stock.process_checklist',
-    name: 'Reproducibility Process Checklist',
-    data: {},
-    group: 'default',
-  },
-  {
-    cid: 'robustness_process_checklist',
-    gid: 'aiverify.stock.process_checklist',
-    name: 'Robustness Process Checklist',
-    data: {},
-    group: 'default',
-  },
-  {
-    cid: 'safety_process_checklist',
-    gid: 'aiverify.stock.process_checklist',
-    name: 'Safety Process Checklist',
-    data: {},
-    group: 'default',
-  },
-  {
-    cid: 'security_process_checklist',
-    gid: 'aiverify.stock.process_checklist',
-    name: 'Security Process Checklist',
-    data: {},
-    group: 'default',
-  },
-  {
-    cid: 'transparency_process_checklist',
-    gid: 'aiverify.stock.process_checklist',
-    name: 'Transparency Process Checklist',
-    data: {},
-    group: 'default',
-  },
-];
 
 // Context creation
 const GroupDataContext = createContext<ChecklistContextValue | undefined>(
