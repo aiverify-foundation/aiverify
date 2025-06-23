@@ -105,10 +105,7 @@ const DatasetList: React.FC<DatasetListProps> = ({ datasets, className }) => {
               const result = await deleteDataset(id);
               return result;
             } catch (error) {
-              return {
-                success: false,
-                message: error instanceof Error ? error.message : 'Failed to delete dataset',
-              };
+              return { success: false, message: error instanceof Error ? error.message : 'Failed to delete dataset' };
             }
           })
         );
@@ -116,9 +113,9 @@ const DatasetList: React.FC<DatasetListProps> = ({ datasets, className }) => {
         const failedDeletions = deleteResults.filter((result) => !result.success);
 
         if (failedDeletions.length > 0) {
-          setModalMessage(
-            failedDeletions[0].message || 'Failed to delete some datasets.'
-          );
+          // Show the specific error message from the API
+          const errorMessage = failedDeletions[0].message || 'Failed to delete some datasets.';
+          setModalMessage(errorMessage);
           setLoading(false);
         } else {
           setTimeout(() => {
@@ -135,9 +132,8 @@ const DatasetList: React.FC<DatasetListProps> = ({ datasets, className }) => {
         }
       } catch (error) {
         console.error('Failed to delete datasets:', error);
-        setModalMessage(
-          error instanceof Error ? error.message : 'Failed to delete the datasets.'
-        );
+        const errorMessage = error instanceof Error ? error.message : 'Failed to delete the datasets.';
+        setModalMessage(errorMessage);
         setLoading(false);
       }
     });
