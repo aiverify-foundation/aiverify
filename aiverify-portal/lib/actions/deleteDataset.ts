@@ -16,7 +16,7 @@ export async function deleteDataset(id: string) {
       const errorMessage = errorData.detail || errorData.message || 'Failed to delete test dataset';
       return {
         success: false,
-        message: errorMessage,
+        error: errorData.detail || errorData.message || 'Failed to delete test dataset',
       };
     }
 
