@@ -52,18 +52,8 @@ def _create_mock_widgets(gid: str):
     widget_size = {
             "minW": 1,
             "minH": 1,
-    widget_size = {
-            "minW": 1,
-            "minH": 1,
             "maxW": faker.random_int(min=1, max=12),
             "maxH": faker.random_int(min=1, max=12),
-        }
-    name = faker.name()
-    meta = {
-        "cid": cid,
-        "name": name,
-        "widgetSize": widget_size
-    }
         }
     name = faker.name()
     meta = {
