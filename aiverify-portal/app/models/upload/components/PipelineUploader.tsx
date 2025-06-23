@@ -429,6 +429,7 @@ const PipelineUploader = ({ onBack }: { onBack: () => void }) => {
                   <option value="">Select default model type</option>
                   <option value="regression">Regression</option>
                   <option value="classification">Classification</option>
+                  <option value="uplift">Uplift</option>
                 </select>
                 <p className="mt-1 text-xs text-gray-400">
                   This will be applied to newly selected folders. You can override individually below.
@@ -464,6 +465,7 @@ const PipelineUploader = ({ onBack }: { onBack: () => void }) => {
                             <option value="">Select Model Type</option>
                             <option value="regression">Regression</option>
                             <option value="classification">Classification</option>
+                            <option value="uplift">Uplift</option>
                           </select>
                           <Button
                             size="sm"

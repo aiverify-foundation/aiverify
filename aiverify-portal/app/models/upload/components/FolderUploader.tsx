@@ -304,6 +304,7 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
                   <option value="">Select</option>
                   <option value="regression">Regression</option>
                   <option value="classification">Classification</option>
+                  <option value="uplift">Uplift</option>
                 </select>
               </div>
             </div>
