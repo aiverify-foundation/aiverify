@@ -67,7 +67,7 @@ jobs:
           docker ps -q | xargs -r docker stop
           docker images -q | xargs -r docker rmi -f
           docker system prune -a -f --volumes
-          lsof -i
+          lsof -i :3000
 
       # Launch containers in Docker Compose
       - name: Run images in Docker Compose
