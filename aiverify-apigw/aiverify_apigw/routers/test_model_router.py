@@ -226,7 +226,7 @@ def upload_folder(
 
             # validate the model
             try:
-                (model_format, serializer) = TestEngineValidator.validate_model(tmp_model_validate_folder, is_pipline=True)
+                (model_format, serializer) = TestEngineValidator.validate_model(tmp_model_validate_folder, is_pipline=file_type == 'pipeline')
                 test_model.status = TestModelStatus.Valid
                 test_model.model_format = model_format
                 test_model.serializer = serializer
