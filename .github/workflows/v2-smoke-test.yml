@@ -73,6 +73,7 @@ jobs:
       - name: Run images in Docker Compose
         run: |
           cd deployment/docker-compose-dev
+          echo ${GITHUB_WORKSPACE}
           COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-docker --profile portal up -d
 
       # - name: Setup Python
