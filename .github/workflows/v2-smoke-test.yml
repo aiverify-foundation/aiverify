@@ -174,13 +174,13 @@ jobs:
           npx playwright install --with-deps
           URL=http://127.0.0.1 PORT_NUMBER=3000 ROOT_FOLDER=${GITHUB_WORKSPACE}/stock-plugins/user_defined_files npx playwright test tests/portal/workflows.spec.js
 
-      # - name: Upload Playwright Traces
-      #   if: always()
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: playwright-trace-v2.0-smoke-testing-${{ github.run_id }}
-      #     path: |
-      #       ${{ github.workspace }}/smoke-testing/test-results/
+      - name: Upload Playwright Traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-trace-v2.0-smoke-testing-${{ github.run_id }}
+          path: |
+            ${{ github.workspace }}/smoke-testing/test-results/
 
       # - name: APIGW Logs
       #   if: always()
