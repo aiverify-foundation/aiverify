@@ -2,7 +2,11 @@
 
 name: v2 Smoke Test
 
+env:
+  GITHUB_TOKEN: ${{ github.token }}
+
 on:
+  
   # Runs when a pull request review is being submitted
   pull_request:
     types: [assigned, synchronize]
@@ -25,10 +29,15 @@ concurrency:
 
 jobs:
   smoke-test:
+    
     #  Run only when PR is approved
     if: (github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || github.event_name == 'push')
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
+    runs-on: self-hosted-aiverify
+    permissions:
+      id-token: write
+      contents: read
+      packages: write
+    timeout-minutes: 360
 
     steps:
       - name: Checkout Code
@@ -44,34 +53,33 @@ jobs:
           repository: aiverify-foundation/aivt-integration-testing
           path: integration-testing
 
+      # Free up disk space before building large Docker images
+      - name: Free up disk space
+        run: |
+          bash .ci/free_disk_space.sh
+
+      # Log in to GitHub Container Registry (ghcr.io), needed by Github Actions to access ghcr.io
+      - name: Login to GHCR
+        run: |
+            echo "${{ env.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      # Clean slate to force rebuild all images    
+      - name: Delete all local Docker images
+        run: |
+          docker ps -q | xargs -r docker stop
+          docker images -q | xargs -r docker rmi -f
+          docker system prune -a -f --volumes
+
+      # Launch containers in Docker Compose  
+      - name: Run images in Docker Compose
+        run: |
+          cd deployment/docker-compose-dev
+          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-docker up -d
+
       # - name: Setup Python
       #   uses: actions/setup-python@v5
       #   with:
       #     python-version: "3.11"
-
-      - name: Build & RUN PORTAL, APIGW & Test Engine Worker
-        run: |
-          echo "Building Python Base Image"
-          docker buildx build -t aiverify-python-base -f aiverify-test-engine/Dockerfile --no-cache .
-          bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
-          docker builder prune -a
-          docker buildx build -t aiverify-test-engine-worker -f aiverify-test-engine/Dockerfile --no-cache .
-          bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
-          docker builder prune -a
-          docker buildx build -t aiverify-portal -f aiverify-portal/Dockerfile --no-cache .
-          bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
-          docker builder prune -a
-
-          cd deployment/docker-compose-dev
-
-          echo "Building & Running Portal, APIGW & Test Engine Worker"
-          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile portal up -d
-          bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
-          docker build prune -a
-          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile automated-tests-venv up -d
-          bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
-          docker build prune -a
-          cd ${GITHUB_WORKSPACE}
 
       # - name: Set ROOT_PATH Variable
       #   run: |
@@ -164,7 +172,7 @@ jobs:
         run: |
           cd integration-testing
           npm ci
-          bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
+          # bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
           npx playwright install --with-deps
           URL=http://127.0.0.1 PORT_NUMBER=3000 ROOT_FOLDER=${GITHUB_WORKSPACE}/stock-plugins/user_defined_files npx playwright test tests/portal/workflows.spec.js
 
