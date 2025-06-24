@@ -72,7 +72,7 @@ jobs:
       - name: Run images in Docker Compose
         run: |
           cd deployment/docker-compose-dev
-          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-docker --profile portal up -d
+          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-docker up -d
 
       # - name: Setup Python
       #   uses: actions/setup-python@v5
@@ -170,7 +170,6 @@ jobs:
         run: |
           cd integration-testing
           npm install
-          # bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
           npx playwright install --with-deps
           URL=http://127.0.0.1 PORT_NUMBER=3000 ROOT_FOLDER=${GITHUB_WORKSPACE}/stock-plugins/user_defined_files npx playwright test tests/portal/workflows.spec.js
 
