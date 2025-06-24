@@ -78,28 +78,18 @@ jobs:
           cd deployment/docker-compose-dev
           COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-docker --profile portal up -d
 
-      - name: Run Integration Test
-        if: ${{ ! cancelled() }}
+      # Run UI Integration Test
+      - name: Run UI Integration Test
         run: |
           cd integration-testing
           npm install
-          # bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
           npx playwright install --with-deps
-          URL=http://127.0.0.1 PORT_NUMBER=4000 ROOT_FOLDER=${GITHUB_WORKSPACE}/stock-plugins/user_defined_files npx playwright test tests/apigw/
+          URL=http://127.0.0.1 PORT_NUMBER=3000 ROOT_FOLDER=${{ github.workspace }}/stock-plugins/user_defined_files npx playwright test tests/portal
 
-      # - name: Run backend tests
-      #   if: ${{ ! cancelled() }}
-      #   run: |
-      #     cd qa-test/backend-testing
-      #     npm install
-      #     BASEDIR=${{ github.workspace }} npx playwright test
-
-      # - name: Show logs
-      #   if: ${{ ! cancelled() }}
-      #   run: |
-      #     echo "================= Start of test-engine log ================="
-      #     cat test-engine-app/engine.log
-      #     echo "================= Start of apigw log ================="
-      #     cat ai-verify-apigw/apigw.log
-      #     echo "================= Start of portal log ================="
-      #     cat ai-verify-portal/portal.log
+      # Run API Integration Test
+      - name: Run API Integration Test
+        run: |
+          cd integration-testing
+          npm install
+          npx playwright install --with-deps
+          URL=http://127.0.0.1 PORT_NUMBER=4000 ROOT_FOLDER=${{ github.workspace }}/stock-plugins/user_defined_files npx playwright test tests/apigw
