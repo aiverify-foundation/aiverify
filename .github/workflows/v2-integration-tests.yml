@@ -4,22 +4,12 @@
 name: v2 Integration Tests
 
 env:
-  AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
-  AWS_REGION: ${{ vars.AWS_REGION }}
-  AWS_CONTAINER_REPOSITORY: ${{ vars.AWS_CONTAINER_REPOSITORY }}
-  TEST_ENGINE_WORKER_IMAGE_TAG: ${{ vars.TEST_ENGINE_WORKER_IMAGE_TAG }}
   GITHUB_TOKEN: ${{ github.token }}
 
 on:
   # Run this workflow everyday at 6:05pm Singapore Time (10:05am UTC)
   schedule:
-    - cron: '5 10 * * *'
-      
-  # Runs when a pull request review is being submitted
-  pull_request:
-    types: [assigned, synchronize]
-    branches:
-      - "main"
+    - cron: "5 10 * * *"
 
   # Run this workflow manually from Actions tab
   workflow_dispatch:
@@ -41,16 +31,16 @@ concurrency:
 
 jobs:
   Integration-Test:
-    
-    #  Run only when PR is approved
-    if: (github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || github.event_name == 'push')
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
+    #  Run only on Workflow Dispatch
+    if: (github.event_name == 'workflow_dispatch')
+    runs-on: self-hosted-aiverify
+    timeout-minutes: 360
     permissions:
       id-token: write
+      contents: read
+      packages: write
 
     steps:
-      
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
@@ -64,39 +54,38 @@ jobs:
           repository: aiverify-foundation/aivt-integration-testing
           path: integration-testing
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ vars.AWS_ROLE_TO_ASSUME }}
-          aws-region: ${{ vars.AWS_REGION }}
-
-      - name: Login to ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2      
-
-      - name: Build & RUN PORTAL, APIGW & Test Engine Worker
+      # Free up disk space before building large Docker images
+      - name: Free up disk space
         run: |
-          echo "Pull AI Verify APIGW Image"
-          docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_CONTAINER_REPOSITORY/aiverify-apigw
+          bash .ci/free_disk_space.sh
 
-          # echo "Pull AI Verify Test Engine Worker Image"
-          # docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_CONTAINER_REPOSITORY/aiverify-test-engine-worker:$TEST_ENGINE_WORKER_IMAGE_TAG
+      # Log in to GitHub Container Registry (ghcr.io), needed by Github Actions to access ghcr.io
+      - name: Login to GHCR
+        run: |
+          echo "${{ env.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
-          echo "Pull AI Verify Portal Image"
-          docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_CONTAINER_REPOSITORY/aiverify-portal
+      # Clean slate to force rebuild all images
+      - name: Delete all local Docker images
+        run: |
+          docker ps -q | xargs -r docker stop
+          docker images -q | xargs -r docker rmi -f
+          docker system prune -a -f --volumes
+          docker builder prune
 
-          echo "Create and Run AI Verify Containers"
+      # Launch containers in Docker Compose
+      - name: Run images in Docker Compose
+        run: |
           cd deployment/docker-compose-dev
-          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile automated-tests-venv --profile portal up -d
+          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-docker --profile portal up -d
 
-      # - name: Run Integration Test
-      #   if: ${{ ! cancelled() }}
-      #   run: |
-      #     cd integration-testing
-      #     npm ci
-      #     # bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
-      #     npx playwright install --with-deps
-      #     URL=http://127.0.0.1 PORT_NUMBER=3000 ROOT_FOLDER=${GITHUB_WORKSPACE}/stock-plugins/user_defined_files npx playwright test tests/portal/workflows.spec.js
+      - name: Run Integration Test
+        if: ${{ ! cancelled() }}
+        run: |
+          cd integration-testing
+          npm install
+          # bash ${GITHUB_WORKSPACE}/.ci/free_disk_space.sh
+          npx playwright install --with-deps
+          URL=http://127.0.0.1 PORT_NUMBER=4000 ROOT_FOLDER=${GITHUB_WORKSPACE}/stock-plugins/user_defined_files npx playwright test tests/apigw/
 
       # - name: Run backend tests
       #   if: ${{ ! cancelled() }}
