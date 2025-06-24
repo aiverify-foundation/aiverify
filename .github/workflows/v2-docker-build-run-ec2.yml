@@ -1,0 +1,60 @@
+# This workflow builds and runs Docker images on a self-hosted EC2 instance for testing purposes.
+
+name: v2 Docker Build & Run (EC2)
+
+env:
+  GITHUB_TOKEN: ${{ github.token }}
+  
+on:
+
+  # Run this workflow manually from Actions tab
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch or tag to checkout'
+        required: true
+        default: 'main'
+        type: string
+
+# Allow one concurrent deployment
+concurrency:
+  group: ${{ github.repository }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-push:
+    runs-on: self-hosted-aiverify
+    permissions:
+      id-token: write
+      contents: read
+      packages: write
+
+    steps:
+        # Check out the source code from the specified branch
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch || 'main' }}
+     
+        # Free up disk space before building large Docker images
+      - name: Free up disk space
+        run: |
+          bash .ci/free_disk_space.sh
+
+        # Log in to GitHub Container Registry (ghcr.io), needed by Github Actions to access ghcr.io
+      - name: Login to GHCR
+        run: |
+            echo "${{ env.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+        # Clean slate to force rebuild all images    
+      - name: Delete all local Docker images
+        run: |
+          docker ps -q | xargs -r docker stop
+          docker images -q | xargs -r docker rmi -f
+          docker system prune -a -f --volumes
+
+        # Launch containers in Docker Compose  
+      - name: Run images in Docker Compose
+        run: |
+          cd deployment/docker-compose-dev
+          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-docker up -d
