@@ -64,7 +64,6 @@ jobs:
       # Clean slate to force rebuild all images
       - name: Delete all local Docker images
         run: |
-          cd deployment/docker-compose-dev
           docker ps -q | xargs -r docker stop
           docker images -q | xargs -r docker rmi -f
           docker system prune -a -f --volumes
@@ -72,6 +71,7 @@ jobs:
       # Launch containers in Docker Compose
       - name: Run images in Docker Compose
         run: |
+          cd deployment/docker-compose-dev
           COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-docker --profile portal up -d
 
       # - name: Setup Python
