@@ -67,12 +67,13 @@ jobs:
           docker ps -q | xargs -r docker stop
           docker images -q | xargs -r docker rmi -f
           docker system prune -a -f --volumes
+          docker builder prune
 
       # Launch containers in Docker Compose
       - name: Run images in Docker Compose
         run: |
           cd deployment/docker-compose-dev
-          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-docker up -d
+          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-docker --profile up -d
 
       # - name: Setup Python
       #   uses: actions/setup-python@v5
