@@ -198,10 +198,25 @@ const PipelineUploader = ({ onBack }: { onBack: () => void }) => {
           console.log('Response data:', data);
           resolve();
         },
-        onError: (error) => {
+        onError: (error: unknown) => {
           console.log(`=== PIPELINE UPLOAD FAILED: ${folder.name} ===`);
           console.error('Error details:', error);
-          reject(error);
+          
+          // The useUploadFolder hook already extracts error.detail from API response
+          // So we can directly use error.message which contains the detailed error
+          let errorMessage = 'Unknown error';
+          
+          if (error instanceof Error) {
+            errorMessage = error.message;
+          } else if (typeof error === 'string') {
+            errorMessage = error;
+          } else if (error && typeof error === 'object' && 'message' in error && typeof (error as any).message === 'string') {
+            errorMessage = (error as any).message;
+          }
+          
+          // Create error object with folder name and detailed message
+          const enhancedError = new Error(`${folder.name}: ${errorMessage}`);
+          reject(enhancedError);
         },
       });
     });
@@ -264,8 +279,11 @@ const PipelineUploader = ({ onBack }: { onBack: () => void }) => {
     
     let finalMessage = `Upload completed: ${successful} successful, ${failed} failed.`;
     if (failed > 0) {
-      const failedFolders = results.filter(r => !r.success).map(r => r.folder);
-      finalMessage += ` Failed folders: ${failedFolders.join(', ')}`;
+      const failedDetails = results
+        .filter(r => !r.success)
+        .map(r => `${r.folder}: ${r.error}`)
+        .join('; ');
+      finalMessage += `\n\nFailed uploads:\n${failedDetails}`;
     }
     
     setModalMessage(finalMessage);
@@ -305,13 +323,13 @@ const PipelineUploader = ({ onBack }: { onBack: () => void }) => {
           onCloseIconClick={closeModal}
           enableScreenOverlay
           heading="Upload Status"
-          height={uploadProgress.length > 0 ? Math.min(400, 200 + uploadProgress.length * 20) : 200}>
+          height={uploadProgress.length > 0 ? Math.min(500, 250 + uploadProgress.length * 20) : 300}>
           <div>
-            <p className="mb-2">{modalMessage}</p>
+            <p className="mb-2 whitespace-pre-line">{modalMessage}</p>
             {uploadProgress.length > 0 && (
-              <div className="mt-4 max-h-48 overflow-y-auto text-sm">
+              <div className="mt-4 max-h-60 overflow-y-auto text-sm">
                 {uploadProgress.map((message, index) => (
-                  <div key={index} className="mb-1">
+                  <div key={index} className="mb-1 font-mono text-xs">
                     {message}
                   </div>
                 ))}

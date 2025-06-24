@@ -184,12 +184,26 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
         setModelType('');
         setSelectedFiles([]);
       },
-      onError: (error) => {
+      onError: (error: unknown) => {
         console.log('=== UPLOAD FAILED ===');
         console.error('Error details:', error);
-        setModalMessage(
-          `Error uploading folder: ${error instanceof Error ? error.message : 'Unknown error'}`
-        );
+        
+        // The useUploadFolder hook already extracts error.detail from API response
+        // So we can directly use error.message which contains the detailed error
+        let errorMessage = 'Unknown error';
+        
+        if (error instanceof Error) {
+          errorMessage = error.message;
+        } else if (typeof error === 'string') {
+          errorMessage = error;
+        } else if (error && typeof error === 'object' && 'message' in error && typeof (error as any).message === 'string') {
+          errorMessage = (error as any).message;
+        }
+        
+        const fullErrorMessage = `Error uploading folder "${folderName}": ${errorMessage}`;
+        console.log('Formatted error message:', fullErrorMessage);
+        
+        setModalMessage(fullErrorMessage);
         setIsModalVisible(true);
         // Reset all fields to initial state
         setFolderName('');
@@ -213,8 +227,8 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
           onCloseIconClick={closeModal}
           enableScreenOverlay
           heading="Upload Status"
-          height={200}>
-          <p>{modalMessage}</p>
+          height={300}>
+          <p className="whitespace-pre-line">{modalMessage}</p>
         </Modal>
       )}
 
