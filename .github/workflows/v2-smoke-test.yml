@@ -72,6 +72,7 @@ jobs:
       - name: Run images in Docker Compose
         run: |
           cd deployment/docker-compose-dev
+          lsof -i TCP:3000
           COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile portal --profile automated-tests-docker up -d
 
       # - name: Setup Python
