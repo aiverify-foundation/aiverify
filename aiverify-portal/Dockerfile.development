@@ -24,4 +24,4 @@ WORKDIR /app/aiverify-portal
 RUN npm install && npm link ../aiverify-shared-library
 
 # ENTRYPOINT ["npm", "run", "start"]
-ENTRYPOINT ["npm", "run", "dev"]
+ENTRYPOINT ["npm", "start"]
