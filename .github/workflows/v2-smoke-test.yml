@@ -77,6 +77,8 @@ jobs:
 
       # Run Smoke Test
       - name: Run Smoke Test
+        env:
+          GITHUB_WORKSPACE: ${{ github.workspace }}
         run: |
           cd integration-testing
           npm install
