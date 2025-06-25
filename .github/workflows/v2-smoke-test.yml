@@ -75,6 +75,13 @@ jobs:
           cd deployment/docker-compose-dev
           COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-docker --profile portal up -d
 
+      # Prepare Smoke Test Data
+      - name: Prepare Smoke Test Data
+        run: |
+          cd stock-plugins/user_defined_files/veritas_data
+          mkdir cs_model
+          mv cs_model.pkl cs_model
+
       # Run Smoke Test
       - name: Run Smoke Test
         run: |
