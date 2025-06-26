@@ -76,7 +76,7 @@ jobs:
       - name: Run images in Docker Compose
         run: |
           cd deployment/docker-compose-dev
-          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-docker --profile portal up -d
+          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-venv --profile portal up -d
 
       # Run UI Integration Test
       - name: Run UI Integration Test
