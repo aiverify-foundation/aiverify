@@ -84,7 +84,7 @@ jobs:
           cd integration-testing
           npm install
           npx playwright install --with-deps
-          URL=http://127.0.0.1 PORT_NUMBER=3000 ROOT_FOLDER=${{ github.workspace }}/stock-plugins/user_defined_files npx playwright test tests/portal
+          URL=http://127.0.0.1 PORT_NUMBER=3000 ROOT_PATH=$GITHUB_WORKSPACE/stock-plugins/user_defined_files npx playwright test tests/portal
 
       # Run API Integration Test
       - name: Run API Integration Test
@@ -92,4 +92,20 @@ jobs:
           cd integration-testing
           npm install
           npx playwright install --with-deps
-          URL=http://127.0.0.1 PORT_NUMBER=4000 ROOT_FOLDER=${{ github.workspace }}/stock-plugins/user_defined_files npx playwright test tests/apigw
+          URL=http://127.0.0.1 PORT_NUMBER=4000 ROOT_PATH=$GITHUB_WORKSPACE/stock-plugins/user_defined_files npx playwright test tests/apigw
+
+      # Run Standalone Plugin Integration Test
+      - name: Run Standalone Plugin Integration Test
+        run: |
+          cd integration-testing/standalone-plugins
+          pip install pytest 
+          pytest .
+
+      # Upload Playwright Traces
+      - name: Upload Playwright Traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-trace-v2.0-integration-testing-${{ github.run_id }}
+          path: |
+            ${{ github.workspace }}/integration-testing/test-results/
