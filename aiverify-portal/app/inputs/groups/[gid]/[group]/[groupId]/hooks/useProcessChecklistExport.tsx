@@ -3,6 +3,9 @@ import { createAndDownloadExcel } from '../utils/excelExport';
 import { executeMDXBundle } from './useMDXExecution';
 import { useMDXSummaryBundle } from './useMDXSummaryBundle';
 
+// Standardized CID that all plugins with export functionality must use
+export const EXPORT_PROCESS_CHECKLISTS_CID = 'export_process_checklists';
+
 // Define interface for checklist items
 export interface Checklist {
   cid: string;
@@ -21,24 +24,21 @@ type ExportResult = Record<string, unknown> | boolean | null;
  * @param format The export format ('json' or 'xlsx')
  * @param groupName The name of the group to export
  * @param checklists The checklists to export
+ * @param gid The plugin gid to use for the export
  * @returns An object with export functionality and state
  */
 export function useProcessChecklistExport(
   format: string,
   groupName: string,
-  checklists: Checklist[]
+  checklists: Checklist[],
+  gid: string
 ) {
   const [isExporting, setIsExporting] = useState(false);
-
-  // Plugin IDs
-  // TO DO: change to get from URL params
-  const gid = 'aiverify.stock.process_checklist';
-  const cid = 'export_process_checklists';
 
   // Fetch the MDX export bundle
   const { data: mdxBundle, isLoading: isLoadingBundle } = useMDXSummaryBundle(
     gid,
-    cid
+    EXPORT_PROCESS_CHECKLISTS_CID
   );
 
   // Flag to track whether the export functionality is ready

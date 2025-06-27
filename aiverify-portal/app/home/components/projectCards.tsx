@@ -1,7 +1,7 @@
 'use client';
 import { RiDeleteBinLine, RiEyeLine, RiPencilFill } from '@remixicon/react';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Project } from '@/app/types';
 import { UserFlows } from '@/app/userFlowsEnum';
 import { Card } from '@/lib/components/card/card';
@@ -20,6 +20,11 @@ function ProjectCards({ projects: initialProjects }: ProjectCardsProps) {
     success: boolean;
     message: string;
   } | null>(null);
+
+  // Update internal state when props change
+  useEffect(() => {
+    setProjects(initialProjects);
+  }, [initialProjects]);
 
   const handleDelete = async (project: Project) => {
     try {

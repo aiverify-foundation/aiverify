@@ -9,6 +9,8 @@ import { CreateTemplateCard } from './components/CreateTemplateCard';
 import { QueryProvider } from './components/QueryProvider';
 import { TemplateCards } from './components/templateCards';
 import { TemplateFilters } from './components/templateFilters';
+import { TemplateSearchProvider } from '@/app/templates/components/TemplateSearchProvider';
+import { FilteredTemplateCards } from '@/app/templates/components/FilteredTemplateCards';
 
 type UrlSearchParams = {
   searchParams: Promise<{
@@ -66,20 +68,37 @@ export default async function TemplatesPage(props: UrlSearchParams) {
         </div>
       </div>
 
-      {templates.length > 1 ? <TemplateFilters /> : null}
-      <section className="mt-6 flex flex-wrap gap-6">
-        <QueryProvider>
-          <CreateTemplateCard
+      {templates.length > 1 ? (
+        <TemplateSearchProvider initialTemplates={templates}>
+          <TemplateFilters templates={templates} />
+          <section className="mt-6 flex flex-wrap gap-6">
+            <QueryProvider>
+              <CreateTemplateCard
+                projectId={projectId}
+                flow={flow}
+              />
+            </QueryProvider>
+            <FilteredTemplateCards
+              projectId={projectId}
+              flow={flow}
+            />
+          </section>
+        </TemplateSearchProvider>
+      ) : (
+        <section className="mt-6 flex flex-wrap gap-6">
+          <QueryProvider>
+            <CreateTemplateCard
+              projectId={projectId}
+              flow={flow}
+            />
+          </QueryProvider>
+          <TemplateCards
+            templates={templates}
             projectId={projectId}
             flow={flow}
           />
-        </QueryProvider>
-        <TemplateCards
-          templates={templates}
-          projectId={projectId}
-          flow={flow}
-        />
-      </section>
+        </section>
+      )}
     </main>
   );
 }

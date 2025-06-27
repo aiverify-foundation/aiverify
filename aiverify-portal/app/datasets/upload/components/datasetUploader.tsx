@@ -26,6 +26,12 @@ function DatasetFileUploader() {
       id: Math.random().toString(36).substring(2, 9),
     }));
     setFileUploads((prevUploads) => [...prevUploads, ...newUploads]);
+    
+    // Clear the file input value to allow reselecting the same files
+    const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   };
 
   const removeUpload = (id: string) => {
@@ -84,6 +90,11 @@ function DatasetFileUploader() {
       // After a short delay, reset all fields to initial state
       setTimeout(() => {
         setFileUploads([]);
+        // Clear the file input value to allow reselecting files
+        const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+        if (fileInput) {
+          fileInput.value = '';
+        }
       }, 2000); // 2 second delay to let the user see the completion status
     });
   };

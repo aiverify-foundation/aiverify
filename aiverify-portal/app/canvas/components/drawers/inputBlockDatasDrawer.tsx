@@ -34,77 +34,41 @@ function InputBlockDatasDrawer(props: InputBlockDatasDrawerProps) {
     InputBlockData[]
   >(selectedInputBlockDatasFromUrlParams);
 
-  // Group input block datas by their type and group
+  // Group input block datas dynamically based on their properties
   const groupedInputBlockDatas = useMemo(() => {
-    const groups: { [key: string]: InputBlockData[] } = {};
-    const fairnessTrees: { [key: string]: InputBlockData[] } = {};
-
-    allInputBlockDatasOnSystem.forEach((inputBlockData) => {
-      // Check if it's a fairness tree
-      if (
-        inputBlockData.gid ===
-          'aiverify.stock.fairness_metrics_toolbox_for_classification' &&
-        inputBlockData.cid === 'fairness_tree'
-      ) {
-        // Group fairness trees by their name/group
-        const key = inputBlockData.name;
-        if (!fairnessTrees[key]) {
-          fairnessTrees[key] = [];
+    // Group-based input blocks (have a 'group' property)
+    const groupedBlocks = allInputBlockDatasOnSystem.reduce((acc, inputBlockData) => {
+      if (inputBlockData.group) {
+        const groupKey = inputBlockData.group;
+        if (!acc[groupKey]) {
+          acc[groupKey] = [];
         }
-        fairnessTrees[key].push(inputBlockData);
+        acc[groupKey].push(inputBlockData);
       }
-      // Check if it's a process checklist
-      else if (inputBlockData.gid === 'aiverify.stock.process_checklist') {
-        // Group process checklists by their group
-        const key = inputBlockData.group;
-        if (!groups[key]) {
-          groups[key] = [];
-        }
-        groups[key].push(inputBlockData);
-      }
-    });
+      return acc;
+    }, {} as Record<string, InputBlockData[]>);
 
-    return { groups, fairnessTrees };
+    // Non-grouped input blocks (don't have a 'group' property)
+    const nonGroupedBlocks = allInputBlockDatasOnSystem.reduce((acc, inputBlockData) => {
+      if (!inputBlockData.group) {
+        const nameKey = inputBlockData.name;
+        if (!acc[nameKey]) {
+          acc[nameKey] = [];
+        }
+        acc[nameKey].push(inputBlockData);
+      }
+      return acc;
+    }, {} as Record<string, InputBlockData[]>);
+
+    return { groupedBlocks, nonGroupedBlocks };
   }, [allInputBlockDatasOnSystem]);
 
-  function handleCheckboxClick(inputBlockData: InputBlockData) {
+  function handleCheckboxClick(inputBlockData: InputBlockData, isGrouped: boolean) {
     return () => {
-      // Check if it's a fairness tree
-      if (
-        inputBlockData.gid ===
-          'aiverify.stock.fairness_metrics_toolbox_for_classification' &&
-        inputBlockData.cid === 'fairness_tree'
-      ) {
-        // For fairness trees, select/deselect by name
-        const treeKey = inputBlockData.name;
-        const treeItems = groupedInputBlockDatas.fairnessTrees[treeKey] || [];
-
-        const isTreeSelected = treeItems.some((item) =>
-          selectedInputBlockDatas.includes(item)
-        );
-
-        const updatedSelectedInputBlockDatas = isTreeSelected
-          ? selectedInputBlockDatas.filter((item) => !treeItems.includes(item))
-          : [
-              ...selectedInputBlockDatas.filter(
-                (item) =>
-                  !(
-                    item.gid ===
-                      'aiverify.stock.fairness_metrics_toolbox_for_classification' &&
-                    item.cid === 'fairness_tree'
-                  )
-              ),
-              inputBlockData,
-            ];
-
-        setSelectedInputBlockDatas(updatedSelectedInputBlockDatas);
-        onCheckboxClick(updatedSelectedInputBlockDatas);
-      }
-      // Check if it's a process checklist
-      else if (inputBlockData.gid === 'aiverify.stock.process_checklist') {
-        // For process checklists, select/deselect the entire group
-        const groupKey = inputBlockData.group;
-        const groupItems = groupedInputBlockDatas.groups[groupKey] || [];
+      if (isGrouped) {
+        // For grouped blocks, select/deselect the entire group
+        const groupKey = inputBlockData.group!;
+        const groupItems = groupedInputBlockDatas.groupedBlocks[groupKey] || [];
 
         const isGroupSelected = groupItems.every((item) =>
           selectedInputBlockDatas.includes(item)
@@ -114,13 +78,29 @@ function InputBlockDatasDrawer(props: InputBlockDatasDrawerProps) {
           ? selectedInputBlockDatas.filter((item) => !groupItems.includes(item))
           : [
               ...selectedInputBlockDatas.filter(
-                (item) =>
-                  !(
-                    item.gid === 'aiverify.stock.process_checklist' &&
-                    item.group === inputBlockData.group
-                  )
+                (item) => !(item.group && item.group === groupKey)
               ),
               ...groupItems,
+            ];
+
+        setSelectedInputBlockDatas(updatedSelectedInputBlockDatas);
+        onCheckboxClick(updatedSelectedInputBlockDatas);
+      } else {
+        // For non-grouped blocks, only one of the same name can be selected
+        const nameKey = inputBlockData.name;
+        const nameItems = groupedInputBlockDatas.nonGroupedBlocks[nameKey] || [];
+
+        const isNameSelected = nameItems.some((item) =>
+          selectedInputBlockDatas.includes(item)
+        );
+
+        const updatedSelectedInputBlockDatas = isNameSelected
+          ? selectedInputBlockDatas.filter((item) => !nameItems.includes(item))
+          : [
+              ...selectedInputBlockDatas.filter(
+                (item) => !(!item.group && item.name === nameKey)
+              ),
+              inputBlockData,
             ];
 
         setSelectedInputBlockDatas(updatedSelectedInputBlockDatas);
@@ -129,28 +109,23 @@ function InputBlockDatasDrawer(props: InputBlockDatasDrawerProps) {
     };
   }
 
-  // Add this function to count selected groups
+  // Count selected groups/items across all types
   const getSelectedGroupCount = useMemo(() => {
     let count = 0;
 
-    // Check if any fairness tree is selected
-    if (
-      selectedInputBlockDatas.some(
-        (item) =>
-          item.gid ===
-            'aiverify.stock.fairness_metrics_toolbox_for_classification' &&
-          item.cid === 'fairness_tree'
-      )
-    ) {
+    // Check for selected grouped blocks
+    const hasSelectedGroupedBlocks = selectedInputBlockDatas.some(
+      (item) => item.group
+    );
+    if (hasSelectedGroupedBlocks) {
       count++;
     }
 
-    // Check if any process checklist group is selected
-    if (
-      selectedInputBlockDatas.some(
-        (item) => item.gid === 'aiverify.stock.process_checklist'
-      )
-    ) {
+    // Check for selected non-grouped blocks
+    const hasSelectedNonGroupedBlocks = selectedInputBlockDatas.some(
+      (item) => !item.group
+    );
+    if (hasSelectedNonGroupedBlocks) {
       count++;
     }
 
@@ -188,28 +163,22 @@ function InputBlockDatasDrawer(props: InputBlockDatasDrawerProps) {
           </DrawerHeader>
           <DrawerBody>
             <div className="space-y-8">
-              {/* Fairness Trees Section */}
-              {Object.entries(groupedInputBlockDatas.fairnessTrees).length >
-                0 && (
+              {/* Non-grouped blocks section */}
+              {Object.entries(groupedInputBlockDatas.nonGroupedBlocks).length > 0 && (
                 <div className="rounded-lg border border-gray-200 p-4">
                   <h3 className="mb-4 text-sm font-medium text-gray-900">
-                    Fairness Trees
+                    Individual Input Blocks
                   </h3>
                   <div className="space-y-3">
-                    {Object.entries(groupedInputBlockDatas.fairnessTrees).map(
-                      ([, treeItems], index) => {
-                        const firstItem = treeItems[0];
-                        const isTreeSelected = treeItems.some((item) =>
+                    {Object.entries(groupedInputBlockDatas.nonGroupedBlocks).map(
+                      ([nameKey, nameItems], index) => {
+                        const firstItem = nameItems[0];
+                        const isNameSelected = nameItems.some((item) =>
                           selectedInputBlockDatas.includes(item)
                         );
-                        const isTreeDisabled =
-                          !isTreeSelected &&
-                          selectedInputBlockDatas.some(
-                            (item) =>
-                              item.gid ===
-                                'aiverify.stock.fairness_metrics_toolbox_for_classification' &&
-                              item.cid === 'fairness_tree'
-                          );
+                        const isNameDisabled =
+                          !isNameSelected &&
+                          selectedInputBlockDatas.some((item) => !item.group);
 
                         return (
                           <label
@@ -218,9 +187,9 @@ function InputBlockDatasDrawer(props: InputBlockDatasDrawerProps) {
                             <input
                               type="checkbox"
                               className="h-4 w-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
-                              checked={isTreeSelected}
-                              disabled={isTreeDisabled}
-                              onChange={handleCheckboxClick(firstItem)}
+                              checked={isNameSelected}
+                              disabled={isNameDisabled}
+                              onChange={handleCheckboxClick(firstItem, false)}
                             />
                             <div className="flex flex-col">
                               <span className="text-sm font-medium text-gray-900">
@@ -240,25 +209,22 @@ function InputBlockDatasDrawer(props: InputBlockDatasDrawerProps) {
                 </div>
               )}
 
-              {/* Process Checklists Section */}
-              {Object.entries(groupedInputBlockDatas.groups).length > 0 && (
+              {/* Grouped blocks section */}
+              {Object.entries(groupedInputBlockDatas.groupedBlocks).length > 0 && (
                 <div className="rounded-lg border border-gray-200 p-4">
                   <h3 className="mb-4 text-sm font-medium text-gray-900">
-                    Process Checklists
+                    Grouped Input Blocks
                   </h3>
                   <div className="space-y-3">
-                    {Object.entries(groupedInputBlockDatas.groups).map(
-                      ([, groupItems], index) => {
+                    {Object.entries(groupedInputBlockDatas.groupedBlocks).map(
+                      ([groupKey, groupItems], index) => {
                         const firstItem = groupItems[0];
                         const isGroupSelected = groupItems.every((item) =>
                           selectedInputBlockDatas.includes(item)
                         );
                         const isGroupDisabled =
                           !isGroupSelected &&
-                          selectedInputBlockDatas.some(
-                            (item) =>
-                              item.gid === 'aiverify.stock.process_checklist'
-                          );
+                          selectedInputBlockDatas.some((item) => item.group);
 
                         return (
                           <label
@@ -269,14 +235,14 @@ function InputBlockDatasDrawer(props: InputBlockDatasDrawerProps) {
                               className="h-4 w-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
                               checked={isGroupSelected}
                               disabled={isGroupDisabled}
-                              onChange={handleCheckboxClick(firstItem)}
+                              onChange={handleCheckboxClick(firstItem, true)}
                             />
                             <div className="flex flex-col">
                               <span className="text-sm font-medium text-gray-900">
-                                {firstItem.group}
+                                {groupKey}
                               </span>
                               <span className="text-xs text-gray-500">
-                                {groupItems.length} checklists •{' '}
+                                {groupItems.length} items •{' '}
                                 {new Date(
                                   firstItem.created_at + "Z"
                                 ).toLocaleString()}

@@ -41,31 +41,3 @@ export function FairnessTreeModalContent({
     </QueryProvider>
   );
 }
-
-// Reusable modal wrapper for other components
-export function FairnessTreeModalWrapper({
-  isOpen,
-  onClose,
-  gid = 'aiverify.stock.fairness_metrics_toolbox_for_classification',
-  cid = 'fairness_tree',
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  gid?: string;
-  cid?: string;
-}) {
-  return (
-    <QueryProvider>
-      <FairnessTreeProvider>
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <FairnessTreeUploadModal
-            isOpen={isOpen}
-            onClose={onClose}
-            gid={gid}
-            cid={cid}
-          />
-        </div>
-      </FairnessTreeProvider>
-    </QueryProvider>
-  );
-}

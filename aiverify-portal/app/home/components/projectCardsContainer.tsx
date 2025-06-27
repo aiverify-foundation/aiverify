@@ -1,5 +1,7 @@
 import { getProjects } from '@/lib/fetchApis/getProjects';
-import { ProjectCards } from './projectCards';
+import { ProjectSearchProvider } from './ProjectSearchProvider';
+import { ProjectsFilters } from './projectFilters';
+import { FilteredProjectCards } from './FilteredProjectCards';
 
 type ProjectCardsContainerProps = {
   className?: string;
@@ -13,9 +15,13 @@ export async function ProjectCardsContainer({
     throw new Error(response.message);
   }
   const projects = response.data;
+  
   return (
-    <section className={className}>
-      <ProjectCards projects={projects} />
-    </section>
+    <ProjectSearchProvider initialProjects={projects}>
+      <ProjectsFilters projects={projects} className="my-6 mt-[100px]" />
+      <section className={className}>
+        <FilteredProjectCards />
+      </section>
+    </ProjectSearchProvider>
   );
 }

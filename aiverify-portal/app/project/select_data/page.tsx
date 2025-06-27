@@ -3,7 +3,6 @@ import {
   transformProjectOutputToState,
   ProjectOutput,
 } from '@/app/canvas/utils/transformProjectOutputToState';
-import { getAllFairnessTrees } from '@/lib/fetchApis/getAllFairnessTrees';
 import { getAllInputBlockGroups } from '@/lib/fetchApis/getAllInputBlockGroup';
 import { getTestModels } from '@/lib/fetchApis/getAllModels';
 import { getInputBlockDatas } from '@/lib/fetchApis/getInputBlockDatas';
@@ -39,7 +38,6 @@ export default async function SelectDataPage({
   const allModels = await getTestModels();
   const allTestResults = await getTestResults();
   const allInputBlockGroups = await getAllInputBlockGroups();
-  const allFairnessTrees = await getAllFairnessTrees();
   const allInputBlockDatas = await getInputBlockDatas();
 
   console.log('Project data:', {
@@ -124,7 +122,6 @@ export default async function SelectDataPage({
             allModels={allModels}
             allTestResults={allTestResults}
             allInputBlockGroups={allInputBlockGroups}
-            allFairnessTrees={allFairnessTrees}
             allInputBlockDatas={allInputBlockDatas}
             flow={flow}
             initialModelId={initialModelId}

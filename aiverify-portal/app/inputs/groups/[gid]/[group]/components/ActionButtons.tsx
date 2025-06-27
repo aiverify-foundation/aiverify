@@ -4,6 +4,8 @@ import React, { useState, useTransition } from 'react';
 import { Button, ButtonVariant } from '@/lib/components/button';
 import { Modal } from '@/lib/components/modal';
 import { useInputBlockGroupSubmission } from '../upload/hooks/useUploadSubmission';
+import { useMDXSummaryBundle } from '../[groupId]/hooks/useMDXSummaryBundle';
+import { EXPORT_PROCESS_CHECKLISTS_CID } from '../[groupId]/hooks/useProcessChecklistExport';
 
 interface ActionButtonsProps {
   gid: string;
@@ -20,6 +22,10 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
   const searchParams = useSearchParams();
   const projectId = searchParams.get('projectId');
   const flow = searchParams.get('flow');
+
+  // Dynamically check if the plugin has import/export functionality
+  const { data: importBundle } = useMDXSummaryBundle(gid, EXPORT_PROCESS_CHECKLISTS_CID);
+  const hasImportFunction = !!importBundle?.code;
 
   const encodedGroup = encodeURIComponent(group);
   const encodedGID = encodeURIComponent(gid);
@@ -54,11 +60,11 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
   };
 
   const handleAddChecklists = () => {
-    if (gid === 'aiverify.stock.process_checklist') {
-      // TODO: fix hardcode
+    if (hasImportFunction) {
+      // Show modal with import options for plugins that support Excel import
       setIsModalOpen(true);
     } else {
-      // alert('Hi');
+      // Directly create new checklist for plugins without import functionality
       addNewChecklist();
     }
   };
@@ -76,7 +82,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
 
       {isModalOpen && (
         <Modal
-          heading="Add Checklists"
+          heading="Add Input"
           onCloseIconClick={() => setIsModalOpen(false)}
           enableScreenOverlay
           primaryBtnLabel="Upload Excel"
@@ -89,10 +95,9 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
           onSecondaryBtnClick={() => {
             setIsModalOpen(false);
             addNewChecklist();
-            // window.location.href = `/inputs/groups/${encodedGID}/${encodedGroup}/upload/manual`;
           }}>
           <p className="text-primary-100">
-            Choose an option to add checklists:
+            Choose an option to add input:
           </p>
         </Modal>
       )}
