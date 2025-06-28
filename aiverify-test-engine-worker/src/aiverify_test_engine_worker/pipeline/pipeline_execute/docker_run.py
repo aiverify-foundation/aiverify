@@ -76,6 +76,7 @@ class DockerRun(Pipe):
             ]
             logger.debug(f"docker cp model path: {cmds}")
             subprocess.run(cmds, check=True)
+            
             if task_data.ground_truth_path and task_data.task.groundTruth:
                 if task_data.ground_truth_path.samefile(task_data.data_path):
                     container_ground_truth_path = container_data_path
@@ -89,7 +90,20 @@ class DockerRun(Pipe):
                     ]
                     logger.debug(f"docker cp ground truth path: {cmds}")
                     subprocess.run(cmds, check=True)
-
+            
+            json_args_dict = task_data.task.algorithmArgs
+            
+            # Modify paths in the dict
+            for key, value in json_args_dict.items():
+                if isinstance(value, str) and os.path.isabs(value) and os.path.exists(value):
+                    filename = os.path.basename(value)
+                    # Replace with new path inside container
+                    new_path = f"/app/data/{filename}"
+                    json_args_dict[key] = new_path
+                    
+            # Convert to JSON
+            json_args = json.dumps(json_args_dict)
+            
             # docker exec
             # output_folder.chmod(0o777)
             cmds = [
@@ -103,7 +117,7 @@ class DockerRun(Pipe):
                 "--data_path", container_data_path,
                 "--model_path", container_model_path,
                 "--model_type", task_data.task.modelType.lower(),
-                "--algorithm_args", json.dumps(task_data.task.algorithmArgs),
+                "--algorithm_args", json_args,
                 "--apigw_url", self.apigw_url,
             ]
             if task_data.ground_truth_path and task_data.task.groundTruth:
