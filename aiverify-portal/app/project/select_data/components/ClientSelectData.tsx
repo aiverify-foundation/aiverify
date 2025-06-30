@@ -360,8 +360,8 @@ export default function ClientSelectData({
         
         // Parse the key to extract gid, cid, and id
         const keyParts = key.split('-');
-        let gid: string = '';
-        let cid: string = '';
+        let gid = '';
+        let cid = '';
         let id: string | undefined;
 
         if (keyParts.length >= 3) {

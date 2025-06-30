@@ -58,7 +58,7 @@ export const DEFAULT_CHECKLISTS: Checklist[] = PROCESS_CHECKLIST_CIDS.map((cid) 
 export const createChecklist = (
   cid: string,
   data: Record<string, string> = {},
-  group: string = 'default'
+  group = 'default'
 ): Checklist => ({
   cid,
   gid: STOCK_PROCESS_CHECKLIST_GID,
@@ -85,7 +85,7 @@ export const fetchDynamicChecklists = async (gid: string): Promise<Checklist[]> 
     
     // Transform API response to Checklist format
     // This is a placeholder - actual implementation would depend on API response structure
-    return data.map((item: any) => ({
+    return data.map((item: { cid: string; gid: string; name?: string }) => ({
       cid: item.cid,
       gid: item.gid,
       name: item.name || CHECKLIST_DISPLAY_NAMES[item.cid] || item.cid,

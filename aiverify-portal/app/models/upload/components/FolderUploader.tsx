@@ -196,8 +196,8 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
           errorMessage = error.message;
         } else if (typeof error === 'string') {
           errorMessage = error;
-        } else if (error && typeof error === 'object' && 'message' in error && typeof (error as any).message === 'string') {
-          errorMessage = (error as any).message;
+        } else if (error && typeof error === 'object' && 'message' in error && typeof (error as { message: unknown }).message === 'string') {
+          errorMessage = (error as { message: string }).message;
         }
         
         const fullErrorMessage = `Error uploading folder "${folderName}": ${errorMessage}`;

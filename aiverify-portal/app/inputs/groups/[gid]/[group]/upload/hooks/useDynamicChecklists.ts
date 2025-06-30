@@ -16,8 +16,8 @@ interface UseDynamicChecklistsResult {
  * @param enableDynamic - Whether to attempt dynamic loading (default: false for now)
  */
 export const useDynamicChecklists = (
-  gid: string = 'aiverify.stock.process_checklist',
-  enableDynamic: boolean = false
+  gid = 'aiverify.stock.process_checklist',
+  enableDynamic = false
 ): UseDynamicChecklistsResult => {
   const [checklists, setChecklists] = useState<Checklist[]>(DEFAULT_CHECKLISTS);
   const [isLoading, setIsLoading] = useState(false);
