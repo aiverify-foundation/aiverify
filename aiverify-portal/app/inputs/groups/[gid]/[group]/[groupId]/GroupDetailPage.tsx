@@ -1,7 +1,8 @@
 'use client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import Fuse from 'fuse.js';
 import Link from 'next/link';
-import { Suspense, useState } from 'react';
+import { Suspense, useMemo, useState } from 'react';
 import ChecklistsFilters from '@/app/inputs/components/FilterButtons';
 import { useInputBlockGroupData } from '@/app/inputs/context/InputBlockGroupDataContext';
 import { ChevronLeftIcon } from '@/app/inputs/utils/icons';
@@ -25,44 +26,49 @@ export default function GroupDetailPage() {
   const { gid, group, setName, currentGroupData } = useInputBlockGroupData();
 
   // Search and sort state
-  const [, setSearchQuery] = useState('');
-  const [, setSortBy] = useState('date-desc');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('date-desc');
 
-  // // Initialize Fuse search
-  // const fuse = useMemo(() => {
-  //   const options = {
-  //     keys: ['name'],
-  //     includeScore: true,
-  //     threshold: 0.5,
-  //   };
-  //   return new Fuse(selectedGroup ? selectedGroup, options);
-  // }, [selectedGroup]);
+  // Initialize Fuse search
+  const fuse = useMemo(() => {
+    if (!currentGroupData?.input_blocks) return null;
+    const options = {
+      keys: ['name'],
+      includeScore: true,
+      threshold: 0.5,
+    };
+    return new Fuse(currentGroupData.input_blocks, options);
+  }, [currentGroupData?.input_blocks]);
 
-  // Filter and sort checklists
-  // const filteredChecklists = useMemo(() => {
-  //   // First, filter by search query
-  //   const filtered = searchQuery
-  //     ? fuse.search(searchQuery).map((result) => result.item)
-  //     : checklists;
+  // Filter and sort input blocks
+  const filteredGroupData = useMemo(() => {
+    if (!currentGroupData) return null;
 
-  //   // Then sort the results
-  //   return [...filtered].sort((a, b) => {
-  //     switch (sortBy) {
-  //       case 'date-asc':
-  //         return (
-  //           new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime()
-  //         );
-  //       case 'date-desc':
-  //         return (
-  //           new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-  //         );
-  //       case 'name':
-  //         return a.name.localeCompare(b.name);
-  //       default:
-  //         return 0;
-  //     }
-  //   });
-  // }, [checklists, searchQuery, sortBy, fuse]);
+    // First, filter by search query
+    const filteredInputBlocks = searchQuery && fuse
+      ? fuse.search(searchQuery).map((result) => result.item)
+      : currentGroupData.input_blocks;
+
+    // Then sort the results
+    const sortedInputBlocks = [...filteredInputBlocks].sort((a, b) => {
+      switch (sortBy) {
+        case 'date-asc':
+          return a.groupNumber - b.groupNumber;
+        case 'date-desc':
+          return b.groupNumber - a.groupNumber;
+        case 'name':
+          return a.name.localeCompare(b.name);
+        default:
+          return 0;
+      }
+    });
+
+    // Return a new group data object with filtered input blocks
+    return {
+      ...currentGroupData,
+      input_blocks: sortedInputBlocks,
+    };
+  }, [currentGroupData, searchQuery, sortBy, fuse]);
 
   const handleSearch = (query: string) => setSearchQuery(query);
   const handleSort = (newSortBy: string) => setSortBy(newSortBy);
@@ -135,7 +141,7 @@ export default function GroupDetailPage() {
                     onSearch={handleSearch}
                     onSort={handleSort}
                   />
-                  {currentGroupData && <GroupDetail group={currentGroupData} />}
+                  {filteredGroupData && <GroupDetail group={filteredGroupData} />}
                 </div>
               }
             />
