@@ -23,30 +23,6 @@ const queryClient = new QueryClient({
 
 export default function GroupDetailPage() {
   const { gid, group, setName, currentGroupData } = useInputBlockGroupData();
-  // const { selectedGroup, checklists, setSelectedGroup } = useChecklists();
-  // console.log('checklist', checklists);
-  // const pathname = usePathname();
-
-  // Get group ID from URL
-  // const groupIdFromURL = useMemo(() => {
-  //   const urlParams = new URLSearchParams(pathname.split('?')[1]);
-  //   return urlParams.get('groupId');
-  // }, [pathname]);
-
-  // const groupName = selectedGroup ?? decodeURIComponent(groupIdFromURL ?? '');
-  // const selectedGroup =
-  //   groupDataList && groupId
-  //     ? groupDataList.find((x) => x.id == groupId)
-  //     : null;
-  // const groupName = group;
-  // console.log(groupName);
-
-  // Set the selected group if it's not already set
-  // useEffect(() => {
-  //   if (groupIdFromURL && !selectedGroup) {
-  //     setSelectedGroup(decodeURIComponent(groupIdFromURL));
-  //   }
-  // }, [groupIdFromURL, selectedGroup, setSelectedGroup]);
 
   // Search and sort state
   const [, setSearchQuery] = useState('');
@@ -88,9 +64,6 @@ export default function GroupDetailPage() {
   //   });
   // }, [checklists, searchQuery, sortBy, fuse]);
 
-  // Handler functions
-  // const handleSearch = (query: string) => setSearchQuery(query);
-  // const handleSort = (newSortBy: string) => setSortBy(newSortBy);
   const handleSearch = (query: string) => setSearchQuery(query);
   const handleSort = (newSortBy: string) => setSortBy(newSortBy);
 
