@@ -386,10 +386,10 @@ const ExcelUploader = () => {
                         follows, else it will not be uploaded: Transparency,
                         Explainability, Reproducibility, Safety, Security,
                         Robustness, Fairness, Data Governance, Accountability,
-                        Human Agency Oversight, Inclusive Growth, Organisational
+                        Human Agency & Oversight, Inclusive Growth, Societal & Environmental Well-being, Organisational
                         Considerations. Ensure that the Completed column is
                         filled with a Yes, No or Not Applicable, else it will be
-                        a blank value.
+                        a blank value. Note: Excel may truncate long sheet names due to the 31-character limit.
                       </span>
                     </li>
                     <li role="listitem">
