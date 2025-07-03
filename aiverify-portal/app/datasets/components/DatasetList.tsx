@@ -21,11 +21,11 @@ const DatasetList: React.FC<DatasetListProps> = ({ datasets, className }) => {
   const [filteredDatasets, setFilteredDatasets] = useState(datasets);
   const [selectedDataset, setSelectedDataset] = useState<Dataset | undefined>(undefined);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
-  const [isPending, startTransition] = useTransition();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [isConfirmation, setIsConfirmation] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
   useEffect(() => {
@@ -51,7 +51,7 @@ const DatasetList: React.FC<DatasetListProps> = ({ datasets, className }) => {
       field: 'updated_at',
       headerName: 'Date',
       sortable: true,
-      renderCell: (row: Dataset) => new Date(row.updated_at + "Z").toLocaleString('en-GB'),
+      renderCell: (row: Dataset) => new Date(row.updated_at + 'Z').toLocaleString('en-GB'),
     },
   ];
 
@@ -95,7 +95,7 @@ const DatasetList: React.FC<DatasetListProps> = ({ datasets, className }) => {
   const confirmDelete = async () => {
     setIsConfirmation(false);
     setLoading(true);
-    
+
     startTransition(async () => {
       try {
         const ids = Array.from(selectedRows);
@@ -113,9 +113,9 @@ const DatasetList: React.FC<DatasetListProps> = ({ datasets, className }) => {
         const failedDeletions = deleteResults.filter((result) => !result.success);
 
         if (failedDeletions.length > 0) {
-          setModalMessage(
-            failedDeletions[0].message || 'Failed to delete some datasets.'
-          );
+          // Show the specific error message from the API
+          const errorMessage = failedDeletions[0].message || 'Failed to delete some datasets.';
+          setModalMessage(errorMessage);
           setLoading(false);
         } else {
           setTimeout(() => {
@@ -132,9 +132,8 @@ const DatasetList: React.FC<DatasetListProps> = ({ datasets, className }) => {
         }
       } catch (error) {
         console.error('Failed to delete datasets:', error);
-        setModalMessage(
-          error instanceof Error ? error.message : 'Failed to delete the datasets.'
-        );
+        const errorMessage = error instanceof Error ? error.message : 'Failed to delete the datasets.';
+        setModalMessage(errorMessage);
         setLoading(false);
       }
     });
@@ -160,11 +159,17 @@ const DatasetList: React.FC<DatasetListProps> = ({ datasets, className }) => {
       primaryBtnLabel={isConfirmation ? 'DELETE' : undefined}
       secondaryBtnLabel={isConfirmation ? 'CANCEL' : undefined}
       onPrimaryBtnClick={isConfirmation ? confirmDelete : undefined}
-      onSecondaryBtnClick={
-        isConfirmation ? () => setIsModalVisible(false) : undefined
-      }>
+      onSecondaryBtnClick={isConfirmation ? () => setIsModalVisible(false) : undefined}>
       <p>{modalMessage}</p>
     </Modal>
+  );
+
+  const renderLoading = (height: string) => (
+    <div
+      className="flex w-full items-center justify-center rounded-lg bg-secondary-950 p-4"
+      style={{ height }}>
+      <div className="spinner-border inline-block h-12 w-12 animate-spin rounded-full border-4 border-primary-500 border-t-transparent" />
+    </div>
   );
 
   const renderDataGrid = () => (
@@ -181,17 +186,9 @@ const DatasetList: React.FC<DatasetListProps> = ({ datasets, className }) => {
     />
   );
 
-  const renderLoading = (height: string) => (
-    <div
-      className="flex w-full items-center justify-center rounded-lg bg-secondary-950 p-4"
-      style={{ height }}>
-      <div className="spinner-border inline-block h-12 w-12 animate-spin rounded-full border-4 border-primary-500 border-t-transparent" />
-    </div>
-  );
-
   const renderDatasetDetail = () => {
     if (!selectedDataset) return null;
-    
+
     return (
       <div className="flex min-w-[40%] flex-col rounded-lg bg-secondary-950 px-6 py-4 shadow-md">
         <div className="flex w-full flex-col gap-2">
@@ -226,13 +223,13 @@ const DatasetList: React.FC<DatasetListProps> = ({ datasets, className }) => {
           <div className="flex gap-3">
             <span className="text-secondary-400">Created:</span>
             <span>
-              {new Date(selectedDataset.created_at + "Z").toLocaleString('en-GB')}
+              {new Date(selectedDataset.created_at + 'Z').toLocaleString('en-GB')}
             </span>
           </div>
           <div className="flex gap-3">
             <span className="text-secondary-400">Last Updated:</span>
             <span>
-              {new Date(selectedDataset.updated_at + "Z").toLocaleString('en-GB')}
+              {new Date(selectedDataset.updated_at + 'Z').toLocaleString('en-GB')}
             </span>
           </div>
         </div>
@@ -240,16 +237,14 @@ const DatasetList: React.FC<DatasetListProps> = ({ datasets, className }) => {
     );
   };
 
-  return selectedDataset ? (
+  return (
     <section className={cn('flex flex-col gap-2', className)}>
-      {/* Modal for confirmation and result */}
       {isModalVisible && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           {renderModal()}
         </div>
       )}
 
-      {/* Search and filter section */}
       <div className="flex w-full items-center justify-between">
         <Filters onSearchInputChange={handleSearchInputChange} />
         <div className="flex justify-end">
@@ -258,45 +253,16 @@ const DatasetList: React.FC<DatasetListProps> = ({ datasets, className }) => {
             size={30}
             color="white"
             onClick={handleDelete}
-            disabled={selectedRows.size === 0}
+            disabled={selectedRows.size === 0 || isPending}
           />
         </div>
       </div>
 
-      {/* Split pane view */}
       <div className="flex flex-grow gap-4">
         <div className="h-[500px] flex-grow overflow-y-auto">
           {loading ? renderLoading('400px') : renderDataGrid()}
         </div>
         {loading ? renderLoading('300px') : renderDatasetDetail()}
-      </div>
-    </section>
-  ) : (
-    <section className={cn('flex flex-col gap-2', className)}>
-      {/* Modal for confirmation and result */}
-      {isModalVisible && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          {renderModal()}
-        </div>
-      )}
-
-      {/* Search and filter section */}
-      <div className="flex w-full items-center justify-between">
-        <Filters onSearchInputChange={handleSearchInputChange} />
-        <div className="flex justify-end">
-          <Icon
-            name={IconName.Delete}
-            size={30}
-            color="white"
-            onClick={handleDelete}
-            disabled={selectedRows.size === 0}
-          />
-        </div>
-      </div>
-
-      {/* Data Grid or Loading Rectangle */}
-      <div className="h-[500px] flex-grow overflow-y-auto">
-        {loading ? renderLoading('400px') : renderDataGrid()}
       </div>
     </section>
   );

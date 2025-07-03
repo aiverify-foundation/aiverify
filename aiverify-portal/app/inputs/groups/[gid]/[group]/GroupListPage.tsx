@@ -7,17 +7,8 @@ import { Icon, IconName } from '@/lib/components/IconSVG';
 import ActionButtons from './components/ActionButtons';
 import GroupList from './components/GroupList';
 
-// export interface GroupListPageProps {
-// gid: string;
-// group: string;
-// }
-
 export default function GroupListPage() {
   const { gid, group } = useInputBlockGroupData();
-  // let { gid, group } = await params;
-  // group = decodeURI(group);
-  // gid = decodeURI(gid);
-  // const checklists = await getAllChecklists(gid);
 
   return (
     <div className="p-6">

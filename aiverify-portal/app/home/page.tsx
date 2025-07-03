@@ -1,7 +1,6 @@
 import { Suspense } from 'react';
 import { ProjectCardsContainer } from './components/projectCardsContainer';
 import { ProjectCardsLoading } from './components/projectCardsLoading';
-import { ProjectsFilters } from './components/projectFilters';
 import { UserFlowCards } from './components/userFlowCards';
 
 export const dynamic = 'force-dynamic';
@@ -13,7 +12,6 @@ export default async function HomePage() {
         Welcome, what would you like to do today?
       </h1>
       <UserFlowCards />
-      <ProjectsFilters className="my-6 mt-[100px]" />
       <Suspense
         fallback={<ProjectCardsLoading className="flex flex-wrap gap-6" />}>
         <ProjectCardsContainer className="flex flex-wrap gap-6" />

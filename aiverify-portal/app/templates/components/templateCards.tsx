@@ -24,8 +24,14 @@ function TemplateCards({ templates, projectId, flow }: TemplateCardsProps) {
   const [selectedTemplate, setSelectedTemplate] =
     useState<ReportTemplate | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isCloning, setIsCloning] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [clonedTemplateName, setClonedTemplateName] = useState<string>('');
+  const [deletedTemplateName, setDeletedTemplateName] = useState<string>('');
 
   // Check if we're in project flow (any flow that's not template-related)
   const isProjectFlow =
@@ -99,6 +105,7 @@ function TemplateCards({ templates, projectId, flow }: TemplateCardsProps) {
     e: React.MouseEvent
   ) => {
     e.stopPropagation();
+    setIsCloning(true);
     try {
       const response = await fetch(
         `/api/project_templates/clone/${template.id}`,
@@ -111,13 +118,19 @@ function TemplateCards({ templates, projectId, flow }: TemplateCardsProps) {
         throw new Error('Failed to clone template');
       }
 
-      // Refresh the page to show the new template
-      router.refresh();
+      // Set the cloned template name for success modal
+      setClonedTemplateName(template.projectInfo.name);
+      
+      // Show success modal
+      setShowSuccessModal(true);
     } catch (error) {
       console.error('Error cloning template:', error);
       setError(
         error instanceof Error ? error.message : 'Failed to clone template'
       );
+      setShowErrorModal(true);
+    } finally {
+      setIsCloning(false);
     }
   };
 
@@ -146,9 +159,12 @@ function TemplateCards({ templates, projectId, flow }: TemplateCardsProps) {
         throw new Error('Failed to delete template');
       }
 
-      // Close modal and refresh the page
+      // Store the deleted template name for success modal
+      setDeletedTemplateName(selectedTemplate.projectInfo.name);
+      
+      // Close delete confirmation modal and show success modal
       setShowDeleteModal(false);
-      router.refresh();
+      setShowDeleteSuccessModal(true);
     } catch (error) {
       console.error('Error deleting template:', error);
       setError(
@@ -178,6 +194,69 @@ function TemplateCards({ templates, projectId, flow }: TemplateCardsProps) {
               {selectedTemplate.projectInfo.name}&quot;?
             </p>
             {error && <p className="text-red-500">{error}</p>}
+          </div>
+        </Modal>
+      )}
+
+      {showSuccessModal && (
+        <Modal
+          heading="Template Cloned Successfully"
+          className="bg-secondary-800"
+          textColor="#FFFFFF"
+          enableScreenOverlay
+          primaryBtnLabel="OK"
+          onCloseIconClick={() => {
+            setShowSuccessModal(false);
+            window.location.reload();
+          }}
+          onPrimaryBtnClick={() => {
+            setShowSuccessModal(false);
+            window.location.reload();
+          }}>
+          <div className="flex flex-col gap-4">
+            <p>
+              Template &quot;{clonedTemplateName}&quot; has been cloned successfully.
+            </p>
+          </div>
+        </Modal>
+      )}
+
+      {showErrorModal && (
+        <Modal
+          heading="Template Cloning Error"
+          className="bg-secondary-800"
+          textColor="#FFFFFF"
+          enableScreenOverlay
+          primaryBtnLabel="OK"
+          onCloseIconClick={() => setShowErrorModal(false)}
+          onPrimaryBtnClick={() => setShowErrorModal(false)}>
+          <div className="flex flex-col gap-4">
+            <p>
+              {error}
+            </p>
+          </div>
+        </Modal>
+      )}
+
+      {showDeleteSuccessModal && (
+        <Modal
+          heading="Template Deleted Successfully"
+          className="bg-secondary-800"
+          textColor="#FFFFFF"
+          enableScreenOverlay
+          primaryBtnLabel="OK"
+          onCloseIconClick={() => {
+            setShowDeleteSuccessModal(false);
+            window.location.reload();
+          }}
+          onPrimaryBtnClick={() => {
+            setShowDeleteSuccessModal(false);
+            window.location.reload();
+          }}>
+          <div className="flex flex-col gap-4">
+            <p>
+              Template &quot;{deletedTemplateName}&quot; has been deleted successfully.
+            </p>
           </div>
         </Modal>
       )}
@@ -231,7 +310,8 @@ function TemplateCards({ templates, projectId, flow }: TemplateCardsProps) {
               <>
                 <button
                   onClick={(e) => handleCloneTemplate(template, e)}
-                  className="transition-colors hover:fill-primary-100">
+                  disabled={isCloning}
+                  className="transition-colors hover:fill-primary-100 disabled:opacity-50 disabled:cursor-not-allowed">
                   <RiFileCopyLine
                     size={27}
                     className="fill-primary-300 dark:fill-primary-300"
