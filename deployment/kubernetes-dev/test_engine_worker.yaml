@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-engine-worker
+  namespace: aiverify
+spec:
+  selector:
+    app: test-engine-worker
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-engine-worker
+  namespace: aiverify
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: test-engine-worker
+  template:
+    metadata:
+      labels:
+        app: test-engine-worker
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: test-engine-worker
+          image: aiverify-test-engine-worker
+          imagePullPolicy: Never
+          env:
+            - name: APIGW_URL
+              value: "http://apigw.aiverify.svc.cluster.local:4000"
+            - name: VALKEY_HOST_ADDRESS
+              value: "valkey.aiverify.svc.cluster.local"
+            - name: VALKEY_PORT
+              value: "6379"
+            - name: PIPELINE_BUILD
+              value: "virtual_env"
+            - name: PIPELINE_EXECUTE
+              value: "virtual_env_execute"

@@ -1,16 +1,17 @@
 'use client';
-import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState } from 'react';
-// import { useChecklistSubmission } from '../../hooks/useUploadSubmission';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useInputBlockGroupData } from '@/app/inputs/context/InputBlockGroupDataContext';
-import { useMDXSummaryBundle } from '@/app/inputs/hooks/useMDXSummaryBundle';
+import { useInputBlockGroupSubmission } from '@/app/inputs/groups/[gid]/[group]/upload/hooks/useUploadSubmission';
+import { Modal } from '@/lib/components/modal';
+import { useMDXSummaryBundle } from '@/app/inputs/groups/[gid]/[group]/[groupId]/hooks/useMDXSummaryBundle';
+import { EXPORT_PROCESS_CHECKLISTS_CID } from '@/app/inputs/groups/[gid]/[group]/[groupId]/hooks/useProcessChecklistExport';
+import { excelToJson } from '../utils/excelToJson';
+import styles from './ExcelUploader.module.css';
 import { UploadIcon } from '@/app/models/upload/utils/icons';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import { Button, ButtonVariant } from '@/lib/components/button';
-import { Modal } from '@/lib/components/modal';
-import { useInputBlockGroupSubmission } from '../../../upload/hooks/useUploadSubmission';
-import { excelToJson } from '../utils/excelToJson';
-import styles from './ExcelUploader.module.css';
+
 
 // Define the interface for checklist submissions
 interface ChecklistSubmission {
@@ -44,12 +45,13 @@ const ExcelUploader = () => {
   const [unmatchedSheets, setUnmatchedSheets] = useState<string[]>([]);
   const [groupName, setGroupName] = useState('');
 
+  const { gid, group, groupDataList } = useInputBlockGroupData();
+
   // Preload the MDX bundle to ensure it's available
   const { error: mdxError } = useMDXSummaryBundle(
-    'aiverify.stock.process_checklist',
-    'export_process_checklists'
+    gid,
+    EXPORT_PROCESS_CHECKLISTS_CID
   );
-  const { gid, group, groupDataList } = useInputBlockGroupData();
 
   const { submitInputBlockGroup: submitChecklist } =
     useInputBlockGroupSubmission();
@@ -187,76 +189,12 @@ const ExcelUploader = () => {
       console.log('Processing Excel file:', file.name);
       console.log('Using group name:', fileGroupName);
 
-      const result = await excelToJson(file, fileGroupName);
+      const result = await excelToJson(file, fileGroupName, gid);
       const { submissions, unmatchedSheets: unmatchedSheetsList } = result;
 
       // Store unmatched sheets for later use in messages
       setUnmatchedSheets(unmatchedSheetsList || []);
 
-      // if (submissions && submissions.length > 0) {
-      //   console.log(`Submitting ${submissions.length} checklists`);
-
-      //   try {
-      //     for (const submission of submissions) {
-      //       await submitChecklist(submission);
-      //     }
-
-      //     let message = `Upload Successful! Processed ${submissions.length} checklists.`;
-
-      //     // Add information about unmatched sheets if any
-      //     if (unmatchedSheetsList && unmatchedSheetsList.length > 0) {
-      //       message += `\n\n${unmatchedSheetsList.length} sheet(s) did not exactly match any principle name and were not uploaded: ${unmatchedSheetsList.join(', ')}.\n\nSheet names must exactly match principle names (case-insensitive).`;
-      //     }
-
-      //     setModalMessage(message);
-      //     setIsModalVisible(true);
-      //   } catch (error: unknown) {
-      //     console.log('Error during checklist submission:', error);
-
-      //     // Check if it's a duplicate checklist error (400 with specific message)
-      //     const submissionError = error as SubmissionError;
-      //     if (
-      //       submissionError.message &&
-      //       submissionError.message.includes('already exists')
-      //     ) {
-      //       console.log(
-      //         'Detected duplicate checklist error:',
-      //         submissionError.message
-      //       );
-
-      //       // Store submissions for potential overwrite
-      //       setDuplicateSubmissions(submissions);
-
-      //       // Show confirmation modal for overwrite
-      //       setIsConfirmModalVisible(true);
-      //     } else {
-      //       // Other error types
-      //       let message = `Upload failed: ${submissionError.message || 'Unknown error'}`;
-
-      //       // Add information about unmatched sheets if any
-      //       if (unmatchedSheetsList && unmatchedSheetsList.length > 0) {
-      //         message += `\n\nAdditionally, ${unmatchedSheetsList.length} sheet(s) did not exactly match any principle name: ${unmatchedSheetsList.join(', ')}.\n\nSheet names must exactly match principle names (case-insensitive).`;
-      //       }
-
-      //       setModalMessage(message);
-      //       setIsModalVisible(true);
-      //     }
-      //   }
-      // } else {
-      //   let message =
-      //     'Upload complete, but no valid checklists were found in the file.';
-
-      //   // If we have unmatched sheets, mention them specifically
-      //   if (unmatchedSheetsList && unmatchedSheetsList.length > 0) {
-      //     message += `\n\n${unmatchedSheetsList.length} sheet(s) could not be matched because their names did not exactly match any principle name: ${unmatchedSheetsList.join(', ')}.\n\nSheet names must exactly match principle names (case-insensitive).`;
-      //   }
-
-      //   console.warn(message);
-      //   setModalMessage(message);
-      //   setIsModalVisible(true);
-      // for (const submission of submissions) {
-      //   await submitChecklist(submission);
-      // }
       const input_blocks = submissions.map((x) => ({
         cid: x.cid,
         data: x.data,
@@ -448,10 +386,10 @@ const ExcelUploader = () => {
                         follows, else it will not be uploaded: Transparency,
                         Explainability, Reproducibility, Safety, Security,
                         Robustness, Fairness, Data Governance, Accountability,
-                        Human Agency Oversight, Inclusive Growth, Organisational
+                        Human Agency & Oversight, Inclusive Growth, Societal & Environmental Well-being, Organisational
                         Considerations. Ensure that the Completed column is
                         filled with a Yes, No or Not Applicable, else it will be
-                        a blank value.
+                        a blank value. Note: Excel may truncate long sheet names due to the 31-character limit.
                       </span>
                     </li>
                     <li role="listitem">

@@ -185,7 +185,7 @@ python -m aiverify_apigw
 To run the tests for the application, you can use `pytest`. Make sure you have `pytest` and `faker` installed. If not, you can install it using pip:
 
 ```
-pip install pytest faker
+pip install -e '.[test]'
 ```
 
 Ensure the Python 3.11 Virtual Environment is setup and activated in the aiverify root directory.

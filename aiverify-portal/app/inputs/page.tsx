@@ -18,14 +18,6 @@ export default async function InputsPage() {
   // Group input blocks by their group value
   const inputBlockGroups = inputBlocks.reduce(
     (acc, block) => {
-      // Skip hardcoded blocks
-      // if (
-      //   block.gid === 'aiverify.stock.process_checklist' ||
-      //   block.gid ===
-      //     'aiverify.stock.fairness_metrics_toolbox_for_classification'
-      // ) {
-      //   return acc;
-      // }
       if (!block.group) {
         return acc;
       }

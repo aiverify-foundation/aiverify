@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: valkey
+  namespace: aiverify
+spec:
+  selector:
+    app: valkey
+  ports:
+    - protocol: TCP
+      port: 6379
+      targetPort: 6379
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: valkey
+  namespace: aiverify
+spec:
+  serviceName: "valkey"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: valkey
+  template:
+    metadata:
+      labels:
+        app: valkey
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: valkey
+          image: valkey/valkey:8-alpine
+          ports:
+            - containerPort: 6379
+          # livenessProbe:
+          #   exec:
+          #     command:
+          #       - valkey-cli
+          #       - ping
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 10
+          # readinessProbe:
+          #   exec:
+          #     command:
+          #       - valkey-cli
+          #       - ping
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 10

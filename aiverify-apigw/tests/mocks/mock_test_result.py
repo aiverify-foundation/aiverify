@@ -53,7 +53,7 @@ def _create_mock_test_result(
         ground_truth=faker.word() if ground_truth_dataset else None,
         start_time=fake_date,
         time_taken=faker.random_int(min=1, max=300),
-        algo_arguments=faker.json_bytes(),
+        algo_arguments=json.dumps({"key": "value"}).encode("utf-8"),
         output=json.dumps({"result": 100}).encode("utf-8"),
         created_at=fake_date,
         updated_at=fake_date,

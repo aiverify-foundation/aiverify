@@ -276,7 +276,7 @@ export const InputBlockGroupDataProvider: React.FC<{
   };
 
   const saveNewGroupData = async () => {
-    const res = await fetch(`/api/input_block_data/groups/`, {
+    const res = await fetch(`/api/input_block_data/groups`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -1,8 +1,4 @@
-FROM node:23-alpine as base
-ARG TARGETARCH
-
-ARG NEXT_PUBLIC_APIGW_HOST=http://127.0.0.1:4000
-ARG APIGW_HOST=http://host.docker.internal:4000
+FROM node:23-alpine AS build
 
 WORKDIR /app
 
@@ -11,37 +7,42 @@ COPY aiverify-portal/ ./aiverify-portal/
 COPY aiverify-shared-library/ ./aiverify-shared-library/
 COPY common/ ./common/
 
-# install aiverify-shared-library
+
+# build aiverify-shared-library
 WORKDIR /app/aiverify-shared-library
-RUN npm install
-RUN npm run build
+RUN npm install && npm run build
 
-# install dependencies
-# RUN npm run build
+# build portal
+WORKDIR /app/aiverify-portal
+RUN npm install && npm link ../aiverify-shared-library && npm run build
 
-# ENV NODE_ENV=production
-ENV NEXT_PUBLIC_APIGW_HOST=$NEXT_PUBLIC_APIGW_HOST
+# production
+FROM node:23-alpine
+
+ARG APIGW_HOST=http://host.docker.internal:4000
+
+RUN apk update && apk upgrade
+
+# copy files from build
+WORKDIR /app
+COPY --from=build /app/common ./common
+COPY --from=build /app/aiverify-shared-library/dist ./aiverify-shared-library/dist
+# COPY --from=build /app/aiverify-shared-library/node_modules ./aiverify-shared-library/node_modules
+COPY --from=build /app/aiverify-shared-library/package.json ./aiverify-shared-library/package.json
+COPY --from=build /app/aiverify-portal/.next ./aiverify-portal/.next
+COPY --from=build /app/aiverify-portal/public ./aiverify-portal/public
+COPY --from=build /app/aiverify-portal/node_modules ./aiverify-portal/node_modules
+COPY --from=build /app/aiverify-portal/package.json ./aiverify-portal/package.json
+
+# Change ownership of the application and directory
+RUN chown -R node:node /app
+
+# Switch to the non-root user
+USER node
+
+WORKDIR /app/aiverify-portal
+
 ENV APIGW_HOST=$APIGW_HOST
 EXPOSE 3000
-
-# development build
-FROM base as development
-
-WORKDIR /app/aiverify-portal
-
-RUN npm install
-RUN npm link ../aiverify-shared-library
-
-# ENTRYPOINT ["npm", "run", "start"]
-ENTRYPOINT ["npm", "run", "dev"]
-
-# production build
-FROM base as production
-
-WORKDIR /app/aiverify-portal
-
-RUN npm install
-RUN npm link ../aiverify-shared-library
-RUN npm run build
 
 ENTRYPOINT ["npm", "start"]

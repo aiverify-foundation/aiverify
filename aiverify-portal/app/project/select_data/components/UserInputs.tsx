@@ -3,7 +3,6 @@
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect, useTransition } from 'react';
 import { useMDXBundle } from '@/app/inputs/groups/[gid]/[group]/[groupId]/[cid]/hooks/useMDXBundle';
-import { FairnessTree } from '@/app/inputs/utils/types';
 import {
   ValidationResults,
   validateInputBlock,
@@ -75,7 +74,6 @@ interface UserInputsProps {
     }>
   ) => void;
   allInputBlockGroups: InputBlockGroupData[];
-  allFairnessTrees: FairnessTree[];
   allInputBlockDatas: InputBlockData[];
   flow: string;
   initialInputBlocks?: Array<{ gid: string; cid: string; id: number }>;
@@ -92,7 +90,6 @@ export default function UserInputs({
   requiredInputBlocks,
   onInputBlocksChange,
   allInputBlockGroups,
-  allFairnessTrees,
   allInputBlockDatas,
   initialInputBlocks = [],
   onValidationResultsChange,
@@ -153,19 +150,7 @@ export default function UserInputs({
     return singleBlocks.reduce(
       (acc, block) => {
         const key = `${block.gid}-${block.cid}`;
-        
-        // Check if it's a fairness tree
-        const matchingTree = allFairnessTrees.find(
-          (tree) => tree.id === block.id
-        );
-        
-        if (matchingTree?.id) {
-          acc[key] = matchingTree.id.toString();
-        } else {
-          // Otherwise it's a regular input block
-          acc[key] = block.id.toString();
-        }
-        
+        acc[key] = block.id.toString();
         return acc;
       },
       {} as { [key: string]: string }
@@ -193,20 +178,21 @@ export default function UserInputs({
     console.log('First group block:', firstGroupBlock);
     
     // Find the matching input block group from allInputBlockGroups
-    // First try to match by ID
-    let matchingGroup = allInputBlockGroups.find(
-      (group) => group.id === firstGroupBlock.id
-    );
+    let matchingGroup = allInputBlockGroups.find((group) => {
+      return group.gid === firstGroupBlock.gid && 
+             group.input_blocks.some(ib => 
+               ib.cid === firstGroupBlock.cid && 
+               ib.groupNumber === firstGroupBlock.id
+             );
+    });
     
-    // If no match by ID, try to find a matching group by gid and cid
+    // If no match by groupNumber, try to find a matching group by gid and group name (fallback)
     if (!matchingGroup) {
-      // Find the required input block to get the group name
       const requiredBlock = requiredInputBlocks.find(
         (reqBlock) => reqBlock.gid === firstGroupBlock.gid && reqBlock.cid === firstGroupBlock.cid
       );
       
       if (requiredBlock && requiredBlock.group) {
-        // Find a group with matching gid and group name
         matchingGroup = allInputBlockGroups.find(
           (group) => group.gid === firstGroupBlock.gid && group.group === requiredBlock.group
         );
@@ -291,11 +277,6 @@ export default function UserInputs({
     (block) => getInputBlockType(block) === InputBlockType.SINGLE
   );
 
-  // Helper function to check if a block is a fairness tree
-  const isFairnessTree = (block: ProjectInputBlock): boolean => {
-    return block.gid === 'aiverify.stock.fairness_metrics_toolbox_for_classification';
-  };
-
   // State to track when to fetch fresh data
   const [shouldFetchData, setShouldFetchData] = useState(false);
 
@@ -306,7 +287,6 @@ export default function UserInputs({
 
       // Prevalidate all available input blocks for potential selection
       const allInputsToValidate = [
-        ...allFairnessTrees,
         ...allInputBlockDatas,
       ].map((input) => ({
         gid: input.gid,
@@ -323,7 +303,7 @@ export default function UserInputs({
               gid: group.gid,
               cid: ib.cid,
               data: ib.data,
-              id: group.id,
+              id: parseInt(`${group.id}${String(ib.groupNumber).padStart(3, '0')}`), // Create unique ID: groupId + groupNumber
             });
           });
         }
@@ -334,7 +314,7 @@ export default function UserInputs({
     };
 
     prevalidateAllInputs();
-  }, [allInputBlockDatas, allInputBlockGroups, allFairnessTrees]);
+  }, [allInputBlockDatas, allInputBlockGroups]);
 
   // Simplified effect to handle selection changes
   useEffect(() => {
@@ -407,7 +387,7 @@ export default function UserInputs({
         ...newGroup.input_blocks.map((ib) => ({
           gid: newGroup.gid,
           cid: ib.cid,
-          id: newGroup.id || 0,
+          id: parseInt(`${newGroup.id}${String(ib.groupNumber).padStart(3, '0')}`), // Create unique ID: groupId + groupNumber
           group: newGroup.group,
         })),
       ];
@@ -422,35 +402,22 @@ export default function UserInputs({
         );
         
         if (block) {
-          // Check if it's a fairness tree
-          if (isFairnessTree(block)) {
-            const tree = allFairnessTrees.find((t) => t.id?.toString() === inputId);
-            if (tree?.id) {
-              selectedBlocks.push({
-                gid,
-                cid,
-                id: tree.id,
-                group: null,
-              });
-            }
+          // Regular input block
+          const inputBlock = allInputBlockDatas.find((ib) => ib.id?.toString() === inputId);
+          if (inputBlock?.id) {
+            selectedBlocks.push({
+              gid,
+              cid,
+              id: inputBlock.id,
+              group: null,
+            });
           } else {
-            // Regular input block
-            const inputBlock = allInputBlockDatas.find((ib) => ib.id?.toString() === inputId);
-            if (inputBlock?.id) {
-              selectedBlocks.push({
-                gid,
-                cid,
-                id: inputBlock.id,
-                group: null,
-              });
-            } else {
-              selectedBlocks.push({
-                gid,
-                cid,
-                id: parseInt(inputId),
-                group: null,
-              });
-            }
+            selectedBlocks.push({
+              gid,
+              cid,
+              id: parseInt(inputId),
+              group: null,
+            });
           }
         }
       }
@@ -518,13 +485,9 @@ export default function UserInputs({
   };
 
   const getAvailableInputsForBlock = (inputBlock: ProjectInputBlock) => {
-    if (isFairnessTree(inputBlock)) {
-      return allFairnessTrees.filter((block) => block.gid === inputBlock.gid);
-    } else {
-      return allInputBlockDatas.filter(
-        (block) => block.gid === inputBlock.gid && block.cid === inputBlock.cid
-      );
-    }
+    return allInputBlockDatas.filter(
+      (block) => block.gid === inputBlock.gid && block.cid === inputBlock.cid
+    );
   };
 
   const handleAddInput = (inputBlock: ProjectInputBlock) => {

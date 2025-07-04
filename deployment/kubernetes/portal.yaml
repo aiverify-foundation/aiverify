@@ -26,6 +26,10 @@ spec:
       labels:
         app: portal
     spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
         - name: portal
           image: ghcr.io/aiverify-foundation/aiverify-portal
@@ -46,5 +50,3 @@ spec:
           env:
             - name: APIGW_HOST
               value: "http://apigw.aiverify.svc.cluster.local:4000"
-            - name: NEXT_PUBLIC_APIGW_HOST
-              value: "http://127.0.0.1:4000"

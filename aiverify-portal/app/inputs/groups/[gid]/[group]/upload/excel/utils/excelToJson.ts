@@ -1,6 +1,7 @@
 import * as ExcelJS from 'exceljs';
 import { InputBlockDataPayload } from '@/app/types';
-import { executeMDXBundle } from '../../../[groupId]/hooks/useMDXExecution';
+import { executeMDXBundle } from '@/app/inputs/groups/[gid]/[group]/[groupId]/hooks/useMDXExecution';
+import { EXPORT_PROCESS_CHECKLISTS_CID } from '@/app/inputs/groups/[gid]/[group]/[groupId]/hooks/useProcessChecklistExport';
 
 interface ChecklistSubmission {
   gid: string; // Group ID, e.g., "aiverify.stock.process_checklist"
@@ -179,10 +180,8 @@ async function convertExcelToJson(file: File): Promise<ExcelJsonData> {
 /**
  * Get MDX Bundle using fetch API directly and execute it to extract functions
  */
-async function getMDXBundle(): Promise<MdxBundle> {
-  // Note: The plugin ID uses a hyphen '-' not an underscore '_'
-  const gid = 'aiverify.stock.process_checklist';
-  const cid = 'export_process_checklists';
+async function getMDXBundle(gid: string): Promise<MdxBundle> {
+  const cid = EXPORT_PROCESS_CHECKLISTS_CID;
 
   try {
     const apiUrl = `/api/plugins/${gid}/summary/${cid}`;
@@ -238,40 +237,38 @@ async function getMDXBundle(): Promise<MdxBundle> {
 
 export const excelToJson = async (
   file: File,
-  groupName: string
+  groupName: string,
+  gid: string
 ): Promise<{
   submissions: ChecklistSubmission[];
   unmatchedSheets: string[];
 }> => {
   try {
-    // Step 1: Convert the Excel file to a JSON structure
+    // Convert the Excel file to a JSON structure
     console.log(`Step 1: Converting Excel file "${file.name}" to JSON`);
     const jsonData = await convertExcelToJson(file);
     console.log('Excel converted to JSON format successfully');
 
-    // Step 2: Fetch the MDX bundle containing the import functions
+    // Fetch the MDX bundle containing the import functions
     console.log('Step 2: Fetching MDX bundle with conversion functions');
-    const mdxBundle = await getMDXBundle();
+    const mdxBundle = await getMDXBundle(gid);
 
-    // Step 3: Try to find and use one of the import functions
+    // Try to find and use one of the import functions
     console.log('Step 3: Looking for a suitable import function');
 
-    // First try the new function names, then fall back to the old ones
-    const importFunctionName = mdxBundle.mdxImportJson
-      ? 'mdxImportJson'
-      : mdxBundle.importJson
-        ? 'importJson'
-        : mdxBundle.mdxJsonToChecklistSubmissions
-          ? 'mdxJsonToChecklistSubmissions'
-          : mdxBundle.jsonToChecklistSubmissions
-            ? 'jsonToChecklistSubmissions'
-            : mdxBundle.mdxExtractChecklistData
-              ? 'mdxExtractChecklistData'
-              : mdxBundle.extractChecklistData
-                ? 'extractChecklistData'
-                : null;
+    // Check for newer function names first, then fall back to legacy names
+    let importFunctionName: string | null = null;
+    let importJsonFn: ImportFunction | null = null;
 
-    if (!importFunctionName) {
+    if (mdxBundle.mdxImportJson) {
+      importFunctionName = 'mdxImportJson';
+      importJsonFn = mdxBundle.mdxImportJson;
+    } else if (mdxBundle.importJson) {
+      importFunctionName = 'importJson';
+      importJsonFn = mdxBundle.importJson;
+    }
+
+    if (!importFunctionName || !importJsonFn) {
       console.error(
         'Available properties in MDX bundle:',
         Object.keys(mdxBundle)
@@ -280,9 +277,8 @@ export const excelToJson = async (
     }
 
     console.log(`Found function "${importFunctionName}" in MDX bundle`);
-    const importJsonFn = mdxBundle[importFunctionName] as ImportFunction;
 
-    // Step 4: Use the import function to convert the JSON data into checklist submissions
+    // Use the import function to convert the JSON data into checklist submissions
     console.log(`Step 4: Converting JSON data using ${importFunctionName}`);
     const result = importJsonFn(jsonData, groupName);
 
