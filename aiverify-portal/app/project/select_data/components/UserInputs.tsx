@@ -71,6 +71,8 @@ interface UserInputsProps {
       cid: string;
       id: number;
       group: string | null;
+      isGroupSelection?: boolean;
+      groupId?: number;
     }>
   ) => void;
   allInputBlockGroups: InputBlockGroupData[];
@@ -303,7 +305,7 @@ export default function UserInputs({
               gid: group.gid,
               cid: ib.cid,
               data: ib.data,
-              id: parseInt(`${group.id}${String(ib.groupNumber).padStart(3, '0')}`), // Create unique ID: groupId + groupNumber
+              id: group.id, // Use the group ID directly, not a compound ID
             });
           });
         }
@@ -377,19 +379,68 @@ export default function UserInputs({
       cid: string;
       id: number;
       group: string | null;
+      isGroupSelection?: boolean;
+      groupId?: number;
     }> = [];
 
     // Add selected checklists
     if (newGroup) {
       console.log('Adding group input blocks from:', newGroup);
+      console.log('Looking for required input blocks with group:', newGroup.group);
+      console.log('All required input blocks:', requiredInputBlocks.map(block => ({
+        gid: block.gid,
+        cid: block.cid,
+        name: block.name,
+        group: block.group
+      })));
+      
+      // Find the required input blocks for this group to get the correct gid/cid
+      const requiredBlocksForGroup = requiredInputBlocks.filter(
+        (block) => block.group === newGroup.group
+      );
+      
+      console.log('Required blocks for group:', requiredBlocksForGroup.map(block => ({
+        gid: block.gid,
+        cid: block.cid,
+        name: block.name,
+        group: block.group
+      })));
+      
+      // Map each input block in the selected group to the corresponding required input block
       selectedBlocks = [
         ...selectedBlocks,
-        ...newGroup.input_blocks.map((ib) => ({
-          gid: newGroup.gid,
-          cid: ib.cid,
-          id: parseInt(`${newGroup.id}${String(ib.groupNumber).padStart(3, '0')}`), // Create unique ID: groupId + groupNumber
-          group: newGroup.group,
-        })),
+        ...requiredBlocksForGroup.map((requiredBlock) => {
+          console.log(`Looking for individual input block for ${requiredBlock.gid}-${requiredBlock.cid}`);
+          
+          // Find the individual input block within the selected group that matches the required block
+          const matchingGroupInputBlock = newGroup.input_blocks.find(
+            (groupInputBlock) => groupInputBlock.cid === requiredBlock.cid
+          );
+          
+          console.log('Found matching group input block:', matchingGroupInputBlock);
+          
+          if (matchingGroupInputBlock) {
+            return {
+              gid: requiredBlock.gid,  // Use the required input block's gid
+              cid: requiredBlock.cid,  // Use the required input block's cid
+              id: matchingGroupInputBlock.id,  // Use the individual input block's ID from the group
+              group: newGroup.group,
+              isGroupSelection: true,  // Flag to indicate this is from a group selection
+              groupId: newGroup.id,    // Include the group ID for context
+            };
+          } else {
+            // Fallback: if no matching input block found in the group
+            console.warn(`No input block found in group for ${requiredBlock.gid}-${requiredBlock.cid}`);
+            return {
+              gid: requiredBlock.gid,
+              cid: requiredBlock.cid,
+              id: newGroup.id, // Use group ID as fallback (this will likely cause issues but is better than crashing)
+              group: newGroup.group,
+              isGroupSelection: true,
+              groupId: newGroup.id,
+            };
+          }
+        }),
       ];
     }
 
@@ -410,6 +461,7 @@ export default function UserInputs({
               cid,
               id: inputBlock.id,
               group: null,
+              isGroupSelection: false,
             });
           } else {
             selectedBlocks.push({
@@ -417,6 +469,7 @@ export default function UserInputs({
               cid,
               id: parseInt(inputId),
               group: null,
+              isGroupSelection: false,
             });
           }
         }
@@ -424,6 +477,14 @@ export default function UserInputs({
     });
 
     console.log('Final selected blocks:', selectedBlocks);
+    console.log('Final selected blocks detailed:', selectedBlocks.map(block => ({
+      gid: block.gid,
+      cid: block.cid,
+      id: block.id,
+      group: block.group,
+      isGroupSelection: block.isGroupSelection,
+      groupId: block.groupId
+    })));
     onInputBlocksChange(selectedBlocks);
   };
 
