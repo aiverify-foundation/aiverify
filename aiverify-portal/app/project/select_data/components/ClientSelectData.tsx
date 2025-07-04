@@ -41,6 +41,8 @@ export type SelectedInputBlock = {
   cid: string;
   id: number;
   group?: string | null;
+  isGroupSelection?: boolean;
+  groupId?: number;
 };
 
 // Validation type
@@ -206,6 +208,12 @@ export default function ClientSelectData({
   };
 
   const handleInputBlocksChange = (inputBlocks: SelectedInputBlock[]) => {
+    console.log('ClientSelectData received input blocks:', inputBlocks.map(block => ({
+      gid: block.gid,
+      cid: block.cid,
+      id: block.id,
+      group: block.group
+    })));
     setSelectedInputBlocks(inputBlocks);
   };
 
@@ -473,18 +481,40 @@ export default function ClientSelectData({
     if (!projectId) return;
 
     try {
-      // Transform the data to only include IDs
-      const transformedData = {
+      // Transform the data for backend saving - always use individual input block IDs
+      const transformedDataForBackend = {
         testModelId: selectedModelId ? parseInt(selectedModelId) : null,
         testResults: selectedTestResults.map((result) => result.id),
-        inputBlocks: selectedInputBlocks.map((block) => block.id),
+        inputBlocks: selectedInputBlocks.map((block) => block.id), // Use individual IDs for backend
       };
 
-      console.log('transformedData', transformedData);
+      console.log('transformedDataForBackend', transformedDataForBackend);
+      console.log('selectedInputBlocks before transform:', selectedInputBlocks.map(block => ({
+        gid: block.gid,
+        cid: block.cid,
+        id: block.id,
+        group: block.group,
+        isGroupSelection: block.isGroupSelection,
+        groupId: block.groupId
+      })));
+      console.log('inputBlocks after transform (individual IDs for backend):', transformedDataForBackend.inputBlocks);
 
-      // Send all changes in a single patch request
-      await patchProject(projectId, transformedData);
+      // Send all changes in a single patch request using individual IDs
+      await patchProject(projectId, transformedDataForBackend);
       console.log('patchProject done');
+
+      // For URL construction, use group context when available
+      const inputBlockIdsForUrl = selectedInputBlocks.map((block) => {
+        // If this is a group selection, use the group ID for URL consistency
+        // This helps the designer understand the group context
+        if (block.isGroupSelection && block.groupId) {
+          return block.groupId;
+        }
+        // For individual selections, use the individual ID
+        return block.id;
+      });
+
+      console.log('inputBlocks for URL (with group context):', inputBlockIdsForUrl);
 
       // Update flow based on current flow
       let updatedFlow = flow;
@@ -497,7 +527,7 @@ export default function ClientSelectData({
       } else if (flow === UserFlows.NewProjectWithEditingExistingTemplate) {
         updatedFlow = UserFlows.NewProjectWithEditingExistingTemplateAndResults;
       }
-      // Construct the URL with all selected data
+      // Construct the URL with group-context data for designer
       const queryString = [
         `flow=${encodeURIComponent(updatedFlow)}`,
         `projectId=${encodeURIComponent(projectId)}`,
@@ -506,8 +536,8 @@ export default function ClientSelectData({
           : []),
         // Always include testResultIds parameter, even if empty
         `testResultIds=${selectedTestResults.map((r) => r.id).join(',')}`,
-        // Always include iBlockIds parameter, even if empty
-        `iBlockIds=${selectedInputBlocks.map((b) => b.id).join(',')}`,
+        // Use group-context IDs for URL to help designer understand group relationships
+        `iBlockIds=${inputBlockIdsForUrl.join(',')}`,
       ].join('&');
 
       if (updatedFlow === UserFlows.EditExistingProjectWithResults) {
