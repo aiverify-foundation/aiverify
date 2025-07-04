@@ -471,7 +471,7 @@ Run the following steps to execute the unit and integration tests inside the `te
 
 ```sh
 cd aiverify/stock-plugins/aiverify.stock.veritas/algorithms/veritastool
-pytest .
+pytest tests/util tests/metrics tests/models tests/principles tests/usecases -p no:warnings
 ```
 
 ## Run using Docker
