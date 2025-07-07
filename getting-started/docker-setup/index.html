@@ -774,9 +774,13 @@
 </span></code></pre></div></p>
 </li>
 <li>
-<p>Install and start services</p>
+<p>[Optional] Change default port number</p>
 </li>
 </ol>
+<p>By default AIVerify runs in port number 3000. If you wish to override this, change port mapping in compose.yml to 3002:3000 before running 
+<code>docker-compose –profile portal –profile automated-tests-venv up -d</code></p>
+<p>refer to <a href="https://docs.docker.com/get-started/docker-concepts/running-containers/publishing-ports/">this documentation</a> for both docker run and docker-compose command.</p>
+<p>`3. Install and start services</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>There are two ways of execution, manual test execution and uploading results and other way is to use automated test execution via Portal</p>
@@ -785,7 +789,7 @@
 <p><code>docker-compose -profile portal up -d</code></p>
 <p>For automated test execution via portal, use</p>
 <p><code>docker-compose –profile portal –profile automated-tests-venv up -d</code></p>
-<p>`3. Type <a href="http://localhost:3000">http://localhost:3000</a> into your browser's address bar. </p>
+<p>`4. Type <a href="http://localhost:3000">http://localhost:3000</a> into your browser's address bar. </p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Upon initial start-up of the toolkit, pages might take some time to load.</p>
