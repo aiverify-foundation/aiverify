@@ -44,8 +44,11 @@ def save_base64_image(base64_str: str, output_dir: Path, image_name: str) -> str
         images_dir = output_dir / "images"
         images_dir.mkdir(exist_ok=True)
 
+        # Replace pipe characters with underscores for valid filename
+        safe_image_name = image_name.replace("|", "_")
+
         # Generate image path
-        image_path = images_dir / f"{image_name}.png"
+        image_path = images_dir / f"{safe_image_name}.png"
 
         # Decode and save image
         image_data = base64.b64decode(base64_str)
