@@ -52,8 +52,18 @@ def _create_mock_widgets(gid: str):
     widget_size = {
             "minW": 1,
             "minH": 1,
+    widget_size = {
+            "minW": 1,
+            "minH": 1,
             "maxW": faker.random_int(min=1, max=12),
             "maxH": faker.random_int(min=1, max=12),
+        }
+    name = faker.name()
+    meta = {
+        "cid": cid,
+        "name": name,
+        "widgetSize": widget_size
+    }
         }
     name = faker.name()
     meta = {
@@ -70,8 +80,11 @@ def _create_mock_widgets(gid: str):
         name=faker.name(),
         version=faker.numerify("%!!.%!!.%!!"),
         author=name,
+        author=name,
         description=faker.text(max_nb_chars=256),
         gid=gid,
+        meta=json.dumps(meta).encode("utf-8"),
+        widget_size=json.dumps(widget_size).encode("utf-8"),
         meta=json.dumps(meta).encode("utf-8"),
         widget_size=json.dumps(widget_size).encode("utf-8"),
         properties=properties,
@@ -88,7 +101,7 @@ def _create_mock_input_block(gid: str, group: str | None=None, group_number: int
     width = faker.random_element(elements=[InputBlockSize.xs, InputBlockSize.sm,
                                  InputBlockSize.md, InputBlockSize.lg, InputBlockSize.xl])
     fullscreen = faker.boolean()
-    name = faker.name()
+    name=faker.name()
     meta = {
         "cid": cid,
         "name": name,
@@ -97,10 +110,12 @@ def _create_mock_input_block(gid: str, group: str | None=None, group_number: int
         id=f"{gid}:{cid}",
         cid=cid,
         name=name,
+        name=name,
         version=faker.numerify("%!!.%!!.%!!"),
         author=faker.name(),
         description=faker.text(max_nb_chars=256),
         gid=gid,
+        meta=json.dumps(meta).encode("utf-8"),
         meta=json.dumps(meta).encode("utf-8"),
         group=group,
         groupNumber=group_number,
@@ -113,8 +128,13 @@ def _create_mock_input_block(gid: str, group: str | None=None, group_number: int
 def _create_mock_template(gid: str):
     cid = ".".join(faker.words()).lower()
     name = faker.name()
+    name = faker.name()
     template = json.dumps({"templateKey": faker.word(), "templateValue": faker.word()}).encode("utf-8")
     project_data = create_mock_project_template_data_meta().model_dump_json().encode('utf-8')
+    meta = {
+        "cid": cid,
+        "name": name,
+    }
     meta = {
         "cid": cid,
         "name": name,
@@ -125,8 +145,10 @@ def _create_mock_template(gid: str):
         name=faker.name(),
         version=faker.numerify("%!!.%!!.%!!"),
         author=name,
+        author=name,
         description=faker.text(max_nb_chars=256),
         gid=gid,
+        meta=json.dumps(meta).encode("utf-8"),
         meta=json.dumps(meta).encode("utf-8"),
         template=template,
         project_data=project_data,
@@ -194,5 +216,6 @@ def create_mock_plugins(session, num_plugins: int = 2, is_stock: bool = True):
         plugins.append(plugin)
     session.add_all(plugins)
     session.flush()
+    session.expunge_all()
     session.expunge_all()
     return plugins

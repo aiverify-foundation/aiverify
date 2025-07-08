@@ -156,7 +156,7 @@ const PluginUploader = () => {
                     <li role="listitem">
                       File Format:{' '}
                       <span className="text-secondary-300">
-                        ZIP file containing plugin or algorithm package
+                        ZIP file
                       </span>
                     </li>
                     <li role="listitem">

@@ -335,11 +335,11 @@ Output:
 	Removing the variable makes the model less fair and;
 	Removing hurts performance
 	
-	- "exclude": The variable should be removed from the model. This is recommended when:
+  - "exclude": The variable should be removed from the model. This is recommended when:
   Removing the variable makes the model fairer and;
 	Removing improves performance
 	
-	- "examine further": More analysis is needed. This happens when there's a tradeoff between fairness and performance i.e. removing a variable improves fairness but hurts performance, or vice versa.
+  - "examine further": More analysis is needed. This happens when there's a tradeoff between fairness and performance i.e. removing a variable improves fairness but hurts performance, or vice versa.
 
 **Root Cause**
 
@@ -471,7 +471,7 @@ Run the following steps to execute the unit and integration tests inside the `te
 
 ```sh
 cd aiverify/stock-plugins/aiverify.stock.veritas/algorithms/veritastool
-pytest .
+pytest tests/util tests/metrics tests/models tests/principles tests/usecases -p no:warnings
 ```
 
 ## Run using Docker

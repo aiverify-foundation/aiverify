@@ -3,7 +3,7 @@ import { ErrorWithMessage } from '@/app/errorTypes';
 import { ReportTemplate } from '@/app/templates/types';
 import { ApiResult, processResponse } from '@/lib/utils/fetchRequestHelpers';
 
-const endpointUrl = `${process.env.APIGW_HOST}/project_templates`;
+const endpointUrl = `${process.env.APIGW_HOST}/project_templates/`;
 
 type Options = {
   id?: number;

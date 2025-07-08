@@ -10,10 +10,11 @@ export async function deleteDataset(id: string) {
     });
 
     if (!response.ok) {
-      const errorData: { message: string } = await response.json();
+      const errorData: { detail?: string; message?: string } = await response.json();
+      const errorMessage = errorData.detail || errorData.message || 'Failed to delete test dataset';
       return {
         success: false,
-        error: errorData.message || 'Failed to delete test dataset',
+        error: errorMessage,
       };
     }
 
@@ -21,6 +22,6 @@ export async function deleteDataset(id: string) {
     return { success: true, message: 'Dataset deleted successfully' };
   } catch (error) {
     console.log('error deleting dataset', error);
-    return { success: false, error: 'Failed to delete test dataset' };
+    return { success: false, message: 'Failed to delete test dataset' };
   }
 }
