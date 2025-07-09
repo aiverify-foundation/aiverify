@@ -129,6 +129,6 @@ class KubectlRun2(Pipe):
             )
             logger.info(f"[+] Submitted job {job_name} with label job-name={job_name}")
         except subprocess.CalledProcessError as e:
-            raise PipeException(f"Failed to submit job: {e}")
+            raise PipeException(f"Failed to submit job: {str(e)}")
         except Exception as e:
             raise PipeException(f"Unexpected error during algorithm execute: {str(e)}")
