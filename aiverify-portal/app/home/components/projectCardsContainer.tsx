@@ -19,7 +19,7 @@ export async function ProjectCardsContainer({
   return (
     <ProjectSearchProvider initialProjects={projects}>
       <ProjectsFilters projects={projects} className="my-6 mt-[100px]" />
-      <section className={className}>
+      <section className={className} data-testid="project-cards-container">
         <FilteredProjectCards />
       </section>
     </ProjectSearchProvider>
