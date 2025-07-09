@@ -6,7 +6,7 @@ import { Card } from '@/lib/components/card/card';
 
 export function UserFlowCards() {
   return (
-    <section className="flex w-full justify-start">
+    <section className="flex w-full justify-start" data-testid="user-flow-cards">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         <Link href="/project/new">
           <Card
