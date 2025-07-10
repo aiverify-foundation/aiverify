@@ -37,6 +37,51 @@ const PipelineUploader = ({ onBack }: { onBack: () => void }) => {
     }
   };
 
+  // Helper function to traverse directory entries recursively
+  const traverseDirectory = async (entry: any, path: string = ''): Promise<FileWithPath[]> => {
+    const files: FileWithPath[] = [];
+    
+    if (entry.isFile) {
+      const file = await new Promise<File>((resolve, reject) => {
+        entry.file(resolve, reject);
+      });
+      
+      // Create a new File object with the same content but with a custom name that includes the path
+      // This ensures it's a proper File object that can be used in FormData
+      const newFile = new File([file], file.name, {
+        type: file.type,
+        lastModified: file.lastModified,
+      });
+      
+      // Add webkitRelativePath as a non-enumerable property
+      // Build the path by combining current path with filename
+      const webkitRelativePath = path + file.name;
+      Object.defineProperty(newFile, 'webkitRelativePath', {
+        value: webkitRelativePath,
+        writable: false,
+        enumerable: false,
+        configurable: false
+      });
+      
+      files.push(newFile as FileWithPath);
+    } else if (entry.isDirectory) {
+      const reader = entry.createReader();
+      const entries = await new Promise<any[]>((resolve, reject) => {
+        reader.readEntries(resolve, reject);
+      });
+      
+      // Build the path for this directory level
+      const currentPath = path + entry.name + '/';
+      
+      for (const subEntry of entries) {
+        const subFiles = await traverseDirectory(subEntry, currentPath);
+        files.push(...subFiles);
+      }
+    }
+    
+    return files;
+  };
+
   const handleFiles = (files: FileList | FileWithPath[]) => {
     console.log('files:', files instanceof FileList, files);
 
@@ -83,7 +128,75 @@ const PipelineUploader = ({ onBack }: { onBack: () => void }) => {
 
   const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
-    handleFiles(event.dataTransfer.files);
+    
+    const items = event.dataTransfer.items;
+    if (!items) {
+      // Fallback to regular file handling
+      handleFiles(event.dataTransfer.files);
+      return;
+    }
+
+    const allFiles: FileWithPath[] = [];
+    const folderGroups: Record<string, FileWithPath[]> = {};
+
+    // Process each dropped item
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      if (item.kind === 'file') {
+        const entry = item.webkitGetAsEntry();
+        if (entry) {
+          if (entry.isDirectory) {
+            // Handle directory - start with empty path, let traverseDirectory build the correct path
+            const files = await traverseDirectory(entry, '');
+            files.forEach(file => {
+              const rootFolderName = file.webkitRelativePath.split('/')[0];
+              if (!folderGroups[rootFolderName]) {
+                folderGroups[rootFolderName] = [];
+              }
+              folderGroups[rootFolderName].push(file);
+            });
+          } else {
+            // Handle individual file
+            const file = item.getAsFile();
+            if (file) {
+              // Create a new File object with the same content
+              // This ensures it's a proper File object that can be used in FormData
+              const newFile = new File([file], file.name, {
+                type: file.type,
+                lastModified: file.lastModified,
+              });
+              
+              // Add webkitRelativePath as a non-enumerable property
+              Object.defineProperty(newFile, 'webkitRelativePath', {
+                value: file.name,
+                writable: false,
+                enumerable: false,
+                configurable: false
+              });
+              
+              const fileWithPath = newFile as FileWithPath;
+              
+              // Group single files under a generic folder name
+              const rootFolderName = 'DroppedFiles';
+              if (!folderGroups[rootFolderName]) {
+                folderGroups[rootFolderName] = [];
+              }
+              folderGroups[rootFolderName].push(fileWithPath);
+            }
+          }
+        }
+      }
+    }
+
+    // Convert folder groups to files array for handleFiles
+    const processedFiles: FileWithPath[] = [];
+    Object.values(folderGroups).forEach(files => {
+      processedFiles.push(...files);
+    });
+
+    if (processedFiles.length > 0) {
+      handleFiles(processedFiles);
+    }
   };
 
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {

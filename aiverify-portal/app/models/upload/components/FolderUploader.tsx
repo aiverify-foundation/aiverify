@@ -22,6 +22,51 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
   const { mutate, status } = useUploadFolder();
   const isLoading = status === 'pending';
 
+  // Helper function to traverse directory entries recursively
+  const traverseDirectory = async (entry: any, path: string = ''): Promise<FileWithPath[]> => {
+    const files: FileWithPath[] = [];
+    
+    if (entry.isFile) {
+      const file = await new Promise<File>((resolve, reject) => {
+        entry.file(resolve, reject);
+      });
+      
+      // Create a new File object with the same content but with a custom name that includes the path
+      // This ensures it's a proper File object that can be used in FormData
+      const newFile = new File([file], file.name, {
+        type: file.type,
+        lastModified: file.lastModified,
+      });
+      
+      // Add webkitRelativePath as a non-enumerable property
+      // Build the path by combining current path with filename
+      const webkitRelativePath = path + file.name;
+      Object.defineProperty(newFile, 'webkitRelativePath', {
+        value: webkitRelativePath,
+        writable: false,
+        enumerable: false,
+        configurable: false
+      });
+      
+      files.push(newFile as FileWithPath);
+    } else if (entry.isDirectory) {
+      const reader = entry.createReader();
+      const entries = await new Promise<any[]>((resolve, reject) => {
+        reader.readEntries(resolve, reject);
+      });
+      
+      // Build the path for this directory level
+      const currentPath = path + entry.name + '/';
+      
+      for (const subEntry of entries) {
+        const subFiles = await traverseDirectory(subEntry, currentPath);
+        files.push(...subFiles);
+      }
+    }
+    
+    return files;
+  };
+
   const handleFiles = (files: FileList | File[]) => {
     // Only allow one folder upload at a time
     // Clear previous selections when a new folder is selected
@@ -54,9 +99,58 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
     }
   };
 
-  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
-    handleFiles(event.dataTransfer.files);
+    
+    const items = event.dataTransfer.items;
+    if (!items) {
+      // Fallback to regular file handling
+      handleFiles(event.dataTransfer.files);
+      return;
+    }
+
+    const allFiles: FileWithPath[] = [];
+
+    // Process each dropped item
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      if (item.kind === 'file') {
+        const entry = item.webkitGetAsEntry();
+        if (entry) {
+          if (entry.isDirectory) {
+            // Handle directory - start with empty path, let traverseDirectory build the correct path
+            const files = await traverseDirectory(entry, '');
+            allFiles.push(...files);
+          } else {
+            // Handle individual file
+            const file = item.getAsFile();
+            if (file) {
+              // Create a new File object with the same content
+              // This ensures it's a proper File object that can be used in FormData
+              const newFile = new File([file], file.name, {
+                type: file.type,
+                lastModified: file.lastModified,
+              });
+              
+              // Add webkitRelativePath as a non-enumerable property
+              Object.defineProperty(newFile, 'webkitRelativePath', {
+                value: file.name,
+                writable: false,
+                enumerable: false,
+                configurable: false
+              });
+              
+              const fileWithPath = newFile as FileWithPath;
+              allFiles.push(fileWithPath);
+            }
+          }
+        }
+      }
+    }
+
+    if (allFiles.length > 0) {
+      handleFiles(allFiles);
+    }
   };
 
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
