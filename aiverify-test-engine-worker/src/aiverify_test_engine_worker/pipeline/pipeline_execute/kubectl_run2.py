@@ -37,7 +37,7 @@ class KubectlRun2(Pipe):
         
         pod_data_path = f"/app/data/datasets/{task_data.data_path.name}"
         pod_model_path = f"/app/data/models/{task_data.model_path.name}"
-        
+
         json_args_dict = task_data.task.algorithmArgs  # This is a Python dict, not yet stringified
 
         # Modify paths in the dict
