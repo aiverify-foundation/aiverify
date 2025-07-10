@@ -1,6 +1,6 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
 import { jest } from '@jest/globals';
+import { render, screen } from '@testing-library/react';
+import React from 'react';
 import { ProjectCardsLoading } from '../projectCardsLoading';
 
 describe('ProjectCardsLoading', () => {

@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { FilteredTemplateCards } from '../FilteredTemplateCards';
-import { UserFlows } from '@/app/userFlowsEnum';
 import { ReportTemplate } from '@/app/templates/types';
+import { UserFlows } from '@/app/userFlowsEnum';
+import { FilteredTemplateCards } from '../FilteredTemplateCards';
 
 // Mock the TemplateCards component
 jest.mock('../templateCards', () => ({

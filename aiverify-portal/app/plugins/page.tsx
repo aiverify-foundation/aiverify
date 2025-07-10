@@ -7,7 +7,14 @@ import PluginsList from './components/PluginList';
 export const dynamic = 'force-dynamic';
 
 export default async function PluginsPage() {
-  const pluginsResult = await getPlugins();
+  let pluginsResult;
+  
+  try {
+    pluginsResult = await getPlugins();
+  } catch (error) {
+    // Handle API rejection/network errors
+    pluginsResult = { message: 'Failed to load plugins' };
+  }
 
   // Default to empty array if error occurs
   let plugins: Plugin[] = [];
@@ -18,7 +25,9 @@ export default async function PluginsPage() {
       // If successful, convert the API data to the expected Plugin type
       const apiData = Array.isArray(pluginsResult.data)
         ? pluginsResult.data
-        : Object.values(pluginsResult.data);
+        : pluginsResult.data && typeof pluginsResult.data === 'object' 
+          ? Object.values(pluginsResult.data)
+          : [];
 
       // We need to cast the API result to the correct type
       plugins = apiData as unknown as Plugin[];

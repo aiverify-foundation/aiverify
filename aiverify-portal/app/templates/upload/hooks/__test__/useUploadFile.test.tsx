@@ -1,8 +1,8 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useUploadFiles } from '../useUploadFile';
 import { uploadJsonFile } from '../../components/utils/uploadJsonFile';
+import { useUploadFiles } from '../useUploadFile';
 
 // Mock the uploadJsonFile function
 jest.mock('../../components/utils/uploadJsonFile', () => ({

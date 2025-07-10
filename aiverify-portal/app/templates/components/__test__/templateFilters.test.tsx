@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { TemplateFilters } from '../templateFilters';
 import { TemplateSearchProvider } from '../TemplateSearchProvider';
+import { TemplateFilters } from '../templateFilters';
 
 // Mock Fuse.js
 jest.mock('fuse.js', () => {
