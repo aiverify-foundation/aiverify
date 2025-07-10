@@ -279,6 +279,18 @@ export default function ClientSelectData({
     console.log('Validation results received:', results);
     console.log('Selected input blocks to check:', blocksToCheck);
 
+    // Create validation keys for matching - use groupId for group selections, individual id for others
+    const validationKeys = blocksToCheck.map((block: SelectedInputBlock) => {
+      // For group selections, use the groupId for validation matching
+      if (block.isGroupSelection && block.groupId) {
+        return `${block.gid}-${block.cid}-${block.groupId}`;
+      }
+      // For individual selections, use the individual id
+      return `${block.gid}-${block.cid}-${block.id}`;
+    });
+    
+    console.log('Validation keys for matching:', validationKeys);
+
     // Collect names and messages of invalid input blocks, grouped by type
     const invalidBlocks: InvalidInputBlock[] = [];
 
@@ -352,11 +364,6 @@ export default function ClientSelectData({
       return { name, type };
     };
 
-    // Create a map of selected block keys for faster lookup
-    const selectedBlockKeys = blocksToCheck.map(
-      (block: SelectedInputBlock) => `${block.gid}-${block.cid}-${block.id}`
-    );
-
     // Check if any selected input has a validation error
     let hasErrors = false;
 
@@ -366,7 +373,22 @@ export default function ClientSelectData({
       if (!result.isValid) {
         console.log(`Processing validation result for key: ${key}`, result);
         
-        // Parse the key to extract gid, cid, and id
+        // Check if this validation key matches any of our validation keys
+        const isSelected = validationKeys.includes(key);
+        
+        console.log(`Validation key: ${key}, isSelected: ${isSelected}`);
+        console.log(`Available validation keys for matching:`, validationKeys);
+
+        if (!isSelected) {
+          console.log(`  Skipping validation result - not selected`);
+          return; // Skip this validation result if it's not for a selected input block
+        }
+
+        console.log(`  ✅ VALIDATION ERROR DETECTED FOR SELECTED BLOCK`);
+        // Mark that we have errors for selected blocks
+        hasErrors = true;
+
+        // Parse the key to extract gid, cid, and id for finding block info
         const keyParts = key.split('-');
         let gid = '';
         let cid = '';
@@ -385,15 +407,30 @@ export default function ClientSelectData({
             // Join all parts except the last one, then split by the last occurrence of '-'
             const gidCidPart = keyParts.slice(0, -1).join('-');
             
-            // Find the split point - we need to match against known gid-cid combinations
+            // Find the split point by matching against known gid-cid combinations
             let foundMatch = false;
-            for (const block of selectedInputBlocks) {
-              const expectedPrefix = `${block.gid}-${block.cid}`;
+            
+            // Try to match against all known input block data
+            for (const inputBlockData of allInputBlockDatas) {
+              const expectedPrefix = `${inputBlockData.gid}-${inputBlockData.cid}`;
               if (gidCidPart === expectedPrefix) {
-                gid = block.gid;
-                cid = block.cid;
+                gid = inputBlockData.gid;
+                cid = inputBlockData.cid;
                 foundMatch = true;
                 break;
+              }
+            }
+            
+            // If not found, try selected blocks
+            if (!foundMatch) {
+              for (const block of blocksToCheck) {
+                const expectedPrefix = `${block.gid}-${block.cid}`;
+                if (gidCidPart === expectedPrefix) {
+                  gid = block.gid;
+                  cid = block.cid;
+                  foundMatch = true;
+                  break;
+                }
               }
             }
             
@@ -403,36 +440,40 @@ export default function ClientSelectData({
             }
           } else {
             // Key is just gid-cid (no numeric ID at the end)
-            // Try to match against selected input blocks
+            // Try to match against all known gid-cid combinations
             let foundMatch = false;
-            for (const block of selectedInputBlocks) {
-              const expectedKey = `${block.gid}-${block.cid}`;
+            
+            // Try all input block data
+            for (const inputBlockData of allInputBlockDatas) {
+              const expectedKey = `${inputBlockData.gid}-${inputBlockData.cid}`;
               if (key === expectedKey) {
-                gid = block.gid;
-                cid = block.cid;
+                gid = inputBlockData.gid;
+                cid = inputBlockData.cid;
                 id = undefined;
                 foundMatch = true;
                 break;
               }
             }
             
+            // If not found, try selected blocks
             if (!foundMatch) {
-              console.warn(`Could not match key against selected blocks: ${key}`);
+              for (const block of blocksToCheck) {
+                const expectedKey = `${block.gid}-${block.cid}`;
+                if (key === expectedKey) {
+                  gid = block.gid;
+                  cid = block.cid;
+                  id = undefined;
+                  foundMatch = true;
+                  break;
+                }
+              }
+            }
+            
+            if (!foundMatch) {
+              console.warn(`Could not match key against any blocks: ${key}`);
               return;
             }
           }
-
-          // Check if this is a selected input block
-          const isSelected = selectedBlockKeys.includes(`${gid}-${cid}-${id || ''}`);
-          
-          console.log(`Validation key: ${key}, parsed as gid: ${gid}, cid: ${cid}, id: ${id}, isSelected: ${isSelected}`);
-
-          if (!isSelected) {
-            return; // Skip this validation result if it's not for a selected input block
-          }
-
-          // Mark that we have errors for selected blocks
-          hasErrors = true;
         } else {
           // Invalid key format
           console.error(`Invalid validation result key format: ${key} - expected at least gid-cid format`);
@@ -471,6 +512,7 @@ export default function ClientSelectData({
       return acc;
     }, {} as Record<string, Array<{name: string, message: string}>>);
     console.log('Final grouped invalid blocks:', groupedForDebug);
+    console.log(`Has validation errors: ${hasErrors}`);
     console.log('=== END FINAL GROUPING DEBUG ===');
     
     setHasValidationErrors(hasErrors);
