@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { NewTemplateForm } from '../NewTemplateForm';
 import { UserFlows } from '@/app/userFlowsEnum';
+import { NewTemplateForm } from '../NewTemplateForm';
 
 // Mock Next.js router
 const mockPush = jest.fn();

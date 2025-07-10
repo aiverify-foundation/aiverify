@@ -1,9 +1,9 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { useRouter } from 'next/navigation';
-import { CreateTemplateCard } from '../CreateTemplateCard';
 import { UserFlows } from '@/app/userFlowsEnum';
 import { patchProject } from '@/lib/fetchApis/getProjects';
+import { CreateTemplateCard } from '../CreateTemplateCard';
 
 // Mock dependencies
 jest.mock('next/navigation', () => ({

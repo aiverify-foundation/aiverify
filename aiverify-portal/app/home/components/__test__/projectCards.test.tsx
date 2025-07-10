@@ -1,8 +1,8 @@
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { jest } from '@jest/globals';
-import { ProjectCards } from '../projectCards';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import React from 'react';
 import { Project } from '@/app/types';
+import { ProjectCards } from '../projectCards';
 
 // Mock fetch globally
 const mockFetch = jest.fn() as jest.MockedFunction<typeof fetch>;

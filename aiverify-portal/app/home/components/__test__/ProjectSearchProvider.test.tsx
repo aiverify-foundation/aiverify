@@ -1,8 +1,8 @@
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
 import { jest } from '@jest/globals';
-import { ProjectSearchProvider, useProjectSearch } from '../ProjectSearchProvider';
+import { render, screen, fireEvent } from '@testing-library/react';
+import React from 'react';
 import { Project } from '@/app/types';
+import { ProjectSearchProvider, useProjectSearch } from '../ProjectSearchProvider';
 
 // Mock project data
 const mockProjects: Project[] = [

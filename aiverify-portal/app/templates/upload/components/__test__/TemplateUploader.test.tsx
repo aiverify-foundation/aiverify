@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import TemplateUploader from '../TemplateUploader';
 import { FileUpload } from '@/app/templates/types';
+import TemplateUploader from '../TemplateUploader';
 
 // Mock JSZip
 const mockLoadAsync = jest.fn();
@@ -203,7 +203,7 @@ describe('TemplateUploader', () => {
   });
 
   describe('ZIP file validation', () => {
-    const createMockFile = (name: string, type: string = 'application/zip') => {
+    const createMockFile = (name: string, type = 'application/zip') => {
       const file = new File(['mock content'], name, { type });
       Object.defineProperty(file, 'name', { value: name });
       return file;

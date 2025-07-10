@@ -1,5 +1,5 @@
-import { uploadJsonFile, UploadRequestPayload } from '../uploadJsonFile';
 import { FileUpload } from '@/app/templates/types';
+import { uploadJsonFile, UploadRequestPayload } from '../uploadJsonFile';
 
 // Mock global fetch
 const mockFetch = jest.fn();
@@ -63,7 +63,7 @@ afterEach(() => {
 describe('uploadJsonFile', () => {
   const mockOnProgress = jest.fn();
   
-  const createMockFileUpload = (content: string = '{"projectInfo": {"name": "Test", "description": "Test"}, "globalVars": [], "pages": []}', filename: string = 'test.json'): FileUpload => ({
+  const createMockFileUpload = (content = '{"projectInfo": {"name": "Test", "description": "Test"}, "globalVars": [], "pages": []}', filename = 'test.json'): FileUpload => ({
     id: 'test-id',
     file: new File([content], filename, { type: 'application/json' }),
     progress: 0,

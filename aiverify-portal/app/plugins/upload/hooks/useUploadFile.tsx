@@ -11,7 +11,7 @@ export function useUploadFiles({
   const mutation = useMutation<{ message: string }, Error, UploadRequestPayload>({
     mutationFn: (payload: UploadRequestPayload) => uploadZipFile(payload),
     onSuccess: (data) => onSuccess(data.message), // Pass the message to the onSuccess callback
-    onError,
+    onError: (error) => onError(error), // Only pass the error object
   });
 
   return mutation; // Return the whole mutation object

@@ -1,6 +1,6 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
 import { jest } from '@jest/globals';
+import { render, screen } from '@testing-library/react';
+import React from 'react';
 
 // Simple mock data structure
 const mockProjectsData = [
@@ -63,8 +63,8 @@ describe('ProjectCardsContainer', () => {
   
   beforeAll(async () => {
     // Dynamic import after mocks are established
-    const module = await import('../projectCardsContainer');
-    ProjectCardsContainer = module.ProjectCardsContainer;
+    const moduleImport = await import('../projectCardsContainer');
+    ProjectCardsContainer = moduleImport.ProjectCardsContainer;
   });
 
   beforeEach(() => {

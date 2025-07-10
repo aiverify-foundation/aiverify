@@ -1,8 +1,8 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { TemplateCards } from '../templateCards';
 import { ReportTemplate } from '@/app/templates/types';
 import { UserFlows } from '@/app/userFlowsEnum';
+import { TemplateCards } from '../templateCards';
 
 // Mock Next.js router
 const mockPush = jest.fn();
