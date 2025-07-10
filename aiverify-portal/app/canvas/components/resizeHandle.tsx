@@ -6,7 +6,7 @@ type ResizeHandleProps = {
 };
 
 const mainHandleClasses =
-  'react-resizable-handle invisible group-hover:visible group-active:visible print:hidden';
+  'react-resizable-handle invisible group-hover:visible group-active:visible no-print';
 
 function ResizeHandle(props: ResizeHandleProps) {
   const { handleAxis, ref, ...rest } = props;

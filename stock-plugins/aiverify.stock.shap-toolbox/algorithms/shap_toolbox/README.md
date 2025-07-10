@@ -117,5 +117,9 @@ If the algorithm runs successfully, the results of the test will be saved in an 
 Run the following steps to execute the unit and integration tests inside the `tests/` folder
 
 ```sh
-docker run --entrypoint python3 aiverify-shap-toolbox -m pytest .
+docker run \
+  --entrypoint python3 \
+  -w /app/aiverify/stock-plugins/aiverify.stock.shap-toolbox/algorithms/shap_toolbox \
+  aiverify-shap-toolbox \
+  -m pytest .
 ```

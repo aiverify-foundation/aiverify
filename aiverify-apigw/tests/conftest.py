@@ -83,6 +83,8 @@ def mock_plugins(db_session):
         AlgorithmModel,
         WidgetModel,
         InputBlockModel,
+        InputBlockGroupDataModel,
+        InputBlockDataModel,
         TemplateModel,
         PluginComponentModel,
         ProjectTemplateModel
@@ -96,6 +98,8 @@ def mock_plugins(db_session):
     db_session.query(AlgorithmModel).delete()
     db_session.query(WidgetModel).delete()
     db_session.query(InputBlockModel).delete()
+    db_session.query(InputBlockGroupDataModel).delete()
+    db_session.query(InputBlockDataModel).delete()
     db_session.query(TemplateModel).delete()
     db_session.query(PluginComponentModel).delete()
     db_session.query(ProjectTemplateModel).delete()
@@ -147,7 +151,71 @@ def mock_test_results(db_session, mock_plugins):
 @pytest.fixture(scope="function")
 def mock_project_template(db_session):
     from .mocks.mock_data_project import create_mock_project_templates
+    from aiverify_apigw.models import ProjectTemplateModel
     project_template = create_mock_project_templates(db_session)
     db_session.commit()
     yield project_template
     db_session.delete(project_template)
+
+
+@pytest.fixture(scope="function")
+def mock_input_block_data(db_session, mock_plugins):
+    from .mocks.mock_input_block_data import create_mock_input_block_data
+    from aiverify_apigw.models import InputBlockDataModel
+
+    results = create_mock_input_block_data(db_session, mock_plugins[0].inputblocks[0])
+    db_session.commit()
+    yield results
+    db_session.query(InputBlockDataModel).delete()
+    db_session.commit()
+
+
+@pytest.fixture(scope="function")
+def mock_input_block_group_data(db_session, mock_plugins):
+    from .mocks.mock_input_block_data import create_mock_input_block_group_data
+    from aiverify_apigw.models import InputBlockGroupDataModel
+    inputblocks = [ib for ib in mock_plugins[0].inputblocks if ib.group is not None]
+    results = create_mock_input_block_group_data(db_session, inputblocks)
+    db_session.commit()
+    yield results
+    db_session.query(InputBlockGroupDataModel).delete()
+    db_session.commit()
+
+
+@pytest.fixture(scope="function")
+def mock_test_datasets(db_session):
+    from .mocks.mock_test_dataset import create_mock_test_datasets
+    from aiverify_apigw.models import TestDatasetModel
+    results = create_mock_test_datasets(db_session)
+    db_session.commit()
+    yield results
+    db_session.query(TestDatasetModel).delete()
+    db_session.commit()
+
+
+@pytest.fixture(scope="function")
+def mock_test_models(db_session):
+    from .mocks.mock_test_model import create_mock_test_models
+    from aiverify_apigw.models import TestModelModel
+    results = create_mock_test_models(db_session)
+    db_session.commit()
+    yield results
+    db_session.query(TestModelModel).delete()
+    db_session.commit()
+
+
+@pytest.fixture(scope="function")
+def mock_test_runs(db_session, mock_plugins):
+    from .mocks.mock_test_run import create_mock_test_runs
+    from aiverify_apigw.models import TestResultModel, TestModelModel, TestDatasetModel, TestArtifactModel, TestRunModel
+
+    results = create_mock_test_runs(db_session, mock_plugins)
+    db_session.commit()
+    yield results
+    db_session.query(TestRunModel).delete()
+    db_session.query(TestResultModel).delete()
+    db_session.query(TestModelModel).delete()
+    db_session.query(TestDatasetModel).delete()
+    db_session.query(TestArtifactModel).delete()
+    db_session.commit()
+

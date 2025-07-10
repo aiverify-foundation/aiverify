@@ -50,7 +50,6 @@ const ChecklistMDX: React.FC<{ cid: string }> = ({ cid }) => {
     if (!currentGroupData) return null;
     return getInputBlockData(cid);
   }, [currentGroupData]);
-  // console.log('group:', group);
 
   const renderedContent = useMemo(() => {
     if (!MDXComponent || !group) return null;
@@ -99,15 +98,6 @@ const GroupDetail: React.FC<{
   const projectId = searchParams.get('projectId');
   const flow = searchParams.get('flow');
 
-  // Sort checklists by the predefined order based on cid
-  // const sortedChecklists = useMemo(() => {
-  //   return [...groupChecklists].sort((a, b) => {
-  //     const aOrder = PRINCIPLE_ORDER[a.cid] || Infinity;
-  //     const bOrder = PRINCIPLE_ORDER[b.cid] || Infinity;
-
-  //     return aOrder - bOrder;
-  //   });
-  // }, [groupChecklists]);
   const sortedList = group.input_blocks;
 
   const handleChecklistClick = (cid: string) => {

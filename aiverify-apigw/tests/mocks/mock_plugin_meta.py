@@ -32,4 +32,4 @@ def create_mock_algorithm_meta(gid: str | None=None):
         "tags": [faker.word() for _ in range(faker.random_int(min=1, max=5))],  # Generates a list of fake tags
         "requireGroundTruth": faker.boolean()  # Randomly assigns a boolean value
     }
-    return AlgorithmMeta.model_validate(meta)
+    return AlgorithmMeta.model_validate(meta, strict=False)

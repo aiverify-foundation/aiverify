@@ -59,6 +59,13 @@ type ReportTemplate = {
   updated_at: string;
 };
 
+// Template data structure before database insertion (what comes from uploaded files)
+type ProcessedTemplateData = {
+  globalVars: GlobalVar[];
+  pages: Page[];
+  projectInfo: ProjectInfo;
+};
+
 type UploadStatus = 'idle' | 'uploading' | 'success' | 'error';
 
 type FileUpload = {
@@ -66,6 +73,8 @@ type FileUpload = {
   progress: number;
   status: UploadStatus;
   id: string;
+  originalFile?: File;
+  processedData?: ProcessedTemplateData;
 };
 
 export type {
@@ -76,6 +85,7 @@ export type {
   Page,
   ProjectInfo,
   ReportTemplate,
+  ProcessedTemplateData,
   GlobalVar,
   UploadStatus,
   FileUpload,

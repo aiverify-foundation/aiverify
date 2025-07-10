@@ -182,16 +182,20 @@ python -m aiverify_apigw
 
 ## Running Tests
 
-To run the tests for the application, you can use `pytest`. Make sure you have `pytest` and `faker` installed. If not, you can install it using pip:
+To run the tests for the application, you can use `pytest`. Make sure you have `pytest` and `faker` installed. If not, you can install it using pip.
+Following the steps in section [Local Machine Setup](#local-machine-setup) to install the application. Then activate the virtual environment to install the dependecies for pytest.
 
 ```
+source .venv/bin/activate
 pip install pytest faker
 ```
 
 To run the tests:
 ```
+cd aiverify_apigw
 pytest tests
 ```
+---
 
 # Docker Setup
 To build apigw docker image, go to the `aiverify` root folder and run:

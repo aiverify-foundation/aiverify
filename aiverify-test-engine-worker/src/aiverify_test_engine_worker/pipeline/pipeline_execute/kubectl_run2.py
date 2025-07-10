@@ -43,10 +43,18 @@ class KubectlRun2(Pipe):
         # Modify paths in the dict
         for key, value in json_args_dict.items():
             if isinstance(value, str) and os.path.isabs(value) and os.path.exists(value):
-                filename = os.path.basename(value)
-                # Replace with new path inside container
-                new_path = f"/app/data/datasets/{filename}"
-                json_args_dict[key] = new_path
+                if value.startswith("/app/aiverify-test-engine-worker/data/datasets"):
+                    # Map to /app/data/datasets
+                    relative_path = os.path.relpath(value, "/app/aiverify-test-engine-worker/data/datasets")
+                    new_path = os.path.join("/app/data/datasets", relative_path)
+                    json_args_dict[key] = new_path
+                elif value.startswith("/app/aiverify-test-engine-worker/data/models"):
+                    # Map to /app/data/models
+                    relative_path = os.path.relpath(value, "/app/aiverify-test-engine-worker/data/models")
+                    new_path = os.path.join("/app/data/models", relative_path)
+                    json_args_dict[key] = new_path
+                else:
+                    raise ValueError(f"Unsupported path: {value}")
 
         # Convert to JSON with properly escaped quotes
         json_args = json.dumps(json_args_dict).replace('"', '\\"')
@@ -121,6 +129,6 @@ class KubectlRun2(Pipe):
             )
             logger.info(f"[+] Submitted job {job_name} with label job-name={job_name}")
         except subprocess.CalledProcessError as e:
-            raise PipeException(f"Failed to submit job: {e}")
+            raise PipeException(f"Failed to submit job: {str(e)}")
         except Exception as e:
             raise PipeException(f"Unexpected error during algorithm execute: {str(e)}")
