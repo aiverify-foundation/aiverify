@@ -1,28 +1,15 @@
 import requests
-from typing import List, Any, Union, Tuple, Optional
+from typing import List, Any, Union, Optional
 import pandas as pd
 import numpy as np
 import logging
 
-from aiverify_test_engine.interfaces.ipipeline import IPipeline  # Adjust the import path if needed
-from aiverify_test_engine.plugins.enums.pipeline_plugin_type import PipelinePluginType
-from aiverify_test_engine.plugins.enums.plugin_type import PluginType
-from aiverify_test_engine.plugins.metadata.plugin_metadata import PluginMetadata
+from aiverify_test_engine.io.custompipeline.custompipeline import CustomInferencePipeline  # Adjust the import path if needed
 
 # Set up logging
 logger = logging.getLogger(__name__)
 
-class ApiInferencePipeline(IPipeline):
-    
-    # Some information on plugin
-    _pipeline: Any = None
-    _pipeline_algorithm: str = ""
-    _name: str = "apipipeline"
-    _description: str = "apipipeline supports calling api/custom pipeline"
-    _version: str = "0.9.0"
-    _metadata: PluginMetadata = PluginMetadata(_name, _description, _version)
-    _plugin_type: PluginType = PluginType.PIPELINE
-    _pipeline_plugin_type: PipelinePluginType = PipelinePluginType.API
+class MyCustomPipeline(CustomInferencePipeline):
     
     def __init__(self):
         self._api_url = "" #insert your URL here, eg. http://xxx:8000/predict
@@ -68,117 +55,4 @@ class ApiInferencePipeline(IPipeline):
 
         return predictions
 
-    @staticmethod
-    def get_metadata() -> PluginMetadata:
-        """
-        A method to return the metadata for this plugin
-
-        Returns:
-            PluginMetadata: Metadata of this plugin
-        """
-        return ApiInferencePipeline._metadata
-    
-    @staticmethod
-    def get_plugin_type() -> PluginType:
-        """
-        A method to return the type for this plugin
-
-        Returns:
-             PluginType: Type of this plugin
-        """
-        return ApiInferencePipeline._plugin_type
-    
-    @staticmethod
-    def get_pipeline_plugin_type() -> PipelinePluginType:
-        """
-        A method to return PipelinePluginType
-
-        Returns:
-            PipelinePluginType: Pipeline Plugin Type
-        """
-        return ApiInferencePipeline._pipeline_plugin_type
-    
-    def cleanup(self) -> None:
-        """
-        A method to clean-up objects
-        """
-        pass
-    
-    def setup(self) -> Tuple[bool, str]:
-        """
-        A method to perform setup
-
-        Returns:
-            Tuple[bool, str]: Returns bool to indicate success, str will indicate the
-            error message if failed.
-        """
-        is_success = True
-        error_messages = ""
-        return is_success, error_messages
-    
-    def get_pipeline(self) -> Any:
-        """
-        A method to return the pipeline
-
-        Returns:
-            Any: Pipeline
-        """
-        pass
-    
-    def get_pipeline_algorithm(self) -> str:
-        """
-        A method to return the pipeline algorithm.
-        Either one of the supported algorithms or ""
-
-        Returns:
-            str: pipeline algorithm name if supported or "" if not supported
-        """
-        pass
-
-    def set_pipeline(self, pipeline: Any) -> None:
-        """
-        A method to set the pipeline.
-
-        Args:
-            pipeline (Any): The pipeline to replace the current data
-        """
-        pass
-
-    def is_supported(self) -> bool:
-        """
-        A method to check whether the pipeline is being identified correctly
-        and is supported
-
-        Returns:
-            bool: True if is an instance of pipeline and is supported
-        """
-        pass
-
-    def predict_proba(self, data: Any, *args) -> Any:
-        """
-        A method to perform prediction probability using the pipeline
-
-        Args:
-            data (Any): data to be predicted by the pipeline
-
-        Returns:
-            Any: predicted result
-        """
-        pass
-
-    def score(self, data: Any, y_true: Any) -> Any:
-        """
-        A method to perform scoring using the pipeline
-
-        Args:
-            data (Any): data to be scored with y_true
-            y_true (Any): ground truth
-
-        Returns:
-            Any: score result
-        """
-        pass
-    
-    
-    
     
