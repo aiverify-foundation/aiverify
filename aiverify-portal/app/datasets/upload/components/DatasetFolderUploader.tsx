@@ -34,12 +34,13 @@ export function DatasetFolderUploader() {
   };
 
   // Helper function to traverse directory entries recursively
-  const traverseDirectory = async (entry: any, path: string = ''): Promise<FileWithPath[]> => {
+  const traverseDirectory = async (entry: FileSystemEntry, path = ''): Promise<FileWithPath[]> => {
     const files: FileWithPath[] = [];
     
     if (entry.isFile) {
+      const fileEntry = entry as FileSystemFileEntry;
       const file = await new Promise<File>((resolve, reject) => {
-        entry.file(resolve, reject);
+        fileEntry.file(resolve, reject);
       });
       
       // Create a new File object with the same content but with a custom name that includes the path
@@ -63,8 +64,9 @@ export function DatasetFolderUploader() {
       
       files.push(newFile as FileWithPath);
     } else if (entry.isDirectory) {
-      const reader = entry.createReader();
-      const entries = await new Promise<any[]>((resolve, reject) => {
+      const directoryEntry = entry as FileSystemDirectoryEntry;
+      const reader = directoryEntry.createReader();
+      const entries = await new Promise<FileSystemEntry[]>((resolve, reject) => {
         reader.readEntries(resolve, reject);
       });
       
