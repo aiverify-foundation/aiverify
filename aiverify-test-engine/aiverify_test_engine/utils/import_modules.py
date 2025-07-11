@@ -147,10 +147,26 @@ def discover_pipeline(directory_path: str) -> Tuple[bool, Optional[type[IPipelin
                     sys.modules[module_name] = module
                     spec.loader.exec_module(module)
 
-                    for _, obj in getmembers(module, isclass):
-                        if issubclass(obj, IPipeline) and obj is not IPipeline:
-                            print(f"Found valid pipeline subclass: {obj.__name__} in {filename}")
-                            return True, obj
+                    # Gather all valid IPipeline subclasses (excluding IPipeline itself)
+                    pipeline_classes = [
+                        obj for _, obj in getmembers(module, isclass)
+                        if issubclass(obj, IPipeline) and obj is not IPipeline
+                    ]
+                    
+                    # Filter to only the "leaf" subclasses (not a base for any other in the list)
+                    leaf_classes = [
+                        cls for cls in pipeline_classes
+                        if not any(
+                            issubclass(other, cls) and other is not cls
+                            for other in pipeline_classes
+                        )
+                    ]
+                    
+                    if leaf_classes:
+                        chosen = leaf_classes[0]
+                        print(f"Found valid pipeline subclass: {chosen.__name__} in {filename}")
+                        return True, chosen
+                    
             except Exception:
                 pass  # Ignore faulty modules
 
