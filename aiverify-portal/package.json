@@ -1,6 +1,6 @@
 {
   "name": "aiverify-portal",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
