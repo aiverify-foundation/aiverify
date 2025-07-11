@@ -8,4 +8,4 @@ class PipelinePluginType(Enum):
 
     SKLEARN = 1
     PYTORCH = 2
-    API = 3
+    CUSTOM = 3

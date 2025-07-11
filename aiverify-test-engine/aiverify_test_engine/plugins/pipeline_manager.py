@@ -225,7 +225,7 @@ class PipelineManager:
                     log_message(PipelineManager._logger, logging.ERROR, error_message)
             
             else:
-                # API pipeline
+                # API or Custom pipeline
                 is_success, pipeline_cls = discover_pipeline(pipeline_path)  
                 
                 try:
