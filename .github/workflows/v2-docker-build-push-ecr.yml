@@ -7,6 +7,8 @@ env:
   AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
   AWS_REGION: ${{ vars.AWS_REGION }}
 
+  GITHUB_TOKEN: ${{ github.token }}
+
 on:
   # Run this workflow everyday at 6:05pm Singapore Time (10:05am UTC)
   schedule:
@@ -39,6 +41,10 @@ on:
         description: 'Optional: Tag suffix for the target'
         required: false
         default: ''
+      build_base:
+        description: 'Optional: Build aiverify-python-base image'
+        required: false
+        default: 'true'
       branch:
         description: 'Git branch to check out, e.g. main'
         required: false
@@ -55,6 +61,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
+      packages: write
 
     strategy:
       # Dynamically create the build matrix based on the event type
@@ -71,13 +78,36 @@ jobs:
             ) || 
              '[ {"image_name":"aiverify-portal","dockerfile_dir":"aiverify-portal","build_target":"","tag_suffix":""},
                 {"image_name":"aiverify-apigw","dockerfile_dir":"aiverify-apigw","build_target":"","tag_suffix":""},
-                {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"aiverify-test-engine-worker-base","tag_suffix":"base"},
+                {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"base","tag_suffix":"base"},
                 {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"venv-build","tag_suffix":"venv"},
                 {"image_name":"aiverify-test-engine-worker","dockerfile_dir":"aiverify-test-engine-worker","build_target":"docker-build","tag_suffix":"docker"} ]' ) }}
       fail-fast: false
       max-parallel: 1
 
     steps:
+
+      # Check out the source code from the specified branch
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch || 'main' }}
+      
+      # Free up disk space before building large Docker images
+      - name: Free up disk space
+        run: |
+          bash .ci/free_disk_space.sh
+
+      # Set BUILD_BASE flag
+      - name: Set BUILD_BASE flag
+        run: |
+          echo "BUILD_BASE=${{ github.event.inputs.build_base || 'true' }}" >> $GITHUB_ENV
+
+      # Build and push aiverify-python-base to GHCR
+      - name: Build and push aiverify-python-base to GHCR
+        if: (matrix.image_name == 'aiverify-test-engine-worker' || matrix.image_name == 'aiverify-apigw') && env.BUILD_BASE == 'true'
+        run: |
+          chmod +x .ci/docker_build_push.sh
+          bash .ci/docker_build_push.sh aiverify-python-base latest aiverify-foundation aiverify-test-engine
 
       # Configure AWS credentials using OIDC
       - name: Configure AWS credentials
@@ -90,17 +120,6 @@ jobs:
       - name: Login to ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2      
-
-      # Check out the source code from the specified branch
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.inputs.branch || 'main' }}
-      
-      # Free up disk space before building large Docker images
-      - name: Free up disk space
-        run: |
-          bash .ci/free_disk_space.sh
 
       # Delete existing images from the ECR repository
       - name: Delete existing images from ECR

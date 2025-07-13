@@ -183,12 +183,12 @@ class InputBlockGroupChild(MyBaseModel):
         }
     }
 
-    # id: int = Field(description="Input block data id")
+    id: int = Field(description="Input block data id")
 
     @classmethod
     def from_model(cls, result: InputBlockDataModel) -> "InputBlockGroupChild":
         return InputBlockGroupChild(
-            # id=result.id,
+            id=result.id,
             cid=result.cid,
             name=result.inputblock.name,
             data=json.loads(result.data.decode("utf-8")),

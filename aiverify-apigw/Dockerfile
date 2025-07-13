@@ -4,7 +4,7 @@
 ##
 
 # Stage 1: Build stage
-FROM aiverify-python-base AS build
+FROM ghcr.io/aiverify-foundation/aiverify-python-base AS build
 
 RUN apt-get update && \
     apt-get upgrade -y && \
@@ -38,7 +38,7 @@ RUN pip install -e . && \
     # npm link ../../aiverify-shared-library
 
 # Stage 2: Runtime stage
-FROM aiverify-python-base
+FROM ghcr.io/aiverify-foundation/aiverify-python-base
 
 # Create a non-root user
 RUN useradd -m appuser

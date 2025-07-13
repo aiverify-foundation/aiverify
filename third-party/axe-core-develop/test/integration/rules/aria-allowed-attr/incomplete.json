@@ -1,5 +1,0 @@
-{
-  "description": "aria-allowed-attr incomplete tests",
-  "rule": "aria-allowed-attr",
-  "incomplete": [["#incomplete1"]]
-}

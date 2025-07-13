@@ -77,12 +77,18 @@ function FileSelect({
 function Input({ accept, multiple }: { accept?: string; multiple?: boolean }) {
   const { inputRef, handleFiles } = useFileSelect();
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleFiles(e.target.files);
+    // Clear the input value to allow selecting the same files again
+    e.target.value = '';
+  };
+
   return (
     <input
       ref={inputRef}
       type="file"
       className={styles.hiddenInput}
-      onChange={(e) => handleFiles(e.target.files)}
+      onChange={handleChange}
       accept={accept}
       multiple={multiple}
     />

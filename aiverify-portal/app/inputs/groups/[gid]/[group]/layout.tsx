@@ -3,10 +3,8 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import React from 'react';
 import { ReactNode } from 'react';
-// import LayoutHeader from '@/app/inputs/components/LayoutHeader';
 import { InputBlockGroupDataProvider } from '@/app/inputs/context/InputBlockGroupDataContext';
 import LayoutHeader from './components/LayoutHeader';
-// import { useInputBlockGroupData } from '@/app/inputs/context/InputBlockGroupDataContext';
 
 type LayoutProps = {
   children: ReactNode;
@@ -17,8 +15,6 @@ const InputBlockGroupLayout = ({ children }: LayoutProps) => {
   const router = useRouter();
   const projectId = searchParams.get('projectId');
   const flow = searchParams.get('flow');
-  // const { gid, group } = useParams<{ gid: string; group: string }>();
-  // console.log('InputBlockGroupLayout', gid, group);
 
   const handleBackToProject = () => {
     if (flow && projectId) {

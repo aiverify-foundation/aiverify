@@ -111,28 +111,38 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
     }> = [];
 
     Array.from(selectedFiles).forEach((file) => {
-      formData.append('files', file);
-
       // Extract the subfolder path from webkitRelativePath
       const relativePath = file.webkitRelativePath;
-      let subfolderPath = './';
+      let subfolderPath = '';
+      let cleanFileName = file.name;
 
       if (relativePath) {
         const pathParts = relativePath.split('/');
         // If file is directly in root folder (no subfolder)
         if (pathParts.length <= 2) {
-          subfolderPath = './';
+          subfolderPath = '';
+          cleanFileName = pathParts[pathParts.length - 1]; // Just the filename
         } else {
-          // Extract the subfolder path (everything after the root folder name)
-          subfolderPath = './' + pathParts.slice(1, -1).join('/');
+          // Extract the subfolder path (everything after the root folder name, excluding the filename)
+          subfolderPath = pathParts.slice(1, -1).join('/');
+          cleanFileName = pathParts[pathParts.length - 1]; // Just the filename
         }
       }
+
+      // Create a new File object with clean filename (without folder path)
+      const cleanFile = new File([file], cleanFileName, {
+        type: file.type,
+        lastModified: file.lastModified,
+      });
+
+      // Add the clean file to FormData
+      formData.append('files', cleanFile);
 
       subfolderPaths.push(subfolderPath);
 
       // Store details for logging
       fileDetails.push({
-        name: file.name,
+        name: cleanFileName,
         path: file.webkitRelativePath || '',
         subfolder: subfolderPath,
       });
@@ -141,8 +151,8 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
     console.log('Files to upload (first 5):');
     fileDetails.slice(0, 5).forEach((file, index) => {
       console.log(`${index + 1}. ${file.name}`);
-      console.log(`   Full path: ${file.path}`);
-      console.log(`   Subfolder: ${file.subfolder}`);
+      console.log(`   Original path: ${file.path}`);
+      console.log(`   Subfolder: "${file.subfolder}"`);
     });
 
     if (fileDetails.length > 5) {
@@ -174,12 +184,26 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
         setModelType('');
         setSelectedFiles([]);
       },
-      onError: (error) => {
+      onError: (error: unknown) => {
         console.log('=== UPLOAD FAILED ===');
         console.error('Error details:', error);
-        setModalMessage(
-          `Error uploading folder: ${error instanceof Error ? error.message : 'Unknown error'}`
-        );
+        
+        // The useUploadFolder hook already extracts error.detail from API response
+        // So we can directly use error.message which contains the detailed error
+        let errorMessage = 'Unknown error';
+        
+        if (error instanceof Error) {
+          errorMessage = error.message;
+        } else if (typeof error === 'string') {
+          errorMessage = error;
+        } else if (error && typeof error === 'object' && 'message' in error && typeof (error as { message: unknown }).message === 'string') {
+          errorMessage = (error as { message: string }).message;
+        }
+        
+        const fullErrorMessage = `Error uploading folder "${folderName}": ${errorMessage}`;
+        console.log('Formatted error message:', fullErrorMessage);
+        
+        setModalMessage(fullErrorMessage);
         setIsModalVisible(true);
         // Reset all fields to initial state
         setFolderName('');
@@ -203,8 +227,8 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
           onCloseIconClick={closeModal}
           enableScreenOverlay
           heading="Upload Status"
-          height={200}>
-          <p>{modalMessage}</p>
+          height={300}>
+          <p className="whitespace-pre-line">{modalMessage}</p>
         </Modal>
       )}
 
@@ -294,6 +318,7 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
                   <option value="">Select</option>
                   <option value="regression">Regression</option>
                   <option value="classification">Classification</option>
+                  <option value="uplift">Uplift</option>
                 </select>
               </div>
             </div>
