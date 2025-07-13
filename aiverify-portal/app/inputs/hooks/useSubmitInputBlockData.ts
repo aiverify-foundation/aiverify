@@ -9,8 +9,10 @@ interface InputBlockSubmission {
   data: Record<string, unknown>;
 }
 
-const submitInputBlockData = async (data: InputBlockSubmission): Promise<InputBlockData> => {
-  const response = await fetch('/api/input_block_data', {
+const submitInputBlockData = async (
+  data: InputBlockSubmission
+): Promise<InputBlockData> => {
+  const response = await fetch('/api/input_block_data/', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -42,4 +44,4 @@ export function useSubmitInputBlockData() {
     isSubmitting: mutation.isPending,
     error: mutation.error,
   };
-} 
+}

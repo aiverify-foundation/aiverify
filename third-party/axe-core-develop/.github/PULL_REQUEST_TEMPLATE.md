@@ -1,3 +1,0 @@
-<< Describe the changes >>
-
-Closes:

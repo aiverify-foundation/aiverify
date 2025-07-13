@@ -21,11 +21,11 @@ class KubectlRun(Pipe):
     def setup(self):
         self.kubectl_bin = os.getenv("KUBECTL", "kubectl")
         self.algo_execute = Path(__file__).parent.joinpath("algo_execute.py")
-        self.apigw_url = os.getenv("DOCKER_APIGW_URL", "http://host.docker.internal:4000")
-        self.extra_args = os.getenv("DOCKER_RUN_EXTRA_ARGS", "--namespace=default")
+        self.apigw_url = os.getenv("KUBECTL_APIGW_URL", "http://apigw.aiverify.svc.cluster.local:4000")
+        self.extra_args = os.getenv("KUBECTL_RUN_EXTRA_ARGS", "--namespace=aiverify")
         registry = os.getenv("KUBECTL_REGISTRY", None)
         if registry is None:
-            registry = os.getenv("DOCKER_REGISTRY", "localhost:5000")
+            registry = os.getenv("DOCKER_REGISTRY", "")
         self.registry = registry
 
     def execute(self, task_data: PipelineData) -> PipelineData:
@@ -41,7 +41,7 @@ class KubectlRun(Pipe):
                 pod_name,
                 "--restart=Never",
                 self.extra_args,
-                f"--image={self.registry}/{tag}",
+                f"--image={self.registry + '/' if self.registry else ''}{tag}", 
                 "--command",
                 "--",
                 "/bin/sh", "-c", "trap : TERM INT; sleep infinity & wait"
@@ -79,6 +79,7 @@ class KubectlRun(Pipe):
             ]
             logger.debug(f"kubectl cp model path: {cmds}")
             subprocess.run(cmds, check=True)
+            
             if task_data.ground_truth_path and task_data.task.groundTruth:
                 if task_data.ground_truth_path.samefile(task_data.data_path):
                     pod_ground_truth_path = pod_data_path
@@ -94,6 +95,19 @@ class KubectlRun(Pipe):
                     logger.debug(f"kubectl cp ground truth path: {cmds}")
                     subprocess.run(cmds, check=True)
 
+            json_args_dict = task_data.task.algorithmArgs  # This is a Python dict, not yet stringified
+
+            # Modify paths in the dict
+            for key, value in json_args_dict.items():
+                if isinstance(value, str) and os.path.isabs(value) and os.path.exists(value):
+                    filename = os.path.basename(value)
+                    # Replace with new path inside pod
+                    new_path = f"/app/data/{filename}"
+                    json_args_dict[key] = new_path
+
+            # Convert to JSON
+            json_args = json.dumps(json_args_dict)
+            
             # kubectl exec
             cmds = [
                 self.kubectl_bin,
@@ -108,7 +122,7 @@ class KubectlRun(Pipe):
                 "--data_path", pod_data_path,
                 "--model_path", pod_model_path,
                 "--model_type", task_data.task.modelType.lower(),
-                "--algorithm_args", json.dumps(task_data.task.algorithmArgs),
+                "--algorithm_args", json_args,
                 "--apigw_url", self.apigw_url,
             ]
             if task_data.ground_truth_path and task_data.task.groundTruth:

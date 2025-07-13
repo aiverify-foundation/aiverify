@@ -259,7 +259,7 @@ def plot_waterfall(zf_name, model_id, local_interpretability_id, local_interpret
         [j["Value"] if j["Value"] != "" and j["Value"] is not None else np.nan for j in feature_info_list]
     )
 
-    txt = zf_name + "_waterfall_{model_id:d}_{local_interpretability_id:d}.png"
+    txt = zf_name + "_waterfall_{model_id}_{local_interpretability_id}.png"
     waterfall_filename = txt.format(model_id=model_id, local_interpretability_id=local_interpretability_id)
 
     waterfall(efx, fx, shap_values, feature_values, feature_names, waterfall_filename, max_display=10, show=False)
@@ -289,6 +289,10 @@ def generate_veritas_images(jsonObject: Dict[str, Any], output_dir: Path) -> tup
 
     # Path prefix for image files
     image_prefix = str(image_dir / "veritas")
+
+    def sanitize_filename(filename: str) -> str:
+        """Replace pipe characters with underscores for valid filename."""
+        return filename.replace("|", "_")
 
     # Create a dictionary to store image paths by category
     image_files = {
@@ -413,7 +417,8 @@ def generate_veritas_images(jsonObject: Dict[str, Any], output_dir: Path) -> tup
                     feature_distribution_list.append(feature_distribution[k])
                     feature_distribution_label.append(k)
 
-                img_path = plot_piechart(feature_distribution_list, feature_distribution_label, image_prefix, key)
+                safe_key = sanitize_filename(key)
+                img_path = plot_piechart(feature_distribution_list, feature_distribution_label, image_prefix, safe_key)
                 if img_path:
                     image_files["fairness"]["report_plots"]["features"][key]["distribution"].append(img_path)
                     relative_path = str(Path(img_path).relative_to(output_dir))
@@ -436,8 +441,9 @@ def generate_veritas_images(jsonObject: Dict[str, Any], output_dir: Path) -> tup
                 best_th = tradeoff.get("max_perf_single_th", [0])[0]
 
                 if th_a and th_b and perf.size > 0 and fair.size > 0:
+                    safe_key = sanitize_filename(key)
                     img_path = plot_contour(
-                        image_prefix, key, fair_metric_name, perf_metric_name, th_a, th_b, perf, fair, best_th
+                        image_prefix, safe_key, fair_metric_name, perf_metric_name, th_a, th_b, perf, fair, best_th
                     )
                     if img_path:
                         image_files["fairness"]["report_plots"]["features"][key]["tradeoff"].append(img_path)
@@ -463,9 +469,9 @@ def generate_veritas_images(jsonObject: Dict[str, Any], output_dir: Path) -> tup
         model_list = transparency.get("model_list", [])
         for model in model_list:
             for local_interpretability in model.get("local_interpretability", []):
-                img_path = plot_waterfall(
-                    image_prefix, model["id"], local_interpretability["id"], local_interpretability
-                )
+                safe_model_id = sanitize_filename(str(model["id"]))
+                safe_local_id = sanitize_filename(str(local_interpretability["id"]))
+                img_path = plot_waterfall(image_prefix, safe_model_id, safe_local_id, local_interpretability)
                 if img_path:
                     image_files["transparency"]["report_plots"]["waterfall"].append(img_path)
                     relative_path = str(Path(img_path).relative_to(output_dir))

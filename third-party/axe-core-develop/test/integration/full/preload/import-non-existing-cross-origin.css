@@ -1,3 +1,0 @@
-/* loads a non existing cross origin stylesheet */
-
-@import 'https://non.existing/style.css';

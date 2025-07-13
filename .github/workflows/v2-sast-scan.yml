@@ -1,0 +1,69 @@
+name: v2 Coverity Scan
+
+on:
+  # Run this workflow everyday at 6:05pm Singapore Time (10:05am UTC)
+  schedule:
+    - cron: '5 10 * * *'
+
+  # Run this workflow manually from Actions tab
+  workflow_dispatch:
+
+# Allow one concurrent deployment
+concurrency:
+  group: ${{ github.repository }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  Static-Application-Security-Testing:
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    env:
+      COV_URL: ${{ secrets.COV_URL }}
+      COV_USER: ${{ secrets.COV_USER }}
+      COVERITY_PASSPHRASE: ${{ secrets.COVERITY_PASSPHRASE }}
+      CSA_URL: ${{ secrets.CSA_URL }}
+      CSA: cov-analysis-linux64-2024.12.1
+      COV_STREAM: aiverify-v2.x
+      COVERITY_PROJECT: aiverify-v2.x
+      CHECKERS: --webapp-security
+      
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-java@v1
+      with:
+        java-version: 11
+
+    - name: Coverity Download
+      run: |
+        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/downloadFile.htm?fn=$CSA.tar.gz | tar -C /tmp -xzf -
+        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE -o /tmp/$CSA/bin/license.dat $COV_URL/downloadFile.htm?fn=license.dat
+        /tmp/$CSA/bin/cov-configure --java
+
+    - name: Coverity Full Scan
+      run: |
+        export PATH=$PATH:/tmp/$CSA/bin
+        set -x
+        coverity capture
+        cov-analyze --dir idir --all --all-security --strip-path $GITHUB_WORKSPACE $CHECKERS
+        cov-commit-defects --dir idir --ticker-mode none --url $COV_URL --stream $COV_STREAM --scm git \
+          --description $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID --target $RUNNER_OS --version $GITHUB_SHA
+
+    - name: Coverity Scan Results
+      run: |
+        curl -fLsS --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/api/viewContents/issues/v1/High%20Impact%20Outstanding?projectId=$COVERITY_PROJECT > results.json
+        cat results.json | jq .viewContentsV1.rows
+
+    - name: Export Coverity Scan Results to CSV
+      if: always()
+      run: |
+        curl -fLsS --header "Accept: text/csv" --user $COV_USER:$COVERITY_PASSPHRASE $COV_URL/api/viewContents/issues/v1/High%20Impact%20Outstanding?projectId=$COVERITY_PROJECT > coverity.csv
+
+    - name: Download Coverity Excel Sheet
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+          name: coverity-results-${{ github.run_id }}
+          path: |
+            ${{ github.workspace }}/coverity.csv

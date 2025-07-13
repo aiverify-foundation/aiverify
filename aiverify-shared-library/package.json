@@ -19,6 +19,7 @@
     "rollup-plugin-css-only": "^4.3.0",
     "rollup-plugin-dts": "^5.0.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
+    "tslib": "^2.6.2",
     "typescript": "^4.9.5"
   },
   "dependencies": {
@@ -40,13 +41,16 @@
   },
   "exports": {
     "./lib": {
-      "import": "./dist/library.js"
+      "import": "./dist/library.js",
+      "types": "./dist/types/lib/src/index.d.ts"
     },
     "./charts": {
-      "import": "./dist/charts.js"
+      "import": "./dist/charts.js",
+      "types": "./dist/types/charts/src/index.d.ts"
     },
     "./graph": {
-      "import": "./dist/graph.js"
+      "import": "./dist/graph.js",
+      "types": "./dist/types/graph/src/index.d.ts"
     },
     "./styles.css": {
       "import": "./dist/mdx.bundle.css"
@@ -64,5 +68,9 @@
         "./dist/types/charts/src/index.d.ts"
       ]
     }
+  },
+  "overrides": {
+    "@babel/runtime": "^7.26.10",
+    "serialize-javascript": "^6.0.2"
   }
 }

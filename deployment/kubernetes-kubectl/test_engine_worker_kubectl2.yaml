@@ -1,0 +1,104 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tew-pvc
+  namespace: aiverify
+spec:
+  accessModes:
+    - ReadWriteOnce #ReadWriteMany if running on multi-node cluster and if the provisioner used supports RWX
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: standard
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-engine-worker
+  namespace: aiverify
+spec:
+  selector:
+    app: test-engine-worker
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-engine-worker
+  namespace: aiverify
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: test-engine-worker
+  template:
+    metadata:
+      labels:
+        app: test-engine-worker
+    spec:
+      serviceAccountName: test-engine-sa
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+      containers:
+        - name: test-engine-worker
+          image: aiverify-test-engine-worker-kube
+          imagePullPolicy: Never
+          env:
+            - name: APIGW_URL
+              value: "http://apigw.aiverify.svc.cluster.local:4000"
+            - name: VALKEY_HOST_ADDRESS
+              value: "valkey.aiverify.svc.cluster.local"
+            - name: VALKEY_PORT
+              value: "6379"
+            - name: PIPELINE_BUILD
+              value: "docker_build"
+            - name: PIPELINE_EXECUTE
+              value: "kubectl_run2"
+            - name: PIPELINE_UPLOAD
+              value: "kube_upload"
+          volumeMounts:
+            - name: docker-socket
+              mountPath: /var/run/docker.sock
+            - name: tew-data
+              mountPath: /app/aiverify-test-engine-worker/data
+      volumes:
+        - name: docker-socket
+          hostPath:
+            path: /var/run/docker.sock
+            type: Socket
+        - name: tew-data
+          persistentVolumeClaim:
+            claimName: tew-pvc
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: test-engine-sa
+  namespace: aiverify
+--- 
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: test-engine-cluster-role
+rules:
+- apiGroups: ["batch", ""]
+  resources: ["jobs", "pods", "pods/exec"]
+  verbs: ["create", "get", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: test-engine-binding
+subjects:
+- kind: ServiceAccount
+  name: test-engine-sa
+  namespace: aiverify
+roleRef:
+  kind: ClusterRole
+  name: test-engine-cluster-role
+  apiGroup: rbac.authorization.k8s.io

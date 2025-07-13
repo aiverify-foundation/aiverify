@@ -51,7 +51,7 @@ class DockerBuild(Pipe):
             "-t", self.base_image,
             "-f", "aiverify-test-engine-worker/Dockerfile",
             "--rm",
-            "--target", "aiverify-test-engine-worker-base",
+            "--target", "base",
             "."
         ]
         logger.debug(f"docker image inspect cmds: {cmds}")

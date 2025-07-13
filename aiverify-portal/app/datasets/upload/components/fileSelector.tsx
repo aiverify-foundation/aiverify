@@ -38,22 +38,7 @@ export function FileSelector({
   }));
 
   function handleFileChange(files: File[]) {
-    let uniqueFiles: File[] = files;
-    if (uploaderState == 'new') {
-      // Check for duplicates by comparing file names
-      const existingFileNames = new Set(
-        fileUploads.map((upload) => upload.file.name)
-      );
-      uniqueFiles = files.filter((file) => !existingFileNames.has(file.name));
-
-      if (uniqueFiles.length === 0) {
-        // All files were duplicates
-        return;
-      }
-    }
-
-    // Continue with unique files only
-    files = uniqueFiles;
+    // Continue with all files - no duplicate checking
     const filesToUpload = Array.from(files);
     const newUploads: FileUpload[] = filesToUpload.map((file) => ({
       file,
@@ -61,12 +46,16 @@ export function FileSelector({
       status: 'idle',
       id: Math.random().toString(36).substring(2, 9),
     }));
+    
     if (
       uploaderState == 'completed' ||
       uploaderState == 'completedWithErrors'
     ) {
+      // Replace all files if in completed state
       setFileUploads(newUploads);
+      setUploaderState('new'); // Reset to new state when new files are selected
     } else {
+      // Add to existing files
       setFileUploads((prevUploads) => {
         const updatedUploads = [...prevUploads, ...newUploads];
         onFilesUpdated?.(updatedUploads);
@@ -134,6 +123,11 @@ export function FileSelector({
         setUploaderState('completedWithErrors');
       } else {
         setUploaderState('completed');
+        // After a short delay, reset successfully uploaded files to allow re-uploading
+        setTimeout(() => {
+          setFileUploads([]);
+          setUploaderState('new');
+        }, 2000); // 2 second delay to let the user see the completion status
       }
     } catch (error) {
       console.log('Unexpected error uploading files:', error);
@@ -154,7 +148,6 @@ export function FileSelector({
     <div>
       <div className={cn('flex w-full flex-col gap-8', className)}>
         <FileSelect
-          disabled={uploaderState !== 'new'}
           onFilesSelected={handleFileChange}
           className="w-full">
           <FileSelect.Input

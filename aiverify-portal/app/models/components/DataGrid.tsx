@@ -112,82 +112,84 @@ export const DataGrid: React.FC<DataGridProps> = ({
   const getRowId = (row: TestModel): string => String(row.id);
 
   return (
-    <div className="overflow-hidden rounded-lg border-secondary-300 bg-secondary-950 shadow-md">
-      <table className="w-full table-auto">
-        <thead className="bg-secondary-950 text-white">
-          <tr>
-            {checkboxSelection && <th className="px-4 py-2 text-center" />}
-            {columns.map((col) => (
-              <th
-                key={col.field}
-                className="relative cursor-pointer px-4 py-2 hover:bg-primary-600">
-                <div
-                  onClick={() => col.sortable && handleHeaderClick(col.field)}
-                  className="mt-2 flex w-full items-start justify-between">
-                  <span>{col.headerName}</span>
-                  {sortField === col.field &&
-                    (sortDirection === 'asc' ? '↑' : '↓')}
-                </div>
-                {col.filterable && (
-                  <div className="mt-2">
-                    <select
-                      className="w-full rounded-lg border bg-secondary-800 px-2 py-1 text-white"
-                      onChange={(e) =>
-                        handleFilterChange(col.field, e.target.value)
-                      }
-                      value={String(filters[col.field] || '')} // Ensure it's a string
-                    >
-                      <option value="">All</option>
-                      {Array.from(
-                        new Set(rows.map((row) => row[col.field]))
-                      ).map((value) => (
-                        <option
-                          key={String(value)}
-                          value={String(value)}>
-                          {String(value)}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedRows.map((row) => (
-            <tr
-              key={row.id}
-              className="hover:bg-secondary-800"
-              onClick={() => onRowClick?.(row)}>
-              {checkboxSelection && (
-                <td
-                  className="px-4 py-2 text-center"
-                  onClick={(e) => e.stopPropagation()}>
-                  <input
-                    type="checkbox"
-                    checked={selectedRows.has(getRowId(row))}
-                    onChange={(e) => handleCheckboxChange(getRowId(row), e)}
-                    className="h-5 w-5 cursor-pointer"
-                  />
-                </td>
-              )}
+    <div className="relative h-full overflow-hidden rounded-lg border-secondary-300 bg-secondary-950 shadow-md">
+      <div className="h-full overflow-y-auto pb-16">
+        <table className="w-full table-auto">
+          <thead className="bg-secondary-950 text-white sticky top-0 z-10">
+            <tr>
+              {checkboxSelection && <th className="px-4 py-2 text-center" />}
               {columns.map((col) => (
-                <td
+                <th
                   key={col.field}
-                  className="border-b border-secondary-500 px-4 py-3 text-white">
-                  {col.renderCell ? (
-                    col.renderCell(row)
-                  ) : (
-                    <span>{String(row[col.field])}</span> // Make sure it's a valid React node
+                  className="relative cursor-pointer px-4 py-2 hover:bg-primary-600">
+                  <div
+                    onClick={() => col.sortable && handleHeaderClick(col.field)}
+                    className="mt-2 flex w-full items-start justify-between">
+                    <span>{col.headerName}</span>
+                    {sortField === col.field &&
+                      (sortDirection === 'asc' ? '↑' : '↓')}
+                  </div>
+                  {col.filterable && (
+                    <div className="mt-2">
+                      <select
+                        className="w-full rounded-lg border bg-secondary-800 px-2 py-1 text-white"
+                        onChange={(e) =>
+                          handleFilterChange(col.field, e.target.value)
+                        }
+                        value={String(filters[col.field] || '')} // Ensure it's a string
+                      >
+                        <option value="">All</option>
+                        {Array.from(
+                          new Set(rows.map((row) => row[col.field]))
+                        ).map((value) => (
+                          <option
+                            key={String(value)}
+                            value={String(value)}>
+                            {String(value)}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   )}
-                </td>
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
-      <div className="mb-2 mt-12 flex items-center justify-between bg-secondary-950 px-5 py-2">
+          </thead>
+          <tbody>
+            {paginatedRows.map((row) => (
+              <tr
+                key={row.id}
+                className="hover:bg-secondary-800"
+                onClick={() => onRowClick?.(row)}>
+                {checkboxSelection && (
+                  <td
+                    className="px-4 py-2 text-center"
+                    onClick={(e) => e.stopPropagation()}>
+                    <input
+                      type="checkbox"
+                      checked={selectedRows.has(getRowId(row))}
+                      onChange={(e) => handleCheckboxChange(getRowId(row), e)}
+                      className="h-5 w-5 cursor-pointer"
+                    />
+                  </td>
+                )}
+                {columns.map((col) => (
+                  <td
+                    key={col.field}
+                    className="border-b border-secondary-500 px-4 py-3 text-white">
+                    {col.renderCell ? (
+                      col.renderCell(row)
+                    ) : (
+                      <span>{String(row[col.field])}</span> // Make sure it's a valid React node
+                    )}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between bg-secondary-950 px-5 py-2 border-t border-secondary-700">
         <div>
           <select
             value={String(pageSize)}

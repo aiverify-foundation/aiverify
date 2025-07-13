@@ -11,6 +11,7 @@ from typing import Dict
 from .algorithm_utils import validate_algorithm
 import logging
 from datetime import datetime
+import requests
 logging.basicConfig(format='%(levelname)-8s [%(filename)s:%(lineno)d] %(message)s')
 logger = logging.getLogger(__name__)
 
@@ -124,6 +125,12 @@ def parse_arguments():
         help="JSON string of arguments for the algorithm."
     )
     parser.add_argument("--apigw_url", type=str, help="URL of apigw to report updates")
+    parser.add_argument(
+        "--upload_output_to_apigw",
+        action="store_true",
+        help="If set, results will be uploaded to the specified apigw URL (requires --apigw_url)"
+    )
+    
     parser.add_argument("--output_zip", type=Path, help="Path to output zip file, default saved under algo_path")
     parser.add_argument(
         "-v", "--verbose",
@@ -133,6 +140,12 @@ def parse_arguments():
     )
 
     args = parser.parse_args()
+    
+    # Post-parsing validation
+    if args.upload_output_to_apigw and not args.apigw_url:
+        parser.error("--apigw_url is required when --upload_output_to_apigw is set.")
+    if args.apigw_url and not args.upload_output_to_apigw:
+        logger.warning("--apigw_url is set but --upload_output_to_apigw is not. URL will be used only for progress update.")
 
     if args.verbose > 0:
         if args.verbose == 1:
@@ -176,7 +189,7 @@ class ProcessCallback:
         Args:
             completion_value (int): Current progress completion
         """
-        logger.info(f"[Accumulate Local Effect Test] Progress Update: {completion_value}")
+        logger.info(f"[Test Run ID {self.test_run_id}] Progress Update: {completion_value}")
         if not self.__class__.apigw_url:
             # logger.error("API Gateway URL is not set.")
             return
@@ -415,6 +428,65 @@ def run():
 
     logger.info("Algorithm run method completed successfully.")
     
+    if args.upload_output_to_apigw:
+        upload_url = f"{args.apigw_url}/test_results/upload_zip"
+        
+        try:
+            with open(output_zip_path, 'rb') as zip_file:
+                # Prepare the files dictionary for the POST request
+                files = {'file': zip_file}
+
+                # Send the POST request to upload the zip file
+                response = requests.post(upload_url, files=files)
+
+                # Check if the upload was successful
+                if response.status_code == 200:
+                    logger.debug(f"Successfully uploaded zip file to {upload_url}")
+                else:
+                    logger.error(
+                        f"Failed to upload zip file. Status code: {response.status_code}, Response: {response.text}")
+                    
+        except FileNotFoundError:
+            logger.error(f"Zip file not found at: {output_zip_path}")
+        except Exception as e:
+            logger.exception(f"Unexpected error while uploading zip: {e}")
     
 if __name__ == "__main__":
-    run()
+
+    try:
+        args = parse_arguments()
+    except Exception as e:
+        logger.critical(f"Failed to parse arguments: {e}")
+        exit(-1)
+    
+    if args.upload_output_to_apigw:
+        # Run with error reporting 
+        try:
+            run()
+        except Exception as e:
+            import traceback
+            error_message = traceback.format_exc()
+            logger.debug(f"Update Pipeline error to API GW")
+
+            update_obj = {
+                "status": "error",
+                "errorMessages": f"Failed to run algorithm: {error_message}",
+            }
+
+            apigw_url = args.apigw_url
+            test_run_id = args.test_run_id
+
+            if apigw_url and test_run_id:
+                update_url = f"{apigw_url}/test_runs/{test_run_id}"
+                logger.debug(f"Post error to {update_url}: {update_obj}")
+                try:
+                    requests.patch(update_url, json=update_obj)
+                    logger.info("Error successfully reported to API Gateway.")
+                except Exception as api_error:
+                    logger.warning(f"Failed to report error to API Gateway: {api_error}")
+            else:
+                logger.warning("Missing apigw_url or test_run_id; cannot send error update.")
+
+            exit(-1)
+    else:
+        run()
