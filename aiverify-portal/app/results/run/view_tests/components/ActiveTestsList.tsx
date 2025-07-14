@@ -191,15 +191,24 @@ export default function ActiveTestsList({ runs }: { runs: TestRunOutput[] }) {
     return [{ value: 'all', label: 'All Algorithms' }, ...uniqueNames];
   };
 
+  // Helper function to get the display status
+  const getDisplayStatus = (test: TestRunOutput) => {
+    if (test.status === 'pending' && test.progress > 0) {
+      return 'running';
+    }
+    return test.status;
+  };
+
   // Combined filtering function
   const getFilteredTests = () => {
     let filtered = tests;
 
     // Filter by status if active filters exist
     if (activeStatusFilters.length > 0) {
-      filtered = filtered.filter((test) =>
-        activeStatusFilters.includes(test.status)
-      );
+      filtered = filtered.filter((test) => {
+        const displayStatus = getDisplayStatus(test);
+        return activeStatusFilters.includes(displayStatus);
+      });
     }
 
     // Filter by algorithm if not set to "all"
@@ -489,9 +498,9 @@ export default function ActiveTestsList({ runs }: { runs: TestRunOutput[] }) {
                         </span>
                         <span
                           className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                            test.status === 'pending'
+                            test.status === 'pending' && test.progress === 0
                               ? 'bg-yellow-200 text-yellow-800'
-                              : test.status === 'running'
+                              : test.status === 'pending' && test.progress > 0
                                 ? 'bg-blue-200 text-blue-800'
                                 : test.status === 'success'
                                   ? 'bg-green-200 text-green-800'
@@ -501,7 +510,7 @@ export default function ActiveTestsList({ runs }: { runs: TestRunOutput[] }) {
                                       ? 'bg-gray-200 text-gray-700'
                                       : 'bg-gray-200 text-gray-800'
                           }`}>
-                          {test.status.toUpperCase()}
+                          {test.status === 'pending' && test.progress > 0 ? 'RUNNING' : test.status.toUpperCase()}
                         </span>
                       </div>
                       <div className="text-sm text-gray-400">
@@ -516,9 +525,8 @@ export default function ActiveTestsList({ runs }: { runs: TestRunOutput[] }) {
                       </div>
                     </div>
                     <div className="flex">
-                      {/* Show cancel button for pending or running tests */}
-                      {(test.status === 'pending' ||
-                        test.status === 'running') && (
+                      {/* Show cancel button for pending tests (both true pending and running) */}
+                      {test.status === 'pending' && (
                         <button
                           onClick={() => handleCancelTest(test.id)}
                           className="ml-2 flex h-8 w-8 items-center justify-center rounded-full bg-secondary-800 p-1 text-gray-400 transition-colors hover:bg-yellow-700 hover:text-white"
@@ -528,9 +536,8 @@ export default function ActiveTestsList({ runs }: { runs: TestRunOutput[] }) {
                           <RiCloseLine className="h-4 w-4" />
                         </button>
                       )}
-                      {/* Only show delete button for tests that are not pending or running */}
-                      {test.status !== 'pending' &&
-                        test.status !== 'running' && (
+                      {/* Only show delete button for tests that are not pending */}
+                      {test.status !== 'pending' && (
                           <button
                             onClick={() => handleDeleteTest(test.id)}
                             className="ml-2 flex h-8 w-8 items-center justify-center rounded-full bg-secondary-800 p-1 text-gray-400 transition-colors hover:bg-red-800 hover:text-white"
@@ -551,7 +558,7 @@ export default function ActiveTestsList({ runs }: { runs: TestRunOutput[] }) {
                         <span className="font-medium text-white">
                           {test.progress}%
                         </span>
-                        {test.status === 'running' &&
+                        {test.status === 'pending' &&
                           test.progress > 0 &&
                           test.progress < 100 && (
                             <span className="ml-2 text-gray-400">
@@ -564,9 +571,9 @@ export default function ActiveTestsList({ runs }: { runs: TestRunOutput[] }) {
                     <div className="h-2 w-full overflow-hidden rounded-full bg-secondary-800">
                       <div
                         className={`h-2 rounded-full transition-all duration-300 ease-in-out ${
-                          test.status === 'pending'
+                          test.status === 'pending' && test.progress === 0
                             ? 'bg-yellow-500'
-                            : test.status === 'running'
+                            : test.status === 'pending' && test.progress > 0
                               ? 'bg-primary-500'
                               : test.status === 'success'
                                 ? 'bg-green-500'
@@ -582,7 +589,7 @@ export default function ActiveTestsList({ runs }: { runs: TestRunOutput[] }) {
                   </div>
 
                   {/* Add visual indicator for real-time updates */}
-                  {test.status === 'running' && (
+                  {test.status === 'pending' && test.progress > 0 && (
                     <div className="mt-1 flex items-center">
                       <div className="h-2 w-2 animate-pulse rounded-full bg-blue-500" />
                       <span className="ml-1 text-xs text-blue-300">

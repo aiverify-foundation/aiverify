@@ -35,7 +35,7 @@ const useGetTestRuns = (
 
       // Check if there are any pending or running tests
       const activeTests = cachedData.filter(
-        (test) => test.status === 'pending' || test.status === 'running'
+        (test) => test.status === 'pending'
       );
 
       if (activeTests.length === 0) return false;
