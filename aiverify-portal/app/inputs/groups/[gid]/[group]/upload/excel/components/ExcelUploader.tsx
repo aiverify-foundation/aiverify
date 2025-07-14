@@ -44,6 +44,7 @@ const ExcelUploader = () => {
   >([]);
   const [unmatchedSheets, setUnmatchedSheets] = useState<string[]>([]);
   const [groupName, setGroupName] = useState('');
+  const [fileNameError, setFileNameError] = useState('');
 
   const { gid, group, groupDataList } = useInputBlockGroupData();
 
@@ -58,6 +59,25 @@ const ExcelUploader = () => {
   const flow = searchParams.get('flow');
   const projectId = searchParams.get('projectId');
 
+  const validateFileName = (fileName: string): boolean => {
+    if (!fileName.endsWith('_checklists.xlsx')) {
+      setFileNameError('File name must end with "_checklists.xlsx"');
+      return false;
+    }
+    
+    const groupNameFromFile = fileName
+      .replace('.xlsx', '')
+      .replace('_checklists', '');
+    
+    if (!groupNameFromFile.trim()) {
+      setFileNameError('File name must start with a group name before "_checklists.xlsx"');
+      return false;
+    }
+    
+    setFileNameError('');
+    return true;
+  };
+
   const handleBack = () => {
     if (flow && projectId) {
       router.push(
@@ -71,7 +91,11 @@ const ExcelUploader = () => {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
-      setFile(selectedFile);
+      if (validateFileName(selectedFile.name)) {
+        setFile(selectedFile);
+      } else {
+        setFile(null);
+      }
     }
     
     // Clear the file input value to allow re-selecting the same file
@@ -268,7 +292,12 @@ const ExcelUploader = () => {
     event.preventDefault();
     const files = Array.from(event.dataTransfer.files);
     if (files.length > 0) {
-      setFile(files[0]);
+      const droppedFile = files[0];
+      if (validateFileName(droppedFile.name)) {
+        setFile(droppedFile);
+      } else {
+        setFile(null);
+      }
     }
   };
 
@@ -437,6 +466,20 @@ const ExcelUploader = () => {
               </div>
             </div>
 
+            {/* File name validation error */}
+            {fileNameError && (
+              <div className="mt-3 rounded-md border border-red-400 bg-red-50 p-3 text-red-700">
+                <div className="flex items-center">
+                  <span className="mr-2 text-lg">⚠️</span>
+                  <span className="text-sm font-medium">Invalid file name:</span>
+                </div>
+                <p className="mt-1 text-sm">{fileNameError}</p>
+                <p className="mt-1 text-xs text-red-600">
+                  File name must follow the format: [group_name]_checklists.xlsx
+                </p>
+              </div>
+            )}
+
             <h2 className="mb-2 mt-10 text-lg font-semibold">
               Selected Files:
             </h2>
@@ -475,7 +518,7 @@ const ExcelUploader = () => {
                 size="sm"
                 variant={ButtonVariant.PRIMARY}
                 onClick={handleSubmit}
-                disabled={isUploading || !file}
+                disabled={isUploading || !file || !!fileNameError}
                 text={isUploading ? 'UPLOADING...' : 'CONFIRM UPLOAD'}
               />
             </div>
