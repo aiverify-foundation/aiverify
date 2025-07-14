@@ -44,6 +44,12 @@ const PluginUploader = () => {
       id: Math.random().toString(36).substring(2, 9),
     }));
     setFileUploads((prevUploads) => [...prevUploads, ...newUploads]);
+    
+    // Clear the file input value to allow re-selecting the same file
+    const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   };
 
   const removeUpload = (id: string) => {

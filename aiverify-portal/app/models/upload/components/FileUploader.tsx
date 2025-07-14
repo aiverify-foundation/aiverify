@@ -17,12 +17,25 @@ const FileUploader = () => {
   const { mutate, status } = useUploadFile();
   const isLoading = status === 'pending';
 
-  const handleFiles = (files: FileList | File[]) => {
+  const handleFiles = (files: FileList | File[], inputElement?: HTMLInputElement) => {
     setSelectedFiles((prevFiles) => [...prevFiles, ...Array.from(files)]);
     setModelTypes((prevTypes) => [
       ...prevTypes,
       ...Array.from(files).map(() => ''),
     ]);
+    
+    // Clear the file input value to allow re-selecting the same file
+    // Use setTimeout to ensure state update is processed first
+    setTimeout(() => {
+      if (inputElement) {
+        inputElement.value = '';
+      } else {
+        const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+        if (fileInput) {
+          fileInput.value = '';
+        }
+      }
+    }, 0);
   };
 
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
@@ -170,7 +183,7 @@ const FileUploader = () => {
                     accept=".sav,.pkl"
                     multiple
                     className="hidden"
-                    onChange={(e) => handleFiles(e.target.files || [])}
+                    onChange={(e) => handleFiles(e.target.files || [], e.target)}
                   />
                 </div>
               </div>

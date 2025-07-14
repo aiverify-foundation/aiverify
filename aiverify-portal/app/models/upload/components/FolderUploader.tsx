@@ -99,6 +99,12 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
       // Replace the current selection instead of appending
       setSelectedFiles(Array.from(files) as FileWithPath[]);
     }
+    
+    // Clear the file input value to allow re-selecting the same folder
+    const fileInput = document.getElementById('folderInput') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   };
 
   const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {

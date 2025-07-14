@@ -73,6 +73,12 @@ const ExcelUploader = () => {
     if (selectedFile) {
       setFile(selectedFile);
     }
+    
+    // Clear the file input value to allow re-selecting the same file
+    const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   };
 
   const overwriteChecklists = async () => {
