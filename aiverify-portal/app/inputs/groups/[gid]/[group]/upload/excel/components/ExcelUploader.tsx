@@ -31,6 +31,12 @@ interface InputBlockData {
   data: Record<string, string>; // For other properties that may exist
 }
 
+// Define interface for API input blocks (simplified structure)
+interface APIInputBlock {
+  cid: string;
+  data: Record<string, string>;
+}
+
 const ExcelUploader = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -338,7 +344,7 @@ const ExcelUploader = () => {
   };
 
   // Comprehensive validation function that must pass before any data is saved
-  const validateSubmissionsForUpload = (submissions: any[]): { isValid: boolean; error?: string } => {
+  const validateSubmissionsForUpload = (submissions: ChecklistSubmission[]): { isValid: boolean; error?: string } => {
     console.log(`Validating ${submissions?.length || 0} submissions...`);
     
     if (!submissions || !Array.isArray(submissions)) {
@@ -442,7 +448,7 @@ const ExcelUploader = () => {
   };
 
   // Final validation before API calls
-  const validateInputBlocksForAPI = (input_blocks: any[]): { isValid: boolean; error?: string } => {
+  const validateInputBlocksForAPI = (input_blocks: APIInputBlock[]): { isValid: boolean; error?: string } => {
     if (!input_blocks || !Array.isArray(input_blocks) || input_blocks.length === 0) {
       return { isValid: false, error: 'No valid input blocks to upload' };
     }
@@ -542,7 +548,7 @@ const ExcelUploader = () => {
       }
 
       const { submissions, unmatchedSheets: unmatchedSheetsList } = result as {
-        submissions: any[];
+        submissions: ChecklistSubmission[];
         unmatchedSheets: string[];
       };
 
