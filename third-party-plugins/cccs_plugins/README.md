@@ -1,3 +1,10 @@
+# HITS
+  [![HitCount](https://hits.dwyl.com/mhfren-sg/https://githubcom/CCCSD2EXT/aiverify/tree/main/third-party-plugins/cccs_plugins.svg?style=flat-square)](http://hits.dwyl.com/mhfren-sg/https://githubcom/CCCSD2EXT/aiverify/tree/main/third-party-plugins/cccs_plugins)
+
+# HITS -unique
+  [![HitCount](https://hits.dwyl.com/mhfren-sg/https://githubcom/CCCSD2EXT/aiverify/tree/main/third-party-plugins/cccs_plugins.svg?style=flat-square&show=unique)](http://hits.dwyl.com/mhfren-sg/https://githubcom/CCCSD2EXT/aiverify/tree/main/third-party-plugins/cccs_plugins)
+
+# visitorbadge.io
 [![Visitors](https://api.visitorbadge.io/api/combined?path=https%3A%2F%2Fgithub.com%2FCCCSD2EXT%2Faiverify%2Ftree%2Fmain%2Fthird-party-plugins%2Fcccs_plugins&countColor=%23263759)](https://visitorbadge.io/status?path=https%3A%2F%2Fgithub.com%2FCCCSD2EXT%2Faiverify%2Ftree%2Fmain%2Fthird-party-plugins%2Fcccs_plugins)
 
 # AIM Toolkit Quick Start Guide
