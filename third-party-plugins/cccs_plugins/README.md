@@ -1,5 +1,6 @@
 # HITS
-  [![HitCount](https://hits.dwyl.com/CCCSD2EXT/https://githubcom/CCCSD2EXT/aiverify/tree/main/third-party-plugins/cccs_plugins.svg?style=flat-square)](http://hits.dwyl.com/CCCSD2EXT/https://githubcom/CCCSD2EXT/aiverify/tree/main/third-party-plugins/cccs_plugins)
+[![HitCount](https://hits.dwyl.com/CCCSD2EXT/aiverify.svg?style=flat-square)](https://hits.dwyl.com/CCCSD2EXT/aiverify)
+
 
 # HITS -unique
   [![HitCount](https://hits.dwyl.com/CCCSD2EXT/https://githubcom/CCCSD2EXT/aiverify/tree/main/third-party-plugins/cccs_plugins.svg?style=flat-square&show=unique)](http://hits.dwyl.com/CCCSD2EXT/https://githubcom/CCCSD2EXT/aiverify/tree/main/third-party-plugins/cccs_plugins)
