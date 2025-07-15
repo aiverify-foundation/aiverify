@@ -174,9 +174,6 @@ const FileUploader = () => {
                       Click to Browse
                     </span>
                   </p>
-                  <p className="mt-1 text-xs text-gray-500">
-                    Maximum 10 files per upload
-                  </p>
                   <input
                     id="fileInput"
                     type="file"

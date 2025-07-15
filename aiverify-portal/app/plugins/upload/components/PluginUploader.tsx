@@ -207,9 +207,6 @@ const PluginUploader = () => {
                     Click to Browse
                   </span>
                   <br />
-                  <span className="text-[0.8rem] text-secondary-300">
-                    Maximum 10 files per upload
-                  </span>
                 </p>
               </div>
             </div>
