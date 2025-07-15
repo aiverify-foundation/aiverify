@@ -80,6 +80,7 @@ export type InputBlockGroupDataContextType = {
   group: string;
   groupId: number | undefined;
   cid: string | undefined;
+  name: string | undefined;
   groupDataList: InputBlockGroupData[] | null;
   inputBlocks: InputBlock[] | null;
   currentGroupData: InputBlockGroupData | null;
@@ -106,17 +107,19 @@ export const InputBlockGroupDataProvider: React.FC<{
     group: string;
     groupId: string | undefined;
     cid: string | undefined;
+    name: string | undefined;
   }>();
   const searchParams = useSearchParams();
   const projectId = searchParams.get('projectId');
   const flow = searchParams.get('flow');
 
-  const { gid, group, cid } = params;
+  const { gid, group, cid, name: groupName } = params;
   const groupId = params.groupId ? parseInt(params.groupId) : undefined;
   const [inputBlocks, setInputBlocks] = useState<InputBlock[]>([]);
   const [groupDataList, setGroupDataList] = useState<InputBlockGroupData[]>([]);
   const [currentGroupData, setCurrentGroupData] =
     useState<InputBlockGroupData | null>(null);
+  const [currentName, setCurrentName] = useState<string | undefined>(groupName);
   const [newGroupData, setNewGroupData] = useState<InputBlockGroupDataUpdate>({
     gid,
     name: group,
@@ -153,6 +156,10 @@ export const InputBlockGroupDataProvider: React.FC<{
           if (groupId) {
             const ibdata = groupData.find((x) => x.id == groupId);
             setCurrentGroupData(ibdata || null);
+            // Set the name from the current group data
+            if (ibdata?.name) {
+              setCurrentName(ibdata.name);
+            }
           }
         } catch (e) {
           console.log('Error get group data: ', e);
@@ -165,8 +172,17 @@ export const InputBlockGroupDataProvider: React.FC<{
       // setInputBlocks(null);
       // setGroupDataList([]);
       setCurrentGroupData(null);
+      setCurrentName(undefined);
     }
   }, [gid, group, groupId]);
+
+  // Update currentName when currentGroupData changes
+  useEffect(() => {
+    if (currentGroupData?.name) {
+      setCurrentName(currentGroupData.name);
+    }
+  }, [currentGroupData]);
+
   const debouncedSaveInputBlockData = useCallback(
     debounce((data: InputBlockGroupData) => {
       console.log('debouncedSaveInputBlockData:', data);
@@ -232,6 +248,7 @@ export const InputBlockGroupDataProvider: React.FC<{
     newData.name = name;
     // console.log('newData:', newData);
     setCurrentGroupData(newData);
+    setCurrentName(name); // Update the local name state
     debouncedSaveInputBlockData(newData);
   };
   const getInputBlockData = (cid: string) => {
@@ -297,6 +314,7 @@ export const InputBlockGroupDataProvider: React.FC<{
         group: decodeURI(group),
         groupId: groupId,
         cid: cid,
+        name: currentName, // Use the state-managed name
         inputBlocks,
         groupDataList: groupDataList,
         currentGroupData,

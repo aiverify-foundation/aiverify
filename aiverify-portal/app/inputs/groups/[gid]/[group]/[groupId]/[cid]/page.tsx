@@ -20,7 +20,8 @@ const queryClient = new QueryClient({
 export default function ChecklistDetailPage() {
   console.log('ChecklistDetailPage component started');
   
-  const { gid, groupId, cid, group } = useInputBlockGroupData();
+  const { gid, groupId, cid, group, name } = useInputBlockGroupData();
+  console.log('Context values:', { gid, groupId, cid, group, name });
   const router = useRouter();
   const [urlParams, setUrlParams] = useState<{ projectId: string | null; flow: string | null }>({
     projectId: null,
@@ -76,7 +77,7 @@ export default function ChecklistDetailPage() {
               <span className="mx-2 text-2xl text-white">/</span>
               <span className="text-2xl font-bold text-white hover:underline">
                 <Link href={preserveQueryParams(`/inputs/groups/${gid}/${group}/${groupId}`)}>
-                  {groupId}
+                  {name || groupId}
                 </Link>
               </span>
               <span className="mx-2 text-2xl text-white">/</span>
