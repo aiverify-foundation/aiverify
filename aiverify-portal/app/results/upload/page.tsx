@@ -30,7 +30,13 @@ const UploadPage = () => {
   };
 
   const handleBackProject = () => {
-    if (isProjectFlow) {
+    if (isProjectFlow && projectId && flow) {
+      // Navigate back to the project select_data page properly to trigger fresh data fetch
+      const backUrl = `/project/select_data?flow=${flow}&projectId=${projectId}`;
+      console.log('Navigating back to project page:', backUrl);
+      router.push(backUrl);
+    } else {
+      // Fallback to history.back() if we don't have the necessary parameters
       window.history.back();
     }
   };
