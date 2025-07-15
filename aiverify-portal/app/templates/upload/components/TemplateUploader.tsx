@@ -143,6 +143,11 @@ const TemplateUploader = () => {
     if (zipFiles.length === 0) {
       setModalMessage('Only ZIP files are allowed.');
       setIsModalVisible(true);
+      // Clear the file input value
+      const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+      if (fileInput) {
+        fileInput.value = '';
+      }
       return;
     }
 
@@ -173,10 +178,21 @@ const TemplateUploader = () => {
     if (processedUploads.length === 0) {
       setModalMessage('No valid ZIP files were processed. Please check file contents and try again.');
       setIsModalVisible(true);
+      // Clear the file input value
+      const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+      if (fileInput) {
+        fileInput.value = '';
+      }
       return;
     }
 
     setFileUploads((prevUploads) => [...prevUploads, ...processedUploads]);
+    
+    // Clear the file input value to allow re-selecting the same file
+    const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   };
 
   const _debugFileInfo = () => {

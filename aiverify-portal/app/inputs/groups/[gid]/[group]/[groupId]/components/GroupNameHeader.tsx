@@ -153,7 +153,11 @@ const GroupHeader = ({
 
   const handleModalClose = useCallback(() => {
     setIsModalVisible(false);
-  }, []);
+    // Navigate back if deletion was successful
+    if (deleteGroupMutation.isSuccess) {
+      router.back();
+    }
+  }, [deleteGroupMutation.isSuccess, router]);
 
   useEffect(() => {
     if (deleteGroupMutation.isSuccess) {
