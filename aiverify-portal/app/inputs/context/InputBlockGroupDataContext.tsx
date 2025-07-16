@@ -113,7 +113,7 @@ export const InputBlockGroupDataProvider: React.FC<{
   const projectId = searchParams.get('projectId');
   const flow = searchParams.get('flow');
 
-  const { gid, group, cid, name} = params;
+  const { gid, group, cid} = params;
   const groupId = params.groupId ? parseInt(params.groupId) : undefined;
   const [inputBlocks, setInputBlocks] = useState<InputBlock[]>([]);
   const [groupDataList, setGroupDataList] = useState<InputBlockGroupData[]>([]);
@@ -121,7 +121,7 @@ export const InputBlockGroupDataProvider: React.FC<{
     useState<InputBlockGroupData | null>(null);
   const [newGroupData, setNewGroupData] = useState<InputBlockGroupDataUpdate>({
     gid,
-    name: name  || group,
+    name: group,
     group: group,
     input_blocks: [],
   });
@@ -300,7 +300,7 @@ export const InputBlockGroupDataProvider: React.FC<{
         group: decodeURI(group),
         groupId: groupId,
         cid: cid,
-        name: currentGroupData?.name ?? name, // This reflects any changes made to the name in the current group data
+        name: currentGroupData?.name ?? group, // This reflects any changes made to the name in the current group data
         inputBlocks,
         groupDataList: groupDataList,
         currentGroupData,
