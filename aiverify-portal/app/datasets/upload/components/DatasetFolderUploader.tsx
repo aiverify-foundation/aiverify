@@ -33,6 +33,55 @@ export function DatasetFolderUploader() {
     }
   };
 
+  // Helper function to traverse directory entries recursively
+  const traverseDirectory = async (entry: FileSystemEntry, path = ''): Promise<FileWithPath[]> => {
+    const files: FileWithPath[] = [];
+    
+    if (entry.isFile) {
+      const fileEntry = entry as FileSystemFileEntry;
+      const file = await new Promise<File>((resolve, reject) => {
+        fileEntry.file(resolve, reject);
+      });
+      
+      // Create a new File object with the same content but with a custom name that includes the path
+      // This ensures it's a proper File object that can be used in FormData
+      const newFile = new File([file], file.name, {
+        type: file.type,
+        lastModified: file.lastModified,
+      });
+      
+      // Add webkitRelativePath as a non-enumerable property
+      // Build the path by combining current path with filename
+      const webkitRelativePath = path + file.name;
+      Object.defineProperty(newFile, 'webkitRelativePath', {
+        value: webkitRelativePath,
+        writable: false,
+        enumerable: false,
+        configurable: false
+      });
+      
+      console.log(`Built webkitRelativePath: "${webkitRelativePath}" from path: "${path}" + filename: "${file.name}"`);
+      
+      files.push(newFile as FileWithPath);
+    } else if (entry.isDirectory) {
+      const directoryEntry = entry as FileSystemDirectoryEntry;
+      const reader = directoryEntry.createReader();
+      const entries = await new Promise<FileSystemEntry[]>((resolve, reject) => {
+        reader.readEntries(resolve, reject);
+      });
+      
+      // Build the path for this directory level
+      const currentPath = path + entry.name + '/';
+      
+      for (const subEntry of entries) {
+        const subFiles = await traverseDirectory(subEntry, currentPath);
+        files.push(...subFiles);
+      }
+    }
+    
+    return files;
+  };
+
   const handleFiles = (files: FileList | File[]) => {
     if (files.length === 0) return;
 
@@ -98,9 +147,115 @@ export function DatasetFolderUploader() {
     resetFileInput();
   };
 
-  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
-    handleFiles(event.dataTransfer.files);
+    
+    const items = event.dataTransfer.items;
+    if (!items) {
+      // Fallback to regular file handling
+      handleFiles(event.dataTransfer.files);
+      return;
+    }
+
+    const allFiles: FileWithPath[] = [];
+    const folderGroups: Record<string, FileWithPath[]> = {};
+
+    // Process each dropped item
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      if (item.kind === 'file') {
+        const entry = item.webkitGetAsEntry();
+        if (entry) {
+          if (entry.isDirectory) {
+            // Handle directory - start with empty path, let traverseDirectory build the correct path
+            const files = await traverseDirectory(entry, '');
+            files.forEach(file => {
+              const rootFolderName = file.webkitRelativePath.split('/')[0];
+              if (!folderGroups[rootFolderName]) {
+                folderGroups[rootFolderName] = [];
+              }
+              folderGroups[rootFolderName].push(file);
+            });
+          } else {
+            // Handle individual file
+            const file = item.getAsFile();
+            if (file) {
+              // Create a new File object with the same content
+              // This ensures it's a proper File object that can be used in FormData
+              const newFile = new File([file], file.name, {
+                type: file.type,
+                lastModified: file.lastModified,
+              });
+              
+              // Add webkitRelativePath as a non-enumerable property
+              Object.defineProperty(newFile, 'webkitRelativePath', {
+                value: file.name,
+                writable: false,
+                enumerable: false,
+                configurable: false
+              });
+              
+              const fileWithPath = newFile as FileWithPath;
+              
+              // Group single files under a generic folder name
+              const rootFolderName = 'DroppedFiles';
+              if (!folderGroups[rootFolderName]) {
+                folderGroups[rootFolderName] = [];
+              }
+              folderGroups[rootFolderName].push(fileWithPath);
+            }
+          }
+        }
+      }
+    }
+
+    // Convert to FolderGroup array
+    const newFolders: FolderGroup[] = Object.entries(folderGroups).map(([name, files]) => ({
+      name,
+      files
+    }));
+
+    if (newFolders.length > 0) {
+      // Add new folders to existing ones, avoiding duplicates
+      setSelectedFolders(prevFolders => {
+        const updatedFolders = [...prevFolders];
+        const addedFolders: string[] = [];
+        const replacedFolders: string[] = [];
+
+        newFolders.forEach(newFolder => {
+          const existingIndex = updatedFolders.findIndex(folder => folder.name === newFolder.name);
+          if (existingIndex >= 0) {
+            // Replace existing folder
+            updatedFolders[existingIndex] = newFolder;
+            replacedFolders.push(newFolder.name);
+          } else {
+            // Add new folder
+            updatedFolders.push(newFolder);
+            addedFolders.push(newFolder.name);
+          }
+        });
+
+        // Show message about added/replaced folders
+        let message = '';
+        if (addedFolders.length > 0) {
+          message += `Added folder${addedFolders.length > 1 ? 's' : ''}: ${addedFolders.join(', ')}`;
+        }
+        if (replacedFolders.length > 0) {
+          if (message) message += '. ';
+          message += `Replaced folder${replacedFolders.length > 1 ? 's' : ''}: ${replacedFolders.join(', ')}`;
+        }
+        
+        if (message) {
+          setModalMessage(message);
+          setIsModalVisible(true);
+        }
+
+        return updatedFolders;
+      });
+    }
+
+    // Reset the file input value to allow reselecting the same folder
+    resetFileInput();
   };
 
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
@@ -111,6 +266,19 @@ export function DatasetFolderUploader() {
     return new Promise((resolve, reject) => {
       console.log(`=== UPLOADING DATASET FOLDER: ${folder.name} ===`);
       console.log(`Total files: ${folder.files.length}`);
+
+      // Debug: Check the first file to see its properties
+      if (folder.files.length > 0) {
+        const firstFile = folder.files[0];
+        console.log('First file debug info:');
+        console.log('- name:', firstFile.name);
+        console.log('- type:', firstFile.type);
+        console.log('- size:', firstFile.size);
+        console.log('- webkitRelativePath:', firstFile.webkitRelativePath);
+        console.log('- constructor:', firstFile.constructor.name);
+        console.log('- instanceof File:', firstFile instanceof File);
+        console.log('- has stream method:', typeof firstFile.stream === 'function');
+      }
 
       // Group files by their direct parent folder for display
       const folderCounts: Record<string, number> = {};

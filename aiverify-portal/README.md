@@ -33,7 +33,7 @@ npm run build
 To install the portal, run the following commands under the `aiverify-portal` project directory.
 
 ```sh
-cd aiverify-portal/aiverify-apigw-node
+cd aiverify-apigw/aiverify-apigw-node
 npm install
 npm link ../../aiverify-shared-library
 ```
