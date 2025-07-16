@@ -113,7 +113,7 @@ export const InputBlockGroupDataProvider: React.FC<{
   const projectId = searchParams.get('projectId');
   const flow = searchParams.get('flow');
 
-  const { gid, group, cid} = params;
+  const { gid, group, cid } = params;
   const groupId = params.groupId ? parseInt(params.groupId) : undefined;
   const [inputBlocks, setInputBlocks] = useState<InputBlock[]>([]);
   const [groupDataList, setGroupDataList] = useState<InputBlockGroupData[]>([]);
@@ -169,7 +169,6 @@ export const InputBlockGroupDataProvider: React.FC<{
       setCurrentGroupData(null);
     }
   }, [gid, group, groupId]);
-
   const debouncedSaveInputBlockData = useCallback(
     debounce((data: InputBlockGroupData) => {
       console.log('debouncedSaveInputBlockData:', data);

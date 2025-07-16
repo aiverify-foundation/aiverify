@@ -21,7 +21,6 @@ export default function ChecklistDetailPage() {
   console.log('ChecklistDetailPage component started');
   
   const { gid, groupId, cid, group, name } = useInputBlockGroupData();
-  console.log('Context values:', { gid, groupId, cid, group, name });
   const router = useRouter();
   const [urlParams, setUrlParams] = useState<{ projectId: string | null; flow: string | null }>({
     projectId: null,
