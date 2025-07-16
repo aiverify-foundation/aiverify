@@ -107,6 +107,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
             value={checklistName}
             onChange={e => setChecklistName(e.target.value)}
             placeholder="Checklist name"
+            maxLength={128}
           />
         </Modal>
       )}
