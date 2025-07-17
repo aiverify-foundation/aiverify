@@ -62,25 +62,13 @@ jobs:
           echo "${{ env.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
       # Clean slate to force rebuild all images
-      # - name: Delete all local Docker images
-      #   run: |
-      #     docker ps -q | xargs -r docker stop
-      #     docker images -q | xargs -r docker rmi -f
-      #     docker system prune -a -f --volumes
-      #     docker builder prune -f
-
-      # Clean slate to force rebuild all images
       - name: Delete all local Docker images
         run: |
           docker ps -q | xargs -r docker stop
           docker images -q | xargs -r docker rmi -f
           docker system prune -a -f
           docker volume prune --all -f
-
-      # List Current Containers and Volumes
-      - name: List Current Docker Volumes
-        run: |
-            docker volume ls
+          docker builder prune -a -f
 
       # Launch containers in Docker Compose
       - name: Run images in Docker Compose
