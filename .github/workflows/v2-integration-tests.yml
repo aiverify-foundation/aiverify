@@ -34,7 +34,7 @@ jobs:
     #  Run only on Workflow Dispatch
     if: (github.event_name == 'workflow_dispatch')
     runs-on: self-hosted-aiverify
-    timeout-minutes: 360
+    timeout-minutes: 120
     permissions:
       id-token: write
       contents: read
@@ -69,14 +69,17 @@ jobs:
         run: |
           docker ps -q | xargs -r docker stop
           docker images -q | xargs -r docker rmi -f
-          docker system prune -a -f --volumes
-          docker builder prune -f
+          docker system prune -a -f
+          docker volume prune --all -f
+          docker builder prune -a -f
 
       # Launch containers in Docker Compose
       - name: Run images in Docker Compose
         run: |
           cd deployment/docker-compose-dev
           COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-venv --profile portal up -d
+          echo "Initialising AI Verify Plugins"
+          sleep 5m
 
       # Run UI Integration Test
       - name: Run UI Integration Test
