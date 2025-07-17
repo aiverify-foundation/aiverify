@@ -72,9 +72,10 @@ jobs:
       # Clean slate to force rebuild all images
       - name: Delete all local Docker images
         run: |
-          docker stop $(docker ps -q)
+          docker ps -q | xargs -r docker stop
+          docker images -q | xargs -r docker rmi -f
           docker system prune -a -f
-          docker volume prune -a -f
+          docker volume prune -f
 
       # List Current Containers and Volumes
       - name: List Current Docker Volumes
