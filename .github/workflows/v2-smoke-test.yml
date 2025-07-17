@@ -87,6 +87,7 @@ jobs:
         run: |
           cd deployment/docker-compose-dev
           COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-venv --profile portal up -d
+          sleep 5m
 
       # Prepare Smoke Test Data
       - name: Prepare Smoke Test Data
