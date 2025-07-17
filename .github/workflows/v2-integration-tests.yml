@@ -81,6 +81,32 @@ jobs:
           echo "Initialising AI Verify Plugins"
           sleep 5m
 
+       # Prepare Integration Test Data
+      - name: Prepare Integration Test Data
+        run: |
+          echo "Preparing Integration Test Data"
+          rm -rf stock-plugins/user_defined_files/data
+          rm -rf stock-plugins/user_defined_files/model
+          rm -rf stock-plugins/user_defined_files/pipeline
+
+          cp -r integration-testing/test-data stock-plugins/user_defined_files/
+          
+          cp -r third-party-plugins stock-plugins/user_defined_files/third-party-plugins
+          cd stock-plugins/user_defined_files/third-party-plugins/cccs_plugins/
+          zip -r cccs_explainability_2.0.zip cccs_explainability_2.0
+          zip -r cccs_fairness_classification_2.0.zip cccs_fairness_classification_2.0
+          zip -r cccs_process_checklist.zip cccs_process_checklist
+          zip -r cccs_report_template.zip cccs_report_template
+
+          cd stock-plugins/user_defined_files/veritas_data
+          mkdir cs_model
+          cp cs_model.pkl cs_model
+
+          echo "Review Test Data Directory"
+          ls -la stock-plugins/user_defined_files/
+
+          echo "Integration Test Data Prepared"
+
       # Run UI Integration Test
       - name: Run UI Integration Test
         run: |
