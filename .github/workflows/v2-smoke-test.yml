@@ -75,7 +75,7 @@ jobs:
           docker ps -q | xargs -r docker stop
           docker images -q | xargs -r docker rmi -f
           docker system prune -a -f
-          docker volume prune -all -f
+          docker volume prune --all -f
 
       # List Current Containers and Volumes
       - name: List Current Docker Volumes
