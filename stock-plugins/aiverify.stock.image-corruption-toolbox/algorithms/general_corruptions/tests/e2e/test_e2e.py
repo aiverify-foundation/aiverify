@@ -27,11 +27,17 @@ image_pipeline_pytorch = {
 }
 
 
+image_pipeline_tensorflow = {
+    **image_pipeline,
+    "model_path": "../../../user_defined_files/pipeline/sample_fashion_mnist_tensorflow",
+}
+
 @pytest.mark.parametrize(
     "data_set",
     [
         image_pipeline,
         image_pipeline_pytorch,
+        image_pipeline_tensorflow,
     ],
 )
 def test_aiverify_general_corruptions_plugin(data_set):
