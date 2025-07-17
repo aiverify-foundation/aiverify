@@ -57,17 +57,29 @@ jobs:
           bash .ci/free_disk_space.sh
 
       # Log in to GitHub Container Registry (ghcr.io), needed by Github Actions to access ghcr.io
-      - name: Login to GHCR
-        run: |
-          echo "${{ env.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+      # - name: Login to GHCR
+      #   run: |
+      #     echo "${{ env.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      # Clean slate to force rebuild all images
+      # - name: Delete all local Docker images
+      #   run: |
+      #     docker ps -q | xargs -r docker stop
+      #     docker images -q | xargs -r docker rmi -f
+      #     docker system prune -a -f --volumes
+      #     docker builder prune -f
 
       # Clean slate to force rebuild all images
       - name: Delete all local Docker images
         run: |
-          docker ps -q | xargs -r docker stop
-          docker images -q | xargs -r docker rmi -f
-          docker system prune -a -f --volumes
-          docker builder prune -f
+          docker stop $(docker ps -q)
+          docker system prune -a -f
+          docker volumer prune -a -f
+
+      # List Current Containers and Volumes
+      - name: List Current Docker Volumes
+        run: |
+            docker volume ls
 
       # Launch containers in Docker Compose
       - name: Run images in Docker Compose
