@@ -74,7 +74,7 @@ jobs:
         run: |
           docker stop $(docker ps -q)
           docker system prune -a -f
-          docker volumer prune -a -f
+          docker volume prune -a -f
 
       # List Current Containers and Volumes
       - name: List Current Docker Volumes
