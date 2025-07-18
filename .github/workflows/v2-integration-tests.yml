@@ -84,6 +84,7 @@ jobs:
        # Prepare Integration Test Data
       - name: Prepare Integration Test Data
         run: |
+          sudo apt-get install zip -y
           echo "Preparing Integration Test Data"
           rm -rf stock-plugins/user_defined_files/data
           rm -rf stock-plugins/user_defined_files/model
