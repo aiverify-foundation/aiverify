@@ -26,7 +26,7 @@ on:
 
 # Allow one concurrent deployment
 concurrency:
-  group: ${{ github.repository }}-${{ github.workflow }}
+  group: automated-testing
   cancel-in-progress: false
 
 jobs:
