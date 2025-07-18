@@ -99,7 +99,7 @@ jobs:
           zip -r cccs_process_checklist.zip cccs_process_checklist
           zip -r cccs_report_template.zip cccs_report_template
 
-          cd stock-plugins/user_defined_files/veritas_data
+          cd ../veritas_data
           mkdir cs_model
           cp cs_model.pkl cs_model
 
