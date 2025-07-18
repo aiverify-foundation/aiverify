@@ -41,13 +41,15 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
     return `${baseUrl}?${params.toString()}`;
   };
 
+  const [checklistName, setChecklistName] = useState(group); // default to group
+
   const addNewChecklist = () => {
     // TODO: handle errors
     startTransition(async () => {
       const res = await submitChecklist({
         gid: gid,
         group: group,
-        name: group,
+        name: checklistName, // use the text field value
         input_blocks: [],
       });
       console.log('res:', res);
@@ -97,8 +99,16 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
             addNewChecklist();
           }}>
           <p className="text-primary-100">
-            Choose an option to add input:
+            Name :
           </p>
+          <input
+            type="text"
+            className="border rounded px-2 py-1 mt-2 w-full text-black"
+            value={checklistName}
+            onChange={e => setChecklistName(e.target.value)}
+            placeholder="Checklist name"
+            maxLength={128}
+          />
         </Modal>
       )}
     </div>
