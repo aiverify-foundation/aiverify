@@ -138,7 +138,7 @@ jobs:
 
       # Upload Playwright Traces
       - name: Upload Playwright Traces
-        if: always()
+        if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
           name: playwright-trace-v2.0-integration-testing-${{ github.run_id }}
