@@ -87,8 +87,14 @@ jobs:
           rm -rf stock-plugins/user_defined_files/model
           rm -rf stock-plugins/user_defined_files/pipeline
 
-          cp -r integration-testing/test-data/ stock-plugins/user_defined_files/
+          cp -r integration-testing/test-data/data stock-plugins/user_defined_files/data
+          cp -r integration-testing/test-data/model stock-plugins/user_defined_files/model
+          cp -r integration-testing/test-data/pipeline stock-plugins/user_defined_files/pipeline
+          cp -r integration-testing/test-data/template stock-plugins/user_defined_files/template
+          cp -r integration-testing/test-data/checklist stock-plugins/user_defined_files/checklist
+          cp -r integration-testing/test-data/test_results stock-plugins/user_defined_files/test_results
           
+
           cp -r third-party-plugins stock-plugins/user_defined_files/third-party-plugins
           cd stock-plugins/user_defined_files/third-party-plugins/cccs_plugins/
           zip -r cccs_explainability_2.0.zip cccs_explainability_2.0
