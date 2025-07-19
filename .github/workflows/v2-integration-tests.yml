@@ -20,10 +20,6 @@ on:
         default: "main"
         type: string
 
-  push:
-    branches:
-      - "main"
-
 # Allow one concurrent deployment
 concurrency:
   group: automated-testing
@@ -31,8 +27,9 @@ concurrency:
 
 jobs:
   Integration-Test:
-    #  Run only on Workflow Dispatch
-    if: (github.event_name == 'workflow_dispatch')
+    
+    #  Run only on Workflow Dispatch and Schedule
+
     runs-on: self-hosted-aiverify
     timeout-minutes: 120
     permissions:
@@ -90,7 +87,7 @@ jobs:
           rm -rf stock-plugins/user_defined_files/model
           rm -rf stock-plugins/user_defined_files/pipeline
 
-          cp -r integration-testing/test-data stock-plugins/user_defined_files/
+          cp -r integration-testing/test-data/ stock-plugins/user_defined_files/
           
           cp -r third-party-plugins stock-plugins/user_defined_files/third-party-plugins
           cd stock-plugins/user_defined_files/third-party-plugins/cccs_plugins/
