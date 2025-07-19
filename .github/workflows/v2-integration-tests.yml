@@ -121,6 +121,7 @@ jobs:
 
       # Run API Integration Test
       - name: Run API Integration Test
+        if: always()
         run: |
           cd integration-testing
           npm install
