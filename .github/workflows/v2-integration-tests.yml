@@ -130,6 +130,7 @@ jobs:
 
       # Run Standalone Plugin Integration Test
       - name: Run Standalone Plugin Integration Test
+        if: always()
         run: |
           cd integration-testing/standalone-plugins
           pip install pytest 
