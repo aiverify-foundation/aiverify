@@ -102,9 +102,10 @@ jobs:
           cd ../../veritas_data
           mkdir cs_model
           cp cs_model.pkl cs_model
+          cd ../
 
           echo "Review Test Data Directory"
-          ls -la stock-plugins/user_defined_files/
+          ls -la
 
           echo "Integration Test Data Prepared"
 
