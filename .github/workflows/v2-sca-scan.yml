@@ -255,13 +255,6 @@ jobs:
           python3 -m venv .venv
           source .venv/bin/activate
           pip install .
-          pip freeze > requirements.txt
-          deactivate
-          rm -rf .venv
-
-          python3 -m venv .venv
-          source .venv/bin/activate
-          pip install -r requirements.txt
           bash <(curl -s -L https://detect.blackduck.com/detect9.sh) --blackduck.url=https://blackduck.aipo-imda.net/ --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} --detect.detector.search.depth=0 --detect.project.name=general-corruptions --detect.project.version.name=v2.x --detect.source.path=. --detect.code.location.name="general-corruptions_v2.x" --detect.excluded.directories=.venv,tests --blackduck.trust.cert=true --detect.notices.report=true --detect.notices.report.path=.
           mv general_corruptions_v2_x_Black_Duck_Notices_Report.txt NOTICE.md
           deactivate
