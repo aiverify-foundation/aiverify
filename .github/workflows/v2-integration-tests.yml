@@ -28,8 +28,7 @@ concurrency:
 jobs:
   Integration-Test:
     
-    #  Run only on Workflow Dispatch and Schedule
-
+    # Run only on Workflow Dispatch and Schedule
     runs-on: self-hosted-aiverify
     timeout-minutes: 120
     permissions:
@@ -38,24 +37,28 @@ jobs:
       packages: write
 
     steps:
+      
+      # Setup Python
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # Checkout AI Verify
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
           ref: main
           repository: aiverify-foundation/aiverify
 
+      # Checkout Integration Test Code
       - name: Checkout Integration Test Code
         uses: actions/checkout@v4
         with:
           ref: main
           repository: aiverify-foundation/aivt-integration-testing
           path: integration-testing
-
-      # Free up disk space before building large Docker images
-      - name: Free up disk space
-        run: |
-          bash .ci/free_disk_space.sh
-
+          
       # Log in to GitHub Container Registry (ghcr.io), needed by Github Actions to access ghcr.io
       - name: Login to GHCR
         run: |
