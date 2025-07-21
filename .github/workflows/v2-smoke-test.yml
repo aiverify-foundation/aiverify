@@ -38,23 +38,29 @@ jobs:
     timeout-minutes: 60
 
     steps:
+      # Checkout Code (Workflow Dispatch)
+      - name: Checkout Code (Workflow Dispatch)
+        if: (github.event_name == 'workflow_dispatch')
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch_to_test }}
+          repository: aiverify-foundation/aiverify
+
+      # Checkout Code (Pull Request)
       - name: Checkout Code
+        if: (github.event_name == 'pull_request')
         uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
           repository: aiverify-foundation/aiverify
 
+      # Checkout Smoke Test Code
       - name: Checkout Smoke Test Code
         uses: actions/checkout@v4
         with:
           ref: main
           repository: aiverify-foundation/aivt-integration-testing
           path: integration-testing
-
-      # Free up disk space before building large Docker images
-      - name: Free up disk space
-        run: |
-          bash .ci/free_disk_space.sh
 
       # Log in to GitHub Container Registry (ghcr.io), needed by Github Actions to access ghcr.io
       - name: Login to GHCR
