@@ -151,5 +151,5 @@ jobs:
         run: |
           cd integration-testing/tests/standalone-plugins
           python3 -m venv .venv
-          pip install pytest requests
+          pip install pytest requests json
           pytest -vv
