@@ -148,8 +148,9 @@ jobs:
       # Run Standalone Plugin Integration Test
       - name: Run Standalone Plugin Integration Test
         if: always()
+        shell: bash
         run: |
           cd integration-testing/tests/standalone-plugins
-          python3 -m venv .venv
+          python -m venv .venv
           pip install pytest requests
           pytest -vv
