@@ -38,6 +38,14 @@ jobs:
     timeout-minutes: 60
 
     steps:
+      
+      # List All Files
+      - name: List All Files
+        run: |
+          ls -la
+          sudo chown -R github .
+          ls -la
+
       # Checkout Code (Workflow Dispatch)
       - name: Checkout Code (Workflow Dispatch)
         if: (github.event_name == 'workflow_dispatch')
