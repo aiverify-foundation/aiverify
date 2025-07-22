@@ -79,12 +79,12 @@ jobs:
           docker builder prune -a -f
 
       # Launch containers in Docker Compose
-      # - name: Run images in Docker Compose
-      #   run: |
-      #     cd deployment/docker-compose-dev
-      #     COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-venv --profile portal up -d
-      #     echo "Initialising AI Verify Plugins"
-      #     sleep 5m
+      - name: Run images in Docker Compose
+        run: |
+          cd deployment/docker-compose-dev
+          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-venv --profile portal up -d
+          echo "Initialising AI Verify Plugins"
+          sleep 5m
 
        # Prepare Integration Test Data
       - name: Prepare Integration Test Data
@@ -120,37 +120,38 @@ jobs:
           echo "Integration Test Data Prepared"
 
       # Run UI Integration Test
-      # - name: Run UI Integration Test
-      #   run: |
-      #     cd integration-testing
-      #     npm install
-      #     npx playwright install --with-deps
-      #     URL=http://127.0.0.1 PORT_NUMBER=3000 ROOT_PATH=$GITHUB_WORKSPACE/stock-plugins/user_defined_files npx playwright test tests/portal
+      - name: Run UI Integration Test
+        run: |
+          cd integration-testing
+          npm install
+          npx playwright install --with-deps
+          URL=http://127.0.0.1 PORT_NUMBER=3000 ROOT_PATH=$GITHUB_WORKSPACE/stock-plugins/user_defined_files npx playwright test tests/portal
 
       # Upload Playwright Traces
-      # - name: Upload Playwright Traces
-      #   if: ${{ failure() }}
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: playwright-trace-v2.0-integration-testing-${{ github.run_id }}
-      #     path: |
-      #       ${{ github.workspace }}/integration-testing/test-results/
+      - name: Upload Playwright Traces
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-trace-v2.0-integration-testing-${{ github.run_id }}
+          path: |
+            ${{ github.workspace }}/integration-testing/test-results/
 
       # Run API Integration Test
-      # - name: Run API Integration Test
-      #   if: always()
-      #   run: |
-      #     cd integration-testing
-      #     npm install
-      #     npx playwright install --with-deps
-      #     URL=http://127.0.0.1 PORT_NUMBER=4000 ROOT_PATH=$GITHUB_WORKSPACE/stock-plugins/user_defined_files npx playwright test tests/apigw
+      - name: Run API Integration Test
+        if: always()
+        run: |
+          cd integration-testing
+          npm install
+          npx playwright install --with-deps
+          URL=http://127.0.0.1 PORT_NUMBER=4000 ROOT_PATH=$GITHUB_WORKSPACE/stock-plugins/user_defined_files npx playwright test tests/apigw
 
       # Run Standalone Plugin Integration Test
       - name: Run Standalone Plugin Integration Test
         if: always()
-        shell: bash
         run: |
           cd integration-testing/tests/standalone-plugins
           python -m venv .venv
+          source .venv/bin/activate
           pip install pytest requests
           pytest -vv
+        shell: bash
