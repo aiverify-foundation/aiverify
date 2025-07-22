@@ -153,9 +153,10 @@ const ExcelUploader = () => {
           }
 
           // Additional corruption checks
-          let validSheetCount = 0;
           let totalCellsChecked = 0;
           let accessibleCells = 0;
+          let validSheetCount = 0;
+          const corruptedSheets: string[] = [];
 
           for (const worksheet of workbook.worksheets) {
             try {
@@ -168,6 +169,7 @@ const ExcelUploader = () => {
 
               // Try to read some cells to test accessibility
               let cellTestCount = 0;
+              let meaningfulContentCount = 0;
               for (let row = 1; row <= Math.min(10, actualRowCount); row++) {
                 for (let col = 1; col <= 6; col++) {
                   try {
@@ -176,6 +178,18 @@ const ExcelUploader = () => {
                     // Try to access cell properties
                     const value = cell.value;
                     const text = cell.text;
+                    
+                    // Check if cell has meaningful content (not null, undefined, or empty string)
+                    const hasContent = value !== null && 
+                                     value !== undefined && 
+                                     text !== null && 
+                                     text !== undefined && 
+                                     text.trim().length > 0;
+                    
+                    if (hasContent) {
+                      meaningfulContentCount++;
+                    }
+                    
                     accessibleCells++;
                     cellTestCount++;
                   } catch (cellError) {
@@ -185,11 +199,20 @@ const ExcelUploader = () => {
                 }
               }
 
-              if (cellTestCount > 0) {
+              // Check if this sheet has meaningful content
+              const contentRatio = cellTestCount > 0 ? meaningfulContentCount / cellTestCount : 0;
+              console.log(`Sheet ${sheetName}: ${meaningfulContentCount}/${cellTestCount} cells have meaningful content (${contentRatio.toFixed(2)} ratio)`);
+              
+              // A sheet is considered valid if it has at least some meaningful content
+              if (contentRatio > 0.1) { // At least 10% of cells should have content
                 validSheetCount++;
+              } else {
+                console.warn(`Sheet ${sheetName} has insufficient meaningful content (${contentRatio.toFixed(2)} ratio) - may be corrupted`);
+                corruptedSheets.push(sheetName);
               }
             } catch (sheetError) {
               console.warn(`Sheet processing error for ${worksheet.name}:`, sheetError);
+              corruptedSheets.push(worksheet.name);
             }
           }
 
@@ -204,14 +227,21 @@ const ExcelUploader = () => {
             return;
           }
 
-          // Need at least one valid sheet
+          // Reject if ANY sheet is corrupted (has insufficient meaningful content)
+          if (corruptedSheets.length > 0) {
+            console.warn(`Quick validation failed: ${corruptedSheets.length} corrupted sheets detected: ${corruptedSheets.join(', ')}`);
+            resolve(false);
+            return;
+          }
+
+          // Need at least one valid sheet with meaningful content
           if (validSheetCount === 0) {
-            console.warn('Quick validation failed: No valid sheets found');
+            console.warn('Quick validation failed: No sheets with meaningful content found');
             resolve(false);
             return;
           }
           
-          console.log(`Quick validation passed: ${validSheetCount} valid sheets, ${accessibilityRatio.toFixed(2)} accessibility ratio`);
+          console.log(`Quick validation passed: ${validSheetCount} valid sheets with meaningful content, ${accessibilityRatio.toFixed(2)} accessibility ratio`);
           resolve(true);
         } catch (error) {
           console.warn('Quick Excel validation failed:', error);
@@ -352,7 +382,7 @@ const ExcelUploader = () => {
     }
 
     if (submissions.length === 0) {
-      return { isValid: false, error: 'No valid checklist data found in the Excel file. Please ensure the file contains properly formatted checklist data.' };
+      return { isValid: false, error: 'No valid checklist data found in the Excel file. Please ensure the file contains properly formatted checklist data with the correct structure (PID, Process, Metric, Process Checks columns must contain content).' };
     }
 
     // Log submission details for debugging
@@ -424,23 +454,35 @@ const ExcelUploader = () => {
         return { isValid: false, error: `Submission ${i + 1} appears to have corrupted data with many invalid values.` };
       }
 
-      // Check for minimum data requirements per submission
-      if (dataKeys.length < 3) {
-        return { isValid: false, error: `Submission ${i + 1} has too few data fields (${dataKeys.length}). Expected checklist data should have more fields.` };
+      // Check for checklist-like data patterns to ensure it's actually a checklist
+      const checklistIndicators = dataKeys.filter(key => {
+        const keyLower = key.toLowerCase();
+        return keyLower.includes('completed') || 
+               keyLower.includes('elaboration') || 
+               keyLower.includes('justification') ||
+               keyLower.includes('response') ||
+               keyLower.includes('answer') ||
+               keyLower.includes('pid');
+      });
+
+      // If we have no checklist-like patterns at all, this might be corrupted data
+      if (checklistIndicators.length === 0) {
+        return { isValid: false, error: `Submission ${i + 1} does not appear to contain valid checklist data. The Excel file may be corrupted or in the wrong format.` };
       }
     }
 
-    // Global data quality check
+    // Global data quality check - be more lenient since structure is validated in Excel processing
     const dataQualityRatio = totalDataPoints > 0 ? meaningfulDataPoints / totalDataPoints : 0;
     console.log(`Data quality ratio: ${dataQualityRatio.toFixed(2)} (${meaningfulDataPoints}/${totalDataPoints})`);
 
-    if (dataQualityRatio < 0.1) {
+    // Lower the threshold for data quality - allow more empty fields since structure is validated
+    if (dataQualityRatio < 0.01) {
       return { isValid: false, error: `Data quality too low: Only ${(dataQualityRatio * 100).toFixed(1)}% of data fields contain meaningful content. This suggests the Excel file may be corrupted or in wrong format.` };
     }
 
-    // Check for minimum total submissions (most checklist groups should have multiple items)
-    if (submissions.length < 2 && totalDataPoints < 10) {
-      return { isValid: false, error: `Insufficient data detected: Only ${submissions.length} submission(s) with ${totalDataPoints} total data points. This may indicate a corrupted or incomplete Excel file.` };
+    // Check for minimum total submissions
+    if (submissions.length < 1) {
+      return { isValid: false, error: `No valid submissions found. This may indicate a corrupted or incomplete Excel file.` };
     }
 
     console.log(`Validation passed: ${submissions.length} submissions, ${dataQualityRatio.toFixed(2)} data quality ratio`);
@@ -603,8 +645,10 @@ const ExcelUploader = () => {
 
       console.log(`Sanity check: ${meaningfulFields}/${totalDataFields} meaningful data fields`);
       
-      if (meaningfulFields < 3) {
-        throw new Error(`Insufficient meaningful data: Only ${meaningfulFields} fields contain actual content. This indicates the Excel file may be corrupted or empty.`);
+      // Be more lenient - allow checklists with fewer meaningful fields since structure is validated
+      // A valid checklist should have at least 1 meaningful field, but structure validation ensures quality
+      if (meaningfulFields < 1) {
+        throw new Error(`Insufficient meaningful data: No fields contain actual content. This indicates the Excel file may be corrupted or empty.`);
       }
 
       // Final checklist-specific validation
