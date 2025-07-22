@@ -187,9 +187,6 @@ export function FileSelector({
                   Click to Browse
                 </span>
                 <br />
-                <span className="text-[0.8rem] text-secondary-300">
-                  Maximum 10 files per upload
-                </span>
               </p>
             </FileSelect.DropZone>
           </div>
