@@ -1,6 +1,14 @@
 // jest.setup.js
 import '@testing-library/jest-dom';
 
+// React 19 specific setup
+import React from 'react';
+
+// Ensure React is properly initialized for tests
+if (typeof globalThis !== 'undefined') {
+  globalThis.React = React;
+}
+
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
   constructor() {}

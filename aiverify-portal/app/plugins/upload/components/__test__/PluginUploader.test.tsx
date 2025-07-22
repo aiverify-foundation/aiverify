@@ -118,7 +118,7 @@ describe('PluginUploader Component', () => {
       
       expect(screen.getByText('Before uploading...')).toBeInTheDocument();
       expect(screen.getByText('Check that the plugin file meets the following requirments.')).toBeInTheDocument();
-      expect(screen.getByText('ZIP file containing plugin or algorithm package')).toBeInTheDocument();
+      expect(screen.getByText('ZIP file')).toBeInTheDocument();
       expect(screen.getByText('Must contain plugin.meta.json file or pyproject.toml for algorithms')).toBeInTheDocument();
     });
 

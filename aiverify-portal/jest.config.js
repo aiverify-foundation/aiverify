@@ -42,6 +42,30 @@ const customJestConfig = {
   transformIgnorePatterns: [
     'node_modules/(?!((@remixicon)/.*|@next|@babel))',
   ],
+  // React 19 specific settings
+  testEnvironmentOptions: {
+    customExportConditions: [''],
+  },
+  // Ensure proper module resolution for React 19
+  moduleDirectories: ['node_modules', '<rootDir>'],
+  // Add React 19 specific globals
+  globals: {
+    'ts-jest': {
+      useESM: true,
+    },
+  },
+  // React 19 specific transform settings
+  transform: {
+    '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', {
+      presets: [
+        ['@babel/preset-env', { targets: { node: 'current' } }],
+        ['@babel/preset-react', { runtime: 'automatic' }],
+        '@babel/preset-typescript',
+      ],
+    }],
+  },
+  // React 19 specific extensions
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
