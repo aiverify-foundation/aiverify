@@ -107,13 +107,13 @@ python -m aiverify_digital_corruptions \
   --brightness_down_factor 0.1 0.2 0.3
 ```
 
-## PyTorch support
+## PyTorch/TensorFlow support
 
-To use a custom PyTorch model with this plugin, follow the steps below:
+To use a custom PyTorch/TensorFlow model with this plugin, follow the steps below:
 
-1. **Install PyTorch**
+1. **Install PyTorch/TensorFlow**
 
-   Ensure you have installed a PyTorch version compatible with your model. Visit the [PyTorch website](https://pytorch.org/get-started/locally/) for installation instructions.
+   Ensure you have installed a PyTorch/TensorFlow version compatible with your model.
 
 2. **Specify Model Path**
 
@@ -139,7 +139,7 @@ To use a custom PyTorch model with this plugin, follow the steps below:
 ├── model_weights.pt     # Contains the trained model weights
 ```
 
-### Example `predict` Function
+### Example `predict` Function (PyTorch)
 
 ```python
 # model.py
@@ -176,7 +176,7 @@ class CustomModel(torch.nn.Module):
         return predictions
 ```
 
-By following these steps, you can integrate your custom PyTorch model into the corruption plugin.
+By following these steps, you can integrate your custom PyTorch/TensorFlow model into the corruption plugin.
 
 ## Develop plugin locally
 
