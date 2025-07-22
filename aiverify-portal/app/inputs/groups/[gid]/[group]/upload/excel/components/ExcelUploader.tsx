@@ -156,7 +156,7 @@ const ExcelUploader = () => {
           let totalCellsChecked = 0;
           let accessibleCells = 0;
           let validSheetCount = 0;
-          let corruptedSheets: string[] = [];
+          const corruptedSheets: string[] = [];
 
           for (const worksheet of workbook.worksheets) {
             try {
