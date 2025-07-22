@@ -180,37 +180,67 @@ export default function UserInputs({
     console.log('First group block:', firstGroupBlock);
     
     // Find the matching input block group from allInputBlockGroups
-    let matchingGroup = allInputBlockGroups.find((group) => {
+    // We need to find which group contains an input block with the same ID as firstGroupBlock.id
+    const matchingGroup = allInputBlockGroups.find((group) => {
       return group.gid === firstGroupBlock.gid && 
+             group.input_blocks && 
              group.input_blocks.some(ib => 
                ib.cid === firstGroupBlock.cid && 
-               ib.groupNumber === firstGroupBlock.id
+               ib.id === firstGroupBlock.id
              );
     });
     
-    // If no match by groupNumber, try to find a matching group by gid and group name (fallback)
+    console.log('Matching group from allInputBlockGroups:', matchingGroup);
+    
+    // If no direct match found, log for debugging
     if (!matchingGroup) {
-      const requiredBlock = requiredInputBlocks.find(
-        (reqBlock) => reqBlock.gid === firstGroupBlock.gid && reqBlock.cid === firstGroupBlock.cid
+      console.log('No matching group found for block:', firstGroupBlock);
+      console.log('Available groups for debugging:', allInputBlockGroups.filter(g => g.gid === firstGroupBlock.gid));
+      
+      // Try to find all groups that have input blocks with the same gid and cid
+      const candidateGroups = allInputBlockGroups.filter(group => 
+        group.gid === firstGroupBlock.gid && 
+        group.input_blocks && 
+        group.input_blocks.some(ib => ib.cid === firstGroupBlock.cid)
       );
       
-      if (requiredBlock && requiredBlock.group) {
-        matchingGroup = allInputBlockGroups.find(
-          (group) => group.gid === firstGroupBlock.gid && group.group === requiredBlock.group
-        );
-      }
+      console.log('Candidate groups with matching gid and cid:', candidateGroups);
+      
+      // For each candidate group, log which input block IDs they contain
+      candidateGroups.forEach(group => {
+        const matchingBlocks = group.input_blocks.filter(ib => ib.cid === firstGroupBlock.cid);
+        console.log(`Group ${group.name} (ID: ${group.id}) contains blocks with IDs:`, matchingBlocks.map(ib => ib.id));
+      });
     }
-    
-    console.log('Matching group from allInputBlockGroups:', matchingGroup);
     
     return matchingGroup || null;
   })();
 
   // Add console logs for debugging
+  console.log('=== UserInputs Initialization Debug ===');
   console.log('Required input blocks:', requiredInputBlocks);
   console.log('All input block groups:', allInputBlockGroups);
-  console.log('Initial input blocks:', initialInputBlocks);
-  console.log('Initial group input:', initialGroupInput);
+  console.log('Initial input blocks from project data:', initialInputBlocks);
+  console.log('Initial group input resolved:', initialGroupInput);
+  
+  // Also log the individual input block IDs for easy reference
+  console.log('Individual input block IDs from project:', initialInputBlocks.map(block => ({
+    gid: block.gid,
+    cid: block.cid,
+    id: block.id
+  })));
+  
+  // Log available groups with their input block IDs for comparison
+  console.log('Available groups with their input block IDs:');
+  allInputBlockGroups.forEach(group => {
+    if (group.input_blocks) {
+      console.log(`Group "${group.name}" (ID: ${group.id}):`, group.input_blocks.map(ib => ({
+        cid: ib.cid,
+        id: ib.id
+      })));
+    }
+  });
+  console.log('=== End Debug ===');
 
   const [selectedGroup, setSelectedGroup] = useState<InputBlockGroupData | null>(
     initialGroupInput

@@ -4,6 +4,7 @@ import { RiArrowLeftLine, RiArrowRightLine } from '@remixicon/react';
 import { RiAlertLine } from '@remixicon/react';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { TestModel } from '@/app/models/utils/types';
 import { InputBlockGroupData } from '@/app/types';
 import { Algorithm, InputBlock, InputBlockData } from '@/app/types';
@@ -70,6 +71,8 @@ export default function ClientSelectData({
   initialTestResults = [],
   initialInputBlocks = [],
 }: ClientSelectDataProps) {
+  const router = useRouter();
+  
   console.log('ClientSelectData received props:', {
     initialModelId,
     initialTestResults,
@@ -139,6 +142,84 @@ export default function ClientSelectData({
     }))
   );
 
+  // Add useEffect hooks to sync state with props when they change
+  useEffect(() => {
+    console.log('initialModelId prop changed:', initialModelId);
+    setSelectedModelId(initialModelId);
+  }, [initialModelId]);
+
+  useEffect(() => {
+    console.log('initialTestResults prop changed:', initialTestResults);
+    const newTestResults = initialTestResults.map((result) => ({
+      gid: result.gid,
+      cid: result.cid,
+      id: result.id,
+    }));
+    setSelectedTestResults(newTestResults);
+  }, [initialTestResults]);
+
+  useEffect(() => {
+    console.log('initialInputBlocks prop changed:', initialInputBlocks);
+    const newInputBlocks = initialInputBlocks.map((block) => ({
+      gid: block.gid,
+      cid: block.cid,
+      id: block.id,
+    }));
+    setSelectedInputBlocks(newInputBlocks);
+  }, [initialInputBlocks]);
+
+  // Add effect to refresh data when component mounts or when user navigates back
+  useEffect(() => {
+    let refreshTimeout: NodeJS.Timeout;
+    
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        console.log('Page became visible, checking if data refresh is needed');
+        // Clear any existing timeout
+        if (refreshTimeout) {
+          clearTimeout(refreshTimeout);
+        }
+        // Debounce the refresh to avoid rapid calls
+        refreshTimeout = setTimeout(() => {
+          console.log('Refreshing data to ensure latest selections are shown');
+          router.refresh();
+        }, 300); // 300ms delay
+      }
+    };
+
+    // Add event listener for page visibility changes
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Check if we need to refresh on mount by comparing timestamps
+    const lastSave = localStorage.getItem(`lastSave_${projectId}`);
+    const lastRefresh = localStorage.getItem(`lastRefresh_${projectId}`);
+    
+    if (lastSave && lastRefresh) {
+      const saveTime = parseInt(lastSave);
+      const refreshTime = parseInt(lastRefresh);
+      
+      // Only refresh if the last save was more recent than the last refresh
+      if (saveTime > refreshTime) {
+        console.log('Detected stale data, refreshing to get latest selections');
+        router.refresh();
+        localStorage.setItem(`lastRefresh_${projectId}`, Date.now().toString());
+      }
+    } else {
+      // If no timestamps found, refresh once on mount
+      console.log('No refresh history found, refreshing to ensure latest selections');
+      router.refresh();
+      localStorage.setItem(`lastRefresh_${projectId}`, Date.now().toString());
+    }
+
+    // Cleanup
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (refreshTimeout) {
+        clearTimeout(refreshTimeout);
+      }
+    };
+  }, [router, projectId]);
+
   // Process validation results whenever they change
   useEffect(() => {
     if (Object.keys(validationResults).length > 0) {
@@ -176,16 +257,52 @@ export default function ClientSelectData({
     }))
   );
 
+  // Add a function to save selections to API
+  const saveSelectionsToAPI = async (
+    modelId?: string,
+    testResults?: SelectedTestResult[],
+    inputBlocks?: SelectedInputBlock[]
+  ) => {
+    if (!projectId) return;
+
+    try {
+      // Use current state if parameters not provided
+      const currentModelId = modelId !== undefined ? modelId : selectedModelId;
+      const currentTestResults = testResults !== undefined ? testResults : selectedTestResults;
+      const currentInputBlocks = inputBlocks !== undefined ? inputBlocks : selectedInputBlocks;
+
+      // Transform the data for backend saving - always use individual input block IDs
+      const transformedDataForBackend = {
+        testModelId: currentModelId ? parseInt(currentModelId) : null,
+        testResults: currentTestResults.map((result) => result.id),
+        inputBlocks: currentInputBlocks.map((block) => block.id), // Use individual IDs for backend
+      };
+
+      console.log('Auto-saving selections to API:', transformedDataForBackend);
+
+      // Send all changes in a single patch request using individual IDs
+      await patchProject(projectId, transformedDataForBackend);
+      console.log('Auto-save completed successfully');
+      
+      // Update the last save timestamp
+      localStorage.setItem(`lastSave_${projectId}`, Date.now().toString());
+    } catch (error) {
+      console.error('Failed to auto-save selections:', error);
+      // Note: We're not showing user-facing errors for auto-save to avoid interrupting UX
+    }
+  };
+
   const handleModelChange = (modelId: string | undefined) => {
     setSelectedModelId(modelId);
 
     // Instead of clearing all test results, filter out those that don't match the new model
+    let validTestResults = selectedTestResults;
     if (modelId) {
       const selectedModel = allModels.find(
         (model) => model.id.toString() === modelId
       );
       if (selectedModel) {
-        const validTestResults = selectedTestResults.filter((result) => {
+        validTestResults = selectedTestResults.filter((result) => {
           const testResult = allTestResults.find((tr) => tr.id === result.id);
           return (
             testResult &&
@@ -195,16 +312,24 @@ export default function ClientSelectData({
         setSelectedTestResults(validTestResults);
       } else {
         // If no model is found, clear the test results
+        validTestResults = [];
         setSelectedTestResults([]);
       }
     } else {
       // If no model is selected, clear the test results
+      validTestResults = [];
       setSelectedTestResults([]);
     }
+
+    // Auto-save the model selection and updated test results
+    saveSelectionsToAPI(modelId, validTestResults, selectedInputBlocks);
   };
 
   const handleTestResultsChange = (testResults: SelectedTestResult[]) => {
     setSelectedTestResults(testResults);
+    
+    // Auto-save the test results selection
+    saveSelectionsToAPI(selectedModelId, testResults, selectedInputBlocks);
   };
 
   const handleInputBlocksChange = (inputBlocks: SelectedInputBlock[]) => {
@@ -215,6 +340,9 @@ export default function ClientSelectData({
       group: block.group
     })));
     setSelectedInputBlocks(inputBlocks);
+
+    // Auto-save the input blocks selection
+    saveSelectionsToAPI(selectedModelId, selectedTestResults, inputBlocks);
   };
 
   // Handler to receive validation results from UserInputs
@@ -278,6 +406,18 @@ export default function ClientSelectData({
     console.log('=== PROCESSING VALIDATION RESULTS ===');
     console.log('Validation results received:', results);
     console.log('Selected input blocks to check:', blocksToCheck);
+
+    // Create validation keys for matching - use groupId for group selections, individual id for others
+    const validationKeys = blocksToCheck.map((block: SelectedInputBlock) => {
+      // For group selections, use the groupId for validation matching
+      if (block.isGroupSelection && block.groupId) {
+        return `${block.gid}-${block.cid}-${block.groupId}`;
+      }
+      // For individual selections, use the individual id
+      return `${block.gid}-${block.cid}-${block.id}`;
+    });
+    
+    console.log('Validation keys for matching:', validationKeys);
 
     // Collect names and messages of invalid input blocks, grouped by type
     const invalidBlocks: InvalidInputBlock[] = [];
@@ -352,11 +492,6 @@ export default function ClientSelectData({
       return { name, type };
     };
 
-    // Create a map of selected block keys for faster lookup
-    const selectedBlockKeys = blocksToCheck.map(
-      (block: SelectedInputBlock) => `${block.gid}-${block.cid}-${block.id}`
-    );
-
     // Check if any selected input has a validation error
     let hasErrors = false;
 
@@ -366,7 +501,22 @@ export default function ClientSelectData({
       if (!result.isValid) {
         console.log(`Processing validation result for key: ${key}`, result);
         
-        // Parse the key to extract gid, cid, and id
+        // Check if this validation key matches any of our validation keys
+        const isSelected = validationKeys.includes(key);
+        
+        console.log(`Validation key: ${key}, isSelected: ${isSelected}`);
+        console.log(`Available validation keys for matching:`, validationKeys);
+
+        if (!isSelected) {
+          console.log(`  Skipping validation result - not selected`);
+          return; // Skip this validation result if it's not for a selected input block
+        }
+
+        console.log(`  ✅ VALIDATION ERROR DETECTED FOR SELECTED BLOCK`);
+        // Mark that we have errors for selected blocks
+        hasErrors = true;
+
+        // Parse the key to extract gid, cid, and id for finding block info
         const keyParts = key.split('-');
         let gid = '';
         let cid = '';
@@ -385,15 +535,30 @@ export default function ClientSelectData({
             // Join all parts except the last one, then split by the last occurrence of '-'
             const gidCidPart = keyParts.slice(0, -1).join('-');
             
-            // Find the split point - we need to match against known gid-cid combinations
+            // Find the split point by matching against known gid-cid combinations
             let foundMatch = false;
-            for (const block of selectedInputBlocks) {
-              const expectedPrefix = `${block.gid}-${block.cid}`;
+            
+            // Try to match against all known input block data
+            for (const inputBlockData of allInputBlockDatas) {
+              const expectedPrefix = `${inputBlockData.gid}-${inputBlockData.cid}`;
               if (gidCidPart === expectedPrefix) {
-                gid = block.gid;
-                cid = block.cid;
+                gid = inputBlockData.gid;
+                cid = inputBlockData.cid;
                 foundMatch = true;
                 break;
+              }
+            }
+            
+            // If not found, try selected blocks
+            if (!foundMatch) {
+              for (const block of blocksToCheck) {
+                const expectedPrefix = `${block.gid}-${block.cid}`;
+                if (gidCidPart === expectedPrefix) {
+                  gid = block.gid;
+                  cid = block.cid;
+                  foundMatch = true;
+                  break;
+                }
               }
             }
             
@@ -403,36 +568,40 @@ export default function ClientSelectData({
             }
           } else {
             // Key is just gid-cid (no numeric ID at the end)
-            // Try to match against selected input blocks
+            // Try to match against all known gid-cid combinations
             let foundMatch = false;
-            for (const block of selectedInputBlocks) {
-              const expectedKey = `${block.gid}-${block.cid}`;
+            
+            // Try all input block data
+            for (const inputBlockData of allInputBlockDatas) {
+              const expectedKey = `${inputBlockData.gid}-${inputBlockData.cid}`;
               if (key === expectedKey) {
-                gid = block.gid;
-                cid = block.cid;
+                gid = inputBlockData.gid;
+                cid = inputBlockData.cid;
                 id = undefined;
                 foundMatch = true;
                 break;
               }
             }
             
+            // If not found, try selected blocks
             if (!foundMatch) {
-              console.warn(`Could not match key against selected blocks: ${key}`);
+              for (const block of blocksToCheck) {
+                const expectedKey = `${block.gid}-${block.cid}`;
+                if (key === expectedKey) {
+                  gid = block.gid;
+                  cid = block.cid;
+                  id = undefined;
+                  foundMatch = true;
+                  break;
+                }
+              }
+            }
+            
+            if (!foundMatch) {
+              console.warn(`Could not match key against any blocks: ${key}`);
               return;
             }
           }
-
-          // Check if this is a selected input block
-          const isSelected = selectedBlockKeys.includes(`${gid}-${cid}-${id || ''}`);
-          
-          console.log(`Validation key: ${key}, parsed as gid: ${gid}, cid: ${cid}, id: ${id}, isSelected: ${isSelected}`);
-
-          if (!isSelected) {
-            return; // Skip this validation result if it's not for a selected input block
-          }
-
-          // Mark that we have errors for selected blocks
-          hasErrors = true;
         } else {
           // Invalid key format
           console.error(`Invalid validation result key format: ${key} - expected at least gid-cid format`);
@@ -471,6 +640,7 @@ export default function ClientSelectData({
       return acc;
     }, {} as Record<string, Array<{name: string, message: string}>>);
     console.log('Final grouped invalid blocks:', groupedForDebug);
+    console.log(`Has validation errors: ${hasErrors}`);
     console.log('=== END FINAL GROUPING DEBUG ===');
     
     setHasValidationErrors(hasErrors);
@@ -481,27 +651,11 @@ export default function ClientSelectData({
     if (!projectId) return;
 
     try {
-      // Transform the data for backend saving - always use individual input block IDs
-      const transformedDataForBackend = {
-        testModelId: selectedModelId ? parseInt(selectedModelId) : null,
-        testResults: selectedTestResults.map((result) => result.id),
-        inputBlocks: selectedInputBlocks.map((block) => block.id), // Use individual IDs for backend
-      };
-
-      console.log('transformedDataForBackend', transformedDataForBackend);
-      console.log('selectedInputBlocks before transform:', selectedInputBlocks.map(block => ({
-        gid: block.gid,
-        cid: block.cid,
-        id: block.id,
-        group: block.group,
-        isGroupSelection: block.isGroupSelection,
-        groupId: block.groupId
-      })));
-      console.log('inputBlocks after transform (individual IDs for backend):', transformedDataForBackend.inputBlocks);
-
-      // Send all changes in a single patch request using individual IDs
-      await patchProject(projectId, transformedDataForBackend);
-      console.log('patchProject done');
+      // Since we're already auto-saving, we just need to handle navigation
+      // But let's do a final save to ensure everything is up to date
+      await saveSelectionsToAPI();
+      
+      console.log('Final save completed, proceeding to navigation');
 
       // For URL construction, use group context when available
       const inputBlockIdsForUrl = selectedInputBlocks.map((block) => {
@@ -527,6 +681,7 @@ export default function ClientSelectData({
       } else if (flow === UserFlows.NewProjectWithEditingExistingTemplate) {
         updatedFlow = UserFlows.NewProjectWithEditingExistingTemplateAndResults;
       }
+      
       // Construct the URL with group-context data for designer
       const queryString = [
         `flow=${encodeURIComponent(updatedFlow)}`,
@@ -546,7 +701,7 @@ export default function ClientSelectData({
         window.location.href = `/canvas?${queryString}&mode=view`;
       }
     } catch (error) {
-      console.error('Failed to update project:', error);
+      console.error('Failed to complete navigation:', error);
       // You might want to show an error message to the user here
     }
   };
