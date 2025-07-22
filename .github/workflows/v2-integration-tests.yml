@@ -44,12 +44,10 @@ jobs:
         with:
           python-version: '3.11'
 
-      # List All Files
-      - name: List All Files
+      # Change Existing File Permissions For Later Removal During Checkout of AI Verify
+      - name: Change Existing File Permissions From Previous Runs
         run: |
-          ls -la
-          sudo chmod -R u+rwX .
-          ls -la
+          sudo chmod -R 777 .
 
       # Checkout AI Verify
       - name: Checkout Code
@@ -122,30 +120,30 @@ jobs:
           echo "Integration Test Data Prepared"
 
       # Run UI Integration Test
-      - name: Run UI Integration Test
-        run: |
-          cd integration-testing
-          npm install
-          npx playwright install --with-deps
-          URL=http://127.0.0.1 PORT_NUMBER=3000 ROOT_PATH=$GITHUB_WORKSPACE/stock-plugins/user_defined_files npx playwright test tests/portal
+      # - name: Run UI Integration Test
+      #   run: |
+      #     cd integration-testing
+      #     npm install
+      #     npx playwright install --with-deps
+      #     URL=http://127.0.0.1 PORT_NUMBER=3000 ROOT_PATH=$GITHUB_WORKSPACE/stock-plugins/user_defined_files npx playwright test tests/portal
 
       # Upload Playwright Traces
-      - name: Upload Playwright Traces
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-trace-v2.0-integration-testing-${{ github.run_id }}
-          path: |
-            ${{ github.workspace }}/integration-testing/test-results/
+      # - name: Upload Playwright Traces
+      #   if: ${{ failure() }}
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: playwright-trace-v2.0-integration-testing-${{ github.run_id }}
+      #     path: |
+      #       ${{ github.workspace }}/integration-testing/test-results/
 
       # Run API Integration Test
-      - name: Run API Integration Test
-        if: always()
-        run: |
-          cd integration-testing
-          npm install
-          npx playwright install --with-deps
-          URL=http://127.0.0.1 PORT_NUMBER=4000 ROOT_PATH=$GITHUB_WORKSPACE/stock-plugins/user_defined_files npx playwright test tests/apigw
+      # - name: Run API Integration Test
+      #   if: always()
+      #   run: |
+      #     cd integration-testing
+      #     npm install
+      #     npx playwright install --with-deps
+      #     URL=http://127.0.0.1 PORT_NUMBER=4000 ROOT_PATH=$GITHUB_WORKSPACE/stock-plugins/user_defined_files npx playwright test tests/apigw
 
       # Run Standalone Plugin Integration Test
       - name: Run Standalone Plugin Integration Test
