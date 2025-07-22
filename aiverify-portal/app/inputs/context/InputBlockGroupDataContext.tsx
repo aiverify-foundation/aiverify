@@ -80,6 +80,7 @@ export type InputBlockGroupDataContextType = {
   group: string;
   groupId: number | undefined;
   cid: string | undefined;
+  name: string | undefined;
   groupDataList: InputBlockGroupData[] | null;
   inputBlocks: InputBlock[] | null;
   currentGroupData: InputBlockGroupData | null;
@@ -106,6 +107,7 @@ export const InputBlockGroupDataProvider: React.FC<{
     group: string;
     groupId: string | undefined;
     cid: string | undefined;
+    name: string | undefined;
   }>();
   const searchParams = useSearchParams();
   const projectId = searchParams.get('projectId');
@@ -297,6 +299,7 @@ export const InputBlockGroupDataProvider: React.FC<{
         group: decodeURI(group),
         groupId: groupId,
         cid: cid,
+        name: currentGroupData?.name ?? group, // This reflects any changes made to the name in the current group data
         inputBlocks,
         groupDataList: groupDataList,
         currentGroupData,
