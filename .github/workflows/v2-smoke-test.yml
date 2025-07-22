@@ -43,7 +43,7 @@ jobs:
       - name: List All Files
         run: |
           ls -la
-          sudo chown -R github .
+          sudo chmod -R 777 .
           ls -la
 
       # Checkout Code (Workflow Dispatch)
