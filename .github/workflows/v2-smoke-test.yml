@@ -39,12 +39,10 @@ jobs:
 
     steps:
       
-      # List All Files
-      - name: List All Files
+      # Change Existing File Permissions For Later Removal During Checkout of AI Verify
+      - name: Change Existing File Permissions From Previous Runs
         run: |
-          ls -la
           sudo chmod -R 777 .
-          ls -la
 
       # Checkout Code (Workflow Dispatch)
       - name: Checkout Code (Workflow Dispatch)
