@@ -44,6 +44,13 @@ jobs:
         with:
           python-version: '3.11'
 
+      # List All Files
+      - name: List All Files
+        run: |
+          ls -la
+          chmod -R u+rwX .
+          ls -la
+
       # Checkout AI Verify
       - name: Checkout Code
         uses: actions/checkout@v4
