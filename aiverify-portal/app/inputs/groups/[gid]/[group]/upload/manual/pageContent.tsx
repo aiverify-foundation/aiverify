@@ -218,7 +218,7 @@ function ChecklistsPageContent({ group }: ChecklistsPageContentProps) {
         const formattedChecklist = {
           cid: checklist.cid,
           data: checklist.data, // Ensure the data object is properly structured
-          gid: 'aiverify.stock.process_checklist',
+          gid: group.gid,
           name: checklist.name,
           group: groupName,
         };

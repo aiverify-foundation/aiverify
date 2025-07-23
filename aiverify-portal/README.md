@@ -22,11 +22,10 @@ See the apigw [README.md](../aiverify-apigw/README.md) for installation and setu
 
 ### 2. Build the `aiverify-shared-library`
 
-```bash
+```sh
 cd aiverify-shared-library
 npm install
 npm run build
-npm link
 ```
 
 ### 3. Install the portal
@@ -34,17 +33,12 @@ npm link
 To install the portal, run the following commands under the `aiverify-portal` project directory.
 
 ```sh
-cd aiverify-portal
+cd aiverify-apigw/aiverify-apigw-node
 npm install
-npm link ../aiverify-shared-library
+npm link ../../aiverify-shared-library
 ```
 
 ## Environment Variables Configuration
-
-# Link shared library
-
-cd aiverify-apigw-node
-npm link aiverify-shared-library
 
 The AI Verify Portal requires certain environment variables to be configured for proper operation. These variables can be set directly in the environment or specified in a `.env` file located in the `aiverify-portal` directory.
 
@@ -52,7 +46,7 @@ Below is a table of the environment variables and their descriptions:
 
 | Variable Name   | Description                                    |
 | --------------- | ---------------------------------------------- |
-| `APIGW_HOST`    | The host address of the AI Verify API Gateway. |
+| `APIGW_HOST`    | The host address of the AI Verify API Gateway. Set to `http://localhost:4000` if the apigw is running on localhost. |
 | `PROXY_TIMEOUT` | Set the proxy timeout. Default to 600000ms     |
 
 ## Running the Portal

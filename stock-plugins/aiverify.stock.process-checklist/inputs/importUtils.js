@@ -11,8 +11,8 @@ const checklistMapping = {
   fairness_process_checklist: "Fairness",
   data_governance_process_checklist: "Data Governance",
   accountability_process_checklist: "Accountability",
-  human_agency_oversight_process_checklist: "Human Agency Oversight",
-  inclusive_growth_process_checklist: "Inclusive Growth",
+  human_agency_oversight_process_checklist: "Human Agency & Oversight",
+  inclusive_growth_process_checklist: "Inclusive Growth, Societal & Environmental Well-being",
   organisational_considerations_process_checklist:
     "Organisational Considerations",
 };
@@ -79,16 +79,40 @@ function formatPrincipleName(principle) {
 
 /**
  * Helper function to find a match for a sheet name in the checklist mapping
- * Only performs exact matching (case-insensitive)
+ * Performs exact matching first, then partial matching for truncated names
  * @param {string} sheetName - The sheet name to find a match for
  * @param {Object} reverseMapping - The reverse mapping of display names to CIDs
  * @returns {string|null} The matching CID or null if no match found
  */
 function findBestCidMatch(sheetName, reverseMapping) {
-  // Only perform exact match (case-insensitive)
-  const exactMatch = reverseMapping[sheetName.trim().toLowerCase()];
+  const normalizedSheetName = sheetName.trim().toLowerCase();
+  
+  // First try exact match (case-insensitive)
+  const exactMatch = reverseMapping[normalizedSheetName];
   if (exactMatch) {
     return exactMatch;
+  }
+
+  // For truncated sheet names, try partial matching
+  // This is particularly useful for long names like "Inclusive Growth, Societal & Environmental Well-being"
+  // which might be truncated to "Inclusive Growth, Societal & En" due to Excel's 31-character limit
+  for (const [displayName, cid] of Object.entries(reverseMapping)) {
+    const normalizedDisplayName = displayName.toLowerCase();
+    
+    // Check if the sheet name starts with the display name (for truncated cases)
+    // or if the display name starts with the sheet name (for abbreviated cases)
+    if (normalizedSheetName.startsWith(normalizedDisplayName.substring(0, Math.min(normalizedDisplayName.length, 25))) ||
+        normalizedDisplayName.startsWith(normalizedSheetName.substring(0, Math.min(normalizedSheetName.length, 25)))) {
+      // Additional validation: ensure it's a reasonable match (at least 10 characters match)
+      const minLength = Math.min(normalizedSheetName.length, normalizedDisplayName.length);
+      if (minLength >= 10) {
+        const commonPrefix = normalizedSheetName.substring(0, minLength);
+        const displayPrefix = normalizedDisplayName.substring(0, minLength);
+        if (commonPrefix === displayPrefix) {
+          return cid;
+        }
+      }
+    }
   }
 
   // No match found

@@ -9,7 +9,9 @@ import { useDeleteGroup } from '../../[groupId]/hooks/useDeleteGroup';
 import {
   useProcessChecklistExport,
   Checklist,
+  EXPORT_PROCESS_CHECKLISTS_CID,
 } from '../hooks/useProcessChecklistExport';
+import { useMDXSummaryBundle } from '../hooks/useMDXSummaryBundle';
 
 interface GroupHeaderProps {
   groupName: string;
@@ -37,8 +39,10 @@ const GroupHeader = ({
   // const { checklists, setChecklists, setSelectedGroup } = useChecklists();
   const { groupId, group, currentGroupData, gid } = useInputBlockGroupData();
   
-  // Check if the current group is the aiverify process checklist
-  const isProcessChecklist = gid === 'aiverify.stock.process_checklist';
+  // Dynamically check if the plugin has export functionality
+  // by checking if the export process checklists MDX bundle exists
+  const { data: exportBundle } = useMDXSummaryBundle(gid, EXPORT_PROCESS_CHECKLISTS_CID);
+  const hasExportFunction = !!exportBundle?.code;
   
   const checklists: Checklist[] = currentGroupData
     ? currentGroupData.input_blocks.map(
@@ -55,15 +59,12 @@ const GroupHeader = ({
   // const editGroupMutation = useEditGroup();
   const deleteGroupMutation = useDeleteGroup();
 
-  // Storage key for group name in localStorage
-  // const storageKey = `checklist_group_name_${initialGroupName}`;
-
   // Initialize export hooks for both formats, but only use the selected one
   const { isExporting: isJsonExporting, handleExport: handleJsonExport } =
-    useProcessChecklistExport('json', initialGroupName, checklists);
+    useProcessChecklistExport('json', initialGroupName, checklists, gid);
 
   const { isExporting: isXlsxExporting, handleExport: handleXlsxExport } =
-    useProcessChecklistExport('xlsx', initialGroupName, checklists);
+    useProcessChecklistExport('xlsx', initialGroupName, checklists, gid);
 
   // Function to handle export button click
   const handleExportClick = useCallback(() => {
@@ -113,16 +114,6 @@ const GroupHeader = ({
     handleXlsxExport,
     initialGroupName,
   ]);
-  // Update the localStorage key to be unique per group
-  // const storageKey = `groupName_${initialGroupName}`;
-
-  // Update the localStorage retrieval
-  // useEffect(() => {
-  //   const storedGroupName = localStorage.getItem(storageKey);
-  //   if (storedGroupName) {
-  //     setGroupName(storedGroupName);
-  //   }
-  // }, [storageKey]);
 
   // Update local state when initialGroupName changes
   useEffect(() => {
@@ -143,40 +134,17 @@ const GroupHeader = ({
       console.log('Deleting group:', groupName);
       deleteGroupMutation.mutate({ groupId });
       setIsDeleteModalVisible(false);
-      // setSelectedGroup('');
-      // setChecklists(
-      //   checklists.filter((checklist) => checklist.group !== groupName)
-      // );
-      // localStorage.removeItem(storageKey); // Remove the specific group name
     }
   }, [
     deleteGroupMutation,
     groupName,
-    // checklists,
-    // setSelectedGroup,
-    // setChecklists,
     router,
-    // storageKey,
     groupId,
   ]);
 
   const handleDeleteCancel = () => {
     setIsDeleteModalVisible(false);
   };
-
-  // const handleSubmit = useCallback(() => {
-  //   console.log('I AM HERE');
-  //   // e.preventDefault();
-  //   console.log('>>> handleSubmit', groupName);
-  //   setIsSaving(true);
-  //   setName(groupName);
-  //   setIsEditing(false);
-  //   // editGroupMutation.mutate({
-  //   //   groupName: initialGroupName,
-  //   //   newGroupName: groupName,
-  //   //   // checklists,
-  //   // });
-  // }, [setName, initialGroupName /* checklists */]);
 
   const handleCancel = () => {
     setGroupName(initialGroupName);
@@ -185,38 +153,11 @@ const GroupHeader = ({
 
   const handleModalClose = useCallback(() => {
     setIsModalVisible(false);
-  }, []);
-
-  // useEffect(() => {
-  //   if (editGroupMutation.isSuccess && isSaving) {
-  //     setModalMessage('Group Name Changed successfully');
-  //     setIsSaving(false);
-  //     setIsEditing(false);
-  //     setIsModalVisible(true);
-  //     // setSelectedGroup(groupName);
-  //     // setChecklists(
-  //     //   checklists.map((checklist) =>
-  //     //     checklist.group === initialGroupName
-  //     //       ? { ...checklist, group: groupName }
-  //     //       : checklist
-  //     //   )
-  //     // );
-  //   } else if (editGroupMutation.isError && isSaving) {
-  //     setModalMessage('Failed to update group name. Please try again.');
-  //     setIsSaving(false);
-  //     setIsEditing(false);
-  //     setIsModalVisible(true);
-  //   }
-  // }, [
-  //   editGroupMutation.isSuccess,
-  //   editGroupMutation.isError,
-  //   isSaving,
-  //   groupName,
-  //   initialGroupName,
-  //   // setSelectedGroup,
-  //   // setChecklists,
-  //   // checklists,
-  // ]);
+    // Navigate back if deletion was successful
+    if (deleteGroupMutation.isSuccess) {
+      router.back();
+    }
+  }, [deleteGroupMutation.isSuccess, router]);
 
   useEffect(() => {
     if (deleteGroupMutation.isSuccess) {
@@ -267,8 +208,8 @@ const GroupHeader = ({
       )}
 
       <div className="flex justify-between gap-2">
-        {/* Custom download button - only show for aiverify.stock.process_checklist */}
-        {isProcessChecklist && (
+        {/* Export button - show for any plugin with export functionality */}
+        {hasExportFunction && (
           <button
             onClick={handleExportClick}
             disabled={isDownloading || isJsonExporting || isXlsxExporting}

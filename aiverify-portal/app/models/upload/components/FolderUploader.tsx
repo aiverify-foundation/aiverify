@@ -22,6 +22,53 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
   const { mutate, status } = useUploadFolder();
   const isLoading = status === 'pending';
 
+  // Helper function to traverse directory entries recursively
+  const traverseDirectory = async (entry: FileSystemEntry, path = ''): Promise<FileWithPath[]> => {
+    const files: FileWithPath[] = [];
+    
+    if (entry.isFile) {
+      const fileEntry = entry as FileSystemFileEntry;
+      const file = await new Promise<File>((resolve, reject) => {
+        fileEntry.file(resolve, reject);
+      });
+      
+      // Create a new File object with the same content but with a custom name that includes the path
+      // This ensures it's a proper File object that can be used in FormData
+      const newFile = new File([file], file.name, {
+        type: file.type,
+        lastModified: file.lastModified,
+      });
+      
+      // Add webkitRelativePath as a non-enumerable property
+      // Build the path by combining current path with filename
+      const webkitRelativePath = path + file.name;
+      Object.defineProperty(newFile, 'webkitRelativePath', {
+        value: webkitRelativePath,
+        writable: false,
+        enumerable: false,
+        configurable: false
+      });
+      
+      files.push(newFile as FileWithPath);
+    } else if (entry.isDirectory) {
+      const directoryEntry = entry as FileSystemDirectoryEntry;
+      const reader = directoryEntry.createReader();
+      const entries = await new Promise<FileSystemEntry[]>((resolve, reject) => {
+        reader.readEntries(resolve, reject);
+      });
+      
+      // Build the path for this directory level
+      const currentPath = path + entry.name + '/';
+      
+      for (const subEntry of entries) {
+        const subFiles = await traverseDirectory(subEntry, currentPath);
+        files.push(...subFiles);
+      }
+    }
+    
+    return files;
+  };
+
   const handleFiles = (files: FileList | File[]) => {
     // Only allow one folder upload at a time
     // Clear previous selections when a new folder is selected
@@ -52,11 +99,66 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
       // Replace the current selection instead of appending
       setSelectedFiles(Array.from(files) as FileWithPath[]);
     }
+    
+    // Clear the file input value to allow re-selecting the same folder
+    const fileInput = document.getElementById('folderInput') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   };
 
-  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
-    handleFiles(event.dataTransfer.files);
+    
+    const items = event.dataTransfer.items;
+    if (!items) {
+      // Fallback to regular file handling
+      handleFiles(event.dataTransfer.files);
+      return;
+    }
+
+    const allFiles: FileWithPath[] = [];
+
+    // Process each dropped item
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      if (item.kind === 'file') {
+        const entry = item.webkitGetAsEntry();
+        if (entry) {
+          if (entry.isDirectory) {
+            // Handle directory - start with empty path, let traverseDirectory build the correct path
+            const files = await traverseDirectory(entry, '');
+            allFiles.push(...files);
+          } else {
+            // Handle individual file
+            const file = item.getAsFile();
+            if (file) {
+              // Create a new File object with the same content
+              // This ensures it's a proper File object that can be used in FormData
+              const newFile = new File([file], file.name, {
+                type: file.type,
+                lastModified: file.lastModified,
+              });
+              
+              // Add webkitRelativePath as a non-enumerable property
+              Object.defineProperty(newFile, 'webkitRelativePath', {
+                value: file.name,
+                writable: false,
+                enumerable: false,
+                configurable: false
+              });
+              
+              const fileWithPath = newFile as FileWithPath;
+              allFiles.push(fileWithPath);
+            }
+          }
+        }
+      }
+    }
+
+    if (allFiles.length > 0) {
+      handleFiles(allFiles);
+    }
   };
 
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
@@ -184,12 +286,26 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
         setModelType('');
         setSelectedFiles([]);
       },
-      onError: (error) => {
+      onError: (error: unknown) => {
         console.log('=== UPLOAD FAILED ===');
         console.error('Error details:', error);
-        setModalMessage(
-          `Error uploading folder: ${error instanceof Error ? error.message : 'Unknown error'}`
-        );
+        
+        // The useUploadFolder hook already extracts error.detail from API response
+        // So we can directly use error.message which contains the detailed error
+        let errorMessage = 'Unknown error';
+        
+        if (error instanceof Error) {
+          errorMessage = error.message;
+        } else if (typeof error === 'string') {
+          errorMessage = error;
+        } else if (error && typeof error === 'object' && 'message' in error && typeof (error as { message: unknown }).message === 'string') {
+          errorMessage = (error as { message: string }).message;
+        }
+        
+        const fullErrorMessage = `Error uploading folder "${folderName}": ${errorMessage}`;
+        console.log('Formatted error message:', fullErrorMessage);
+        
+        setModalMessage(fullErrorMessage);
         setIsModalVisible(true);
         // Reset all fields to initial state
         setFolderName('');
@@ -213,8 +329,8 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
           onCloseIconClick={closeModal}
           enableScreenOverlay
           heading="Upload Status"
-          height={200}>
-          <p>{modalMessage}</p>
+          height={300}>
+          <p className="whitespace-pre-line">{modalMessage}</p>
         </Modal>
       )}
 
@@ -304,6 +420,7 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
                   <option value="">Select</option>
                   <option value="regression">Regression</option>
                   <option value="classification">Classification</option>
+                  <option value="uplift">Uplift</option>
                 </select>
               </div>
             </div>

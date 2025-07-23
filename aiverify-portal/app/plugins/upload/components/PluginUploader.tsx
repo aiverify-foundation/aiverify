@@ -44,6 +44,12 @@ const PluginUploader = () => {
       id: Math.random().toString(36).substring(2, 9),
     }));
     setFileUploads((prevUploads) => [...prevUploads, ...newUploads]);
+    
+    // Clear the file input value to allow re-selecting the same file
+    const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   };
 
   const removeUpload = (id: string) => {
@@ -156,7 +162,7 @@ const PluginUploader = () => {
                     <li role="listitem">
                       File Format:{' '}
                       <span className="text-secondary-300">
-                        ZIP file containing plugin or algorithm package
+                        ZIP file
                       </span>
                     </li>
                     <li role="listitem">
@@ -201,9 +207,6 @@ const PluginUploader = () => {
                     Click to Browse
                   </span>
                   <br />
-                  <span className="text-[0.8rem] text-secondary-300">
-                    Maximum 10 files per upload
-                  </span>
                 </p>
               </div>
             </div>

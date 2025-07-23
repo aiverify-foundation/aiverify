@@ -496,6 +496,13 @@ export default function DecisionTree({
   );
   const [metrics, setMetrics] = useState<any>(data["metrics"] || null);
 
+  const resetGraphView = () => {
+    if (cy.current) {
+      cy.current.fit(cy.current.nodes(), 20);
+      cy.current.center();
+    }
+  };
+
   const onReady = (cyobj) => {
     cy.current = cyobj;
     let coll = cy.current.outcomes();

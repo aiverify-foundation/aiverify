@@ -2,7 +2,8 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Link from 'next/link';
-import React from 'react';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 import { useInputBlockGroupData } from '@/app/inputs/context/InputBlockGroupDataContext';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import ChecklistDetail from './components/ChecklistDetail';
@@ -17,8 +18,41 @@ const queryClient = new QueryClient({
 });
 
 export default function ChecklistDetailPage() {
-  const { gid, groupId, cid, group } = useInputBlockGroupData();
-  if (!groupId || !cid) return;
+  console.log('ChecklistDetailPage component started');
+  
+  const { gid, groupId, cid, group, name } = useInputBlockGroupData();
+  const router = useRouter();
+  const [urlParams, setUrlParams] = useState<{ projectId: string | null; flow: string | null }>({
+    projectId: null,
+    flow: null
+  });
+  
+  useEffect(() => {
+    // Get URL parameters from window.location
+    if (typeof window !== 'undefined') {
+      const urlSearchParams = new URLSearchParams(window.location.search);
+      const projectId = urlSearchParams.get('projectId');
+      const flow = urlSearchParams.get('flow');
+      setUrlParams({ projectId, flow });
+      console.log('URL params from window.location:', { projectId, flow });
+    }
+  }, []);
+  
+  console.log('Context values:', { gid, groupId, cid, group });
+  console.log('URL params state:', urlParams);
+  
+  if (!groupId || !cid) {
+    console.log('Early return triggered - missing groupId or cid');
+    return null;
+  }
+
+  // Helper function to preserve query parameters
+  const preserveQueryParams = (url: string) => {
+    if (urlParams.flow && urlParams.projectId) {
+      return `${url}?flow=${urlParams.flow}&projectId=${urlParams.projectId}`;
+    }
+    return url;
+  };
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -33,20 +67,16 @@ export default function ChecklistDetailPage() {
           <div className="ml-3 items-end">
             <nav className="breadcrumbs mb-6 text-sm">
               <span className="text-2xl font-bold text-white hover:underline">
-                <Link href="/inputs">Inputs</Link>
+                <Link href={preserveQueryParams("/inputs")}>Inputs</Link>
               </span>
               <span className="mx-2 text-2xl text-white">/</span>
               <span className="text-2xl font-bold text-white hover:underline">
-                <Link href={`/inputs/groups/`}>Groups</Link>
+                <Link href={preserveQueryParams(`/inputs/groups/${gid}/${group}`)}>{group}</Link>
               </span>
               <span className="mx-2 text-2xl text-white">/</span>
               <span className="text-2xl font-bold text-white hover:underline">
-                <Link href={`/inputs/groups/${gid}/${group}`}>{group}</Link>
-              </span>
-              <span className="mx-2 text-2xl text-white">/</span>
-              <span className="text-2xl font-bold text-white hover:underline">
-                <Link href={`/inputs/groups/${gid}/${group}/${groupId}`}>
-                  {groupId}
+                <Link href={preserveQueryParams(`/inputs/groups/${gid}/${group}/${groupId}`)}>
+                  {name || groupId}
                 </Link>
               </span>
               <span className="mx-2 text-2xl text-white">/</span>

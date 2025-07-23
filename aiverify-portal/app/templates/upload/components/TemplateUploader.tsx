@@ -1,8 +1,9 @@
 'use client';
+import JSZip from 'jszip';
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { UploadIcon } from '@/app/models/upload/utils/icons';
-import { FileUpload } from '@/app/templates/types';
+import { FileUpload, ProcessedTemplateData } from '@/app/templates/types';
 import { useUploadFiles } from '@/app/templates/upload/hooks/useUploadFile';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import { Button, ButtonVariant } from '@/lib/components/button';
@@ -39,35 +40,89 @@ const TemplateUploader = () => {
     },
   });
 
-  const validateJsonFile = (file: File): Promise<boolean> => {
+  const validateZipFile = (file: File): Promise<{ isValid: boolean; processedData?: ProcessedTemplateData }> => {
     return new Promise((resolve) => {
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = async (e) => {
         try {
           if (e.target?.result) {
-            // Try to parse the JSON
-            const content = e.target.result as string;
-            const parsedJson = JSON.parse(content);
-            console.log('JSON structure validation:', parsedJson);
-            setFileValidationInfo(`${file.name} is valid JSON format`);
-            resolve(true);
+            const zipData = e.target.result as ArrayBuffer;
+            const zip = new JSZip();
+            
+            // Load the zip file
+            const zipContent = await zip.loadAsync(zipData);
+            
+            // Find files ending with .meta.json and .data.json
+            const fileNames = Object.keys(zipContent.files);
+            const metaFileName = fileNames.find(name => name.endsWith('.meta.json'));
+            const dataFileName = fileNames.find(name => name.endsWith('.data.json'));
+            
+            if (!metaFileName || !dataFileName) {
+              setFileValidationInfo(`${file.name} must contain files ending with .meta.json and .data.json`);
+              resolve({ isValid: false });
+              return;
+            }
+            
+            const metaFile = zipContent.file(metaFileName);
+            const dataFile = zipContent.file(dataFileName);
+            
+            if (!metaFile || !dataFile) {
+              setFileValidationInfo(`${file.name} could not access the meta or data files`);
+              resolve({ isValid: false });
+              return;
+            }
+            
+            // Extract and parse meta.json
+            const metaContent = await metaFile.async('text');
+            const metaData = JSON.parse(metaContent);
+            
+            // Extract and parse data.json
+            const dataContent = await dataFile.async('text');
+            const dataJson = JSON.parse(dataContent);
+            
+            // Validate that meta.json has required fields
+            if (!metaData.name || !metaData.description) {
+              setFileValidationInfo(`${file.name} ${metaFileName} must contain 'name' and 'description' fields`);
+              resolve({ isValid: false });
+              return;
+            }
+            
+            // Merge metadata into data.json
+            const enhancedData = {
+              ...dataJson,
+              projectInfo: {
+                name: metaData.name,
+                description: metaData.description
+              }
+            };
+            
+            console.log('ZIP file validation successful:', {
+              metaFileName,
+              dataFileName,
+              metaData: { name: metaData.name, description: metaData.description },
+              enhancedDataStructure: Object.keys(enhancedData)
+            });
+            
+            setFileValidationInfo(`${file.name} is valid and processed successfully (found: ${metaFileName}, ${dataFileName})`);
+            resolve({ isValid: true, processedData: enhancedData });
+            
           } else {
             setFileValidationInfo(`${file.name} could not be read`);
-            resolve(false);
+            resolve({ isValid: false });
           }
         } catch (error) {
-          console.error('JSON parsing error:', error);
-          setFileValidationInfo(`${file.name} is not valid JSON format`);
-          resolve(false);
+          console.error('ZIP processing error:', error);
+          setFileValidationInfo(`${file.name} is not a valid ZIP file or contains invalid JSON`);
+          resolve({ isValid: false });
         }
       };
 
       reader.onerror = () => {
         setFileValidationInfo(`Error reading ${file.name}`);
-        resolve(false);
+        resolve({ isValid: false });
       };
 
-      reader.readAsText(file);
+      reader.readAsArrayBuffer(file);
     });
   };
 
@@ -77,32 +132,67 @@ const TemplateUploader = () => {
     // Clear previous validation info
     setFileValidationInfo('');
 
-    // Filter only JSON files
-    const jsonFiles = Array.from(files).filter(
+    // Filter only ZIP files
+    const zipFiles = Array.from(files).filter(
       (file) =>
-        file.type === 'application/json' ||
-        file.name.toLowerCase().endsWith('.json')
+        file.type === 'application/zip' ||
+        file.type === 'application/x-zip-compressed' ||
+        file.name.toLowerCase().endsWith('.zip')
     );
 
-    if (jsonFiles.length === 0) {
-      setModalMessage('Only JSON files are allowed.');
+    if (zipFiles.length === 0) {
+      setModalMessage('Only ZIP files are allowed.');
       setIsModalVisible(true);
+      // Clear the file input value
+      const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+      if (fileInput) {
+        fileInput.value = '';
+      }
       return;
     }
 
-    // Validate each JSON file
-    for (const file of jsonFiles) {
-      await validateJsonFile(file);
+    // Validate each ZIP file and process them
+    const processedUploads: FileUpload[] = [];
+    
+    for (const file of zipFiles) {
+      const validationResult = await validateZipFile(file);
+      
+      if (validationResult.isValid && validationResult.processedData) {
+        // Create a new File object with the processed JSON data
+        const jsonString = JSON.stringify(validationResult.processedData, null, 2);
+        const processedFile = new File([jsonString], file.name.replace('.zip', '.json'), {
+          type: 'application/json'
+        });
+        
+        processedUploads.push({
+          file: processedFile,
+          originalFile: file, // Keep reference to original ZIP file
+          processedData: validationResult.processedData,
+          progress: 0,
+          status: 'idle',
+          id: Math.random().toString(36).substring(2, 9),
+        });
+      }
     }
 
-    const newUploads: FileUpload[] = jsonFiles.map((file) => ({
-      file,
-      progress: 0,
-      status: 'idle',
-      id: Math.random().toString(36).substring(2, 9),
-    }));
+    if (processedUploads.length === 0) {
+      setModalMessage('No valid ZIP files were processed. Please check file contents and try again.');
+      setIsModalVisible(true);
+      // Clear the file input value
+      const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+      if (fileInput) {
+        fileInput.value = '';
+      }
+      return;
+    }
 
-    setFileUploads((prevUploads) => [...prevUploads, ...newUploads]);
+    setFileUploads((prevUploads) => [...prevUploads, ...processedUploads]);
+    
+    // Clear the file input value to allow re-selecting the same file
+    const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   };
 
   const _debugFileInfo = () => {
@@ -115,25 +205,20 @@ const TemplateUploader = () => {
       const file = upload.file;
       console.log('Debug file info:', {
         name: file.name,
+        originalName: upload.originalFile?.name,
         size: file.size,
         type: file.type,
         lastModified: new Date(file.lastModified).toISOString(),
+        hasProcessedData: !!upload.processedData,
       });
 
-      // Read file content for debugging
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const content = e.target?.result as string;
-          const firstFewChars =
-            content.substring(0, 200) + (content.length > 200 ? '...' : '');
-          console.log(`File content preview (${file.name}):`, firstFewChars);
-          console.log('Full content length:', content.length);
-        } catch (error) {
-          console.error('Error reading file:', error);
-        }
-      };
-      reader.readAsText(file);
+      if (upload.processedData) {
+        console.log('Processed data structure:', {
+          hasProjectInfo: !!upload.processedData.projectInfo,
+          projectInfo: upload.processedData.projectInfo,
+          dataKeys: Object.keys(upload.processedData)
+        });
+      }
     });
   };
 
@@ -247,13 +332,19 @@ const TemplateUploader = () => {
                     <li role="listitem">
                       File Type:{' '}
                       <span className="text-secondary-300">
-                        JSON files only
+                        ZIP files only
                       </span>
                     </li>
                     <li role="listitem">
                       File Structure:{' '}
                       <span className="text-secondary-300">
-                        Must follow the template schema
+                        Must contain files ending with .meta.json and .data.json
+                      </span>
+                    </li>
+                    <li role="listitem">
+                      Metadata:{' '}
+                      <span className="text-secondary-300">
+                        .meta.json file must have name and description fields
                       </span>
                     </li>
                     <li role="listitem">
@@ -275,7 +366,7 @@ const TemplateUploader = () => {
                   id="fileInput"
                   style={{ display: 'none' }}
                   multiple
-                  accept=".json, application/json"
+                  accept=".zip, application/zip, application/x-zip-compressed"
                   onChange={(e) =>
                     handleFileChange(Array.from(e.target.files || []))
                   }
@@ -300,7 +391,14 @@ const TemplateUploader = () => {
                   key={file.id}
                   className={styles.fileItem}>
                   <div className={styles.fileHeader}>
-                    <div className={styles.fileName}>{file.file.name}</div>
+                    <div className={styles.fileName}>
+                      {file.originalFile?.name || file.file.name}
+                      {file.processedData?.projectInfo && (
+                        <div className="text-xs text-secondary-300 mt-1">
+                          {file.processedData.projectInfo.name} - {file.processedData.projectInfo.description}
+                        </div>
+                      )}
+                    </div>
                     <button
                       className={styles.removeButton}
                       onClick={() => removeUpload(file.id)}>

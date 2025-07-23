@@ -4,7 +4,7 @@ import { RiArrowLeftLine, RiArrowRightLine } from '@remixicon/react';
 import { RiAlertLine } from '@remixicon/react';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { FairnessTree } from '@/app/inputs/utils/types';
+import { useRouter } from 'next/navigation';
 import { TestModel } from '@/app/models/utils/types';
 import { InputBlockGroupData } from '@/app/types';
 import { Algorithm, InputBlock, InputBlockData } from '@/app/types';
@@ -23,7 +23,6 @@ interface ClientSelectDataProps {
   allModels: TestModel[];
   allTestResults: TestResult[];
   allInputBlockGroups: InputBlockGroupData[];
-  allFairnessTrees: FairnessTree[];
   allInputBlockDatas: InputBlockData[];
   flow: string;
   initialModelId?: string;
@@ -42,6 +41,9 @@ export type SelectedInputBlock = {
   gid: string;
   cid: string;
   id: number;
+  group?: string | null;
+  isGroupSelection?: boolean;
+  groupId?: number;
 };
 
 // Validation type
@@ -63,18 +65,33 @@ export default function ClientSelectData({
   allModels,
   allTestResults,
   allInputBlockGroups,
-  allFairnessTrees,
   allInputBlockDatas,
   flow,
   initialModelId,
   initialTestResults = [],
   initialInputBlocks = [],
 }: ClientSelectDataProps) {
+  const router = useRouter();
+  
   console.log('ClientSelectData received props:', {
     initialModelId,
     initialTestResults,
     initialInputBlocks,
   });
+
+  // Debug: Log the required input blocks to see their group properties
+  console.log('=== DEBUGGING REQUIRED INPUT BLOCKS ===');
+  console.log('Total required input blocks:', requiredInputBlocks.length);
+  requiredInputBlocks.forEach((block, index) => {
+    console.log(`Required Input Block ${index + 1}:`, {
+      gid: block.gid,
+      cid: block.cid,
+      name: block.name,
+      group: block.group,
+      fullBlock: block
+    });
+  });
+  console.log('=== END DEBUGGING ===');
 
   // State for model selection
   const [selectedModelId, setSelectedModelId] = useState<string | undefined>(
@@ -125,6 +142,84 @@ export default function ClientSelectData({
     }))
   );
 
+  // Add useEffect hooks to sync state with props when they change
+  useEffect(() => {
+    console.log('initialModelId prop changed:', initialModelId);
+    setSelectedModelId(initialModelId);
+  }, [initialModelId]);
+
+  useEffect(() => {
+    console.log('initialTestResults prop changed:', initialTestResults);
+    const newTestResults = initialTestResults.map((result) => ({
+      gid: result.gid,
+      cid: result.cid,
+      id: result.id,
+    }));
+    setSelectedTestResults(newTestResults);
+  }, [initialTestResults]);
+
+  useEffect(() => {
+    console.log('initialInputBlocks prop changed:', initialInputBlocks);
+    const newInputBlocks = initialInputBlocks.map((block) => ({
+      gid: block.gid,
+      cid: block.cid,
+      id: block.id,
+    }));
+    setSelectedInputBlocks(newInputBlocks);
+  }, [initialInputBlocks]);
+
+  // Add effect to refresh data when component mounts or when user navigates back
+  useEffect(() => {
+    let refreshTimeout: NodeJS.Timeout;
+    
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        console.log('Page became visible, checking if data refresh is needed');
+        // Clear any existing timeout
+        if (refreshTimeout) {
+          clearTimeout(refreshTimeout);
+        }
+        // Debounce the refresh to avoid rapid calls
+        refreshTimeout = setTimeout(() => {
+          console.log('Refreshing data to ensure latest selections are shown');
+          router.refresh();
+        }, 300); // 300ms delay
+      }
+    };
+
+    // Add event listener for page visibility changes
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Check if we need to refresh on mount by comparing timestamps
+    const lastSave = localStorage.getItem(`lastSave_${projectId}`);
+    const lastRefresh = localStorage.getItem(`lastRefresh_${projectId}`);
+    
+    if (lastSave && lastRefresh) {
+      const saveTime = parseInt(lastSave);
+      const refreshTime = parseInt(lastRefresh);
+      
+      // Only refresh if the last save was more recent than the last refresh
+      if (saveTime > refreshTime) {
+        console.log('Detected stale data, refreshing to get latest selections');
+        router.refresh();
+        localStorage.setItem(`lastRefresh_${projectId}`, Date.now().toString());
+      }
+    } else {
+      // If no timestamps found, refresh once on mount
+      console.log('No refresh history found, refreshing to ensure latest selections');
+      router.refresh();
+      localStorage.setItem(`lastRefresh_${projectId}`, Date.now().toString());
+    }
+
+    // Cleanup
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (refreshTimeout) {
+        clearTimeout(refreshTimeout);
+      }
+    };
+  }, [router, projectId]);
+
   // Process validation results whenever they change
   useEffect(() => {
     if (Object.keys(validationResults).length > 0) {
@@ -140,6 +235,8 @@ export default function ClientSelectData({
         'SelectedInputBlocks changed, reprocessing validation:',
         selectedInputBlocks
       );
+      console.log('Available validation result keys:', Object.keys(validationResults));
+      console.log('Looking for validation keys:', selectedInputBlocks.map(block => `${block.gid}-${block.cid}-${block.id}`));
       processValidationResults(validationResults);
     }
   }, [selectedInputBlocks]);
@@ -150,16 +247,62 @@ export default function ClientSelectData({
     selectedInputBlocks,
   });
 
+  // Debug: Log the required input blocks to see their names
+  console.log('Required input blocks with names:', 
+    requiredInputBlocks.map(block => ({
+      gid: block.gid,
+      cid: block.cid, 
+      name: block.name,
+      group: block.group
+    }))
+  );
+
+  // Add a function to save selections to API
+  const saveSelectionsToAPI = async (
+    modelId?: string,
+    testResults?: SelectedTestResult[],
+    inputBlocks?: SelectedInputBlock[]
+  ) => {
+    if (!projectId) return;
+
+    try {
+      // Use current state if parameters not provided
+      const currentModelId = modelId !== undefined ? modelId : selectedModelId;
+      const currentTestResults = testResults !== undefined ? testResults : selectedTestResults;
+      const currentInputBlocks = inputBlocks !== undefined ? inputBlocks : selectedInputBlocks;
+
+      // Transform the data for backend saving - always use individual input block IDs
+      const transformedDataForBackend = {
+        testModelId: currentModelId ? parseInt(currentModelId) : null,
+        testResults: currentTestResults.map((result) => result.id),
+        inputBlocks: currentInputBlocks.map((block) => block.id), // Use individual IDs for backend
+      };
+
+      console.log('Auto-saving selections to API:', transformedDataForBackend);
+
+      // Send all changes in a single patch request using individual IDs
+      await patchProject(projectId, transformedDataForBackend);
+      console.log('Auto-save completed successfully');
+      
+      // Update the last save timestamp
+      localStorage.setItem(`lastSave_${projectId}`, Date.now().toString());
+    } catch (error) {
+      console.error('Failed to auto-save selections:', error);
+      // Note: We're not showing user-facing errors for auto-save to avoid interrupting UX
+    }
+  };
+
   const handleModelChange = (modelId: string | undefined) => {
     setSelectedModelId(modelId);
 
     // Instead of clearing all test results, filter out those that don't match the new model
+    let validTestResults = selectedTestResults;
     if (modelId) {
       const selectedModel = allModels.find(
         (model) => model.id.toString() === modelId
       );
       if (selectedModel) {
-        const validTestResults = selectedTestResults.filter((result) => {
+        validTestResults = selectedTestResults.filter((result) => {
           const testResult = allTestResults.find((tr) => tr.id === result.id);
           return (
             testResult &&
@@ -169,20 +312,37 @@ export default function ClientSelectData({
         setSelectedTestResults(validTestResults);
       } else {
         // If no model is found, clear the test results
+        validTestResults = [];
         setSelectedTestResults([]);
       }
     } else {
       // If no model is selected, clear the test results
+      validTestResults = [];
       setSelectedTestResults([]);
     }
+
+    // Auto-save the model selection and updated test results
+    saveSelectionsToAPI(modelId, validTestResults, selectedInputBlocks);
   };
 
   const handleTestResultsChange = (testResults: SelectedTestResult[]) => {
     setSelectedTestResults(testResults);
+    
+    // Auto-save the test results selection
+    saveSelectionsToAPI(selectedModelId, testResults, selectedInputBlocks);
   };
 
   const handleInputBlocksChange = (inputBlocks: SelectedInputBlock[]) => {
+    console.log('ClientSelectData received input blocks:', inputBlocks.map(block => ({
+      gid: block.gid,
+      cid: block.cid,
+      id: block.id,
+      group: block.group
+    })));
     setSelectedInputBlocks(inputBlocks);
+
+    // Auto-save the input blocks selection
+    saveSelectionsToAPI(selectedModelId, selectedTestResults, inputBlocks);
   };
 
   // Handler to receive validation results from UserInputs
@@ -243,6 +403,22 @@ export default function ClientSelectData({
       return;
     }
 
+    console.log('=== PROCESSING VALIDATION RESULTS ===');
+    console.log('Validation results received:', results);
+    console.log('Selected input blocks to check:', blocksToCheck);
+
+    // Create validation keys for matching - use groupId for group selections, individual id for others
+    const validationKeys = blocksToCheck.map((block: SelectedInputBlock) => {
+      // For group selections, use the groupId for validation matching
+      if (block.isGroupSelection && block.groupId) {
+        return `${block.gid}-${block.cid}-${block.groupId}`;
+      }
+      // For individual selections, use the individual id
+      return `${block.gid}-${block.cid}-${block.id}`;
+    });
+    
+    console.log('Validation keys for matching:', validationKeys);
+
     // Collect names and messages of invalid input blocks, grouped by type
     const invalidBlocks: InvalidInputBlock[] = [];
 
@@ -252,95 +428,69 @@ export default function ClientSelectData({
       cid: string,
       id?: number
     ): { name: string; type: string } => {
+      console.log(`=== FINDING INPUT BLOCK INFO FOR ${gid}-${cid} ===`);
+      
       // Default fallback values
-      let type = 'Other';
+      let type = 'Input Block';
       let name = cid;
 
-      // Check if this is a process checklist (pattern matching from the image)
-      if (
-        cid.includes('process_checklist') ||
-        cid.endsWith('_process_checklist')
-      ) {
-        // Group all process checklists under their parent group name
-        // Look for the required input block that would contain this checklist
-        const parentBlock = requiredInputBlocks.find(
-          (block) =>
-            block.group &&
-            (block.gid === 'aiverify.stock.process_checklist' ||
-              block.gid === 'aiverify.stock.veritas')
-        );
+      // Find the matching required input block using BOTH gid and cid to ensure uniqueness
+      const requiredInputBlock = requiredInputBlocks.find(
+        (block) => block.gid === gid && block.cid === cid
+      );
 
-        if (parentBlock && parentBlock.group) {
-          type = parentBlock.group;
-        } else if (gid === 'aiverify.stock.process_checklist') {
-          type = 'AI Verify Process Checklists';
-        } else if (gid === 'aiverify.stock.veritas') {
-          type = 'Veritas Process Checklists';
-        }
+      // Debug: Log all available required input blocks for comparison
+      console.log(`Looking for gid: "${gid}", cid: "${cid}"`);
+      console.log('Available required input blocks:');
+      requiredInputBlocks.forEach((block, index) => {
+        console.log(`  [${index}] gid: "${block.gid}", cid: "${block.cid}", name: "${block.name}", group: "${block.group}"`);
+        console.log(`    gid match: ${block.gid === gid}, cid match: ${block.cid === cid}`);
+      });
 
-        // Format the name to be more readable (e.g., "accountability_process_checklist" -> "Accountability Process Checklist")
-        name = cid
-          .split('_')
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(' ');
+      // Use the required input block's group as the type/category if available,
+      // otherwise fall back to the name
+      if (requiredInputBlock) {
+        type = requiredInputBlock.group || requiredInputBlock.name;
+        console.log(`✅ Found required input block for ${gid}-${cid}:`, {
+          name: requiredInputBlock.name,
+          group: requiredInputBlock.group,
+          resolvedType: type
+        });
       } else {
-        // For other input blocks, find the matching required input block to get its display name
-        const requiredInputBlock = requiredInputBlocks.find(
+        console.log(`❌ No required input block found for gid: "${gid}", cid: "${cid}"`);
+        
+        // FALLBACK: Check if we can find group information from selectedInputBlocks
+        const selectedBlock = selectedInputBlocks.find(
           (block) => block.gid === gid && block.cid === cid
         );
-
-        // If we found a matching required input block, use its name as the category header
-        if (requiredInputBlock) {
-          type = requiredInputBlock.name;
-
-          // Now find the actual instance name based on id
-          if (id !== undefined) {
-            // Check in fairness trees
-            if (
-              gid ===
-              'aiverify.stock.fairness_metrics_toolbox_for_classification'
-            ) {
-              const fairnessTree = allFairnessTrees.find(
-                (f) => f.gid === gid && f.cid === cid && f.id === id
-              );
-              if (fairnessTree) {
-                name = fairnessTree.name || `${cid}`;
-                return { name, type };
-              }
-            }
-
-            // Check in other input block datas
-            const inputBlock = allInputBlockDatas.find(
-              (i) => i.gid === gid && i.cid === cid && i.id === id
-            );
-            if (inputBlock) {
-              name = inputBlock.name || `${cid}`;
-              return { name, type };
-            }
-          }
+        
+        if (selectedBlock && selectedBlock.group) {
+          type = selectedBlock.group;
+          console.log(`✅ Using group from selectedInputBlocks: "${type}"`);
         } else {
-          // Fallback for blocks not in requiredInputBlocks
-          if (gid.includes('fairness')) {
-            type = 'Fairness Tree';
-          } else if (gid.startsWith('aiverify.plugin.')) {
-            // Extract plugin name from gid
-            const pluginParts = gid.split('.');
-            if (pluginParts.length > 2) {
-              type = `${pluginParts[2].charAt(0).toUpperCase() + pluginParts[2].slice(1)} Plugin`;
-            } else {
-              type = 'Plugin';
-            }
-          }
+          console.log('This will fall back to type: "Input Block"');
         }
       }
 
+      // If we have an ID, try to find the actual instance name from allInputBlockDatas
+      if (id !== undefined) {
+        const inputBlock = allInputBlockDatas.find(
+          (i) => i.gid === gid && i.cid === cid && i.id === id
+        );
+        if (inputBlock) {
+          name = inputBlock.name || cid;
+          console.log(`Found input block data for ${gid}-${cid}-${id}:`, {
+            name: inputBlock.name,
+            finalName: name
+          });
+        } else {
+          console.warn(`No input block data found for gid: ${gid}, cid: ${cid}, id: ${id}`);
+        }
+      }
+
+      console.log(`=== FINAL RESULT FOR ${gid}-${cid}: name="${name}", type="${type}" ===`);
       return { name, type };
     };
-
-    // Create a map of selected block keys for faster lookup
-    const selectedBlockKeys = blocksToCheck.map(
-      (block: SelectedInputBlock) => `${block.gid}-${block.cid}-${block.id}`
-    );
 
     // Check if any selected input has a validation error
     let hasErrors = false;
@@ -349,43 +499,112 @@ export default function ClientSelectData({
     Object.entries(results).forEach(([key, result]) => {
       // Only process results for invalid blocks
       if (!result.isValid) {
-        // Parse the key to extract gid, cid, and id
+        console.log(`Processing validation result for key: ${key}`, result);
+        
+        // Check if this validation key matches any of our validation keys
+        const isSelected = validationKeys.includes(key);
+        
+        console.log(`Validation key: ${key}, isSelected: ${isSelected}`);
+        console.log(`Available validation keys for matching:`, validationKeys);
+
+        if (!isSelected) {
+          console.log(`  Skipping validation result - not selected`);
+          return; // Skip this validation result if it's not for a selected input block
+        }
+
+        console.log(`  ✅ VALIDATION ERROR DETECTED FOR SELECTED BLOCK`);
+        // Mark that we have errors for selected blocks
+        hasErrors = true;
+
+        // Parse the key to extract gid, cid, and id for finding block info
         const keyParts = key.split('-');
-        let gid: string, cid: string, id: string | undefined;
+        let gid = '';
+        let cid = '';
+        let id: string | undefined;
 
-        if (keyParts.length === 3) {
-          // Key includes ID: gid-cid-id
-          [gid, cid, id] = keyParts;
-
-          // Check if this is a selected input block
-          const isSelected = selectedBlockKeys.includes(key);
-
-          if (!isSelected) {
-            return; // Skip this validation result if it's not for a selected input block
+        if (keyParts.length >= 3) {
+          // Key format: gid-cid-id or gid-cid-more-parts-id
+          // Since gid and cid can contain dots, we need to be smarter about parsing
+          // The last part should be the numeric ID if it exists
+          const lastPart = keyParts[keyParts.length - 1];
+          
+          // Check if the last part is a numeric ID
+          if (/^\d+$/.test(lastPart)) {
+            // Key includes ID: gid-cid-id (where gid or cid might contain dashes)
+            id = lastPart;
+            // Join all parts except the last one, then split by the last occurrence of '-'
+            const gidCidPart = keyParts.slice(0, -1).join('-');
+            
+            // Find the split point by matching against known gid-cid combinations
+            let foundMatch = false;
+            
+            // Try to match against all known input block data
+            for (const inputBlockData of allInputBlockDatas) {
+              const expectedPrefix = `${inputBlockData.gid}-${inputBlockData.cid}`;
+              if (gidCidPart === expectedPrefix) {
+                gid = inputBlockData.gid;
+                cid = inputBlockData.cid;
+                foundMatch = true;
+                break;
+              }
+            }
+            
+            // If not found, try selected blocks
+            if (!foundMatch) {
+              for (const block of blocksToCheck) {
+                const expectedPrefix = `${block.gid}-${block.cid}`;
+                if (gidCidPart === expectedPrefix) {
+                  gid = block.gid;
+                  cid = block.cid;
+                  foundMatch = true;
+                  break;
+                }
+              }
+            }
+            
+            if (!foundMatch) {
+              console.warn(`Could not parse gid-cid from key: ${key}`);
+              return;
+            }
+          } else {
+            // Key is just gid-cid (no numeric ID at the end)
+            // Try to match against all known gid-cid combinations
+            let foundMatch = false;
+            
+            // Try all input block data
+            for (const inputBlockData of allInputBlockDatas) {
+              const expectedKey = `${inputBlockData.gid}-${inputBlockData.cid}`;
+              if (key === expectedKey) {
+                gid = inputBlockData.gid;
+                cid = inputBlockData.cid;
+                id = undefined;
+                foundMatch = true;
+                break;
+              }
+            }
+            
+            // If not found, try selected blocks
+            if (!foundMatch) {
+              for (const block of blocksToCheck) {
+                const expectedKey = `${block.gid}-${block.cid}`;
+                if (key === expectedKey) {
+                  gid = block.gid;
+                  cid = block.cid;
+                  id = undefined;
+                  foundMatch = true;
+                  break;
+                }
+              }
+            }
+            
+            if (!foundMatch) {
+              console.warn(`Could not match key against any blocks: ${key}`);
+              return;
+            }
           }
-
-          // Mark that we have errors for selected blocks
-          hasErrors = true;
-        } else if (keyParts.length === 2) {
-          // Key is just gid-cid
-          [gid, cid] = keyParts;
-          id = undefined;
-
-          // Check if any selected input block matches this gid-cid
-          const isSelected = blocksToCheck.some(
-            (block: SelectedInputBlock) =>
-              block.gid === gid && block.cid === cid
-          );
-
-          if (!isSelected) {
-            return; // Skip this validation result if it's not for a selected input block
-          }
-
-          // Mark that we have errors for selected blocks
-          hasErrors = true;
         } else {
           // Invalid key format
-          console.error(`Invalid validation result key format: ${key}`);
+          console.error(`Invalid validation result key format: ${key} - expected at least gid-cid format`);
           return;
         }
 
@@ -403,11 +622,27 @@ export default function ClientSelectData({
             type: type,
           };
           invalidBlocks.push(invalidBlock);
+          console.log(`Added invalid block:`, invalidBlock);
         }
       }
     });
 
     console.log('Invalid input blocks after processing:', invalidBlocks);
+    console.log('=== FINAL GROUPING DEBUG ===');
+    const groupedForDebug = invalidBlocks.reduce((acc, block) => {
+      if (!acc[block.type]) {
+        acc[block.type] = [];
+      }
+      acc[block.type].push({
+        name: block.name,
+        message: block.message
+      });
+      return acc;
+    }, {} as Record<string, Array<{name: string, message: string}>>);
+    console.log('Final grouped invalid blocks:', groupedForDebug);
+    console.log(`Has validation errors: ${hasErrors}`);
+    console.log('=== END FINAL GROUPING DEBUG ===');
+    
     setHasValidationErrors(hasErrors);
     setInvalidInputBlocks(invalidBlocks);
   };
@@ -416,18 +651,24 @@ export default function ClientSelectData({
     if (!projectId) return;
 
     try {
-      // Transform the data to only include IDs
-      const transformedData = {
-        testModelId: selectedModelId ? parseInt(selectedModelId) : null,
-        testResults: selectedTestResults.map((result) => result.id),
-        inputBlocks: selectedInputBlocks.map((block) => block.id),
-      };
+      // Since we're already auto-saving, we just need to handle navigation
+      // But let's do a final save to ensure everything is up to date
+      await saveSelectionsToAPI();
+      
+      console.log('Final save completed, proceeding to navigation');
 
-      console.log('transformedData', transformedData);
+      // For URL construction, use group context when available
+      const inputBlockIdsForUrl = selectedInputBlocks.map((block) => {
+        // If this is a group selection, use the group ID for URL consistency
+        // This helps the designer understand the group context
+        if (block.isGroupSelection && block.groupId) {
+          return block.groupId;
+        }
+        // For individual selections, use the individual ID
+        return block.id;
+      });
 
-      // Send all changes in a single patch request
-      await patchProject(projectId, transformedData);
-      console.log('patchProject done');
+      console.log('inputBlocks for URL (with group context):', inputBlockIdsForUrl);
 
       // Update flow based on current flow
       let updatedFlow = flow;
@@ -440,7 +681,8 @@ export default function ClientSelectData({
       } else if (flow === UserFlows.NewProjectWithEditingExistingTemplate) {
         updatedFlow = UserFlows.NewProjectWithEditingExistingTemplateAndResults;
       }
-      // Construct the URL with all selected data
+      
+      // Construct the URL with group-context data for designer
       const queryString = [
         `flow=${encodeURIComponent(updatedFlow)}`,
         `projectId=${encodeURIComponent(projectId)}`,
@@ -449,8 +691,8 @@ export default function ClientSelectData({
           : []),
         // Always include testResultIds parameter, even if empty
         `testResultIds=${selectedTestResults.map((r) => r.id).join(',')}`,
-        // Always include iBlockIds parameter, even if empty
-        `iBlockIds=${selectedInputBlocks.map((b) => b.id).join(',')}`,
+        // Use group-context IDs for URL to help designer understand group relationships
+        `iBlockIds=${inputBlockIdsForUrl.join(',')}`,
       ].join('&');
 
       if (updatedFlow === UserFlows.EditExistingProjectWithResults) {
@@ -459,7 +701,7 @@ export default function ClientSelectData({
         window.location.href = `/canvas?${queryString}&mode=view`;
       }
     } catch (error) {
-      console.error('Failed to update project:', error);
+      console.error('Failed to complete navigation:', error);
       // You might want to show an error message to the user here
     }
   };
@@ -535,7 +777,6 @@ export default function ClientSelectData({
           requiredInputBlocks={requiredInputBlocks}
           onInputBlocksChange={handleInputBlocksChange}
           allInputBlockGroups={allInputBlockGroups}
-          allFairnessTrees={allFairnessTrees}
           allInputBlockDatas={allInputBlockDatas}
           initialInputBlocks={initialInputBlocks}
           onValidationResultsChange={handleValidationResultsChange}

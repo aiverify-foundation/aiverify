@@ -1,4 +1,3 @@
-
 type Project = {
   globalVars: unknown[];
   pages: unknown[];
@@ -279,6 +278,7 @@ type InputBlockData = {
 };
 
 type InputBlockGroupDataChild = {
+  id: number;
   cid: string;
   name: string;
   groupNumber: number;
