@@ -103,6 +103,7 @@ jobs:
           cp -r integration-testing/test-data/test_results stock-plugins/user_defined_files/test_results
 
           cp -r third-party-plugins stock-plugins/user_defined_files/third-party-plugins
+          cp -r integration-testing/test-data/plugins/corrupted.zip stock-plugins/user_defined_files/third-party-plugins/cccs_plugins
           cd stock-plugins/user_defined_files/third-party-plugins/cccs_plugins/
           zip -r cccs_explainability_2.0.zip cccs_explainability_2.0
           zip -r cccs_fairness_classification_2.0.zip cccs_fairness_classification_2.0
