@@ -110,8 +110,9 @@ jobs:
           zip -r cccs_report_template.zip cccs_report_template
 
           cd ../../veritas_data
-          mkdir cs_model
+          mkdir cs_model test_files
           cp cs_model.pkl cs_model
+          cp mktg_uplift_acq_dict.pickle test_files
           cd ../
 
           echo "Review Test Data Directory"
