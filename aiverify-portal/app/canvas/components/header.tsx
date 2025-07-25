@@ -19,7 +19,14 @@ const CanvasHeader = ({ project }: CanvasHeaderProps) => {
   // Format the timestamp
   const formatTimestamp = (timestamp: string) => {
     // Create a date object and format it for Singapore timezone
-    const date = new Date(timestamp + "Z");
+    // Don't add "Z" if the timestamp already has timezone info
+    const date = new Date(timestamp.includes('Z') ? timestamp : timestamp + "Z");
+    
+    // Check if the date is valid
+    if (isNaN(date.getTime())) {
+      return null;
+    }
+    
     return date.toLocaleString('en-GB', {
       day: 'numeric',
       month: 'short',
@@ -43,7 +50,7 @@ const CanvasHeader = ({ project }: CanvasHeaderProps) => {
             svgClassName="fill-white dark:fill-white"
           />
         </div>
-        {project?.updated_at && (
+        {project?.updated_at && formatTimestamp(project.updated_at) && (
           <span className="text-sm text-gray-400">
             Autosaved at {formatTimestamp(project.updated_at)}
           </span>
