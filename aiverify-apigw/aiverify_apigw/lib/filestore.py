@@ -1,4 +1,5 @@
-from .file_utils import compute_file_hash
+from .file_utils import compute_file_hash, check_valid_filename
+from .validators import validate_gid_cid
 from .logging import logger
 from .s3 import MyS3
 from typing import Any
@@ -32,7 +33,7 @@ class FileStoreError(Exception):
 
 
 def check_relative_to_base(base_path: Path | str, filepath: str) -> bool:
-    print(f"check_relative_to_base: {base_path} -> {filepath}")
+    # print(f"check_relative_to_base: {base_path} -> {filepath}")
     if isinstance(base_path, Path):
         filepath = Path(filepath)
         full_path = base_path / filepath
@@ -171,6 +172,8 @@ def zip_folder(folder: Path) -> tuple[io.BytesIO, str]:
         str: Filehash of zip file
     """
 
+    if not check_valid_filename(folder.name):
+        raise FileStoreError(f"Invalid filename {folder.name}")
     logger.debug(f"ziping folder {folder}")
 
     zip_content = io.BytesIO()
@@ -216,6 +219,10 @@ def _save_plugin(source: Path, target: Path | str, zip_filename: str, hash_filen
 
 
 def save_plugin(gid: str, source_dir: Path):
+    if not check_valid_filename(source_dir.name):
+        raise FileStoreError(f"Invalid filename {source_dir.name}")
+    if not validate_gid_cid(gid):
+        raise FileStoreError(f"Invalid gid: {gid}")
     folder = get_plugin_folder(gid)
     logger.debug(f"Save plugin {gid} folder from {source_dir} to {folder}")
     zip_filename = f"{gid}.zip"
@@ -224,6 +231,11 @@ def save_plugin(gid: str, source_dir: Path):
 
 
 def save_mdx_bundles(gid: str, source_dir: Path):
+    # check valid filename
+    if not check_valid_filename(source_dir.name):
+        raise FileStoreError(f"Invalid filename {source_dir.name}")
+    if not validate_gid_cid(gid):
+        raise FileStoreError(f"Invalid gid {gid}")
     # source_bundles_path = source_dir.joinpath("mdx_bundles")
     bundler_folder = get_plugin_mdx_bundles_folder(gid)
     if isinstance(bundler_folder, Path):
@@ -306,24 +318,40 @@ def _get_zip(folder: Path | str, zip_filename: str) -> bytes:
 
 
 def get_plugin_zip(gid: str) -> bytes:
+    # validate gid
+    if not validate_gid_cid(gid):
+        logger.warning(f"Invalid gid: {gid}")
+        raise FileStoreError(f"Invalid gid: {gid}")
     folder = get_plugin_folder(gid)
     zip_filename = f"{gid}.zip"
     return _get_zip(folder, zip_filename)
 
 
 def get_plugin_algorithm_zip(gid: str, cid: str) -> bytes:
+    # validate gid
+    if not validate_gid_cid(gid):
+        logger.warning(f"Invalid gid: {gid}")
+        raise FileStoreError(f"Invalid gid: {gid}")
     folder = get_plugin_component_folder(gid, "algorithms")
     zip_filename = f"{cid}.zip"
     return _get_zip(folder, zip_filename)
 
 
 def get_plugin_widgets_zip(gid: str) -> bytes:
+    # validate gid
+    if not validate_gid_cid(gid):
+        logger.warning(f"Invalid gid: {gid}")
+        raise FileStoreError(f"Invalid gid: {gid}")
     folder = get_plugin_folder(gid)
     zip_filename = "widgets.zip"
     return _get_zip(folder, zip_filename)
 
 
 def get_plugin_mdx_bundle(gid: str, cid: str, summary: bool = False) -> Any:
+    # validate gid
+    if not validate_gid_cid(gid):
+        logger.warning(f"Invalid gid: {gid}")
+        raise FileStoreError(f"Invalid gid: {gid}")
     bundle_folder = get_plugin_mdx_bundles_folder(gid)
     filename = f"{cid}.summary.bundle.json" if summary else f"{cid}.bundle.json"
     if isinstance(bundle_folder, Path):
@@ -342,14 +370,22 @@ def get_plugin_mdx_bundle(gid: str, cid: str, summary: bool = False) -> Any:
 
 
 def get_plugin_inputs_zip(gid: str) -> bytes:
+    # validate gid
+    if not validate_gid_cid(gid):
+        logger.warning(f"Invalid gid: {gid}")
+        raise FileStoreError(f"Invalid gid: {gid}")
     folder = get_plugin_folder(gid)
     zip_filename = "inputs.zip"
     return _get_zip(folder, zip_filename)
 
 
 def delete_plugin(gid: str):
-    folder = get_plugin_folder(gid)
+    # validate gid
+    if not validate_gid_cid(gid):
+        logger.warning(f"Invalid gid: {gid}")
+        return
 
+    folder = get_plugin_folder(gid)
     try:
         if isinstance(folder, Path):
             if not folder.exists() or not folder.is_dir():
@@ -392,6 +428,9 @@ def save_artifact(test_result_id: str, filename: str, data: bytes):
     # validate input
     if not test_result_id.isalnum():
         raise FileStoreError(f"Invalid test result id {test_result_id}")
+    # check valid filename
+    if not check_valid_filename(filename):
+        raise FileStoreError(f"Invalid filename {filename}")
     folder = get_artifacts_folder(test_result_id)
     if not check_relative_to_base(folder, filename):
         raise FileStoreError(f"Invalid filename {filename}")
@@ -412,6 +451,9 @@ def save_artifact(test_result_id: str, filename: str, data: bytes):
 def get_artifact(test_result_id: str, filename: str):
     if not test_result_id.isalnum():
         raise FileStoreError(f"Invalid test result id {test_result_id}")
+    # check valid filename
+    if not check_valid_filename(filename):
+        raise FileStoreError(f"Invalid filename {filename}")
     folder = get_artifacts_folder(test_result_id)
     if not check_relative_to_base(folder, filename):
         raise FileStoreError(f"Invalid filename {filename}")
@@ -440,6 +482,9 @@ def get_model_path(filename: str, subfolder: str | None = None):
 
 
 def save_test_model(source_path: Path) -> str:
+    # check valid filename
+    if not check_valid_filename(source_path.name):
+        raise FileStoreError(f"Invalid filename {source_path.name}")
     target_path = get_model_path(source_path.name)
     logger.debug(f"Save test model from {source_path} to {target_path}")
 
@@ -469,9 +514,12 @@ def save_test_model(source_path: Path) -> str:
 
 
 def get_test_model(filename: str):
-    model_path = get_model_path(filename)
+    # validate filename
+    if not check_valid_filename(filename):
+        raise FileStoreError(f"Invalid filename {filename}")
     if not check_relative_to_base(base_models_dir, filename):
         raise FileStoreError(f"Invalid filename {filename}")
+    model_path = get_model_path(filename)
     if isinstance(model_path, Path):
         if not model_path.exists():
             raise FileNotFoundError(f"File {filename} is not found")
@@ -535,6 +583,9 @@ def get_dataset_path(filename: str, subfolder: str | None = None):
 
 
 def save_test_dataset(source_path: Path) -> str:
+    # check valid filename
+    if not check_valid_filename(source_path.name):
+        raise FileStoreError(f"Invalid filename {source_path.name}")
     target_path = get_dataset_path(source_path.name)
     logger.debug(f"Save test dataset from {source_path} to {target_path}")
 
@@ -564,9 +615,12 @@ def save_test_dataset(source_path: Path) -> str:
 
 
 def get_test_dataset(filename: str):
-    dataset_path = get_dataset_path(filename)
+    # validate file name
+    if not check_valid_filename(filename):
+        raise FileStoreError(f"Invalid filename {filename}")
     if not check_relative_to_base(base_dataset_dir, filename):
         raise FileStoreError(f"Invalid filename {filename}")
+    dataset_path = get_dataset_path(filename)
     if isinstance(dataset_path, Path):
         if not dataset_path.exists():
             raise FileNotFoundError(f"File {filename} is not found")
