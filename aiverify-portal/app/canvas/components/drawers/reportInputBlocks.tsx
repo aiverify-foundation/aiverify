@@ -23,7 +23,7 @@ function ReportInputBlocksDrawer(props: ReportInputBlocksDrawerProps) {
   const { inputBlocks, className } = props;
 
   const FileIconComponent =
-    inputBlocks.length > 0 ? RiFileTextFill : RiFileTextLine;
+    (inputBlocks || []).length > 0 ? RiFileTextFill : RiFileTextLine;
 
   return (
     <div className={cn('flex w-full justify-center', className)}>
@@ -35,9 +35,9 @@ function ReportInputBlocksDrawer(props: ReportInputBlocksDrawerProps) {
                 className="relative disabled:opacity-50"
                 title="View input block(s) for this report">
                 <FileIconComponent className="h-5 w-5 text-gray-500 hover:text-gray-900" />
-                {inputBlocks.length > 0 && (
+                {(inputBlocks || []).length > 0 && (
                   <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 text-[0.7rem] text-white">
-                    {inputBlocks.length}
+                    {(inputBlocks || []).length}
                   </span>
                 )}
               </button>

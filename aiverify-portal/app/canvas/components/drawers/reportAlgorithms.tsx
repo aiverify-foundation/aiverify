@@ -22,7 +22,7 @@ type ReportAlgorithmsDrawerProps = {
 function ReportAlgorithmsDrawer(props: ReportAlgorithmsDrawerProps) {
   const { algorithms, className } = props;
 
-  const FlaskIconComponent = algorithms.length > 0 ? RiFlaskFill : RiFlaskLine;
+  const FlaskIconComponent = (algorithms || []).length > 0 ? RiFlaskFill : RiFlaskLine;
 
   return (
     <div className={cn('flex w-full justify-center', className)}>
@@ -34,9 +34,9 @@ function ReportAlgorithmsDrawer(props: ReportAlgorithmsDrawerProps) {
                 className="relative disabled:opacity-50"
                 title="View test(s)/algorithm(s) for this report">
                 <FlaskIconComponent className="h-5 w-5 text-gray-500 hover:text-gray-900" />
-                {algorithms.length > 0 && (
+                {(algorithms || []).length > 0 && (
                   <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 text-[0.7rem] text-white">
-                    {algorithms.length}
+                    {(algorithms || []).length}
                   </span>
                 )}
               </button>
