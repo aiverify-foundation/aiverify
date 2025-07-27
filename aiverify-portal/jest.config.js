@@ -23,6 +23,18 @@ const customJestConfig = {
     '!app/**/coverage/**',
     '!app/**/.next/**',
     '!app/**/dist/**',
+    '!app/**/__test__/**',
+    '!app/**/*.test.{js,jsx,ts,tsx}',
+    '!app/**/*.spec.{js,jsx,ts,tsx}',
+    '!app/**/__tests__/**',
+    '!app/**/__mocks__/**',
+    '!app/**/test/**',
+    '!app/**/tests/**',
+    '!app/**/*.stories.{js,jsx,ts,tsx}',
+    '!app/**/*.stories.{js,jsx,ts,tsx}',
+    '!app/**/stories/**',
+    '!app/**/storybook/**',
+    '!app/**/.storybook/**',
   ],
   coverageThreshold: {
     global: {
