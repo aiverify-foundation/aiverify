@@ -7,6 +7,7 @@
   "parser": "@typescript-eslint/parser",
   "plugins": ["@typescript-eslint"],
   "root": true,
+  "ignorePatterns": ["**/__tests__/**", "**/__test__/**", "**/__utils__/**"],
   "rules": {
     "react-hooks/rules-of-hooks": "warn",
     "react-hooks/exhaustive-deps": 0,
@@ -60,21 +61,5 @@
     //     "patterns": ["../"]
     //   }
     // ]
-  },
-  "overrides": [
-    {
-      "files": ["**/__test__/**/*.{ts,tsx}", "**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}"],
-      "rules": {
-        "@typescript-eslint/no-explicit-any": "warn",
-        "@typescript-eslint/no-unused-vars": [
-          "warn",
-          { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
-        ],
-        "react/display-name": "off",
-        "@typescript-eslint/no-inferrable-types": "warn",
-        "@typescript-eslint/no-require-imports": "warn",
-        "import/order": "warn"
-      }
-    }
-  ]
+  }
 }
