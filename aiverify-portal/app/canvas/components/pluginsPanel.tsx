@@ -104,7 +104,7 @@ function PluginsPanel(props: PluginsPanelProps) {
   );
 
   return (
-    <section className={cn('flex flex-col', className)}>
+    <section data-testid="plugins-panel" className={cn('flex flex-col', className)}>
       <div>
         <TextInput
           data-testid="search-input"

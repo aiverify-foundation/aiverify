@@ -1128,6 +1128,7 @@ function Designer(props: DesignerProps) {
     <section className="fixed right-[100px] top-[105px] z-50 flex w-[50px] max-w-[50px] flex-col gap-4">
       <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
         <button
+          data-testid="print-button"
           className="disabled:opacity-50"
           title="Print"
           onClick={canvasPrint.print}>
@@ -1137,6 +1138,7 @@ function Designer(props: DesignerProps) {
       {!isTemplate && (
         <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
           <button
+            data-testid="save-template-button"
             className="disabled:opacity-50"
             title="Save as Template"
             onClick={handleSaveAsTemplate}>
@@ -1147,6 +1149,7 @@ function Designer(props: DesignerProps) {
       {isTemplate && (
         <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
           <button
+            data-testid="export-template-button"
             className="disabled:opacity-50"
             title="Export Template"
             onClick={async () => {
@@ -1210,6 +1213,7 @@ function Designer(props: DesignerProps) {
       {isTemplate ? (
         <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
           <button
+            data-testid="toggle-mode-button"
             className="disabled:opacity-50"
             title={disabled ? 'Switch to Edit Mode' : 'Switch to View Mode'}
             onClick={toggleMode}>
@@ -1225,6 +1229,7 @@ function Designer(props: DesignerProps) {
       {!disabled ? (
         <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-300 p-2 px-1 py-3 shadow-lg">
           <button
+            data-testid="toggle-grid-button"
             className="disabled:opacity-50"
             title="Toggle Grid"
             onClick={() => {
@@ -1286,6 +1291,7 @@ function Designer(props: DesignerProps) {
           </div>
           <div className="flex justify-end">
           <button
+            data-testid="edit-project-info-button"
             onClick={handleEditProjectOpen}
             className="flex-shrink-0 p-1.5 rounded hover:bg-gray-200 transition-colors"
             title="Edit project info">
@@ -1390,6 +1396,7 @@ function Designer(props: DesignerProps) {
                 </div>
               ) : (
                 <GridLayout
+                  data-testid="grid-layout"
                   layout={layout}
                   width={GRID_WIDTH}
                   rowHeight={GRID_ROW_HEIGHT}
@@ -1573,6 +1580,7 @@ function Designer(props: DesignerProps) {
           flow === UserFlows.EditExistingProjectWithResults ? (
             <Link href={backButtonLink}>
               <Button
+                data-testid="back-button"
                 className="w-[130px] gap-4 p-2 text-white"
                 variant="secondary">
                 <RiArrowLeftLine /> Back
@@ -1583,6 +1591,7 @@ function Designer(props: DesignerProps) {
             flow === UserFlows.NewProjectWithEditingExistingTemplate ||
             flow === UserFlows.EditExistingProject ? (
             <Button
+              data-testid="next-button"
               className="w-[130px] gap-4 p-2 text-white"
               onClick={handleNextClick}>
               Next <RiArrowRightLine />

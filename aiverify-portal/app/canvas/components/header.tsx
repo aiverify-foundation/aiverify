@@ -39,7 +39,7 @@ const CanvasHeader = ({ project }: CanvasHeaderProps) => {
   };
 
   return (
-    <header className="fixed left-0 right-0 top-0 z-50 flex h-16 items-center border-b border-primary-700 bg-primary-950 px-6 backdrop-blur-sm">
+    <header data-testid="canvas-header" className="fixed left-0 right-0 top-0 z-50 flex h-16 items-center border-b border-primary-700 bg-primary-950 px-6 backdrop-blur-sm">
       {/* Burger Icon and Autosave */}
       <div className="flex items-center gap-4">
         <div

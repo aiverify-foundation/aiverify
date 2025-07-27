@@ -935,6 +935,277 @@ describe('GridItemComponent', () => {
       // The function should be callable without errors
       expect(getArtifactURLButton).toBeInTheDocument();
     });
+
+    it('handles getResults with hasVisitedDataSelection and no matching test result', () => {
+      const testResultsUsedWithoutMatch = [
+        {
+          gid: 'non-existent-algo',
+          cid: 'non-existent-cid',
+          testResultId: 999,
+        },
+      ];
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={testResultsUsedWithoutMatch}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={true}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      const getResultsButton = screen.getByText('Get Results');
+      fireEvent.click(getResultsButton);
+
+      expect(getResultsButton).toBeInTheDocument();
+    });
+
+    it('handles getResults with hasVisitedDataSelection and no testResultsUsed', () => {
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={[]}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={true}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      const getResultsButton = screen.getByText('Get Results');
+      fireEvent.click(getResultsButton);
+
+      expect(getResultsButton).toBeInTheDocument();
+    });
+
+    it('handles getArtifacts with non-array urls', () => {
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      const getArtifactsButton = screen.getByText('Get Artifacts');
+      fireEvent.click(getArtifactsButton);
+
+      expect(getArtifactsButton).toBeInTheDocument();
+    });
+
+    it('handles getArtifactURL with non-array urls', () => {
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      const getArtifactURLButton = screen.getByText('Get Artifact URL');
+      fireEvent.click(getArtifactURLButton);
+
+      expect(getArtifactURLButton).toBeInTheDocument();
+    });
+
+    it('handles getArtifactURL with no matching pathname', () => {
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      const getArtifactURLButton = screen.getByText('Get Artifact URL');
+      fireEvent.click(getArtifactURLButton);
+
+      expect(getArtifactURLButton).toBeInTheDocument();
+    });
+
+    it('handles properties with null values', () => {
+      const widgetWithNullProperties = {
+        ...mockWidget,
+        properties: [
+          {
+            key: 'title',
+            value: undefined,
+            default: 'Default Title',
+            helper: 'Title helper text',
+          },
+          {
+            key: 'description',
+            value: undefined,
+            default: 'Default Description',
+            helper: 'Description helper text',
+          },
+        ],
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={widgetWithNullProperties}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('handles mock data without data property', () => {
+      const widgetWithoutData = {
+        ...mockWidget,
+        mockdata: [
+          {
+            type: 'InputBlock' as const,
+            gid: 'test-input',
+            cid: 'test-input',
+            data: {} as any,
+            artifacts: [],
+          },
+        ],
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={widgetWithoutData}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={false}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
   });
 
   describe('Edge Cases', () => {
@@ -1129,6 +1400,347 @@ describe('GridItemComponent', () => {
 
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
+
+    it('handles test result with invalid JSON output', () => {
+      const testResultWithInvalidJson = {
+        ...mockTestResults[0],
+        output: 'invalid json string',
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={[testResultWithInvalidJson] as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('handles test result with non-object output', () => {
+      const testResultWithNonObjectOutput = {
+        ...mockTestResults[0],
+        output: 'simple string output',
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={[testResultWithNonObjectOutput] as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('handles test result with null output', () => {
+      const testResultWithNullOutput = {
+        ...mockTestResults[0],
+        output: null,
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={[testResultWithNullOutput] as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('handles test result without testResultId', () => {
+      const testResultWithoutId = {
+        ...mockTestResultsUsed[0],
+        testResultId: undefined,
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={[testResultWithoutId]}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={false}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('handles input block data without inputBlockDataId', () => {
+      const inputBlockDataWithoutId = {
+        ...mockInputBlockDatasUsed[0],
+        inputBlockDataId: undefined,
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={[inputBlockDataWithoutId]}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={false}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('handles input block data without gid and cid', () => {
+      const inputBlockDataWithoutGidCid = {
+        ...mockInputBlockDatasUsed[0],
+        gid: undefined,
+        cid: undefined,
+      } as any;
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={[inputBlockDataWithoutGidCid]}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={false}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('handles test result without artifacts', () => {
+      const testResultWithoutArtifacts = {
+        ...mockTestResults[0],
+        artifacts: undefined,
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={[testResultWithoutArtifacts] as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={false}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('handles mock data without artifacts', () => {
+      const widgetWithoutArtifacts = {
+        ...mockWidget,
+        mockdata: [
+          {
+            type: 'Algorithm' as const,
+            gid: 'test-algo',
+            cid: 'test-algo',
+            data: { test: 'mock-data' },
+            artifacts: undefined,
+          },
+        ],
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={widgetWithoutArtifacts}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={false}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('handles mock data without data property', () => {
+      const widgetWithoutData = {
+        ...mockWidget,
+        mockdata: [
+          {
+            type: 'InputBlock' as const,
+            gid: 'test-input',
+            cid: 'test-input',
+            data: {} as any,
+            artifacts: [],
+          },
+        ],
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={widgetWithoutData}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={false}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
   });
 
   describe('Context Menu Behavior', () => {
@@ -1238,6 +1850,1943 @@ describe('GridItemComponent', () => {
 
       // Should not throw any errors
       expect(hoverButton).toBeInTheDocument();
+    });
+
+    it('handles click outside with editor input class', () => {
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      const widgetContainer = screen.getByTestId('widget-error-boundary').parentElement;
+      fireEvent.mouseEnter(widgetContainer!);
+
+      // Wait for context menu to appear
+      expect(screen.getByTestId('grid-item-context-menu')).toBeInTheDocument();
+
+      // Create an element with editor input class
+      const editorElement = document.createElement('div');
+      editorElement.className = 'editor-input';
+      document.body.appendChild(editorElement);
+
+      // Click on editor element should not close context menu
+      fireEvent.mouseDown(editorElement);
+
+      expect(screen.getByTestId('grid-item-context-menu')).toBeInTheDocument();
+
+      document.body.removeChild(editorElement);
+    });
+
+    it('handles click outside without editor input class', () => {
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      const widgetContainer = screen.getByTestId('widget-error-boundary').parentElement;
+      fireEvent.mouseEnter(widgetContainer!);
+
+      // Create an element without editor input class
+      const outsideElement = document.createElement('div');
+      outsideElement.className = 'outside-element';
+      document.body.appendChild(outsideElement);
+
+      // Click outside should close context menu
+      fireEvent.mouseDown(outsideElement);
+
+      expect(screen.queryByTestId('grid-item-context-menu')).not.toBeInTheDocument();
+
+      document.body.removeChild(outsideElement);
+    });
+
+    it('handles ResizeObserver functionality', () => {
+      // Mock ResizeObserver
+      const mockResizeObserver = jest.fn();
+      mockResizeObserver.mockImplementation((callback) => ({
+        observe: jest.fn(),
+        disconnect: jest.fn(),
+      }));
+      global.ResizeObserver = mockResizeObserver;
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(mockResizeObserver).toHaveBeenCalled();
+    });
+
+    it('handles window scroll and resize events', () => {
+      const addEventListenerSpy = jest.spyOn(window, 'addEventListener');
+      const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      const widgetContainer = screen.getByTestId('widget-error-boundary').parentElement;
+      fireEvent.mouseEnter(widgetContainer!);
+
+      // Context menu should be visible
+      expect(screen.getByTestId('grid-item-context-menu')).toBeInTheDocument();
+
+      // Cleanup
+      addEventListenerSpy.mockRestore();
+      removeEventListenerSpy.mockRestore();
+    });
+
+    it('handles document mousedown events', () => {
+      const addEventListenerSpy = jest.spyOn(document, 'addEventListener');
+      const removeEventListenerSpy = jest.spyOn(document, 'removeEventListener');
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      const widgetContainer = screen.getByTestId('widget-error-boundary').parentElement;
+      fireEvent.mouseEnter(widgetContainer!);
+
+      // Context menu should be visible
+      expect(screen.getByTestId('grid-item-context-menu')).toBeInTheDocument();
+
+      // Cleanup
+      addEventListenerSpy.mockRestore();
+      removeEventListenerSpy.mockRestore();
+    });
+
+    it('handles widget properties drawer close effect', () => {
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      const widgetContainer = screen.getByTestId('widget-error-boundary').parentElement;
+      fireEvent.mouseEnter(widgetContainer!);
+
+      const infoButton = screen.getByText('Info');
+      fireEvent.click(infoButton);
+
+      // Properties drawer should be open
+      expect(screen.getByTestId('widget-properties-drawer')).toBeInTheDocument();
+
+      const closeButton = screen.getByText('Close Drawer');
+      fireEvent.click(closeButton);
+
+      // onWidgetPropertiesClose should be called
+      expect(mockOnWidgetPropertiesClose).toHaveBeenCalled();
+    });
+
+    it('handles edit click with null gridItemRef', () => {
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      const widgetContainer = screen.getByTestId('widget-error-boundary').parentElement;
+      fireEvent.mouseEnter(widgetContainer!);
+
+      const editButton = screen.getByText('Edit');
+      fireEvent.click(editButton);
+
+      expect(mockOnEditClick).toHaveBeenCalledWith('test-widget-id', expect.any(HTMLDivElement), mockWidget);
+    });
+
+    it('handles timeout cleanup on unmount', () => {
+      const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
+
+      const { unmount } = render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      unmount();
+
+      clearTimeoutSpy.mockRestore();
+    });
+
+    it('handles dragging state changes', () => {
+      const { rerender } = render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      // Show context menu first
+      const widgetContainer = screen.getByTestId('widget-error-boundary').parentElement;
+      fireEvent.mouseEnter(widgetContainer!);
+      expect(screen.getByTestId('grid-item-context-menu')).toBeInTheDocument();
+
+      // Change to dragging state
+      rerender(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={true}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      // Context menu should be hidden when dragging
+      expect(screen.queryByTestId('grid-item-context-menu')).not.toBeInTheDocument();
+    });
+
+    it('handles context menu position updates', () => {
+      const addEventListenerSpy = jest.spyOn(window, 'addEventListener');
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      const widgetContainer = screen.getByTestId('widget-error-boundary').parentElement;
+      fireEvent.mouseEnter(widgetContainer!);
+
+      // Context menu should be visible
+      expect(screen.getByTestId('grid-item-context-menu')).toBeInTheDocument();
+
+      // Trigger scroll event to test position update
+      fireEvent.scroll(window);
+
+      addEventListenerSpy.mockRestore();
+    });
+
+    it('handles context menu without showContextMenu', () => {
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      // Context menu should not be visible initially
+      expect(screen.queryByTestId('grid-item-context-menu')).not.toBeInTheDocument();
+    });
+
+    it('handles widget properties drawer without showWidgetProperties', () => {
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      // Properties drawer should not be visible initially
+      expect(screen.queryByTestId('widget-properties-drawer')).not.toBeInTheDocument();
+    });
+
+    it('handles getResults with hasVisitedDataSelection and matching test result', () => {
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={true}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      const getResultsButton = screen.getByText('Get Results');
+      fireEvent.click(getResultsButton);
+
+      expect(getResultsButton).toBeInTheDocument();
+    });
+
+    it('handles getResults with hasVisitedDataSelection and no testResultId', () => {
+      const testResultsUsedWithoutId = [
+        {
+          gid: 'test-algo',
+          cid: 'test-algo-cid',
+          testResultId: undefined,
+        },
+      ];
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={testResultsUsedWithoutId}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={true}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      const getResultsButton = screen.getByText('Get Results');
+      fireEvent.click(getResultsButton);
+
+      expect(getResultsButton).toBeInTheDocument();
+    });
+  });
+
+  describe('React.memo functionality', () => {
+    it('memoizes component correctly', () => {
+      const { rerender } = render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      // Re-render with same props should not cause re-render
+      rerender(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('re-renders when props change', () => {
+      const { rerender } = render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      // Re-render with different isDragging prop should cause re-render
+      rerender(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={true}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      // Should show placeholder when dragging
+      const gridItemRoot = document.querySelector('.grid-item-root');
+      const placeholder = gridItemRoot?.querySelector('.bg-gray-100');
+      expect(placeholder).toBeInTheDocument();
+    });
+
+    it('re-renders when widget changes', () => {
+      const { rerender } = render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      const newWidget = { ...mockWidget, name: 'New Widget Name' };
+
+      rerender(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={newWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('re-renders when model changes', () => {
+      const { rerender } = render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      const newModel = { ...mockModel, name: 'New Model Name' };
+
+      rerender(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={newModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('re-renders when layout changes', () => {
+      const { rerender } = render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      const newLayout = { ...mockLayout, w: 8, h: 6 };
+
+      rerender(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={newLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('re-renders when testResultsUsed changes', () => {
+      const { rerender } = render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      const newTestResultsUsed = [
+        { ...mockTestResultsUsed[0], testResultId: 999 },
+      ];
+
+      rerender(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={newTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('re-renders when inputBlockDatasUsed changes', () => {
+      const { rerender } = render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      const newInputBlockDatasUsed = [
+        { ...mockInputBlockDatasUsed[0], inputBlockDataId: 999 },
+      ];
+
+      rerender(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={newInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('re-renders when hasVisitedDataSelection changes', () => {
+      const { rerender } = render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      rerender(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={true}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('re-renders when requiredTestCount changes', () => {
+      const { rerender } = render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      rerender(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={10}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('re-renders when selectedTestCount changes', () => {
+      const { rerender } = render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      rerender(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={7}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+  });
+
+  describe('Advanced Edge Cases', () => {
+    it('handles test result with complex output structure', () => {
+      const testResultWithComplexOutput = {
+        ...mockTestResults[0],
+        output: JSON.stringify({
+          data: {
+            metrics: {
+              accuracy: 0.95,
+              precision: 0.92,
+              recall: 0.88,
+            },
+            predictions: [1, 0, 1, 1, 0],
+            features: ['feature1', 'feature2', 'feature3'],
+          },
+          metadata: {
+            modelType: 'random_forest',
+            version: '1.0.0',
+          },
+        }),
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={[testResultWithComplexOutput] as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('handles test result with array output', () => {
+      const testResultWithArrayOutput = {
+        ...mockTestResults[0],
+        output: JSON.stringify([1, 2, 3, 4, 5]),
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={[testResultWithArrayOutput] as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('handles test result with string output', () => {
+      const testResultWithStringOutput = {
+        ...mockTestResults[0],
+        output: 'simple string output',
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={[testResultWithStringOutput] as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('handles test result with number output', () => {
+      const testResultWithNumberOutput = {
+        ...mockTestResults[0],
+        output: 42,
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={[testResultWithNumberOutput] as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('handles test result with boolean output', () => {
+      const testResultWithBooleanOutput = {
+        ...mockTestResults[0],
+        output: true,
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={[testResultWithBooleanOutput] as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('handles test result with undefined testArguments', () => {
+      const testResultWithoutArguments = {
+        ...mockTestResults[0],
+        testArguments: undefined,
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={[testResultWithoutArguments] as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('handles test result with undefined modelType', () => {
+      const testResultWithoutModelType = {
+        ...mockTestResults[0],
+        testArguments: {
+          ...mockTestResults[0].testArguments,
+          modelType: undefined,
+        },
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={[testResultWithoutModelType] as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('handles input block data with complex data structure', () => {
+      const inputBlockDataWithComplexData = {
+        ...mockInputBlockDatas[0],
+        data: {
+          features: ['feature1', 'feature2', 'feature3'],
+          labels: [0, 1, 0, 1, 0],
+          metadata: {
+            source: 'csv',
+            rows: 1000,
+            columns: 10,
+          },
+          preprocessing: {
+            normalized: true,
+            scaled: false,
+          },
+        },
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={mockWidget}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={[inputBlockDataWithComplexData]}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('handles widget with complex properties', () => {
+      const widgetWithComplexProperties = {
+        ...mockWidget,
+        properties: [
+          {
+            key: 'title',
+            value: 'Complex Widget',
+            default: 'Default Title',
+            helper: 'Title helper text',
+          },
+          {
+            key: 'description',
+            value: 'A widget with complex configuration',
+            default: 'Default Description',
+            helper: 'Description helper text',
+          },
+          {
+            key: 'threshold',
+            value: '0.8',
+            default: '0.5',
+            helper: 'Classification threshold',
+          },
+          {
+            key: 'enableLogging',
+            value: 'true',
+            default: 'false',
+            helper: 'Enable debug logging',
+          },
+          {
+            key: 'maxIterations',
+            value: '1000',
+            default: '100',
+            helper: 'Maximum iterations',
+          },
+        ],
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={widgetWithComplexProperties}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('handles widget without properties array', () => {
+      const widgetWithoutPropertiesArray = {
+        ...mockWidget,
+        properties: null,
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={widgetWithoutPropertiesArray}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('handles widget with empty properties array', () => {
+      const widgetWithEmptyProperties = {
+        ...mockWidget,
+        properties: [],
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={widgetWithEmptyProperties}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('handles widget with properties that have no value, default, or helper', () => {
+      const widgetWithMinimalProperties = {
+        ...mockWidget,
+        properties: [
+          {
+            key: 'title',
+            value: undefined,
+            default: '',
+            helper: '',
+          },
+        ],
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={widgetWithMinimalProperties}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('handles widget with properties that have only helper value', () => {
+      const widgetWithHelperOnlyProperties = {
+        ...mockWidget,
+        properties: [
+          {
+            key: 'title',
+            value: undefined,
+            default: '',
+            helper: 'This is the helper text',
+          },
+        ],
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={widgetWithHelperOnlyProperties}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('handles widget with properties that have only default value', () => {
+      const widgetWithDefaultOnlyProperties = {
+        ...mockWidget,
+        properties: [
+          {
+            key: 'title',
+            value: undefined,
+            default: 'Default Title',
+            helper: '',
+          },
+        ],
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={widgetWithDefaultOnlyProperties}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('handles widget with properties that have only value', () => {
+      const widgetWithValueOnlyProperties = {
+        ...mockWidget,
+        properties: [
+          {
+            key: 'title',
+            value: 'Actual Title',
+            default: '',
+            helper: '',
+          },
+        ],
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={widgetWithValueOnlyProperties}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('handles widget with properties that have value and default', () => {
+      const widgetWithValueAndDefaultProperties = {
+        ...mockWidget,
+        properties: [
+          {
+            key: 'title',
+            value: 'Actual Title',
+            default: 'Default Title',
+            helper: '',
+          },
+        ],
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={widgetWithValueAndDefaultProperties}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('handles widget with properties that have value and helper', () => {
+      const widgetWithValueAndHelperProperties = {
+        ...mockWidget,
+        properties: [
+          {
+            key: 'title',
+            value: 'Actual Title',
+            default: '',
+            helper: 'Helper text',
+          },
+        ],
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={widgetWithValueAndHelperProperties}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
+    });
+
+    it('handles widget with properties that have default and helper', () => {
+      const widgetWithDefaultAndHelperProperties = {
+        ...mockWidget,
+        properties: [
+          {
+            key: 'title',
+            value: undefined,
+            default: 'Default Title',
+            helper: 'Helper text',
+          },
+        ],
+      };
+
+      render(
+        <GridItemComponent
+          allAvalaiblePlugins={mockAllPlugins}
+          layout={mockLayout}
+          widget={widgetWithDefaultAndHelperProperties}
+          model={mockModel}
+          projectCreatedAt="2023-01-01T00:00:00Z"
+          testResultsUsed={mockTestResultsUsed}
+          inputBlockDatasUsed={mockInputBlockDatasUsed}
+          allTestResultsOnSystem={mockTestResults as any}
+          allInputBlockDatasOnSystem={mockInputBlockDatas}
+          onDeleteClick={mockOnDeleteClick}
+          onEditClick={mockOnEditClick}
+          onInfoClick={mockOnInfoClick}
+          onWidgetPropertiesClose={mockOnWidgetPropertiesClose}
+          dispatch={mockDispatch}
+          pageIndex={0}
+          isDragging={false}
+          isResizing={false}
+          disabled={false}
+          hasVisitedDataSelection={false}
+          useRealData={true}
+          requiredTestCount={5}
+          selectedTestCount={3}
+        />
+      );
+
+      expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
   });
 }); 

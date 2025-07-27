@@ -182,6 +182,7 @@ function PageNavigation({
             ) : (
               <button
                 key={pageIndex}
+                data-testid={`page-${pageIndex + 1}-button`}
                 onClick={() => onPageChange(pageIndex)}
                 className={cn(
                   'flex h-6 w-6 items-center justify-center rounded-lg transition-colors',
