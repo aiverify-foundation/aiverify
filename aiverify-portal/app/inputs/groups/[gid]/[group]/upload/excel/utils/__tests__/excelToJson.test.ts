@@ -1,4 +1,4 @@
-import { excelToJson } from './excelToJson';
+import { excelToJson } from '../excelToJson';
 import * as ExcelJS from 'exceljs';
 
 // Mock the MDX execution module

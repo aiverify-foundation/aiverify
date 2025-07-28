@@ -30,8 +30,12 @@ jest.mock('@/app/inputs/groups/[gid]/[group]/[groupId]/hooks/useMDXSummaryBundle
   useMDXSummaryBundle: jest.fn(() => ({ error: null })),
 }));
 
+jest.mock('@/app/inputs/groups/[gid]/[group]/[groupId]/hooks/useProcessChecklistExport', () => ({
+  EXPORT_PROCESS_CHECKLISTS_CID: 'test-checklist-id',
+}));
+
 // Mock excelToJson
-jest.mock('../utils/excelToJson', () => ({
+jest.mock('../../utils/excelToJson', () => ({
   excelToJson: jest.fn(),
 }));
 
@@ -93,7 +97,7 @@ const mockFileReader = {
 global.FileReader = jest.fn(() => mockFileReader) as any;
 
 // Import after mocks
-import ExcelUploader from './ExcelUploader';
+import ExcelUploader from '../../components/ExcelUploader';
 
 describe('ExcelUploader', () => {
   const mockPush = jest.fn();
@@ -112,7 +116,7 @@ describe('ExcelUploader', () => {
       submitInputBlockGroup: mockSubmitChecklist,
     });
     
-    const { excelToJson } = require('../utils/excelToJson');
+    const { excelToJson } = require('../../utils/excelToJson');
     excelToJson.mockImplementation(mockExcelToJson);
     
     mockExcelToJson.mockResolvedValue({
@@ -1432,7 +1436,7 @@ describe('ExcelUploader', () => {
 
     it('handles upload timeout', async () => {
       // Mock excelToJson to simulate timeout
-      const { excelToJson } = require('../utils/excelToJson');
+      const { excelToJson } = require('../../utils/excelToJson');
       excelToJson.mockImplementation(() => new Promise((_, reject) => {
         setTimeout(() => reject(new Error('Upload timed out')), 100);
       }));
@@ -1508,7 +1512,7 @@ describe('ExcelUploader', () => {
   describe('Modal and Error Handling', () => {
     it('shows modal with error message', async () => {
       // Mock excelToJson to throw error
-      const { excelToJson } = require('../utils/excelToJson');
+      const { excelToJson } = require('../../utils/excelToJson');
       const error = new Error('Invalid file format');
       error.name = 'ExcelCorruptedError';
       excelToJson.mockRejectedValue(error);
@@ -1569,7 +1573,7 @@ describe('ExcelUploader', () => {
   describe('File Processing Edge Cases', () => {
     it('handles file with invalid Excel structure', async () => {
       // Mock excelToJson to return invalid structure
-      const { excelToJson } = require('../utils/excelToJson');
+      const { excelToJson } = require('../../utils/excelToJson');
       excelToJson.mockResolvedValue({
         submissions: null,
         unmatchedSheets: [],
@@ -1595,7 +1599,7 @@ describe('ExcelUploader', () => {
 
     it('handles file with empty submissions', async () => {
       // Mock excelToJson to return empty submissions
-      const { excelToJson } = require('../utils/excelToJson');
+      const { excelToJson } = require('../../utils/excelToJson');
       excelToJson.mockResolvedValue({
         submissions: [],
         unmatchedSheets: [],
@@ -1699,7 +1703,7 @@ describe('ExcelUploader', () => {
 
     it('recovers from upload errors', async () => {
       // Mock excelToJson to fail first, then succeed
-      const { excelToJson } = require('../utils/excelToJson');
+      const { excelToJson } = require('../../utils/excelToJson');
       excelToJson
         .mockRejectedValueOnce(new Error('First upload failed'))
         .mockResolvedValueOnce({
@@ -1765,7 +1769,7 @@ describe('ExcelUploader', () => {
 
     it('handles complete error flow', async () => {
       // Mock all dependencies to fail
-      const { excelToJson } = require('../utils/excelToJson');
+      const { excelToJson } = require('../../utils/excelToJson');
       excelToJson.mockRejectedValue(new Error('Processing failed'));
       
       render(<ExcelUploader />);
@@ -2028,7 +2032,7 @@ describe('ExcelUploader', () => {
   describe('File Processing Validation', () => {
     it('handles file with insufficient meaningful content', async () => {
       // Mock excelToJson to return data with low content ratio
-      const { excelToJson } = require('../utils/excelToJson');
+      const { excelToJson } = require('../../utils/excelToJson');
       excelToJson.mockResolvedValue({
         submissions: [
           {
@@ -2076,7 +2080,7 @@ describe('ExcelUploader', () => {
 
     it('handles file with suspicious data patterns', async () => {
       // Mock excelToJson to return data with suspicious patterns
-      const { excelToJson } = require('../utils/excelToJson');
+      const { excelToJson } = require('../../utils/excelToJson');
       excelToJson.mockResolvedValue({
         submissions: [
           {
@@ -2121,7 +2125,7 @@ describe('ExcelUploader', () => {
 
     it('handles file without checklist patterns', async () => {
       // Mock excelToJson to return data without checklist patterns
-      const { excelToJson } = require('../utils/excelToJson');
+      const { excelToJson } = require('../../utils/excelToJson');
       excelToJson.mockResolvedValue({
         submissions: [
           {
@@ -2161,7 +2165,7 @@ describe('ExcelUploader', () => {
   describe('Error Message Handling', () => {
     it('handles ExcelCorruptedError', async () => {
       // Mock excelToJson to throw specific error
-      const { excelToJson } = require('../utils/excelToJson');
+      const { excelToJson } = require('../../utils/excelToJson');
       const error = new Error('Excel file is corrupted');
       error.name = 'ExcelCorruptedError';
       excelToJson.mockRejectedValue(error);
@@ -2186,7 +2190,7 @@ describe('ExcelUploader', () => {
 
     it('handles timeout errors', async () => {
       // Mock excelToJson to throw timeout error
-      const { excelToJson } = require('../utils/excelToJson');
+      const { excelToJson } = require('../../utils/excelToJson');
       excelToJson.mockRejectedValue(new Error('Upload timed out'));
       
       render(<ExcelUploader />);
@@ -2209,7 +2213,7 @@ describe('ExcelUploader', () => {
 
     it('handles network errors', async () => {
       // Mock excelToJson to throw network error
-      const { excelToJson } = require('../utils/excelToJson');
+      const { excelToJson } = require('../../utils/excelToJson');
       excelToJson.mockRejectedValue(new Error('Network error occurred'));
       
       render(<ExcelUploader />);
@@ -2232,7 +2236,7 @@ describe('ExcelUploader', () => {
 
     it('handles null property errors', async () => {
       // Mock excelToJson to throw null property error
-      const { excelToJson } = require('../utils/excelToJson');
+      const { excelToJson } = require('../../utils/excelToJson');
       excelToJson.mockRejectedValue(new Error('Cannot read properties of null'));
       
       render(<ExcelUploader />);
@@ -2255,7 +2259,7 @@ describe('ExcelUploader', () => {
 
     it('handles server errors', async () => {
       // Mock excelToJson to throw server error
-      const { excelToJson } = require('../utils/excelToJson');
+      const { excelToJson } = require('../../utils/excelToJson');
       excelToJson.mockRejectedValue(new Error('Server error: 500 Internal Server Error'));
       
       render(<ExcelUploader />);
@@ -2278,7 +2282,7 @@ describe('ExcelUploader', () => {
 
     it('handles useEffect errors', async () => {
       // Mock excelToJson to throw useEffect error
-      const { excelToJson } = require('../utils/excelToJson');
+      const { excelToJson } = require('../../utils/excelToJson');
       excelToJson.mockRejectedValue(new Error('useEffect cleanup error'));
       
       render(<ExcelUploader />);
