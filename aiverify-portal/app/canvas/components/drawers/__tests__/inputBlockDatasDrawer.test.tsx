@@ -151,7 +151,11 @@ describe('InputBlockDatasDrawer', () => {
       const twoElements = screen.getAllByText(/2/);
       expect(twoElements.length).toBeGreaterThan(0);
       expect(screen.getByText(/items/)).toBeInTheDocument();
-      expect(screen.getByText(/1\/1\/2023/)).toBeInTheDocument();
+      const dateElements = screen.getAllByText((content, element) => {
+        return Boolean(element?.textContent?.includes('2023') && 
+          (element?.textContent?.includes('01/01') || element?.textContent?.includes('1/1')));
+      });
+      expect(dateElements.length).toBeGreaterThan(0);
     });
 
     it('handles group selection correctly', async () => {
@@ -224,7 +228,12 @@ describe('InputBlockDatasDrawer', () => {
       expect(screen.getByText('Individual Input Blocks')).toBeInTheDocument();
       expect(screen.getByText('Individual Block')).toBeInTheDocument();
       // The actual date format depends on the user's locale and timezone
-      expect(screen.getByText(/1\/3\/2023/)).toBeInTheDocument();
+      const dateElements = screen.getAllByText((content, element) => {
+        return Boolean(element?.textContent?.includes('2023') && 
+          (element?.textContent?.includes('03/01') || element?.textContent?.includes('3/1') ||
+           element?.textContent?.includes('01/03') || element?.textContent?.includes('1/3')));
+      });
+      expect(dateElements.length).toBeGreaterThan(0);
     });
 
     it('handles individual block selection correctly', async () => {
