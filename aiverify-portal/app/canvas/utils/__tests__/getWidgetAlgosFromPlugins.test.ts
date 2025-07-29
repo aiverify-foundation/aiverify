@@ -168,18 +168,89 @@ describe('getWidgetAlgosFromPlugins', () => {
     });
 
     it('should handle template widget with undefined algorithms', () => {
-      const pluginWithoutAlgorithms = {
-        ...mockPlugin,
-        algorithms: [] as Algorithm[], // Use empty array instead of undefined
-      };
       const templateWidget = {
-        ...mockWidget,
-        widgetGID: 'plugin1:widget1',
+        cid: 'template-widget',
+        gid: 'template-plugin',
+        name: 'Template Widget',
+        version: '1.0.0',
+        author: 'Test Author',
+        description: 'Test widget description',
+        widgetSize: { minW: 2, minH: 2, maxW: 12, maxH: 12 },
+        properties: [],
+        tags: 'test,widget',
+        dependencies: [],
+        mockdata: [],
+        dynamicHeight: false,
+        mdx: { code: 'test mdx code', frontmatter: {} },
+        gridItemId: 'template-widget',
+        widgetGID: 'template-plugin:widget1',
+      } as any; // Use any to bypass type checking for template widget
+
+      const pluginWithoutAlgorithms: PluginForGridLayout = {
+        ...mockPlugin,
+        gid: 'template-plugin',
+        algorithms: undefined as any,
       };
 
       const result = getWidgetAlgosFromPlugins([pluginWithoutAlgorithms], templateWidget);
+      expect(result).toEqual([]);
+    });
 
-      expect(result).toHaveLength(0);
+    it('should handle template widget with plugin found but no algorithms array', () => {
+      const templateWidget = {
+        cid: 'template-widget',
+        gid: 'template-plugin',
+        name: 'Template Widget',
+        version: '1.0.0',
+        author: 'Test Author',
+        description: 'Test widget description',
+        widgetSize: { minW: 2, minH: 2, maxW: 12, maxH: 12 },
+        properties: [],
+        tags: 'test,widget',
+        dependencies: [],
+        mockdata: [],
+        dynamicHeight: false,
+        mdx: { code: 'test mdx code', frontmatter: {} },
+        gridItemId: 'template-widget',
+        widgetGID: 'template-plugin:widget1',
+      } as any; // Use any to bypass type checking for template widget
+
+      const pluginWithoutAlgorithms: PluginForGridLayout = {
+        ...mockPlugin,
+        gid: 'template-plugin',
+        algorithms: null as any,
+      };
+
+      const result = getWidgetAlgosFromPlugins([pluginWithoutAlgorithms], templateWidget);
+      expect(result).toEqual([]);
+    });
+
+    it('should handle template widget with plugin found but empty algorithms array', () => {
+      const templateWidget = {
+        cid: 'template-widget',
+        gid: 'template-plugin',
+        name: 'Template Widget',
+        version: '1.0.0',
+        author: 'Test Author',
+        description: 'Test widget description',
+        widgetSize: { minW: 2, minH: 2, maxW: 12, maxH: 12 },
+        properties: [],
+        tags: 'test,widget',
+        dependencies: [],
+        mockdata: [],
+        dynamicHeight: false,
+        mdx: { code: 'test mdx code', frontmatter: {} },
+        gridItemId: 'template-widget',
+        widgetGID: 'template-plugin:widget1',
+      } as any; // Use any to bypass type checking for template widget
+
+      const pluginWithEmptyAlgorithms: PluginForGridLayout = {
+        ...mockPlugin,
+        gid: 'template-plugin',
+        algorithms: [],
+      };
+
+      const result = getWidgetAlgosFromPlugins([pluginWithEmptyAlgorithms], templateWidget);
       expect(result).toEqual([]);
     });
   });

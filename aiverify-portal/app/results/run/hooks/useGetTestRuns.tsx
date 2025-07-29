@@ -23,7 +23,37 @@ const useGetTestRuns = (
 ) => {
   const queryClient = useQueryClient();
 
-  // Set up polling for active tests
+  // Main query for fetching test runs
+  const mainQuery = useQuery<TestRunOutput[], Error>({
+    queryKey: ['testRuns'],
+    queryFn: async (): Promise<TestRunOutput[]> => {
+      console.log('Fetching test runs');
+
+      const response = await fetch('/api/test_runs', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // Add these options to ensure consistent fetch behavior
+        cache: 'no-cache',
+        next: { revalidate: 0 },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Test runs fetch error:', errorText);
+        throw new Error(`Failed to fetch test runs: ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log('Test runs fetch successful:', result);
+      return result;
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    ...options,
+  });
+
+  // Set up polling for active tests - only when main query is successful
   useQuery({
     queryKey: ['testRunsProgress'],
     queryFn: async (): Promise<boolean> => {
@@ -98,37 +128,10 @@ const useGetTestRuns = (
       return true; // Successfully checked for progress updates
     },
     refetchInterval: PROGRESS_POLL_INTERVAL,
-    enabled: true,
+    enabled: mainQuery.isSuccess && mainQuery.data?.some(test => test.status === 'pending'),
   });
 
-  return useQuery<TestRunOutput[], Error>({
-    queryKey: ['testRuns'],
-    queryFn: async (): Promise<TestRunOutput[]> => {
-      console.log('Fetching test runs');
-
-      const response = await fetch('/api/test_runs', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        // Add these options to ensure consistent fetch behavior
-        cache: 'no-cache',
-        next: { revalidate: 0 },
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Test runs fetch error:', errorText);
-        throw new Error(`Failed to fetch test runs: ${errorText}`);
-      }
-
-      const result = await response.json();
-      console.log('Test runs fetch successful:', result);
-      return result;
-    },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    ...options,
-  });
+  return mainQuery;
 };
 
 export default useGetTestRuns;

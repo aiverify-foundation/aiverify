@@ -111,11 +111,35 @@ jest.mock('@rjsf/core', () => {
           const value = formData?.[key] || '';
           const widget = uiSchema?.[key]?.['ui:widget'];
           
+          // Handle null or undefined field
+          if (!field) {
+            return (
+              <div key={key} data-testid={`field-${key}`}>
+                <label htmlFor={key}>{key}</label>
+                <input
+                  id={key}
+                  name={key}
+                  type="text"
+                  value={value}
+                  onChange={(e) => {
+                    handleChange({
+                      formData: { ...formData, [key]: e.target.value },
+                      errors: [],
+                      errorSchema: {}
+                    });
+                  }}
+                  data-testid={`input-${key}`}
+                  required={schema.required?.includes(key)}
+                />
+              </div>
+            );
+          }
+          
           if (widget === 'CustomSelectWidget') {
             const enumOptions = uiSchema?.[key]?.['ui:enumOptions'] || [];
             return (
               <div key={key} data-testid={`field-${key}`}>
-                <label htmlFor={key}>{field.title || key}</label>
+                <label htmlFor={key}>{field?.title || key}</label>
                 <select
                   id={key}
                   name={key}
@@ -142,7 +166,7 @@ jest.mock('@rjsf/core', () => {
           } else {
             return (
               <div key={key} data-testid={`field-${key}`}>
-                <label htmlFor={key}>{field.title || key}</label>
+                <label htmlFor={key}>{field?.title || key}</label>
                 <input
                   id={key}
                   name={key}
@@ -1366,6 +1390,493 @@ describe('TestRunForm', () => {
       render(<TestRunForm {...defaultProps} />);
       
       // Check if form renders correctly with error state
+      const forms = screen.getAllByTestId('rjsf-form');
+      expect(forms.length).toBeGreaterThan(0);
+    });
+
+    it('handles algorithm with null input schema', () => {
+      const pluginWithNullSchema = {
+        ...mockPlugins[0],
+        algorithms: [{
+          ...mockPlugins[0].algorithms[0],
+          inputSchema: null as any
+        }]
+      };
+
+      render(<TestRunForm {...defaultProps} plugins={[pluginWithNullSchema]} />);
+      
+      const forms = screen.getAllByTestId('rjsf-form');
+      expect(forms.length).toBeGreaterThan(0);
+    });
+
+    it('handles algorithm with undefined input schema', () => {
+      const pluginWithUndefinedSchema = {
+        ...mockPlugins[0],
+        algorithms: [{
+          ...mockPlugins[0].algorithms[0],
+          inputSchema: undefined as any
+        }]
+      };
+
+      render(<TestRunForm {...defaultProps} plugins={[pluginWithUndefinedSchema]} />);
+      
+      const forms = screen.getAllByTestId('rjsf-form');
+      expect(forms.length).toBeGreaterThan(0);
+    });
+
+    it('handles algorithm with schema without properties', () => {
+      const pluginWithoutProperties = {
+        ...mockPlugins[0],
+        algorithms: [{
+          ...mockPlugins[0].algorithms[0],
+          inputSchema: {
+            type: 'object',
+            title: 'Schema without properties',
+            description: 'Schema without properties',
+            required: [],
+            properties: {}
+          }
+        }]
+      };
+
+      render(<TestRunForm {...defaultProps} plugins={[pluginWithoutProperties]} />);
+      
+      const forms = screen.getAllByTestId('rjsf-form');
+      expect(forms.length).toBeGreaterThan(0);
+    });
+
+    it('handles algorithm with schema with null properties', () => {
+      const pluginWithNullProperties = {
+        ...mockPlugins[0],
+        algorithms: [{
+          ...mockPlugins[0].algorithms[0],
+          inputSchema: {
+            type: 'object',
+            properties: null as any,
+            title: 'Schema with null properties',
+            description: 'Schema with null properties',
+            required: []
+          }
+        }]
+      };
+
+      render(<TestRunForm {...defaultProps} plugins={[pluginWithNullProperties]} />);
+      
+      const forms = screen.getAllByTestId('rjsf-form');
+      expect(forms.length).toBeGreaterThan(0);
+    });
+
+    it('handles algorithm with schema with undefined properties', () => {
+      const pluginWithUndefinedProperties = {
+        ...mockPlugins[0],
+        algorithms: [{
+          ...mockPlugins[0].algorithms[0],
+          inputSchema: {
+            type: 'object',
+            properties: undefined as any,
+            title: 'Schema with undefined properties',
+            description: 'Schema with undefined properties',
+            required: []
+          }
+        }]
+      };
+
+      render(<TestRunForm {...defaultProps} plugins={[pluginWithUndefinedProperties]} />);
+      
+      const forms = screen.getAllByTestId('rjsf-form');
+      expect(forms.length).toBeGreaterThan(0);
+    });
+
+    it('handles algorithm with schema with non-object properties', () => {
+      const pluginWithNonObjectProperties = {
+        ...mockPlugins[0],
+        algorithms: [{
+          ...mockPlugins[0].algorithms[0],
+          inputSchema: {
+            type: 'object',
+            properties: 'not an object' as any,
+            title: 'Schema with non-object properties',
+            description: 'Schema with non-object properties',
+            required: []
+          }
+        }]
+      };
+
+      render(<TestRunForm {...defaultProps} plugins={[pluginWithNonObjectProperties]} />);
+      
+      const forms = screen.getAllByTestId('rjsf-form');
+      expect(forms.length).toBeGreaterThan(0);
+    });
+
+    it('handles algorithm with property schema that is not an object', () => {
+      const pluginWithInvalidPropertySchema = {
+        ...mockPlugins[0],
+        algorithms: [{
+          ...mockPlugins[0].algorithms[0],
+          inputSchema: {
+            type: 'object',
+            properties: {
+              param1: 'not a schema object' as any
+            },
+            title: 'Schema with invalid property schema',
+            description: 'Schema with invalid property schema',
+            required: []
+          }
+        }]
+      };
+
+      render(<TestRunForm {...defaultProps} plugins={[pluginWithInvalidPropertySchema]} />);
+      
+      const forms = screen.getAllByTestId('rjsf-form');
+      expect(forms.length).toBeGreaterThan(0);
+    });
+
+    it('handles algorithm with property schema that is null', () => {
+      const pluginWithNullPropertySchema = {
+        ...mockPlugins[0],
+        algorithms: [{
+          ...mockPlugins[0].algorithms[0],
+          inputSchema: {
+            type: 'object',
+            properties: {
+              param1: null as any
+            },
+            title: 'Schema with null property schema',
+            description: 'Schema with null property schema',
+            required: []
+          }
+        }]
+      };
+
+      render(<TestRunForm {...defaultProps} plugins={[pluginWithNullPropertySchema]} />);
+      
+      const forms = screen.getAllByTestId('rjsf-form');
+      expect(forms.length).toBeGreaterThan(0);
+    });
+
+    it('handles algorithm with required fields that are not arrays', () => {
+      const pluginWithInvalidRequired = {
+        ...mockPlugins[0],
+        algorithms: [{
+          ...mockPlugins[0].algorithms[0],
+          inputSchema: {
+            type: 'object',
+            properties: {
+              param1: {
+                type: 'string',
+                title: 'Parameter 1'
+              }
+            },
+            required: 'not an array' as any,
+            title: 'Schema with invalid required field',
+            description: 'Schema with invalid required field'
+          }
+        }]
+      };
+
+      render(<TestRunForm {...defaultProps} plugins={[pluginWithInvalidRequired]} />);
+      
+      const forms = screen.getAllByTestId('rjsf-form');
+      expect(forms.length).toBeGreaterThan(0);
+    });
+
+    it('handles algorithm with null required fields', () => {
+      const pluginWithNullRequired = {
+        ...mockPlugins[0],
+        algorithms: [{
+          ...mockPlugins[0].algorithms[0],
+          inputSchema: {
+            type: 'object',
+            properties: {
+              param1: {
+                type: 'string',
+                title: 'Parameter 1'
+              }
+            },
+            required: null as any,
+            title: 'Schema with null required field',
+            description: 'Schema with null required field'
+          }
+        }]
+      };
+
+      render(<TestRunForm {...defaultProps} plugins={[pluginWithNullRequired]} />);
+      
+      const forms = screen.getAllByTestId('rjsf-form');
+      expect(forms.length).toBeGreaterThan(0);
+    });
+
+    it('handles algorithm with undefined required fields', () => {
+      const pluginWithUndefinedRequired = {
+        ...mockPlugins[0],
+        algorithms: [{
+          ...mockPlugins[0].algorithms[0],
+          inputSchema: {
+            type: 'object',
+            properties: {
+              param1: {
+                type: 'string',
+                title: 'Parameter 1'
+              }
+            },
+            required: undefined as any,
+            title: 'Schema with undefined required field',
+            description: 'Schema with undefined required field'
+          }
+        }]
+      };
+
+      render(<TestRunForm {...defaultProps} plugins={[pluginWithUndefinedRequired]} />);
+      
+      const forms = screen.getAllByTestId('rjsf-form');
+      expect(forms.length).toBeGreaterThan(0);
+    });
+
+    it('handles algorithm with property that has no default value', () => {
+      const pluginWithoutDefault = {
+        ...mockPlugins[0],
+        algorithms: [{
+          ...mockPlugins[0].algorithms[0],
+          inputSchema: {
+            type: 'object',
+            properties: {
+              param1: {
+                type: 'string',
+                title: 'Parameter 1'
+                // No default value
+              }
+            },
+            required: [],
+            title: 'Schema without default values',
+            description: 'Schema without default values'
+          }
+        }]
+      };
+
+      render(<TestRunForm {...defaultProps} plugins={[pluginWithoutDefault]} />);
+      
+      const forms = screen.getAllByTestId('rjsf-form');
+      expect(forms.length).toBeGreaterThan(0);
+    });
+
+    it('handles algorithm with property that has null default value', () => {
+      const pluginWithNullDefault = {
+        ...mockPlugins[0],
+        algorithms: [{
+          ...mockPlugins[0].algorithms[0],
+          inputSchema: {
+            type: 'object',
+            properties: {
+              param1: {
+                type: 'string',
+                title: 'Parameter 1',
+                default: null
+              }
+            },
+            required: [],
+            title: 'Schema with null default value',
+            description: 'Schema with null default value'
+          }
+        }]
+      };
+
+      render(<TestRunForm {...defaultProps} plugins={[pluginWithNullDefault]} />);
+      
+      const forms = screen.getAllByTestId('rjsf-form');
+      expect(forms.length).toBeGreaterThan(0);
+    });
+
+    it('handles algorithm with property that has undefined default value', () => {
+      const pluginWithUndefinedDefault = {
+        ...mockPlugins[0],
+        algorithms: [{
+          ...mockPlugins[0].algorithms[0],
+          inputSchema: {
+            type: 'object',
+            properties: {
+              param1: {
+                type: 'string',
+                title: 'Parameter 1',
+                default: undefined
+              }
+            },
+            required: [],
+            title: 'Schema with undefined default value',
+            description: 'Schema with undefined default value'
+          }
+        }]
+      };
+
+      render(<TestRunForm {...defaultProps} plugins={[pluginWithUndefinedDefault]} />);
+      
+      const forms = screen.getAllByTestId('rjsf-form');
+      expect(forms.length).toBeGreaterThan(0);
+    });
+
+    it('handles algorithm with property that has empty string default value', () => {
+      const pluginWithEmptyStringDefault = {
+        ...mockPlugins[0],
+        algorithms: [{
+          ...mockPlugins[0].algorithms[0],
+          inputSchema: {
+            type: 'object',
+            properties: {
+              param1: {
+                type: 'string',
+                title: 'Parameter 1',
+                default: ''
+              }
+            },
+            required: [],
+            title: 'Schema with empty string default value',
+            description: 'Schema with empty string default value'
+          }
+        }]
+      };
+
+      render(<TestRunForm {...defaultProps} plugins={[pluginWithEmptyStringDefault]} />);
+      
+      const forms = screen.getAllByTestId('rjsf-form');
+      expect(forms.length).toBeGreaterThan(0);
+    });
+
+    it('handles algorithm with property that has zero default value', () => {
+      const pluginWithZeroDefault = {
+        ...mockPlugins[0],
+        algorithms: [{
+          ...mockPlugins[0].algorithms[0],
+          inputSchema: {
+            type: 'object',
+            properties: {
+              param1: {
+                type: 'number',
+                title: 'Parameter 1',
+                default: 0
+              }
+            },
+            required: [],
+            title: 'Schema with zero default value',
+            description: 'Schema with zero default value'
+          }
+        }]
+      };
+
+      render(<TestRunForm {...defaultProps} plugins={[pluginWithZeroDefault]} />);
+      
+      const forms = screen.getAllByTestId('rjsf-form');
+      expect(forms.length).toBeGreaterThan(0);
+    });
+
+    it('handles algorithm with property that has false default value', () => {
+      const pluginWithFalseDefault = {
+        ...mockPlugins[0],
+        algorithms: [{
+          ...mockPlugins[0].algorithms[0],
+          inputSchema: {
+            type: 'object',
+            properties: {
+              param1: {
+                type: 'boolean',
+                title: 'Parameter 1',
+                default: false
+              }
+            },
+            required: [],
+            title: 'Schema with false default value',
+            description: 'Schema with false default value'
+          }
+        }]
+      };
+
+      render(<TestRunForm {...defaultProps} plugins={[pluginWithFalseDefault]} />);
+      
+      const forms = screen.getAllByTestId('rjsf-form');
+      expect(forms.length).toBeGreaterThan(0);
+    });
+
+    it('handles algorithm with property that has empty array default value', () => {
+      const pluginWithEmptyArrayDefault = {
+        ...mockPlugins[0],
+        algorithms: [{
+          ...mockPlugins[0].algorithms[0],
+          inputSchema: {
+            type: 'object',
+            properties: {
+              param1: {
+                type: 'array',
+                title: 'Parameter 1',
+                default: []
+              }
+            },
+            required: [],
+            title: 'Schema with empty array default value',
+            description: 'Schema with empty array default value'
+          }
+        }]
+      };
+
+      render(<TestRunForm {...defaultProps} plugins={[pluginWithEmptyArrayDefault]} />);
+      
+      const forms = screen.getAllByTestId('rjsf-form');
+      expect(forms.length).toBeGreaterThan(0);
+    });
+
+    it('handles algorithm with property that has empty object default value', () => {
+      const pluginWithEmptyObjectDefault = {
+        ...mockPlugins[0],
+        algorithms: [{
+          ...mockPlugins[0].algorithms[0],
+          inputSchema: {
+            type: 'object',
+            properties: {
+              param1: {
+                type: 'object',
+                title: 'Parameter 1',
+                default: {}
+              }
+            },
+            required: [],
+            title: 'Schema with empty object default value',
+            description: 'Schema with empty object default value'
+          }
+        }]
+      };
+
+      render(<TestRunForm {...defaultProps} plugins={[pluginWithEmptyObjectDefault]} />);
+      
+      const forms = screen.getAllByTestId('rjsf-form');
+      expect(forms.length).toBeGreaterThan(0);
+    });
+
+    it('handles algorithm with property that has complex default value', () => {
+      const pluginWithComplexDefault = {
+        ...mockPlugins[0],
+        algorithms: [{
+          ...mockPlugins[0].algorithms[0],
+          inputSchema: {
+            type: 'object',
+            properties: {
+              param1: {
+                type: 'object',
+                title: 'Parameter 1',
+                default: {
+                  nested: {
+                    value: 'test',
+                    array: [1, 2, 3],
+                    boolean: true
+                  }
+                }
+              }
+            },
+            required: [],
+            title: 'Schema with complex default value',
+            description: 'Schema with complex default value'
+          }
+        }]
+      };
+
+      render(<TestRunForm {...defaultProps} plugins={[pluginWithComplexDefault]} />);
+      
       const forms = screen.getAllByTestId('rjsf-form');
       expect(forms.length).toBeGreaterThan(0);
     });

@@ -106,7 +106,23 @@ describe('getWidgetInputBlocksFromPlugins', () => {
     it('should handle template widget with undefined input blocks', () => {
       const pluginWithoutInputBlocks = {
         ...mockPlugin,
-        input_blocks: [] as InputBlock[], // Use empty array instead of undefined
+        input_blocks: undefined as any,
+      };
+      const templateWidget = {
+        ...mockWidget,
+        widgetGID: 'plugin1:widget1',
+      };
+
+      const result = getWidgetInputBlocksFromPlugins([pluginWithoutInputBlocks], templateWidget);
+
+      expect(result).toHaveLength(0);
+      expect(result).toEqual([]);
+    });
+
+    it('should handle template widget with plugin found but null input blocks', () => {
+      const pluginWithoutInputBlocks = {
+        ...mockPlugin,
+        input_blocks: null as any,
       };
       const templateWidget = {
         ...mockWidget,

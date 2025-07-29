@@ -281,4 +281,200 @@ describe('ProjectCards', () => {
       expect(sidebar).toBeInTheDocument();
     });
   });
+
+  describe('Delete Functionality', () => {
+    it('shows confirmation modal when delete button is clicked', () => {
+      render(<ProjectCards projects={mockProjects} />);
+
+      const deleteButtons = screen.getAllByRole('button');
+      fireEvent.click(deleteButtons[0]);
+
+      expect(screen.getByText('Confirm Delete')).toBeInTheDocument();
+      expect(screen.getByText(/Are you sure you want to delete project/)).toBeInTheDocument();
+    });
+
+    it('closes confirmation modal when cancel is clicked', () => {
+      render(<ProjectCards projects={mockProjects} />);
+
+      const deleteButtons = screen.getAllByRole('button');
+      fireEvent.click(deleteButtons[0]);
+
+      expect(screen.getByText('Confirm Delete')).toBeInTheDocument();
+
+      const cancelButton = screen.getByText('Cancel');
+      fireEvent.click(cancelButton);
+
+      expect(screen.queryByText('Confirm Delete')).not.toBeInTheDocument();
+    });
+
+    it('closes confirmation modal when close icon is clicked', () => {
+      render(<ProjectCards projects={mockProjects} />);
+
+      const deleteButtons = screen.getAllByRole('button');
+      fireEvent.click(deleteButtons[0]);
+
+      expect(screen.getByText('Confirm Delete')).toBeInTheDocument();
+
+      const closeButton = document.querySelector('.icon_wrapper');
+      fireEvent.click(closeButton!);
+
+      expect(screen.queryByText('Confirm Delete')).not.toBeInTheDocument();
+    });
+
+    it('successfully deletes project when confirmed', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+      } as Response);
+
+      render(<ProjectCards projects={mockProjects} />);
+
+      const deleteButtons = screen.getAllByRole('button');
+      fireEvent.click(deleteButtons[0]);
+
+      const confirmDeleteButton = screen.getByText('Delete');
+      fireEvent.click(confirmDeleteButton);
+
+      await waitFor(() => {
+        expect(screen.getByText('Success')).toBeInTheDocument();
+        expect(screen.getByText(/has been successfully deleted/)).toBeInTheDocument();
+      });
+
+      expect(mockFetch).toHaveBeenCalledWith('/api/projects/projects/1', {
+        method: 'DELETE',
+      });
+    });
+
+    it('handles delete API error and shows error modal', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+      } as Response);
+
+      render(<ProjectCards projects={mockProjects} />);
+
+      const deleteButtons = screen.getAllByRole('button');
+      fireEvent.click(deleteButtons[0]);
+
+      const confirmDeleteButton = screen.getByText('Delete');
+      fireEvent.click(confirmDeleteButton);
+
+      await waitFor(() => {
+        expect(screen.getByText('Error')).toBeInTheDocument();
+        expect(screen.getByText(/Failed to delete project/)).toBeInTheDocument();
+      });
+    });
+
+    it('handles network error during delete operation', async () => {
+      mockFetch.mockRejectedValueOnce(new Error('Network error'));
+
+      render(<ProjectCards projects={mockProjects} />);
+
+      const deleteButtons = screen.getAllByRole('button');
+      fireEvent.click(deleteButtons[0]);
+
+      const confirmDeleteButton = screen.getByText('Delete');
+      fireEvent.click(confirmDeleteButton);
+
+      await waitFor(() => {
+        expect(screen.getByText('Error')).toBeInTheDocument();
+        expect(screen.getByText(/Failed to delete project/)).toBeInTheDocument();
+      });
+    });
+
+    it('disables delete button during deletion process', async () => {
+      mockFetch.mockImplementation(() => new Promise(resolve => setTimeout(() => resolve({
+        ok: true,
+        status: 200,
+      } as Response), 100)));
+
+      render(<ProjectCards projects={mockProjects} />);
+
+      const deleteButtons = screen.getAllByRole('button');
+      fireEvent.click(deleteButtons[0]);
+
+      const confirmDeleteButton = screen.getByText('Delete');
+      fireEvent.click(confirmDeleteButton);
+
+      // The delete button should be disabled during the process
+      expect(deleteButtons[0]).toBeDisabled();
+
+      await waitFor(() => {
+        expect(screen.getByText('Success')).toBeInTheDocument();
+      });
+    });
+
+    it('closes result modal when OK button is clicked', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+      } as Response);
+
+      render(<ProjectCards projects={mockProjects} />);
+
+      const deleteButtons = screen.getAllByRole('button');
+      fireEvent.click(deleteButtons[0]);
+
+      const confirmDeleteButton = screen.getByText('Delete');
+      fireEvent.click(confirmDeleteButton);
+
+      await waitFor(() => {
+        expect(screen.getByText('Success')).toBeInTheDocument();
+      });
+
+      const okButton = screen.getByText('OK');
+      fireEvent.click(okButton);
+
+      expect(screen.queryByText('Success')).not.toBeInTheDocument();
+    });
+
+    it('closes result modal when close icon is clicked', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+      } as Response);
+
+      render(<ProjectCards projects={mockProjects} />);
+
+      const deleteButtons = screen.getAllByRole('button');
+      fireEvent.click(deleteButtons[0]);
+
+      const confirmDeleteButton = screen.getByText('Delete');
+      fireEvent.click(confirmDeleteButton);
+
+      await waitFor(() => {
+        expect(screen.getByText('Success')).toBeInTheDocument();
+      });
+
+      const closeButton = document.querySelector('.icon_wrapper');
+      fireEvent.click(closeButton!);
+
+      expect(screen.queryByText('Success')).not.toBeInTheDocument();
+    });
+
+    it('removes project from list after successful deletion', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+      } as Response);
+
+      render(<ProjectCards projects={mockProjects} />);
+
+      let cards = document.querySelectorAll('.card');
+      expect(cards).toHaveLength(2);
+
+      const deleteButtons = screen.getAllByRole('button');
+      fireEvent.click(deleteButtons[0]);
+
+      const confirmDeleteButton = screen.getByText('Delete');
+      fireEvent.click(confirmDeleteButton);
+
+      await waitFor(() => {
+        cards = document.querySelectorAll('.card');
+        expect(cards).toHaveLength(1);
+        expect(screen.queryByText('Test Project 1')).not.toBeInTheDocument();
+        expect(screen.getByText('Test Project 2')).toBeInTheDocument();
+      });
+    });
+  });
 }); 

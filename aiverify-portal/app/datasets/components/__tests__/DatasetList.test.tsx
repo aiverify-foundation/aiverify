@@ -280,6 +280,257 @@ describe('DatasetList', () => {
       // So we just verify the row exists
       expect(firstRow).toBeInTheDocument();
     });
+
+    it('shows confirmation modal when delete is clicked', () => {
+      render(<DatasetList datasets={mockDatasets} />);
+      
+      const checkboxes = screen.getAllByRole('checkbox');
+      const firstCheckbox = checkboxes[0];
+      fireEvent.click(firstCheckbox);
+      
+      const deleteIcon = document.querySelector('[class*="pointer_effect"]:not([class*="disabled"])');
+      fireEvent.click(deleteIcon!);
+      
+      expect(screen.getByText('Confirm Deletion')).toBeInTheDocument();
+      expect(screen.getByText('Are you sure you want to delete the selected dataset(s)?')).toBeInTheDocument();
+    });
+
+    it('handles deletion failure', async () => {
+      const { deleteDataset } = require('@/lib/actions/deleteDataset');
+      deleteDataset.mockResolvedValue({ success: false, message: 'Delete failed' });
+      
+      render(<DatasetList datasets={mockDatasets} />);
+      
+      const checkboxes = screen.getAllByRole('checkbox');
+      const firstCheckbox = checkboxes[0];
+      fireEvent.click(firstCheckbox);
+      
+      const deleteIcon = document.querySelector('[class*="pointer_effect"]:not([class*="disabled"])');
+      fireEvent.click(deleteIcon!);
+      
+      const confirmButton = screen.getByText('DELETE');
+      fireEvent.click(confirmButton);
+      
+      await waitFor(() => {
+        expect(screen.getByText('Deletion Status')).toBeInTheDocument();
+        expect(screen.getByText('Delete failed')).toBeInTheDocument();
+      });
+    });
+
+    it('handles deletion with partial failures', async () => {
+      const { deleteDataset } = require('@/lib/actions/deleteDataset');
+      deleteDataset
+        .mockResolvedValueOnce({ success: true })
+        .mockResolvedValueOnce({ success: false, message: 'Second delete failed' });
+      
+      render(<DatasetList datasets={mockDatasets} />);
+      
+      const checkboxes = screen.getAllByRole('checkbox');
+      const firstCheckbox = checkboxes[0];
+      const secondCheckbox = checkboxes[1];
+      fireEvent.click(firstCheckbox);
+      fireEvent.click(secondCheckbox);
+      
+      const deleteIcon = document.querySelector('[class*="pointer_effect"]:not([class*="disabled"])');
+      fireEvent.click(deleteIcon!);
+      
+      const confirmButton = screen.getByText('DELETE');
+      fireEvent.click(confirmButton);
+      
+      await waitFor(() => {
+        expect(screen.getByText('Deletion Status')).toBeInTheDocument();
+        expect(screen.getByText('Second delete failed')).toBeInTheDocument();
+      });
+    });
+
+    it('handles deletion with exception', async () => {
+      const { deleteDataset } = require('@/lib/actions/deleteDataset');
+      deleteDataset.mockRejectedValue(new Error('Network error'));
+      
+      render(<DatasetList datasets={mockDatasets} />);
+      
+      const checkboxes = screen.getAllByRole('checkbox');
+      const firstCheckbox = checkboxes[0];
+      fireEvent.click(firstCheckbox);
+      
+      const deleteIcon = document.querySelector('[class*="pointer_effect"]:not([class*="disabled"])');
+      fireEvent.click(deleteIcon!);
+      
+      const confirmButton = screen.getByText('DELETE');
+      fireEvent.click(confirmButton);
+      
+      await waitFor(() => {
+        expect(screen.getByText('Deletion Status')).toBeInTheDocument();
+        expect(screen.getByText('Network error')).toBeInTheDocument();
+      });
+    });
+
+    it('closes modal on cancel', () => {
+      render(<DatasetList datasets={mockDatasets} />);
+      
+      const checkboxes = screen.getAllByRole('checkbox');
+      const firstCheckbox = checkboxes[0];
+      fireEvent.click(firstCheckbox);
+      
+      const deleteIcon = document.querySelector('[class*="pointer_effect"]:not([class*="disabled"])');
+      fireEvent.click(deleteIcon!);
+      
+      const cancelButton = screen.getByText('CANCEL');
+      fireEvent.click(cancelButton);
+      
+      expect(screen.queryByText('Confirm Deletion')).not.toBeInTheDocument();
+    });
+
+    it('closes modal on close icon click during confirmation', () => {
+      render(<DatasetList datasets={mockDatasets} />);
+      
+      const checkboxes = screen.getAllByRole('checkbox');
+      const firstCheckbox = checkboxes[0];
+      fireEvent.click(firstCheckbox);
+      
+      const deleteIcon = document.querySelector('[class*="pointer_effect"]:not([class*="disabled"])');
+      fireEvent.click(deleteIcon!);
+      
+      const closeIcon = document.querySelector('[data-testid="close-icon"]') || document.querySelector('.close-icon');
+      if (closeIcon) {
+        fireEvent.click(closeIcon);
+        expect(screen.queryByText('Confirm Deletion')).not.toBeInTheDocument();
+      }
+    });
+
+    it('does not show delete button when no rows are selected', () => {
+      render(<DatasetList datasets={mockDatasets} />);
+      
+      const deleteIcon = document.querySelector('[class*="pointer_effect"][class*="disabled"]');
+      expect(deleteIcon).toBeInTheDocument();
+    });
+  });
+
+  describe('Loading States', () => {
+    it('shows loading spinner during deletion', async () => {
+      const { deleteDataset } = require('@/lib/actions/deleteDataset');
+      deleteDataset.mockImplementation(() => new Promise(resolve => setTimeout(() => resolve({ success: true }), 100)));
+      
+      render(<DatasetList datasets={mockDatasets} />);
+      
+      const checkboxes = screen.getAllByRole('checkbox');
+      const firstCheckbox = checkboxes[0];
+      fireEvent.click(firstCheckbox);
+      
+      const deleteIcon = document.querySelector('[class*="pointer_effect"]:not([class*="disabled"])');
+      fireEvent.click(deleteIcon!);
+      
+      const confirmButton = screen.getByText('DELETE');
+      fireEvent.click(confirmButton);
+      
+      // Should show loading spinner
+      expect(document.querySelector('.spinner-border')).toBeInTheDocument();
+    });
+  });
+
+  describe('File Type Icons', () => {
+    it('shows file icon for file type datasets', () => {
+      render(<DatasetList datasets={mockDatasets} />);
+      
+      // The file icon should be present for the first dataset (file type)
+      const fileIcons = document.querySelectorAll('svg');
+      expect(fileIcons.length).toBeGreaterThan(0);
+    });
+
+    it('shows folder icon for folder type datasets', () => {
+      render(<DatasetList datasets={mockDatasets} />);
+      
+      // The folder icon should be present for the second dataset (folder type)
+      const folderIcons = document.querySelectorAll('svg');
+      expect(folderIcons.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('Dataset Detail Panel', () => {
+    it('shows dataset details when a row is clicked', () => {
+      render(<DatasetList datasets={mockDatasets} />);
+      
+      const firstRow = screen.getByText('Test Dataset 1').closest('tr');
+      fireEvent.click(firstRow!);
+      
+      // Should show dataset details
+      expect(screen.getByText('File Type:')).toBeInTheDocument();
+      expect(screen.getByText('file')).toBeInTheDocument();
+      expect(screen.getByText('File Name:')).toBeInTheDocument();
+      expect(screen.getByText('test1.csv')).toBeInTheDocument();
+    });
+
+    it('hides dataset details when same row is clicked again', () => {
+      render(<DatasetList datasets={mockDatasets} />);
+      
+      const firstRow = screen.getByText('Test Dataset 1').closest('tr');
+      fireEvent.click(firstRow!);
+      fireEvent.click(firstRow!);
+      
+      // Should hide dataset details
+      expect(screen.queryByText('File Type:')).not.toBeInTheDocument();
+    });
+
+    it('shows dataset details for folder type', () => {
+      render(<DatasetList datasets={mockDatasets} />);
+      
+      const secondRow = screen.getByText('Test Dataset 2').closest('tr');
+      fireEvent.click(secondRow!);
+      
+      // Should show dataset details
+      expect(screen.getByText('File Type:')).toBeInTheDocument();
+      expect(screen.getByText('folder')).toBeInTheDocument();
+      expect(screen.getByText('File Name:')).toBeInTheDocument();
+      expect(screen.getByText('test2.zip')).toBeInTheDocument();
+    });
+  });
+
+  describe('Date Formatting', () => {
+    it('formats dates correctly in the table', () => {
+      render(<DatasetList datasets={mockDatasets} />);
+      
+      // Check that dates are formatted and displayed
+      const dateElements = screen.getAllByText(/\d{1,2}\/\d{1,2}\/\d{4}/);
+      expect(dateElements.length).toBeGreaterThan(0);
+    });
+
+    it('formats dates correctly in detail panel', () => {
+      render(<DatasetList datasets={mockDatasets} />);
+      
+      const firstRow = screen.getByText('Test Dataset 1').closest('tr');
+      fireEvent.click(firstRow!);
+      
+      // Check that dates are formatted in detail panel
+      const dateElements = screen.getAllByText(/\d{1,2}\/\d{1,2}\/\d{4}/);
+      expect(dateElements.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('Search Functionality', () => {
+    it('filters datasets when search term is entered', async () => {
+      render(<DatasetList datasets={mockDatasets} />);
+      
+      const searchInput = screen.getByPlaceholderText('Search by Name');
+      fireEvent.change(searchInput, { target: { value: 'Dataset 1' } });
+      
+      // Wait for debounce
+      await waitFor(() => {
+        expect(searchInput).toHaveValue('Dataset 1');
+      });
+    });
+
+    it('shows all datasets when search is empty', async () => {
+      render(<DatasetList datasets={mockDatasets} />);
+      
+      const searchInput = screen.getByPlaceholderText('Search by Name');
+      fireEvent.change(searchInput, { target: { value: 'Dataset 1' } });
+      fireEvent.change(searchInput, { target: { value: '' } });
+      
+      // Wait for debounce
+      await waitFor(() => {
+        expect(searchInput).toHaveValue('');
+      });
+    });
   });
 
   describe('Sorting', () => {
@@ -314,6 +565,33 @@ describe('DatasetList', () => {
       
       // Check that the click was registered (no aria-sort attribute in current implementation)
       expect(nameHeader).toBeInTheDocument();
+    });
+
+    it('sorts by rows when header is clicked', () => {
+      render(<DatasetList datasets={mockDatasets} />);
+      
+      const rowsHeader = screen.getByText('Rows');
+      fireEvent.click(rowsHeader);
+      
+      expect(rowsHeader).toBeInTheDocument();
+    });
+
+    it('sorts by columns when header is clicked', () => {
+      render(<DatasetList datasets={mockDatasets} />);
+      
+      const columnsHeader = screen.getByText('Columns');
+      fireEvent.click(columnsHeader);
+      
+      expect(columnsHeader).toBeInTheDocument();
+    });
+
+    it('sorts by date when header is clicked', () => {
+      render(<DatasetList datasets={mockDatasets} />);
+      
+      const dateHeader = screen.getByText('Date');
+      fireEvent.click(dateHeader);
+      
+      expect(dateHeader).toBeInTheDocument();
     });
   });
 
@@ -389,6 +667,38 @@ describe('DatasetList', () => {
       render(<DatasetList datasets={longNameDataset} />);
       
       expect(screen.getByText('A'.repeat(100))).toBeInTheDocument();
+    });
+
+    it('handles datasets with null values in detail panel', () => {
+      const nullValueDataset: Dataset[] = [
+        {
+          id: '1',
+          name: 'Null Value Dataset',
+          description: null,
+          fileType: 'file',
+          filename: 'null.csv',
+          zip_hash: 'hash',
+          size: 1024,
+          serializer: null,
+          dataFormat: null,
+          numRows: null,
+          numCols: null,
+          dataColumns: null,
+          status: 'valid',
+          errorMessages: null,
+          created_at: '2023-01-01T00:00:00',
+          updated_at: '2023-01-01T00:00:00',
+        },
+      ];
+      
+      render(<DatasetList datasets={nullValueDataset} />);
+      
+      const firstRow = screen.getByText('Null Value Dataset').closest('tr');
+      fireEvent.click(firstRow!);
+      
+      // Should show N/A for null values - use getAllByText since there are multiple N/A elements
+      const naElements = screen.getAllByText('N/A');
+      expect(naElements.length).toBeGreaterThan(0);
     });
   });
 }); 

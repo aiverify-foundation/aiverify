@@ -242,6 +242,17 @@ describe('saveStateToDatabase', () => {
       expect(patchProject).not.toHaveBeenCalled();
     });
 
+    it('should handle localStorage error gracefully', async () => {
+      mockLocalStorage.setItem.mockImplementation(() => {
+        throw new Error('localStorage error');
+      });
+      await saveStateToDatabase(mockState);
+      expect(mockConsole.warn).toHaveBeenCalledWith(
+        'Failed to save minimal state to localStorage:',
+        expect.any(Error)
+      );
+    });
+
     it('should create minimal state with correct structure', async () => {
       await saveStateToDatabase(mockState);
       const savedData = JSON.parse(mockLocalStorage.setItem.mock.calls[0][1]);
