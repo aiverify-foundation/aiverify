@@ -24,30 +24,30 @@ describe('SplitPane', () => {
       <SplitPane
         leftPane={
           <div>
-            <h1>Model List</h1>
+            <h1>Plugin List</h1>
             <ul>
-              <li>Model 1</li>
-              <li>Model 2</li>
+              <li>Plugin 1</li>
+              <li>Plugin 2</li>
             </ul>
           </div>
         }
         rightPane={
           <div>
-            <h2>Model Details</h2>
-            <p>Model information</p>
+            <h2>Plugin Details</h2>
+            <p>Plugin information</p>
           </div>
         }
       />
     );
 
-    expect(container).toHaveTextContent('Model List');
-    expect(container).toHaveTextContent('Model 1');
-    expect(container).toHaveTextContent('Model 2');
-    expect(container).toHaveTextContent('Model Details');
-    expect(container).toHaveTextContent('Model information');
+    expect(container).toHaveTextContent('Plugin List');
+    expect(container).toHaveTextContent('Plugin 1');
+    expect(container).toHaveTextContent('Plugin 2');
+    expect(container).toHaveTextContent('Plugin Details');
+    expect(container).toHaveTextContent('Plugin information');
   });
 
-  it('has correct CSS classes', () => {
+  it('has correct CSS classes and accessibility attributes', () => {
     const { container } = render(
       <SplitPane
         leftPane={<div>Left</div>}
@@ -56,12 +56,20 @@ describe('SplitPane', () => {
     );
 
     const mainDiv = container.firstChild as HTMLElement;
-    const leftDiv = container.querySelector('.flex-shrink-0.flex-grow.basis-3\\/5');
-    const rightDiv = container.querySelector('.basis-2\\/5');
+    const leftDiv = container.querySelector('.flex-shrink-0.flex-grow.basis-2\\/5');
+    const rightDiv = container.querySelector('.flex-shrink-0.flex-grow.basis-3\\/5');
 
     expect(mainDiv).toHaveClass('flex', 'h-[calc(100vh-150px)]');
-    expect(leftDiv).toHaveClass('flex-shrink-0', 'flex-grow', 'basis-3/5', 'p-2');
-    expect(rightDiv).toHaveClass('basis-2/5', 'overflow-y-auto', 'p-2');
+    expect(mainDiv).toHaveAttribute('role', 'region');
+    expect(mainDiv).toHaveAttribute('aria-label', 'Split pane container');
+
+    expect(leftDiv).toHaveClass('flex-shrink-0', 'flex-grow', 'basis-2/5', 'p-2');
+    expect(leftDiv).toHaveAttribute('role', 'region');
+    expect(leftDiv).toHaveAttribute('aria-label', 'Left pane content');
+
+    expect(rightDiv).toHaveClass('flex-shrink-0', 'flex-grow', 'basis-3/5', 'overflow-y-auto', 'p-3');
+    expect(rightDiv).toHaveAttribute('role', 'region');
+    expect(rightDiv).toHaveAttribute('aria-label', 'Right pane content');
   });
 
   it('renders empty content gracefully', () => {

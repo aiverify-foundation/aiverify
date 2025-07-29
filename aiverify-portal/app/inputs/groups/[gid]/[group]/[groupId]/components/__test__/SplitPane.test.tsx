@@ -24,27 +24,23 @@ describe('SplitPane', () => {
       <SplitPane
         leftPane={
           <div>
-            <h1>Model List</h1>
-            <ul>
-              <li>Model 1</li>
-              <li>Model 2</li>
-            </ul>
+            <h1>Title</h1>
+            <p>Description</p>
           </div>
         }
         rightPane={
           <div>
-            <h2>Model Details</h2>
-            <p>Model information</p>
+            <button>Action</button>
+            <span>Info</span>
           </div>
         }
       />
     );
 
-    expect(container).toHaveTextContent('Model List');
-    expect(container).toHaveTextContent('Model 1');
-    expect(container).toHaveTextContent('Model 2');
-    expect(container).toHaveTextContent('Model Details');
-    expect(container).toHaveTextContent('Model information');
+    expect(container).toHaveTextContent('Title');
+    expect(container).toHaveTextContent('Description');
+    expect(container).toHaveTextContent('Action');
+    expect(container).toHaveTextContent('Info');
   });
 
   it('has correct CSS classes', () => {
@@ -56,12 +52,12 @@ describe('SplitPane', () => {
     );
 
     const mainDiv = container.firstChild as HTMLElement;
-    const leftDiv = container.querySelector('.flex-shrink-0.flex-grow.basis-3\\/5');
-    const rightDiv = container.querySelector('.basis-2\\/5');
+    const leftDiv = container.querySelector('.flex-1.basis-1\\/4');
+    const rightDiv = container.querySelector('.flex-1.basis-3\\/4');
 
-    expect(mainDiv).toHaveClass('flex', 'h-[calc(100vh-150px)]');
-    expect(leftDiv).toHaveClass('flex-shrink-0', 'flex-grow', 'basis-3/5', 'p-2');
-    expect(rightDiv).toHaveClass('basis-2/5', 'overflow-y-auto', 'p-2');
+    expect(mainDiv).toHaveClass('flex', 'h-full', 'w-full', 'flex-1');
+    expect(leftDiv).toHaveClass('flex-1', 'basis-1/4', 'p-4');
+    expect(rightDiv).toHaveClass('flex-1', 'basis-3/4', 'overflow-y-auto', 'p-3');
   });
 
   it('renders empty content gracefully', () => {

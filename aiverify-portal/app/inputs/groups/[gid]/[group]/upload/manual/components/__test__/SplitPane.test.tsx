@@ -24,27 +24,26 @@ describe('SplitPane', () => {
       <SplitPane
         leftPane={
           <div>
-            <h1>Model List</h1>
-            <ul>
-              <li>Model 1</li>
-              <li>Model 2</li>
-            </ul>
+            <h1>Upload Form</h1>
+            <form>
+              <input type="text" placeholder="Name" />
+              <button type="submit">Submit</button>
+            </form>
           </div>
         }
         rightPane={
           <div>
-            <h2>Model Details</h2>
-            <p>Model information</p>
+            <h2>Preview</h2>
+            <p>Form preview content</p>
           </div>
         }
       />
     );
 
-    expect(container).toHaveTextContent('Model List');
-    expect(container).toHaveTextContent('Model 1');
-    expect(container).toHaveTextContent('Model 2');
-    expect(container).toHaveTextContent('Model Details');
-    expect(container).toHaveTextContent('Model information');
+    expect(container).toHaveTextContent('Upload Form');
+    expect(container).toHaveTextContent('Submit');
+    expect(container).toHaveTextContent('Preview');
+    expect(container).toHaveTextContent('Form preview content');
   });
 
   it('has correct CSS classes', () => {
@@ -56,12 +55,12 @@ describe('SplitPane', () => {
     );
 
     const mainDiv = container.firstChild as HTMLElement;
-    const leftDiv = container.querySelector('.flex-shrink-0.flex-grow.basis-3\\/5');
-    const rightDiv = container.querySelector('.basis-2\\/5');
+    const leftDiv = container.querySelector('.basis-1\\/4');
+    const rightDiv = container.querySelector('.basis-3\\/4');
 
-    expect(mainDiv).toHaveClass('flex', 'h-[calc(100vh-150px)]');
-    expect(leftDiv).toHaveClass('flex-shrink-0', 'flex-grow', 'basis-3/5', 'p-2');
-    expect(rightDiv).toHaveClass('basis-2/5', 'overflow-y-auto', 'p-2');
+    expect(mainDiv).toHaveClass('flex', 'w-full', 'h-full');
+    expect(leftDiv).toHaveClass('basis-1/4', 'p-2');
+    expect(rightDiv).toHaveClass('basis-3/4', 'overflow-y-auto', 'p-3');
   });
 
   it('renders empty content gracefully', () => {
