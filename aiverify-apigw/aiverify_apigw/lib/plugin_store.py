@@ -36,9 +36,10 @@ class PluginStoreException(Exception):
 
 class PluginStore:
     node_folder = Path(__file__).parent.parent.parent.joinpath("aiverify-apigw-node")
+    tsx_path = node_folder.joinpath("node_modules/.bin/tsx").as_posix()
     validate_script_path = node_folder.joinpath("validateMDX.ts").as_posix()
     validate_summary_path = node_folder.joinpath("validateSummaryMDX.ts").as_posix()
-    npx = os.getenv("NPX_PATH", "npx")
+    node_path = os.getenv("NPX_PATH", "node")
     stock_plugin_folder = Path(__file__).parent.parent.parent.parent.joinpath("stock-plugins")
     plugin_meta_filename = "plugin.meta.json"
 
@@ -609,7 +610,8 @@ class PluginStore:
 
     @classmethod
     def validate_mdx(cls, mdx_script: Path, validate_script: str = validate_script_path, output_file: Path | None = None) -> bool:
-        args = [cls.npx, "tsx", validate_script, mdx_script.resolve().as_posix()]
+        # args = [cls.npx, "tsx", validate_script, mdx_script.resolve().as_posix()]
+        args = [cls.node_path, cls.tsx_path, validate_script, mdx_script.resolve().as_posix()]
         if output_file:
             args.append(output_file.as_posix())
         try:
