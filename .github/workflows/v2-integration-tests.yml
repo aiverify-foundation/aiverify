@@ -113,7 +113,7 @@ jobs:
           cd ../../veritas_data
           mkdir cs_model test_files
           cp cs_model.pkl cs_model
-          cp mktg_uplift_acq_dict.pickle test_files
+          cp mktg_uplift_acq_dict.pickle cs_X_test.pkl test_files
           cd ../
 
           echo "Review Test Data Directory"
