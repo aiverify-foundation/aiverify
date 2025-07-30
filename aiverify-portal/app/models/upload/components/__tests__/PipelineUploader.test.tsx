@@ -626,6 +626,79 @@ describe('PipelineUploader', () => {
     expect(screen.getByText('📂 subfolder2/')).toBeInTheDocument();
   });
 
+  it('handles files with deep nested folder structure', () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    // Add a folder with deep nested structure
+    const pipelineInput = document.querySelector('input[type="file"]');
+    const mockFile1 = new File(['content1'], 'file1.txt');
+    const mockFile2 = new File(['content2'], 'file2.txt');
+    
+    Object.defineProperty(mockFile1, 'webkitRelativePath', {
+      value: 'test-folder/subfolder1/deep/nested/file1.txt',
+      writable: false,
+      enumerable: false,
+      configurable: false
+    });
+    Object.defineProperty(mockFile2, 'webkitRelativePath', {
+      value: 'test-folder/subfolder2/another/deep/file2.txt',
+      writable: false,
+      enumerable: false,
+      configurable: false
+    });
+    
+    fireEvent.change(pipelineInput!, { target: { files: [mockFile1, mockFile2] } });
+    
+    // Should show the first-level subfolders
+    expect(screen.getByText('📂 subfolder1/')).toBeInTheDocument();
+    expect(screen.getByText('📂 subfolder2/')).toBeInTheDocument();
+  });
+
+  it('handles files with no subfolder structure (files directly in root)', () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    // Add a folder with files directly in root
+    const pipelineInput = document.querySelector('input[type="file"]');
+    const mockFile1 = new File(['content1'], 'file1.txt');
+    const mockFile2 = new File(['content2'], 'file2.txt');
+    
+    Object.defineProperty(mockFile1, 'webkitRelativePath', {
+      value: 'test-folder/file1.txt',
+      writable: false,
+      enumerable: false,
+      configurable: false
+    });
+    Object.defineProperty(mockFile2, 'webkitRelativePath', {
+      value: 'test-folder/file2.txt',
+      writable: false,
+      enumerable: false,
+      configurable: false
+    });
+    
+    fireEvent.change(pipelineInput!, { target: { files: [mockFile1, mockFile2] } });
+    
+    // Should show files in Root subfolder
+    expect(screen.getByText('📂 Root/')).toBeInTheDocument();
+  });
+
+  it('handles files with empty webkitRelativePath', () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    const pipelineInput = document.querySelector('input[type="file"]');
+    const mockFile = new File(['test content'], 'test.txt');
+    Object.defineProperty(mockFile, 'webkitRelativePath', {
+      value: '', // Empty path
+      writable: false,
+      enumerable: false,
+      configurable: false
+    });
+    
+    fireEvent.change(pipelineInput!, { target: { files: [mockFile] } });
+    
+    // Should show a folder even with empty path (the component handles this case)
+    expect(screen.getByText(/📁/)).toBeInTheDocument();
+  });
+
   it('updates submit button text based on folder count', () => {
     render(<PipelineUploader onBack={mockOnBack} />);
     
@@ -662,42 +735,90 @@ describe('PipelineUploader', () => {
     expect(screen.getByText(/UPLOAD \d+ PIPELINES/)).toBeInTheDocument();
   });
 
+  it('shows correct submit button text for multiple folders', () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    // Add multiple folders
+    const pipelineInput = document.querySelector('input[type="file"]');
+    const mockFiles = Array.from({ length: 3 }, (_, i) => {
+      const mockFile = new File([`content${i}`], `file${i}.txt`);
+      Object.defineProperty(mockFile, 'webkitRelativePath', {
+        value: `folder${i}/file${i}.txt`,
+        writable: false,
+        enumerable: false,
+        configurable: false
+      });
+      return mockFile;
+    });
+    
+    fireEvent.change(pipelineInput!, { target: { files: mockFiles } });
+    
+    // Should show plural form for multiple folders
+    expect(screen.getByText('UPLOAD 3 PIPELINES')).toBeInTheDocument();
+  });
+
+  it('shows upload progress during multiple folder uploads', async () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    // Add multiple folders
+    const pipelineInput = document.querySelector('input[type="file"]');
+    const mockFile1 = new File(['content1'], 'file1.txt');
+    const mockFile2 = new File(['content2'], 'file2.txt');
+    
+    Object.defineProperty(mockFile1, 'webkitRelativePath', {
+      value: 'folder1/file1.txt',
+      writable: false,
+      enumerable: false,
+      configurable: false
+    });
+    Object.defineProperty(mockFile2, 'webkitRelativePath', {
+      value: 'folder2/file2.txt',
+      writable: false,
+      enumerable: false,
+      configurable: false
+    });
+    
+    fireEvent.change(pipelineInput!, { target: { files: [mockFile1, mockFile2] } });
+    
+    // Close modal
+    const closeButton = await screen.findByText('Close');
+    fireEvent.click(closeButton);
+    await waitFor(() => {
+      expect(screen.queryByText('Close')).not.toBeInTheDocument();
+    });
+    
+    // Set model types
+    const modelTypeSelects = screen.getAllByDisplayValue('Select Model Type');
+    fireEvent.change(modelTypeSelects[0], { target: { value: 'classification' } });
+    fireEvent.change(modelTypeSelects[1], { target: { value: 'regression' } });
+    
+    // Submit form
+    const submitButton = screen.getByText('UPLOAD 2 PIPELINES');
+    fireEvent.click(submitButton);
+    
+    // Should show uploading progress
+    expect(screen.getByText('Uploading...')).toBeInTheDocument();
+    
+    // Mock first upload success
+    const onSuccessCallback1 = mockMutate.mock.calls[0][1].onSuccess;
+    onSuccessCallback1();
+    
+    // Mock second upload success
+    await waitFor(() => {
+      expect(mockMutate).toHaveBeenCalledTimes(2);
+    });
+    const onSuccessCallback2 = mockMutate.mock.calls[1][1].onSuccess;
+    onSuccessCallback2();
+    
+    // Should show success message
+    await waitFor(() => {
+      expect(screen.getByText(/Upload completed: 2 successful, 0 failed/)).toBeInTheDocument();
+    });
+  });
+
   // Additional tests for 100% coverage
 
-  // it('handles validation error for missing model types', async () => {
-  //   render(<PipelineUploader onBack={mockOnBack} />);
-    
-  //   // Add a folder
-  //   const pipelineInput = document.querySelector('input[type="file"]');
-  //   const mockFile = new File(['test content'], 'test.txt');
-  //   Object.defineProperty(mockFile, 'webkitRelativePath', {
-  //     value: 'test-folder/test.txt',
-  //     writable: false,
-  //     enumerable: false,
-  //     configurable: false
-  //   });
-  //   fireEvent.change(pipelineInput!, { target: { files: [mockFile] } });
-    
-  //   // Close modal first
-  //   const closeButton = await screen.findByText('Close');
-  //   fireEvent.click(closeButton);
-  //   await waitFor(() => {
-  //     expect(screen.queryByText('Close')).not.toBeInTheDocument();
-  //   });
-    
-  //   // Submit form without setting model type
-  //   const submitButton = screen.getByText('UPLOAD 1 PIPELINE');
-  //   fireEvent.click(submitButton);
-    
-  //   // Should show validation error with a more flexible matcher
-  //   await waitFor(() => {
-  //     const errorElement = screen.queryByText((content, element) => {
-  //       return Boolean(element?.textContent?.includes('Please select model type for all folders') &&
-  //              element?.textContent?.includes('test-folder'));
-  //     });
-  //     expect(errorElement).toBeInTheDocument();
-  //   });
-  // });
+
 
   it('handles multiple upload failures', async () => {
     render(<PipelineUploader onBack={mockOnBack} />);
@@ -870,6 +991,84 @@ describe('PipelineUploader', () => {
 
   // Additional tests for 100% coverage
 
+  it('handles modal height calculation with many progress messages', async () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    // Add a folder
+    const pipelineInput = document.querySelector('input[type="file"]');
+    const mockFile = new File(['test content'], 'test.txt');
+    Object.defineProperty(mockFile, 'webkitRelativePath', {
+      value: 'test-folder/test.txt',
+      writable: false,
+      enumerable: false,
+      configurable: false
+    });
+    fireEvent.change(pipelineInput!, { target: { files: [mockFile] } });
+    
+    // Close modal
+    const closeButton = await screen.findByText('Close');
+    fireEvent.click(closeButton);
+    await waitFor(() => {
+      expect(screen.queryByText('Close')).not.toBeInTheDocument();
+    });
+    
+    // Set model type
+    const folderModelTypeSelect = screen.getByDisplayValue('Select Model Type');
+    fireEvent.change(folderModelTypeSelect, { target: { value: 'classification' } });
+    
+    // Submit form
+    const submitButton = screen.getByText('UPLOAD 1 PIPELINE');
+    fireEvent.click(submitButton);
+    
+    // Should show uploading progress
+    expect(screen.getByText('Uploading...')).toBeInTheDocument();
+    
+    // Get the success callback and call it
+    const onSuccessCallback = mockMutate.mock.calls[0][1].onSuccess;
+    onSuccessCallback();
+    
+    // Should show success message with progress
+    await waitFor(() => {
+      expect(screen.getByText(/Upload completed: 1 successful, 0 failed/)).toBeInTheDocument();
+    });
+  });
+
+  it('handles files with webkitRelativePath that has only filename', () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    const pipelineInput = document.querySelector('input[type="file"]');
+    const mockFile = new File(['test content'], 'test.txt');
+    Object.defineProperty(mockFile, 'webkitRelativePath', {
+      value: 'test.txt', // Just filename, no folder
+      writable: false,
+      enumerable: false,
+      configurable: false
+    });
+    
+    fireEvent.change(pipelineInput!, { target: { files: [mockFile] } });
+    
+    // Should show the file in a folder (the component groups single files)
+    expect(screen.getByText('📁 test.txt')).toBeInTheDocument();
+  });
+
+  it('handles files with webkitRelativePath that has multiple slashes', () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    const pipelineInput = document.querySelector('input[type="file"]');
+    const mockFile = new File(['test content'], 'test.txt');
+    Object.defineProperty(mockFile, 'webkitRelativePath', {
+      value: 'folder/subfolder/deep/test.txt', // Multiple levels
+      writable: false,
+      enumerable: false,
+      configurable: false
+    });
+    
+    fireEvent.change(pipelineInput!, { target: { files: [mockFile] } });
+    
+    // Should show the root folder
+    expect(screen.getByText('📁 folder')).toBeInTheDocument();
+  });
+
   it('handles drop event with directory entries', async () => {
     render(<PipelineUploader onBack={mockOnBack} />);
     
@@ -973,6 +1172,121 @@ describe('PipelineUploader', () => {
     await waitFor(() => {
       expect(screen.getByText('📁 test-directory')).toBeInTheDocument();
     });
+  });
+
+  it('handles drop event with directory entries that have both files and subdirectories', async () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    const uploadArea = screen.getByText(/Drag & drop folders/).closest('div');
+    
+    // Mock subdirectory entry
+    const mockSubDirectoryEntry = {
+      isFile: false,
+      isDirectory: true,
+      name: 'subdir',
+      createReader: () => ({
+        readEntries: (callback: (entries: any[]) => void) => {
+          callback([
+            {
+              isFile: true,
+              isDirectory: false,
+              name: 'subfile.txt',
+              file: (callback: (file: File) => void) => {
+                const mockFile = new File(['test content'], 'subfile.txt');
+                callback(mockFile);
+              }
+            }
+          ]);
+        }
+      })
+    };
+    
+    // Mock file entry
+    const mockFileEntry = {
+      isFile: true,
+      isDirectory: false,
+      name: 'rootfile.txt',
+      file: (callback: (file: File) => void) => {
+        const mockFile = new File(['test content'], 'rootfile.txt');
+        callback(mockFile);
+      }
+    };
+    
+    const mockDirectoryEntry = {
+      isFile: false,
+      isDirectory: true,
+      name: 'test-directory',
+      createReader: () => ({
+        readEntries: (callback: (entries: any[]) => void) => {
+          callback([mockSubDirectoryEntry, mockFileEntry]);
+        }
+      })
+    };
+    
+    const mockDropEvent = {
+      preventDefault: jest.fn(),
+      dataTransfer: {
+        items: [
+          { 
+            kind: 'file',
+            webkitGetAsEntry: () => mockDirectoryEntry
+          }
+        ]
+      }
+    };
+    
+    fireEvent.drop(uploadArea!, mockDropEvent);
+    
+    // Should show the directory folder
+    await waitFor(() => {
+      expect(screen.getByText('📁 test-directory')).toBeInTheDocument();
+    });
+  });
+
+  it('handles drop event with directory entries that have empty subdirectories', async () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    const uploadArea = screen.getByText(/Drag & drop folders/).closest('div');
+    
+    // Mock empty subdirectory entry
+    const mockEmptySubDirectoryEntry = {
+      isFile: false,
+      isDirectory: true,
+      name: 'empty-subdir',
+      createReader: () => ({
+        readEntries: (callback: (entries: any[]) => void) => {
+          callback([]); // Empty directory
+        }
+      })
+    };
+    
+    const mockDirectoryEntry = {
+      isFile: false,
+      isDirectory: true,
+      name: 'test-directory',
+      createReader: () => ({
+        readEntries: (callback: (entries: any[]) => void) => {
+          callback([mockEmptySubDirectoryEntry]);
+        }
+      })
+    };
+    
+    const mockDropEvent = {
+      preventDefault: jest.fn(),
+      dataTransfer: {
+        items: [
+          { 
+            kind: 'file',
+            webkitGetAsEntry: () => mockDirectoryEntry
+          }
+        ]
+      }
+    };
+    
+    fireEvent.drop(uploadArea!, mockDropEvent);
+    
+    // Should not show any folders since empty directories don't create folders
+    expect(screen.queryByText(/📁/)).not.toBeInTheDocument();
   });
 
   it('handles files with empty webkitRelativePath', () => {
@@ -1131,6 +1445,31 @@ describe('PipelineUploader', () => {
     expect(screen.queryByText(/📁/)).not.toBeInTheDocument();
   });
 
+  it('handles file input change with empty FileList', () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    const pipelineInput = document.querySelector('input[type="file"]');
+    
+    // Test with empty FileList
+    fireEvent.change(pipelineInput!, { target: { files: [] } });
+    
+    // Should not show any folders
+    expect(screen.queryByText(/📁/)).not.toBeInTheDocument();
+  });
+
+  it('handles file input change with files that have no webkitRelativePath', () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    const pipelineInput = document.querySelector('input[type="file"]');
+    const mockFile = new File(['test content'], 'test.txt');
+    // Don't add webkitRelativePath property
+    
+    fireEvent.change(pipelineInput!, { target: { files: [mockFile] } });
+    
+    // Should not show any folders since files without webkitRelativePath are ignored
+    expect(screen.queryByText(/📁/)).not.toBeInTheDocument();
+  });
+
   it('handles file input change that clears the input value', () => {
     render(<PipelineUploader onBack={mockOnBack} />);
     
@@ -1282,6 +1621,110 @@ describe('PipelineUploader', () => {
     expect(screen.getByText('📁 test.txt')).toBeInTheDocument();
   });
 
+  it('handles drop event with files that have no entry', () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    const uploadArea = screen.getByText(/Drag & drop folders/).closest('div');
+    
+    const mockDropEvent = {
+      preventDefault: jest.fn(),
+      dataTransfer: {
+        items: [
+          { 
+            kind: 'file',
+            webkitGetAsEntry: () => null,
+            getAsFile: () => null
+          }
+        ]
+      }
+    };
+    
+    fireEvent.drop(uploadArea!, mockDropEvent);
+    
+    // Should not show any folders since no valid files were processed
+    expect(screen.queryByText(/📁/)).not.toBeInTheDocument();
+  });
+
+  it('handles drop event with files that have no getAsFile method', () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    const uploadArea = screen.getByText(/Drag & drop folders/).closest('div');
+    
+    const mockDropEvent = {
+      preventDefault: jest.fn(),
+      dataTransfer: {
+        items: [
+          { 
+            kind: 'file',
+            webkitGetAsEntry: () => ({ isFile: true, isDirectory: false }),
+            getAsFile: () => null // Returns null
+          }
+        ]
+      }
+    };
+    
+    fireEvent.drop(uploadArea!, mockDropEvent);
+    
+    // Should not show any folders since no valid files were processed
+    expect(screen.queryByText(/📁/)).not.toBeInTheDocument();
+  });
+
+  it('handles drop event with mixed file and directory items', async () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    const uploadArea = screen.getByText(/Drag & drop folders/).closest('div');
+    
+    // Mock directory entry
+    const mockDirectoryEntry = {
+      isFile: false,
+      isDirectory: true,
+      name: 'test-directory',
+      createReader: () => ({
+        readEntries: (callback: (entries: any[]) => void) => {
+          callback([
+            {
+              isFile: true,
+              isDirectory: false,
+              name: 'test.txt',
+              file: (callback: (file: File) => void) => {
+                const mockFile = new File(['test content'], 'test.txt');
+                callback(mockFile);
+              }
+            }
+          ]);
+        }
+      })
+    };
+    
+    // Mock individual file
+    const mockFile = new File(['test content'], 'individual.txt');
+    
+    const mockDropEvent = {
+      preventDefault: jest.fn(),
+      dataTransfer: {
+        items: [
+          { 
+            kind: 'file',
+            webkitGetAsEntry: () => mockDirectoryEntry
+          },
+          { 
+            kind: 'file',
+            webkitGetAsEntry: () => ({ isFile: true, isDirectory: false }),
+            getAsFile: () => mockFile
+          }
+        ]
+      }
+    };
+    
+    fireEvent.drop(uploadArea!, mockDropEvent);
+    
+    // Should show both the directory and the individual file
+    await waitFor(() => {
+      expect(screen.getByText('📁 test-directory')).toBeInTheDocument();
+      expect(screen.getByText('📁 individual.txt')).toBeInTheDocument();
+    });
+  });
+
   it('handles validation error for empty folder names', async () => {
     render(<PipelineUploader onBack={mockOnBack} />);
     
@@ -1317,6 +1760,8 @@ describe('PipelineUploader', () => {
       expect(screen.getByText(/All folders must have valid names/)).toBeInTheDocument();
     });
   });
+
+
 
   it('handles upload error with string error', async () => {
     render(<PipelineUploader onBack={mockOnBack} />);
@@ -1435,6 +1880,84 @@ describe('PipelineUploader', () => {
     });
   });
 
+  it('handles upload error with object that has non-string message property', async () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    // Add a folder
+    const pipelineInput = document.querySelector('input[type="file"]');
+    const mockFile = new File(['test content'], 'test.txt');
+    Object.defineProperty(mockFile, 'webkitRelativePath', {
+      value: 'test-folder/test.txt',
+      writable: false,
+      enumerable: false,
+      configurable: false
+    });
+    fireEvent.change(pipelineInput!, { target: { files: [mockFile] } });
+    
+    // Close modal
+    const closeButton = await screen.findByText('Close');
+    fireEvent.click(closeButton);
+    await waitFor(() => {
+      expect(screen.queryByText('Close')).not.toBeInTheDocument();
+    });
+    
+    // Set model type
+    const folderModelTypeSelect = screen.getByDisplayValue('Select Model Type');
+    fireEvent.change(folderModelTypeSelect, { target: { value: 'classification' } });
+    
+    // Submit form
+    const submitButton = screen.getByText('UPLOAD 1 PIPELINE');
+    fireEvent.click(submitButton);
+    
+    // Get the error callback and call it with object that has non-string message
+    const onErrorCallback = mockMutate.mock.calls[0][1].onError;
+    onErrorCallback({ message: 123 }); // Non-string message
+    
+    // Should show error message
+    await waitFor(() => {
+      expect(screen.getByText(/test-folder: Unknown error/)).toBeInTheDocument();
+    });
+  });
+
+  it('handles upload error with object that has no message property', async () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    // Add a folder
+    const pipelineInput = document.querySelector('input[type="file"]');
+    const mockFile = new File(['test content'], 'test.txt');
+    Object.defineProperty(mockFile, 'webkitRelativePath', {
+      value: 'test-folder/test.txt',
+      writable: false,
+      enumerable: false,
+      configurable: false
+    });
+    fireEvent.change(pipelineInput!, { target: { files: [mockFile] } });
+    
+    // Close modal
+    const closeButton = await screen.findByText('Close');
+    fireEvent.click(closeButton);
+    await waitFor(() => {
+      expect(screen.queryByText('Close')).not.toBeInTheDocument();
+    });
+    
+    // Set model type
+    const folderModelTypeSelect = screen.getByDisplayValue('Select Model Type');
+    fireEvent.change(folderModelTypeSelect, { target: { value: 'classification' } });
+    
+    // Submit form
+    const submitButton = screen.getByText('UPLOAD 1 PIPELINE');
+    fireEvent.click(submitButton);
+    
+    // Get the error callback and call it with object that has no message property
+    const onErrorCallback = mockMutate.mock.calls[0][1].onError;
+    onErrorCallback({ customError: 'Custom error object' });
+    
+    // Should show error message
+    await waitFor(() => {
+      expect(screen.getByText(/test-folder: Unknown error/)).toBeInTheDocument();
+    });
+  });
+
   it('resets file input after upload', async () => {
     render(<PipelineUploader onBack={mockOnBack} />);
     
@@ -1523,6 +2046,47 @@ describe('PipelineUploader', () => {
     expect(screen.getByText(/📁/)).toBeInTheDocument();
   });
 
+  // Test to cover the remaining uncovered lines by testing specific error scenarios
+  it('handles upload error with null error object', async () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    // Add a folder
+    const pipelineInput = document.querySelector('input[type="file"]');
+    const mockFile = new File(['test content'], 'test.txt');
+    Object.defineProperty(mockFile, 'webkitRelativePath', {
+      value: 'test-folder/test.txt',
+      writable: false,
+      enumerable: false,
+      configurable: false
+    });
+    fireEvent.change(pipelineInput!, { target: { files: [mockFile] } });
+    
+    // Close modal
+    const closeButton = await screen.findByText('Close');
+    fireEvent.click(closeButton);
+    await waitFor(() => {
+      expect(screen.queryByText('Close')).not.toBeInTheDocument();
+    });
+    
+    // Set model type
+    const modelTypeSelect = screen.getByDisplayValue('Select Model Type');
+    fireEvent.change(modelTypeSelect, { target: { value: 'classification' } });
+    
+    // Mock the upload to fail with null error
+    mockMutate.mockImplementation((formData, options) => {
+      options.onError(null);
+    });
+    
+    // Submit form
+    const submitButton = screen.getByText('UPLOAD 1 PIPELINE');
+    fireEvent.click(submitButton);
+    
+    // Should show error message
+    await waitFor(() => {
+      expect(screen.getByText(/test-folder: Unknown error/)).toBeInTheDocument();
+    });
+  });
+
   // Test to cover lines 267-268 (error handling for upload failures)
   it('handles upload error with object error', async () => {
     render(<PipelineUploader onBack={mockOnBack} />);
@@ -1608,10 +2172,177 @@ describe('PipelineUploader', () => {
     });
   });
 
-  // Test to cover line 557 (global model type selection logic)
-  // Commented out due to the global model type selection logic not working as expected in tests
-  // We've achieved excellent coverage (96.99% statement, 97.16% line) without this test
-  /*
+  // Test to cover error handling with non-Error object that has message property
+  it('handles upload error with object that has message property', async () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    // Add a folder
+    const pipelineInput = document.querySelector('input[type="file"]');
+    const mockFile = new File(['test content'], 'test.txt');
+    Object.defineProperty(mockFile, 'webkitRelativePath', {
+      value: 'test-folder/test.txt',
+      writable: false,
+      enumerable: false,
+      configurable: false
+    });
+    fireEvent.change(pipelineInput!, { target: { files: [mockFile] } });
+    
+    // Close modal
+    const closeButton = await screen.findByText('Close');
+    fireEvent.click(closeButton);
+    await waitFor(() => {
+      expect(screen.queryByText('Close')).not.toBeInTheDocument();
+    });
+    
+    // Set model type
+    const modelTypeSelect = screen.getByDisplayValue('Select Model Type');
+    fireEvent.change(modelTypeSelect, { target: { value: 'classification' } });
+    
+    // Mock the upload to fail with an object that has message property
+    mockMutate.mockImplementation((formData, options) => {
+      // Simulate error with object that has message property
+      const errorObj = { message: 'Object with message property' };
+      options.onError(errorObj);
+    });
+    
+    // Submit form
+    const submitButton = screen.getByText('UPLOAD 1 PIPELINE');
+    fireEvent.click(submitButton);
+    
+    // Should show error message
+    await waitFor(() => {
+      expect(screen.getByText(/test-folder: Object with message property/)).toBeInTheDocument();
+    });
+  });
+
+  // Test to cover error handling with object that has non-string message property
+  it('handles upload error with object that has non-string message property', async () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    // Add a folder
+    const pipelineInput = document.querySelector('input[type="file"]');
+    const mockFile = new File(['test content'], 'test.txt');
+    Object.defineProperty(mockFile, 'webkitRelativePath', {
+      value: 'test-folder/test.txt',
+      writable: false,
+      enumerable: false,
+      configurable: false
+    });
+    fireEvent.change(pipelineInput!, { target: { files: [mockFile] } });
+    
+    // Close modal
+    const closeButton = await screen.findByText('Close');
+    fireEvent.click(closeButton);
+    await waitFor(() => {
+      expect(screen.queryByText('Close')).not.toBeInTheDocument();
+    });
+    
+    // Set model type
+    const modelTypeSelect = screen.getByDisplayValue('Select Model Type');
+    fireEvent.change(modelTypeSelect, { target: { value: 'classification' } });
+    
+    // Mock the upload to fail with an object that has non-string message property
+    mockMutate.mockImplementation((formData, options) => {
+      // Simulate error with object that has non-string message property
+      const errorObj = { message: 123 }; // Non-string message
+      options.onError(errorObj);
+    });
+    
+    // Submit form
+    const submitButton = screen.getByText('UPLOAD 1 PIPELINE');
+    fireEvent.click(submitButton);
+    
+    // Should show error message
+    await waitFor(() => {
+      expect(screen.getByText(/test-folder: Unknown error/)).toBeInTheDocument();
+    });
+  });
+
+  // Test to cover error handling with object that has no message property
+  it('handles upload error with object that has no message property', async () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    // Add a folder
+    const pipelineInput = document.querySelector('input[type="file"]');
+    const mockFile = new File(['test content'], 'test.txt');
+    Object.defineProperty(mockFile, 'webkitRelativePath', {
+      value: 'test-folder/test.txt',
+      writable: false,
+      enumerable: false,
+      configurable: false
+    });
+    fireEvent.change(pipelineInput!, { target: { files: [mockFile] } });
+    
+    // Close modal
+    const closeButton = await screen.findByText('Close');
+    fireEvent.click(closeButton);
+    await waitFor(() => {
+      expect(screen.queryByText('Close')).not.toBeInTheDocument();
+    });
+    
+    // Set model type
+    const modelTypeSelect = screen.getByDisplayValue('Select Model Type');
+    fireEvent.change(modelTypeSelect, { target: { value: 'classification' } });
+    
+    // Mock the upload to fail with an object that has no message property
+    mockMutate.mockImplementation((formData, options) => {
+      // Simulate error with object that has no message property
+      const errorObj = { customError: 'Custom error object' };
+      options.onError(errorObj);
+    });
+    
+    // Submit form
+    const submitButton = screen.getByText('UPLOAD 1 PIPELINE');
+    fireEvent.click(submitButton);
+    
+    // Should show error message
+    await waitFor(() => {
+      expect(screen.getByText(/test-folder: Unknown error/)).toBeInTheDocument();
+    });
+  });
+
+  // Test to cover lines 360-362 (error handling for different error types)
+  it('handles upload error with string error', async () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    // Add a folder
+    const pipelineInput = document.querySelector('input[type="file"]');
+    const mockFile = new File(['test content'], 'test.txt');
+    Object.defineProperty(mockFile, 'webkitRelativePath', {
+      value: 'test-folder/test.txt',
+      writable: false,
+      enumerable: false,
+      configurable: false
+    });
+    fireEvent.change(pipelineInput!, { target: { files: [mockFile] } });
+    
+    // Close modal
+    const closeButton = await screen.findByText('Close');
+    fireEvent.click(closeButton);
+    await waitFor(() => {
+      expect(screen.queryByText('Close')).not.toBeInTheDocument();
+    });
+    
+    // Set model type
+    const modelTypeSelect = screen.getByDisplayValue('Select Model Type');
+    fireEvent.change(modelTypeSelect, { target: { value: 'classification' } });
+    
+    // Mock the upload to fail with a string error
+    mockMutate.mockImplementation((formData, options) => {
+      // Simulate error with string error
+      options.onError('String error message');
+    });
+    
+    // Submit form
+    const submitButton = screen.getByText('UPLOAD 1 PIPELINE');
+    fireEvent.click(submitButton);
+    
+    // Should show error message
+    await waitFor(() => {
+      expect(screen.getByText(/test-folder: String error message/)).toBeInTheDocument();
+    });
+  });
+
   it('updates global model type for folders with empty modelType', async () => {
     render(<PipelineUploader onBack={mockOnBack} />);
     
@@ -1637,18 +2368,508 @@ describe('PipelineUploader', () => {
     const defaultModelTypeSelect = screen.getByDisplayValue('Select default model type');
     fireEvent.change(defaultModelTypeSelect, { target: { value: 'classification' } });
     
-    // The folder should be visible
-    expect(screen.getByText(/📁/)).toBeInTheDocument();
+    // The folder should be visible and the global model type should be set
+    expect(screen.getByText('📁 test-folder')).toBeInTheDocument();
+    expect(defaultModelTypeSelect).toHaveValue('classification');
+  });
+
+  it('does not update global model type for folders that already have model type', async () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
     
-    // Change the folder model type to something else
+    // Add a folder first
+    const pipelineInput = document.querySelector('input[type="file"]');
+    const mockFile = new File(['test content'], 'test.txt');
+    Object.defineProperty(mockFile, 'webkitRelativePath', {
+      value: 'test-folder/test.txt',
+      writable: false,
+      enumerable: false,
+      configurable: false
+    });
+    fireEvent.change(pipelineInput!, { target: { files: [mockFile] } });
+    
+    // Close modal
+    const closeButton = await screen.findByText('Close');
+    fireEvent.click(closeButton);
+    await waitFor(() => {
+      expect(screen.queryByText('Close')).not.toBeInTheDocument();
+    });
+    
+    // Set individual model type first
     const folderModelTypeSelect = screen.getByDisplayValue('Select Model Type');
     fireEvent.change(folderModelTypeSelect, { target: { value: 'regression' } });
     
-    // Now set global model type again - this should NOT update the folder since it has a model type
-    fireEvent.change(defaultModelTypeSelect, { target: { value: 'uplift' } });
+    // Verify individual model type is set
+    expect(folderModelTypeSelect).toHaveValue('regression');
     
-    // The folder should still be visible
-    expect(screen.getByText(/📁/)).toBeInTheDocument();
+    // Now set global model type - it should not affect the individual folder
+    const defaultModelTypeSelect = screen.getByDisplayValue('Select default model type');
+    fireEvent.change(defaultModelTypeSelect, { target: { value: 'classification' } });
+    
+    // The folder should keep its individual model type
+    expect(folderModelTypeSelect).toHaveValue('regression');
   });
-  */
+
+  // Test to cover the specific error handling branches (lines 267-268)
+  it('handles upload error with object that has message property but not instanceof Error', async () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    // Add a folder
+    const pipelineInput = document.querySelector('input[type="file"]');
+    const mockFile = new File(['test content'], 'test.txt');
+    Object.defineProperty(mockFile, 'webkitRelativePath', {
+      value: 'test-folder/test.txt',
+      writable: false,
+      enumerable: false,
+      configurable: false
+    });
+    fireEvent.change(pipelineInput!, { target: { files: [mockFile] } });
+    
+    // Close modal
+    const closeButton = await screen.findByText('Close');
+    fireEvent.click(closeButton);
+    await waitFor(() => {
+      expect(screen.queryByText('Close')).not.toBeInTheDocument();
+    });
+    
+    // Set model type
+    const modelTypeSelect = screen.getByDisplayValue('Select Model Type');
+    fireEvent.change(modelTypeSelect, { target: { value: 'classification' } });
+    
+    // Mock the upload to fail with an object that has message property but is not an Error instance
+    mockMutate.mockImplementation((formData, options) => {
+      const errorObj = { message: 'Custom error message' };
+      // This object has a message property but is not an Error instance
+      options.onError(errorObj);
+    });
+    
+    // Submit form
+    const submitButton = screen.getByText('UPLOAD 1 PIPELINE');
+    fireEvent.click(submitButton);
+    
+    // Should show error message
+    await waitFor(() => {
+      expect(screen.getByText(/test-folder: Custom error message/)).toBeInTheDocument();
+    });
+  });
+
+  // Test to cover the console.log branch for files > 5 (line 297)
+  it('logs console message when there are more than 5 files', async () => {
+    const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+    
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    // Add a folder with more than 5 files
+    const pipelineInput = document.querySelector('input[type="file"]');
+    const mockFiles = Array.from({ length: 7 }, (_, i) => {
+      const mockFile = new File([`content${i}`], `file${i}.txt`);
+      Object.defineProperty(mockFile, 'webkitRelativePath', {
+        value: `test-folder/file${i}.txt`,
+        writable: false,
+        enumerable: false,
+        configurable: false
+      });
+      return mockFile;
+    });
+    
+    fireEvent.change(pipelineInput!, { target: { files: mockFiles } });
+    
+    // Close modal
+    const closeButton = await screen.findByText('Close');
+    fireEvent.click(closeButton);
+    await waitFor(() => {
+      expect(screen.queryByText('Close')).not.toBeInTheDocument();
+    });
+    
+    // Set model type
+    const modelTypeSelect = screen.getByDisplayValue('Select Model Type');
+    fireEvent.change(modelTypeSelect, { target: { value: 'classification' } });
+    
+    // Mock successful upload
+    mockMutate.mockImplementation((formData, options) => {
+      options.onSuccess({ success: true });
+    });
+    
+    // Submit form
+    const submitButton = screen.getByText('UPLOAD 1 PIPELINE');
+    fireEvent.click(submitButton);
+    
+    // Wait for upload to complete
+    await waitFor(() => {
+      expect(screen.getByText(/Upload completed: 1 successful, 0 failed/)).toBeInTheDocument();
+    });
+    
+    // Verify console.log was called for files > 5
+    expect(consoleSpy).toHaveBeenCalledWith('... and 2 more files');
+    
+    consoleSpy.mockRestore();
+  });
+
+  // Test to cover the error handling branches in handleSubmit (lines 360-362)
+  it('handles upload error in handleSubmit with non-Error object', async () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    // Add a folder
+    const pipelineInput = document.querySelector('input[type="file"]');
+    const mockFile = new File(['test content'], 'test.txt');
+    Object.defineProperty(mockFile, 'webkitRelativePath', {
+      value: 'test-folder/test.txt',
+      writable: false,
+      enumerable: false,
+      configurable: false
+    });
+    fireEvent.change(pipelineInput!, { target: { files: [mockFile] } });
+    
+    // Close modal
+    const closeButton = await screen.findByText('Close');
+    fireEvent.click(closeButton);
+    await waitFor(() => {
+      expect(screen.queryByText('Close')).not.toBeInTheDocument();
+    });
+    
+    // Set model type
+    const modelTypeSelect = screen.getByDisplayValue('Select Model Type');
+    fireEvent.change(modelTypeSelect, { target: { value: 'classification' } });
+    
+    // Mock the upload to fail with a non-Error object
+    mockMutate.mockImplementation((formData, options) => {
+      const errorObj = { customError: 'Custom error object' };
+      options.onError(errorObj);
+    });
+    
+    // Submit form
+    const submitButton = screen.getByText('UPLOAD 1 PIPELINE');
+    fireEvent.click(submitButton);
+    
+    // Should show error message with "Unknown error" since it's not an Error instance
+    await waitFor(() => {
+      expect(screen.getByText(/test-folder: Unknown error/)).toBeInTheDocument();
+    });
+  });
+
+  // Test to cover the modal display branch (line 513)
+  it('displays modal with correct height calculation when there are many progress messages', async () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    // Add multiple folders to trigger many progress messages
+    const pipelineInput = document.querySelector('input[type="file"]');
+    const mockFiles = Array.from({ length: 10 }, (_, i) => {
+      const mockFile = new File([`content${i}`], `file${i}.txt`);
+      Object.defineProperty(mockFile, 'webkitRelativePath', {
+        value: `folder${i}/file${i}.txt`,
+        writable: false,
+        enumerable: false,
+        configurable: false
+      });
+      return mockFile;
+    });
+    
+    fireEvent.change(pipelineInput!, { target: { files: mockFiles } });
+    
+    // Close modal
+    const closeButton = await screen.findByText('Close');
+    fireEvent.click(closeButton);
+    await waitFor(() => {
+      expect(screen.queryByText('Close')).not.toBeInTheDocument();
+    });
+    
+    // Set model types for all folders
+    const modelTypeSelects = screen.getAllByDisplayValue('Select Model Type');
+    modelTypeSelects.forEach(select => {
+      fireEvent.change(select, { target: { value: 'classification' } });
+    });
+    
+    // Mock successful uploads
+    mockMutate.mockImplementation((formData, options) => {
+      options.onSuccess({ success: true });
+    });
+    
+    // Submit form
+    const submitButton = screen.getByText('UPLOAD 10 PIPELINES');
+    fireEvent.click(submitButton);
+    
+    // Wait for upload to complete and modal to show
+    await waitFor(() => {
+      expect(screen.getByText(/Upload completed: 10 successful, 0 failed/)).toBeInTheDocument();
+    });
+    
+    // Verify modal is displayed with progress messages
+    expect(screen.getByText('Close')).toBeInTheDocument();
+  });
+
+  // Test to cover the pathParts logic branch (lines 267-268)
+  it('handles files with deep nested folder structure to cover pathParts logic', async () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    // Add a folder with deep nested structure (more than 2 path parts)
+    const pipelineInput = document.querySelector('input[type="file"]');
+    const mockFile = new File(['test content'], 'test.txt');
+    Object.defineProperty(mockFile, 'webkitRelativePath', {
+      value: 'test-folder/subfolder1/subfolder2/deep/nested/test.txt', // 5 path parts
+      writable: false,
+      enumerable: false,
+      configurable: false
+    });
+    
+    fireEvent.change(pipelineInput!, { target: { files: [mockFile] } });
+    
+    // Close modal
+    const closeButton = await screen.findByText('Close');
+    fireEvent.click(closeButton);
+    await waitFor(() => {
+      expect(screen.queryByText('Close')).not.toBeInTheDocument();
+    });
+    
+    // Set model type
+    const modelTypeSelect = screen.getByDisplayValue('Select Model Type');
+    fireEvent.change(modelTypeSelect, { target: { value: 'classification' } });
+    
+    // Mock successful upload
+    mockMutate.mockImplementation((formData, options) => {
+      options.onSuccess({ success: true });
+    });
+    
+    // Submit form
+    const submitButton = screen.getByText('UPLOAD 1 PIPELINE');
+    fireEvent.click(submitButton);
+    
+    // Wait for upload to complete
+    await waitFor(() => {
+      expect(screen.getByText(/Upload completed: 1 successful, 0 failed/)).toBeInTheDocument();
+    });
+  });
+
+  // Test to cover the error handling branch in handleSubmit (lines 360-362)
+  it('handles upload error in handleSubmit with non-Error object to cover error handling branch', async () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    // Add a folder
+    const pipelineInput = document.querySelector('input[type="file"]');
+    const mockFile = new File(['test content'], 'test.txt');
+    Object.defineProperty(mockFile, 'webkitRelativePath', {
+      value: 'test-folder/test.txt',
+      writable: false,
+      enumerable: false,
+      configurable: false
+    });
+    fireEvent.change(pipelineInput!, { target: { files: [mockFile] } });
+    
+    // Close modal
+    const closeButton = await screen.findByText('Close');
+    fireEvent.click(closeButton);
+    await waitFor(() => {
+      expect(screen.queryByText('Close')).not.toBeInTheDocument();
+    });
+    
+    // Set model type
+    const modelTypeSelect = screen.getByDisplayValue('Select Model Type');
+    fireEvent.change(modelTypeSelect, { target: { value: 'classification' } });
+    
+    // Mock the upload to fail with a non-Error object (this triggers the else branch in error handling)
+    mockMutate.mockImplementation((formData, options) => {
+      const errorObj = { customError: 'Custom error object' };
+      options.onError(errorObj);
+    });
+    
+    // Submit form
+    const submitButton = screen.getByText('UPLOAD 1 PIPELINE');
+    fireEvent.click(submitButton);
+    
+    // Should show error message with "Unknown error" since it's not an Error instance
+    await waitFor(() => {
+      expect(screen.getByText(/test-folder: Unknown error/)).toBeInTheDocument();
+    });
+  });
+
+  // Test to cover the error handling branch in catch block (lines 360-362)
+  it('handles upload error in catch block with non-Error object', async () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    // Add a folder
+    const pipelineInput = document.querySelector('input[type="file"]');
+    const mockFile = new File(['test content'], 'test.txt');
+    Object.defineProperty(mockFile, 'webkitRelativePath', {
+      value: 'test-folder/test.txt',
+      writable: false,
+      enumerable: false,
+      configurable: false
+    });
+    fireEvent.change(pipelineInput!, { target: { files: [mockFile] } });
+    
+    // Close modal
+    const closeButton = await screen.findByText('Close');
+    fireEvent.click(closeButton);
+    await waitFor(() => {
+      expect(screen.queryByText('Close')).not.toBeInTheDocument();
+    });
+    
+    // Set model type
+    const modelTypeSelect = screen.getByDisplayValue('Select Model Type');
+    fireEvent.change(modelTypeSelect, { target: { value: 'classification' } });
+    
+    // Mock the upload to fail with a non-Error object (this triggers the else branch in catch block)
+    mockMutate.mockImplementation((formData, options) => {
+      // Simulate a non-Error object being thrown
+      const nonErrorObject = { customError: 'Custom error object' };
+      options.onError(nonErrorObject);
+    });
+    
+    // Submit form
+    const submitButton = screen.getByText('UPLOAD 1 PIPELINE');
+    fireEvent.click(submitButton);
+    
+    // Should show error message with "Unknown error" since it's not an Error instance
+    await waitFor(() => {
+      expect(screen.getByText(/test-folder: Unknown error/)).toBeInTheDocument();
+    });
+  });
+
+  // Test to cover the modal height calculation branch (line 513)
+  it('displays modal with height calculation when uploadProgress has items', async () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    // Add a folder
+    const pipelineInput = document.querySelector('input[type="file"]');
+    const mockFile = new File(['test content'], 'test.txt');
+    Object.defineProperty(mockFile, 'webkitRelativePath', {
+      value: 'test-folder/test.txt',
+      writable: false,
+      enumerable: false,
+      configurable: false
+    });
+    fireEvent.change(pipelineInput!, { target: { files: [mockFile] } });
+    
+    // Close modal
+    const closeButton = await screen.findByText('Close');
+    fireEvent.click(closeButton);
+    await waitFor(() => {
+      expect(screen.queryByText('Close')).not.toBeInTheDocument();
+    });
+    
+    // Set model type
+    const modelTypeSelect = screen.getByDisplayValue('Select Model Type');
+    fireEvent.change(modelTypeSelect, { target: { value: 'classification' } });
+    
+    // Mock successful upload
+    mockMutate.mockImplementation((formData, options) => {
+      options.onSuccess({ success: true });
+    });
+    
+    // Submit form
+    const submitButton = screen.getByText('UPLOAD 1 PIPELINE');
+    fireEvent.click(submitButton);
+    
+    // Wait for upload to complete and modal to show with progress messages
+    await waitFor(() => {
+      expect(screen.getByText(/Upload completed: 1 successful, 0 failed/)).toBeInTheDocument();
+    });
+    
+    // Verify modal is displayed (this covers the height calculation branch)
+    expect(screen.getByText('Close')).toBeInTheDocument();
+  });
+
+  // Test to cover the catch block error handling (lines 360-362)
+  it('handles catch block with non-Error object to cover error handling branch', async () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    // Add a folder
+    const pipelineInput = document.querySelector('input[type="file"]');
+    const mockFile = new File(['test content'], 'test.txt');
+    Object.defineProperty(mockFile, 'webkitRelativePath', {
+      value: 'test-folder/test.txt',
+      writable: false,
+      enumerable: false,
+      configurable: false
+    });
+    fireEvent.change(pipelineInput!, { target: { files: [mockFile] } });
+    
+    // Close modal
+    const closeButton = await screen.findByText('Close');
+    fireEvent.click(closeButton);
+    await waitFor(() => {
+      expect(screen.queryByText('Close')).not.toBeInTheDocument();
+    });
+    
+    // Set model type
+    const modelTypeSelect = screen.getByDisplayValue('Select Model Type');
+    fireEvent.change(modelTypeSelect, { target: { value: 'classification' } });
+    
+    // Mock the upload to fail by throwing a non-Error object
+    mockMutate.mockImplementation((formData, options) => {
+      // This will cause the catch block to receive a non-Error object
+      throw { customError: 'Custom error object' };
+    });
+    
+    // Submit form
+    const submitButton = screen.getByText('UPLOAD 1 PIPELINE');
+    fireEvent.click(submitButton);
+    
+    // Should show error message with "Unknown error" since it's not an Error instance
+    await waitFor(() => {
+      expect(screen.getByText(/test-folder: Unknown error/)).toBeInTheDocument();
+    });
+  });
+
+  // Test to cover the exact catch block error handling (lines 360-362)
+  it('triggers exact catch block with non-Error object', async () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    // Add a folder
+    const pipelineInput = document.querySelector('input[type="file"]');
+    const mockFile = new File(['test content'], 'test.txt');
+    Object.defineProperty(mockFile, 'webkitRelativePath', {
+      value: 'test-folder/test.txt',
+      writable: false,
+      enumerable: false,
+      configurable: false
+    });
+    fireEvent.change(pipelineInput!, { target: { files: [mockFile] } });
+    
+    // Close modal
+    const closeButton = await screen.findByText('Close');
+    fireEvent.click(closeButton);
+    await waitFor(() => {
+      expect(screen.queryByText('Close')).not.toBeInTheDocument();
+    });
+    
+    // Set model type
+    const modelTypeSelect = screen.getByDisplayValue('Select Model Type');
+    fireEvent.change(modelTypeSelect, { target: { value: 'classification' } });
+    
+    // Mock the mutate to throw a non-Error object directly
+    mockMutate.mockImplementation(() => {
+      throw { customError: 'Custom error object' };
+    });
+    
+    // Submit form
+    const submitButton = screen.getByText('UPLOAD 1 PIPELINE');
+    fireEvent.click(submitButton);
+    
+    // Should show error message with "Unknown error" since it's not an Error instance
+    await waitFor(() => {
+      expect(screen.getByText(/test-folder: Unknown error/)).toBeInTheDocument();
+    });
+  });
+
+  // Test to cover the click handler branch (line 513)
+  it('triggers click handler on upload area to cover line 513', () => {
+    render(<PipelineUploader onBack={mockOnBack} />);
+    
+    // Mock the click method on the pipelineInput element
+    const mockClick = jest.fn();
+    Object.defineProperty(document, 'getElementById', {
+      value: jest.fn(() => ({
+        click: mockClick
+      })),
+      writable: true
+    });
+    
+    // Click on the upload area
+    const uploadArea = screen.getByText(/Drag & drop folders/).closest('div');
+    fireEvent.click(uploadArea!);
+    
+    // Should trigger the click on the hidden input
+    expect(document.getElementById).toHaveBeenCalledWith('pipelineInput');
+    expect(mockClick).toHaveBeenCalled();
+  });
+
 }); 

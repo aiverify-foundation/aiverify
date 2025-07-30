@@ -11,7 +11,7 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
-// Mock the Modal component
+// Mock the Modal component with unique testids for different modals
 jest.mock('@/lib/components/modal', () => ({
   Modal: ({ 
     children, 
@@ -24,72 +24,45 @@ jest.mock('@/lib/components/modal', () => ({
     width, 
     height, 
     enableScreenOverlay 
-  }: any) => (
-    <div data-testid="modal" style={{ width, height }}>
-      <div data-testid="modal-heading">{heading}</div>
-      <button data-testid="close-button" onClick={onCloseIconClick}>
-        Close
-      </button>
-      <button data-testid="primary-button" onClick={onPrimaryBtnClick}>
-        {primaryBtnLabel}
-      </button>
-      <button data-testid="secondary-button" onClick={onSecondaryBtnClick}>
-        {secondaryBtnLabel}
-      </button>
-      <div data-testid="modal-content">{children}</div>
-      {enableScreenOverlay && <div data-testid="screen-overlay" />}
-    </div>
-  ),
+  }: any) => {
+    const isMessageModal = width === '500px' && height === '200px';
+    const isErrorModal = heading === 'Error';
+    const isLoadingModal = heading.includes('Loading');
+    
+    return (
+      <div data-testid={isMessageModal ? "message-modal" : isErrorModal ? "error-modal" : isLoadingModal ? "loading-modal" : "modal"} style={{ width, height }}>
+        <div data-testid="modal-heading">{heading}</div>
+        <button data-testid={isMessageModal ? "message-close-button" : "close-button"} onClick={onCloseIconClick}>
+          Close
+        </button>
+        <button data-testid="primary-button" onClick={onPrimaryBtnClick}>
+          {primaryBtnLabel}
+        </button>
+        <button data-testid="secondary-button" onClick={onSecondaryBtnClick}>
+          {secondaryBtnLabel}
+        </button>
+        <div data-testid="modal-content">{children}</div>
+        {enableScreenOverlay && <div data-testid="screen-overlay" />}
+      </div>
+    );
+  },
 }));
 
-// Mock the hooks
+// Mock the hooks with default values
+const mockUseMDXBundle = jest.fn();
+const mockUseMDXSummaryBundle = jest.fn();
+const mockUseSubmitInputBlockData = jest.fn();
+
 jest.mock('@/app/inputs/hooks/useMDXBundle', () => ({
-  useMDXBundle: () => ({
-    data: {
-      code: `
-        export default function TestComponent({ isEditing, data, onChangeData }) {
-          return (
-            <div>
-              <input 
-                data-testid="test-input"
-                value={data.testField || ''}
-                onChange={(e) => onChangeData('testField', e.target.value)}
-              />
-            </div>
-          );
-        }
-      `,
-    },
-    isLoading: false,
-    error: null,
-  }),
+  useMDXBundle: () => mockUseMDXBundle(),
 }));
 
 jest.mock('@/app/inputs/hooks/useMDXSummaryBundle', () => ({
-  useMDXSummaryBundle: () => ({
-    data: {
-      code: `
-        export function validate(data) {
-          return data.testField && data.testField.length > 0;
-        }
-        export function progress(data) {
-          return data.testField ? 100 : 0;
-        }
-        export function summary(data) {
-          return data.testField || '';
-        }
-      `,
-    },
-    isLoading: false,
-    error: null,
-  }),
+  useMDXSummaryBundle: () => mockUseMDXSummaryBundle(),
 }));
 
 jest.mock('@/app/inputs/hooks/useSubmitInputBlockData', () => ({
-  useSubmitInputBlockData: () => ({
-    submitInputBlockData: jest.fn().mockResolvedValue(undefined),
-    isSubmitting: false,
-  }),
+  useSubmitInputBlockData: () => mockUseSubmitInputBlockData(),
 }));
 
 // Mock mdx-bundler
@@ -120,6 +93,51 @@ describe('DynamicInputBlockModal', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    
+    // Default mock implementations
+    mockUseMDXBundle.mockReturnValue({
+      data: {
+        code: `
+          export default function TestComponent({ isEditing, data, onChangeData }) {
+            return (
+              <div>
+                <input 
+                  data-testid="test-input"
+                  value={data.testField || ''}
+                  onChange={(e) => onChangeData('testField', e.target.value)}
+                />
+              </div>
+            );
+          }
+        `,
+      },
+      isLoading: false,
+      error: null,
+    });
+
+    mockUseMDXSummaryBundle.mockReturnValue({
+      data: {
+        code: `
+          function validate(data) {
+            return data.testField && data.testField.length > 0;
+          }
+          function progress(data) {
+            return data.testField ? 100 : 0;
+          }
+          function summary(data) {
+            return data.testField || '';
+          }
+          module.exports = { validate, progress, summary };
+        `,
+      },
+      isLoading: false,
+      error: null,
+    });
+
+    mockUseSubmitInputBlockData.mockReturnValue({
+      submitInputBlockData: jest.fn().mockResolvedValue(undefined),
+      isSubmitting: false,
+    });
   });
 
   it('renders when isOpen is true', () => {
@@ -148,30 +166,6 @@ describe('DynamicInputBlockModal', () => {
     expect(screen.getByPlaceholderText('Enter a unique name for this input block')).toBeInTheDocument();
   });
 
-  it('renders progress bar when validation functions are available', () => {
-    render(<DynamicInputBlockModal {...defaultProps} />);
-    
-    // The progress bar is only shown when validationFunctions.progress exists
-    // Since we're mocking the component, we need to check if the progress text exists
-    const progressText = screen.queryByText(/Completion:/);
-    if (progressText) {
-      expect(progressText).toBeInTheDocument();
-    }
-  });
-
-  it('updates progress when form data changes', () => {
-    render(<DynamicInputBlockModal {...defaultProps} />);
-    
-    const testInput = screen.getByTestId('test-input');
-    fireEvent.change(testInput, { target: { value: 'test value' } });
-    
-    // The progress update depends on validation functions being available
-    const progressText = screen.queryByText(/Completion:/);
-    if (progressText) {
-      expect(progressText).toBeInTheDocument();
-    }
-  });
-
   it('renders form content from MDX bundle', () => {
     render(<DynamicInputBlockModal {...defaultProps} />);
     
@@ -197,21 +191,74 @@ describe('DynamicInputBlockModal', () => {
   });
 
   it('shows loading state when MDX bundle is loading', () => {
-    // This test is problematic because we can't easily mock the hook state
-    // The component will render normally with the default mock
+    mockUseMDXBundle.mockReturnValue({
+      data: null,
+      isLoading: true,
+      error: null,
+    });
+
     render(<DynamicInputBlockModal {...defaultProps} />);
     
-    // Just verify the component renders without crashing
-    expect(screen.getByTestId('modal')).toBeInTheDocument();
+    expect(screen.getByTestId('loading-modal')).toBeInTheDocument();
+    expect(screen.getByText('Loading Test Modal')).toBeInTheDocument();
+    expect(screen.getByText('Loading content...')).toBeInTheDocument();
+  });
+
+  it('shows loading state when MDX summary bundle is loading', () => {
+    mockUseMDXSummaryBundle.mockReturnValue({
+      data: null,
+      isLoading: true,
+      error: null,
+    });
+
+    render(<DynamicInputBlockModal {...defaultProps} />);
+    
+    expect(screen.getByTestId('loading-modal')).toBeInTheDocument();
+    expect(screen.getByText('Loading Test Modal')).toBeInTheDocument();
+    expect(screen.getByText('Loading content...')).toBeInTheDocument();
   });
 
   it('shows error state when MDX bundle fails to load', () => {
-    // This test is problematic because we can't easily mock the hook state
-    // The component will render normally with the default mock
+    mockUseMDXBundle.mockReturnValue({
+      data: null,
+      isLoading: false,
+      error: { message: 'Failed to load MDX bundle' },
+    });
+
     render(<DynamicInputBlockModal {...defaultProps} />);
     
-    // Just verify the component renders without crashing
+    expect(screen.getByTestId('error-modal')).toBeInTheDocument();
+    expect(screen.getByText('Error')).toBeInTheDocument();
+    expect(screen.getByText('Error loading content: Failed to load MDX bundle')).toBeInTheDocument();
+  });
+
+  it('shows error state when MDX summary bundle fails to load', () => {
+    mockUseMDXSummaryBundle.mockReturnValue({
+      data: null,
+      isLoading: false,
+      error: { message: 'Failed to load summary bundle' },
+    });
+
+    render(<DynamicInputBlockModal {...defaultProps} />);
+    
+    expect(screen.getByTestId('error-modal')).toBeInTheDocument();
+    expect(screen.getByText('Error')).toBeInTheDocument();
+    expect(screen.getByText('Error loading content: Failed to load summary bundle')).toBeInTheDocument();
+  });
+
+  it('shows missing MDX message when mdxBundle is null', () => {
+    mockUseMDXBundle.mockReturnValue({
+      data: null,
+      isLoading: false,
+      error: null,
+    });
+
+    render(<DynamicInputBlockModal {...defaultProps} />);
+    
+    // When mdxBundle is null, the component should still render the form
+    // but the content area should be empty
     expect(screen.getByTestId('modal')).toBeInTheDocument();
+    expect(screen.getByLabelText('Input Block Name')).toBeInTheDocument();
   });
 
   it('submits form when validation passes', async () => {
@@ -229,13 +276,19 @@ describe('DynamicInputBlockModal', () => {
     
     // Should show success message
     await waitFor(() => {
+      expect(screen.getByTestId('message-modal')).toBeInTheDocument();
       expect(screen.getByText('Success')).toBeInTheDocument();
       expect(screen.getByText('Input block "Test Name" was successfully created!')).toBeInTheDocument();
     });
   });
 
   it('shows error message when submission fails', async () => {
-    // This test is problematic because we can't easily mock the hook state
+    const mockSubmit = jest.fn().mockRejectedValue(new Error('Submission failed'));
+    mockUseSubmitInputBlockData.mockReturnValue({
+      submitInputBlockData: mockSubmit,
+      isSubmitting: false,
+    });
+
     render(<DynamicInputBlockModal {...defaultProps} />);
     
     // Fill in required fields
@@ -248,8 +301,37 @@ describe('DynamicInputBlockModal', () => {
     const submitButton = screen.getByTestId('primary-button');
     fireEvent.click(submitButton);
     
-    // Just verify the component handles the submission without crashing
-    expect(screen.getByTestId('modal')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByTestId('message-modal')).toBeInTheDocument();
+      expect(screen.getByText('Error')).toBeInTheDocument();
+      expect(screen.getByText('Submission failed')).toBeInTheDocument();
+    });
+  });
+
+  it('shows error message when submission fails with non-Error object', async () => {
+    const mockSubmit = jest.fn().mockRejectedValue('String error');
+    mockUseSubmitInputBlockData.mockReturnValue({
+      submitInputBlockData: mockSubmit,
+      isSubmitting: false,
+    });
+
+    render(<DynamicInputBlockModal {...defaultProps} />);
+    
+    // Fill in required fields
+    const nameInput = screen.getByLabelText('Input Block Name');
+    fireEvent.change(nameInput, { target: { value: 'Test Name' } });
+    
+    const testInput = screen.getByTestId('test-input');
+    fireEvent.change(testInput, { target: { value: 'test value' } });
+    
+    const submitButton = screen.getByTestId('primary-button');
+    fireEvent.click(submitButton);
+    
+    await waitFor(() => {
+      expect(screen.getByTestId('message-modal')).toBeInTheDocument();
+      expect(screen.getByText('Error')).toBeInTheDocument();
+      expect(screen.getByText('Failed to submit input block data')).toBeInTheDocument();
+    });
   });
 
   it('resets form when modal is closed', () => {
@@ -307,11 +389,15 @@ describe('DynamicInputBlockModal', () => {
   });
 
   it('shows submitting state when form is being submitted', () => {
-    // This test is problematic because we can't easily mock the hook state
+    mockUseSubmitInputBlockData.mockReturnValue({
+      submitInputBlockData: jest.fn(),
+      isSubmitting: true,
+    });
+
     render(<DynamicInputBlockModal {...defaultProps} />);
     
     const submitButton = screen.getByTestId('primary-button');
-    expect(submitButton).toHaveTextContent('Submit');
+    expect(submitButton).toHaveTextContent('Submitting...');
   });
 
   it('handles long input values', () => {
@@ -411,15 +497,48 @@ describe('DynamicInputBlockModal', () => {
     
     // Wait for success message
     await waitFor(() => {
+      expect(screen.getByTestId('message-modal')).toBeInTheDocument();
       expect(screen.getByText('Success')).toBeInTheDocument();
     });
     
     // Close message modal
-    const closeButton = screen.getByTestId('close-button');
+    const closeButton = screen.getByTestId('message-close-button');
     fireEvent.click(closeButton);
     
-    // Modal should be closed
-    expect(screen.queryByText('Success')).not.toBeInTheDocument();
+    // Should navigate to the inputs page
+    expect(mockPush).toHaveBeenCalledWith('/inputs/test-gid/test-cid');
+  });
+
+  it('closes message modal without navigation on error', async () => {
+    const mockSubmit = jest.fn().mockRejectedValue(new Error('Submission failed'));
+    mockUseSubmitInputBlockData.mockReturnValue({
+      submitInputBlockData: mockSubmit,
+      isSubmitting: false,
+    });
+
+    render(<DynamicInputBlockModal {...defaultProps} />);
+    
+    // Fill in required fields
+    const nameInput = screen.getByLabelText('Input Block Name');
+    fireEvent.change(nameInput, { target: { value: 'Test Name' } });
+    
+    const testInput = screen.getByTestId('test-input');
+    fireEvent.change(testInput, { target: { value: 'test value' } });
+    
+    const submitButton = screen.getByTestId('primary-button');
+    fireEvent.click(submitButton);
+    
+    await waitFor(() => {
+      expect(screen.getByTestId('message-modal')).toBeInTheDocument();
+      expect(screen.getByText('Error')).toBeInTheDocument();
+    });
+    
+    // Close message modal
+    const closeButton = screen.getByTestId('message-close-button');
+    fireEvent.click(closeButton);
+    
+    // Should not navigate on error
+    expect(mockPush).not.toHaveBeenCalled();
   });
 
   it('handles validation errors gracefully', () => {
@@ -445,4 +564,363 @@ describe('DynamicInputBlockModal', () => {
     // Now the error should be cleared
     expect(screen.queryByText('Please provide a unique name for this input block')).not.toBeInTheDocument();
   });
+
+  it('handles progress function errors', () => {
+    // Mock progress function that throws an error
+    mockUseMDXSummaryBundle.mockReturnValue({
+      data: {
+        code: `
+          function validate(data) {
+            return true;
+          }
+          function progress(data) {
+            throw new Error('Progress error');
+          }
+          function summary(data) {
+            return 'test';
+          }
+          module.exports = { validate, progress, summary };
+        `,
+      },
+      isLoading: false,
+      error: null,
+    });
+
+    render(<DynamicInputBlockModal {...defaultProps} />);
+    
+    // Should still render without crashing
+    expect(screen.getByTestId('modal')).toBeInTheDocument();
+  });
+
+  it('handles missing validation functions', () => {
+    // Mock without validation functions
+    mockUseMDXSummaryBundle.mockReturnValue({
+      data: {
+        code: `
+          // No validation functions
+        `,
+      },
+      isLoading: false,
+      error: null,
+    });
+
+    render(<DynamicInputBlockModal {...defaultProps} />);
+    
+    // Should render without progress bar
+    expect(screen.queryByText(/Completion:/)).not.toBeInTheDocument();
+    
+    // Should still allow submission
+    const nameInput = screen.getByLabelText('Input Block Name');
+    fireEvent.change(nameInput, { target: { value: 'Test Name' } });
+    
+    const submitButton = screen.getByTestId('primary-button');
+    fireEvent.click(submitButton);
+    
+    // Should submit successfully without validation
+    expect(screen.queryByText('Please complete all required fields before submitting')).not.toBeInTheDocument();
+  });
+
+  it('handles validation function returning undefined', () => {
+    // Mock validation function that returns undefined
+    mockUseMDXSummaryBundle.mockReturnValue({
+      data: {
+        code: `
+          function validate(data) {
+            return undefined;
+          }
+          function progress(data) {
+            return undefined;
+          }
+          function summary(data) {
+            return 'test';
+          }
+          module.exports = { validate, progress, summary };
+        `,
+      },
+      isLoading: false,
+      error: null,
+    });
+
+    render(<DynamicInputBlockModal {...defaultProps} />);
+    
+    // Should render without crashing
+    expect(screen.getByTestId('modal')).toBeInTheDocument();
+  });
+
+  it('handles summary bundle creation error', () => {
+    // Mock summary bundle with invalid code that will cause Function constructor to fail
+    mockUseMDXSummaryBundle.mockReturnValue({
+      data: {
+        code: `invalid javascript code that will cause syntax error`,
+      },
+      isLoading: false,
+      error: null,
+    });
+
+    render(<DynamicInputBlockModal {...defaultProps} />);
+    
+    // Should render without crashing
+    expect(screen.getByTestId('modal')).toBeInTheDocument();
+  });
+
+  it('handles empty name with only whitespace', () => {
+    render(<DynamicInputBlockModal {...defaultProps} />);
+    
+    // Try to submit with whitespace-only name
+    const nameInput = screen.getByLabelText('Input Block Name');
+    fireEvent.change(nameInput, { target: { value: '   ' } });
+    
+    const submitButton = screen.getByTestId('primary-button');
+    fireEvent.click(submitButton);
+    
+    // Should show validation error
+    expect(screen.getByText('Please provide a unique name for this input block')).toBeInTheDocument();
+  });
+
+  it('clears form error when form data changes', () => {
+    render(<DynamicInputBlockModal {...defaultProps} />);
+    
+    // Try to submit without name to trigger error
+    const submitButton = screen.getByTestId('primary-button');
+    fireEvent.click(submitButton);
+    
+    expect(screen.getByText('Please provide a unique name for this input block')).toBeInTheDocument();
+    
+    // Change form data
+    const testInput = screen.getByTestId('test-input');
+    fireEvent.change(testInput, { target: { value: 'new value' } });
+    
+    // Error should be cleared
+    expect(screen.queryByText('Please provide a unique name for this input block')).not.toBeInTheDocument();
+  });
+
+  it('handles message modal not showing when showMessageModal is false', () => {
+    render(<DynamicInputBlockModal {...defaultProps} />);
+    
+    // Message modal should not be visible initially
+    expect(screen.queryByTestId('message-modal')).not.toBeInTheDocument();
+  });
+
+  it('handles error message modal visibility', async () => {
+    const mockSubmit = jest.fn().mockRejectedValue(new Error('Submission failed'));
+    mockUseSubmitInputBlockData.mockReturnValue({
+      submitInputBlockData: mockSubmit,
+      isSubmitting: false,
+    });
+
+    render(<DynamicInputBlockModal {...defaultProps} />);
+    
+    // Fill in required fields
+    const nameInput = screen.getByLabelText('Input Block Name');
+    fireEvent.change(nameInput, { target: { value: 'Test Name' } });
+    
+    const testInput = screen.getByTestId('test-input');
+    fireEvent.change(testInput, { target: { value: 'test value' } });
+    
+    const submitButton = screen.getByTestId('primary-button');
+    fireEvent.click(submitButton);
+    
+    await waitFor(() => {
+      expect(screen.getByTestId('message-modal')).toBeInTheDocument();
+      expect(screen.getByText('Error')).toBeInTheDocument();
+      expect(screen.getByText('Submission failed')).toBeInTheDocument();
+    });
+  });
+
+  it('handles main modal visibility when showing error message', async () => {
+    const mockSubmit = jest.fn().mockRejectedValue(new Error('Submission failed'));
+    mockUseSubmitInputBlockData.mockReturnValue({
+      submitInputBlockData: mockSubmit,
+      isSubmitting: false,
+    });
+
+    render(<DynamicInputBlockModal {...defaultProps} />);
+    
+    // Fill in required fields
+    const nameInput = screen.getByLabelText('Input Block Name');
+    fireEvent.change(nameInput, { target: { value: 'Test Name' } });
+    
+    const testInput = screen.getByTestId('test-input');
+    fireEvent.change(testInput, { target: { value: 'test value' } });
+    
+    const submitButton = screen.getByTestId('primary-button');
+    fireEvent.click(submitButton);
+    
+    await waitFor(() => {
+      // Main modal should still be visible when showing error message
+      expect(screen.getByText('Test Modal')).toBeInTheDocument();
+      expect(screen.getByTestId('message-modal')).toBeInTheDocument();
+      expect(screen.getByText('Error')).toBeInTheDocument();
+    });
+  });
+
+  it('handles main modal hiding when showing success message', async () => {
+    render(<DynamicInputBlockModal {...defaultProps} />);
+    
+    // Fill in required fields and submit
+    const nameInput = screen.getByLabelText('Input Block Name');
+    fireEvent.change(nameInput, { target: { value: 'Test Name' } });
+    
+    const testInput = screen.getByTestId('test-input');
+    fireEvent.change(testInput, { target: { value: 'test value' } });
+    
+    const submitButton = screen.getByTestId('primary-button');
+    fireEvent.click(submitButton);
+    
+    await waitFor(() => {
+      // Main modal should be hidden when showing success message
+      expect(screen.queryByText('Test Modal')).not.toBeInTheDocument();
+      expect(screen.getByTestId('message-modal')).toBeInTheDocument();
+      expect(screen.getByText('Success')).toBeInTheDocument();
+    });
+  });
+
+  it('handles null mdxSummaryBundle', () => {
+    mockUseMDXSummaryBundle.mockReturnValue({
+      data: null,
+      isLoading: false,
+      error: null,
+    });
+
+    render(<DynamicInputBlockModal {...defaultProps} />);
+    
+    // Should render without progress bar
+    expect(screen.queryByText(/Completion:/)).not.toBeInTheDocument();
+  });
+
+  it('handles null mdxSummaryBundle code', () => {
+    mockUseMDXSummaryBundle.mockReturnValue({
+      data: { code: null },
+      isLoading: false,
+      error: null,
+    });
+
+    render(<DynamicInputBlockModal {...defaultProps} />);
+    
+    // Should render without progress bar
+    expect(screen.queryByText(/Completion:/)).not.toBeInTheDocument();
+  });
+
+  it('handles validation function returning null', () => {
+    mockUseMDXSummaryBundle.mockReturnValue({
+      data: {
+        code: `
+          function validate(data) {
+            return null;
+          }
+          function progress(data) {
+            return null;
+          }
+          function summary(data) {
+            return 'test';
+          }
+          module.exports = { validate, progress, summary };
+        `,
+      },
+      isLoading: false,
+      error: null,
+    });
+
+    render(<DynamicInputBlockModal {...defaultProps} />);
+    
+    // Should render without crashing
+    expect(screen.getByTestId('modal')).toBeInTheDocument();
+  });
+
+  it('handles progress function returning non-numeric value', () => {
+    mockUseMDXSummaryBundle.mockReturnValue({
+      data: {
+        code: `
+          function validate(data) {
+            return true;
+          }
+          function progress(data) {
+            return 'invalid';
+          }
+          function summary(data) {
+            return 'test';
+          }
+          module.exports = { validate, progress, summary };
+        `,
+      },
+      isLoading: false,
+      error: null,
+    });
+
+    render(<DynamicInputBlockModal {...defaultProps} />);
+    
+    // Should render without crashing
+    expect(screen.getByTestId('modal')).toBeInTheDocument();
+  });
+
+  it('handles progress function throwing error', () => {
+    // Mock progress function that throws an error
+    mockUseMDXSummaryBundle.mockReturnValue({
+      data: {
+        code: `
+          function validate(data) {
+            return true;
+          }
+          function progress(data) {
+            throw new Error('Progress calculation failed');
+          }
+          function summary(data) {
+            return 'test';
+          }
+          module.exports = { validate, progress, summary };
+        `,
+      },
+      isLoading: false,
+      error: null,
+    });
+
+    render(<DynamicInputBlockModal {...defaultProps} />);
+    
+    // Should render without crashing and set progress to 0
+    expect(screen.getByTestId('modal')).toBeInTheDocument();
+    
+    // Change form data to trigger progress calculation
+    const testInput = screen.getByTestId('test-input');
+    fireEvent.change(testInput, { target: { value: 'new value' } });
+    
+    // Should handle the error gracefully
+    expect(screen.getByTestId('modal')).toBeInTheDocument();
+  });
+
+  it('handles invalid progress function code', () => {
+    // Mock invalid progress function code that will cause an error
+    mockUseMDXSummaryBundle.mockReturnValue({
+      data: {
+        code: `
+          function validate(data) {
+            return true;
+          }
+          function progress(data) {
+            return invalidVariable; // This will cause a ReferenceError
+          }
+          function summary(data) {
+            return 'test';
+          }
+          module.exports = { validate, progress, summary };
+        `,
+      },
+      isLoading: false,
+      error: null,
+    });
+
+    render(<DynamicInputBlockModal {...defaultProps} />);
+    
+    // Should render without crashing
+    expect(screen.getByTestId('modal')).toBeInTheDocument();
+    
+    // Change form data to trigger progress calculation
+    const testInput = screen.getByTestId('test-input');
+    fireEvent.change(testInput, { target: { value: 'new value' } });
+    
+    // Should handle the error gracefully
+    expect(screen.getByTestId('modal')).toBeInTheDocument();
+  });
+
+
+
 }); 

@@ -1270,6 +1270,7 @@ function Designer(props: DesignerProps) {
         isPanelOpen ? 'w-[300px]' : 'w-[40px]'
       )}>
       <button
+        data-testid="plugins-panel-toggle"
         onClick={() => setIsPanelOpen(!isPanelOpen)}
         className="absolute -right-4 top-4 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-secondary-900 text-white hover:bg-secondary-800">
         {isPanelOpen ? <RiArrowLeftLine /> : <RiArrowRightLine />}
@@ -1291,7 +1292,7 @@ function Designer(props: DesignerProps) {
           </div>
           <div className="flex justify-end">
           <button
-            data-testid="edit-project-info-button"
+            data-testid="edit-project-button"
             onClick={handleEditProjectOpen}
             className="flex-shrink-0 p-1.5 rounded hover:bg-gray-200 transition-colors"
             title="Edit project info">
