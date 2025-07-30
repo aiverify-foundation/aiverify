@@ -1074,7 +1074,8 @@ describe('DatasetFolderUploader', () => {
 
   describe('Upload Progress and States', () => {
     it('shows correct upload progress for multiple folders', async () => {
-      // Mock the mutate function to simulate slow uploads
+      // Mock the mutate function to simulate mixed results - first succeeds, second fails
+      mockMutate.mockReset();
       let callCount = 0;
       mockMutate.mockImplementation((formData, options) => {
         callCount++;
@@ -1129,10 +1130,10 @@ describe('DatasetFolderUploader', () => {
       const submitButton = screen.getByText('UPLOAD 2 FOLDERS');
       fireEvent.click(submitButton);
       
-      // Check for final results - both folders fail in practice
+      // Check for final results - first folder succeeds, second fails
       await waitFor(() => {
-        expect(screen.getByText(/Upload completed: 0 successful, 2 failed/)).toBeInTheDocument();
-        expect(screen.getByText(/Failed folders: folder1, folder2/)).toBeInTheDocument();
+        expect(screen.getByText(/Upload completed: 1 successful, 1 failed/)).toBeInTheDocument();
+        expect(screen.getByText(/Failed folders: folder2/)).toBeInTheDocument();
       });
     });
 
