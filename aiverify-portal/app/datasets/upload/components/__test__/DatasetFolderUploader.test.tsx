@@ -1074,13 +1074,13 @@ describe('DatasetFolderUploader', () => {
 
   describe('Upload Progress and States', () => {
     it('shows correct upload progress for multiple folders', async () => {
-      // Mock the mutate function to simulate mixed results - first succeeds, second fails
+      // Mock the mutate function to simulate mixed results - folder1 succeeds, folder2 fails
       mockMutate.mockReset();
-      let callCount = 0;
       mockMutate.mockImplementation((formData, options) => {
-        callCount++;
+        // Use the folder name from FormData to determine success/failure
+        const folderName = formData.get('foldername') as string;
         setTimeout(() => {
-          if (callCount === 1) {
+          if (folderName === 'folder1') {
             options?.onSuccess?.();
           } else {
             options?.onError?.(new Error('Upload failed'));
