@@ -7,6 +7,7 @@
   "parser": "@typescript-eslint/parser",
   "plugins": ["@typescript-eslint"],
   "root": true,
+  "ignorePatterns": ["**/__tests__/**", "**/__test__/**", "**/__utils__/**"],
   "rules": {
     "react-hooks/rules-of-hooks": "warn",
     "react-hooks/exhaustive-deps": 0,

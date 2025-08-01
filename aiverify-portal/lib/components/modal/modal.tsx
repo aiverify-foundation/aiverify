@@ -76,7 +76,7 @@ function Modal(props: ModalProps) {
             />
           ) : null}
         </header>
-        <main style={{ height: 'calc(100% - 20px' }}>{children}</main>
+        <main style={{ height: 'calc(100% - 20px)' }}>{children}</main>
         {(onSecondaryBtnClick || onPrimaryBtnClick) && (
           <footer className="absolute bottom-0 left-0 mt-4 flex w-full items-center justify-end gap-2 p-4">
             {onSecondaryBtnClick && (

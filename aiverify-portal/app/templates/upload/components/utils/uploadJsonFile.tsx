@@ -6,7 +6,7 @@ export type UploadRequestPayload = {
 };
 
 // Define a type for JSON data - could be enhanced with more specific structure if known
-type JsonData = Record<string, unknown>;
+export type JsonData = Record<string, unknown>;
 
 // For testing alternate approaches
 const USE_FETCH_APPROACH = true; // Set to true to use fetch API instead of XMLHttpRequest
@@ -37,7 +37,7 @@ export async function uploadJsonFile({
 }
 
 // Helper function to read file as JSON
-function readFileAsJson(file: File): Promise<JsonData> {
+export function readFileAsJson(file: File): Promise<JsonData> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
 
@@ -68,7 +68,7 @@ function readFileAsJson(file: File): Promise<JsonData> {
 }
 
 // Fetch API implementation with direct JSON content
-async function uploadJsonWithFetch(
+export async function uploadJsonWithFetch(
   jsonContent: JsonData,
   onProgress: (progress: number) => void
 ): Promise<{ message: string }> {
@@ -119,7 +119,7 @@ async function uploadJsonWithFetch(
 }
 
 // XMLHttpRequest implementation with direct JSON content
-async function uploadJsonWithXhr(
+export async function uploadJsonWithXhr(
   jsonContent: JsonData,
   onProgress: (progress: number) => void
 ): Promise<{ message: string }> {

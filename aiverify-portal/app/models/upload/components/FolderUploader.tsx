@@ -173,7 +173,7 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
       return;
     }
 
-    if (!folderName || !modelType) {
+    if (!folderName?.trim() || !modelType) {
       setModalMessage('Please fill in all required fields.');
       setIsModalVisible(true);
       return;
@@ -265,13 +265,6 @@ const FolderUpload = ({ onBack }: { onBack: () => void }) => {
     formData.append('model_type', modelType);
     formData.append('file_type', 'folder');
     formData.append('subfolders', subfolderPaths.join(','));
-
-    console.log(
-      'Subfolders parameter:',
-      subfolderPaths.join(',').substring(0, 100) +
-        (subfolderPaths.join(',').length > 100 ? '...' : '')
-    );
-    console.log('=== SENDING UPLOAD REQUEST ===');
 
     // Clear selection immediately when submitting
     setSelectedFiles([]);

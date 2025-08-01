@@ -22,8 +22,10 @@ export const useAutosave = (state: State) => {
 
     const saveState = async () => {
       try {
-        await debouncedSaveStateToDatabase(state);
-        previousStateRef.current = state;
+        // The debounced function doesn't return a Promise, so we don't await it
+        debouncedSaveStateToDatabase(state);
+        // Note: We don't update previousStateRef here because the debounced function
+        // is asynchronous and we can't easily track when it completes
         saveAttemptsRef.current = 0; // Reset attempts on successful save
       } catch (error) {
         console.error('Failed to save state:', error);

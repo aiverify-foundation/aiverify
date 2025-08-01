@@ -118,7 +118,7 @@ function WidgetPropertiesDrawer(props: WidgetPropertiesDrawerProps) {
   };
 
   const parentPlugin = findPluginByGid(allAvailablePlugins, widget.gid);
-  const algos = widget.dependencies
+  const algos = (widget.dependencies || [])
     .map((dep) => {
       if (!dep.cid) {
         return undefined;
@@ -128,7 +128,7 @@ function WidgetPropertiesDrawer(props: WidgetPropertiesDrawerProps) {
     })
     .filter((algo) => algo !== undefined);
 
-  const inputBlocks = widget.dependencies
+  const inputBlocks = (widget.dependencies || [])
     .map((ib) => {
       if (!ib.cid) {
         return undefined;
@@ -187,6 +187,7 @@ function WidgetPropertiesDrawer(props: WidgetPropertiesDrawerProps) {
                   </div>
                   <ul>
                     {algos.map((algo) => {
+                      if (!algo) return null;
                       const testResultForThisAlgo = testResultsUsed
                         ? findTestResultByAlgoGidAndCid(
                             testResultsUsed,
@@ -276,129 +277,132 @@ function WidgetPropertiesDrawer(props: WidgetPropertiesDrawerProps) {
                     </h2>
                   </div>
                   <ul>
-                    {inputBlocks.map((ib) => (
-                      <li
-                        key={ib.cid}
-                        className="ml-2 mt-1 flex flex-col items-start gap-1 p-0 text-gray-400">
+                    {inputBlocks.map((ib) => {
+                      if (!ib) return null;
+                      return (
+                        <li
+                          key={ib.cid}
+                          className="ml-2 mt-1 flex flex-col items-start gap-1 p-0 text-gray-400">
                         {/* <div className="mb-2 h-[1px] w-full bg-gray-500" /> */}
                         <h3 className="text-[0.9rem] font-semibold">
                           {ib.name}
                         </h3>
                         <p className="text-[0.8rem]">{ib.description}</p>
                       </li>
+                    );
+                  })}
+                </ul>
+              </div>
+              <div className="ml-5 flex flex-col items-start gap-1">
+                <div className="mt-8 flex items-center gap-2 text-gray-500">
+                  <RiSurveyFill className="h-4 w-4 text-gray-500 hover:text-gray-900" />
+                  <h2 className="text-[0.8rem] font-semibold">
+                    User Input Data
+                  </h2>
+                </div>
+                {!inputBlocksDataUsed || inputBlocksDataUsed.length === 0 ? (
+                  <div className="mb-1 text-[0.8rem] text-blue-600">
+                    Currently using mock data
+                  </div>
+                ) : (
+                  <ul>
+                    {inputBlocksDataUsed.map((inputBlockData) => (
+                      <li
+                        key={inputBlockData.id}
+                        className="ml-2 mt-1 flex flex-col items-start gap-1 p-0 text-blue-600">
+                        <div className="flex flex-col">
+                          <div className="text-[0.8rem]">
+                            <span className="font-semibold">ID:</span>{' '}
+                            {inputBlockData.id}
+                          </div>
+                          <div className="text-[0.8rem]">
+                            <span className="font-semibold">Name:</span>{' '}
+                            {inputBlockData.name}
+                          </div>
+                          <div className="text-[0.8rem]">
+                            <span className="font-semibold">Group:</span>{' '}
+                            {inputBlockData.group}
+                          </div>
+                          <div className="text-[0.8rem]">
+                            <span className="font-semibold">Created:</span>{' '}
+                            {new Date(
+                              inputBlockData.created_at + "Z"
+                            ).toLocaleString()}
+                          </div>
+                        </div>
+                      </li>
                     ))}
                   </ul>
-                </div>
-                <div className="ml-5 flex flex-col items-start gap-1">
-                  <div className="mt-8 flex items-center gap-2 text-gray-500">
-                    <RiSurveyFill className="h-4 w-4 text-gray-500 hover:text-gray-900" />
-                    <h2 className="text-[0.8rem] font-semibold">
-                      User Input Data
-                    </h2>
-                  </div>
-                  {!inputBlocksDataUsed || inputBlocksDataUsed.length === 0 ? (
-                    <div className="mb-1 text-[0.8rem] text-blue-600">
-                      Currently using mock data
-                    </div>
-                  ) : (
-                    <ul>
-                      {inputBlocksDataUsed.map((inputBlockData) => (
-                        <li
-                          key={inputBlockData.id}
-                          className="ml-2 mt-1 flex flex-col items-start gap-1 p-0 text-blue-600">
-                          <div className="flex flex-col">
-                            <div className="text-[0.8rem]">
-                              <span className="font-semibold">ID:</span>{' '}
-                              {inputBlockData.id}
-                            </div>
-                            <div className="text-[0.8rem]">
-                              <span className="font-semibold">Name:</span>{' '}
-                              {inputBlockData.name}
-                            </div>
-                            <div className="text-[0.8rem]">
-                              <span className="font-semibold">Group:</span>{' '}
-                              {inputBlockData.group}
-                            </div>
-                            <div className="text-[0.8rem]">
-                              <span className="font-semibold">Created:</span>{' '}
-                              {new Date(
-                                inputBlockData.created_at + "Z"
-                              ).toLocaleString()}
-                            </div>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-                <Divider />
-              </React.Fragment>
-            ) : null}
+                )}
+              </div>
+              <Divider />
+            </React.Fragment>
+          ) : null}
 
-            {/* Widget Properties Section */}
-            {widget.properties && widget.properties.length > 0 ? (
-              <React.Fragment>
-                <div className="mt-8 flex flex-col items-start gap-1 text-gray-500">
-                  <div className="flex items-center gap-2">
-                    <RiSettings4Line className="h-5 w-5 text-gray-500 hover:text-gray-900" />
-                    <h2 className="text-[0.9rem] font-semibold">
-                      Widget Custom Properties
-                    </h2>
-                  </div>
-                  <div className="w-full">
-                    {widget.properties.map((property: WidgetProperty) => (
-                      <div
-                        key={property.key}
-                        className="mb-4">
-                        <label
-                          htmlFor={`property-${property.key}`}
-                          className="mb-1 block text-[0.9rem] font-semibold text-gray-500">
-                          {property.key}
-                        </label>
-                        <p className="mb-2 text-[0.8rem] text-gray-400">
-                          {property.helper}
-                        </p>
-                        <input
-                          id={`property-${property.key}`}
-                          type="text"
-                          className="w-full rounded-md border border-gray-300 px-3 py-2 text-[0.9rem] text-gray-700 focus:border-primary-500 focus:outline-none"
-                          value={propertyValues[property.key] || ''}
-                          onChange={(e) =>
-                            handlePropertyChange(property.key, e.target.value)
-                          }
-                          placeholder={property.default}
-                        />
-                      </div>
-                    ))}
-                  </div>
+          {/* Widget Properties Section */}
+          {widget.properties && widget.properties.length > 0 ? (
+            <React.Fragment>
+              <div className="mt-8 flex flex-col items-start gap-1 text-gray-500">
+                <div className="flex items-center gap-2">
+                  <RiSettings4Line className="h-5 w-5 text-gray-500 hover:text-gray-900" />
+                  <h2 className="text-[0.9rem] font-semibold">
+                    Widget Custom Properties
+                  </h2>
                 </div>
-              </React.Fragment>
-            ) : null}
-          </DrawerBody>
-          <DrawerFooter className="mt-6">
-            <DrawerClose asChild>
-              <Button
-                className="mt-2 w-full sm:mt-0 sm:w-fit"
-                variant="secondary"
-                onClick={() => onDeleteClick()}>
-                Delete widget
-              </Button>
-            </DrawerClose>
-            <DrawerClose asChild>
-              <Button
-                className="w-full sm:w-fit"
-                onClick={() => onOkClick()}>
-                Ok
-              </Button>
-            </DrawerClose>
-          </DrawerFooter>
-        </DrawerContent>
-        <div className="absolute right-0 top-0 z-20 bg-white text-xs text-gray-300">
-          {widget.gridItemId}
-        </div>
-      </Drawer>
-    </div>
-  );
+                <div className="w-full">
+                  {widget.properties.map((property: WidgetProperty) => (
+                    <div
+                      key={property.key}
+                      className="mb-4">
+                      <label
+                        htmlFor={`property-${property.key}`}
+                        className="mb-1 block text-[0.9rem] font-semibold text-gray-500">
+                        {property.key}
+                      </label>
+                      <p className="mb-2 text-[0.8rem] text-gray-400">
+                        {property.helper}
+                      </p>
+                      <input
+                        id={`property-${property.key}`}
+                        type="text"
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-[0.9rem] text-gray-700 focus:border-primary-500 focus:outline-none"
+                        value={propertyValues[property.key] || ''}
+                        onChange={(e) =>
+                          handlePropertyChange(property.key, e.target.value)
+                        }
+                        placeholder={property.default}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </React.Fragment>
+          ) : null}
+        </DrawerBody>
+        <DrawerFooter className="mt-6">
+          <DrawerClose asChild>
+            <Button
+              className="mt-2 w-full sm:mt-0 sm:w-fit"
+              variant="secondary"
+              onClick={() => onDeleteClick()}>
+              Delete widget
+            </Button>
+          </DrawerClose>
+          <DrawerClose asChild>
+            <Button
+              className="w-full sm:w-fit"
+              onClick={() => onOkClick()}>
+              Ok
+            </Button>
+          </DrawerClose>
+        </DrawerFooter>
+      </DrawerContent>
+      <div className="absolute right-0 top-0 z-20 bg-white text-xs text-gray-300">
+        {widget.gridItemId}
+      </div>
+    </Drawer>
+  </div>
+);
 }
 
 export { WidgetPropertiesDrawer };

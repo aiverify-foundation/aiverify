@@ -30,12 +30,13 @@ function PageNumber({
         right: `${(isOverflowPage ? -15 : -10) / zoomLevel}%`,
       }}>
       Page {pageNumber}
-      {!isOverflowPage && onDeleteClick && !disableDelete && (
+      {onDeleteClick && !disableDelete && (
         <Tooltip
           sideOffset={-10}
           content="Delete Page"
           side="right">
           <RiDeleteBinLine
+            data-testid="delete-button"
             className="mt-2 cursor-pointer rounded bg-gray-300 p-1 text-gray-500 shadow-sm hover:text-red-500"
             onClick={onDeleteClick}
           />

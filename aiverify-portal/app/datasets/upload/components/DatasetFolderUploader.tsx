@@ -37,46 +37,51 @@ export function DatasetFolderUploader() {
   const traverseDirectory = async (entry: FileSystemEntry, path = ''): Promise<FileWithPath[]> => {
     const files: FileWithPath[] = [];
     
-    if (entry.isFile) {
-      const fileEntry = entry as FileSystemFileEntry;
-      const file = await new Promise<File>((resolve, reject) => {
-        fileEntry.file(resolve, reject);
-      });
-      
-      // Create a new File object with the same content but with a custom name that includes the path
-      // This ensures it's a proper File object that can be used in FormData
-      const newFile = new File([file], file.name, {
-        type: file.type,
-        lastModified: file.lastModified,
-      });
-      
-      // Add webkitRelativePath as a non-enumerable property
-      // Build the path by combining current path with filename
-      const webkitRelativePath = path + file.name;
-      Object.defineProperty(newFile, 'webkitRelativePath', {
-        value: webkitRelativePath,
-        writable: false,
-        enumerable: false,
-        configurable: false
-      });
-      
-      console.log(`Built webkitRelativePath: "${webkitRelativePath}" from path: "${path}" + filename: "${file.name}"`);
-      
-      files.push(newFile as FileWithPath);
-    } else if (entry.isDirectory) {
-      const directoryEntry = entry as FileSystemDirectoryEntry;
-      const reader = directoryEntry.createReader();
-      const entries = await new Promise<FileSystemEntry[]>((resolve, reject) => {
-        reader.readEntries(resolve, reject);
-      });
-      
-      // Build the path for this directory level
-      const currentPath = path + entry.name + '/';
-      
-      for (const subEntry of entries) {
-        const subFiles = await traverseDirectory(subEntry, currentPath);
-        files.push(...subFiles);
+    try {
+      if (entry.isFile) {
+        const fileEntry = entry as FileSystemFileEntry;
+        const file = await new Promise<File>((resolve, reject) => {
+          fileEntry.file(resolve, reject);
+        });
+        
+        // Create a new File object with the same content but with a custom name that includes the path
+        // This ensures it's a proper File object that can be used in FormData
+        const newFile = new File([file], file.name, {
+          type: file.type,
+          lastModified: file.lastModified,
+        });
+        
+        // Add webkitRelativePath as a non-enumerable property
+        // Build the path by combining current path with filename
+        const webkitRelativePath = path + file.name;
+        Object.defineProperty(newFile, 'webkitRelativePath', {
+          value: webkitRelativePath,
+          writable: false,
+          enumerable: false,
+          configurable: false
+        });
+        
+        console.log(`Built webkitRelativePath: "${webkitRelativePath}" from path: "${path}" + filename: "${file.name}"`);
+        
+        files.push(newFile as FileWithPath);
+      } else if (entry.isDirectory) {
+        const directoryEntry = entry as FileSystemDirectoryEntry;
+        const reader = directoryEntry.createReader();
+        const entries = await new Promise<FileSystemEntry[]>((resolve, reject) => {
+          reader.readEntries(resolve, reject);
+        });
+        
+        // Build the path for this directory level
+        const currentPath = path + entry.name + '/';
+        
+        for (const subEntry of entries) {
+          const subFiles = await traverseDirectory(subEntry, currentPath);
+          files.push(...subFiles);
+        }
       }
+    } catch (error) {
+      console.error('Error traversing directory:', error);
+      // Return empty array on error to continue processing other files
     }
     
     return files;
@@ -162,50 +167,57 @@ export function DatasetFolderUploader() {
 
     // Process each dropped item
     for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-      if (item.kind === 'file') {
-        const entry = item.webkitGetAsEntry();
-        if (entry) {
-          if (entry.isDirectory) {
-            // Handle directory - start with empty path, let traverseDirectory build the correct path
-            const files = await traverseDirectory(entry, '');
-            files.forEach(file => {
-              const rootFolderName = file.webkitRelativePath.split('/')[0];
-              if (!folderGroups[rootFolderName]) {
-                folderGroups[rootFolderName] = [];
-              }
-              folderGroups[rootFolderName].push(file);
-            });
-          } else {
-            // Handle individual file
-            const file = item.getAsFile();
-            if (file) {
-              // Create a new File object with the same content
-              // This ensures it's a proper File object that can be used in FormData
-              const newFile = new File([file], file.name, {
-                type: file.type,
-                lastModified: file.lastModified,
+      try {
+        const item = items[i];
+        if (item.kind === 'file') {
+          const entry = item.webkitGetAsEntry();
+          if (entry) {
+            if (entry.isDirectory) {
+              // Handle directory - start with empty path, let traverseDirectory build the correct path
+              const files = await traverseDirectory(entry, '');
+              files.forEach(file => {
+                const rootFolderName = file.webkitRelativePath.split('/')[0];
+                if (!folderGroups[rootFolderName]) {
+                  folderGroups[rootFolderName] = [];
+                }
+                folderGroups[rootFolderName].push(file);
               });
-              
-              // Add webkitRelativePath as a non-enumerable property
-              Object.defineProperty(newFile, 'webkitRelativePath', {
-                value: file.name,
-                writable: false,
-                enumerable: false,
-                configurable: false
-              });
-              
-              const fileWithPath = newFile as FileWithPath;
-              
-              // Group single files under a generic folder name
-              const rootFolderName = 'DroppedFiles';
-              if (!folderGroups[rootFolderName]) {
-                folderGroups[rootFolderName] = [];
+            } else {
+              // Handle individual file
+              if (typeof item.getAsFile === 'function') {
+                const file = item.getAsFile();
+                if (file) {
+                  // Create a new File object with the same content
+                  // This ensures it's a proper File object that can be used in FormData
+                  const newFile = new File([file], file.name, {
+                    type: file.type,
+                    lastModified: file.lastModified,
+                  });
+                  
+                  // Add webkitRelativePath as a non-enumerable property
+                  Object.defineProperty(newFile, 'webkitRelativePath', {
+                    value: file.name,
+                    writable: false,
+                    enumerable: false,
+                    configurable: false
+                  });
+                  
+                  const fileWithPath = newFile as FileWithPath;
+                  
+                  // Group single files under a generic folder name
+                  const rootFolderName = 'DroppedFiles';
+                  if (!folderGroups[rootFolderName]) {
+                    folderGroups[rootFolderName] = [];
+                  }
+                  folderGroups[rootFolderName].push(fileWithPath);
+                }
               }
-              folderGroups[rootFolderName].push(fileWithPath);
             }
           }
         }
+      } catch (error) {
+        console.error('Error processing dropped item:', error);
+        // Continue processing other items
       }
     }
 

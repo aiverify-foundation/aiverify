@@ -17,10 +17,12 @@ function ResizeHandle(props: ResizeHandleProps) {
     ne: `${mainHandleClasses} react-resizable-handle-ne`,
   };
 
+  const className = positionClasses[handleAxis as keyof typeof positionClasses] || mainHandleClasses;
+
   return (
     <span
       ref={ref}
-      className={positionClasses[handleAxis as keyof typeof positionClasses]}
+      className={className}
       {...rest}
     />
   );

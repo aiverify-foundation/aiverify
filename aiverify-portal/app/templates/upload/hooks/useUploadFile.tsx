@@ -18,7 +18,7 @@ export function useUploadFiles({
   >({
     mutationFn: (payload: UploadRequestPayload) => uploadJsonFile(payload),
     onSuccess: (data) => onSuccess(data.message),
-    onError,
+    onError: (error) => onError(error),
   });
 
   return mutation;

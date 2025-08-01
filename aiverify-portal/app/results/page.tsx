@@ -1,13 +1,21 @@
 import React from 'react';
 import { Icon, IconName } from '@/lib/components/IconSVG';
 import { getTestResults } from '@/lib/fetchApis/getTestResults';
+import { TestResult } from '@/app/types';
 import ActionButtons from './components/ActionButton';
 import TestResultsList from './components/TestResultsList';
 
 export const dynamic = 'force-dynamic';
 
 export default async function ResultsPage() {
-  const testResults = await getTestResults();
+  let testResults: TestResult[] = [];
+  
+  try {
+    testResults = await getTestResults();
+  } catch (error) {
+    console.error('Failed to fetch test results:', error);
+    // Continue with empty results array
+  }
 
   return (
     <div className="p-6">

@@ -99,6 +99,7 @@ function Card(props: CardProps) {
     <CardProvider value={{ size }}>
       <div
         ref={cardRef}
+        data-testid="card"
         className={`${styles.card} ${styles[`card_${size}`]} ${className}`}
         style={{
           height,

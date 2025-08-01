@@ -56,7 +56,7 @@ const GroupList: React.FC<GroupListProps> = () => {
           );
         case 'date-desc':
           return (
-            new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime()
+            new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
           );
         case 'name':
           return a.name.localeCompare(b.name);
