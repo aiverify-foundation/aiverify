@@ -11,12 +11,9 @@ class InvalidFilename(Exception):
 
 
 def check_valid_filename(filename: str):
-    # return PurePath(filename).stem.isalnum
-    if not filename[0].isalnum():
-        return False
-    # filename must be alphanumeric plus charters ./
-    # sanitized = re.fullmatch(r'[a-zA-Z0-9_./]*', filename)
-    # return sanitized is not None
+    # if not filename[0].isalnum():
+    #     return False
+    # filename must be alphanumeric plus charters ./_-
     return re.search(r"\.\.", filename) is None and re.search(r"[^a-zA-Z0-9._\-/]", filename.replace("\\", "/")) is None
 
 

@@ -91,11 +91,11 @@ class PluginTest:
             test_input = np.random.random((128, 32))
             test_target = np.random.random((128, 1))
             model.fit(test_input, test_target)
-            model.save("mytestmodel")
+            model.save("mytestmodel.keras")
 
             # Deserialize the model
             reconstructed_model = self._serializer_instance.deserialize_data(
-                "mytestmodel"
+                "mytestmodel.keras"
             )
             np.testing.assert_allclose(
                 model.predict(test_input), reconstructed_model.predict(test_input)

@@ -2,12 +2,15 @@
 
 name: v2 Smoke Test
 
+env:
+  GITHUB_TOKEN: ${{ github.token }}
+
 on:
   # Runs when a pull request review is being submitted
   pull_request:
     types: [assigned, synchronize]
     branches:
-      - "v2.x"
+      - "main"
 
   # Run this workflow manually from Actions tab
   workflow_dispatch:
@@ -15,151 +18,98 @@ on:
       branch_to_test:
         description: "Branch or tag to run test"
         required: true
-        default: "v2.x"
+        default: "main"
         type: string
-
-  push:
-    branches: [v2.x]
 
 # Allow one concurrent deployment
 concurrency:
-  group: ${{ github.repository }}-${{ github.workflow }}
+  group: automated-testing
   cancel-in-progress: false
 
 jobs:
   smoke-test:
     #  Run only when PR is approved
-    if: (github.event_name == 'pull_request' && github.event.pull_request.assignee != null) || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
+    if: (github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || github.event_name == 'push')
+    runs-on: self-hosted-aiverify
+    permissions:
+      id-token: write
+      contents: read
+      packages: write
+    timeout-minutes: 60
 
     steps:
-      - name: Checkout Code
+      
+      # Change Existing File Permissions For Later Removal During Checkout of AI Verify
+      - name: Change Existing File Permissions From Previous Runs
+        run: |
+          sudo chmod -R 777 .
+
+      # Checkout Code (Workflow Dispatch)
+      - name: Checkout Code (Workflow Dispatch)
+        if: (github.event_name == 'workflow_dispatch')
         uses: actions/checkout@v4
         with:
-          ref: v2.x
+          ref: ${{ inputs.branch_to_test }}
           repository: aiverify-foundation/aiverify
 
+      # Checkout Code (Pull Request)
+      - name: Checkout Code
+        if: (github.event_name == 'pull_request')
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          repository: aiverify-foundation/aiverify
+
+      # Checkout Smoke Test Code
       - name: Checkout Smoke Test Code
         uses: actions/checkout@v4
         with:
-          ref: v2.x
-          repository: aiverify-foundation/smoke-testing
-          path: smoke-testing
+          ref: main
+          repository: aiverify-foundation/aivt-integration-testing
+          path: integration-testing
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Set ROOT_PATH Variable
+      # Log in to GitHub Container Registry (ghcr.io), needed by Github Actions to access ghcr.io
+      - name: Login to GHCR
         run: |
-          echo "ROOT_PATH=${{ github.workspace }}/stock-plugins/user_defined_files" >> $GITHUB_ENV
+          echo "${{ env.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
-      - name: Install AI Verify Shared Library
+      # Clean slate to force rebuild all images
+      - name: Delete all local Docker images
         run: |
-          cd aiverify-shared-library
-          npm install
-          npm run build
-          npm link
-          cd ${GITHUB_WORKSPACE}
+          docker ps -q | xargs -r docker stop
+          docker images -q | xargs -r docker rmi -f
+          docker system prune -a -f
+          docker volume prune --all -f
+          docker builder prune -a -f
 
-      - name: Install APIGW & Start APIGW
+      # Launch containers in Docker Compose
+      - name: Run images in Docker Compose
         run: |
-          cd aiverify-apigw
-          touch .env
-          echo "MONGODB_URI=mongodb://localhost:27017 \ DB_NAME=aiverify \ PORT=4000" >> .env
-          python3 -m venv .venv
-          source .venv/bin/activate
-          pip install --no-cache-dir torch==2.4.1+cpu --index-url https://download.pytorch.org/whl/cpu
-          pip install -e ../aiverify-test-engine[all]
-          pip install -e .
-          cd aiverify-apigw-node
-          npm install
-          npm link aiverify-shared-library
-          cd ../
-          python3 -m aiverify_apigw > output.log 2>&1 &
-          sleep 180
-          cd ${GITHUB_WORKSPACE}
+          cd deployment/docker-compose-dev
+          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-venv --profile portal up -d
+          echo "Initialising AI Verify Plugins"
+          sleep 5m
 
-      - name: Install PORTAL
+      # Prepare Smoke Test Data
+      - name: Prepare Smoke Test Data
         run: |
-          cd aiverify-portal
-          touch .env
-          echo "APIGW_HOST=http://localhost:4000" >> .env
-          npm install
-          npm run dev > output.log 2>&1 &
-          cd ${GITHUB_WORKSPACE}
+          cd stock-plugins/user_defined_files/veritas_data
+          mkdir cs_model
+          mv cs_model.pkl cs_model
 
-      - name: Create Zip Test Results using Digital Corruption
-        run: |
-          cd aiverify-test-engine
-          python -m venv .venv2
-          source .venv2/bin/activate
-          pip install -e .
-          cd ${GITHUB_WORKSPACE}
-          cd stock-plugins/aiverify.stock.image-corruption-toolbox/algorithms/digital_corruptions/
-          pip install -e .
-          python -m aiverify_digital_corruptions \
-            --data_path ${{ env.ROOT_PATH }}/data/raw_fashion_image_10 \
-            --model_path ${{ env.ROOT_PATH }}/pipeline/sample_fashion_mnist_sklearn \
-            --ground_truth_path ${{ env.ROOT_PATH }}/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
-            --ground_truth label \
-            --model_type CLASSIFICATION \
-            --run_pipeline \
-            --annotated_ground_truth_path ${{ env.ROOT_PATH }}/data/pickle_pandas_fashion_mnist_annotated_labels_10.sav \
-            --set_seed 10 \
-            --file_name_label file_name
-          cd output
-          zip -r digital_corruptions.zip .
-          cp digital_corruptions.zip ${GITHUB_WORKSPACE}/smoke-testing/fixtures/
-          deactivate
-          rm -f .venv2
-          cd ${GITHUB_WORKSPACE}
-
-      - name: Create Zip Test Results using FMTC Toolbox
-        run: |
-          cd aiverify-test-engine
-          python -m venv .venv2
-          source .venv2/bin/activate
-          pip install -e .
-          cd ${GITHUB_WORKSPACE}
-          cd stock-plugins/aiverify.stock.fairness-metrics-toolbox-for-classification/algorithms/fairness_metrics_toolbox_for_classification/
-          pip install -e .
-          python -m aiverify_fairness_metrics_toolbox_for_classification \
-            --data_path ${{ env.ROOT_PATH }}/data/sample_mc_pipeline_toxic_data.sav \
-            --model_path ${{ env.ROOT_PATH }}/pipeline/mc_tabular_toxic \
-            --ground_truth_path ${{ env.ROOT_PATH }}/data/sample_mc_pipeline_toxic_ytest_data.sav \
-            --ground_truth toxic \
-            --model_type CLASSIFICATION \
-            --run_pipeline \
-            --sensitive_features_list gender
-          cp output/results.json ${GITHUB_WORKSPACE}/smoke-testing/fixtures/
-          deactivate
-          rm -rf .venv2
-          cd ${GITHUB_WORKSPACE}
-
+      # Run Smoke Test
       - name: Run Smoke Test
         run: |
-          cd smoke-testing
+          cd integration-testing
           npm install
           npx playwright install --with-deps
-          URL=http://localhost:3000 npx playwright test tests/03-smoke.spec.js
+          URL=http://127.0.0.1 PORT_NUMBER=3000 ROOT_PATH=$GITHUB_WORKSPACE/stock-plugins/user_defined_files npx playwright test tests/portal/01-workflows.spec.js
 
+      # Upload Playwright Traces
       - name: Upload Playwright Traces
-        if: always()
+        if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
           name: playwright-trace-v2.0-smoke-testing-${{ github.run_id }}
           path: |
-            ${{ github.workspace }}/smoke-testing/test-results/
-
-      - name: APIGW Logs
-        if: always()
-        run: |
-          cat ${GITHUB_WORKSPACE}/aiverify-apigw/output.log
-
-      - name: PORTAL Logs
-        if: always()
-        run: |
-          cat ${GITHUB_WORKSPACE}/aiverify-portal/output.log
+            ${{ github.workspace }}/integration-testing/test-results/
